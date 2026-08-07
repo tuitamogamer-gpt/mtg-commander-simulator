@@ -928,7 +928,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // detach everything
         for (const aid of card.attachments.slice()) {
           const a = this.byIid(aid);
-          if (a) { a.attachedTo = null; if (a.is('Aura')) await this.move(a, 'graveyard'); }
+          if (a) { a.attachedTo = null; if (a.hasSub('Aura')) await this.move(a, 'graveyard'); }
         }
         card.attachments = [];
         if (card.attachedTo) {
@@ -1767,11 +1767,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               await this.move(c, 'graveyard'); any = true; continue;
             }
             // aura attachment legality
-            if (c.is('Aura')) {
+            if (c.hasSub('Aura')) {
               const host = c.attachedTo ? this.byIid(c.attachedTo) : null;
               if (!host || host.zone !== 'battlefield') { await this.move(c, 'graveyard'); any = true; continue; }
             }
-            if (c.is('Equipment') && c.attachedTo) {
+            if (c.hasSub('Equipment') && c.attachedTo) {
               const host = this.byIid(c.attachedTo);
               if (!host || host.zone !== 'battlefield' || !host.is('Creature')) {
                 const h2 = host;
@@ -1835,6 +1835,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG;
   const G = MTG.Game.prototype;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
+
+  // Equip cijena za konkretan cilj: karte tipa "Equip Elf {2} / Equip {5}"
+  // imaju jeftiniju alternativu koja vrijedi samo za ciljeve koji prolaze filter.
+  function equipCostFor(eq, target) {
+    const alt = eq.def.equipAlt;
+    if (alt && target && alt.filter(target)) return alt.cost;
+    return eq.def.equip;
+  }
 
   // ============================================================
   // Mana sources & payment
@@ -2850,8 +2858,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const out = [];
     for (const c of this.bf()) {
       if (c.ctrl !== p) continue;
-      const abs = c.def.abilities;
-      if (!abs) continue;
+      // NE preskačemo karte bez `abilities` — equip i crew blokovi ispod
+      // vrijede i za Equipmente/Vehicle koji nemaju nijednu aktiviranu sposobnost.
+      const abs = c.def.abilities || [];
       abs.forEach((a, ai) => {
         if (a.manaAbilityOnly) return;
         if (a.sorcery && (this.turnPlayer !== p || this.stack.length || (this.phase !== 'main1' && this.phase !== 'main2'))) return;
@@ -2886,16 +2895,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         out.push({ card: c, ability: a, idx: ai });
       });
       // equip
-      if (c.is('Equipment') && c.def.equip !== undefined) {
+      if (c.hasSub('Equipment') && c.def.equip !== undefined) {
         if (this.turnPlayer === p && !this.stack.length && (this.phase === 'main1' || this.phase === 'main2')) {
-          const cost = U.parseCost(c.def.equip);
-          if (this.canPayMana(p, cost) && this.creatures(p).some(x => x.iid !== c.attachedTo)) {
-            out.push({ card: c, equip: true });
-          }
+          // "Equip <tip> {N}" alternativa se plaća po cilju, pa gledamo je li ijedan cilj platljiv
+          const affordable = this.creatures(p).some(x =>
+            x.iid !== c.attachedTo && this.canPayMana(p, U.parseCost(equipCostFor(c, x))));
+          if (affordable) out.push({ card: c, equip: true });
         }
       }
       // crew
-      if (c.is('Vehicle') && c.def.crew !== undefined && !c.is('Creature')) {
+      if (c.hasSub('Vehicle') && c.def.crew !== undefined && !c.is('Creature')) {
         const crewPow = this.creatures(p).filter(x => !x.tapped).reduce((s, x) => s + Math.max(0, x.power), 0);
         if (crewPow >= c.def.crew) out.push({ card: c, crew: true });
       }
@@ -2971,14 +2980,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
     if (entry.equip) {
-      const cost = U.parseCost(c.def.equip);
-      const cands = this.creatures(p).filter(x => x.iid !== c.attachedTo);
+      // nudimo samo ciljeve čiju equip cijenu igrač zaista može platiti
+      const cands = this.creatures(p).filter(x =>
+        x.iid !== c.attachedTo && this.canPayMana(p, U.parseCost(equipCostFor(c, x))));
+      if (!cands.length) return false;
       const tgt = uiTargets && uiTargets[0] || (await p.controller.decide(this, {
         type: 'chooseTargets', candidates: cands, min: 1, max: 1, prompt: `Equip ${c.name} na:`,
         aiHint: { kind: 'equipTarget', card: c },
       }))[0];
       if (!tgt) return false;
-      const ok = await this.payMana(p, cost);
+      const ok = await this.payMana(p, U.parseCost(equipCostFor(c, tgt)));
       if (!ok) return false;
       await this.attach(c, tgt);
       this.lg(`${c.name} → ${tgt.name}.`);
@@ -6471,8 +6482,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const c of bf) {
           if (c.ctrl !== self.ctrl || c === self) continue;
           if (c.is('Creature') || c.is('Land')) continue;
-          const isArt = c.is('Artifact') && !c.is('Equipment') && !c.hasSub('Equipment');
-          const isEnch = c.is('Enchantment') && !c.is('Aura') && !c.hasSub('Aura');
+          const isArt = c.is('Artifact') && !c.hasSub('Equipment');
+          const isEnch = c.is('Enchantment') && !c.hasSub('Aura');
           if ((isArt || isEnch) && c.mv >= 4) {
             c.cur.types.push('Creature');
             if (!c.cur.subtypes.includes('Elemental')) c.cur.subtypes.push('Elemental');
@@ -9010,7 +9021,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Winds of Rath'] = {
     resolve: async ctx => {
-      for (const c of ctx.g.bf().filter(c => c.is('Creature') && !c.attachments.some(a => { const x = ctx.g.byIid(a); return x && x.is('Aura'); })).slice()) {
+      for (const c of ctx.g.bf().filter(c => c.is('Creature') && !c.attachments.some(a => { const x = ctx.g.byIid(a); return x && x.hasSub('Aura'); })).slice()) {
         await ctx.g.destroy(c, { noRegen: true });
       }
     },
@@ -18806,7 +18817,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
     triggers: [{
       on: 'etb', desc: 'Auto-attach opreme', opt: true,
-      filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card.is('Equipment') && d.card !== self,
+      filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card.hasSub('Equipment') && d.card !== self,
       run: async ctx => {
         const cands = ctx.g.creatures(ctx.you);
         if (cands.length) await ctx.g.attach(ctx.data.card, cands.sort((a, b) => b.power - a.power)[0]);
@@ -19822,7 +19833,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (/draw/.test(o)) v += 1.5;
       if (c.is('Planeswalker')) v += 6;
       if (c.def.mana) v += 0.8;
-      if (c.is('Equipment')) v += 0.5;
+      if (c.hasSub('Equipment')) v += 0.5;
       return v;
     }
 
