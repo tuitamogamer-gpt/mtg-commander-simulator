@@ -6,6 +6,12 @@
 <meta name="theme-color" content="#12141a">
 <title>MTG Commander Simulator</title>
 <style>
+:root {
+  --art-back: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20140'%3E%3Crect%20width='100'%20height='140'%20fill='%230d1018'/%3E%3Crect%20x='4'%20y='4'%20width='92'%20height='132'%20rx='7'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='1.6'%20opacity='.8'/%3E%3Crect%20x='9'%20y='9'%20width='82'%20height='122'%20rx='5'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='.6'%20opacity='.45'/%3E%3Ccircle%20cx='50'%20cy='70'%20r='25'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='1.1'%20opacity='.7'/%3E%3Ccircle%20cx='50'%20cy='70'%20r='17'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='.6'%20opacity='.45'/%3E%3Cpath%20d='M50%2057%20L58.6%2083.4%20L36.2%2067.1%20L63.8%2067.1%20L41.4%2083.4%20Z'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='1'%20opacity='.9'/%3E%3Ccircle%20cx='50'%20cy='45'%20r='4.6'%20fill='%23e8e3c8'/%3E%3Ccircle%20cx='73.8'%20cy='62.3'%20r='4.6'%20fill='%234a90d9'/%3E%3Ccircle%20cx='64.7'%20cy='90.2'%20r='4.6'%20fill='%238a6f9a'/%3E%3Ccircle%20cx='35.3'%20cy='90.2'%20r='4.6'%20fill='%23d95a4a'/%3E%3Ccircle%20cx='26.2'%20cy='62.3'%20r='4.6'%20fill='%235aa860'/%3E%3C/svg%3E");
+  --art-hero: radial-gradient(120% 150% at 50% 8%, #2a2136 0%, #171a24 45%, #12141a 100%);
+  --art-felt: radial-gradient(90% 120% at 50% 0%, #1a1d27 0%, #12141a 70%);
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; }
 body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #12141a; color: #e8e8ea; overflow-x: hidden; }
@@ -34,7 +40,11 @@ img { -webkit-user-drag: none; }
 .credits { margin-top: 26px; font-size: 11px; color: #778; line-height: 1.5; text-align: center; }
 
 /* ---------- game layout ---------- */
-#game { display: none; flex-direction: column; height: 100dvh; max-width: 640px; margin: 0 auto; }
+#game {
+  display: none; flex-direction: column; height: 100dvh; max-width: 640px; margin: 0 auto;
+  background-image: linear-gradient(#12141ae0, #12141af2), var(--art-felt);
+  background-size: cover, cover; background-position: center; background-attachment: fixed;
+}
 .topbar { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px 4px; background: #1a1e26; border-bottom: 1px solid #2a2f3a; }
 .phasewrap { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .phase { font-size: 12px; color: #cdd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -218,10 +228,131 @@ img { -webkit-user-drag: none; }
 .personachip { font-size: 10px; background: #262b36; border: 1px solid #3a4050; color: #c9b37a; border-radius: 8px; padding: 1px 6px; white-space: nowrap; }
 .botstyles { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
 .botstylerow { display: flex; align-items: center; gap: 10px; }
-.botname { font-size: 13px; font-weight: 600; min-width: 92px; }
+.botname { font-size: 13px; font-weight: 600; min-width: 74px; }
 .styleselect { flex: 1; background: #12141a; color: #e8e8ea; border: 1px solid #3a4050; border-radius: 8px; padding: 8px; font-size: 13px; }
-.styledesc { font-size: 10.5px; color: #8a95a8; margin: 0 0 6px 102px; line-height: 1.35; }
+.styledesc { font-size: 10.5px; color: #8a95a8; margin: 0 0 8px 46px; line-height: 1.35; }
 .setupgrid { display: flex; flex-direction: column; }
+
+/* --- izbor komandera --- */
+.cmdbox { display: flex; flex-direction: column; gap: 8px; }
+.cmdchosen { display: flex; flex-direction: column; gap: 6px; }
+.cmdchip { display: flex; gap: 9px; background: #1c2029; border: 2px solid #e8c05a55; border-radius: 12px; overflow: hidden; }
+.cmdchip img { width: 92px; height: 68px; object-fit: cover; flex: none; }
+.cmdchipinfo { padding: 6px 8px 6px 0; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+.cmdchipname { font-size: 12.5px; font-weight: 700; color: #e8c05a; }
+.cmdchiptype { font-size: 10px; color: #8a95a8; }
+.cmdbadge { font-size: 10px; color: #7fd6a0; background: #1b2a20; border: 1px solid #2f5a3f; border-radius: 7px; padding: 1px 6px; align-self: flex-start; }
+.cmdhint { font-size: 10.5px; color: #8a95a8; line-height: 1.4; }
+.cmdcheck { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #c8ccd6; margin-top: 10px; cursor: pointer; }
+.cmdcheck input { width: 16px; height: 16px; accent-color: #e8c05a; }
+.cmdstatus { font-size: 12px; margin: 10px 0; padding: 7px 9px; border-radius: 9px; }
+.cmdstatus.good { background: #16281c; color: #8fe0aa; border: 1px solid #2f5a3f; }
+.cmdstatus.bad { background: #2a1a1a; color: #e89a9a; border: 1px solid #5a2f2f; }
+.cmdgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; margin: 10px 0; }
+.cmdopt { display: flex; gap: 8px; background: #171a21; border: 2px solid #2a2f3a; border-radius: 11px; overflow: hidden; cursor: pointer; transition: border-color .12s, transform .12s; }
+.cmdopt:hover { transform: translateY(-1px); border-color: #4a5266; }
+.cmdopt.selected { border-color: #e8c05a; box-shadow: 0 0 12px #e8c05a44; background: #221f18; }
+.cmdopt.pairable { border-color: #4fa86a; box-shadow: 0 0 10px #4fa86a44; }
+.cmdopt img { width: 54px; height: 76px; object-fit: cover; flex: none; }
+.cmdoptinfo { padding: 5px 6px 5px 0; min-width: 0; display: flex; flex-direction: column; gap: 2px; justify-content: center; }
+.cmdoptname { font-size: 11.5px; font-weight: 650; line-height: 1.25; }
+.cmdoptname .deft { color: #c9b37a; font-weight: 400; font-size: 10px; }
+.cmdopttype { font-size: 9.5px; color: #8a95a8; }
+
+/* --- atmosferska grafika --- */
+#setup { position: relative; }
+#setup::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 320px; z-index: 0;
+  background-image: var(--art-hero);
+  background-size: cover; background-position: center 30%; background-repeat: no-repeat;
+  -webkit-mask-image: linear-gradient(#000 0%, #000 38%, transparent 100%);
+  mask-image: linear-gradient(#000 0%, #000 38%, transparent 100%);
+  opacity: .5; pointer-events: none;
+}
+#setup > * { position: relative; z-index: 1; }
+.title { text-shadow: 0 2px 18px #000a; }
+.subtitle { text-shadow: 0 1px 10px #000c; }
+/* poleđina karte kad Scryfall slika ne stigne */
+img.imgfail {
+  background-image: var(--art-back);
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  font-size: 0; color: transparent; border: 0;
+}
+/* u igri karta bez arta ostaje čist obojeni okvir + ime (čitljivije od poleđine) */
+.mini img.imgfail, .hcard img.imgfail { display: none; }
+.bigcard { background-image: var(--art-back); background-size: cover; background-position: center; }
+/* AI persona amblemi (2x2 sprite) */
+.pbadge {
+  width: 34px; height: 34px; border-radius: 50%; flex: none;
+  background: radial-gradient(circle at 34% 28%, #2c3140, #171a22);
+  border: 1px solid #3a4050; box-shadow: inset 0 0 10px #0009;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.pbadge.p-aggressive { border-color: #7a3a34; }
+.pbadge.p-diplomat   { border-color: #6a6a3a; }
+.pbadge.p-passive    { border-color: #35506e; }
+.pbadge.p-teaser     { border-color: #5c3a72; }
+.cdnote { font-size: 10px; color: #8a95a8; margin: 3px 0 6px; line-height: 1.35; }
+
+/* --- prozor za reakciju + HOLD + reflektor na AI akcije --- */
+.tbtn.armed { background: linear-gradient(90deg,#e8c05a,#d98a4a); color: #12141a; box-shadow: 0 0 10px #e8c05a66; }
+.promptbar.reacting { border-top: 2px solid #e8c05a; background: linear-gradient(#241f18, #1a1e26); }
+.reacttrack { height: 5px; border-radius: 3px; background: #2a2f3a; overflow: hidden; margin: 6px 0 2px; }
+.reactfill { display: block; height: 100%; width: 100%; background: linear-gradient(90deg,#e8c05a,#d95a4a); transition: width .12s linear; }
+.spotbar {
+  position: fixed; left: 50%; top: 40%; transform: translateX(-50%);
+  z-index: 130; max-width: min(92vw, 720px); pointer-events: none;
+  padding: 11px 18px; border-radius: 12px; font-size: 14.5px; font-weight: 650; line-height: 1.35;
+  text-align: center; box-shadow: 0 12px 34px #000b; animation: spotin .22s ease-out;
+  background: #232833; border: 2px solid #3a4050; color: #e8e8ea;
+}
+.spotbar.danger { background: linear-gradient(#3a1e1e, #2a1618); border-color: #b04a44; color: #ffd9d4; }
+.spotbar.warn { background: linear-gradient(#3a331e, #2a2416); border-color: #b0904a; color: #ffeec4; }
+@keyframes spotin { from { opacity: 0; transform: translate(-50%, -12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.sideloglist .k-spot { color: #ffb37a; font-weight: 650; }
+
+/* --- modal "bot te cilja": velika karta + kategorija prijetnje --- */
+.overlay.threatov { background: #0009; }
+.threatmodal { max-width: 620px; border: 2px solid #b04a44; box-shadow: 0 0 40px #b04a4455; animation: threatin .2s ease-out; }
+@keyframes threatin { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
+.threatmodal.counter { border-color: #4a7ab0; box-shadow: 0 0 40px #4a7ab055; }
+.threatmodal.exile   { border-color: #9a6ac0; box-shadow: 0 0 40px #9a6ac055; }
+.threatmodal.bounce  { border-color: #4aa0b0; box-shadow: 0 0 40px #4aa0b055; }
+.threatmodal.steal   { border-color: #c08a3a; box-shadow: 0 0 40px #c08a3a55; }
+.threatmodal.discard { border-color: #8a7a9a; }
+.threatmodal.debuff  { border-color: #7a9a5a; }
+.threathead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.threatkind { font-size: 15px; font-weight: 800; letter-spacing: .3px; background: #2a1618; border: 1px solid #b04a44; color: #ffd9d4; border-radius: 9px; padding: 4px 10px; }
+.threatmodal.counter .threatkind { background: #16202a; border-color: #4a7ab0; color: #cfe4ff; }
+.threatmodal.exile .threatkind   { background: #1e1628; border-color: #9a6ac0; color: #e8d4ff; }
+.threatmodal.bounce .threatkind  { background: #16242a; border-color: #4aa0b0; color: #d0f0ff; }
+.threatmodal.steal .threatkind   { background: #2a2216; border-color: #c08a3a; color: #ffe8bf; }
+.threatby { font-size: 12.5px; color: #b8c0cc; }
+.threatbody { display: flex; gap: 14px; align-items: flex-start; }
+.threatart { width: 190px; flex: none; border-radius: 11px; box-shadow: 0 8px 24px #000a; background: var(--art-back) center/cover; aspect-ratio: 5/7; object-fit: cover; }
+.threatinfo { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.threatname { font-size: 17px; font-weight: 750; line-height: 1.2; }
+.threatname .threatab { font-size: 12.5px; color: #c9b37a; font-weight: 500; }
+.threatcost { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.threattype { font-size: 11.5px; color: #8a95a8; }
+.threattargets { font-size: 13px; color: #ffd9d4; background: #2a1618; border-radius: 8px; padding: 5px 8px; }
+.threatoracle { font-size: 12px; color: #c8ccd6; line-height: 1.45; max-height: 190px; overflow-y: auto; }
+.threathint { font-size: 11.5px; color: #ffe0a8; background: #2a2416; border: 1px solid #5a4a2a; border-radius: 8px; padding: 5px 8px; line-height: 1.4; }
+.threatfoot { font-size: 10.5px; color: #8a95a8; margin-top: 8px; line-height: 1.4; }
+.pbtn.hot { background: linear-gradient(90deg,#d95a4a,#e8c05a); color: #12141a; font-weight: 700; }
+/* meta na tabli pulsira dok je modal otvoren */
+.mini.threatened, .hcard.threatened {
+  outline: 3px solid #ff5a4a; outline-offset: 2px; filter: brightness(1.5) saturate(1.2);
+  animation: threatpulse 1.1s ease-in-out infinite;
+}
+@keyframes threatpulse {
+  0%,100% { box-shadow: 0 0 0 3px #ff5a4a, 0 0 14px 4px #ff5a4a77; }
+  50%     { box-shadow: 0 0 0 3px #ff8a6a, 0 0 30px 12px #ff5a4abb; }
+}
+@media (min-width: 1100px) {
+  .threatmodal { max-width: 720px; }
+  .threatart { width: 240px; }
+}
 
 @media (min-width: 1100px) {
   /* --- setup ekran: dvije kolone --- */
@@ -305,6 +436,7 @@ img { -webkit-user-drag: none; }
   /* modali/sheetovi centrirani umjesto bottom-sheet */
   .overlay { align-items: center; }
   .modal, .sheet { border-radius: 16px; max-width: 760px; max-height: 86vh; }
+  .modal.wide { max-width: 1080px; width: 92%; }
   .cardgrid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
   .logpanel { max-width: 900px; }
 }
@@ -411,6 +543,17 @@ MTG.plural = function (n, s, p) { return n === 1 ? s : (p || s + 's'); };
 
 MTG.cap = function (s) { return s.charAt(0).toUpperCase() + s.slice(1); };
 
+// 1x1 providna slika — kad Scryfall art ne stigne, ubacimo je da browser
+// ne crta ikonu "slomljena slika"; CSS ispod prikaže poleđinu karte.
+MTG.BLANK_PX = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+MTG.imgFail = function (img, cls) {
+  if (!img || img._failed) return;
+  img._failed = true;
+  img.classList.add(cls || 'imgfail');
+  img.removeAttribute('srcset');
+  img.src = MTG.BLANK_PX;
+};
+
 // ===== engine.js =====
 'use strict';
 var MTG = globalThis.MTG || (globalThis.MTG = {});
@@ -448,6 +591,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.blockedBy = [];
       this.cur = null;              // derived characteristics (recalc)
       this.commander = false;
+      this.cmdCasts = 0;            // koliko puta je OVAJ komander bačen iz CZ (tax je po komanderu)
       this.castMeta = null;         // how it was cast (for blitz etc.)
     }
     is(type) { return this.cur ? this.cur.types.includes(type) : this.def.types.includes(type); }
@@ -484,7 +628,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.poolMeta = [];           // restricted/persistent mana entries {color,n,restrict,persist}
       this.landsPlayed = 0;
       this.maxLands = 1;
-      this.commanderCasts = 0;
+      this.commanders = [];         // CardInst[] — 1 ili 2 (partneri), bez obzira na zonu
+      this.chosenCommanders = null; // string[] — izbor igrača prije buildDeck
       this.commanderDamage = {};    // by commander iid
       this.lost = false;
       this.controller = null;       // decision maker
@@ -506,6 +651,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     opponents(g) { return g.players.filter(p => p !== this && !p.lost); }
     hasCmdInPlayOrCmd() { return true; }
+    // UKUPNO castova komandera (za Commander's Insignia i sl.)
+    get commanderCasts() {
+      let n = 0;
+      for (const c of this.commanders) n += (c.cmdCasts || 0);
+      return n;
+    }
+    // legacy setter (testovi/skripte): upiši sve na prvog komandera
+    set commanderCasts(v) {
+      for (let i = 0; i < this.commanders.length; i++) this.commanders[i].cmdCasts = i === 0 ? v : 0;
+    }
   }
   MTG.Player = Player;
 
@@ -539,12 +694,64 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.maxTurns = opts.maxTurns || 200;
       this.paced = !!opts.paced;    // vizuelno tempiranje AI akcija (samo u browseru)
       this.speedFactor = 1;
+      // kućna pravila (default = zvanična pravila)
+      this.houseRules = Object.assign({ sumPartnerDamage: false }, opts.houseRules || {});
     }
 
     // pauza da igrač VIDI svaku AI akciju zasebno — poštuje redoslijed i sekvence
     async pace(ms) {
       if (!this.paced || this.gameOver || !ms) return;
       await new Promise(r => setTimeout(r, Math.round(ms * this.speedFactor)));
+    }
+
+    // ljudski igrač za stolom (za "reflektor" na AI akcije koje ga diraju)
+    human() {
+      if (this._human === undefined) this._human = this.players.find(p => !p.isAI) || null;
+      return this._human;
+    }
+    // je li meta ljudski igrač ili njegov permanent?
+    hitsHuman(targets) {
+      const hu = this.human();
+      if (!hu) return false;
+      for (const t of (targets || []).flat()) {
+        if (!t) continue;
+        if (t === hu) return true;
+        if (t.ctrl === hu || (t.owner === hu && t.zone !== 'battlefield')) return true;
+      }
+      return false;
+    }
+    // koje od meta pripadaju ljudskom igraču (permanent, karta, spell na stacku, on sam)
+    humanTargets(targets) {
+      const hu = this.human();
+      if (!hu) return [];
+      const out = [];
+      for (const t of (targets || []).flat()) {
+        if (!t) continue;
+        if (t === hu) { out.push(t); continue; }
+        if (t.ctrl === hu) { out.push(t); continue; }          // permanent ILI spell na stacku
+        if (t.owner === hu && t.zone && t.zone !== 'battlefield') out.push(t);
+      }
+      return out;
+    }
+
+    // PAUZA + prikaz karte: bot je uperio removal/counter/exile… u mene
+    async alertHuman(payload) {
+      const hu = this.human();
+      this.note('threat', payload);
+      if (!this.paced || !hu || !hu.controller || this.gameOver) {
+        await this.pace(payload.ms || 1200);
+        return null;
+      }
+      const ans = await hu.controller.decide(this, Object.assign({ type: 'threatAlert', player: hu }, payload));
+      return ans;
+    }
+
+    // istakni AI akciju usmjerenu na igrača i daj mu vremena da je pročita
+    async spotlight(text, opts) {
+      opts = opts || {};
+      this.lg(text, opts.cls || 'spot');
+      this.note('spotlight', { text, kind: opts.kind || 'info' });
+      await this.pace(opts.ms || 1200);
     }
 
     // ------------- logging -------------
@@ -563,17 +770,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return p;
     }
 
-    buildDeck(p, deckData, defs) {
-      const cmdName = deckData.commander;
+    buildDeck(p, deckData, defs, chosen) {
+      // izbor komandera: eksplicitno prosljeđen → p.chosenCommanders → face commander iz deka
+      let want = chosen || p.chosenCommanders || [deckData.commander];
+      want = want.filter(Boolean).slice(0, 2);
+      const check = MTG.validateCommanders ? MTG.validateCommanders(deckData, want, defs) : { ok: true };
+      if (!check.ok) {
+        this.lg(`⚠️ Nevažeći izbor komandera (${check.why}) — koristim ${deckData.commander}.`, 'warn');
+        want = [deckData.commander];
+      }
+      const need = {};
+      for (const n of want) need[n] = (need[n] || 0) + 1;
+      const picked = {};
       for (const entry of deckData.cards) {
         for (let i = 0; i < entry.n; i++) {
           const def = defs[entry.name];
           if (!def) throw new Error('No def for ' + entry.name);
           const c = new CardInst(def, p);
-          if (entry.name === cmdName) { c.commander = true; c.zone = 'command'; p.command.push(c); }
-          else p.library.push(c);
+          if (need[entry.name] > 0) {
+            need[entry.name]--;
+            c.commander = true; c.cmdCasts = 0; c.zone = 'command';
+            picked[entry.name] = c;
+          } else p.library.push(c);
         }
       }
+      // poštuj redoslijed izbora
+      for (const n of want) if (picked[n]) { p.command.push(picked[n]); p.commanders.push(picked[n]); }
+      p.commanderNames = p.commanders.map(c => c.name);
       const cs = new Set();
       for (const entry of deckData.cards) {
         const d = defs[entry.name];
@@ -1503,8 +1726,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             let dead = false, why = '';
             if (p.life <= 0) { dead = true; why = 'život na 0'; }
             if (p.deckedOut) { dead = true; why = 'prazna biblioteka'; }
-            for (const [iid, dmg] of Object.entries(p.commanderDamage)) {
-              if (dmg >= 21) { dead = true; why = 'commander šteta (21+)'; }
+            // 903.10a: 21 štete od ISTOG komandera. Kućno pravilo može tražiti zbir partnera.
+            if (this.houseRules && this.houseRules.sumPartnerDamage) {
+              const byOwner = {};
+              for (const q of this.players) for (const c of q.commanders) byOwner[c.iid] = q.idx;
+              const tot = {};
+              for (const [iid, dmg] of Object.entries(p.commanderDamage)) {
+                const k = byOwner[iid] !== undefined ? 'p' + byOwner[iid] : iid;
+                tot[k] = (tot[k] || 0) + dmg;
+              }
+              for (const k in tot) if (tot[k] >= 21) { dead = true; why = 'commander šteta (21+, kućno pravilo: zbir partnera)'; }
+            } else {
+              for (const [iid, dmg] of Object.entries(p.commanderDamage)) {
+                if (dmg >= 21) { dead = true; why = 'commander šteta (21+)'; }
+              }
             }
             if (dead) { await this.playerLoses(p, why); any = true; }
           }
@@ -1903,7 +2138,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const cost = U.parseCost(str || '');
     let generic = cost.generic;
     // commander tax
-    if (card.commander && card.zone === 'command' && !castOpts.noTax) generic += 2 * p.commanderCasts;
+    if (card.commander && card.zone === 'command' && !castOpts.noTax) generic += 2 * (card.cmdCasts || 0);
     // cost modifiers from battlefield
     for (const c of this.bf()) {
       const mods = c.def.costMods;
@@ -2269,12 +2504,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     card.zone = 'stack';
     card.castMeta = { x: xVal, alt: castOpts, from: so.from, kicked, offspring };
     if (paidTimes) { card.meta.paidTimes = paidTimes; so.squadN = paidTimes; }
-    if (card.commander && so.from === 'command') p.commanderCasts++;
+    if (card.commander && so.from === 'command') card.cmdCasts = (card.cmdCasts || 0) + 1;
 
     this.stack.push(so);
     this.note('stack', {});
     this.lg(`${p.name} baca ${card.name}${xVal ? ` (X=${xVal})` : ''}${castOpts.free ? ' (besplatno)' : ''}${so.from === 'command' ? ' iz command zone' : ''}.`, 'cast');
-    await this.pace(p.isAI ? 800 : 150);
+    await this.pace(p.isAI ? 1000 : 150);
 
     // cast tracking + triggers
     p.turnState.spellsCast++;
@@ -2294,6 +2529,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         else if (t.ctrl && t.ctrl !== p && t.zone) vics.add(t.ctrl);
       }
       if (vics.size) await this.emit('crime', { player: p, victims: [...vics] });
+    }
+    // PRIJETNJA: bot je uperio spell u mene → pauza + prikaz karte
+    if (p.isAI) {
+      const mine = this.humanTargets(so.targets);
+      if (mine.length) {
+        const kind = MTG.threatKind(d, so.targets);
+        const names = MTG.threatTargetNames(mine, this.human());
+        this.lg(`${kind.icon} ${p.name} → ${card.name} (${kind.label}) cilja ${names.join(', ')}`, 'spot');
+        await this.alertHuman({ card, by: p, targets: mine, kind, names, source: 'spell', ms: 1600 });
+      }
     }
     // storm
     let hasStorm = (d.storm && !castOpts.free);
@@ -2435,7 +2680,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.note('stack', {});
     if (so.kind === 'trigger') {
       this.lg(`Rezolvira se: ${so.name}.`, 'resolve');
-      await this.pace(so.ctrl && so.ctrl.isAI ? 420 : 150);
+      await this.pace(so.ctrl && so.ctrl.isAI ? 620 : 150);
       // re-check targets
       if (so.ctx.targets && so.ctx.targets.length && !this.targetsStillOk(so.ctx.targets)) {
         this.lg(`${so.name}: sve mete nelegalne — fizzle.`);
@@ -2448,7 +2693,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (so.kind === 'ability') {
       this.lg(`Rezolvira se: ${so.name}.`, 'resolve');
-      await this.pace(so.ctrl && so.ctrl.isAI ? 420 : 150);
+      await this.pace(so.ctrl && so.ctrl.isAI ? 620 : 150);
       if (so.targets && so.targets.length && !this.targetsStillOk(so.targets)) {
         this.lg(`${so.name}: mete nelegalne — fizzle.`);
         return;
@@ -2467,7 +2712,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return;
     }
     this.lg(`Rezolvira se: ${so.name}.`, 'resolve');
-    await this.pace(p.isAI ? 550 : 200);
+    await this.pace(p.isAI ? 750 : 200);
     const ctx = {
       g: this, src: card, you: p, targets: so.targets, x: so.x, mode: so.mode, so,
       kicked: so.kicked,
@@ -2870,7 +3115,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     this.lg(`${p.name} aktivira: ${c.name}${a.label ? ' — ' + a.label : ''}.`, 'activate');
-    await this.pace(p.isAI ? 600 : 0);
+    await this.pace(p.isAI ? 800 : 0);
     await this.emit('abilityActivated', { player: p, card: c, isMana: false });
     // crime: ciljanje protivnika/njihovih stvari kroz ability
     {
@@ -2881,6 +3126,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         else if (t.ctrl && t.ctrl !== p && t.zone) vics.add(t.ctrl);
       }
       if (vics.size) await this.emit('crime', { player: p, victims: [...vics] });
+    }
+    if (p.isAI) {
+      const mine = this.humanTargets(ctx.targets);
+      if (mine.length) {
+        const kind = MTG.threatKind({ oracle: (a.label || '') + '\n' + (c.def.oracle || '') }, ctx.targets);
+        const names = MTG.threatTargetNames(mine, this.human());
+        this.lg(`${kind.icon} ${p.name} → ${c.name}${a.label ? ' (' + a.label + ')' : ''} (${kind.label}) cilja ${names.join(', ')}`, 'spot');
+        await this.alertHuman({
+          card: c, by: p, targets: mine, kind, names, source: 'ability',
+          abilityLabel: a.label || '', ms: 1400,
+        });
+      }
     }
     const so = { kind: 'ability', name: `${c.name}${a.label ? ' — ' + a.label : ''}`, ctrl: p, ctx, run: a.run, targets: ctx.targets, srcCard: c };
     this.stack.push(so);
@@ -2946,6 +3203,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.autoPassPolicy = function (mode, g, q, me) {
     if (!q || q.type !== 'priority') return false;
     if (mode === 'full') return false;
+    if (mode === 'off') return true;                         // nikad ne pitaj (ručni HOLD)
     const casts = q.casts || [], acts = q.acts || [];
     if (!casts.length && !acts.length) return true;          // nema šta da se odigra
     const top = g.stack[g.stack.length - 1];
@@ -2954,7 +3212,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (top.ctrl === me && !casts.length) return true;
       return false;                                          // nešto je na stacku → PITAJ
     }
-    if (mode === 'fast') return true;                        // brzi mod: samo stack
+    if (mode === 'fast' || mode === 'auto') return true;     // prazan stack → ništa se ne dešava
     // smart: ključni prozori sa praznim stackom
     const myTurn = g.turnPlayer === me;
     const inCombat = g.phase === 'combat';
@@ -2966,10 +3224,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (myTurn && g.step === 'attackers') return true;
     return false;                                            // PITAJ
   };
+  // ikona, množilac pauze, opis. Normalna je sada osjetno sporija nego ranije —
+  // cilj je da se VIDI šta bot radi, korak po korak.
+  MTG.SPEEDS = {
+    normal: ['▶️', 1.6, 'Normalna — vidi se svaki potez bota'],
+    slow: ['🐢', 2.6, 'Sporo — za pažljivo praćenje'],
+    fast: ['⏩', 0.6, 'Brzo — za preskakanje'],
+  };
   MTG.PRIO_MODES = [
-    { key: 'fast', icon: '⚡', label: 'Brzo', desc: 'Pitam te samo kad je nešto na stacku.' },
-    { key: 'smart', icon: '🎯', label: 'Pametno', desc: 'Pitam kad imaš instant/sposobnost: stack, napadači, blokeri, kraj tuđeg poteza.' },
-    { key: 'full', icon: '🎛️', label: 'Full control', desc: 'Pitam te za svaki prioritet (kao na turniru).' },
+    { key: 'auto', icon: '⚡', label: 'Auto + Reaguj', desc: 'Ne prekida te. Kad protivnik nešto baci, dobiješ kratak prozor sa dugmetom REAGUJ.' },
+    { key: 'off', icon: '🔕', label: 'Nikad ne pitaj', desc: 'Nikad ne staje. Ti staješ ručno, dugmetom 🖐️.' },
+    { key: 'smart', icon: '🎯', label: 'Pametno', desc: 'Staje kad imaš instant: stack, napadači, blokeri, kraj tuđeg poteza.' },
+    { key: 'full', icon: '🎛️', label: 'Full control', desc: 'Staje na svakom prioritetu (kao na turniru).' },
   ];
 
   G.askPriorityAction = async function (p) {
@@ -3017,7 +3283,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.remove(card);
     card.zone = 'nowhere';
     this.lg(`${p.name} igra land: ${card.name}.`, 'land');
-    await this.pace(p.isAI ? 500 : 0);
+    await this.pace(p.isAI ? 700 : 0);
     await this.move(card, 'battlefield', { ctrl: p });
     await this.flushTriggers();
     return true;
@@ -3076,7 +3342,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // UPKEEP
     this.phase = 'upkeep';
     this.note('phase', {});
-    await this.pace(p.isAI ? 240 : 0);
+    await this.pace(p.isAI ? 330 : 0);
     await this.emit('upkeep', { player: p });
     // suspend
     for (const q of this.players) {
@@ -3098,7 +3364,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // DRAW
     this.phase = 'draw';
     this.note('phase', {});
-    await this.pace(p.isAI ? 240 : 0);
+    await this.pace(p.isAI ? 330 : 0);
     if (this.turnNo > 1 || this.players.indexOf(p) > 0) {
       await this.draw(p, 1);
     } else this.lg(`${p.name} preskače prvo vučenje.`);
@@ -3110,7 +3376,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // MAIN 1
     this.phase = 'main1';
     this.note('phase', {});
-    await this.pace(p.isAI ? 240 : 0);
+    await this.pace(p.isAI ? 330 : 0);
     await this.mainPhase(p);
     if (this.gameOver) return;
 
@@ -3132,7 +3398,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // MAIN 2
     this.phase = 'main2';
     this.note('phase', {});
-    await this.pace(p.isAI ? 240 : 0);
+    await this.pace(p.isAI ? 330 : 0);
     await this.emit('postcombatMain', { player: p });
     await this.flushTriggers();
     await this.mainPhase(p);
@@ -3141,7 +3407,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // END STEP
     this.phase = 'end';
     this.note('phase', {});
-    await this.pace(p.isAI ? 240 : 0);
+    await this.pace(p.isAI ? 330 : 0);
     if (this.monarch === p && !p.lost) { this.lg(`👑📜 Monarh ${p.name} vuče kartu.`); await this.draw(p, 1); }
     await this.emit('endStep', { player: p });
     await this.flushTriggers();
@@ -3217,7 +3483,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.combatPhase = async function (p) {
     this.phase = 'combat'; this.step = 'begin';
     this.note('phase', {});
-    await this.pace(p.isAI ? 240 : 0);
+    await this.pace(p.isAI ? 330 : 0);
     this.combat = { attackers: [], defenders: new Map() };
     await this.emit('beginCombat', { player: p });
     await this.flushTriggers();
@@ -3236,7 +3502,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     this.step = 'attackers';
     this.note('phase', {});
-    await this.pace(p.isAI ? 240 : 0);
+    await this.pace(p.isAI ? 330 : 0);
     // forced attackers
     const forced = elig.filter(c => c.cur.mustAttack || c.def.mustAttack || this.isForcedToAttack(c));
     const decl = await p.controller.decide(this, {
@@ -3314,7 +3580,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (dp) { dp.lastAttackers = dp.lastAttackers || new Set(); dp.lastAttackers.add(p); }
     }
     this.note('combat', {});
-    await this.pace(p.isAI ? 900 : 250);
+    await this.pace(p.isAI ? 1200 : 250);
+    // REFLEKTOR: bot napada baš tebe
+    {
+      const hu = this.human();
+      if (p.isAI && hu) {
+        const mine = attackers.filter(c => c.attacking === hu || (c.attacking && c.attacking.ctrl === hu));
+        if (mine.length) {
+          const pw = mine.reduce((s, c) => s + (c.cur ? c.cur.power : 0), 0);
+          await this.spotlight(
+            `⚔️ ${p.name} napada TEBE — ${mine.length} ${U.plural(mine.length, 'stvorenje', 'stvorenja')} (${pw} štete): ${mine.map(c => c.name).slice(0, 4).join(', ')}`,
+            { kind: 'danger', ms: 1800 });
+        }
+      }
+    }
     // attack triggers
     for (const c of attackers) {
       await this.emit('attacks', { card: c, player: p, defender: c.attacking });
@@ -3335,7 +3614,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // blockers per defending player
     this.step = 'blockers';
     this.note('phase', {});
-    await this.pace(p.isAI ? 240 : 0);
+    await this.pace(p.isAI ? 330 : 0);
     const byDefender = new Map();
     for (const c of this.combat.attackers) {
       if (!(c.attacking instanceof MTG.Player)) {
@@ -3372,7 +3651,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (a.blockedBy.length) this.lg(`🛡️ ${a.name} blokiran: ${a.blockedBy.map(b => b.name).join(', ')}.`, 'block');
     }
     this.note('combat', {});
-    if (this.combat.attackers.some(a => a.blockedBy.length)) await this.pace(700);
+    if (this.combat.attackers.some(a => a.blockedBy.length)) await this.pace(900);
+    // REFLEKTOR: bot je blokirao TVOJE napadače
+    {
+      const hu = this.human();
+      if (hu) {
+        const mine = this.combat.attackers.filter(a => a.ctrl === hu && a.blockedBy.length);
+        if (mine.length) {
+          await this.spotlight(
+            `🛡️ Botovi blokiraju tvoj napad: ${mine.map(a => `${a.name} ← ${a.blockedBy.map(b => b.name).join(' + ')}`).slice(0, 3).join(' · ')}`,
+            { kind: 'warn', ms: 1700 });
+        }
+      }
+    }
     for (const a of this.combat.attackers) {
       for (const b of a.blockedBy) await this.emit('blocks', { blocker: b, attacker: a });
       if (a.blockedBy.length) await this.emit('becomesBlocked', { attacker: a, blockers: a.blockedBy });
@@ -3707,6 +3998,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   E.pumpAllUntilEOT = function (g, filter, dp, dt, kws) {
+    // tolerancija: neko proslijedi Playera umjesto filtera → "moja stvorenja"
+    if (filter && typeof filter !== 'function') {
+      const owner = filter;
+      filter = (g2, c) => c.ctrl === owner;
+    }
+    if (!filter) filter = () => true;
     g.untilEffects.push({
       expires: 'eot', kind: 'pumpAll',
       apply: (g2, bf) => {
@@ -4190,9 +4487,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       cost: { tap: true }, produce: (g, c, p) => p.colorIdentity.map(col => ({ [col]: 1 })),
       onProduce: async (g, c, p, chosen, forSpell) => {
         if (forSpell && forSpell.card && forSpell.card.is('Creature')) {
-          const cmd = p.command[0] || g.bf().find(x => x.commander && x.owner === p);
-          const cmdDef = cmd ? cmd.def : (p.deck && null);
-          if (cmdDef && forSpell.card.def.subtypes.some(s => cmdDef.subtypes.includes(s))) {
+          const cmds = (p.commanders && p.commanders.length ? p.commanders : p.command);
+          const subs = new Set();
+          for (const cm of cmds) for (const s of (cm.def.subtypes || [])) subs.add(s);
+          if (subs.size && forSpell.card.def.subtypes.some(s => subs.has(s))) {
             g.queueTrigger({ src: c, name: 'Path of Ancestry — Scry 1', ctrl: p, run: async ctx => { await E.scry(ctx.g, ctx.you, 1); } });
           }
         }
@@ -4538,8 +4836,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     entersTapped: (g, card) => !g.lands(card.ctrl).some(l => l !== card && l.hasSub('Mountain')),
     mana: tapFor(['R']),
     abilities: [{
-      label: '+1/+0 svima', cost: { tap: true, mana: '{1}{R}{R}' },
-      run: async ctx => { E.pumpAllUntilEOT(ctx.g, ctx.you, 1, 0); },
+      label: '+1/+0 svojim stvorenjima', cost: { tap: true, mana: '{1}{R}{R}' },
+      run: async ctx => { E.pumpAllUntilEOT(ctx.g, (g, c) => c.ctrl === ctx.you, 1, 0); },
     }],
   };
   SC['Shattered Landscape'] = {
@@ -4671,7 +4969,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Commander iz CZ u ruku', cost: { tap: true, sacSelf: true },
       cond: (g, c, p) => p.command.length > 0,
       run: async ctx => {
-        const cmd = ctx.you.command[0];
+        let cmd = ctx.you.command[0];
+        if (ctx.you.command.length > 1) {
+          const picked = await ctx.you.controller.decide(ctx.g, {
+            type: 'chooseCards', from: ctx.you.command.slice(), min: 1, max: 1,
+            prompt: 'Kojeg komandera u ruku?', aiHint: { kind: 'chooseCreature' },
+          });
+          cmd = (picked && picked[0]) || cmd;
+        }
         if (!cmd) return;
         ctx.you.command.splice(ctx.you.command.indexOf(cmd), 1);
         cmd.zone = 'hand'; ctx.you.hand.push(cmd);
@@ -12755,6 +13060,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }, extra || {});
 
   SC['Inspirit, Flagship Vessel'] = {
+    canBeCommanderExtra: true,   // legendarni Spacecraft: "can be your commander" (Forge tekst to izostavlja)
     stationCreatureAt: 8,
     dynTypes: (g, c) => (c.counters['charge'] || 0) >= 8 ? ['Creature'] : [],
     statics: [{
@@ -20211,12 +20517,216 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
   };
 
+  // ============================================================
+  // KOMANDERI: partner pravila i legalni izbori po deku
+  // ============================================================
+  // Podržane varijante:
+  //   Partner                    – bilo koja druga karta sa običnim Partnerom
+  //   Partner—<Label>            – samo karta sa ISTIM labelom (npr. TMNT "Character select")
+  //   Partner with <Ime>         – samo ta imenovana karta
+  //   Friends forever            – bilo koja druga sa Friends forever
+  //   Choose a Background        – + bilo koji Background
+  //   Doctor's companion         – + bilo koji legendarni Doctor
+  MTG.cmdTag = function (def) {
+    const o = (def && def.oracle) || '';
+    const sub = (def && def.subtypes) || [];
+    const sup = (def && def.super) || [];
+    const t = { kind: null, label: null, with: null };
+    let m;
+    if ((m = /^Partner with ([^(\n]+?)\s*(?:\(|$)/m.exec(o))) { t.kind = 'with'; t.with = m[1].trim().replace(/\.$/, ''); }
+    else if ((m = /^Partner\s*[—–-]\s*([^(\n]+?)\s*(?:\(|$)/m.exec(o))) { t.kind = 'named'; t.label = m[1].trim(); }
+    else if (/^Partner\s*(?:\(|$)/m.test(o)) { t.kind = 'partner'; }
+    else if (/^Friends forever/m.test(o)) { t.kind = 'named'; t.label = 'Friends forever'; }
+    else if (/Doctor's companion/i.test(o)) { t.kind = 'doctorsCompanion'; }
+    else if (/Choose a Background/i.test(o)) { t.kind = 'background'; }
+    t.isBackground = sub.indexOf('Background') >= 0;
+    t.isDoctor = sub.indexOf('Doctor') >= 0 && sup.indexOf('Legendary') >= 0;
+    return t;
+  };
+
+  // ljudski čitljiv opis partner sposobnosti
+  MTG.cmdTagLabel = function (tag) {
+    if (!tag || !tag.kind) return '';
+    if (tag.kind === 'with') return '🤝 Partner sa: ' + tag.with;
+    if (tag.kind === 'named') return '🤝 Partner — ' + tag.label;
+    if (tag.kind === 'partner') return '🤝 Partner';
+    if (tag.kind === 'background') return '🤝 Bira Background';
+    if (tag.kind === 'doctorsCompanion') return '🤝 Doctor\'s companion';
+    return '';
+  };
+
+  // može li ovo dvoje biti par komandera?
+  MTG.canPartner = function (defA, defB) {
+    if (!defA || !defB || defA.name === defB.name) return false;
+    const a = MTG.cmdTag(defA), b = MTG.cmdTag(defB);
+    if (a.kind === 'with' || b.kind === 'with')
+      return a.with === defB.name || b.with === defA.name;
+    if (a.kind === 'partner' && b.kind === 'partner') return true;
+    if (a.kind === 'named' && b.kind === 'named' &&
+      String(a.label).toLowerCase() === String(b.label).toLowerCase()) return true;
+    if (a.kind === 'background' && b.isBackground) return true;
+    if (b.kind === 'background' && a.isBackground) return true;
+    if (a.kind === 'doctorsCompanion' && b.isDoctor) return true;
+    if (b.kind === 'doctorsCompanion' && a.isDoctor) return true;
+    return false;
+  };
+
+  MTG.canBeCommander = function (def, deckData) {
+    if (!def) return false;
+    // face commander deka je uvijek legalan (planeswalkeri, legendarni Spacecraft…)
+    if (deckData && deckData.commander === def.name) return true;
+    const sup = def.super || [], o = def.oracle || '';
+    if (def.canBeCommanderExtra) return true;
+    if (/can be your commander/i.test(o)) return true;
+    if ((def.subtypes || []).indexOf('Background') >= 0) return true;
+    return sup.indexOf('Legendary') >= 0 && (def.types || []).indexOf('Creature') >= 0;
+  };
+
+  // svi legalni komanderi u deku, sortirano: face commander prvi, pa partneri, pa ostali
+  MTG.legalCommanders = function (deckData, defs) {
+    defs = defs || MTG.DEFS;
+    if (!deckData) return [];
+    const seen = {}, out = [];
+    for (const entry of deckData.cards || []) {
+      if (seen[entry.name]) continue;
+      seen[entry.name] = 1;
+      const def = defs[entry.name];
+      if (!MTG.canBeCommander(def, deckData)) continue;
+      const tag = MTG.cmdTag(def);
+      out.push({
+        name: entry.name, def, tag,
+        isDefault: entry.name === deckData.commander,
+        partnerLabel: MTG.cmdTagLabel(tag),
+      });
+    }
+    out.sort((a, b) => (b.isDefault - a.isDefault) || ((b.tag.kind ? 1 : 0) - (a.tag.kind ? 1 : 0)) || a.name.localeCompare(b.name));
+    return out;
+  };
+
+  // provjera izbora (1 ili 2 imena)
+  MTG.validateCommanders = function (deckData, names, defs) {
+    defs = defs || MTG.DEFS;
+    names = (names || []).filter(Boolean);
+    if (!names.length) return { ok: false, why: 'Nije izabran nijedan komander.' };
+    if (names.length > 2) return { ok: false, why: 'Najviše dva komandera.' };
+    const pool = {};
+    for (const entry of (deckData.cards || [])) pool[entry.name] = (pool[entry.name] || 0) + entry.n;
+    for (const n of names) {
+      if (!pool[n]) return { ok: false, why: `${n} nije u ovom deku.` };
+      if (!MTG.canBeCommander(defs[n], deckData)) return { ok: false, why: `${n} ne može biti komander.` };
+    }
+    if (names.length === 2) {
+      if (names[0] === names[1]) return { ok: false, why: 'Isti komander dvaput.' };
+      if (!MTG.canPartner(defs[names[0]], defs[names[1]]))
+        return { ok: false, why: `${names[0]} i ${names[1]} nisu partneri.` };
+    }
+    return { ok: true, why: '' };
+  };
+
+  // AI/nasumičan izbor: face commander, ili slučajan legalan (par ako može)
+  MTG.randomCommanders = function (deckData, rnd, defs) {
+    defs = defs || MTG.DEFS;
+    const legals = MTG.legalCommanders(deckData, defs);
+    if (!legals.length) return [deckData.commander];
+    const pick = legals[Math.floor(rnd() * legals.length)];
+    const mates = legals.filter(l => MTG.canPartner(pick.def, l.def));
+    if (mates.length && rnd() < 0.6) {
+      const mate = mates[Math.floor(rnd() * mates.length)];
+      return [pick.name, mate.name];
+    }
+    return [pick.name];
+  };
+
+  // ============================================================
+  // KLASIFIKACIJA PRIJETNJE — šta mi je bot upravo uperio u glavu?
+  // ============================================================
+  MTG.THREAT_KINDS = {
+    counter: { icon: '🚫', label: 'Counterspell', cls: 'counter', hint: 'Kontrira ti spell — ako imaš odgovor, sad je trenutak.' },
+    exile: { icon: '🌀', label: 'Exile', cls: 'exile', hint: 'Egzil — karta se ne vraća u groblje. Regeneracija i „vrati iz groblja" ne pomažu.' },
+    destroy: { icon: '💀', label: 'Removal', cls: 'destroy', hint: 'Uništava ti permanent.' },
+    sacrifice: { icon: '🔪', label: 'Prisilna žrtva', cls: 'destroy', hint: 'Tjera te da žrtvuješ — hexproof i indestructible te NE spašavaju.' },
+    bounce: { icon: '↩️', label: 'Bounce', cls: 'bounce', hint: 'Vraća ti permanent u ruku.' },
+    damage: { icon: '🔥', label: 'Direktna šteta', cls: 'damage', hint: 'Šteta na tebe ili tvoje stvorenje.' },
+    steal: { icon: '🤝', label: 'Krađa', cls: 'steal', hint: 'Preuzima kontrolu nad tvojim permanentom.' },
+    discard: { icon: '🃏', label: 'Discard', cls: 'discard', hint: 'Tjera te da odbaciš karte.' },
+    debuff: { icon: '⬇️', label: 'Slabljenje', cls: 'debuff', hint: 'Smanjuje/tapuje/blokira tvoje stvorenje.' },
+    tax: { icon: '💸', label: 'Porez / gubitak', cls: 'debuff', hint: 'Gubiš život, resurse ili plaćaš.' },
+    goad: { icon: '😈', label: 'Goad / politika', cls: 'steal', hint: 'Tjera tvoja stvorenja da napadaju drugoga.' },
+    target: { icon: '🎯', label: 'Ciljano na tebe', cls: 'target', hint: 'Bot je uperio ovo u tebe.' },
+  };
+
+  // vraća {key, icon, label, cls, hint} — najspecifičnija kategorija koja se poklopi
+  MTG.threatKind = function (def, targets) {
+    const o = ((def && def.oracle) || '').replace(/\s+/g, ' ');
+    const t = s => new RegExp(s, 'i').test(o);
+    const hitsSpell = (targets || []).flat().some(x => x && x.kind && !x.zone);
+    if (hitsSpell || t('counter target') || t('counter (?:that|it)\\b') || t('counter all')) return kind('counter');
+    if (t('exile target') || t('exile (?:all|each|any number of|up to)') || t('exile (?:that|it) (?:card|creature|permanent)')) return kind('exile');
+    if (t('gain control of')) return kind('steal');
+    if (t('goad')) return kind('goad');
+    if (t('sacrific\\w+ (?:a|an|that|the|one|two|\\d)')) return kind('sacrifice');
+    if (t('destroy target') || t('destroy (?:all|each|any number of|up to)')) return kind('destroy');
+    if (t('return target .* to .*hand') ||
+      t('shuffles? .* into (?:their|its owner\'s) library') ||
+      t('(?:on top|on the bottom) of (?:its owner\'s|their) library')) return kind('bounce');
+    if (t('deals? \\d+ damage') || t('deals? damage equal') || t('deals? X damage')) return kind('damage');
+    if (t('discards? ')) return kind('discard');
+    if (t('gets? [-−]\\d') || t('tap target') || t("(?:doesn't|does not) untap") || t('-1/-1 counter')) return kind('debuff');
+    if (t('loses? \\d+ life') || t('lose life') || t('pay(?:s)? ')) return kind('tax');
+    return kind('target');
+    function kind(k) { return Object.assign({ key: k }, MTG.THREAT_KINDS[k]); }
+  };
+
+  // opis meta u jednoj liniji ("TEBE", imena permanenata, "tvoj spell X")
+  MTG.threatTargetNames = function (targets, human) {
+    const out = [];
+    for (const x of (targets || []).flat()) {
+      if (!x) continue;
+      if (x === human) out.push('TEBE');
+      else if (x.kind && !x.zone) out.push(`tvoj spell „${x.name || (x.card && x.card.name) || '?'}"`);
+      else if (x.name) out.push(x.name);
+    }
+    return out;
+  };
+
+  // redovi za prikaz commander štete — poštuje kućno pravilo o zbiru partnera
+  MTG.cmdDamageRows = function (g, p) {
+    const sum = !!(g.houseRules && g.houseRules.sumPartnerDamage);
+    const ent = Object.entries(p.commanderDamage || {});
+    const rows = [];
+    if (!sum) {
+      for (const [iid, n] of ent) {
+        const c = g.byIid(parseInt(iid, 10));
+        rows.push({ label: c ? c.name.split(',')[0] : '?', n, detail: c ? c.name : '' });
+      }
+    } else {
+      const byKey = {};
+      for (const [iid, n] of ent) {
+        const c = g.byIid(parseInt(iid, 10));
+        const own = c && c.owner ? c.owner : null;
+        const k = own ? 'p' + own.idx : iid;
+        if (!byKey[k]) { byKey[k] = { label: own ? own.name : '?', n: 0, parts: [] }; rows.push(byKey[k]); }
+        byKey[k].n += n;
+        byKey[k].parts.push(`${c ? c.name.split(',')[0] : '?'} ${n}`);
+      }
+      for (const r of rows) r.detail = r.parts.join(' + ');
+    }
+    rows.sort((a, b) => b.n - a.n);
+    return rows;
+  };
+
   MTG.newGame = function (opts) {
-    // opts: {humanDeck, aiDecks:[names], aiStyles:[keys], seed, onEvent, humanController, difficulty, maxTurns}
-    const g = new MTG.Game({ seed: opts.seed, onEvent: opts.onEvent, maxTurns: opts.maxTurns, paced: opts.paced });
+    // opts: {humanDeck, aiDecks:[names], aiStyles:[keys], seed, onEvent, humanController, difficulty, maxTurns,
+    //        humanCommanders:[names], aiRandomCommanders:bool}
+    const g = new MTG.Game({
+      seed: opts.seed, onEvent: opts.onEvent, maxTurns: opts.maxTurns, paced: opts.paced,
+      houseRules: Object.assign({}, opts.houseRules,
+        opts.sumPartnerDamage !== undefined ? { sumPartnerDamage: !!opts.sumPartnerDamage } : {}),
+    });
     const names = ['Ti', 'AI Zmaj', 'AI Vuk', 'AI Gavran'];
     const players = [];
     const humanP = g.addPlayer(opts.humanName || names[0], MTG.DECKS[opts.humanDeck], null, !opts.humanController);
+    if (opts.humanCommanders && opts.humanCommanders.length) humanP.chosenCommanders = opts.humanCommanders.slice(0, 2);
     let i = 1;
     const styleKeys = Object.keys(MTG.AI_STYLES || {}).filter(k => k !== 'balanced');
     const styles = [];
@@ -20236,8 +20746,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         p.controller = new MTG.AIController(p, { difficulty: opts.difficulty || 'normal', style: st });
         p.isAI = true;
       }
+      if (p !== humanP && opts.aiRandomCommanders && !p.chosenCommanders)
+        p.chosenCommanders = MTG.randomCommanders(p.deck, g.rnd, MTG.DEFS);
       g.buildDeck(p, p.deck, MTG.DEFS);
       p.deckName = p.deck.name;
+    }
+    // objavi izbor komandera u log (samo kad odstupa od face commandera)
+    for (const p of g.players) {
+      const nm = p.commanders.map(c => c.name);
+      if (nm.length > 1 || (nm.length === 1 && nm[0] !== p.deck.commander))
+        g.lg(`👑 ${p.name}: ${nm.join(' + ')}${nm.length > 1 ? ' (partneri)' : ''}`);
     }
     // randomize turn order
     U.shuffle(g.players, g.rnd);
@@ -20294,7 +20812,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.playerSheet = null;
       this.zoneBrowse = null;
       this.showLog = false;
-      this.prioMode = 'smart';   // 'fast' | 'smart' | 'full'
+      this.prioMode = 'auto';    // 'auto' | 'off' | 'smart' | 'full'
+      this.holdNext = false;     // ručni "stani na sljedećem prioritetu"
+      this.react = null;         // otvoren prozor za reakciju
       this.renderQueued = false;
       this.imgCache = {};
     }
@@ -20315,6 +20835,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             // auto-handling for smoothness
             const auto = ui.autoAnswer(g, q);
             if (auto !== undefined) { resolve(auto); return; }
+            // "auto" mod: ne blokiraj — daj kratak prozor sa dugmetom REAGUJ
+            if (ui.openReactWindow(g, q, resolve)) return;
             ui.pendings = ui.pendings || [];
             ui.pendings.push({ q, resolve, sel: [], assigns: new Map(), mode: null });
             ui.render();
@@ -20325,11 +20847,64 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     autoAnswer(g, q) {
+      if (q.type === 'threatAlert') return undefined;   // uvijek pauziraj i pokaži kartu
       if (q.type === 'priority') {
-        const mode = this.prioMode || 'smart';
+        // ručni HOLD: staje tačno jednom, u bilo kom modu
+        if (this.holdNext) { this.holdNext = false; this._forceStop = true; return undefined; }
+        const mode = this.prioMode || 'auto';
         if (MTG.autoPassPolicy(mode, g, q, this.me)) return { kind: 'pass' };
       }
       return undefined;
+    }
+
+    // ---------- prozor za reakciju (auto mod) ----------
+    reactMs() {
+      const base = { slow: 6000, normal: 4000, fast: 2000 };
+      return base[this.speed || 'normal'] || 4000;
+    }
+    openReactWindow(g, q, resolve) {
+      if (q.type !== 'priority') return false;
+      if (this._forceStop) { this._forceStop = false; return false; }   // ručni HOLD → pravi prompt
+      if ((this.prioMode || 'auto') !== 'auto') return false;
+      // sigurnosno: ako je nekim čudom već otvoren prozor, zatvori ga (pusti dalje)
+      if (this.react) this.skipReactWindow();
+      const ms = this.reactMs();
+      const w = { q, resolve, ms, t0: Date.now() };
+      this.react = w;
+      w.timer = setTimeout(() => {
+        if (this.react !== w) return;
+        this.react = null;
+        resolve({ kind: 'pass' });
+        this.render();
+      }, ms);
+      // sitni tick da se traka animira
+      w.tick = setInterval(() => { if (this.react === w) this.paintReactBar(); }, 100);
+      this.render();
+      return true;
+    }
+    takeReactWindow() {
+      const w = this.react;
+      if (!w) return;
+      clearTimeout(w.timer); clearInterval(w.tick);
+      this.react = null;
+      this.pendings = this.pendings || [];
+      this.pendings.push({ q: w.q, resolve: w.resolve, sel: [], assigns: new Map(), mode: null });
+      this.render();
+    }
+    skipReactWindow() {
+      const w = this.react;
+      if (!w) return;
+      clearTimeout(w.timer); clearInterval(w.tick);
+      this.react = null;
+      w.resolve({ kind: 'pass' });
+      this.render();
+    }
+    paintReactBar() {
+      const w = this.react;
+      const fill = document.querySelector('.reactfill');
+      if (!w || !fill) return;
+      const left = Math.max(0, 1 - (Date.now() - w.t0) / w.ms);
+      fill.style.width = (left * 100) + '%';
     }
 
     resolvePending(val) {
@@ -20416,7 +20991,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       lp.appendChild(el('div', 'sidetitle', '📜 Tok igre'));
       const list = el('div', 'sideloglist');
       for (const entry of g.log.slice(-90)) {
-        list.appendChild(el('div', 'll k-' + (entry.kind || 'x'), esc(entry.msg)));
+        list.appendChild(el('div', 'll k-' + (entry.cls || entry.kind || 'x'), esc(entry.msg)));
       }
       lp.appendChild(list);
       side.appendChild(lp);
@@ -20438,6 +21013,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             ev.preventDefault();
           }
           return;
+        }
+        // R = reaguj / armiraj HOLD; Space u prozoru reakcije = pusti dalje
+        if (ev.key === 'r' || ev.key === 'R') {
+          if (this.react) { this.takeReactWindow(); ev.preventDefault(); return; }
+          if (!this.pending) {
+            this.holdNext = !this.holdNext;
+            this.toast(this.holdNext ? '🖐️ HOLD: stajem na sljedećem prioritetu.' : 'HOLD otkazan.');
+            this.render(); ev.preventDefault();
+          }
+          return;
+        }
+        if (this.react && (ev.key === ' ' || ev.key === 'Enter')) {
+          this.skipReactWindow(); ev.preventDefault(); return;
         }
         if (ev.key === ' ' || ev.key === 'Enter') {
           const modal = document.querySelector('.overlay .modal, .overlay .sheet');
@@ -20473,7 +21061,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!nm) { prev.style.display = 'none'; curName = null; return; }
         if (nm !== curName) {
           curName = nm;
-          prev.innerHTML = `<img src="${imgURL(nm, true)}" onerror="this.parentElement.style.display='none'">`;
+          prev.innerHTML = `<img src="${imgURL(nm, true)}" onerror="MTG.imgFail(this)">`;
         }
         prev.style.display = 'block';
       });
@@ -20513,13 +21101,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       bar.appendChild(left);
       const btns = el('div', 'topbtns');
       // brzina AI poteza
-      const speeds = { normal: ['▶️', 1, 'Normalna brzina'], fast: ['⏩', 0.35, 'Brzo'], slow: ['🐢', 1.8, 'Sporo — sve se lijepo vidi'] };
+      const speeds = MTG.SPEEDS;
       this.speed = this.speed || 'normal';
       const spB = el('button', 'tbtn', speeds[this.speed][0]);
+      spB.title = 'Brzina AI poteza: ' + speeds[this.speed][2];
       spB.onclick = () => {
-        const order = ['normal', 'fast', 'slow'];
+        const order = ['normal', 'slow', 'fast'];
         this.speed = order[(order.indexOf(this.speed) + 1) % order.length];
-        this.game.speedFactor = speeds[this.speed][1];
+        this.applySpeed();
         this.toast('Brzina AI poteza: ' + speeds[this.speed][2]);
         this.render();
       };
@@ -20528,12 +21117,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       btns.appendChild(spB);
       const logB = el('button', 'tbtn', '📜');
       logB.onclick = () => { this.showLog = !this.showLog; this.render(); };
+      // ručni HOLD — "stani na sljedećem prioritetu"
+      const holdB = el('button', 'tbtn' + (this.holdNext ? ' armed' : ''), '🖐️');
+      holdB.title = this.holdNext
+        ? 'HOLD armiran — igra staje na sljedećem prioritetu. Klikni da otkažeš.'
+        : 'HOLD — stani na sljedećem prioritetu (kad hoćeš da ubaciš instant).';
+      holdB.onclick = () => {
+        if (this.react) { this.takeReactWindow(); return; }
+        this.holdNext = !this.holdNext;
+        this.toast(this.holdNext ? '🖐️ HOLD: stajem na sljedećem prioritetu.' : 'HOLD otkazan.');
+        this.render();
+      };
+      btns.appendChild(holdB);
       const modes = MTG.PRIO_MODES;
-      const curMode = modes.find(m => m.key === (this.prioMode || 'smart')) || modes[1];
+      const curMode = modes.find(m => m.key === (this.prioMode || 'auto')) || modes[0];
       const setB = el('button', 'tbtn', curMode.icon);
       setB.title = `Prioritet: ${curMode.label} — ${curMode.desc}`;
       setB.onclick = () => {
-        const i = modes.findIndex(m => m.key === (this.prioMode || 'smart'));
+        const i = modes.findIndex(m => m.key === (this.prioMode || 'auto'));
         const next = modes[(i + 1) % modes.length];
         this.prioMode = next.key;
         this.toast(`${next.icon} Prioritet: ${next.label} — ${next.desc}`);
@@ -20557,8 +21158,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const collapsed = this.collapsed.has(p.idx);
         // header
         const head = el('div', 'opphead' + (isCandidate ? ' targetable' : ''));
-        const cmdInCZ = p.command.length > 0;
-        const cmdOnBf = g.bf().some(c => c.commander && c.owner === p);
+        const cmdList = (p.commanders && p.commanders.length) ? p.commanders : p.command;
+        const cmdState = cmdList.map(c => c.zone === 'battlefield' ? 'na tabli' : c.zone === 'command' ? 'u CZ' : '🪦')
+          .join(' / ') || '—';
+        const cmdTitle = cmdList.map(c => `${c.name} (${c.zone})`).join(' · ');
         const styleMeta = p.isAI && p.aiStyle && MTG.AI_STYLES && MTG.AI_STYLES[p.aiStyle];
         head.innerHTML = `
           <span class="chev">${collapsed ? '▸' : '▾'}</span>
@@ -20566,7 +21169,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ${styleMeta ? `<span class="personachip" title="Stil: ${esc(styleMeta.label)}">${styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
           <span class="opplife" role="button">${p.life}❤</span>
           <span class="oppmeta">✋${p.hand.length} 📚${p.library.length}</span>
-          <span class="oppcmd">${cmdOnBf ? '👑na tabli' : cmdInCZ ? '👑u CZ' : '👑🪦'}</span>
+          <span class="oppcmd" title="${esc(cmdTitle)}">👑${esc(cmdState)}</span>
           <button class="tbtn small">ℹ️</button>`;
         head.querySelector('button').onclick = (e) => { e.stopPropagation(); this.playerSheet = p; this.render(); };
         // EDHLAB-style: life tap = detalji (commander dmg itd.), ostatak = collapse
@@ -20701,11 +21304,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const castEntry = this.pending && this.pending.q.casts && this.pending.q.casts.find(e => e.card === cmd);
           const cost = this.game.spellCost(me, cmd, {});
           cz.innerHTML = `
-            <img loading="lazy" src="${imgURL(cmd.name)}" onerror="this.style.display='none'">
+            <img loading="lazy" src="${imgURL(cmd.name)}" onerror="MTG.imgFail(this)">
             <div class="czinfo">
               <div class="czlabel">👑 COMMAND ZONA</div>
               <div class="czname">${esc(cmd.name.split(',')[0])}</div>
-              <div class="czcost">Cijena: ${costHTML(U.costStr(cost))}${me.commanderCasts ? ` <span class="tax">(tax +${2 * me.commanderCasts})</span>` : ''}</div>
+              <div class="czcost">Cijena: ${costHTML(U.costStr(cost))}${cmd.cmdCasts ? ` <span class="tax">(tax +${2 * cmd.cmdCasts})</span>` : ''}</div>
             </div>
             ${castEntry ? '<div class="czgo">BACI ▶</div>' : ''}`;
           if (castEntry) cz.classList.add('castable');
@@ -20718,7 +21321,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     miniCard(g, c, opts = {}) {
-      const d = el('div', 'mini' + (opts.sm ? ' sm' : '') + (c.tapped ? ' tapped' : '') + (c.sick && c.is('Creature') && !c.kw('haste') ? ' sick' : ''));
+      const threatened = this.threatTargets && this.threatTargets.has(c.iid);
+      const d = el('div', 'mini' + (opts.sm ? ' sm' : '') + (c.tapped ? ' tapped' : '') + (c.sick && c.is('Creature') && !c.kw('haste') ? ' sick' : '') + (threatened ? ' threatened' : ''));
       const colors = c.colors.length ? c.colors : ['C'];
       const grad = colors.length > 1
         ? `linear-gradient(135deg, ${colors.map(x => COLHEX[x]).join(',')})`
@@ -20738,7 +21342,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const stackN = opts.stackN && opts.stackN > 1 ? `<div class="stackn">×${opts.stackN}</div>` : '';
       if (opts.stackN > 1) d.classList.add('stacked');
       d.innerHTML = `
-        <img loading="lazy" src="${imgURL(c.name)}" onerror="this.style.display='none'">
+        <img loading="lazy" src="${imgURL(c.name)}" onerror="MTG.imgFail(this)">
         <div class="mname">${esc(c.name.split(' // ')[0])}</div>
         ${pt}${cnt}${att}${tok}${stackN}
         ${badges.length ? `<div class="badge">${badges.join('')}</div>` : ''}`;
@@ -20797,11 +21401,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       for (const c of me.hand) {
-        const d = el('div', 'hcard');
+        const d = el('div', 'hcard' + (this.threatTargets && this.threatTargets.has(c.iid) ? ' threatened' : ''));
         const colors = c.colors.length ? c.colors : ['C'];
         d.style.setProperty('--frame', colors.length > 1 ? `linear-gradient(135deg, ${colors.map(x => COLHEX[x]).join(',')})` : COLHEX[colors[0]]);
         d.innerHTML = `
-          <img loading="lazy" src="${imgURL(c.name)}" onerror="this.style.display='none'">
+          <img loading="lazy" src="${imgURL(c.name)}" onerror="MTG.imgFail(this)">
           <div class="hcost">${costHTML(c.def.cost || '')}</div>
           <div class="mname">${esc(c.name.split(' // ')[0])}</div>`;
         d.dataset.cname = c.name;
@@ -20824,7 +21428,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const bar = el('div', 'promptbar');
       const pd = this.pending;
       if (!pd) {
-        bar.appendChild(el('div', 'ptext dim', g.gameOver ? 'Partija je gotova.' : '⏳ Protivnici igraju…'));
+        // prozor za reakciju — ne blokira, samo ponudi
+        if (this.react) {
+          const w = this.react;
+          const top = g.stack[g.stack.length - 1];
+          const who = top && top.ctrl ? top.ctrl.name : 'protivnik';
+          const what = top ? (top.name || (top.card && top.card.name) || 'nešto') : 'akcija';
+          bar.classList.add('reacting');
+          const info = el('div', 'ptext',
+            `⚡ <b>${esc(who)}</b>: ${esc(what)} — želiš da odgovoriš?`);
+          bar.appendChild(info);
+          const track = el('div', 'reacttrack', '<span class="reactfill"></span>');
+          bar.appendChild(track);
+          const row = el('div', 'btnrow');
+          const yes = el('button', 'pbtn primary', '⚡ REAGUJ');
+          yes.onclick = () => this.takeReactWindow();
+          const no = el('button', 'pbtn', 'Pusti ▶');
+          no.onclick = () => this.skipReactWindow();
+          row.appendChild(yes); row.appendChild(no);
+          bar.appendChild(row);
+          setTimeout(() => this.paintReactBar(), 0);
+          return bar;
+        }
+        const hint = this.holdNext ? '🖐️ HOLD armiran — stajem na sljedećem prioritetu.' : '⏳ Protivnici igraju…';
+        bar.appendChild(el('div', 'ptext dim', g.gameOver ? 'Partija je gotova.' : hint));
         return bar;
       }
       const q = pd.q;
@@ -20861,6 +21488,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!hasCustom && q.type !== 'manualResolve') return null;
         return btn('⚒️ Sudija', () => { this.showJudge = true; this.render(); });
       };
+      if (q.type === 'threatAlert') {
+        bar.appendChild(el('div', 'ptext', '⏸️ Pauza — pogledaj šta ti bot šalje.'));
+        return bar;
+      }
       switch (q.type) {
         case 'manualResolve': {
           bar.appendChild(el('div', 'ptext', `⚒️ <b>${esc(q.card.name)}</b> — izvrši efekat ručno pa potvrdi`));
@@ -20912,9 +21543,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (oz2) bar.appendChild(oz2);
           const row = el('div', 'btnrow');
           row.appendChild(btn('Prođi ▶', () => this.resolvePending({ kind: 'pass' }), 'primary'));
-          row.appendChild(btn('⚡ Ne pitaj u combatu', () => {
-            this.prioMode = 'fast';
-            this.toast('⚡ Brzi mod: pitam samo kad je nešto na stacku');
+          row.appendChild(btn('🔕 Ne prekidaj me više', () => {
+            this.prioMode = 'off';
+            this.toast('🔕 Ne pitam više. Stani ručno dugmetom 🖐️ (ili tipkom R).');
             this.resolvePending({ kind: 'pass' });
           }));
           bar.appendChild(row);
@@ -20955,10 +21586,69 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     // ---------- decision modals ----------
+    // ---------- PRIJETNJA: bot je uperio spell/sposobnost u mene ----------
+    renderThreatAlert(g, q) {
+      const k = q.kind || { icon: '🎯', label: 'Ciljano na tebe', cls: 'target', hint: '' };
+      const d = q.card.def || {};
+      const ov = el('div', 'overlay dark threatov');
+      const m = el('div', 'modal threatmodal ' + k.cls);
+      ov.appendChild(m);
+
+      m.appendChild(el('div', 'threathead',
+        `<span class="threatkind">${k.icon} ${esc(k.label)}</span>
+         <span class="threatby">${esc(q.by.name)} ${q.source === 'ability' ? 'aktivira' : 'baca'} na tebe</span>`));
+
+      const body = el('div', 'threatbody');
+      body.innerHTML = `
+        <img class="threatart" src="${imgURL(q.card.name, true)}" onerror="MTG.imgFail(this)">
+        <div class="threatinfo">
+          <div class="threatname">${esc(q.card.name)}${q.abilityLabel ? ` <span class="threatab">— ${esc(q.abilityLabel)}</span>` : ''}</div>
+          <div class="threatcost">${costHTML(d.cost || '')} <span class="threattype">${esc([(d.super || []).join(' '), (d.types || []).join(' ')].filter(Boolean).join(' '))}${(d.subtypes || []).length ? ' — ' + esc(d.subtypes.join(' ')) : ''}</span></div>
+          <div class="threattargets">🎯 Meta: <b>${(q.names || []).map(n => esc(n)).join(', ')}</b></div>
+          <div class="threatoracle">${esc(d.oracle || '').replace(/\n/g, '<br>')}</div>
+          ${k.hint ? `<div class="threathint">💡 ${esc(k.hint)}</div>` : ''}
+        </div>`;
+      m.appendChild(body);
+
+      const canAnswer = this.myInstantCount(g) > 0;
+      const row = el('div', 'btnrow');
+      const ok = el('button', 'pbtn primary', 'Vidio sam ▶');
+      ok.onclick = () => { this.threatTargets = null; this.resolvePending(null); };
+      const hold = el('button', 'pbtn' + (canAnswer ? ' hot' : ''),
+        canAnswer ? '⚡ Odgovoriću (HOLD)' : '⚡ HOLD (nemam odgovor u ruci)');
+      hold.onclick = () => {
+        this.holdNext = true;
+        this.threatTargets = null;
+        this.toast('🖐️ HOLD armiran — igra staje čim dobiješ prioritet.');
+        this.resolvePending(null);
+      };
+      row.appendChild(ok); row.appendChild(hold);
+      m.appendChild(row);
+      m.appendChild(el('div', 'threatfoot',
+        canAnswer
+          ? 'Imaš karte koje možeš baciti kao odgovor — „Odgovoriću" zaustavlja igru na sljedećem prioritetu.'
+          : 'Nemaš instant-speed odgovor u ruci, ali HOLD i dalje radi (sposobnosti, landovi…).'));
+
+      // označi mete na tabli dok je modal otvoren
+      this.threatTargets = new Set((q.targets || []).filter(t => t && t.iid).map(t => t.iid));
+      return ov;
+    }
+
+    myInstantCount(g) {
+      if (!this.me) return 0;
+      try {
+        return g.castableList(this.me).filter(e => {
+          const c = e.card;
+          return c.is('Instant') || c.kw('flash') || (e.alt && e.alt.flash);
+        }).length;
+      } catch (e) { return 0; }
+    }
+
     renderDecisionModal(g) {
       const pd = this.pending;
       if (!pd) return null;
       const q = pd.q;
+      if (q.type === 'threatAlert') return this.renderThreatAlert(g, q);
       const types = ['mulligan', 'bottomCards', 'chooseCards', 'chooseOption', 'chooseMulti', 'chooseX', 'scry'];
       if (!types.includes(q.type)) return null;
       const ov = el('div', 'overlay');
@@ -21076,7 +21766,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const cc = el('div', 'bigcard');
       const name = (c.name || (c.card && c.card.name) || '?');
       cc.innerHTML = `
-        <img loading="lazy" src="${imgURL(name)}" onerror="this.classList.add('noimg')">
+        <img loading="lazy" src="${imgURL(name)}" onerror="MTG.imgFail(this,'noimg')">
         <div class="bcname">${esc(name)}</div>`;
       return cc;
     }
@@ -21220,16 +21910,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const m = el('div', 'sheet tall');
       ov.appendChild(m);
       const meta = MTG.DECK_META[p.deckName] || {};
-      const entries = Object.entries(p.commanderDamage);
-      const cmdDmg = entries.length ? entries.map(([iid, n]) => {
-        const c = g.byIid(parseInt(iid, 10));
-        const pct = Math.min(100, Math.round(n / 21 * 100));
-        return `<div class="cdrow"><span>${c ? esc(c.name.split(',')[0]) : '?'}</span>
-          <span class="cdbar"><span class="cdfill${n >= 15 ? ' hot' : ''}" style="width:${pct}%"></span></span>
-          <b>${n}/21</b></div>`;
+      const rows = MTG.cmdDamageRows(g, p);
+      const summed = !!(g.houseRules && g.houseRules.sumPartnerDamage);
+      const cmdDmg = rows.length ? rows.map(r => {
+        const pct = Math.min(100, Math.round(r.n / 21 * 100));
+        return `<div class="cdrow" title="${esc(r.detail || '')}"><span>${esc(r.label)}</span>
+          <span class="cdbar"><span class="cdfill${r.n >= 15 ? ' hot' : ''}" style="width:${pct}%"></span></span>
+          <b>${r.n}/21</b></div>`;
       }).join('') : '<div class="cdnone">— još ništa —</div>';
       m.appendChild(el('div', 'mtitle', `${meta.icon || ''} ${esc(p.name)} — ${esc(p.deckName)} · ${p.life}❤${p.lost ? ' · ☠️ ELIMINISAN' : ''}`));
-      m.appendChild(el('div', 'cmddmg', `<b>Commander šteta primljena (21 = smrt):</b>${cmdDmg}`));
+      const own = (p.commanders && p.commanders.length) ? p.commanders : p.command;
+      if (own.length) {
+        const ZN = { battlefield: 'na tabli', command: 'u CZ', graveyard: 'groblje', exile: 'egzil', hand: 'ruka', library: 'biblioteka', stack: 'stack' };
+        m.appendChild(el('div', 'cmdhint',
+          `👑 Komander${own.length > 1 ? 'i (partneri)' : ''}: ` +
+          own.map(c => `<b>${esc(c.name)}</b> <span style="color:#8a95a8">(${ZN[c.zone] || c.zone}${c.cmdCasts ? `, tax +${2 * c.cmdCasts}` : ''})</span>`).join(' · ')));
+      }
+      m.appendChild(el('div', 'cmddmg',
+        `<b>Commander šteta primljena (21 = smrt):</b>` +
+        (summed
+          ? `<div class="cdnote">🏠 Kućno pravilo: šteta partnera se ZBRAJA po vlasniku.</div>`
+          : `<div class="cdnote">Pravilo 903.10a: svaki komander ima svojih 21 — partneri se ne zbrajaju.</div>`) +
+        cmdDmg));
       const zrow = el('div', 'btnrow');
       for (const z of ['graveyard', 'exile']) {
         const b = el('button', 'pbtn', `${z === 'graveyard' ? '🪦' : '🌀'} ${p[z].length}`);
@@ -21421,10 +22123,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 <b>⚔️ Napad:</b> u combat fazi tap na svoja stvorenja da ih pošalješ u napad; ponovni tap mijenja metu (kojeg igrača napadaš). <b>🛡️ Blok:</b> prvo tap na napadača (u traci), pa na svog blokera.<br><br>
 <b>🎯 Mete:</b> kad spell traži metu, legalne mete <span style="color:#e8c05a">zlatno svijetle</span> — tap na kartu ili na protivnikov panel.<br><br>
 <b>Protivnici:</b> njihove table su stalno vidljive ispod imena. Tap na zaglavlje sklapa/otvara tablu, ℹ️ otvara detalje (groblje, commander šteta…).<br><br>
-<b>⚡ Instanti i prioritet:</b> igra ima pravi stack i prioritet — možeš odgovoriti na svaki protivnikov spell, trigger i na napad. Dugme gore mijenja koliko te često pitam:<br>
-&nbsp;&nbsp;🎯 <b>Pametno</b> (podrazumijevano) — pitam kad imaš instant/sposobnost: nešto je na stacku, proglašeni su napadači ili blokeri, ili je kraj protivnikovog poteza.<br>
-&nbsp;&nbsp;⚡ <b>Brzo</b> — pitam samo kad je nešto na stacku.<br>
-&nbsp;&nbsp;🎛️ <b>Full control</b> — pitam za svaki prioritet, kao na turniru.<br>
+<b>⚡ Instanti i prioritet:</b> igra ima pravi stack i prioritet, ali te ne prekida. Dugme ⚡ gore bira režim:<br>
+&nbsp;&nbsp;⚡ <b>Auto + Reaguj</b> (podrazumijevano) — ne staje. Kad protivnik nešto baci, dolje se pojavi traka „<b>REAGUJ</b>" sa odbrojavanjem; klikni je (ili tipka <b>R</b>) da uskočiš, ili je ignoriši i igra ide dalje.<br>
+&nbsp;&nbsp;🔕 <b>Nikad ne pitaj</b> — nikad ne staje.<br>
+&nbsp;&nbsp;🎯 <b>Pametno</b> — staje na bitnim prozorima (stack, napadači, blokeri, kraj tuđeg poteza).<br>
+&nbsp;&nbsp;🎛️ <b>Full control</b> — staje na svakom prioritetu, kao na turniru.<br>
+<b>🖐️ HOLD (tipka R):</b> kad god hoćeš da staneš — armiraj ga i igra će stati na sljedećem prioritetu. Radi u svim režimima.<br>
+<b>🐢 Brzina:</b> dugme ▶️/🐢/⏩ gore mijenja tempo botova. Kad bot cilja tebe, napada te ili blokira tvoj napad, dobiješ crvenu traku preko ekrana da se vidi šta radi.<br>
 Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i karte sa flash idu bilo kad kad imaš prioritet.`));
       const close = el('button', 'pbtn primary wide', 'Jasno! ▶');
       close.onclick = () => { this.showHelp = false; this.render(); };
@@ -21458,6 +22163,21 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
       document.body.appendChild(b);
       setTimeout(() => b.remove(), 1500);
     }
+
+    applySpeed() {
+      this.speed = this.speed || 'normal';
+      if (this.game) this.game.speedFactor = (MTG.SPEEDS[this.speed] || MTG.SPEEDS.normal)[1];
+    }
+
+    // "reflektor" — bot je uradio nešto usmjereno na tebe
+    showSpot(text, kind) {
+      const old = document.querySelector('.spotbar');
+      if (old) old.remove();
+      const b = el('div', 'spotbar ' + (kind || 'info'), esc(text));
+      document.body.appendChild(b);
+      const ms = Math.round(1900 * (this.game ? this.game.speedFactor : 1));
+      b._t = setTimeout(() => b.remove(), ms);
+    }
   }
   MTG.UI = UI;
 })();
@@ -21475,17 +22195,32 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
 
   function commanderImg(deckName) {
     const d = MTG.DECKS[deckName];
-    const face = d.commander.split(' // ')[0];
+    return artURL(d.commander);
+  }
+  function artURL(name) {
+    const face = String(name).split(' // ')[0];
     return `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(face)}&format=image&version=art_crop`;
+  }
+  function cardImg(name) {
+    const face = String(name).split(' // ')[0];
+    return `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(face)}&format=image&version=small`;
+  }
+  function typeLine(def) {
+    return `${(def.super || []).join(' ')} ${(def.types || []).join(' ')}${(def.subtypes || []).length ? ' — ' + def.subtypes.join(' ') : ''}`.trim();
   }
 
   function renderSetup() {
     const root = $('#setup');
     root.innerHTML = '';
     root.appendChild(el('h1', 'title', '⚔️ MTG Commander Simulator'));
-    root.appendChild(el('div', 'subtitle', '14 pravih precon deckova · 2023–2026 · igraj pametno'));
+    const nDecks = Object.keys(MTG.DECKS).filter(d => !MTG.DECKS[d].custom).length;
+    root.appendChild(el('div', 'subtitle', `${nDecks} pravih precon deckova · 2023–2026 · biraj komandera i partnere`));
 
-    const state = { deck: null, ai: 3, difficulty: 'normal', seed: '', aiStyles: ['random', 'random', 'random'] };
+    const state = {
+      deck: null, ai: 3, difficulty: 'normal', seed: '',
+      aiStyles: ['random', 'random', 'random'],
+      commanders: [], aiRandomCommanders: false, sumPartnerDamage: false,
+    };
 
     const grid = el('div', 'setupgrid');
     root.appendChild(grid);
@@ -21499,7 +22234,7 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
       const meta = MTG.DECK_META[name] || {};
       const card = el('div', 'deckcard');
       card.innerHTML = `
-        <img class="deckart" loading="lazy" src="${commanderImg(name)}" onerror="this.style.display='none'">
+        <img class="deckart" loading="lazy" src="${commanderImg(name)}" onerror="MTG.imgFail(this)">
         <div class="deckinfo">
           <div class="deckname">${meta.icon || ''} ${esc(name)}</div>
           <div class="deckcmd">👑 ${esc(deck.commander)}</div>
@@ -21509,16 +22244,61 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
         </div>`;
       card.onclick = () => {
         state.deck = name;
+        state.commanders = [deck.commander];
         deckList.querySelectorAll('.deckcard').forEach(c => c.classList.remove('selected'));
         card.classList.add('selected');
         startBtn.disabled = false;
-        startBtn.textContent = `Kreni sa: ${name} ▶`;
+        renderCmdBox();
+        updateStartLabel();
       };
       deckList.appendChild(card);
     }
     left.appendChild(deckList);
 
-    right.appendChild(el('div', 'seclabel', '2 · Protivnici (AI dobijaju nasumične precone)'));
+    // ---------- 2 · KOMANDER ----------
+    right.appendChild(el('div', 'seclabel', '2 · Komander'));
+    const cmdBox = el('div', 'cmdbox');
+    right.appendChild(cmdBox);
+    const updateStartLabel = () => {
+      if (!state.deck) return;
+      const c = state.commanders;
+      startBtn.textContent = `Kreni: ${state.deck} · ${c.map(n => n.split(',')[0]).join(' + ')} ▶`;
+    };
+    function renderCmdBox() {
+      cmdBox.innerHTML = '';
+      if (!state.deck) { cmdBox.appendChild(el('div', 'cmdhint', 'Prvo izaberi deck lijevo.')); return; }
+      const deck = MTG.DECKS[state.deck];
+      const legals = MTG.legalCommanders(deck, MTG.DEFS);
+      const chosen = el('div', 'cmdchosen');
+      for (const nm of state.commanders) {
+        const def = MTG.DEFS[nm] || {};
+        const tag = MTG.cmdTag(def);
+        const chip = el('div', 'cmdchip');
+        chip.innerHTML = `
+          <img loading="lazy" src="${artURL(nm)}" onerror="MTG.imgFail(this)">
+          <div class="cmdchipinfo">
+            <div class="cmdchipname">👑 ${esc(nm)}</div>
+            <div class="cmdchiptype">${esc(typeLine(def))}</div>
+            ${tag.kind ? `<div class="cmdbadge">${esc(MTG.cmdTagLabel(tag))}</div>` : ''}
+          </div>`;
+        chosen.appendChild(chip);
+      }
+      cmdBox.appendChild(chosen);
+      const partnerable = legals.filter(l => l.tag.kind).length;
+      cmdBox.appendChild(el('div', 'cmdhint',
+        `${legals.length} legalnih komandera u ovom deku` +
+        (partnerable ? ` · ${partnerable} sa partner sposobnošću 🤝` : '') +
+        (state.commanders.length === 2 ? ' · igraš sa DVA komandera' : '')));
+      const btn = el('button', 'pbtn wide', legals.length > 1 ? '🔄 Promijeni komandera / partnere' : '🔒 Ovaj deck ima samo jednog');
+      btn.disabled = legals.length <= 1;
+      btn.onclick = async () => {
+        const res = await pickCommanders(state.deck, state.commanders);
+        if (res) { state.commanders = res; renderCmdBox(); updateStartLabel(); }
+      };
+      cmdBox.appendChild(btn);
+    }
+
+    right.appendChild(el('div', 'seclabel', '3 · Protivnici (AI dobijaju nasumične precone)'));
     const aiRow = el('div', 'btnrow center');
     const botStyles = el('div', 'botstyles');
     const styleOptions = [['random', '🎲 Nasumičan stil']]
@@ -21536,7 +22316,15 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
       const botNames = ['AI Zmaj', 'AI Vuk', 'AI Gavran'];
       for (let i = 0; i < state.ai; i++) {
         const row = el('div', 'botstylerow');
-        const lbl = el('span', 'botname', `🤖 ${botNames[i]}`);
+        const badge = el('span', 'pbadge');
+        const setBadge = k => {
+          badge.className = 'pbadge ' + (['aggressive', 'diplomat', 'passive', 'teaser'].includes(k) ? 'p-' + k : 'p-none');
+          badge.textContent = ['aggressive', 'diplomat', 'passive', 'teaser'].includes(k)
+            ? '' : (k === 'random' ? '🎲' : '⚖️');
+          badge.title = STYLE_DESC[k] || '';
+        };
+        setBadge(state.aiStyles[i]);
+        const lbl = el('span', 'botname', esc(botNames[i]));
         const sel = el('select', 'styleselect');
         for (const [k, label] of styleOptions) {
           const o = el('option', '', label);
@@ -21545,8 +22333,8 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
           sel.appendChild(o);
         }
         const desc = el('div', 'styledesc', STYLE_DESC[state.aiStyles[i]] || '');
-        sel.onchange = () => { state.aiStyles[i] = sel.value; desc.textContent = STYLE_DESC[sel.value] || ''; };
-        row.appendChild(lbl); row.appendChild(sel);
+        sel.onchange = () => { state.aiStyles[i] = sel.value; desc.textContent = STYLE_DESC[sel.value] || ''; setBadge(sel.value); };
+        row.appendChild(badge); row.appendChild(lbl); row.appendChild(sel);
         botStyles.appendChild(row);
         botStyles.appendChild(desc);
       }
@@ -21561,7 +22349,19 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
     right.appendChild(botStyles);
     renderBotStyles();
 
-    right.appendChild(el('div', 'seclabel', '3 · Težina'));
+    const randRow = el('label', 'cmdcheck');
+    randRow.innerHTML = '<input type="checkbox"> <span>🎲 AI botovi biraju nasumične (i partner) komandere</span>';
+    randRow.querySelector('input').onchange = e => { state.aiRandomCommanders = e.target.checked; };
+    right.appendChild(randRow);
+
+    const houseRow = el('label', 'cmdcheck');
+    houseRow.title = 'Zvanično pravilo 903.10a: 21 šteta od ISTOG komandera. ' +
+      'Uključi ovo ako tvoja grupa igra da se šteta oba partnera zbraja.';
+    houseRow.innerHTML = '<input type="checkbox"> <span>🏠 Kućno pravilo: šteta oba partnera se ZBRAJA (nije po 903.10a)</span>';
+    houseRow.querySelector('input').onchange = e => { state.sumPartnerDamage = e.target.checked; };
+    right.appendChild(houseRow);
+
+    right.appendChild(el('div', 'seclabel', '4 · Težina'));
     const diffRow = el('div', 'btnrow center');
     for (const [k, label] of [['normal', 'Normalna'], ['tough', 'Teška']]) {
       const b = el('button', 'pbtn choice' + (k === 'normal' ? ' selected' : ''), label);
@@ -21574,6 +22374,7 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
     startBtn.disabled = true;
     startBtn.onclick = () => startGame(state);
     right.appendChild(startBtn);
+    renderCmdBox();
 
     // --- IMPORT SVOG DECKA ---
     right.appendChild(el('div', 'seclabel', '📥 Ili uvezi SVOJ deck (Moxfield)'));
@@ -21612,6 +22413,74 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
       'Pravila: puna osnovna pravila + stack, prioritet, commander tax/damage. Neke kompleksne karte su pojednostavljene (označene ⚠️ u prikazu karte).'));
   }
 
+  // ---------- Izbor komandera (1 ili 2 partnera) ----------
+  function pickCommanders(deckName, current) {
+    const deck = MTG.DECKS[deckName];
+    const legals = MTG.legalCommanders(deck, MTG.DEFS);
+    let sel = (current && current.length ? current : [deck.commander]).slice(0, 2);
+
+    return new Promise(resolve => {
+      const ov = el('div', 'overlay dark');
+      const m = el('div', 'modal wide');
+      m.appendChild(el('div', 'mtitle', `👑 Komanderi — ${esc(deckName)}`));
+      m.appendChild(el('div', 'cmdhint',
+        'Klikni kartu da je izabereš. Karte sa 🤝 <b>Partner</b> mogu ići u paru — ' +
+        'izaberi jednu, pa klikni drugu koja joj odgovara (obrubljene zeleno). ' +
+        'Ostatak deka ostaje isti; neizabrani legendarci idu u biblioteku.'));
+
+      const grid = el('div', 'cmdgrid');
+      m.appendChild(grid);
+      const status = el('div', 'cmdstatus');
+      m.appendChild(status);
+
+      const row = el('div', 'btnrow');
+      const okBtn = el('button', 'pbtn primary', 'Potvrdi ✔');
+      const defBtn = el('button', 'pbtn', '↩ Originalni');
+      const cancel = el('button', 'pbtn danger', 'Otkaži');
+      row.appendChild(okBtn); row.appendChild(defBtn); row.appendChild(cancel);
+      m.appendChild(row);
+
+      function draw() {
+        grid.innerHTML = '';
+        const soloDef = sel.length === 1 ? MTG.DEFS[sel[0]] : null;
+        for (const L of legals) {
+          const on = sel.indexOf(L.name) >= 0;
+          const pairable = !!soloDef && !on && MTG.canPartner(soloDef, L.def);
+          const c = el('div', 'cmdopt' + (on ? ' selected' : '') + (pairable ? ' pairable' : ''));
+          c.innerHTML = `
+            <img loading="lazy" src="${cardImg(L.name)}" onerror="MTG.imgFail(this)">
+            <div class="cmdoptinfo">
+              <div class="cmdoptname">${on ? '👑 ' : ''}${esc(L.name)}${L.isDefault ? ' <span class="deft">(originalni)</span>' : ''}</div>
+              <div class="cmdopttype">${esc(typeLine(L.def))} · ${esc(L.def.cost || '')}</div>
+              ${L.tag.kind ? `<div class="cmdbadge">${esc(L.partnerLabel)}</div>` : ''}
+            </div>`;
+          c.onclick = () => {
+            const i = sel.indexOf(L.name);
+            if (i >= 0) { if (sel.length > 1) sel.splice(i, 1); }
+            else if (sel.length === 1 && MTG.canPartner(MTG.DEFS[sel[0]], L.def)) sel.push(L.name);
+            else sel = [L.name];
+            draw();
+          };
+          grid.appendChild(c);
+        }
+        const v = MTG.validateCommanders(deck, sel, MTG.DEFS);
+        status.className = 'cmdstatus ' + (v.ok ? 'good' : 'bad');
+        status.innerHTML = v.ok
+          ? `✅ ${sel.map(n => esc(n)).join(' <b>+</b> ')}${sel.length === 2 ? ' — dva komandera' : ''}`
+          : `⛔ ${esc(v.why)}`;
+        okBtn.disabled = !v.ok;
+      }
+      draw();
+
+      okBtn.onclick = () => { ov.remove(); resolve(sel.slice()); };
+      defBtn.onclick = () => { sel = [deck.commander]; draw(); };
+      cancel.onclick = () => { ov.remove(); resolve(null); };
+      ov.onclick = e => { if (e.target === ov) { ov.remove(); resolve(null); } };
+      ov.appendChild(m);
+      document.body.appendChild(ov);
+    });
+  }
+
   function pickCommander(legends) {
     return new Promise(resolve => {
       const ov = el('div', 'overlay dark');
@@ -21645,6 +22514,9 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
       humanDeck: state.deck,
       aiDecks,
       aiStyles: state.aiStyles.slice(0, state.ai),
+      humanCommanders: (state.commanders && state.commanders.length) ? state.commanders : undefined,
+      aiRandomCommanders: state.aiRandomCommanders,
+      sumPartnerDamage: state.sumPartnerDamage,
       seed,
       difficulty: state.difficulty,
       humanName: 'Ti',
@@ -21653,14 +22525,17 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
       humanController: (p) => { ui.me = p; return ui.controllerFor(p); },
       onEvent: (e) => {
         if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ TVOJ POTEZ' : `Potez ${g.turnNo} — ${e.p.name}`, e.p === ui.me);
+        if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
         ui.queueRender();
       },
     });
     ui.game = g;
+    ui.applySpeed();
     window._game = g;
     window._ui = ui;
     ui.render();
-    ui.toast(`Seed: ${seed} · Protivnici: ${aiDecks.join(', ')}`);
+    const cmdTxt = (state.commanders || []).map(n => n.split(',')[0]).join(' + ');
+    ui.toast(`Seed: ${seed} · 👑 ${cmdTxt} · Protivnici: ${aiDecks.join(', ')}`);
     g.start().catch(err => {
       console.error(err);
       ui.toast('Greška u igri: ' + err.message);
