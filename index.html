@@ -66,6 +66,9 @@ img { -webkit-user-drag: none; }
 .oppmeta { color: #9ab; }
 .oppcmd { color: #c9b37a; font-size: 10px; margin-left: auto; white-space: nowrap; }
 .tbtn.small { padding: 2px 6px; font-size: 12px; }
+/* stanje panel toggle-a (tiše od .armed, koji je rezervisan za HOLD) */
+.tbtn.on { box-shadow: inset 0 0 0 1.5px #c9a03a99; color: #e8c05a; }
+.deskonly { display: none; }
 .oppstrip { display: flex; gap: 4px; overflow-x: auto; padding: 3px 6px 6px; align-items: flex-end; min-height: 74px; }
 .oppLands { background: #262b36; border-radius: 7px; padding: 5px 8px; font-size: 11px; text-align: center; color: #8a9; font-weight: 700; flex-shrink: 0; line-height: 1.3; }
 .emptystrip { color: #556; font-size: 11px; padding: 8px; }
@@ -122,8 +125,9 @@ img { -webkit-user-drag: none; }
 .zbtns { display: flex; gap: 4px; }
 .zbtn { background: #262b36; color: #cde; border: none; border-radius: 7px; padding: 4px 6px; font-size: 11px; }
 
-.czrow { display: flex; gap: 6px; padding: 4px 0 2px; }
-.czcard { display: flex; align-items: center; gap: 8px; background: linear-gradient(90deg,#2a2416,#1c2029); border: 2px solid #c9a03a88; border-radius: 10px; padding: 5px 8px; flex: 1; position: relative; }
+/* wrap: sa partnerima može biti 2 komandera + emblem u istom redu */
+.czrow { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 0 2px; }
+.czcard { display: flex; align-items: center; gap: 8px; background: linear-gradient(90deg,#2a2416,#1c2029); border: 2px solid #c9a03a88; border-radius: 10px; padding: 5px 8px; flex: 1 1 230px; min-width: 0; position: relative; }
 .czcard.castable { border-color: #5aa860; box-shadow: 0 0 10px #5aa86055; }
 .czcard img { width: 40px; height: 54px; object-fit: cover; border-radius: 5px; flex-shrink: 0; }
 .czinfo { flex: 1; min-width: 0; }
@@ -133,7 +137,8 @@ img { -webkit-user-drag: none; }
 .czcost .tax { color: #d98a5a; }
 .czgo { background: linear-gradient(90deg,#c9973a,#d95a4a); color: #fff; font-weight: 800; font-size: 12px; padding: 8px 10px; border-radius: 9px; }
 /* The Ring emblem uz komandera */
-.ringcard { cursor: pointer; background: linear-gradient(90deg,#2b2110,#191c24); border-color: #e8c05a99; }
+/* emblem ne otima prostor komanderu — ne raste, samo se skuplja i prelama */
+.ringcard { cursor: pointer; background: linear-gradient(90deg,#2b2110,#191c24); border-color: #e8c05a99; flex: 0 1 260px; }
 .ringart { width: 40px; height: 54px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 26px; border-radius: 5px; background: radial-gradient(circle at 50% 40%, #4a3714, #14161d 70%); border: 1px solid #e8c05a55; }
 .ringnone { color: #778; font-weight: 400; font-style: italic; }
 .ringpips { display: flex; gap: 4px; margin-top: 4px; }
@@ -377,7 +382,11 @@ img.imgfail {
   /* --- igra: grid sa sidebarom --- */
   #game { max-width: none; height: 100vh; display: grid !important;
     grid-template-columns: minmax(0, 1fr) 360px;
-    grid-template-rows: auto auto minmax(0, auto) auto minmax(0, 1fr) auto auto;
+    /* Višak visine ide protivničkim tablama — tamo se gomilaju permanenti.
+       `center` (stack) se skuplja na nulu kad je prazan, a `mine` prati svoj
+       sadržaj i sjedi tik iznad prompta i ruke. Ranije je višak išao u `mine`,
+       pa je zjapila crna rupa nasred ekrana. */
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto auto auto;
     grid-template-areas:
       "topbar  topbar"
       "ticker  side"
@@ -393,10 +402,15 @@ img.imgfail {
   .ticker { grid-area: ticker; font-size: 13px; }
   .oppswrap { grid-area: opps; max-height: none; overflow: visible; flex-direction: row !important; display: grid;
     grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 10px; padding: 8px 4px 4px 12px; align-items: start; }
-  .opprow { border-radius: 12px; height: 100%; }
-  .oppstrip { flex-wrap: wrap; max-height: 240px; overflow-y: auto; }
+  .opprow { border-radius: 12px; height: 100%; display: flex; flex-direction: column; min-height: 0; }
+  /* protivnička tabla koristi svu dodijeljenu visinu, pa skroluje tek kad prelije */
+  .oppstrip { flex-wrap: wrap; flex: 1; min-height: 0; max-height: none; overflow-y: auto; align-content: flex-start; }
   .center { grid-area: center; }
   .myboard { grid-area: mine; padding: 6px 4px 6px 12px; }
+  /* na širokom ekranu komander i emblem ostaju grupisani lijevo umjesto da se
+     razvuku na suprotne krajeve reda */
+  .czcard { flex: 0 1 340px; }
+  .ringcard { flex: 0 1 280px; }
   .promptbar { grid-area: prompt; border-radius: 12px 12px 0 0; }
   .handwrap { grid-area: hand; }
   /* centriranje bez overflow-clip buga: auto-margine na krajevima */
@@ -441,6 +455,18 @@ img.imgfail {
   .sideloglist .k-token { color: #a0d8a0; }
   .sideloglist .k-counter { color: #d8a0e8; }
   .sideloglist .k-resolve { color: #9ab; }
+
+  /* panel toggle-i postoje samo tamo gdje sidebar i postoji */
+  .deskonly { display: inline-block; }
+
+  /* oba panela ugašena → jedna kolona preko cijele širine */
+  #game.nosidebar { grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "topbar" "ticker" "opps" "center" "mine" "prompt" "hand";
+    padding-right: 12px; }
+  #game.nosidebar .sidebar { display: none; }
+  /* kad je samo jedan panel aktivan, sidebar mu daje svu visinu */
+  .sidebar > .threatpanel:only-child { align-self: start; }
+  .sidebar > .sidelog:only-child { flex: 1; }
 
   /* modali/sheetovi centrirani umjesto bottom-sheet */
   .overlay { align-items: center; }
@@ -3386,9 +3412,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.phase = 'draw';
     this.note('phase', {});
     await this.pace(p.isAI ? 330 : 0);
-    if (this.turnNo > 1 || this.players.indexOf(p) > 0) {
+    // CR 103.8: prvi igrač preskače prvo vučenje SAMO u partiji sa dva igrača.
+    // U višeigračkoj partiji (pod od 3-4) niko ne preskače.
+    const skipsFirstDraw = this.players.length === 2 && this.turnNo === 1 && this.players.indexOf(p) === 0;
+    if (!skipsFirstDraw) {
       await this.draw(p, 1);
-    } else this.lg(`${p.name} preskače prvo vučenje.`);
+    } else this.lg(`${p.name} preskače prvo vučenje (duel — CR 103.8).`);
     await this.emit('drawStep', { player: p });
     await this.flushTriggers();
     await this.priorityRound(p);
@@ -20930,6 +20959,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.playerSheet = null;
       this.zoneBrowse = null;
       this.showLog = false;
+      // desktop paneli — pamte se između partija; kad su oba ugašena
+      // sidebar nestaje i tabla dobija punu širinu ekrana
+      this.showThreat = localStorage.getItem('mtgThreat') !== '0';
+      this.showSideLog = localStorage.getItem('mtgSideLog') !== '0';
       this.prioMode = 'auto';    // 'auto' | 'off' | 'smart' | 'full'
       this.holdNext = false;     // ručni "stani na sljedećem prioritetu"
       this.react = null;         // otvoren prozor za reakciju
@@ -21053,6 +21086,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const a of (this.pending.q.acts || [])) this.actable.add(a.card.iid);
       }
       root.innerHTML = '';
+      // oba panela ugašena → sidebar se uklanja i tabla ide preko cijele širine
+      root.classList.toggle('nosidebar', !this.showThreat && !this.showSideLog);
       root.appendChild(this.renderTopbar(g));
       // action ticker — zadnji log
       const last = g.log.length ? g.log[g.log.length - 1] : null;
@@ -21084,6 +21119,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderSidebar(g) {
       const side = el('div', 'sidebar');
       // THREAT
+      if (this.showThreat) {
       const tp = el('div', 'threatpanel');
       tp.appendChild(el('div', 'sidetitle', '🎯 Threat — ko je najopasniji?'));
       const table = MTG.threatTable ? MTG.threatTable(g) : [];
@@ -21104,16 +21140,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       tp.appendChild(el('div', 'sidenote', 'Botovi koriste ovu procjenu + ličnu „grudge" memoriju (pamte ko ih je napadao).'));
       side.appendChild(tp);
-      // TOK IGRE
-      const lp = el('div', 'sidelog');
-      lp.appendChild(el('div', 'sidetitle', '📜 Tok igre'));
-      const list = el('div', 'sideloglist');
-      for (const entry of g.log.slice(-90)) {
-        list.appendChild(el('div', 'll k-' + (entry.cls || entry.kind || 'x'), esc(entry.msg)));
       }
-      lp.appendChild(list);
-      side.appendChild(lp);
-      requestAnimationFrame(() => { list.scrollTop = list.scrollHeight; });
+      // TOK IGRE
+      if (this.showSideLog) {
+        const lp = el('div', 'sidelog');
+        lp.appendChild(el('div', 'sidetitle', '📜 Tok igre'));
+        const list = el('div', 'sideloglist');
+        for (const entry of g.log.slice(-90)) {
+          list.appendChild(el('div', 'll k-' + (entry.cls || entry.kind || 'x'), esc(entry.msg)));
+        }
+        lp.appendChild(list);
+        side.appendChild(lp);
+        requestAnimationFrame(() => { list.scrollTop = list.scrollHeight; });
+      }
       return side;
     }
 
@@ -21258,9 +21297,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.toast(`${next.icon} Prioritet: ${next.label} — ${next.desc}`);
         this.render();
       };
+      // desktop panel toggle-i: gase threat/tok igre da tabla dobije punu širinu
+      const thB = el('button', 'tbtn deskonly' + (this.showThreat ? ' on' : ''), '🎯');
+      thB.title = (this.showThreat ? 'Sakrij' : 'Prikaži') + ' Threat panel';
+      thB.onclick = () => {
+        this.showThreat = !this.showThreat;
+        localStorage.setItem('mtgThreat', this.showThreat ? '1' : '0');
+        this.render();
+      };
+      const slB = el('button', 'tbtn deskonly' + (this.showSideLog ? ' on' : ''), '📋');
+      slB.title = (this.showSideLog ? 'Sakrij' : 'Prikaži') + ' Tok igre';
+      slB.onclick = () => {
+        this.showSideLog = !this.showSideLog;
+        localStorage.setItem('mtgSideLog', this.showSideLog ? '1' : '0');
+        this.render();
+      };
       const newB = el('button', 'tbtn', '↺');
       newB.onclick = () => { if (confirm('Nova partija? Trenutna se gubi.')) location.reload(); };
-      btns.appendChild(helpB); btns.appendChild(logB); btns.appendChild(setB); btns.appendChild(newB);
+      btns.appendChild(helpB); btns.appendChild(logB);
+      btns.appendChild(thB); btns.appendChild(slB);
+      btns.appendChild(setB); btns.appendChild(newB);
       bar.appendChild(btns);
       return bar;
     }
