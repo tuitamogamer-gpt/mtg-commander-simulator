@@ -132,6 +132,15 @@ img { -webkit-user-drag: none; }
 .czcost { font-size: 10.5px; color: #aab; display: flex; align-items: center; gap: 3px; margin-top: 2px; }
 .czcost .tax { color: #d98a5a; }
 .czgo { background: linear-gradient(90deg,#c9973a,#d95a4a); color: #fff; font-weight: 800; font-size: 12px; padding: 8px 10px; border-radius: 9px; }
+/* The Ring emblem uz komandera */
+.ringcard { cursor: pointer; background: linear-gradient(90deg,#2b2110,#191c24); border-color: #e8c05a99; }
+.ringart { width: 40px; height: 54px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 26px; border-radius: 5px; background: radial-gradient(circle at 50% 40%, #4a3714, #14161d 70%); border: 1px solid #e8c05a55; }
+.ringnone { color: #778; font-weight: 400; font-style: italic; }
+.ringpips { display: flex; gap: 4px; margin-top: 4px; }
+.ringpip { width: 100%; height: 4px; border-radius: 2px; background: #3a3f4a; }
+.ringpip.on { background: linear-gradient(90deg,#e8c05a,#d99a3a); }
+.ringab { font-size: 12px; line-height: 1.45; color: #6b7280; margin: 5px 0; }
+.ringab.on { color: #e8e8ea; }
 .hintact { color: #4ab8d9; }
 .helptext { font-size: 12.5px; line-height: 1.55; color: #cdd; }
 .promptbar { background: #1a1e26; border-top: 1px solid #2a2f3a; padding: 7px 10px; display: flex; flex-direction: column; gap: 6px; }
@@ -10977,18 +10986,115 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await g.emit('voteEnd', { src, by: you, votes, options, secret: true, picks });
     return { votes, picks };
   };
-  // The Ring tempts you (pojednostavljeno po LTR pravilima)
+  // ============================================================
+  // THE RING — emblem koji stoji uz komandera i napreduje svaki put
+  // kad te Prsten iskušava ("the Ring tempts you").
+  // ------------------------------------------------------------
+  // Pravila (CR 701.52 / LTR): emblem dobiješ PRIJE nego što izabereš
+  // Ring-bearera. Sposobnosti se dobijaju redom odozgo nadolje i
+  // kumulativne su — jednom stečena ostaje do kraja partije. Nivo staje
+  // na 4, ali i dalje biraš (moguće i istog) Ring-bearera svaki put.
+  // ============================================================
+  E7.ringBearer = (g, p) => g.bf().find(c => c.ctrl === p && c.meta.ringBearer) || null;
+
+  E7.ringEmblem = (g, p) => {
+    let em = p.emblems.find(e => e.ring);
+    if (em) return em;
+    em = { ring: true, name: 'The Ring', level: 0 };
+    // Nivo 1 — stalni efekat: Ring-bearer je legendaran i ne mogu ga
+    // blokirati stvorenja veće snage.
+    em.apply = (g2, pl, bf) => {
+      if (em.level < 1) return;
+      const rb = bf.find(c => c.ctrl === pl && c.meta.ringBearer);
+      if (!rb) return;
+      if (!rb.cur.super.includes('Legendary')) rb.cur.super.push('Legendary');
+      const prev = rb.cur.cantBeBlockedBy;
+      rb.cur.cantBeBlockedBy = (g3, blocker) =>
+        (!!prev && prev(g3, blocker)) || blocker.power > rb.power;
+    };
+    p.emblems.push(em);
+    return em;
+  };
+
+  // Trajni slušaoci: `once:false` bez `expires` preživi kraj poteza.
+  E7.ringInstall = (g, p, lvl) => {
+    const isBearer = c => !!c && c.ctrl === p && c.meta.ringBearer && c.zone === 'battlefield';
+
+    if (lvl === 2) {
+      // Kad god Ring-bearer napadne — vuci kartu, pa odbaci kartu.
+      g.delayed.push({
+        on: 'attacks', once: false, ctrl: p, name: 'The Ring: vuci pa odbaci',
+        filter: (g2, d) => isBearer(d.card),
+        run: async ctx => {
+          await ctx.g.draw(p, 1);
+          if (!p.hand.length) return;
+          const pick = await p.controller.decide(ctx.g, {
+            type: 'chooseCards', from: p.hand, min: 1, max: 1,
+            prompt: 'The Ring: odbaci kartu', aiHint: { kind: 'addlDiscard' },
+          });
+          if (pick.length) await ctx.g.discard(p, pick);
+        },
+      });
+    }
+
+    if (lvl === 3) {
+      // Kad god Ring-bearera blokira stvorenje — njegov vlasnik ga
+      // žrtvuje na kraju borbe (okida se za svakog blokera posebno).
+      g.delayed.push({
+        on: 'becomesBlocked', once: false, ctrl: p, name: 'The Ring: bloker se žrtvuje',
+        filter: (g2, d) => isBearer(d.attacker),
+        run: async ctx => {
+          for (const b of (ctx.data.blockers || []).slice()) {
+            const iid = b.iid;
+            ctx.g.delayed.push({
+              on: 'endCombat', once: true, expires: 'eot', ctrl: b.ctrl,
+              name: 'The Ring: žrtvuj blokera',
+              run: async c2 => {
+                const x = c2.g.byIid(iid);
+                if (x && x.zone === 'battlefield') await c2.g.sacrifice(x.ctrl, x);
+              },
+            });
+          }
+        },
+      });
+    }
+
+    if (lvl === 4) {
+      // Kad god Ring-bearer nanese borbenu štetu igraču — svaki protivnik gubi 3 života.
+      g.delayed.push({
+        on: 'combatDamageToPlayer', once: false, ctrl: p, name: 'The Ring: −3 života',
+        filter: (g2, d) => isBearer(d.card),
+        run: async ctx => {
+          for (const o of ctx.g.players) {
+            if (o !== p && !o.lost) await ctx.g.loseLife(o, 3, 'The Ring');
+          }
+        },
+      });
+    }
+  };
+
   E7.ringTempts = async (g, p) => {
-    p.ringLevel = Math.min(4, (p.ringLevel || 0) + 1);
-    const pool = g.creatures(p);
+    const em = E7.ringEmblem(g, p);              // 1) emblem prije izbora nosioca
+    if (em.level < 4) {                          // 2) sljedeća sposobnost, kumulativno
+      em.level++;
+      E7.ringInstall(g, p, em.level);
+    }
+    p.ringLevel = em.level;
+    const pool = g.creatures(p);                 // 3) izbor Ring-bearera (može i isti)
     if (pool.length) {
       const pick = await p.controller.decide(g, {
         type: 'chooseCards', from: pool, min: 1, max: 1, prompt: 'Izaberi Ring-bearera', aiHint: { kind: 'ringBearer' },
       });
-      for (const c of g.creatures(p)) c.meta.ringBearer = false;
-      if (pick[0]) { pick[0].meta.ringBearer = true; g.lg(`${pick[0].name} je Ring-bearer (nivo ${p.ringLevel}).`); }
+      if (pick[0]) {
+        for (const c of g.bf()) if (c.ctrl === p) c.meta.ringBearer = false;
+        pick[0].meta.ringBearer = true;
+        g.lg(`💍 ${pick[0].name} je Ring-bearer (The Ring, nivo ${em.level}).`);
+      }
+    } else {
+      g.lg(`💍 The Ring — nivo ${em.level} (nemaš stvorenja za Ring-bearera).`);
     }
-    return g.creatures(p).find(c => c.meta.ringBearer) || null;
+    g.recalc();
+    return E7.ringBearer(g, p);
   };
 
   // ============================================================
@@ -21308,8 +21414,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       info.querySelector('.melife').onclick = () => { this.playerSheet = me; this.render(); };
       row2.appendChild(info);
       wrap.appendChild(row2);
-      // COMMAND ZONE — always visible when commander is there
-      if (me.command.length) {
+      // COMMAND ZONE — always visible when commander is there.
+      // The Ring emblem stoji uz komandera i ostaje vidljiv i kad je
+      // komander na bojnom polju (tj. kad je command zona prazna).
+      const ringEm = (me.emblems || []).find(e => e.ring);
+      if (me.command.length || ringEm) {
         const czRow = el('div', 'czrow');
         for (const cmd of me.command) {
           const cz = el('div', 'czcard');
@@ -21327,9 +21436,41 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           cz.onclick = () => { this.sheet = { card: cmd }; this.render(); };
           czRow.appendChild(cz);
         }
+        if (ringEm) czRow.appendChild(this.ringCard(me, ringEm));
         wrap.appendChild(czRow);
       }
       return wrap;
+    }
+
+    // The Ring — emblem uz komandera. Prikazuje nivo i koje su od četiri
+    // sposobnosti već stečene (kumulativno se dobijaju odozgo nadolje).
+    ringCard(me, em) {
+      const bearer = this.game.bf().find(c => c.ctrl === me && c.meta.ringBearer);
+      const abil = [
+        'Ring-bearer je legendaran i ne mogu ga blokirati stvorenja veće snage.',
+        'Kad Ring-bearer napadne — vuci kartu, pa odbaci kartu.',
+        'Kad Ring-bearera blokira stvorenje — vlasnik ga žrtvuje na kraju borbe.',
+        'Kad Ring-bearer nanese borbenu štetu igraču — svaki protivnik gubi 3 života.',
+      ];
+      const d = el('div', 'czcard ringcard');
+      d.innerHTML = `
+        <div class="ringart">💍</div>
+        <div class="czinfo">
+          <div class="czlabel">THE RING · NIVO ${em.level}/4</div>
+          <div class="czname">${bearer ? esc(bearer.name.split(',')[0]) : '<span class="ringnone">bez Ring-bearera</span>'}</div>
+          <div class="ringpips">${abil.map((_, i) => `<span class="ringpip${i < em.level ? ' on' : ''}"></span>`).join('')}</div>
+        </div>`;
+      d.onclick = () => {
+        this.sheet = {
+          custom: {
+            title: `💍 The Ring — nivo ${em.level}/4`,
+            body: abil.map((t, i) => `<div class="ringab${i < em.level ? ' on' : ''}">${i < em.level ? '✓' : '○'} ${t}</div>`).join('')
+              + `<div class="ringab on" style="margin-top:8px">Ring-bearer: <b>${bearer ? esc(bearer.name) : '—'}</b></div>`,
+          },
+        };
+        this.render();
+      };
+      return d;
     }
 
     miniCard(g, c, opts = {}) {
@@ -21343,6 +21484,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const pd = this.pending;
       const badges = [];
       if (c.commander) badges.push('👑');
+      if (c.meta.ringBearer) badges.push('💍');
       if (c.attacking) badges.push('⚔️');
       if (c.blocking) badges.push('🛡️');
       if (this.actable && this.actable.has(c.iid)) { badges.push('⚙️'); d.classList.add('actable'); }
@@ -21845,6 +21987,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const { card } = this.sheet;
       const ov = el('div', 'overlay');
       ov.onclick = (e) => { if (e.target === ov) { this.sheet = null; this.render(); } };
+      // sheet bez karte (npr. The Ring emblem)
+      if (this.sheet.custom) {
+        const cm = el('div', 'sheet');
+        const ci = el('div', 'sheetinfo');
+        ci.innerHTML = `<div class="sname">${this.sheet.custom.title}</div><div class="soracle">${this.sheet.custom.body}</div>`;
+        cm.appendChild(ci);
+        const cb = el('button', 'pbtn wide', 'Zatvori');
+        cb.onclick = () => { this.sheet = null; this.render(); };
+        cm.appendChild(cb);
+        ov.appendChild(cm);
+        return ov;
+      }
       const m = el('div', 'sheet');
       ov.appendChild(m);
       const img = el('img', 'sheetimg');
