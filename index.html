@@ -959,6 +959,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.timestamp = ++IID;
         this.battlefield.push(card);
         card.sick = true;
+        card.meta._enteredTurn = this.turnNo;
         await this.handleETB(card, opts);
       } else {
         card.ctrl = card.owner;
