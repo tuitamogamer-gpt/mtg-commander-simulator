@@ -3663,6 +3663,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     await this.emit('attackersDeclared', { player: p, attackers });
+    // MYRIAD — "Whenever this creature attacks, for each opponent other than the
+    // one it's attacking, you may create a tapped token copy attacking that player.
+    // Exile those tokens at end of combat." (čišćenje već postoji: meta.exileEndCombat)
+    // Kopije se prave TEK nakon attackersDeclared i ne dobijaju svoje 'attacks'
+    // okidače — nisu deklarisani napadači (CR 506.3c). Iteriramo snimak jer
+    // makeTokens gura kopije u isti `attackers` niz.
+    for (const c of attackers.slice()) {
+      if (!c.kw('myriad')) continue;
+      const tgt = c.attacking instanceof MTG.Player ? c.attacking : (c.attacking && c.attacking.ctrl);
+      const others = this.players.filter(o => o !== p && !o.lost && o !== tgt);
+      if (!others.length) continue;
+      let go = true;
+      if (!p.isAI) {
+        go = (await p.controller.decide(this, {
+          type: 'chooseOption', prompt: `Myriad (${c.name}): napraviti kopije za ostale protivnike?`,
+          options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+          aiHint: { kind: 'optTrigger', src: c, name: 'Myriad' },
+        })) === 'yes';
+      }
+      if (!go) continue;
+      const hit = [];
+      for (const opp of others) {
+        const made = await this.copyPermanentToken(c, p, { tapped: true, attacking: opp });
+        for (const m of made) m.meta.exileEndCombat = true;
+        if (made.length) hit.push(opp.name);
+      }
+      if (hit.length) this.lg(`${c.name}: myriad — kopije napadaju ${hit.join(', ')}.`, 'attack');
+    }
     await this.flushTriggers();
     await this.priorityRound(p);
     if (this.gameOver) { this.combat = null; return; }
@@ -4213,7 +4241,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       defs[name] = d;
     }
-    // token defs also get processed lightly
+    // Token defovi ne prolaze kroz petlju iznad, pa im keywordi koji se
+    // implementiraju kao triger ostaju mrtvi (Dragon Elemental ima prowess u
+    // kws, ali bez ovoga nikad ne dobije +1/+1).
+    for (const t of Object.values(MTG.TOKENS || {})) {
+      if ((t.kws || []).includes('prowess') && !(t.triggers || []).some(x => x.desc === 'Prowess')) {
+        t.triggers = (t.triggers || []).concat([{
+          on: 'castNonCreature', desc: 'Prowess',
+          filter: (g, self, data) => data.player === self.ctrl,
+          run: async ctx => { E.pumpUntilEOT(ctx.g, ctx.src, 1, 1); },
+        }]);
+      }
+    }
     return defs;
   };
 
