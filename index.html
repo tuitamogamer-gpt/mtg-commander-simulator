@@ -1909,14 +1909,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     // granted mana abilities (Brightcap Badger: Fungus/Saproling tap for G)
+    // Dodijeljena sposobnost mora nositi SVOJU cijenu i restrikciju: npr. Ninja
+    // Pizza daje Foodovima "{T}, Sacrifice this artifact: Add any color" — bez
+    // sacSelf bi Food bio vječni mana rock umjesto jednokratnog.
     for (const granter of this.bf()) {
       const gm = granter.def.grantMana;
       if (!gm || granter.ctrl !== p) continue;
+      if (gm.restrict && forSpell && !gm.restrict(this, forSpell)) continue;
+      const gcost = gm.cost || { tap: true };
       for (const x of this.bf()) {
-        if (x.ctrl !== p || x.tapped) continue;
+        if (x.ctrl !== p) continue;
+        if (gcost.tap && x.tapped) continue;
         if (!gm.filter(this, x, granter)) continue;
-        if (x.is('Creature') && x.sick && !x.kw('haste')) continue;
-        out.push({ card: x, m: { cost: { tap: true } }, produce: gm.produce, extraCost: { tap: true } });
+        if (gcost.tap && x.is('Creature') && x.sick && !x.kw('haste')) continue;
+        out.push({ card: x, m: { cost: gcost, restrict: gm.restrict }, produce: gm.produce, extraCost: gcost });
       }
     }
     // convoke / improvise: tapanje stvorenja/artefakata plaća spell
@@ -11885,7 +11891,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
   };
   SC['Ninja Pizza'] = {
-    grantMana: { filter: (g, x) => x.hasSub('Food'), produce: [{ ANY: true, n: 1 }] },
+    // "Foods you control have '{T}, Sacrifice this artifact: Add one mana of any color.'"
+    grantMana: { filter: (g, x) => x.hasSub('Food'), cost: { tap: true, sacSelf: true }, produce: [{ ANY: true, n: 1 }] },
     triggers: [{
       on: 'postcombatMain', desc: 'Food', filter: (g, self, d) => d.player === self.ctrl,
       run: async ctx => { await ctx.g.makeTokens('food', ctx.you); },
