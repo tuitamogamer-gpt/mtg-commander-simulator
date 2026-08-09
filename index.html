@@ -1913,7 +1913,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const kind = m.cost.rmCounter.kind || m.cost.rmCounter;
           if ((c.counters[kind] || 0) < (m.cost.rmCounter.n || 1)) continue;
         }
-        if (m.restrict && forSpell && !m.restrict(this, forSpell)) continue;
+        // 3. argument je kartica-izvor: treba kartama tipa Secluded Courtyard
+        // kojima ograničenje zavisi od izbora zapamćenog na samoj karti
+        if (m.restrict && forSpell && !m.restrict(this, forSpell, c)) continue;
         let produce = m.produce;
         if (typeof produce === 'function') produce = produce(this, c, p);
         if (!produce || !produce.length) continue;
@@ -1927,7 +1929,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const granter of this.bf()) {
       const gm = granter.def.grantMana;
       if (!gm || granter.ctrl !== p) continue;
-      if (gm.restrict && forSpell && !gm.restrict(this, forSpell)) continue;
+      if (gm.restrict && forSpell && !gm.restrict(this, forSpell, granter)) continue;
       const gcost = gm.cost || { tap: true };
       for (const x of this.bf()) {
         if (x.ctrl !== p) continue;
@@ -17167,26 +17169,54 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     mana: { cost: { tap: true }, produce: [{ R: 1 }, { W: 1 }] },
     entersTapped: (g, card) => !card.ctrl.hand.some(c => c.def.subtypes.includes('Mountain') || c.def.subtypes.includes('Plains')),
   };
+  // ============================================================
+  // "As this land enters, choose a creature type."
+  // Igrač bira tip (AI uzima najčešći iz svoje table i ruke), a mana se
+  // stvarno može potrošiti SAMO na stvorenje tog tipa — restrict dobija
+  // karticu-izvor pa čita izbor zapamćen na njoj.
+  // ============================================================
+  const chooseCreatureType = async (g, card) => {
+    const p = card.ctrl;
+    // kandidati: najčešći tipovi među tvojim stvorenjima (sto + ruka + biblioteka)
+    const counts = {};
+    const pool = g.creatures(p).concat(p.hand.filter(x => x.is('Creature'))).concat(p.library.filter(x => x.is('Creature')));
+    for (const c of pool) for (const s of (c.def.subtypes || [])) counts[s] = (counts[s] || 0) + 1;
+    const top = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 4);
+    if (!top.length) { card.meta.chosenType = E9.bestSubtype(g, p); return; }
+    let pick = top[0];
+    if (!p.isAI) {
+      const k = await p.controller.decide(g, {
+        type: 'chooseOption', prompt: `${card.name}: izaberi tip stvorenja`,
+        options: top.map(t => ({ key: t, label: `${t} (${counts[t]} u špilu)` })),
+        aiHint: { kind: 'chooseType' },
+      });
+      if (k) pick = k;
+    }
+    card.meta.chosenType = pick;
+    g.lg(`${card.name}: izabran tip — ${pick}.`);
+  };
+  const typedRestrict = (g, forSpell, src) => {
+    if (!forSpell || !forSpell.card || !forSpell.card.is('Creature')) return false;
+    const t = src && src.meta && src.meta.chosenType;
+    if (!t) return true;                    // tip još nije izabran — ne blokiraj
+    return forSpell.card.hasSub(t);
+  };
+
   SC['Secluded Courtyard'] = {
     producesColors: [],
-    asEnters: async (g, card) => { card.meta.chosenType = E9.bestSubtype(g, card.ctrl); },
+    asEnters: chooseCreatureType,
     mana: [
       { cost: { tap: true }, produce: [{ C: 1 }] },
-      {
-        cost: { tap: true }, produce: [{ ANY: true, n: 1 }],
-        restrict: (g, forSpell) => forSpell && forSpell.card && forSpell.card.is('Creature'),
-      },
+      { cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrict: typedRestrict },
     ],
-    simplified: 'Ograničenje na izabrani tip aproksimirano: bilo koje stvorenje.',
+    simplified: 'Dio „ili aktiviraj sposobnost stvorenja tog tipa" nije podržan; bacanje stvorenja izabranog tipa radi.',
   };
   SC['Unclaimed Territory'] = {
     producesColors: [],
+    asEnters: chooseCreatureType,
     mana: [
       { cost: { tap: true }, produce: [{ C: 1 }] },
-      {
-        cost: { tap: true }, produce: [{ ANY: true, n: 1 }],
-        restrict: (g, forSpell) => forSpell && forSpell.card && forSpell.card.is('Creature'),
-      },
+      { cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrict: typedRestrict },
     ],
   };
   SC['Scavenger Grounds'] = {
