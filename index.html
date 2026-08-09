@@ -2022,6 +2022,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return null;
       }
       const s = sources[idx];
+      // Jedna karta = jedno tapanje. Pain i filter landovi imaju po dvije
+      // {T} mana sposobnosti kao zasebne unose, pa je solver znao tapnuti istu
+      // zemlju dvaput i tako naduvati dostupnu manu.
+      if (s.extraCost && s.extraCost.tap &&
+        planAcc.some(st => st.src && st.src.card === s.card && st.src.extraCost && st.src.extraCost.tap)) {
+        return tryCover(idx + 1, needPips, needGen, planAcc);
+      }
       // option: skip this source
       const skip = tryCover(idx + 1, needPips, needGen, planAcc);
       if (skip) return skip;
@@ -4945,6 +4952,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // --- Mardu Surge ---
   SC['Caves of Koilos'] = painLand('W', 'B');
   SC['Fetid Heath'] = filterLand('W', 'B');
+  // --- zemlje iz Scions & Spellcraft / Coven Counters ---
+  // Bez ovih su ulazile na sto kao potpuno prazne karte: nisu davale manu.
+  SC['Arcane Sanctum'] = triLand('W', 'U', 'B');
+  SC['Contaminated Aquifer'] = tappedDual('U', 'B');
+  SC['Idyllic Beachfront'] = tappedDual('W', 'U');
+  SC['Sunlit Marsh'] = tappedDual('W', 'B');
+  SC['Darkwater Catacombs'] = kartLand('U', 'B');
+  SC['Sunken Ruins'] = filterLand('U', 'B');
+  SC['Underground River'] = painLand('U', 'B');
+  // "As this land enters, you may reveal a Plains or Swamp card from your hand."
+  SC['Shineshadow Snarl'] = revealLand('W', 'B', 'Plains', 'Swamp');
+  SC['Blighted Woodland'] = {
+    producesColors: [], mana: { cost: { tap: true }, produce: [{ C: 1 }] },
+    abilities: [{
+      label: 'Žrtvuj: dva basica (tapped)', cost: { mana: '{3}{G}', tap: true, sacSelf: true },
+      run: async ctx => { await E.searchBasic(ctx.g, ctx.you, { n: 2, tapped: true }); },
+    }],
+  };
   SC['Nomad Outpost'] = triLand('R', 'W', 'B');
   SC['Savage Lands'] = triLand('B', 'R', 'G');
   SC['Shattered Sanctum'] = slowLand('W', 'B');
