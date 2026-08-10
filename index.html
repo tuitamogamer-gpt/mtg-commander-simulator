@@ -3,10 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#12141a">
+<meta name="theme-color" content="#050708">
 <title>MTG Commander Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
+  /* --- dizajn tokeni stola (MTG Commander Client Design) --- */
+  --tbl-bg: #050708;
+  --tbl-panel: #0b0f11;
+  --tbl-panel2: #0d1113;
+  --tbl-raise: #171c1f;
+  --tbl-line: rgba(185,160,106,.16);
+  --tbl-line2: rgba(185,160,106,.28);
+  --tbl-gold: #c8863c;
+  --tbl-gold-lt: #f0c48a;
+  --tbl-ink: #e8e2d4;
+  --tbl-ink-hi: #f6f1e4;
+  --tbl-mute: #8d8778;
+  --tbl-mute2: #6f6858;
+  --tbl-good: #8fd48a;
+  --tbl-bad: #d24a3a;
+  --tbl-font: 'Barlow', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --tbl-cond: 'Barlow Semi Condensed', 'Barlow', sans-serif;
   --art-back: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20140'%3E%3Crect%20width='100'%20height='140'%20fill='%230d1018'/%3E%3Crect%20x='4'%20y='4'%20width='92'%20height='132'%20rx='7'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='1.6'%20opacity='.8'/%3E%3Crect%20x='9'%20y='9'%20width='82'%20height='122'%20rx='5'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='.6'%20opacity='.45'/%3E%3Ccircle%20cx='50'%20cy='70'%20r='25'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='1.1'%20opacity='.7'/%3E%3Ccircle%20cx='50'%20cy='70'%20r='17'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='.6'%20opacity='.45'/%3E%3Cpath%20d='M50%2057%20L58.6%2083.4%20L36.2%2067.1%20L63.8%2067.1%20L41.4%2083.4%20Z'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='1'%20opacity='.9'/%3E%3Ccircle%20cx='50'%20cy='45'%20r='4.6'%20fill='%23e8e3c8'/%3E%3Ccircle%20cx='73.8'%20cy='62.3'%20r='4.6'%20fill='%234a90d9'/%3E%3Ccircle%20cx='64.7'%20cy='90.2'%20r='4.6'%20fill='%238a6f9a'/%3E%3Ccircle%20cx='35.3'%20cy='90.2'%20r='4.6'%20fill='%23d95a4a'/%3E%3Ccircle%20cx='26.2'%20cy='62.3'%20r='4.6'%20fill='%235aa860'/%3E%3C/svg%3E");
   --art-hero: radial-gradient(120% 150% at 50% 8%, #2a2136 0%, #171a24 45%, #12141a 100%);
   --art-felt: radial-gradient(90% 120% at 50% 0%, #1a1d27 0%, #12141a 70%);
@@ -384,11 +404,9 @@ img.imgfail {
   /* --- igra: grid sa sidebarom --- */
   #game { max-width: none; height: 100vh; display: grid !important;
     grid-template-columns: minmax(0, 1fr) 360px;
-    /* Višak visine ide protivničkim tablama — tamo se gomilaju permanenti.
-       `center` (stack) se skuplja na nulu kad je prazan, a `mine` prati svoj
-       sadržaj i sjedi tik iznad prompta i ruke. Ranije je višak išao u `mine`,
-       pa je zjapila crna rupa nasred ekrana. */
-    grid-template-rows: auto auto minmax(0, 1fr) auto auto auto auto;
+    /* Proporcije po dizajnu stola: protivnici su kompaktna traka gore, a
+       tvoja tabla dobija glavninu visine. Stack se skuplja kad je prazan. */
+    grid-template-rows: auto auto minmax(130px, .8fr) auto minmax(0, 1.4fr) auto auto;
     grid-template-areas:
       "topbar  topbar"
       "ticker  side"
@@ -483,6 +501,162 @@ img.imgfail {
   .mini.sm { width: 82px; height: 111px; }
   .hcard { width: 106px; height: 146px; }
 }
+
+/* ============================================================
+   STO — dizajn iz "MTG Commander Client Design"
+   Sve je ograničeno na #game: setup ekran ostaje kakav je bio.
+   Jezik: skoro-crna pozadina, zlatne hairline linije, oštri uglovi
+   (radius 2-3px), razmaknute verzalne mikro-labele, Barlow.
+   ============================================================ */
+#game {
+  background: radial-gradient(130% 95% at 50% 6%, #10161a 0%, #080b0d 42%, var(--tbl-bg) 100%);
+  font-family: var(--tbl-font);
+  color: var(--tbl-ink);
+}
+#game .sidetitle, #game .czlabel, #game .oppname, #game .seclabel {
+  font-family: var(--tbl-cond);
+}
+/* mikro-labela: verzal + široki razmak */
+#game .sidetitle, #game .czlabel {
+  font-size: 9.5px; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--tbl-mute); font-weight: 600;
+}
+/* --- panel osnova --- */
+#game .threatpanel, #game .sidelog, #game .stackpanel, #game .cmddmgpanel,
+#game .opprow, #game .czcard, #game .promptbar {
+  background: linear-gradient(180deg, var(--tbl-panel2), var(--tbl-panel));
+  border: 1px solid var(--tbl-line);
+  border-radius: 3px;
+}
+#game .opprow.active { border-color: var(--tbl-line2); box-shadow: 0 0 0 1px rgba(200,134,60,.14) inset; }
+#game .opprow.lost { opacity: .42; filter: grayscale(.7); }
+/* --- top bar --- */
+#game .topbar {
+  background: linear-gradient(180deg, #0a0e10, #070a0b);
+  border-bottom: 1px solid var(--tbl-line);
+}
+#game .phase { font-family: var(--tbl-cond); letter-spacing: .06em; }
+#game .phase b { color: var(--tbl-gold-lt); font-weight: 700; }
+#game .stepper { gap: 3px; }
+#game .stepper .step {
+  background: #0a0e10; border: 1px solid var(--tbl-line);
+  border-radius: 2px; color: var(--tbl-mute2);
+  font-family: var(--tbl-cond); letter-spacing: .18em; text-transform: uppercase;
+  font-size: 9.5px; padding: 4px 10px;
+}
+#game .stepper .step.on {
+  background: linear-gradient(180deg, #2a1d0e, #1a1208);
+  border-color: rgba(200,134,60,.5); color: var(--tbl-gold-lt);
+}
+#game .tbtn {
+  background: #0d1214; border: 1px solid var(--tbl-line);
+  border-radius: 2px; color: var(--tbl-ink);
+}
+#game .tbtn.on { box-shadow: inset 0 0 0 1px rgba(200,134,60,.55); color: var(--tbl-gold-lt); }
+#game .tbtn.armed { background: linear-gradient(180deg, var(--tbl-gold-lt), var(--tbl-gold)); color: #12100a; }
+/* --- ticker --- */
+#game .ticker {
+  background: transparent; color: var(--tbl-mute);
+  border-bottom: 1px solid rgba(185,160,106,.08);
+  font-size: 12px; letter-spacing: .02em;
+}
+/* --- protivnici --- */
+#game .oppname { letter-spacing: .1em; text-transform: uppercase; font-size: 13px; color: var(--tbl-ink-hi); }
+#game .opphead { border-bottom: 1px solid rgba(185,160,106,.1); }
+/* --- moja tabla / command zona --- */
+#game .czcard { background: linear-gradient(120deg, #14100a 0%, var(--tbl-panel) 62%); border-color: rgba(200,134,60,.32); }
+#game .czname { font-family: var(--tbl-cond); font-size: 15px; letter-spacing: .04em; color: var(--tbl-ink-hi); }
+#game .ringcard { background: linear-gradient(120deg, #15110a, var(--tbl-panel)); }
+/* --- sidebar paneli --- */
+#game .sidebar { gap: 8px; }
+#game .sidehead { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
+#game .sidecount {
+  font-family: var(--tbl-cond); font-size: 11px; color: var(--tbl-gold);
+  letter-spacing: .1em;
+}
+#game .stackpanel, #game .cmddmgpanel { padding: 10px 12px; }
+#game .stacklist { display: flex; flex-direction: column; gap: 4px; max-height: 190px; overflow-y: auto; }
+#game .stackempty {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 18px 0; color: var(--tbl-mute2);
+  font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+}
+#game .stackempty span { font-size: 20px; color: rgba(185,160,106,.35); animation: omBreathe 3.4s ease-in-out infinite; }
+@keyframes omBreathe { 0%,100% { opacity:.35 } 50% { opacity:.9 } }
+#game .stackitem {
+  border: 1px solid var(--tbl-line); border-left: 2px solid rgba(185,160,106,.35);
+  border-radius: 2px; padding: 5px 8px; background: #0a0e10; cursor: pointer;
+}
+#game .stackitem.mine { border-left-color: var(--tbl-gold); }
+#game .stackitem:hover { background: var(--tbl-raise); }
+#game .siname { font-size: 12px; color: var(--tbl-ink-hi); }
+#game .sisub { font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--tbl-mute2); }
+/* commander damage matrica */
+#game .cdgrid { display: grid; gap: 2px; margin-top: 6px; align-items: center; }
+#game .cdh {
+  font-size: 8.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--tbl-mute2); text-align: center; padding-bottom: 2px;
+}
+#game .cdname {
+  font-size: 11px; color: var(--tbl-mute); overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; padding-right: 4px;
+}
+#game .cdname.me { color: var(--tbl-gold-lt); }
+#game .cdname.lost { text-decoration: line-through; opacity: .5; }
+#game .cdv {
+  text-align: center; font-variant-numeric: tabular-nums; font-size: 12px;
+  padding: 2px 0; border-radius: 2px; background: #0a0e10;
+  border: 1px solid rgba(185,160,106,.1); color: var(--tbl-ink);
+}
+#game .cdv.zero { color: #3f4649; border-color: rgba(255,255,255,.04); }
+#game .cdv.warn { color: var(--tbl-gold-lt); border-color: rgba(200,134,60,.4); }
+#game .cdv.lethal { color: #fff; background: rgba(210,74,58,.8); border-color: var(--tbl-bad); font-weight: 700; }
+/* threat + log u istom jeziku */
+#game .tbar { background: linear-gradient(90deg, var(--tbl-good), var(--tbl-gold-lt), var(--tbl-bad)); }
+#game .tbarwrap { background: #0a0e10; border-radius: 2px; }
+#game .sideloglist { font-size: 11.5px; }
+#game .sideloglist .ll { border-bottom: 1px solid rgba(185,160,106,.07); color: #b9b3a5; }
+#game .sideloglist .k-turn { color: var(--tbl-gold); letter-spacing: .12em; text-transform: uppercase; font-size: 10px; }
+#game .sidenote { color: var(--tbl-mute2); }
+/* --- tvoj život: u dizajnu je krupan broj uz command zonu --- */
+#game .meinfo {
+  align-items: baseline; gap: 12px;
+  border-top: 1px solid rgba(185,160,106,.1); padding: 6px 12px 4px;
+}
+#game .melife {
+  font-family: var(--tbl-cond); font-size: 34px; font-weight: 700;
+  line-height: 1; color: var(--tbl-ink-hi); letter-spacing: -.01em;
+  text-shadow: 0 0 18px rgba(200,134,60,.25); cursor: pointer;
+}
+#game .zbtn {
+  background: #0a0e10; border: 1px solid var(--tbl-line); border-radius: 2px;
+  color: var(--tbl-mute); font-variant-numeric: tabular-nums;
+}
+#game .zbtn:hover { color: var(--tbl-gold-lt); border-color: var(--tbl-line2); }
+/* --- sekcijski naslovi (kao u dizajnu) --- */
+#game .myboard { position: relative; padding-top: 20px !important; }
+#game .myboard::before {
+  content: 'Tvoja tabla'; position: absolute; top: 4px; left: 12px;
+  font-family: var(--tbl-cond); font-size: 9px; letter-spacing: .26em;
+  text-transform: uppercase; color: var(--tbl-mute2);
+}
+#game .opprow { position: relative; }
+#game .oppstrip { position: relative; padding-top: 14px; }
+#game .oppstrip::before {
+  content: 'Bojno polje'; position: absolute; top: 0; left: 2px;
+  font-family: var(--tbl-cond); font-size: 8px; letter-spacing: .22em;
+  text-transform: uppercase; color: rgba(141,135,120,.55);
+}
+/* --- karte: oštriji okvir da prati jezik --- */
+#game .mini, #game .hcard { border-radius: 3px; }
+#game .mini.targetable, #game .hcard.playable { box-shadow: 0 0 0 1px var(--tbl-gold), 0 0 12px rgba(200,134,60,.3); }
+/* --- prompt bar / dugmad --- */
+#game .promptbar { border-radius: 3px 3px 0 0; }
+#game .pbtn {
+  border-radius: 2px; font-family: var(--tbl-cond);
+  letter-spacing: .14em; text-transform: uppercase;
+}
+#game .pbtn.wide { background: linear-gradient(180deg, var(--tbl-gold-lt), var(--tbl-gold)); color: #14110a; }
 </style>
 </head>
 <body>
@@ -22388,6 +22562,52 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // ---------- desktop sidebar: threat panel + tok igre ----------
     renderSidebar(g) {
       const side = el('div', 'sidebar');
+      // THE STACK — šta trenutno čeka na rezoluciju
+      {
+        const sp = el('div', 'stackpanel');
+        const head = el('div', 'sidehead');
+        head.appendChild(el('div', 'sidetitle', 'The Stack'));
+        head.appendChild(el('div', 'sidecount', String(g.stack.length)));
+        sp.appendChild(head);
+        const body = el('div', 'stacklist');
+        if (!g.stack.length) {
+          body.classList.add('empty');
+          body.innerHTML = '<div class="stackempty"><span>◇</span>stack je prazan</div>';
+        } else {
+          for (const so of g.stack.slice().reverse()) {
+            const it = el('div', 'stackitem' + (so.ctrl === this.me ? ' mine' : ''));
+            it.innerHTML = `<div class="siname">${esc(so.name || (so.card && so.card.name) || 'Efekat')}</div>` +
+              `<div class="sisub">${esc(so.ctrl ? so.ctrl.name : '')}${so.kind ? ' · ' + esc(so.kind) : ''}</div>`;
+            if (so.card) it.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
+            body.appendChild(it);
+          }
+        }
+        sp.appendChild(body);
+        side.appendChild(sp);
+      }
+      // COMMANDER DAMAGE — matrica igrač × komander
+      {
+        const cd = el('div', 'cmddmgpanel');
+        cd.appendChild(el('div', 'sidetitle', 'Commander damage'));
+        const cmds = [];
+        for (const p of g.players) for (const c of (p.commanders || [])) cmds.push({ p, c });
+        if (!cmds.length) cd.appendChild(el('div', 'sidenote', 'Nema komandera na stolu.'));
+        else {
+          const tbl = el('div', 'cdgrid');
+          tbl.style.gridTemplateColumns = `minmax(0,1fr) repeat(${cmds.length}, 30px)`;
+          tbl.appendChild(el('div', 'cdh', ''));
+          for (const { c } of cmds) tbl.appendChild(el('div', 'cdh', esc(c.name.split(/[ ,]/)[0].slice(0, 4))));
+          for (const p of g.players) {
+            tbl.appendChild(el('div', 'cdname' + (p === this.me ? ' me' : '') + (p.lost ? ' lost' : ''), esc(p.name)));
+            for (const { c } of cmds) {
+              const n = (p.commanderDamage || {})[c.iid] || 0;
+              tbl.appendChild(el('div', 'cdv' + (n >= 21 ? ' lethal' : n >= 12 ? ' warn' : n ? '' : ' zero'), n ? String(n) : '·'));
+            }
+          }
+          cd.appendChild(tbl);
+        }
+        side.appendChild(cd);
+      }
       // THREAT
       if (this.showThreat) {
       const tp = el('div', 'threatpanel');
