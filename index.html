@@ -761,6 +761,105 @@ body:has(#setup) { background: #08090d; }
   letter-spacing: .14em; text-transform: uppercase;
 }
 #game .pbtn.wide { background: linear-gradient(180deg, var(--tbl-gold-lt), var(--tbl-gold)); color: #14110a; }
+
+/* ============================================================
+   THE STACK — popup na sredini ekrana
+   Ne blokira tablu: wrapper je pointer-events:none, samo panel hvata klikove,
+   pa igrač i dalje može reagovati dok stack stoji.
+   ============================================================ */
+.stackpopwrap {
+  position: fixed; inset: 0; z-index: 85;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.stackpop {
+  pointer-events: auto;
+  width: min(430px, 92vw); max-height: 72dvh;
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg, #12171acc, #0a0e10f2);
+  backdrop-filter: blur(7px);
+  border: 1px solid rgba(200,134,60,.45);
+  border-radius: 4px;
+  box-shadow: 0 18px 60px #000c, 0 0 0 1px #0006, 0 0 30px rgba(200,134,60,.10);
+  animation: stackPopIn .16s ease-out;
+  overflow: hidden;
+}
+@keyframes stackPopIn { from { opacity: 0; transform: translateY(10px) scale(.97) } to { opacity: 1; transform: none } }
+.stackpop.dragging { animation: none; }
+.stackpophead {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px; cursor: grab;
+  border-bottom: 1px solid rgba(185,160,106,.16);
+  background: linear-gradient(180deg, #1a130a, #0d1113);
+}
+.stackpophead:active { cursor: grabbing; }
+.stackpoptitle {
+  font-family: var(--tbl-cond, inherit); font-size: 10.5px; letter-spacing: .26em;
+  text-transform: uppercase; color: var(--tbl-gold-lt, #e8c05a); font-weight: 700; flex: 1;
+}
+.stackpopn {
+  background: linear-gradient(180deg, var(--tbl-gold-lt, #e8c05a), var(--tbl-gold, #c8863c));
+  color: #14110a; font-size: 11px; font-weight: 900;
+  padding: 1px 8px; border-radius: 2px; letter-spacing: .06em;
+}
+.stackpopx {
+  background: none; border: 1px solid rgba(185,160,106,.28); color: #b9a06a;
+  border-radius: 2px; font-size: 13px; line-height: 1; padding: 3px 8px; cursor: pointer;
+}
+.stackpopx:hover { background: rgba(185,160,106,.14); color: #fff; }
+.stackpopbody { overflow-y: auto; padding: 9px 11px; display: flex; flex-direction: column; gap: 5px; }
+.stackpopitem {
+  display: flex; align-items: center; gap: 9px;
+  border: 1px solid rgba(185,160,106,.16); border-left: 3px solid rgba(185,160,106,.4);
+  border-radius: 2px; padding: 7px 9px; background: #0a0e10; cursor: pointer;
+}
+.stackpopitem:hover { background: #141a1d; }
+.stackpopitem.mine { border-left-color: var(--tbl-gold-lt, #e8c05a); }
+.stackpopitem.next { border-color: rgba(200,134,60,.5); box-shadow: 0 0 0 1px rgba(200,134,60,.18) inset; }
+.stackpopitem img { width: 34px; height: 46px; object-fit: cover; border-radius: 2px; flex-shrink: 0; background: #222; }
+.stackpopinfo { flex: 1; min-width: 0; }
+.stackpopname { font-size: 12.5px; color: #efe7d2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stackpopsub { font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: #6f6a5c; }
+.stackpopidx { font-size: 9px; letter-spacing: .16em; color: #8a7a52; flex-shrink: 0; }
+.stackpopfoot {
+  padding: 6px 11px; border-top: 1px solid rgba(185,160,106,.12);
+  font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: #6f6a5c; text-align: center;
+}
+@media (max-width: 700px) { .stackpop { width: 94vw; max-height: 60dvh; } }
+
+/* ============================================================
+   Podesive AI table — visina zone i veličina karata
+   ============================================================ */
+.oppswrap { max-height: var(--opp-h, 42dvh); }
+.oppstrip { min-height: calc(74px * var(--opp-scale, 1)); }
+.oppstrip .mini.sm { width: calc(52px * var(--opp-scale, 1)); height: calc(70px * var(--opp-scale, 1)); }
+.oppstrip .mini.sm .mname { font-size: calc(7px * var(--opp-scale, 1)); max-height: calc(17px * var(--opp-scale, 1)); }
+.oppstrip .mini.sm .pt { font-size: calc(8.5px * var(--opp-scale, 1)); }
+.oppstrip .mini.sm .cnt, .oppstrip .mini.sm .cnt2, .oppstrip .mini.sm .att { font-size: calc(9px * var(--opp-scale, 1)); }
+.oppstrip .mini.sm .badge { font-size: calc(13px * var(--opp-scale, 1)); }
+.oppstrip .oppLands { font-size: calc(11px * var(--opp-scale, 1)); padding: calc(5px * var(--opp-scale,1)) calc(8px * var(--opp-scale,1)); }
+/* hvatište za povlačenje visine */
+.oppresize {
+  height: 11px; margin: -2px 8px 0; cursor: ns-resize;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  flex-shrink: 0; touch-action: none;
+}
+.oppresize::before {
+  content: ''; width: 46px; height: 3px; border-radius: 2px;
+  background: rgba(185,160,106,.26); transition: background .12s, width .12s;
+}
+.oppresize:hover::before, .oppresize.drag::before { background: rgba(200,134,60,.75); width: 78px; }
+.oppsizebar {
+  display: flex; align-items: center; gap: 5px; padding: 0 9px 3px;
+  font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: #6f6a5c;
+}
+.oppsizebar .zbtn {
+  background: #0d1214; border: 1px solid rgba(185,160,106,.22); color: #c9bfa6;
+  border-radius: 2px; font-size: 12px; line-height: 1; padding: 2px 8px; cursor: pointer;
+}
+.oppsizebar .zbtn:hover { border-color: rgba(200,134,60,.6); color: #fff; }
+.oppsizebar .zval { min-width: 34px; text-align: center; color: #b9a06a; }
+.oppsizebar .zspacer { flex: 1; }
 </style>
 </head>
 <body>
@@ -22741,6 +22840,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // sidebar nestaje i tabla dobija punu širinu ekrana
       this.showThreat = localStorage.getItem('mtgThreat') !== '0';
       this.showSideLog = localStorage.getItem('mtgSideLog') !== '0';
+      // THE STACK kao popup na sredini — sam iskoči kad nešto stane na stack
+      this.stackPopup = localStorage.getItem('mtgStackPop') !== '0';
+      this.stackPopDismissed = 0;   // dužina stacka na kojoj je igrač zatvorio popup
+      this.stackPopPos = null;      // {x,y} ako ga je odvukao sa sredine
+      // podesive AI table (pamti se između partija)
+      this.oppHeight = parseInt(localStorage.getItem('mtgOppH') || '42', 10);
+      this.oppScale = parseFloat(localStorage.getItem('mtgOppS') || '1');
       this.prioMode = 'auto';    // 'auto' | 'off' | 'smart' | 'full'
       this.holdNext = false;     // ručni "stani na sljedećem prioritetu"
       this.react = null;         // otvoren prozor za reakciju
@@ -22889,8 +22995,97 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.showHelp) root.appendChild(this.renderHelp(g));
       if (this.showJudge) root.appendChild(this.renderJudge(g));
       const modal = this.renderDecisionModal(g);
+      // stack popup stoji na sredini, pa se sklanja kad je otvoren bilo koji drugi
+      // overlay — inače bi se preklapali baš na istom mjestu
+      const blocked = !!modal || !!this.sheet || !!this.playerSheet || !!this.zoneBrowse ||
+        this.showLog || this.showHelp || this.showJudge;
+      const sp = blocked ? null : this.renderStackPopup(g);
+      if (sp) root.appendChild(sp);
       if (modal) root.appendChild(modal);
       if (g.gameOver) root.appendChild(this.renderGameOver(g));
+    }
+
+    // ---------- THE STACK: popup na sredini ekrana ----------
+    // Iskače sam čim nešto stane na stack i nestaje kad se stack isprazni.
+    // Wrapper ne hvata klikove, pa tabla ispod ostaje upotrebljiva.
+    renderStackPopup(g) {
+      if (!this.stackPopup || !g.stack.length || g.gameOver) return null;
+      if (this.stackPopDismissed === g.stack.length) return null;
+      if (this.stackPopDismissed && this.stackPopDismissed !== g.stack.length) this.stackPopDismissed = 0;
+
+      const wrap = el('div', 'stackpopwrap');
+      const pop = el('div', 'stackpop');
+      if (this.stackPopPos) {
+        pop.style.position = 'fixed';
+        pop.style.left = this.stackPopPos.x + 'px';
+        pop.style.top = this.stackPopPos.y + 'px';
+      }
+      const head = el('div', 'stackpophead');
+      head.appendChild(el('div', 'stackpoptitle', 'The Stack'));
+      head.appendChild(el('div', 'stackpopn', String(g.stack.length)));
+      const x = el('button', 'stackpopx', '✕');
+      x.title = 'Sakrij (vrati se kad se stack promijeni)';
+      x.onclick = (e) => { e.stopPropagation(); this.stackPopDismissed = g.stack.length; this.render(); };
+      head.appendChild(x);
+      pop.appendChild(head);
+
+      const body = el('div', 'stackpopbody');
+      const items = g.stack.slice().reverse();   // vrh stacka prvi — prvi se i rješava
+      items.forEach((so, i) => {
+        const it = el('div', 'stackpopitem' + (so.ctrl === this.me ? ' mine' : '') + (i === 0 ? ' next' : ''));
+        const nm = so.name || (so.card && so.card.name) || 'Efekat';
+        const kind = so.kind === 'trigger' ? 'trigger' : so.kind === 'ability' ? 'sposobnost' : 'spell';
+        if (so.card) {
+          const img = el('img');
+          img.loading = 'lazy';
+          img.src = imgURL(so.card.name);
+          img.onerror = () => MTG.imgFail(img);
+          it.appendChild(img);
+        }
+        const info = el('div', 'stackpopinfo');
+        info.appendChild(el('div', 'stackpopname', esc(nm)));
+        info.appendChild(el('div', 'stackpopsub', `${esc(so.ctrl ? so.ctrl.name : '')} · ${kind}`));
+        it.appendChild(info);
+        it.appendChild(el('div', 'stackpopidx', i === 0 ? 'SLJEDEĆE' : '#' + (items.length - i)));
+        if (so.card) it.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
+        body.appendChild(it);
+      });
+      pop.appendChild(body);
+      pop.appendChild(el('div', 'stackpopfoot', 'rješava se odozgo nadolje'));
+
+      // povlačenje popupa (da ne smeta ako stoji preko nečega)
+      const onDown = (ev) => {
+        if (ev.target.closest('.stackpopx')) return;
+        const r = pop.getBoundingClientRect();
+        const sx = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left;
+        const sy = (ev.touches ? ev.touches[0].clientY : ev.clientY) - r.top;
+        pop.classList.add('dragging');
+        const move = (e2) => {
+          const cx = e2.touches ? e2.touches[0].clientX : e2.clientX;
+          const cy = e2.touches ? e2.touches[0].clientY : e2.clientY;
+          const nx = Math.max(4, Math.min(window.innerWidth - r.width - 4, cx - sx));
+          const ny = Math.max(4, Math.min(window.innerHeight - r.height - 4, cy - sy));
+          this.stackPopPos = { x: nx, y: ny };
+          pop.style.position = 'fixed'; pop.style.left = nx + 'px'; pop.style.top = ny + 'px';
+          if (e2.cancelable) e2.preventDefault();
+        };
+        const up = () => {
+          pop.classList.remove('dragging');
+          window.removeEventListener('mousemove', move);
+          window.removeEventListener('mouseup', up);
+          window.removeEventListener('touchmove', move);
+          window.removeEventListener('touchend', up);
+        };
+        window.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', up);
+        window.addEventListener('touchmove', move, { passive: false });
+        window.addEventListener('touchend', up);
+      };
+      head.addEventListener('mousedown', onDown);
+      head.addEventListener('touchstart', onDown, { passive: true });
+
+      wrap.appendChild(pop);
+      return wrap;
     }
 
     // ---------- desktop sidebar: threat panel + tok igre ----------
@@ -23136,9 +23331,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         localStorage.setItem('mtgSideLog', this.showSideLog ? '1' : '0');
         this.render();
       };
+      const stB = el('button', 'tbtn' + (this.stackPopup ? ' on' : ''), '🃏');
+      stB.title = (this.stackPopup ? 'Isključi' : 'Uključi') + ' stack popup na sredini ekrana';
+      stB.onclick = () => {
+        this.stackPopup = !this.stackPopup;
+        this.stackPopDismissed = 0;
+        localStorage.setItem('mtgStackPop', this.stackPopup ? '1' : '0');
+        this.toast(this.stackPopup ? '🃏 Stack popup uključen' : '🃏 Stack popup isključen');
+        this.render();
+      };
       const newB = el('button', 'tbtn', '↺');
       newB.onclick = () => { if (confirm('Nova partija? Trenutna se gubi.')) location.reload(); };
       btns.appendChild(helpB); btns.appendChild(logB);
+      btns.appendChild(stB);
       btns.appendChild(thB); btns.appendChild(slB);
       btns.appendChild(setB); btns.appendChild(newB);
       bar.appendChild(btns);
@@ -23147,7 +23352,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     renderOpponents(g) {
       this.collapsed = this.collapsed || new Set();
+      const outer = el('div', 'oppsouter');
       const wrap = el('div', 'oppswrap');
+      // podesivo: visina zone (povlačenjem) i veličina karata (− / +)
+      wrap.style.setProperty('--opp-h', this.oppHeight + 'dvh');
+      wrap.style.setProperty('--opp-scale', String(this.oppScale));
       for (const p of g.players) {
         if (p === this.me) continue;
         const meta = MTG.DECK_META[p.deckName] || {};
@@ -23204,7 +23413,67 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         wrap.appendChild(row);
       }
-      return wrap;
+      outer.appendChild(wrap);
+
+      // --- kontrole veličine AI tabli ---
+      const bar = el('div', 'oppsizebar');
+      const setScale = (v) => {
+        this.oppScale = Math.max(0.6, Math.min(2, Math.round(v * 20) / 20));
+        localStorage.setItem('mtgOppS', String(this.oppScale));
+        wrap.style.setProperty('--opp-scale', String(this.oppScale));
+        val.textContent = Math.round(this.oppScale * 100) + '%';
+      };
+      const minus = el('button', 'zbtn', '−');
+      minus.title = 'Manje karte kod protivnika';
+      minus.onclick = () => setScale(this.oppScale - 0.1);
+      const plus = el('button', 'zbtn', '+');
+      plus.title = 'Veće karte kod protivnika';
+      plus.onclick = () => setScale(this.oppScale + 0.1);
+      const val = el('div', 'zval', Math.round(this.oppScale * 100) + '%');
+      const reset = el('button', 'zbtn', '↺');
+      reset.title = 'Vrati na standardno (100%, 42% visine)';
+      reset.onclick = () => {
+        setScale(1);
+        this.oppHeight = 42;
+        localStorage.setItem('mtgOppH', '42');
+        wrap.style.setProperty('--opp-h', '42dvh');
+      };
+      bar.appendChild(el('div', '', 'AI table'));
+      bar.appendChild(el('div', 'zspacer'));
+      bar.appendChild(minus); bar.appendChild(val); bar.appendChild(plus); bar.appendChild(reset);
+      outer.appendChild(bar);
+
+      // --- hvatište: povlačenjem se mijenja visina zone protivnika ---
+      const grip = el('div', 'oppresize');
+      grip.title = 'Povuci da promijeniš visinu AI tabli';
+      const startDrag = (ev) => {
+        const startY = ev.touches ? ev.touches[0].clientY : ev.clientY;
+        const startH = this.oppHeight;
+        grip.classList.add('drag');
+        const move = (e2) => {
+          const cy = e2.touches ? e2.touches[0].clientY : e2.clientY;
+          const dvh = ((cy - startY) / window.innerHeight) * 100;
+          this.oppHeight = Math.max(14, Math.min(74, Math.round(startH + dvh)));
+          wrap.style.setProperty('--opp-h', this.oppHeight + 'dvh');
+          if (e2.cancelable) e2.preventDefault();
+        };
+        const up = () => {
+          grip.classList.remove('drag');
+          localStorage.setItem('mtgOppH', String(this.oppHeight));
+          window.removeEventListener('mousemove', move);
+          window.removeEventListener('mouseup', up);
+          window.removeEventListener('touchmove', move);
+          window.removeEventListener('touchend', up);
+        };
+        window.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', up);
+        window.addEventListener('touchmove', move, { passive: false });
+        window.addEventListener('touchend', up);
+      };
+      grip.addEventListener('mousedown', startDrag);
+      grip.addEventListener('touchstart', startDrag, { passive: true });
+      outer.appendChild(grip);
+      return outer;
     }
 
     renderCenter(g) {
