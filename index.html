@@ -1021,8 +1021,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     is(type) { return this.cur ? this.cur.types.includes(type) : this.def.types.includes(type); }
     hasSub(s) {
       const subs = this.cur ? this.cur.subtypes : this.def.subtypes;
-      if (this.cur && this.cur.allCreatureTypes && this.is('Creature')) return true;
-      return subs.includes(s);
+      if (subs.includes(s)) return true;
+      // changeling / Maskwood Nexus: "svaki tip stvorenja" vrijedi SAMO za prave
+      // tipove stvorenja. Ranije je vraćalo true i za 'Aura'/'Equipment', pa je
+      // SBA slao cijelu tvoju tablu u groblje čim Maskwood Nexus uđe.
+      if (this.cur && this.cur.allCreatureTypes && this.is('Creature') &&
+        MTG.CREATURE_SUBTYPES && MTG.CREATURE_SUBTYPES.has(s)) return true;
+      return false;
     }
     kw(k) { return this.cur && this.cur.kw.has(k); }
     get name() { return this.def.name; }
@@ -1371,7 +1376,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.damage = 0; card.deathtouched = false; card.regenShield = 0;
       card.attacking = null; card.blocking = null; card.blockedBy = [];
       card.faceDown = false;
-      if (toZone !== 'battlefield') { card.counters = {}; card.meta = {}; card.sick = true; }
+      // card.meta se NAMJERNO ne briše pri odlasku sa bojnog polja: "leaves the
+      // battlefield"/"dies" trigeri se tek stavljaju na stack i rezolviraju se
+      // KASNIJE (flushTriggers), a mnogi čitaju baš meta izvora — Colfenor's Urn,
+      // Skyclave Apparition, Grothama. Brisanjem ovdje su svi tiho otkazivali.
+      // Umjesto toga se meta resetuje pri ULASKU na bojno polje (novi objekat).
+      if (toZone !== 'battlefield') { card.counters = {}; card.sick = true; }
 
       if (card.isToken && toZone !== 'battlefield') {
         card.zone = 'ceased';
@@ -1388,6 +1398,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.timestamp = ++IID;
         this.battlefield.push(card);
         card.sick = true;
+        // CR 400.7: permanent koji uđe na bojno polje je NOV objekat — svjež meta.
+        if (fromZone !== 'battlefield') card.meta = {};
         card.meta._enteredTurn = this.turnNo;
         await this.handleETB(card, opts);
       } else {
@@ -1599,7 +1611,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (e.kind === 'preventNextToPlayer') {
           this.untilEffects.splice(this.untilEffects.indexOf(e), 1);
           this.lg(`Sljedeća šteta igraču ${p.name} spriječena.`);
-          if (e.reflect && src) {
+          if (e.reflectToController && src && src.ctrl) {
+            // Deflecting Palm: šteta ide kontroloru izvora, ma šta izvor bio
+            await this.damagePlayer(null, src.ctrl, n, {});
+          } else if (e.reflect && src) {
             if (src.is && src.is('Creature')) await this.damageCreature(null, src, n, {});
             else if (src && src.ctrl) await this.damagePlayer(null, src.ctrl, n, {});
           }
@@ -1885,6 +1900,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           c.cur.toughness += (c.counters['+1/+1'] || 0) - (c.counters['-1/-1'] || 0);
           c.cur.toughness -= (c.counters['-0/-1'] || 0);
           if ((c.counters['flying'] || 0) > 0) c.cur.kw.add('flying');
+          // keyword counteri koje karte stvarno stavljaju (Spectacular Showdown…)
+          for (const kwc of ['double strike', 'first strike', 'deathtouch', 'lifelink',
+            'trample', 'vigilance', 'menace', 'reach', 'hexproof', 'indestructible']) {
+            if ((c.counters[kwc] || 0) > 0) c.cur.kw.add(kwc);
+          }
         }
       }
       // pass 4: until-EOT effects in timestamp order
@@ -1895,7 +1915,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const c of bf) {
         if (c.meta.tempHaste) c.cur.kw.add('haste');
         if (c.meta.suspected) { c.cur.kw.add('menace'); c.cur.cantBlock = true; }
-        if (c.cur.kw.has('defender')) c.cur.cantAttack = c.cur.cantAttack || !c.meta.canAttackDefender && !c.cur.defenderCanAttack;
+        if (c.cur.kw.has('defender')) {
+          // Weathered Sentinels: "can attack players who attacked you last turn
+          // as though it didn't have defender" — bez ovoga je recalc svejedno
+          // postavljao cantAttack, pa karta nikad nije mogla napasti.
+          const revenge = c.def.canAttackRevenge &&
+            (((c.ctrl.prevAttackers && c.ctrl.prevAttackers.size) || 0) +
+             ((c.ctrl.lastAttackers && c.ctrl.lastAttackers.size) || 0)) > 0;
+          c.cur.cantAttack = c.cur.cantAttack ||
+            (!c.meta.canAttackDefender && !c.cur.defenderCanAttack && !revenge);
+        }
       }
       // city's blessing
       for (const p of this.players) {
@@ -1931,6 +1960,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const c of p.graveyard) consider(c, z => z === 'graveyard');
         for (const c of p.exile) consider(c, z => z === 'exile');
       }
+      // "When you cast this spell" — izvor je JOŠ na stacku, pa ga gornje petlje
+      // ne vide. Bez ovoga Hydroid Krasis i slični nikad ne okinu.
+      for (const so of this.stack) if (so.card) consider(so.card, z => z === 'stack');
       return found;
     }
 
@@ -2223,12 +2255,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (c.is('Planeswalker') && (c.counters['loyalty'] || 0) <= 0) {
               await this.move(c, 'graveyard'); any = true; continue;
             }
-            // aura attachment legality
-            if (c.hasSub('Aura')) {
-              const host = c.attachedTo ? this.byIid(c.attachedTo) : null;
-              if (!host || host.zone !== 'battlefield') { await this.move(c, 'graveyard'); any = true; continue; }
+            // aura attachment legality (CR 704.5m)
+            // `subtypes` umjesto hasSub: uz Maskwood Nexus (allCreatureTypes)
+            // hasSub('Aura') vraća true za SVAKO stvorenje, pa je cijela tabla
+            // odlazila u groblje.
+            const subs = (c.cur && c.cur.subtypes) || c.def.subtypes || [];
+            if (subs.includes('Aura')) {
+              // Aura na IGRAČU (curse) nema attachedTo — prati igrača dok je u igri
+              if (c.def.isPlayerAura) {
+                const vic = c.meta && c.meta.cursedPlayer;
+                if (vic && vic.lost) { await this.move(c, 'graveyard'); any = true; continue; }
+              } else {
+                const host = c.attachedTo ? this.byIid(c.attachedTo) : null;
+                if (!host || host.zone !== 'battlefield') { await this.move(c, 'graveyard'); any = true; continue; }
+              }
             }
-            if (c.hasSub('Equipment') && c.attachedTo) {
+            if (subs.includes('Equipment') && c.attachedTo) {
               const host = this.byIid(c.attachedTo);
               if (!host || host.zone !== 'battlefield' || !host.is('Creature')) {
                 const h2 = host;
@@ -2735,11 +2777,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (ac.sacArtifactOrCreature && !this.bf().some(c => c.ctrl === p && (c.is('Artifact') || c.is('Creature')))) return;
         if (ac.discard && p.hand.filter(c => c !== card).length < ac.discard) return;
       }
-      // targets must exist
-      const specs = this.spellTargetSpecs(card, castOpts);
-      if (specs) {
-        for (const spec of specs) {
-          if (!spec.upTo && this.legalTargets(spec, card, p).length < (spec.count || 1)) return;
+      // targets must exist — osim za X-spellove, gdje X (a time i legalne mete)
+      // još nije izabran, pa bi provjera bila lažno negativna
+      if (!cost.x) {
+        const specs = this.spellTargetSpecs(card, castOpts);
+        if (specs) {
+          for (const spec of specs) {
+            if (!spec.upTo && this.legalTargets(spec, card, p).length < (spec.count || 1)) return;
+          }
         }
       }
       // CR 601.2b: modove smiješ birati samo ako za njih postoje legalne mete.
@@ -2844,6 +2889,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       xVal = Math.max(0, Math.min(xVal, maxX));
     }
     if (castOpts.free && opts.xVal !== undefined) xVal = opts.xVal;
+    // X mora biti vidljiv filterima meta (npr. "target creature with mana value X")
+    castOpts.xVal = xVal;
 
     // kicker
     let kicked = false;
@@ -3861,6 +3908,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this._extraCombats = 0;
     for (const q of this.players) q.turnState = q.freshTurnState();
     p.landsPlayed = 0; p.maxLands = 1;
+    // Ko me napao u SVOM prošlom potezu (Weathered Sentinels i sl.). Set se ne
+    // smije brisati na početku mog poteza — tada se baš i čita — nego se prebaci
+    // u prevAttackers, a novi se puni tokom ovog kruga.
+    p.prevAttackers = p.lastAttackers || new Set();
     p.lastAttackers = new Set();
     this.lg(`——— Potez ${this.turnNo}: ${p.name} ———`, 'turn');
     this.note('turn', { p });
@@ -3991,7 +4042,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await this.discard(p, picked);
     }
     // damage clears, until-EOT expire
-    for (const c of this.bf()) { c.damage = 0; c.deathtouched = false; c.regenShield = 0; }
+    for (const c of this.bf()) {
+      c.damage = 0; c.deathtouched = false; c.regenShield = 0;
+      // "…dealt combat damage by this creature THIS TURN" — bez čišćenja je
+      // Steel Hellkite zauvijek pamtio svakog koga je ikad pogodio.
+      if (c.meta && c.meta._hitThisTurn) c.meta._hitThisTurn = {};
+    }
     this.untilEffects = this.untilEffects.filter(e => e.expires !== 'eot' && !(e.expires === 'yourNext' && e.ctrl === this.nextPlayer(p)));
     for (const c of this.bf()) {
       c.meta.tempHaste = false;
@@ -4142,6 +4198,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (!attackers.length) { await this.endCombatStep(p); return; }
     this.combat.attackers = attackers;
+    // statici uslovljeni napadom (Berserkers' Onslaught: "attacking creatures you
+    // control have double strike") moraju biti aktivni PRIJE anyFS provjere i
+    // prije nanošenja štete — inače se čita zastarjeli keyword set.
+    this.recalc();
     for (const c of attackers) {
       const tname = c.attacking instanceof MTG.Player ? c.attacking.name : (c.attacking && c.attacking.name);
       this.lg(`⚔️ ${c.name} napada → ${tname}.`, 'attack');
@@ -4322,15 +4382,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.canAttackAtAll = function (c) {
     if (c.kw('defender')) {
       if (c.meta.canAttackDefender || c.cur.defenderCanAttack) return true;
-      if (c.def.canAttackRevenge && c.ctrl.lastAttackers && c.ctrl.lastAttackers.size > 0) return true;
+      if (c.def.canAttackRevenge &&
+        ((c.ctrl.prevAttackers && c.ctrl.prevAttackers.size > 0) ||
+         (c.ctrl.lastAttackers && c.ctrl.lastAttackers.size > 0))) return true;
       return false;
     }
     return true;
   };
 
+  // Goad se u ovom kodu bilježi na tri načina: untilEffects (E.goad), trajni
+  // meta.goadedBy (jednokratni efekti) i cur.goadedBy koji statik opreme obnavlja
+  // svakim recalcom (pa nestane čim se oprema skine). Svi se čitaju kroz ovo.
+  G.goadersOf = function (c) {
+    const out = [];
+    if (c.meta && c.meta.goadedBy) out.push(...c.meta.goadedBy);
+    if (c.cur && c.cur.goadedBy) out.push(...c.cur.goadedBy);
+    return out.filter(Boolean);
+  };
+
   G.isForcedToAttack = function (c) {
     if (c.def.mustAttack) return true;
-    if (c.meta && c.meta.goadedBy && c.meta.goadedBy.length) return true;
+    if (this.goadersOf(c).length) return true;
     for (const e of this.untilEffects) {
       if (e.kind === 'mustAttack' && e.who === c.ctrl) return true;
       if (e.kind === 'goadCard' && e.iid === c.iid) return true;
@@ -4338,7 +4410,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return false;
   };
   G.isGoaded = function (c) {
-    if (c.meta && c.meta.goadedBy && c.meta.goadedBy.length) return true;
+    if (this.goadersOf(c).length) return true;
     return this.untilEffects.some(e => e.kind === 'goadCard' && e.iid === c.iid);
   };
   G.isForcedAttackOther = function (c) {
@@ -4346,9 +4418,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (e.kind === 'mustAttack' && e.who === c.ctrl && e.notPlayer) return true;
       if (e.kind === 'goadCard' && e.iid === c.iid && e.notPlayer) return true;
     }
-    // Drugi način zapisa goada (Martial/Shiny Impetus, Redemption Arc, Ransom Note).
-    // Bez ovoga su ti efekti tjerali na napad, ali NE i "napadni nekog drugog".
-    if (c.meta && c.meta.goadedBy && c.meta.goadedBy.some(x => x && x !== c.ctrl)) return true;
+    // Bez ovoga su Impetus/Redemption Arc/Bloodthirsty Blade tjerali na napad,
+    // ali NE i "napadni nekog drugog" — pa je goadano stvorenje često udaralo
+    // baš onoga ko ga je nahuškao.
+    if (this.goadersOf(c).some(x => x !== c.ctrl)) return true;
     return false;
   };
   G.forcedVictimException = function (c) {
@@ -4356,11 +4429,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (e.kind === 'mustAttack' && e.who === c.ctrl && e.notPlayer) return e.notPlayer;
       if (e.kind === 'goadCard' && e.iid === c.iid && e.notPlayer) return e.notPlayer;
     }
-    if (c.meta && c.meta.goadedBy) {
-      const g = c.meta.goadedBy.find(x => x && x !== c.ctrl && !x.lost);
-      if (g) return g;
-    }
-    return null;
+    const g = this.goadersOf(c).find(x => x !== c.ctrl && !x.lost);
+    return g || null;
   };
 
   G.canBlock = function (blocker, attacker) {
@@ -4764,6 +4834,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'haste', 'vigilance', 'menace', 'reach', 'defender', 'indestructible', 'hexproof', 'flash', 'prowess', 'forestwalk', 'wither'];
 
   MTG.buildDefs = function (rawCards, scripts) {
+    // Skup stvarnih tipova stvorenja iz baze — koristi ga CardInst.hasSub da
+    // "svaki tip stvorenja" (changeling, Maskwood Nexus) ne obuhvati i
+    // Aura/Equipment/Vehicle i slične ne-creature podtipove.
+    // Karte tipa "Kindred Enchantment — Treefolk Aura" nose i jedno i drugo, pa
+    // se podtipovi koji se pojavljuju na ne-stvorenjima oduzimaju.
+    {
+      const creature = new Set(), other = new Set();
+      for (const raw of Object.values(rawCards)) {
+        const t = raw.types || [];
+        const isCre = t.includes('Creature') || t.includes('Kindred') || t.includes('Tribal');
+        for (const s of raw.subtypes || []) (isCre ? creature : other).add(s);
+      }
+      for (const s of other) creature.delete(s);
+      MTG.CREATURE_SUBTYPES = creature;
+    }
     const defs = {};
     for (const [name, raw] of Object.entries(rawCards)) {
       const d = Object.assign({}, raw);
@@ -6255,8 +6340,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Second Harvest'] = {
     resolve: async ctx => {
+      // bez noReplace: kopije moraju proći kroz zamjene za pravljenje tokena
+      // (Chatterfang, Academy Manufactor) — inače Second Harvest pravi pola manje.
       const toks = ctx.g.bf().filter(c => c.ctrl === ctx.you && c.isToken);
-      for (const t of toks.slice()) await ctx.g.copyPermanentToken(t, ctx.you, { noReplace: true });
+      for (const t of toks.slice()) await ctx.g.copyPermanentToken(t, ctx.you, {});
     },
   };
   SC['Tear Asunder'] = {
@@ -6756,14 +6843,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { on: 'etb', filter: etbSelf, desc: 'Wall token', run: async ctx => { await ctx.g.makeTokens('wall13', ctx.you); } },
       { on: 'attacks', filter: (g, self, d) => d.card === self, desc: 'Wall token', run: async ctx => { await ctx.g.makeTokens('wall13', ctx.you); } },
       {
+        // "Whenever a creature you control WITH DEFENDER dies" — provjera defendera
+        // je nedostajala, pa je ramp išao na svaku smrt bilo kojeg stvorenja.
         on: 'dies', opt: true, desc: 'Nađi basic',
-        filter: (g, self, d) => d.card !== self && d.snap.ctrl === self.ctrl && d.snap.types.includes('Creature'),
-        onlyIf: (g, self, d) => true,
-        run: async ctx => {
-          if (!ctx.data.snap.subtypes || true) {
-            await E.searchBasic(ctx.g, ctx.you, { tapped: true });
-          }
-        },
+        filter: (g, self, d) => d.card !== self && d.snap.ctrl === self.ctrl &&
+          d.snap.types.includes('Creature') && (d.snap.kw || []).includes('defender'),
+        run: async ctx => { await E.searchBasic(ctx.g, ctx.you, { tapped: true }); },
       },
     ],
   };
@@ -7072,8 +7157,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         onlyIf: (g, self) => (self.meta.urn || []).length >= 3,
         run: async ctx => {
           const g = ctx.g;
+          // Lista se mora pročitati PRIJE žrtvovanja — nakon odlaska sa bojnog
+          // polja urna više ne nosi svoj spisak, pa se nije vraćalo ništa.
+          const iids = (ctx.src.meta.urn || []).slice();
           await g.sacrifice(ctx.you, ctx.src);
-          for (const iid of ctx.src.meta.urn || []) {
+          for (const iid of iids) {
             const c = g.byIid(iid);
             if (c && c.zone === 'exile') {
               c.owner.exile.splice(c.owner.exile.indexOf(c), 1);
@@ -9314,7 +9402,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: (g, evt, src) => {
         const isOppSide = (t) => (t instanceof MTG.Player) ? t !== src.ctrl : t.ctrl !== src.ctrl;
         const isMySide = (t) => (t instanceof MTG.Player) ? t === src.ctrl : t.ctrl === src.ctrl;
-        if (evt.target && isOppSide(evt.target) && evt.src && (evt.src.ctrl === src.ctrl || !evt.src.ctrl)) return evt.n * 2;
+        // "If ANY source would deal damage to an opponent or a permanent an
+        // opponent controls" — izvor ne mora biti tvoj. Ranije se udvostručavala
+        // samo tvoja šteta, pa su goadani napadi među protivnicima bili duplo slabiji.
+        if (evt.target && isOppSide(evt.target)) return evt.n * 2;
         if (evt.target && isMySide(evt.target)) return Math.ceil(evt.n / 2);
         return evt.n;
       },
@@ -9557,7 +9648,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     simplified: 'Sprječava sljedeću štetu tebi ovaj potez i vraća je izvoru.',
     resolve: async ctx => {
       const you = ctx.you;
-      ctx.g.untilEffects.push({ kind: 'preventNextToPlayer', who: you, expires: 'eot', reflect: true });
+      // reflectToController: šteta ide KONTROLORU izvora (kao na pravoj karti),
+      // a ne samom stvorenju — `reflect` je gađao napadača, koji to obično preživi.
+      ctx.g.untilEffects.push({ kind: 'preventNextToPlayer', who: you, expires: 'eot', reflectToController: true });
     },
   };
   SC["Gideon's Sacrifice"] = {
@@ -9708,7 +9801,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Bloodthirsty Blade'] = {
-    attachGrant: (g, self, host) => { host.cur.power += 2; },
+    // "Equipped creature gets +2/+0 and is goaded" — goad je STATIK opreme, pa se
+    // mora obnavljati svakim recalcom. Ranije se upisivao trajno u meta i ostajao
+    // i nakon skidanja opreme.
+    attachGrant: (g, self, host) => {
+      host.cur.power += 2;
+      host.cur.goadedBy = (host.cur.goadedBy || []).concat([self.ctrl]);
+    },
     abilities: [{
       label: 'Pripoji protivničkom stvorenju', cost: { mana: '{1}' }, sorcery: true,
       targets: [{
@@ -9825,7 +9924,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl !== ctrl,
       aiHint: { goal: 'goadTarget' },
     }],
-    attachGrant: (g, self, host) => { host.cur.power += buff[0]; host.cur.toughness += buff[1]; if (host.meta) host.meta.goadedBy = [self.ctrl]; },
+    attachGrant: (g, self, host) => { host.cur.power += buff[0]; host.cur.toughness += buff[1]; host.cur.goadedBy = (host.cur.goadedBy || []).concat([self.ctrl]); },
     triggers: extra || [],
   });
   SC['Martial Impetus'] = impetus([1, 1], [{
@@ -9848,7 +9947,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl !== ctrl,
       aiHint: { goal: 'goadTarget' },
     }],
-    attachGrant: (g, self, host) => { host.cur.kw.add('indestructible'); if (host.meta) host.meta.goadedBy = [self.ctrl]; },
+    attachGrant: (g, self, host) => { host.cur.kw.add('indestructible'); host.cur.goadedBy = (host.cur.goadedBy || []).concat([self.ctrl]); },
     abilities: [{
       label: 'Egzilaj nosioca', cost: { mana: '{1}{W}' },
       cond: (g, c) => !!c.attachedTo,
@@ -10571,6 +10670,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       for (const c of ctx.g.bf().filter(c => c.is('Creature') && c.power >= 3).slice()) await ctx.g.destroy(c);
     },
+    // Dawn (aftermath polovina): bez ovoga je castSpell padao nazad na `resolve`
+    // i bacao DRUGI board wipe umjesto masovnog vraćanja iz groblja.
+    aftermathResolve: async ctx => {
+      const back = ctx.you.graveyard.filter(c => c.is('Creature') && parseInt(c.def.power || '0', 10) <= 2).slice();
+      for (const c of back) await ctx.g.move(c, 'hand');
+      ctx.g.lg(`Dawn: ${back.length} stvorenja nazad u ruku.`);
+    },
     flashback: { cost: '{3}{W}{W}', altCostStr: '{3}{W}{W}', speed: 'sorcery', isAftermath: true },
   };
   SC['Martial Coup'] = {
@@ -10583,15 +10689,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Stolen by the Fae'] = {
+    // "Return target creature with mana value X" — meta mora imati MV TAČNO X.
+    // Ranije je filter bio "bilo koje stvorenje", pa je za {U}{U} (X=0) bounceovao
+    // i komandera protivnika.
     targets: (g, card, castOpts) => [{
       what: 'creature', prompt: 'Vrati u ruku (MV = X)',
-      filter: (g2, c) => c.zone === 'battlefield' && c.is('Creature'),
+      filter: (g2, c) => c.zone === 'battlefield' && c.is('Creature') &&
+        c.mv === ((castOpts && castOpts.xVal) || 0),
       aiHint: { goal: 'bounce' },
     }],
     resolve: async ctx => {
       const t = ctx.targets[0], x = ctx.x || 0;
-      if (t && t.zone === 'battlefield' && t.mv <= x) await ctx.g.move(t, 'hand');
-      else if (t && t.zone === 'battlefield') await ctx.g.move(t, 'hand');
+      if (t && t.zone === 'battlefield') await ctx.g.move(t, 'hand');
       if (x) await ctx.g.makeTokens('faerie', ctx.you, { n: x });
     },
   };
@@ -10852,7 +10961,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Hydroid Krasis'] = {
     etbCounters: { kind: '+1/+1', n: (g, card) => (card.castMeta && card.castMeta.x) || 0 },
     triggers: [{
-      on: 'cast', desc: 'Život + karte', filter: (g, self, d) => d.card === self,
+      // zone:'stack' — izvor je spell koji se upravo baca, nije na bojnom polju
+      on: 'cast', zone: 'stack', desc: 'Život + karte', filter: (g, self, d) => d.card === self,
       run: async ctx => {
         const x = (ctx.src.castMeta && ctx.src.castMeta.x) || 0;
         await ctx.g.gainLife(ctx.you, Math.floor(x / 2));
@@ -10914,7 +11024,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Kappa Cannoneer'] = {
     improvise: true,
     triggers: [{
-      on: 'etb', desc: '+1/+1 + unblockable', filter: (g, self, d) => d.card !== self && d.card.ctrl === self.ctrl && d.card.is('Artifact'),
+      // "Whenever THIS CREATURE or another artifact you control enters" — Kappa je
+      // artefakt-stvorenje, pa okida i na vlastiti ulazak (dolazi kao 5/5 unblockable).
+      on: 'etb', desc: '+1/+1 + unblockable', filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card.is('Artifact'),
       run: async ctx => {
         ctx.g.addCounters(ctx.src, '+1/+1', 1);
         const iid = ctx.src.iid;
@@ -14941,12 +15053,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Ogre Slumlord'] = {
     triggers: [{
-      on: 'dies', desc: 'Rat', filter: (g, self, d) => d.snap.types.includes('Creature') && !d.snap.isToken, opt: true,
+      // "Whenever ANOTHER nontoken creature dies" — bez d.card !== self
+      // Ogre Slumlord je pravio pacova i na vlastitu smrt.
+      on: 'dies', desc: 'Rat', filter: (g, self, d) => d.card !== self && d.snap.types.includes('Creature') && !d.snap.isToken, opt: true,
       run: async ctx => { await ctx.g.makeTokens('rat', ctx.you); },
     }],
     statics: [{
       apply: (g, self, bf) => {
-        for (const c of bf) if (c.ctrl === self.ctrl && c.hasSub('Rat')) c.cur.kw.add('deathtouch');
+        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature') && c.hasSub('Rat')) c.cur.kw.add('deathtouch');
       },
     }],
   };
@@ -16782,24 +16896,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     },
   };
-  SC['Expressive Iteration'] = {
-    resolve: async ctx => {
-      const you = ctx.you, g = ctx.g;
-      const top = [];
-      for (let i = 0; i < 3 && you.library.length; i++) top.push(you.library.pop());
-      if (!top.length) return;
-      const best = top.slice().sort((a, b) => U.mv(b.def.cost || '') - U.mv(a.def.cost || ''));
-      const toHand = best[0];
-      toHand.zone = 'hand'; you.hand.push(toHand);
-      const land = top.find(c => c !== toHand && c.is('Land'));
-      if (land) { land.zone = 'exile'; you.exile.push(land); land.meta = { playableUntil: g.turnNo, playableBy: you }; }
-      for (const c of top) {
-        if (c === toHand || c === land) continue;
-        c.zone = 'library'; you.library.unshift(c);
-      }
-      g.lg('Expressive Iteration: karta u ruku + odigraj land iz egzila.');
-    },
-  };
+  // Expressive Iteration je već definisan (ispravno: igrač bira šta u ruku, a šta
+  // u egzil da igra ovaj potez) u scripts_stella.js. Ovdje je stajala verzija koja
+  // je egzilirala samo ako je među kartama bio land — inače bi izgubila pola karte.
   SC['Furygale Flocking'] = {
     selfCostAdjust: (g, card, p) => -p.graveyard.filter(c => c.is('Instant') || c.is('Sorcery')).length,
     resolve: async ctx => {
@@ -16832,19 +16931,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (t) await ctx.g.copyPermanentToken(t, you, {});
     },
   };
-  SC['Rousing Refrain'] = {
-    suspend: { cost: '{0}', n: 3 },
-    simplified: 'Suspend 3 verzija; iz ruke košta {5}{R}.',
-    resolve: async ctx => {
-      let n = 0;
-      for (const o of E.eachOpp(ctx.g, ctx.you)) n += o.hand.length;
-      ctx.you.pool['R'] = (ctx.you.pool['R'] || 0) + n;
-      ctx.g.lg(`Rousing Refrain: +${n} crvene mane!`);
-      // vrati u egzil sa suspend
-      const c = ctx.src;
-      if (c.zone === 'stack') { ctx.g.remove(c); c.zone = 'exile'; ctx.you.exile.push(c); c.meta = { suspended: 3 }; }
-    },
-  };
+  // Rousing Refrain je već definisan (ispravno: CILJANI protivnik + persistMana +
+  // suspend {1}{R}) u scripts_stella.js. Ovdje je stajala verzija koja je zbrajala
+  // ruke SVIH protivnika i davala 3x previše mane.
   SC['Surge to Victory'] = {
     resolve: async ctx => {
       const pool = ctx.you.graveyard.filter(c => c.is('Instant') || c.is('Sorcery'));
@@ -16895,14 +16984,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const t of ctx.targets.filter(Boolean)) if (t.zone === 'battlefield') await ctx.g.damageCreature(ctx.src, t, 6);
     },
   };
-  SC['Volcanic Torrent'] = {
-    cascade: true,
-    resolve: async ctx => {
-      const n = ctx.you.turnState.spellsCastList.filter(x => x.card.is('Instant') || x.card.is('Sorcery')).length;
-      for (const c of ctx.g.bf().filter(c => c.is('Creature')).slice()) await ctx.g.damageCreature(ctx.src, c, n);
-      ctx.g.lg(`Volcanic Torrent: ${n} štete svim stvorenjima.`);
-    },
-  };
+  // Volcanic Torrent je već definisan (ispravno, jednostrano) u scripts_stella.js.
+  // Ovdje je stajala druga, pogrešna verzija koja je gasila i vlastita stvorenja.
   SC['Talisman of Creativity'] = {
     mana: [
       { cost: { tap: true }, produce: [{ C: 1 }] },
@@ -19603,9 +19686,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     xCost: true,
     resolve: async ctx => {
       const x = ctx.x || 0;
-      await ctx.g.makeTokens('soldierW', ctx.you, { n: x });
+      const made = await ctx.g.makeTokens('soldierW', ctx.you, { n: x });
       if (x >= 5) {
-        for (const c of ctx.g.bf().filter(c => c.is('Creature') && !c.isToken).slice()) await ctx.g.destroy(c);
+        // "destroy all OTHER creatures" — sve osim vojnika koje je upravo napravio
+        // (ranije je štedio SVE tokene, pa i protivničke).
+        const mine = new Set((made || []).map(m => m.iid));
+        for (const c of ctx.g.bf().filter(c => c.is('Creature') && !mine.has(c.iid)).slice()) await ctx.g.destroy(c);
         ctx.g.lg('Martial Coup: prevrat! Sva ostala stvorenja uništena.');
       }
     },
@@ -22026,6 +22112,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (best && best.v >= 6) return { kind: 'cast', card: c, alt: e.alt, from: e.from };
           }
         }
+      }
+      // AKTIVIRANE SPOSOBNOSTI na prioritetu. Ranije se gledao samo q.casts, pa
+      // bot nikad nije koristio ništa aktivirano dok nešto stoji na stacku —
+      // uključujući Stella Lee (kopiraj svoj spell), što je gasilo cijeli deck.
+      for (const e of (q.acts || [])) {
+        const a = e.ability;
+        if (!a || !a.targets) continue;
+        const wantsSpell = a.targets.some(s => s.what === 'spell' || s.zone === 'stack');
+        if (!wantsSpell) continue;
+        // kopiraj/kontriraj cilja spell na stacku — biraj po tome ko ga kontroliše
+        const mine = a.targets.some(s => (s.aiHint && /copy/i.test(s.aiHint.goal || '')));
+        const cands = g.legalTargets(a.targets[0], e.card, p)
+          .filter(so => mine ? so.ctrl === p : so.ctrl !== p);
+        if (!cands.length) continue;
+        const pick = cands[cands.length - 1];   // vrh stacka
+        return { kind: 'activate', entry: e, targets: [pick] };
       }
       return { kind: 'pass' };
     }
