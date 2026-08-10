@@ -16156,9 +16156,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'attacks', desc: 'Treasure', filter: (g, self, d) => d.card === self,
       run: async ctx => { await ctx.g.makeTokens('treasure', ctx.you); },
+    }, {
+      // druga polovina okidača: "or becomes the target of a spell".
+      // Ranije je nedostajala jer 'targeted' event nije postojao.
+      on: 'targeted', desc: 'Treasure (ciljan)', filter: (g, self, d) => d.card === self,
+      run: async ctx => { await ctx.g.makeTokens('treasure', ctx.you); },
     }],
-    statics: [{ apply: (g, self, bf) => { /* dupli treasure mana — pojednostavljeno */ } }],
-    simplified: 'Treasure daje 2 mane — pojednostavljeno na 1 (standard token).',
+    // "Treasures you control have '{T}, Sacrifice this artifact: Add two mana
+    // of any one color.'" Ranije prazan static — Treasure je davao samo 1.
+    grantMana: {
+      filter: (g, x) => x.hasSub('Treasure'),
+      cost: { tap: true, sacSelf: true },
+      produce: [{ W: 2 }, { U: 2 }, { B: 2 }, { R: 2 }, { G: 2 }],
+    },
   };
   SC['Harmonic Prodigy'] = {
     doublesMagecraft: true,
