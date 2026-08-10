@@ -305,7 +305,7 @@ img.imgfail {
   display: inline-flex; align-items: center; justify-content: center; font-size: 16px;
 }
 .pbadge.p-aggressive { border-color: #7a3a34; }
-.pbadge.p-diplomat   { border-color: #6a6a3a; }
+.pbadge.p-opportunist { border-color: #6a5a3a; }
 .pbadge.p-passive    { border-color: #35506e; }
 .pbadge.p-teaser     { border-color: #5c3a72; }
 .cdnote { font-size: 10px; color: #8a95a8; margin: 3px 0 6px; line-height: 1.35; }
@@ -950,6 +950,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         types: card.cur ? card.cur.types.slice() : card.def.types.slice(),
         subtypes: card.cur ? card.cur.subtypes.slice() : card.def.subtypes.slice(),
         attachments: card.attachments.slice(), mv: card.mv, colors: card.colors,
+        // Keywordi u trenutku odlaska. Bez ovoga je snap.flying bio undefined,
+        // pa se Luminous Broodmoth okidao i na stvorenja koja su umrla SA
+        // letenjem → beskonačna petlja sa Selfless Spiritom.
+        kw: card.cur ? [...card.cur.kw] : [],
+        flying: !!(card.cur && card.cur.kw.has('flying')),
       };
     }
 
@@ -21124,18 +21129,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       wipeBias: -1.5,      // ne voli wipe (ubija i njegove)
       counterBias: -0.5,
     },
-    diplomat: {
-      label: 'Pregovarač', icon: '🤝',
-      // Ranije atkThr 0.9 / atkRnd 0.15 / lowLifeHunt 0: napadao je toliko
-      // rijetko i nikad nije dovršavao protivnike, pa je pobjeđivao 9% umjesto
-      // ~25%. Karakter ostaje (lider + osveta), ali sad zna zaključiti partiju.
-      atkThr: 0.6, atkRnd: 0.25,
-      blockThr: 0,
-      lowLifeHunt: 1.4,
-      focusLeader: 2.4,    // i dalje prvenstveno najveća prijetnja...
-      grudgeOnly: true,    // ...ili oni koji su ga napali (uz lethal izuzetak)
-      castCreature: 0.3, castDamage: 0.2, castDefense: 0.4, castPolitics: 0.6,
-      wipeBias: 0, counterBias: 0.4,
+    opportunist: {
+      label: 'Strvinar', icon: '🦅',
+      // Zamjena za Pregovarača, koji se preklapao sa Uravnoteženim i nije
+      // imao putanju do pobjede. Strvinar je mehanički njegova suprotnost:
+      // pušta najjačeg da bježi i navaljuje na svakoga ko posrne.
+      atkThr: 0.15, atkRnd: 0.4,
+      blockThr: 0.9,       // radije čuva napadače nego što blokira
+      lowLifeHunt: 3.2,    // definišuća osobina — kljuca ranjene
+      focusLeader: -1.2,   // AKTIVNO izbjegava najveću prijetnju
+      castCreature: 0.4, castDamage: 1.0, castDefense: -0.2, castPolitics: 0.2,
+      wipeBias: -1.2,      // wipe bi mu pobrisao vlastite napadače
+      counterBias: -0.2,
     },
     passive: {
       label: 'Pasivan', icon: '🛡️',
@@ -21430,8 +21435,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (P.chaos && this.r(g) < 0.5) return oppPlayers[Math.floor(this.r(g) * oppPlayers.length)];
       const leader = oppPlayers.slice().sort((a, b) => this.playerThreat(g, b) - this.playerThreat(g, a))[0];
       const lowest = oppPlayers.slice().sort((a, b) => a.life - b.life)[0];
-      if (this.style === 'aggressive') return lowest;             // dokrajči ranjene
-      if (this.style === 'diplomat' || this.style === 'passive') return leader; // gađa prijetnju
+      if (this.style === 'aggressive' || this.style === 'opportunist') return lowest; // dokrajči ranjene
+      if (this.style === 'passive') return leader;                // gađa prijetnju
       return this.r(g) < 0.6 ? leader : lowest;
     }
 
@@ -21473,13 +21478,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // pregovarač: ne dira one koji ga nisu dirali i nisu lider (osim lethala)
           const isGrudge = (grudges[o.idx] || 0) > 0;
           const myDmg = g.dmgAmount(c, 'normal');
-          // Lethal izuzetak je ranije gledao samo OVO stvorenje, pa pregovarač
-          // nikad nije mogao zaključiti partiju udruženim napadom. Sad računa
-          // šta cijela tabla može nanijeti.
-          if (P.grudgeOnly && o !== leader && !isGrudge) {
-            const boardDmg = q.eligible.reduce((s, x) => s + g.dmgAmount(x, 'normal'), 0);
-            if (o.life > Math.max(myDmg, boardDmg * 0.9)) continue;
-          }
           const blockers = g.creatures(o).filter(b => g.canBlock(b, c));
           let score = 0;
           if (!blockers.length) {
@@ -21495,7 +21493,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // persona modifikatori mete
           if (o === leader) score += P.focusLeader;
           if (o.life <= 12) score += P.lowLifeHunt;
-          if (isGrudge) score += this.style === 'diplomat' ? 2 : 0.8;
+          if (isGrudge) score += 0.8;
           if (teaseTarget && o === teaseTarget) score += 2.5;
           if (score > bestScore) { bestScore = score; bestTarget = o; }
         }
@@ -23799,7 +23797,7 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
       .concat(Object.entries(MTG.AI_STYLES).map(([k, s]) => [k, `${s.icon} ${s.label}`]));
     const STYLE_DESC = {
       aggressive: 'Napada bez milosti, juri ranjene igrače, ne voli da blokira.',
-      diplomat: 'Dira samo najveću prijetnju — i one koji su prvi napali njega. Pamti.',
+      opportunist: 'Izbjegava najjačeg i navaljuje na ranjene. Kljuca svakoga ko posrne.',
       passive: 'Kornjača: gradi tablu, čuva blokere, udara tek kad je sigurno.',
       teaser: 'Haos: bocka sve pomalo, mijenja mete, obožava goad i politiku.',
       balanced: 'Standardna, uravnotežena AI logika.',
@@ -23812,8 +23810,8 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
         const row = el('div', 'botstylerow');
         const badge = el('span', 'pbadge');
         const setBadge = k => {
-          badge.className = 'pbadge ' + (['aggressive', 'diplomat', 'passive', 'teaser'].includes(k) ? 'p-' + k : 'p-none');
-          badge.textContent = ['aggressive', 'diplomat', 'passive', 'teaser'].includes(k)
+          badge.className = 'pbadge ' + (['aggressive', 'opportunist', 'passive', 'teaser'].includes(k) ? 'p-' + k : 'p-none');
+          badge.textContent = ['aggressive', 'opportunist', 'passive', 'teaser'].includes(k)
             ? '' : (k === 'random' ? '🎲' : '⚖️');
           badge.title = STYLE_DESC[k] || '';
         };
