@@ -1978,6 +1978,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async pickTargets(ctx, specs, src, ctrl) {
       ctx.targets = [];
+      const targetedNow = [];
       for (const spec of specs) {
         const cands = this.legalTargets(spec, src, ctrl);
         const min = spec.upTo ? 0 : (spec.count || 1);
@@ -1997,16 +1998,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
         }
         if (picked.length < min) return false;
-        // 'targeted' — karte tipa Black Bolt reaguju kad ih neko cilja.
-        // Ranije ga niko nije emitovao, pa je taj okidač bio mrtav.
-        for (const t of picked) {
-          if (t && t.iid !== undefined && t !== src) {
-            await this.emit('targeted', { card: t, byPlayer: ctrl, src });
-          }
-        }
+        for (const t of picked) if (t && t.iid !== undefined && t !== src) targetedNow.push(t);
         if (max === 1) ctx.targets.push(picked[0]);
         else ctx.targets.push(picked);
       }
+      // 'targeted' — karte tipa Black Bolt reaguju kad ih neko cilja. Ranije ga
+      // niko nije emitovao pa je okidač bio mrtav. Emituje se TEK kad su sve
+      // mete izabrane: usred petlje bi okidač mogao promijeniti stanje table
+      // dok se ostale mete još biraju.
+      for (const t of targetedNow) await this.emit('targeted', { card: t, byPlayer: ctrl, src });
       return true;
     }
 
@@ -2061,6 +2061,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         while (any && guard++ < 30) {
           any = false;
           this.recalc();
+          // "pobjeđuješ kad ovaj permanent ima N countera" (Darksteel Reactor).
+          // State provjera, pa radi i kad counteri stignu izvana.
+          for (const c of this.bf()) {
+            const need = c.def.winAtCharge;
+            if (!need || this.gameOver) continue;
+            if ((c.counters['charge'] || 0) < need) continue;
+            const w = c.ctrl;
+            this.lg(`💥 ${w.name} POBJEĐUJE — ${c.name} sa ${need}+ charge countera!`, 'win');
+            for (const q of this.players) if (q !== w) q.lost = true;
+            this.gameOver = true; this.winner = w;
+            this.note('gameover', { winner: w });
+            return;
+          }
           // players lose
           for (const p of this.players) {
             if (p.lost) continue;
@@ -13630,8 +13643,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'beginCombat', desc: '+1/+1 ili 2 charge',
       filter: (g, self, d) => d.player === self.ctrl && (self.counters['charge'] || 0) >= 1,
       targets: [{
+        // "up to one OTHER target artifact" — sebe je ranije nudio kao metu,
+        // pa bi run samo izašao i okidač bi propao.
         what: 'permanent', prompt: 'Drugi artefakt', upTo: true,
-        filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Artifact') && c.ctrl === ctrl,
+        filter: (g, c, ctrl, src) => c.zone === 'battlefield' && c.is('Artifact') && c.ctrl === ctrl && c !== src,
         aiHint: { goal: 'buff' },
       }],
       run: async ctx => {
@@ -14035,16 +14050,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Darksteel Reactor'] = {
     kws: ['indestructible'],
+    // "When ~ has twenty or more charge counters, you win." To je STATE trigger:
+    // mora opaliti čim counteri pređu 20, bez obzira odakle su došli (Inspirit
+    // dodaje 2 po combatu). Ranije se provjeravalo samo u vlastitom upkeepu, pa
+    // je pobjeda kasnila ceo krug ili izostala.
+    winAtCharge: 20,
     triggers: [{
       on: 'upkeep', desc: 'Charge counter', filter: (g, self, d) => d.player === self.ctrl, opt: false,
-      run: async ctx => {
-        ctx.g.addCounters(ctx.src, 'charge', 1);
-        if ((ctx.src.counters['charge'] || 0) >= 20) {
-          ctx.g.lg(`💥 ${ctx.you.name} POBJEĐUJE — Darksteel Reactor sa 20 countera!`);
-          for (const q of ctx.g.players) if (q !== ctx.you) q.lost = true;
-          ctx.g.gameOver = true; ctx.g.winner = ctx.you;
-        }
-      },
+      run: async ctx => { ctx.g.addCounters(ctx.src, 'charge', 1); },
     }],
   };
   SC['Empowered Autogenerator'] = {
