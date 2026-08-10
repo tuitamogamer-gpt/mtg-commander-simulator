@@ -3809,13 +3809,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (mode === 'full') return false;
     if (mode === 'off') return true;                         // nikad ne pitaj (ručni HOLD)
     const casts = q.casts || [], acts = q.acts || [];
-    if (!casts.length && !acts.length) return true;          // nema šta da se odigra
+    const canAct = casts.length > 0 || acts.length > 0;
     const top = g.stack[g.stack.length - 1];
     if (top) {
+      // SVAKA protivnikova odigrana karta staje — i kad nemam čime da odgovorim.
+      // Stack se vidi na sredini, a igra ide dalje tek na tvoj klik.
+      // (Landovi ne koriste stack, pa oni nikad ne zaustavljaju igru.)
+      if (top.ctrl !== me && top.kind === 'spell') return false;
+      if (!canAct) return true;                              // trigeri/sposobnosti bez odgovora → pusti
       // moj vlastiti spell/trigger na vrhu, a nemam nikakav odgovor iz ruke → pusti
       if (top.ctrl === me && !casts.length) return true;
       return false;                                          // nešto je na stacku → PITAJ
     }
+    if (!canAct) return true;                                // nema šta da se odigra
     // POSLJEDNJI end step prije mog poteza: zadnja prilika da nešto odigram u
     // tuđem potezu (instanti, flash, aktivacije). Uvijek stani — igrač sam
     // odlučuje kad nastavlja, dugmetom "Nastavi na moj potez".
@@ -3864,7 +3870,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       return true;
     });
-    if (!casts.length && !acts.length) return { kind: 'pass' };
+    if (!casts.length && !acts.length) {
+      // Ljudski igrač svejedno dobija prozor kad protivnik odigra kartu: vidi
+      // šta je bačeno na stacku i sam klikne Proceed. Botovi tu nemaju šta da
+      // biraju, pa njima i dalje kratimo put.
+      const top = this.stack[this.stack.length - 1];
+      const showToHuman = !p.isAI && top && top.ctrl !== p && top.kind === 'spell';
+      if (!showToHuman) return { kind: 'pass' };
+    }
     return p.controller.decide(this, {
       type: 'priority', player: p, casts, acts,
       stack: this.stack, phase: this.phase,
@@ -23842,6 +23855,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const w = this.react;
           const top = g.stack[g.stack.length - 1];
           bar.classList.add('reacting');
+          const rq = this.react.q || {};
+          const canAct = ((rq.casts || []).length + (rq.acts || []).length) > 0;
           // Posljednji end step prije mog poteza dobija svoj tekst i dugme —
           // to nije "odgovor na spell", nego zadnja prilika da nešto odigram.
           const preTurn = !top && MTG.isLastEndStepBeforeMyTurn(g, this.me);
@@ -23851,15 +23866,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           } else {
             const who = top && top.ctrl ? top.ctrl.name : 'protivnik';
             const what = top ? (top.name || (top.card && top.card.name) || 'nešto') : 'akcija';
-            bar.appendChild(el('div', 'ptext',
-              `⚡ <b>${esc(who)}</b>: ${esc(what)} — želiš da odgovoriš?`));
+            bar.appendChild(el('div', 'ptext', canAct
+              ? `⚡ <b>${esc(who)}</b>: ${esc(what)} — želiš da odgovoriš?`
+              : `⚡ <b>${esc(who)}</b>: ${esc(what)} — nemaš odgovor.`));
           }
           const row = el('div', 'btnrow');
-          const yes = el('button', 'pbtn primary', preTurn ? '🎴 ODIGRAJ NEŠTO' : '⚡ REAGUJ');
-          yes.onclick = () => this.takeReactWindow();
-          const no = el('button', 'pbtn', preTurn ? 'Nastavi na moj potez ▶' : 'Pusti ▶');
+          if (canAct) {
+            const yes = el('button', 'pbtn primary', preTurn ? '🎴 ODIGRAJ NEŠTO' : '⚡ REAGUJ');
+            yes.onclick = () => this.takeReactWindow();
+            row.appendChild(yes);
+          }
+          // Kad nemam čime da odgovorim, jedino dugme je Proceed — ali igra i
+          // dalje čeka mene, bez odbrojavanja.
+          const no = el('button', 'pbtn' + (canAct ? '' : ' primary'),
+            preTurn ? 'Nastavi na moj potez ▶' : 'Proceed ▶');
           no.onclick = () => this.skipReactWindow();
-          row.appendChild(yes); row.appendChild(no);
+          row.appendChild(no);
           bar.appendChild(row);
           return bar;
         }
@@ -23957,7 +23979,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const oz2 = offZoneRow();
           if (oz2) bar.appendChild(oz2);
           const row = el('div', 'btnrow');
-          row.appendChild(btn(MTG.isLastEndStepBeforeMyTurn(g, this.me) ? 'Nastavi na moj potez ▶' : 'Prođi ▶',
+          row.appendChild(btn(MTG.isLastEndStepBeforeMyTurn(g, this.me) ? 'Nastavi na moj potez ▶' : 'Proceed ▶',
             () => this.resolvePending({ kind: 'pass' }), 'primary'));
           row.appendChild(btn('🔕 Ne prekidaj me više', () => {
             this.prioMode = 'off';
