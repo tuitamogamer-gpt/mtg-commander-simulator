@@ -766,16 +766,18 @@ body:has(#setup) { background: #08090d; }
    pa igrač i dalje može reagovati dok stack stoji.
    ============================================================ */
 .stackpopwrap {
-  position: fixed; inset: 0; z-index: 85;
+  position: fixed; inset: 0; z-index: 115;
   display: flex; align-items: center; justify-content: center;
   pointer-events: none;
 }
+/* reveal je blokirajuća odluka — mora iznad hover previewa (#hoverprev, 120) */
+.stackpopwrap.revealwrap { z-index: 140; }
 .stackpop {
   pointer-events: auto;
   width: min(430px, 92vw); max-height: 72dvh;
   display: flex; flex-direction: column;
-  background: linear-gradient(180deg, #12171acc, #0a0e10f2);
-  backdrop-filter: blur(7px);
+  background: linear-gradient(180deg, #12171af7, #070a0bfc);
+  backdrop-filter: blur(9px);
   border: 1px solid rgba(200,134,60,.45);
   border-radius: 4px;
   box-shadow: 0 18px 60px #000c, 0 0 0 1px #0006, 0 0 30px rgba(200,134,60,.10);
@@ -823,6 +825,10 @@ body:has(#setup) { background: #08090d; }
   padding: 6px 11px; border-top: 1px solid rgba(185,160,106,.12);
   font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: #6f6a5c; text-align: center;
 }
+.stackpop.reveal .stackpopfoot { padding: 9px 11px; background: #070a0b; }
+.stackpop.reveal .stackpopfoot .pbtn { width: 100%; position: relative; z-index: 1; }
+.stackpop.reveal { border-color: rgba(200,134,60,.6); background: linear-gradient(180deg, #12171a, #070a0b); }
+.stackpop.reveal .stackpopbody { background: #0a0e10; }
 @media (max-width: 700px) { .stackpop { width: 94vw; max-height: 60dvh; } }
 
 /* ============================================================
@@ -1173,6 +1179,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return ans;
     }
 
+    // Pokaži ljudskom igraču na sredini ekrana ono što NIJE prošlo kroz stack —
+    // tokene i permanente koji uđu bez bacanja (reanimacija, "put onto the
+    // battlefield"…) — pa čekaj njegov Proceed. Landovi se preskaču.
+    async revealToHuman(payload) {
+      const hu = this.human();
+      if (!this.paced || !hu || !hu.controller || this.gameOver) return null;
+      if (payload.ctrl === hu) return null;          // vlastite poteze ne prekidamo
+      const cards = (payload.cards || []).filter(c => c && !c.is('Land'));
+      if (!cards.length) return null;
+      return hu.controller.decide(this, Object.assign({}, payload, { type: 'cardReveal', player: hu, cards }));
+    }
+
     // istakni AI akciju usmjerenu na igrača i daj mu vremena da je pročita
     async spotlight(text, opts) {
       opts = opts || {};
@@ -1400,6 +1418,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (fromZone !== 'battlefield') card.meta = {};
         card.meta._enteredTurn = this.turnNo;
         await this.handleETB(card, opts);
+        // Permanent koji NIJE bačen (reanimacija, "put onto the battlefield",
+        // blink) nikad se ne pojavi na stacku, pa ga igrač inače ne bi vidio.
+        // Tokene pokriva makeTokens, landove namjerno preskačemo.
+        if (!card.isToken && fromZone !== 'stack' && fromZone !== 'battlefield') {
+          await this.revealToHuman({ cards: [card], ctrl: card.ctrl, kind: 'enters' });
+        }
       } else {
         card.ctrl = card.owner;
         const arr = card.owner[toZone];
@@ -1519,6 +1543,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const m of made) names[m.name] = (names[m.name] || 0) + 1;
         this.lg(`${ctrl.name} pravi ${Object.entries(names).map(([k, v]) => v > 1 ? `${v}× ${k}` : k).join(', ')}.`, 'token');
         await this.emit('tokensCreated', { ctrl, tokens: made });
+        // tokeni ne prolaze kroz stack — pokaži ih na sredini i sačekaj Proceed
+        await this.revealToHuman({ cards: made, ctrl, kind: 'tokens' });
       }
       this.recalc();
       return made;
@@ -23054,6 +23080,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.render();
     }
 
+    // razriješi TAČNO ODREĐENU odluku (ne nužno onu na vrhu niza)
+    resolvePendingEntry(pd, val) {
+      if (!pd) return;
+      const i = (this.pendings || []).indexOf(pd);
+      if (i >= 0) this.pendings.splice(i, 1);
+      this.sheet = null;
+      pd.resolve(val);
+      this.render();
+    }
+
     scrollPromptIntoView() { }
 
     // ---------- rendering ----------
@@ -23098,15 +23134,72 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.showLog) root.appendChild(this.renderLog(g));
       if (this.showHelp) root.appendChild(this.renderHelp(g));
       if (this.showJudge) root.appendChild(this.renderJudge(g));
+      const reveal = this.renderRevealPopup(g);
+      if (reveal) root.appendChild(reveal);
       const modal = this.renderDecisionModal(g);
       // stack popup stoji na sredini, pa se sklanja kad je otvoren bilo koji drugi
       // overlay — inače bi se preklapali baš na istom mjestu
-      const blocked = !!modal || !!this.sheet || !!this.playerSheet || !!this.zoneBrowse ||
+      const blocked = !!modal || !!reveal || !!this.sheet || !!this.playerSheet || !!this.zoneBrowse ||
         this.showLog || this.showHelp || this.showJudge;
       const sp = blocked ? null : this.renderStackPopup(g);
       if (sp) root.appendChild(sp);
       if (modal) root.appendChild(modal);
       if (g.gameOver) root.appendChild(this.renderGameOver(g));
+    }
+
+    // ---------- Karte/tokeni koji ne prolaze kroz stack ----------
+    // Isti centar ekrana kao stack popup: vidiš šta je protivnik dobio i sam
+    // klikneš Proceed. Landove engine uopšte ne šalje ovamo.
+    renderRevealPopup(g) {
+      // Traži reveal bilo gdje u nizu odluka, ne samo na vrhu — da ga druga
+      // odluka ne može zakloniti i ostaviti igru da visi.
+      const list = this.pendings || [];
+      let pd = null;
+      for (let i = list.length - 1; i >= 0; i--) if (list[i].q.type === 'cardReveal') { pd = list[i]; break; }
+      if (!pd) return null;
+      const cards = pd.q.cards || [];
+      if (!cards.length) return null;
+      const who = pd.q.ctrl ? pd.q.ctrl.name : '';
+      const wrap = el('div', 'stackpopwrap revealwrap');
+      const pop = el('div', 'stackpop reveal');
+      const head = el('div', 'stackpophead');
+      head.appendChild(el('div', 'stackpoptitle',
+        pd.q.kind === 'tokens' ? 'Tokeni' : 'Ulazi na tablu'));
+      head.appendChild(el('div', 'stackpopn', String(cards.length)));
+      pop.appendChild(head);
+
+      const body = el('div', 'stackpopbody');
+      // grupiši iste (npr. 8× Soldier) da lista ostane čitljiva
+      const groups = new Map();
+      for (const c of cards) {
+        const k = c.name;
+        if (!groups.has(k)) groups.set(k, { card: c, n: 0 });
+        groups.get(k).n++;
+      }
+      for (const { card, n } of groups.values()) {
+        const it = el('div', 'stackpopitem');
+        const img = el('img');
+        img.loading = 'lazy';
+        img.src = imgURL(card.name);
+        img.onerror = () => MTG.imgFail(img);
+        it.appendChild(img);
+        const info = el('div', 'stackpopinfo');
+        info.appendChild(el('div', 'stackpopname', esc(card.name)));
+        const pt = card.cur && card.is('Creature') ? ` · ${card.cur.power}/${card.cur.toughness}` : '';
+        info.appendChild(el('div', 'stackpopsub', esc(who) + pt));
+        it.appendChild(info);
+        if (n > 1) it.appendChild(el('div', 'stackpopidx', '×' + n));
+        it.onclick = () => { this.sheet = { card }; this.render(); };
+        body.appendChild(it);
+      }
+      pop.appendChild(body);
+      const foot = el('div', 'stackpopfoot');
+      const btn = el('button', 'pbtn primary wide', 'Proceed ▶');
+      btn.onclick = () => this.resolvePendingEntry(pd, null);
+      foot.appendChild(btn);
+      pop.appendChild(foot);
+      wrap.appendChild(pop);
+      return wrap;
     }
 
     // ---------- THE STACK: popup na sredini ekrana ----------
