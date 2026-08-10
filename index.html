@@ -335,8 +335,6 @@ img.imgfail {
 /* --- prozor za reakciju + HOLD + reflektor na AI akcije --- */
 .tbtn.armed { background: linear-gradient(90deg,#e8c05a,#d98a4a); color: #12141a; box-shadow: 0 0 10px #e8c05a66; }
 .promptbar.reacting { border-top: 2px solid #e8c05a; background: linear-gradient(#241f18, #1a1e26); }
-.reacttrack { height: 5px; border-radius: 3px; background: #2a2f3a; overflow: hidden; margin: 6px 0 2px; }
-.reactfill { display: block; height: 100%; width: 100%; background: linear-gradient(90deg,#e8c05a,#d95a4a); transition: width .12s linear; }
 .spotbar {
   position: fixed; left: 50%; top: 40%; transform: translateX(-50%);
   z-index: 130; max-width: min(92vw, 720px); pointer-events: none;
@@ -3798,6 +3796,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   //  full  — pita na svakom prioritetu
   // vraća true = auto-pass (ne pitaj igrača)
   // ============================================================
+  // Je li ovo end step igrača koji je NEPOSREDNO prije mene u redu poteza?
+  // (tj. čim ovaj potez završi, na redu sam ja)
+  MTG.isLastEndStepBeforeMyTurn = function (g, me) {
+    if (!me || g.phase !== 'end' || g.turnPlayer === me || me.lost) return false;
+    if (g.extraTurns && g.extraTurns.length) return false;   // neko ubacuje ekstra potez
+    return g.nextPlayer(g.turnPlayer) === me;
+  };
+
   MTG.autoPassPolicy = function (mode, g, q, me) {
     if (!q || q.type !== 'priority') return false;
     if (mode === 'full') return false;
@@ -3810,6 +3816,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (top.ctrl === me && !casts.length) return true;
       return false;                                          // nešto je na stacku → PITAJ
     }
+    // POSLJEDNJI end step prije mog poteza: zadnja prilika da nešto odigram u
+    // tuđem potezu (instanti, flash, aktivacije). Uvijek stani — igrač sam
+    // odlučuje kad nastavlja, dugmetom "Nastavi na moj potez".
+    if (MTG.isLastEndStepBeforeMyTurn(g, me)) return false;
     if (mode === 'fast' || mode === 'auto') return true;     // prazan stack → ništa se ne dešava
     // smart: ključni prozori sa praznim stackom
     const myTurn = g.turnPlayer === me;
@@ -3830,7 +3840,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     fast: ['⏩', 0.6, 'Brzo — za preskakanje'],
   };
   MTG.PRIO_MODES = [
-    { key: 'auto', icon: '⚡', label: 'Auto + Reaguj', desc: 'Ne prekida te. Kad protivnik nešto baci, dobiješ kratak prozor sa dugmetom REAGUJ.' },
+    { key: 'auto', icon: '⚡', label: 'Auto + Reaguj', desc: 'Ne prekida te bez potrebe. Kad protivnik nešto baci — i kad je zadnji end step prije tvog poteza — staje i čeka tebe. Nema odbrojavanja.' },
     { key: 'off', icon: '🔕', label: 'Nikad ne pitaj', desc: 'Nikad ne staje. Ti staješ ručno, dugmetom 🖐️.' },
     { key: 'smart', icon: '🎯', label: 'Pametno', desc: 'Staje kad imaš instant: stack, napadači, blokeri, kraj tuđeg poteza.' },
     { key: 'full', icon: '🎛️', label: 'Full control', desc: 'Staje na svakom prioritetu (kao na turniru).' },
@@ -22995,34 +23005,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     // ---------- prozor za reakciju (auto mod) ----------
-    reactMs() {
-      const base = { slow: 6000, normal: 4000, fast: 2000 };
-      return base[this.speed || 'normal'] || 4000;
-    }
+    // BEZ odbrojavanja: prozor se otvara samo kad zaista imaš šta odigrati, i
+    // čeka tebe. Igra nastavlja tek kad klikneš REAGUJ ili Pusti.
     openReactWindow(g, q, resolve) {
       if (q.type !== 'priority') return false;
       if (this._forceStop) { this._forceStop = false; return false; }   // ručni HOLD → pravi prompt
       if ((this.prioMode || 'auto') !== 'auto') return false;
       // sigurnosno: ako je nekim čudom već otvoren prozor, zatvori ga (pusti dalje)
       if (this.react) this.skipReactWindow();
-      const ms = this.reactMs();
-      const w = { q, resolve, ms, t0: Date.now() };
-      this.react = w;
-      w.timer = setTimeout(() => {
-        if (this.react !== w) return;
-        this.react = null;
-        resolve({ kind: 'pass' });
-        this.render();
-      }, ms);
-      // sitni tick da se traka animira
-      w.tick = setInterval(() => { if (this.react === w) this.paintReactBar(); }, 100);
+      this.react = { q, resolve };
       this.render();
       return true;
     }
     takeReactWindow() {
       const w = this.react;
       if (!w) return;
-      clearTimeout(w.timer); clearInterval(w.tick);
       this.react = null;
       this.pendings = this.pendings || [];
       this.pendings.push({ q: w.q, resolve: w.resolve, sel: [], assigns: new Map(), mode: null });
@@ -23031,17 +23028,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     skipReactWindow() {
       const w = this.react;
       if (!w) return;
-      clearTimeout(w.timer); clearInterval(w.tick);
       this.react = null;
       w.resolve({ kind: 'pass' });
       this.render();
-    }
-    paintReactBar() {
-      const w = this.react;
-      const fill = document.querySelector('.reactfill');
-      if (!w || !fill) return;
-      const left = Math.max(0, 1 - (Date.now() - w.t0) / w.ms);
-      fill.style.width = (left * 100) + '%';
     }
 
     resolvePending(val) {
@@ -23852,22 +23841,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (this.react) {
           const w = this.react;
           const top = g.stack[g.stack.length - 1];
-          const who = top && top.ctrl ? top.ctrl.name : 'protivnik';
-          const what = top ? (top.name || (top.card && top.card.name) || 'nešto') : 'akcija';
           bar.classList.add('reacting');
-          const info = el('div', 'ptext',
-            `⚡ <b>${esc(who)}</b>: ${esc(what)} — želiš da odgovoriš?`);
-          bar.appendChild(info);
-          const track = el('div', 'reacttrack', '<span class="reactfill"></span>');
-          bar.appendChild(track);
+          // Posljednji end step prije mog poteza dobija svoj tekst i dugme —
+          // to nije "odgovor na spell", nego zadnja prilika da nešto odigram.
+          const preTurn = !top && MTG.isLastEndStepBeforeMyTurn(g, this.me);
+          if (preTurn) {
+            bar.appendChild(el('div', 'ptext',
+              `🌙 Kraj poteza — <b>${esc(g.turnPlayer ? g.turnPlayer.name : '')}</b>. Zadnja prilika prije tvog poteza.`));
+          } else {
+            const who = top && top.ctrl ? top.ctrl.name : 'protivnik';
+            const what = top ? (top.name || (top.card && top.card.name) || 'nešto') : 'akcija';
+            bar.appendChild(el('div', 'ptext',
+              `⚡ <b>${esc(who)}</b>: ${esc(what)} — želiš da odgovoriš?`));
+          }
           const row = el('div', 'btnrow');
-          const yes = el('button', 'pbtn primary', '⚡ REAGUJ');
+          const yes = el('button', 'pbtn primary', preTurn ? '🎴 ODIGRAJ NEŠTO' : '⚡ REAGUJ');
           yes.onclick = () => this.takeReactWindow();
-          const no = el('button', 'pbtn', 'Pusti ▶');
+          const no = el('button', 'pbtn', preTurn ? 'Nastavi na moj potez ▶' : 'Pusti ▶');
           no.onclick = () => this.skipReactWindow();
           row.appendChild(yes); row.appendChild(no);
           bar.appendChild(row);
-          setTimeout(() => this.paintReactBar(), 0);
           return bar;
         }
         const hint = this.holdNext ? '🖐️ HOLD armiran — stajem na sljedećem prioritetu.' : '⏳ Protivnici igraju…';
@@ -23948,6 +23941,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             label = '🛡️ <b>Blokeri proglašeni</b> — zadnja šansa za trik prije štete.';
           } else if (g.phase === 'combat' && g.step === 'firstStrike') {
             label = '⚔️ <b>First-strike šteta gotova</b> — možeš reagovati prije obične štete.';
+          } else if (MTG.isLastEndStepBeforeMyTurn(g, this.me)) {
+            label = `🌙 <b>Kraj poteza</b> (${esc(g.turnPlayer.name)}) — zadnja prilika prije tvog poteza.`;
           } else if (g.phase === 'end') {
             label = `🌙 <b>Kraj poteza</b> (${esc(g.turnPlayer.name)}) — najbolji trenutak za instant.`;
           } else {
@@ -23962,7 +23957,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const oz2 = offZoneRow();
           if (oz2) bar.appendChild(oz2);
           const row = el('div', 'btnrow');
-          row.appendChild(btn('Prođi ▶', () => this.resolvePending({ kind: 'pass' }), 'primary'));
+          row.appendChild(btn(MTG.isLastEndStepBeforeMyTurn(g, this.me) ? 'Nastavi na moj potez ▶' : 'Prođi ▶',
+            () => this.resolvePending({ kind: 'pass' }), 'primary'));
           row.appendChild(btn('🔕 Ne prekidaj me više', () => {
             this.prioMode = 'off';
             this.toast('🔕 Ne pitam više. Stani ručno dugmetom 🖐️ (ili tipkom R).');
