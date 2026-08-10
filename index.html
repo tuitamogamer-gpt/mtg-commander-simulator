@@ -7,7 +7,7 @@
 <title>MTG Commander Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   /* --- dizajn tokeni stola (MTG Commander Client Design) --- */
@@ -501,6 +501,108 @@ img.imgfail {
   .mini.sm { width: 82px; height: 111px; }
   .hcard { width: 106px; height: 146px; }
 }
+
+/* ============================================================
+   MENI — dizajn iz "Game menu design request"
+   Namjerno drugačiji od stola: zaobljeno (11px), bijele hairline
+   linije i Marcellus serif naslovi. Sve pod #setup.
+   ============================================================ */
+#setup {
+  --mn-bg: #08090d; --mn-panel: #0d0e14; --mn-raise: #14161d; --mn-raise2: #191b24;
+  --mn-line: rgba(255,255,255,.07); --mn-line2: rgba(255,255,255,.10);
+  --mn-gold: #E8B04B; --mn-gold-lt: #ffd583;
+  --mn-ink: #f2eee6; --mn-mute: rgba(233,230,223,.55); --mn-mute2: rgba(233,230,223,.35);
+  --mn-ok: #5ec98a;
+  background: var(--mn-bg); color: var(--mn-ink);
+  font-family: 'Barlow', -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+body:has(#setup) { background: #08090d; }
+/* zaglavlje */
+#setup .menuhead {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 2px 18px; border-bottom: 1px solid var(--mn-line); margin-bottom: 18px;
+}
+#setup .menumark {
+  width: 38px; height: 38px; flex: none; transform: rotate(45deg);
+  border: 1.5px solid var(--mn-gold); border-radius: 7px;
+  box-shadow: inset 0 0 14px rgba(232,176,75,.25);
+}
+#setup .menutitles { flex: 1; min-width: 0; }
+#setup .title {
+  font-family: 'Marcellus', Georgia, serif; font-weight: 400;
+  font-size: 30px; text-align: left; margin: 0; color: var(--mn-ink);
+  background: none; -webkit-text-fill-color: currentColor; letter-spacing: .2px;
+}
+#setup .subtitle { text-align: left; margin: 3px 0 0; color: var(--mn-mute); font-size: 13px; }
+#setup .menupill {
+  display: flex; align-items: center; gap: 7px; flex: none;
+  border: 1px solid var(--mn-line2); border-radius: 999px; padding: 6px 14px;
+  font-size: 10.5px; letter-spacing: 2px; text-transform: uppercase; color: var(--mn-mute);
+}
+#setup .menupill .dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--mn-ok);
+  box-shadow: 0 0 8px rgba(94,201,138,.7);
+}
+/* sekcije 01/02/03 */
+#setup .seclabel {
+  font-family: 'Marcellus', Georgia, serif; font-size: 17px; color: var(--mn-ink);
+  letter-spacing: .2px; display: flex; align-items: baseline; gap: 10px; margin: 20px 0 10px;
+}
+#setup .seclabel i {
+  font-style: normal; font-family: 'Barlow', sans-serif; font-size: 11px;
+  letter-spacing: 2px; color: var(--mn-gold); opacity: .85;
+}
+#setup .seclabel em {
+  font-style: normal; font-size: 11px; color: var(--mn-mute2); letter-spacing: .3px;
+}
+/* deck kartice */
+#setup .deckcard {
+  background: var(--mn-panel); border: 1px solid var(--mn-line); border-radius: 11px;
+  overflow: hidden; transition: border-color .14s, background .14s, transform .14s;
+}
+#setup .deckcard:hover { background: var(--mn-raise); border-color: var(--mn-line2); }
+#setup .deckcard.selected {
+  border-color: rgba(232,176,75,.5); background: var(--mn-raise);
+  box-shadow: 0 0 0 1px rgba(232,176,75,.18), 0 10px 30px rgba(0,0,0,.5);
+}
+#setup .deckart { width: 104px; height: auto; align-self: stretch; object-fit: cover; }
+#setup .deckname { font-family: 'Marcellus', Georgia, serif; font-weight: 400; font-size: 17px; color: var(--mn-ink); }
+#setup .deckcmd { color: var(--mn-gold); font-size: 12.5px; margin: 3px 0 5px; }
+#setup .deckblurb { color: var(--mn-mute); font-size: 12px; line-height: 1.45; }
+#setup .deckset { color: var(--mn-mute2); font-size: 10.5px; margin-top: 5px; }
+#setup .deckstyle { color: var(--mn-mute); }
+#setup .dot { border: none; }
+/* desni panel */
+#setup .setupright {
+  background: var(--mn-panel); border: 1px solid var(--mn-line);
+  border-radius: 15px; padding: 4px 18px 18px;
+}
+#setup .cmdbox, #setup .cmdopt, #setup .pbtn, #setup select, #setup textarea, #setup input {
+  border-radius: 10px;
+}
+#setup .cmdbox {
+  border: 1px dashed var(--mn-line2); background: rgba(255,255,255,.012);
+  color: var(--mn-mute2); min-height: 96px;
+}
+#setup .pbtn {
+  background: var(--mn-raise); border: 1px solid var(--mn-line); color: var(--mn-ink);
+  transition: border-color .14s, background .14s;
+}
+#setup .pbtn:hover { border-color: var(--mn-line2); background: var(--mn-raise2); }
+#setup .pbtn.on, #setup .pbtn.sel {
+  border-color: rgba(232,176,75,.55); color: var(--mn-gold-lt);
+  background: linear-gradient(180deg, #1a1408, #14110a);
+}
+#setup .pbtn.start {
+  background: linear-gradient(180deg, rgba(232,176,75,.16), rgba(232,176,75,.06));
+  border-color: rgba(232,176,75,.4); color: var(--mn-gold-lt);
+  font-family: 'Marcellus', Georgia, serif; font-size: 17px; letter-spacing: .3px;
+}
+#setup .pbtn.start:disabled { color: var(--mn-mute2); border-color: var(--mn-line); background: var(--mn-raise); }
+#setup select, #setup textarea, #setup input {
+  background: var(--mn-raise); border: 1px solid var(--mn-line); color: var(--mn-ink);
+}
+#setup .sidenote, #setup .cmdhint { color: var(--mn-mute2); font-size: 11px; }
 
 /* ============================================================
    STO — dizajn iz "MTG Commander Client Design"
@@ -23924,9 +24026,17 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
   function renderSetup() {
     const root = $('#setup');
     root.innerHTML = '';
-    root.appendChild(el('h1', 'title', '⚔️ MTG Commander Simulator'));
     const nDecks = Object.keys(MTG.DECKS).filter(d => !MTG.DECKS[d].custom).length;
-    root.appendChild(el('div', 'subtitle', `${nDecks} pravih precon deckova · 2023–2026 · biraj komandera i partnere`));
+    // zaglavlje po dizajnu menija: romb-znak lijevo, naslov, status pilula desno
+    const head = el('div', 'menuhead');
+    head.innerHTML = `
+      <div class="menumark" aria-hidden="true"></div>
+      <div class="menutitles">
+        <h1 class="title">MTG Commander Simulator</h1>
+        <div class="subtitle">${nDecks} pravih precon deckova · 2023–2026 · biraj komandera i partnere</div>
+      </div>
+      <div class="menupill"><span class="dot"></span>Priprema partije</div>`;
+    root.appendChild(head);
 
     const state = {
       deck: null, ai: 3, difficulty: 'normal', seed: '',
@@ -23940,7 +24050,7 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
     const right = el('div', 'setupright');
     grid.appendChild(left); grid.appendChild(right);
 
-    left.appendChild(el('div', 'seclabel', '1 · Izaberi svoj precon'));
+    left.appendChild(el('div', 'seclabel', '<i>01</i> Izaberi svoj precon'));
     const deckList = el('div', 'decklist');
     for (const [name, deck] of Object.entries(MTG.DECKS)) {
       const meta = MTG.DECK_META[name] || {};
@@ -23968,7 +24078,7 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
     left.appendChild(deckList);
 
     // ---------- 2 · KOMANDER ----------
-    right.appendChild(el('div', 'seclabel', '2 · Komander'));
+    right.appendChild(el('div', 'seclabel', '<i>02</i> Komander'));
     const cmdBox = el('div', 'cmdbox');
     right.appendChild(cmdBox);
     const updateStartLabel = () => {
@@ -24010,7 +24120,7 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
       cmdBox.appendChild(btn);
     }
 
-    right.appendChild(el('div', 'seclabel', '3 · Protivnici (AI dobijaju nasumične precone)'));
+    right.appendChild(el('div', 'seclabel', '<i>03</i> Protivnici <em>AI dobijaju nasumične precone</em>'));
     const aiRow = el('div', 'btnrow center');
     const botStyles = el('div', 'botstyles');
     const styleOptions = [['random', '🎲 Nasumičan stil']]
@@ -24057,7 +24167,7 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
       aiRow.appendChild(b);
     }
     right.appendChild(aiRow);
-    right.appendChild(el('div', 'seclabel', '🎭 Stil AI botova'));
+    right.appendChild(el('div', 'seclabel', '<i>·</i> Stil AI botova'));
     right.appendChild(botStyles);
     renderBotStyles();
 
@@ -24073,7 +24183,7 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
     houseRow.querySelector('input').onchange = e => { state.sumPartnerDamage = e.target.checked; };
     right.appendChild(houseRow);
 
-    right.appendChild(el('div', 'seclabel', '4 · Težina'));
+    right.appendChild(el('div', 'seclabel', '<i>04</i> Težina'));
     const diffRow = el('div', 'btnrow center');
     for (const [k, label] of [['normal', 'Normalna'], ['tough', 'Teška']]) {
       const b = el('button', 'pbtn choice' + (k === 'normal' ? ' selected' : ''), label);
@@ -24089,7 +24199,7 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
     renderCmdBox();
 
     // --- IMPORT SVOG DECKA ---
-    right.appendChild(el('div', 'seclabel', '📥 Ili uvezi SVOJ deck (Moxfield)'));
+    right.appendChild(el('div', 'seclabel', '<i>·</i> Ili uvezi svoj deck'));
     const impBox = el('div', 'importbox');
     impBox.innerHTML = `
       <textarea id="impText" rows="4" placeholder="Zalijepi Moxfield URL ili export tekst:\n1 Sol Ring\n1 Arcane Signet\n1 Atraxa, Praetors' Voice\n…"></textarea>
