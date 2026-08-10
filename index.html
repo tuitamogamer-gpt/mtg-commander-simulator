@@ -1246,6 +1246,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (n <= 0 || target.zone !== 'battlefield') return 0;
       n = this.applyDamageReplacements(src, target, n, opts);
       if (n <= 0) return 0;
+      // prevencija sve štete određenom stvorenju (Kurbis i sl.)
+      if (this.untilEffects.some(e => e.kind === 'preventToCreature' && e.iid === target.iid)) {
+        this.lg(`Šteta stvorenju ${target.name} je spriječena.`);
+        return 0;
+      }
       // shield counter: upija jedan damage event
       if ((target.counters['shield'] || 0) > 0) {
         this.removeCounters(target, 'shield', 1);
@@ -1914,8 +1919,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if ((c.counters[kind] || 0) < (m.cost.rmCounter.n || 1)) continue;
         }
         // 3. argument je kartica-izvor: treba kartama tipa Secluded Courtyard
-        // kojima ograničenje zavisi od izbora zapamćenog na samoj karti
-        if (m.restrict && forSpell && !m.restrict(this, forSpell, c)) continue;
+        // kojima ograničenje zavisi od izbora zapamćenog na samoj karti.
+        // Kod plaćanja SPOSOBNOSTI primjenjuju se samo restrikcije koje se
+        // izričito prijave (restrictAbilities), da postojeće spell-only
+        // restrikcije ostanu netaknute.
+        if (m.restrict && forSpell && (!forSpell.isAbility || m.restrictAbilities)
+          && !m.restrict(this, forSpell, c)) continue;
         let produce = m.produce;
         if (typeof produce === 'function') produce = produce(this, c, p);
         if (!produce || !produce.length) continue;
@@ -1940,7 +1949,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     // convoke / improvise: tapanje stvorenja/artefakata plaća spell
-    if (forSpell && forSpell.card) {
+    if (forSpell && forSpell.card && !forSpell.isAbility) {
       const fd = forSpell.card.def;
       const hasImpStat = fd.improvise || this.bf().some(c => c.ctrl === p && c.def.grantsImprovise && !forSpell.card.is('Artifact'));
       const grantedConvoke = !fd.convoke && forSpell.card.def.types.includes('Creature') &&
@@ -3141,7 +3150,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.untapSelf) { c.tapped = false; }
     if (cost.mana) {
       const mc = U.parseCost(typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana);
-      const ok = await this.payMana(p, mc);
+      // izvor sposobnosti se prosljeđuje da restrikcije mane mogu odlučiti
+      // (Secluded Courtyard: „ili aktiviraj sposobnost stvorenja tog tipa")
+      const ok = await this.payMana(p, mc, { card: c, isAbility: true });
       if (!ok) { if (cost.tap) c.tapped = false; return false; }
     }
     if (cost.life) await this.loseLife(p, cost.life, 'cost');
@@ -3735,9 +3746,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (dp.lost) continue;
       const potential = this.creatures(dp).filter(b => !b.tapped && !b.cur.cantBlock);
       if (!potential.length) continue;
-      const blocks = await dp.controller.decide(this, {
-        type: 'blockers', attackers: atks, potential, player: dp,
-      });
+      // Odric: napadač bira blokove umjesto branioca. Čovjek dobije izbor;
+      // AI bira "bez blokova", što je za napadača praktično uvijek ispravno.
+      const chooser = this.untilEffects.find(e => e.kind === 'chooseBlocksFor' && e.who !== dp);
+      let blocks;
+      if (chooser) {
+        this.lg(`${chooser.who.name} bira blokove za ${dp.name} (Odric).`);
+        blocks = chooser.who.isAI ? [] : await chooser.who.controller.decide(this, {
+          type: 'blockers', attackers: atks, potential, player: dp, chosenByAttacker: true,
+        });
+      } else {
+        blocks = await dp.controller.decide(this, {
+          type: 'blockers', attackers: atks, potential, player: dp,
+        });
+      }
       // blocks: [{blocker, attacker}]
       for (const b of blocks) {
         if (!this.canBlock(b.blocker, b.attacker)) continue;
@@ -17196,10 +17218,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     g.lg(`${card.name}: izabran tip — ${pick}.`);
   };
   const typedRestrict = (g, forSpell, src) => {
-    if (!forSpell || !forSpell.card || !forSpell.card.is('Creature')) return false;
+    if (!forSpell || !forSpell.card) return false;
     const t = src && src.meta && src.meta.chosenType;
     if (!t) return true;                    // tip još nije izabran — ne blokiraj
-    return forSpell.card.hasSub(t);
+    // Secluded Courtyard vrijedi i za sposobnosti stvorenja tog tipa;
+    // Unclaimed Territory samo za bacanje stvorenja.
+    if (forSpell.isAbility) return forSpell.card.is('Creature') && forSpell.card.hasSub(t);
+    return forSpell.card.is('Creature') && forSpell.card.hasSub(t);
   };
 
   SC['Secluded Courtyard'] = {
@@ -17207,9 +17232,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     asEnters: chooseCreatureType,
     mana: [
       { cost: { tap: true }, produce: [{ C: 1 }] },
-      { cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrict: typedRestrict },
+      // restrictAbilities: vrijedi i kad se plaća sposobnost, ne samo spell
+      { cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrict: typedRestrict, restrictAbilities: true },
     ],
-    simplified: 'Dio „ili aktiviraj sposobnost stvorenja tog tipa" nije podržan; bacanje stvorenja izabranog tipa radi.',
   };
   SC['Unclaimed Territory'] = {
     producesColors: [],
@@ -19616,13 +19641,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Kurbis, Harvest Celebrant'] = {
     // "mana spent to cast" = X + {G}{G}
     etbCounters: { kind: '+1/+1', n: (g, card) => ((card.castMeta && card.castMeta.x) || 0) + 2 },
-    // Engine nema prevenciju štete stvorenjima (samo igračima), pa je efekat
-    // aproksimiran indestructible-om do kraja poteza.
-    simplified: 'Umjesto prevencije štete, cilj dobija indestructible do kraja poteza.',
     abilities: [{
-      label: 'Skini counter: zaštiti stvorenje', cost: { rmCounter: { kind: '+1/+1', n: 1 } },
-      targets: [T.creature((g, c) => hasCounter(c), { prompt: 'Zaštiti', aiHint: { goal: 'protect' } })],
-      run: async ctx => { if (ctx.targets[0]) E.grantUntilEOT(ctx.g, ctx.targets[0], ['indestructible']); },
+      label: 'Skini counter: spriječi svu štetu stvorenju', cost: { rmCounter: { kind: '+1/+1', n: 1 } },
+      // T.creature prima samo opcije — filter ide kroz T.permanent
+      targets: [T.permanent((g, c) => c.is('Creature') && hasCounter(c), { prompt: 'Zaštiti', aiHint: { goal: 'protect' } })],
+      run: async ctx => {
+        const t = ctx.targets[0]; if (!t) return;
+        ctx.g.untilEffects.push({ kind: 'preventToCreature', iid: t.iid, expires: 'eot' });
+        ctx.g.lg(`${t.name}: sva šteta ovog poteza je spriječena.`);
+      },
     }],
   };
 
@@ -19928,9 +19955,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'attackersDeclared', desc: 'Ti biraš blokove',
       filter: (g, self, d) => d.player === self.ctrl && d.attackers.includes(self) && d.attackers.length >= 4,
-      run: async ctx => { ctx.g.lg('Odric napada sa 4+ stvorenja — po pravilima bi ti birao blokove.'); },
+      run: async ctx => {
+        ctx.g.untilEffects.push({ kind: 'chooseBlocksFor', who: ctx.you, expires: 'eot' });
+        ctx.g.lg(`${ctx.you.name} bira blokove ovog combata (Odric).`);
+      },
     }],
-    simplified: 'Biranje protivničkih blokova nije podržano — okidač se samo prijavljuje u logu.',
   };
   SC['Sigarda, Heron\'s Grace'] = {
     statics: [{ apply: (g, self, bf) => { for (const c of bf) if (c.ctrl === self.ctrl && c.hasSub('Human')) c.cur.hexproof = true; } }],
@@ -20082,7 +20111,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => { if (ctx.targets[0]) await ctx.g.destroy(ctx.targets[0]); },
   };
   SC['Snuff Out'] = {
-    targets: [T.creature((g, c) => !c.colors.includes('B'), { prompt: 'Uništi (necrno)', aiHint: { goal: 'removal' } })],
+    targets: [T.permanent((g, c) => c.is('Creature') && !c.colors.includes('B'), { prompt: 'Uništi (necrno)', aiHint: { goal: 'removal' } })],
     resolve: async ctx => { if (ctx.targets[0]) await ctx.g.destroy(ctx.targets[0]); },
   };
   SC['Final Judgment'] = {
@@ -20390,15 +20419,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   SC['Sublime Epiphany'] = {
-    targets: [T.creature({ prompt: 'Kopiraj svoje stvorenje (opciono)', upTo: true, aiHint: { goal: 'copy' } })],
-    resolve: async ctx => {
-      // pojednostavljeno: kontra prvog protivničkog spella na stacku, vrati permanent, kopija, vuci
-      const so = ctx.g.stack.filter(s => s.kind === 'spell' && s.ctrl !== ctx.you).pop();
-      if (so) { so.countered = true; ctx.g.lg(`Sublime Epiphany kontrira ${so.name || 'spell'}.`); }
-      if (ctx.targets[0] && ctx.targets[0].ctrl === ctx.you) await ctx.g.copyPermanentToken(ctx.targets[0], ctx.you, {});
-      await ctx.g.draw(ctx.you, 1);
+    modes: {
+      pick: 'any', min: 1,
+      list: [
+        { label: 'Kontriraj spell', targets: [T.spell(null, { prompt: 'Kontriraj spell', aiHint: { goal: 'counter' } })] },
+        { label: 'Vrati nonland permanent u ruku', targets: [T.permanent((g, c) => !c.is('Land'), { prompt: 'Vrati u ruku', aiHint: { goal: 'bounce' } })] },
+        { label: 'Token-kopija tvog stvorenja', targets: [T.yourCreature({ prompt: 'Kopiraj', aiHint: { goal: 'copy' } })] },
+        { label: 'Igrač vuče kartu', targets: [T.player({ prompt: 'Ko vuče kartu' })] },
+      ],
     },
-    simplified: 'Modalni izbor je pojednostavljen: kontrira spell (ako ga ima), pravi kopiju cilja i vuče kartu.',
+    resolve: async ctx => {
+      const modes = ctx.mode || [];
+      for (let i = 0; i < modes.length; i++) {
+        const raw = ctx.targets[i];
+        const t = Array.isArray(raw) ? raw[0] : raw;
+        if (!t) continue;
+        if (modes[i] === 0) { t.countered = true; ctx.g.lg(`Sublime Epiphany kontrira ${t.name || 'spell'}.`); }
+        else if (modes[i] === 1) { if (t.zone === 'battlefield') { await ctx.g.move(t, 'hand'); ctx.g.lg(`${t.name} vraćen u ruku.`); } }
+        else if (modes[i] === 2) { if (t.zone === 'battlefield') await ctx.g.copyPermanentToken(t, ctx.you, {}); }
+        else if (modes[i] === 3) { await ctx.g.draw(t, 1); }
+      }
+    },
+    simplified: 'Mod „kontriraj aktiviranu ili trigerovanu sposobnost" nije podržan; ostala četiri rade.',
   };
 
   SC['Summon: Good King Mog XII'] = {
@@ -20443,10 +20485,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const cands = ctx.you.exile.filter(c => ids.includes(c.iid));
         if (!cands.length) { ctx.g.lg('Urianger: nema egziliranih karata.'); return; }
         const pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: cands, min: 1, max: 1, prompt: 'Baci iz egzila:', aiHint: { kind: 'freeCast' } });
-        if (pick[0]) await E.castCopyFromZone(ctx.g, ctx.you, pick[0]);
+        if (!pick[0]) return;
+        // "Spells you cast this way cost {2} less" — jednokratno smanjenje baš za tu kartu
+        const iid = pick[0].iid;
+        ctx.you.tempReductions = ctx.you.tempReductions || [];
+        ctx.you.tempReductions.push({ once: true, filter: (g, card) => card.iid === iid, delta: -2 });
+        await E.castCopyFromZone(ctx.g, ctx.you, pick[0]);
       },
     }],
-    simplified: 'Play Arcanum baca egziliranu kartu bez popusta od {2}.',
   };
 
   SC['White Auracite'] = {
@@ -20865,7 +20911,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const m = /moxfield\.com\/decks\/([A-Za-z0-9_-]+)/.exec(url);
     if (!m) throw new Error('Ne prepoznajem Moxfield URL.');
     const id = m[1];
-    const resp = await fetch(`https://api2.moxfield.com/v3/decks/all/${id}`, { headers: { 'Accept': 'application/json' } });
+    // Moxfield ne šalje CORS zaglavlja, pa direktan poziv iz browsera pada.
+    // Preko http(s) idemo na vlastiti /api/moxfield proxy; kad je stranica
+    // otvorena kao file:// nema proxyja pa probamo direktno.
+    const viaProxy = location.protocol === 'http:' || location.protocol === 'https:';
+    const endpoint = viaProxy
+      ? `/api/moxfield?id=${encodeURIComponent(id)}`
+      : `https://api2.moxfield.com/v3/decks/all/${id}`;
+    let resp;
+    try {
+      resp = await fetch(endpoint, { headers: { 'Accept': 'application/json' } });
+    } catch (e) {
+      throw new Error('Ne mogu doći do Moxfielda (mreža ili CORS).');
+    }
     if (!resp.ok) throw new Error('Moxfield API ' + resp.status);
     const j = await resp.json();
     const cards = [];
@@ -21068,12 +21126,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
     diplomat: {
       label: 'Pregovarač', icon: '🤝',
-      atkThr: 0.9, atkRnd: 0.15,
+      // Ranije atkThr 0.9 / atkRnd 0.15 / lowLifeHunt 0: napadao je toliko
+      // rijetko i nikad nije dovršavao protivnike, pa je pobjeđivao 9% umjesto
+      // ~25%. Karakter ostaje (lider + osveta), ali sad zna zaključiti partiju.
+      atkThr: 0.6, atkRnd: 0.25,
       blockThr: 0,
-      lowLifeHunt: 0,
-      focusLeader: 3,      // napada SAMO najveću prijetnju...
-      grudgeOnly: true,    // ...ili one koji su ga napali
-      castCreature: 0, castDamage: 0, castDefense: 0.4, castPolitics: 0.6,
+      lowLifeHunt: 1.4,
+      focusLeader: 2.4,    // i dalje prvenstveno najveća prijetnja...
+      grudgeOnly: true,    // ...ili oni koji su ga napali (uz lethal izuzetak)
+      castCreature: 0.3, castDamage: 0.2, castDefense: 0.4, castPolitics: 0.6,
       wipeBias: 0, counterBias: 0.4,
     },
     passive: {
@@ -21313,14 +21374,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const a = e.ability;
       if (!a) return 0;
       if (a.aiScore) return a.aiScore(g, c, this.p);
-      const label = (a.label || '').toLowerCase();
-      if (/vuci|draw/.test(label)) return 3;
-      if (/token|vjeverica|squirrel|treasure|food/.test(label)) return 2.2;
-      if (/monstrosity|level|counter/.test(label)) return 2;
-      if (/uništi|šteta|fight|gubi/.test(label)) return 2.4;
       if (a.loyalty !== undefined) return 3;
-      if (/mana|boja/.test(label)) return 0; // mana handled by solver
-      return 0.8;
+      const label = (a.label || '').toLowerCase();
+      if (/mana|boja/.test(label)) return 0; // manu rješava solver
+      // Utility zemlje i slično su ranije padale na default 0.8 i nikad nisu
+      // bile odigrane jer ih je svako bacanje karte nadglasalo.
+      let v;
+      if (/vuci|draw|karta/.test(label)) v = 3.2;
+      else if (/nađi|naci|traži|trazi|search|tutor|basic|forest|plains|island|swamp|mountain/.test(label)) v = 2.6;
+      else if (/uništi|unisti|šteta|steta|fight|gubi|destroy|damage|exile|egzil/.test(label)) v = 2.4;
+      else if (/token|vjeverica|squirrel|treasure|food|clue|human|spirit|soldier|wolf|\d\/\d/.test(label)) v = 2.3;
+      else if (/monstrosity|level|counter|\+1\/\+1/.test(label)) v = 2.0;
+      else if (/neblokiran|unblockable|double strike|deathtouch|lifelink|trample|flying|haste|vigilance|indestructible|hexproof|menace|\+\d/.test(label)) {
+        // borbeni bonusi vrijede samo prije borbe
+        v = g.phase === 'main1' ? 2.1 : 0.5;
+      } else v = 0.9;
+      // U drugoj glavnoj fazi neiskorištena mana ionako propada, pa su
+      // aktivirane sposobnosti tada osjetno vrjednije od čekanja.
+      if (g.phase === 'main2') v += 1.6;
+      return v;
     }
 
     priorityAction(g, q) {
@@ -21401,7 +21473,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // pregovarač: ne dira one koji ga nisu dirali i nisu lider (osim lethala)
           const isGrudge = (grudges[o.idx] || 0) > 0;
           const myDmg = g.dmgAmount(c, 'normal');
-          if (P.grudgeOnly && o !== leader && !isGrudge && o.life > myDmg) continue;
+          // Lethal izuzetak je ranije gledao samo OVO stvorenje, pa pregovarač
+          // nikad nije mogao zaključiti partiju udruženim napadom. Sad računa
+          // šta cijela tabla može nanijeti.
+          if (P.grudgeOnly && o !== leader && !isGrudge) {
+            const boardDmg = q.eligible.reduce((s, x) => s + g.dmgAmount(x, 'normal'), 0);
+            if (o.life > Math.max(myDmg, boardDmg * 0.9)) continue;
+          }
           const blockers = g.creatures(o).filter(b => g.canBlock(b, c));
           let score = 0;
           if (!blockers.length) {
