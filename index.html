@@ -3032,6 +3032,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       kind: 'spell', card: so.card, ctrl, name: so.name + ' (kopija)', targets: so.targets.slice(),
       x: so.x, mode: so.mode, castOpts: so.castOpts, kicked: so.kicked, copyOf: so, isCopy: true,
     };
+    // forceTarget: kopija ide na tačno određenu metu (Mirrorwing Dragon)
+    if (opts.forceTarget) {
+      copy.targets = so.targets.map(t => (Array.isArray(t) ? [opts.forceTarget] : opts.forceTarget));
+      opts = Object.assign({}, opts, { mayNewTargets: false });
+    }
     // new targets?
     if (opts.mayNewTargets && so.targets.length) {
       const specs = this.spellTargetSpecs(so.card, so.castOpts || {});
@@ -16240,7 +16245,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Mirrorwing Dragon'] = {
-    simplified: 'Kopiranje spellova koji ciljaju samo zmaja — pojednostavljeno (nije implementirano).',
+    triggers: [{
+      on: 'cast', desc: 'Kopije za ostala stvorenja',
+      filter: (g, self, d) => {
+        if (!d.card || !(d.card.is('Instant') || d.card.is('Sorcery'))) return false;
+        const ts = (d.so && d.so.targets || []).flat().filter(Boolean);
+        return ts.length > 0 && ts.every(t => t === self);
+      },
+      run: async ctx => {
+        const caster = ctx.data.player;
+        const others = ctx.g.creatures(caster).filter(c => c !== ctx.src);
+        for (const c of others) {
+          await ctx.g.copySpell(ctx.data.so, caster, { mayNewTargets: true, forceTarget: c });
+        }
+        ctx.g.lg(`Mirrorwing Dragon: ${others.length} kopija.`);
+      },
+    }],
   };
   SC['Muddle, the Ever-Changing'] = {
     triggers: [{
@@ -16435,16 +16455,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Reality Shift'] = {
-    simplified: 'Manifest pojednostavljen: 2/2 face-down token.',
-    targets: [T.creature({ prompt: 'Egzilaj', aiHint: { goal: 'removal' } })],
+    targets: [T.creature({ prompt: 'Egzilaj stvorenje', aiHint: { goal: 'removal' } })],
     resolve: async ctx => {
-      const t = ctx.targets[0];
-      if (!t) return;
+      const t = ctx.targets[0]; if (!t) return;
       const owner = t.ctrl;
       await ctx.g.exileCard(t);
+      // manifest: vrh biblioteke ide na sto kao 2/2 licem nadolje
       if (owner.library.length) {
-        owner.library.pop(); // karta "postaje" manifest
+        owner.library.pop();
         await ctx.g.makeTokens('manifest22', owner);
+        ctx.g.lg(`${owner.name} manifestuje vrh biblioteke.`);
       }
     },
   };
@@ -16629,9 +16649,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Throes of Chaos'] = {
     cascade: true,
-    flashback: { cost: '{3}{R}', altCostStr: '{3}{R}', speed: 'sorcery' },
-    simplified: 'Retrace pojednostavljen kao flashback.',
-    resolve: async ctx => { /* cascade radi svoje */ },
+    flashback: { cost: '{3}{R}', altCostStr: '{3}{R}' },
+    resolve: async ctx => { ctx.g.lg('Throes of Chaos: cascade.'); },
+    simplified: 'Retrace je aproksimiran flashbackom: ne traži odbacivanje zemlje i može se iskoristiti samo jednom.',
   };
   SC['Twinflame'] = {
     kicker: { cost: '{2}{R}' },
