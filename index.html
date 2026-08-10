@@ -1997,6 +1997,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
         }
         if (picked.length < min) return false;
+        // 'targeted' — karte tipa Black Bolt reaguju kad ih neko cilja.
+        // Ranije ga niko nije emitovao, pa je taj okidač bio mrtav.
+        for (const t of picked) {
+          if (t && t.iid !== undefined && t !== src) {
+            await this.emit('targeted', { card: t, byPlayer: ctrl, src });
+          }
+        }
         if (max === 1) ctx.targets.push(picked[0]);
         else ctx.targets.push(picked);
       }
@@ -17022,8 +17029,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     }],
     triggers: [{
-      on: 'blocked', desc: 'Counteri', filter: (g, self, d) => d.card && d.card.ctrl === self.ctrl && d.card.hasSub('Hero'),
-      run: async ctx => { ctx.g.addCounters(ctx.data.card, '+1/+1', (ctx.data.card.blockedBy || []).length || 1); },
+      // engine emituje 'becomesBlocked' sa {attacker, blockers}; 'blocked' ne postoji
+      on: 'becomesBlocked', desc: 'Counteri',
+      filter: (g, self, d) => d.attacker && d.attacker.ctrl === self.ctrl && d.attacker.hasSub('Hero'),
+      run: async ctx => { ctx.g.addCounters(ctx.data.attacker, '+1/+1', (ctx.data.blockers || []).length || 1); },
     }],
   };
   SC['Speed, Young Avenger'] = {
@@ -18431,7 +18440,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         },
       },
     ],
-    simplified: 'Lethal Voice zavisi od "targeted" eventa — radi za spellove koji ciljaju.',
   };
   SC['Council of Reeds'] = {
     statics: [{ apply: () => {} }],
@@ -21480,7 +21488,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // threat score of a permanent on battlefield
       let v = 0;
       if (c.is('Creature')) {
-        v += Math.max(0, c.power) * 1.1 + Math.max(0, c.toughness) * 0.3;
+        // Koliko stvorenje STVARNO udara: pod Felotharom (i sličnima) šteta ide
+        // po žilavosti, pa je procjena po snazi grubo potcjenjivala takve table
+        // i AI ih nije napadao. dmgAmount poštuje assignByToughness.
+        let hit = Math.max(0, c.power);
+        try { hit = Math.max(hit, g.dmgAmount(c, 'normal')); } catch (e) { /* van borbe */ }
+        v += hit * 1.1 + Math.max(0, c.toughness) * 0.3;
         if (c.kw('flying')) v += 1.2;
         if (c.kw('trample')) v += 1;
         if (c.kw('deathtouch')) v += 1;
