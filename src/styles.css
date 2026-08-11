@@ -1,0 +1,952 @@
+:root {
+  /* --- dizajn tokeni stola (MTG Commander Client Design) --- */
+  --tbl-bg: #050708;
+  --tbl-panel: #0b0f11;
+  --tbl-panel2: #0d1113;
+  --tbl-raise: #171c1f;
+  --tbl-line: rgba(185,160,106,.16);
+  --tbl-line2: rgba(185,160,106,.28);
+  --tbl-gold: #c8863c;
+  --tbl-gold-lt: #f0c48a;
+  --tbl-ink: #e8e2d4;
+  --tbl-ink-hi: #f6f1e4;
+  --tbl-mute: #8d8778;
+  --tbl-mute2: #6f6858;
+  --tbl-good: #8fd48a;
+  --tbl-bad: #d24a3a;
+  --tbl-font: 'Barlow', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --tbl-cond: 'Barlow Semi Condensed', 'Barlow', sans-serif;
+  --art-back: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20140'%3E%3Crect%20width='100'%20height='140'%20fill='%230d1018'/%3E%3Crect%20x='4'%20y='4'%20width='92'%20height='132'%20rx='7'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='1.6'%20opacity='.8'/%3E%3Crect%20x='9'%20y='9'%20width='82'%20height='122'%20rx='5'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='.6'%20opacity='.45'/%3E%3Ccircle%20cx='50'%20cy='70'%20r='25'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='1.1'%20opacity='.7'/%3E%3Ccircle%20cx='50'%20cy='70'%20r='17'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='.6'%20opacity='.45'/%3E%3Cpath%20d='M50%2057%20L58.6%2083.4%20L36.2%2067.1%20L63.8%2067.1%20L41.4%2083.4%20Z'%20fill='none'%20stroke='%23c9a03a'%20stroke-width='1'%20opacity='.9'/%3E%3Ccircle%20cx='50'%20cy='45'%20r='4.6'%20fill='%23e8e3c8'/%3E%3Ccircle%20cx='73.8'%20cy='62.3'%20r='4.6'%20fill='%234a90d9'/%3E%3Ccircle%20cx='64.7'%20cy='90.2'%20r='4.6'%20fill='%238a6f9a'/%3E%3Ccircle%20cx='35.3'%20cy='90.2'%20r='4.6'%20fill='%23d95a4a'/%3E%3Ccircle%20cx='26.2'%20cy='62.3'%20r='4.6'%20fill='%235aa860'/%3E%3C/svg%3E");
+  --art-hero: radial-gradient(120% 150% at 50% 8%, #2a2136 0%, #171a24 45%, #12141a 100%);
+  --art-felt: radial-gradient(90% 120% at 50% 0%, #1a1d27 0%, #12141a 70%);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #12141a; color: #e8e8ea; overflow-x: hidden; }
+button { font-family: inherit; }
+img { -webkit-user-drag: none; }
+
+/* ---------- setup ---------- */
+#setup { max-width: 560px; margin: 0 auto; padding: 18px 14px 48px; }
+.title { font-size: 26px; text-align: center; margin-top: 8px; background: linear-gradient(90deg,#e8c05a,#d95a4a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.subtitle { text-align: center; color: #9aa; margin: 4px 0 18px; font-size: 13px; }
+.seclabel { font-size: 13px; color: #c9b37a; margin: 18px 0 8px; font-weight: 600; letter-spacing: .4px; }
+.decklist { display: flex; flex-direction: column; gap: 10px; }
+.deckcard { display: flex; gap: 10px; background: #1c2029; border: 2px solid #2a2f3a; border-radius: 14px; overflow: hidden; cursor: pointer; transition: border-color .15s; }
+.deckcard.selected { border-color: #e8c05a; box-shadow: 0 0 14px #e8c05a44; }
+.deckart { width: 110px; height: 110px; object-fit: cover; flex-shrink: 0; }
+.deckinfo { padding: 8px 10px 8px 0; flex: 1; }
+.deckname { font-weight: 700; font-size: 15px; }
+.deckcmd { font-size: 12px; color: #c9b37a; margin: 2px 0; }
+.deckcolors { display: flex; align-items: center; gap: 4px; margin: 3px 0; }
+.deckstyle { font-size: 11px; color: #9aa; margin-left: 4px; }
+.deckblurb { font-size: 11.5px; color: #bbc; line-height: 1.35; }
+.deckset { font-size: 10px; color: #778; margin-top: 3px; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; border: 1px solid #0006; }
+.dot.big { width: 13px; height: 13px; }
+.start { width: 100%; margin-top: 22px; font-size: 17px; padding: 14px; }
+.credits { margin-top: 26px; font-size: 11px; color: #778; line-height: 1.5; text-align: center; }
+
+/* ---------- game layout ---------- */
+#game {
+  display: none; flex-direction: column; height: 100dvh; max-width: 640px; margin: 0 auto;
+  background-image: linear-gradient(#12141ae0, #12141af2), var(--art-felt);
+  background-size: cover, cover; background-position: center; background-attachment: fixed;
+}
+.topbar { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px 4px; background: #1a1e26; border-bottom: 1px solid #2a2f3a; }
+.phasewrap { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.phase { font-size: 12px; color: #cdd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stepper { display: flex; gap: 3px; }
+.step { font-size: 8.5px; font-weight: 800; letter-spacing: .3px; color: #556; background: #20242e; border-radius: 4px; padding: 2px 5px; }
+.step.on { color: #12141a; background: linear-gradient(90deg,#e8c05a,#d98a4a); }
+.ticker { font-size: 11px; color: #8a95a8; background: #14161c; padding: 3px 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-bottom: 1px solid #1e2230; }
+.topbtns { display: flex; gap: 6px; }
+.tbtn { background: #262b36; color: #dde; border: none; border-radius: 8px; padding: 5px 9px; font-size: 15px; }
+
+.oppswrap { max-height: 42dvh; overflow-y: auto; padding: 4px 8px 2px; display: flex; flex-direction: column; gap: 5px; }
+.opprow { background: #1c2029; border: 2px solid #2a2f3a; border-radius: 10px; overflow: hidden; }
+.opprow.active { border-color: #6a8ad9; }
+.opprow.lost { opacity: .35; }
+.opphead { display: flex; align-items: center; gap: 7px; padding: 4px 7px; font-size: 11.5px; }
+.opphead .chev { color: #667; font-size: 10px; }
+.oppname { font-weight: 700; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.opplife { font-size: 16px; font-weight: 800; color: #f0d0a0; }
+.oppmeta { color: #9ab; }
+.oppcmd { color: #c9b37a; font-size: 10px; margin-left: auto; white-space: nowrap; }
+.tbtn.small { padding: 2px 6px; font-size: 12px; }
+/* stanje panel toggle-a (tiše od .armed, koji je rezervisan za HOLD) */
+.tbtn.on { box-shadow: inset 0 0 0 1.5px #c9a03a99; color: #e8c05a; }
+.deskonly { display: none; }
+.oppstrip { display: flex; gap: 4px; overflow-x: auto; padding: 3px 6px 6px; align-items: flex-end; min-height: 74px; }
+.oppLands { background: #262b36; border-radius: 7px; padding: 5px 8px; font-size: 11px; text-align: center; color: #8a9; font-weight: 700; flex-shrink: 0; line-height: 1.3; }
+.emptystrip { color: #556; font-size: 11px; padding: 8px; }
+
+.center { padding: 0 8px; }
+.stack { background: #241f2e; border: 1px solid #4a3f6a; border-radius: 10px; padding: 6px 8px; margin: 2px 0; }
+.stacktitle { font-size: 10px; color: #b8a0e8; letter-spacing: 1px; }
+.stackitem { padding: 4px 6px; margin: 3px 0; background: #2e2840; border-radius: 7px; font-size: 12px; display: flex; justify-content: space-between; gap: 8px; }
+.stackitem.top { border: 1px solid #8a70d8; }
+.stackitem .who { color: #9a8; font-size: 10.5px; }
+
+.myboard { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 4px 8px; overflow: hidden; min-height: 120px; }
+.cardrow { display: flex; gap: 5px; overflow-x: auto; padding: 4px 0; min-height: 96px; align-items: flex-end; }
+.landrow { display: flex; gap: 5px; overflow-x: auto; padding: 3px 0; align-items: center; }
+.emptyrow { color: #556; font-size: 12px; padding: 12px; }
+
+.mini { position: relative; width: 66px; height: 88px; border-radius: 7px; flex-shrink: 0; background: #222; border: 2px solid transparent; overflow: hidden; }
+.mini::before { content:''; position: absolute; inset: 0; background: var(--frame, #555); opacity: .8; }
+.mini img { position: absolute; inset: 2px; width: calc(100% - 4px); height: calc(100% - 4px); object-fit: cover; border-radius: 5px; }
+.mini .mname { position: absolute; bottom: 0; left: 0; right: 0; font-size: 8.2px; background: #000b; padding: 2px 3px; line-height: 1.1; max-height: 22px; overflow: hidden; }
+.mini .pt { position: absolute; top: 2px; right: 2px; background: #000d; color: #fff; font-size: 10px; font-weight: 800; padding: 1px 4px; border-radius: 5px; }
+.mini .cnt { position: absolute; top: 18px; right: 2px; background: #2a6a2add; font-size: 9px; padding: 1px 3px; border-radius: 4px; }
+.mini .cnt2 { position: absolute; top: 32px; right: 2px; background: #2a3f6add; color: #dfe8ff; font-size: 9px; padding: 1px 3px; border-radius: 4px; letter-spacing: .3px; white-space: nowrap; }
+.mini .crewtag { position: absolute; bottom: 14px; left: 2px; background: #6a4a1add; color: #ffe0b0; font-size: 7.5px; letter-spacing: .12em; padding: 1px 3px; border-radius: 3px; }
+.mini .att { position: absolute; top: 34px; right: 2px; background: #6a5a2add; font-size: 9px; padding: 1px 3px; border-radius: 4px; }
+.mini .badge { position: absolute; top: 2px; left: 2px; font-size: 13px; filter: drop-shadow(0 0 2px #000); }
+.mini.tapped { transform: rotate(8deg) scale(.94); opacity: .75; }
+.mini.sick img { filter: saturate(.6); }
+.mini.sm { width: 52px; height: 70px; }
+.mini.sm .mname { font-size: 7px; max-height: 17px; }
+.mini.sm .pt { font-size: 8.5px; padding: 0 3px; }
+.mini.cmdr { border-color: #c9a03a; box-shadow: 0 0 8px #c9a03a66; }
+.mini.actable { border-color: #4ab8d9; box-shadow: 0 0 9px #4ab8d977; }
+.mini .toktag { position: absolute; top: 46%; left: 0; right: 0; text-align: center; font-size: 6.5px; letter-spacing: 1px; color: #fffc; background: #0008; padding: 1px 0; }
+.mini .stackn { position: absolute; bottom: 20px; right: 2px; background: #e8c05a; color: #12141a; font-size: 10px; font-weight: 900; padding: 1px 5px; border-radius: 6px; box-shadow: 0 1px 3px #000a; }
+.mini.stacked { box-shadow: 2px 2px 0 #2e3542, 4px 4px 0 #262b36; margin-right: 4px; }
+.cdrow { display: flex; align-items: center; gap: 7px; margin-top: 5px; font-size: 11.5px; }
+.cdrow span:first-child { min-width: 82px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cdbar { flex: 1; height: 7px; background: #262b36; border-radius: 4px; overflow: hidden; }
+.cdfill { display: block; height: 100%; background: #c9973a; }
+.cdfill.hot { background: #d95a4a; }
+.cdnone { color: #667; font-size: 11px; margin-top: 4px; }
+.mini.eligible { border-color: #4a90d9; }
+.mini.attacking { border-color: #d95a4a; box-shadow: 0 0 10px #d95a4a88; }
+.mini.blocking { border-color: #5aa860; box-shadow: 0 0 10px #5aa86088; }
+.atkchip { position: absolute; bottom: 20px; left: 0; right: 0; background: #d95a4add; font-size: 8px; text-align: center; padding: 1px; }
+.targetable { border-color: #e8c05a !important; box-shadow: 0 0 12px #e8c05a99 !important; cursor: pointer; animation: pulse 1.2s infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 4px #e8c05a55; } }
+
+.landstack { background: #1c2029; border: 2px solid #2a2f3a; border-radius: 8px; padding: 4px 7px; font-size: 10px; flex-shrink: 0; min-width: 64px; }
+.landstack.tapped { opacity: .55; }
+.landstack .lname { font-size: 9px; color: #cdd; white-space: nowrap; max-width: 80px; overflow: hidden; text-overflow: ellipsis; }
+.landstack .lcount { color: #8a9; font-weight: 700; }
+.meinfo { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 12px; flex-shrink: 0; padding-left: 6px; }
+.melife { font-size: 20px; font-weight: 800; color: #f0d0a0; }
+.zbtns { display: flex; gap: 4px; }
+.zbtn { background: #262b36; color: #cde; border: none; border-radius: 7px; padding: 4px 6px; font-size: 11px; }
+
+/* wrap: sa partnerima može biti 2 komandera + emblem u istom redu */
+.czrow { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 0 2px; }
+.czcard { display: flex; align-items: center; gap: 8px; background: linear-gradient(90deg,#2a2416,#1c2029); border: 2px solid #c9a03a88; border-radius: 10px; padding: 5px 8px; flex: 1 1 230px; min-width: 0; position: relative; }
+.czcard.castable { border-color: #5aa860; box-shadow: 0 0 10px #5aa86055; }
+.czcard img { width: 40px; height: 54px; object-fit: cover; border-radius: 5px; flex-shrink: 0; }
+.czinfo { flex: 1; min-width: 0; }
+.czlabel { font-size: 8.5px; letter-spacing: 1.2px; color: #c9a03a; font-weight: 800; }
+.czname { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.czcost { font-size: 10.5px; color: #aab; display: flex; align-items: center; gap: 3px; margin-top: 2px; }
+.czcost .tax { color: #d98a5a; }
+.czgo { background: linear-gradient(90deg,#c9973a,#d95a4a); color: #fff; font-weight: 800; font-size: 12px; padding: 8px 10px; border-radius: 9px; }
+/* The Ring emblem uz komandera */
+/* emblem ne otima prostor komanderu — ne raste, samo se skuplja i prelama */
+.ringcard { cursor: pointer; background: linear-gradient(90deg,#2b2110,#191c24); border-color: #e8c05a99; flex: 0 1 260px; }
+.ringart { width: 40px; height: 54px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 26px; border-radius: 5px; background: radial-gradient(circle at 50% 40%, #4a3714, #14161d 70%); border: 1px solid #e8c05a55; }
+.ringnone { color: #778; font-weight: 400; font-style: italic; }
+.ringpips { display: flex; gap: 4px; margin-top: 4px; }
+.ringpip { width: 100%; height: 4px; border-radius: 2px; background: #3a3f4a; }
+.ringpip.on { background: linear-gradient(90deg,#e8c05a,#d99a3a); }
+.ringab { font-size: 12px; line-height: 1.45; color: #6b7280; margin: 5px 0; }
+.ringab.on { color: #e8e8ea; }
+.hintact { color: #4ab8d9; }
+.helptext { font-size: 12.5px; line-height: 1.55; color: #cdd; }
+.promptbar { background: #1a1e26; border-top: 1px solid #2a2f3a; padding: 7px 10px; display: flex; flex-direction: column; gap: 6px; }
+.ptext { font-size: 13px; }
+.ptext.dim { color: #789; }
+.pbtn { background: #2e3542; color: #e8e8ea; border: none; border-radius: 10px; padding: 10px 14px; font-size: 14px; font-weight: 600; }
+.pbtn.primary { background: linear-gradient(90deg,#c9973a,#d95a4a); color: #fff; }
+.pbtn.danger { background: #8a3a3a; }
+.pbtn.wide { width: 100%; margin-top: 6px; }
+.pbtn.selected { outline: 2px solid #e8c05a; }
+.pbtn.choice { flex: 1; }
+.pbtn:disabled { opacity: .45; }
+.btnrow { display: flex; gap: 8px; margin-top: 8px; }
+.btnrow.center { justify-content: center; }
+.atkrow { display: flex; gap: 6px; overflow-x: auto; }
+.atkchipbig { background: #3a2a2a; border: 1px solid #6a4a4a; border-radius: 8px; padding: 5px 8px; font-size: 11.5px; white-space: nowrap; }
+.atkchipbig.selchip { border-color: #e8c05a; background: #4a3a2a; }
+.btnrow.offzone { flex-wrap: wrap; gap: 6px; }
+.btnrow.offzone .pbtn { font-size: 12px; padding: 7px 10px; background: #2a3550; border: 1px solid #46567e; flex: 0 1 auto; }
+
+.handwrap { background: #14161c; border-top: 1px solid #2a2f3a; padding: 6px 8px calc(8px + env(safe-area-inset-bottom)); }
+.hand { display: flex; gap: 6px; overflow-x: auto; min-height: 108px; align-items: flex-end; }
+.hcard { position: relative; width: 76px; height: 104px; border-radius: 8px; flex-shrink: 0; background: #222; border: 2px solid transparent; overflow: hidden; }
+.hcard::before { content:''; position: absolute; inset: 0; background: var(--frame, #555); opacity: .85; }
+.hcard img { position: absolute; inset: 2px; width: calc(100% - 4px); height: calc(100% - 4px); object-fit: cover; border-radius: 6px; }
+.hcard .mname { position: absolute; bottom: 0; left: 0; right: 0; font-size: 8.6px; background: #000c; padding: 2px 3px; }
+.hcard .hcost { position: absolute; top: 2px; right: 2px; display: flex; gap: 1px; flex-wrap: wrap; justify-content: flex-end; max-width: 90%; }
+.hcard.castable { border-color: #5aa860; box-shadow: 0 0 10px #5aa86077; }
+.msym { width: 14px; height: 14px; vertical-align: -2px; border-radius: 50%; box-shadow: 0 1px 1px #0006; }
+.czcost .msym, .stype .msym { width: 13px; height: 13px; }
+.pip { display: inline-flex; align-items: center; justify-content: center; min-width: 13px; height: 13px; border-radius: 50%; font-size: 8.5px; font-weight: 800; padding: 0 2px; border: 1px solid #0006; }
+
+/* overlays */
+.overlay { position: fixed; inset: 0; background: #000a; z-index: 40; display: flex; align-items: flex-end; justify-content: center; }
+.overlay.dark { background: #000d; align-items: center; }
+.modal { background: #1c2029; border-radius: 16px 16px 0 0; padding: 14px; width: 100%; max-width: 640px; max-height: 82dvh; overflow-y: auto; }
+.overlay.dark .modal { border-radius: 16px; width: 88%; }
+.mtitle { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+.mtitle.small { font-size: 12.5px; color: #c9b37a; margin-top: 10px; }
+.cardgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 7px; margin: 8px 0; }
+.bigcard { position: relative; border-radius: 8px; overflow: hidden; background: #262b36; border: 2px solid #333a48; aspect-ratio: 5/7; }
+.bigcard img { width: 100%; height: 100%; object-fit: cover; }
+.bigcard img.noimg { display: none; }
+.bigcard .bcname { position: absolute; bottom: 0; left: 0; right: 0; background: #000c; font-size: 9.5px; padding: 3px 4px; }
+.bigcard.selected { border-color: #e8c05a; box-shadow: 0 0 10px #e8c05a88; }
+.bigcard.scrybottom { opacity: .5; }
+.scrylabel { position: absolute; top: 4px; left: 4px; background: #000c; font-size: 10px; font-weight: 800; padding: 2px 5px; border-radius: 5px; color: #e8c05a; }
+.xrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 10px 0; }
+.xrow .pbtn { font-size: 22px; width: 52px; }
+.xval { font-size: 30px; font-weight: 800; min-width: 48px; text-align: center; }
+
+.sheet { background: #1c2029; border-radius: 16px 16px 0 0; width: 100%; max-width: 640px; max-height: 88dvh; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.sheet.tall { min-height: 55dvh; }
+.sheetimg { width: min(62vw, 250px); border-radius: 12px; align-self: center; }
+.sheetimg.noimg { display: none; }
+.sname { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.stype { font-size: 12px; color: #c9b37a; margin: 3px 0; }
+.spt { font-size: 13px; font-weight: 700; margin: 2px 0; }
+.soracle { font-size: 12.5px; line-height: 1.45; color: #cdd; background: #14161c; border-radius: 8px; padding: 8px; margin-top: 5px; }
+.simplified { font-size: 11px; color: #d9a05a; margin-top: 5px; }
+.sheetacts { display: flex; flex-direction: column; gap: 2px; }
+.cmddmg { font-size: 12px; color: #cdd; background: #14161c; padding: 8px; border-radius: 8px; margin-bottom: 6px; }
+
+.logpanel { position: fixed; inset: 0; background: #14161cf5; z-index: 50; padding: 14px; display: flex; flex-direction: column; max-width: 640px; margin: 0 auto; }
+.logbox { flex: 1; overflow-y: auto; font-size: 12px; line-height: 1.5; }
+.logline { padding: 1px 0; border-bottom: 1px solid #1e2230; }
+.logline .lt { color: #667; font-size: 10px; }
+.logline.dmg { color: #e8a0a0; }
+.logline.cast { color: #a0c0e8; }
+.logline.attack { color: #e8c05a; }
+.logline.win, .logline.lose { color: #e8c05a; font-weight: 700; }
+.logline.turn { color: #8a9; font-weight: 700; margin-top: 4px; }
+.logline.token { color: #a0d8a0; }
+.logline.counter { color: #d8a0e8; font-weight: 700; }
+
+
+.importbox { background: #1c2029; border: 2px dashed #3a4050; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.importbox textarea { background: #12141a; color: #dde; border: 1px solid #2a2f3a; border-radius: 8px; padding: 8px; font-size: 12px; font-family: monospace; resize: vertical; }
+.importnote { font-size: 10.5px; color: #8a95a8; line-height: 1.45; }
+.impstatus { font-size: 12px; color: #c9b37a; min-height: 16px; }
+.judgegrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 6px 0; }
+.judgegrid .pbtn { font-size: 12.5px; padding: 9px 6px; }
+
+.gameover { font-size: 24px; font-weight: 800; text-align: center; margin: 10px 0 16px; }
+.turnbanner { position: fixed; top: 34%; left: 50%; transform: translateX(-50%); background: #1c2029f2; border: 2px solid #4a5060; color: #e8e8ea; font-size: 18px; font-weight: 800; padding: 13px 26px; border-radius: 14px; z-index: 95; white-space: nowrap; animation: bannerIn 1.5s ease forwards; box-shadow: 0 6px 30px #000a; pointer-events: none; }
+.turnbanner.gold { border-color: #e8c05a; color: #e8c05a; box-shadow: 0 0 30px #e8c05a44; }
+@keyframes bannerIn { 0% { opacity: 0; transform: translateX(-50%) scale(.85); } 12% { opacity: 1; transform: translateX(-50%) scale(1); } 82% { opacity: 1; } 100% { opacity: 0; } }
+.toastmsg { position: fixed; bottom: 130px; left: 50%; transform: translateX(-50%); background: #262b36ee; border: 1px solid #4a5060; color: #fff; padding: 9px 16px; border-radius: 10px; font-size: 13px; z-index: 90; max-width: 88%; text-align: center; }
+
+/* ============================================================
+   DESKTOP (≥1100px) — glavni raspored
+   ============================================================ */
+.sidebar { display: none; }
+#hoverprev { display: none; position: fixed; z-index: 120; width: 300px; pointer-events: none; filter: drop-shadow(0 10px 30px #000c); }
+#hoverprev img { width: 300px; border-radius: 14px; display: block; }
+.personachip { font-size: 10px; background: #262b36; border: 1px solid #3a4050; color: #c9b37a; border-radius: 8px; padding: 1px 6px; white-space: nowrap; }
+.botstyles { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+.botstylerow { display: flex; align-items: center; gap: 10px; }
+.botname { font-size: 13px; font-weight: 600; min-width: 74px; }
+.styleselect { flex: 1; background: #12141a; color: #e8e8ea; border: 1px solid #3a4050; border-radius: 8px; padding: 8px; font-size: 13px; }
+.styledesc { font-size: 10.5px; color: #8a95a8; margin: 0 0 8px 46px; line-height: 1.35; }
+.setupgrid { display: flex; flex-direction: column; }
+
+/* --- izbor komandera --- */
+.cmdbox { display: flex; flex-direction: column; gap: 8px; }
+.cmdchosen { display: flex; flex-direction: column; gap: 6px; }
+.cmdchip { display: flex; gap: 9px; background: #1c2029; border: 2px solid #e8c05a55; border-radius: 12px; overflow: hidden; }
+.cmdchip img { width: 92px; height: 68px; object-fit: cover; flex: none; }
+.cmdchipinfo { padding: 6px 8px 6px 0; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+.cmdchipname { font-size: 12.5px; font-weight: 700; color: #e8c05a; }
+.cmdchiptype { font-size: 10px; color: #8a95a8; }
+.cmdbadge { font-size: 10px; color: #7fd6a0; background: #1b2a20; border: 1px solid #2f5a3f; border-radius: 7px; padding: 1px 6px; align-self: flex-start; }
+.cmdhint { font-size: 10.5px; color: #8a95a8; line-height: 1.4; }
+.cmdcheck { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #c8ccd6; margin-top: 10px; cursor: pointer; }
+.cmdcheck input { width: 16px; height: 16px; accent-color: #e8c05a; }
+.cmdstatus { font-size: 12px; margin: 10px 0; padding: 7px 9px; border-radius: 9px; }
+.cmdstatus.good { background: #16281c; color: #8fe0aa; border: 1px solid #2f5a3f; }
+.cmdstatus.bad { background: #2a1a1a; color: #e89a9a; border: 1px solid #5a2f2f; }
+.cmdgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; margin: 10px 0; }
+.cmdopt { display: flex; gap: 8px; background: #171a21; border: 2px solid #2a2f3a; border-radius: 11px; overflow: hidden; cursor: pointer; transition: border-color .12s, transform .12s; }
+.cmdopt:hover { transform: translateY(-1px); border-color: #4a5266; }
+.cmdopt.selected { border-color: #e8c05a; box-shadow: 0 0 12px #e8c05a44; background: #221f18; }
+.cmdopt.pairable { border-color: #4fa86a; box-shadow: 0 0 10px #4fa86a44; }
+.cmdopt img { width: 54px; height: 76px; object-fit: cover; flex: none; }
+.cmdoptinfo { padding: 5px 6px 5px 0; min-width: 0; display: flex; flex-direction: column; gap: 2px; justify-content: center; }
+.cmdoptname { font-size: 11.5px; font-weight: 650; line-height: 1.25; }
+.cmdoptname .deft { color: #c9b37a; font-weight: 400; font-size: 10px; }
+.cmdopttype { font-size: 9.5px; color: #8a95a8; }
+
+/* --- atmosferska grafika --- */
+#setup { position: relative; }
+#setup::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 320px; z-index: 0;
+  background-image: var(--art-hero);
+  background-size: cover; background-position: center 30%; background-repeat: no-repeat;
+  -webkit-mask-image: linear-gradient(#000 0%, #000 38%, transparent 100%);
+  mask-image: linear-gradient(#000 0%, #000 38%, transparent 100%);
+  opacity: .5; pointer-events: none;
+}
+#setup > * { position: relative; z-index: 1; }
+.title { text-shadow: 0 2px 18px #000a; }
+.subtitle { text-shadow: 0 1px 10px #000c; }
+/* poleđina karte kad Scryfall slika ne stigne */
+img.imgfail {
+  background-image: var(--art-back);
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  font-size: 0; color: transparent; border: 0;
+}
+/* u igri karta bez arta ostaje čist obojeni okvir + ime (čitljivije od poleđine) */
+.mini img.imgfail, .hcard img.imgfail { display: none; }
+.bigcard { background-image: var(--art-back); background-size: cover; background-position: center; }
+/* AI persona amblemi (2x2 sprite) */
+.pbadge {
+  width: 34px; height: 34px; border-radius: 50%; flex: none;
+  background: radial-gradient(circle at 34% 28%, #2c3140, #171a22);
+  border: 1px solid #3a4050; box-shadow: inset 0 0 10px #0009;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.pbadge.p-aggressive { border-color: #7a3a34; }
+.pbadge.p-opportunist { border-color: #6a5a3a; }
+.pbadge.p-passive    { border-color: #35506e; }
+.pbadge.p-teaser     { border-color: #5c3a72; }
+.cdnote { font-size: 10px; color: #8a95a8; margin: 3px 0 6px; line-height: 1.35; }
+
+/* --- prozor za reakciju + HOLD + reflektor na AI akcije --- */
+.tbtn.armed { background: linear-gradient(90deg,#e8c05a,#d98a4a); color: #12141a; box-shadow: 0 0 10px #e8c05a66; }
+.promptbar.reacting { border-top: 2px solid #e8c05a; background: linear-gradient(#241f18, #1a1e26); }
+.spotbar {
+  position: fixed; left: 50%; top: 40%; transform: translateX(-50%);
+  z-index: 130; max-width: min(92vw, 720px); pointer-events: none;
+  padding: 11px 18px; border-radius: 12px; font-size: 14.5px; font-weight: 650; line-height: 1.35;
+  text-align: center; box-shadow: 0 12px 34px #000b; animation: spotin .22s ease-out;
+  background: #232833; border: 2px solid #3a4050; color: #e8e8ea;
+}
+.spotbar.danger { background: linear-gradient(#3a1e1e, #2a1618); border-color: #b04a44; color: #ffd9d4; }
+.spotbar.warn { background: linear-gradient(#3a331e, #2a2416); border-color: #b0904a; color: #ffeec4; }
+@keyframes spotin { from { opacity: 0; transform: translate(-50%, -12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.sideloglist .k-spot { color: #ffb37a; font-weight: 650; }
+
+/* --- modal "bot te cilja": velika karta + kategorija prijetnje --- */
+.overlay.threatov { background: #0009; }
+.threatmodal { max-width: 620px; border: 2px solid #b04a44; box-shadow: 0 0 40px #b04a4455; animation: threatin .2s ease-out; }
+@keyframes threatin { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
+.threatmodal.counter { border-color: #4a7ab0; box-shadow: 0 0 40px #4a7ab055; }
+.threatmodal.exile   { border-color: #9a6ac0; box-shadow: 0 0 40px #9a6ac055; }
+.threatmodal.bounce  { border-color: #4aa0b0; box-shadow: 0 0 40px #4aa0b055; }
+.threatmodal.steal   { border-color: #c08a3a; box-shadow: 0 0 40px #c08a3a55; }
+.threatmodal.discard { border-color: #8a7a9a; }
+.threatmodal.debuff  { border-color: #7a9a5a; }
+.threathead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.threatkind { font-size: 15px; font-weight: 800; letter-spacing: .3px; background: #2a1618; border: 1px solid #b04a44; color: #ffd9d4; border-radius: 9px; padding: 4px 10px; }
+.threatmodal.counter .threatkind { background: #16202a; border-color: #4a7ab0; color: #cfe4ff; }
+.threatmodal.exile .threatkind   { background: #1e1628; border-color: #9a6ac0; color: #e8d4ff; }
+.threatmodal.bounce .threatkind  { background: #16242a; border-color: #4aa0b0; color: #d0f0ff; }
+.threatmodal.steal .threatkind   { background: #2a2216; border-color: #c08a3a; color: #ffe8bf; }
+.threatby { font-size: 12.5px; color: #b8c0cc; }
+.threatbody { display: flex; gap: 14px; align-items: flex-start; }
+.threatart { width: 190px; flex: none; border-radius: 11px; box-shadow: 0 8px 24px #000a; background: var(--art-back) center/cover; aspect-ratio: 5/7; object-fit: cover; }
+.threatinfo { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.threatname { font-size: 17px; font-weight: 750; line-height: 1.2; }
+.threatname .threatab { font-size: 12.5px; color: #c9b37a; font-weight: 500; }
+.threatcost { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.threattype { font-size: 11.5px; color: #8a95a8; }
+.threattargets { font-size: 13px; color: #ffd9d4; background: #2a1618; border-radius: 8px; padding: 5px 8px; }
+.threatoracle { font-size: 12px; color: #c8ccd6; line-height: 1.45; max-height: 190px; overflow-y: auto; }
+.threathint { font-size: 11.5px; color: #ffe0a8; background: #2a2416; border: 1px solid #5a4a2a; border-radius: 8px; padding: 5px 8px; line-height: 1.4; }
+.threatfoot { font-size: 10.5px; color: #8a95a8; margin-top: 8px; line-height: 1.4; }
+.pbtn.hot { background: linear-gradient(90deg,#d95a4a,#e8c05a); color: #12141a; font-weight: 700; }
+/* meta na tabli pulsira dok je modal otvoren */
+.mini.threatened, .hcard.threatened {
+  outline: 3px solid #ff5a4a; outline-offset: 2px; filter: brightness(1.5) saturate(1.2);
+  animation: threatpulse 1.1s ease-in-out infinite;
+}
+@keyframes threatpulse {
+  0%,100% { box-shadow: 0 0 0 3px #ff5a4a, 0 0 14px 4px #ff5a4a77; }
+  50%     { box-shadow: 0 0 0 3px #ff8a6a, 0 0 30px 12px #ff5a4abb; }
+}
+@media (min-width: 1100px) {
+  .threatmodal { max-width: 720px; }
+  .threatart { width: 240px; }
+}
+
+@media (min-width: 1100px) {
+  /* --- setup ekran: dvije kolone --- */
+  #setup { max-width: 1560px; margin: 0 auto; padding: 18px 28px; }
+  .setupgrid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 26px; align-items: start; }
+  .setupright { position: sticky; top: 12px; display: flex; flex-direction: column; }
+  .decklist { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 12px; }
+  .deckcard { cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
+  .deckcard:hover { transform: translateY(-2px); box-shadow: 0 8px 22px #0008; }
+  .title { font-size: 34px; }
+  .pbtn.start { font-size: 16px; padding: 14px; }
+
+  /* --- igra: grid sa sidebarom --- */
+  #game { max-width: none; height: 100vh; display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    /* Proporcije po dizajnu stola: protivnici su kompaktna traka gore, a
+       tvoja tabla dobija glavninu visine. Stack se skuplja kad je prazan. */
+    grid-template-rows: auto auto minmax(130px, .8fr) auto minmax(0, 1.4fr) auto auto;
+    grid-template-areas:
+      "topbar  topbar"
+      "ticker  side"
+      "opps    side"
+      "center  side"
+      "mine    side"
+      "prompt  side"
+      "hand    hand";
+    column-gap: 12px; padding: 0 12px 0 0; }
+  .topbar { grid-area: topbar; padding: 8px 16px; }
+  .phase { font-size: 15px; }
+  .stepper .step { font-size: 11px; padding: 3px 8px; }
+  .ticker { grid-area: ticker; font-size: 13px; }
+  .oppswrap { grid-area: opps; max-height: none; overflow: visible; flex-direction: row !important; display: grid;
+    grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 10px; padding: 8px 4px 4px 12px; align-items: start; }
+  .opprow { border-radius: 12px; height: 100%; display: flex; flex-direction: column; min-height: 0; }
+  /* protivnička tabla koristi svu dodijeljenu visinu, pa skroluje tek kad prelije */
+  .oppstrip { flex-wrap: wrap; flex: 1; min-height: 0; max-height: none; overflow-y: auto; align-content: flex-start; }
+  .center { grid-area: center; }
+  .myboard { grid-area: mine; padding: 6px 4px 6px 12px; }
+  /* na širokom ekranu komander i emblem ostaju grupisani lijevo umjesto da se
+     razvuku na suprotne krajeve reda */
+  .czcard { flex: 0 1 340px; }
+  .ringcard { flex: 0 1 280px; }
+  .promptbar { grid-area: prompt; border-radius: 12px 12px 0 0; }
+  .handwrap { grid-area: hand; }
+  /* centriranje bez overflow-clip buga: auto-margine na krajevima */
+  .hand { justify-content: flex-start; }
+  .hand > :first-child { margin-left: auto; }
+  .hand > :last-child { margin-right: auto; }
+
+  /* veće karte na velikom ekranu */
+  .mini { width: 86px; height: 116px; border-radius: 9px; }
+  .mini .mname { font-size: 9.5px; max-height: 26px; }
+  .mini .pt { font-size: 12px; }
+  .mini.sm { width: 74px; height: 100px; }
+  .hcard { width: 96px; height: 132px; }
+  .hcard .mname { font-size: 10px; }
+  .hand { min-height: 138px; }
+  .oppLands { min-width: 46px; font-size: 12px; }
+
+  /* --- sidebar --- */
+  .sidebar { grid-area: side; display: flex; flex-direction: column; gap: 10px; padding: 8px 0;
+    min-height: 0; overflow: hidden; }
+  .sidetitle { font-size: 12.5px; font-weight: 800; letter-spacing: .4px; color: #c9b37a; margin-bottom: 6px; }
+  .threatpanel { background: #1a1e26; border: 1px solid #2a2f3a; border-radius: 12px; padding: 10px 12px; }
+  .threatrow { display: grid; grid-template-columns: 26px minmax(0,1fr) 90px 34px; align-items: center; gap: 6px;
+    padding: 4px 2px; border-radius: 8px; cursor: pointer; font-size: 12.5px; }
+  .threatrow:hover { background: #232838; }
+  .threatrow.top .tname { color: #e8905a; font-weight: 800; }
+  .threatrow.me .tname { color: #7ac0e8; }
+  .tname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+  .tbarwrap { background: #12141a; border-radius: 6px; height: 9px; overflow: hidden; }
+  .tbar { display: block; height: 100%; background: linear-gradient(90deg, #5aa860, #e8c05a, #d95a4a); border-radius: 6px; }
+  .tscore { text-align: right; font-variant-numeric: tabular-nums; color: #aab; font-size: 11.5px; }
+  .sidenote { font-size: 10px; color: #667; margin-top: 6px; line-height: 1.35; }
+  .persona { font-size: 11px; }
+  .sidelog { background: #1a1e26; border: 1px solid #2a2f3a; border-radius: 12px; padding: 10px 12px;
+    flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .sideloglist { flex: 1; overflow-y: auto; font-size: 11.5px; line-height: 1.45; min-height: 0; }
+  .sideloglist .ll { padding: 1px 0; border-bottom: 1px solid #1e2230; color: #bcc; }
+  .sideloglist .k-dmg { color: #e8a0a0; }
+  .sideloglist .k-cast { color: #a0c0e8; }
+  .sideloglist .k-attack { color: #e8c05a; }
+  .sideloglist .k-turn { color: #8a9; font-weight: 700; margin-top: 3px; }
+  .sideloglist .k-token { color: #a0d8a0; }
+  .sideloglist .k-counter { color: #d8a0e8; }
+  .sideloglist .k-resolve { color: #9ab; }
+
+  /* panel toggle-i postoje samo tamo gdje sidebar i postoji */
+  .deskonly { display: inline-block; }
+
+  /* oba panela ugašena → jedna kolona preko cijele širine */
+  #game.nosidebar { grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "topbar" "ticker" "opps" "center" "mine" "prompt" "hand";
+    padding-right: 12px; }
+  #game.nosidebar .sidebar { display: none; }
+  /* kad je samo jedan panel aktivan, sidebar mu daje svu visinu */
+  .sidebar > .threatpanel:only-child { align-self: start; }
+  .sidebar > .sidelog:only-child { flex: 1; }
+
+  /* modali/sheetovi centrirani umjesto bottom-sheet */
+  .overlay { align-items: center; }
+  .modal, .sheet { border-radius: 16px; max-width: 760px; max-height: 86vh; }
+  .modal.wide { max-width: 1080px; width: 92%; }
+  .cardgrid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+  .logpanel { max-width: 900px; }
+}
+@media (min-width: 1500px) {
+  #game { grid-template-columns: minmax(0, 1fr) 400px; }
+  .mini { width: 96px; height: 130px; }
+  .mini.sm { width: 82px; height: 111px; }
+  .hcard { width: 106px; height: 146px; }
+}
+
+/* ============================================================
+   MENI — dizajn iz "Game menu design request"
+   Namjerno drugačiji od stola: zaobljeno (11px), bijele hairline
+   linije i Marcellus serif naslovi. Sve pod #setup.
+   ============================================================ */
+#setup {
+  --mn-bg: #08090d; --mn-panel: #0d0e14; --mn-raise: #14161d; --mn-raise2: #191b24;
+  --mn-line: rgba(255,255,255,.07); --mn-line2: rgba(255,255,255,.10);
+  --mn-gold: #E8B04B; --mn-gold-lt: #ffd583;
+  --mn-ink: #f2eee6; --mn-mute: rgba(233,230,223,.55); --mn-mute2: rgba(233,230,223,.35);
+  --mn-ok: #5ec98a;
+  background: var(--mn-bg); color: var(--mn-ink);
+  font-family: 'Barlow', -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+body:has(#setup) { background: #08090d; }
+/* zaglavlje */
+#setup .menuhead {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 2px 18px; border-bottom: 1px solid var(--mn-line); margin-bottom: 18px;
+}
+#setup .menumark {
+  width: 38px; height: 38px; flex: none; transform: rotate(45deg);
+  border: 1.5px solid var(--mn-gold); border-radius: 7px;
+  box-shadow: inset 0 0 14px rgba(232,176,75,.25);
+}
+#setup .menutitles { flex: 1; min-width: 0; }
+#setup .title {
+  font-family: 'Marcellus', Georgia, serif; font-weight: 400;
+  font-size: 30px; text-align: left; margin: 0; color: var(--mn-ink);
+  background: none; -webkit-text-fill-color: currentColor; letter-spacing: .2px;
+}
+#setup .subtitle { text-align: left; margin: 3px 0 0; color: var(--mn-mute); font-size: 13px; }
+#setup .menupill {
+  display: flex; align-items: center; gap: 7px; flex: none;
+  border: 1px solid var(--mn-line2); border-radius: 999px; padding: 6px 14px;
+  font-size: 10.5px; letter-spacing: 2px; text-transform: uppercase; color: var(--mn-mute);
+}
+#setup .menupill .dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--mn-ok);
+  box-shadow: 0 0 8px rgba(94,201,138,.7);
+}
+/* sekcije 01/02/03 */
+#setup .seclabel {
+  font-family: 'Marcellus', Georgia, serif; font-size: 17px; color: var(--mn-ink);
+  letter-spacing: .2px; display: flex; align-items: baseline; gap: 10px; margin: 20px 0 10px;
+}
+#setup .seclabel i {
+  font-style: normal; font-family: 'Barlow', sans-serif; font-size: 11px;
+  letter-spacing: 2px; color: var(--mn-gold); opacity: .85;
+}
+#setup .seclabel em {
+  font-style: normal; font-size: 11px; color: var(--mn-mute2); letter-spacing: .3px;
+}
+/* deck kartice */
+#setup .deckcard {
+  background: var(--mn-panel); border: 1px solid var(--mn-line); border-radius: 11px;
+  overflow: hidden; transition: border-color .14s, background .14s, transform .14s;
+}
+#setup .deckcard:hover { background: var(--mn-raise); border-color: var(--mn-line2); }
+#setup .deckcard.selected {
+  border-color: rgba(232,176,75,.5); background: var(--mn-raise);
+  box-shadow: 0 0 0 1px rgba(232,176,75,.18), 0 10px 30px rgba(0,0,0,.5);
+}
+#setup .deckart { width: 104px; height: auto; align-self: stretch; object-fit: cover; }
+#setup .deckname { font-family: 'Marcellus', Georgia, serif; font-weight: 400; font-size: 17px; color: var(--mn-ink); }
+#setup .deckcmd { color: var(--mn-gold); font-size: 12.5px; margin: 3px 0 5px; }
+#setup .deckblurb { color: var(--mn-mute); font-size: 12px; line-height: 1.45; }
+#setup .deckset { color: var(--mn-mute2); font-size: 10.5px; margin-top: 5px; }
+#setup .deckstyle { color: var(--mn-mute); }
+#setup .dot { border: none; }
+/* desni panel */
+#setup .setupright {
+  background: var(--mn-panel); border: 1px solid var(--mn-line);
+  border-radius: 15px; padding: 4px 18px 18px;
+}
+#setup .cmdbox, #setup .cmdopt, #setup .pbtn, #setup select, #setup textarea, #setup input {
+  border-radius: 10px;
+}
+#setup .cmdbox {
+  border: 1px dashed var(--mn-line2); background: rgba(255,255,255,.012);
+  color: var(--mn-mute2); min-height: 96px;
+}
+#setup .pbtn {
+  background: var(--mn-raise); border: 1px solid var(--mn-line); color: var(--mn-ink);
+  transition: border-color .14s, background .14s;
+}
+#setup .pbtn:hover { border-color: var(--mn-line2); background: var(--mn-raise2); }
+#setup .pbtn.on, #setup .pbtn.sel {
+  border-color: rgba(232,176,75,.55); color: var(--mn-gold-lt);
+  background: linear-gradient(180deg, #1a1408, #14110a);
+}
+#setup .pbtn.start {
+  background: linear-gradient(180deg, rgba(232,176,75,.16), rgba(232,176,75,.06));
+  border-color: rgba(232,176,75,.4); color: var(--mn-gold-lt);
+  font-family: 'Marcellus', Georgia, serif; font-size: 17px; letter-spacing: .3px;
+}
+#setup .pbtn.start:disabled { color: var(--mn-mute2); border-color: var(--mn-line); background: var(--mn-raise); }
+#setup select, #setup textarea, #setup input {
+  background: var(--mn-raise); border: 1px solid var(--mn-line); color: var(--mn-ink);
+}
+#setup .sidenote, #setup .cmdhint { color: var(--mn-mute2); font-size: 11px; }
+
+/* ============================================================
+   STO — dizajn iz "MTG Commander Client Design"
+   Sve je ograničeno na #game: setup ekran ostaje kakav je bio.
+   Jezik: skoro-crna pozadina, zlatne hairline linije, oštri uglovi
+   (radius 2-3px), razmaknute verzalne mikro-labele, Barlow.
+   ============================================================ */
+#game {
+  background: radial-gradient(130% 95% at 50% 6%, #10161a 0%, #080b0d 42%, var(--tbl-bg) 100%);
+  font-family: var(--tbl-font);
+  color: var(--tbl-ink);
+}
+#game .sidetitle, #game .czlabel, #game .oppname, #game .seclabel {
+  font-family: var(--tbl-cond);
+}
+/* mikro-labela: verzal + široki razmak */
+#game .sidetitle, #game .czlabel {
+  font-size: 9.5px; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--tbl-mute); font-weight: 600;
+}
+/* --- panel osnova --- */
+#game .threatpanel, #game .sidelog, #game .stackpanel, #game .cmddmgpanel,
+#game .opprow, #game .czcard, #game .promptbar {
+  background: linear-gradient(180deg, var(--tbl-panel2), var(--tbl-panel));
+  border: 1px solid var(--tbl-line);
+  border-radius: 3px;
+}
+#game .opprow.active { border-color: var(--tbl-line2); box-shadow: 0 0 0 1px rgba(200,134,60,.14) inset; }
+#game .opprow.lost { opacity: .42; filter: grayscale(.7); }
+/* --- top bar --- */
+#game .topbar {
+  background: linear-gradient(180deg, #0a0e10, #070a0b);
+  border-bottom: 1px solid var(--tbl-line);
+}
+#game .phase { font-family: var(--tbl-cond); letter-spacing: .06em; }
+#game .phase b { color: var(--tbl-gold-lt); font-weight: 700; }
+#game .stepper { gap: 3px; }
+#game .stepper .step {
+  background: #0a0e10; border: 1px solid var(--tbl-line);
+  border-radius: 2px; color: var(--tbl-mute2);
+  font-family: var(--tbl-cond); letter-spacing: .18em; text-transform: uppercase;
+  font-size: 9.5px; padding: 4px 10px;
+}
+#game .stepper .step.on {
+  background: linear-gradient(180deg, #2a1d0e, #1a1208);
+  border-color: rgba(200,134,60,.5); color: var(--tbl-gold-lt);
+}
+#game .tbtn {
+  background: #0d1214; border: 1px solid var(--tbl-line);
+  border-radius: 2px; color: var(--tbl-ink);
+}
+#game .tbtn.on { box-shadow: inset 0 0 0 1px rgba(200,134,60,.55); color: var(--tbl-gold-lt); }
+#game .tbtn.armed { background: linear-gradient(180deg, var(--tbl-gold-lt), var(--tbl-gold)); color: #12100a; }
+/* --- ticker --- */
+#game .ticker {
+  background: transparent; color: var(--tbl-mute);
+  border-bottom: 1px solid rgba(185,160,106,.08);
+  font-size: 12px; letter-spacing: .02em;
+}
+/* --- protivnici --- */
+#game .oppname { letter-spacing: .1em; text-transform: uppercase; font-size: 13px; color: var(--tbl-ink-hi); }
+#game .opphead { border-bottom: 1px solid rgba(185,160,106,.1); }
+/* --- moja tabla / command zona --- */
+#game .czcard { background: linear-gradient(120deg, #14100a 0%, var(--tbl-panel) 62%); border-color: rgba(200,134,60,.32); }
+#game .czname { font-family: var(--tbl-cond); font-size: 15px; letter-spacing: .04em; color: var(--tbl-ink-hi); }
+#game .ringcard { background: linear-gradient(120deg, #15110a, var(--tbl-panel)); }
+/* --- sidebar paneli --- */
+#game .sidebar { gap: 8px; }
+#game .sidehead { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
+#game .sidecount {
+  font-family: var(--tbl-cond); font-size: 11px; color: var(--tbl-gold);
+  letter-spacing: .1em;
+}
+#game .stackpanel, #game .cmddmgpanel { padding: 10px 12px; }
+#game .stacklist { display: flex; flex-direction: column; gap: 4px; max-height: 190px; overflow-y: auto; }
+#game .stackempty {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 18px 0; color: var(--tbl-mute2);
+  font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+}
+#game .stackempty span { font-size: 20px; color: rgba(185,160,106,.35); animation: omBreathe 3.4s ease-in-out infinite; }
+@keyframes omBreathe { 0%,100% { opacity:.35 } 50% { opacity:.9 } }
+#game .stackitem {
+  border: 1px solid var(--tbl-line); border-left: 2px solid rgba(185,160,106,.35);
+  border-radius: 2px; padding: 5px 8px; background: #0a0e10; cursor: pointer;
+}
+#game .stackitem.mine { border-left-color: var(--tbl-gold); }
+#game .stackitem:hover { background: var(--tbl-raise); }
+#game .siname { font-size: 12px; color: var(--tbl-ink-hi); }
+#game .sisub { font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--tbl-mute2); }
+/* commander damage matrica */
+#game .cdgrid { display: grid; gap: 2px; margin-top: 6px; align-items: center; }
+#game .cdh {
+  font-size: 8.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--tbl-mute2); text-align: center; padding-bottom: 2px;
+}
+#game .cdname {
+  font-size: 11px; color: var(--tbl-mute); overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; padding-right: 4px;
+}
+#game .cdname.me { color: var(--tbl-gold-lt); }
+#game .cdname.lost { text-decoration: line-through; opacity: .5; }
+#game .cdv {
+  text-align: center; font-variant-numeric: tabular-nums; font-size: 12px;
+  padding: 2px 0; border-radius: 2px; background: #0a0e10;
+  border: 1px solid rgba(185,160,106,.1); color: var(--tbl-ink);
+}
+#game .cdv.zero { color: #3f4649; border-color: rgba(255,255,255,.04); }
+#game .cdv.warn { color: var(--tbl-gold-lt); border-color: rgba(200,134,60,.4); }
+#game .cdv.lethal { color: #fff; background: rgba(210,74,58,.8); border-color: var(--tbl-bad); font-weight: 700; }
+/* threat + log u istom jeziku */
+#game .tbar { background: linear-gradient(90deg, var(--tbl-good), var(--tbl-gold-lt), var(--tbl-bad)); }
+#game .tbarwrap { background: #0a0e10; border-radius: 2px; }
+#game .sideloglist { font-size: 11.5px; }
+#game .sideloglist .ll { border-bottom: 1px solid rgba(185,160,106,.07); color: #b9b3a5; }
+#game .sideloglist .k-turn { color: var(--tbl-gold); letter-spacing: .12em; text-transform: uppercase; font-size: 10px; }
+#game .sidenote { color: var(--tbl-mute2); }
+/* --- tvoj život: u dizajnu je krupan broj uz command zonu --- */
+#game .meinfo {
+  align-items: baseline; gap: 12px;
+  border-top: 1px solid rgba(185,160,106,.1); padding: 6px 12px 4px;
+}
+#game .melife {
+  font-family: var(--tbl-cond); font-size: 34px; font-weight: 700;
+  line-height: 1; color: var(--tbl-ink-hi); letter-spacing: -.01em;
+  text-shadow: 0 0 18px rgba(200,134,60,.25); cursor: pointer;
+}
+#game .zbtn {
+  background: #0a0e10; border: 1px solid var(--tbl-line); border-radius: 2px;
+  color: var(--tbl-mute); font-variant-numeric: tabular-nums;
+}
+#game .zbtn:hover { color: var(--tbl-gold-lt); border-color: var(--tbl-line2); }
+/* --- sekcijski naslovi (kao u dizajnu) --- */
+#game .myboard { position: relative; padding-top: 20px !important; }
+#game .myboard::before {
+  content: 'Tvoja tabla'; position: absolute; top: 4px; left: 12px;
+  font-family: var(--tbl-cond); font-size: 9px; letter-spacing: .26em;
+  text-transform: uppercase; color: var(--tbl-mute2);
+}
+#game .opprow { position: relative; }
+#game .oppstrip { position: relative; padding-top: 14px; }
+#game .oppstrip::before {
+  content: 'Bojno polje'; position: absolute; top: 0; left: 2px;
+  font-family: var(--tbl-cond); font-size: 8px; letter-spacing: .22em;
+  text-transform: uppercase; color: rgba(141,135,120,.55);
+}
+/* --- karte: oštriji okvir da prati jezik --- */
+#game .mini, #game .hcard { border-radius: 3px; }
+#game .mini.targetable, #game .hcard.playable { box-shadow: 0 0 0 1px var(--tbl-gold), 0 0 12px rgba(200,134,60,.3); }
+/* --- prompt bar / dugmad --- */
+#game .promptbar { border-radius: 3px 3px 0 0; }
+#game .pbtn {
+  border-radius: 2px; font-family: var(--tbl-cond);
+  letter-spacing: .14em; text-transform: uppercase;
+}
+#game .pbtn.wide { background: linear-gradient(180deg, var(--tbl-gold-lt), var(--tbl-gold)); color: #14110a; }
+
+/* ============================================================
+   THE STACK — popup na sredini ekrana
+   Ne blokira tablu: wrapper je pointer-events:none, samo panel hvata klikove,
+   pa igrač i dalje može reagovati dok stack stoji.
+   ============================================================ */
+.stackpopwrap {
+  position: fixed; inset: 0; z-index: 115;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+/* reveal je blokirajuća odluka — mora iznad hover previewa (#hoverprev, 120) */
+.stackpopwrap.revealwrap { z-index: 140; }
+.stackpop {
+  pointer-events: auto;
+  width: min(430px, 92vw); max-height: 72dvh;
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg, #12171af7, #070a0bfc);
+  backdrop-filter: blur(9px);
+  border: 1px solid rgba(200,134,60,.45);
+  border-radius: 4px;
+  box-shadow: 0 18px 60px #000c, 0 0 0 1px #0006, 0 0 30px rgba(200,134,60,.10);
+  animation: stackPopIn .16s ease-out;
+  overflow: hidden;
+}
+@keyframes stackPopIn { from { opacity: 0; transform: translateY(10px) scale(.97) } to { opacity: 1; transform: none } }
+.stackpop.dragging { animation: none; }
+.stackpophead {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px; cursor: grab;
+  border-bottom: 1px solid rgba(185,160,106,.16);
+  background: linear-gradient(180deg, #1a130a, #0d1113);
+}
+.stackpophead:active { cursor: grabbing; }
+.stackpoptitle {
+  font-family: var(--tbl-cond, inherit); font-size: 10.5px; letter-spacing: .26em;
+  text-transform: uppercase; color: var(--tbl-gold-lt, #e8c05a); font-weight: 700; flex: 1;
+}
+.stackpopn {
+  background: linear-gradient(180deg, var(--tbl-gold-lt, #e8c05a), var(--tbl-gold, #c8863c));
+  color: #14110a; font-size: 11px; font-weight: 900;
+  padding: 1px 8px; border-radius: 2px; letter-spacing: .06em;
+}
+.stackpopx {
+  background: none; border: 1px solid rgba(185,160,106,.28); color: #b9a06a;
+  border-radius: 2px; font-size: 13px; line-height: 1; padding: 3px 8px; cursor: pointer;
+}
+.stackpopx:hover { background: rgba(185,160,106,.14); color: #fff; }
+.stackpopbody { overflow-y: auto; padding: 9px 11px; display: flex; flex-direction: column; gap: 5px; }
+.stackpopitem {
+  display: flex; align-items: center; gap: 9px;
+  border: 1px solid rgba(185,160,106,.16); border-left: 3px solid rgba(185,160,106,.4);
+  border-radius: 2px; padding: 7px 9px; background: #0a0e10; cursor: pointer;
+}
+.stackpopitem:hover { background: #141a1d; }
+.stackpopitem.mine { border-left-color: var(--tbl-gold-lt, #e8c05a); }
+.stackpopitem.next { border-color: rgba(200,134,60,.5); box-shadow: 0 0 0 1px rgba(200,134,60,.18) inset; }
+.stackpopitem img { width: 34px; height: 46px; object-fit: cover; border-radius: 2px; flex-shrink: 0; background: #222; }
+.stackpopinfo { flex: 1; min-width: 0; }
+.stackpopname { font-size: 12.5px; color: #efe7d2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stackpopsub { font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: #6f6a5c; }
+.stackpopidx { font-size: 9px; letter-spacing: .16em; color: #8a7a52; flex-shrink: 0; }
+.stackpopfoot {
+  padding: 6px 11px; border-top: 1px solid rgba(185,160,106,.12);
+  font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: #6f6a5c; text-align: center;
+}
+.stackpop.reveal .stackpopfoot { padding: 9px 11px; background: #070a0b; }
+.stackpop.reveal .stackpopfoot .pbtn { width: 100%; position: relative; z-index: 1; }
+.stackpop.reveal { border-color: rgba(200,134,60,.6); background: linear-gradient(180deg, #12171a, #070a0b); }
+.stackpop.reveal .stackpopbody { background: #0a0e10; }
+@media (max-width: 700px) { .stackpop { width: 94vw; max-height: 60dvh; } }
+
+/* ============================================================
+   DESKTOP ACTION STAGE — obavezni pregled svake nonland akcije
+   ============================================================ */
+.actionstagewrap {
+  position: fixed; inset: 0; z-index: 132; display: grid; place-items: center;
+  padding: 30px; background: radial-gradient(circle at 50% 45%, rgba(32,24,12,.36), rgba(0,0,0,.86));
+  backdrop-filter: blur(4px);
+}
+.actionstage {
+  width: min(900px, calc(100vw - 80px)); max-height: min(720px, calc(100vh - 80px));
+  display: grid; grid-template-columns: 270px minmax(0,1fr); gap: 28px; overflow: hidden;
+  padding: 24px; background: linear-gradient(145deg, #151b1e, #070a0b 72%);
+  border: 1px solid rgba(200,134,60,.58); box-shadow: 0 32px 110px #000, inset 0 1px rgba(255,255,255,.05);
+  animation: actionStageIn .2s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes actionStageIn { from { opacity: 0; transform: translateY(14px) scale(.98) } to { opacity: 1; transform: none } }
+.actionstageart { align-self: center; }
+.actionstageart img { display: block; width: 100%; border-radius: 12px; box-shadow: 0 18px 46px #000c; }
+.actionstageinfo { min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+.actionstageeyebrow { color: var(--tbl-gold); font: 700 10px/1.2 var(--tbl-cond); letter-spacing: .24em; text-transform: uppercase; }
+.actionstagename { margin-top: 9px; color: #f6f1e4; font: 30px/1.05 'Marcellus', serif; }
+.actionstagetype { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; color: #9d998e; font-size: 12px; }
+.actionstagetarget { margin-top: 16px; padding: 9px 11px; color: #e8d5a4; background: rgba(200,134,60,.09); border-left: 2px solid var(--tbl-gold); font-size: 13px; }
+.actionstageoracle { margin-top: 14px; max-height: 210px; overflow-y: auto; color: #d6d0c2; font-size: 14px; line-height: 1.55; }
+.actionstagestack { margin-top: 16px; color: #716d64; font: 600 9px/1.3 var(--tbl-cond); letter-spacing: .16em; text-transform: uppercase; }
+.actionstagebuttons { display: flex; justify-content: flex-end; gap: 9px; margin-top: 20px; }
+.actionstagebuttons .pbtn { min-width: 180px; padding: 11px 16px; }
+.actionrespond { border-color: rgba(90,150,190,.55) !important; color: #a9d7f2 !important; }
+
+/* Priority stop preset panel. */
+#game .stopbtn { width: auto; min-width: 86px; padding-inline: 10px; font: 700 9px/1 var(--tbl-cond); letter-spacing: .13em; }
+.stopmodal { width: min(680px, calc(100vw - 80px)); }
+.stopintro { margin: -4px 0 16px; color: #908b80; font-size: 12.5px; line-height: 1.5; }
+.stopprofiles { display: grid; gap: 7px; margin-bottom: 14px; }
+.stopprofile {
+  width: 100%; display: grid; grid-template-columns: 42px minmax(0,1fr) auto; gap: 12px; align-items: center;
+  padding: 12px; text-align: left; cursor: pointer; background: #0b0f11; color: #ddd5c5;
+  border: 1px solid rgba(185,160,106,.16); border-radius: 2px;
+}
+.stopprofile:hover { background: #12181b; border-color: rgba(200,134,60,.4); }
+.stopprofile.selected { background: linear-gradient(90deg, rgba(200,134,60,.14), #0b0f11); border-color: rgba(200,134,60,.66); }
+.stopprofile .stopicon { font-size: 22px; text-align: center; }
+.stopprofile b { display: block; font: 700 13px/1.2 var(--tbl-cond); letter-spacing: .08em; text-transform: uppercase; }
+.stopprofile small { display: block; margin-top: 4px; color: #858176; font-size: 11px; line-height: 1.4; }
+.stopprofile i { color: var(--tbl-gold-lt); font: normal 700 8px/1 var(--tbl-cond); letter-spacing: .16em; }
+
+/* APNAP simultani trigger ordering. */
+.orderhint { color: #8d887e; font-size: 11px; margin: -5px 0 12px; }
+.triggerorder { display: grid; gap: 6px; margin-bottom: 12px; }
+.triggerorderrow { display: grid; grid-template-columns: 30px minmax(0,1fr) auto; align-items: center; gap: 9px; padding: 8px; border: 1px solid rgba(185,160,106,.16); background: #0a0e10; }
+.triggerordern { display: grid; place-items: center; width: 24px; height: 24px; color: #15110a; background: var(--tbl-gold); font-weight: 800; }
+.triggerordertext b, .triggerordertext span { display: block; }
+.triggerordertext b { color: #e9e1d0; font-size: 12px; }
+.triggerordertext span { margin-top: 2px; color: #817d73; font-size: 10px; }
+.triggerordercontrols { display: flex; gap: 4px; }
+.triggerordercontrols .pbtn { min-width: 34px; padding: 5px 8px; }
+
+/* Combat mapa: ko napada koga, blokeri i gornja procjena štete. */
+.combatmap { display: grid; gap: 7px; padding: 8px 10px; border: 1px solid rgba(200,134,60,.22); background: rgba(7,10,11,.74); }
+.combatmaptitle { color: var(--tbl-gold); font: 700 9px/1.2 var(--tbl-cond); letter-spacing: .22em; text-transform: uppercase; }
+.combatlane { display: grid; grid-template-columns: minmax(0,1fr) 74px 150px; gap: 10px; align-items: center; padding: 6px; border-top: 1px solid rgba(185,160,106,.1); }
+.combatlane.tome { background: linear-gradient(90deg, transparent, rgba(175,55,42,.13)); }
+.combatattackers { display: flex; gap: 5px; overflow-x: auto; }
+.combatunit { min-width: 118px; max-width: 150px; display: flex; align-items: center; gap: 7px; padding: 5px; background: #0d1214; border: 1px solid rgba(185,160,106,.14); cursor: pointer; }
+.combatunit img { width: 30px; height: 42px; object-fit: cover; }
+.combatunit span { min-width: 0; }
+.combatunit b, .combatunit small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.combatunit b { color: #e6decd; font-size: 10px; }
+.combatunit small { margin-top: 3px; color: #8a857a; font-size: 9px; }
+.combatarrow { height: 16px; position: relative; overflow: hidden; }
+.combatarrow::before { content: ''; position: absolute; left: 0; right: 9px; top: 7px; height: 1px; background: linear-gradient(90deg, transparent, var(--tbl-gold)); }
+.combatarrow::after { content: ''; position: absolute; right: 1px; top: 3px; width: 8px; height: 8px; border-top: 1px solid var(--tbl-gold); border-right: 1px solid var(--tbl-gold); transform: rotate(45deg); }
+.combatarrow span { position: absolute; width: 20px; height: 2px; top: 7px; background: #f0c86f; filter: blur(.4px); animation: combatTravel 1.35s linear infinite; }
+@keyframes combatTravel { from { left: -20px; opacity: 0 } 20% { opacity: 1 } to { left: calc(100% + 5px); opacity: 0 } }
+.combatdefender { min-width: 0; }
+.combatdefender b, .combatdefender span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.combatdefender b { color: #f3ead7; font: 700 12px/1.2 var(--tbl-cond); }
+.combatdefender span { margin-top: 3px; color: #a97467; font-size: 9.5px; }
+
+/* ============================================================
+   Podesive AI table — visina zone i veličina karata
+   ============================================================ */
+.oppswrap { max-height: var(--opp-h, 42dvh); }
+.oppstrip { min-height: calc(74px * var(--opp-scale, 1)); }
+.oppstrip .mini.sm { width: calc(52px * var(--opp-scale, 1)); height: calc(70px * var(--opp-scale, 1)); }
+.oppstrip .mini.sm .mname { font-size: calc(7px * var(--opp-scale, 1)); max-height: calc(17px * var(--opp-scale, 1)); }
+.oppstrip .mini.sm .pt { font-size: calc(8.5px * var(--opp-scale, 1)); }
+.oppstrip .mini.sm .cnt, .oppstrip .mini.sm .cnt2, .oppstrip .mini.sm .att { font-size: calc(9px * var(--opp-scale, 1)); }
+.oppstrip .mini.sm .badge { font-size: calc(13px * var(--opp-scale, 1)); }
+.oppstrip .oppLands { font-size: calc(11px * var(--opp-scale, 1)); padding: calc(5px * var(--opp-scale,1)) calc(8px * var(--opp-scale,1)); }
+/* hvatište za povlačenje visine */
+.oppresize {
+  height: 11px; margin: -2px 8px 0; cursor: ns-resize;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  flex-shrink: 0; touch-action: none;
+}
+.oppresize::before {
+  content: ''; width: 46px; height: 3px; border-radius: 2px;
+  background: rgba(185,160,106,.26); transition: background .12s, width .12s;
+}
+.oppresize:hover::before, .oppresize.drag::before { background: rgba(200,134,60,.75); width: 78px; }
+.oppsizebar {
+  display: flex; align-items: center; gap: 5px; padding: 0 9px 3px;
+  font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: #6f6a5c;
+}
+.oppsizebar .zbtn {
+  background: #0d1214; border: 1px solid rgba(185,160,106,.22); color: #c9bfa6;
+  border-radius: 2px; font-size: 12px; line-height: 1; padding: 2px 8px; cursor: pointer;
+}
+.oppsizebar .zbtn:hover { border-color: rgba(200,134,60,.6); color: #fff; }
+.oppsizebar .zval { min-width: 34px; text-align: center; color: #b9a06a; }
+.oppsizebar .zspacer { flex: 1; }
+
+/* Desktop-only proizvod: ispod 1280 px ne pokušavamo sabiti Commander sto. */
+#desktop-only { display: none; }
+@media (max-width: 1279px) {
+  #setup, #game { display: none !important; }
+  #desktop-only {
+    min-height: 100vh; padding: 32px; display: grid; place-items: center;
+    background: radial-gradient(circle at 50% 15%, #211c2d, #080a0d 64%);
+  }
+  .desktop-only-card {
+    width: min(560px, 100%); padding: 42px; text-align: center;
+    border: 1px solid rgba(200,134,60,.55); background: rgba(10,13,15,.94);
+    box-shadow: 0 28px 80px #000c, inset 0 1px rgba(255,255,255,.04);
+  }
+  .desktop-only-card span { color: #c8863c; font-size: 11px; letter-spacing: .24em; }
+  .desktop-only-card h1 { margin: 12px 0 8px; color: #f6f1e4; font: 32px/1.1 'Marcellus', serif; }
+  .desktop-only-card p { color: #9f998b; font-size: 14px; line-height: 1.6; }
+}
