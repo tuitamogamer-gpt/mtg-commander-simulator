@@ -18,7 +18,7 @@ Original prompt: Pretvori postojeći MTG Commander simulator u desktop-only Comm
 - [x] Ispravan priority/stack/trigger state machine sa holderom, punim pass krugom i APNAP batchom.
 - [x] Desktop action stage, stop profili, end-step prozor i combat vizualizacija.
 - [x] Card-by-card certifikacija po svakom od 20 deckova.
-- [ ] Release gate, push i Vercel redeploy.
+- [x] Release gate, GitHub push i Vercel produkcijski redeploy.
 
 ## Završni status provjere
 
@@ -52,3 +52,5 @@ Original prompt: Pretvori postojeći MTG Commander simulator u desktop-only Comm
 - 2026-08-11: Zatvorene sve označene i naknadno pronađene aproksimacije aktivnih deckova, uključujući Goat, Erestor, Graywater Encore, Bloodcaster, Dead Before Sunrise, Spree, Foundry, Brewmaster, Vraska, Mirror Entity, Celeborn, Galadhrim Ambush i Lethal Scheme.
 - 2026-08-11: Test gate je 31/31 zelen, uključujući po jednu determinističku četveroigračku partiju za svaki od 20 deckova; strict certifikacija je 1722/1722.
 - 2026-08-11: Playwright desktop tok je ručno pregledan kroz 26 poteza bez browser grešaka. Tastatura sada može birati karte i potvrditi Proceed/reveal modale.
+- 2026-08-11: Commit `e4d7c03` je pushovan na `codex/desktop-commander-overhaul`; Vercel produkcija je dostigla `READY`, alias `https://mtg-commander-simulator.vercel.app` vraća HTTP 200, a svi stvarni JS/CSS asseti su dostupni.
+- 2026-08-11: Produkcijski Chromium smoke je na javnom aliasu izabrao `Most Wanted`, pokrenuo četveroigračku partiju do mulligana i završio bez console/page grešaka.
