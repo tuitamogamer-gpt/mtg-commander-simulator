@@ -853,7 +853,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
   };
   SC['Colossal Whale'] = {
-    unblockableIfIsland: true,
     statics: [{
       apply: (g, self, bf) => {
         self.cur.cantBeBlockedBy = ((prev) => (g2, blocker) => {

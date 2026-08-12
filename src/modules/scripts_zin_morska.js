@@ -48,32 +48,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     grantsOffspring: '{2}',
   };
   SC['Aether Channeler'] = {
-    modes: {
-      pick: 1,
-      list: [
-        { label: '1/1 Bird flying' },
-        { label: 'Bounce nonland', targets: [T.permanent((g, c) => !c.is('Land'), { prompt: 'Vrati u ruku', aiHint: { goal: 'bounce' } })] },
-        { label: 'Vuci kartu' },
-      ],
-    },
-    isCreatureModal: true,
     triggers: [{
       on: 'etb', filter: etbSelf, desc: 'Izbor',
       run: async ctx => {
         const g = ctx.g;
+        const bounceCandidates = g.legalTargets({
+          what: 'permanent',
+          filter: (g2, card) => card.zone === 'battlefield' && !card.is('Land') && card !== ctx.src,
+        }, ctx.src, ctx.you);
+        const options = [{ key: 'bird', label: '1/1 Bird' }, { key: 'draw', label: 'Vuci kartu' }];
+        if (bounceCandidates.length) options.splice(1, 0, { key: 'bounce', label: 'Bounce nonland' });
         const k = await ctx.you.controller.decide(g, {
           type: 'chooseOption', prompt: 'Aether Channeler:',
-          options: [{ key: 'bird', label: '1/1 Bird' }, { key: 'bounce', label: 'Bounce nonland' }, { key: 'draw', label: 'Vuci kartu' }],
+          options,
           aiHint: { kind: 'channeler' },
         });
         if (k === 'bird') await g.makeTokens('birdW', ctx.you);
         else if (k === 'draw') await g.draw(ctx.you, 1);
         else {
-          const cands = g.legalTargets({ what: 'permanent', filter: (g2, c) => c.zone === 'battlefield' && !c.is('Land') && c !== ctx.src }, ctx.src, ctx.you);
-          if (cands.length) {
-            const pick = await ctx.you.controller.decide(g, { type: 'chooseTargets', candidates: cands, min: 1, max: 1, prompt: 'Bounce', aiHint: { goal: 'bounce' } });
-            if (pick.length) await g.move(pick[0], 'hand');
-          } else await g.draw(ctx.you, 1);
+          const pick = await ctx.you.controller.decide(g, { type: 'chooseTargets', candidates: bounceCandidates, min: 1, max: 1, prompt: 'Bounce', aiHint: { goal: 'bounce' } });
+          if (pick.length) await g.move(pick[0], 'hand');
         }
       },
     }],
@@ -507,7 +501,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Dusk'] = {
-    aftermathName: 'Dawn',
     resolve: async ctx => {
       for (const c of ctx.g.bf().filter(c => c.is('Creature') && c.power >= 3).slice()) await ctx.g.destroy(c);
     },
@@ -791,21 +784,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Innocuous Researcher'] = {
-    triggers: [{
-      on: 'attacks', filter: attacksSelf, desc: 'Parley',
-      run: async ctx => {
-        const g = ctx.g;
-        let inv = 0;
-        for (const q of g.alivePlayers()) {
-          if (!q.library.length) continue;
-          const top = q.library[q.library.length - 1];
-          g.lg(`${q.name} otkriva: ${top.name}.`);
-          if (!top.is('Land')) inv++;
-        }
-        if (inv) await E.investigate(g, ctx.you, inv);
-        for (const q of g.alivePlayers()) await g.draw(q, 1);
+    triggers: [
+      {
+        on: 'attacks', filter: attacksSelf, desc: 'Parley',
+        run: async ctx => {
+          const g = ctx.g;
+          let inv = 0;
+          for (const q of g.alivePlayers()) {
+            if (!q.library.length) continue;
+            const top = q.library[q.library.length - 1];
+            g.lg(`${q.name} otkriva: ${top.name}.`);
+            if (!top.is('Land')) inv++;
+          }
+          if (inv) await E.investigate(g, ctx.you, inv);
+          for (const q of g.alivePlayers()) await g.draw(q, 1);
+        },
       },
-    }],
+      {
+        on: 'endStep', desc: 'Untapuj landove i zaključaj spellove', opt: true,
+        filter: (g, self, d) => d.player === self.ctrl,
+        run: async ctx => {
+          for (const land of ctx.g.lands(ctx.you)) land.tapped = false;
+          ctx.you.cantCastUntilTurnStart = ctx.you.turnsStarted + 1;
+          ctx.g.recalc();
+        },
+      },
+    ],
   };
   SC['Jolrael, Mwonvuli Recluse'] = {
     triggers: [{
@@ -916,11 +920,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Merchant of Truth'] = {
-    triggers: [{
-      on: 'dies', desc: 'Istraga',
-      filter: (g, self, d) => d.snap.ctrl === self.ctrl && d.snap.types.includes('Creature') && !d.snap.isToken,
-      run: async ctx => { await E.investigate(ctx.g, ctx.you); },
-    }],
+    triggers: [
+      {
+        on: 'dies', desc: 'Istraga',
+        filter: (g, self, d) => d.snap.ctrl === self.ctrl && d.snap.types.includes('Creature') && !d.snap.isToken,
+        run: async ctx => { await E.investigate(ctx.g, ctx.you); },
+      },
+      {
+        on: 'attackersDeclared', desc: 'Clue exalted',
+        filter: (g, self, d) => d.player === self.ctrl && d.attackers.length === 1,
+        run: async ctx => {
+          const clues = ctx.g.bf().filter(c => c.ctrl === ctx.you && c.hasSub('Clue')).length;
+          if (clues) E.pumpUntilEOT(ctx.g, ctx.data.attackers[0], clues, clues);
+        },
+      },
+    ],
   };
   SC['Nadir Kraken'] = {
     triggers: [{
@@ -1060,17 +1074,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Tezzeret, Betrayer of Flesh'] = {
+    firstArtifactAbilityDiscount: true,
     abilities: [
       {
         label: '+1: Vuci 2, odbaci', loyalty: 1, sorcery: true,
         run: async ctx => {
           await ctx.g.draw(ctx.you, 2);
-          const art = ctx.you.hand.find(c => c.is('Artifact'));
-          const n = art ? 1 : 2;
-          const pool = ctx.you.hand;
-          if (pool.length) {
+          const artifacts = ctx.you.hand.filter(c => c.is('Artifact'));
+          let discardArtifact = false;
+          if (artifacts.length) {
+            const choice = await ctx.you.controller.decide(ctx.g, {
+              type: 'chooseOption', prompt: 'Tezzeret: odbaci artefakt ili dvije karte?',
+              options: [{ key: 'artifact', label: 'Jedan artefakt' }, { key: 'two', label: 'Dvije karte' }],
+              aiHint: { kind: 'mode' },
+            });
+            discardArtifact = choice === 'artifact';
+          }
+          const pool = discardArtifact ? artifacts : ctx.you.hand;
+          const n = discardArtifact ? 1 : Math.min(2, pool.length);
+          if (n) {
             const pick = await ctx.you.controller.decide(ctx.g, {
-              type: 'chooseCards', from: pool, min: Math.min(n, pool.length), max: Math.min(n, pool.length), prompt: `Odbaci ${n} (1 ako je artefakt)`, aiHint: { kind: 'cleanupDiscard' },
+              type: 'chooseCards', from: pool, min: n, max: n, prompt: `Odbaci ${n}`, aiHint: { kind: 'cleanupDiscard' },
             });
             await ctx.g.discard(ctx.you, pick);
           }
@@ -1087,11 +1111,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               const c = bf.find(x => x.iid === iid);
               if (!c) return;
               if (!c.cur.types.includes('Creature')) c.cur.types.push('Creature');
-              c.cur.basePower = 4; c.cur.baseToughness = 4;
-              c.cur.power = 4 + (c.counters['+1/+1'] || 0); c.cur.toughness = 4 + (c.counters['+1/+1'] || 0);
+              if (!c.hasSub('Vehicle')) {
+                c.cur.basePower = 4; c.cur.baseToughness = 4;
+                c.cur.power = 4 + (c.counters['+1/+1'] || 0); c.cur.toughness = 4 + (c.counters['+1/+1'] || 0);
+              }
             },
           });
           ctx.g.recalc();
+        },
+      },
+      {
+        label: '-6: Emblem — tapovani artefakt vuče kartu', loyalty: -6, sorcery: true,
+        run: async ctx => {
+          ctx.you.emblems.push({
+            name: 'Tezzeret, Betrayer of Flesh emblem',
+            triggers: [{
+              on: 'becameTapped', desc: 'Tezzeret emblem: vuci kartu',
+              filter: (g, emblem, d, owner) => d.card && d.card.ctrl === owner && d.card.is('Artifact'),
+              run: async emblemCtx => { await emblemCtx.g.draw(emblemCtx.you, 1); },
+            }],
+          });
         },
       },
     ],

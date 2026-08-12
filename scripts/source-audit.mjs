@@ -40,7 +40,7 @@ export function extractRawData(source = readSource()) {
 }
 
 function scriptAssignments(source) {
-  return [...source.matchAll(/SC\[(?:'([^']+)'|"([^"]+)")\]\s*=\s*\{/g)]
+  return [...source.matchAll(/SC\[(?:'([^']+)'|"([^"]+)")\]\s*=/g)]
     .map(match => ({ name: match[1] || match[2], index: match.index }));
 }
 
@@ -67,12 +67,15 @@ export function auditSource(source = readSource()) {
 
   const deckRows = allDeckRows.filter(deck => !EXCLUDED_DECKS.has(deck.name));
   const activeNames = new Set(raw.decks.filter(deck => !EXCLUDED_DECKS.has(deck.name)).flatMap(deck => deck.cards.map(card => card.name)));
+  const allSimplifiedCards = [...simplified].sort();
   return {
     sourceBytes: Buffer.byteLength(source),
     sourceLines: source.split('\n').length,
     rawCardCount: Object.keys(raw.cards).length,
     deckRows, excludedDeckRows: allDeckRows.filter(deck => EXCLUDED_DECKS.has(deck.name)),
     duplicateScripts: [...counts].filter(([, count]) => count > 1).map(([name, count]) => ({ name, count })),
-    simplifiedCards: [...simplified].filter(name => activeNames.has(name)).sort(),
+    simplifiedCards: allSimplifiedCards.filter(name => activeNames.has(name)),
+    inactiveSimplifiedCards: allSimplifiedCards.filter(name => !activeNames.has(name)),
+    allSimplifiedCards,
   };
 }

@@ -90,13 +90,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.cityBlessing = false;
       this.emblems = [];
       this.skipUntapOnce = false;
+      this.turnsStarted = 0;
     }
     freshTurnState() {
       return {
         spellsCast: 0, nonCreatureSpells: 0, spellsCastList: [], lifeGained: 0, lifeLost: 0, lifeLossEvents: 0,
         manaSpentOnSpells: 0, expendFired: {}, landsEntered: 0, tokensCreated: 0,
         creaturesDiedUnder: 0, drewThisTurn: 0, firstSpellDone: false, secondSpellDone: false,
-        gainedLifeFirst: false, attackedMe: [],
+        gainedLifeFirst: false, attackedMe: [], artifactAbilitiesActivated: 0, combatDamageHits: [],
       };
     }
     opponents(g) { return g.players.filter(p => p !== this && !p.lost); }
@@ -434,6 +435,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (wasBattlefield && card.meta.characteristicOriginalDef) {
         card.def = card.meta.characteristicOriginalDef;
+        card.isCopyOf = null;
         delete card.meta.characteristicOriginalDef;
       }
       // card.meta se NAMJERNO ne briše pri odlasku sa bojnog polja: "leaves the
@@ -556,6 +558,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             const nn = typeof r.n === 'function' ? r.n(this, card, r.src) : (r.n || 1);
             if (nn > 0) this.addCounters(card, '+1/+1', nn, true);
           }
+        }
+        for (const player of this.players) for (const source of player.graveyard) {
+          if (!source.def.graveyardEtbCounters) continue;
+          const nn = source.def.graveyardEtbCounters(this, source, card) || 0;
+          if (nn > 0) this.addCounters(card, '+1/+1', nn, true);
         }
       }
       if (d.asEnters) await d.asEnters(this, card);
@@ -735,6 +742,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     addCounters(card, kind, n, silent) {
       if (n <= 0) return;
       if (kind === '+1/+1' && card.is && card.is('Creature')) n = this.adjustPlusCounters(card, n);
+      const before = card.counters[kind] || 0;
       card.counters[kind] = (card.counters[kind] || 0) + n;
       const counterText = `${card.name}: +${n} ${kind} ${U.plural(n, 'counter', 'countera')}.`;
       if (!silent) this.lg(counterText);
@@ -743,7 +751,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.emitSync('countersAdded', { card, kind, n });
       if (kind === '+1/+1' && card.zone === 'battlefield' && card.is && card.is('Creature')) {
         if (this.turnPlayer) this.turnPlayer.turnState._putCounterThisTurn = (this.turnPlayer.turnState._putCounterThisTurn || 0) + 1;
-        this.emit('plusAdded', { card, n, ctrl: card.ctrl }); // sync queue triggera
+        this.emit('plusAdded', { card, n, before, after: card.counters[kind], ctrl: card.ctrl }); // sync queue triggera
       }
     }
     removeCounters(card, kind, n) {
@@ -791,34 +799,54 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async damagePlayer(src, p, n, opts = {}) {
       if (n <= 0 || p.lost) return 0;
-      if (opts.combat && src && src.is && src.is('Creature') && !src.hasSub('Elf') &&
+      const preventionAllowed = !this.bf().some(card => card.def.damageCantBePrevented);
+      if (preventionAllowed && opts.combat && src && src.is && src.is('Creature') && !src.hasSub('Elf') &&
         this.untilEffects.some(e => e.kind === 'preventNonElfCombat')) {
         this.lg(`Galadhrim Ambush sprječava combat štetu od ${src.name}.`);
+        await this.emit('damagePrevented', { src, target: p, player: p, n, combat: true });
         return 0;
       }
       // prevencije i preusmjerenja (Selfless Squire, Comeuppance, Deflecting Palm, Gideon's Sacrifice, Take the Bait)
       for (const e of this.untilEffects.slice()) {
         if (e.who !== p) continue;
-        if (e.kind === 'redirectToCreature') {
+        if ((e.kind === 'redirectToCreature' || e.kind === 'redirectAllDamage') &&
+          !(opts._appliedRedirects && opts._appliedRedirects.has(e))) {
           const c = this.byIid(e.iid);
           if (c && c.zone === 'battlefield') {
             this.lg(`Šteta preusmjerena na ${c.name}.`);
-            return this.damageCreature(src, c, n, opts);
+            const applied = new Set(opts._appliedRedirects || []); applied.add(e);
+            return this.damageCreature(src, c, n, Object.assign({}, opts, { _appliedRedirects: applied }));
           }
           continue;
         }
-        if (e.kind === 'preventCombatToPlayer' && opts.combat) { this.lg(`Šteta igraču ${p.name} spriječena.`); return 0; }
-        if (e.kind === 'preventToPlayer') {
+        if (preventionAllowed && e.kind === 'comeuppance' && src && src.ctrl !== p) {
+          this.lg(`Comeuppance sprječava ${n} štete igraču ${p.name}.`);
+          await this.emit('damagePrevented', { src, target: p, player: p, n, combat: !!opts.combat });
+          if (src.is && src.is('Creature')) {
+            await this.damageCreature(e.sourceCard || null, src, n, Object.assign({}, opts, { combat: false }));
+          } else if (src.ctrl) {
+            await this.damagePlayer(e.sourceCard || null, src.ctrl, n, Object.assign({}, opts, { combat: false }));
+          }
+          return 0;
+        }
+        if (preventionAllowed && e.kind === 'preventCombatToPlayer' && opts.combat) {
           this.lg(`Šteta igraču ${p.name} spriječena.`);
+          await this.emit('damagePrevented', { src, target: p, player: p, n, combat: true });
+          return 0;
+        }
+        if (preventionAllowed && e.kind === 'preventToPlayer') {
+          this.lg(`Šteta igraču ${p.name} spriječena.`);
+          await this.emit('damagePrevented', { src, target: p, player: p, n, combat: !!opts.combat });
           if (e.reflectCreatures && src && src.is && src.is('Creature')) await this.damageCreature(null, src, n, {});
           return 0;
         }
-        if (e.kind === 'preventNextToPlayer') {
+        if (preventionAllowed && e.kind === 'preventNextToPlayer' && (!e.source || e.source === src)) {
           this.untilEffects.splice(this.untilEffects.indexOf(e), 1);
           this.lg(`Sljedeća šteta igraču ${p.name} spriječena.`);
+          await this.emit('damagePrevented', { src, target: p, player: p, n, combat: !!opts.combat });
           if (e.reflectToController && src && src.ctrl) {
             // Deflecting Palm: šteta ide kontroloru izvora, ma šta izvor bio
-            await this.damagePlayer(null, src.ctrl, n, {});
+            await this.damagePlayer(e.sourceCard || null, src.ctrl, n, Object.assign({}, opts, { combat: false }));
           } else if (e.reflect && src) {
             if (src.is && src.is('Creature')) await this.damageCreature(null, src, n, {});
             else if (src && src.ctrl) await this.damagePlayer(null, src.ctrl, n, {});
@@ -831,6 +859,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete igraču ${p.name}.`, 'dmg');
       if (opts.combat && src && src.commander) {
         p.commanderDamage[src.iid] = (p.commanderDamage[src.iid] || 0) + n;
+      }
+      if (opts.combat && src && src.ctrl && src.ctrl.turnState) {
+        src.ctrl.turnState.combatDamageHits.push({ card: src, ctrl: src.ctrl, player: p, n });
       }
       if (opts.combat && this.monarch === p && src && src.ctrl && src.ctrl !== p) {
         await this.becomeMonarch(src.ctrl);
@@ -845,26 +876,53 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async damageCreature(src, target, n, opts = {}) {
       if (n <= 0 || target.zone !== 'battlefield') return 0;
-      if (opts.combat && src && src.is && src.is('Creature') && !src.hasSub('Elf') &&
+      const preventionAllowed = !this.bf().some(card => card.def.damageCantBePrevented);
+      if (preventionAllowed && opts.combat && src && src.is && src.is('Creature') && !src.hasSub('Elf') &&
         this.untilEffects.some(e => e.kind === 'preventNonElfCombat')) {
         this.lg(`Galadhrim Ambush sprječava combat štetu od ${src.name}.`);
+        await this.emit('damagePrevented', { src, target, n, combat: true });
         return 0;
       }
-      if (this.isProtectedFrom(target, src)) {
+      if (preventionAllowed && this.isProtectedFrom(target, src)) {
         this.lg(`${target.name}: zaštita sprječava štetu od ${src ? src.name : 'izvora'}.`);
+        await this.emit('damagePrevented', { src, target, n, combat: !!opts.combat });
         return 0;
+      }
+      for (const e of this.untilEffects.slice()) {
+        if (e.kind === 'redirectAllDamage' && e.who === target.ctrl && e.iid !== target.iid &&
+          !(opts._appliedRedirects && opts._appliedRedirects.has(e))) {
+          const chosen = this.byIid(e.iid);
+          if (chosen && chosen.zone === 'battlefield') {
+            this.lg(`Šteta sa ${target.name} preusmjerena na ${chosen.name}.`);
+            const applied = new Set(opts._appliedRedirects || []); applied.add(e);
+            return this.damageCreature(src, chosen, n, Object.assign({}, opts, { _appliedRedirects: applied }));
+          }
+        }
+        if (preventionAllowed && e.kind === 'comeuppance' && target.is('Planeswalker') &&
+          e.who === target.ctrl && src && src.ctrl !== e.who) {
+          this.lg(`Comeuppance sprječava ${n} štete planeswalkeru ${target.name}.`);
+          await this.emit('damagePrevented', { src, target, n, combat: !!opts.combat });
+          if (src.is && src.is('Creature')) {
+            await this.damageCreature(e.sourceCard || null, src, n, Object.assign({}, opts, { combat: false }));
+          } else if (src.ctrl) {
+            await this.damagePlayer(e.sourceCard || null, src.ctrl, n, Object.assign({}, opts, { combat: false }));
+          }
+          return 0;
+        }
       }
       n = this.applyDamageReplacements(src, target, n, opts);
       if (n <= 0) return 0;
       // prevencija sve štete određenom stvorenju (Kurbis i sl.)
-      if (this.untilEffects.some(e => e.kind === 'preventToCreature' && e.iid === target.iid)) {
+      if (preventionAllowed && this.untilEffects.some(e => e.kind === 'preventToCreature' && e.iid === target.iid)) {
         this.lg(`Šteta stvorenju ${target.name} je spriječena.`);
+        await this.emit('damagePrevented', { src, target, n, combat: !!opts.combat });
         return 0;
       }
       // shield counter: upija jedan damage event
-      if ((target.counters['shield'] || 0) > 0) {
+      if (preventionAllowed && (target.counters['shield'] || 0) > 0) {
         this.removeCounters(target, 'shield', 1);
         this.lg(`${target.name}: shield counter upija štetu.`);
+        await this.emit('damagePrevented', { src, target, n, combat: !!opts.combat });
         await this.emit('shieldRemoved', { card: target });
         return 0;
       }
@@ -910,6 +968,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     applyDamageReplacements(src, target, n, opts) {
       for (const r of this.replacers('damage')) {
+        if (r.prevent && this.bf().some(card => card.def.damageCantBePrevented)) continue;
         n = r.run(this, { src, target, n, combat: !!opts.combat, noncombat: !opts.combat }, r.src);
       }
       return n;
@@ -1036,10 +1095,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     tap(card) {
       if (!card || card.zone !== 'battlefield' || card.tapped) return false;
       card.tapped = true;
-      if (this.turnPlayer === card.ctrl && card.meta._firstTappedTurn !== this.turnNo) {
+      const firstThisTurn = card.meta._firstTappedTurn !== this.turnNo;
+      if (firstThisTurn) {
         card.meta._firstTappedTurn = this.turnNo;
-        void this.emit('becameTapped', { card, player: card.ctrl });
       }
+      void this.emit('becameTapped', { card, player: card.ctrl, firstThisTurn });
       return true;
     }
 
@@ -1087,7 +1147,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const r of reps) {
           if (r.event !== event) continue;
           if (r.cond && !r.cond(this, c)) continue;
-          out.push({ ctrl: c.ctrl, src: c, run: r.run, n: r.n, priority: r.priority || 0 });
+          out.push({ ctrl: c.ctrl, src: c, run: r.run, n: r.n, prevent: !!r.prevent, priority: r.priority || 0 });
         }
       }
       out.sort((a, b) => a.priority - b.priority);
@@ -1271,6 +1331,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             src: card, name: t.desc || name, run: t.run, targets: t.targets,
             opt: t.opt, data, onlyIf: t.onlyIf,
           });
+        }
+      }
+      // Emblemi nisu permanenti, ali njihove triggerovane sposobnosti i dalje
+      // postoje u komandnoj zoni i moraju pratiti događaje u igri.
+      for (const player of this.players) {
+        for (const emblem of player.emblems || []) {
+          for (const t of emblem.triggers || []) {
+            if (t.on !== name || t.filter && !t.filter(this, emblem, data || {}, player)) continue;
+            this.queueTrigger({
+              src: emblem, ctrl: player, name: t.desc || name, run: t.run,
+              targets: t.targets, opt: t.opt, data: data || {}, onlyIf: t.onlyIf,
+            });
+          }
         }
       }
       // delayed triggers
@@ -1602,6 +1675,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           for (const key of Object.keys(byName)) {
             const list = byName[key];
+            const controller = list[0] && list[0].ctrl;
+            if (list[0] && list[0].is('Creature') && controller &&
+              this.bf().some(c => c.ctrl === controller && c.def.ignoreLegendRuleCreatures)) continue;
             if (list.length > 1) {
               // CR 704.5j: KONTROLOR bira koju zadržava — ne "najnovija".
               // Sa "najnovija" je token-kopija tvoje bafovane legende ubijala original.

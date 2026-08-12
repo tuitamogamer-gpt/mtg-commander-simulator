@@ -669,6 +669,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Everlasting Torment'] = {
     noLifegain: 'all',
     allDamageWither: true,
+    damageCantBePrevented: true,
   };
   SC['Flourishing Defenses'] = {
     triggers: [{
@@ -955,7 +956,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     costMods: [(g, self, q) => (q.player === self.ctrl && q.card.is('Artifact')) ? -1 : 0],
   };
   SC['Hangarback Walker'] = {
-    xCost: true, xxCost: true,
+    xCost: true,
     etbCounters: { kind: '+1/+1', n: (g, card) => card.castMeta ? (card.castMeta.x || 0) : 1 },
     triggers: [{
       on: 'dies', desc: 'Thopteri', filter: (g, self, d) => d.card === self,
@@ -1144,7 +1145,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Astral Cornucopia'] = {
-    xCost: true, xxxCost: true,
+    xCost: true,
     etbCounters: { kind: 'charge', n: (g, card) => card.castMeta ? (card.castMeta.x || 0) : 0 },
     mana: {
       cost: { tap: true },

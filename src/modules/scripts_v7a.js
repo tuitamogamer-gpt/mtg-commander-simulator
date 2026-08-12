@@ -671,6 +671,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Heralds of the Shredder'] = {
     replace: [{
       event: 'damage',
+      prevent: true,
       run: (g, ev, src) => {
         if (ev.target && ev.target !== src && ev.target.ctrl === src.ctrl && ev.target.is && ev.target.is('Creature')) {
           g.addCounters(ev.target, '+1/+1', ev.n);
@@ -1179,7 +1180,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Gix, Yawgmoth Praetor'] = {
     triggers: [{
       on: 'combatDamageToPlayer', desc: 'Plati 1 → karta',
-      filter: (g, self, d) => d.player && d.player.lost === false && E.eachOpp(g, self.ctrl).includes(d.player) || (d.player !== d.card.ctrl && d.player !== self.ctrl ? false : false),
+      filter: (g, self, d) => d.player && E.eachOpp(g, self.ctrl).includes(d.player),
       run: async ctx => {
         // bilo čije stvorenje udari NEKOG od tvojih protivnika → kontrolor može platiti 1 život za kartu
         const d = ctx.data;
@@ -1192,6 +1193,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         if (yes === 'yes') { await ctx.g.loseLife(hitter, 1, 'gix'); await ctx.g.draw(hitter, 1); }
       },
+    }],
+    abilities: [{
+      label: 'Odbaci X: ukradi X karata s vrha', cost: { mana: '{4}{B}{B}{B}', discardX: true },
+      targets: [T.opponent({ prompt: 'Protivnik čiju biblioteku egziliraš', aiHint: { goal: 'mill' } })],
+      run: async ctx => {
+        const opponent = ctx.targets[0];
+        if (!opponent) return;
+        for (let i = 0; i < (ctx.x || 0) && opponent.library.length; i++) {
+          const card = opponent.library.pop();
+          card.zone = 'exile'; opponent.exile.push(card);
+          card.meta = card.meta || {};
+          card.meta.playableBy = ctx.you;
+          card.meta.playableUntil = 9999;
+          card.meta.freePlay = true;
+        }
+      },
+      aiScore: (g, c, p) => p.hand.length >= 3 ? 4 : 0,
     }],
   };
   SC['Goldlust Triad'] = {

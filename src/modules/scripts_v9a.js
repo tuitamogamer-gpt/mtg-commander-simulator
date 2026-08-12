@@ -412,12 +412,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await ctx.g.makeTokens('elementalUR44', ctx.you);
       await ctx.g.draw(ctx.you, 2);
     },
-    altCosts: [{
-      label: 'Discard → Treasure', speed: 'instant', altCostStr: '{U}{R}',
-      cond: (g, p, card) => card.zone === 'hand',
-      isDiscardTreasure: true,
-    }],
-    // discard-za-treasure preko sudije; glavna verzija radi normalno
+    handAbility: {
+      label: 'Odbaci: napravi Treasure', cost: '{U/R}{U/R}',
+      run: async ctx => { await ctx.g.makeTokens('treasure', ctx.you); },
+    },
   };
   SC['Prismari Charm'] = {
     modes: {
@@ -676,7 +674,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   // Prismari lands
-  SC['Ferrous Lake'] = SC['Ferrous Lake'] || {};
   SC['Hall of Oracles'] = {
     producesColors: [],
     mana: [
@@ -777,11 +774,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return n < 8;
     },
   };
-  SC['Frostboil Snarl'] = Object.assign({
-    producesColors: ['U', 'R'], mana: { cost: { tap: true }, produce: [{ U: 1 }, { R: 1 }] },
-    entersTapped: (g, card) => !card.ctrl.hand.some(c => c.def.subtypes.includes('Island') || c.def.subtypes.includes('Mountain')),
-  });
-
   // ============================================================
   // AVENGERS ASSEMBLE (MSC) — commander: Captain America, Team Leader
   // ============================================================
@@ -834,7 +826,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Captain America, Living Legend'] = {
     triggers: [{
       on: 'becameTapped', desc: 'Prvi tap: untapaj',
-      filter: (g, self, d) => d.player === self.ctrl && d.card.is('Creature'),
+      filter: (g, self, d) => g.turnPlayer === self.ctrl && d.player === self.ctrl && d.card.is('Creature') && d.firstThisTurn,
       run: async ctx => {
         if (ctx.data.card.zone === 'battlefield') ctx.data.card.tapped = false;
       },
@@ -996,7 +988,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => { await ctx.g.draw(ctx.you, ctx.data.n || 0); },
     }],
   };
-  SC['Quicksilver, Speedster'] = { kws: ['flash', 'double strike', 'haste'] };
+  SC['Quicksilver, Speedster'] = {
+    kws: ['flash', 'double strike', 'haste'],
+    grantsFlash: (g, self) => self.tapped,
+  };
   SC['Rescue, Pepper Potts'] = {
     triggers: [{
       on: 'etb', desc: 'Bounce svoj artefakt/stvorenje', filter: etbSelf, opt: true,
@@ -1037,18 +1032,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Shang-Chi and the Ten Rings'] = {
-    triggers: [{
-      on: 'draw', desc: '+1/+1', filter: (g, self, d) => d.player === self.ctrl,
-      run: async ctx => {
-        ctx.g.addCounters(ctx.src, '+1/+1', 1);
-        if ((ctx.src.counters['+1/+1'] || 0) >= 10 && !ctx.src.meta._tenRings) {
+    triggers: [
+      {
+        on: 'draw', desc: '+1/+1', filter: (g, self, d) => d.player === self.ctrl,
+        run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', 1); },
+      },
+      {
+        on: 'plusAdded', desc: 'Deseti prsten',
+        filter: (g, self, d) => d.card === self && d.before < 10 && d.after >= 10,
+        run: async ctx => {
+          if (ctx.src.meta._tenRings) return;
           ctx.src.meta._tenRings = true;
           await ctx.g.draw(ctx.you, 5);
           await ctx.g.gainLife(ctx.you, 5);
           ctx.g.lg('Shang-Chi: DESET PRSTENOVA! +5 karata, +5 života!');
-        }
+        },
       },
-    }],
+    ],
   };
   SC['She-Hulk, Wallbreaker'] = {
     statics: [{
@@ -1086,11 +1086,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['The Wasp, Winsome Avenger'] = {
     triggers: [
       {
+        on: 'etb', desc: 'Hero dobija hexproof', filter: etbSelf,
+        targets: [T.creature({
+          prompt: 'Hero dobija hexproof',
+          filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') && c.hasSub('Hero'),
+          aiHint: { goal: 'protect' },
+        })],
+        run: async ctx => { if (ctx.targets[0]) E.grantUntilEOT(ctx.g, ctx.targets[0], ['hexproof']); },
+      },
+      {
         on: 'attacks', desc: 'Tapuj blokera', filter: (g, self, d) => d.card === self && d.defender instanceof MTG.Player,
+        targets: [{
+          what: 'creature', prompt: 'Tapuj stvorenje defending igrača',
+          filter: (g, c, ctrl, src) => c.zone === 'battlefield' && c.is('Creature') &&
+            src.attacking instanceof MTG.Player && c.ctrl === src.attacking,
+          aiHint: { goal: 'removal' },
+        }],
         run: async ctx => {
-          const defr = ctx.src.attacking;
-          const cands = ctx.g.creatures(defr).filter(c => !c.tapped);
-          if (cands.length) { const t = cands.sort((a, b) => b.power - a.power)[0]; t.tapped = true; ctx.g.lg(`Wasp tapuje ${t.name}.`); }
+          const target = ctx.targets[0];
+          if (target) { ctx.g.tap(target); ctx.g.lg(`Wasp tapuje ${target.name}.`); }
         },
       },
     ],
@@ -1497,6 +1511,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         cost: { tap: true }, produce: [{ ANY: true, n: 1 }],
         restrict: (g, forSpell) => forSpell && forSpell.card && (forSpell.card.def.super || []).includes('Legendary'),
+      },
+      {
+        cost: { tap: true },
+        produce: (g, card) => {
+          const colors = new Set();
+          for (const permanent of g.bf()) {
+            if (permanent.ctrl !== card.ctrl || !(permanent.cur.super || []).includes('Legendary')) continue;
+            for (const color of permanent.colors) colors.add(color);
+          }
+          return [...colors].map(color => ({ [color]: 1 }));
+        },
       },
     ],
     abilities: [{

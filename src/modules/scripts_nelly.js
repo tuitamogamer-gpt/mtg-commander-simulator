@@ -134,7 +134,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Feather, Radiant Arbiter'] = {
-    simplified: 'Kopiranje spellova koji ciljaju samo Feather nije implementirano.',
+    triggers: [{
+      on: 'cast', desc: 'Kopije za druge legalne mete',
+      filter: (g, self, d) => {
+        if (d.player !== self.ctrl || !d.card || d.card.is('Creature')) return false;
+        const chosen = (d.so && d.so.targets || []).flat().filter(Boolean);
+        return chosen.length > 0 && chosen.every(target => target === self);
+      },
+      run: async ctx => {
+        const so = ctx.data.so;
+        if (!so || !ctx.g.stack.includes(so)) return;
+        const specs = so.targetSpecs || ctx.g.spellTargetSpecs(so.card, so.castOpts || {});
+        if (!specs || !specs.length) return;
+        const legalSets = specs.map(spec => new Set(ctx.g.legalTargets(spec, so.card, ctx.data.player)));
+        const candidates = ctx.g.creatures().filter(card => card !== ctx.src && legalSets.every(set => set.has(card)));
+        if (!candidates.length) return;
+        const picked = await ctx.you.controller.decide(ctx.g, {
+          type: 'chooseCards', from: candidates, min: 0, max: candidates.length,
+          prompt: 'Feather: izaberi dodatna stvorenja ({2} po kopiji)', aiHint: { kind: 'copyTargets', src: ctx.src },
+        });
+        if (!picked.length) return;
+        const paid = await ctx.g.payMana(ctx.you, { generic: picked.length * 2, x: 0, pips: [] });
+        if (!paid) return;
+        for (const creature of picked) await ctx.g.copySpell(so, ctx.you, { forceTarget: creature });
+      },
+    }],
   };
   SC['Fiendish Duo'] = {
     replace: [{
@@ -291,15 +315,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Selfless Squire'] = {
     kws: ['flash'],
-    simplified: 'Prevencija štete pojednostavljena: sprječava svu štetu tebi ovaj potez.',
-    triggers: [{
-      on: 'etb', filter: etbSelf, desc: 'Štit',
-      run: async ctx => {
-        const you = ctx.you, self = ctx.src;
-        ctx.g.untilEffects.push({ kind: 'preventToPlayer', who: you, expires: 'eot', srcIid: self.iid });
-        ctx.g.lg(`${you.name}: sva šteta spriječena ovaj potez.`);
+    triggers: [
+      {
+        on: 'etb', filter: etbSelf, desc: 'Štit',
+        run: async ctx => {
+          const you = ctx.you, self = ctx.src;
+          ctx.g.untilEffects.push({ kind: 'preventToPlayer', who: you, expires: 'eot', srcIid: self.iid });
+          ctx.g.lg(`${you.name}: sva šteta spriječena ovaj potez.`);
+        },
       },
-    }],
+      {
+        on: 'damagePrevented', desc: '+1/+1 za spriječenu štetu',
+        filter: (g, self, d) => d.target === self.ctrl && d.n > 0,
+        run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', ctx.data.n); },
+      },
+    ],
   };
   SC['Stalking Leonin'] = {
     triggers: [{
@@ -397,28 +427,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
   };
   SC['Comeuppance'] = {
-    simplified: 'Pojednostavljeno: sprječava svu štetu tebi ovaj potez + vraća je napadačima-stvorenjima.',
     resolve: async ctx => {
       const you = ctx.you;
-      ctx.g.untilEffects.push({ kind: 'preventToPlayer', who: you, expires: 'eot', reflectCreatures: true });
+      ctx.g.untilEffects.push({ kind: 'comeuppance', who: you, expires: 'eot', sourceCard: ctx.src });
       ctx.g.lg(`${you.name}: Comeuppance štit ovaj potez.`);
     },
   };
   SC['Deflecting Palm'] = {
-    simplified: 'Sprječava sljedeću štetu tebi ovaj potez i vraća je izvoru.',
     resolve: async ctx => {
       const you = ctx.you;
-      // reflectToController: šteta ide KONTROLORU izvora (kao na pravoj karti),
-      // a ne samom stvorenju — `reflect` je gađao napadača, koji to obično preživi.
-      ctx.g.untilEffects.push({ kind: 'preventNextToPlayer', who: you, expires: 'eot', reflectToController: true });
+      const candidates = [...new Set(ctx.g.bf().concat(ctx.g.stack.filter(so => so.card).map(so => so.card)))];
+      if (!candidates.length) return;
+      const picked = await you.controller.decide(ctx.g, {
+        type: 'chooseCards', from: candidates, min: 1, max: 1,
+        prompt: 'Deflecting Palm: izaberi izvor štete', aiHint: { kind: 'damageSource' },
+      });
+      if (!picked[0]) return;
+      ctx.g.untilEffects.push({
+        kind: 'preventNextToPlayer', who: you, expires: 'eot', source: picked[0],
+        reflectToController: true, sourceCard: ctx.src,
+      });
     },
   };
   SC["Gideon's Sacrifice"] = {
-    simplified: 'Preusmjerava svu štetu tebi na izabrano stvorenje ovaj potez.',
-    targets: [T.yourCreature({ prompt: 'Žrtveno stvorenje', aiHint: { goal: 'protect' } })],
+    targets: [T.permanent((g, c, ctrl) => c.ctrl === ctrl && (c.is('Creature') || c.is('Planeswalker')), {
+      prompt: 'Tvoje stvorenje ili planeswalker', aiHint: { goal: 'protect' },
+    })],
     resolve: async ctx => {
       const you = ctx.you, iid = ctx.targets[0].iid;
-      ctx.g.untilEffects.push({ kind: 'redirectToCreature', who: you, iid, expires: 'eot' });
+      ctx.g.untilEffects.push({ kind: 'redirectAllDamage', who: you, iid, expires: 'eot' });
     },
   };
   SC['Immortal Obligation'] = {
@@ -655,21 +692,50 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Ghostly Prison'] = { attackTax: 2 };
   SC['Hot Pursuit'] = {
-    simplified: 'Drugi dio (preuzimanje kontrole kad 2+ igrača izgube) nije implementiran.',
-    triggers: [{
-      on: 'etb', filter: etbSelf, desc: 'Suspect + goad',
-      targets: [{
-        what: 'creature', prompt: 'Protivničko stvorenje',
-        filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl !== ctrl,
-        aiHint: { goal: 'goadTarget' },
-      }],
-      run: async ctx => {
-        const t = ctx.targets[0];
-        E.suspect(ctx.g, t);
-        t.meta.goadedBy = [ctx.you];
-        ctx.g.lg(`${t.name} trajno goadovan (Hot Pursuit).`);
+    statics: [{
+      apply: (g, self) => {
+        const target = self.meta.pursuitTargetIid && g.byIid(self.meta.pursuitTargetIid);
+        if (target && target.zone === 'battlefield') {
+          target.cur.goadedBy = (target.cur.goadedBy || []).concat([self.ctrl]);
+        }
       },
     }],
+    triggers: [
+      {
+        on: 'etb', filter: etbSelf, desc: 'Suspect + goad',
+        targets: [{
+          what: 'creature', prompt: 'Protivničko stvorenje',
+          filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl !== ctrl,
+          aiHint: { goal: 'goadTarget' },
+        }],
+        run: async ctx => {
+          const t = ctx.targets[0];
+          E.suspect(ctx.g, t);
+          ctx.src.meta.pursuitTargetIid = t.iid;
+          ctx.g.recalc();
+          ctx.g.lg(`${t.name} je goadovan dok je Hot Pursuit na bojnom polju.`);
+        },
+      },
+      {
+        on: 'beginCombat', desc: 'Preuzmi goadovana/osumnjičena stvorenja',
+        filter: (g, self, d) => d.player === self.ctrl && g.players.filter(player => player.lost).length >= 2,
+        run: async ctx => {
+          const stolen = ctx.g.creatures().filter(card => ctx.g.isGoaded(card) || card.meta.suspected);
+          for (const card of stolen) {
+            const from = card.ctrl;
+            if (from === ctx.you) { card.tapped = false; card.meta.tempHaste = true; continue; }
+            card.ctrl = ctx.you;
+            card.tapped = false;
+            card.meta.tempHaste = true;
+            ctx.g.untilEffects.push({
+              kind: 'temporaryControl', iid: card.iid, from, to: ctx.you, expires: 'eot',
+            });
+          }
+          ctx.g.recalc();
+          ctx.g.lg(`Hot Pursuit: ${stolen.length} goadovanih/osumnjičenih stvorenja pod privremenom kontrolom.`);
+        },
+      },
+    ],
   };
   const impetus = (buff, extra) => ({
     auraTarget: [{
@@ -803,6 +869,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: [],
     abilities: [
       { label: 'Žrtvuj: nađi basic (tapped)', cost: { tap: true, sacSelf: true }, run: async ctx => { await E.searchBasic(ctx.g, ctx.you, { tapped: true }); } },
+      {
+        label: 'Žrtvuj: power ≤2 ne može biti blokiran', cost: { tap: true, sacSelf: true },
+        targets: [T.creature({
+          prompt: 'Stvorenje snage 2 ili manje',
+          filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') && c.power <= 2,
+          aiHint: { goal: 'evasion' },
+        })],
+        run: async ctx => {
+          const target = ctx.targets[0];
+          if (!target) return;
+          const iid = target.iid;
+          ctx.g.untilEffects.push({
+            expires: 'eot', kind: 'unblockable',
+            apply: (g2, bf) => { const card = bf.find(x => x.iid === iid); if (card) card.cur.unblockable = true; },
+          });
+          ctx.g.recalc();
+        },
+      },
     ],
   };
   SC['Kher Keep'] = {

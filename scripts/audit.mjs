@@ -13,6 +13,7 @@ for (const deck of report.deckRows) {
 }
 console.log(`Duplicate SC registracije: ${report.duplicateScripts.length}`);
 console.log(`Označene simplified karte: ${report.simplifiedCards.length}`);
+console.log(`Označene simplified karte izvan aktivnog seta: ${report.inactiveSimplifiedCards.length}`);
 
 const fatal = report.deckRows.some(deck => deck.total !== 100 || deck.missingDefinitions.length);
 if (fatal) process.exitCode = 1;

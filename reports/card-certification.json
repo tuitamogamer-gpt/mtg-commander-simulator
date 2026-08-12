@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-11T11:21:29.182Z",
+  "generatedAt": "2026-08-12T18:09:39.280Z",
   "policy": "Svaki deck i svaka jedinstvena karta se navode zasebno. Aggregate smoke nije zamjena za ovaj izvještaj.",
   "excludedDecks": [
     {
@@ -9,9 +9,18 @@
   ],
   "totals": {
     "decks": 20,
-    "cardEntries": 1722,
-    "passed": 1722,
-    "failed": 0
+    "cardDeckChecks": 1722,
+    "passedCardDeckChecks": 1722,
+    "failedCardDeckChecks": 0,
+    "uniqueCards": 1237,
+    "uniquePassed": 1237,
+    "uniqueFailed": 0,
+    "rawCards": 1288,
+    "rawPassed": 1288,
+    "rawFailed": 0,
+    "inactiveRawCards": 51,
+    "inactiveRawPassed": 51,
+    "inactiveRawFailed": 0
   },
   "decks": [
     {
@@ -10545,6 +10554,314 @@
           "issues": []
         }
       ]
+    }
+  ],
+  "inactiveCards": [
+    {
+      "name": "Agitator Ant",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ancient Stone Idol",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Anya, Merciless Angel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bloodthirsty Blade",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Boros Garrison",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Boros Reckoner",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Comeuppance",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Curse of Opulence",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Darien, King of Kjeldor",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Deflecting Palm",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Disrupt Decorum",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Duelist's Heritage",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Feather, Radiant Arbiter",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fiendish Duo",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Frontier Warmonger",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ghostly Prison",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gideon's Sacrifice",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gisela, Blade of Goldnight",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Havoc Eater",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Hot Pursuit",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Immortal Obligation",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Kazuul, Tyrant of the Cliffs",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Keeper of the Accord",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Kher Keep",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Labyrinth of Skophos",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Loran of the Third Path",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Martial Impetus",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Mob Verdict",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Needle Spires",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Nelly Borca, Impulsive Accuser",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Otherworldly Escort",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Prisoner's Dilemma",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Redemption Arc",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Rite of the Raging Storm",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Seal of Cleansing",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Selfless Squire",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Sevinne's Reclamation",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Slayers' Stronghold",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Smuggler's Share",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Soul Snare",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Spectacular Showdown",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Stalking Leonin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Steel Hellkite",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Take the Bait",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Trouble in Pairs",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Vengeful Ancestor",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Vow of Duty",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Vow of Lightning",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "War Room",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Windborn Muse",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Winds of Rath",
+      "active": false,
+      "status": "PASS",
+      "issues": []
     }
   ]
 }

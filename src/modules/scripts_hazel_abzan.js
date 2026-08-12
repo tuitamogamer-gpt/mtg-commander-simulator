@@ -411,31 +411,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['The Odd Acorn Gang'] = {
+    statics: [{
+      apply: (g, self, bf) => {
+        for (const squirrel of bf) {
+          if (squirrel.ctrl !== self.ctrl || !squirrel.is('Creature') || !squirrel.hasSub('Squirrel')) continue;
+          squirrel.cur.extraAbilities.push({
+            label: 'Tap: target Squirrel +2/+2 i trample', sorcery: true, cost: { tap: true },
+            targets: [{
+              what: 'creature', prompt: 'Squirrel meta',
+              filter: (g2, card) => card.zone === 'battlefield' && card.is('Creature') && card.hasSub('Squirrel'),
+              aiHint: { goal: 'buff' },
+            }],
+            run: async ctx => { if (ctx.targets[0]) E.pumpUntilEOT(ctx.g, ctx.targets[0], 2, 2, ['trample']); },
+          });
+        }
+      },
+    }],
     triggers: [{
       on: 'combatDamageToPlayer', oncePerTurn: true, desc: 'Vuci kartu',
       filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card.hasSub('Squirrel'),
       run: async ctx => { await ctx.g.draw(ctx.you, 1); },
-    }],
-    abilities: [{
-      label: 'Tapuj vjevericu: +2/+2 trample', sorcery: true,
-      cost: {},
-      cond: (g, c, p) => g.creatures(p).some(x => x.hasSub('Squirrel') && !x.tapped && !x.sick),
-      targets: [{
-        what: 'creature', prompt: 'Squirrel meta',
-        filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') && c.hasSub('Squirrel'),
-        aiHint: { goal: 'buff' },
-      }],
-      run: async ctx => {
-        const g = ctx.g, p = ctx.you;
-        const pool = g.creatures(p).filter(x => x.hasSub('Squirrel') && !x.tapped && !x.sick);
-        if (!pool.length) return;
-        const picked = await p.controller.decide(g, {
-          type: 'chooseCards', from: pool, min: 1, max: 1, prompt: 'Tapuj vjevericu (cijena)', aiHint: { kind: 'crew' },
-        });
-        if (!picked.length) return;
-        picked[0].tapped = true;
-        E.pumpUntilEOT(g, ctx.targets[0], 2, 2, ['trample']);
-      },
     }],
   };
   SC['Tireless Provisioner'] = {

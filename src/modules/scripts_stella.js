@@ -226,7 +226,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const you = ctx.you;
       g.delayed.push({
         on: 'upkeep', once: true, name: 'Arcane Denial: vučenje', ctrl: caster,
-        run: async c2 => { await c2.g.draw(caster, 2); },
+        run: async c2 => {
+          const n = await caster.controller.decide(c2.g, {
+            type: 'chooseX', min: 0, max: 2, prompt: 'Arcane Denial: koliko karata vučeš?', aiHint: { kind: 'chooseX' },
+          });
+          await c2.g.draw(caster, Math.max(0, Math.min(2, Number(n) || 0)));
+        },
       });
       g.delayed.push({
         on: 'upkeep', once: true, name: 'Arcane Denial: vučenje', ctrl: you,

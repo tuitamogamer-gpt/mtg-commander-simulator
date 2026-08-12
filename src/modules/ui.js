@@ -986,16 +986,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // mana pool
       const pool = me.pool;
       const poolStr = Object.entries(pool).filter(([k, v]) => v > 0).map(([k, v]) => `${MANA_SYM[k]}${v}`).join(' ');
+      const maySeeLibraryTop = g.bf().some(card => card.ctrl === me && card.def.revealOwnTop);
+      const libraryTop = maySeeLibraryTop ? me.library[me.library.length - 1] : null;
       const info = el('div', 'meinfo');
       info.innerHTML = `<div class="melife">${me.life}❤</div>
         <div>${poolStr ? '🔮 ' + poolStr : ''}</div>
         <div class="zbtns">
-          <button class="zbtn">📚${me.library.length}</button>
+          <button class="zbtn" data-z="library-top">📚${me.library.length}${libraryTop ? ' · 👁' : ''}</button>
           <button class="zbtn" data-z="graveyard">🪦${me.graveyard.length}</button>
           <button class="zbtn" data-z="exile">🌀${me.exile.length}</button>
         </div>`;
       info.querySelectorAll('.zbtn[data-z]').forEach(b => {
-        b.onclick = () => { this.zoneBrowse = { player: me, zone: b.dataset.z }; this.render(); };
+        b.onclick = () => {
+          if (b.dataset.z === 'library-top') {
+            if (libraryTop) this.sheet = { card: libraryTop };
+          } else this.zoneBrowse = { player: me, zone: b.dataset.z };
+          this.render();
+        };
       });
       info.querySelector('.melife').onclick = () => { this.playerSheet = me; this.render(); };
       row2.appendChild(info);
@@ -1840,7 +1847,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const a of (q.acts || [])) {
           if (a.card !== card) continue;
           if (a.ability) usedAbilities.add(a.ability);
-          let label = a.turnFaceUp ? a.label : a.manaAbility ? a.label : a.cycling ? 'Cycling' : a.plot ? `Plot ${U.costStr(U.parseCost(card.def.plot))}` : a.suspend ? 'Suspend' :
+          let label = a.turnFaceUp ? a.label : a.manaAbility ? a.label : a.handAbility ? card.def.handAbility.label :
+            a.gyAbility ? (a.gyAbilityOverride || card.def.gyAbility).label : a.cycling ? 'Cycling' : a.plot ? `Plot ${U.costStr(U.parseCost(card.def.plot))}` : a.suspend ? 'Suspend' :
             a.equip ? `Equip ${U.costStr(U.parseCost(card.def.equip))}` : a.crew ? `Crew ${card.def.crew}` :
               (a.ability && a.ability.label) || 'Aktiviraj';
           const b = el('button', 'pbtn wide', (a.turnFaceUp ? '🃏 ' : a.manaAbility ? '⚡ ' : '⚙️ ') + esc(label));

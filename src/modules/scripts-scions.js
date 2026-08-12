@@ -56,6 +56,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await ctx.g.gainLife(ctx.you, 1);
       },
     }],
+    abilities: [{
+      label: 'Protivnici koji su izgubili život žrtvuju najjače',
+      cost: { mana: '{4}', tap: true, sacSelf: true },
+      run: async ctx => {
+        for (const opponent of E.eachOpp(ctx.g, ctx.you)) {
+          if (!opponent.turnState.lifeLost) continue;
+          const creatures = ctx.g.creatures(opponent);
+          if (!creatures.length) continue;
+          const greatest = Math.max(...creatures.map(c => c.power));
+          const choices = creatures.filter(c => c.power === greatest);
+          const picked = await opponent.controller.decide(ctx.g, {
+            type: 'chooseCards', from: choices, min: 1, max: 1,
+            prompt: 'Papalymo: žrtvuj stvorenje najveće snage', aiHint: { kind: 'forcedSac' },
+          });
+          if (picked[0]) await ctx.g.sacrifice(opponent, picked[0]);
+        }
+      },
+    }],
   };
 
   SC['Hermes, Overseer of Elpis'] = {
@@ -71,27 +89,90 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   SC['Estinien Varlineau'] = {
-    triggers: [{
-      on: 'castNonCreature', desc: 'Counter + flying',
-      filter: (g, self, d) => d.player === self.ctrl,
-      run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', 1); E.grantUntilEOT(ctx.g, ctx.src, ['flying']); },
-    }],
+    triggers: [
+      {
+        on: 'castNonCreature', desc: 'Counter + flying',
+        filter: (g, self, d) => d.player === self.ctrl,
+        run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', 1); E.grantUntilEOT(ctx.g, ctx.src, ['flying']); },
+      },
+      {
+        on: 'postcombatMain', desc: 'Karte za pogođene protivnike',
+        filter: (g, self, d) => d.player === self.ctrl,
+        run: async ctx => {
+          const opponents = new Set((ctx.you.turnState.combatDamageHits || [])
+            .filter(hit => hit.ctrl === ctx.you && (hit.card === ctx.src || hit.card.hasSub('Dragon')))
+            .map(hit => hit.player));
+          const x = opponents.size;
+          if (x) { await ctx.g.draw(ctx.you, x); await ctx.g.loseLife(ctx.you, x, 'Estinien'); }
+        },
+      },
+    ],
   };
 
   SC['Fandaniel, Telophoroi Ascian'] = {
-    triggers: [{
-      on: 'castIS', desc: 'Surveil 1',
-      filter: (g, self, d) => d.player === self.ctrl,
-      run: async ctx => { await E.surveil(ctx.g, ctx.you, 1); },
-    }],
+    triggers: [
+      {
+        on: 'castIS', desc: 'Surveil 1',
+        filter: (g, self, d) => d.player === self.ctrl,
+        run: async ctx => { await E.surveil(ctx.g, ctx.you, 1); },
+      },
+      {
+        on: 'endStep', desc: 'Žrtva ili gubitak života',
+        filter: (g, self, d) => d.player === self.ctrl,
+        run: async ctx => {
+          const count = ctx.you.graveyard.filter(card => card.is('Instant') || card.is('Sorcery')).length;
+          for (const opponent of E.eachOpp(ctx.g, ctx.you)) {
+            const creatures = ctx.g.creatures(opponent).filter(card => !card.isToken);
+            let sacrifice = false;
+            if (creatures.length) {
+              sacrifice = await opponent.controller.decide(ctx.g, {
+                type: 'chooseOption', prompt: `Fandaniel: žrtvuj nontoken stvorenje ili izgubi ${2 * count} života?`,
+                options: [{ key: 'sac', label: 'Žrtvuj' }, { key: 'life', label: 'Izgubi život' }],
+                aiHint: { kind: 'mode' },
+              }) === 'sac';
+            }
+            if (sacrifice) {
+              const picked = await opponent.controller.decide(ctx.g, {
+                type: 'chooseCards', from: creatures, min: 1, max: 1, prompt: 'Žrtvuj nontoken stvorenje', aiHint: { kind: 'forcedSac' },
+              });
+              if (picked[0]) await ctx.g.sacrifice(opponent, picked[0]);
+            } else if (count) await ctx.g.loseLife(opponent, 2 * count, 'Fandaniel');
+          }
+        },
+      },
+    ],
   };
 
   SC['Thancred Waters'] = {
-    triggers: [{
-      on: 'castNonCreature', desc: 'Indestructible',
-      filter: (g, self, d) => d.player === self.ctrl,
-      run: async ctx => { E.grantUntilEOT(ctx.g, ctx.src, ['indestructible']); },
-    }],
+    triggers: [
+      {
+        on: 'etb', desc: 'Royal Guard', filter: etbSelf,
+        targets: [{
+          what: 'permanent', prompt: 'Druga legendarna permanenta', aiHint: { goal: 'protect' },
+          filter: (g, card, ctrl, source) => card.zone === 'battlefield' && card.ctrl === ctrl && card !== source &&
+            (card.cur.super || []).includes('Legendary'),
+        }],
+        run: async ctx => {
+          const target = ctx.targets[0];
+          if (!target || target === ctx.src) return;
+          const sourceIid = ctx.src.iid, targetIid = target.iid, controller = ctx.you;
+          ctx.g.untilEffects.push({
+            expires: 'never', kind: 'thancredGuard',
+            apply: (g2, bf) => {
+              const source = bf.find(c => c.iid === sourceIid);
+              const protectedPermanent = bf.find(c => c.iid === targetIid);
+              if (source && source.ctrl === controller && protectedPermanent) protectedPermanent.cur.kw.add('indestructible');
+            },
+          });
+          ctx.g.recalc();
+        },
+      },
+      {
+        on: 'castNonCreature', desc: 'Indestructible',
+        filter: (g, self, d) => d.player === self.ctrl,
+        run: async ctx => { E.grantUntilEOT(ctx.g, ctx.src, ['indestructible']); },
+      },
+    ],
   };
 
   SC['Hraesvelgr of the First Brood'] = {
@@ -201,18 +282,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Ardbert, Warrior of Darkness'] = {
-    triggers: [{
-      on: 'cast', desc: 'Bijeli/crni spell → counteri legendarnima',
-      filter: (g, self, d) => d.player === self.ctrl && d.card && (d.card.colors.includes('W') || d.card.colors.includes('B')),
-      run: async ctx => {
-        const white = ctx.data.card.colors.includes('W');
-        for (const c of ctx.g.creatures(ctx.you)) {
-          if (!(c.def.super || []).includes('Legendary')) continue;
-          ctx.g.addCounters(c, '+1/+1', 1);
-          E.grantUntilEOT(ctx.g, c, [white ? 'vigilance' : 'menace']);
-        }
+    triggers: [
+      {
+        on: 'cast', desc: 'Bijeli spell → counteri i vigilance',
+        filter: (g, self, d) => d.player === self.ctrl && d.card && d.card.colors.includes('W'),
+        run: async ctx => {
+          for (const c of ctx.g.creatures(ctx.you)) if ((c.def.super || []).includes('Legendary')) {
+            ctx.g.addCounters(c, '+1/+1', 1); E.grantUntilEOT(ctx.g, c, ['vigilance']);
+          }
+        },
       },
-    }],
+      {
+        on: 'cast', desc: 'Crni spell → counteri i menace',
+        filter: (g, self, d) => d.player === self.ctrl && d.card && d.card.colors.includes('B'),
+        run: async ctx => {
+          for (const c of ctx.g.creatures(ctx.you)) if ((c.def.super || []).includes('Legendary')) {
+            ctx.g.addCounters(c, '+1/+1', 1); E.grantUntilEOT(ctx.g, c, ['menace']);
+          }
+        },
+      },
+    ],
   };
 
   // ============================================================
@@ -402,6 +491,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Hildibrand Manderville'] = {
     statics: [{
       apply: (g, self, bf) => { for (const c of bf) if (c.ctrl === self.ctrl && c.isToken && c.is('Creature')) { c.cur.power++; c.cur.toughness++; } },
+    }],
+    triggers: [{
+      on: 'dies', desc: 'Adventure iz groblja', filter: (g, self, d) => d.card === self,
+      run: async ctx => { ctx.src.meta.adventureFromGraveUntilOwnTurn = ctx.you.turnsStarted + 1; },
     }],
     adventure: {
       name: "Gentleman's Rise", cost: '{2}{W}', types: 'Instant', speed: 'instant', altCostStr: '{2}{W}',

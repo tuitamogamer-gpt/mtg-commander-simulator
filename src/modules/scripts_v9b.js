@@ -512,17 +512,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Endless Ranks of HYDRA'] = {
     resolve: async ctx => {
       for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.makeTokens('villainB', ctx.you);
-      const you = ctx.you, card = ctx.src;
-      ctx.g.delayed.push({
-        on: 'attacks', once: false, name: 'HYDRA povratak', ctrl: you,
-        filter: (g2, d) => d.card.commander && d.card.ctrl === you && card.zone === 'graveyard',
-        run: async c2 => {
-          if (card.zone !== 'graveyard' || !c2.g.canPayMana(you, U.parseCost('{1}{B}'))) return;
-          const ok = await c2.g.payMana(you, U.parseCost('{1}{B}'));
-          if (ok) { c2.g.remove(card); card.zone = 'hand'; you.hand.push(card); c2.g.lg('Endless Ranks of HYDRA se vraća!'); }
-        },
-      });
     },
+    triggers: [{
+      on: 'etb', zone: 'graveyard', opt: true, desc: 'HYDRA povratak',
+      filter: (g, self, d) => d.card.commander && d.card.ctrl === self.owner,
+      run: async ctx => {
+        if (ctx.src.zone !== 'graveyard') return;
+        const ok = await ctx.g.payMana(ctx.you, U.parseCost('{1}{B}'));
+        if (!ok) return;
+        ctx.g.remove(ctx.src); ctx.src.zone = 'hand'; ctx.you.hand.push(ctx.src);
+        ctx.g.lg('Endless Ranks of HYDRA se vraća u ruku.');
+      },
+    }, {
+      on: 'attacks', zone: 'graveyard', opt: true, desc: 'HYDRA povratak',
+      filter: (g, self, d) => d.card.commander && d.card.ctrl === self.owner,
+      run: async ctx => {
+        if (ctx.src.zone !== 'graveyard') return;
+        const ok = await ctx.g.payMana(ctx.you, U.parseCost('{1}{B}'));
+        if (!ok) return;
+        ctx.g.remove(ctx.src); ctx.src.zone = 'hand'; ctx.you.hand.push(ctx.src);
+        ctx.g.lg('Endless Ranks of HYDRA se vraća u ruku.');
+      },
+    }],
   };
   SC['Extract Power'] = {
     resolve: async ctx => {
@@ -735,22 +746,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'attackersDeclared', desc: 'Kazna',
       filter: (g, self, d) => {
-        const host = self.attachedTo ? null : null;
-        return d.player === self.ctrl && self.meta.hostPlayer !== undefined && d.attackers.some(a => a.attacking === g.players[self.meta.hostPlayer]);
+        const victim = self.meta && self.meta.cursedPlayer;
+        return d.player === self.ctrl && victim && d.attackers.some(a => a.attacking === victim);
       },
       run: async ctx => {
-        const victim = ctx.g.players[ctx.src.meta.hostPlayer];
+        const victim = ctx.src.meta.cursedPlayer;
         if (!victim || victim.lost) return;
         await ctx.g.loseLife(victim, 2, 'nemesis');
         await ctx.g.draw(ctx.you, 1);
         await ctx.g.gainLife(ctx.you, 2);
       },
+    }, {
+      on: 'attackersDeclared', desc: 'Premjesti Archnemesis', opt: true,
+      filter: (g, self, d) => d.player !== self.ctrl && d.attackers.some(a => a.attacking === self.ctrl),
+      run: async ctx => {
+        ctx.src.meta.cursedPlayer = ctx.data.player;
+        ctx.g.lg(`Archnemesis se veže za ${ctx.data.player.name}.`);
+      },
     }],
-    asEnters: async (g, card) => { /* hostPlayer set u aura attach */ },
   };
   SC['Black Market Connections'] = {
     triggers: [{
-      on: 'upkeep', desc: 'Izbor', filter: (g, self, d) => d.player === self.ctrl,
+      on: 'precombatMain', desc: 'Izbor', filter: (g, self, d) => d.player === self.ctrl,
       run: async ctx => {
         const ks = await ctx.you.controller.decide(ctx.g, {
           type: 'chooseMulti', prompt: 'Black Market Connections (1+):',
@@ -934,7 +951,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
   };
   SC['Council of Reeds'] = {
-    statics: [{ apply: () => {} }],
+    ignoreLegendRuleCreatures: true,
     triggers: [{
       on: 'beginCombat', desc: 'Kopija sebe',
       filter: (g, self, d) => d.player === self.ctrl && E9.castNoncreatureThisTurn(self.ctrl),
@@ -994,15 +1011,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Human Torch'] = {
-    triggers: [{
-      on: 'beginCombat', desc: 'FLAME ON!',
-      filter: (g, self, d) => d.player === self.ctrl && E9.castNoncreatureThisTurn(self.ctrl),
-      run: async ctx => {
-        E.grantUntilEOT(ctx.g, ctx.src, ['flying', 'double strike', 'haste']);
-        ctx.src.meta.tempHaste = true;
-        ctx.g.lg('FLAME ON! 🔥');
+    triggers: [
+      {
+        on: 'beginCombat', desc: 'FLAME ON!',
+        filter: (g, self, d) => d.player === self.ctrl && E9.castNoncreatureThisTurn(self.ctrl),
+        run: async ctx => {
+          E.grantUntilEOT(ctx.g, ctx.src, ['flying', 'double strike', 'haste']);
+          ctx.src.meta.tempHaste = true;
+          ctx.g.lg('FLAME ON! 🔥');
+        },
       },
-    }],
+      {
+        on: 'attacks', desc: 'Plati RGWU za odraz štete', opt: true,
+        filter: (g, self, d) => d.card === self && g.canPayMana(self.ctrl, U.parseCost('{R}{G}{W}{U}')),
+        run: async ctx => {
+          if (await ctx.g.payMana(ctx.you, U.parseCost('{R}{G}{W}{U}'))) ctx.src.meta._torchReflectTurn = ctx.g.turnNo;
+        },
+      },
+      {
+        on: 'combatDamageToPlayer', desc: 'Odrazi combat štetu',
+        filter: (g, self, d) => d.card === self && self.meta._torchReflectTurn === g.turnNo,
+        run: async ctx => {
+          for (const opponent of E.eachOpp(ctx.g, ctx.you)) {
+            if (opponent !== ctx.data.player) await ctx.g.damagePlayer(ctx.src, opponent, ctx.data.n || 0);
+          }
+        },
+      },
+    ],
   };
   SC['Lockjaw, Slobbering Teleporter'] = {
     triggers: [{
@@ -1274,7 +1309,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
     resolve: async ctx => { for (const t of ctx.targets.filter(Boolean)) if (t.zone === 'battlefield') await ctx.g.destroy(t); },
   };
-  SC['Into the Time Vortex'] = { cascade: true, rebound: true, resolve: async ctx => {} };
+  // Oracle nema zaseban resolution efekt: cijeli tekst čine cascade i rebound.
+  SC['Into the Time Vortex'] = { cascade: true, rebound: true, rulesOnlySpell: true };
   SC["It's Clobberin' Time!"] = {
     rebound: true,
     modes: {
@@ -1483,10 +1519,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Cosmic Crucible'] = {
     triggers: [
       {
-        on: 'upkeep', desc: '4 mane', filter: (g, self, d) => d.player === self.ctrl,
+        on: 'precombatMain', desc: '4 mane', filter: (g, self, d) => d.player === self.ctrl,
         run: async ctx => {
-          for (const col of ['G', 'U', 'W', 'R']) ctx.you.pool[col] = (ctx.you.pool[col] || 0) + 1;
-          ctx.g.lg('Cosmic Crucible: +4 mane (GUWR).');
+          const made = [];
+          for (let i = 0; i < 4; i++) {
+            const color = await ctx.you.controller.decide(ctx.g, {
+              type: 'chooseOption', prompt: `Cosmic Crucible: boja mane ${i + 1}/4`,
+              options: ['W', 'U', 'B', 'R', 'G'].map(key => ({ key, label: key })), aiHint: { kind: 'manaColor' },
+            });
+            const chosen = ['W', 'U', 'B', 'R', 'G'].includes(color) ? color : 'W';
+            ctx.you.pool[chosen] = (ctx.you.pool[chosen] || 0) + 1;
+            made.push(chosen);
+          }
+          ctx.g.lg(`Cosmic Crucible: +4 mane (${made.join('')}).`);
         },
       },
       {
@@ -1547,15 +1592,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       aiScore: () => 1,
     }],
   };
-  SC['Canopy Vista'] = {
-    producesColors: ['G', 'W'], mana: { cost: { tap: true }, produce: [{ G: 1 }, { W: 1 }] },
-    entersTapped: (g, card) => g.lands(card.ctrl).filter(l => l !== card && (l.def.super || []).includes('Basic')).length < 2,
-  };
-  SC['Sunpetal Grove'] = {
-    producesColors: ['G', 'W'], mana: { cost: { tap: true }, produce: [{ G: 1 }, { W: 1 }] },
-    entersTapped: (g, card) => !g.lands(card.ctrl).some(l => l !== card && (l.hasSub('Forest') || l.hasSub('Plains'))),
-  };
-
   // ============================================================
   // WAKANDA FOREVER — commander: T'Challa, the Black Panther
   // ============================================================
@@ -1856,15 +1892,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Ancestral Communion'] = {
+    targets: [{
+      zone: 'graveyard', what: 'card', prompt: 'Permanent karta u ruku',
+      filter: (g, c) => c.is('Creature') || c.is('Artifact') || c.is('Enchantment') || c.is('Land') || c.is('Planeswalker'),
+      aiHint: { goal: 'reanimate' },
+    }],
+    triggers: [{
+      on: 'cast', zone: 'stack', desc: 'Kopija uz komandera',
+      filter: (g, self, d) => d.card === self && g.bf().some(c => c.commander && c.ctrl === self.ctrl),
+      run: async ctx => {
+        const spell = ctx.g.stack.find(so => so.kind === 'spell' && so.card === ctx.src);
+        if (spell) await ctx.g.copySpell(spell, ctx.you, { mayNewTargets: true });
+      },
+    }],
     resolve: async ctx => {
-      const doIt = async () => {
-        const pool = ctx.you.graveyard.filter(c => c.is('Creature') || c.is('Artifact') || c.is('Enchantment') || c.is('Land'));
-        if (!pool.length) return;
-        const pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: pool, min: 0, max: 1, prompt: 'U ruku:', aiHint: { kind: 'reanimate' } });
-        if (pick[0]) { ctx.g.remove(pick[0]); pick[0].zone = 'hand'; ctx.you.hand.push(pick[0]); }
-      };
-      await doIt();
-      if (ctx.g.bf().some(c => c.commander && c.ctrl === ctx.you)) { ctx.g.lg('Ancestral Communion: kopija!'); await doIt(); }
+      const target = ctx.targets[0];
+      if (!target || target.zone !== 'graveyard') return;
+      ctx.g.remove(target); target.zone = 'hand'; target.owner.hand.push(target);
     },
   };
   SC['Martial Coup'] = {
@@ -1958,6 +2002,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Heart-Shaped Herb'] = {
     replace: [{
       event: 'damage',
+      prevent: true,
       run: (g, ev, src) => {
         if (ev.target === src.ctrl && ev.src && ev.src.ctrl !== src.ctrl) return Math.max(0, ev.n - 1);
         return ev.n;
@@ -2083,6 +2128,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     equip: '{2}',
     replace: [{
       event: 'damage',
+      prevent: true,
       run: (g, ev, src) => {
         if (src.attachedTo && ev.target && ev.target.iid === src.attachedTo) {
           const host = g.byIid(src.attachedTo);
@@ -2176,7 +2222,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         aiScore: (g, c, p) => p.life < 12 && p.hand.length > 4 ? 3 : 0.2,
       },
       {
-        label: 'Sac artefakt: vuci', cost: { tap: true, mana: '{1}', sac: (g, x, c) => x.is('Artifact') && x !== c },
+        label: 'Plati 1 život: Goat', cost: { tap: true, mana: '{1}', life: 1 },
+        run: async ctx => { await ctx.g.makeTokens('goat', ctx.you); },
+        aiScore: (g, c, p) => p.life > 10 ? 0.8 : 0,
+      },
+      {
+        label: 'Sac stvorenje: artefakt iz groblja u ruku', cost: { tap: true, mana: '{1}', sacCreature: true },
+        targets: [{
+          zone: 'graveyard', what: 'card', prompt: 'Artefakt iz groblja',
+          filter: (g, card, ctrl) => card.owner === ctrl && card.is('Artifact'), aiHint: { goal: 'reanimate' },
+        }],
+        run: async ctx => {
+          const target = ctx.targets[0];
+          if (!target || target.zone !== 'graveyard') return;
+          ctx.g.remove(target); target.zone = 'hand'; target.owner.hand.push(target);
+        },
+        aiScore: (g, c, p) => p.graveyard.some(x => x.is('Artifact')) ? 1 : 0,
+      },
+      {
+        label: 'Sac artefakt: vuci', cost: { tap: true, mana: '{1}', sac: (g, x) => x.is('Artifact') },
         run: async ctx => { await ctx.g.draw(ctx.you, 1); },
         aiScore: () => 0.5,
       },
@@ -2248,13 +2312,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: ['G', 'W'], mana: { cost: { tap: true }, produce: [{ G: 1 }, { W: 1 }] },
     entersTapped: (g, card) => g.alivePlayers().filter(x => x !== card.ctrl).length < 2,
   };
-  SC['Fortified Village'] = {
-    producesColors: ['G', 'W'], mana: { cost: { tap: true }, produce: [{ G: 1 }, { W: 1 }] },
-    entersTapped: (g, card) => !card.ctrl.hand.some(c => c.def.subtypes.includes('Forest') || c.def.subtypes.includes('Plains')),
-  };
-  SC['Scattered Groves'] = { producesColors: ['G', 'W'], entersTapped: true, mana: { cost: { tap: true }, produce: [{ G: 1 }, { W: 1 }] }, cycling: { cost: '{2}' } };
-  SC['Sungrass Prairie'] = { producesColors: ['G', 'W'], mana: { cost: { tap: true, mana: '{1}' }, produce: [{ G: 1, W: 1 }] } };
-
   // ---------- preostali stapleovi ----------
   SC['Spectator Seating'] = {
     producesColors: ['R', 'W'], mana: { cost: { tap: true }, produce: [{ R: 1 }, { W: 1 }] },
@@ -2273,7 +2330,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Birds of Paradise'] = { mana: { cost: { tap: true }, produce: [{ ANY: true, n: 1 }] } };
   SC['Metalwork Colossus'] = {
     selfCostAdjust: (g, card, p) => -g.bf().filter(c => c.ctrl === p && c.is('Artifact') && !c.is('Creature') && !c.is('Land')).reduce((s, c) => s + c.mv, 0),
-    abilities: [],
+    gyAbility: {
+      label: 'Žrtvuj 2 artefakta: vrati u ruku', cost: '{0}', sacArtifacts: 2, exileSelf: false,
+      run: async ctx => {
+        if (ctx.src.zone !== 'graveyard') return;
+        ctx.g.remove(ctx.src); ctx.src.zone = 'hand'; ctx.src.owner.hand.push(ctx.src);
+      },
+    },
   };
   SC['Meteor Golem'] = {
     triggers: [{

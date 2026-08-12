@@ -312,12 +312,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   SC['Dearly Departed'] = {
-    // radi iz groblja — engine podržava trigere sa zone:'graveyard'
-    triggers: [{
-      on: 'etb', zone: 'graveyard', desc: 'Human dobija dodatni counter',
-      filter: (g, self, d) => d.card.ctrl === self.owner && d.card.hasSub('Human') && d.card.is('Creature'),
-      run: async ctx => { ctx.g.addCounters(ctx.data.card, '+1/+1', 1); },
-    }],
+    graveyardEtbCounters: (g, self, card) => card.ctrl === self.owner && card.hasSub('Human') && card.is('Creature') ? 1 : 0,
   };
 
   SC["Death's Presence"] = {

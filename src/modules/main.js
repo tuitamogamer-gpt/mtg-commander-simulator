@@ -421,6 +421,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       commanders: p.commanders.map(card),
       battlefield: g.battlefield.filter(c => c.ctrl === p).map(card),
       hand: p === ui.me ? p.hand.map(card) : undefined,
+      visibleLibraryTop: p === ui.me && g.bf().some(source => source.ctrl === p && source.def.revealOwnTop) && p.library.length
+        ? card(p.library[p.library.length - 1]) : undefined,
     }));
     const pending = ui && ui.pending ? ui.pending.q : (ui && ui.react ? ui.react.q : null);
     return {
@@ -439,6 +441,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           card: entry.card && entry.card.name,
           label: entry.manaAbility ? entry.label :
             entry.turnFaceUp ? entry.label :
+            entry.handAbility ? entry.card.def.handAbility.label :
+              entry.gyAbility ? (entry.gyAbilityOverride || entry.card.def.gyAbility).label :
             entry.ability ? entry.ability.label :
               entry.equip ? 'Equip' : entry.crew ? 'Crew' : entry.cycling ? 'Cycling' : 'Aktiviraj',
         }))),

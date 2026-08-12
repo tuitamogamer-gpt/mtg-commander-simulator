@@ -468,9 +468,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Vernal Fen'] = battleLand('B', 'G');
   SC['Spire Garden'] = bondLand('R', 'G');
   SC['Undergrowth Stadium'] = bondLand('B', 'G');
-  SC['Thriving Grove'] = Object.assign(anyColorLand(), { entersTapped: true });
-  SC['Thriving Isle'] = Object.assign(anyColorLand(), { entersTapped: true });
-  SC['Thriving Moor'] = Object.assign(anyColorLand(), { entersTapped: true });
+  const thrivingLand = baseColor => ({
+    producesColors: COLORS, entersTapped: true,
+    mana: {
+      cost: { tap: true },
+      produce: (g, card) => [{ [baseColor]: 1 }, { [card.meta.thrivingColor || COLORS.find(color => color !== baseColor)]: 1 }],
+    },
+    asEnters: async (g, card) => {
+      const options = COLORS.filter(color => color !== baseColor).map(color => ({ key: color, label: color }));
+      const choice = await card.ctrl.controller.decide(g, {
+        type: 'chooseOption', prompt: `${card.name}: druga boja?`, options, aiHint: { kind: 'manaColor' },
+      });
+      card.meta.thrivingColor = COLORS.includes(choice) && choice !== baseColor ? choice : options[0].key;
+    },
+  });
+  SC['Thriving Grove'] = thrivingLand('G');
+  SC['Thriving Moor'] = thrivingLand('B');
 
   // --- Mardu Surge ---
   SC['Caves of Koilos'] = painLand('W', 'B');
@@ -615,6 +628,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { cost: { tap: true }, produce: [{ C: 1 }] },
       { cost: { tap: true, mana: '{1}' }, produce: [{ ANY: true, n: 1 }] },
     ],
+    abilities: [{
+      label: 'Postani kopija nontoken artefakta', cost: { tap: true, manaFromTarget: true },
+      targets: [T.permanent((g, target, ctrl) => target.ctrl === ctrl && target.is('Artifact') && !target.isToken, {
+        prompt: 'Nontoken artefakt koji kontrolišeš', aiHint: { goal: 'copy' },
+      })],
+      run: async ctx => {
+        const target = ctx.targets[0];
+        if (!target || target.zone !== 'battlefield') return;
+        if (!ctx.src.meta.characteristicOriginalDef) ctx.src.meta.characteristicOriginalDef = ctx.src.def;
+        const copiedDef = target.isCopyOf || target.def;
+        ctx.src.def = copiedDef;
+        ctx.src.isCopyOf = copiedDef;
+        ctx.g.recalc();
+        ctx.g.lg(`The Mycosynth Gardens postaje kopija: ${target.name}.`);
+      },
+      aiScore: (g, card, p) => g.bf().some(x => x.ctrl === p && x.is('Artifact') && !x.isToken && x !== card) ? 1 : 0,
+    }],
   };
 
   // --- Most Wanted ---
