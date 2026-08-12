@@ -303,7 +303,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (c.zone === 'graveyard' && !c.isToken) {
             c.owner.graveyard.splice(c.owner.graveyard.indexOf(c), 1);
             c.zone = 'exile'; c.owner.exile.push(c);
-            c.counters = c.counters || {}; c.counters['hit'] = 1;
+            c.counters = c.counters || {}; ctx.g.addCounters(c, 'hit', 1);
             ctx.g.lg(`Mari egzilira ${c.name} (hit counter).`);
           }
         },
@@ -316,7 +316,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!victim) return;
           const hit = victim.exile.find(c => c.counters && c.counters['hit'] > 0);
           if (hit) {
-            hit.counters['hit'] = 0;
+            ctx.g.removeCounters(hit, 'hit', 1);
             await ctx.g.draw(ctx.you, 1);
             await ctx.g.makeTokens('treasure', ctx.you, { n: 2 });
           }

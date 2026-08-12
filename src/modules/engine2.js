@@ -180,7 +180,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       while (generic > 0 && pool[col] > 0) { pool[col]--; usedPool[col]++; generic--; }
     }
     // then sources
-    const sources = this.manaSources(p, forSpell).filter(s => !opts.excludeCards || !opts.excludeCards.includes(s.card));
+    const onlyCards = opts.onlyCards ? new Set(opts.onlyCards) : null;
+    const sources = this.manaSources(p, forSpell).filter(s =>
+      (!opts.excludeCards || !opts.excludeCards.includes(s.card)) &&
+      (!onlyCards || onlyCards.has(s.card)));
     // converters (sources that consume mana, e.g. signets) must come FIRST so their
     // consumption is appended to the need and covered by plain sources explored later.
     const flex = s => {
@@ -269,9 +272,44 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return !!this.manaSolve(p, cost, forSpell, opts || {});
   };
 
+  G.manualManaSelectionSolution = function (p, cost, forSpell, cards, opts = {}) {
+    const selected = [...new Set((cards || []).filter(Boolean))];
+    const available = new Set(this.manaSources(p, forSpell)
+      .filter(source => !opts.excludeCards || !opts.excludeCards.includes(source.card))
+      .map(source => source.card));
+    if (selected.some(card => !available.has(card))) return null;
+    const sol = this.manaSolve(p, cost, forSpell, Object.assign({}, opts, { onlyCards: selected }));
+    if (!sol) return null;
+    const used = new Set(sol.plan.filter(step => step.src).map(step => step.src.card));
+    if (used.size !== selected.length || selected.some(card => !used.has(card))) return null;
+    return sol;
+  };
+
   G.payMana = async function (p, cost, forSpell, opts = {}) {
-    const sol = this.manaSolve(p, cost, forSpell, opts);
+    let sol = this.manaSolve(p, cost, forSpell, opts);
     if (!sol) return false;
+    // Manualni izbor vrijedi za spellove i samo za ljudskog igraca. Pool mana
+    // se i dalje trosi prva; igrac bira tacne permanente za preostali iznos.
+    if (opts.isSpell && p.manualMana && !p.isAI && sol.plan.some(step => step.src)) {
+      const allSources = this.manaSources(p, forSpell)
+        .filter(source => !opts.excludeCards || !opts.excludeCards.includes(source.card));
+      const candidates = [...new Set(allSources.map(source => source.card))];
+      const suggested = [...new Set(sol.plan.filter(step => step.src).map(step => step.src.card))];
+      const choice = await p.controller.decide(this, {
+        type: 'chooseManaSources', player: p, cost, forSpell, opts,
+        candidates, sources: allSources, suggested,
+        prompt: `${forSpell && forSpell.card ? forSpell.card.name : 'Spell'}: izaberi mana izvore`,
+      });
+      if (!(choice && choice.auto)) {
+        const cards = Array.isArray(choice) ? choice : choice && choice.cards;
+        const manual = this.manualManaSelectionSolution(p, cost, forSpell, cards, opts);
+        if (!manual) {
+          this.lg(`${forSpell && forSpell.card ? forSpell.card.name : 'Spell'}: izabrani mana izvori ne mogu platiti cijenu.`);
+          return false;
+        }
+        sol = manual;
+      }
+    }
     // activate sources: plain producers first, converters (which consume mana) last.
     // Sva produkcija ulazi u pool; na kraju se CIJELA cijena skida iz poola.
     const steps = sol.plan.slice().sort((a, b) => ((a.src && a.src.consume) ? 1 : 0) - ((b.src && b.src.consume) ? 1 : 0));
@@ -1082,6 +1120,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     this.stack.push(copy);
     this.note('stack', {});
+    this.notifyEffect(`📋 ${ctrl.name} kopira spell ${so.name}.`, { kind: 'spellCopy', spell: copy, player: ctrl });
     await this.emit('spellCopied', { so: copy, ctrl, isInstantSorcery: so.card.is('Instant') || so.card.is('Sorcery') });
     return copy;
   };
@@ -1106,6 +1145,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     this.stack.push(copy);
     this.note('stack', {});
+    this.notifyEffect(`📋 ${ctrl.name} kopira ${so.kind === 'trigger' ? 'trigger' : 'sposobnost'} ${so.name}.`, {
+      kind: 'abilityCopy', ability: copy, player: ctrl,
+    });
     return copy;
   };
 
@@ -1343,6 +1385,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const c of this.bf()) {
       if (c.ctrl !== p) continue;
       if (c.cur && c.cur.abilitiesDisabled) continue;
+      if (c.faceDown && c.meta && c.meta.faceDownDef &&
+        (c.meta.faceDownDef.types || []).includes('Creature')) {
+        for (const faceUp of this.faceUpCosts(c)) {
+          if (!this.canPayMana(p, U.parseCost(faceUp.cost), { card: c, isAbility: true })) continue;
+          out.push({
+            card: c, turnFaceUp: true, faceUpCost: faceUp.cost, faceUpDef: c.meta.faceDownDef,
+            label: `Okreni licem gore: ${c.meta.faceDownDef.name} (${faceUp.kind}: ${faceUp.cost})`,
+          });
+        }
+      }
       // NE preskačemo karte bez `abilities` — equip i crew blokovi ispod
       // vrijede i za Equipmente/Vehicle koji nemaju nijednu aktiviranu sposobnost.
       const abs = (c.def.abilities || []).concat(c.cur.extraAbilities || []);
@@ -1482,6 +1534,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.activateAbility = async function (p, entry, uiTargets) {
     const c = entry.card;
+    if (entry.turnFaceUp) return this.turnFaceUp(p, c, entry.faceUpCost);
     if (entry.manaAbility) {
       const source = entry.manaSource;
       const cost = source.extraCost || {};
@@ -1875,6 +1928,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // tuđem potezu (instanti, flash, aktivacije). Uvijek stani — igrač sam
     // odlučuje kad nastavlja, dugmetom "Nastavi na moj potez".
     if (MTG.isLastEndStepBeforeMyTurn(g, me)) return false;
+    // U combatu legalan instant-speed potez nikad ne smije tiho proci u
+    // podrazumijevanom profilu: buff, removal ili aktivacija dobijaju pravi
+    // reaction prozor. Profil "off" je vec eksplicitno obradjen iznad.
+    if (g.phase === 'combat' && canAct) return false;
     if (mode === 'fast' || mode === 'auto' || mode === 'end') return true;
     // smart: ključni prozori sa praznim stackom
     const myTurn = g.turnPlayer === me;
@@ -1895,7 +1952,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     fast: ['⏩', 0.6, 'Brzo — za preskakanje'],
   };
   MTG.PRIO_MODES = [
-    { key: 'end', icon: '🌙', short: 'END', label: 'Samo prije mog poteza', desc: 'Priority stop samo na end stepu igrača neposredno prije tebe. Protivničke nonland karte se i dalje obavezno pokažu.' },
+    { key: 'end', icon: '🌙', short: 'END', label: 'Combat reakcije + prije mog poteza', desc: 'Staje u combatu kad imaš legalan odgovor i na end stepu igrača neposredno prije tebe. Protivničke nonland karte se uvijek pokažu.' },
     { key: 'combat', icon: '⚔️', short: 'COMBAT', label: 'Combat + end step', desc: 'Staje poslije napadača, blokera i first-strike štete, te na end stepu prije tvog poteza.' },
     { key: 'off', icon: '▶', short: 'AKCIJE', label: 'Samo obavezne akcije', desc: 'Bez praznih priority stopova; svaka protivnička nonland karta se ipak pokaže i čeka Proceed.' },
     { key: 'full', icon: '🎛️', short: 'FULL', label: 'Full control', desc: 'Staje na svakom priority prozoru kao za stolom na turniru.' },

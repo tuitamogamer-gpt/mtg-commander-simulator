@@ -62,6 +62,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     raccoon33: tok('Raccoon', null, ['Creature'], ['Raccoon'], 3, 3, { colorsOverride: ['G'] }),
     eldrazi1010: tok('Eldrazi', null, ['Creature'], ['Eldrazi'], 10, 10, { colorsOverride: [] }),
     shapeshifter: tok('Shapeshifter', null, ['Creature'], ['Shapeshifter'], 2, 2, { colorsOverride: ['U'], changeling: true }),
+    shapeshifter32: tok('Shapeshifter', null, ['Creature'], ['Shapeshifter'], 3, 2, {
+      colorsOverride: [], changeling: true,
+      oracle: 'Changeling (This creature has all creature types.)',
+    }),
     treasure: tok('Treasure', null, ['Artifact'], ['Treasure'], undefined, undefined, {
       mana: { cost: { tap: true, sacSelf: true }, produce: [{ ANY: true, n: 1 }] },
     }),
@@ -188,6 +192,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     });
     g.recalc();
+    const stat = `${dp >= 0 ? '+' : ''}${dp}/${dt >= 0 ? '+' : ''}${dt}`;
+    const extra = kws && kws.length ? ` i ${kws.join(', ')}` : '';
+    g.notifyEffect(`✨ ${card.name} dobija ${stat}${extra} do kraja poteza.`, { kind: 'temporaryEffect', card });
   };
 
   E.pumpAllUntilEOT = function (g, filter, dp, dt, kws) {
@@ -209,6 +216,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     });
     g.recalc();
+    const affected = g.bf().filter(c => c.is('Creature') && filter(g, c));
+    const stat = `${dp >= 0 ? '+' : ''}${dp}/${dt >= 0 ? '+' : ''}${dt}`;
+    const extra = kws && kws.length ? ` i ${kws.join(', ')}` : '';
+    if (affected.length) g.notifyEffect(`✨ ${affected.length} stvorenja dobijaju ${stat}${extra} do kraja poteza.`, {
+      kind: 'temporaryEffect', cards: affected,
+    });
   };
 
   E.grantUntilEOT = function (g, card, kws) { E.pumpUntilEOT(g, card, 0, 0, kws); };
@@ -347,6 +360,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (wl) d.ward = { life: parseInt(wl[1], 10) };
       const wm = /Ward\s*\{(\d+)\}/.exec(oracle);
       if (wm && !d.ward) d.ward = { mana: '{' + wm[1] + '}' };
+      // Face-down creature manifestovan/cloakovan smije se okrenuti i za
+      // vlastiti morph/disguise trosak, ako ga karta ima.
+      const morph = /(?:^|\n)Morph\s+((?:\{[^}]+\})+)/i.exec(oracle);
+      const disguise = /(?:^|\n)Disguise\s+((?:\{[^}]+\})+)/i.exec(oracle);
+      if (morph) d.morph = morph[1];
+      if (disguise) d.disguise = disguise[1];
       // merge script
       const sc = scripts[name];
       if (sc) {

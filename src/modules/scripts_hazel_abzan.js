@@ -18,7 +18,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const isBad = kinds.some(k => ['-1/-1', '-0/-1'].includes(k));
       const mine = c.ctrl === p;
       if ((mine && isGood) || (!mine && isBad && !isGood)) {
-        for (const k of kinds) c.counters[k] = (c.counters[k] || 0) + 1;
+        for (const k of kinds) g.addCounters(c, k, 1);
       }
     }
     // Proliferate obuhvata i IGRAČE sa counterima, ne samo permanente.

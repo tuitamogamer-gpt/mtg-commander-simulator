@@ -40,7 +40,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   TK.ox22 = tok('Ox', ['Creature'], ['Ox'], 2, 2, [], ['W']);
   TK.elephant33 = tok('Elephant', ['Creature'], ['Elephant'], 3, 3, [], ['G']);
   TK.construct44F = tok('Construct', ['Artifact', 'Creature'], ['Construct'], 4, 4, ['flying', 'haste'], []);
-  TK.manifest22 = tok('Manifest', ['Creature'], [], 2, 2, [], []);
   TK.vibranium = tok('Vibranium', ['Artifact'], ['Vibranium'], undefined, undefined, ['indestructible'], [], {
     power: undefined, toughness: undefined,
     mana: {
@@ -467,12 +466,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const t = ctx.targets[0]; if (!t) return;
       const owner = t.ctrl;
       await ctx.g.exileCard(t);
-      // manifest: vrh biblioteke ide na sto kao 2/2 licem nadolje
-      if (owner.library.length) {
-        owner.library.pop();
-        await ctx.g.makeTokens('manifest22', owner);
-        ctx.g.lg(`${owner.name} manifestuje vrh biblioteke.`);
-      }
+      await ctx.g.manifestTop(owner);
     },
   };
   SC['Resculpt'] = {

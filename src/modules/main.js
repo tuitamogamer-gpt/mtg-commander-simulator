@@ -296,10 +296,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       humanName: 'Ti',
       maxTurns: 200,
       paced: true,
-      humanController: (p) => { ui.me = p; return ui.controllerFor(p); },
+      humanController: (p) => {
+        ui.me = p;
+        p.manualMana = ui.manaMode === 'manual';
+        return ui.controllerFor(p);
+      },
       onEvent: (e) => {
         if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ TVOJ POTEZ' : `Potez ${g.turnNo} — ${e.p.name}`, e.p === ui.me);
         if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
+        if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind);
         ui.queueRender();
       },
     });
@@ -331,6 +336,58 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ui.render();
       return;
     }
+    if (smokeScenario === 'manualMana') {
+      ui.manaMode = 'manual';
+      ui.me.manualMana = true;
+      localStorage.setItem('mtgManaMode', 'manual');
+      const lands = ['Plains', 'Plains', 'Plains', 'Island'].map(name => {
+        const land = new MTG.CardInst(MTG.DEFS[name], ui.me);
+        land.ctrl = ui.me; land.zone = 'battlefield'; land.sick = false;
+        g.battlefield.push(land);
+        return land;
+      });
+      const spell = new MTG.CardInst(MTG.DEFS['Cut a Deal'], ui.me);
+      spell.zone = 'hand'; ui.me.hand.push(spell);
+      g.turnPlayer = ui.me; g.turnNo = 1; g.phase = 'main1'; g.step = 'main';
+      g.recalc();
+      void g.castSpell(ui.me, spell, { from: 'hand' });
+      ui.render();
+      return;
+    }
+    if (smokeScenario === 'manifest') {
+      void (async () => {
+        const hidden = new MTG.CardInst(MTG.DEFS['Stalwart Pathlighter'], ui.me);
+        hidden.zone = 'library'; ui.me.library.push(hidden);
+        g.turnPlayer = ui.me; g.turnNo = 1; g.phase = 'main1'; g.step = 'main';
+        ui.me.pool.W = 2; ui.me.pool.C = 1;
+        await g.manifestTop(ui.me);
+        g.recalc();
+        const acts = g.activatableList(ui.me);
+        void ui.me.controller.decide(g, {
+          type: 'main', player: ui.me, casts: [], acts, lands: [], phase: g.phase,
+        }).then(action => g.performAction(ui.me, action));
+        ui.sheet = { card: hidden };
+        ui.render();
+      })();
+      return;
+    }
+    if (smokeScenario === 'combatReaction') {
+      const attackerPlayer = g.players.find(player => player !== ui.me);
+      const attacker = new MTG.CardInst(MTG.DEFS['Stalwart Pathlighter'], attackerPlayer);
+      attacker.ctrl = attackerPlayer; attacker.zone = 'battlefield'; attacker.sick = false;
+      attacker.attacking = ui.me;
+      const plains = new MTG.CardInst(MTG.DEFS['Plains'], ui.me);
+      plains.ctrl = ui.me; plains.zone = 'battlefield'; plains.sick = false;
+      const answer = new MTG.CardInst(MTG.DEFS['Swords to Plowshares'], ui.me);
+      answer.zone = 'hand'; ui.me.hand.push(answer);
+      g.battlefield.push(attacker, plains);
+      g.turnPlayer = attackerPlayer; g.turnNo = 1; g.phase = 'combat'; g.step = 'blockers';
+      g.combat = { attackers: [attacker], defenders: new Map() };
+      g.recalc();
+      void g.askPriorityAction(ui.me);
+      ui.render();
+      return;
+    }
     g.start().catch(err => {
       console.error(err);
       ui.toast('Greška u igri: ' + err.message);
@@ -345,6 +402,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!g) return { mode: 'setup', deckCount: MTG.DECKS ? Object.keys(MTG.DECKS).length : 0 };
     const card = c => ({
       id: c.iid, name: c.name, zone: c.zone, tapped: !!c.tapped,
+      faceDown: !!c.faceDown,
+      hiddenIdentity: c.faceDown && c.ctrl === ui.me && c.meta && c.meta.faceDownDef
+        ? c.meta.faceDownDef.name : undefined,
       power: c.is('Creature') ? c.power : undefined,
       toughness: c.is('Creature') ? c.toughness : undefined,
       attacking: c.attacking ? c.attacking.name : null,
@@ -365,18 +425,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const pending = ui && ui.pending ? ui.pending.q : (ui && ui.react ? ui.react.q : null);
     return {
       mode: g.gameOver ? 'gameover' : 'game',
+      manaMode: ui ? ui.manaMode : 'auto',
       coordinateSystem: 'Commander seats are ordered by players[]; the human seat is marked isAI=false.',
       turn: g.turnNo, activePlayer: g.turnPlayer ? g.turnPlayer.name : null,
       phase: g.phase, step: g.step, winner: g.winner ? g.winner.name : null,
       pending: pending ? {
         type: pending.type,
         prompt: pending.prompt || null,
-        actions: (pending.acts || []).map(entry => ({
+        actions: (pending.casts || []).map(entry => ({
+          card: entry.card && entry.card.name,
+          label: `Baci ${entry.card && entry.card.name}`,
+        })).concat((pending.acts || []).map(entry => ({
           card: entry.card && entry.card.name,
           label: entry.manaAbility ? entry.label :
+            entry.turnFaceUp ? entry.label :
             entry.ability ? entry.ability.label :
               entry.equip ? 'Equip' : entry.crew ? 'Crew' : entry.cycling ? 'Cycling' : 'Aktiviraj',
-        })),
+        }))),
       } : null,
       priority: g.priorityState ? {
         holder: g.priorityState.holder ? g.priorityState.holder.name : null,

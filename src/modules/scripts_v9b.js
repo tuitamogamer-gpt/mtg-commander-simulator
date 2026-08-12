@@ -765,8 +765,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (k === 't') { await ctx.g.makeTokens('treasure', ctx.you); await ctx.g.loseLife(ctx.you, 1, 'bmc'); }
           else if (k === 'c') { await ctx.g.draw(ctx.you, 1); await ctx.g.loseLife(ctx.you, 2, 'bmc'); }
           else {
-            const def = Object.assign({}, TK.shapeshifter, { power: '3', toughness: '2', changeling: true });
-            await ctx.g.makeTokens(def, ctx.you);
+            await ctx.g.makeTokens('shapeshifter32', ctx.you);
             await ctx.g.loseLife(ctx.you, 3, 'bmc');
           }
         }

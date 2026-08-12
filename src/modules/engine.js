@@ -237,6 +237,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     note(type, data) { this.onEvent(Object.assign({ type }, data)); }
 
+    // Jedinstven, uvijek vidljiv kanal za efekte koje je ranije bilo lako
+    // propustiti u logu (kopije, counteri, privremeno/dodijeljene sposobnosti).
+    notifyEffect(text, data = {}, addToLog = true) {
+      if (!text) return;
+      if (addToLog) this.lg(text, 'effect');
+      this.note('effectNotice', Object.assign({ text }, data));
+    }
+
     // ------------- setup -------------
     addPlayer(name, deck, controller, isAI) {
       const p = new Player(name, this.players.length);
@@ -422,6 +430,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (wasBattlefield && card.meta.faceDownDef) {
         card.def = card.meta.faceDownDef;
         delete card.meta.faceDownDef;
+        delete card.meta.faceDownKind;
       }
       if (wasBattlefield && card.meta.characteristicOriginalDef) {
         card.def = card.meta.characteristicOriginalDef;
@@ -453,6 +462,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (fromZone !== 'battlefield') card.meta = {};
         if (opts.faceDownDef) {
           card.meta.faceDownDef = opts.faceDownDef;
+          card.meta.faceDownKind = opts.faceDownKind || 'manifest';
           card.faceDown = true;
         }
         card.meta._enteredTurn = this.turnNo;
@@ -516,17 +526,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (d.etbCounters) {
         let n = typeof d.etbCounters.n === 'function' ? d.etbCounters.n(this, card) : d.etbCounters.n;
         if (n > 0 && d.etbCounters.kind === '+1/+1') n = this.adjustPlusCounters(card, n);
-        if (n > 0) card.counters[d.etbCounters.kind] = (card.counters[d.etbCounters.kind] || 0) + n;
+        if (n > 0) {
+          card.counters[d.etbCounters.kind] = (card.counters[d.etbCounters.kind] || 0) + n;
+          this.notifyEffect(`◆ ${card.name} ulazi sa ${n} ${d.etbCounters.kind} ${U.plural(n, 'counterom', 'countera')}.`, {
+            kind: 'counter', card, counterKind: d.etbCounters.kind, n,
+          });
+        }
       }
       if (card.castMeta && card.castMeta.grantedSunburstColors > 0) {
         const kind = card.is('Creature') ? '+1/+1' : 'charge';
         card.counters[kind] = (card.counters[kind] || 0) + card.castMeta.grantedSunburstColors;
+        this.notifyEffect(`◆ ${card.name}: sunburst dodaje ${card.castMeta.grantedSunburstColors} ${kind} countera.`, {
+          kind: 'counter', card, counterKind: kind, n: card.castMeta.grantedSunburstColors,
+        });
       }
       if (d.loyalty && card.is('Planeswalker')) {
         card.counters['loyalty'] = parseInt(d.loyalty, 10);
         if (d.compleated && card.castMeta && card.castMeta.phyrexianLifePaid > 0) {
           card.counters['loyalty'] = Math.max(0, card.counters['loyalty'] - 2);
         }
+        this.notifyEffect(`◆ ${card.name} ulazi sa ${card.counters['loyalty']} loyalty countera.`, {
+          kind: 'counter', card, counterKind: 'loyalty', n: card.counters['loyalty'],
+        });
       }
       // additional +1/+1 counters replacements (Grumgully)
       if (card.is('Creature')) {
@@ -552,6 +573,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async sagaChapter(card) {
       const next = (card.counters['lore'] || 0) + 1;
       card.counters['lore'] = next;
+      this.notifyEffect(`◆ ${card.name}: lore counter ${next}.`, { kind: 'counter', card, counterKind: 'lore', n: 1 });
       const ch = card.def.saga[next - 1];
       if (ch) {
         this.lg(`${card.name} — poglavlje ${next}.`);
@@ -602,31 +624,96 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return made;
     }
 
-    async cloakTop(player) {
-      if (!player.library.length) return null;
-      const card = player.library.pop();
-      const originalDef = card.def;
-      card.def = {
+    faceDownCreatureDef(kind) {
+      const cloaked = kind === 'cloak';
+      return {
         name: 'Face-down creature', cost: null, super: [], types: ['Creature'], subtypes: [],
-        power: '2', toughness: '2', oracle: 'Cloaked card (controller may turn it face up if it is a creature).',
-        kws: [], ward: { mana: '{2}' },
-        abilities: [{
-          label: 'Turn face up',
-          cost: { mana: (g, self) => self.meta.faceDownDef.cost || '{0}' },
-          cond: (g, self) => !!self.meta.faceDownDef && self.meta.faceDownDef.types.includes('Creature'),
-          run: async ctx => {
-            ctx.src.def = ctx.src.meta.faceDownDef;
-            delete ctx.src.meta.faceDownDef;
-            ctx.src.faceDown = false;
-            ctx.g.recalc();
-            ctx.g.lg(`${ctx.src.name} je okrenut licem gore.`);
-          },
-        }],
+        power: '2', toughness: '2', colorsOverride: [], kws: [],
+        oracle: cloaked
+          ? 'Face-down 2/2 creature with ward {2}. Its controller may turn it face up if it is a creature card.'
+          : 'Face-down 2/2 creature. Its controller may turn it face up if it is a creature card.',
+        ward: cloaked ? { mana: '{2}' } : null,
       };
-      card.faceDown = true;
-      await this.move(card, 'battlefield', { ctrl: player, faceDownDef: originalDef });
-      this.lg(`${player.name} cloak-uje vrh biblioteke kao 2/2 sa ward {2}.`);
+    }
+
+    async putFaceDown(player, card, kind = 'manifest') {
+      if (!player || !card) return null;
+      const originalDef = card.def;
+      card.def = this.faceDownCreatureDef(kind);
+      await this.move(card, 'battlefield', {
+        ctrl: player, faceDownDef: originalDef, faceDownKind: kind,
+      });
+      this.lg(`${player.name} stavlja kartu licem nadolje kao 2/2${kind === 'cloak' ? ' sa ward {2}' : ''}.`);
+      this.notifyEffect(`🃏 ${player.name}: nova face-down 2/2 karta.`, { kind: 'faceDown', card, player }, false);
       return card;
+    }
+
+    async manifestCard(player, card) {
+      return this.putFaceDown(player, card, 'manifest');
+    }
+
+    async manifestTop(player) {
+      if (!player || !player.library.length) return null;
+      return this.manifestCard(player, player.library[player.library.length - 1]);
+    }
+
+    // Manifest dread: pogledaj dvije, jednu manifestuj, drugu stavi u groblje.
+    async manifestDread(player) {
+      if (!player || !player.library.length) return null;
+      const seen = player.library.slice(-2).reverse();
+      let chosen = seen[0];
+      if (seen.length > 1) {
+        const pick = await player.controller.decide(this, {
+          type: 'chooseCards', from: seen, min: 1, max: 1,
+          prompt: 'Manifest dread: izaberi kartu koju manifestujes',
+          aiHint: { kind: 'manifestDread' },
+        });
+        if (pick && seen.includes(pick[0])) chosen = pick[0];
+      }
+      const other = seen.find(card => card !== chosen) || null;
+      const manifested = await this.manifestCard(player, chosen);
+      if (other) await this.move(other, 'graveyard');
+      this.lg(`${player.name} manifest dread${other ? ' i stavlja drugu kartu u groblje' : ''}.`);
+      return manifested;
+    }
+
+    async cloakTop(player) {
+      if (!player || !player.library.length) return null;
+      return this.putFaceDown(player, player.library[player.library.length - 1], 'cloak');
+    }
+
+    faceUpCosts(card) {
+      const original = card && card.meta && card.meta.faceDownDef;
+      if (!original || !(original.types || []).includes('Creature')) return [];
+      const costs = [{ kind: 'mana cost', cost: original.cost || '{0}' }];
+      if (original.morph) costs.push({ kind: 'morph', cost: original.morph });
+      if (original.disguise) costs.push({ kind: 'disguise', cost: original.disguise });
+      return costs.filter((entry, index, all) => all.findIndex(other => other.cost === entry.cost) === index);
+    }
+
+    faceUpCost(card) {
+      const costs = this.faceUpCosts(card);
+      return costs.length ? costs[0].cost : null;
+    }
+
+    async turnFaceUp(player, card, chosenCost) {
+      if (!card || card.zone !== 'battlefield' || card.ctrl !== player || !card.faceDown) return false;
+      const original = card.meta.faceDownDef;
+      const legalCosts = this.faceUpCosts(card);
+      const selected = legalCosts.find(entry => entry.cost === chosenCost) || legalCosts[0];
+      if (!original || !selected) return false;
+      const costStr = selected.cost;
+      if (!await this.payMana(player, U.parseCost(costStr), { card, isAbility: true })) return false;
+      card.def = original;
+      delete card.meta.faceDownDef;
+      delete card.meta.faceDownKind;
+      card.faceDown = false;
+      this.recalc();
+      this.lg(`${player.name} okrece ${card.name} licem gore.`, 'effect');
+      this.notifyEffect(`🃏 ${card.name} je okrenut licem gore.`, { kind: 'faceUp', card, player }, false);
+      await this.emit('turnedFaceUp', { card, player });
+      await this.checkSBA();
+      return true;
     }
 
     async copyPermanentToken(orig, ctrl, opts = {}) {
@@ -649,7 +736,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (n <= 0) return;
       if (kind === '+1/+1' && card.is && card.is('Creature')) n = this.adjustPlusCounters(card, n);
       card.counters[kind] = (card.counters[kind] || 0) + n;
-      if (!silent) this.lg(`${card.name}: +${n} ${kind} ${U.plural(n, 'counter', 'countera')}.`);
+      const counterText = `${card.name}: +${n} ${kind} ${U.plural(n, 'counter', 'countera')}.`;
+      if (!silent) this.lg(counterText);
+      this.notifyEffect(`◆ ${counterText}`, { kind: 'counter', card, counterKind: kind, n }, !!silent);
       this.recalc();
       this.emitSync('countersAdded', { card, kind, n });
       if (kind === '+1/+1' && card.zone === 'battlefield' && card.is && card.is('Creature')) {
@@ -1015,7 +1104,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           kw: new Set(d.kws || []),
           power: 0, toughness: 0, basePower: 0, baseToughness: 0,
           cantAttack: false, cantBlock: false, mustAttack: false,
-          assignByToughness: false, allCreatureTypes: false,
+          assignByToughness: false, allCreatureTypes: !!d.changeling,
           extraAbilities: [], wardCost: d.ward || null, extraMana: [],
           hexproof: false, shroud: false, cantBeBlockedBy: null, unblockable: false,
           protectionFrom: [],
@@ -1106,6 +1195,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // city's blessing
       for (const p of this.players) {
         if (!p.cityBlessing && bf.filter(c => c.ctrl === p).length >= 10) p.cityBlessing = true;
+      }
+      // Obavijesti samo kad se NOVA dodijeljena sposobnost/keyword pojavi.
+      // Recalc se poziva cesto, pa se potpisi pamte na objektu karte da isti
+      // stalni efekt ne proizvodi duplikate pri svakom osvjezavanju table.
+      for (const c of bf) {
+        const baseKeywords = new Set(c.def.kws || []);
+        const features = [];
+        for (const kw of c.cur.kw) if (!baseKeywords.has(kw)) features.push(`keyword: ${kw}`);
+        for (const ability of c.cur.extraAbilities || []) {
+          if (ability && ability.label) features.push(`sposobnost: ${ability.label}`);
+        }
+        const previous = new Set(c.meta._grantedFeatureNotices || []);
+        for (const feature of features) {
+          if (!previous.has(feature)) {
+            this.notifyEffect(`✨ ${c.name} dobija ${feature}.`, { kind: 'abilityGrant', card: c, feature });
+          }
+        }
+        c.meta._grantedFeatureNotices = features;
       }
     }
 

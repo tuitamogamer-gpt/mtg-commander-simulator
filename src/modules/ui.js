@@ -39,6 +39,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
   }
 
+  function manualManaSourceText(source) {
+    const cost = source.extraCost || {};
+    const parts = [];
+    if (cost.tap) parts.push('tap');
+    if (cost.sacSelf) parts.push('žrtvuj');
+    if (cost.life) parts.push(`-${cost.life} života`);
+    if (cost.mana) parts.push(typeof cost.mana === 'string' ? cost.mana : 'plati manu');
+    const optionText = option => option.ANY
+      ? `${option.n || 1} bilo koje boje`
+      : Object.entries(option).filter(([key]) => key !== 'n')
+        .map(([color, amount]) => `${amount}×${MANA_SYM[color] || color}`).join(' + ');
+    const produces = (source.produce || []).map(optionText).join(' ili ');
+    const via = source.m && source.m.viaConvoke ? 'convoke/improvise · ' : '';
+    return `${via}${parts.length ? parts.join(' + ') + ' → ' : ''}${produces}`;
+  }
+
   class UI {
     constructor() {
       this.game = null;
@@ -60,6 +76,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.oppHeight = parseInt(localStorage.getItem('mtgOppH') || '42', 10);
       this.oppScale = parseFloat(localStorage.getItem('mtgOppS') || '1');
       this.prioMode = localStorage.getItem('mtgStopProfile') || 'end';
+      this.manaMode = localStorage.getItem('mtgManaMode') === 'manual' ? 'manual' : 'auto';
       this.holdNext = false;     // ručni "stani na sljedećem prioritetu"
       this.react = null;         // otvoren prozor za reakciju
       this.actionStageDismissed = new WeakSet();
@@ -639,6 +656,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.render();
       };
       btns.appendChild(holdB);
+      const manaB = el('button', 'tbtn manamode' + (this.manaMode === 'manual' ? ' on' : ''),
+        this.manaMode === 'manual' ? '🖐 MANA' : '✨ MANA');
+      manaB.title = this.manaMode === 'manual'
+        ? 'Manual mana: pri svakom spellu biraš tačne landove i mana izvore. Klikni za automatsko.'
+        : 'Auto mana: engine bira izvore. Klikni za manualni izbor.';
+      manaB.onclick = () => {
+        this.manaMode = this.manaMode === 'manual' ? 'auto' : 'manual';
+        localStorage.setItem('mtgManaMode', this.manaMode);
+        if (this.me) this.me.manualMana = this.manaMode === 'manual';
+        this.toast(this.manaMode === 'manual'
+          ? '🖐 Manual mana uključena — biraš izvore za svaki spell.'
+          : '✨ Automatska mana uključena.');
+        this.render();
+      };
+      btns.appendChild(manaB);
       const modes = MTG.PRIO_MODES;
       const curMode = modes.find(m => m.key === (this.prioMode || 'end')) || modes[0];
       const setB = el('button', 'tbtn stopbtn', `${curMode.icon} ${curMode.short}`);
@@ -1029,7 +1061,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     miniCard(g, c, opts = {}) {
       const threatened = this.threatTargets && this.threatTargets.has(c.iid);
-      const d = el('div', 'mini' + (opts.sm ? ' sm' : '') + (c.tapped ? ' tapped' : '') + (c.sick && c.is('Creature') && !c.kw('haste') ? ' sick' : '') + (threatened ? ' threatened' : ''));
+      const mayLookFaceDown = c.faceDown && c.ctrl === this.me && c.meta && c.meta.faceDownDef;
+      const faceName = mayLookFaceDown ? c.meta.faceDownDef.name : c.name;
+      const d = el('div', 'mini' + (opts.sm ? ' sm' : '') + (c.tapped ? ' tapped' : '') + (c.sick && c.is('Creature') && !c.kw('haste') ? ' sick' : '') + (threatened ? ' threatened' : '') + (c.faceDown ? ' facedown' : ''));
       const colors = c.colors.length ? c.colors : ['C'];
       const grad = colors.length > 1
         ? `linear-gradient(135deg, ${colors.map(x => COLHEX[x]).join(',')})`
@@ -1062,14 +1096,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ? '<div class="crewtag" title="Posada ukrcana ovaj potez">CREW</div>' : '';
       const att = c.attachments.length ? `<div class="att">🔗${c.attachments.length}</div>` : '';
       const tok = c.isToken ? `<div class="toktag">TOKEN</div>` : '';
+      const fd = c.faceDown ? `<div class="facedowntag">${mayLookFaceDown ? 'FACE-DOWN · ' + esc(faceName.split(' // ')[0]) : 'FACE-DOWN'}</div>` : '';
       const stackN = opts.stackN && opts.stackN > 1 ? `<div class="stackn">×${opts.stackN}</div>` : '';
       if (opts.stackN > 1) d.classList.add('stacked');
       d.innerHTML = `
-        <img loading="lazy" src="${imgURL(c.name)}" onerror="MTG.imgFail(this)">
-        <div class="mname">${esc(c.name.split(' // ')[0])}</div>
-        ${pt}${cnt}${oc}${crewed}${att}${tok}${stackN}
+        <img loading="lazy" src="${c.faceDown && !mayLookFaceDown ? MTG.BLANK_PX : imgURL(faceName)}" onerror="MTG.imgFail(this)">
+        <div class="mname">${esc(c.faceDown ? 'Face-down creature' : c.name.split(' // ')[0])}</div>
+        ${pt}${cnt}${oc}${crewed}${att}${tok}${fd}${stackN}
         ${badges.length ? `<div class="badge">${badges.join('')}</div>` : ''}`;
-      d.dataset.cname = c.name;
+      d.dataset.cname = mayLookFaceDown ? faceName : c.name;
       // interactions
       if (this.isCandidate(c)) {
         d.classList.add('targetable');
@@ -1164,6 +1199,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (preTurn) {
             bar.appendChild(el('div', 'ptext',
               `🌙 Kraj poteza — <b>${esc(g.turnPlayer ? g.turnPlayer.name : '')}</b>. Zadnja prilika prije tvog poteza.`));
+          } else if (!top && g.phase === 'combat' && canAct) {
+            const stepLabel = g.step === 'attackers' ? 'napadači su proglašeni' :
+              g.step === 'blockers' ? 'blokeri su proglašeni' :
+                g.step === 'firstStrike' ? 'first-strike šteta je završena' : 'combat je u toku';
+            bar.appendChild(el('div', 'ptext',
+              `⚡ <b>Combat reakcija</b> — ${stepLabel}. Imaš ${(rq.casts || []).length + (rq.acts || []).length} legalnih opcija.`));
           } else {
             const who = top && top.ctrl ? top.ctrl.name : 'protivnik';
             const what = top ? (top.name || (top.card && top.card.name) || 'nešto') : 'akcija';
@@ -1388,12 +1429,58 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!pd) return null;
       const q = pd.q;
       if (q.type === 'threatAlert') return this.renderThreatAlert(g, q);
-      const types = ['mulligan', 'bottomCards', 'chooseCards', 'chooseOption', 'chooseMulti', 'chooseX', 'scry', 'orderTriggers', 'combatReview'];
+      const types = ['mulligan', 'bottomCards', 'chooseCards', 'chooseOption', 'chooseMulti', 'chooseX', 'scry', 'orderTriggers', 'combatReview', 'chooseManaSources'];
       if (!types.includes(q.type)) return null;
       const ov = el('div', 'overlay');
       const m = el('div', 'modal');
       ov.appendChild(m);
       const btn = (label, fn, cls) => { const b = el('button', 'pbtn ' + (cls || ''), label); b.onclick = fn; return b; };
+
+      if (q.type === 'chooseManaSources') {
+        if (!pd.manaInit) {
+          pd.sel = (q.suggested || []).slice();
+          pd.manaInit = true;
+        }
+        m.classList.add('wide', 'manapickmodal');
+        m.appendChild(el('div', 'mtitle', `🖐 ${esc(q.prompt || 'Izaberi mana izvore')}`));
+        m.appendChild(el('div', 'manapickcost', `Cijena: ${costHTML(U.costStr(q.cost))}`));
+        const poolText = Object.entries(q.player.pool || {}).filter(([, n]) => n > 0)
+          .map(([color, n]) => `${MANA_SYM[color] || color}${n}`).join(' ');
+        m.appendChild(el('div', 'manapickhint', poolText
+          ? `Mana u poolu (${poolText}) troši se prije izabranih izvora. Izaberi tačne permanente za ostatak.`
+          : 'Izaberi tačne landove, mana rockove, Treasure ili convoke/improvise izvore koje želiš koristiti.'));
+        const byCard = new Map();
+        for (const source of q.sources || []) {
+          if (!byCard.has(source.card)) byCard.set(source.card, []);
+          byCard.get(source.card).push(source);
+        }
+        const list = el('div', 'manasourcelist');
+        for (const card of q.candidates || []) {
+          const selected = pd.sel.includes(card);
+          const row = el('button', 'manasourcerow' + (selected ? ' selected' : ''));
+          const labels = (byCard.get(card) || []).map(source => manualManaSourceText(source)).join(' · ');
+          row.innerHTML = `<span class="manacheck">${selected ? '✓' : ''}</span>` +
+            `<img src="${imgURL(card.name)}" onerror="MTG.imgFail(this)">` +
+            `<span><b>${esc(card.name)}</b><small>${esc(labels)}${card.tapped ? ' · TAPOVAN' : ''}</small></span>`;
+          row.onclick = () => {
+            if (selected) pd.sel.splice(pd.sel.indexOf(card), 1); else pd.sel.push(card);
+            this.render();
+          };
+          list.appendChild(row);
+        }
+        m.appendChild(list);
+        const valid = g.manualManaSelectionSolution(q.player, q.cost, q.forSpell, pd.sel, q.opts || {});
+        m.appendChild(el('div', 'manavalid ' + (valid ? 'ok' : 'bad'), valid
+          ? `✓ Ovaj izbor plaća cijenu sa ${pd.sel.length} ${U.plural(pd.sel.length, 'izvorom', 'izvora')}.`
+          : '⚠ Izbor još ne može tačno platiti cijenu.'));
+        const actions = el('div', 'btnrow');
+        const confirm = btn('Tapuj izabrane izvore ✓', () => this.resolvePendingEntry(pd, { cards: pd.sel.slice() }), 'primary');
+        confirm.disabled = !valid;
+        actions.appendChild(confirm);
+        actions.appendChild(btn('Automatski samo ovaj put', () => this.resolvePendingEntry(pd, { auto: true })));
+        m.appendChild(actions);
+        return ov;
+      }
 
       if (q.type === 'combatReview') {
         const attackers = (q.attackers || []).filter(c => c && c.zone === 'battlefield');
@@ -1711,17 +1798,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const m = el('div', 'sheet');
       ov.appendChild(m);
+      const mayLookFaceDown = card.faceDown && card.ctrl === this.me && card.meta && card.meta.faceDownDef;
+      const shownDef = mayLookFaceDown ? card.meta.faceDownDef : card.def;
+      const shownName = mayLookFaceDown ? shownDef.name : card.name;
       const img = el('img', 'sheetimg');
-      img.src = imgURL(card.name, true);
+      img.src = card.faceDown && !mayLookFaceDown ? MTG.BLANK_PX : imgURL(shownName, true);
       img.onerror = () => img.classList.add('noimg');
       m.appendChild(img);
       const info = el('div', 'sheetinfo');
-      const typeLine = [(card.def.super || []).join(' '), card.def.types.join(' '), card.def.subtypes.length ? '— ' + card.def.subtypes.join(' ') : ''].join(' ');
-      info.innerHTML = `<div class="sname">${esc(card.name)} ${costHTML(card.def.cost || '')}</div>
+      const typeLine = [(shownDef.super || []).join(' '), shownDef.types.join(' '), shownDef.subtypes.length ? '— ' + shownDef.subtypes.join(' ') : ''].join(' ');
+      info.innerHTML = `${card.faceDown ? `<div class="facedownsheet">🃏 FACE-DOWN 2/2${mayLookFaceDown ? ' · samo ti vidiš identitet' : ''}</div>` : ''}` +
+        `<div class="sname">${esc(shownName)} ${costHTML(shownDef.cost || '')}</div>
         <div class="stype">${esc(typeLine)}</div>
         ${card.is('Creature') && card.cur ? `<div class="spt">${card.power}/${card.toughness}${card.tapped ? ' · TAPPED' : ''}${Object.entries(card.counters).filter(([k, v]) => v > 0).map(([k, v]) => ` · ${v}×${k}`).join('')}</div>` : ''}
-        <div class="soracle">${esc(card.def.oracle || '').replace(/\n/g, '<br>')}</div>
-        ${card.def.simplified ? `<div class="simplified">⚠️ ${esc(card.def.simplified)}</div>` : ''}`;
+        <div class="soracle">${esc(shownDef.oracle || '').replace(/\n/g, '<br>')}</div>
+        ${shownDef.simplified ? `<div class="simplified">⚠️ ${esc(shownDef.simplified)}</div>` : ''}`;
       m.appendChild(info);
       // actions
       const acts = el('div', 'sheetacts');
@@ -1749,10 +1840,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const a of (q.acts || [])) {
           if (a.card !== card) continue;
           if (a.ability) usedAbilities.add(a.ability);
-          let label = a.manaAbility ? a.label : a.cycling ? 'Cycling' : a.plot ? `Plot ${U.costStr(U.parseCost(card.def.plot))}` : a.suspend ? 'Suspend' :
+          let label = a.turnFaceUp ? a.label : a.manaAbility ? a.label : a.cycling ? 'Cycling' : a.plot ? `Plot ${U.costStr(U.parseCost(card.def.plot))}` : a.suspend ? 'Suspend' :
             a.equip ? `Equip ${U.costStr(U.parseCost(card.def.equip))}` : a.crew ? `Crew ${card.def.crew}` :
               (a.ability && a.ability.label) || 'Aktiviraj';
-          const b = el('button', 'pbtn wide', (a.manaAbility ? '⚡ ' : '⚙️ ') + esc(label));
+          const b = el('button', 'pbtn wide', (a.turnFaceUp ? '🃏 ' : a.manaAbility ? '⚡ ' : '⚙️ ') + esc(label));
           b.onclick = () => { this.sheet = null; this.resolvePending({ kind: 'activate', entry: a }); };
           acts.appendChild(b);
         }
@@ -1993,13 +2084,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ov.appendChild(m);
       m.appendChild(el('div', 'mtitle', '❓ Kako se igra'));
       m.appendChild(el('div', 'helptext', `
-<b>🎴 Igranje karata:</b> tap na kartu u ruci → otvara se prikaz sa dugmadima ("Baci", "Igraj land", "Cycling"…). Karte sa <span style="color:#5aa860">zelenim okvirom</span> se mogu igrati odmah. Mana se automatski tapuje.<br><br>
+<b>🎴 Igranje karata:</b> tap na kartu u ruci → otvara se prikaz sa dugmadima ("Baci", "Igraj land", "Cycling"…). Karte sa <span style="color:#5aa860">zelenim okvirom</span> se mogu igrati odmah. Dugme <b>✨/🖐 MANA</b> gore prebacuje automatsko i ručno biranje tačnih mana izvora za spellove.<br><br>
 <b>👑 Commander:</b> stoji u COMMAND ZONI (panel iznad ruke) dok ga ne baciš — tap na njega pa "Baci". Kad umre, vraća se u command zonu (uz tax +2 po ponovnom bacanju). Na tabli ima 👑 značku i zlatni okvir.<br><br>
 <b>⚙️ Sposobnosti i tokeni:</b> karta na tabli sa ⚙️ značkom ima sposobnost koju možeš aktivirati — tap na nju pa izaberi dugme (npr. "Napravi Food", "Vjeverica", equip, crew…). Tako se prave tokeni.<br><br>
 <b>⚔️ Napad:</b> u combat fazi tap na svoje stvorenje, pa u velikom popupu izaberi kojeg igrača napada. Svaki proglašeni combat dobija pregled i čeka tvoj <b>Proceed</b>, čak i kad ne napadaju tebe. <b>🛡️ Blok:</b> prvo tap na napadača (u traci), pa na svog blokera.<br><br>
 <b>🎯 Mete:</b> kad spell traži metu, legalne mete <span style="color:#e8c05a">zlatno svijetle</span> — tap na kartu ili na protivnikov panel.<br><br>
 <b>Protivnici:</b> njihove table su stalno vidljive ispod imena. Tap na zaglavlje sklapa/otvara tablu, ℹ️ otvara detalje (groblje, commander šteta…).<br><br>
-<b>⚡ Instanti i prioritet:</b> svaka protivnička nonland karta izlazi na centralni action stage i čeka tvoj <b>Proceed</b>. Dugme <b>STOP</b> gore bira dodatne priority prozore: samo end step prije tvog poteza, combat + end, samo obavezne akcije ili full control.<br>
+<b>⚡ Instanti i prioritet:</b> svaka protivnička nonland karta izlazi na centralni action stage i čeka tvoj <b>Proceed</b>. Ako tokom combata imaš legalan buff, removal ili aktivaciju, automatski dobijaš reaction prozor. Dugme <b>STOP</b> gore bira dodatne priority prozore.<br>
+<b>🃏 Manifest/Cloak:</b> face-down permanent je stvarna skrivena 2/2 karta, ne token. Svoj identitet možeš pogledati; ako je creature card i imaš manu, 🃏 akcija je okreće licem gore bez stacka. Cloak dodatno ima ward {2}.<br>
 <b>🖐️ HOLD (tipka R):</b> kad god hoćeš da staneš — armiraj ga i igra će stati na sljedećem prioritetu. Radi u svim režimima.<br>
 <b>🐢 Brzina:</b> dugme ▶️/🐢/⏩ gore mijenja tempo botova. Kad bot cilja tebe, napada te ili blokira tvoj napad, dobiješ crvenu traku preko ekrana da se vidi šta radi.<br>
 Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i karte sa flash idu bilo kad kad imaš prioritet.`));
@@ -2056,6 +2148,25 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
       const t = el('div', 'toastmsg', esc(msg));
       document.body.appendChild(t);
       setTimeout(() => t.remove(), 2500);
+    }
+
+    showEffectNotice(text, kind) {
+      if (!text) return;
+      let stack = document.querySelector('.effectnoticestack');
+      if (!stack) {
+        stack = el('div', 'effectnoticestack');
+        document.body.appendChild(stack);
+      }
+      const item = el('div', 'effectnotice ' + (kind || 'effect'), esc(text));
+      stack.appendChild(item);
+      while (stack.children.length > 5) stack.firstElementChild.remove();
+      setTimeout(() => {
+        item.classList.add('leaving');
+        setTimeout(() => {
+          item.remove();
+          if (!stack.children.length) stack.remove();
+        }, 220);
+      }, 4200);
     }
 
     showBanner(text, gold) {

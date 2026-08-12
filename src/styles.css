@@ -277,6 +277,35 @@ img { -webkit-user-drag: none; }
 @keyframes bannerIn { 0% { opacity: 0; transform: translateX(-50%) scale(.85); } 12% { opacity: 1; transform: translateX(-50%) scale(1); } 82% { opacity: 1; } 100% { opacity: 0; } }
 .toastmsg { position: fixed; bottom: 130px; left: 50%; transform: translateX(-50%); background: #262b36ee; border: 1px solid #4a5060; color: #fff; padding: 9px 16px; border-radius: 10px; font-size: 13px; z-index: 90; max-width: 88%; text-align: center; }
 
+.effectnoticestack { position: fixed; right: 18px; bottom: 118px; z-index: 140; display: flex; flex-direction: column; gap: 8px; width: min(390px, 32vw); pointer-events: none; }
+.effectnotice { background: linear-gradient(135deg, #202638f2, #2c2340f2); border: 1px solid #8c72c7; border-left: 4px solid #d9b95d; color: #fff; padding: 11px 14px; border-radius: 9px; box-shadow: 0 8px 25px #0009; font-size: 13px; line-height: 1.35; animation: effectin .2s ease-out; }
+.effectnotice.counter { border-left-color: #d85d66; }
+.effectnotice.spellCopy, .effectnotice.abilityCopy { border-left-color: #6eb4ef; }
+.effectnotice.leaving { opacity: 0; transform: translateX(20px); transition: .22s ease; }
+@keyframes effectin { from { opacity: 0; transform: translateX(25px); } }
+
+.manamode.on { border-color: #d6b95c; color: #ffe59a; background: #3b321d; }
+.manapickmodal { max-width: 860px; }
+.manapickcost { text-align: center; font-size: 18px; margin: 2px 0 8px; }
+.manapickhint { color: #bfc5d4; background: #171b25; border: 1px solid #353b4a; border-radius: 8px; padding: 9px 12px; margin-bottom: 10px; }
+.manasourcelist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; max-height: 52vh; overflow: auto; padding: 2px; }
+.manasourcerow { display: grid; grid-template-columns: 28px 48px 1fr; align-items: center; gap: 9px; text-align: left; border: 1px solid #3d4352; background: #20242f; color: #edf0f7; border-radius: 9px; min-height: 62px; padding: 6px 9px; cursor: pointer; }
+.manasourcerow:hover { border-color: #7a8298; }
+.manasourcerow.selected { border-color: #d8bc64; background: #342f20; box-shadow: inset 0 0 0 1px #d8bc6440; }
+.manasourcerow img { width: 44px; height: 54px; object-fit: cover; border-radius: 4px; }
+.manasourcerow b, .manasourcerow small { display: block; }
+.manasourcerow small { color: #acb4c7; margin-top: 3px; }
+.manacheck { display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid #687083; border-radius: 50%; font-weight: 800; }
+.manasourcerow.selected .manacheck { background: #d8bc64; border-color: #d8bc64; color: #201d14; }
+.manavalid { margin: 10px 0 4px; padding: 8px 11px; border-radius: 7px; }
+.manavalid.ok { background: #173525; color: #9be4b8; }
+.manavalid.bad { background: #3a2022; color: #f1adb2; }
+
+.mini.facedown { background: radial-gradient(circle at 35% 30%, #493d63, #171522 62%); border-color: #9c84c5; }
+.mini.facedown > img { opacity: .28; filter: grayscale(1) contrast(1.2); }
+.facedowntag { position: absolute; left: 4px; right: 4px; bottom: 22px; background: #171421e8; color: #e4d9ff; border: 1px solid #8d78b5; border-radius: 4px; padding: 2px 3px; font-size: 8px; text-align: center; overflow: hidden; white-space: nowrap; }
+.facedownsheet { color: #e2d5ff; background: #302744; border: 1px solid #806aa7; border-radius: 6px; padding: 7px 9px; margin-bottom: 8px; font-size: 12px; letter-spacing: .04em; }
+
 /* ============================================================
    DESKTOP (≥1100px) — glavni raspored
    ============================================================ */
