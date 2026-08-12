@@ -120,7 +120,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   class AIController {
     constructor(player, opts = {}) {
       this.p = player;
-      this.difficulty = opts.difficulty || 'normal'; // normal | tough
+      this.difficulty = opts.difficulty === 'tough' ? 'hard' : (opts.difficulty || 'normal'); // easy | normal | hard
       this.style = PERSONAS[opts.style] ? opts.style : 'balanced';
       this.persona = PERSONAS[this.style];
       player.aiStyle = this.style;
@@ -186,6 +186,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // ---------- main decide ----------
     async decide(g, q) {
+      if (MTG.chooseBotAction) {
+        try {
+          const prioritySessionKey = q.type === 'priority'
+            ? `${g._prioritySessionId || 0}|${this.p.idx}` : null;
+          if (prioritySessionKey && this._v2PrioritySessionUsed === prioritySessionKey) return { kind: 'pass' };
+          const emptyPriorityKey = q.type === 'priority' && !g.stack.length
+            ? `${g.turnNo}|${g.phase}|${g.step}|${this.p.idx}` : null;
+          if (emptyPriorityKey && this._v2EmptyPriorityUsed === emptyPriorityKey) return { kind: 'pass' };
+          this.lastV2Decision = await MTG.chooseBotAction({
+            gameState: g,
+            botPlayerId: this.p.idx,
+            difficulty: this.difficulty,
+            actionWindow: q,
+          });
+          const answer = MTG.unwrapBotDecisionAction(this.lastV2Decision.action);
+          if (answer && answer.kind !== 'pass') {
+            if (emptyPriorityKey) this._v2EmptyPriorityUsed = emptyPriorityKey;
+            if (prioritySessionKey) this._v2PrioritySessionUsed = prioritySessionKey;
+          }
+          return answer;
+        } catch (error) {
+          // Stari kontroler je samo sigurnosni fallback i nikad ne zaobilazi
+          // legalne liste koje mu je rules engine već dao.
+          g.lg(`⚠️ AI V2 fallback (${this.p.name}): ${error.message}`, 'warn');
+        }
+      }
       switch (q.type) {
         case 'mulligan': return this.mulligan(g, q);
         case 'bottomCards': return this.bottomCards(g, q);

@@ -4,6 +4,8 @@ Desktop-only, browser-based Magic: The Gathering Commander simulator for 20 fixe
 
 Every opponent nonland spell is shown on a central action stage and waits for **Proceed**. The client also exposes real stack/priority passes, configurable end-step/combat/full-control stops, visible combat assignments, and deck/card certification reports.
 
+Bots use the local heuristic/simulation-based **Commander AI Engine V2**. It has hidden-information-safe player views, per-deck profiles, multiplayer threat evaluation, seedable beam search and a structured decision log; it uses no AI/model/API service. See [`docs/COMMANDER_AI_ENGINE.md`](docs/COMMANDER_AI_ENGINE.md).
+
 ## Running locally
 
 Install dependencies and run a local static server:
@@ -22,6 +24,8 @@ npm run check
 npm test
 npm run audit
 npm run certify:strict
+npm run test:ai
+npm run benchmark:ai
 ```
 
 The generated per-deck/per-card results are in `reports/card-certification.md` and `reports/card-certification.json`.

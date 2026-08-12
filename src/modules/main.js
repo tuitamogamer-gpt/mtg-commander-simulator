@@ -188,7 +188,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     right.appendChild(el('div', 'seclabel', '<i>04</i> Težina'));
     const diffRow = el('div', 'btnrow center');
-    for (const [k, label] of [['normal', 'Normalna'], ['tough', 'Teška']]) {
+    for (const [k, label] of [['easy', 'Laka'], ['normal', 'Normalna'], ['hard', 'Teška']]) {
       const b = el('button', 'pbtn choice' + (k === 'normal' ? ' selected' : ''), label);
       b.onclick = () => { state.difficulty = k; diffRow.querySelectorAll('.pbtn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); };
       diffRow.appendChild(b);
@@ -456,6 +456,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       combat: g.combat ? {
         attackers: g.combat.attackers.map(card),
       } : null,
+      aiDecisions: (g.aiDecisionLog || []).slice(-3).map(entry => ({
+        turn: entry.turn, player: entry.playerName, chosen: entry.chosen,
+        score: entry.score, reason: entry.scoreBreakdown,
+        nodes: entry.analyzedNodes, depth: entry.reachedDepth,
+        tieBreak: entry.tieBreak, fallback: entry.fallback,
+      })),
       players,
       recentLog: g.log.slice(-10),
     };

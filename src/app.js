@@ -17,6 +17,7 @@ import './modules/scripts_v9b.js';
 import './modules/scripts-coven.js';
 import './modules/scripts-scions.js';
 import './modules/autoscript.js';
+import './modules/ai-v2.js';
 import './modules/ai.js';
 import './modules/loader.js';
 import './modules/ui.js';

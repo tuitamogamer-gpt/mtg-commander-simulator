@@ -44,6 +44,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       'Scions & Spellcraft': { icon: '🔮', colors: ['W', 'U', 'B'], style: 'Spellslinger/drain', blurb: 'Y\'shtola: svaki noncreature spell MV 3+ drena svakog protivnika za 2. Scioni, kopije i kontrola.', set: 'Final Fantasy Commander (2025)' },
       'Coven Counters': { icon: '🌾', colors: ['G', 'W'], style: '+1/+1 counteri/Coven', blurb: 'Leinore: counter svaki combat, a tri stvorenja različite snage vuku kartu. Coven i ljudi.', set: 'Innistrad: Midnight Hunt Commander (2021)' },
     };
+    if (MTG.buildDeckAIProfiles) MTG.buildDeckAIProfiles();
   };
 
   // ============================================================

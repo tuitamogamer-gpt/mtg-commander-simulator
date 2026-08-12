@@ -12,7 +12,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   class CardInst {
     constructor(def, owner) {
-      this.iid = IID++;
+      // Simulirani snapshot koristi negativne lokalne ID-jeve za novonastale
+      // tokene/kopije. Tako AI analiza ne pomjera live IID allocator.
+      this.iid = owner && owner.game && owner.game._simulation
+        ? owner.game._nextSimulationIid-- : IID++;
       this.def = def;               // merged def+script (immutable)
       this.owner = owner;           // player
       this.ctrl = owner;            // controller
@@ -249,6 +252,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // ------------- setup -------------
     addPlayer(name, deck, controller, isAI) {
       const p = new Player(name, this.players.length);
+      p.game = this;
       p.controller = controller; p.isAI = isAI; p.deck = deck;
       this.players.push(p);
       return p;

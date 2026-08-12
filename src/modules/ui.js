@@ -1963,6 +1963,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const ov = el('div', 'logpanel');
       const head = el('div', 'mtitle', '📜 Log partije');
       ov.appendChild(head);
+      if (g.aiDecisionLog && g.aiDecisionLog.length) {
+        const aiBox = el('div', 'logbox');
+        aiBox.appendChild(el('div', 'logline effect', '<b>🧠 AI V2 — zadnje odluke</b>'));
+        for (const decision of g.aiDecisionLog.slice(-5).reverse()) {
+          const alternatives = (decision.alternatives || []).slice(0, 2)
+            .map(alt => `${esc(alt.action)} ${Number(alt.score).toFixed(1)}`).join(' · ');
+          aiBox.appendChild(el('div', 'logline',
+            `<span class="lt">[${decision.turn}]</span> <b>${esc(decision.playerName)}</b>: ${esc(decision.chosen)} ` +
+            `(${Number(decision.score).toFixed(1)}) · ${decision.analyzedNodes} nodes / d${decision.reachedDepth}` +
+            `${decision.fallback ? ' · FALLBACK' : ''}${alternatives ? `<br><small>${alternatives}</small>` : ''}`));
+        }
+        ov.appendChild(aiBox);
+      }
       const box = el('div', 'logbox');
       for (let i = g.log.length - 1; i >= Math.max(0, g.log.length - 250); i--) {
         const e = g.log[i];

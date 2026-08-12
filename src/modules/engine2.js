@@ -1975,6 +1975,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return;
     }
     this._prioritySessionActive = true;
+    this._prioritySessionId = (this._prioritySessionId || 0) + 1;
     let holder = afterPlayer && !afterPlayer.lost
       ? afterPlayer
       : (this.turnPlayer && !this.turnPlayer.lost ? this.turnPlayer : this.alivePlayers()[0]);
@@ -2416,19 +2417,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       type: 'attackers', eligible: elig, opponents: oppList, forced,
     });
     // decl: [{card, target(player or pw iid)}]
-    const cantAttackTarget = (c, tgt) => {
-      if (!(tgt instanceof MTG.Player)) return false;
-      if (c.def.attackTargetRestriction && !c.def.attackTargetRestriction(this, c, tgt)) return true;
-      for (const e of this.untilEffects) {
-        if (e.kind === 'cantAttackPlayer' && e.who === c.ctrl && e.notPlayer === tgt) return true;
-        if (e.kind === 'cantAttackPlayerCard' && e.iid === c.iid && e.notPlayer === tgt) return true;
-      }
-      // trajne def-zaštite branioca (Queen Mother Ramonda i sl.)
-      for (const b of this.bf()) {
-        if (b.ctrl === tgt && b.def.protectsController && b.def.protectsController(this, b, c, tgt)) return true;
-      }
-      return false;
-    };
+    const cantAttackTarget = (c, tgt) => !this.canAttackTarget(c, tgt);
     const attackers = [];
     for (const a of decl) {
       const c = a.card;
@@ -2677,6 +2666,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return false;
     }
     return true;
+  };
+
+  // Zajednički rules validator za UI, live combat i AI generator. AI ne
+  // duplira Ghostly Prison/Queen Mother/card-specific zabrane.
+  G.canAttackTarget = function (c, target) {
+    if (!c || !target || c.ctrl === target || target.lost) return false;
+    const defender = target instanceof MTG.Player ? target : target.ctrl;
+    if (!defender || defender === c.ctrl || defender.lost) return false;
+    if (!(target instanceof MTG.Player) && !(target instanceof MTG.CardInst && target.is('Planeswalker') && target.zone === 'battlefield')) return false;
+    if (c.def.attackTargetRestriction && !c.def.attackTargetRestriction(this, c, target)) return false;
+    for (const e of this.untilEffects) {
+      if (e.kind === 'cantAttackPlayer' && e.who === c.ctrl && e.notPlayer === defender) return false;
+      if (e.kind === 'cantAttackPlayerCard' && e.iid === c.iid && e.notPlayer === defender) return false;
+    }
+    for (const permanent of this.bf()) {
+      if (permanent.ctrl === defender && permanent.def.protectsController && permanent.def.protectsController(this, permanent, c, defender)) return false;
+    }
+    return true;
+  };
+
+  G.legalAttackTargets = function (c) {
+    const players = c.ctrl.opponents(this);
+    const planeswalkers = this.bf().filter(card => card.is('Planeswalker') && card.ctrl !== c.ctrl);
+    return players.concat(planeswalkers).filter(target => this.canAttackTarget(c, target));
   };
 
   // Goad se u ovom kodu bilježi na tri načina: untilEffects (E.goad), trajni
