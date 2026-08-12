@@ -1749,10 +1749,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const a of (q.acts || [])) {
           if (a.card !== card) continue;
           if (a.ability) usedAbilities.add(a.ability);
-          let label = a.cycling ? 'Cycling' : a.plot ? `Plot ${U.costStr(U.parseCost(card.def.plot))}` : a.suspend ? 'Suspend' :
+          let label = a.manaAbility ? a.label : a.cycling ? 'Cycling' : a.plot ? `Plot ${U.costStr(U.parseCost(card.def.plot))}` : a.suspend ? 'Suspend' :
             a.equip ? `Equip ${U.costStr(U.parseCost(card.def.equip))}` : a.crew ? `Crew ${card.def.crew}` :
               (a.ability && a.ability.label) || 'Aktiviraj';
-          const b = el('button', 'pbtn wide', '⚙️ ' + esc(label));
+          const b = el('button', 'pbtn wide', (a.manaAbility ? '⚡ ' : '⚙️ ') + esc(label));
           b.onclick = () => { this.sheet = null; this.resolvePending({ kind: 'activate', entry: a }); };
           acts.appendChild(b);
         }

@@ -29,6 +29,39 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       game.canPayMana(player, U.parseCost(equipCostFor(equipment, target))));
   }
 
+  function manaOptionLabel(option) {
+    if (option.ANY) return `${option.n || 1} manu bilo koje boje`;
+    return Object.entries(option)
+      .filter(([key]) => key !== 'n')
+      .map(([color, amount]) => `${amount}×${color}`)
+      .join(' + ');
+  }
+
+  function manualManaLabel(source) {
+    const cost = source.extraCost || {};
+    const costParts = [];
+    if (cost.mana) costParts.push(typeof cost.mana === 'string' ? cost.mana : 'plati manu');
+    if (cost.tap) costParts.push('tap');
+    if (cost.sacSelf) costParts.push('žrtvuj ovu kartu');
+    if (cost.life) costParts.push(`plati ${cost.life} života`);
+    const produces = source.produce.map(manaOptionLabel).join(' ili ');
+    const grantedBy = source.grantedBy ? ` — daje ${source.grantedBy.name}` : '';
+    return `Mana: ${costParts.length ? costParts.join(' + ') + ' → ' : ''}${produces}${grantedBy}`;
+  }
+
+  function manualManaKey(source) {
+    const cost = source.extraCost || {};
+    return JSON.stringify({
+      card: source.card.iid,
+      tap: !!cost.tap,
+      sacSelf: !!cost.sacSelf,
+      sacType: cost.sacType || null,
+      life: cost.life || 0,
+      mana: typeof cost.mana === 'string' ? cost.mana : !!cost.mana,
+      produce: source.produce,
+    });
+  }
+
   // ============================================================
   // Mana sources & payment
   // ============================================================
@@ -86,7 +119,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (gcost.tap && x.tapped) continue;
         if (!gm.filter(this, x, granter)) continue;
         if (gcost.tap && x.is('Creature') && x.sick && !x.kw('haste') && !gm.ignoreSickness) continue;
-        out.push({ card: x, m: { cost: gcost, restrict: gm.restrict }, produce: gm.produce, extraCost: gcost });
+        out.push({
+          card: x,
+          m: { cost: gcost, restrict: gm.restrict, ignoreSickness: !!gm.ignoreSickness },
+          produce: gm.produce,
+          extraCost: gcost,
+          grantedBy: granter,
+        });
       }
     }
     // convoke / improvise: tapanje stvorenja/artefakata plaća spell
@@ -1367,6 +1406,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (crewPow >= c.def.crew) out.push({ card: c, crew: true });
       }
     }
+    // Mana solver i dalje automatski bira izvore pri plaćanju. Kada permanent
+    // ima i drugu aktiviranu funkciju (Food život, utility land, sposobnost
+    // kopirana preko Brewmastera...), igrač mora moći eksplicitno izabrati
+    // hoće li koristiti tu funkciju ili njegovu vlastitu/dodijeljenu mana
+    // sposobnost. Ne nudimo obične mana-only permanente da meni ne postane
+    // popis svih landova, niti restriktivnu manu čije namjensko trošenje pool
+    // trenutno ne može pouzdano pratiti nakon ručnog floatanja.
+    const manualManaSeen = new Set();
+    for (const source of this.manaSources(p, null)) {
+      const c = source.card;
+      const utility = (c.def.abilities || []).concat(c.cur && c.cur.extraAbilities || [])
+        .some(ability => !ability.manaAbilityOnly);
+      if (!utility || source.m.restrict) continue;
+      const cost = source.extraCost || {};
+      if (cost.life && p.life <= cost.life) continue;
+      if (cost.mana) {
+        const manaCost = U.parseCost(typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana);
+        if (!this.canPayMana(p, manaCost, { card: c, isAbility: true }, {
+          excludeCards: cost.tap ? [c] : [],
+        })) continue;
+      }
+      const key = manualManaKey(source);
+      if (manualManaSeen.has(key)) continue;
+      manualManaSeen.add(key);
+      out.push({ card: c, manaAbility: true, manaSource: source, label: manualManaLabel(source) });
+    }
     // Neke sposobnosti po pravilima aktiviraju isključivo protivnici vlasnika
     // permanenta (Oft-Nabbed Goat). One zato ne pripadaju u gornji owner pass.
     for (const c of this.bf()) {
@@ -1417,6 +1482,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.activateAbility = async function (p, entry, uiTargets) {
     const c = entry.card;
+    if (entry.manaAbility) {
+      const source = entry.manaSource;
+      const cost = source.extraCost || {};
+      if (!source || c.zone !== 'battlefield' || c.ctrl !== p || c.cur && c.cur.abilitiesDisabled) return false;
+      if (cost.tap && c.tapped) return false;
+      if (cost.tap && c.is('Creature') && c.sick && !c.kw('haste') &&
+        !source.m.creatureOK && !source.m.ignoreSickness) return false;
+      if (cost.life && p.life <= cost.life) return false;
+      if (cost.mana) {
+        const manaCost = U.parseCost(typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana);
+        const paid = await this.payMana(p, manaCost, { card: c, isAbility: true }, {
+          excludeCards: cost.tap ? [c] : [],
+        });
+        if (!paid) return false;
+      }
+      let chosen = source.produce[0];
+      if (source.produce.length > 1) {
+        const choice = await p.controller.decide(this, {
+          type: 'chooseOption',
+          prompt: `${c.name}: koju manu proizvodiš?`,
+          options: source.produce.map((option, index) => ({ key: String(index), label: manaOptionLabel(option) })),
+          aiHint: { kind: 'manaColor' },
+        });
+        chosen = source.produce[Number(choice)] || source.produce[0];
+      }
+      this.lg(`${p.name} aktivira: ${c.name} — ${entry.label}.`, 'mana');
+      await this.activateManaSource(p, source, chosen, null, []);
+      await this.emit('abilityActivated', { player: p, card: c, isMana: true });
+      this.note('mana', { p });
+      return true;
+    }
     if (entry.cycling) {
       const d = c.def.cycling;
       const cost = U.parseCost(typeof d.cost === 'function' ? d.cost(this, c) : d.cost);

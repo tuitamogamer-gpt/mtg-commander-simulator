@@ -309,7 +309,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     window._ui = ui;
     ui.render();
     const cmdTxt = (state.commanders || []).map(n => n.split(',')[0]).join(' + ');
-    ui.toast(`Seed: ${seed} · 👑 ${cmdTxt} · Protivnici: ${aiDecks.join(', ')}`);
+    const smokeScenario = new URLSearchParams(window.location.search).get('smokeScenario');
+    if (!smokeScenario) ui.toast(`Seed: ${seed} · 👑 ${cmdTxt} · Protivnici: ${aiDecks.join(', ')}`);
+    // Deterministički browser scenario za card-sheet interakcije koje bi kroz
+    // nasumičnu biblioteku bilo teško pouzdano dovesti na ekran. Aktivira se
+    // isključivo eksplicitnim smokeScenario query parametrom.
+    if (smokeScenario === 'resourceChoice') {
+      const pizza = new MTG.CardInst(MTG.DEFS['Ninja Pizza'], ui.me);
+      pizza.ctrl = ui.me; pizza.zone = 'battlefield';
+      const food = new MTG.CardInst(MTG.TOKENS.food, ui.me);
+      food.ctrl = ui.me; food.zone = 'battlefield'; food.isToken = true;
+      g.battlefield.push(pizza, food);
+      g.turnPlayer = ui.me; g.turnNo = 1; g.phase = 'main1'; g.step = 'main';
+      ui.me.pool.C = 2;
+      g.recalc();
+      const acts = g.activatableList(ui.me);
+      void ui.me.controller.decide(g, {
+        type: 'main', player: ui.me, casts: [], acts, lands: [], phase: g.phase,
+      }).then(action => g.performAction(ui.me, action));
+      ui.sheet = { card: food };
+      ui.render();
+      return;
+    }
     g.start().catch(err => {
       console.error(err);
       ui.toast('Greška u igri: ' + err.message);
@@ -336,6 +357,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       name: p.name, deck: p.deckName, life: p.life, lost: !!p.lost, isAI: !!p.isAI,
       handCount: p.hand.length, libraryCount: p.library.length,
       graveyardCount: p.graveyard.length, exileCount: p.exile.length,
+      manaPool: Object.fromEntries(Object.entries(p.pool || {}).filter(([, amount]) => amount > 0)),
       commanders: p.commanders.map(card),
       battlefield: g.battlefield.filter(c => c.ctrl === p).map(card),
       hand: p === ui.me ? p.hand.map(card) : undefined,
@@ -346,7 +368,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       coordinateSystem: 'Commander seats are ordered by players[]; the human seat is marked isAI=false.',
       turn: g.turnNo, activePlayer: g.turnPlayer ? g.turnPlayer.name : null,
       phase: g.phase, step: g.step, winner: g.winner ? g.winner.name : null,
-      pending: pending ? { type: pending.type, prompt: pending.prompt || null } : null,
+      pending: pending ? {
+        type: pending.type,
+        prompt: pending.prompt || null,
+        actions: (pending.acts || []).map(entry => ({
+          card: entry.card && entry.card.name,
+          label: entry.manaAbility ? entry.label :
+            entry.ability ? entry.ability.label :
+              entry.equip ? 'Equip' : entry.crew ? 'Crew' : entry.cycling ? 'Cycling' : 'Aktiviraj',
+        })),
+      } : null,
       priority: g.priorityState ? {
         holder: g.priorityState.holder ? g.priorityState.holder.name : null,
         consecutivePasses: g.priorityState.consecutivePasses,
