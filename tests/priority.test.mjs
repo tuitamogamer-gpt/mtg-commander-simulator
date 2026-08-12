@@ -83,3 +83,23 @@ test('kontrolor bira redoslijed svojih simultanih triggera unutar APNAP grupe', 
   await game.flushTriggers();
   assert.deepEqual(Array.from(game.stack, item => item.name), ['Drugi', 'Prvi', 'NAP']);
 });
+
+test('svaki proglašeni combat čeka ljudski pregled i kad čovjek nije meta', async () => {
+  const { game, players } = priorityGame(['Human', 'Attacker', 'Defender']);
+  players[1].isAI = true;
+  players[2].isAI = true;
+  game.paced = true;
+  const attacker = { name: 'Test attacker', ctrl: players[1], attacking: players[2] };
+  let seen = null;
+  players[0].controller = {
+    decide: async (g, q) => { seen = q; return null; },
+  };
+
+  await game.reviewCombatWithHuman({ attackingPlayer: players[1], attackers: [attacker] });
+
+  assert.equal(seen.type, 'combatReview');
+  assert.equal(seen.player, players[0]);
+  assert.equal(seen.attackingPlayer, players[1]);
+  assert.deepEqual(seen.attackers, [attacker]);
+  assert.equal(attacker.attacking, players[2]);
+});

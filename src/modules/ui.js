@@ -63,6 +63,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.holdNext = false;     // ručni "stani na sljedećem prioritetu"
       this.react = null;         // otvoren prozor za reakciju
       this.actionStageDismissed = new WeakSet();
+      this.attackPicker = null;  // napadač za kojeg biramo branitelja u popupu
       this.showStops = false;
       this.renderQueued = false;
       this.imgCache = {};
@@ -139,6 +140,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const pd = this.pendings && this.pendings.pop();
       if (!pd) return;
       this.sheet = null;
+      this.attackPicker = null;
       pd.resolve(val);
       this.render();
     }
@@ -149,6 +151,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const i = (this.pendings || []).indexOf(pd);
       if (i >= 0) this.pendings.splice(i, 1);
       this.sheet = null;
+      this.attackPicker = null;
       pd.resolve(val);
       this.render();
     }
@@ -200,7 +203,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.showStops) root.appendChild(this.renderStopSettings(g));
       const reveal = this.renderRevealPopup(g);
       if (reveal) root.appendChild(reveal);
-      const modal = this.renderDecisionModal(g);
+      const modal = this.renderAttackTargetPopup(g) || this.renderDecisionModal(g);
       // stack popup stoji na sredini, pa se sklanja kad je otvoren bilo koji drugi
       // overlay — inače bi se preklapali baš na istom mjestu
       const blocked = !!modal || !!reveal || !!this.sheet || !!this.playerSheet || !!this.zoneBrowse ||
@@ -678,14 +681,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderOpponents(g) {
       this.collapsed = this.collapsed || new Set();
       const outer = el('div', 'oppsouter');
-      const wrap = el('div', 'oppswrap');
+      const activeAiTurn = !!(g.turnPlayer && g.turnPlayer.isAI && g.turnPlayer !== this.me);
+      const wrap = el('div', 'oppswrap' + (activeAiTurn ? ' active-ai-turn' : ''));
       // podesivo: visina zone (povlačenjem) i veličina karata (− / +)
       wrap.style.setProperty('--opp-h', this.oppHeight + 'dvh');
       wrap.style.setProperty('--opp-scale', String(this.oppScale));
       for (const p of g.players) {
         if (p === this.me) continue;
         const meta = MTG.DECK_META[p.deckName] || {};
-        const row = el('div', 'opprow' + (p.lost ? ' lost' : '') + (g.turnPlayer === p ? ' active' : ''));
+        const isActiveAi = activeAiTurn && g.turnPlayer === p;
+        const row = el('div', 'opprow' + (p.lost ? ' lost' : '') + (g.turnPlayer === p ? ' active' : '') + (isActiveAi ? ' activeai' : ''));
+        if (isActiveAi) row.style.setProperty('--opp-scale', String(Math.min(2, this.oppScale * 1.2)));
         const isCandidate = this.isCandidate(p);
         const collapsed = this.collapsed.has(p.idx);
         // header
@@ -698,6 +704,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         head.innerHTML = `
           <span class="chev">${collapsed ? '▸' : '▾'}</span>
           <span class="oppname">${meta.icon || '🤖'} ${esc(p.name)}</span>
+          ${isActiveAi ? '<span class="activeaitag">AKTIVNI POTEZ</span>' : ''}
           ${styleMeta ? `<span class="personachip" title="Stil: ${esc(styleMeta.label)}">${styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
           <span class="opplife" role="button">${p.life}❤</span>
           <span class="oppmeta">✋${p.hand.length} 📚${p.library.length}</span>
@@ -1242,7 +1249,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         case 'attackers': {
           const n = pd.sel.length;
-          bar.appendChild(el('div', 'ptext', `⚔️ Napad: izaberi napadače (${n}) — tap na stvorenje, ponovni tap mijenja metu`));
+          bar.appendChild(el('div', 'ptext', `⚔️ Napad: izaberi napadače (${n}) — tap na stvorenje pa izaberi branitelja u popupu`));
           bar.appendChild(btn(n ? `Napadni! (${n})` : 'Bez napada ▶', () => this.resolvePending(pd.sel.map(s => ({ card: s.card, target: s.target }))), 'primary'));
           break;
         }
@@ -1338,12 +1345,57 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!pd) return null;
       const q = pd.q;
       if (q.type === 'threatAlert') return this.renderThreatAlert(g, q);
-      const types = ['mulligan', 'bottomCards', 'chooseCards', 'chooseOption', 'chooseMulti', 'chooseX', 'scry', 'orderTriggers'];
+      const types = ['mulligan', 'bottomCards', 'chooseCards', 'chooseOption', 'chooseMulti', 'chooseX', 'scry', 'orderTriggers', 'combatReview'];
       if (!types.includes(q.type)) return null;
       const ov = el('div', 'overlay');
       const m = el('div', 'modal');
       ov.appendChild(m);
       const btn = (label, fn, cls) => { const b = el('button', 'pbtn ' + (cls || ''), label); b.onclick = fn; return b; };
+
+      if (q.type === 'combatReview') {
+        const attackers = (q.attackers || []).filter(c => c && c.zone === 'battlefield');
+        const attacker = q.attackingPlayer || (attackers[0] && attackers[0].ctrl);
+        const atMe = attackers.filter(c => c.attacking === this.me || (c.attacking && c.attacking.ctrl === this.me));
+        const lanes = new Map();
+        for (const card of attackers) {
+          const target = card.attacking instanceof MTG.Player ? card.attacking : card.attacking && card.attacking.ctrl;
+          if (!target) continue;
+          if (!lanes.has(target)) lanes.set(target, []);
+          lanes.get(target).push(card);
+        }
+        m.classList.add('wide', 'combatreviewmodal');
+        m.appendChild(el('div', 'combatkicker', 'COMBAT · NAPADAČI PROGLAŠENI'));
+        m.appendChild(el('div', 'combatreviewhead',
+          `<div><b>${esc(attacker ? attacker.name : 'Igrač')}</b> napada sa ${attackers.length} ${U.plural(attackers.length, 'stvorenjem', 'stvorenjima')}.</div>` +
+          `<span class="${atMe.length ? 'danger' : 'safe'}">${atMe.length ? `TEBE NAPADA ${atMe.length}` : 'NE UČESTVUJEŠ'}</span>`));
+        const body = el('div', 'combatreviewlanes');
+        for (const [target, cards] of lanes) {
+          const rawDamage = cards.reduce((sum, card) => sum + g.dmgAmount(card, 'normal'), 0);
+          const lane = el('div', 'combatreviewlane' + (target === this.me ? ' tome' : ''));
+          const laneHead = el('div', 'combatreviewtarget');
+          laneHead.innerHTML = `<div><small>BRANITELJ</small><b>${esc(target.name)}</b></div>` +
+            `<div class="combatestimate"><strong>${rawDamage}</strong><span>moguće štete</span></div>`;
+          lane.appendChild(laneHead);
+          const grid = el('div', 'combatreviewcards');
+          for (const card of cards) {
+            const unit = el('button', 'combatreviewcard');
+            const kws = ['flying', 'trample', 'menace', 'first strike', 'double strike', 'deathtouch']
+              .filter(k => card.kw(k)).join(' · ');
+            unit.innerHTML = `<img src="${imgURL(card.name)}" onerror="MTG.imgFail(this)">` +
+              `<span><b>${esc(card.name)}</b><strong>${card.power}/${card.toughness}</strong>${kws ? `<small>${esc(kws)}</small>` : ''}</span>`;
+            unit.onclick = () => { this.sheet = { card }; this.render(); };
+            grid.appendChild(unit);
+          }
+          lane.appendChild(grid);
+          body.appendChild(lane);
+        }
+        m.appendChild(body);
+        m.appendChild(el('div', 'combatreviewnote', atMe.length
+          ? 'Pregledaj napadače. Nakon Proceed slijede attack triggeri, priority i izbor blokova.'
+          : 'Ovaj napad nije usmjeren na tebe, ali combat ostaje vidljiv i pod tvojom kontrolom.'));
+        m.appendChild(btn('Proceed ▶', () => this.resolvePendingEntry(pd, null), 'primary wide combatproceed'));
+        return ov;
+      }
 
       if (q.type === 'orderTriggers') {
         pd.order = pd.order || q.triggers.slice();
@@ -1519,18 +1571,71 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.toast('🎯 ' + label + ' — tap na metu');
     }
 
+    renderAttackTargetPopup(g) {
+      const pd = this.pending;
+      const attacker = this.attackPicker;
+      if (!pd || pd.q.type !== 'attackers' || !attacker || !pd.q.eligible.includes(attacker)) {
+        this.attackPicker = null;
+        return null;
+      }
+      const selected = pd.sel.find(s => s.card === attacker);
+      const ov = el('div', 'overlay dark attackpickov');
+      const modal = el('div', 'modal attackpickmodal');
+      ov.appendChild(modal);
+      ov.onclick = e => { if (e.target === ov) { this.attackPicker = null; this.render(); } };
+
+      modal.appendChild(el('div', 'combatkicker', 'PROGLASI NAPADAČA'));
+      modal.appendChild(el('div', 'attackpicktitle', 'Koga napada <b>' + esc(attacker.name) + '</b>?'));
+      const body = el('div', 'attackpickbody');
+      const card = el('div', 'attackpickcard');
+      const keywords = ['flying', 'trample', 'menace', 'first strike', 'double strike', 'deathtouch', 'lifelink']
+        .filter(k => attacker.kw(k));
+      card.innerHTML = `<img src="${imgURL(attacker.name, true)}" onerror="MTG.imgFail(this)">` +
+        `<div><b>${esc(attacker.name)}</b><span>${attacker.power}/${attacker.toughness}</span>` +
+        `<small>${keywords.length ? esc(keywords.join(' · ')) : 'bez combat keyworda'}</small></div>`;
+      body.appendChild(card);
+
+      const choices = el('div', 'attacktargets');
+      for (const target of pd.q.opponents) {
+        const creatures = g.creatures(target);
+        const blockers = creatures.filter(c => !c.tapped && !c.cur.cantBlock && g.canBlock(c, attacker));
+        const option = el('button', 'attacktarget' + (selected && selected.target === target ? ' selected' : ''));
+        const meta = MTG.DECK_META[target.deckName] || {};
+        option.innerHTML = `<span class="attacktargeticon">${meta.icon || '🛡️'}</span>` +
+          `<span class="attacktargetmain"><b>${esc(target.name)}</b><small>${esc(target.deckName || '')}</small></span>` +
+          `<span class="attacktargetstats"><strong>${target.life}❤</strong><small>${blockers.length} mogućih blokera · ✋${target.hand.length}</small></span>` +
+          `<span class="attacktargetgo">→</span>`;
+        option.onclick = () => {
+          if (selected) selected.target = target;
+          else pd.sel.push({ card: attacker, target });
+          this.attackPicker = null;
+          this.render();
+        };
+        choices.appendChild(option);
+      }
+      body.appendChild(choices);
+      modal.appendChild(body);
+      const foot = el('div', 'attackpickfoot');
+      if (selected) {
+        const remove = el('button', 'pbtn danger', 'Ne šalji u napad');
+        remove.onclick = () => {
+          pd.sel.splice(pd.sel.indexOf(selected), 1);
+          this.attackPicker = null;
+          this.render();
+        };
+        foot.appendChild(remove);
+      }
+      const cancel = el('button', 'pbtn', 'Odustani');
+      cancel.onclick = () => { this.attackPicker = null; this.render(); };
+      foot.appendChild(cancel);
+      modal.appendChild(foot);
+      return ov;
+    }
+
     toggleAttacker(c) {
       const pd = this.pending;
-      const opps = pd.q.opponents;
-      const idx = pd.sel.findIndex(s => s.card === c);
-      if (idx < 0) {
-        pd.sel.push({ card: c, target: opps[0] });
-      } else {
-        const cur = pd.sel[idx];
-        const oi = opps.indexOf(cur.target);
-        if (oi < opps.length - 1) cur.target = opps[oi + 1];
-        else pd.sel.splice(idx, 1);
-      }
+      if (!pd || pd.q.type !== 'attackers' || !pd.q.eligible.includes(c)) return;
+      this.attackPicker = c;
       this.render();
     }
 
@@ -1848,7 +1953,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 <b>🎴 Igranje karata:</b> tap na kartu u ruci → otvara se prikaz sa dugmadima ("Baci", "Igraj land", "Cycling"…). Karte sa <span style="color:#5aa860">zelenim okvirom</span> se mogu igrati odmah. Mana se automatski tapuje.<br><br>
 <b>👑 Commander:</b> stoji u COMMAND ZONI (panel iznad ruke) dok ga ne baciš — tap na njega pa "Baci". Kad umre, vraća se u command zonu (uz tax +2 po ponovnom bacanju). Na tabli ima 👑 značku i zlatni okvir.<br><br>
 <b>⚙️ Sposobnosti i tokeni:</b> karta na tabli sa ⚙️ značkom ima sposobnost koju možeš aktivirati — tap na nju pa izaberi dugme (npr. "Napravi Food", "Vjeverica", equip, crew…). Tako se prave tokeni.<br><br>
-<b>⚔️ Napad:</b> u combat fazi tap na svoja stvorenja da ih pošalješ u napad; ponovni tap mijenja metu (kojeg igrača napadaš). <b>🛡️ Blok:</b> prvo tap na napadača (u traci), pa na svog blokera.<br><br>
+<b>⚔️ Napad:</b> u combat fazi tap na svoje stvorenje, pa u velikom popupu izaberi kojeg igrača napada. Svaki proglašeni combat dobija pregled i čeka tvoj <b>Proceed</b>, čak i kad ne napadaju tebe. <b>🛡️ Blok:</b> prvo tap na napadača (u traci), pa na svog blokera.<br><br>
 <b>🎯 Mete:</b> kad spell traži metu, legalne mete <span style="color:#e8c05a">zlatno svijetle</span> — tap na kartu ili na protivnikov panel.<br><br>
 <b>Protivnici:</b> njihove table su stalno vidljive ispod imena. Tap na zaglavlje sklapa/otvara tablu, ℹ️ otvara detalje (groblje, commander šteta…).<br><br>
 <b>⚡ Instanti i prioritet:</b> svaka protivnička nonland karta izlazi na centralni action stage i čeka tvoj <b>Proceed</b>. Dugme <b>STOP</b> gore bira dodatne priority prozore: samo end step prije tvog poteza, combat + end, samo obavezne akcije ili full control.<br>

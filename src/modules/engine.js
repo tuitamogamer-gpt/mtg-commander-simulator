@@ -208,6 +208,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return hu.controller.decide(this, Object.assign({}, payload, { type: 'cardReveal', player: hu, cards }));
     }
 
+    // Svaki stvarno proglašeni napad dobija blokirajući pregled za čovjeka,
+    // čak i kad nijedan napadač ne ide na njega. Ovo je UX checkpoint, ne
+    // priority prozor, pa ne mijenja redoslijed ni Commander pravila.
+    async reviewCombatWithHuman(payload) {
+      const hu = this.human();
+      if (!this.paced || !hu || !hu.controller || this.gameOver) return null;
+      const attackers = (payload && payload.attackers || []).filter(Boolean);
+      if (!attackers.length) return null;
+      return hu.controller.decide(this, Object.assign({}, payload, {
+        type: 'combatReview', player: hu, attackers,
+      }));
+    }
+
     // istakni AI akciju usmjerenu na igrača i daj mu vremena da je pročita
     async spotlight(text, opts) {
       opts = opts || {};

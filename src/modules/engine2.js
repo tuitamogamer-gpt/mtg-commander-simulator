@@ -2122,6 +2122,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     this.note('combat', {});
     await this.pace(p.isAI ? 1200 : 250);
+    await this.reviewCombatWithHuman({ attackingPlayer: p, attackers: attackers.slice() });
+    if (this.gameOver) { this.combat = null; return; }
     // REFLEKTOR: bot napada baš tebe
     {
       const hu = this.human();
