@@ -725,11 +725,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // board strip (always visible unless collapsed)
         if (!collapsed && !p.lost) {
           const strip = el('div', 'oppstrip');
-          const perms = g.bf().filter(c => c.ctrl === p && !c.is('Land'));
+          const allPerms = g.bf().filter(c => c.ctrl === p && !c.is('Land'));
+          const perms = allPerms.filter(c => !this.attachedHost(g, c));
           const creatures = perms.filter(c => c.is('Creature'));
           const others = perms.filter(c => !c.is('Creature'));
           for (const entry of this.groupPerms(creatures.concat(others))) {
-            strip.appendChild(this.miniCard(g, entry.card, { sm: true, stackN: entry.n }));
+            strip.appendChild(this.permanentPile(g, entry.card, { sm: true, stackN: entry.n }));
           }
           // lands summary chip
           const lands = g.lands(p);
@@ -740,7 +741,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             lc.onclick = () => { this.playerSheet = p; this.render(); };
             strip.appendChild(lc);
           }
-          if (!perms.length && !lands.length) strip.appendChild(el('div', 'emptystrip', 'prazna tabla'));
+          if (!allPerms.length && !lands.length) strip.appendChild(el('div', 'emptystrip', 'prazna tabla'));
           row.appendChild(strip);
         }
         wrap.appendChild(row);
@@ -873,6 +874,47 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return out;
     }
 
+    attachedHost(g, card) {
+      if (!card || !card.attachedTo) return null;
+      const host = g.byIid(card.attachedTo);
+      return host && host.zone === 'battlefield' && !host.phasedOut ? host : null;
+    }
+
+    attachedCards(g, host) {
+      return (host.attachments || []).map(iid => g.byIid(iid)).filter(card =>
+        card && card.zone === 'battlefield' && !card.phasedOut && card.attachedTo === host.iid);
+    }
+
+    attachedCard(g, card, host, opts = {}) {
+      const equipment = card.hasSub('Equipment');
+      const item = el('div', 'attachedcard' + (opts.sm ? ' sm' : '') +
+        (card.tapped ? ' tapped' : '') + (equipment ? ' equipment' : ' aura'));
+      item.dataset.cname = card.name;
+      item.title = `${card.name} — ${equipment ? 'opremljeno' : 'prikačeno'} na ${host.name}`;
+      item.innerHTML = `<img loading="lazy" src="${imgURL(card.name)}" onerror="MTG.imgFail(this)">
+        <span><small>${equipment ? 'OPREMA' : 'AURA'}</small><b>${esc(card.name.split(' // ')[0])}</b></span>`;
+      if (this.actable && this.actable.has(card.iid)) item.classList.add('actable');
+      if (this.isCandidate(card)) {
+        item.classList.add('targetable');
+        item.onclick = () => this.pickCandidate(card);
+      } else {
+        item.onclick = () => { this.sheet = { card }; this.render(); };
+      }
+      return item;
+    }
+
+    permanentPile(g, card, opts = {}) {
+      const attachments = this.attachedCards(g, card);
+      if (!attachments.length) return this.miniCard(g, card, opts);
+      const pile = el('div', 'permanentpile' + (opts.sm ? ' sm' : '') + ' equipped');
+      pile.dataset.host = card.name;
+      pile.appendChild(this.miniCard(g, card, opts));
+      const tray = el('div', 'attachmenttray');
+      for (const attached of attachments) tray.appendChild(this.attachedCard(g, attached, card, opts));
+      pile.appendChild(tray);
+      return pile;
+    }
+
     landGroups(g, p) {
       const groups = {};
       for (const l of g.lands(p)) {
@@ -886,14 +928,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const me = this.me;
       const wrap = el('div', 'myboard');
       // permanents (nonland)
-      const perms = g.bf().filter(c => c.ctrl === me && !c.is('Land'));
+      const allPerms = g.bf().filter(c => c.ctrl === me && !c.is('Land'));
+      const perms = allPerms.filter(c => !this.attachedHost(g, c));
       const row1 = el('div', 'cardrow');
       const creatures = perms.filter(c => c.is('Creature'));
       const others = perms.filter(c => !c.is('Creature'));
       for (const entry of this.groupPerms(creatures.concat(others))) {
-        row1.appendChild(this.miniCard(g, entry.card, { stackN: entry.n }));
+        row1.appendChild(this.permanentPile(g, entry.card, { stackN: entry.n }));
       }
-      if (!perms.length) row1.appendChild(el('div', 'emptyrow', 'Tvoja tabla je prazna'));
+      if (!allPerms.length) row1.appendChild(el('div', 'emptyrow', 'Tvoja tabla je prazna'));
       wrap.appendChild(row1);
       // lands & info row
       const row2 = el('div', 'landrow');

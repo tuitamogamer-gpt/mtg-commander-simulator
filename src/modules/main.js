@@ -328,6 +328,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       toughness: c.is('Creature') ? c.toughness : undefined,
       attacking: c.attacking ? c.attacking.name : null,
       blocking: c.blocking || null,
+      attachedTo: c.attachedTo ? (g.byIid(c.attachedTo)?.name || c.attachedTo) : null,
+      attachments: (c.attachments || []).map(iid => g.byIid(iid)?.name || iid),
       counters: Object.fromEntries(Object.entries(c.counters || {}).filter(([, n]) => n)),
     });
     const players = g.players.map(p => ({

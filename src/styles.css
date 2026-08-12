@@ -114,6 +114,37 @@ img { -webkit-user-drag: none; }
 .mini .toktag { position: absolute; top: 46%; left: 0; right: 0; text-align: center; font-size: 6.5px; letter-spacing: 1px; color: #fffc; background: #0008; padding: 1px 0; }
 .mini .stackn { position: absolute; bottom: 20px; right: 2px; background: #e8c05a; color: #12141a; font-size: 10px; font-weight: 900; padding: 1px 5px; border-radius: 6px; box-shadow: 0 1px 3px #000a; }
 .mini.stacked { box-shadow: 2px 2px 0 #2e3542, 4px 4px 0 #262b36; margin-right: 4px; }
+.permanentpile {
+  width: 66px; flex: 0 0 auto; display: flex; flex-direction: column;
+  align-items: stretch; gap: 3px; position: relative;
+}
+.permanentpile.sm { width: 52px; }
+.permanentpile > .mini { flex: 0 0 auto; }
+.attachmenttray {
+  display: grid; gap: 3px; padding-top: 6px; position: relative;
+}
+.attachmenttray::before {
+  content: ''; position: absolute; top: 0; left: 50%; width: 1px; height: 6px;
+  background: #c9a03a99;
+}
+.attachedcard {
+  position: relative; width: 100%; height: 30px; overflow: hidden; cursor: pointer;
+  display: grid; grid-template-columns: 21px minmax(0,1fr); align-items: center; gap: 4px;
+  background: linear-gradient(100deg,#241b0e,#11161a 72%); color: #e8e2d4;
+  border: 1px solid #6a5429; border-left: 3px solid #d7a84b; border-radius: 3px;
+  box-shadow: 0 3px 8px #0009; text-align: left;
+}
+.attachedcard + .attachedcard { margin-top: -1px; transform: translateX(3px); }
+.attachedcard img { width: 21px; height: 28px; object-fit: cover; }
+.attachedcard span { min-width: 0; display: grid; gap: 1px; }
+.attachedcard small { color: #d7a84b; font-size: 5.8px; line-height: 1; letter-spacing: .12em; }
+.attachedcard b { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 7px; line-height: 1.05; }
+.attachedcard.aura { border-left-color: #8d7bd6; }
+.attachedcard.aura small { color: #b9a9f2; }
+.attachedcard.tapped { opacity: .68; }
+.attachedcard:hover { border-color: #d7a84b; filter: brightness(1.12); }
+.attachedcard.actable { box-shadow: 0 0 0 1px #4ab8d9, 0 3px 9px #0009; }
+.attachedcard.targetable { box-shadow: 0 0 0 1px #e8c05a, 0 0 11px #e8c05a66; }
 .cdrow { display: flex; align-items: center; gap: 7px; margin-top: 5px; font-size: 11.5px; }
 .cdrow span:first-child { min-width: 82px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cdbar { flex: 1; height: 7px; background: #262b36; border-radius: 4px; overflow: hidden; }
@@ -429,6 +460,8 @@ img.imgfail {
 
   /* veće karte na velikom ekranu */
   .mini { width: 86px; height: 116px; border-radius: 9px; }
+  .permanentpile { width: 86px; }
+  .permanentpile.sm { width: 74px; }
   .mini .mname { font-size: 9.5px; max-height: 26px; }
   .mini .pt { font-size: 12px; }
   .mini.sm { width: 74px; height: 100px; }
@@ -487,7 +520,9 @@ img.imgfail {
 @media (min-width: 1500px) {
   #game { grid-template-columns: minmax(0, 1fr) 400px; }
   .mini { width: 96px; height: 130px; }
+  .permanentpile { width: 96px; }
   .mini.sm { width: 82px; height: 111px; }
+  .permanentpile.sm { width: 82px; }
   .hcard { width: 106px; height: 146px; }
 }
 
@@ -956,6 +991,16 @@ body:has(#setup) { background: #08090d; }
 .oppswrap { max-height: var(--opp-h, 42dvh); }
 .oppstrip { min-height: calc(74px * var(--opp-scale, 1)); }
 .oppstrip .mini.sm { width: calc(52px * var(--opp-scale, 1)); height: calc(70px * var(--opp-scale, 1)); }
+.oppstrip .permanentpile.sm { width: calc(52px * var(--opp-scale, 1)); }
+.oppstrip .attachmenttray { gap: calc(2px * var(--opp-scale, 1)); padding-top: calc(5px * var(--opp-scale, 1)); }
+.oppstrip .attachedcard {
+  height: calc(25px * var(--opp-scale, 1));
+  grid-template-columns: calc(17px * var(--opp-scale, 1)) minmax(0,1fr);
+  gap: calc(3px * var(--opp-scale, 1)); border-left-width: calc(2px * var(--opp-scale, 1));
+}
+.oppstrip .attachedcard img { width: calc(17px * var(--opp-scale, 1)); height: calc(23px * var(--opp-scale, 1)); }
+.oppstrip .attachedcard small { font-size: calc(5px * var(--opp-scale, 1)); }
+.oppstrip .attachedcard b { font-size: calc(6px * var(--opp-scale, 1)); }
 .oppstrip .mini.sm .mname { font-size: calc(7px * var(--opp-scale, 1)); max-height: calc(17px * var(--opp-scale, 1)); }
 .oppstrip .mini.sm .pt { font-size: calc(8.5px * var(--opp-scale, 1)); }
 .oppstrip .mini.sm .cnt, .oppstrip .mini.sm .cnt2, .oppstrip .mini.sm .att { font-size: calc(9px * var(--opp-scale, 1)); }

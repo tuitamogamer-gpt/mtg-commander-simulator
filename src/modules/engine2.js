@@ -15,6 +15,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return eq.cur.equipCost !== undefined ? eq.cur.equipCost : eq.def.equip;
   }
 
+  function equipTargetSpec(player) {
+    return {
+      what: 'creature', prompt: 'Stvorenje koje kontrolišeš',
+      filter: (g, target) => target.zone === 'battlefield' && target.ctrl === player && target.is('Creature'),
+    };
+  }
+
+  function equipCandidates(game, equipment, player) {
+    const spec = equipTargetSpec(player);
+    return game.legalTargets(spec, equipment, player).filter(target =>
+      target.iid !== equipment.attachedTo &&
+      game.canPayMana(player, U.parseCost(equipCostFor(equipment, target))));
+  }
+
   // ============================================================
   // Mana sources & payment
   // ============================================================
@@ -705,6 +719,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         specs = [];
         for (const mi of mode) if (d.modes.list[mi].targets) specs = specs.concat(d.modes.list[mi].targets);
       }
+      so.targetSpecs = specs;
       const ctx = { g: this, src: card, you: p, so };
       const ok = await this.pickTargets(ctx, specs, card, p);
       if (!ok) { this.lg(`${card.name}: nema legalnih meta.`); return false; }
@@ -713,6 +728,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const specs2 = [];
       for (const mi of mode) if (d.modes.list[mi].targets) specs2.push(...d.modes.list[mi].targets);
       if (specs2.length) {
+        so.targetSpecs = specs2;
         const ctx = { g: this, src: card, you: p, so };
         const ok = await this.pickTargets(ctx, specs2, card, p);
         if (!ok) { this.lg(`${card.name}: nema legalnih meta.`); return false; }
@@ -1002,6 +1018,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const copy = {
       kind: 'spell', card: so.card, ctrl, name: so.name + ' (kopija)', targets: so.targets.slice(),
       x: so.x, mode: so.mode, castOpts: so.castOpts, kicked: so.kicked, copyOf: so, isCopy: true,
+      targetSpecs: so.targetSpecs || null,
     };
     // forceTarget: kopija ide na tačno određenu metu (Mirrorwing Dragon)
     if (opts.forceTarget) {
@@ -1010,7 +1027,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // new targets?
     if (opts.mayNewTargets && so.targets.length) {
-      const specs = this.spellTargetSpecs(so.card, so.castOpts || {});
+      const specs = so.targetSpecs || this.spellTargetSpecs(so.card, so.castOpts || {});
       if (specs) {
         const redo = await ctrl.controller.decide(this, {
           type: 'chooseOption', prompt: `Kopija ${so.name}: nove mete?`,
@@ -1064,7 +1081,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.lg(`Rezolvira se: ${so.name}.`, 'resolve');
       await this.pace(so.ctrl && so.ctrl.isAI ? 620 : 150);
       // re-check targets
-      if (so.ctx.targets && so.ctx.targets.length && !this.targetsStillOk(so.ctx.targets)) {
+      const checked = this.revalidateTargets(so.ctx.targets || [], so.targetSpecs, so.srcCard, so.ctrl);
+      so.ctx.targets = checked.targets;
+      so.targets = checked.targets;
+      if (checked.anyChosen && !checked.anyLegal) {
         this.lg(`${so.name}: sve mete nelegalne — fizzle.`);
         return;
       }
@@ -1076,7 +1096,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (so.kind === 'ability') {
       this.lg(`Rezolvira se: ${so.name}.`, 'resolve');
       await this.pace(so.ctrl && so.ctrl.isAI ? 620 : 150);
-      if (so.targets && so.targets.length && !this.targetsStillOk(so.targets)) {
+      const checked = this.revalidateTargets(so.targets || [], so.targetSpecs, so.srcCard, so.ctrl);
+      so.targets = checked.targets;
+      if (so.ctx) so.ctx.targets = checked.targets;
+      if (checked.anyChosen && !checked.anyLegal) {
         this.lg(`${so.name}: mete nelegalne — fizzle.`);
         return;
       }
@@ -1088,7 +1111,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // spell
     const card = so.card, p = so.ctrl, d = card.def;
     if (so.countered) { await this.move(card, 'graveyard'); return; }
-    if (so.targets.length && !this.targetsStillOk(so.targets)) {
+    const checked = this.revalidateTargets(so.targets || [], so.targetSpecs, card, p);
+    so.targets = checked.targets;
+    if (checked.anyChosen && !checked.anyLegal) {
       this.lg(`${card.name}: sve mete nelegalne — spell fizzla.`, 'resolve');
       if (!so.isCopy) await this.move(card, 'graveyard');
       return;
@@ -1225,20 +1250,50 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await this.checkSBA(); await this.flushTriggers();
   };
 
-  G.targetsStillOk = function (targets) {
-    const flat = [];
-    for (const t of targets) { if (Array.isArray(t)) flat.push(...t); else if (t !== null && t !== undefined) flat.push(t); }
-    if (!flat.length) return true;
-    let anyOk = false;
-    for (const t of flat) {
-      if (t instanceof MTG.Player) { if (!t.lost) anyOk = true; }
-      else if (t && t.kind === 'spell') { if (this.stack.includes(t)) anyOk = true; }
-      else if (t instanceof MTG.CardInst) {
-        if ((t.zone !== 'battlefield' || !t.phasedOut) &&
-          (t.zone === 'battlefield' || t.zone === 'graveyard' || t.zone === 'stack' || t.zone === 'hand')) anyOk = true;
-      }
+  G.targetStillOk = function (target, spec, src, ctrl) {
+    if (!target) return false;
+    // Sa sačuvanim target-specom ponavljamo kompletnu legality provjeru na
+    // rezoluciji: zona/filter, protection, shroud i protivnički hexproof.
+    if (spec) return this.legalTargets(spec, src, ctrl).includes(target);
+    // Legacy stack objekti bez speca ipak moraju izgubiti metu koja je napustila
+    // odgovarajuću zonu ili phased out.
+    if (target instanceof MTG.Player) return !target.lost;
+    if (target && target.kind === 'spell') return this.stack.includes(target);
+    if (target instanceof MTG.CardInst) {
+      return (target.zone !== 'battlefield' || !target.phasedOut) &&
+        (target.zone === 'battlefield' || target.zone === 'graveyard' ||
+          target.zone === 'stack' || target.zone === 'hand');
     }
-    return anyOk;
+    return false;
+  };
+
+  G.revalidateTargets = function (targets, specs, src, ctrl) {
+    let chosen = 0;
+    let legal = 0;
+    const checked = (targets || []).map((target, index) => {
+      const spec = specs && specs[index] || null;
+      if (Array.isArray(target)) {
+        return target.filter(item => {
+          chosen++;
+          if (!this.targetStillOk(item, spec, src, ctrl)) return false;
+          legal++;
+          return true;
+        });
+      }
+      if (target === null || target === undefined) return target;
+      chosen++;
+      if (this.targetStillOk(target, spec, src, ctrl)) {
+        legal++;
+        return target;
+      }
+      return null;
+    });
+    return { targets: checked, anyChosen: chosen > 0, anyLegal: legal > 0 };
+  };
+
+  G.targetsStillOk = function (targets, specs, src, ctrl) {
+    const checked = this.revalidateTargets(targets, specs, src, ctrl);
+    return !checked.anyChosen || checked.anyLegal;
   };
 
   // ============================================================
@@ -1300,10 +1355,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // equip
       if (c.hasSub('Equipment') && (c.def.equip !== undefined || c.cur.equipCost !== undefined)) {
         if (this.turnPlayer === p && !this.stack.length && (this.phase === 'main1' || this.phase === 'main2')) {
-          // "Equip <tip> {N}" alternativa se plaća po cilju, pa gledamo je li ijedan cilj platljiv
-          const affordable = this.creatures(p).some(x =>
-            x.iid !== c.attachedTo && this.canPayMana(p, U.parseCost(equipCostFor(c, x))));
-          if (affordable) out.push({ card: c, equip: true });
+          // Equip je ciljana sposobnost: shroud/protection moraju ukloniti metu,
+          // dok vlastiti hexproof ostaje legalan. Alternativna cijena se i dalje
+          // obračunava po konkretnom preostalom cilju.
+          if (equipCandidates(this, c, p).length) out.push({ card: c, equip: true });
         }
       }
       // crew
@@ -1404,19 +1459,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
     if (entry.equip) {
-      // nudimo samo ciljeve čiju equip cijenu igrač zaista može platiti
-      const cands = this.creatures(p).filter(x =>
-        x.iid !== c.attachedTo && this.canPayMana(p, U.parseCost(equipCostFor(c, x))));
+      const spec = equipTargetSpec(p);
+      // Nudimo samo legalne ciljane mete čiju equip cijenu igrač može platiti.
+      const cands = equipCandidates(this, c, p);
       if (!cands.length) return false;
       const tgt = uiTargets && uiTargets[0] || (await p.controller.decide(this, {
         type: 'chooseTargets', candidates: cands, min: 1, max: 1, prompt: `Equip ${c.name} na:`,
         aiHint: { kind: 'equipTarget', card: c },
       }))[0];
-      if (!tgt) return false;
+      if (!tgt || !cands.includes(tgt)) return false;
       const ok = await this.payMana(p, U.parseCost(equipCostFor(c, tgt)));
       if (!ok) return false;
-      await this.attach(c, tgt);
-      this.lg(`${c.name} → ${tgt.name}.`);
+      const ctx = { g: this, src: c, you: p, targets: [tgt] };
+      const so = {
+        kind: 'ability', name: `${c.name} — Equip`, ctrl: p, ctx,
+        targets: ctx.targets, srcCard: c, targetSpecs: [spec],
+        run: async equipCtx => {
+          const host = equipCtx.targets[0];
+          if (!host || c.zone !== 'battlefield') return;
+          if (await equipCtx.g.attach(c, host)) equipCtx.g.lg(`${c.name} → ${host.name}.`);
+        },
+      };
+      this.lg(`${p.name} aktivira: ${c.name} — Equip.`, 'activate');
+      await this.emit('abilityActivated', { player: p, card: c, isMana: false });
+      this.stack.push(so);
+      this.note('stack', {});
+      await this.flushTriggers();
+      await this.priorityRound(p);
       return true;
     }
     if (entry.gyAbility) {
@@ -1585,7 +1654,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       }
     }
-    const so = { kind: 'ability', name: `${c.name}${a.label ? ' — ' + a.label : ''}`, ctrl: p, ctx, run: a.run, targets: ctx.targets, srcCard: c };
+    const so = {
+      kind: 'ability', name: `${c.name}${a.label ? ' — ' + a.label : ''}`, ctrl: p,
+      ctx, run: a.run, targets: ctx.targets, srcCard: c, targetSpecs: a.targets || null,
+    };
     this.stack.push(so);
     this.note('stack', {});
     await this.flushTriggers();
@@ -1594,15 +1666,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   G.attach = async function (att, host) {
+    if (!att || !host || att.zone !== 'battlefield' || host.zone !== 'battlefield') return false;
     if (att.attachedTo) {
       const old = this.byIid(att.attachedTo);
       if (old) old.attachments = old.attachments.filter(i => i !== att.iid);
     }
     att.attachedTo = host.iid;
-    host.attachments.push(att.iid);
+    if (!host.attachments.includes(att.iid)) host.attachments.push(att.iid);
     if (att.def.onAttach) att.def.onAttach(this, att, host);
     this.recalc();
     await this.emit('attached', { att, host });
+    return true;
   };
 
   // ============================================================
