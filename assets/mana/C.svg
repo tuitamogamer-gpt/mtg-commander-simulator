@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-labelledby="title">
+  <title>Bezbojna mana</title>
+  <circle cx="20" cy="20" r="19" fill="#8d8b83" stroke="#c9c6b9" stroke-width="1.5"/>
+  <path d="m20 7.7 12.3 12.2L20 32.3 7.7 19.9Z" fill="#e8e4d8"/>
+  <path d="m20 12.8 7.2 7.1L20 27.2l-7.2-7.3Z" fill="#676862"/>
+  <path d="m20 7.7 7.2 12.2L20 32.3l-7.2-12.4Z" fill="none" stroke="#a9a79f"/>
+</svg>

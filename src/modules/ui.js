@@ -22,21 +22,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const face = name.split(' // ')[0];
     return `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(face)}&format=image&version=${big ? 'normal' : 'small'}`;
   }
-  // Pravi mana simboli sa Scryfalla. Hibridi/phyrexian ({W/U}, {W/P}) u kodu
-  // simbola nemaju kosu crtu. Ako slika ne stigne, pada nazad na obojeni pip
-  // pa cijena ostaje čitljiva i offline.
+  const LOCAL_MANA = new Set(['W', 'U', 'B', 'R', 'G', 'C', 'X', 'T']);
+  const MANA_PATH = '/assets/mana/';
+  function manaGlyph(code, extraClass = '') {
+    const safe = String(code || '').toUpperCase();
+    if (LOCAL_MANA.has(safe)) {
+      return `<img class="msym mana-glyph ${extraClass}" src="${MANA_PATH}${safe}.svg" alt="{${safe}}" title="{${safe}}">`;
+    }
+    if (/^\d+$/.test(safe)) {
+      return `<span class="msym mana-glyph mana-generic ${extraClass}" role="img" aria-label="${safe} generičke mane" title="{${safe}}">${safe}</span>`;
+    }
+    if (safe.includes('/')) {
+      const [left, right] = safe.split('/');
+      const leftCol = COLHEX[left] || '#b9b4a6';
+      const rightCol = COLHEX[right] || (right === 'P' ? '#7f5a72' : '#78756d');
+      return `<span class="msym mana-glyph mana-combo ${extraClass}" role="img" aria-label="{${esc(safe)}}" title="{${esc(safe)}}" ` +
+        `style="--mana-left:${leftCol};--mana-right:${rightCol}"><b>${esc(left)}</b><i>/</i><b>${esc(right)}</b></span>`;
+    }
+    return `<span class="msym mana-glyph mana-generic ${extraClass}" role="img" aria-label="{${esc(safe)}}">${esc(safe)}</span>`;
+  }
+
+  // Potpuno lokalni mana set. Troškovi ostaju čitljivi i bez mreže, uključujući
+  // generičku, X, hibridnu i phyrexian manu.
   function costHTML(cost) {
     if (!cost) return '';
-    return cost.replace(/\{([^}]+)\}/g, (m, t) => {
-      const code = t.toUpperCase();
-      const col = COLHEX[code] || (/^\d+$|^X$/.test(code) ? '#ccc' : '#c9b37a');
-      const fg = code === 'B' ? '#eee' : '#222';
-      const url = 'https://svgs.scryfall.io/card-symbols/' + encodeURIComponent(code.replace(/\//g, '')) + '.svg';
-      // bez loading="lazy" — simboli su sitni i često van viewporta, pa bi
-      // lijeno učitavanje značilo da se nikad ne dohvate
-      return `<img class="msym" src="${url}" alt="{${code}}" title="{${code}}"` +
-        ` onerror="MTG.symFail(this,'${col}','${fg}','${esc(code)}')">`;
-    });
+    return cost.replace(/\{([^}]+)\}/g, (m, t) => manaGlyph(t));
   }
 
   function manualManaSourceText(source) {
@@ -193,6 +203,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const a of (this.pending.q.acts || [])) this.actable.add(a.card.iid);
       }
       root.innerHTML = '';
+      root.dataset.phase = g.phase || 'idle';
+      root.classList.toggle('human-turn', g.turnPlayer === this.me);
+      root.classList.toggle('ai-turn', !!(g.turnPlayer && g.turnPlayer.isAI));
+      root.classList.toggle('combat-phase', g.phase === 'combat');
+      root.style.setProperty('--arena-turn-accent', g.turnPlayer === this.me ? '#d3974c' : '#778f63');
       // oba panela ugašena → sidebar se uklanja i tabla ide preko cijele širine
       root.classList.toggle('nosidebar', !this.showThreat && !this.showSideLog);
       root.appendChild(this.renderTopbar(g));
@@ -718,11 +733,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // podesivo: visina zone (povlačenjem) i veličina karata (− / +)
       wrap.style.setProperty('--opp-h', this.oppHeight + 'dvh');
       wrap.style.setProperty('--opp-scale', String(this.oppScale));
+      let seatNo = 0;
       for (const p of g.players) {
         if (p === this.me) continue;
+        seatNo++;
         const meta = MTG.DECK_META[p.deckName] || {};
         const isActiveAi = activeAiTurn && g.turnPlayer === p;
-        const row = el('div', 'opprow' + (p.lost ? ' lost' : '') + (g.turnPlayer === p ? ' active' : '') + (isActiveAi ? ' activeai' : ''));
+        const row = el('div', `opprow seat-${seatNo}` + (p.lost ? ' lost' : '') + (g.turnPlayer === p ? ' active' : '') + (isActiveAi ? ' activeai' : ''));
+        row.dataset.seat = String(seatNo).padStart(2, '0');
+        row.style.setProperty('--seat-accent', COLHEX[(meta.colors || [])[0]] || '#778f63');
         if (isActiveAi) row.style.setProperty('--opp-scale', String(Math.min(2, this.oppScale * 1.2)));
         const isCandidate = this.isCandidate(p);
         const collapsed = this.collapsed.has(p.idx);
@@ -735,6 +754,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const styleMeta = p.isAI && p.aiStyle && MTG.AI_STYLES && MTG.AI_STYLES[p.aiStyle];
         head.innerHTML = `
           <span class="chev">${collapsed ? '▸' : '▾'}</span>
+          <span class="seatindex">${String(seatNo).padStart(2, '0')}</span>
           <span class="oppname">${meta.icon || '🤖'} ${esc(p.name)}</span>
           ${isActiveAi ? '<span class="activeaitag">AKTIVNI POTEZ</span>' : ''}
           ${styleMeta ? `<span class="personachip" title="Stil: ${esc(styleMeta.label)}">${styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
@@ -985,12 +1005,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // mana pool
       const pool = me.pool;
-      const poolStr = Object.entries(pool).filter(([k, v]) => v > 0).map(([k, v]) => `${MANA_SYM[k]}${v}`).join(' ');
+      const poolStr = Object.entries(pool).filter(([k, v]) => v > 0)
+        .map(([k, v]) => `<span class="manapoolchip">${manaGlyph(k, 'poolglyph')}<b>${v}</b></span>`).join('');
       const maySeeLibraryTop = g.bf().some(card => card.ctrl === me && card.def.revealOwnTop);
       const libraryTop = maySeeLibraryTop ? me.library[me.library.length - 1] : null;
       const info = el('div', 'meinfo');
-      info.innerHTML = `<div class="melife">${me.life}❤</div>
-        <div>${poolStr ? '🔮 ' + poolStr : ''}</div>
+      info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="melife">${me.life}<small>life</small></div>
+        <div class="manapool">${poolStr}</div>
         <div class="zbtns">
           <button class="zbtn" data-z="library-top">📚${me.library.length}${libraryTop ? ' · 👁' : ''}</button>
           <button class="zbtn" data-z="graveyard">🪦${me.graveyard.length}</button>
