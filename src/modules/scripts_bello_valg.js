@@ -710,10 +710,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'dies', desc: 'Drain 1',
       filter: (g, self, d) => d.snap.types.includes('Creature'),
+      targets: [T.player({ prompt: 'Ko gubi 1 život?', aiHint: { goal: 'drain' } })],
       run: async ctx => {
-        const opps = E.eachOpp(ctx.g, ctx.you);
-        if (!opps.length) return;
-        const t = opps.sort((a, b) => a.life - b.life)[0];
+        const t = ctx.targets[0];
+        if (!t) return;
         await ctx.g.loseLife(t, 1);
         await ctx.g.gainLife(ctx.you, 1);
       },

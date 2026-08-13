@@ -611,6 +611,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (me) return [me];
           return pick(cands);
         }
+        case 'gift': {
+          const me = cands.find(x => x === p);
+          if (me) return [me];
+          if (oppPlayers.length) return [oppPlayers.slice().sort((a, b) => this.playerThreat(g, a) - this.playerThreat(g, b)
+            || a.idx - b.idx)[0]];
+          return pick(cands);
+        }
         case 'bounce': {
           if (enemyPerms.length) return pick(enemyPerms);
           return min ? pick(cands) : [];
@@ -710,6 +717,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'bestCard': case 'reunion': case 'reanimate': {
           return byValDesc.slice(0, Math.max(min, Math.min(max, 1) || 1)).slice(0, max);
         }
+        case 'castFreeUpTo': return byValDesc.slice(0, max);
         case 'hideaway': {
           return [byValDesc[0]];
         }
@@ -794,6 +802,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const kind = q.aiHint && q.aiHint.kind || '';
       const keys = q.options.map(o => o.key);
       switch (kind) {
+        case 'vote': {
+          if (MTG.pickBotVoteOption) return MTG.pickBotVoteOption(g, this.p, q);
+          const preferred = q.aiHint && q.aiHint.aiPick && q.aiHint.aiPick(this.p);
+          return keys.includes(preferred) ? preferred : keys[0];
+        }
+        case 'chooseOpponent': {
+          const offered = q.options.filter(option => option.player && !option.player.lost);
+          if (!offered.length) return keys[0];
+          const goal = q.aiHint && q.aiHint.goal || 'delegate';
+          if (goal === 'threat' || goal === 'harm') {
+            const picked = this.pickOppPlayer(g, offered.map(option => option.player));
+            return offered.find(option => option.player === picked).key;
+          }
+          // Kada nekome poklanja resurs/kopiju ili mu prepušta odluku, bot bira
+          // najmanje opasnog javno procijenjenog protivnika.
+          return offered.slice().sort((a, b) => this.playerThreat(g, a.player) - this.playerThreat(g, b.player)
+            || a.player.idx - b.player.idx)[0].key;
+        }
+        case 'abstractPile': {
+          return q.options.slice().sort((a, b) => (b.denyValue || 0) - (a.denyValue || 0))[0].key;
+        }
+        case 'clashPlace': {
+          const card = q.aiHint && q.aiHint.card;
+          return card && this.cardValue(g, card) >= 3 ? 'top' : 'bottom';
+        }
         case 'manaColor': {
           // pick color we have least of / most needed: pick from hand costs
           const needs = {};
@@ -804,6 +837,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'ward': return this.p.life > 10 ? 'yes' : 'no';
         case 'optTrigger': return 'yes';
         case 'freeCast': return 'yes';
+        case 'tataruDraw': return 'yes';
         case 'kicker': return 'yes';
         case 'offspring': return 'yes';
         case 'newTargets': return 'no';

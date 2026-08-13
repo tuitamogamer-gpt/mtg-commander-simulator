@@ -732,6 +732,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return d.targets || null;
   };
 
+  G.applyDemonstrate = async function (p, so, card) {
+    const yes = await p.controller.decide(this, {
+      type: 'chooseOption', prompt: `Demonstrate: kopiraj ${card.name}? (izabrani protivnik takođe dobija kopiju)`,
+      options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+      aiHint: { kind: 'freeCast', card },
+    });
+    if (yes !== 'yes') return false;
+    const opponent = await MTG.E.chooseOpponent(this, p, {
+      prompt: `Demonstrate — ko takođe kopira ${card.name}?`, goal: 'gift',
+    });
+    await this.copySpell(so, p, { mayNewTargets: true });
+    if (opponent) {
+      this.lg(`Demonstrate: ${opponent.name} takođe kopira ${card.name}.`);
+      await this.copySpell(so, opponent, { mayNewTargets: true });
+    }
+    return true;
+  };
+
   // ============================================================
   // Casting
   // ============================================================
@@ -1062,20 +1080,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // demonstrate (Creative/Replication Technique)
     if (d.demonstrate && !castOpts.free && !so.isCopy) {
-      const yes = await p.controller.decide(this, {
-        type: 'chooseOption', prompt: `Demonstrate: kopiraj ${card.name}? (izabrani protivnik takođe dobija kopiju)`,
-        options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
-        aiHint: { kind: 'freeCast' },
-      });
-      if (yes === 'yes') {
-        await this.copySpell(so, p, { mayNewTargets: true });
-        const opps = this.alivePlayers().filter(q => q !== p);
-        if (opps.length) {
-          const weakest = opps.slice().sort((a, b) => a.life - b.life)[0];
-          this.lg(`Demonstrate: ${weakest.name} takođe kopira ${card.name}.`);
-          await this.copySpell(so, weakest, { mayNewTargets: true });
-        }
-      }
+      await this.applyDemonstrate(p, so, card);
     }
     // cascade (own keyword, granted next-spell effects, battlefield grants like Wildsear/Rain of Riches)
     let cascades = 0;

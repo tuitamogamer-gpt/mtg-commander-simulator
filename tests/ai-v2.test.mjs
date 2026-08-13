@@ -288,6 +288,119 @@ test('decision log sadrži alternative, prijetnje, seed, dubinu i fallback statu
   assert.equal(Object.keys(decision.log.threatScores).sort().join(','), [...game.players].map(player => String(player.idx)).sort().join(','));
 });
 
+test('Elven Council protivnici taktički umanjuju korist vlasnika vote efekta', async () => {
+  const { game, players: [bot, human] } = gameFixture(181);
+  human.deck = MTG.DECKS['Elven Council'];
+  human.deckName = 'Elven Council';
+  const galadriel = addCard(game, human, MTG.DEFS['Galadriel, Elven-Queen']);
+  addCard(game, human, MTG.DEFS['Elvish Visionary']);
+  game.recalc();
+
+  const galadrielVote = {
+    type: 'chooseOption', prompt: 'Galadriel: glasaj',
+    options: [
+      { key: 'dominion', label: 'Dominion (Ring + counter)' },
+      { key: 'guidance', label: 'Guidance (karta)' },
+    ],
+    aiHint: { kind: 'vote', src: galadriel, voter: bot, forWhom: human, secret: false, revealedVotes: [] },
+  };
+  const galadrielDecision = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 182, actionWindow: galadrielVote });
+  assert.equal(MTG.unwrapBotDecisionAction(galadrielDecision.action), 'guidance');
+
+  const plea = addCard(game, human, MTG.DEFS['Plea for Power'], 'graveyard');
+  const pleaVote = {
+    type: 'chooseOption', prompt: 'Plea for Power: glasaj',
+    options: [
+      { key: 'time', label: 'Time (ekstra potez)' },
+      { key: 'knowledge', label: 'Knowledge (3 karte)' },
+    ],
+    aiHint: { kind: 'vote', src: plea, voter: bot, forWhom: human, secret: false, revealedVotes: [] },
+  };
+  const pleaDecision = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 183, actionWindow: pleaVote });
+  assert.equal(MTG.unwrapBotDecisionAction(pleaDecision.action), 'knowledge');
+});
+
+test('Elrond glas zavisi od stvarne cijene Fellowshipa', async () => {
+  const { game, players: [bot, human] } = gameFixture(184);
+  const elrond = addCard(game, human, MTG.DEFS['Elrond of the White Council']);
+  const vote = () => ({
+    type: 'chooseOption', prompt: 'Elrond: tajno glasaj',
+    options: [
+      { key: 'fellowship', label: 'Fellowship (daš stvorenje)' },
+      { key: 'aid', label: 'Aid (counteri Elrondu)' },
+    ],
+    aiHint: { kind: 'vote', src: elrond, voter: bot, forWhom: human, secret: true },
+  });
+  game.recalc();
+  const noCreature = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 185, actionWindow: vote() });
+  assert.equal(MTG.unwrapBotDecisionAction(noCreature.action), 'fellowship');
+
+  addCard(game, bot, MTG.DEFS['Blood Artist']);
+  game.recalc();
+  const withCreature = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 186, actionWindow: vote() });
+  assert.equal(MTG.unwrapBotDecisionAction(withCreature.action), 'aid');
+});
+
+test('Cirdan, Sail i Travel glasovi koriste vlastite i javne resurse', async () => {
+  const { game, players: [bot, human, other] } = gameFixture(189);
+  const cirdan = addCard(game, human, MTG.DEFS['Círdan the Shipwright']);
+  game.recalc();
+  const cirdanVote = {
+    type: 'chooseOption', prompt: 'Cirdan: tajno glasaj',
+    options: game.players.map(player => ({ key: String(player.idx), label: player.name })),
+    aiHint: { kind: 'vote', src: cirdan, voter: bot, forWhom: human, secret: true },
+  };
+  const cirdanDecision = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 190, actionWindow: cirdanVote });
+  assert.equal(MTG.unwrapBotDecisionAction(cirdanDecision.action), String(bot.idx), 'bez bombe bot osigurava sebi kartu');
+
+  const sail = addCard(game, human, MTG.DEFS['Sail into the West'], 'graveyard');
+  const sailVote = () => ({
+    type: 'chooseOption', prompt: 'Sail into the West: glasaj',
+    options: [{ key: 'return', label: 'Return' }, { key: 'embark', label: 'Embark' }],
+    aiHint: { kind: 'vote', src: sail, voter: bot, forWhom: human, secret: false, revealedVotes: [] },
+  });
+  const emptyBot = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 191, actionWindow: sailVote() });
+  assert.equal(MTG.unwrapBotDecisionAction(emptyBot.action), 'embark', 'prazna ruka želi novu ruku');
+  addCard(game, bot, MTG.DEFS['Blood Artist'], 'graveyard');
+  addCard(game, bot, MTG.DEFS['Darksteel Reactor'], 'graveyard');
+  for (let i = 0; i < 7; i++) addCard(game, bot, syntheticDef(`Solidna ruka ${i}`, { cost: '{4}', oracle: 'Draw a card.' }), 'hand');
+  const graveBot = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 192, actionWindow: sailVote() });
+  assert.equal(MTG.unwrapBotDecisionAction(graveBot.action), 'return', 'puna ruka i jako groblje žele povrat');
+
+  const travel = addCard(game, human, MTG.DEFS['Travel Through Caradhras'], 'graveyard');
+  const travelVote = () => ({
+    type: 'chooseOption', prompt: 'Travel Through Caradhras: glasaj',
+    options: [{ key: 'pass', label: 'Redhorn Pass' }, { key: 'mines', label: 'Mines of Moria' }],
+    aiHint: { kind: 'vote', src: travel, voter: bot, forWhom: human, secret: false, revealedVotes: [] },
+  });
+  const noHumanGrave = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 193, actionWindow: travelVote() });
+  assert.equal(MTG.unwrapBotDecisionAction(noHumanGrave.action), 'mines', 'prazno protivničko groblje čini Mines praznim glasom');
+  addCard(game, human, MTG.DEFS['Blood Artist'], 'graveyard');
+  for (let i = 0; i < 8; i++) addPlains(game, human);
+  game.recalc();
+  const valuableHumanGrave = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 194, actionWindow: travelVote() });
+  assert.equal(MTG.unwrapBotDecisionAction(valuableHumanGrave.action), 'pass', 'kasni basic je manja pomoć od vraćanja jakog enginea');
+  assert.ok(other);
+});
+
+test('AI ne floata beskorisnu manu iz utility landa', async () => {
+  const { game, players: [bot] } = gameFixture(187);
+  const tunnel = addCard(game, bot, MTG.DEFS['Access Tunnel']);
+  game.turnPlayer = bot;
+  game.turnNo = 2;
+  game.phase = 'main1';
+  game.step = 'main';
+  game.recalc();
+  const acts = game.activatableList(bot);
+  assert.ok(acts.some(entry => entry.card === tunnel && entry.manaAbility), 'ljudski manual-mana izbor mora ostati dostupan');
+  const q = { type: 'main', player: bot, casts: [], acts, lands: [], phase: game.phase };
+  const view = MTG.createBotPlayerView(game, bot.idx, q);
+  assert.equal(MTG.generateLegalActions(view).some(action => action.kind === 'activate' && action.entry.manaAbility), false);
+  const decision = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 188, actionWindow: q, forceSearch: true });
+  assert.equal(decision.action.kind, 'done');
+  assert.equal(tunnel.tapped, false);
+});
+
 test('AI V2 nema mrežne/model/auth zavisnosti', () => {
   const source = fs.readFileSync(new URL('../src/modules/ai-v2.js', import.meta.url), 'utf8');
   assert.doesNotMatch(source, /\bfetch\s*\(/);

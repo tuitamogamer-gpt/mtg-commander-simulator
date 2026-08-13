@@ -523,10 +523,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return out;
   }
 
+  function combinationsWithRepeats(items, min, max, limit) {
+    const out = [], take = [];
+    function walk(start) {
+      if (out.length >= limit) return;
+      if (take.length >= min && take.length <= max) out.push(take.slice());
+      if (take.length === max) return;
+      for (let i = start; i < items.length && out.length < limit; i++) {
+        take.push(items[i]);
+        walk(i);
+        take.pop();
+      }
+    }
+    walk(0);
+    return out;
+  }
+
   function playerThreatForGame(game, observer, target) {
     const view = MTG.createBotPlayerView(game, observer.idx);
     return MTG.assessPlayerThreat(view, observer.idx, target.idx).totalScore;
   }
+
+  function opponentChoiceScore(game, player, option, q) {
+    const target = option && option.player;
+    if (!target || target.lost || target === player) return -100;
+    const goal = q && q.aiHint && q.aiHint.goal || 'delegate';
+    const threat = playerThreatForGame(game, player, target);
+    const board = boardValueFor(game, target);
+    if (goal === 'threat' || goal === 'harm') return threat + board * 0.22 + (40 - target.life) * 0.08;
+    return -(threat + board * 0.18);
+  }
+  MTG.scoreBotOpponentChoice = opponentChoiceScore;
 
   function attackAssignmentScore(game, player, card, target) {
     const defender = target instanceof U.Player ? target : target.ctrl;
@@ -622,7 +649,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const actions = [];
     if (q.type === 'main' || q.type === 'priority') {
       for (const entry of q.casts || []) actions.push({ kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from });
-      for (const entry of q.acts || []) actions.push({ kind: 'activate', entry });
+      for (const entry of q.acts || []) {
+        // Ručne mana-aktivacije postoje da čovjek može birati između utility i
+        // mana moda istog permanenta. Botu nisu potrebne: payMana već koristi
+        // isti izvor automatski kad stvarno nešto plaća. Njihovo rangiranje kao
+        // obične utility aktivacije samo je tapovalo land i otkrivalo da nema
+        // instant, iako proizvedena mana nije imala legalnu potrošnju.
+        if (!entry.manaAbility) actions.push({ kind: 'activate', entry });
+      }
       if (q.type === 'main') {
         for (const card of q.lands || []) actions.push({ kind: 'land', card });
         actions.push({ kind: 'done' });
@@ -641,7 +675,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const option of q.options || []) actions.push({ kind: 'chooseOption', value: option.key, option });
     } else if (q.type === 'chooseMulti') {
       const min = q.min || q.count || 1, max = q.max || q.count || min;
-      for (const picks of combinations(q.options || [], min, max, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseMulti', value: picks.map(option => option.key ?? option), options: picks });
+      const pickSets = q.repeats
+        ? combinationsWithRepeats(q.options || [], min, max, Math.max(config.beamWidth * 2, 12))
+        : combinations(q.options || [], min, max, Math.max(config.beamWidth * 2, 12));
+      for (const picks of pickSets) actions.push({ kind: 'chooseMulti', value: picks.map(option => option.key ?? option), options: picks });
     } else if (q.type === 'chooseX') {
       const min = Number(q.min || 0), max = Number(q.max || min);
       const strategic = [...new Set([min, max, Math.min(max, min + 1), Math.min(max, 3), Math.min(max, 5), ...((q.thresholds || []).map(Number))])].filter(value => value >= min && value <= max).sort((a, b) => a - b);
@@ -707,6 +744,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const threat = playerThreatForGame(game, player, target);
       const lethal = target.life <= 7 ? 12 : 0;
       const friendly = target === player ? (/gain|protect|draw/i.test(hint) ? 20 : -30) : 0;
+      if (/gift|benefit/i.test(hint)) return target === player ? 24 : -(threat * 0.45);
       return threat * 0.45 + lethal + friendly;
     }
     if (target instanceof U.CardInst) {
@@ -780,6 +818,135 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return candidates.map(target => ({ target, score: permanentGameValue(game, target, player) }))
       .sort((a, b) => b.score - a.score || a.target.iid - b.target.iid)[0];
   }
+
+  function publicVoteCount(q, key) {
+    const revealed = q && q.aiHint && q.aiHint.revealedVotes || [];
+    return revealed.filter(vote => vote.key === key).length;
+  }
+
+  function recoveryValue(player, limit) {
+    return (player && player.graveyard || []).map(card => cardDefinitionValue(card.def))
+      .sort((a, b) => b - a).slice(0, limit).reduce((sum, value) => sum + value, 0);
+  }
+
+  function handRefreshValue(player, useKnownCards) {
+    if (!player) return 0;
+    const count = player.hand.length;
+    const quantity = Math.max(0, 7 - count) * 1.35;
+    if (!useKnownCards || !count) return quantity;
+    const quality = player.hand.reduce((sum, card) => sum + cardDefinitionValue(card.def), 0) / count;
+    // Sail dopušta odbijanje wheela, pa dobra puna ruka nikad nije negativna.
+    return Math.max(0, quantity + Math.max(0, 2.7 - quality) * Math.min(count, 5) * 0.45);
+  }
+
+  function erestorVoteAdjustment(game, voter, optionKey, q) {
+    if (!q || !q.aiHint || q.aiHint.secret) return 0;
+    const revealed = q.aiHint.revealedVotes || [];
+    let score = 0;
+    for (const erestor of game.bf().filter(card => card.name === 'Erestor of the Council')) {
+      if (!erestor.ctrl || erestor.ctrl === voter) continue;
+      const controllerVote = revealed.find(vote => vote.playerId === erestor.ctrl.idx);
+      if (!controllerVote) continue;
+      // Pokloni sebi Treasure kada se može pratiti Erestorov javni glas, ali
+      // uračunaj i scry koji dobija njegov kontrolor ako glasamo drugačije.
+      score += controllerVote.key === optionKey ? 2.35 : -0.65;
+    }
+    return score;
+  }
+
+  function tacticalVoteScore(game, voter, option, q) {
+    const hint = q && q.aiHint || {};
+    const src = hint.src;
+    const owner = hint.forWhom || src && src.ctrl;
+    const key = String(option && option.key);
+    const isOwner = owner === voter;
+    const ownerThreat = owner && !isOwner ? clamp(playerThreatForGame(game, voter, owner) / 25, 0.75, 1.45) : 1;
+    const ownerUtility = value => isOwner ? value : -value * ownerThreat;
+    let score = 0;
+
+    switch (src && src.name) {
+      case 'Galadriel, Elven-Queen': {
+        const ring = owner && owner.emblems && owner.emblems.find(emblem => emblem.ring);
+        const creatures = owner ? game.creatures(owner) : [];
+        const dominion = creatures.length ? 4.2 + Math.min(3, ring && ring.level || 0) * 0.75 : 1.2;
+        const guidance = owner ? (owner.hand.length <= 3 ? 3.5 : owner.hand.length >= 7 ? 1.8 : 2.7) : 2.7;
+        score += ownerUtility(key === 'dominion' ? dominion : guidance);
+        break;
+      }
+      case 'Plea for Power':
+        score += ownerUtility(key === 'time' ? 13 : 6.8);
+        break;
+      case 'Elrond of the White Council': {
+        const ownerCreatures = owner ? game.creatures(owner) : [];
+        if (key === 'aid') {
+          score += ownerUtility(ownerCreatures.length * 1.45 + (ownerCreatures.some(card => card.commander) ? 0.8 : 0));
+        } else if (!isOwner) {
+          const mine = game.creatures(voter);
+          if (mine.length) {
+            const cheapestGift = Math.min(...mine.map(card => permanentGameValue(game, card, voter)));
+            // Promjena kontrole je i gubitak resursa birača i dobitak vlasnika
+            // Elronda. Bez stvorenja Fellowship je zato pravi "prazan" glas.
+            score -= cheapestGift * 0.95;
+            score -= cheapestGift * 0.65 * ownerThreat;
+          }
+        }
+        break;
+      }
+      case 'Círdan the Shipwright': {
+        const target = game.players.find(player => String(player.idx) === key);
+        if (!target) break;
+        if (target === voter) {
+          score += 3.1; // garantovana karta i zaštita od slučajnog nultog glasa
+        } else {
+          const threat = clamp(playerThreatForGame(game, voter, target) / 20, 0.65, 1.6);
+          score -= 2.4 * threat;
+          const bestPermanent = voter.hand.filter(card => card.is('Land') || card.is('Creature') || card.is('Artifact') || card.is('Enchantment') || card.is('Planeswalker'))
+            .map(card => cardDefinitionValue(card.def)).sort((a, b) => b - a)[0] || 0;
+          // Sa pravom bombom ima smisla riskirati nula glasova i besplatan
+          // permanent; inače je samoglas najstabilnija vrijednost.
+          score += Math.max(0, bestPermanent - 7.5) * 0.75;
+        }
+        break;
+      }
+      case 'Sail into the West': {
+        const returnSelf = recoveryValue(voter, 2) * 0.78;
+        const embarkSelf = handRefreshValue(voter, true);
+        score += key === 'return' ? returnSelf : embarkSelf;
+        if (!isOwner && owner) {
+          const returnOwner = recoveryValue(owner, 2) * 0.72;
+          const embarkOwner = handRefreshValue(owner, false);
+          score -= (key === 'return' ? returnOwner : embarkOwner) * 0.72 * ownerThreat;
+        }
+        break;
+      }
+      case 'Travel Through Caradhras': {
+        const already = publicVoteCount(q, key);
+        const passValue = owner ? Math.max(1.4, 4.5 - game.lands(owner).length * 0.28 - already * 0.45) : 3;
+        const graveValues = (owner && owner.graveyard || []).map(card => cardDefinitionValue(card.def)).sort((a, b) => b - a);
+        const minesValue = graveValues[already] || 0;
+        score += ownerUtility(key === 'pass' ? passValue : minesValue);
+        break;
+      }
+      default: {
+        const preferred = hint.aiPick && hint.aiPick(voter);
+        if (preferred !== undefined) score += key === String(preferred) ? 3 : 0;
+        else {
+          const label = String(option && option.label || '').toLowerCase();
+          if (/draw|vuci|karta|token|counter|mana/.test(label)) score += isOwner ? 1.5 : -1.5;
+        }
+      }
+    }
+
+    score += erestorVoteAdjustment(game, voter, key, q);
+    return round(score);
+  }
+  MTG.scoreBotVoteOption = tacticalVoteScore;
+  MTG.pickBotVoteOption = function (game, voter, q) {
+    const options = (q && q.options || []).slice();
+    if (!options.length) return null;
+    return options.map(option => ({ option, score: tacticalVoteScore(game, voter, option, q) }))
+      .sort((a, b) => b.score - a.score || String(a.option.key).localeCompare(String(b.option.key)))[0].option.key;
+  };
 
   function quickScoreAction(view, action, profile, q) {
     const privateData = PRIVATE_VIEWS.get(view);
@@ -880,12 +1047,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (action.kind === 'chooseCards' || action.kind === 'bottomCards') {
       breakdown.choice = action.picks.reduce((sum, card) => sum + choiceCardValue(game, player, card, q || {}), 0);
     } else if (action.kind === 'chooseOption') {
-      const key = String(action.value).toLowerCase();
-      if (/yes|da|keep|accept|use/.test(key)) breakdown.choice = q && q.aiHint && q.aiHint.kind === 'ward' ? 1.5 : 1;
-      if (/no|ne|decline/.test(key)) breakdown.choice = q && q.aiHint && q.aiHint.kind === 'ward' ? 0 : -0.2;
-      const label = String(action.option && action.option.label || '').toLowerCase();
-      if (/draw|vuci|token|counter|destroy|exile|mana/.test(label)) breakdown.choice += 2;
-      if (/lose|gubi|sacrifice|žrtvuj|discard|odbaci/.test(label)) breakdown.choice -= 1.5;
+      if (q && q.aiHint && q.aiHint.kind === 'vote') {
+        breakdown.choice = tacticalVoteScore(game, player, action.option, q);
+      } else if (q && q.aiHint && q.aiHint.kind === 'chooseOpponent') {
+        breakdown.choice = opponentChoiceScore(game, player, action.option, q);
+      } else if (q && q.aiHint && q.aiHint.kind === 'abstractPile') {
+        breakdown.choice = Number(action.option && action.option.denyValue || 0);
+      } else if (q && q.aiHint && q.aiHint.kind === 'clashPlace') {
+        const value = q.aiHint.card ? cardDefinitionValue(q.aiHint.card.def) : 0;
+        breakdown.choice = action.value === 'top' ? value : Math.max(0, 3.2 - value);
+      } else {
+        const key = String(action.value).toLowerCase();
+        if (/yes|da|keep|accept|use/.test(key)) breakdown.choice = q && q.aiHint && q.aiHint.kind === 'ward' ? 1.5 : 1;
+        if (/no|ne|decline/.test(key)) breakdown.choice = q && q.aiHint && q.aiHint.kind === 'ward' ? 0 : -0.2;
+        const label = String(action.option && action.option.label || '').toLowerCase();
+        if (/draw|vuci|token|counter|destroy|exile|mana/.test(label)) breakdown.choice += 2;
+        if (/lose|gubi|sacrifice|žrtvuj|discard|odbaci/.test(label)) breakdown.choice -= 1.5;
+      }
     } else if (action.kind === 'chooseMulti') {
       breakdown.choice = (action.options || []).reduce((sum, option) => sum + (/draw|token|destroy|exile|counter/i.test(option.label || '') ? 2 : 0.3), 0);
     } else if (action.kind === 'chooseX') {
@@ -1222,7 +1400,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     for (const candidate of candidates.slice(deepWidth)) searched.push({ score: candidate.quick.total, rootAction: candidate.action, depth: 0, breakdown: candidate.quick.breakdown });
     searched.sort((a, b) => b.score - a.score || actionKey(a.rootAction).localeCompare(actionKey(b.rootAction)));
-    let selection = pickNearTie(searched, seed, config.tieTolerance, difficulty === 'easy');
+    // Glasovi nisu kozmetički modovi: i mala evaluacijska razlika može značiti
+    // ekstra potez ili cijelu vojsku countera za protivnika. Zato se seedovani
+    // "malo slabiji potez" ne primjenjuje na vote prozore.
+    const tieTolerance = q && q.type === 'chooseOption' && q.aiHint && q.aiHint.kind === 'vote' ? 0 : config.tieTolerance;
+    let selection = pickNearTie(searched, seed, tieTolerance, difficulty === 'easy');
     if (!selection.chosen) {
       fallback = true;
       const safe = legalActions.find(action => action.kind === 'pass' || action.kind === 'done') || legalActions[0];

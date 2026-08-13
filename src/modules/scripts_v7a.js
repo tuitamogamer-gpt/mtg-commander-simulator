@@ -130,11 +130,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   E7.clash = async (g, p) => {
     const opps = E.eachOpp(g, p).filter(o => o.library.length);
-    const o = opps[0];
+    const o = await E.chooseOpponent(g, p, {
+      candidates: opps, prompt: 'Clash — izaberi protivnika', goal: 'clash',
+    });
     const mine = p.library[p.library.length - 1];
     const theirs = o && o.library[o.library.length - 1];
     const mv1 = mine ? mine.mv : -1, mv2 = theirs ? theirs.mv : -1;
     g.lg(`Clash: ${p.name} (${mine ? mine.name : '—'} mv${mv1}) vs ${o ? o.name : '—'} (${theirs ? theirs.name : '—'} mv${mv2}).`);
+    const place = async (player, card) => {
+      if (!player || !card) return;
+      const where = await player.controller.decide(g, {
+        type: 'chooseOption', prompt: `Clash — ${card.name} ostaje na vrhu ili ide na dno?`,
+        options: [{ key: 'top', label: 'Ostavi na vrhu' }, { key: 'bottom', label: 'Stavi na dno' }],
+        aiHint: { kind: 'clashPlace', card },
+      });
+      if (where === 'bottom' && player.library[player.library.length - 1] === card) {
+        player.library.pop(); player.library.unshift(card);
+      }
+    };
+    await place(p, mine);
+    await place(o, theirs);
     return mv1 > mv2;
   };
   // glasanje — "will of the council" (javno, redom)
@@ -145,7 +160,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (q.lost) continue;
       const k = await q.controller.decide(g, {
         type: 'chooseOption', prompt: `${src.name}: glasaj`, options,
-        aiHint: { kind: 'vote', src, options, voter: q, forWhom: you, aiPick },
+        aiHint: {
+          kind: 'vote', src, options, voter: q, forWhom: you, aiPick, secret: false,
+          // Will of the council je javno glasanje. Bot smije reagovati na već
+          // otkrivene glasove (i Erestora), ali ne dobija uvid u buduće izbore.
+          revealedVotes: order.slice(0, order.indexOf(q)).filter(p => !p.lost).map(p => ({
+            playerId: p.idx,
+            key: votes['_by_' + p.idx],
+          })),
+        },
       });
       votes.set(k, (votes.get(k) || 0) + 1);
       const opt = options.find(o => o.key === k);
@@ -161,7 +184,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const q of g.alivePlayers()) {
       const k = await q.controller.decide(g, {
         type: 'chooseOption', prompt: `${src.name}: tajno glasaj`, options,
-        aiHint: { kind: 'vote', src, options, voter: q, forWhom: you },
+        // Secret council namjerno ne prosljeđuje tuđe trenutne izbore.
+        aiHint: { kind: 'vote', src, options, voter: q, forWhom: you, secret: true },
       });
       picks.set(q, k);
     }

@@ -264,7 +264,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Tataru Taru'] = {
     triggers: [{
       on: 'etb', desc: 'Vuci; protivnik može vući', filter: etbSelf,
-      run: async ctx => { await ctx.g.draw(ctx.you, 1); },
+      targets: [T.opponent({ prompt: 'Koji protivnik može vući?', aiHint: { goal: 'gift' } })],
+      run: async ctx => {
+        await ctx.g.draw(ctx.you, 1);
+        const opponent = ctx.targets[0];
+        if (!opponent) return;
+        const yes = await opponent.controller.decide(ctx.g, {
+          type: 'chooseOption', prompt: `Tataru Taru — ${opponent.name}, želiš li vući kartu?`,
+          options: [{ key: 'yes', label: 'Da, vuci' }, { key: 'no', label: 'Ne' }],
+          aiHint: { kind: 'tataruDraw', source: ctx.src },
+        });
+        if (yes === 'yes') await ctx.g.draw(opponent, 1);
+      },
     }],
   };
   SC['Krile Baldesion'] = {

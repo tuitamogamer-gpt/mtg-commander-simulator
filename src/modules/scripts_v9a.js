@@ -306,24 +306,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
         }
         if (!exiled.length) return;
-        // protivnik "sklanja" najbolju
-        exiled.sort((a, b) => U.mv(b.def.cost || '') - U.mv(a.def.cost || ''));
-        const denied = exiled.shift();
-        g.lg(`Plargg and Nassari: protivnik sklanja ${denied.name}.`);
-        let castN = 0;
-        for (const c of exiled) {
-          if (castN >= 2) break;
-          const yes = await ctx.you.controller.decide(g, {
-            type: 'chooseOption', prompt: `Baci besplatno: ${c.name}?`,
-            options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
-            aiHint: { kind: 'freeCast' },
-          });
-          if (yes !== 'yes') continue;
+        const chooser = await E.chooseOpponent(g, ctx.you, {
+          prompt: 'Plargg and Nassari — koji protivnik bira kartu?', goal: 'delegate',
+        });
+        const deniedPick = chooser ? await chooser.controller.decide(g, {
+          type: 'chooseCards', from: exiled, min: 1, max: 1,
+          prompt: 'Plargg and Nassari — izaberi kartu koju kaster ne može baciti',
+          aiHint: { kind: 'denyCast', caster: ctx.you },
+        }) : [];
+        const denied = deniedPick[0] || exiled[0];
+        const remaining = exiled.filter(card => card !== denied);
+        g.lg(`Plargg and Nassari: ${chooser ? chooser.name : 'protivnik'} sklanja ${denied.name}.`);
+        const chosen = await ctx.you.controller.decide(g, {
+          type: 'chooseCards', from: remaining, min: 0, max: Math.min(2, remaining.length),
+          prompt: 'Izaberi do dva spella za besplatno bacanje', aiHint: { kind: 'castFreeUpTo' },
+        });
+        for (const c of chosen.slice(0, 2)) {
           c.owner.exile.splice(c.owner.exile.indexOf(c), 1);
           c.zone = 'nowhere';
           const ok = await g.castSpell(ctx.you, c, { free: true, from: 'exile', asThoughAnyColor: true });
           if (!ok) { c.zone = 'exile'; c.owner.exile.push(c); }
-          else castN++;
         }
       },
     }],
@@ -483,23 +485,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const pileA = [], pileB = [];
       for (let i = 0; i < 4 && you.library.length; i++) { const c = you.library.pop(); c.zone = 'exile'; you.exile.push(c); pileA.push(c); }
       for (let i = 0; i < 4 && you.library.length; i++) { const c = you.library.pop(); c.zone = 'exile'; you.exile.push(c); pileB.push(c); }
-      // protivnik bira jaču hrpu za groblje (heuristika: veći ukupni mv face-up = pileB)
-      const val = (pile) => pile.reduce((s, c) => s + U.mv(c.def.cost || ''), 0);
-      const toGY = val(pileB) >= val(pileA) ? pileB : pileA;
+      const chooser = await E.chooseOpponent(g, you, {
+        prompt: 'Abstract Performance — koji protivnik bira hrpu?', goal: 'delegate',
+      });
+      const faceUpValue = pileB.reduce((sum, card) => sum + U.mv(card.def.cost || '') + (card.is('Land') ? 0 : 1.5), 0);
+      const pileKey = chooser ? await chooser.controller.decide(g, {
+        type: 'chooseOption', prompt: 'Abstract Performance — koju hrpu stavljaš u groblje?',
+        options: [
+          { key: 'down', label: `Hrpa licem nadolje (${pileA.length} skrivenih karata)`, denyValue: pileA.length * 3.1 },
+          { key: 'up', label: `Hrpa licem nagore (${pileB.map(card => card.name).join(', ') || 'prazna'})`, denyValue: faceUpValue },
+        ],
+        aiHint: { kind: 'abstractPile', faceDownCount: pileA.length },
+      }) : 'up';
+      const toGY = pileKey === 'down' ? pileA : pileB;
       const keep = toGY === pileA ? pileB : pileA;
       for (const c of toGY) { you.exile.splice(you.exile.indexOf(c), 1); c.zone = 'graveyard'; you.graveyard.push(c); }
-      g.lg(`Abstract Performance: hrpa od ${toGY.length} ide u groblje.`);
+      g.lg(`Abstract Performance: ${chooser ? chooser.name : 'protivnik'} šalje hrpu od ${toGY.length} u groblje.`);
       const castable = keep.filter(c => !c.is('Land'));
       if (castable.length) {
-        const best = castable.sort((a, b) => U.mv(b.def.cost || '') - U.mv(a.def.cost || ''))[0];
-        const yes = await you.controller.decide(g, {
-          type: 'chooseOption', prompt: `Baci besplatno: ${best.name}?`,
-          options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }], aiHint: { kind: 'freeCast' },
+        const pick = await you.controller.decide(g, {
+          type: 'chooseCards', from: castable, min: 0, max: 1,
+          prompt: 'Izaberi do jedan spell za besplatno bacanje', aiHint: { kind: 'bestCard' },
         });
-        if (yes === 'yes') {
-          you.exile.splice(you.exile.indexOf(best), 1); best.zone = 'nowhere';
-          const ok = await g.castSpell(you, best, { free: true, from: 'exile' });
-          if (!ok) { best.zone = 'exile'; you.exile.push(best); }
+        const chosen = pick[0];
+        if (chosen) {
+          you.exile.splice(you.exile.indexOf(chosen), 1); chosen.zone = 'nowhere';
+          const ok = await g.castSpell(you, chosen, { free: true, from: 'exile' });
+          if (!ok) { chosen.zone = 'exile'; you.exile.push(chosen); }
         }
       }
       for (const c of keep.slice()) {

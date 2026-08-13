@@ -30,15 +30,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const root = $('#setup');
     root.innerHTML = '';
     const nDecks = Object.keys(MTG.DECKS).filter(d => !MTG.DECKS[d].custom).length;
-    // zaglavlje po dizajnu menija: romb-znak lijevo, naslov, status pilula desno
+    // Desktop "war room" zaglavlje: proizvod ostaje jasan, a zadatak je u prvom planu.
     const head = el('div', 'menuhead');
     head.innerHTML = `
       <div class="menumark" aria-hidden="true"></div>
       <div class="menutitles">
-        <h1 class="title">MTG Commander Simulator</h1>
-        <div class="subtitle">${nDecks} pravih precon deckova · 2023–2026 · biraj komandera i partnere</div>
+        <div class="menu-kicker">MTG Commander Simulator <span>// desktop lab</span></div>
+        <h1 class="title">Izgradi svoj Commander pod.</h1>
+        <div class="subtitle">${nDecks} pravih precon deckova · 2021–2026 · od izbora komandera do prvog poteza</div>
       </div>
-      <div class="menupill"><span class="dot"></span>Priprema partije</div>`;
+      <div class="menupill"><span class="dot"></span><span><b>Faza 01</b>Priprema partije</span></div>`;
     root.appendChild(head);
 
     const state = {
@@ -53,11 +54,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const right = el('div', 'setupright');
     grid.appendChild(left); grid.appendChild(right);
 
-    left.appendChild(el('div', 'seclabel', '<i>01</i> Izaberi svoj precon'));
+    left.appendChild(el('div', 'seclabel', '<i>01</i> Izaberi svoj precon <em>Komandna biblioteka</em>'));
     const deckList = el('div', 'decklist');
     for (const [name, deck] of Object.entries(MTG.DECKS)) {
       const meta = MTG.DECK_META[name] || {};
-      const card = el('div', 'deckcard');
+      const card = el('button', 'deckcard');
+      card.type = 'button';
+      card.setAttribute('aria-pressed', 'false');
       card.innerHTML = `
         <img class="deckart" loading="lazy" src="${commanderImg(name)}" onerror="MTG.imgFail(this)">
         <div class="deckinfo">
@@ -70,8 +73,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.onclick = () => {
         state.deck = name;
         state.commanders = [deck.commander];
-        deckList.querySelectorAll('.deckcard').forEach(c => c.classList.remove('selected'));
+        deckList.querySelectorAll('.deckcard').forEach(c => {
+          c.classList.remove('selected');
+          c.setAttribute('aria-pressed', 'false');
+        });
         card.classList.add('selected');
+        card.setAttribute('aria-pressed', 'true');
         startBtn.disabled = false;
         renderCmdBox();
         updateStartLabel();
@@ -81,6 +88,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     left.appendChild(deckList);
 
     // ---------- 2 · KOMANDER ----------
+    right.appendChild(el('div', 'controlintro', `
+      <span>Pod control</span>
+      <h2>Konfiguriši partiju</h2>
+      <p>Izbori ostaju ovdje dok pregledavaš biblioteku. Spreman pod kreće jednim potezom.</p>`));
     right.appendChild(el('div', 'seclabel', '<i>02</i> Komander'));
     const cmdBox = el('div', 'cmdbox');
     right.appendChild(cmdBox);
@@ -333,6 +344,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         type: 'main', player: ui.me, casts: [], acts, lands: [], phase: g.phase,
       }).then(action => g.performAction(ui.me, action));
       ui.sheet = { card: food };
+      ui.render();
+      return;
+    }
+    if (smokeScenario === 'opponentChoice') {
+      g.turnPlayer = ui.me; g.turnNo = 1; g.phase = 'main1'; g.step = 'main';
+      void MTG.E.chooseOpponent(g, ui.me, {
+        prompt: 'Sylvan Offering — ko dobija Treefolk?', goal: 'gift',
+      }).then(opponent => {
+        if (opponent) ui.toast(`Izabran protivnik: ${opponent.name}`);
+        ui.render();
+      });
       ui.render();
       return;
     }

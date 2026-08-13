@@ -1344,9 +1344,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Recurring Insight'] = {
     rebound: true,
+    targets: [T.opponent({ prompt: 'Po čijoj ruci vučeš?', aiHint: { goal: 'maxHand' } })],
     resolve: async ctx => {
-      const best = E.eachOpp(ctx.g, ctx.you).sort((a, b) => b.hand.length - a.hand.length)[0];
-      if (best) await ctx.g.draw(ctx.you, best.hand.length);
+      const opponent = ctx.targets[0];
+      if (opponent) await ctx.g.draw(ctx.you, opponent.hand.length);
     },
   };
   SC['Seize the Day'] = {
@@ -1718,8 +1719,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [
       {
         on: 'endStep', desc: 'Daj krunu', filter: (g, self, d) => d.player === self.ctrl && !g.monarch,
+        targets: [T.opponent({ prompt: 'Ko postaje monarh?', aiHint: { goal: 'gift' } })],
         run: async ctx => {
-          const o = E.eachOpp(ctx.g, ctx.you).sort((a, b) => a.life - b.life)[0];
+          const o = ctx.targets[0];
           if (o) { ctx.g.monarch = o; ctx.g.lg(`👑 M'Baku daje krunu: ${o.name}.`); }
         },
       },

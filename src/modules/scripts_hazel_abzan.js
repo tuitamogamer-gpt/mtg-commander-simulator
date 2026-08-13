@@ -615,38 +615,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Rootcast Apprenticeship'] = {
+    modes: {
+      pick: 3,
+      repeats: true,
+      list: [
+        { label: '+2 countera na stvorenje', targets: [T.creature({ prompt: 'Stvorenje za +2 countera', aiHint: { goal: 'buff' } })] },
+        { label: 'Kopiraj svoj token', targets: [T.permanent((g, c, ctrl) => c.ctrl === ctrl && c.isToken, { prompt: 'Token za kopiju', aiHint: { goal: 'copy' } })] },
+        { label: 'Target player pravi Vjevericu', targets: [T.player({ prompt: 'Ko pravi Vjevericu?', aiHint: { goal: 'gift' } })] },
+        { label: 'Target opponent žrtvuje nontoken artefakt', targets: [T.opponent({ prompt: 'Ko žrtvuje artefakt?', aiHint: { goal: 'removal' } })] },
+      ],
+    },
     resolve: async ctx => {
       const g = ctx.g, p = ctx.you;
-      for (let i = 0; i < 3; i++) {
-        const opts = [
-          { key: 'counters', label: '+2 countera na stvorenje' },
-          { key: 'copy', label: 'Kopiraj token' },
-          { key: 'squirrel', label: 'Vjeverica' },
-          { key: 'sac', label: 'Protivnik žrtvuje nontoken artefakt' },
-        ];
-        const k = await p.controller.decide(g, {
-          type: 'chooseOption', prompt: `Rootcast (${i + 1}/3):`, options: opts, aiHint: { kind: 'rootcast' },
-        });
-        if (k === 'counters') {
-          const c = await E.chooseCreature(g, p, g.creatures(p), 'Stvorenje za +2 countera', { kind: 'buff' });
-          if (c) g.addCounters(c, '+1/+1', 2);
-        } else if (k === 'copy') {
-          const toks = g.bf().filter(c => c.ctrl === p && c.isToken);
-          const c = toks.length ? await E.chooseCreature(g, p, toks, 'Token za kopiju', { kind: 'copyBestToken' }) : null;
-          if (c) await g.copyPermanentToken(c, p);
-        } else if (k === 'squirrel') {
-          await g.makeTokens('squirrel', p);
-        } else {
-          const opps = E.eachOpp(g, p);
-          for (const o of opps) {
-            const arts = g.bf().filter(c => c.ctrl === o && c.is('Artifact') && !c.isToken);
-            if (arts.length) {
-              const picked = await o.controller.decide(g, {
-                type: 'chooseCards', from: arts, min: 1, max: 1, prompt: 'Žrtvuj nontoken artefakt', aiHint: { kind: 'forcedSac' },
-              });
-              if (picked.length) { await g.sacrifice(o, picked[0]); break; }
-            }
-          }
+      let targetIndex = 0;
+      for (const mode of ctx.mode || []) {
+        const target = ctx.targets[targetIndex++];
+        if (mode === 0 && target) g.addCounters(target, '+1/+1', 2);
+        else if (mode === 1 && target) await g.copyPermanentToken(target, p);
+        else if (mode === 2 && target) await g.makeTokens('squirrel', target);
+        else if (mode === 3 && target) {
+          const artifacts = g.bf().filter(card => card.ctrl === target && card.is('Artifact') && !card.isToken);
+          if (!artifacts.length) continue;
+          const picked = await target.controller.decide(g, {
+            type: 'chooseCards', from: artifacts, min: 1, max: 1,
+            prompt: 'Rootcast Apprenticeship — žrtvuj nontoken artefakt', aiHint: { kind: 'forcedSac' },
+          });
+          if (picked.length) await g.sacrifice(target, picked[0]);
         }
       }
     },

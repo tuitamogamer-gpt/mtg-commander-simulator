@@ -335,12 +335,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', filter: etbSelf, desc: 'Tajni izbor',
       run: async ctx => {
-        const opps = E.eachOpp(ctx.g, ctx.you);
-        if (!opps.length) return;
-        const pick = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseTargets', candidates: opps, min: 1, max: 1, prompt: 'Tajno izaberi protivnika', aiHint: { goal: 'drain' },
+        const chosen = await E.chooseOpponent(ctx.g, ctx.you, {
+          prompt: 'Stalking Leonin — tajno izaberi protivnika', goal: 'threat',
         });
-        ctx.src.meta.chosen = pick[0] ? pick[0].idx : opps[0].idx;
+        if (chosen) ctx.src.meta.chosen = chosen.idx;
       },
     }],
     abilities: [{

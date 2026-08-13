@@ -263,6 +263,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   E.eachOpp = function (g, p) { return g.alivePlayers().filter(q => q !== p); };
 
+  // "Choose an opponent" nije targeting: ne smije okidati ward/crime niti
+  // koristiti target prečice, ali ljudski igrač i dalje mora dobiti stvaran
+  // izbor između svih živih protivnika.
+  E.chooseOpponent = async function (g, p, opts = {}) {
+    const opponents = (opts.candidates || E.eachOpp(g, p))
+      .filter(q => q && q !== p && !q.lost);
+    if (!opponents.length) return null;
+    if (opponents.length === 1) return opponents[0];
+    const options = opponents.map(player => ({
+      key: String(player.idx), label: player.name, player,
+    }));
+    const key = await p.controller.decide(g, {
+      type: 'chooseOption', player: p,
+      prompt: opts.prompt || 'Izaberi protivnika', options,
+      aiHint: Object.assign({ kind: 'chooseOpponent', goal: opts.goal || 'delegate' }, opts.aiHint || {}),
+    });
+    return opponents.find(player => String(player.idx) === String(key)) || opponents[0];
+  };
+
   E.chooseCreature = async function (g, p, pool, prompt, aiHint) {
     if (!pool.length) return null;
     const picked = await p.controller.decide(g, {

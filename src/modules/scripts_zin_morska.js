@@ -891,12 +891,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
     abilities: [{
       label: 'Žrtvuj X Clue: ukradi', cost: { tap: true, sac: (g, x) => x.hasSub('Clue'), sacN: 'X' },
+      targets: [T.opponent({ prompt: 'Čiju biblioteku otkrivaš?', aiHint: { goal: 'mill' } })],
       run: async ctx => {
         const g = ctx.g, x = ctx.x || 0;
         if (!x) return;
-        const opps = E.eachOpp(g, ctx.you);
-        if (!opps.length) return;
-        const o = opps.sort((a, b) => b.library.length - a.library.length)[0];
+        const o = ctx.targets[0];
+        if (!o) return;
         const top = o.library.slice(-x).reverse();
         g.lg(`Lonis otkriva kod ${o.name}: ${top.map(c => c.name).join(', ')}.`);
         const cands = top.filter(c => !c.is('Land') && ['Creature', 'Artifact', 'Enchantment', 'Planeswalker'].some(t => c.is(t)) && c.mv <= x);
