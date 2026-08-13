@@ -8,7 +8,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const $ = s => document.querySelector(s);
   const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
-  const COLHEX = { W: '#e8e3c8', U: '#4a90d9', B: '#8a6f9a', R: '#d95a4a', G: '#5aa860' };
 
   function commanderImg(deckName) {
     const d = MTG.DECKS[deckName];
@@ -23,23 +22,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(face)}&format=image&version=small`;
   }
   function typeLine(def) {
-    return `${(def.super || []).join(' ')} ${(def.types || []).join(' ')}${(def.subtypes || []).length ? ' — ' + def.subtypes.join(' ') : ''}`.trim();
+    return `${(def.super || []).join(' ')} ${(def.types || []).join(' ')}${(def.subtypes || []).length ? ' - ' + def.subtypes.join(' ') : ''}`.trim();
   }
 
   function renderSetup() {
     const root = $('#setup');
     root.innerHTML = '';
     const nDecks = Object.keys(MTG.DECKS).filter(d => !MTG.DECKS[d].custom).length;
-    // Desktop "war room" zaglavlje: proizvod ostaje jasan, a zadatak je u prvom planu.
+    // Desktop war-room zaglavlje: proizvod ostaje jasan, a zadatak je u prvom planu.
     const head = el('div', 'menuhead');
     head.innerHTML = `
       <div class="menumark" aria-hidden="true"></div>
       <div class="menutitles">
-        <div class="menu-kicker">MTG Commander Simulator <span>// desktop lab</span></div>
-        <h1 class="title">Izgradi svoj Commander pod.</h1>
-        <div class="subtitle">${nDecks} pravih precon deckova · 2021–2026 · od izbora komandera do prvog poteza</div>
+        <div class="menu-kicker">Commander Simulator <span>Desktop klijent</span></div>
+        <h1 class="title">Sastavi svoj Commander pod.</h1>
+        <div class="subtitle">${nDecks} precon deckova iz perioda 2021-2026, spremnih za puni četveroigrački sto.</div>
       </div>
-      <div class="menupill"><span class="dot"></span><span><b>Faza 01</b>Priprema partije</span></div>`;
+      <div class="menupill"><span class="menupillmark" aria-hidden="true"></span><span><b>Main menu</b>Priprema partije</span></div>`;
     root.appendChild(head);
 
     const state = {
@@ -54,7 +53,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const right = el('div', 'setupright');
     grid.appendChild(left); grid.appendChild(right);
 
-    left.appendChild(el('div', 'seclabel', '<i>01</i> Izaberi svoj precon <em>Komandna biblioteka</em>'));
+    left.appendChild(el('div', 'seclabel', '<i>Precon</i> Izaberi svoj deck <em>Komandna biblioteka</em>'));
     const deckList = el('div', 'decklist');
     for (const [name, deck] of Object.entries(MTG.DECKS)) {
       const meta = MTG.DECK_META[name] || {};
@@ -62,13 +61,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.type = 'button';
       card.setAttribute('aria-pressed', 'false');
       card.innerHTML = `
-        <img class="deckart" loading="lazy" src="${commanderImg(name)}" onerror="MTG.imgFail(this)">
+        <img class="deckart" loading="lazy" decoding="async" alt="${esc(deck.commander)}" src="${commanderImg(name)}" onerror="MTG.imgFail(this)">
         <div class="deckinfo">
-          <div class="deckname">${meta.icon || ''} ${esc(name)}</div>
-          <div class="deckcmd">👑 ${esc(deck.commander)}</div>
-          <div class="deckcolors">${(meta.colors || []).map(c => `<span class="dot big" style="background:${COLHEX[c]}"></span>`).join('')} <span class="deckstyle">${esc(meta.style || '')}</span></div>
-          <div class="deckblurb">${esc(meta.blurb || '')}</div>
-          <div class="deckset">${esc(meta.set || '')}</div>
+          <div class="deckname">${esc(name)}</div>
+          <div class="deckcmd"><span>Commander</span>${esc(deck.commander)}</div>
+          <div class="deckcolors">${(meta.colors || []).map(c => `<img class="deckmana" src="/assets/mana/${c}.svg" alt="{${c}}" title="{${c}}">`).join('')} <span class="deckstyle">${esc(meta.style || '').replace(/[—–]/g, '-')}</span></div>
+          <div class="deckblurb">${esc(meta.blurb || '').replace(/[—–]/g, '-')}</div>
+          <div class="deckset">${esc(meta.set || '').replace(/[—–]/g, '-')}</div>
         </div>`;
       card.onclick = () => {
         state.deck = name;
@@ -89,16 +88,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // ---------- 2 · KOMANDER ----------
     right.appendChild(el('div', 'controlintro', `
-      <span>Pod control</span>
+      <span>Postavke poda</span>
       <h2>Konfiguriši partiju</h2>
-      <p>Izbori ostaju ovdje dok pregledavaš biblioteku. Spreman pod kreće jednim potezom.</p>`));
-    right.appendChild(el('div', 'seclabel', '<i>02</i> Komander'));
+      <p>Izbori ostaju ovdje dok pregledavaš biblioteku. Pokreni partiju kada je pod spreman.</p>`));
+    right.appendChild(el('div', 'seclabel', '<i>Izbor</i> Komander'));
     const cmdBox = el('div', 'cmdbox');
     right.appendChild(cmdBox);
     const updateStartLabel = () => {
       if (!state.deck) return;
       const c = state.commanders;
-      startBtn.textContent = `Kreni: ${state.deck} · ${c.map(n => n.split(',')[0]).join(' + ')} ▶`;
+      startBtn.textContent = 'Pokreni partiju';
+      startBtn.title = `${state.deck}: ${c.map(n => n.split(',')[0]).join(' + ')}`;
     };
     function renderCmdBox() {
       cmdBox.innerHTML = '';
@@ -113,7 +113,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         chip.innerHTML = `
           <img loading="lazy" src="${artURL(nm)}" onerror="MTG.imgFail(this)">
           <div class="cmdchipinfo">
-            <div class="cmdchipname">👑 ${esc(nm)}</div>
+            <div class="cmdchipname">${esc(nm)}</div>
             <div class="cmdchiptype">${esc(typeLine(def))}</div>
             ${tag.kind ? `<div class="cmdbadge">${esc(MTG.cmdTagLabel(tag))}</div>` : ''}
           </div>`;
@@ -134,10 +134,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       cmdBox.appendChild(btn);
     }
 
-    right.appendChild(el('div', 'seclabel', '<i>03</i> Protivnici <em>AI dobijaju nasumične precone</em>'));
+    right.appendChild(el('div', 'seclabel', '<i>Pod</i> Protivnici <em>AI dobijaju nasumične precone</em>'));
     const aiRow = el('div', 'btnrow center');
     const botStyles = el('div', 'botstyles');
-    const styleOptions = [['random', '🎲 Nasumičan stil']]
+    const styleOptions = [['random', 'Nasumičan stil']]
       .concat(Object.entries(MTG.AI_STYLES).map(([k, s]) => [k, `${s.icon} ${s.label}`]));
     const STYLE_DESC = {
       aggressive: 'Napada bez milosti, juri ranjene igrače, ne voli da blokira.',
@@ -156,7 +156,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const setBadge = k => {
           badge.className = 'pbadge ' + (['aggressive', 'opportunist', 'passive', 'teaser'].includes(k) ? 'p-' + k : 'p-none');
           badge.textContent = ['aggressive', 'opportunist', 'passive', 'teaser'].includes(k)
-            ? '' : (k === 'random' ? '🎲' : '⚖️');
+            ? '' : (k === 'random' ? '?' : '=');
           badge.title = STYLE_DESC[k] || '';
         };
         setBadge(state.aiStyles[i]);
@@ -176,28 +176,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     };
     for (const n of [1, 2, 3]) {
-      const b = el('button', 'pbtn choice' + (n === 3 ? ' selected' : ''), `${n} AI ${n === 1 ? '(duel)' : n === 3 ? '(puni pod)' : ''}`);
+      const b = el('button', 'pbtn choice' + (n === 3 ? ' selected' : ''), n === 1 ? '1 AI duel' : n === 3 ? '3 AI pod' : '2 AI');
       b.onclick = () => { state.ai = n; aiRow.querySelectorAll('.pbtn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); renderBotStyles(); };
       aiRow.appendChild(b);
     }
     right.appendChild(aiRow);
-    right.appendChild(el('div', 'seclabel', '<i>·</i> Stil AI botova'));
+    right.appendChild(el('div', 'seclabel', '<i>AI</i> Stil botova'));
     right.appendChild(botStyles);
     renderBotStyles();
 
     const randRow = el('label', 'cmdcheck');
-    randRow.innerHTML = '<input type="checkbox"> <span>🎲 AI botovi biraju nasumične (i partner) komandere</span>';
+    randRow.innerHTML = '<input type="checkbox"> <span>AI botovi biraju nasumične (i partner) komandere</span>';
     randRow.querySelector('input').onchange = e => { state.aiRandomCommanders = e.target.checked; };
     right.appendChild(randRow);
 
     const houseRow = el('label', 'cmdcheck');
     houseRow.title = 'Zvanično pravilo 903.10a: 21 šteta od ISTOG komandera. ' +
       'Uključi ovo ako tvoja grupa igra da se šteta oba partnera zbraja.';
-    houseRow.innerHTML = '<input type="checkbox"> <span>🏠 Kućno pravilo: šteta oba partnera se ZBRAJA (nije po 903.10a)</span>';
+    houseRow.innerHTML = '<input type="checkbox"> <span>Kućno pravilo: šteta oba partnera se ZBRAJA (nije po 903.10a)</span>';
     houseRow.querySelector('input').onchange = e => { state.sumPartnerDamage = e.target.checked; };
     right.appendChild(houseRow);
 
-    right.appendChild(el('div', 'seclabel', '<i>04</i> Težina'));
+    right.appendChild(el('div', 'seclabel', '<i>AI</i> Težina'));
     const diffRow = el('div', 'btnrow center');
     for (const [k, label] of [['easy', 'Laka'], ['normal', 'Normalna'], ['hard', 'Teška']]) {
       const b = el('button', 'pbtn choice' + (k === 'normal' ? ' selected' : ''), label);
@@ -206,7 +206,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     right.appendChild(diffRow);
 
-    const startBtn = el('button', 'pbtn primary start', 'Prvo izaberi deck…');
+    const startBtn = el('button', 'pbtn primary start', 'Prvo izaberi deck');
     startBtn.disabled = true;
     startBtn.onclick = () => startGame(state);
     right.appendChild(startBtn);
@@ -225,9 +225,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return new Promise(resolve => {
       const ov = el('div', 'overlay dark');
       const m = el('div', 'modal wide');
-      m.appendChild(el('div', 'mtitle', `👑 Komanderi — ${esc(deckName)}`));
+      m.appendChild(el('div', 'mtitle', `👑 Komanderi: ${esc(deckName)}`));
       m.appendChild(el('div', 'cmdhint',
-        'Klikni kartu da je izabereš. Karte sa 🤝 <b>Partner</b> mogu ići u paru — ' +
+        'Klikni kartu da je izabereš. Karte sa 🤝 <b>Partner</b> mogu ići u paru. ' +
         'izaberi jednu, pa klikni drugu koja joj odgovara (obrubljene zeleno). ' +
         'Ostatak deka ostaje isti; neizabrani legendarci idu u biblioteku.'));
 
@@ -269,7 +269,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const v = MTG.validateCommanders(deck, sel, MTG.DEFS);
         status.className = 'cmdstatus ' + (v.ok ? 'good' : 'bad');
         status.innerHTML = v.ok
-          ? `✅ ${sel.map(n => esc(n)).join(' <b>+</b> ')}${sel.length === 2 ? ' — dva komandera' : ''}`
+          ? `✅ ${sel.map(n => esc(n)).join(' <b>+</b> ')}${sel.length === 2 ? ' (dva komandera)' : ''}`
           : `⛔ ${esc(v.why)}`;
         okBtn.disabled = !v.ok;
       }
@@ -313,7 +313,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return ui.controllerFor(p);
       },
       onEvent: (e) => {
-        if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ TVOJ POTEZ' : `Potez ${g.turnNo} — ${e.p.name}`, e.p === ui.me);
+        if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ TVOJ POTEZ' : `Potez ${g.turnNo}: ${e.p.name}`, e.p === ui.me);
         if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
         if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind);
         ui.queueRender();
@@ -350,7 +350,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (smokeScenario === 'opponentChoice') {
       g.turnPlayer = ui.me; g.turnNo = 1; g.phase = 'main1'; g.step = 'main';
       void MTG.E.chooseOpponent(g, ui.me, {
-        prompt: 'Sylvan Offering — ko dobija Treefolk?', goal: 'gift',
+        prompt: 'Sylvan Offering: ko dobija Treefolk?', goal: 'gift',
       }).then(opponent => {
         if (opponent) ui.toast(`Izabran protivnik: ${opponent.name}`);
         ui.render();

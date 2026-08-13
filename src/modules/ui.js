@@ -277,7 +277,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const info = el('div', 'actionstageinfo');
       info.appendChild(el('div', 'actionstageeyebrow', `${esc(kind)} · ${esc(top.ctrl ? top.ctrl.name : '')}`));
       info.appendChild(el('div', 'actionstagename', esc(top.name || source.name)));
-      info.appendChild(el('div', 'actionstagetype', `${costHTML(def.cost || '')}<span>${esc([...(def.super || []), ...(def.types || [])].join(' '))}${(def.subtypes || []).length ? ' — ' + esc(def.subtypes.join(' ')) : ''}</span>`));
+      info.appendChild(el('div', 'actionstagetype', `${costHTML(def.cost || '')}<span>${esc([...(def.super || []), ...(def.types || [])].join(' '))}${(def.subtypes || []).length ? ' - ' + esc(def.subtypes.join(' ')) : ''}</span>`));
       info.appendChild(el('div', 'actionstagetarget', `🎯 ${esc(targetText)}`));
       info.appendChild(el('div', 'actionstageoracle', esc(def.oracle || top.name || '').replace(/\n/g, '<br>')));
       info.appendChild(el('div', 'actionstagestack', `STACK ${g.stack.length} · ova akcija se razrješava ${g.stack.length === 1 ? 'sljedeća' : 'prije ' + (g.stack.length - 1) + ' starijih akcija'}`));
@@ -493,7 +493,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // THREAT
       if (this.showThreat) {
       const tp = el('div', 'threatpanel');
-      tp.appendChild(el('div', 'sidetitle', '🎯 Threat — ko je najopasniji?'));
+      tp.appendChild(el('div', 'sidetitle', '🎯 Threat: ko je najopasniji?'));
       const table = MTG.threatTable ? MTG.threatTable(g) : [];
       const max = Math.max(1, ...table.map(t => t.score));
       const min = Math.min(...table.map(t => t.score), max);
@@ -504,7 +504,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const grudgeMe = this.me && t.p.isAI && ((t.p.grudges || {})[this.me.idx] || 0) >= 2;
         row.innerHTML = `
           <span class="trank">${['🥇', '🥈', '🥉', '4.'][i] || (i + 1) + '.'}</span>
-          <span class="tname">${esc(t.p.name)}${styleMeta ? ` <span class="persona" title="${esc(styleMeta.label)}">${styleMeta.icon}</span>` : ''}${grudgeMe ? ' <span class="persona" title="Pamti tvoje napade — ima zub na tebe!">💢</span>' : ''}</span>
+          <span class="tname">${esc(t.p.name)}${styleMeta ? ` <span class="persona" title="${esc(styleMeta.label)}">${styleMeta.icon}</span>` : ''}${grudgeMe ? ' <span class="persona" title="Pamti tvoje napade i ima zub na tebe!">💢</span>' : ''}</span>
           <span class="tbarwrap"><span class="tbar" style="width:${pct}%"></span></span>
           <span class="tscore">${t.score}</span>`;
         row.onclick = () => { this.playerSheet = t.p; this.render(); };
@@ -622,7 +622,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const map = { untap: 'Untap', upkeep: 'Upkeep', draw: 'Draw', main1: 'Main 1', combat: 'Combat', main2: 'Main 2', end: 'End', cleanup: 'Cleanup' };
       let s = map[g.phase] || g.phase;
       if (g.phase === 'combat' && g.step) {
-        const smap = { begin: '', attackers: '— napadači', blockers: '— blokeri', firstStrike: '— first strike', damage: '— šteta', endCombat: '' };
+        const smap = { begin: '', attackers: 'napadači', blockers: 'blokeri', firstStrike: 'first strike', damage: 'šteta', endCombat: '' };
         s += ' ' + (smap[g.step] || '');
       }
       return s;
@@ -662,8 +662,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // ručni HOLD — "stani na sljedećem prioritetu"
       const holdB = el('button', 'tbtn' + (this.holdNext ? ' armed' : ''), '🖐️');
       holdB.title = this.holdNext
-        ? 'HOLD armiran — igra staje na sljedećem prioritetu. Klikni da otkažeš.'
-        : 'HOLD — stani na sljedećem prioritetu (kad hoćeš da ubaciš instant).';
+        ? 'HOLD armiran. Igra staje na sljedećem prioritetu. Klikni da otkažeš.'
+        : 'HOLD: stani na sljedećem prioritetu (kad hoćeš da ubaciš instant).';
       holdB.onclick = () => {
         if (this.react) { this.takeReactWindow(); return; }
         this.holdNext = !this.holdNext;
@@ -681,7 +681,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         localStorage.setItem('mtgManaMode', this.manaMode);
         if (this.me) this.me.manualMana = this.manaMode === 'manual';
         this.toast(this.manaMode === 'manual'
-          ? '🖐 Manual mana uključena — biraš izvore za svaki spell.'
+          ? '🖐 Manual mana uključena. Biraš izvore za svaki spell.'
           : '✨ Automatska mana uključena.');
         this.render();
       };
@@ -689,7 +689,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const modes = MTG.PRIO_MODES;
       const curMode = modes.find(m => m.key === (this.prioMode || 'end')) || modes[0];
       const setB = el('button', 'tbtn stopbtn', `${curMode.icon} ${curMode.short}`);
-      setB.title = `Stopovi: ${curMode.label} — ${curMode.desc}`;
+      setB.title = `Stopovi: ${curMode.label}. ${curMode.desc}`;
       setB.onclick = () => { this.showStops = true; this.render(); };
       // desktop panel toggle-i: gase threat/tok igre da tabla dobije punu širinu
       const thB = el('button', 'tbtn deskonly' + (this.showThreat ? ' on' : ''), '🎯');
@@ -749,7 +749,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const head = el('div', 'opphead' + (isCandidate ? ' targetable' : ''));
         const cmdList = (p.commanders && p.commanders.length) ? p.commanders : p.command;
         const cmdState = cmdList.map(c => c.zone === 'battlefield' ? 'na tabli' : c.zone === 'command' ? 'u CZ' : '🪦')
-          .join(' / ') || '—';
+          .join(' / ') || '-';
         const cmdTitle = cmdList.map(c => `${c.name} (${c.zone})`).join(' · ');
         const styleMeta = p.isAI && p.aiStyle && MTG.AI_STYLES && MTG.AI_STYLES[p.aiStyle];
         head.innerHTML = `
@@ -942,7 +942,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const item = el('div', 'attachedcard' + (opts.sm ? ' sm' : '') +
         (card.tapped ? ' tapped' : '') + (equipment ? ' equipment' : ' aura'));
       item.dataset.cname = card.name;
-      item.title = `${card.name} — ${equipment ? 'opremljeno' : 'prikačeno'} na ${host.name}`;
+      item.title = `${card.name}: ${equipment ? 'opremljeno' : 'prikačeno'} na ${host.name}`;
       item.innerHTML = `<img loading="lazy" src="${imgURL(card.name)}" onerror="MTG.imgFail(this)">
         <span><small>${equipment ? 'OPREMA' : 'AURA'}</small><b>${esc(card.name.split(' // ')[0])}</b></span>`;
       if (this.actable && this.actable.has(card.iid)) item.classList.add('actable');
@@ -1062,9 +1062,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const bearer = this.game.bf().find(c => c.ctrl === me && c.meta.ringBearer);
       const abil = [
         'Ring-bearer je legendaran i ne mogu ga blokirati stvorenja veće snage.',
-        'Kad Ring-bearer napadne — vuci kartu, pa odbaci kartu.',
-        'Kad Ring-bearera blokira stvorenje — vlasnik ga žrtvuje na kraju borbe.',
-        'Kad Ring-bearer nanese borbenu štetu igraču — svaki protivnik gubi 3 života.',
+        'Kad Ring-bearer napadne, vuci kartu pa odbaci kartu.',
+        'Kad Ring-bearera blokira stvorenje, vlasnik ga žrtvuje na kraju borbe.',
+        'Kad Ring-bearer nanese borbenu štetu igraču, svaki protivnik gubi 3 života.',
       ];
       const d = el('div', 'czcard ringcard');
       d.innerHTML = `
@@ -1077,9 +1077,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       d.onclick = () => {
         this.sheet = {
           custom: {
-            title: `💍 The Ring — nivo ${em.level}/4`,
+            title: `💍 The Ring: nivo ${em.level}/4`,
             body: abil.map((t, i) => `<div class="ringab${i < em.level ? ' on' : ''}">${i < em.level ? '✓' : '○'} ${t}</div>`).join('')
-              + `<div class="ringab on" style="margin-top:8px">Ring-bearer: <b>${bearer ? esc(bearer.name) : '—'}</b></div>`,
+              + `<div class="ringab on" style="margin-top:8px">Ring-bearer: <b>${bearer ? esc(bearer.name) : '-'}</b></div>`,
           },
         };
         this.render();
@@ -1226,19 +1226,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const preTurn = !top && MTG.isLastEndStepBeforeMyTurn(g, this.me);
           if (preTurn) {
             bar.appendChild(el('div', 'ptext',
-              `🌙 Kraj poteza — <b>${esc(g.turnPlayer ? g.turnPlayer.name : '')}</b>. Zadnja prilika prije tvog poteza.`));
+              `🌙 Kraj poteza: <b>${esc(g.turnPlayer ? g.turnPlayer.name : '')}</b>. Zadnja prilika prije tvog poteza.`));
           } else if (!top && g.phase === 'combat' && canAct) {
             const stepLabel = g.step === 'attackers' ? 'napadači su proglašeni' :
               g.step === 'blockers' ? 'blokeri su proglašeni' :
                 g.step === 'firstStrike' ? 'first-strike šteta je završena' : 'combat je u toku';
             bar.appendChild(el('div', 'ptext',
-              `⚡ <b>Combat reakcija</b> — ${stepLabel}. Imaš ${(rq.casts || []).length + (rq.acts || []).length} legalnih opcija.`));
+              `⚡ <b>Combat reakcija</b>: ${stepLabel}. Imaš ${(rq.casts || []).length + (rq.acts || []).length} legalnih opcija.`));
           } else {
             const who = top && top.ctrl ? top.ctrl.name : 'protivnik';
             const what = top ? (top.name || (top.card && top.card.name) || 'nešto') : 'akcija';
             bar.appendChild(el('div', 'ptext', canAct
-              ? `⚡ <b>${esc(who)}</b>: ${esc(what)} — želiš da odgovoriš?`
-              : `⚡ <b>${esc(who)}</b>: ${esc(what)} — nemaš odgovor.`));
+              ? `⚡ <b>${esc(who)}</b>: ${esc(what)}. Želiš da odgovoriš?`
+              : `⚡ <b>${esc(who)}</b>: ${esc(what)}. Nemaš odgovor.`));
           }
           const row = el('div', 'btnrow');
           if (canAct) {
@@ -1255,7 +1255,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           bar.appendChild(row);
           return bar;
         }
-        const hint = this.holdNext ? '🖐️ HOLD armiran — stajem na sljedećem prioritetu.' : '⏳ Protivnici igraju…';
+        const hint = this.holdNext ? '🖐️ HOLD armiran. Stajem na sljedećem prioritetu.' : '⏳ Protivnici igraju…';
         bar.appendChild(el('div', 'ptext dim', g.gameOver ? 'Partija je gotova.' : hint));
         return bar;
       }
@@ -1266,7 +1266,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return b;
       };
       if (this.manualPick) {
-        bar.appendChild(el('div', 'ptext', `🎯 <b>${esc(this.manualPick.label)}</b> — tap na metu`));
+        bar.appendChild(el('div', 'ptext', `🎯 <b>${esc(this.manualPick.label)}</b>: tap na metu`));
         bar.appendChild(btn('Otkaži', () => { this.manualPick = null; this.render(); }, 'danger'));
         return bar;
       }
@@ -1278,7 +1278,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const ZONE = { graveyard: '🪦', exile: '🌀', battlefield: '🎴' };
         for (const e of list.slice(0, 4)) {
           const zi = ZONE[e.card.zone] || '•';
-          const owner = e.card.owner !== this.me ? ` — od ${e.card.owner.name}` : '';
+          const owner = e.card.owner !== this.me ? `, od ${e.card.owner.name}` : '';
           const alt = e.alt && e.alt.label ? ` · ${e.alt.label}` : (e.alt && e.alt.free ? ' · besplatno' : '');
           const b = btn(`${zi} ${esc(e.card.name.split(' // ')[0])}${esc(alt)}${esc(owner)}`, () => {
             this.resolvePending({ kind: 'cast', card: e.card, alt: e.alt, from: e.from });
@@ -1294,12 +1294,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return btn('⚒️ Sudija', () => { this.showJudge = true; this.render(); });
       };
       if (q.type === 'threatAlert') {
-        bar.appendChild(el('div', 'ptext', '⏸️ Pauza — pogledaj šta ti bot šalje.'));
+        bar.appendChild(el('div', 'ptext', '⏸️ Pauza. Pogledaj šta ti bot šalje.'));
         return bar;
       }
       switch (q.type) {
         case 'manualResolve': {
-          bar.appendChild(el('div', 'ptext', `⚒️ <b>${esc(q.card.name)}</b> — izvrši efekat ručno pa potvrdi`));
+          bar.appendChild(el('div', 'ptext', `⚒️ <b>${esc(q.card.name)}</b>: izvrši efekat ručno pa potvrdi`));
           const row = el('div', 'btnrow');
           row.appendChild(btn('⚒️ Otvori sudija-panel', () => { this.showJudge = true; this.render(); }, 'primary'));
           row.appendChild(btn('Gotovo ✔', () => this.resolvePending(true)));
@@ -1307,7 +1307,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           break;
         }
         case 'main': {
-          let hint = g.phase === 'main1' ? '🎴 Glavna faza 1 — tap na kartu za akcije' : '🎴 Glavna faza 2';
+          let hint = g.phase === 'main1' ? '🎴 Glavna faza 1: tap na kartu za akcije' : '🎴 Glavna faza 2';
           if (this.actable && this.actable.size) hint += ` · <span class="hintact">⚙️ = sposobnost (${this.actable.size})</span>`;
           bar.appendChild(el('div', 'ptext', hint));
           const oz = offZoneRow();
@@ -1324,26 +1324,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const nOpt = (q.casts || []).length + (q.acts || []).length;
           let label;
           if (top) {
-            label = `⚡ Na stacku: <b>${esc(top.name)}</b> <span class="who">(${esc(top.ctrl.name)})</span> — odgovoriti?`;
+            label = `⚡ Na stacku: <b>${esc(top.name)}</b> <span class="who">(${esc(top.ctrl.name)})</span>. Odgovoriti?`;
           } else if (g.phase === 'combat' && g.step === 'attackers') {
             const atk = (g.combat && g.combat.attackers) || [];
             const dmg = atk.filter(a => a.attacking === this.me).reduce((s, a) => s + g.dmgAmount(a, 'normal'), 0);
-            label = `⚔️ <b>Napadači proglašeni</b> (${atk.length}) — na tebe ide ${dmg} štete. Trenutak za instant.`;
+            label = `⚔️ <b>Napadači proglašeni</b> (${atk.length}). Na tebe ide ${dmg} štete. Trenutak za instant.`;
           } else if (g.phase === 'combat' && g.step === 'blockers') {
-            label = '🛡️ <b>Blokeri proglašeni</b> — zadnja šansa za trik prije štete.';
+            label = '🛡️ <b>Blokeri proglašeni</b>. Zadnja šansa za trik prije štete.';
           } else if (g.phase === 'combat' && g.step === 'firstStrike') {
-            label = '⚔️ <b>First-strike šteta gotova</b> — možeš reagovati prije obične štete.';
+            label = '⚔️ <b>First-strike šteta gotova</b>. Možeš reagovati prije obične štete.';
           } else if (MTG.isLastEndStepBeforeMyTurn(g, this.me)) {
-            label = `🌙 <b>Kraj poteza</b> (${esc(g.turnPlayer.name)}) — zadnja prilika prije tvog poteza.`;
+            label = `🌙 <b>Kraj poteza</b> (${esc(g.turnPlayer.name)}). Zadnja prilika prije tvog poteza.`;
           } else if (g.phase === 'end') {
-            label = `🌙 <b>Kraj poteza</b> (${esc(g.turnPlayer.name)}) — najbolji trenutak za instant.`;
+            label = `🌙 <b>Kraj poteza</b> (${esc(g.turnPlayer.name)}). Najbolji trenutak za instant.`;
           } else {
-            label = '⚡ Prioritet — možeš odgovoriti.';
+            label = '⚡ Prioritet: možeš odgovoriti.';
           }
           const ozc = MTG.offZoneCasts ? MTG.offZoneCasts(q.casts) : [];
           const inHandN = (q.casts || []).length - ozc.length;
           const hint = nOpt
-            ? ` <span class="hintact">${nOpt} opcija${inHandN ? ' — tap na kartu u ruci' : ''}</span>`
+            ? ` <span class="hintact">${nOpt} opcija${inHandN ? ': tap na kartu u ruci' : ''}</span>`
             : '';
           bar.appendChild(el('div', 'ptext', label + hint));
           const oz2 = offZoneRow();
@@ -1361,7 +1361,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         case 'attackers': {
           const n = pd.sel.length;
-          bar.appendChild(el('div', 'ptext', `⚔️ Napad: izaberi napadače (${n}) — tap na stvorenje pa izaberi branitelja u popupu`));
+          bar.appendChild(el('div', 'ptext', `⚔️ Napad: izaberi napadače (${n}). Tap na stvorenje pa izaberi branitelja u popupu`));
           bar.appendChild(btn(n ? `Napadni! (${n})` : 'Bez napada ▶', () => this.resolvePending(pd.sel.map(s => ({ card: s.card, target: s.target }))), 'primary'));
           break;
         }
@@ -1410,8 +1410,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       body.innerHTML = `
         <img class="threatart" src="${imgURL(q.card.name, true)}" onerror="MTG.imgFail(this)">
         <div class="threatinfo">
-          <div class="threatname">${esc(q.card.name)}${q.abilityLabel ? ` <span class="threatab">— ${esc(q.abilityLabel)}</span>` : ''}</div>
-          <div class="threatcost">${costHTML(d.cost || '')} <span class="threattype">${esc([(d.super || []).join(' '), (d.types || []).join(' ')].filter(Boolean).join(' '))}${(d.subtypes || []).length ? ' — ' + esc(d.subtypes.join(' ')) : ''}</span></div>
+          <div class="threatname">${esc(q.card.name)}${q.abilityLabel ? ` <span class="threatab">: ${esc(q.abilityLabel)}</span>` : ''}</div>
+          <div class="threatcost">${costHTML(d.cost || '')} <span class="threattype">${esc([(d.super || []).join(' '), (d.types || []).join(' ')].filter(Boolean).join(' '))}${(d.subtypes || []).length ? ' - ' + esc(d.subtypes.join(' ')) : ''}</span></div>
           <div class="threattargets">🎯 Meta: <b>${(q.names || []).map(n => esc(n)).join(', ')}</b></div>
           <div class="threatoracle">${esc(d.oracle || '').replace(/\n/g, '<br>')}</div>
           ${k.hint ? `<div class="threathint">💡 ${esc(k.hint)}</div>` : ''}
@@ -1427,14 +1427,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       hold.onclick = () => {
         this.holdNext = true;
         this.threatTargets = null;
-        this.toast('🖐️ HOLD armiran — igra staje čim dobiješ prioritet.');
+        this.toast('🖐️ HOLD armiran. Igra staje čim dobiješ prioritet.');
         this.resolvePending(null);
       };
       row.appendChild(ok); row.appendChild(hold);
       m.appendChild(row);
       m.appendChild(el('div', 'threatfoot',
         canAnswer
-          ? 'Imaš karte koje možeš baciti kao odgovor — „Odgovoriću" zaustavlja igru na sljedećem prioritetu.'
+          ? 'Imaš karte koje možeš baciti kao odgovor. „Odgovoriću" zaustavlja igru na sljedećem prioritetu.'
           : 'Nemaš instant-speed odgovor u ruci, ali HOLD i dalje radi (sposobnosti, landovi…).'));
 
       // označi mete na tabli dok je modal otvoren
@@ -1601,7 +1601,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return ov;
       }
       if (q.type === 'chooseCards') {
-        m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Izaberi karte') + ` (${q.min}–${q.max})`));
+        m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Izaberi karte') + ` (${q.min}-${q.max})`));
         m.appendChild(this.cardGrid(g, q.from, { min: q.min, max: q.max }));
         const row = el('div', 'btnrow');
         if (pd.sel.length >= q.min) row.appendChild(btn(`Potvrdi ✓ (${pd.sel.length})`, () => this.resolvePending(pd.sel.slice()), 'primary'));
@@ -1634,7 +1634,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (q.type === 'chooseX') {
         pd.xVal = pd.xVal === undefined ? Math.min(q.max, Math.max(q.min, q.max)) : pd.xVal;
-        m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Izaberi X') + ` (${q.min}–${q.max})`));
+        m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Izaberi X') + ` (${q.min}-${q.max})`));
         const xrow = el('div', 'xrow');
         const minus = btn('−', () => { pd.xVal = Math.max(q.min, pd.xVal - 1); this.render(); });
         const plus = btn('+', () => { pd.xVal = Math.min(q.max, pd.xVal + 1); this.render(); });
@@ -1647,7 +1647,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (q.type === 'scry') {
         pd.scryState = pd.scryState || q.cards.map(() => 'top');
-        m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Scry') + ' — tap mijenja vrh/dno'));
+        m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Scry') + ': tap mijenja vrh/dno'));
         const grid = el('div', 'cardgrid');
         q.cards.forEach((c, i) => {
           const cc = this.bigCardEl(c);
@@ -1726,7 +1726,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.showJudge = false;
       this.manualPick = { label, cb, players: opts.players };
       this.render();
-      this.toast('🎯 ' + label + ' — tap na metu');
+      this.toast('🎯 ' + label + ': tap na metu');
     }
 
     renderAttackTargetPopup(g) {
@@ -1834,7 +1834,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       img.onerror = () => img.classList.add('noimg');
       m.appendChild(img);
       const info = el('div', 'sheetinfo');
-      const typeLine = [(shownDef.super || []).join(' '), shownDef.types.join(' '), shownDef.subtypes.length ? '— ' + shownDef.subtypes.join(' ') : ''].join(' ');
+      const typeLine = [(shownDef.super || []).join(' '), shownDef.types.join(' '), shownDef.subtypes.length ? '- ' + shownDef.subtypes.join(' ') : ''].join(' ');
       info.innerHTML = `${card.faceDown ? `<div class="facedownsheet">🃏 FACE-DOWN 2/2${mayLookFaceDown ? ' · samo ti vidiš identitet' : ''}</div>` : ''}` +
         `<div class="sname">${esc(shownName)} ${costHTML(shownDef.cost || '')}</div>
         <div class="stype">${esc(typeLine)}</div>
@@ -1880,14 +1880,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (card.zone === 'battlefield' && card.ctrl === this.me && card.def.abilities) {
           for (const ab of card.def.abilities) {
             if (usedAbilities.has(ab) || !ab.label) continue;
-            const b = el('button', 'pbtn wide disabled', `⚙️ ${esc(ab.label)} — nedostupno sad`);
+            const b = el('button', 'pbtn wide disabled', `⚙️ ${esc(ab.label)}: nedostupno sad`);
             b.disabled = true;
             acts.appendChild(b);
           }
         }
         if (card.zone === 'command' && !(q.casts || []).some(e => e.card === card)) {
           const cost = g.spellCost(card.owner, card, {});
-          const b = el('button', 'pbtn wide disabled', `Baci ${U.costStr(cost)} — nema dovoljno mane / nije tvoja main faza`);
+          const b = el('button', 'pbtn wide disabled', `Baci ${U.costStr(cost)}: nema dovoljno mane / nije tvoja main faza`);
           b.disabled = true;
           acts.appendChild(b);
         }
@@ -1913,8 +1913,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return `<div class="cdrow" title="${esc(r.detail || '')}"><span>${esc(r.label)}</span>
           <span class="cdbar"><span class="cdfill${r.n >= 15 ? ' hot' : ''}" style="width:${pct}%"></span></span>
           <b>${r.n}/21</b></div>`;
-      }).join('') : '<div class="cdnone">— još ništa —</div>';
-      m.appendChild(el('div', 'mtitle', `${meta.icon || ''} ${esc(p.name)} — ${esc(p.deckName)} · ${p.life}❤${p.lost ? ' · ☠️ ELIMINISAN' : ''}`));
+      }).join('') : '<div class="cdnone">Još ništa.</div>';
+      m.appendChild(el('div', 'mtitle', `${meta.icon || ''} ${esc(p.name)}: ${esc(p.deckName)} · ${p.life}❤${p.lost ? ' · ☠️ ELIMINISAN' : ''}`));
       const own = (p.commanders && p.commanders.length) ? p.commanders : p.command;
       if (own.length) {
         const ZN = { battlefield: 'na tabli', command: 'u CZ', graveyard: 'groblje', exile: 'egzil', hand: 'ruka', library: 'biblioteka', stack: 'stack' };
@@ -1926,7 +1926,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         `<b>Commander šteta primljena (21 = smrt):</b>` +
         (summed
           ? `<div class="cdnote">🏠 Kućno pravilo: šteta partnera se ZBRAJA po vlasniku.</div>`
-          : `<div class="cdnote">Pravilo 903.10a: svaki komander ima svojih 21 — partneri se ne zbrajaju.</div>`) +
+          : `<div class="cdnote">Pravilo 903.10a: svaki komander ima svojih 21. Partneri se ne zbrajaju.</div>`) +
         cmdDmg));
       const zrow = el('div', 'btnrow');
       for (const z of ['graveyard', 'exile']) {
@@ -1956,7 +1956,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const m = el('div', 'sheet tall');
       ov.appendChild(m);
       const names = { graveyard: 'Groblje', exile: 'Egzil', command: 'Command zona' };
-      m.appendChild(el('div', 'mtitle', `${esc(player.name)} — ${names[zone] || zone} (${player[zone].length})`));
+      m.appendChild(el('div', 'mtitle', `${esc(player.name)}: ${names[zone] || zone} (${player[zone].length})`));
       const grid = el('div', 'cardgrid');
       const judgeReturn = this.zoneBrowse.judgeReturn;
       for (const c of player[zone]) {
@@ -1986,7 +1986,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ov.appendChild(head);
       if (g.aiDecisionLog && g.aiDecisionLog.length) {
         const aiBox = el('div', 'logbox');
-        aiBox.appendChild(el('div', 'logline effect', '<b>🧠 AI V2 — zadnje odluke</b>'));
+        aiBox.appendChild(el('div', 'logline effect', '<b>🧠 AI V2: zadnje odluke</b>'));
         for (const decision of g.aiDecisionLog.slice(-5).reverse()) {
           const alternatives = (decision.alternatives || []).slice(0, 2)
             .map(alt => `${esc(alt.action)} ${Number(alt.score).toFixed(1)}`).join(' · ');
@@ -2022,7 +2022,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         m.appendChild(el('div', 'soracle', esc(c.def.oracle || '').replace(/\n/g, '<br>')));
         m.appendChild(el('div', 'importnote', 'Izvrši ono što karta kaže dugmadima ispod, pa "Gotovo".'));
       } else {
-        m.appendChild(el('div', 'mtitle', '⚒️ Sudija-panel — ručne akcije'));
+        m.appendChild(el('div', 'mtitle', '⚒️ Sudija-panel: ručne akcije'));
       }
       const grid = el('div', 'judgegrid');
       const jb = (label, fn) => {
@@ -2127,14 +2127,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       m.appendChild(el('div', 'mtitle', '❓ Kako se igra'));
       m.appendChild(el('div', 'helptext', `
 <b>🎴 Igranje karata:</b> tap na kartu u ruci → otvara se prikaz sa dugmadima ("Baci", "Igraj land", "Cycling"…). Karte sa <span style="color:#5aa860">zelenim okvirom</span> se mogu igrati odmah. Dugme <b>✨/🖐 MANA</b> gore prebacuje automatsko i ručno biranje tačnih mana izvora za spellove.<br><br>
-<b>👑 Commander:</b> stoji u COMMAND ZONI (panel iznad ruke) dok ga ne baciš — tap na njega pa "Baci". Kad umre, vraća se u command zonu (uz tax +2 po ponovnom bacanju). Na tabli ima 👑 značku i zlatni okvir.<br><br>
-<b>⚙️ Sposobnosti i tokeni:</b> karta na tabli sa ⚙️ značkom ima sposobnost koju možeš aktivirati — tap na nju pa izaberi dugme (npr. "Napravi Food", "Vjeverica", equip, crew…). Tako se prave tokeni.<br><br>
+<b>👑 Commander:</b> stoji u COMMAND ZONI (panel iznad ruke) dok ga ne baciš. Tap na njega pa "Baci". Kad umre, vraća se u command zonu (uz tax +2 po ponovnom bacanju). Na tabli ima 👑 značku i zlatni okvir.<br><br>
+<b>⚙️ Sposobnosti i tokeni:</b> karta na tabli sa ⚙️ značkom ima sposobnost koju možeš aktivirati. Tap na nju pa izaberi dugme (npr. "Napravi Food", "Vjeverica", equip, crew…). Tako se prave tokeni.<br><br>
 <b>⚔️ Napad:</b> u combat fazi tap na svoje stvorenje, pa u velikom popupu izaberi kojeg igrača napada. Svaki proglašeni combat dobija pregled i čeka tvoj <b>Proceed</b>, čak i kad ne napadaju tebe. <b>🛡️ Blok:</b> prvo tap na napadača (u traci), pa na svog blokera.<br><br>
-<b>🎯 Mete:</b> kad spell traži metu, legalne mete <span style="color:#e8c05a">zlatno svijetle</span> — tap na kartu ili na protivnikov panel.<br><br>
+<b>🎯 Mete:</b> kad spell traži metu, legalne mete <span style="color:#e8c05a">zlatno svijetle</span>. Tap na kartu ili na protivnikov panel.<br><br>
 <b>Protivnici:</b> njihove table su stalno vidljive ispod imena. Tap na zaglavlje sklapa/otvara tablu, ℹ️ otvara detalje (groblje, commander šteta…).<br><br>
 <b>⚡ Instanti i prioritet:</b> svaka protivnička nonland karta izlazi na centralni action stage i čeka tvoj <b>Proceed</b>. Ako tokom combata imaš legalan buff, removal ili aktivaciju, automatski dobijaš reaction prozor. Dugme <b>STOP</b> gore bira dodatne priority prozore.<br>
 <b>🃏 Manifest/Cloak:</b> face-down permanent je stvarna skrivena 2/2 karta, ne token. Svoj identitet možeš pogledati; ako je creature card i imaš manu, 🃏 akcija je okreće licem gore bez stacka. Cloak dodatno ima ward {2}.<br>
-<b>🖐️ HOLD (tipka R):</b> kad god hoćeš da staneš — armiraj ga i igra će stati na sljedećem prioritetu. Radi u svim režimima.<br>
+<b>🖐️ HOLD (tipka R):</b> kad god hoćeš da staneš, armiraj ga i igra će stati na sljedećem prioritetu. Radi u svim režimima.<br>
 <b>🐢 Brzina:</b> dugme ▶️/🐢/⏩ gore mijenja tempo botova. Kad bot cilja tebe, napada te ili blokira tvoj napad, dobiješ crvenu traku preko ekrana da se vidi šta radi.<br>
 Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i karte sa flash idu bilo kad kad imaš prioritet.`));
       const close = el('button', 'pbtn primary wide', 'Jasno! ▶');
