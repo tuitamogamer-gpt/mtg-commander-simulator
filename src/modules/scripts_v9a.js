@@ -60,10 +60,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     return Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] || 'Hero';
   };
-  E9.tempCopyAttacking = async (g, src, base, n, defender, you) => {
+  E9.tempCopyAttacking = async (g, src, base, n, defender, you, copyOpts = {}) => {
     const made = [];
     for (let i = 0; i < n; i++) {
-      const m = await g.copyPermanentToken(base, you, { tapped: true, attacking: defender, haste: true });
+      const m = await g.copyPermanentToken(base, you,
+        Object.assign({ tapped: true, attacking: defender, haste: true }, copyOpts));
       made.push(...m);
     }
     return made;

@@ -237,7 +237,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function publicCard(card, viewer, forceKnown) {
     if (!card) return null;
-    const ownerKnows = card.owner === viewer;
+    // Vlasnik ne zna automatski identitet karte egzilirane licem nadolje.
+    // Manifest/cloak je izuzetak: kontrolor smije pogledati vlastitu skrivenu
+    // kartu, a `revealedTo` pokriva Klaw/Extract Power dozvole.
+    const ownerKnows = card.owner === viewer && (!card.faceDown || card.meta && card.meta.faceDownDef);
     const revealedTo = card.meta && card.meta.revealedTo;
     const known = !!forceKnown || ownerKnows || !card.faceDown || card.zone === 'graveyard' || card.zone === 'command' ||
       revealedTo === 'all' || Array.isArray(revealedTo) && revealedTo.includes(viewer.idx);
@@ -1047,15 +1050,43 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (action.kind === 'chooseCards' || action.kind === 'bottomCards') {
       breakdown.choice = action.picks.reduce((sum, card) => sum + choiceCardValue(game, player, card, q || {}), 0);
     } else if (action.kind === 'chooseOption') {
-      if (q && q.aiHint && q.aiHint.kind === 'vote') {
+      const hintKind = q && q.aiHint && q.aiHint.kind;
+      if (hintKind === 'vote') {
         breakdown.choice = tacticalVoteScore(game, player, action.option, q);
-      } else if (q && q.aiHint && q.aiHint.kind === 'chooseOpponent') {
+      } else if (hintKind === 'chooseOpponent') {
         breakdown.choice = opponentChoiceScore(game, player, action.option, q);
-      } else if (q && q.aiHint && q.aiHint.kind === 'abstractPile') {
+      } else if (hintKind === 'abstractPile') {
         breakdown.choice = Number(action.option && action.option.denyValue || 0);
-      } else if (q && q.aiHint && q.aiHint.kind === 'clashPlace') {
+      } else if (hintKind === 'clashPlace') {
         const value = q.aiHint.card ? cardDefinitionValue(q.aiHint.card.def) : 0;
         breakdown.choice = action.value === 'top' ? value : Math.max(0, 3.2 - value);
+      } else if (hintKind === 'creatureType') {
+        breakdown.choice = Number(action.option && action.option.keepValue || 0) * 1.4;
+      } else if (hintKind === 'typhoidMary') {
+        if (action.value === 't') breakdown.choice = 2.8 + (availableManaEstimate(game, player) < 5 ? 0.8 : 0);
+        if (action.value === 'd') breakdown.choice = 3.5 + Math.max(0, 5 - player.hand.length) * 0.85;
+        if (action.value === 'b') breakdown.choice = player.opponents(game).length * 1.7 + 2 + (player.life <= 12 ? 2.5 : 0);
+      } else if (hintKind === 'villainousChoice') {
+        if (action.value === 'sac') {
+          const candidates = q.aiHint.candidates || [];
+          const cheapest = Math.min(...candidates.map(card => permanentGameValue(game, card, player)), Infinity);
+          breakdown.choice = Number.isFinite(cheapest) ? -cheapest : -100;
+        } else {
+          breakdown.choice = -(Number(action.option.lifeCost || 2) * (player.life <= 10 ? 2.5 : 1)) -
+            Number(action.option.cardsForOpponent || 0) * 2.6;
+        }
+      } else if (hintKind === 'freeCast') {
+        const freeCard = q.aiHint.card;
+        if (action.value === 'yes' && freeCard) {
+          breakdown.choice = cardDefinitionValue(freeCard.def) + 2;
+          const sem = inferCardSemantics(freeCard.def);
+          if (sem.roles.includes('board-wipe')) {
+            const mine = boardValueFor(game, player);
+            const theirs = player.opponents(game).reduce((sum, opponent) => sum + boardValueFor(game, opponent), 0);
+            breakdown.choice += (theirs - mine) * 0.4;
+            if (mine > theirs) breakdown.safety -= 14;
+          }
+        } else if (action.value === 'no') breakdown.choice = 0;
       } else {
         const key = String(action.value).toLowerCase();
         if (/yes|da|keep|accept|use/.test(key)) breakdown.choice = q && q.aiHint && q.aiHint.kind === 'ward' ? 1.5 : 1;
@@ -1065,9 +1096,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (/lose|gubi|sacrifice|žrtvuj|discard|odbaci/.test(label)) breakdown.choice -= 1.5;
       }
     } else if (action.kind === 'chooseMulti') {
-      breakdown.choice = (action.options || []).reduce((sum, option) => sum + (/draw|token|destroy|exile|counter/i.test(option.label || '') ? 2 : 0.3), 0);
+      if (q && q.aiHint && q.aiHint.kind === 'blackMarketConnections') {
+        const selected = action.options || [];
+        const lifeCost = selected.reduce((sum, option) => sum + Number(option.lifeCost || 0), 0);
+        for (const option of selected) {
+          if (option.benefit === 'treasure') breakdown.resources += 2.8;
+          if (option.benefit === 'draw') breakdown.resources += 3.5 + Math.max(0, 5 - player.hand.length) * 0.65;
+          if (option.benefit === 'creature') breakdown.choice += 4.2;
+        }
+        breakdown.safety -= lifeCost * (player.life <= 10 ? 1.4 : 0.55);
+        if (lifeCost >= player.life) breakdown.safety -= 1000;
+      } else {
+        breakdown.choice = (action.options || []).reduce((sum, option) =>
+          sum + (/draw|token|destroy|exile|counter/i.test(option.label || '') ? 2 : 0.3), 0);
+      }
     } else if (action.kind === 'chooseX') {
-      breakdown.choice = action.value * 0.7;
+      if (q && q.aiHint && q.aiHint.kind === 'toxicDeluge') {
+        const x = Number(action.value) || 0;
+        for (const creature of game.bf().filter(card => card.is('Creature') && card.toughness <= x)) {
+          const value = permanentGameValue(game, creature, player);
+          breakdown.choice += creature.ctrl === player ? -value : value;
+        }
+        // Deluge je life-for-tempo alat: zdravi bot ne smije odbiti čistu
+        // razmjenu samo zato što tri života vrijede približno kao jedan 3/3.
+        // Na niskom životu ostaje strogo konzervativan.
+        breakdown.safety -= x * (player.life <= 8 ? 1.6 : player.life <= 15 ? 0.45 : 0.22);
+        if (x >= player.life) breakdown.safety -= 1000;
+      } else breakdown.choice = action.value * 0.7;
       const source = q && q.src;
       if (source && /lose.*life|pay.*life/i.test(source.def && source.def.oracle || '')) breakdown.safety -= action.value * 0.5;
     } else if (action.kind === 'mulligan') {

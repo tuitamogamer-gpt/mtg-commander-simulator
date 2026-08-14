@@ -91,7 +91,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (m.cost && m.cost.tap && c.tapped) continue;
         if (m.cost && m.cost.tap && c.is('Creature') && c.sick && !c.kw('haste') && !m.creatureOK) continue;
         if (m.oncePerTurn && c.meta['_mana_' + (m.key || 0)] === this.turnNo) continue;
-        if (m.cost && m.cost.sacType && !this.bf().some(x => x.ctrl === p && x !== c && x.hasSub(m.cost.sacType))) continue;
+        if (m.cost && m.cost.sacSelf && !this.canSacrifice(c)) continue;
+        if (m.cost && m.cost.sacType && !this.bf().some(x => x.ctrl === p && x !== c &&
+          x.hasSub(m.cost.sacType) && this.canSacrifice(x))) continue;
         if (m.cost && m.cost.rmCounter) {
           const kind = m.cost.rmCounter.kind || m.cost.rmCounter;
           if ((c.counters[kind] || 0) < (m.cost.rmCounter.n || 1)) continue;
@@ -574,8 +576,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // additional cost feasibility (sac/discard)
       const ac = card.def.addlCost;
       if (ac && !alt) {
-        if (ac.sacCreature && !this.creatures(p).length) return;
-        if (ac.sacArtifactOrCreature && !this.bf().some(c => c.ctrl === p && (c.is('Artifact') || c.is('Creature')))) return;
+        if (ac.sacCreature && !this.creatures(p).some(c => this.canSacrifice(c))) return;
+        if (ac.sacArtifactOrCreature && !this.bf().some(c => c.ctrl === p &&
+          (c.is('Artifact') || c.is('Creature')) && this.canSacrifice(c))) return;
         if (ac.discard && p.hand.filter(c => c !== card).length < ac.discard) return;
       }
       // targets must exist — osim za X-spellove, gdje X (a time i legalne mete)
@@ -757,6 +760,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // opts: {alt, from, xVal, aiChosen...}
     const alt = opts.alt || null;
     const castOpts = alt ? Object.assign({}, alt) : {};
+    // Interni card-scriptovi istorijski koriste i kraći top-level oblik
+    // (`{free:true, exileAfter:true}`), dok UI legalne liste nose isto pod
+    // `alt`. Normalizuj oba oblika u jednu autoritativnu cast putanju.
+    for (const key of ['free', 'exileAfter', 'asThoughAnyColor', 'speed', 'flash', 'miracle']) {
+      if (opts[key] !== undefined && castOpts[key] === undefined) castOpts[key] = opts[key];
+    }
     const d = card.def;
     const cost = this.spellCost(p, card, castOpts);
 
@@ -888,11 +897,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // additional costs
     const ac = castOpts.adventure ? null : d.addlCost;
-    const paidAddl = { sacd: [], discarded: [] };
+    const paidAddl = { sacd: [], discarded: [], life: 0 };
     if (ac && !castOpts.free) {
       if (ac.sacCreature || ac.sacArtifactOrCreature || ac.sacAnyCreatures) {
         const pool = this.bf().filter(c => c.ctrl === p &&
-          (ac.sacCreature ? c.is('Creature') : ac.sacArtifactOrCreature ? (c.is('Artifact') || c.is('Creature')) : c.is('Creature')));
+          (ac.sacCreature ? c.is('Creature') : ac.sacArtifactOrCreature ? (c.is('Artifact') || c.is('Creature')) : c.is('Creature')) &&
+          this.canSacrifice(c));
         const min = ac.sacAnyCreatures ? 0 : 1;
         const max = ac.sacAnyCreatures ? pool.length : 1;
         const picked = await p.controller.decide(this, {
@@ -910,6 +920,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         if (picked.length < ac.discard) return false;
         paidAddl.discarded = picked;
+      }
+      if (ac.lifeX) {
+        const thresholds = [...new Set(this.bf().filter(c => c.is('Creature'))
+          .map(c => Math.max(0, c.toughness)).filter(n => n <= p.life))].sort((a, b) => a - b);
+        const chosen = await p.controller.decide(this, {
+          type: 'chooseX', min: 0, max: p.life, thresholds, src: card,
+          prompt: `${card.name}: plati X života`, aiHint: { kind: ac.aiKind || 'lifeX', card },
+        });
+        paidAddl.life = Math.max(0, Math.min(Number(chosen) || 0, p.life));
       }
     }
     if (castOpts.jumpstart) {
@@ -995,12 +1014,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     so.discardedCards = paidAddl.discarded.slice();
     for (const c of paidAddl.sacd) await this.sacrifice(p, c);
     for (const c of paidAddl.discarded) await this.discard(p, [c]);
+    if (paidAddl.life) await this.loseLife(p, paidAddl.life, card.name);
+    so.additionalLifePaid = paidAddl.life;
     for (const c of delveExiled) await this.move(c, 'exile');
     for (const c of escapeExiled) await this.move(c, 'exile');
 
     // move card to stack
     this.remove(card);
     const fromZone = card.zone;
+    card.faceDown = false;
+    if (card.meta) delete card.meta.revealedTo;
     card.zone = 'stack';
     card.castMeta = {
       x: xVal, alt: castOpts, from: so.from, kicked, offspring,
@@ -1492,9 +1515,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               null, { excludeCards: cost.tap ? [c] : [], artifactAbilityAlreadyUsed: c.is('Artifact') }));
           if (!possible) return;
         }
-        if (cost.sacSelf && c.zone !== 'battlefield') return;
-        if (cost.sacCreature && !this.creatures(p).filter(x => !cost.sacOther || x !== c).length) return;
-        if (cost.sac && !this.bf().some(x => x.ctrl === p && cost.sac(this, x, c))) return;
+        if (cost.sacSelf && !this.canSacrifice(c)) return;
+        if (cost.sacCreature && !this.creatures(p).filter(x => (!cost.sacOther || x !== c) && this.canSacrifice(x)).length) return;
+        if (cost.sac && !this.bf().some(x => x.ctrl === p && cost.sac(this, x, c) && this.canSacrifice(x))) return;
         if (cost.life && p.life <= cost.life) return;
         if (cost.discard && p.hand.length < cost.discard) return;
         if (cost.exileFromGY && p.graveyard.length < cost.exileFromGY) return;
@@ -1858,9 +1881,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!ok) { if (cost.tap) c.tapped = false; return false; }
     }
     if (cost.life) await this.loseLife(p, cost.life, 'cost');
-    if (cost.sacSelf) { ctx.sacdSelf = this.snapshot(c); await this.sacrifice(p, c); }
+    if (cost.sacSelf) {
+      if (!this.canSacrifice(c)) return false;
+      ctx.sacdSelf = this.snapshot(c);
+      await this.sacrifice(p, c);
+    }
     if (cost.sacCreature || cost.sac) {
-      const pool = this.bf().filter(x => x.ctrl === p && (cost.sacCreature ? x.is('Creature') : cost.sac(this, x, c)) && (!cost.sacOther || x !== c));
+      const pool = this.bf().filter(x => x.ctrl === p &&
+        (cost.sacCreature ? x.is('Creature') : cost.sac(this, x, c)) &&
+        (!cost.sacOther || x !== c) && this.canSacrifice(x));
       const nsac = cost.sacN === 'X' ? null : (cost.sacN || 1);
       let picked;
       if (nsac === null) {
@@ -2147,11 +2176,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (p.landsPlayed >= p.maxLands) return false;
     if (this.turnPlayer !== p || this.stack.length || (this.phase !== 'main1' && this.phase !== 'main2')) return false;
     p.landsPlayed++;
+    const fromZone = card.zone;
     this.remove(card);
     card.zone = 'nowhere';
     this.lg(`${p.name} igra land: ${card.name}.`, 'land');
     await this.pace(p.isAI ? 700 : 0);
     await this.move(card, 'battlefield', { ctrl: p });
+    await this.emit('landPlayed', { player: p, card, from: fromZone });
     await this.flushTriggers();
     return true;
   };
@@ -2782,6 +2813,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // još na stolu), pa se tek onda nanese ODJEDNOM. Bez toga bloker koji pogine
     // od napadača nikad ne uzvrati — blokiranje nikad ne bi bilo trade.
     const plan = [];   // {src, target, n, toPlayer}
+    const playerHits = new Map();
     const dealt = [];  // ko je stvarno rasporedio štetu u ovom koraku (CR 510.5)
     for (const a of cmb.attackers.slice()) {
       if (a.zone !== 'battlefield' || a.attacking === null) continue;
@@ -2825,10 +2857,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const d of plan) {
       if (d.toPlayer) {
         const dealtN = await this.damagePlayer(d.src, d.target, d.n, { combat: true, deferSBA: true });
-        if (dealtN > 0) await this.emit('combatDamageToPlayer', { card: d.src, player: d.target, n: dealtN });
+        if (dealtN > 0) {
+          await this.emit('combatDamageToPlayer', { card: d.src, player: d.target, n: dealtN, step: stepKind });
+          const hits = playerHits.get(d.target) || [];
+          hits.push({ card: d.src, n: dealtN });
+          playerHits.set(d.target, hits);
+        }
       } else {
         await this.damageCreature(d.src, d.target, d.n, { combat: true, deferSBA: true });
       }
+    }
+    for (const [player, hits] of playerHits) {
+      await this.emit('combatDamageGroupToPlayer', {
+        player, hits, cards: hits.map(hit => hit.card), step: stepKind,
+      });
     }
     // CR 510.5: ko je rasporedio štetu u first strike koraku ne radi to opet u normalnom
     if (stepKind === 'first') for (const c of dealt) c.meta._dealtFirstStrike = true;

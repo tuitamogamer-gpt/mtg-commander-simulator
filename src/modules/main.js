@@ -285,11 +285,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function startGame(state) {
-    const allDecks = Object.keys(MTG.DECKS).filter(d => d !== state.deck && !MTG.DECKS[d].custom);
+    const forcedAIDecks = [...new Set(state.aiDecks || [])]
+      .filter(deckName => deckName !== state.deck && MTG.DECKS[deckName] && !MTG.DECKS[deckName].custom);
+    const allDecks = Object.keys(MTG.DECKS)
+      .filter(d => d !== state.deck && !forcedAIDecks.includes(d) && !MTG.DECKS[d].custom);
     const seed = state.seed ? parseInt(state.seed, 10) : Math.floor(Math.random() * 1e9);
     const rnd = MTG.mulberry32(seed);
     MTG.shuffle(allDecks, rnd);
-    const aiDecks = allDecks.slice(0, state.ai);
+    const aiDecks = forcedAIDecks.concat(allDecks).slice(0, state.ai);
 
     const ui = new MTG.UI();
     $('#setup').style.display = 'none';
@@ -410,6 +413,78 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ui.render();
       return;
     }
+    if (smokeScenario === 'doomCombat') {
+      void (async () => {
+        const doom = new MTG.CardInst(MTG.DEFS['Doctor Doom, King of Latveria'], ui.me);
+        doom.ctrl = ui.me; doom.zone = 'battlefield'; doom.sick = false;
+        const prowler = new MTG.CardInst(MTG.DEFS['Prowler, Clawed Thief'], ui.me);
+        prowler.ctrl = ui.me; prowler.zone = 'battlefield'; prowler.sick = false;
+        g.battlefield.push(doom, prowler);
+        g.turnPlayer = ui.me; g.turnNo = 4; g.phase = 'combat'; g.step = 'begin';
+        g.combat = { attackers: [], defenders: new Map() };
+        g.recalc();
+        await g.emit('beginCombat', { player: ui.me });
+        await g.flushTriggers();
+        await g.priorityRound(ui.me);
+        ui.render();
+      })();
+      return;
+    }
+    if (smokeScenario === 'doomDeluge') {
+      const doom = new MTG.CardInst(MTG.DEFS['Doctor Doom, King of Latveria'], ui.me);
+      doom.ctrl = ui.me; doom.zone = 'battlefield'; doom.sick = false;
+      doom.counters['+1/+1'] = 2;
+      const opponent = g.players.find(player => player !== ui.me);
+      const threat = new MTG.CardInst(MTG.DEFS['Red Ghost, Intangible Genius'], opponent);
+      threat.ctrl = opponent; threat.zone = 'battlefield'; threat.sick = false;
+      const deluge = new MTG.CardInst(MTG.DEFS['Toxic Deluge'], ui.me);
+      deluge.zone = 'hand'; ui.me.hand.push(deluge);
+      g.battlefield.push(doom, threat);
+      ui.me.pool.B = 1; ui.me.pool.C = 2;
+      g.turnPlayer = ui.me; g.turnNo = 4; g.phase = 'main1'; g.step = 'main';
+      g.recalc();
+      void g.castSpell(ui.me, deluge, { from: 'hand' });
+      ui.render();
+      return;
+    }
+    if (smokeScenario === 'doomHiddenExile') {
+      void (async () => {
+        const klaw = new MTG.CardInst(MTG.DEFS['Klaw, Master of Sound'], ui.me);
+        klaw.ctrl = ui.me; klaw.zone = 'battlefield'; klaw.sick = false;
+        const victim = g.players.find(player => player !== ui.me);
+        const secret = new MTG.CardInst(MTG.DEFS['Sol Ring'], victim);
+        secret.zone = 'library'; victim.library.push(secret);
+        g.battlefield.push(klaw);
+        g.turnPlayer = ui.me; g.turnNo = 4; g.phase = 'main1'; g.step = 'main';
+        g.recalc();
+        await klaw.def.triggers[0].run({ g, src: klaw, you: ui.me, data: { player: victim } });
+        ui.zoneBrowse = { player: victim, zone: 'exile' };
+        ui.render();
+      })();
+      return;
+    }
+    if (smokeScenario === 'doomAI') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Doom Prevails');
+        const opponent = ui.me;
+        if (!bot) throw new Error('doomAI scenario zahtijeva smokeAIDeck=Doom Prevails');
+        const doom = new MTG.CardInst(MTG.DEFS['Doctor Doom, King of Latveria'], bot);
+        doom.ctrl = bot; doom.zone = 'battlefield'; doom.sick = false; doom.counters['+1/+1'] = 2;
+        const threat = new MTG.CardInst(MTG.DEFS['Red Ghost, Intangible Genius'], opponent);
+        threat.ctrl = opponent; threat.zone = 'battlefield'; threat.sick = false;
+        const deluge = new MTG.CardInst(MTG.DEFS['Toxic Deluge'], bot);
+        deluge.zone = 'hand'; bot.hand.push(deluge);
+        g.battlefield.push(doom, threat);
+        bot.life = 12; bot.pool.B = 1; bot.pool.C = 2;
+        g.turnPlayer = bot; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        await g.castSpell(bot, deluge, { from: 'hand' });
+        ui.showLog = true;
+        ui.toast(`Doom AI je razriješio Toxic Deluge; život: ${bot.life}.`);
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     g.start().catch(err => {
       console.error(err);
       ui.toast('Greška u igri: ' + err.message);
@@ -511,10 +586,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const smoke = new URLSearchParams(window.location.search);
     const smokeDeck = smoke.get('smokeDeck');
     if (smokeDeck && MTG.DECKS[smokeDeck]) {
+      const smokeAIDeck = smoke.get('smokeAIDeck');
       startGame({
         deck: smokeDeck,
         commanders: [MTG.DECKS[smokeDeck].commander],
         ai: 3,
+        aiDecks: smokeAIDeck && MTG.DECKS[smokeAIDeck] ? [smokeAIDeck] : [],
         aiStyles: ['balanced', 'balanced', 'balanced'],
         aiRandomCommanders: false,
         sumPartnerDamage: false,

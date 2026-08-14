@@ -401,6 +401,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const wasBattlefield = fromZone === 'battlefield';
       const snap = this.snapshot(card);
 
+      // Unearth replacement: ako bi permanent napustio bojno polje iz bilo
+      // kojeg razloga, ide u egzil umjesto u drugu zonu.
+      if (wasBattlefield && card.meta && card.meta.unearth && toZone !== 'exile') {
+        toZone = 'exile';
+        opts = Object.assign({}, opts, { noCmdReplace: true });
+      }
+
       // commander zone replacement
       if (card.commander && (toZone === 'graveyard' || toZone === 'exile') && !opts.noCmdReplace) {
         const keep = await card.owner.controller.decide(this, {
@@ -731,7 +738,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const base = orig.isCopyOf ? orig.isCopyOf : orig.def;
       const def = Object.assign({}, base);
       if (opts.modPT) { def.power = String(opts.modPT[0]); def.toughness = String(opts.modPT[1]); }
-      const made = await this.makeTokens(def, ctrl, { n: opts.n || 1, copyOf: base, tapped: opts.tapped, attacking: opts.attacking, noReplace: opts.noReplace });
+      if (opts.nonlegendary) def.super = (def.super || []).filter(type => type !== 'Legendary');
+      if (opts.addSubtypes) def.subtypes = [...new Set([...(def.subtypes || []), ...opts.addSubtypes])];
+      if (opts.name) def.name = opts.name;
+      const made = await this.makeTokens(def, ctrl, {
+        n: opts.n || 1, copyOf: def, tapped: opts.tapped, attacking: opts.attacking,
+        noReplace: opts.noReplace, haste: opts.haste,
+      });
       return made;
     }
 
@@ -1050,8 +1063,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await this.emit('connive', { card, ctrl: p });
     }
 
+    canSacrifice(card) {
+      return !!card && card.zone === 'battlefield' && !(card.cur && card.cur.cantSacrifice);
+    }
+
     async sacrifice(p, card) {
-      if (card.zone !== 'battlefield') return false;
+      if (!this.canSacrifice(card)) {
+        if (card && card.zone === 'battlefield') this.lg(`${card.name} ne može biti žrtvovan.`);
+        return false;
+      }
       this.lg(`${p.name} žrtvuje ${card.name}.`, 'sac');
       await this.move(card, 'graveyard');
       await this.emit('sacrificed', { player: p, card });
@@ -1167,7 +1187,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           types: d.types.slice(), subtypes: d.subtypes.slice(), super: (d.super || []).slice(),
           kw: new Set(d.kws || []),
           power: 0, toughness: 0, basePower: 0, baseToughness: 0,
-          cantAttack: false, cantBlock: false, mustAttack: false,
+          cantAttack: false, cantBlock: false, cantSacrifice: false, mustAttack: false,
           assignByToughness: false, allCreatureTypes: !!d.changeling,
           extraAbilities: [], wardCost: d.ward || null, extraMana: [],
           hexproof: false, shroud: false, cantBeBlockedBy: null, unblockable: false,
@@ -1412,15 +1432,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         if (yes !== 'yes') return;
       }
-      // targets
-      if (tr.targets) {
-        const ok = await this.pickTargets(ctx, tr.targets, tr.src, ctrl);
+      // Mete mogu zavisiti od trigger podatka (npr. "za svakog protivnika"
+      // ili Batrocov X), pa ih računamo kada trigger ide na stack.
+      const targetSpecs = typeof tr.targets === 'function'
+        ? tr.targets(this, tr.src, tr.data || {})
+        : tr.targets;
+      if (targetSpecs && targetSpecs.length) {
+        const ok = await this.pickTargets(ctx, targetSpecs, tr.src, ctrl);
         if (!ok) return; // no legal targets → fizzle
       }
       // put on stack as trigger — allow responses
       const so = {
         kind: 'trigger', name: (tr.src ? tr.src.name + ': ' : '') + (tr.name || 'trigger'),
-        ctrl, ctx, run: tr.run, srcCard: tr.src, targetSpecs: tr.targets || null,
+        ctrl, ctx, run: tr.run, srcCard: tr.src, targetSpecs: targetSpecs || null,
       };
       this.stack.push(so);
       this.note('stack', {});

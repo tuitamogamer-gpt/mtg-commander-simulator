@@ -553,6 +553,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           return;
         }
+        if (this.pending && this.pending.q.type === 'chooseX' && (ev.key === 'ArrowLeft' || ev.key === 'ArrowRight')) {
+          const pd = this.pending, q = pd.q;
+          const current = pd.xVal === undefined ? q.min : pd.xVal;
+          pd.xVal = Math.max(q.min, Math.min(q.max, current + (ev.key === 'ArrowRight' ? 1 : -1)));
+          this.render(); ev.preventDefault(); return;
+        }
         if (ev.key === ' ' || ev.key === 'Enter') {
           const visibleProceed = document.querySelector('.actionstage .pbtn.primary, .reveal .pbtn.primary');
           if (visibleProceed && !visibleProceed.disabled) {
@@ -1087,10 +1093,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return d;
     }
 
+    canLookFaceDown(c) {
+      if (!c || !c.faceDown || !this.me) return !c || !c.faceDown;
+      const meta = c.meta || {};
+      return !!(c.ctrl === this.me && meta.faceDownDef) || meta.revealedTo === 'all' ||
+        Array.isArray(meta.revealedTo) && meta.revealedTo.includes(this.me.idx);
+    }
+
+    visibleFaceDownDef(c) {
+      if (!this.canLookFaceDown(c)) return null;
+      return c.meta && c.meta.faceDownDef || c.def;
+    }
+
     miniCard(g, c, opts = {}) {
       const threatened = this.threatTargets && this.threatTargets.has(c.iid);
-      const mayLookFaceDown = c.faceDown && c.ctrl === this.me && c.meta && c.meta.faceDownDef;
-      const faceName = mayLookFaceDown ? c.meta.faceDownDef.name : c.name;
+      const shownFaceDownDef = this.visibleFaceDownDef(c);
+      const mayLookFaceDown = !!shownFaceDownDef;
+      const faceName = mayLookFaceDown ? shownFaceDownDef.name : c.name;
       const d = el('div', 'mini' + (opts.sm ? ' sm' : '') + (c.tapped ? ' tapped' : '') + (c.sick && c.is('Creature') && !c.kw('haste') ? ' sick' : '') + (threatened ? ' threatened' : '') + (c.faceDown ? ' facedown' : ''));
       const colors = c.colors.length ? c.colors : ['C'];
       const grad = colors.length > 1
@@ -1633,7 +1652,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return ov;
       }
       if (q.type === 'chooseX') {
-        pd.xVal = pd.xVal === undefined ? Math.min(q.max, Math.max(q.min, q.max)) : pd.xVal;
+        pd.xVal = pd.xVal === undefined
+          ? Math.max(q.min, Math.min(q.max, Number.isFinite(q.suggested) ? q.suggested : q.min))
+          : pd.xVal;
         m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Izaberi X') + ` (${q.min}-${q.max})`));
         const xrow = el('div', 'xrow');
         const minus = btn('−', () => { pd.xVal = Math.max(q.min, pd.xVal - 1); this.render(); });
@@ -1690,10 +1711,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     bigCardEl(c) {
       const cc = el('div', 'bigcard');
-      const name = (c.name || (c.card && c.card.name) || '?');
+      const shown = c instanceof MTG.CardInst ? this.visibleFaceDownDef(c) : null;
+      const hidden = c instanceof MTG.CardInst && c.faceDown && !shown;
+      const name = hidden ? 'Face-down card' : (shown ? shown.name : (c.name || (c.card && c.card.name) || '?'));
+      const faceDownNote = c instanceof MTG.CardInst && c.faceDown && shown ? ' · FACE-DOWN (vidljivo tebi)' : '';
       cc.innerHTML = `
-        <img loading="lazy" src="${imgURL(name)}" onerror="MTG.imgFail(this,'noimg')">
-        <div class="bcname">${esc(name)}</div>`;
+        <img loading="lazy" src="${hidden ? MTG.BLANK_PX : imgURL(name)}" onerror="MTG.imgFail(this,'noimg')">
+        <div class="bcname">${esc(name + faceDownNote)}</div>`;
       return cc;
     }
 
@@ -1826,16 +1850,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const m = el('div', 'sheet');
       ov.appendChild(m);
-      const mayLookFaceDown = card.faceDown && card.ctrl === this.me && card.meta && card.meta.faceDownDef;
-      const shownDef = mayLookFaceDown ? card.meta.faceDownDef : card.def;
-      const shownName = mayLookFaceDown ? shownDef.name : card.name;
+      const visibleFaceDownDef = this.visibleFaceDownDef(card);
+      const mayLookFaceDown = !!visibleFaceDownDef;
+      const hiddenFaceDown = card.faceDown && !mayLookFaceDown;
+      const shownDef = hiddenFaceDown
+        ? { name: 'Face-down card', cost: null, super: [], types: ['Card'], subtypes: [], oracle: 'Identitet ove karte nije poznat.' }
+        : (mayLookFaceDown ? visibleFaceDownDef : card.def);
+      const shownName = shownDef.name;
       const img = el('img', 'sheetimg');
       img.src = card.faceDown && !mayLookFaceDown ? MTG.BLANK_PX : imgURL(shownName, true);
       img.onerror = () => img.classList.add('noimg');
       m.appendChild(img);
       const info = el('div', 'sheetinfo');
       const typeLine = [(shownDef.super || []).join(' '), shownDef.types.join(' '), shownDef.subtypes.length ? '- ' + shownDef.subtypes.join(' ') : ''].join(' ');
-      info.innerHTML = `${card.faceDown ? `<div class="facedownsheet">🃏 FACE-DOWN 2/2${mayLookFaceDown ? ' · samo ti vidiš identitet' : ''}</div>` : ''}` +
+      const faceDownLabel = card.zone === 'battlefield' ? 'FACE-DOWN 2/2' : 'FACE-DOWN EXILE';
+      info.innerHTML = `${card.faceDown ? `<div class="facedownsheet">🃏 ${faceDownLabel}${mayLookFaceDown ? ' · samo ti vidiš identitet' : ''}</div>` : ''}` +
         `<div class="sname">${esc(shownName)} ${costHTML(shownDef.cost || '')}</div>
         <div class="stype">${esc(typeLine)}</div>
         ${card.is('Creature') && card.cur ? `<div class="spt">${card.power}/${card.toughness}${card.tapped ? ' · TAPPED' : ''}${Object.entries(card.counters).filter(([k, v]) => v > 0).map(([k, v]) => ` · ${v}×${k}`).join('')}</div>` : ''}
