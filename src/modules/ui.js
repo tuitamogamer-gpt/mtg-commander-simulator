@@ -1031,7 +1031,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           this.render();
         };
       });
-      info.querySelector('.melife').onclick = () => { this.playerSheet = me; this.render(); };
+      const myLife = info.querySelector('.melife');
+      if (this.isCandidate(me)) {
+        myLife.classList.add('targetable');
+        myLife.title = `Izaberi ${me.name} kao metu`;
+        myLife.onclick = () => this.pickCandidate(me);
+      } else {
+        myLife.onclick = () => { this.playerSheet = me; this.render(); };
+      }
       row2.appendChild(info);
       wrap.appendChild(row2);
       // COMMAND ZONE — always visible when commander is there.

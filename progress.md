@@ -1,6 +1,6 @@
 Original prompt: Pretvori postojeći MTG Commander simulator u desktop-only Commander klijent za fiksni set postojećih deckova. Svaka nonland karta i relevantna odluka moraju biti vidljive i potvrđene kroz Proceed; priority, stack, end-step stopovi i combat moraju pratiti prava Commander pravila; svaki deck i svaka karta moraju proći zasebnu certifikaciju. Blame Game je kandidat za uklanjanje. Završni koraci su Git push i Vercel redeploy tek nakon release gateova.
 
-Aktivni zahtjev (2026-08-14): Deck-by-deck real-time audit `Prismari Artistry`, kao ljudski igrač i lokalni AI bot. Proći sve interakcije i odluke, odmah ispraviti potvrđene greške; nakon punog automatizovanog i browser QA uraditi commit, push i production deploy.
+Aktivni zahtjev (2026-08-14): Deck-by-deck real-time audit `Deep Clue Sea`, kao ljudski igrač i lokalni AI bot, sa posebnim fokusom na Prepared i castovanje privremenih spell kopija. Proći sve interakcije i odluke, odmah ispraviti potvrđene greške; nakon punog automatizovanog i browser QA uraditi commit, push i production deploy.
 
 # Desktop Commander overhaul
 
@@ -30,6 +30,10 @@ Aktivni zahtjev (2026-08-14): Deck-by-deck real-time audit `Prismari Artistry`, 
 - Desktop Playwright: stvarni UI tok do 26. poteza, action stage/Proceed i reveal popupovi, bez console/page greške.
 
 ## Dnevnik
+
+- 2026-08-14: `Deep Clue Sea` semantic i browser audit završen kao ljudski deck i lokalni AI V2 protivnik. Ispravljeni su individualni investigate događaji i Erdwal once-per-turn, Academy/Adrix/Esix replacement redoslijed, Ascend, Aerial exile-cast dozvola, Junk Winder target lock, obje Koma sposobnosti i potpuni activation lock, Selvala nulta/egzaktna mana, Tangletrove, Armed with Proof detach, Nettlecyst replacement, odvojeni Merchant exalted triggeri, Search planeswalker napad, Ongoing combat grupe i creature-only grave trošak, Disorder neograničeni tačan X, Farewell/Finale i više Deep Clue AI izbora. Prepared sada stvarno castuje Braingeyser/Maestro's Gift iz egzila, bira X i zaključava metu, pravilno okida Aerial, fizzla bez retargeta i prestaje postojati poslije resolve/countera; browser je dodatno otkrio i zatvorio nemogućnost da ljudski igrač targetuje sebe. Novi Deep Clue suite prolazi 19/19, puni repo 307/307, syntax i audit su čisti. Human replacement UI pravi tačno šest Graf Mole kopija; Prepared UI baca Braingeyser X=3 na sebe i razrješava Aerial draw; AI bira Academy→Adrix→Esix/Graf, baca Prepared Braingeyser X=2 i završava bez fallbacka. Svi završni Playwright tokovi su vizuelno pregledani sa praznim stackom/pending stanjem i 0 console/page grešaka. Spremno za commit/push/production deploy.
+
+- 2026-08-14: Započet deck-by-deck real-time audit `Deep Clue Sea`, kao ljudski igrač i lokalni AI V2 bot, uz odobren commit/push/deploy po završetku. Worktree je krenuo čist i lokalni HEAD `e3a44c2` odgovara origin grani. Slijede potpuni semantic inventar svih jedinstvenih karata, ciljane reprodukcije i stvarni human/AI browser tokovi.
 
 - 2026-08-14: Započet deck-by-deck real-time audit `Prismari Artistry`, kao ljudski deck i lokalni AI V2 protivnik, uz odobren commit/push/deploy po završetku. Worktree je krenuo čist; lokalni HEAD `52c21ad` odgovara origin grani, syntax baseline prolazi, a Prismari je izdvojen u `scripts_v9a.js`. Slijede potpuni semantic inventar svih jedinstvenih karata, ciljane reprodukcije i stvarni human/AI browser tokovi.
 

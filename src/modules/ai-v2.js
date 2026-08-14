@@ -838,6 +838,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return card.ctrl === player ? permanentGameValue(game, card, player) + (card.counters['+1/+1'] || 0) * 0.8 : -100;
     }
     if (hint === 'moorlandRescuer' || hint === 'wallMourning') return value * 1.25;
+    if (hint === 'esixCopy') return permanentGameValue(game, card, player) * 1.6;
+    if (hint === 'finaleUntap') {
+      if (card.ctrl !== player || !card.tapped) return -20;
+      return 5 + (card.def.mana ? 1 : 0) + (card.def.producesColors || []).length * 0.2;
+    }
+    if (hint === 'bestLand') {
+      const colors = player.colorIdentity || [];
+      const counts = Object.fromEntries(colors.map(color => [color, 0]));
+      for (const land of game.lands(player)) for (const color of land.def.producesColors || []) {
+        if (counts[color] !== undefined) counts[color]++;
+      }
+      return Math.max(0, ...(card.def.producesColors || []).filter(color => counts[color] !== undefined)
+        .map(color => 6 - counts[color])) + (card.def.entersTapped ? -0.5 : 0);
+    }
     if (hint === 'blight') return blightRecipientValue(game, player, card, q.aiHint && q.aiHint.n || 1);
     if (hint === 'eventidePermanents') {
       return Object.entries(card.counters || {}).reduce((sum, [kind, amount]) =>
@@ -1226,6 +1240,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } else if (hintKind === 'moveCounterKind') {
         const target = q.aiHint && q.aiHint.target;
         breakdown.choice = target ? -counterRemovalValue(target, player, action.value, 1) * 4 : 0;
+      } else if (hintKind === 'tokenReplacementOrder') {
+        const name = action.option && action.option.source && action.option.source.name || action.option && action.option.label || '';
+        breakdown.choice = name === 'Academy Manufactor' ? 30 :
+          name === 'Adrix and Nev, Twincasters' ? 20 : name === 'Esix, Fractal Bloom' ? 5 : 10;
+      } else if (hintKind === 'innocuousUntap') {
+        const useful = game.lands(player).some(card => card.tapped);
+        breakdown.choice = action.value === 'yes' ? (useful ? 10 : -8) : (useful ? -2 : 5);
+      } else if (hintKind === 'killerService') {
+        const cheapest = game.bf().filter(card => card.ctrl === player && card.isToken)
+          .map(card => permanentGameValue(game, card, player)).sort((a, b) => a - b)[0];
+        breakdown.choice = action.value === 'yes' ? (Number.isFinite(cheapest) ? 8 - cheapest : -100) : 0;
+      } else if (hintKind === 'ransom') {
+        const threat = game.bf().filter(card => card.ctrl !== player && card.is('Creature'))
+          .map(card => permanentGameValue(game, card, player)).sort((a, b) => b - a)[0] || 0;
+        if (action.value === 'goad') breakdown.choice = threat >= 5 ? threat + 2 : 1;
+        if (action.value === 'cloak') breakdown.choice = player.library.length
+          ? 4 + (profile.primarySynergies.includes('tokens') ? 3 : 0) : -100;
+        if (action.value === 'draw') breakdown.choice = 4.5 + Math.max(0, 5 - player.hand.length) * 0.8;
       } else if (hintKind === 'creatureType') {
         breakdown.choice = Number(action.option && action.option.keepValue || 0) * 1.4;
       } else if (hintKind === 'citadelSiege') {
@@ -1356,7 +1388,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (/lose|gubi|sacrifice|žrtvuj|discard|odbaci/.test(label)) breakdown.choice -= 1.5;
       }
     } else if (action.kind === 'chooseMulti') {
-      if (q && q.aiHint && q.aiHint.kind === 'blackMarketConnections') {
+      if (q && q.aiHint && q.aiHint.kind === 'farewellModes') {
+        for (const option of action.options || []) {
+          const index = Number(option.key);
+          if (index === 3) {
+            const own = player.graveyard.reduce((sum, card) => sum + cardDefinitionValue(card.def), 0);
+            const enemy = player.opponents(game).reduce((sum, opponent) => sum +
+              opponent.graveyard.reduce((s, card) => s + cardDefinitionValue(card.def), 0), 0);
+            breakdown.choice += enemy - own * 1.4;
+            continue;
+          }
+          const type = ['Artifact', 'Creature', 'Enchantment'][index];
+          if (!type) continue;
+          for (const card of game.bf().filter(permanent => permanent.is(type))) {
+            const value = permanentGameValue(game, card, player);
+            breakdown.choice += card.ctrl === player ? -value * 1.4 : value;
+          }
+        }
+      } else if (q && q.aiHint && q.aiHint.kind === 'blackMarketConnections') {
         const selected = action.options || [];
         const lifeCost = selected.reduce((sum, option) => sum + Number(option.lifeCost || 0), 0);
         for (const option of selected) {

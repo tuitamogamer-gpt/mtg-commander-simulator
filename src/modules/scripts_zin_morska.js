@@ -32,13 +32,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   E.investigate = async function (g, p, n) {
     n = n || 1;
-    // Erdwal Illuminator: prva istraga svaki potez → dodatna
-    const first = !p.turnState._investigated;
-    let total = n;
-    if (first && g.bf().some(c => c.ctrl === p && c.def.extraFirstInvestigate)) total += 1;
-    p.turnState._investigated = true;
-    await g.makeTokens('clue', p, { n: total });
-    await g.emit('investigated', { player: p, n: total });
+    // "Investigate twice/three times" su odvojeni događaji. Ovo je bitno za
+    // replacement efekte (Academy/Adrix/Esix) i Erdwalov prvi investigate.
+    for (let i = 0; i < n; i++) {
+      await g.makeTokens('clue', p);
+      await g.emit('investigated', { player: p, n: 1 });
+    }
   };
 
   // ==================== FAMILY MATTERS (ZINNIA) ====================
@@ -655,16 +654,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Aerial Extortionist'] = {
+    exileAndPermit: async (g, card) => {
+      if (!card) return;
+      const owner = card.owner;
+      await g.exileCard(card);
+      if (card.zone !== 'exile') return;
+      card.meta = card.meta || {};
+      card.meta.playableBy = owner;
+      card.meta.playableUntil = 9999;
+    },
     triggers: [
       {
         on: 'etb', filter: etbSelf, desc: 'Egzilaj nonland',
-        targets: [{ what: 'permanent', prompt: 'Nonland', upTo: true, filter: (g, c, ctrl) => c.zone === 'battlefield' && !c.is('Land') && c.ctrl !== ctrl, aiHint: { goal: 'removal' } }],
-        run: async ctx => { if (ctx.targets[0]) await ctx.g.exileCard(ctx.targets[0]); },
+        targets: [{ what: 'permanent', prompt: 'Nonland', upTo: true, filter: (g, c) => c.zone === 'battlefield' && !c.is('Land'), aiHint: { goal: 'removal' } }],
+        run: async ctx => { await ctx.src.def.exileAndPermit(ctx.g, ctx.targets[0]); },
       },
       {
         on: 'combatDamageToPlayer', filter: (g, self, d) => d.card === self, desc: 'Egzilaj nonland',
-        targets: [{ what: 'permanent', prompt: 'Nonland', upTo: true, filter: (g, c, ctrl) => c.zone === 'battlefield' && !c.is('Land') && c.ctrl !== ctrl, aiHint: { goal: 'removal' } }],
-        run: async ctx => { if (ctx.targets[0]) await ctx.g.exileCard(ctx.targets[0]); },
+        targets: [{ what: 'permanent', prompt: 'Nonland', upTo: true, filter: (g, c) => c.zone === 'battlefield' && !c.is('Land'), aiHint: { goal: 'removal' } }],
+        run: async ctx => { await ctx.src.def.exileAndPermit(ctx.g, ctx.targets[0]); },
       },
       {
         on: 'cast', desc: 'Vuci',
@@ -731,7 +739,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => { await ctx.g.makeTokens('detectiveWU', ctx.you); },
     }],
   };
-  SC['Erdwal Illuminator'] = { extraFirstInvestigate: true };
+  SC['Erdwal Illuminator'] = {
+    triggers: [{
+      on: 'investigated', oncePerTurn: true, desc: 'Dodatna istraga',
+      filter: (g, self, d) => d.player === self.ctrl,
+      run: async ctx => { await E.investigate(ctx.g, ctx.you); },
+    }],
+  };
   SC['Esix, Fractal Bloom'] = {
     replace: [{
       event: 'createToken', priority: 4,
@@ -742,7 +756,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         src.meta._esixTurn = g.turnNo;
         const picked = await ctrl.controller.decide(g, {
           type: 'chooseCards', from: cands, min: 0, max: 1,
-          prompt: 'Esix: tokeni mogu postati kopije kojeg stvorenja?', aiHint: { kind: 'copyTarget' },
+          prompt: 'Esix: tokeni mogu postati kopije kojeg stvorenja?', aiHint: { kind: 'esixCopy' },
         });
         const chosen = picked[0];
         if (!chosen) return defs;
@@ -802,6 +816,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       {
         on: 'endStep', desc: 'Untapuj landove i zaključaj spellove', opt: true,
+        aiHint: { kind: 'innocuousUntap' },
         filter: (g, self, d) => d.player === self.ctrl,
         run: async ctx => {
           for (const land of ctx.g.lands(ctx.you)) land.tapped = false;
@@ -835,13 +850,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     selfCostAdjust: (g, card, p) => -g.bf().filter(c => c.ctrl === p && c.isToken).length,
     triggers: [{
       on: 'etb', desc: 'Tapni', filter: (g, self, d) => d.card !== self && d.card.ctrl === self.ctrl && d.card.isToken,
+      onlyIf: (g, self) => g.bf().some(c => c.ctrl !== self.ctrl && !c.is('Land')),
+      targets: [T.permanent((g, c, ctrl) => c.ctrl !== ctrl && !c.is('Land'), {
+        prompt: 'Tapni (ne untapuje se):', aiHint: { goal: 'removal' },
+      })],
       run: async ctx => {
-        const cands = ctx.g.bf().filter(c => c.ctrl !== ctx.you && !c.is('Land'));
-        if (!cands.length) return;
-        const pick = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseTargets', candidates: cands, min: 0, max: 1, prompt: 'Tapni (ne untapuje se):', aiHint: { goal: 'removal' },
-        });
-        if (pick.length) { pick[0].tapped = true; pick[0].meta.noUntapOnce = true; ctx.g.lg(`${pick[0].name} zaključan.`); }
+        const target = ctx.targets[0];
+        if (target) { target.tapped = true; target.meta.noUntapOnce = true; ctx.g.lg(`${target.name} zaključan.`); }
       },
     }],
   };
@@ -866,22 +881,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'upkeep', desc: "Koma's Coil", filter: () => true,
       run: async ctx => { await ctx.g.makeTokens('serpentKoma', ctx.you); },
     }],
-    abilities: [{
-      label: 'Žrtvuj Zmiju: tap ili štit', cost: { sac: (g, x, self) => x.hasSub('Serpent') && x !== self, sacOther: true },
-      run: async ctx => {
-        const k = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseOption', prompt: 'Koma:',
-          options: [{ key: 'tap', label: 'Tapni permanent' }, { key: 'ind', label: 'Indestructible' }],
-          aiHint: { kind: 'koma' },
-        });
-        if (k === 'ind') { E.grantUntilEOT(ctx.g, ctx.src, ['indestructible']); return; }
-        const cands = ctx.g.bf().filter(c => c.ctrl !== ctx.you);
-        if (cands.length) {
-          const pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseTargets', candidates: cands, min: 1, max: 1, prompt: 'Tapni:', aiHint: { goal: 'removal' } });
-          if (pick.length) { pick[0].tapped = true; ctx.g.lg(`${pick[0].name} tapnut.`); }
-        }
+    abilities: [
+      {
+        label: 'Žrtvuj drugu Zmiju: tapni permanent i ugasi aktivacije',
+        cost: { sac: (g, x, self) => x.hasSub('Serpent') && x !== self, sacOther: true },
+        targets: [T.permanent(null, { prompt: 'Tapni i ugasi aktivacije', aiHint: { goal: 'removal' } })],
+        run: async ctx => {
+          const target = ctx.targets[0];
+          if (!target) return;
+          target.tapped = true;
+          const iid = target.iid;
+          ctx.g.untilEffects.push({
+            expires: 'eot', kind: 'komaDisable', iid,
+            apply: (g2, bf) => { const card = bf.find(c => c.iid === iid); if (card) card.cur.activationDisabled = true; },
+          });
+          ctx.g.recalc();
+          ctx.g.lg(`${target.name} je tapnut i ne može aktivirati sposobnosti ovaj potez.`);
+        },
       },
-    }],
+      {
+        label: 'Žrtvuj drugu Zmiju: Koma dobija indestructible',
+        cost: { sac: (g, x, self) => x.hasSub('Serpent') && x !== self, sacOther: true },
+        run: async ctx => { E.grantUntilEOT(ctx.g, ctx.src, ['indestructible']); },
+      },
+    ],
   };
   SC['Lonis, Cryptozoologist'] = {
     triggers: [{
@@ -929,10 +952,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         on: 'attackersDeclared', desc: 'Clue exalted',
         filter: (g, self, d) => d.player === self.ctrl && d.attackers.length === 1,
-        run: async ctx => {
-          const clues = ctx.g.bf().filter(c => c.ctrl === ctx.you && c.hasSub('Clue')).length;
-          if (clues) E.pumpUntilEOT(ctx.g, ctx.data.attackers[0], clues, clues);
-        },
+        times: (g, self) => g.bf().filter(c => c.ctrl === self.ctrl && c.hasSub('Clue')).length,
+        run: async ctx => { E.pumpUntilEOT(ctx.g, ctx.data.attackers[0], 1, 1); },
       },
     ],
   };
@@ -958,8 +979,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Selvala, Explorer Returned'] = {
     mana: {
+      manual: true,
       cost: { tap: true },
-      produce: (g, c, p) => [{ G: Math.max(1, 1) }],
+      produce: (g) => [{ G: g.alivePlayers().filter(q => q.library.length && !q.library[q.library.length - 1].is('Land')).length }],
       onProduce: async (g, c, p) => {
         let nonlands = 0;
         for (const q of g.alivePlayers()) {
@@ -967,7 +989,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const top = q.library[q.library.length - 1];
           if (!top.is('Land')) nonlands++;
         }
-        if (nonlands > 1) p.pool.G += nonlands - 1;
         if (nonlands) await g.gainLife(p, nonlands);
         for (const q of g.alivePlayers()) await g.draw(q, 1);
       },
@@ -1019,7 +1040,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Tangletrove Kelp'] = {
     triggers: [{
-      on: 'beginCombat', desc: 'Clue vojska', filter: (g, self, d) => d.player === self.ctrl,
+      on: 'beginCombat', desc: 'Clue vojska', filter: () => true,
       run: async ctx => {
         const you = ctx.you, selfIid = ctx.src.iid;
         ctx.g.untilEffects.push({
@@ -1149,8 +1170,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Disorder in the Court'] = {
+    xMax: (g) => g.bf().filter(c => c.is('Creature')).length,
     targets: (g, card, castOpts) => [{
-      what: 'creature', prompt: 'Egzilaj privremeno (X)', count: 5, upTo: true,
+      what: 'creature', prompt: 'Egzilaj privremeno (tačno X)', count: castOpts.xVal || 0,
       filter: (g2, c) => c.zone === 'battlefield' && c.is('Creature'),
       aiHint: { goal: 'removal' },
     }],
@@ -1181,6 +1203,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Farewell'] = {
     modes: {
       pick: 'any', min: 1,
+      aiHint: { kind: 'farewellModes' },
       list: [
         { label: 'Egzilaj sve artefakte' },
         { label: 'Egzilaj sva stvorenja' },
@@ -1232,7 +1255,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', filter: etbSelf, desc: 'Germ',
       run: async ctx => {
-        const made = await ctx.g.makeTokens('germ', ctx.you, { noReplace: true });
+        // Living weapon i dalje stvara token kroz normalne replacement efekte.
+        // Ako ih nastane više, Equipment se prikači na jedan od njih.
+        const made = await ctx.g.makeTokens('germ', ctx.you);
         if (made[0]) await ctx.g.attach(ctx.src, made[0]);
       },
     }],
@@ -1285,6 +1310,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { on: 'etb', filter: etbSelf, desc: 'Foodovi', run: async ctx => { await ctx.g.makeTokens('food', ctx.you, { n: E.eachOpp(ctx.g, ctx.you).length }); } },
       {
         on: 'endStep', opt: true, desc: 'Rhino', filter: (g, self, d) => d.player === self.ctrl,
+        aiHint: { kind: 'killerService' },
         onlyIf: (g, self) => g.bf().some(c => c.ctrl === self.ctrl && c.isToken) && g.canPayMana(self.ctrl, U.parseCost('{2}')),
         run: async ctx => {
           const ok = await ctx.g.payMana(ctx.you, U.parseCost('{2}'));
@@ -1346,23 +1372,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Ongoing Investigation'] = {
     triggers: [{
-      on: 'combatDamageToPlayer', oncePerTurn: true, desc: 'Istraga',
-      filter: (g, self, d) => d.card.ctrl === self.ctrl,
+      on: 'combatDamageGroupToPlayer', desc: 'Istraga',
+      filter: (g, self, d) => d.cards.some(card => card.ctrl === self.ctrl && card.is('Creature')),
       run: async ctx => { await E.investigate(ctx.g, ctx.you); },
     }],
     abilities: [{
-      label: 'Egzilaj iz groblja: istraga +2 života', cost: { mana: '{1}{G}', exileFromGY: 1 },
+      label: 'Egzilaj creature iz groblja: istraga +2 života',
+      cost: { mana: '{1}{G}', exileFromGY: { n: 1, filter: (g, card) => card.is('Creature') } },
       run: async ctx => { await E.investigate(ctx.g, ctx.you); await ctx.g.gainLife(ctx.you, 2); },
     }],
   };
   SC['Search the Premises'] = {
     triggers: [{
       on: 'attackersDeclared', desc: 'Istrage',
-      filter: (g, self, d) => d.attackers.some(a => a.attacking === self.ctrl),
-      run: async ctx => {
-        const n = ctx.data.attackers.filter(a => a.attacking === ctx.you).length;
-        if (n) await E.investigate(ctx.g, ctx.you, n);
-      },
+      filter: (g, self, d) => d.attackers.some(a => a.attacking === self.ctrl ||
+        (a.attacking && a.attacking.is && a.attacking.is('Planeswalker') && a.attacking.ctrl === self.ctrl)),
+      times: (g, self, d) => d.attackers.filter(a => a.attacking === self.ctrl ||
+        (a.attacking && a.attacking.is && a.attacking.is('Planeswalker') && a.attacking.ctrl === self.ctrl)).length,
+      run: async ctx => { await E.investigate(ctx.g, ctx.you); },
     }],
   };
   SC["Teferi's Ageless Insight"] = { drawDouble: true };

@@ -406,8 +406,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         while (p.graveyard.length) { const c = p.graveyard.pop(); c.zone = 'library'; p.library.push(c); }
         U.shuffle(p.library, g.rnd);
         await g.draw(p, x);
-        let n = 0;
-        for (const l of g.lands(p)) { if (n >= 5) break; if (l.tapped) { l.tapped = false; n++; } }
+        const lands = g.bf().filter(card => card.is('Land'));
+        const picked = await p.controller.decide(g, {
+          type: 'chooseCards', from: lands, min: 0, max: Math.min(5, lands.length),
+          prompt: 'Finale of Revelation: untapuj do pet landova', aiHint: { kind: 'finaleUntap' },
+        });
+        for (const land of picked.filter(card => lands.includes(card)).slice(0, 5)) land.tapped = false;
         p.noMaxHandForever = true;
         g.lg('FINALE OF REVELATION X≥10: mega mod!');
       } else {

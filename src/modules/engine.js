@@ -407,6 +407,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const wasBattlefield = fromZone === 'battlefield';
       const snap = this.snapshot(card);
 
+      // Prepared pravi stvarnu kopiju karte koja se baca iz egzila. Kao i sve
+      // kopije karata, ona prestaje postojati čim napusti stack (resolve,
+      // counter ili fizzle) i nikad ne smije završiti u groblju/egzilu/ruci.
+      if (card.isCopySpell && fromZone === 'stack' && toZone !== 'stack') {
+        this.remove(card);
+        card.zone = 'ceased';
+        return card;
+      }
+
       // Unearth replacement: ako bi permanent napustio bojno polje iz bilo
       // kojeg razloga, ide u egzil umjesto u drugu zonu.
       if (wasBattlefield && card.meta && card.meta.unearth && toZone !== 'exile') {
@@ -694,8 +703,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!Array.isArray(spec)) for (let i = 0; i < n; i++) defs.push(spec);
       // token replacements (Academy Manufactor, Chatterfang)
       if (!opts.noReplace) {
-        for (const r of this.replacers('createToken')) {
-          if (r.ctrl === ctrl) defs = await r.run(this, defs, ctrl, r.src) || defs;
+        const pending = this.replacers('createToken').filter(r => r.ctrl === ctrl);
+        while (pending.length) {
+          let index = 0;
+          if (pending.length > 1 && ctrl.controller && ctrl.controller.decide) {
+            const picked = await ctrl.controller.decide(this, {
+              type: 'chooseOption',
+              prompt: 'Redoslijed replacement efekata za tokene — koji primjenjuješ sljedeći?',
+              options: pending.map((entry, i) => ({
+                key: String(i), label: entry.src ? entry.src.name : `Replacement ${i + 1}`,
+                source: entry.src,
+              })),
+              aiHint: { kind: 'tokenReplacementOrder', defs: defs.slice(), replacements: pending.slice() },
+            });
+            const chosen = Number.parseInt(picked, 10);
+            if (Number.isInteger(chosen) && chosen >= 0 && chosen < pending.length) index = chosen;
+          }
+          const [r] = pending.splice(index, 1);
+          defs = await r.run(this, defs, ctrl, r.src) || defs;
         }
         // privremeno dupliranje tokena (Kaya -2)
         if (this.untilEffects.some(e => e.kind === 'tokenDouble' && e.who === ctrl)) defs = defs.concat(defs.slice());
@@ -1362,7 +1387,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           extraAbilities: [], wardCost: d.ward || null, extraMana: [],
           hexproof: false, shroud: false, cantBeBlockedBy: null, unblockable: false,
           protectionFrom: [],
-          abilitiesDisabled: false,
+          abilitiesDisabled: false, activationDisabled: false,
           attackTaxes: [], loyalty: c.counters['loyalty'] || 0,
         };
         if (d.power !== undefined) {
@@ -1448,7 +1473,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // city's blessing
       for (const p of this.players) {
-        if (!p.cityBlessing && bf.filter(c => c.ctrl === p).length >= 10) p.cityBlessing = true;
+        const hasAscend = bf.some(c => c.ctrl === p && /(^|\n)Ascend\b/i.test(c.def.oracle || ''));
+        if (!p.cityBlessing && hasAscend && bf.filter(c => c.ctrl === p).length >= 10) p.cityBlessing = true;
       }
       // Obavijesti samo kad se NOVA dodijeljena sposobnost/keyword pojavi.
       // Recalc se poziva cesto, pa se potpisi pamte na objektu karte da isti
@@ -1521,19 +1547,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const found = this.collectTriggers(name, data || {});
       for (const { card, t, ctrlOverride } of found) {
         if (t.oncePerTurn) card.meta['_once_' + t.on] = this.turnNo;
+        const nativeTimes = Math.max(0, Number(typeof t.times === 'function'
+          ? t.times(this, card, data || {})
+          : (t.times === undefined ? 1 : t.times)) || 0);
         // Veyran doubles every permanent trigger caused by casting/copying an
         // instant or sorcery. Prowess lives on `castNonCreature`, Manaform on
         // `cast`, and other engines use castFirst/castSecond.
-        let times = 1;
+        let times = nativeTimes;
         const castOrCopyIS = data && data.isInstantSorcery &&
           (name === 'spellCopied' || name === 'targeted' || name === 'cast' || name.startsWith('cast'));
         const castOrCopyController = data && (data.player || data.ctrl || data.byPlayer);
         if (castOrCopyIS && castOrCopyController === card.ctrl) {
-          times += this.bf().filter(v => v.def.doublesMagecraft && v.ctrl === card.ctrl).length;
+          times += nativeTimes * this.bf().filter(v => v.def.doublesMagecraft && v.ctrl === card.ctrl).length;
         }
         for (const doubler of this.bf()) {
           if (doubler.ctrl === card.ctrl && doubler.def.doubleTriggerFilter &&
-            doubler.def.doubleTriggerFilter(this, doubler, card, name, data)) times++;
+            doubler.def.doubleTriggerFilter(this, doubler, card, name, data)) times += nativeTimes;
         }
         // Krang: draw-uzrokovani trigeri tvojih permanenata okidaju dodatni put
         if (name === 'draw' && this.bf().some(v => v.def.doubleDrawTriggers && v.ctrl === card.ctrl)) times *= 2;
@@ -1545,7 +1574,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               : (t.controller || ctrlOverride),
             name: t.desc || name, run: t.run, targets: t.targets, modes: t.modes,
             prepareTargets: t.prepareTargets,
-            opt: t.opt, data, onlyIf: t.onlyIf,
+            opt: t.opt, data, onlyIf: t.onlyIf, aiHint: t.aiHint,
           });
         }
       }
@@ -1620,7 +1649,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const yes = await ctrl.controller.decide(this, {
           type: 'chooseOption', prompt: `${tr.src ? tr.src.name : ''}: ${tr.name} — iskoristi?`,
           options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
-          aiHint: { kind: 'optTrigger', src: tr.src, name: tr.name },
+          aiHint: Object.assign({ kind: 'optTrigger', src: tr.src, name: tr.name }, tr.aiHint || {}),
         });
         if (yes !== 'yes') return;
       }
@@ -1982,7 +2011,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             }
             if (subs.includes('Equipment') && c.attachedTo) {
               const host = this.byIid(c.attachedTo);
-              if (!host || host.zone !== 'battlefield' || !host.is('Creature')) {
+              if (c.is('Creature') || !host || host.zone !== 'battlefield' || !host.is('Creature')) {
                 const h2 = host;
                 if (h2) h2.attachments = h2.attachments.filter(i => i !== c.iid);
                 c.attachedTo = null;

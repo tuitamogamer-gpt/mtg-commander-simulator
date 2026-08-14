@@ -1106,6 +1106,126 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'clueHuman') {
+      void (async () => {
+        const take = name => {
+          const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+          g.remove(card);
+          card.ctrl = ui.me; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        take('Morska, Undersea Sleuth');
+        take('Academy Manufactor');
+        take('Adrix and Nev, Twincasters');
+        take('Esix, Fractal Bloom');
+        take('Graf Mole');
+        take('Armed with Proof');
+        g.turnPlayer = ui.me; g.turnNo = 22; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        ui.toast('Deep Clue human: izaberi redoslijed Academy / Adrix / Esix, pa stvorenje za Esix kopije.');
+        ui.render();
+        await MTG.E.investigate(g, ui.me);
+        let guard = 0;
+        while ((g.pendingTriggers.length || g.stack.length) && guard++ < 100) {
+          await g.flushTriggers();
+          if (g.stack.length) await g.resolveTop();
+        }
+        const tokens = g.bf().filter(card => card.ctrl === ui.me && card.isToken);
+        g.lg(`Deep Clue human: tokeni=${tokens.length}; ${tokens.map(card => card.name).join(', ')}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Deep Clue human scenario: replacement redoslijed i Esix izbor su razriješeni.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'cluePrepared') {
+      void (async () => {
+        const take = (name, owner = ui.me, zone = 'battlefield') => {
+          const zones = [owner.command, owner.hand, owner.library, owner.graveyard, owner.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], owner);
+          g.remove(card);
+          card.ctrl = owner; card.zone = zone; card.sick = false;
+          if (zone === 'battlefield') g.battlefield.push(card); else owner[zone].push(card);
+          return card;
+        };
+        const opponent = g.players.find(player => player !== ui.me && !player.lost);
+        const focusmage = take('Dirgur Focusmage');
+        take('Aerial Extortionist', opponent);
+        for (let i = 0; i < 8; i++) {
+          const card = new MTG.CardInst(MTG.DEFS[i % 2 ? 'Island' : 'Forest'], ui.me);
+          card.zone = 'library'; ui.me.library.push(card);
+        }
+        g.turnPlayer = ui.me; g.turnNo = 23; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        ui.me.pool.C = 3; ui.me.pool.U = 2;
+        g.recalc();
+        await focusmage.def.triggers[0].run({ g, src: focusmage, you: ui.me });
+        const prepared = ui.me.exile.find(card => card.meta && card.meta.preparedBy === focusmage.iid);
+        if (!prepared) throw new Error('Prepared Braingeyser nije napravljen');
+        const q = {
+          type: 'main', player: ui.me,
+          casts: g.castableList(ui.me), acts: g.activatableList(ui.me), lands: g.playableLands(ui.me), phase: g.phase,
+        };
+        ui.toast('Prepared: klikni Braingeyser iz egzila, izaberi X i target playera.');
+        const action = await ui.me.controller.decide(g, q);
+        await g.performAction(ui.me, action);
+        g.lg(`Prepared UI: Braingeyser=${prepared.zone}; tvoja ruka=${ui.me.hand.length}; ${opponent.name} ruka=${opponent.hand.length}.`, 'ai');
+        ui.toast('Prepared Braingeyser je razriješen; privremena kopija je prestala postojati.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'clueAI') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Deep Clue Sea');
+        if (!bot) throw new Error('clueAI scenario zahtijeva smokeAIDeck=Deep Clue Sea');
+        const takeBot = name => {
+          const zones = [bot.command, bot.hand, bot.library, bot.graveyard, bot.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], bot);
+          g.remove(card);
+          card.ctrl = bot; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        takeBot('Academy Manufactor');
+        takeBot('Adrix and Nev, Twincasters');
+        takeBot('Esix, Fractal Bloom');
+        takeBot('Graf Mole');
+        const focusmage = takeBot('Dirgur Focusmage');
+        const aerial = new MTG.CardInst(MTG.DEFS['Aerial Extortionist'], ui.me);
+        aerial.ctrl = ui.me; aerial.zone = 'battlefield'; aerial.sick = false;
+        g.battlefield.push(aerial);
+        for (let i = 0; i < 8; i++) {
+          const card = new MTG.CardInst(MTG.DEFS[i % 2 ? 'Island' : 'Forest'], bot);
+          card.zone = 'library'; bot.library.push(card);
+        }
+        g.turnPlayer = bot; g.turnNo = 24; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        const priorityRound = g.priorityRound;
+        g.priorityRound = async () => {};
+        await MTG.E.investigate(g, bot);
+        await focusmage.def.triggers[0].run({ g, src: focusmage, you: bot });
+        const prepared = bot.exile.find(card => card.meta && card.meta.preparedBy === focusmage.iid);
+        bot.pool.C = 2; bot.pool.U = 2;
+        if (!prepared || !await g.castSpell(bot, prepared, { from: 'exile', xVal: 2 })) {
+          throw new Error('Deep Clue AI Prepared cast nije uspio');
+        }
+        let guard = 0;
+        while ((g.pendingTriggers.length || g.stack.length) && guard++ < 120) {
+          await g.flushTriggers();
+          if (g.stack.length) await g.resolveTop();
+        }
+        g.priorityRound = priorityRound;
+        const recent = (g.aiDecisionLog || []).filter(entry => entry.playerName === bot.name).slice(-20);
+        const tokens = g.bf().filter(card => card.ctrl === bot && card.isToken);
+        g.lg(`Deep Clue AI: tokeni=${tokens.map(card => card.name).join(', ') || 'nema'}; Prepared=${prepared.zone}; odluke=${recent.length}; fallback=${recent.some(entry => entry.fallback) ? 'DA' : 'NE'}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Deep Clue AI scenario: replacement redoslijed i Prepared Braingeyser su razriješeni.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     g.start().catch(err => {
       console.error(err);
       ui.toast('Greška u igri: ' + err.message);

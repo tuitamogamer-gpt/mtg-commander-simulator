@@ -91,7 +91,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const out = [];
     for (const c of this.bf()) {
       if (c.ctrl !== p) continue;
-      if (c.cur && c.cur.abilitiesDisabled) continue;
+      if (c.cur && (c.cur.abilitiesDisabled || c.cur.activationDisabled)) continue;
       const ownMana = c.def.mana ? (Array.isArray(c.def.mana) ? c.def.mana : [c.def.mana]) : [];
       const mm = ownMana.concat(c.cur && c.cur.extraMana || []);
       if (!mm) continue;
@@ -848,7 +848,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // X
     let xVal = 0;
     if (cost.x && !castOpts.free) {
-      const maxX = this.maxAffordableX(p, cost, card);
+      let maxX = this.maxAffordableX(p, cost, card);
+      if (typeof d.xMax === 'function') maxX = Math.min(maxX, Math.max(0, Number(d.xMax(this, card, p, castOpts)) || 0));
       xVal = opts.xVal !== undefined ? opts.xVal : await p.controller.decide(this, {
         type: 'chooseX', min: 0, max: maxX, card, prompt: `X za ${card.name}?`,
         aiHint: { kind: 'chooseX', card },
@@ -1755,6 +1756,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           });
         }
       }
+      if (c.cur && c.cur.activationDisabled) continue;
       // NE preskačemo karte bez `abilities` — equip i crew blokovi ispod
       // vrijede i za Equipmente/Vehicle koji nemaju nijednu aktiviranu sposobnost.
       const abs = (c.def.abilities || []).concat(c.cur.extraAbilities || []);
@@ -1797,7 +1799,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (cost.sac && !this.bf().some(x => x.ctrl === p && cost.sac(this, x, c) && this.canSacrifice(x))) return;
         if (cost.life && p.life <= cost.life) return;
         if (cost.discard && p.hand.length < cost.discard) return;
-        if (cost.exileFromGY && p.graveyard.length < cost.exileFromGY) return;
+        if (cost.exileFromGY) {
+          const exileN = typeof cost.exileFromGY === 'object' ? (cost.exileFromGY.n || 1) : cost.exileFromGY;
+          const exileFilter = typeof cost.exileFromGY === 'object' ? cost.exileFromGY.filter : null;
+          if (p.graveyard.filter(card => !exileFilter || exileFilter(this, card, c, p)).length < exileN) return;
+        }
         if (cost.rmCounter) {
           const kind = cost.rmCounter.kind || cost.rmCounter;
           const nn = cost.rmCounter.n || 1;
@@ -1851,7 +1857,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const source of this.manaSources(p, null)) {
       const c = source.card;
       const utility = (c.def.abilities || []).concat(c.cur && c.cur.extraAbilities || [])
-        .some(ability => !ability.manaAbilityOnly);
+        .some(ability => !ability.manaAbilityOnly) || source.m.manual;
       if (!utility || source.m.restrict) continue;
       const cost = source.extraCost || {};
       if (cost.life && p.life <= cost.life) continue;
@@ -1870,7 +1876,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Neke sposobnosti po pravilima aktiviraju isključivo protivnici vlasnika
     // permanenta (Oft-Nabbed Goat). One zato ne pripadaju u gornji owner pass.
     for (const c of this.bf()) {
-      if (c.ctrl === p || c.cur && c.cur.abilitiesDisabled) continue;
+      if (c.ctrl === p || c.cur && (c.cur.abilitiesDisabled || c.cur.activationDisabled)) continue;
       const abs = c.def.opponentAbilities || [];
       abs.forEach((a, ai) => {
         if (a.sorcery && (this.turnPlayer !== p || this.stack.length || (this.phase !== 'main1' && this.phase !== 'main2'))) return;
@@ -1925,10 +1931,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.activateAbility = async function (p, entry, uiTargets) {
     const c = entry.card;
     if (entry.turnFaceUp) return this.turnFaceUp(p, c, entry.faceUpCost);
+    if (c.zone === 'battlefield' && c.cur && c.cur.activationDisabled) return false;
     if (entry.manaAbility) {
       const source = entry.manaSource;
       const cost = source.extraCost || {};
-      if (!source || c.zone !== 'battlefield' || c.ctrl !== p || c.cur && c.cur.abilitiesDisabled) return false;
+      if (!source || c.zone !== 'battlefield' || c.ctrl !== p || c.cur && (c.cur.abilitiesDisabled || c.cur.activationDisabled)) return false;
       if (cost.tap && c.tapped) return false;
       if (cost.tap && c.is('Creature') && c.sick && !c.kw('haste') &&
         !source.m.creatureOK && !source.m.ignoreSickness) return false;
@@ -2314,9 +2321,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     if (cost.exileFromGY) {
+      const exileN = typeof cost.exileFromGY === 'object' ? (cost.exileFromGY.n || 1) : cost.exileFromGY;
+      const exileFilter = typeof cost.exileFromGY === 'object' ? cost.exileFromGY.filter : null;
+      const exilePool = p.graveyard.filter(card => !exileFilter || exileFilter(this, card, c, p));
       const picked = await p.controller.decide(this, {
-        type: 'chooseCards', from: p.graveyard, min: cost.exileFromGY, max: cost.exileFromGY, prompt: 'Egzilaj iz groblja:', aiHint: { kind: 'delve' },
+        type: 'chooseCards', from: exilePool, min: exileN, max: exileN, prompt: 'Egzilaj iz groblja:', aiHint: { kind: 'delve' },
       });
+      if (picked.length < exileN || picked.some(card => !exilePool.includes(card))) return false;
       for (const x of picked) await this.move(x, 'exile');
     }
     if (cost.counter === '-1/-1') await this.addM1(c, 1, p);

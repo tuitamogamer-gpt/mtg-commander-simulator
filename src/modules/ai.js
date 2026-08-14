@@ -789,6 +789,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const sorted = from.slice().sort((a, b) => score(b) - score(a));
           return sorted.length ? [sorted[0]] : [];
         }
+        case 'esixCopy': {
+          const sorted = from.slice().sort((a, b) => this.permThreat(g, b) - this.permThreat(g, a));
+          return sorted.length && this.permThreat(g, sorted[0]) >= 2 ? [sorted[0]] : [];
+        }
+        case 'finaleUntap': {
+          return from.filter(card => card.ctrl === this.p && card.tapped)
+            .sort((a, b) => this.cardValue(g, b) - this.cardValue(g, a)).slice(0, max);
+        }
         case 'danceFreeCasts': {
           return byValDesc.filter(card => this.cardValue(g, card) > 1.5).slice(0, max);
         }
@@ -831,7 +839,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return [notMine[0] || sorted[sorted.length - 1]];
         }
         case 'bestLand': {
-          return [from[0]];
+          const colors = this.p.colorIdentity || [];
+          const counts = Object.fromEntries(colors.map(color => [color, 0]));
+          for (const land of g.lands(this.p)) {
+            for (const color of land.def.producesColors || []) if (counts[color] !== undefined) counts[color]++;
+          }
+          const score = card => Math.max(0, ...(card.def.producesColors || [])
+            .filter(color => counts[color] !== undefined).map(color => 6 - counts[color])) +
+            (card.def.entersTapped ? -0.5 : 0) + (card.def.mana ? 0.2 : 0);
+          return from.length ? [from.slice().sort((a, b) => score(b) - score(a) || a.iid - b.iid)[0]] : [];
         }
         case 'blight': {
           const n = q.aiHint && q.aiHint.n || 1;
@@ -983,6 +999,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           return keys[0];
         }
+        case 'tokenReplacementOrder': {
+          const rank = option => {
+            const name = option.source && option.source.name || option.label || '';
+            if (name === 'Academy Manufactor') return 30;
+            if (name === 'Adrix and Nev, Twincasters') return 20;
+            if (name === 'Esix, Fractal Bloom') return 5;
+            return 10;
+          };
+          return q.options.slice().sort((a, b) => rank(b) - rank(a))[0].key;
+        }
+        case 'innocuousUntap': {
+          const useful = g.lands(this.p).some(card => card.tapped);
+          return useful && keys.includes('yes') ? 'yes' : (keys.includes('no') ? 'no' : keys[0]);
+        }
+        case 'killerService': {
+          const cheap = g.bf().some(card => card.ctrl === this.p && card.isToken && this.permThreat(g, card) < 4);
+          return cheap && keys.includes('yes') ? 'yes' : (keys.includes('no') ? 'no' : keys[0]);
+        }
+        case 'ransom': {
+          const threat = g.bf().filter(card => card.ctrl !== this.p && card.is('Creature'))
+            .sort((a, b) => this.permThreat(g, b) - this.permThreat(g, a))[0];
+          if (threat && this.permThreat(g, threat) >= 5 && keys.includes('goad')) return 'goad';
+          const profile = MTG.getDeckAIProfile && MTG.getDeckAIProfile(this.p.deckName || this.p.deck && this.p.deck.name);
+          if (this.p.library.length && profile && profile.primarySynergies.includes('tokens') && keys.includes('cloak')) return 'cloak';
+          return keys.includes('draw') ? 'draw' : keys[0];
+        }
         case 'optTrigger': return 'yes';
         case 'inspiritCounter': {
           const target = q.aiHint && q.aiHint.target;
@@ -1125,6 +1167,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           scores.set('3', artifact ? 4 + this.permThreat(g, artifact) : 0);
         }
         return keys.slice().sort((a, b) => scores.get(b) - scores.get(a)).slice(0, max);
+      }
+      if (q.aiHint && q.aiHint.kind === 'farewellModes') {
+        const zoneScore = kind => {
+          if (kind === 3) {
+            const own = this.p.graveyard.reduce((sum, card) => sum + this.cardValue(g, card), 0);
+            const enemy = g.players.filter(player => player !== this.p)
+              .reduce((sum, player) => sum + player.graveyard.reduce((s, card) => s + this.cardValue(g, card), 0), 0);
+            return enemy - own * 1.4;
+          }
+          const type = ['Artifact', 'Creature', 'Enchantment'][kind];
+          return g.bf().filter(card => card.is(type)).reduce((sum, card) =>
+            sum + (card.ctrl === this.p ? -this.permThreat(g, card) * 1.4 : this.permThreat(g, card)), 0);
+        };
+        const ranked = keys.map(key => ({ key, score: zoneScore(Number(key)) }))
+          .filter(entry => entry.score > 0.5).sort((a, b) => b.score - a.score);
+        return (ranked.length ? ranked : keys.map(key => ({ key, score: zoneScore(Number(key)) }))
+          .sort((a, b) => b.score - a.score).slice(0, 1)).slice(0, max).map(entry => entry.key);
       }
       const n = Math.max(min, Math.min(max, 2));
       const out = [];
