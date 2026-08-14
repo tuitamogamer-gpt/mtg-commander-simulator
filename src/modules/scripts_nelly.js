@@ -380,17 +380,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Sun Titan'] = {
     triggers: [
-      { on: 'etb', filter: etbSelf, opt: true, desc: 'Vrati MV≤3', run: async ctx => { await sunTitanReturn(ctx); } },
-      { on: 'attacks', filter: attacksSelf, opt: true, desc: 'Vrati MV≤3', run: async ctx => { await sunTitanReturn(ctx); } },
+      { on: 'etb', filter: etbSelf, desc: 'Vrati MV≤3', targets: sunTitanTargets(), run: sunTitanReturn },
+      { on: 'attacks', filter: attacksSelf, desc: 'Vrati MV≤3', targets: sunTitanTargets(), run: sunTitanReturn },
     ],
   };
+  function sunTitanTargets() {
+    return [{
+      zone: 'graveyard', what: 'card', prompt: 'Target permanent karta MV≤3',
+      filter: (g, card) => card.mv <= 3 && ['Creature', 'Artifact', 'Enchantment', 'Land', 'Planeswalker'].some(type => card.is(type)),
+      aiHint: { goal: 'recur' },
+    }];
+  }
   async function sunTitanReturn(ctx) {
-    const cands = ctx.you.graveyard.filter(c => c.mv <= 3 && ['Creature', 'Artifact', 'Enchantment', 'Land', 'Planeswalker'].some(t => c.is(t)));
-    if (!cands.length) return;
-    const pick = await ctx.you.controller.decide(ctx.g, {
-      type: 'chooseCards', from: cands, min: 0, max: 1, prompt: 'Vrati permanent MV≤3', aiHint: { kind: 'reanimate' },
+    const target = ctx.targets[0];
+    if (!target || target.zone !== 'graveyard') return;
+    const choice = await ctx.you.controller.decide(ctx.g, {
+      type: 'chooseOption', prompt: `Sun Titan: vratiti ${target.name}?`,
+      options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+      aiHint: { kind: 'sunTitanReturn', card: target },
     });
-    if (pick.length) await E.reanimate(ctx.g, ctx.you, pick[0]);
+    if (choice === 'yes') await E.reanimate(ctx.g, ctx.you, target);
   }
   SC['Vengeful Ancestor'] = {
     triggers: [

@@ -625,16 +625,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // additional cost feasibility (sac/discard)
       const ac = card.def.addlCost;
-      if (ac && !alt) {
+      if (ac && !(alt && alt.adventure)) {
         if (ac.sacCreature && !this.creatures(p).some(c => this.canSacrifice(c))) return;
         if (ac.sacArtifactOrCreature && !this.bf().some(c => c.ctrl === p &&
           (c.is('Artifact') || c.is('Creature')) && this.canSacrifice(c))) return;
         if (ac.discard && p.hand.filter(c => c !== card).length < ac.discard) return;
+        if (ac.discardOrLife && !p.hand.some(c => c !== card) && p.life < ac.discardOrLife) return;
       }
       // targets must exist — osim za X-spellove, gdje X (a time i legalne mete)
       // još nije izabran, pa bi provjera bila lažno negativna
       if (!cost.x) {
-        const specs = this.spellTargetSpecs(card, castOpts);
+        const specs = this.spellTargetSpecs(card, castOpts, p);
         if (specs) {
           for (const spec of specs) {
             if (!spec.upTo && this.legalTargets(spec, card, p).length < (spec.count ?? 1)) return;
@@ -771,6 +772,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     for (const owner of this.players) for (const card of owner.exile) {
       if (!card.is('Land') || !card.meta || card.meta.playableBy !== p || !this.hasExilePlayPermission(p, card)) continue;
+      if (card.meta.spellsOnly) continue;
       if (card.meta.playableCondition && !card.meta.playableCondition(this, p, card)) continue;
       out.push(card);
     }
@@ -785,7 +787,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return (casts || []).filter(e => e.card.zone !== 'hand' && e.from !== 'command');
   };
 
-  G.spellTargetSpecs = function (card, castOpts) {
+  G.spellTargetSpecs = function (card, castOpts, caster = card.owner) {
     const d = card.def;
     if (castOpts && castOpts.splitHalf && d.splitHalves && d.splitHalves[castOpts.splitHalf]) {
       return d.splitHalves[castOpts.splitHalf].targets || null;
@@ -798,7 +800,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (castOpts && castOpts.room) return castOpts.room.targets || null;
     if (castOpts && castOpts.overloaded) return null;
     if (d.subtypes && d.subtypes.includes('Aura') && d.auraTarget) return d.auraTarget;
-    if (typeof d.targets === 'function') return d.targets(this, card, castOpts);
+    if (typeof d.targets === 'function') return d.targets(this, card, castOpts, caster);
     return d.targets || null;
   };
 
@@ -941,7 +943,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
 
     // targets
-    let specs = this.spellTargetSpecs(card, castOpts);
+    let specs = this.spellTargetSpecs(card, castOpts, p);
     if (specs) {
       if (mode && d.modes) {
         specs = [];
@@ -976,17 +978,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // additional costs
     const ac = castOpts.adventure ? null : d.addlCost;
-    const paidAddl = { sacd: [], discarded: [], life: 0, blightCard: null, blightN: 0 };
-    if (ac && !castOpts.free) {
-      if (ac.sacCreature || ac.sacArtifactOrCreature || ac.sacAnyCreatures) {
+    const paidAddl = { sacd: [], discarded: [], life: 0, blightCard: null, blightN: 0, choice: null };
+    if (ac) {
+      if (ac.sacCreature || ac.sacArtifactOrCreature || ac.sacAnyCreatures || ac.sacCreaturesEqualTargets) {
         const pool = this.bf().filter(c => c.ctrl === p &&
           (ac.sacCreature ? c.is('Creature') : ac.sacArtifactOrCreature ? (c.is('Artifact') || c.is('Creature')) : c.is('Creature')) &&
           this.canSacrifice(c));
-        const min = ac.sacAnyCreatures ? 0 : 1;
-        const max = ac.sacAnyCreatures ? pool.length : 1;
+        const targetCount = ac.sacCreaturesEqualTargets
+          ? (so.targets || []).flat().filter(Boolean).length
+          : null;
+        const min = targetCount !== null ? targetCount : (ac.sacAnyCreatures ? 0 : 1);
+        const max = targetCount !== null ? targetCount : (ac.sacAnyCreatures ? pool.length : 1);
+        if (pool.length < min) return false;
         const picked = await p.controller.decide(this, {
           type: 'chooseCards', from: pool, min, max, prompt: `${card.name}: žrtvuj (${min}-${max})`,
-          aiHint: { kind: 'addlSac', card },
+          aiHint: { kind: ac.aiKind || 'addlSac', card, required: min },
         });
         if (picked.length < min) return false;
         paidAddl.sacd = picked;
@@ -999,6 +1005,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         if (picked.length < ac.discard) return false;
         paidAddl.discarded = picked;
+      }
+      if (ac.discardOrLife) {
+        const discardPool = p.hand.filter(c => c !== card);
+        const options = [];
+        if (discardPool.length) options.push({ key: 'discard', label: 'Odbaci kartu' });
+        if (p.life >= ac.discardOrLife) options.push({ key: 'life', label: `Plati ${ac.discardOrLife} života` });
+        if (!options.length) return false;
+        const choice = options.length === 1 ? options[0].key : await p.controller.decide(this, {
+          type: 'chooseOption', prompt: `${card.name}: dodatna cijena`, options,
+          aiHint: { kind: ac.choiceKind || 'discardOrLife', card, life: ac.discardOrLife },
+        });
+        paidAddl.choice = options.some(option => option.key === choice) ? choice : options[0].key;
+        if (paidAddl.choice === 'discard') {
+          const picked = await p.controller.decide(this, {
+            type: 'chooseCards', from: discardPool, min: 1, max: 1,
+            prompt: `${card.name}: odbaci kartu`, aiHint: { kind: 'addlDiscard', card },
+          });
+          if (!picked.length) return false;
+          paidAddl.discarded.push(picked[0]);
+        } else paidAddl.life += ac.discardOrLife;
       }
       if (ac.lifeX) {
         const targeted = (so.targets || []).flat().filter(Boolean).length;
@@ -1133,12 +1159,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     so.sacdN = paidAddl.sacd.length;
     so.sacdSnaps = paidAddl.sacd.map(c => this.snapshot(c));
     so.discardedCards = paidAddl.discarded.slice();
-    for (const c of paidAddl.sacd) await this.sacrifice(p, c);
+    if (paidAddl.sacd.length) await this.sacrificeMany(p, paidAddl.sacd);
     for (const c of paidAddl.discarded) await this.discard(p, [c]);
     if (paidAddl.life) await this.loseLife(p, paidAddl.life, card.name);
     if (paidAddl.blightCard) await this.addM1(paidAddl.blightCard, paidAddl.blightN, p);
     so.additionalLifePaid = paidAddl.life;
     so.additionalBlightPaid = paidAddl.blightN;
+    so.additionalCostChoice = paidAddl.choice;
     for (const c of delveExiled) await this.move(c, 'exile');
     for (const c of escapeExiled) await this.move(c, 'exile');
 
@@ -1146,7 +1173,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.remove(card);
     const fromZone = card.zone;
     if (castOpts.consumeExilePermission && card.meta) {
-      for (const key of ['playableBy', 'playableUntil', 'playableUntilOwnTurn', 'freePlay', 'anyColor', 'exileAfterPlay']) {
+      for (const key of ['playableBy', 'playableUntil', 'playableUntilOwnTurn', 'freePlay', 'anyColor', 'exileAfterPlay', 'spellsOnly']) {
         delete card.meta[key];
       }
     }
@@ -1328,7 +1355,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       .map(target => ({ target, ward: Object.assign({}, target.cur.wardCost) }));
     // new targets?
     if (opts.mayNewTargets && so.targets.length) {
-      const specs = so.targetSpecs || this.spellTargetSpecs(so.card, so.castOpts || {});
+      const specs = so.targetSpecs || this.spellTargetSpecs(so.card, so.castOpts || {}, ctrl);
       if (specs) {
         const redo = await ctrl.controller.decide(this, {
           type: 'chooseOption', prompt: `Kopija ${so.name}: nove mete?`,
@@ -2705,6 +2732,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   // Combat
   // ============================================================
+  G.chooseAttackingDestination = async function (ctrl, restrictedDefender, token, sourceLabel) {
+    const defenders = restrictedDefender
+      ? [restrictedDefender]
+      : this.players.filter(player => player !== ctrl && !player.lost);
+    let candidates = [];
+    for (const defender of defenders) {
+      if (!defender || defender.lost || defender === ctrl) continue;
+      candidates.push(defender);
+      candidates.push(...this.bf().filter(card => card.ctrl === defender && card.is('Planeswalker')));
+    }
+    // Ovi tokeni nisu proglašeni kao napadači (CR 508.4), pa declaration-only
+    // zabrane i porezi ne ograničavaju odredište koje njihov efekat dopušta.
+    if (!candidates.length) return restrictedDefender || null;
+    if (candidates.length === 1) return candidates[0];
+    const options = candidates.map((target, index) => ({
+      key: String(index),
+      label: target instanceof MTG.Player ? target.name : `${target.name} (${target.ctrl.name})`,
+      target,
+    }));
+    const key = await ctrl.controller.decide(this, {
+      type: 'chooseOption',
+      prompt: `${sourceLabel || token && token.name || 'Token'}: koga napada token?`,
+      options,
+      aiHint: { kind: 'attackDestination', token, restrictedDefender },
+    });
+    const chosen = options.find(option => option.key === String(key));
+    return chosen ? chosen.target : candidates[0];
+  };
+
   G.combatPhase = async function (p) {
     this.phase = 'combat'; this.step = 'begin';
     this.note('phase', {});
@@ -2850,18 +2906,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const tgt = c.attacking instanceof MTG.Player ? c.attacking : (c.attacking && c.attacking.ctrl);
       const others = this.players.filter(o => o !== p && !o.lost && o !== tgt);
       if (!others.length) continue;
-      let go = true;
-      if (!p.isAI) {
-        go = (await p.controller.decide(this, {
-          type: 'chooseOption', prompt: `Myriad (${c.name}): napraviti kopije za ostale protivnike?`,
-          options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
-          aiHint: { kind: 'optTrigger', src: c, name: 'Myriad' },
-        })) === 'yes';
-      }
-      if (!go) continue;
       const hit = [];
       for (const opp of others) {
-        const made = await this.copyPermanentToken(c, p, { tapped: true, attacking: opp });
+        const go = (await p.controller.decide(this, {
+          type: 'chooseOption', prompt: `Myriad (${c.name}): kopija za ${opp.name}?`,
+          options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+          aiHint: { kind: 'myriadCopy', src: c, opponent: opp },
+        })) === 'yes';
+        if (!go) continue;
+        const made = await this.copyPermanentToken(c, p, {
+          tapped: true,
+          attacking: opp,
+          chooseAttacking: (game, token) => game.chooseAttackingDestination(p, opp, token, `Myriad — ${c.name}`),
+        });
         for (const m of made) m.meta.exileEndCombat = true;
         if (made.length) hit.push(opp.name);
       }
@@ -3037,6 +3094,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.isForcedToAttack = function (c) {
     if (c.def.mustAttack) return true;
+    if (c.meta && c.meta.mustAttackTurn === this.turnNo) return true;
     if (c.meta && c.meta.mustAttackPlayer && this.canAttackTarget(c, c.meta.mustAttackPlayer)) return true;
     if (this.goadersOf(c).length) return true;
     for (const e of this.untilEffects) {

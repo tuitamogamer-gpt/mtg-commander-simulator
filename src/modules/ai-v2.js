@@ -483,7 +483,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (action.kind === 'declareBlockers') return action.assignments.length ? `Block: ${action.assignments.map(item => `${item.blocker.name} → ${item.attacker.name}`).join(', ')}` : 'No blocks';
     if (action.kind === 'chooseTargets') return `Targets: ${action.picks.map(target => target.name || target.card && target.card.name || 'stack object').join(', ') || 'none'}`;
     if (action.kind === 'chooseCards') return `Cards: ${action.picks.map(card => card.name).join(', ') || 'none'}`;
-    if (action.kind === 'chooseOption') return `Choose ${String(action.value)}`;
+    if (action.kind === 'chooseOption') return `Choose ${action.option && action.option.label || String(action.value)}`;
     if (action.kind === 'chooseX') return `Choose X=${action.value}`;
     if (action.kind === 'mulligan') return action.value ? 'Mulligan' : 'Keep hand';
     if (action.kind === 'bottomCards') return `Bottom ${action.picks.map(card => card.name).join(', ')}`;
@@ -777,6 +777,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (target instanceof U.Player) {
       if (hint === 'proliferate') return target === player ? -100 : 8 + (target.poison || 0) * 2;
       if (hint === 'drawSelf') return target === player ? 100 : -100;
+      if (hint === 'marduTokenCount') return game.creatures(target).length * 12 - target.idx * 0.001;
       const threat = playerThreatForGame(game, player, target);
       const lethal = target.life <= 7 ? 12 : 0;
       const friendly = target === player ? (/gain|protect|draw/i.test(hint) ? 20 : -30) : 0;
@@ -855,6 +856,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return (card.counters['+1/+1'] || 0) * 5 - permanentGameValue(game, card, player) * 0.35;
     }
     if (hint === 'mariHit') return value;
+    if (hint === 'myrBattlesphere') return 4 - value * 0.03;
     if (hint === 'stationTap') return Math.max(0, card.power) * 4 - value * 0.1;
     if (hint === 'bottomOrder') return -value;
     if (/discard|sacCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) return -value;
@@ -1158,6 +1160,55 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const best = game.creatures(player).map(card => blightRecipientValue(game, player, card, amount))
           .sort((a, b) => b - a)[0];
         breakdown.choice = action.value === 'yes' ? (Number.isFinite(best) ? best + 5.5 : -100) : 0;
+      } else if (hintKind === 'attackDestination') {
+        const target = action.option && action.option.target;
+        if (target instanceof U.Player) {
+          const tokenPower = Math.max(1, q.aiHint && q.aiHint.token && q.aiHint.token.power || 1);
+          breakdown.choice = (40 - target.life) * 0.35 + playerThreatForGame(game, player, target) * 0.16 +
+            (target.life <= tokenPower ? 40 : 0);
+        } else if (target instanceof U.CardInst) {
+          breakdown.choice = permanentGameValue(game, target, player) + Math.max(0, 6 - (target.counters.loyalty || 0));
+        }
+      } else if (hintKind === 'myriadCopy') {
+        const source = q.aiHint && q.aiHint.src;
+        const superTypes = source ? ((source.cur && source.cur.super) || source.def.super || []) : [];
+        const legendary = superTypes.includes('Legendary');
+        const hasValue = source && ((source.def.triggers || []).some(trigger => trigger.on === 'etb' || trigger.on === 'lto' || trigger.on === 'dies'));
+        breakdown.choice = action.value === 'yes' ? (legendary && !hasValue ? -6 : 6) : 0;
+      } else if (hintKind === 'temptingOffer') {
+        const caster = q.aiHint && q.aiHint.caster;
+        const x = Number(q.aiHint && q.aiHint.x || 0);
+        const need = player.life <= 12 ? 1.8 : game.creatures(player).length <= 2 ? 1.2 : 0.75;
+        const casterThreat = caster ? playerThreatForGame(game, player, caster) : 20;
+        breakdown.choice = action.value === 'yes' ? x * need - x * (0.8 + casterThreat / 45) : 0;
+      } else if (hintKind === 'gixDraw') {
+        breakdown.choice = action.value === 'yes'
+          ? (player.library.length ? 4.2 + Math.max(0, 5 - player.hand.length) * 0.6 - (player.life <= 4 ? 8 : 0.5) : -100)
+          : 0;
+      } else if (hintKind === 'bitterTriumphCost') {
+        const cheapest = player.hand.filter(card => card !== q.aiHint.card)
+          .map(card => cardDefinitionValue(card.def)).sort((a, b) => a - b)[0];
+        if (action.value === 'discard') breakdown.choice = Number.isFinite(cheapest) ? -cheapest : -100;
+        else {
+          const lifeCost = Number(q.aiHint.life || 3);
+          breakdown.choice = -lifeCost * (player.life <= 8 ? 3 : player.life <= 15 ? 1.25 : 0.55);
+        }
+      } else if (hintKind === 'fabricate') {
+        const tokenEngines = game.bf().filter(card => card.ctrl === player &&
+          /token|creature.*enter|leaves the battlefield|dies/i.test(card.def.oracle || '')).length;
+        breakdown.choice = action.value === 't' ? 5.5 + tokenEngines * 1.4 : 4.1;
+      } else if (hintKind === 'willMardu') {
+        if (action.value === '0') {
+          breakdown.choice = Math.max(0, ...game.players.filter(target => !target.lost)
+            .map(target => game.creatures(target).length)) * 2.6;
+        } else {
+          const damage = game.creatures(player).length;
+          breakdown.choice = Math.max(0, ...game.bf().filter(card => card.is('Creature') && card.ctrl !== player)
+            .map(card => card.toughness - card.damage <= damage ? permanentGameValue(game, card, player) : 0));
+        }
+      } else if (hintKind === 'sunTitanReturn') {
+        const card = q.aiHint && q.aiHint.card;
+        breakdown.choice = action.value === 'yes' && card ? cardDefinitionValue(card.def) + 2 : 0;
       } else if (hintKind === 'glissaMode') {
         if (action.value === '0') breakdown.choice = 4 + Math.max(0, 5 - player.hand.length) * 0.45;
         if (action.value === '1') {

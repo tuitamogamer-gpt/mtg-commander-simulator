@@ -478,6 +478,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.timestamp = ++IID;
         this.battlefield.push(card);
         card.sick = true;
+        // "Tapped and attacking" je karakteristika samog ulaska, ne izmjena
+        // nakon ETB događaja. ETB filteri zato odmah moraju vidjeti napadača.
+        if (opts.attacking && this.combat) {
+          card.attacking = opts.attacking;
+          card.sick = false;
+          if (!this.combat.attackers.includes(card)) this.combat.attackers.push(card);
+        }
         // CR 400.7: permanent koji uđe na bojno polje je NOV objekat — svjež meta.
         if (fromZone !== 'battlefield') card.meta = {};
         if (opts.faceDownDef) {
@@ -671,8 +678,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async makeTokens(spec, ctrl, opts = {}) {
       // spec: token def name from MTG.TOKENS or inline def; opts: {n, tapped, attacking, copyOf}
       let n = opts.n || 1;
-      let defs = [];
-      for (let i = 0; i < n; i++) defs.push(spec);
+      let defs = Array.isArray(spec) ? spec.slice() : [];
+      if (!Array.isArray(spec)) for (let i = 0; i < n; i++) defs.push(spec);
       // token replacements (Academy Manufactor, Chatterfang)
       if (!opts.noReplace) {
         for (const r of this.replacers('createToken')) {
@@ -689,8 +696,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         c.isToken = true;
         if (opts.copyOf) c.isCopyOf = opts.copyOf;
         c.zone = 'nowhere';
-        await this.move(c, 'battlefield', { ctrl, tapped: opts.tapped });
-        if (opts.attacking && this.combat) { c.attacking = opts.attacking; c.sick = false; this.combat.attackers.push(c); }
+        const attackTarget = typeof opts.chooseAttacking === 'function'
+          ? await opts.chooseAttacking(this, c, made.length, opts.attacking)
+          : opts.attacking;
+        await this.move(c, 'battlefield', { ctrl, tapped: opts.tapped, attacking: attackTarget });
         if (opts.haste) c.meta.tempHaste = true;
         made.push(c);
         ctrl.turnState.tokensCreated++;
@@ -808,7 +817,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (opts.name) def.name = opts.name;
       const made = await this.makeTokens(def, ctrl, {
         n: opts.n || 1, copyOf: def, tapped: opts.tapped, attacking: opts.attacking,
-        noReplace: opts.noReplace, haste: opts.haste,
+        chooseAttacking: opts.chooseAttacking, noReplace: opts.noReplace, haste: opts.haste,
       });
       return made;
     }
@@ -1167,6 +1176,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
 
+    async sacrificeMany(p, cards) {
+      const unique = [...new Set(cards)].filter(card => this.canSacrifice(card));
+      if (!unique.length) return 0;
+      // Jedna instrukcija "sacrifice X/them" je simultan događaj. Sačuvaj
+      // kontrolore svih izvora kako bi LKI sposobnosti vidjele cijeli batch.
+      const previous = this._simultaneousLeaveSources;
+      const batch = unique.map(card => ({ card, ctrl: card.ctrl }));
+      this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
+      try {
+        for (const card of unique) {
+          this.lg(`${p.name} žrtvuje ${card.name}.`, 'sac');
+          await this.move(card, 'graveyard');
+          await this.emit('sacrificed', { player: p, card });
+        }
+      } finally {
+        this._simultaneousLeaveSources = previous;
+      }
+      return unique.length;
+    }
+
     async destroy(card, opts = {}) {
       if (card.zone !== 'battlefield') return false;
       if (card.kw('indestructible') && !opts.ignoreIndestructible) {
@@ -1219,7 +1248,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         doomed.push(card);
       }
-      for (const card of doomed) if (card.zone === 'battlefield') await this.move(card, 'graveyard');
+      const previous = this._simultaneousLeaveSources;
+      const batch = doomed.map(card => ({ card, ctrl: card.ctrl }));
+      this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
+      try {
+        for (const card of doomed) if (card.zone === 'battlefield') await this.move(card, 'graveyard');
+      } finally {
+        this._simultaneousLeaveSources = previous;
+      }
       return doomed.length;
     }
 
@@ -1426,20 +1462,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // ============================================================
     collectTriggers(name, data) {
       const found = [];
-      const consider = (card, zoneOK) => {
+      const seen = new Map();
+      const consider = (card, zoneOK, ctrlOverride) => {
         if (card.cur && card.cur.abilitiesDisabled) return;
         const trigs = card.def.triggers;
         if (!trigs) return;
         for (const t of trigs) {
+          let cardSeen = seen.get(card);
+          if (!cardSeen) { cardSeen = new Set(); seen.set(card, cardSeen); }
+          if (cardSeen.has(t)) continue;
           if (t.on !== name) continue;
           const zone = t.zone || 'battlefield';
           if (!zoneOK(zone)) continue;
           if (t.oncePerTurn && card.meta['_once_' + t.on] === this.turnNo) continue;
           try { if (t.filter && !t.filter(this, card, data)) continue; } catch (e) { continue; }
-          found.push({ card, t });
+          cardSeen.add(t);
+          found.push({ card, t, ctrlOverride });
         }
       };
       for (const c of this.bf()) consider(c, z => z === 'battlefield');
+      // Fizička reprezentacija simultanog leave/dies događaja pomjera karte
+      // jednu po jednu. Izvori iz cijelog batcha ipak ostaju dostupni preko LKI.
+      if (name === 'dies' || name === 'lto') {
+        for (const entry of (this._simultaneousLeaveSources || [])) {
+          consider(entry.card, z => z === 'battlefield', entry.ctrl);
+        }
+      }
       // dying/leaving card's own leave-triggers
       if ((name === 'dies' || name === 'lto') && data.card) {
         const dc = data.card;
@@ -1458,7 +1506,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async emit(name, data) {
       const found = this.collectTriggers(name, data || {});
-      for (const { card, t } of found) {
+      for (const { card, t, ctrlOverride } of found) {
         if (t.oncePerTurn) card.meta['_once_' + t.on] = this.turnNo;
         // Veyran doubling: magecraft-style triggers fire twice
         let times = 1;
@@ -1474,7 +1522,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (let i = 0; i < times; i++) {
           this.queueTrigger({
             src: card,
-            ctrl: typeof t.controller === 'function' ? t.controller(this, card, data || {}) : t.controller,
+            ctrl: typeof t.controller === 'function'
+              ? t.controller(this, card, data || {})
+              : (t.controller || ctrlOverride),
             name: t.desc || name, run: t.run, targets: t.targets, modes: t.modes,
             prepareTargets: t.prepareTargets,
             opt: t.opt, data, onlyIf: t.onlyIf,

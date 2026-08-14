@@ -744,7 +744,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // ovako bio potpuno neigriv). Uzimamo koliko treba, najmanje vrijedne prvo.
           return byValAsc.slice(0, Math.max(min, max || 0));
         }
-        case 'sacCost': case 'forcedSac': case 'sacToken': case 'sacX': case 'braidsSac': {
+        case 'sacCost': case 'addlSac': case 'eliminateSacrifice': case 'forcedSac': case 'sacToken': case 'sacX': case 'braidsSac': {
           const sorted = byThreatAsc;
           if (kind === 'sacX') {
             // sacrifice tokens only, small number
@@ -822,6 +822,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const sorted = from.slice().sort((a, b) => Math.max(0, b.power) - Math.max(0, a.power));
           return [sorted[0]];
         }
+        case 'myrBattlesphere': return from.slice(0, max);
         case 'counterCost': {
           const bad = card => (card.counters['-1/-1'] || 0) + (card.counters.stun || 0) +
             (card.counters.finality || 0) + (card.counters.doom || 0);
@@ -909,6 +910,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const best = g.creatures(this.p).map(card => this.blightRecipientScore(g, card, n)).sort((a, b) => b - a)[0];
           return Number.isFinite(best) && best > -7 && keys.includes('yes') ? 'yes' : 'no';
         }
+        case 'attackDestination': {
+          const offered = q.options.filter(option => option.target);
+          const players = offered.filter(option => option.target instanceof U.Player)
+            .sort((a, b) => this.playerThreat(g, b.target) - this.playerThreat(g, a.target)
+              || a.target.life - b.target.life || a.target.idx - b.target.idx);
+          if (players.length) return players[0].key;
+          return offered[0] ? offered[0].key : keys[0];
+        }
+        case 'myriadCopy': return keys.includes('yes') ? 'yes' : keys[0];
+        case 'temptingOffer': {
+          const caster = q.aiHint && q.aiHint.caster;
+          const accept = this.p.life <= 12 || g.creatures(this.p).length <= 2 || !caster || this.playerThreat(g, caster) < 28;
+          return accept && keys.includes('yes') ? 'yes' : (keys.includes('no') ? 'no' : keys[0]);
+        }
+        case 'gixDraw': return this.p.life > 4 && this.p.library.length && keys.includes('yes') ? 'yes' : (keys.includes('no') ? 'no' : keys[0]);
+        case 'bitterTriumphCost': {
+          const hasDiscard = this.p.hand.some(card => card !== (q.aiHint && q.aiHint.card));
+          if (hasDiscard && (this.p.life <= 14 || !keys.includes('life')) && keys.includes('discard')) return 'discard';
+          return keys.includes('life') ? 'life' : keys[0];
+        }
+        case 'fabricate': {
+          const tokenEngine = g.bf().some(card => card.ctrl === this.p && /token|dies|leaves the battlefield/i.test(card.def.oracle || ''));
+          return tokenEngine && keys.includes('t') ? 't' : (keys.includes('c') ? 'c' : keys[0]);
+        }
+        case 'willMardu': {
+          const maxOppCreatures = Math.max(0, ...g.players.filter(player => player !== this.p && !player.lost)
+            .map(player => g.creatures(player).length));
+          return maxOppCreatures >= 3 && keys.includes('0') ? '0' : (keys.includes('1') ? '1' : keys[0]);
+        }
+        case 'sunTitanReturn': return keys.includes('yes') ? 'yes' : keys[0];
         case 'glissaMode': {
           const enchantment = g.bf().filter(card => card.is('Enchantment') && card.ctrl !== this.p)
             .sort((a, b) => this.permThreat(g, b) - this.permThreat(g, a))[0];

@@ -894,6 +894,128 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'marduHuman') {
+      void (async () => {
+        const take = name => {
+          const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+          g.remove(card);
+          card.ctrl = ui.me; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        const addFreshToken = tokenName => {
+          const token = new MTG.CardInst(MTG.TOKENS[tokenName], ui.me);
+          token.ctrl = ui.me; token.zone = 'battlefield'; token.isToken = true; token.sick = false;
+          token.meta._enteredTurn = 18;
+          g.battlefield.push(token);
+          return token;
+        };
+        const settle = async () => {
+          let guard = 0;
+          while ((g.pendingTriggers.length || g.stack.length) && guard++ < 120) {
+            await g.flushTriggers();
+            if (g.stack.length) await g.resolveTop();
+          }
+          if (guard >= 120) throw new Error('Mardu human scenario trigger guard');
+        };
+        const zurgo = take('Zurgo Stormrender');
+        zurgo.commander = true;
+        const storm = take('Redoubled Stormsinger');
+        addFreshToken('servo'); addFreshToken('servo'); addFreshToken('warriorR');
+        const first = g.players.find(player => player !== ui.me && !player.lost);
+        const walkerOwner = g.players.find(player => player !== ui.me && player !== first && !player.lost) || first;
+        const walker = new MTG.CardInst(MTG.DEFS['Kaya, Geist Hunter'], walkerOwner);
+        walker.ctrl = walkerOwner; walker.zone = 'battlefield'; walker.sick = false; walker.counters.loyalty = 6;
+        g.battlefield.push(walker);
+        g.turnPlayer = ui.me; g.turnNo = 18; g.phase = 'combat'; g.step = 'attackers'; g.paced = false;
+        g.combat = { attackers: [zurgo, storm], defenders: new Map() };
+        zurgo.attacking = first; zurgo.tapped = true;
+        storm.attacking = first; storm.tapped = true;
+        g.recalc();
+        ui.toast('Mardu human: poredaj Zurgo/Stormsinger triggere, pa za svaki novi token izaberi igrača ili planeswalkera kojeg napada.');
+        await g.emit('attacks', { card: zurgo, player: ui.me, defender: first });
+        await g.emit('attacks', { card: storm, player: ui.me, defender: first });
+        await settle();
+        for (const card of g.bf()) card.attacking = null;
+        g.combat = null;
+        g.step = '';
+        await g.emit('endStep', { player: first });
+        await settle();
+        const temporary = g.bf().filter(card => card.isToken && card.attacking).length;
+        g.lg(`Mardu human provjera: privremeni napadači na tabli=${temporary}; ruka=${ui.me.hand.length}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Mardu human scenario: attack izbori, simultani sacrifice i Zurgo LKI su razriješeni.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'marduAI') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Mardu Surge');
+        if (!bot) throw new Error('marduAI scenario zahtijeva smokeAIDeck=Mardu Surge');
+        const takeBot = name => {
+          const zones = [bot.command, bot.hand, bot.library, bot.graveyard, bot.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], bot);
+          g.remove(card);
+          card.ctrl = bot; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        const addBotToken = tokenName => {
+          const token = new MTG.CardInst(MTG.TOKENS[tokenName], bot);
+          token.ctrl = bot; token.zone = 'battlefield'; token.isToken = true; token.sick = false;
+          token.meta._enteredTurn = 19;
+          g.battlefield.push(token);
+          return token;
+        };
+        const settle = async () => {
+          let guard = 0;
+          while ((g.pendingTriggers.length || g.stack.length) && guard++ < 160) {
+            await g.flushTriggers();
+            if (g.stack.length) await g.resolveTop();
+          }
+          if (guard >= 160) throw new Error('Mardu AI scenario trigger guard');
+        };
+        const zurgo = takeBot('Zurgo Stormrender');
+        zurgo.commander = true;
+        const storm = takeBot('Redoubled Stormsinger');
+        const angel = takeBot('Angel of Invention');
+        takeBot('Bastion of Remembrance');
+        const sphere = takeBot('Myr Battlesphere');
+        addBotToken('servo'); addBotToken('servo');
+        addBotToken('myr'); addBotToken('myr'); addBotToken('myr');
+        const walker = new MTG.CardInst(MTG.DEFS['Kaya, Geist Hunter'], ui.me);
+        walker.ctrl = ui.me; walker.zone = 'battlefield'; walker.sick = false; walker.counters.loyalty = 8;
+        g.battlefield.push(walker);
+        g.turnPlayer = bot; g.turnNo = 19; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        await g.emit('etb', { card: angel });
+        await settle();
+        g.phase = 'combat'; g.step = 'attackers';
+        g.combat = { attackers: [zurgo, storm, sphere], defenders: new Map() };
+        zurgo.attacking = ui.me; zurgo.tapped = true;
+        storm.attacking = ui.me; storm.tapped = true;
+        sphere.attacking = walker; sphere.tapped = true;
+        await g.emit('attacks', { card: zurgo, player: bot, defender: ui.me });
+        await g.emit('attacks', { card: storm, player: bot, defender: ui.me });
+        await g.emit('attacks', { card: sphere, player: bot, defender: walker });
+        await settle();
+        const tokenRoutes = [...new Set(g.bf().filter(card => card.isToken && card.attacking)
+          .map(card => card.attacking.name))];
+        for (const card of g.bf()) card.attacking = null;
+        g.combat = null;
+        g.step = '';
+        await g.emit('endStep', { player: ui.me });
+        await settle();
+        const recent = (g.aiDecisionLog || []).filter(entry => entry.playerName === bot.name).slice(-12);
+        g.lg(`Mardu AI provjera: Servi=${g.creatures(bot).filter(card => card.isToken && card.hasSub('Servo')).length}; token mete=${tokenRoutes.join(', ') || 'nema'}; Kaya loyalty=${walker.counters.loyalty || 0}; odluke=${recent.length}; fallback=${recent.some(entry => entry.fallback) ? 'DA' : 'NE'}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Mardu AI scenario: Fabricate, Stormsinger, Mobilize i Battlesphere odluke su razriješene.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     g.start().catch(err => {
       console.error(err);
       ui.toast('Greška u igri: ' + err.message);
