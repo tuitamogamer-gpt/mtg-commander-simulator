@@ -646,6 +646,69 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'covenHuman') {
+      void (async () => {
+        const take = name => {
+          const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+          g.remove(card);
+          card.ctrl = ui.me; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        const vanguard = take("Sigarda's Vanguard");
+        take("Avacyn's Pilgrim");
+        take('Dawnhart Wardens');
+        take('Wall of Mourning');
+        g.turnPlayer = ui.me; g.turnNo = 12; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        ui.toast('Coven human: izaberi bilo koji broj stvorenja, ali svako mora imati različitu snagu.');
+        await g.emit('etb', { card: vanguard });
+        await g.flushTriggers();
+        await g.resolveTop();
+        g.lg(`Coven human provjera: ${g.creatures(ui.me).filter(card => card.kw('double strike')).map(card => card.name).join(', ') || 'niko'} dobija double strike.`, 'ai');
+        ui.showLog = true;
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'covenAI') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Coven Counters');
+        if (!bot) throw new Error('covenAI scenario zahtijeva smokeAIDeck=Coven Counters');
+        const takeBot = name => {
+          const zones = [bot.command, bot.hand, bot.library, bot.graveyard, bot.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], bot);
+          g.remove(card);
+          card.ctrl = bot; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        const leinore = takeBot('Leinore, Autumn Sovereign');
+        const pilgrim = takeBot("Avacyn's Pilgrim");
+        const wardens = takeBot('Dawnhart Wardens');
+        const siege = new MTG.CardInst(MTG.DEFS['Citadel Siege'], bot);
+        siege.ctrl = bot; siege.zone = 'battlefield'; siege.sick = false;
+        g.battlefield.push(siege);
+        g.turnPlayer = bot; g.turnNo = 13; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        await siege.def.asEnters(g, siege);
+        const upgrade = [bot.hand, bot.library, bot.graveyard, bot.exile].flat()
+          .find(card => card.name === 'Biogenic Upgrade') || new MTG.CardInst(MTG.DEFS['Biogenic Upgrade'], bot);
+        g.remove(upgrade); upgrade.zone = 'hand'; bot.hand.push(upgrade);
+        bot.pool.G = 2; bot.pool.C = 4;
+        await g.castSpell(bot, upgrade, { from: 'hand' });
+        g.phase = 'combat'; g.step = 'begin';
+        await g.emit('beginCombat', { player: bot });
+        await g.flushTriggers();
+        while (g.stack.length && !g.gameOver) await g.resolveTop();
+        g.lg(`Coven AI provjera: Siege=${siege.meta.siege}; Leinore ${leinore.power}; Pilgrim ${pilgrim.power}; Wardens ${wardens.power}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Coven AI scenario: Citadel režim, raspodjela countera i combat Coven su razriješeni.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     if (smokeScenario === 'blightHuman') {
       void (async () => {
         const take = name => {

@@ -827,6 +827,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!(card instanceof U.CardInst)) return 0;
     const hint = q.aiHint && q.aiHint.kind || '';
     const value = cardDefinitionValue(card.def) + (card.commander ? 8 : 0);
+    if (hint === 'celestialKeep') {
+      return card.ctrl === player ? permanentGameValue(game, card, player) * 1.5 : -permanentGameValue(game, card, player);
+    }
+    if (hint === 'covenDifferentPowers' || hint === 'bolster') {
+      return card.ctrl === player ? permanentGameValue(game, card, player) + (card.counters['+1/+1'] || 0) * 0.8 : -100;
+    }
+    if (hint === 'moorlandRescuer' || hint === 'wallMourning') return value * 1.25;
     if (hint === 'blight') return blightRecipientValue(game, player, card, q.aiHint && q.aiHint.n || 1);
     if (hint === 'eventidePermanents') {
       return Object.entries(card.counters || {}).reduce((sum, [kind, amount]) =>
@@ -1167,6 +1174,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         breakdown.choice = target ? -counterRemovalValue(target, player, action.value, 1) * 4 : 0;
       } else if (hintKind === 'creatureType') {
         breakdown.choice = Number(action.option && action.option.keepValue || 0) * 1.4;
+      } else if (hintKind === 'citadelSiege') {
+        const own = game.creatures(player);
+        const hostile = game.bf().filter(card => card.is('Creature') && card.ctrl !== player);
+        const counterSynergy = own.filter(card => (card.counters['+1/+1'] || 0) > 0 ||
+          /counter|coven/i.test(card.def.oracle || '')).length;
+        const tapValue = hostile.reduce((best, card) => Math.max(best, permanentGameValue(game, card, player)), 0);
+        breakdown.choice = action.value === 'khans'
+          ? (own.length ? 8 + counterSynergy * 3 : -2)
+          : (hostile.length ? 2 + tapValue * 0.35 : -3);
+      } else if (hintKind === 'eternalWitness') {
+        breakdown.choice = action.value === 'yes' ? cardDefinitionValue(q.aiHint.card.def) + 2 : 0;
+      } else if (hintKind === 'enduringScalelord') {
+        breakdown.choice = action.value === 'yes' ? 5 : 0;
+      } else if (hintKind === 'lifecrafterPay') {
+        breakdown.choice = action.value === 'yes' ? 4 + Math.max(0, 5 - player.hand.length) * 0.4 : 0;
       } else if (hintKind === 'typhoidMary') {
         if (action.value === 't') breakdown.choice = 2.8 + (availableManaEstimate(game, player) < 5 ? 0.8 : 0);
         if (action.value === 'd') breakdown.choice = 3.5 + Math.max(0, 5 - player.hand.length) * 0.85;
@@ -1350,6 +1372,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const target = q.aiHint.target;
         const lethal = target ? Math.max(1, target.toughness - target.damage) : 1;
         breakdown.choice = target && x >= lethal ? permanentGameValue(game, target, player) : -Math.abs(lethal - x) * 2;
+      } else if (q && q.aiHint && q.aiHint.kind === 'counterDistribution') {
+        const x = Number(action.value) || 0;
+        const target = q.aiHint.target;
+        const others = game.creatures(player).filter(card => card !== target);
+        const before = new Set(others.map(card => Number(card.power) || 0));
+        const afterPower = target ? (Number(target.power) || 0) + x : x;
+        const preservesDistinctPower = before.has(afterPower) ? -3.5 : 3.5;
+        breakdown.choice = x * 0.65 + preservesDistinctPower + (target ? permanentGameValue(game, target, player) * 0.08 : 0);
       } else breakdown.choice = action.value * 0.7;
       const source = q && q.src;
       if (source && /lose.*life|pay.*life/i.test(source.def && source.def.oracle || '')) breakdown.safety -= action.value * 0.5;

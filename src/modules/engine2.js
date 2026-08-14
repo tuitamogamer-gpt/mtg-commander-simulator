@@ -182,7 +182,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.manaSolve = function (p, cost, forSpell, opts = {}) {
     // cost: parsed {generic, x, pips} with x already multiplied in via opts.xVal
     const pips = cost.pips.slice();
-    let generic = cost.generic + (opts.xVal || 0) * (cost.x || 0);
+    let generic = Math.max(0, cost.generic + (opts.xVal || 0) * (cost.x || 0) - (cost.xReduction || 0));
     // first: use floating pool
     const pool = Object.assign({}, p.pool);
     const usedPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
@@ -347,7 +347,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // activate sources: plain producers first, converters (which consume mana) last.
     // Sva produkcija ulazi u pool; na kraju se CIJELA cijena skida iz poola.
     const steps = sol.plan.slice().sort((a, b) => (a.consume ? 1 : 0) - (b.consume ? 1 : 0));
-    const genTotal0 = cost.generic + (opts.xVal || 0) * (cost.x || 0);
+    const genTotal0 = Math.max(0, cost.generic + (opts.xVal || 0) * (cost.x || 0) - (cost.xReduction || 0));
     const needColors = cost.pips.map(pp => pp.find(c => COLORS.includes(c))).filter(Boolean);
     let phyPaidWithLife = 0;
     for (const step of steps) {
@@ -365,7 +365,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (forSpell && forSpell.card) forSpell.card.meta._payColors = [...this._payColors];
     if (forSpell) forSpell.phyrexianLifePaid = phyPaidWithLife;
     // spent tracking for expend
-    const total = genTotal + cost.pips.length;
+    // Convoke and Phyrexian life pay a portion of the total cost without
+    // spending mana.  Effects such as Kurbis and expend care about the mana
+    // actually spent, not the spell's final total cost.
+    const convoked = forSpell && forSpell.convokedCards ? forSpell.convokedCards.length : 0;
+    const total = Math.max(0, genTotal + cost.pips.length - phyPaidWithLife - convoked);
+    if (forSpell) forSpell.manaSpent = total;
     if (opts.isSpell) await this.trackSpentOnSpell(p, total);
     this.note('mana', { p });
     return true;
@@ -529,7 +534,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (r.filter(this, card)) generic += r.delta;
       }
     }
+    // A generic reduction larger than the printed generic component may also
+    // reduce X.  Preserve that residual instead of discarding it at zero.
     cost.generic = Math.max(0, generic);
+    cost.xReduction = Math.max(0, -generic);
     // "Spend mana as though it were mana of any color" mijenja samo način
     // plaćanja obojenih pipova; mana value i generički dio ostaju isti.
     if (castOpts.asThoughAnyColor) {
@@ -846,7 +854,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let kicked = false;
     if (d.kicker && !castOpts.free) {
       const kCost = U.parseCost(d.kicker.cost);
-      const combined = { generic: cost.generic + kCost.generic, x: cost.x, pips: cost.pips.concat(kCost.pips) };
+      const combined = { generic: cost.generic + kCost.generic, x: cost.x, xReduction: cost.xReduction || 0, pips: cost.pips.concat(kCost.pips) };
       if (this.canPayMana(p, combined, { card }, { xVal })) {
         const yes = await p.controller.decide(this, {
           type: 'chooseOption', prompt: `Kicker ${d.kicker.cost} za ${card.name}?`,
@@ -863,7 +871,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const rCost = U.parseCost(repCostStr);
       let maxN = 0;
       for (let k = 1; k <= 4; k++) {
-        const comb = { generic: cost.generic + rCost.generic * k, x: cost.x, pips: cost.pips.concat(Array(k).fill(rCost.pips).flat()) };
+        const comb = { generic: cost.generic + rCost.generic * k, x: cost.x, xReduction: cost.xReduction || 0, pips: cost.pips.concat(Array(k).fill(rCost.pips).flat()) };
         if (this.canPayMana(p, comb, { card }, { xVal })) maxN = k; else break;
       }
       if (maxN > 0) {
@@ -889,7 +897,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (offspringCost && !castOpts.free) {
       const oCost = U.parseCost(offspringCost);
-      const combined = { generic: cost.generic + oCost.generic, x: cost.x, pips: cost.pips.concat(oCost.pips) };
+      const combined = { generic: cost.generic + oCost.generic, x: cost.x, xReduction: cost.xReduction || 0, pips: cost.pips.concat(oCost.pips) };
       if (this.canPayMana(p, combined, { card }, { xVal })) {
         const yes = await p.controller.decide(this, {
           type: 'chooseOption', prompt: `Offspring ${offspringCost} za ${card.name} (1/1 kopija)?`,
@@ -956,6 +964,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         so.targets = ctx.targets;
         so.wardTargets = ctx.wardTargets;
       }
+    }
+
+    // Some spells lock in a division or another target-dependent choice while
+    // they are being cast (for example Biogenic Upgrade).  Keep that choice on
+    // the stack object so responses cannot retroactively change it.
+    if (typeof d.prepareTargets === 'function') {
+      const prepared = await d.prepareTargets({ g: this, src: card, you: p, so, targets: so.targets });
+      if (prepared === false) return false;
     }
 
     // additional costs
@@ -1106,6 +1122,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     so.foundrySource = paySpell.foundrySource || null;
     so.convokedCards = (paySpell.convokedCards || []).slice();
     so.phyrexianLifePaid = paySpell.phyrexianLifePaid || 0;
+    so.manaSpent = paySpell.manaSpent || 0;
     so.grantedSunburstColors = 0;
     if (p.sunburstGrant && p.sunburstGrant.turn === this.turnNo) {
       if (card.is('Artifact')) so.grantedSunburstColors = (card.meta._payColors || []).length;
@@ -1138,6 +1155,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     card.zone = 'stack';
     card.castMeta = {
       x: xVal, alt: castOpts, from: so.from, kicked, offspring,
+      manaSpent: so.manaSpent,
+      castPhase: this.phase,
       artifactManaSpent: so.artifactManaSpent,
       grantedSunburstColors: so.grantedSunburstColors,
       phyrexianLifePaid: so.phyrexianLifePaid,
@@ -1297,6 +1316,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       kind: 'spell', card: so.card, ctrl, name: so.name + ' (kopija)', targets: so.targets.slice(),
       x: so.x, mode: so.mode, castOpts: so.castOpts, kicked: so.kicked, copyOf: so, isCopy: true,
       targetSpecs: so.targetSpecs || null,
+      counterDistribution: so.counterDistribution ? so.counterDistribution.map(entry => Object.assign({}, entry)) : null,
     };
     // forceTarget: kopija ide na tačno određenu metu (Mirrorwing Dragon)
     if (opts.forceTarget) {
@@ -1322,6 +1342,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
     }
+    if (copy.counterDistribution) {
+      const amounts = copy.counterDistribution.map(entry => entry.n);
+      copy.counterDistribution = (copy.targets || []).flat().filter(Boolean)
+        .slice(0, amounts.length).map((target, index) => ({ iid: target.iid, n: amounts[index] }));
+    }
     this.stack.push(copy);
     this.queueWardTriggers(copy, { wardTargets });
     this.note('stack', {});
@@ -1332,7 +1357,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.copyStackAbility = async function (so, ctrl, opts = {}) {
     if (!so || (so.kind !== 'trigger' && so.kind !== 'ability')) return null;
-    const copyCtx = Object.assign({}, so.ctx, { targets: (so.ctx.targets || []).slice(), you: ctrl });
+    const copyCtx = Object.assign({}, so.ctx, {
+      targets: (so.ctx.targets || []).slice(), you: ctrl,
+      counterDistribution: so.ctx.counterDistribution
+        ? so.ctx.counterDistribution.map(entry => Object.assign({}, entry)) : null,
+    });
     const copy = {
       kind: so.kind, name: `${so.name} (kopija)`, ctrl, ctx: copyCtx, run: so.run,
       targets: copyCtx.targets, srcCard: so.srcCard, targetSpecs: so.targetSpecs || null,
@@ -1350,6 +1379,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const ok = await this.pickTargets(copyCtx, copy.targetSpecs, so.srcCard, ctrl);
         if (ok) { copy.targets = copyCtx.targets; wardTargets = copyCtx.wardTargets; }
       }
+    }
+    if (copyCtx.counterDistribution) {
+      const amounts = copyCtx.counterDistribution.map(entry => entry.n);
+      copyCtx.counterDistribution = (copy.targets || []).flat().filter(Boolean)
+        .slice(0, amounts.length).map((target, index) => ({ iid: target.iid, n: amounts[index] }));
     }
     this.stack.push(copy);
     this.queueWardTriggers(copy, { wardTargets });

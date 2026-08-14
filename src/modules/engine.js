@@ -1476,6 +1476,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             src: card,
             ctrl: typeof t.controller === 'function' ? t.controller(this, card, data || {}) : t.controller,
             name: t.desc || name, run: t.run, targets: t.targets, modes: t.modes,
+            prepareTargets: t.prepareTargets,
             opt: t.opt, data, onlyIf: t.onlyIf,
           });
         }
@@ -1596,6 +1597,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (targetSpecs && targetSpecs.length) {
         const ok = await this.pickTargets(ctx, targetSpecs, tr.src, ctrl);
         if (!ok) return; // no legal targets → fizzle
+      }
+      const selectedMode = mode !== null ? tr.modes.list[mode] : null;
+      const prepareTargets = selectedMode && selectedMode.prepareTargets || tr.prepareTargets;
+      if (typeof prepareTargets === 'function') {
+        const prepared = await prepareTargets(ctx);
+        if (prepared === false) return;
       }
       // Crime se počini čim trigger cilja protivnika, njegov permanent, spell
       // ili kartu u njegovom groblju — ne tek na rezoluciji. Spellovi i

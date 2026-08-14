@@ -911,7 +911,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: [], entersTapped: true, mana: tapFor([{ C: 1 }]),
     abilities: [{
       label: 'Žrtvuj: 2 basica (tapped)', cost: { mana: '{2}', tap: true, sacSelf: true },
-      run: async ctx => { await E.searchBasic(ctx.g, ctx.you, { n: 2, tapped: true }); },
+      run: async ctx => {
+        const first = await E.searchBasic(ctx.g, ctx.you, { n: 1, tapped: true, prompt: 'Prvi basic land' });
+        if (!first[0]) return;
+        const basicTypes = ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'];
+        const shared = basicTypes.filter(type => (first[0].def.subtypes || []).includes(type));
+        if (shared.length) await E.searchBasic(ctx.g, ctx.you, {
+          n: 1, tapped: true, prompt: `Drugi basic (${shared.join('/')})`,
+          filter: def => shared.some(type => (def.subtypes || []).includes(type)),
+        });
+      },
     }],
   };
   SC['Needle Spires'] = {

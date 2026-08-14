@@ -1621,7 +1621,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Hour of Reckoning'] = {
     convoke: true,
     resolve: async ctx => {
-      for (const c of ctx.g.bf().filter(c => c.is('Creature') && !c.isToken).slice()) await ctx.g.destroy(c);
+      await ctx.g.destroyMany(ctx.g.bf().filter(c => c.is('Creature') && !c.isToken));
     },
   };
   SC['Lingering Souls'] = {

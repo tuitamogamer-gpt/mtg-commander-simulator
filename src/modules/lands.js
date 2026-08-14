@@ -34,7 +34,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     entersTapped: (g, card) => !g.lands(card.ctrl).some(l => l !== card && (l.hasSub(subA) || l.hasSub(subB))),
   });
   const revealLand = (c1, c2, subA, subB) => Object.assign(dual(c1, c2), {
-    entersTapped: (g, card) => !card.ctrl.hand.some(c => c.def.subtypes.includes(subA) || c.def.subtypes.includes(subB)),
+    asEnters: async (g, card) => {
+      const pool = card.ctrl.hand.filter(c => (c.def.subtypes || []).includes(subA) || (c.def.subtypes || []).includes(subB));
+      if (!pool.length) return;
+      const picked = await card.ctrl.controller.decide(g, {
+        type: 'chooseCards', from: pool, min: 0, max: 1,
+        prompt: `${card.name}: možeš pokazati ${subA} ili ${subB} kartu`,
+        aiHint: { kind: 'revealLand', source: card },
+      });
+      if (picked[0] && pool.includes(picked[0])) {
+        card.meta.revealedLandIid = picked[0].iid;
+        g.lg(`${card.ctrl.name} pokazuje ${picked[0].name} za ${card.name}.`);
+      }
+    },
+    entersTapped: (g, card) => !card.meta.revealedLandIid,
   });
   const battleLand = (c1, c2) => Object.assign(dual(c1, c2), {
     entersTapped: (g, card) => g.lands(card.ctrl).filter(l => l !== card && (l.def.super || []).includes('Basic')).length < 2,

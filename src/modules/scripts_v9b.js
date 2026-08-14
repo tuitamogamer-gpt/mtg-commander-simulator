@@ -1381,7 +1381,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
     resolve: async ctx => {
       const filt = ctx.mode[0] === 0 ? (c) => c.is('Creature') : (c) => (c.is('Artifact') || c.is('Enchantment')) && !c.is('Land');
-      for (const c of ctx.g.bf().filter(filt).slice()) await ctx.g.destroy(c);
+      await ctx.g.destroyMany(ctx.g.bf().filter(filt));
     },
   };
   SC['Collective Effort'] = {
