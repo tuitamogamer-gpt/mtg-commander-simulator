@@ -1,6 +1,6 @@
 Original prompt: Pretvori postojeći MTG Commander simulator u desktop-only Commander klijent za fiksni set postojećih deckova. Svaka nonland karta i relevantna odluka moraju biti vidljive i potvrđene kroz Proceed; priority, stack, end-step stopovi i combat moraju pratiti prava Commander pravila; svaki deck i svaka karta moraju proći zasebnu certifikaciju. Blame Game je kandidat za uklanjanje. Završni koraci su Git push i Vercel redeploy tek nakon release gateova.
 
-Aktivni zahtjev (2026-08-14): Deck-by-deck real-time audit `Deep Clue Sea`, kao ljudski igrač i lokalni AI bot, sa posebnim fokusom na Prepared i castovanje privremenih spell kopija. Proći sve interakcije i odluke, odmah ispraviti potvrđene greške; nakon punog automatizovanog i browser QA uraditi commit, push i production deploy.
+Aktivni zahtjev (2026-08-14): Deck-by-deck real-time audit `Scions & Spellcraft`, kao ljudski igrač i lokalni AI bot. Proći sve interakcije i odluke, odmah ispraviti potvrđene engine, mehaničke, UI i AI greške; nakon punog automatizovanog i browser QA uraditi commit, push i production deploy.
 
 # Desktop Commander overhaul
 
@@ -24,12 +24,16 @@ Aktivni zahtjev (2026-08-14): Deck-by-deck real-time audit `Deep Clue Sea`, kao 
 
 ## Završni status provjere
 
-- `npm test`: 31/31, uključujući svih 20 zasebnih deck-smoke partija i ciljane card-rule ugovore.
-- `npm run certify:strict`: 1722/1722 card/deck provjere, 0 FAIL.
-- `npm run audit`: 20 aktivnih deckova po 100 karata, 0 duplicate script registracija, 0 `simplified` karata.
-- Desktop Playwright: stvarni UI tok do 26. poteza, action stage/Proceed i reveal popupovi, bez console/page greške.
+- `npm test`: 331/331, uključujući Scions semantic/AI regresije i pune determinističke partije u obje pozicije.
+- `npm run certify:strict`: 1237/1237 aktivnih jedinstvenih, 1722/1722 card/deck i 1288/1288 raw provjera, 0 FAIL.
+- `npm run audit`: 20 aktivnih deckova po 100 karata; Scions 100/92; 0 duplicate script registracija i 0 `simplified` karata.
+- Desktop Playwright: završni Scions human i AI Partner/mehanika/odluka tokovi vizuelno pregledani, prazan stack/pending, bez console/page greške i bez AI fallbacka.
 
 ## Dnevnik
+
+- 2026-08-14: `Scions & Spellcraft` deck-by-deck audit završen kao ljudski deck i lokalni AI V2 protivnik, sa eksplicitno testiranom Partner with mehanikom Alisaie↔Alphinaud u oba smjera. Ispravljeni su Y'shtola damage/draw, G'raha Hero i life odluka, Papalymo/Fandaniel izbori, Thancred/Hraesvelgr object tracking, stvarni graveyard cast i exile replacement za Gearhulk/Emet-Selch, Krile target lock, Job Select/Planisphere/Blue Mage/Sage equipment tokovi, Archaeomancer's Map, Transpose, Tataru, Eye of Nidhogg, Observed Stasis, Snuff Out, Crux/Cleansing/Final Judgment, Good King Mog, Urianger, White Auracite, land reveal izbori i centralna spell-copy/stack/cast-source pravila. Scions AI sada kontekstualno bira Hero life, Fandaniel, wipe, grave/exile cast i token/copy odluke. Novi Scions suite prolazi 24/24, puni repo 331/331; syntax PASS, audit 100/92 uz 0 duplicate/0 simplified i strict 1237/1237 aktivnih jedinstvenih, 1722/1722 card/deck, 1288/1288 raw. Human UI je kroz pravi Partner modal stavio Alphinauda u ruku i završio Job/treći-draw tok; AI UI je sam odabrao Partner pretragu, pravilan Cleansing Nova mod, G'raha i Fandaniel bez fallbacka. Prirodni human tok stigao je do poteza 14, prirodni Scions AI do poteza 18; svi završni Playwright stateovi i screenshotovi pregledani su sa praznim stackom/pending stanjem i 0 console/page grešaka. Spremno za commit/push/production deploy.
+
+- 2026-08-14: Započet deck-by-deck real-time audit `Scions & Spellcraft`, kao ljudski igrač i lokalni AI V2 bot, uz odobren commit/push/deploy po završetku. Worktree je krenuo čist i HEAD `e5c2e66` odgovara origin grani; slijede semantic inventar, bazni gate i stvarni human/AI browser tokovi.
 
 - 2026-08-14: `Deep Clue Sea` semantic i browser audit završen kao ljudski deck i lokalni AI V2 protivnik. Ispravljeni su individualni investigate događaji i Erdwal once-per-turn, Academy/Adrix/Esix replacement redoslijed, Ascend, Aerial exile-cast dozvola, Junk Winder target lock, obje Koma sposobnosti i potpuni activation lock, Selvala nulta/egzaktna mana, Tangletrove, Armed with Proof detach, Nettlecyst replacement, odvojeni Merchant exalted triggeri, Search planeswalker napad, Ongoing combat grupe i creature-only grave trošak, Disorder neograničeni tačan X, Farewell/Finale i više Deep Clue AI izbora. Prepared sada stvarno castuje Braingeyser/Maestro's Gift iz egzila, bira X i zaključava metu, pravilno okida Aerial, fizzla bez retargeta i prestaje postojati poslije resolve/countera; browser je dodatno otkrio i zatvorio nemogućnost da ljudski igrač targetuje sebe. Novi Deep Clue suite prolazi 19/19, puni repo 307/307, syntax i audit su čisti. Human replacement UI pravi tačno šest Graf Mole kopija; Prepared UI baca Braingeyser X=3 na sebe i razrješava Aerial draw; AI bira Academy→Adrix→Esix/Graf, baca Prepared Braingeyser X=2 i završava bez fallbacka. Svi završni Playwright tokovi su vizuelno pregledani sa praznim stackom/pending stanjem i 0 console/page grešaka. Spremno za commit/push/production deploy.
 

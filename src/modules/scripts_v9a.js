@@ -1644,7 +1644,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Port Town'] = {
     producesColors: ['W', 'U'],
     mana: { cost: { tap: true }, produce: [{ W: 1 }, { U: 1 }] },
-    entersTapped: (g, card) => !card.ctrl.hand.some(c => c.def.subtypes.includes('Plains') || c.def.subtypes.includes('Island')),
+    entersTapped: async (g, card) => {
+      const revealable = card.ctrl.hand.filter(candidate => candidate !== card &&
+        (candidate.def.subtypes.includes('Plains') || candidate.def.subtypes.includes('Island')));
+      if (!revealable.length) return true;
+      const picked = await card.ctrl.controller.decide(g, {
+        type: 'chooseCards', from: revealable, min: 0, max: 1,
+        prompt: 'Port Town: otkrij Plains ili Island da uđe untapped?',
+        aiHint: { kind: 'revealLand', source: card },
+      });
+      if (!picked[0]) return true;
+      g.lg(`${card.ctrl.name} otkriva ${picked[0].name} za Port Town.`);
+      return false;
+    },
   };
   SC['Prairie Stream'] = {
     producesColors: ['W', 'U'],

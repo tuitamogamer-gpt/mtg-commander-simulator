@@ -1226,6 +1226,103 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'scionsHuman') {
+      void (async () => {
+        const take = (name, zone = 'battlefield') => {
+          const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+          g.remove(card);
+          card.ctrl = ui.me; card.zone = zone; card.sick = false;
+          if (zone === 'battlefield') g.battlefield.push(card); else ui.me[zone].push(card);
+          return card;
+        };
+        const settle = async () => {
+          let guard = 0;
+          while ((g.pendingTriggers.length || g.stack.length) && guard++ < 120) {
+            await g.flushTriggers();
+            if (g.stack.length) await g.resolveTop();
+          }
+          if (guard >= 120) throw new Error('Scions human scenario trigger guard');
+        };
+        const alisaie = take('Alisaie Leveilleur');
+        const alphinaud = take('Alphinaud Leveilleur', 'library');
+        g.turnPlayer = ui.me; g.turnNo = 26; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        ui.toast('Scions Partner: izaberi SEBE kao target igrača, zatim potvrdi pretragu za Alphinauda.');
+        ui.render();
+        await g.emit('etb', { card: alisaie, ctrl: ui.me });
+        await settle();
+
+        const planisphere = take("Astrologian's Planisphere");
+        await g.emit('etb', { card: planisphere, ctrl: ui.me });
+        await settle();
+        ui.me.turnState.drewThisTurn = 2;
+        await g.draw(ui.me, 1);
+        await settle();
+        const hero = planisphere.attachedTo && g.byIid(planisphere.attachedTo);
+        g.lg(`Scions human: Partner=${alphinaud.zone}; Planisphere host=${hero ? hero.name : 'nema'}; counteri=${hero && hero.counters['+1/+1'] || 0}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Scions human scenario: Partner search i Planisphere treći draw su razriješeni.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'scionsAI') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Scions & Spellcraft');
+        if (!bot) throw new Error('scionsAI scenario zahtijeva smokeAIDeck=Scions & Spellcraft');
+        const takeBot = (name, zone = 'battlefield') => {
+          const zones = [bot.command, bot.hand, bot.library, bot.graveyard, bot.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], bot);
+          g.remove(card);
+          card.ctrl = bot; card.zone = zone; card.sick = false;
+          if (zone === 'battlefield') g.battlefield.push(card); else bot[zone].push(card);
+          return card;
+        };
+        const settle = async () => {
+          let guard = 0;
+          while ((g.pendingTriggers.length || g.stack.length) && guard++ < 180) {
+            await g.flushTriggers();
+            if (g.stack.length) await g.resolveTop();
+          }
+          if (guard >= 180) throw new Error('Scions AI scenario trigger guard');
+        };
+        const alisaie = takeBot('Alisaie Leveilleur');
+        const alphinaud = takeBot('Alphinaud Leveilleur', 'library');
+        takeBot("G'raha Tia, Scion Reborn");
+        takeBot('Fandaniel, Telophoroi Ascian');
+        const victim = g.players.find(player => player.isAI && player !== bot);
+        if (victim) {
+          const creature = new MTG.CardInst(MTG.DEFS['Baleful Strix'], victim);
+          creature.ctrl = victim; creature.zone = 'battlefield'; creature.sick = false;
+          g.battlefield.push(creature);
+          for (const name of ['Arcane Signet', 'Sol Ring', 'Thought Vessel']) {
+            const artifact = new MTG.CardInst(MTG.DEFS[name], victim);
+            artifact.ctrl = victim; artifact.zone = 'battlefield'; artifact.sick = false;
+            g.battlefield.push(artifact);
+          }
+        }
+        for (const name of ['Swords to Plowshares', 'Void Rend', 'Snuff Out']) takeBot(name, 'graveyard');
+        g.turnPlayer = bot; g.turnNo = 27; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        await g.emit('etb', { card: alisaie, ctrl: bot });
+        await settle();
+
+        const nova = takeBot('Cleansing Nova', 'hand');
+        bot.pool.C = 3; bot.pool.W = 2;
+        if (!await g.castSpell(bot, nova, { from: 'hand' })) throw new Error('Scions AI Cleansing Nova cast nije uspio');
+        await settle();
+        g.phase = 'end'; g.step = 'end';
+        await g.emit('endStep', { player: bot });
+        await settle();
+        const recent = (g.aiDecisionLog || []).filter(entry => entry.playerName === bot.name).slice(-24);
+        g.lg(`Scions AI: Partner=${alphinaud.zone}; Hero=${g.creatures(bot).filter(card => card.isToken && card.hasSub('Hero')).length}; Nova=${nova.zone}; odluke=${recent.length}; fallback=${recent.some(entry => entry.fallback) ? 'DA' : 'NE'}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Scions AI scenario: Partner, G\'raha, wipe mod i Fandaniel odluke su razriješeni.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     g.start().catch(err => {
       console.error(err);
       ui.toast('Greška u igri: ' + err.message);

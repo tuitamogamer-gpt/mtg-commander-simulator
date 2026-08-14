@@ -1006,7 +1006,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Doom lands
   SC['Choked Estuary'] = {
     producesColors: ['U', 'B'], mana: { cost: { tap: true }, produce: [{ U: 1 }, { B: 1 }] },
-    entersTapped: (g, card) => !card.ctrl.hand.some(c => c.def.subtypes.includes('Island') || c.def.subtypes.includes('Swamp')),
+    entersTapped: async (g, card) => {
+      const revealable = card.ctrl.hand.filter(candidate => candidate !== card &&
+        (candidate.def.subtypes.includes('Island') || candidate.def.subtypes.includes('Swamp')));
+      if (!revealable.length) return true;
+      const picked = await card.ctrl.controller.decide(g, {
+        type: 'chooseCards', from: revealable, min: 0, max: 1,
+        prompt: 'Choked Estuary: otkrij Island ili Swamp da uđe untapped?',
+        aiHint: { kind: 'revealLand', source: card },
+      });
+      if (!picked[0]) return true;
+      g.lg(`${card.ctrl.name} otkriva ${picked[0].name} za Choked Estuary.`);
+      return false;
+    },
   };
   SC['Crumbling Necropolis'] = { producesColors: ['U', 'B', 'R'], entersTapped: true, mana: { cost: { tap: true }, produce: [{ U: 1 }, { B: 1 }, { R: 1 }] } };
   SC['Drowned Catacomb'] = {
@@ -1376,8 +1388,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Cleansing Nova'] = {
     modes: {
-      pick: 1,
-      list: [{ label: 'Uništi sva stvorenja' }, { label: 'Uništi artefakte i enchantmente' }],
+      pick: 1, aiHint: { kind: 'scionsWipe' },
+      list: [
+        { label: 'Uništi sva stvorenja', aiMeta: { destroyKind: 'creatures' } },
+        { label: 'Uništi artefakte i enchantmente', aiMeta: { destroyKind: 'artifactsEnchantments' } },
+      ],
     },
     resolve: async ctx => {
       const filt = ctx.mode[0] === 0 ? (c) => c.is('Creature') : (c) => (c.is('Artifact') || c.is('Enchantment')) && !c.is('Land');
@@ -2477,7 +2492,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Rite of Replication'] = {
     kicker: { cost: '{5}' },
-    targets: [T.creature({ prompt: 'Kopiraj', aiHint: { goal: 'buff' } })],
+    targets: [T.creature({ prompt: 'Kopiraj', aiHint: { goal: 'copy' } })],
     resolve: async ctx => {
       const t = ctx.targets[0];
       if (!t) return;

@@ -187,11 +187,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   E.pumpUntilEOT = function (g, card, dp, dt, kws) {
-    const iid = card.iid;
+    const iid = card.iid, timestamp = card.timestamp;
     g.untilEffects.push({
       expires: 'eot', kind: 'pump',
       apply: (g2, bf) => {
-        const c = bf.find(x => x.iid === iid);
+        const c = bf.find(x => x.iid === iid && x.timestamp === timestamp);
         if (!c) return;
         c.cur.power += dp; c.cur.toughness += dt;
         if (kws) for (const k of kws) c.cur.kw.add(k);

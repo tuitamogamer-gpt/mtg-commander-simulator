@@ -839,6 +839,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (hint === 'moorlandRescuer' || hint === 'wallMourning') return value * 1.25;
     if (hint === 'esixCopy') return permanentGameValue(game, card, player) * 1.6;
+    if (hint === 'scionsCopyToken') return permanentGameValue(game, card, player) * 1.7;
     if (hint === 'finaleUntap') {
       if (card.ctrl !== player || !card.tapped) return -20;
       return 5 + (card.def.mana ? 1 : 0) + (card.def.producesColors || []).length * 0.2;
@@ -1070,11 +1071,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (action.kind === 'cast') {
       const card = action.card;
       const sem = inferCardSemantics(card.def);
-      const cost = game.spellCost(player, card, action.alt || {});
+      const cost = game.spellCost(player, card, Object.assign({}, action.alt || {}, { from: action.from }));
       const spend = (cost.generic || 0) + (cost.pips || []).length;
       breakdown.base = cardDefinitionValue(card.def) + Math.min(5, spend * 0.35);
       breakdown.synergy = sem.synergyTags.filter(tag => profile.primarySynergies.includes(tag)).length * 2;
       if (card.commander) breakdown.synergy += 2.2 * profile.commanderImportance;
+      if (cost.lifeCost) {
+        const lifePressure = player.life <= 8 ? 3 : player.life <= 15 ? 1.35 : 0.55;
+        breakdown.safety -= Number(cost.lifeCost) * lifePressure;
+        if (cost.lifeCost >= player.life) breakdown.safety -= 1000;
+      }
       if (sem.roles.includes('ramp') && game.turnNo <= 16) breakdown.resources += 3;
       if (sem.roles.includes('card-draw') || sem.roles.includes('card-selection')) breakdown.resources += Math.max(0, 4 - player.hand.length) * 0.7;
       if ((card.is('Instant') || card.kw('flash')) && phase === 'main1' && !sem.roles.includes('card-draw')) breakdown.timing -= 1.8;
@@ -1290,6 +1296,54 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       } else if (hintKind === 'partnerSearch' || hintKind === 'rampChoice') {
         breakdown.choice = action.value === 'yes' ? 6 : -1;
+      } else if (hintKind === 'scionsHeroLife') {
+        const card = q.data && q.data.card;
+        const x = card ? U.mv(card.def.cost || '') : 0;
+        const lifePenalty = x * (player.life <= 10 ? 2.8 : player.life <= 18 ? 1.2 : 0.55);
+        breakdown.choice = action.value === 'yes' && x > 0 && player.life > x
+          ? 3.2 + x * 1.45 - lifePenalty
+          : action.value === 'yes' ? -100 : 0;
+      } else if (hintKind === 'fandanielChoice') {
+        if (action.value === 'sac') {
+          const cheapest = Math.min(...(q.aiHint.candidates || [])
+            .map(card => permanentGameValue(game, card, player)), Infinity);
+          breakdown.choice = Number.isFinite(cheapest) ? -cheapest : -100;
+        } else {
+          const loss = Number(q.aiHint.lifeLoss || 0);
+          breakdown.choice = -loss * (player.life <= loss + 5 ? 2.8 : player.life <= 15 ? 1.4 : 0.75);
+        }
+      } else if (hintKind === 'scionsCastCopy') {
+        const card = q.aiHint.card;
+        const value = card ? cardDefinitionValue(card.def) : 0;
+        const mana = Number(q.aiHint.mana || 3);
+        breakdown.choice = action.value === 'yes'
+          ? (availableManaEstimate(game, player) >= mana ? value + 2.5 - mana * 0.35 : -100)
+          : 0;
+      } else if (hintKind === 'uriangerExileTop') {
+        const card = q.aiHint.card;
+        const value = card ? cardDefinitionValue(card.def) : 0;
+        breakdown.choice = action.value === 'yes' ? 2.5 + value * 0.3 : 0;
+      } else if (hintKind === 'scionsGraveCast') {
+        const candidates = player.graveyard.filter(card => card.is('Instant') || card.is('Sorcery'));
+        const best = candidates.map(card => cardDefinitionValue(card.def)).sort((a, b) => b - a)[0] || 0;
+        const affordable = q.aiHint.free || candidates.some(card => {
+          const cost = game.spellCost(player, card, { from: 'graveyard' });
+          return game.canPayMana(player, cost, { card });
+        });
+        breakdown.choice = action.value === 'yes' ? (affordable ? best + 2 : -30) : 0;
+      } else if (hintKind === 'scionsWipe') {
+        const kind = action.option && action.option.destroyKind;
+        const affected = game.bf().filter(card => {
+          if (kind === 'dragons') return card.is('Creature') && card.hasSub('Dragon');
+          if (kind === 'nondragons') return card.is('Creature') && !card.hasSub('Dragon');
+          if (kind === 'creatures') return card.is('Creature');
+          if (kind === 'artifactsEnchantments') return !card.is('Land') && (card.is('Artifact') || card.is('Enchantment'));
+          return false;
+        });
+        breakdown.choice = affected.reduce((score, card) => {
+          const value = permanentGameValue(game, card, player);
+          return score + (card.ctrl === player ? -value * 1.35 : value);
+        }, 0);
       } else if (hintKind === 'fameFortune') {
         const bestCreature = game.creatures(player).map(card =>
           permanentGameValue(game, card, player) + Math.max(0, card.power) * (card.tapped ? 0.25 : 0.8))

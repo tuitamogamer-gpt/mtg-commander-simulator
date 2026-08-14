@@ -495,7 +495,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Cut a Deal'] = {
     resolve: async ctx => {
       let n = 0;
-      for (const o of E.eachOpp(ctx.g, ctx.you)) { await ctx.g.draw(o, 1); n++; }
+      for (const o of E.eachOpp(ctx.g, ctx.you)) n += await ctx.g.draw(o, 1);
       await ctx.g.draw(ctx.you, n);
     },
   };

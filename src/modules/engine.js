@@ -386,7 +386,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     snapshot(card) {
       return {
-        iid: card.iid, name: card.name, def: card.def, ctrl: card.ctrl, owner: card.owner,
+        iid: card.iid, timestamp: card.timestamp, name: card.name, def: card.def, ctrl: card.ctrl, owner: card.owner,
         isToken: card.isToken, power: card.power, toughness: card.toughness,
         commander: card.commander, attacking: card.attacking, plus1: card.plus1(),
         minus1: card.counters['-1/-1'] || 0,
@@ -414,6 +414,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.remove(card);
         card.zone = 'ceased';
         return card;
+      }
+
+      // Gearhulk/Emet-style permission: the actual graveyard card is cast and
+      // must be exiled if it would leave the stack for the graveyard, including
+      // countering and fizzling (not only a normal resolution).
+      if (fromZone === 'stack' && toZone === 'graveyard' && card.meta && card.meta.exileIfStackLeaves) {
+        toZone = 'exile';
+        delete card.meta.exileIfStackLeaves;
+      } else if (fromZone === 'stack' && toZone !== 'stack' && card.meta) {
+        delete card.meta.exileIfStackLeaves;
       }
 
       // Unearth replacement: ako bi permanent napustio bojno polje iz bilo
@@ -1301,6 +1311,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await this.move(card, 'exile');
     }
 
+    async exileMany(cards) {
+      // "Exile all" je, kao destroy-all, simultan događaj. Zaključavanje svih
+      // izvora prije prvog move() čuva LTB/dies semantiku board wipea.
+      const unique = [...new Set(cards)].filter(card => card && card.zone === 'battlefield');
+      const previous = this._simultaneousLeaveSources;
+      const batch = unique.map(card => ({ card, ctrl: card.ctrl }));
+      this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
+      try {
+        for (const card of unique) if (card.zone === 'battlefield') await this.move(card, 'exile');
+      } finally {
+        this._simultaneousLeaveSources = previous;
+      }
+      return unique.length;
+    }
+
     removeFromCombat(card) {
       if (!this.combat) return;
       const ci = this.combat.attackers.indexOf(card);
@@ -1650,6 +1675,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           type: 'chooseOption', prompt: `${tr.src ? tr.src.name : ''}: ${tr.name} — iskoristi?`,
           options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
           aiHint: Object.assign({ kind: 'optTrigger', src: tr.src, name: tr.name }, tr.aiHint || {}),
+          data: tr.data,
         });
         if (yes !== 'yes') return;
       }

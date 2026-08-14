@@ -620,6 +620,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!this.canCastTiming(p, card, alt)) return;
       if (card.def.castCond && !card.def.castCond(this, p, card)) return;
       const castOpts = alt ? Object.assign({}, alt) : {};
+      castOpts.from = from;
       const cost = this.spellCost(p, card, castOpts);
       const xVal = cost.x ? (castOpts.xFixed !== undefined ? castOpts.xFixed : 0) : 0;
       if (alt && alt.delve) {
@@ -836,6 +837,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // opts: {alt, from, xVal, aiChosen...}
     const alt = opts.alt || null;
     const castOpts = alt ? Object.assign({}, alt) : {};
+    if (opts.from !== undefined && castOpts.from === undefined) castOpts.from = opts.from;
     // Interni card-scriptovi istorijski koriste i kraći top-level oblik
     // (`{free:true, exileAfter:true}`), dok UI legalne liste nose isto pod
     // `alt`. Normalizuj oba oblika u jednu autoritativnu cast putanju.
@@ -928,7 +930,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return candidateTargets.every(spec => spec.upTo ||
             this.legalTargets(spec, card, p).length >= (spec.count ?? 1));
         })
-        .map(({ mode: candidateMode, index }) => ({ key: String(index), label: candidateMode.label }));
+        .map(({ mode: candidateMode, index }) => Object.assign(
+          { key: String(index), label: candidateMode.label }, candidateMode.aiMeta || {}));
       if (!opts2.length) return false;
       if (pickN !== 'any' && !d.modes.repeats && opts2.length < pickN) return false;
       if (pickN === 1) {
@@ -1538,7 +1541,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // spell
     const card = so.card, p = so.ctrl, d = card.def;
-    if (so.countered) { await this.move(card, 'graveyard'); return; }
+    if (so.countered) {
+      if (!so.isCopy) await this.move(card, 'graveyard');
+      return;
+    }
     const checked = this.revalidateTargets(so.targets || [], so.targetSpecs, card, p);
     so.targets = checked.targets;
     if (checked.anyChosen && !checked.anyLegal) {
