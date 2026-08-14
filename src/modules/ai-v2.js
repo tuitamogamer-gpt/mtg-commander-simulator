@@ -1524,11 +1524,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         breakdown.safety -= x * (player.life <= 10 ? 1.8 : player.life <= 18 ? 0.8 : 0.35);
         if (x >= player.life) breakdown.safety -= 1000;
-      } else if (q && q.aiHint && q.aiHint.kind === 'fireCovenantDamage') {
+      } else if (q && q.aiHint && ['fireCovenantDamage', 'magmaOpusDamage', 'dividedDamage'].includes(q.aiHint.kind)) {
         const x = Number(action.value) || 0;
         const target = q.aiHint.target;
-        const lethal = target ? Math.max(1, target.toughness - target.damage) : 1;
-        breakdown.choice = target && x >= lethal ? permanentGameValue(game, target, player) : -Math.abs(lethal - x) * 2;
+        if (target instanceof MTG.Player) {
+          breakdown.choice = target === player ? -x * 3 : x * (target.life <= x ? 4 : 0.8);
+        } else {
+          const lethal = target ? Math.max(1, target.toughness - target.damage) : 1;
+          breakdown.choice = target && x >= lethal ? permanentGameValue(game, target, player) : -Math.abs(lethal - x) * 2;
+        }
       } else if (q && q.aiHint && q.aiHint.kind === 'counterDistribution') {
         const x = Number(action.value) || 0;
         const target = q.aiHint.target;

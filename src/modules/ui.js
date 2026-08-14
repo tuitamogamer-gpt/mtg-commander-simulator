@@ -265,9 +265,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const q = entry.q;
       const canAct = ((q.casts || []).length + (q.acts || []).length) > 0;
       const kind = top.kind === 'spell' ? 'Card on the stack' : top.kind === 'trigger' ? 'Trigger on the stack' : 'Ability on the stack';
-      const targets = (top.targets || top.ctx && top.ctx.targets || []).flat().filter(Boolean);
+      const targetGroups = top.targets || top.ctx && top.ctx.targets || [];
+      const targets = targetGroups.flat().filter(Boolean);
+      const damageDivision = top.damageDivision || top.ctx && top.ctx.damageDivision || [];
+      const dividedTargets = damageDivision.length
+        ? (Array.isArray(targetGroups[0]) ? targetGroups[0].filter(Boolean) : targets.slice(0, damageDivision.length))
+        : [];
+      const damageFor = target => damageDivision.find(entry =>
+        target instanceof MTG.Player ? entry.playerIdx === target.idx : entry.iid === target.iid);
       const targetText = targets.length
-        ? targets.map(t => t instanceof MTG.Player ? t.name : `${t.name}${t.ctrl ? ` (${t.ctrl.name})` : ''}`).join(', ')
+        ? targets.map((t, index) => {
+          const assignment = index < dividedTargets.length ? damageFor(t) : null;
+          const name = t instanceof MTG.Player ? t.name : `${t.name}${t.ctrl ? ` (${t.ctrl.name})` : ''}`;
+          return assignment ? `${name} — ${assignment.n} damage` : name;
+        }).join(', ')
         : 'no target';
       const def = source.def || {};
       const wrap = el('div', 'actionstagewrap');
@@ -280,6 +291,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       info.appendChild(el('div', 'actionstagename', esc(top.name || source.name)));
       info.appendChild(el('div', 'actionstagetype', `${costHTML(def.cost || '')}<span>${esc([...(def.super || []), ...(def.types || [])].join(' '))}${(def.subtypes || []).length ? ' - ' + esc(def.subtypes.join(' ')) : ''}</span>`));
       info.appendChild(el('div', 'actionstagetarget', `🎯 ${esc(targetText)}`));
+      if (damageDivision.length) {
+        const split = el('div', 'actionstagedivision');
+        dividedTargets.forEach((target, index) => {
+          const assignment = damageFor(target);
+          if (!assignment) return;
+          split.appendChild(el('div', 'actionstagedamagetarget',
+            `<span>${index + 1}</span><b>${esc(target.name)}</b><strong>${assignment.n}<small>damage</small></strong>`));
+        });
+        info.appendChild(split);
+      }
       info.appendChild(el('div', 'actionstageoracle', esc(def.oracle || top.name || '').replace(/\n/g, '<br>')));
       info.appendChild(el('div', 'actionstagestack', `STACK ${g.stack.length} · this action resolves ${g.stack.length === 1 ? 'next' : 'before ' + (g.stack.length - 1) + ' older actions'}`));
       const buttons = el('div', 'actionstagebuttons');
@@ -751,6 +772,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         row.style.setProperty('--seat-accent', COLHEX[(meta.colors || [])[0]] || '#778f63');
         if (isActiveAi) row.style.setProperty('--opp-scale', String(Math.min(2, this.oppScale * 1.2)));
         const isCandidate = this.isCandidate(p);
+        const isSelectedTarget = this.selectedTargetIndex(p) >= 0;
         const collapsed = this.collapsed.has(p.idx);
         // header
         const head = el('div', 'opphead' + (isCandidate ? ' targetable' : ''));
@@ -772,14 +794,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         head.querySelector('button').onclick = (e) => { e.stopPropagation(); this.playerSheet = p; this.render(); };
         // EDHLAB-style: life tap = detalji (commander dmg itd.), ostatak = collapse
         head.querySelector('.opplife').onclick = (e) => {
-          if (isCandidate) return; // pusti glavni handler
+          if (isCandidate || isSelectedTarget) return; // pusti glavni handler
           e.stopPropagation(); this.playerSheet = p; this.render();
         };
         head.onclick = () => {
+          if (isSelectedTarget) { this.removeTargetCandidate(p); return; }
           if (isCandidate) { this.pickCandidate(p); return; }
           if (this.collapsed.has(p.idx)) this.collapsed.delete(p.idx); else this.collapsed.add(p.idx);
           this.render();
         };
+        if (isSelectedTarget) this.markSelectedTarget(head, p);
         row.appendChild(head);
         // board strip (always visible unless collapsed)
         if (!collapsed && !p.lost) {
@@ -907,7 +931,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const so = g.stack[i];
           const item = el('div', 'stackitem' + (i === g.stack.length - 1 ? ' top' : ''));
           item.innerHTML = `<b>${esc(so.name)}</b><span class="who">${esc(so.ctrl.name)}</span>`;
-          if (this.isCandidate(so)) { item.classList.add('targetable'); item.onclick = () => this.pickCandidate(so); }
+          if (this.markSelectedTarget(item, so)) { /* selected stack target remains removable */ }
+          else if (this.isCandidate(so)) { item.classList.add('targetable'); item.onclick = () => this.pickCandidate(so); }
           else if (so.card) item.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
           st.appendChild(item);
         }
@@ -953,7 +978,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       item.innerHTML = `<img loading="lazy" src="${imgURL(card.name)}" onerror="MTG.imgFail(this)">
         <span><small>${equipment ? 'EQUIPMENT' : 'AURA'}</small><b>${esc(card.name.split(' // ')[0])}</b></span>`;
       if (this.actable && this.actable.has(card.iid)) item.classList.add('actable');
-      if (this.isCandidate(card)) {
+      if (this.markSelectedTarget(item, card)) {
+        return item;
+      } else if (this.isCandidate(card)) {
         item.classList.add('targetable');
         item.onclick = () => this.pickCandidate(card);
       } else {
@@ -1005,8 +1032,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const lc = el('div', 'landstack' + (untapped === 0 ? ' tapped' : ''));
         const cols = (lands[0].def.producesColors || []).map(c => `<span class="dot" style="background:${COLHEX[c]}"></span>`).join('');
         lc.innerHTML = `<div class="lname">${esc(name)}</div><div>${cols}</div><div class="lcount">${untapped}/${lands.length}</div>`;
+        const selectedLand = lands.find(l => this.selectedTargetIndex(l) >= 0);
         const cand = lands.find(l => this.isCandidate(l));
-        if (cand) { lc.classList.add('targetable'); lc.onclick = () => this.pickCandidate(cand); }
+        if (selectedLand) this.markSelectedTarget(lc, selectedLand);
+        else if (cand) { lc.classList.add('targetable'); lc.onclick = () => this.pickCandidate(cand); }
         else lc.onclick = () => { this.sheet = { card: lands[0] }; this.render(); };
         row2.appendChild(lc);
       }
@@ -1033,7 +1062,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
       });
       const myLife = info.querySelector('.melife');
-      if (this.isCandidate(me)) {
+      if (this.markSelectedTarget(myLife, me)) {
+        // selected player target can be removed directly
+      } else if (this.isCandidate(me)) {
         myLife.classList.add('targetable');
         myLife.title = `Choose ${me.name} as the target`;
         myLife.onclick = () => this.pickCandidate(me);
@@ -1162,6 +1193,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ${badges.length ? `<div class="badge">${badges.join('')}</div>` : ''}`;
       d.dataset.cname = mayLookFaceDown ? faceName : c.name;
       // interactions
+      if (this.markSelectedTarget(d, c)) {
+        return d;
+      }
       if (this.isCandidate(c)) {
         d.classList.add('targetable');
         d.onclick = () => this.pickCandidate(c);
@@ -1223,7 +1257,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <div class="hcost">${costHTML(c.def.cost || '')}</div>
           <div class="mname">${esc(c.name.split(' // ')[0])}</div>`;
         d.dataset.cname = c.name;
-        if (this.isCandidate(c)) {
+        if (this.markSelectedTarget(d, c)) {
+          // selected target can be removed directly
+        } else if (this.isCandidate(c)) {
           d.classList.add('targetable');
           d.onclick = () => this.pickCandidate(c);
         } else {
@@ -1409,9 +1445,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         case 'chooseTargets': {
           const min = q.min, max = q.max;
-          bar.appendChild(el('div', 'ptext', `🎯 ${esc(q.prompt || 'Choose a target')} (${pd.sel.length}/${max})`));
-          if (pd.sel.length >= min) bar.appendChild(btn('Confirm ✓', () => this.resolvePending(pd.sel.slice()), 'primary'));
-          if (min === 0) bar.appendChild(btn('Skip', () => this.resolvePending([])));
+          bar.classList.add('targetprompt');
+          bar.dataset.testid = 'target-selection';
+          const source = q.src || q.card;
+          bar.appendChild(el('div', 'targetprompthead',
+            `<span>🎯 ${source && source.name ? esc(source.name) + ' · ' : ''}${esc(q.prompt || 'Choose a target')}</span>` +
+            `<strong>${pd.sel.length} / ${max}</strong>`));
+          bar.appendChild(el('div', 'targetprompthint',
+            pd.sel.length < min
+              ? `Choose ${min - pd.sel.length} more target${min - pd.sel.length === 1 ? '' : 's'}. Glowing cards and players are legal.`
+              : 'Review the numbered targets, then confirm. Click a selected target or × to remove it.'));
+          const picked = el('div', 'targetpickchips');
+          pd.sel.forEach((target, index) => {
+            const chip = el('button', 'targetpickchip',
+              `<span>${index + 1}</span><b>${esc(target.name || target.card && target.card.name || 'Stack object')}</b><i>×</i>`);
+            chip.type = 'button';
+            chip.title = `Remove target ${index + 1}`;
+            chip.onclick = () => this.removeTargetCandidate(target);
+            picked.appendChild(chip);
+          });
+          if (!pd.sel.length) picked.appendChild(el('div', 'targetpickempty', 'No targets selected yet'));
+          bar.appendChild(picked);
+          const actions = el('div', 'btnrow targetpromptactions');
+          if (pd.sel.length >= min) actions.appendChild(btn(
+            pd.sel.length ? `Lock ${pd.sel.length} target${pd.sel.length === 1 ? '' : 's'} ✓` : 'Choose no targets ✓',
+            () => this.resolvePending(pd.sel.slice()), 'primary'));
+          if (pd.sel.length) actions.appendChild(btn('Clear', () => { pd.sel = []; this.render(); }));
+          if (min === 0 && !pd.sel.length) actions.appendChild(btn('Skip', () => this.resolvePending([])));
+          bar.appendChild(actions);
           break;
         }
         default: {
@@ -1698,6 +1759,68 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         pd.xVal = pd.xVal === undefined
           ? Math.max(q.min, Math.min(q.max, Number.isFinite(q.suggested) ? q.suggested : q.min))
           : pd.xVal;
+        if (q.allocation && q.allocation.kind === 'damage') {
+          const allocation = q.allocation;
+          const targets = allocation.targets || [];
+          const assigned = allocation.assigned || [];
+          const current = targets[allocation.index];
+          const assignedBefore = assigned.reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
+          const previewAssigned = assignedBefore + pd.xVal;
+          m.classList.add('wide', 'damageallocationmodal');
+          m.dataset.testid = 'damage-allocation';
+          const source = allocation.source || q.src || q.card;
+          m.appendChild(el('div', 'damageallocationkicker', '🔥 DIVIDED DAMAGE · LOCK TARGETS'));
+          const hero = el('div', 'damageallocationhero');
+          hero.innerHTML = source && source.name
+            ? `<img src="${imgURL(source.name)}" onerror="MTG.imgFail(this)">` +
+              `<div><small>EFFECT SOURCE</small><b>${esc(source.name)}</b><span>${targets.length} target${targets.length === 1 ? '' : 's'} selected</span></div>`
+            : '<div><small>EFFECT SOURCE</small><b>Damage effect</b></div>';
+          hero.appendChild(el('div', 'damageallocationtotal',
+            `<strong>${allocation.total}</strong><span>damage total</span>`));
+          m.appendChild(hero);
+          m.appendChild(el('div', 'damageallocationprogress',
+            `<span style="width:${allocation.total ? Math.min(100, previewAssigned / allocation.total * 100) : 0}%"></span>`));
+          const list = el('div', 'damageallocationlist');
+          targets.forEach((target, index) => {
+            const prior = assigned[index];
+            const isCurrent = index === allocation.index;
+            const row = el('div', 'damageallocationrow' + (isCurrent ? ' current' : prior ? ' locked' : ' pending'));
+            const targetVisual = target instanceof MTG.Player
+              ? `<div class="damageplayericon">${esc((MTG.DECK_META[target.deckName] || {}).icon || '♟')}</div>`
+              : `<img src="${imgURL(target.name)}" onerror="MTG.imgFail(this)">`;
+            const targetMeta = target instanceof MTG.Player
+              ? `${target.life} life · player`
+              : target.is && target.is('Creature') ? `${target.power}/${target.toughness} · ${esc(target.ctrl && target.ctrl.name || '')}` : esc(target.ctrl && target.ctrl.name || 'permanent');
+            const shown = prior ? prior.n : isCurrent ? pd.xVal : null;
+            row.innerHTML = `<span class="damagetargetnumber">${index + 1}</span>${targetVisual}` +
+              `<div class="damagetargetinfo"><b>${esc(target.name)}</b><small>${targetMeta}</small></div>` +
+              `<div class="damageamount${shown === null ? ' waiting' : ''}"><strong>${shown === null ? '—' : shown}</strong><span>${shown === 1 ? 'damage' : 'damage'}</span></div>`;
+            if (isCurrent) {
+              const controls = el('div', 'damagecontrols');
+              const minus = btn('−', () => { pd.xVal = Math.max(q.min, pd.xVal - 1); this.render(); });
+              const plus = btn('+', () => { pd.xVal = Math.min(q.max, pd.xVal + 1); this.render(); });
+              minus.disabled = pd.xVal <= q.min;
+              plus.disabled = pd.xVal >= q.max;
+              controls.appendChild(minus); controls.appendChild(plus);
+              row.appendChild(controls);
+            }
+            list.appendChild(row);
+          });
+          m.appendChild(list);
+          const remainingAfter = allocation.left - pd.xVal;
+          m.appendChild(el('div', 'damageallocationsummary',
+            `<span><b>${previewAssigned}/${allocation.total}</b> assigned in this preview</span>` +
+            `<span><b>${remainingAfter}</b> left for ${Math.max(0, targets.length - allocation.index - 1)} target${targets.length - allocation.index - 1 === 1 ? '' : 's'}</span>`));
+          m.appendChild(el('div', 'damageallocationnote',
+            allocation.index === targets.length - 1
+              ? 'This is the complete damage split. Confirm to lock it on the stack.'
+              : 'Every selected target must receive at least 1 damage. The remaining amount stays reserved for later targets.'));
+          const label = allocation.index === targets.length - 1
+            ? `Lock complete split · ${allocation.total} damage ✓`
+            : `Assign ${pd.xVal} to target ${allocation.index + 1} ▶`;
+          m.appendChild(btn(label, () => this.resolvePending(pd.xVal), 'primary wide damageconfirm'));
+          return ov;
+        }
         m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Choose X') + ` (${q.min}-${q.max})`));
         const xrow = el('div', 'xrow');
         const minus = btn('−', () => { pd.xVal = Math.max(q.min, pd.xVal - 1); this.render(); });
@@ -1791,7 +1914,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const pd = this.pending;
       if (!pd || pd.q.type !== 'chooseTargets') return false;
-      return pd.q.candidates.includes(x) && !pd.sel.includes(x);
+      return pd.sel.length < pd.q.max && pd.q.candidates.includes(x) && !pd.sel.includes(x);
+    }
+    selectedTargetIndex(x) {
+      const pd = this.pending;
+      if (!pd || pd.q.type !== 'chooseTargets') return -1;
+      return pd.sel.indexOf(x);
+    }
+    markSelectedTarget(node, target) {
+      const index = this.selectedTargetIndex(target);
+      if (index < 0) return false;
+      node.classList.add('target-selected');
+      node.dataset.targetNumber = String(index + 1);
+      node.setAttribute('aria-label', `Target ${index + 1}: ${target.name || 'selected target'}`);
+      node.appendChild(el('div', 'targetorderbadge', `<span>🎯</span><b>${index + 1}</b>`));
+      node.onclick = () => this.removeTargetCandidate(target);
+      return true;
+    }
+    removeTargetCandidate(target) {
+      const pd = this.pending;
+      if (!pd || pd.q.type !== 'chooseTargets') return;
+      const index = pd.sel.indexOf(target);
+      if (index >= 0) pd.sel.splice(index, 1);
+      this.render();
     }
     pickCandidate(x) {
       if (this.manualPick) {
@@ -1803,8 +1948,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const pd = this.pending;
       if (!pd) return;
+      if (pd.sel.includes(x)) { this.removeTargetCandidate(x); return; }
+      if (pd.sel.length >= pd.q.max) return;
       pd.sel.push(x);
-      if (pd.sel.length >= pd.q.max) { this.resolvePending(pd.sel.slice()); return; }
       this.render();
     }
 

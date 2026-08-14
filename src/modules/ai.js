@@ -1212,7 +1212,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const target = q.aiHint && q.aiHint.target;
         return target ? Math.max(q.min, Math.min(q.max, Math.max(1, target.toughness - target.damage))) : q.min;
       }
-      if (kind === 'magmaOpusDamage') {
+      if (kind === 'magmaOpusDamage' || kind === 'dividedDamage') {
         const target = q.aiHint && q.aiHint.target;
         return target instanceof MTG.CardInst
           ? Math.max(q.min, Math.min(q.max, Math.max(1, target.toughness - target.damage)))

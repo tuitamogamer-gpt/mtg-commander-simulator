@@ -422,21 +422,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
     prepareTargets: async ctx => {
       const targets = Array.isArray(ctx.targets[0]) ? ctx.targets[0] : [];
-      ctx.so.damageDivision = [];
-      let left = 4;
-      for (let index = 0; index < targets.length; index++) {
-        const remaining = targets.length - index - 1;
-        const max = left - remaining;
-        const target = targets[index];
-        const chosen = index === targets.length - 1 ? left : await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseX', min: 1, max, card: ctx.src,
-          prompt: `Magma Opus: šteta za ${target.name} (preostalo ${left})`,
-          aiHint: { kind: 'magmaOpusDamage', target, left, remaining },
-        });
-        const n = Math.max(1, Math.min(Number(chosen) || 1, max));
-        ctx.so.damageDivision.push({ iid: target.iid, playerIdx: target instanceof MTG.Player ? target.idx : null, n });
-        left -= n;
-      }
+      const division = await E.divideDamage(ctx.g, ctx.you, ctx.src, targets, 4, { aiKind: 'magmaOpusDamage' });
+      if (!division) return false;
+      ctx.so.damageDivision = division;
       return true;
     },
     resolve: async ctx => {

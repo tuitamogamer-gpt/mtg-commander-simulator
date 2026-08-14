@@ -106,6 +106,50 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   const E = MTG.E = {};
 
+  // Damage that is "divided as you choose" is locked in while the spell or
+  // trigger is put on the stack.  Every decision carries the complete split
+  // context so the human UI can show all selected targets, numbered rows and
+  // the remaining damage instead of a sequence of unrelated X prompts.
+  E.divideDamage = async function (g, player, source, targets, total, opts = {}) {
+    const chosenTargets = (targets || []).flat().filter(Boolean);
+    const amount = Math.max(0, Number(total) || 0);
+    if (!chosenTargets.length) return [];
+    if (amount < chosenTargets.length) return null;
+    const division = [];
+    let left = amount;
+    for (let index = 0; index < chosenTargets.length; index++) {
+      const target = chosenTargets[index];
+      const remainingTargets = chosenTargets.length - index - 1;
+      const max = left - remainingTargets;
+      const min = remainingTargets === 0 ? left : 1;
+      const allocation = {
+        kind: 'damage', source, total: amount, targets: chosenTargets.slice(),
+        assigned: division.map((entry, assignedIndex) =>
+          Object.assign({ target: chosenTargets[assignedIndex] }, entry)),
+        index, left,
+      };
+      // Ask even for the final forced value (min === max).  That last review is
+      // intentional: the player sees the complete split before it is locked.
+      const raw = await player.controller.decide(g, {
+        type: 'chooseX', min, max, card: source, src: source,
+        prompt: `${source.name}: damage for ${target.name} (${left} remaining)`,
+        allocation,
+        aiHint: {
+          kind: opts.aiKind || 'dividedDamage', card: source, target, left,
+          remaining: remainingTargets, remainingTargets,
+        },
+      });
+      const n = Math.max(min, Math.min(Number(raw) || min, max));
+      division.push({
+        iid: target.iid,
+        playerIdx: target instanceof MTG.Player ? target.idx : null,
+        n,
+      });
+      left -= n;
+    }
+    return left === 0 ? division : null;
+  };
+
   E.searchBasic = async function (g, p, opts = {}) {
     // opts: {n, toHandN, tapped, filter(def), prompt}
     const n = opts.n || 1;

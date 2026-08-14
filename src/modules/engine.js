@@ -1806,6 +1806,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const so = {
         kind: 'trigger', name: (tr.src ? tr.src.name + ': ' : '') + (tr.name || 'trigger'),
         ctrl, ctx, run: tr.run, targets: ctx.targets, srcCard: tr.src, targetSpecs: targetSpecs || null, mode,
+        damageDivision: ctx.damageDivision
+          ? ctx.damageDivision.map(entry => Object.assign({}, entry)) : null,
       };
       this.stack.push(so);
       this.queueWardTriggers(so, ctx);

@@ -1096,20 +1096,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (ac && ac.lifeX && ac.divideAmongTargets && paidAddl.life > 0) {
       const targets = (so.targets || []).flat().filter(Boolean);
-      so.damageDivision = [];
-      let left = paidAddl.life;
-      for (let index = 0; index < targets.length; index++) {
-        const remainingTargets = targets.length - index - 1;
-        const max = left - remainingTargets;
-        const n = index === targets.length - 1 ? left : await p.controller.decide(this, {
-          type: 'chooseX', min: 1, max, card,
-          prompt: `${card.name}: damage for ${targets[index].name} (${left} remaining)`,
-          aiHint: { kind: 'fireCovenantDamage', card, target: targets[index], left, remainingTargets },
-        });
-        const assigned = Math.max(1, Math.min(Number(n) || 1, max));
-        so.damageDivision.push({ iid: targets[index].iid, n: assigned });
-        left -= assigned;
-      }
+      const division = await MTG.E.divideDamage(this, p, card, targets, paidAddl.life, {
+        aiKind: 'fireCovenantDamage',
+      });
+      if (!division) return false;
+      so.damageDivision = division;
     }
     if (castOpts.jumpstart) {
       const pool = p.hand;
@@ -1468,10 +1459,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       targets: (so.ctx.targets || []).slice(), you: ctrl,
       counterDistribution: so.ctx.counterDistribution
         ? so.ctx.counterDistribution.map(entry => Object.assign({}, entry)) : null,
+      damageDivision: so.ctx.damageDivision
+        ? so.ctx.damageDivision.map(entry => Object.assign({}, entry)) : null,
     });
     const copy = {
       kind: so.kind, name: `${so.name} (kopija)`, ctrl, ctx: copyCtx, run: so.run,
       targets: copyCtx.targets, srcCard: so.srcCard, targetSpecs: so.targetSpecs || null,
+      damageDivision: copyCtx.damageDivision,
     };
     let wardTargets = (copy.targets || []).flat().filter(target =>
       target instanceof MTG.CardInst && target.ctrl !== ctrl && target.cur && target.cur.wardCost)
@@ -1486,6 +1480,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const ok = await this.pickTargets(copyCtx, copy.targetSpecs, so.srcCard, ctrl);
         if (ok) { copy.targets = copyCtx.targets; wardTargets = copyCtx.wardTargets; }
       }
+    }
+    if (copyCtx.damageDivision) {
+      const amounts = copyCtx.damageDivision.map(entry => entry.n);
+      const damageTargets = Array.isArray(copy.targets[0])
+        ? copy.targets[0] : (copy.targets || []).flat().filter(Boolean);
+      copyCtx.damageDivision = damageTargets.slice(0, amounts.length).map((target, index) => ({
+        iid: target.iid,
+        playerIdx: target instanceof MTG.Player ? target.idx : null,
+        n: amounts[index],
+      }));
+      copy.damageDivision = copyCtx.damageDivision;
     }
     if (copyCtx.counterDistribution) {
       const amounts = copyCtx.counterDistribution.map(entry => entry.n);

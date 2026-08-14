@@ -191,10 +191,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Inferno Titan'] = {
     abilities: [{ label: '+1/+0', cost: { mana: '{R}' }, run: async ctx => { E.pumpUntilEOT(ctx.g, ctx.src, 1, 0); } }],
-    triggers: [
-      { on: 'etb', filter: etbSelf, desc: '3 štete', targets: [T.any({ prompt: '3 štete u:', aiHint: { goal: 'damage', n: 3 } })], run: async ctx => { await ctx.g.damageAny(ctx.src, ctx.targets[0], 3); } },
-      { on: 'attacks', filter: attacksSelf, desc: '3 štete', targets: [T.any({ prompt: '3 štete u:', aiHint: { goal: 'damage', n: 3 } })], run: async ctx => { await ctx.g.damageAny(ctx.src, ctx.targets[0], 3); } },
-    ],
+    triggers: ['etb', 'attacks'].map(on => ({
+      on, filter: on === 'etb' ? etbSelf : attacksSelf, desc: 'Divide 3 damage',
+      targets: [T.any({
+        prompt: 'Inferno Titan: choose one, two, or three targets', count: 3, min: 1,
+        aiHint: { goal: 'damage', n: 3 },
+      })],
+      prepareTargets: async ctx => {
+        const targets = Array.isArray(ctx.targets[0]) ? ctx.targets[0] : [];
+        const division = await E.divideDamage(ctx.g, ctx.you, ctx.src, targets, 3);
+        if (!division) return false;
+        ctx.damageDivision = division;
+        return true;
+      },
+      run: async ctx => {
+        const targets = Array.isArray(ctx.targets[0]) ? ctx.targets[0] : [];
+        for (const target of targets) {
+          const assignment = (ctx.damageDivision || []).find(entry =>
+            target instanceof MTG.Player ? entry.playerIdx === target.idx : entry.iid === target.iid);
+          if (!assignment) continue;
+          if (target instanceof MTG.Player) await ctx.g.damagePlayer(ctx.src, target, assignment.n);
+          else await ctx.g.damageCreature(ctx.src, target, assignment.n, { deferSBA: true });
+        }
+        await ctx.g.checkSBA();
+      },
+    })),
   };
   SC['Inspiring Overseer'] = {
     triggers: [{ on: 'etb', filter: etbSelf, desc: '1 život + karta', run: async ctx => { await ctx.g.gainLife(ctx.you, 1); await ctx.g.draw(ctx.you, 1); } }],

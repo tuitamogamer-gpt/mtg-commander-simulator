@@ -363,6 +363,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Deterministički browser scenario za card-sheet interakcije koje bi kroz
     // nasumičnu biblioteku bilo teško pouzdano dovesti na ekran. Aktivira se
     // isključivo eksplicitnim smokeScenario query parametrom.
+    if (smokeScenario === 'infernoTargeting') {
+      void (async () => {
+        const titan = new MTG.CardInst(MTG.DEFS['Inferno Titan'], ui.me);
+        titan.ctrl = ui.me; titan.zone = 'battlefield'; titan.sick = false;
+        g.battlefield.push(titan);
+        const opponents = g.players.filter(player => player !== ui.me && !player.lost);
+        const names = ['Stormcatch Mentor', 'Ignoble Hierarch', 'Oft-Nabbed Goat'];
+        opponents.forEach((player, index) => {
+          const card = new MTG.CardInst(MTG.DEFS[names[index]], player);
+          card.ctrl = player; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          ui.collapsed = ui.collapsed || new Set();
+          ui.collapsed.delete(player.idx);
+        });
+        g.turnPlayer = ui.me; g.turnNo = 12; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        ui.toast('Inferno Titan: choose 1-3 glowing targets, confirm the numbered set, then divide exactly 3 damage.');
+        ui.render();
+        await g.emit('etb', { card: titan });
+        await g.flushTriggers();
+        g.lg('Inferno Titan targeting smoke: targets and damage split are locked on the stack.', 'effect');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     if (smokeScenario === 'resourceChoice') {
       const pizza = new MTG.CardInst(MTG.DEFS['Ninja Pizza'], ui.me);
       pizza.ctrl = ui.me; pizza.zone = 'battlefield';
@@ -1412,6 +1437,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       pending: pending ? {
         type: pending.type,
         prompt: pending.prompt || null,
+        selectedTargets: pending.type === 'chooseTargets' && ui.pending
+          ? (ui.pending.sel || []).map((target, index) => ({
+            order: index + 1, name: target.name || target.card && target.card.name || 'stack object',
+          })) : undefined,
+        allocation: pending.type === 'chooseX' && pending.allocation ? {
+          kind: pending.allocation.kind,
+          source: pending.allocation.source && pending.allocation.source.name,
+          total: pending.allocation.total,
+          currentTarget: pending.allocation.targets[pending.allocation.index] &&
+            pending.allocation.targets[pending.allocation.index].name,
+          currentValue: ui.pending && ui.pending.xVal,
+          assigned: (pending.allocation.assigned || []).map(entry => ({
+            name: entry.target && entry.target.name, amount: entry.n,
+          })),
+          remaining: pending.allocation.left,
+        } : undefined,
         effect: pending.type === 'effectReview' ? {
           kind: pending.effectKind,
           source: pending.source && pending.source.name,
@@ -1439,7 +1480,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         consecutivePasses: g.priorityState.consecutivePasses,
         neededPasses: g.priorityState.neededPasses,
       } : null,
-      stack: g.stack.map((item, index) => ({ index, kind: item.kind, name: item.name, controller: item.ctrl && item.ctrl.name })),
+      stack: g.stack.map((item, index) => ({
+        index, kind: item.kind, name: item.name, controller: item.ctrl && item.ctrl.name,
+        damageDivision: (item.damageDivision || item.ctx && item.ctx.damageDivision || []).map(entry => ({
+          target: entry.playerIdx !== null && entry.playerIdx !== undefined
+            ? g.players.find(player => player.idx === entry.playerIdx)?.name
+            : g.byIid(entry.iid)?.name,
+          amount: entry.n,
+        })),
+      })),
       combat: g.combat ? {
         attackers: g.combat.attackers.map(card),
       } : null,
