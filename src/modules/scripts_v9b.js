@@ -337,7 +337,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const c = ctx.data.card;
         if (c.zone !== 'graveyard') return;
         ctx.g.remove(c); c.zone = 'exile'; ctx.you.exile.push(c);
-        c.meta = c.meta || {}; c.meta.playableBy = ctx.you; c.meta.playableUntil = ctx.g.turnNo + 1;
+        c.meta = c.meta || {};
+        c.meta.playableBy = ctx.you;
+        c.meta.playableUntilOwnTurn = ctx.you.turnsStarted + 1;
+        delete c.meta.playableUntil;
         ctx.g.lg(`Moonstone: ${c.name} igraj do kraja sljedećeg poteza.`);
       },
     }],

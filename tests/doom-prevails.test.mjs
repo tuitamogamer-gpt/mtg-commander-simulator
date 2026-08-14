@@ -168,19 +168,39 @@ test('Living Laser pravi sve kopije kao nonlegendary i egzilira ih tek na sljede
   assert.equal(copies.every(card => card.zone !== 'battlefield'), true);
 });
 
-test('Awesome Android i Moonstone mogu egzilirati i igrati odbačeni land', async () => {
+test('Moonstone drži land i spell igrivim kroz cijeli sljedeći Doomov potez u Commander podu', async () => {
   const { game, players: [doomPlayer] } = rulesGame({}, 2);
   const android = permanent(game, doomPlayer, 'Awesome Android');
   const moonstone = permanent(game, doomPlayer, 'Moonstone, Harsh Mistress');
   const swamp = inZone(doomPlayer, 'Swamp', 'graveyard');
   const island = inZone(doomPlayer, 'Island', 'graveyard');
+  const spell = inZone(doomPlayer, "Night's Whisper", 'graveyard');
+  doomPlayer.turnsStarted = 5;
+  game.turnNo = 20;
   await android.def.triggers[0].run({ g: game, src: android, you: doomPlayer, data: { player: doomPlayer, card: swamp } });
   await moonstone.def.triggers[0].run({ g: game, src: moonstone, you: doomPlayer, data: { player: doomPlayer, card: island } });
+  await moonstone.def.triggers[0].run({ g: game, src: moonstone, you: doomPlayer, data: { player: doomPlayer, card: spell } });
   assert.equal(swamp.zone, 'exile');
   assert.equal(island.zone, 'exile');
+  assert.equal(game.playableLands(doomPlayer).includes(swamp), true, 'Awesome Android važi u trenutnom potezu');
+  assert.equal(spell.meta.playableUntilOwnTurn, 6);
+
+  // Tri protivnička poteza su prošla. Globalni turnNo je +4, ali tek sada
+  // počinje Doomov stvarni sljedeći potez i dozvola mora još važiti.
+  game.turnNo = 24;
+  doomPlayer.turnsStarted = 6;
+  game.turnPlayer = doomPlayer;
+  game.phase = 'main1';
+  doomPlayer.pool.B = 1;
+  doomPlayer.pool.C = 1;
   const playable = game.playableLands(doomPlayer);
-  assert.equal(playable.includes(swamp), true);
+  assert.equal(playable.includes(swamp), false, 'Awesome Android dozvola je istekla');
   assert.equal(playable.includes(island), true);
+  assert.equal(game.castableList(doomPlayer).some(entry => entry.card === spell && entry.from === 'exile'), true);
+
+  game.expireOwnTurnExilePermissions(doomPlayer);
+  assert.equal(game.playableLands(doomPlayer).includes(island), false);
+  assert.equal(game.castableList(doomPlayer).some(entry => entry.card === spell), false);
 });
 
 test('Klaw dozvoljava land iz tuđeg face-down exilea i dobija indestructible', async () => {

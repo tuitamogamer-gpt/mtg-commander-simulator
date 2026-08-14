@@ -234,6 +234,9 @@ img { -webkit-user-drag: none; }
 .bigcard .bcname { position: absolute; bottom: 0; left: 0; right: 0; background: #000c; font-size: 9.5px; padding: 3px 4px; }
 .bigcard.selected { border-color: #e8c05a; box-shadow: 0 0 10px #e8c05a88; }
 .bigcard.scrybottom { opacity: .5; }
+.bigcard.inspectable { cursor: pointer; }
+.bigcard.castable { border-color: #65bf72; box-shadow: 0 0 14px #65bf7288; }
+.bigcard .zoneplay { position: absolute; top: 5px; right: 5px; z-index: 2; border: 1px solid #9ee6a8; border-radius: 4px; background: #17391fed; color: #dfffe4; font-size: 9px; font-weight: 900; letter-spacing: .08em; padding: 3px 5px; }
 .scrylabel { position: absolute; top: 4px; left: 4px; background: #000c; font-size: 10px; font-weight: 800; padding: 2px 5px; border-radius: 5px; color: #e8c05a; }
 .xrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 10px 0; }
 .xrow .pbtn { font-size: 22px; width: 52px; }

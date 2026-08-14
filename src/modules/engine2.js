@@ -557,6 +557,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return true;
   };
 
+  // Dozvole tipa "do kraja tvog sljedećeg poteza" ne smiju koristiti
+  // globalni turnNo: u Commander podu između dva moja poteza prolaze još tri
+  // protivnička poteza. playableUntilOwnTurn broji samo poteze igrača koji je
+  // dobio dozvolu, a cleanup tog igrača je eksplicitno gasi.
+  G.hasExilePlayPermission = function (p, card) {
+    const m = card && card.meta;
+    if (!m || (m.playableBy && m.playableBy !== p)) return false;
+    if (m.playableUntilOwnTurn !== undefined) return p.turnsStarted <= m.playableUntilOwnTurn;
+    return m.playableUntil !== undefined && m.playableUntil >= this.turnNo;
+  };
+
+  G.expireOwnTurnExilePermissions = function (p) {
+    for (const owner of this.players) for (const card of owner.exile) {
+      const m = card.meta;
+      if (!m || m.playableBy !== p || m.playableUntilOwnTurn === undefined) continue;
+      if (p.turnsStarted < m.playableUntilOwnTurn) continue;
+      delete m.playableUntilOwnTurn;
+      delete m.playableBy;
+    }
+  };
+
   G.castableList = function (p) {
     // returns [{card, from, alt}] of spells p could cast now (mana-feasible)
     const out = [];
@@ -661,12 +682,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // exile zone plays (plot, Light Up the Stage, Theater, hideaway executed via effects granting)
     for (const card of p.exile) {
       if (card.meta && card.meta.plotted) consider(card, 'exile', { free: true, plotPlay: true, speed: 'sorcery' });
-      if (card.meta && card.meta.playableUntil !== undefined) {
+      if (this.hasExilePlayPermission(p, card)) {
         if (card.meta.needsOppLost && !this.players.some(q => q !== p && q.turnState.lifeLost > 0)) continue;
-        if (card.meta.playableUntil >= this.turnNo && (!card.meta.playableBy || card.meta.playableBy === p))
-          consider(card, 'exile', card.meta.freePlay ? { free: true } : {});
-        if (card.meta.playableUntil >= this.turnNo && (!card.meta.playableBy || card.meta.playableBy === p) &&
-          !card.meta.freePlay && p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && p.life > card.mv) {
+        consider(card, 'exile', card.meta.freePlay ? { free: true } : {});
+        if (!card.meta.freePlay && p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && p.life > card.mv) {
           consider(card, 'exile', {
             free: true, bloodcaster: true, lifeCost: card.mv,
             label: `Plati ${card.mv} života umjesto mana cijene`,
@@ -679,8 +698,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (q === p) continue;
       for (const card of q.exile) {
         const m = card.meta;
-        if (!m || m.playableBy !== p || m.playableUntil === undefined) continue;
-        if (m.playableUntil < this.turnNo) continue;
+        if (!m || m.playableBy !== p || !this.hasExilePlayPermission(p, card)) continue;
         consider(card, 'exile', Object.assign(
           m.freePlay ? { free: true } : {},
           m.anyColor ? { asThoughAnyColor: true } : {}));
@@ -713,7 +731,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       out.push(...p.graveyard.filter(card => card.is('Land')));
     }
     for (const owner of this.players) for (const card of owner.exile) {
-      if (!card.is('Land') || !card.meta || card.meta.playableBy !== p || card.meta.playableUntil < this.turnNo) continue;
+      if (!card.is('Land') || !card.meta || card.meta.playableBy !== p || !this.hasExilePlayPermission(p, card)) continue;
       if (card.meta.playableCondition && !card.meta.playableCondition(this, p, card)) continue;
       out.push(card);
     }
@@ -2405,6 +2423,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     this.delayed = this.delayed.filter(d => d.expires !== 'eot');
+    this.expireOwnTurnExilePermissions(p);
     // blitz / dash sacrifice already via delayed triggers at end step
     this.emptyPool();
     for (const q of this.players) q.tempReductions = [];

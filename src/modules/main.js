@@ -413,6 +413,46 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ui.render();
       return;
     }
+    if (smokeScenario === 'doomMoonstoneExile') {
+      void (async () => {
+        const take = (name, zone) => {
+          const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+          g.remove(card);
+          card.ctrl = ui.me;
+          card.zone = zone;
+          if (zone === 'battlefield') {
+            card.sick = false;
+            g.battlefield.push(card);
+          } else ui.me[zone].push(card);
+          return card;
+        };
+        const moonstone = take('Moonstone, Harsh Mistress', 'battlefield');
+        const spell = take("Night's Whisper", 'graveyard');
+        g.turnPlayer = ui.me; g.turnNo = 20; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        ui.me.turnsStarted = 5;
+        await moonstone.def.triggers[0].run({ g, src: moonstone, you: ui.me, data: { player: ui.me, card: spell } });
+
+        // Reprodukuj screenshot: tri protivnička poteza su prošla, sada je
+        // Doomov sljedeći potez. Karta i dalje mora biti legalna iz exilea.
+        g.turnNo = 24;
+        ui.me.turnsStarted = 6;
+        ui.me.pool.B = 1;
+        ui.me.pool.C = 1;
+        g.recalc();
+        const q = {
+          type: 'main', player: ui.me,
+          casts: g.castableList(ui.me), acts: g.activatableList(ui.me), lands: g.playableLands(ui.me), phase: g.phase,
+        };
+        void ui.me.controller.decide(g, q).then(action => g.performAction(ui.me, action));
+        const smokeView = new URLSearchParams(window.location.search).get('smokeView');
+        if (smokeView === 'exile') ui.zoneBrowse = { player: ui.me, zone: 'exile' };
+        if (smokeView === 'sheet') ui.sheet = { card: spell };
+        ui.toast(`Moonstone: ${spell.name} je legalan iz exilea do kraja ovog poteza.`);
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     if (smokeScenario === 'doomCombat') {
       void (async () => {
         const doom = new MTG.CardInst(MTG.DEFS['Doctor Doom, King of Latveria'], ui.me);
@@ -578,6 +618,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       commanders: p.commanders.map(card),
       battlefield: g.battlefield.filter(c => c.ctrl === p).map(card),
       hand: p === ui.me ? p.hand.map(card) : undefined,
+      exile: p === ui.me ? p.exile.map(card) : undefined,
       visibleLibraryTop: p === ui.me && g.bf().some(source => source.ctrl === p && source.def.revealOwnTop) && p.library.length
         ? card(p.library[p.library.length - 1]) : undefined,
     }));
@@ -593,7 +634,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         prompt: pending.prompt || null,
         actions: (pending.casts || []).map(entry => ({
           card: entry.card && entry.card.name,
-          label: `Baci ${entry.card && entry.card.name}`,
+          from: entry.from,
+          label: entry.from === 'exile'
+            ? `Igraj ${entry.card && entry.card.name} iz egzila`
+            : `Baci ${entry.card && entry.card.name}`,
         })).concat((pending.acts || []).map(entry => ({
           card: entry.card && entry.card.name,
           label: entry.manaAbility ? entry.label :

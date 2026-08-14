@@ -1988,6 +1988,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       m.appendChild(el('div', 'mtitle', `${esc(player.name)}: ${names[zone] || zone} (${player[zone].length})`));
       const grid = el('div', 'cardgrid');
       const judgeReturn = this.zoneBrowse.judgeReturn;
+      const pd = this.pending;
+      const actionQ = pd && (pd.q.type === 'main' || pd.q.type === 'priority') ? pd.q : null;
       for (const c of player[zone]) {
         const cc = this.bigCardEl(c);
         if (judgeReturn) {
@@ -1999,6 +2001,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             this.queueRender();
           };
         } else if (this.isCandidate(c)) { cc.classList.add('targetable'); cc.onclick = () => { this.zoneBrowse = null; this.pickCandidate(c); }; }
+        else {
+          const playableNow = !!actionQ &&
+            ((actionQ.casts || []).some(entry => entry.card === c) || (actionQ.lands || []).includes(c));
+          cc.classList.add('inspectable');
+          if (playableNow) {
+            cc.classList.add('castable');
+            cc.appendChild(el('div', 'zoneplay', 'IGRAJ ▶'));
+          }
+          cc.onclick = () => {
+            this.zoneBrowse = null;
+            this.sheet = { card: c };
+            this.render();
+          };
+        }
         grid.appendChild(cc);
       }
       if (!player[zone].length) grid.appendChild(el('div', 'emptyrow', 'Prazno'));
