@@ -1205,15 +1205,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Fumigate'] = {
     resolve: async ctx => {
-      let n = 0;
-      for (const c of ctx.g.bf().filter(c => c.is('Creature')).slice()) if (await ctx.g.destroy(c)) n++;
+      const n = await ctx.g.destroyMany(ctx.g.bf().filter(c => c.is('Creature')));
       if (n) await ctx.g.gainLife(ctx.you, n);
     },
   };
   SC['Organic Extinction'] = {
     improvise: true,
     resolve: async ctx => {
-      for (const c of ctx.g.bf().filter(c => c.is('Creature') && !c.is('Artifact')).slice()) await ctx.g.destroy(c);
+      await ctx.g.destroyMany(ctx.g.bf().filter(c => c.is('Creature') && !c.is('Artifact')));
     },
   };
   SC['Inspiring Statuary'] = { grantsImprovise: true };

@@ -394,7 +394,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.def = Object.assign({}, card.def, { super: (card.def.super || []).filter(type => type !== 'Legendary') });
       if ((card.def.types || []).includes('Creature')) g.addCounters(card, '+1/+1', 1);
       if ((card.def.types || []).includes('Planeswalker')) {
-        card.counters.loyalty = (parseInt(card.def.loyalty, 10) || 0) + 1;
+        card.meta.additionalLoyaltyCounters = 1;
       }
       g.recalc();
       g.lg(`Loki's Double kopira ${target.name}.`);

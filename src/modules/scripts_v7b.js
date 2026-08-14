@@ -11,9 +11,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   // proliferate sa Tekuthal duplim
   const prolif = async (g, p) => {
-    const twice = g.bf().some(c => c.ctrl === p && c.def.doubleProliferate);
     await E.proliferate(g, p);
-    if (twice) { g.lg('Tekuthal: proliferate ×2!'); await E.proliferate(g, p); }
   };
   E7.prolif = prolif;
 
@@ -735,7 +733,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     label: 'Station (tapuj stvorenje → charge)', sorcery: true,
     cost: { tapCreature: true },
     run: async ctx => {
-      const n = ctx.stationPower || 0;
+      // Power se provjerava na rezoluciji; ako je stvorenje otišlo, koristi LKI.
+      const n = ctx.tappedCre && ctx.tappedCre.zone === 'battlefield'
+        ? Math.max(0, ctx.tappedCre.power) : (ctx.stationPower || 0);
       if (n > 0) ctx.g.addCounters(ctx.src, 'charge', n);
       ctx.g.lg(`${ctx.src.name}: station +${n} charge (ukupno ${ctx.src.counters['charge'] || 0}).`);
     },
@@ -769,7 +769,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // pa bi run samo izašao i okidač bi propao.
         what: 'permanent', prompt: 'Drugi artefakt', upTo: true,
         filter: (g, c, ctrl, src) => c.zone === 'battlefield' && c.is('Artifact') && c.ctrl === ctrl && c !== src,
-        aiHint: { goal: 'buff' },
+        aiHint: { goal: 'chargeCounter' },
       }],
       run: async ctx => {
         const t = ctx.targets[0];
@@ -777,7 +777,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const k = await ctx.you.controller.decide(ctx.g, {
           type: 'chooseOption', prompt: `Inspirit → ${t.name}:`,
           options: [{ key: 'p', label: '+1/+1 counter' }, { key: 'c', label: '2 charge countera' }],
-          aiHint: { kind: 'mode' },
+          aiHint: { kind: 'inspiritCounter', target: t },
         });
         if (k === 'p') ctx.g.addCounters(t, '+1/+1', 1);
         else ctx.g.addCounters(t, 'charge', 2);
@@ -797,13 +797,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const x = ctx.g.bf().filter(c => c.ctrl === ctx.you && c.is('Artifact') && c.tapped).length;
         if (x > 0 && ctx.targets[0]) await ctx.g.damageAny(ctx.src, ctx.targets[0], x);
-        if (x > 0) await E.scry(ctx.g, ctx.you, Math.min(x, 4));
+        if (x > 0) await E.scry(ctx.g, ctx.you, x);
       },
     }],
   };
   SC['Chrome Host Seedshark'] = {
     triggers: [{
-      on: 'castIS', desc: 'Incubate X',
+      on: 'castNonCreature', desc: 'Incubate X',
       filter: (g, self, d) => d.player === self.ctrl,
       run: async ctx => {
         const x = ctx.data.mv || 0;
@@ -812,7 +812,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (made[0] && x > 0) ctx.g.addCounters(made[0], '+1/+1', x);
       },
     }],
-    // "noncreature spell" — castIS pokriva instant/sorcery; artifacts/ench idu preko cast eventa
   };
   SC['Coretapper'] = {
     abilities: [
@@ -831,7 +830,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
   };
   SC['Crystalline Crawler'] = {
-    etbCounters: { kind: '+1/+1', n: (g, card) => Math.max(1, (card.meta._payColors || []).length) },
+    etbCounters: { kind: '+1/+1', n: (g, card) => (card.meta._payColors || []).length },
     mana: { cost: { rmCounter: { kind: '+1/+1', n: 1 } }, produce: [{ ANY: true, n: 1 }] },
     abilities: [{
       label: '+1/+1 counter', cost: { tap: true },
@@ -867,12 +866,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Deepglow Skate'] = {
     triggers: [{
       on: 'etb', desc: 'Dupliraj countere', filter: etbSelf,
+      targets: [{
+        what: 'permanent', count: 999, upTo: true, prompt: 'Permanenti čije countere dupliraš',
+        filter: (g, c) => c.zone === 'battlefield' && hasAnyCounter(c),
+        aiHint: { goal: 'proliferate' },
+      }],
       run: async ctx => {
-        const cands = ctx.g.bf().filter(c => c.ctrl === ctx.you && hasAnyCounter(c));
-        for (const t of cands) {
+        const chosen = ctx.targets[0] || [];
+        for (const t of chosen) {
           for (const k of Object.keys(t.counters)) if (t.counters[k] > 0) ctx.g.addCounters(t, k, t.counters[k]);
         }
-        if (cands.length) ctx.g.lg(`Deepglow Skate: dupliran svaki counter (${cands.length} permanenata).`);
+        if (chosen.length) ctx.g.lg(`Deepglow Skate: duplirani counteri (${chosen.length} permanenata).`);
       },
     }],
   };
@@ -885,13 +889,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [
       {
         on: 'etb', desc: 'Animiraj artefakte (sac EOT)', filter: etbSelf,
+        targets: [{
+          what: 'permanent', count: 999, upTo: true, prompt: 'Artefakti koji postaju 3/3',
+          filter: (g, c, ctrl) => c.zone === 'battlefield' && c.ctrl === ctrl && c.is('Artifact') && !c.is('Creature'),
+          aiHint: { goal: 'depthshaker' },
+        }],
         run: async ctx => {
-          const cands = ctx.g.bf().filter(c => c.ctrl === ctx.you && c.is('Artifact') && !c.is('Creature') && !c.hasSub('Equipment'));
-          const pick = await ctx.you.controller.decide(ctx.g, {
-            type: 'chooseCards', from: cands, min: 0, max: cands.length, prompt: 'Animiraj u 3/3 (sac na kraju!)', aiHint: { kind: 'depthshaker' },
-          });
           const chosen = [];
-          for (const c of pick) {
+          for (const c of (ctx.targets[0] || [])) {
             const iid = c.iid;
             ctx.g.untilEffects.push({
               expires: 'eot', kind: 'animate',
@@ -912,7 +917,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         on: 'attacks', desc: 'Melee', filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card.is('Artifact') && d.card.is('Creature'),
         run: async ctx => {
           const c = ctx.data.card;
-          const defs = new Set(ctx.g.combat ? ctx.g.combat.attackers.filter(a => a.ctrl === ctx.you).map(a => a.attacking).filter(x => x instanceof MTG.Player) : []);
+          const defs = new Set(ctx.g.combat ? ctx.g.combat.attackers.filter(a => a.ctrl === ctx.you)
+            .map(a => a.attacking instanceof MTG.Player ? a.attacking : a.attacking && a.attacking.ctrl)
+            .filter(x => x instanceof MTG.Player) : []);
           if (defs.size) E.pumpUntilEOT(ctx.g, c, defs.size, defs.size);
         },
       },
@@ -922,18 +929,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     selfCostAdjust: (g, card, p) => -g.bf().filter(c => c.ctrl === p && c.is('Artifact')).length,
     triggers: [{ on: 'etb', desc: 'Mill 4', filter: etbSelf, run: async ctx => { await ctx.g.mill(ctx.you, 4); } }],
     abilities: [{
-      label: 'Baci artefakt iz groblja', cost: { tap: true },
-      cond: (g, c, p) => p.graveyard.some(x => x.is('Artifact') && g.canPayMana(p, U.parseCost(x.def.cost || ''))),
+      label: 'Artefakt iz groblja možeš baciti ovaj potez', cost: { tap: true },
+      cond: (g, c, p) => p.graveyard.some(x => x.is('Artifact')),
+      targets: [{
+        zone: 'graveyard', what: 'card', prompt: 'Ciljani artefakt u tvom groblju',
+        filter: (g, card, ctrl) => card.owner === ctrl && card.is('Artifact'),
+        aiHint: { goal: 'bestGyCast' },
+      }],
       run: async ctx => {
-        const pool = ctx.you.graveyard.filter(x => x.is('Artifact'));
-        const pick = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseCards', from: pool, min: 0, max: 1, prompt: 'Baci iz groblja', aiHint: { kind: 'reanimate' },
-        });
-        if (pick[0]) {
-          ctx.g.remove(pick[0]); pick[0].zone = 'nowhere';
-          const ok = await ctx.g.castSpell(ctx.you, pick[0], { from: 'graveyard' });
-          if (!ok) { pick[0].zone = 'graveyard'; ctx.you.graveyard.push(pick[0]); }
-        }
+        const card = ctx.targets[0];
+        if (!card || card.zone !== 'graveyard') return;
+        card.meta.emryCastTurn = ctx.g.turnNo;
+        ctx.g.lg(`${card.name} se može baciti iz groblja ovaj potez.`);
       },
       aiScore: (g, c, p) => p.graveyard.some(x => x.is('Artifact') && x.mv <= 3) ? 5 : 1,
     }],
@@ -945,10 +952,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Etched Oracle'] = {
-    etbCounters: { kind: '+1/+1', n: (g, card) => Math.min(4, (card.meta._payColors || []).length || 1) },
+    etbCounters: { kind: '+1/+1', n: (g, card) => Math.min(4, (card.meta._payColors || []).length) },
     abilities: [{
       label: 'Skini 4: vuci 3', cost: { mana: '{1}', rmCounter: { kind: '+1/+1', n: 4 } },
-      run: async ctx => { await ctx.g.draw(ctx.you, 3); },
+      targets: [T.player({ prompt: 'Igrač vuče tri', aiHint: { goal: 'drawSelf' } })],
+      run: async ctx => { if (ctx.targets[0]) await ctx.g.draw(ctx.targets[0], 3); },
       aiScore: () => 7,
     }],
   };
@@ -977,13 +985,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Kilo, Apogee Mind'] = {
     triggers: [{
-      on: 'attacks', desc: 'Proliferate (tap)', filter: (g, self, d) => d.card === self,
+      on: 'becameTapped', desc: 'Proliferate kad se tapuje', filter: (g, self, d) => d.card === self,
       run: async ctx => { await prolif(ctx.g, ctx.you); },
-    }],
-    abilities: [{
-      label: 'Tapuj: proliferate', cost: { tap: true },
-      run: async ctx => { await prolif(ctx.g, ctx.you); },
-      aiScore: (g, c, p) => g.bf().some(x => x.ctrl === p && Object.values(x.counters).some(v => v > 0)) ? 4 : 0.3,
     }],
   };
   SC['Mindless Automaton'] = {
@@ -1005,29 +1008,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     etbCounters: { kind: '+1/+1', n: 2 },
     triggers: [{
       on: 'crime', desc: 'Proliferate (tuđi zločin)',
-      filter: (g, self, d) => d.player !== self.ctrl && (d.victims || []).includes(self.ctrl),
+      filter: (g, self, d) => d.player !== self.ctrl,
       run: async ctx => { await prolif(ctx.g, ctx.you); },
     }],
   };
   SC['Phyrexian Metamorph'] = {
-    triggers: [{
-      on: 'etb', desc: 'Kopiraj artefakt/stvorenje', filter: etbSelf, opt: true,
-      run: async ctx => {
-        const cands = ctx.g.bf().filter(c => (c.is('Artifact') || c.is('Creature')) && c !== ctx.src);
-        if (!cands.length) return;
-        const pick = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseCards', from: cands, min: 0, max: 1, prompt: 'Kopiraj:', aiHint: { kind: 'mirrorCopy' },
-        });
-        const t = pick[0];
-        if (!t) return;
-        const base = t.isCopyOf || t.def;
-        ctx.src.isCopyOf = base;
-        ctx.src.def = Object.assign({}, base);
-        if (!ctx.src.def.types.includes('Artifact')) ctx.src.def = Object.assign({}, ctx.src.def, { types: ['Artifact'].concat(ctx.src.def.types) });
-        ctx.g.lg(`Metamorph kopira: ${t.name}.`);
-        ctx.g.recalc();
-      },
-    }],
+    asEnters: async (g, card) => {
+      const cands = g.bf().filter(c => (c.is('Artifact') || c.is('Creature')) && c !== card);
+      if (!cands.length) return;
+      const pick = await card.ctrl.controller.decide(g, {
+        type: 'chooseCards', from: cands, min: 0, max: 1,
+        prompt: 'Metamorph: artifact ili creature za kopiranje', aiHint: { kind: 'mirrorCopy' },
+      });
+      const target = pick[0];
+      if (!target || !cands.includes(target)) return;
+      if (!card.meta.characteristicOriginalDef) card.meta.characteristicOriginalDef = card.def;
+      const base = target.isCopyOf || target.def;
+      card.isCopyOf = base;
+      card.def = Object.assign({}, base);
+      if (!card.def.types.includes('Artifact')) card.def = Object.assign({}, card.def, { types: ['Artifact'].concat(card.def.types) });
+      g.lg(`Metamorph kopira: ${target.name}.`);
+      if (base.asEnters && base !== card.meta.characteristicOriginalDef && (card.meta._copyAsEntersDepth || 0) < 3) {
+        card.meta._copyAsEntersDepth = (card.meta._copyAsEntersDepth || 0) + 1;
+        await base.asEnters(g, card);
+      }
+    },
   };
   SC['Steel Overseer'] = {
     abilities: [{
@@ -1048,21 +1053,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Tekuthal, Inquiry Dominus'] = {
     doubleProliferate: true,
     abilities: [{
-      label: 'Indestructible counter', cost: { mana: '{1}{U}{U}' },
+      label: 'Indestructible counter', cost: { mana: '{1}{UP}{UP}', removeCountersFromOthers: 3 },
       cond: (g, c, p) => {
         let n = 0;
         for (const x of g.bf()) if (x.ctrl === p && x !== c) n += Object.values(x.counters).reduce((a, b) => a + b, 0);
         return n >= 3 && !(c.counters['indestructible'] > 0);
       },
       run: async ctx => {
-        let left = 3;
-        for (const x of ctx.g.bf()) {
-          if (x.ctrl !== ctx.you || x === ctx.src || left <= 0) continue;
-          for (const k of Object.keys(x.counters)) {
-            const take = Math.min(left, x.counters[k] || 0);
-            if (take > 0) { ctx.g.removeCounters(x, k, take); left -= take; }
-          }
-        }
         ctx.g.addCounters(ctx.src, 'indestructible', 1);
         ctx.g.lg('Tekuthal: indestructible counter.');
       },
@@ -1110,11 +1107,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const c = pick[0] || top[0];
         ctx.you.library.splice(ctx.you.library.indexOf(c), 1);
         c.zone = 'hand'; ctx.you.hand.push(c);
-        for (const x of top) {
-          if (x === c) continue;
-          ctx.you.library.splice(ctx.you.library.indexOf(x), 1);
-          x.zone = 'library'; ctx.you.library.unshift(x);
+        const rest = top.filter(x => x !== c);
+        const ordered = [];
+        while (rest.length) {
+          const chosen = await ctx.you.controller.decide(ctx.g, {
+            type: 'chooseCards', from: rest.slice(), min: 1, max: 1,
+            prompt: ordered.length ? 'Sljedeća karta iznad nje na dnu' : 'Karta na samo dno biblioteke',
+            aiHint: { kind: 'bottomOrder' },
+          });
+          const next = chosen[0] && rest.includes(chosen[0]) ? chosen[0] : rest[0];
+          ordered.push(next);
+          rest.splice(rest.indexOf(next), 1);
         }
+        for (const x of ordered) ctx.you.library.splice(ctx.you.library.indexOf(x), 1);
+        for (const x of ordered) x.zone = 'library';
+        ctx.you.library.unshift(...ordered);
       }
       await prolif(ctx.g, ctx.you);
     },
@@ -1159,8 +1166,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     asEnters: async (g, card) => {
       const k = await card.ctrl.controller.decide(g, {
         type: 'chooseOption', prompt: 'Cloud Key: koji tip?',
-        options: [{ key: 'Artifact', label: 'Artifact' }, { key: 'Creature', label: 'Creature' }, { key: 'Instant', label: 'Instant' }, { key: 'Sorcery', label: 'Sorcery' }],
-        aiHint: { kind: 'mode' },
+        options: [{ key: 'Artifact', label: 'Artifact' }, { key: 'Creature', label: 'Creature' },
+          { key: 'Enchantment', label: 'Enchantment' }, { key: 'Instant', label: 'Instant' }, { key: 'Sorcery', label: 'Sorcery' }],
+        aiHint: { kind: 'cloudKey' },
       });
       card.meta.chosenType = k;
     },
@@ -1174,7 +1182,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // je pobjeda kasnila ceo krug ili izostala.
     winAtCharge: 20,
     triggers: [{
-      on: 'upkeep', desc: 'Charge counter', filter: (g, self, d) => d.player === self.ctrl, opt: false,
+      on: 'upkeep', desc: 'Charge counter', filter: (g, self, d) => d.player === self.ctrl, opt: true,
       run: async ctx => { ctx.g.addCounters(ctx.src, 'charge', 1); },
     }],
   };
@@ -1201,6 +1209,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Gavel of the Righteous'] = {
     equip: '{3}',
+    equipRemoveCounter: true,
     triggers: [{
       on: 'beginCombat', desc: 'Charge counter', filter: (g, self, d) => d.player === self.ctrl,
       run: async ctx => { ctx.g.addCounters(ctx.src, 'charge', 1); },
@@ -1253,11 +1262,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Lux Artillery'] = {
     triggers: [
       {
-        on: 'etb', desc: 'Sunburst novom stvorenju',
-        filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card !== self && d.card.is('Artifact') && d.card.is('Creature') && !d.card.isToken,
+        on: 'castCreature', desc: 'Artifact creature spell dobija sunburst',
+        filter: (g, self, d) => d.player === self.ctrl && d.card.is('Artifact'),
         run: async ctx => {
           const n = (ctx.data.card.meta._payColors || []).length;
-          if (n > 0) ctx.g.addCounters(ctx.data.card, '+1/+1', n);
+          if (ctx.data.card.castMeta) ctx.data.card.castMeta.grantedSunburstColors = n;
         },
       },
       {
@@ -1289,32 +1298,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
   };
   SC['Moxite Refinery'] = {
-    abilities: [{
-      label: 'Premjesti countere', sorcery: true, cost: { tap: true, mana: '{2}' },
-      cond: (g, c, p) => g.bf().some(x => x.ctrl === p && hasAnyCounter(x)),
-      run: async ctx => {
-        const g = ctx.g, you = ctx.you;
-        const froms = g.bf().filter(x => x.ctrl === you && hasAnyCounter(x));
-        const fp = await you.controller.decide(g, { type: 'chooseCards', from: froms, min: 1, max: 1, prompt: 'Skini countere sa:', aiHint: { kind: 'movePick' } });
-        const from = fp[0];
-        if (!from) return;
-        let x = 0;
-        for (const k of Object.keys(from.counters)) { x += from.counters[k]; g.removeCounters(from, k, from.counters[k]); }
-        if (x <= 0) return;
-        const k = await you.controller.decide(g, {
-          type: 'chooseOption', prompt: `${x} countera → gdje?`,
-          options: [{ key: 'charge', label: 'Charge na artefakt' }, { key: 'plus', label: '+1/+1 na stvorenje' }],
-          aiHint: { kind: 'mode' },
-        });
-        const pool = k === 'charge' ? g.bf().filter(c => c.is('Artifact')) : g.bf().filter(c => c.is('Creature'));
-        const tp = await you.controller.decide(g, { type: 'chooseCards', from: pool, min: 1, max: 1, prompt: 'Na:', aiHint: { kind: 'buffPick' } });
-        if (tp[0]) g.addCounters(tp[0], k === 'charge' ? 'charge' : '+1/+1', x);
+    abilities: [
+      {
+        label: 'Premjesti kao charge countere', sorcery: true,
+        cost: { tap: true, mana: '{2}', removeAnyCounters: { filter: (g, x) => x.is('Artifact') || x.is('Creature') } },
+        cond: (g, c, p) => g.bf().some(x => x.ctrl === p && (x.is('Artifact') || x.is('Creature')) && hasAnyCounter(x)),
+        targets: [T.permanent((g, target) => target.is('Artifact'), { prompt: 'Ciljani artefakt', aiHint: { goal: 'chargeCounter' } })],
+        run: async ctx => { if (ctx.targets[0] && ctx.x > 0) ctx.g.addCounters(ctx.targets[0], 'charge', ctx.x); },
+        aiScore: () => 1,
       },
-      aiScore: () => 1,
-    }],
+      {
+        label: 'Premjesti kao +1/+1 countere', sorcery: true,
+        cost: { tap: true, mana: '{2}', removeAnyCounters: { filter: (g, x) => x.is('Artifact') || x.is('Creature') } },
+        cond: (g, c, p) => g.bf().some(x => x.ctrl === p && (x.is('Artifact') || x.is('Creature')) && hasAnyCounter(x)),
+        targets: [T.creature({ prompt: 'Ciljano stvorenje', aiHint: { goal: 'buff' } })],
+        run: async ctx => { if (ctx.targets[0] && ctx.x > 0) ctx.g.addCounters(ctx.targets[0], '+1/+1', ctx.x); },
+        aiScore: () => 1,
+      },
+    ],
   };
   SC['Pentad Prism'] = {
-    etbCounters: { kind: 'charge', n: (g, card) => Math.max(1, (card.meta._payColors || []).length) },
+    etbCounters: { kind: 'charge', n: (g, card) => (card.meta._payColors || []).length },
     mana: { cost: { rmCounter: { kind: 'charge', n: 1 } }, produce: [{ ANY: true, n: 1 }] },
   };
   SC['Solar Array'] = {
@@ -1326,10 +1330,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Soul-Guide Lantern'] = {
     triggers: [{
       on: 'etb', desc: 'Egzilaj kartu iz groblja', filter: etbSelf,
+      targets: [{
+        zone: 'graveyard', anyGraveyard: true, what: 'card', prompt: 'Karta iz bilo kojeg groblja',
+        aiHint: { goal: 'gyHate' },
+      }],
       run: async ctx => {
-        for (const o of E.eachOpp(ctx.g, ctx.you)) {
-          if (o.graveyard.length) { const c = o.graveyard.pop(); c.zone = 'exile'; o.exile.push(c); ctx.g.lg(`Lantern egzilira ${c.name}.`); break; }
-        }
+        const card = ctx.targets[0];
+        if (card && card.zone === 'graveyard') { await ctx.g.move(card, 'exile'); ctx.g.lg(`Lantern egzilira ${card.name}.`); }
       },
     }],
     abilities: [
@@ -1384,33 +1391,46 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Resourceful Defense'] = {
     triggers: [{
       on: 'lto', desc: 'Sačuvaj countere',
-      filter: (g, self, d) => d.snap.ctrl === self.ctrl && d.card !== self,
+      filter: (g, self, d) => d.snap.ctrl === self.ctrl && d.card !== self &&
+        Object.values(d.snap.counters || {}).some(n => n > 0),
+      targets: [{
+        what: 'permanent', prompt: 'Permanent koji prima countere',
+        filter: (g, c, ctrl) => c.zone === 'battlefield' && c.ctrl === ctrl,
+        aiHint: { goal: 'buff' },
+      }],
       run: async ctx => {
         const snap = ctx.data.snap;
-        const total = (snap.plus1 || 0);
-        if (total <= 0) return;
-        const pool = ctx.g.bf().filter(c => c.ctrl === ctx.you);
-        if (!pool.length) return;
-        const pick = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseCards', from: pool, min: 0, max: 1, prompt: `Prebaci ${total} countera na:`, aiHint: { kind: 'buffPick' },
-        });
-        if (pick[0]) ctx.g.addCounters(pick[0], '+1/+1', total);
+        const target = ctx.targets[0];
+        if (!target) return;
+        for (const [kind, n] of Object.entries(snap.counters || {})) {
+          if (n > 0) ctx.g.addCounters(target, kind, n);
+        }
       },
     }],
     abilities: [{
       label: 'Premjesti countere', cost: { mana: '{4}{W}' },
-      cond: (g, c, p) => g.bf().some(x => x.ctrl === p && hasAnyCounter(x)),
+      cond: (g, c, p) => g.bf().filter(x => x.ctrl === p).length >= 2 &&
+        g.bf().some(x => x.ctrl === p && hasAnyCounter(x)),
+      targets: [
+        T.permanent((g, target, ctrl) => target.ctrl === ctrl && hasAnyCounter(target), {
+          prompt: 'Permanent sa kojeg pomjeraš countere', aiHint: { goal: 'buff' },
+        }),
+        T.permanent((g, target, ctrl) => target.ctrl === ctrl, {
+          prompt: 'Drugi permanent koji prima countere', differentFromPrevious: true, aiHint: { goal: 'buff' },
+        }),
+      ],
       run: async ctx => {
-        const froms = ctx.g.bf().filter(x => x.ctrl === ctx.you && hasAnyCounter(x));
-        const fp = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: froms, min: 1, max: 1, prompt: 'Sa:', aiHint: { kind: 'movePick' } });
-        const from = fp[0];
-        if (!from) return;
-        const pool = ctx.g.bf().filter(x => x.ctrl === ctx.you && x !== from);
-        const tp = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: pool, min: 1, max: 1, prompt: 'Na:', aiHint: { kind: 'buffPick' } });
-        if (!tp[0]) return;
+        const from = ctx.targets[0], to = ctx.targets[1];
+        if (!from || !to || from === to) return;
         for (const k of Object.keys(from.counters)) {
-          const n = from.counters[k];
-          if (n > 0) { ctx.g.removeCounters(from, k, n); ctx.g.addCounters(tp[0], k, n); }
+          const available = from.counters[k] || 0;
+          if (available <= 0) continue;
+          const chosen = await ctx.you.controller.decide(ctx.g, {
+            type: 'chooseX', min: 0, max: available, card: from,
+            prompt: `Koliko ${k} countera premještaš?`, aiHint: { kind: 'moveCounters', source: from, counterKind: k },
+          });
+          const n = Math.max(0, Math.min(available, Number(chosen) || 0));
+          if (n > 0) { ctx.g.removeCounters(from, k, n); ctx.g.addCounters(to, k, n); }
         }
       },
       aiScore: () => 0.5,

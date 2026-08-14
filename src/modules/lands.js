@@ -640,12 +640,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Artefakt iz groblja u ruku', cost: { tap: true, sacSelf: true, mana: '{2}' },
       cond: (g, c, p) => p.graveyard.some(x => x.is('Artifact')),
+      targets: [{
+        zone: 'graveyard', what: 'card', prompt: 'Ciljana artifact karta u tvom groblju',
+        filter: (g, card, ctrl) => card.owner === ctrl && card.is('Artifact'),
+        aiHint: { goal: 'reanimate' },
+      }],
       run: async ctx => {
-        const pool = ctx.you.graveyard.filter(x => x.is('Artifact'));
-        const pick = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseCards', from: pool, min: 1, max: 1, prompt: 'Artefakt u ruku', aiHint: { kind: 'reanimate' },
-        });
-        if (pick[0]) { ctx.g.remove(pick[0]); pick[0].zone = 'hand'; ctx.you.hand.push(pick[0]); }
+        const card = ctx.targets[0];
+        if (card && card.zone === 'graveyard') await ctx.g.move(card, 'hand');
       },
     }],
   };

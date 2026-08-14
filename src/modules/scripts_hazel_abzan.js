@@ -10,30 +10,41 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const anotherCreatureDies = (g, self, d) => d.card !== self && d.snap.types.includes('Creature');
 
   E.proliferate = async function (g, p) {
-    for (const c of g.bf()) {
-      const kinds = Object.keys(c.counters).filter(k => (c.counters[k] || 0) > 0);
-      if (!kinds.length) continue;
-      const beneficial = ['+1/+1', 'loyalty', 'acorn', 'quest', 'soul', 'hour', 'lore', 'charge'];
-      const isGood = kinds.some(k => beneficial.includes(k));
-      const isBad = kinds.some(k => ['-1/-1', '-0/-1'].includes(k));
-      const mine = c.ctrl === p;
-      if ((mine && isGood) || (!mine && isBad && !isGood)) {
-        for (const k of kinds) g.addCounters(c, k, 1);
+    // Svaki Tekuthal je zaseban replacement efekt. Svaki proliferate traži
+    // novi izbor; proliferate ne targetira, pa hexproof/shroud/ward ne utiču.
+    const tekuthals = g.bf().filter(c => c.ctrl === p && c.def.doubleProliferate).length;
+    const repeats = Math.pow(2, tekuthals);
+    for (let pass = 0; pass < repeats; pass++) {
+      const permanents = g.bf().filter(c => Object.values(c.counters).some(n => n > 0));
+      const players = g.alivePlayers().filter(q => (q.poison || 0) > 0);
+      const candidates = permanents.concat(players);
+      if (!candidates.length) {
+        g.lg(`${p.name} proliferira (nema countera za izbor).`);
+        continue;
       }
-    }
-    // Proliferate obuhvata i IGRAČE sa counterima, ne samo permanente.
-    // Ranije su poison counteri bili preskočeni.
-    for (const q of g.players) {
-      if (q === p || q.lost) continue;
-      if ((q.poison || 0) > 0) {
-        q.poison++;
-        g.lg(`${q.name}: poison ${q.poison}.`);
-        if (q.poison >= 10) { q.lost = true; g.lg(`${q.name} gubi (poison)!`); }
+      const picked = await p.controller.decide(g, {
+        type: 'chooseTargets', spec: { what: 'proliferate' }, candidates,
+        min: 0, max: candidates.length,
+        prompt: repeats > 1 ? `Proliferate ${pass + 1}/${repeats}` : 'Proliferate',
+        aiHint: { goal: 'proliferate' },
+      });
+      const chosen = Array.isArray(picked) ? [...new Set(picked)].filter(x => candidates.includes(x)) : [];
+      for (const subject of chosen) {
+        if (subject instanceof MTG.Player) {
+          if ((subject.poison || 0) > 0) {
+            subject.poison++;
+            g.lg(`${subject.name}: poison ${subject.poison}.`);
+          }
+          continue;
+        }
+        for (const kind of Object.keys(subject.counters)) {
+          if ((subject.counters[kind] || 0) > 0) g.addCounters(subject, kind, 1);
+        }
       }
+      g.recalc();
+      await g.checkSBA();
+      g.lg(`${p.name} proliferira (${chosen.length} izabrano).`);
     }
-    g.recalc();
-    await g.checkSBA();
-    g.lg(`${p.name} proliferira.`);
   };
 
   E.monstrosity = async function (g, card, n) {

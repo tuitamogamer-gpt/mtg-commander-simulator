@@ -35,7 +35,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Chain Reaction'] = {
     resolve: async ctx => {
       const x = ctx.g.bf().filter(c => c.is('Creature')).length;
-      for (const c of ctx.g.bf().filter(c => c.is('Creature')).slice()) await ctx.g.damageCreature(ctx.src, c, x);
+      for (const c of ctx.g.bf().filter(c => c.is('Creature')).slice()) {
+        await ctx.g.damageCreature(ctx.src, c, x, { deferSBA: true });
+      }
+      await ctx.g.checkSBA();
     },
   };
   SC["Night's Whisper"] = {

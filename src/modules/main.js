@@ -585,6 +585,67 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'counterHuman') {
+      void (async () => {
+        const take = name => {
+          const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+          g.remove(card);
+          card.ctrl = ui.me; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        const inspirit = take('Inspirit, Flagship Vessel');
+        const reactor = take('Darksteel Reactor');
+        const kilo = take('Kilo, Apogee Mind');
+        const opponent = g.players.find(player => player !== ui.me);
+        const weakened = new MTG.CardInst(MTG.DEFS['Kilo, Apogee Mind'], opponent);
+        weakened.ctrl = opponent; weakened.zone = 'battlefield'; weakened.sick = false;
+        g.battlefield.push(weakened);
+        inspirit.counters.charge = 8; reactor.counters.charge = 17;
+        kilo.counters['+1/+1'] = 2; weakened.counters['-1/-1'] = 1; opponent.poison = 2;
+        g.turnPlayer = ui.me; g.turnNo = 10; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        ui.toast('Counter human: izaberi svaki permanent/player koji želiš proliferirati.');
+        await MTG.E.proliferate(g, ui.me);
+        ui.showLog = true;
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'counterAI') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Counter Intelligence');
+        if (!bot) throw new Error('counterAI scenario zahtijeva smokeAIDeck=Counter Intelligence');
+        const takeBot = name => {
+          const zones = [bot.command, bot.hand, bot.library, bot.graveyard, bot.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], bot);
+          g.remove(card);
+          card.ctrl = bot; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        const inspirit = takeBot('Inspirit, Flagship Vessel');
+        const reactor = takeBot('Darksteel Reactor');
+        const kilo = takeBot('Kilo, Apogee Mind');
+        const weakened = new MTG.CardInst(MTG.DEFS['Kilo, Apogee Mind'], ui.me);
+        weakened.ctrl = ui.me; weakened.zone = 'battlefield'; weakened.sick = false;
+        g.battlefield.push(weakened);
+        inspirit.counters.charge = 8; reactor.counters.charge = 17;
+        kilo.counters['+1/+1'] = 2; weakened.counters['-1/-1'] = 1; ui.me.poison = 2;
+        g.turnPlayer = bot; g.turnNo = 12; g.phase = 'combat'; g.step = 'begin'; g.paced = false;
+        g.recalc();
+        await MTG.E.proliferate(g, bot);
+        await g.emit('beginCombat', { player: bot });
+        await g.flushTriggers();
+        while (g.stack.length && !g.gameOver) await g.resolveTop();
+        g.lg(`Counter AI provjera: Reactor ${reactor.counters.charge || 0}; neprijateljski -1/-1 ${weakened.counters['-1/-1'] || 0}; poison ${ui.me.poison}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Counter AI scenario: proliferate i Inspirit odluke razriješene.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     g.start().catch(err => {
       console.error(err);
       ui.toast('Greška u igri: ' + err.message);

@@ -584,6 +584,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           return pick(cands);
         }
+        case 'chargeCounter': {
+          const score = card => {
+            if (card.name === 'Darksteel Reactor') return 100 + (card.counters.charge || 0);
+            if (card.def.stationCreatureAt) return 80 - Math.max(0, card.def.stationCreatureAt - (card.counters.charge || 0));
+            if (card.is('Artifact')) return 10 + (card.counters.charge || 0);
+            return 0;
+          };
+          const mine = myPerms.slice().sort((a, b) => score(b) - score(a));
+          return mine.length ? [mine[0]] : (min ? pick(cands) : []);
+        }
+        case 'proliferate': {
+          const beneficial = new Set(['+1/+1', 'loyalty', 'charge', 'indestructible', 'shield', 'lore', 'quest', 'acorn', 'soul', 'hour', 'level', 'oil']);
+          const harmful = new Set(['-1/-1', '-0/-1', 'stun', 'finality', 'doom', 'bounty']);
+          return cands.filter(subject => {
+            if (subject instanceof MTG.Player) return subject !== p && (subject.poison || 0) > 0;
+            const kinds = Object.keys(subject.counters).filter(kind => (subject.counters[kind] || 0) > 0);
+            const good = kinds.some(kind => beneficial.has(kind));
+            const bad = kinds.some(kind => harmful.has(kind));
+            return subject.ctrl === p ? good && !bad : bad && !good;
+          }).slice(0, max);
+        }
         case 'protect': case 'fightMine': {
           if (myPerms.length) return [myPerms[0]];
           return pick(cands);
@@ -687,6 +708,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'cleanupDiscard': case 'addlDiscard': {
           return byValAsc.slice(0, Math.max(min, 0));
         }
+        case 'bottomOrder': return byValAsc.slice(0, 1);
         case 'delve': {
           // Delve je SNIŽENJE cijene — min je 0, pa je "uzmi min" značilo da bot
           // nikad ne egzilira ništa i onda ne može platiti (Treasure Cruise je
@@ -771,6 +793,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const sorted = from.slice().sort((a, b) => Math.max(0, b.power) - Math.max(0, a.power));
           return [sorted[0]];
         }
+        case 'counterCost': {
+          const bad = card => (card.counters['-1/-1'] || 0) + (card.counters.stun || 0) +
+            (card.counters.finality || 0) + (card.counters.doom || 0);
+          const sorted = from.slice().sort((a, b) => bad(b) - bad(a) || this.permThreat(g, a) - this.permThreat(g, b));
+          return sorted.length ? [sorted[0]] : [];
+        }
         case 'removalPick': case 'stealPick': case 'goadPick': {
           const sorted = from.slice().sort((a, b) => this.permThreat(g, b) - this.permThreat(g, a));
           return sorted.length && (min > 0 || this.permThreat(g, sorted[0]) >= 3) ? [sorted[0]] : (min > 0 && sorted.length ? [sorted[0]] : []);
@@ -841,6 +869,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         case 'ward': return this.p.life > 10 ? 'yes' : 'no';
         case 'optTrigger': return 'yes';
+        case 'inspiritCounter': {
+          const target = q.aiHint && q.aiHint.target;
+          const wantsCharge = target && (target.name === 'Darksteel Reactor' || target.def.stationCreatureAt ||
+            target.def.winAtCharge || Object.prototype.hasOwnProperty.call(target.counters || {}, 'charge'));
+          return wantsCharge && keys.includes('c') ? 'c' : (keys.includes('p') ? 'p' : keys[0]);
+        }
+        case 'cloudKey': return keys.includes('Artifact') ? 'Artifact' : keys[0];
+        case 'counterCostKind': {
+          const bad = ['-1/-1', '-0/-1', 'stun', 'finality', 'doom', 'bounty'];
+          return bad.find(key => keys.includes(key)) || keys[0];
+        }
+        case 'equipPayment': {
+          const card = q.aiHint && q.aiHint.card;
+          const counters = card ? Object.values(card.counters).reduce((sum, n) => sum + Math.max(0, n), 0) : 0;
+          return counters >= 2 && keys.includes('mana') ? 'mana' : (keys.includes('counter') ? 'counter' : keys[0]);
+        }
         case 'partnerSearch': case 'rampChoice': return keys.includes('yes') ? 'yes' : keys[0];
         case 'elvenFarsight': {
           const card = q.aiHint && q.aiHint.card;

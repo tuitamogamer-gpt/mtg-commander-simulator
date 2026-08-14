@@ -674,6 +674,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       actions.push(...generateBlockPlans(game, player, q, config));
     } else if (q.type === 'chooseTargets') {
       const ranked = (q.candidates || []).slice().sort((a, b) => targetValue(game, player, b, q) - targetValue(game, player, a, q) || targetStableKey(a).localeCompare(targetStableKey(b))).slice(0, config.targetLimit);
+      if (q.aiHint && ['proliferate', 'depthshaker'].includes(q.aiHint.goal)) {
+        const strategic = ranked.filter(target => targetValue(game, player, target, q) > 0).slice(0, q.max || ranked.length);
+        actions.push({ kind: 'chooseTargets', picks: strategic });
+      }
       for (const picks of combinations(ranked, q.min || 0, q.max || 1, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseTargets', picks });
     } else if (q.type === 'chooseCards') {
       const ranked = (q.from || []).slice().sort((a, b) => choiceCardValue(game, player, b, q) - choiceCardValue(game, player, a, q) || a.iid - b.iid).slice(0, Math.max(config.targetLimit, q.max || 1));
@@ -755,6 +759,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function targetValue(game, player, target, q) {
     const hint = q.aiHint && q.aiHint.goal || '';
     if (target instanceof U.Player) {
+      if (hint === 'proliferate') return target === player ? -100 : 8 + (target.poison || 0) * 2;
+      if (hint === 'drawSelf') return target === player ? 100 : -100;
       const threat = playerThreatForGame(game, player, target);
       const lethal = target.life <= 7 ? 12 : 0;
       const friendly = target === player ? (/gain|protect|draw/i.test(hint) ? 20 : -30) : 0;
@@ -764,8 +770,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (target instanceof U.CardInst) {
       const value = permanentGameValue(game, target, player);
       const hostile = target.ctrl !== player;
+      if (hint === 'proliferate') {
+        const beneficial = new Set(['+1/+1', 'loyalty', 'charge', 'indestructible', 'shield', 'lore', 'quest', 'acorn', 'soul', 'hour', 'level', 'oil']);
+        const harmful = new Set(['-1/-1', '-0/-1', 'stun', 'finality', 'doom', 'bounty']);
+        const kinds = Object.keys(target.counters).filter(kind => (target.counters[kind] || 0) > 0);
+        const good = kinds.some(kind => beneficial.has(kind));
+        const bad = kinds.some(kind => harmful.has(kind));
+        if (!hostile) return good && !bad ? 8 + value : -20;
+        return bad && !good ? 8 + value : -20;
+      }
+      if (hint === 'chargeCounter') {
+        if (hostile || !target.is('Artifact')) return -100;
+        if (target.name === 'Darksteel Reactor') return 120 + (target.counters.charge || 0) * 2;
+        if (target.def.stationCreatureAt) return 90 - Math.max(0, target.def.stationCreatureAt - (target.counters.charge || 0));
+        return 12 + (target.counters.charge || 0);
+      }
+      if (hint === 'depthshaker') {
+        if (hostile || game.phase !== 'main1') return -100;
+        if (['Darksteel Reactor', 'Lux Artillery', 'Moxite Refinery'].includes(target.name)) return -50;
+        return 5 - value * 0.16 - Object.values(target.counters).reduce((sum, n) => sum + Math.max(0, n), 0);
+      }
       if (/removal|damage|destroy|exile|bounce|counter/i.test(hint)) return hostile ? value : -value * 1.8;
-      if (/pump|protect|copy|recur|return|attach|equip/i.test(hint)) return hostile ? -value : value;
+      if (/buff|pump|protect|copy|recur|return|attach|equip/i.test(hint)) return hostile ? -value : value;
       return hostile ? value * 0.7 : value * 0.5;
     }
     if (target && target.kind) {
@@ -780,6 +806,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!(card instanceof U.CardInst)) return 0;
     const hint = q.aiHint && q.aiHint.kind || '';
     const value = cardDefinitionValue(card.def) + (card.commander ? 8 : 0);
+    if (hint === 'counterCost') {
+      const bad = (card.counters['-1/-1'] || 0) + (card.counters['-0/-1'] || 0) +
+        (card.counters.stun || 0) + (card.counters.finality || 0) + (card.counters.doom || 0);
+      return bad * 20 - value;
+    }
+    if (hint === 'stationTap') return Math.max(0, card.power) * 4 - value * 0.1;
+    if (hint === 'bottomOrder') return -value;
     if (/discard|sacCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) return -value;
     if (card.ctrl && card.ctrl !== player) return value * 1.2;
     return value;
@@ -1106,6 +1139,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         } else if (action.value === 'scry') {
           breakdown.choice = player.library.length ? (player.hand.length >= 6 ? 2.3 : 1.7) : -2;
         }
+      } else if (hintKind === 'commanderZone') {
+        breakdown.choice = action.value === 'cz' ? 40 : -8;
+      } else if (hintKind === 'cloudKey') {
+        breakdown.choice = action.value === 'Artifact' ? 12 : action.value === 'Creature' ? 3 : 1;
+      } else if (hintKind === 'inspiritCounter') {
+        const target = q.aiHint && q.aiHint.target;
+        const wantsCharge = target && (target.name === 'Darksteel Reactor' || target.def.stationCreatureAt ||
+          target.def.winAtCharge || Object.prototype.hasOwnProperty.call(target.counters || {}, 'charge'));
+        breakdown.choice = action.value === (wantsCharge ? 'c' : 'p') ? 12 : -3;
+      } else if (hintKind === 'counterCostKind') {
+        breakdown.choice = ['-1/-1', '-0/-1', 'stun', 'finality', 'doom', 'bounty'].includes(action.value) ? 10 : 0;
+      } else if (hintKind === 'equipPayment') {
+        const card = q.aiHint && q.aiHint.card;
+        const counters = card ? Object.values(card.counters).reduce((sum, n) => sum + Math.max(0, n), 0) : 0;
+        breakdown.choice = action.value === (counters >= 2 ? 'mana' : 'counter') ? 7 : 0;
       } else if (hintKind === 'aggroAmalgam') {
         const source = q.aiHint && q.aiHint.src;
         if (source && action.value === '0') {

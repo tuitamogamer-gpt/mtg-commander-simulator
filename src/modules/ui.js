@@ -1668,19 +1668,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (q.type === 'scry') {
         pd.scryState = pd.scryState || q.cards.map(() => 'top');
+        pd.scryOrder = pd.scryOrder || q.cards.slice();
         m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Scry') + ': tap mijenja vrh/dno'));
+        m.appendChild(el('div', 'orderhint', 'Strelice mijenjaju redoslijed. VRH: prvi se prvi vuče. DNO: prvi je najdublje.'));
         const grid = el('div', 'cardgrid');
-        q.cards.forEach((c, i) => {
+        pd.scryOrder.forEach((c, orderIndex) => {
+          const i = q.cards.indexOf(c);
           const cc = this.bigCardEl(c);
           cc.classList.add(pd.scryState[i] === 'top' ? 'scrytop' : 'scrybottom');
           cc.appendChild(el('div', 'scrylabel', pd.scryState[i] === 'top' ? 'VRH' : 'DNO'));
           cc.onclick = () => { pd.scryState[i] = pd.scryState[i] === 'top' ? 'bottom' : 'top'; this.render(); };
+          const controls = el('div', 'triggerordercontrols');
+          const left = btn('←', event => {
+            event.stopPropagation();
+            if (orderIndex > 0) [pd.scryOrder[orderIndex - 1], pd.scryOrder[orderIndex]] = [pd.scryOrder[orderIndex], pd.scryOrder[orderIndex - 1]];
+            this.render();
+          });
+          const right = btn('→', event => {
+            event.stopPropagation();
+            if (orderIndex < pd.scryOrder.length - 1) [pd.scryOrder[orderIndex + 1], pd.scryOrder[orderIndex]] = [pd.scryOrder[orderIndex], pd.scryOrder[orderIndex + 1]];
+            this.render();
+          });
+          left.disabled = orderIndex === 0; right.disabled = orderIndex === pd.scryOrder.length - 1;
+          controls.appendChild(left); controls.appendChild(right); cc.appendChild(controls);
           grid.appendChild(cc);
         });
         m.appendChild(grid);
         m.appendChild(btn('Potvrdi ✓', () => {
           const top = [], bottom = [];
-          q.cards.forEach((c, i) => (pd.scryState[i] === 'top' ? top : bottom).push(c));
+          pd.scryOrder.forEach(c => {
+            const i = q.cards.indexOf(c);
+            (pd.scryState[i] === 'top' ? top : bottom).push(c);
+          });
           this.resolvePending({ top, bottom });
         }, 'primary wide'));
         return ov;

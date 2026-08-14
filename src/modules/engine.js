@@ -389,6 +389,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         isToken: card.isToken, power: card.power, toughness: card.toughness,
         commander: card.commander, attacking: card.attacking, plus1: card.plus1(),
         minus1: card.counters['-1/-1'] || 0,
+        counters: Object.assign({}, card.counters),
         types: card.cur ? card.cur.types.slice() : card.def.types.slice(),
         subtypes: card.cur ? card.cur.subtypes.slice() : card.def.subtypes.slice(),
         attachments: card.attachments.slice(), mv: card.mv, colors: card.colors,
@@ -413,10 +414,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
 
       // commander zone replacement
-      if (card.commander && (toZone === 'graveyard' || toZone === 'exile') && !opts.noCmdReplace) {
+      if (card.commander && ['graveyard', 'exile', 'hand', 'library'].includes(toZone) && !opts.noCmdReplace) {
+        const zoneLabels = { graveyard: 'Groblje', exile: 'Egzil', hand: 'Ruka', library: 'Biblioteka' };
         const keep = await card.owner.controller.decide(this, {
           type: 'chooseOption', prompt: `${card.name}: vrati u command zonu?`,
-          options: [{ key: 'cz', label: 'Command zona' }, { key: 'stay', label: toZone === 'graveyard' ? 'Groblje' : 'Egzil' }],
+          options: [{ key: 'cz', label: 'Command zona' }, { key: 'stay', label: zoneLabels[toZone] }],
+          aiHint: { kind: 'commanderZone', card, toZone },
         });
         if (keep === 'cz') toZone = 'command';
       }
@@ -529,9 +532,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async handleETB(card, opts) {
-      const d = card.def;
+      let d = card.def;
       card.meta = card.meta || {};
-      // "as enters" choices & counters
+      // Copy i drugi as-enters replacementi postavljaju karakteristike prije
+      // enters-tapped i enters-with-counters replacementa kopirane karte.
+      if (d.asEnters) {
+        await d.asEnters(this, card);
+        d = card.def;
+      }
       if (d.entersTapped && !opts.forceUntapped) {
         let t = typeof d.entersTapped === 'function' ? await d.entersTapped(this, card) : d.entersTapped;
         if (t) card.tapped = true;
@@ -559,7 +567,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       }
       if (d.loyalty && card.is('Planeswalker')) {
-        card.counters['loyalty'] = parseInt(d.loyalty, 10);
+        card.counters['loyalty'] = parseInt(d.loyalty, 10) + (card.meta.additionalLoyaltyCounters || 0);
         if (d.compleated && card.castMeta && card.castMeta.phyrexianLifePaid > 0) {
           card.counters['loyalty'] = Math.max(0, card.counters['loyalty'] - 2);
         }
@@ -581,7 +589,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (nn > 0) this.addCounters(card, '+1/+1', nn, true);
         }
       }
-      if (d.asEnters) await d.asEnters(this, card);
       if (d.saga) { card.counters['lore'] = 0; }
       this.recalc();
       const evData = { card, ctrl: card.ctrl };
@@ -1122,6 +1129,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       await this.move(card, 'graveyard');
       return true;
+    }
+
+    async destroyMany(cards, opts = {}) {
+      // "Destroy all" je simultan događaj: ko je indestructible/shielded ili
+      // može regenerisati zaključava se prije nego prvi permanent napusti tablu.
+      // Inače bi odlazak lorda/Spacecrafta usred petlje promijenio sudbinu
+      // permanenata koji su bili zaštićeni u trenutku efekta.
+      const unique = [...new Set(cards)].filter(card => card && card.zone === 'battlefield');
+      const doomed = [];
+      for (const card of unique) {
+        if (card.kw('indestructible') && !opts.ignoreIndestructible) {
+          this.lg(`${card.name} je indestructible — preživljava.`);
+          continue;
+        }
+        if ((card.counters['shield'] || 0) > 0 && !opts.ignoreIndestructible) {
+          this.removeCounters(card, 'shield', 1);
+          card.damage = 0; card.deathtouched = false;
+          this.lg(`${card.name}: shield counter sprječava uništenje.`);
+          await this.emit('shieldRemoved', { card });
+          continue;
+        }
+        if (card.regenShield > 0 && !opts.noRegen) {
+          card.regenShield--;
+          card.tapped = true; card.damage = 0; card.deathtouched = false;
+          if (this.combat) this.removeFromCombat(card);
+          this.lg(`${card.name} se regeneriše.`);
+          continue;
+        }
+        doomed.push(card);
+      }
+      for (const card of doomed) if (card.zone === 'battlefield') await this.move(card, 'graveyard');
+      return doomed.length;
     }
 
     async exileCard(card) {

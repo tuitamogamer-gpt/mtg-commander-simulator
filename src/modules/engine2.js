@@ -26,8 +26,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const spec = equipTargetSpec(player);
     return game.legalTargets(spec, equipment, player).filter(target =>
       target.iid !== equipment.attachedTo &&
-      game.canPayMana(player, game.abilityManaCost(player, equipment, equipCostFor(equipment, target)), null,
-        { artifactAbilityAlreadyUsed: equipment.is('Artifact') }));
+      (game.canPayMana(player, game.abilityManaCost(player, equipment, equipCostFor(equipment, target)), null,
+        { artifactAbilityAlreadyUsed: equipment.is('Artifact') }) ||
+        equipment.def.equipRemoveCounter && Object.values(equipment.counters).some(n => n > 0)));
   }
 
   function controlsCommander(game, player) {
@@ -674,6 +675,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (p.graveyard.filter(c => c !== card).length >= (d.escape.exileN || 0))
           consider(card, 'graveyard', Object.assign({ escape: true }, d.escape));
       }
+      if (card.meta.emryCastTurn === this.turnNo) consider(card, 'graveyard', { emry: true });
       // mayhem: baci iz groblja ako je odbačena ovaj potez
       if (d.mayhem && card.meta._discardedTurn === this.turnNo) {
         consider(card, 'graveyard', Object.assign({ mayhem: true, altCostStr: d.mayhem.cost }, d.mayhem));
@@ -1033,8 +1035,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     so.convokedCards = (paySpell.convokedCards || []).slice();
     so.phyrexianLifePaid = paySpell.phyrexianLifePaid || 0;
     so.grantedSunburstColors = 0;
-    if (card.is('Artifact') && p.sunburstGrant && p.sunburstGrant.turn === this.turnNo) {
-      so.grantedSunburstColors = (card.meta._payColors || []).length;
+    if (p.sunburstGrant && p.sunburstGrant.turn === this.turnNo) {
+      if (card.is('Artifact')) so.grantedSunburstColors = (card.meta._payColors || []).length;
       p.sunburstGrant = null;
     }
 
@@ -1576,6 +1578,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const nn = cost.rmCounter.n || 1;
           if ((c.counters[kind] || 0) < nn) return;
         }
+        if (cost.removeCountersFromOthers) {
+          const allowed = this.bf().filter(x => x.ctrl === p && x !== c &&
+            (x.is('Artifact') || x.is('Creature') || x.is('Planeswalker')));
+          const total = allowed.reduce((sum, x) => sum + Object.values(x.counters)
+            .reduce((a, b) => a + Math.max(0, b), 0), 0);
+          if (total < cost.removeCountersFromOthers) return;
+        }
+        if (cost.removeAnyCounters) {
+          const filter = cost.removeAnyCounters.filter;
+          if (!this.bf().some(x => x.ctrl === p && (!filter || filter(this, x, c)) &&
+            Object.values(x.counters).some(n => n > 0))) return;
+        }
         if (cost.tapCreature && !this.creatures(p).some(x => x !== c && !x.tapped)) return;
         if (a.targets) {
           for (const spec of a.targets) {
@@ -1788,10 +1802,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }))[0];
       if (!tgt || !cands.includes(tgt)) return false;
       const equipManaCost = this.abilityManaCost(p, c, equipCostFor(c, tgt));
-      const ok = await this.payMana(p, equipManaCost, { card: c, isAbility: true }, {
+      const canMana = this.canPayMana(p, equipManaCost, { card: c, isAbility: true }, {
         artifactAbilityAlreadyUsed: c.is('Artifact'),
       });
-      if (!ok) return false;
+      const counterKinds = Object.keys(c.counters).filter(kind => (c.counters[kind] || 0) > 0);
+      const canCounter = !!c.def.equipRemoveCounter && counterKinds.length > 0;
+      let payment = canMana ? 'mana' : 'counter';
+      if (canMana && canCounter) payment = await p.controller.decide(this, {
+        type: 'chooseOption', prompt: `${c.name} — Equip cijena`,
+        options: [{ key: 'mana', label: 'Plati {3}' }, { key: 'counter', label: 'Ukloni counter' }],
+        aiHint: { kind: 'equipPayment', card: c },
+      });
+      if (payment === 'counter' && canCounter) {
+        let counterKind = counterKinds[0];
+        if (counterKinds.length > 1) counterKind = await p.controller.decide(this, {
+          type: 'chooseOption', prompt: `${c.name}: koji counter uklanjaš?`,
+          options: counterKinds.map(kind => ({ key: kind, label: kind })),
+          aiHint: { kind: 'counterCostKind', card: c },
+        });
+        if (!counterKinds.includes(counterKind)) return false;
+        this.removeCounters(c, counterKind, 1);
+      } else {
+        if (!canMana) return false;
+        const ok = await this.payMana(p, equipManaCost, { card: c, isAbility: true }, {
+          artifactAbilityAlreadyUsed: c.is('Artifact'),
+        });
+        if (!ok) return false;
+      }
       this.markAbilityActivated(p, c);
       const ctx = { g: this, src: c, you: p, targets: [tgt] };
       const so = {
@@ -1909,6 +1946,55 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const nn = cost.rmCounter.n || 1;
       if ((c.counters[kind] || 0) < nn) return false;
       this.removeCounters(c, kind, nn);
+    }
+    if (cost.removeCountersFromOthers) {
+      ctx.removedCounterCosts = [];
+      for (let left = cost.removeCountersFromOthers; left > 0; left--) {
+        const pool = this.bf().filter(x => x.ctrl === p && x !== c &&
+          (x.is('Artifact') || x.is('Creature') || x.is('Planeswalker')) &&
+          Object.values(x.counters).some(n => n > 0));
+        if (!pool.length) return false;
+        const picked = await p.controller.decide(this, {
+          type: 'chooseCards', from: pool, min: 1, max: 1,
+          prompt: `Ukloni counter (${left} preostalo)`, aiHint: { kind: 'counterCost', src: c },
+        });
+        const source = picked[0];
+        if (!source || !pool.includes(source)) return false;
+        const kinds = Object.keys(source.counters).filter(kind => (source.counters[kind] || 0) > 0);
+        let kind = kinds[0];
+        if (kinds.length > 1) kind = await p.controller.decide(this, {
+          type: 'chooseOption', prompt: `${source.name}: koji counter?`,
+          options: kinds.map(key => ({ key, label: key })),
+          aiHint: { kind: 'counterCostKind', card: source },
+        });
+        if (!kinds.includes(kind)) return false;
+        this.removeCounters(source, kind, 1);
+        ctx.removedCounterCosts.push({ card: source, kind });
+      }
+    }
+    if (cost.removeAnyCounters) {
+      const filter = cost.removeAnyCounters.filter;
+      const pool = this.bf().filter(x => x.ctrl === p && (!filter || filter(this, x, c)) &&
+        Object.values(x.counters).some(n => n > 0));
+      const picked = await p.controller.decide(this, {
+        type: 'chooseCards', from: pool, min: 1, max: 1,
+        prompt: 'Ukloni countere sa:', aiHint: { kind: 'counterCost', src: c },
+      });
+      const source = picked[0];
+      if (!source || !pool.includes(source)) return false;
+      ctx.counterSource = source;
+      ctx.x = 0;
+      for (const kind of Object.keys(source.counters).filter(key => (source.counters[key] || 0) > 0)) {
+        const available = source.counters[kind] || 0;
+        const amount = await p.controller.decide(this, {
+          type: 'chooseX', min: 0, max: available, card: source,
+          prompt: `Koliko ${kind} countera uklanjaš?`,
+          aiHint: { kind: 'moveCounters', source, counterKind: kind },
+        });
+        const n = Math.max(0, Math.min(available, Number(amount) || 0));
+        if (n > 0) { this.removeCounters(source, kind, n); ctx.x += n; }
+      }
+      if (ctx.x <= 0) return false;
     }
     if (cost.tap) { if (c.tapped) return false; this.tap(c); }
     if (cost.untapSelf) { c.tapped = false; }

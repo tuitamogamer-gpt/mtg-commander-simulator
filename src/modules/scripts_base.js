@@ -167,7 +167,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
     // keep: {top:[cards in order], bottom:[cards]}
     for (const c of top) p.library.splice(p.library.indexOf(c), 1);
-    for (const c of keep.bottom) { c.zone = 'library'; p.library.unshift(c); }
+    for (const c of keep.bottom) c.zone = 'library';
+    p.library.unshift(...keep.bottom);
     for (const c of keep.top.slice().reverse()) { c.zone = 'library'; p.library.push(c); }
     if (keep.bottom.length) g.lg(`${p.name} scry ${n}: ${keep.bottom.length} na dno.`);
     else g.lg(`${p.name} scry ${n}.`);
@@ -493,13 +494,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const t = ctx.targets[0], g = ctx.g;
       if (!t || t.zone !== 'battlefield') return;
       const owner = t.owner;
-      const wasToken = t.isToken;
-      g.remove(t);
-      if (!wasToken) { t.zone = 'library'; owner.library.push(t); U.shuffle(owner.library, g.rnd); }
-      else t.zone = 'ceased';
+      await g.move(t, 'library');
+      U.shuffle(owner.library, g.rnd);
       g.lg(`${t.name} je zamiješan u biblioteku.`);
-      g.recalc();
-      await g.checkSBA();
       if (owner.library.length) {
         const top = owner.library[owner.library.length - 1];
         g.lg(`${owner.name} otkriva: ${top.name}.`);
