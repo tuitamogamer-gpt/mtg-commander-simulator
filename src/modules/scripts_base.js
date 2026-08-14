@@ -148,8 +148,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!picked.length) { U.shuffle(p.library, g.rnd); return null; }
     const c = picked[0];
     p.library.splice(p.library.indexOf(c), 1);
-    c.zone = 'nowhere';
-    await g.move(c, 'battlefield', { ctrl: p, tapped: opts.tapped !== false });
+    if (opts.toHand) {
+      c.zone = 'hand'; p.hand.push(c);
+      g.lg(`${p.name} traži ${c.name} u ruku.`);
+    } else {
+      c.zone = 'nowhere';
+      await g.move(c, 'battlefield', { ctrl: p, tapped: opts.tapped !== false });
+    }
     U.shuffle(p.library, g.rnd);
     return c;
   };

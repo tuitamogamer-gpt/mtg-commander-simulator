@@ -677,11 +677,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const picks of combinations(ranked, q.min || 0, q.max || 1, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseTargets', picks });
     } else if (q.type === 'chooseCards') {
       const ranked = (q.from || []).slice().sort((a, b) => choiceCardValue(game, player, b, q) - choiceCardValue(game, player, a, q) || a.iid - b.iid).slice(0, Math.max(config.targetLimit, q.max || 1));
+      if (q.aiHint && q.aiHint.kind === 'genesisWave') {
+        const picks = ranked.filter(card => !((card.def.super || []).includes('Legendary') &&
+          game.bf().some(existing => existing.ctrl === player && existing.name === card.name)));
+        actions.push({ kind: 'chooseCards', picks });
+      }
       for (const picks of combinations(ranked, q.min || 0, q.max || 1, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseCards', picks });
     } else if (q.type === 'chooseOption') {
       for (const option of q.options || []) actions.push({ kind: 'chooseOption', value: option.key, option });
     } else if (q.type === 'chooseMulti') {
-      const min = q.min || q.count || 1, max = q.max || q.count || min;
+      const min = q.min ?? q.count ?? 1, max = q.max ?? q.count ?? min;
       const pickSets = q.repeats
         ? combinationsWithRepeats(q.options || [], min, max, Math.max(config.beamWidth * 2, 12))
         : combinations(q.options || [], min, max, Math.max(config.beamWidth * 2, 12));
@@ -1083,6 +1088,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       } else if (hintKind === 'partnerSearch' || hintKind === 'rampChoice') {
         breakdown.choice = action.value === 'yes' ? 6 : -1;
+      } else if (hintKind === 'elvenFarsight') {
+        const card = q.aiHint && q.aiHint.card;
+        breakdown.choice = action.value === 'yes' && card && card.is('Creature') ? 4 :
+          action.value === 'no' && card && !card.is('Creature') ? 2 : -1;
+      } else if (hintKind === 'radagastToken') {
+        const needsFlyingBlocker = game.bf().some(card => card.ctrl !== player && card.is('Creature') && card.kw('flying') && !card.tapped);
+        breakdown.choice = action.value === 'bird' ? (needsFlyingBlocker ? 5 : 3.4) :
+          action.value === 'beast' ? (needsFlyingBlocker ? 3.5 : 4.3) : 0;
       } else if (hintKind === 'tmntAlliance') {
         if (action.value === 'counter') {
           breakdown.choice = 3.2 + game.bf().filter(card => card.ctrl === player &&

@@ -155,13 +155,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     cycling: {
       cost: '{1}', noDraw: true,
       effect: async ctx => {
-        const isl = ctx.you.library.find(c => c.hasSub && c.def.subtypes.includes('Island'));
-        if (isl) {
-          ctx.you.library.splice(ctx.you.library.indexOf(isl), 1);
-          isl.zone = 'hand'; ctx.you.hand.push(isl);
-          U.shuffle(ctx.you.library, ctx.g.rnd);
-          ctx.g.lg(`Islandcycling: ${isl.name} u ruku.`);
-        }
+        await E.searchLandByName(ctx.g, ctx.you, ['Island'], { toHand: true });
       },
     },
     resolve: async ctx => { await ctx.g.draw(ctx.you, 3); },
@@ -189,7 +183,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   });
   SC['Vineglimmer Snarl'] = Object.assign(dual2('G', 'U'), {
-    entersTapped: (g, card) => !card.ctrl.hand.some(c => c.def.subtypes.includes('Forest') || c.def.subtypes.includes('Island')),
+    entersTapped: async (g, card) => {
+      const revealable = card.ctrl.hand.filter(candidate => candidate !== card &&
+        (candidate.def.subtypes.includes('Forest') || candidate.def.subtypes.includes('Island')));
+      if (!revealable.length) return true;
+      const picked = await card.ctrl.controller.decide(g, {
+        type: 'chooseCards', from: revealable, min: 0, max: 1,
+        prompt: 'Vineglimmer Snarl: otkrij Forest ili Island da uđe untapped?',
+        aiHint: { kind: 'revealLand', source: card },
+      });
+      if (!picked[0]) return true;
+      g.lg(`${card.ctrl.name} otkriva ${picked[0].name} za Vineglimmer Snarl.`);
+      return false;
+    },
   });
   SC['Rejuvenating Springs'] = Object.assign(dual2('G', 'U'), {
     entersTapped: (g, card) => g.alivePlayers().filter(x => x !== card.ctrl).length < 2,

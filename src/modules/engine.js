@@ -101,6 +101,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         manaSpentOnSpells: 0, expendFired: {}, landsEntered: 0, tokensCreated: 0,
         creaturesDiedUnder: 0, drewThisTurn: 0, firstSpellDone: false, secondSpellDone: false,
         gainedLifeFirst: false, attackedMe: [], artifactAbilitiesActivated: 0, combatDamageHits: [],
+        // Entry history is rules state, not a battlefield snapshot. Galadriel
+        // must still remember an Elf that entered earlier this turn even if it
+        // died, was bounced, or entered before Galadriel herself.
+        elfEntries: [],
       };
     }
     opponents(g) { return g.players.filter(p => p !== this && !p.lost); }
@@ -479,6 +483,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           card.faceDown = true;
         }
         card.meta._enteredTurn = this.turnNo;
+        if (card.hasSub && card.hasSub('Elf')) card.ctrl.turnState.elfEntries.push(card.iid);
         await this.handleETB(card, opts);
         // Permanent koji NIJE bačen (reanimacija, "put onto the battlefield",
         // blink) nikad se ne pojavi na stacku, pa ga igrač inače ne bi vidio.
@@ -1015,6 +1020,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         p.turnState.drewThisTurn++;
         if (this.phase === 'draw') p.turnState._firstDrawDone = true;
         await this.emit('draw', { player: p, card: c, srcCard, nth: p.turnState.drewThisTurn });
+        // Miracle is a draw-triggered alternative cast, not a permanent-zone
+        // ability. Queue it directly while the freshly drawn card is in hand;
+        // it will be put on the stack after the current object finishes
+        // resolving, matching the normal trigger/priority path.
+        if (this.turnNo > 0 && p.turnState.drewThisTurn === 1 && c.def.miracle) {
+          this.queueTrigger({
+            src: c, ctrl: p, name: `Miracle ${c.def.miracle}`, opt: true,
+            onlyIf: () => c.zone === 'hand',
+            run: async ctx => {
+              if (c.zone !== 'hand') return;
+              ctx.g.lg(`${ctx.you.name} otkriva ${c.name} za Miracle ${c.def.miracle}.`);
+              await ctx.g.castSpell(ctx.you, c, {
+                from: 'hand', alt: { altCostStr: c.def.miracle, speed: 'instant', miracle: true },
+              });
+            },
+          });
+        }
       }
       if (drawn) this.lg(`${p.name} vuče ${drawn} ${U.plural(drawn, 'kartu', 'karte')}.`, 'draw');
       this.note('hand', { p });

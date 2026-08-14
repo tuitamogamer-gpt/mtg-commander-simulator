@@ -34,8 +34,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return game.bf().some(card => card.ctrl === player && card.commander);
   }
 
-  function modePickFor(game, player, card) {
-    const pick = card.def.modes && card.def.modes.pick || 1;
+  function modePickFor(game, player, card, castOpts) {
+    const configured = card.def.modes && card.def.modes.pick;
+    const pick = typeof configured === 'function'
+      ? configured(game, player, card, castOpts || {})
+      : (configured || 1);
     return card.def.castCondBoth && controlsCommander(game, player) ? 2 : pick;
   }
 
@@ -596,8 +599,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // igrivim modom, pa bi bacanje puklo tek nasred procesa.
       const md = card.def.modes;
       if (md && !castOpts.overloaded) {
-        const effectivePick = modePickFor(this, p, card);
-        const need = effectivePick === 'any' ? (md.min || 1) : effectivePick;
+        const effectivePick = modePickFor(this, p, card, castOpts);
+        const need = effectivePick === 'any' ? (md.min ?? 1) : effectivePick;
         let playable = 0;
         for (const m of md.list) {
           const ok = !m.targets || m.targets.every(s => s.upTo ||
@@ -851,7 +854,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // modes
     let mode = null;
     if (d.modes && !(castOpts.overloaded)) {
-      const pickN = modePickFor(this, p, card);
+      const pickN = modePickFor(this, p, card, Object.assign({}, castOpts, { _kicked: kicked }));
       const opts2 = d.modes.list.map((m, i) => ({ key: String(i), label: m.label }));
       if (pickN === 1) {
         const k = await p.controller.decide(this, {
@@ -862,7 +865,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } else {
         const ks = await p.controller.decide(this, {
           type: 'chooseMulti', prompt: `${card.name}: izaberi ${pickN === 'any' ? 'bilo koji broj' : pickN} modova`,
-          options: opts2, min: pickN === 'any' ? (d.modes.min || 1) : pickN, max: pickN === 'any' ? d.modes.list.length : pickN,
+          options: opts2, min: pickN === 'any' ? (d.modes.min ?? 1) : pickN, max: pickN === 'any' ? d.modes.list.length : pickN,
           repeats: d.modes.repeats, aiHint: { kind: 'modes', card },
         });
         mode = ks.map(k => parseInt(k, 10));
@@ -2744,7 +2747,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (c.def.attackTargetRestriction && !c.def.attackTargetRestriction(this, c, target)) return false;
     for (const e of this.untilEffects) {
       if (e.kind === 'cantAttackPlayer' && e.who === c.ctrl && e.notPlayer === defender) return false;
-      if (e.kind === 'cantAttackPlayerCard' && e.iid === c.iid && e.notPlayer === defender) return false;
+      if (e.kind === 'cantAttackPlayerCard' && e.iid === c.iid && e.notPlayer === defender &&
+        (e.timestamp === undefined || e.timestamp === c.timestamp)) return false;
     }
     for (const permanent of this.bf()) {
       if (permanent.ctrl === defender && permanent.def.protectsController && permanent.def.protectsController(this, permanent, c, defender)) return false;

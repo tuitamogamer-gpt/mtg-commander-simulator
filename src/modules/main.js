@@ -485,6 +485,66 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'elvenHuman') {
+      void (async () => {
+        const take = name => {
+          const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+          g.remove(card);
+          card.ctrl = ui.me; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        take('Galadriel, Elven-Queen');
+        take('Erestor of the Council');
+        take('Model of Unity');
+        const visionary = take('Elvish Visionary');
+        g.turnPlayer = ui.me; g.turnNo = 6; g.phase = 'combat'; g.step = 'begin'; g.paced = false;
+        ui.me.turnState.elfEntries = [visionary.iid];
+        g.recalc();
+        await g.emit('beginCombat', { player: ui.me });
+        await g.flushTriggers();
+        await g.resolveTop();
+        await g.priorityRound(ui.me);
+        ui.showLog = true;
+        ui.toast(`Elven human scenario završen: Ring ${ui.me.emblems.find(emblem => emblem.ring)?.level || 0}.`);
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'elvenAI') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Elven Council');
+        if (!bot) throw new Error('elvenAI scenario zahtijeva smokeAIDeck=Elven Council');
+        const takeBot = name => {
+          const zones = [bot.command, bot.hand, bot.library, bot.graveyard, bot.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], bot);
+          g.remove(card);
+          card.ctrl = bot; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        const radagast = takeBot('Radagast, Wizard of Wilds');
+        const flyer = new MTG.CardInst(MTG.TOKENS.birdU, ui.me);
+        flyer.ctrl = ui.me; flyer.zone = 'battlefield'; flyer.isToken = true; flyer.sick = false;
+        g.battlefield.push(flyer);
+        const farsight = new MTG.CardInst(MTG.DEFS['Elven Farsight'], bot);
+        const forest = new MTG.CardInst(MTG.DEFS.Forest, bot);
+        bot.library.length = 0; forest.zone = 'library'; bot.library.push(forest);
+        g.turnPlayer = bot; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        await radagast.def.triggers[0].run({ g, src: radagast, you: bot, data: { player: bot, mv: 5 } });
+        const handBefore = bot.hand.length;
+        await farsight.def.resolve({ g, src: farsight, you: bot });
+        const madeBird = g.creatures(bot).some(card => card.isToken && card.hasSub('Bird'));
+        const declinedBadReveal = bot.hand.length === handBefore;
+        g.lg(`Elven AI provjera: Radagast ${madeBird ? 'Bird ✓' : 'nije Bird'}; Farsight loš reveal ${declinedBadReveal ? 'odbijen ✓' : 'prihvaćen'}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Elven AI scenario: kontekstualne odluke razriješene.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     g.start().catch(err => {
       console.error(err);
       ui.toast('Greška u igri: ' + err.message);

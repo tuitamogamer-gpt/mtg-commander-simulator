@@ -782,6 +782,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'rampPick': case 'piperPick': {
           return byValDesc.slice(0, Math.max(min, 1)).slice(0, Math.max(max, 1));
         }
+        case 'revealLand': return from.length ? [from[0]] : [];
+        case 'genesisWave': {
+          return from.filter(card => !((card.def.super || []).includes('Legendary') &&
+            g.bf().some(existing => existing.ctrl === this.p && existing.name === card.name)));
+        }
         case 'gyHate': {
           const notMine = from.filter(c => c.owner !== this.p);
           const sorted = notMine.sort((a, b) => this.cardValue(g, b) - this.cardValue(g, a));
@@ -837,6 +842,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'ward': return this.p.life > 10 ? 'yes' : 'no';
         case 'optTrigger': return 'yes';
         case 'partnerSearch': case 'rampChoice': return keys.includes('yes') ? 'yes' : keys[0];
+        case 'elvenFarsight': {
+          const card = q.aiHint && q.aiHint.card;
+          return card && card.is('Creature') && keys.includes('yes') ? 'yes' : (keys.includes('no') ? 'no' : keys[0]);
+        }
+        case 'radagastToken': {
+          const needsFlyingBlocker = g.bf().some(card => card.ctrl !== this.p && card.is('Creature') && card.kw('flying') && !card.tapped);
+          return needsFlyingBlocker && keys.includes('bird') ? 'bird' : (keys.includes('beast') ? 'beast' : keys[0]);
+        }
         case 'tmntAlliance': {
           const hasFoodEngine = g.bf().some(card => card.ctrl === this.p &&
             ['Ninja Pizza', 'Donatello, the Brains', 'Leonardo, the Balance'].includes(card.name));
@@ -895,7 +908,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     chooseMulti(g, q) {
-      const min = q.min || 1, max = Math.min(q.max || 1, q.options.length);
+      const min = q.min ?? 1, max = Math.min(q.max ?? 1, q.options.length);
       const keys = q.options.map(o => o.key);
       const n = Math.max(min, Math.min(max, 2));
       const out = [];

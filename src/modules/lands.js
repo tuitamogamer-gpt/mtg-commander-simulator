@@ -151,7 +151,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       cost: { tap: true },
       produce: (g, c, p) => {
         const cols = new Set();
-        for (const l of g.bf()) if (l.is('Land') && l.ctrl !== p) for (const col of (l.def.producesColors || [])) cols.add(col);
+        for (const l of g.bf()) {
+          if (!l.is('Land') || l.ctrl === p) continue;
+          // Command Tower/Path advertise all five colors as static metadata,
+          // but can actually produce only their controller's color identity.
+          // Exotic Orchard copies what the opponent's land can produce, not
+          // the superset printed in our UI metadata.
+          const dynamicIdentity = l.name === 'Command Tower' || l.name === 'Path of Ancestry';
+          const available = dynamicIdentity ? l.ctrl.colorIdentity : (l.def.producesColors || []);
+          for (const col of available) cols.add(col);
+        }
         return [...cols].filter(x => COLORS.includes(x)).map(col => ({ [col]: 1 }));
       },
     },

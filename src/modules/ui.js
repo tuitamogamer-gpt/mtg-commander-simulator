@@ -1648,7 +1648,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }, 'wide' + (n ? ' selected' : ''));
           m.appendChild(b);
         }
-        if (chosen.length >= (q.min || 1)) m.appendChild(btn('Potvrdi ✓', () => this.resolvePending(chosen.slice()), 'primary wide'));
+        if (chosen.length >= (q.min ?? 1)) m.appendChild(btn('Potvrdi ✓', () => this.resolvePending(chosen.slice()), 'primary wide'));
         return ov;
       }
       if (q.type === 'chooseX') {
