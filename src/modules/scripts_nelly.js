@@ -758,6 +758,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     filter: (g, self, d) => self.attachedTo === d.card.iid,
     run: async ctx => { await ctx.g.makeTokens('treasure', ctx.you); },
   }]);
+  SC['Shiny Impetus'].auraTarget = [T.creature({
+    prompt: 'Enchant creature', aiHint: { goal: 'goadTarget' },
+  })];
   SC['Redemption Arc'] = {
     auraTarget: [{
       what: 'creature', prompt: 'Protivničko stvorenje',
@@ -935,7 +938,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: [], mana: tapFor([{ C: 1 }]),
     abilities: [{
       label: 'Ne može biti blokiran', cost: { mana: '{4}', tap: true },
-      targets: [T.yourCreature({ prompt: 'Stvorenje', aiHint: { goal: 'evasion' } })],
+      targets: [T.creature({ prompt: 'Stvorenje', aiHint: { goal: 'evasion' } })],
       run: async ctx => {
         const iid = ctx.targets[0].iid;
         ctx.g.untilEffects.push({ expires: 'eot', apply: (g2, bf) => { const c = bf.find(x => x.iid === iid); if (c) c.cur.unblockable = true; } });

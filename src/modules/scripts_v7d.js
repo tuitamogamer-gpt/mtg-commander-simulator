@@ -46,7 +46,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Painful Truths'] = {
     resolve: async ctx => {
-      const x = Math.min(3, Math.max(1, (ctx.src.meta._payColors || []).length));
+      const x = Math.min(3, (ctx.src.meta._payColors || []).length);
       await ctx.g.draw(ctx.you, x);
       await ctx.g.loseLife(ctx.you, x, 'truths');
     },
@@ -99,30 +99,52 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     modes: {
       pick: 1,
       list: [
-        { label: '4 štete igraču', targets: [T.opponent({ prompt: '4 štete', aiHint: { goal: 'drain' } })] },
+        {
+          label: '4 štete igraču ili planeswalkeru',
+          targets: [T.any({
+            prompt: 'Igrač ili planeswalker',
+            filter: (g, target) => target instanceof MTG.Player || target instanceof MTG.CardInst && target.is('Planeswalker'),
+            aiHint: { goal: 'damage', n: 4 },
+          })],
+        },
         { label: 'Permanenti indestructible' },
         { label: 'Double strike', targets: [T.creature({ prompt: 'Double strike', aiHint: { goal: 'buff' } })] },
       ],
     },
     resolve: async ctx => {
       const mi = ctx.mode[0];
-      if (mi === 0) { if (ctx.targets[0]) await ctx.g.damagePlayer(ctx.src, ctx.targets[0], 4); }
+      if (mi === 0) { if (ctx.targets[0]) await ctx.g.damageAny(ctx.src, ctx.targets[0], 4); }
       else if (mi === 1) { for (const c of ctx.g.bf().filter(c => c.ctrl === ctx.you)) E.grantUntilEOT(ctx.g, c, ['indestructible']); }
       else { if (ctx.targets[0]) E.grantUntilEOT(ctx.g, ctx.targets[0], ['double strike']); }
     },
   };
   SC["Heliod's Intervention"] = {
     xCost: true,
+    modes: {
+      pick: 1,
+      aiHint: { kind: 'heliodIntervention' },
+      list: [
+        {
+          label: 'Uništi X artefakata i/ili enchantmenta',
+          targets: (g, card, castOpts) => [T.permanent(
+            (g2, target) => target.is('Artifact') || target.is('Enchantment'),
+            { count: castOpts.xVal || 0, prompt: `Tačno ${castOpts.xVal || 0} meta`, aiHint: { goal: 'removal' } },
+          )],
+        },
+        {
+          label: 'Ciljani igrač dobija 2X života',
+          targets: [T.player({ prompt: 'Ko dobija život?', aiHint: { goal: 'lifegain' } })],
+        },
+      ],
+    },
     resolve: async ctx => {
       const x = ctx.x || 0;
-      const cands = ctx.g.bf().filter(c => (c.is('Artifact') || c.is('Enchantment')) && c.ctrl !== ctx.you);
-      if (cands.length && x > 0) {
-        const pick = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseCards', from: cands, min: 0, max: x, prompt: `Uništi do ${x}`, aiHint: { kind: 'removalPick' },
-        });
-        if (pick.length) { for (const c of pick) await ctx.g.destroy(c); return; }
-      }
-      await ctx.g.gainLife(ctx.you, 2 * x);
+      if (ctx.mode[0] === 0) {
+        const targets = Array.isArray(ctx.targets[0]) ? ctx.targets[0] : [ctx.targets[0]].filter(Boolean);
+        for (const target of targets) {
+          if (target.zone === 'battlefield') await ctx.g.destroy(target);
+        }
+      } else if (ctx.targets[0]) await ctx.g.gainLife(ctx.targets[0], 2 * x);
     },
   };
   SC['Elvish Mystic'] = { mana: { cost: { tap: true }, produce: [{ G: 1 }] } };

@@ -1322,35 +1322,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'combatDamageToPlayer', desc: 'Goad ili ukradi kartu',
       filter: (g, self, d) => d.card.ctrl === self.ctrl,
+      modes: {
+        aiHint: { kind: 'grenzoMode' },
+        list: [
+          {
+            label: 'Goad njegovo stvorenje',
+            targets: (g, self, data) => [T.creature({
+              prompt: 'Goad stvorenje tog igrača',
+              filter: (g2, card) => card.zone === 'battlefield' && card.is('Creature') && card.ctrl === data.player,
+              aiHint: { goal: 'goad' },
+            })],
+          },
+          { label: 'Egzilaj vrh — smiješ baciti ovaj potez' },
+        ],
+      },
       run: async ctx => {
         const victim = ctx.data.player;
-        const k = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseOption', prompt: 'Grenzo: izaberi',
-          options: [{ key: 'goad', label: 'Goad njegovo stvorenje' }, { key: 'steal', label: 'Egzilaj vrh — smiješ bacati' }],
-          aiHint: { kind: 'mode' },
-        });
-        if (k === 'goad') {
-          const cands = ctx.g.creatures(victim);
-          if (cands.length) {
-            const pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: cands, min: 1, max: 1, prompt: 'Goad', aiHint: { kind: 'goadPick' } });
-            if (pick[0]) E.goad(ctx.g, pick[0], ctx.you);
-          }
+        if (ctx.mode === 0) {
+          if (ctx.targets[0]) E.goad(ctx.g, ctx.targets[0], ctx.you);
         } else if (victim && victim.library.length) {
           const c = victim.library.pop();
           c.zone = 'exile'; victim.exile.push(c);
+          c.meta.playableBy = ctx.you;
+          c.meta.playableUntil = ctx.g.turnNo;
+          c.meta.anyColor = true;
           ctx.g.lg(`Grenzo egzilira ${c.name} — ${ctx.you.name} smije baciti do kraja poteza.`);
-          if (!c.is('Land') && ctx.g.canPayMana(ctx.you, U.parseCost(c.def.cost || ''))) {
-            const yes = await ctx.you.controller.decide(ctx.g, {
-              type: 'chooseOption', prompt: `Baci ${c.name}?`, options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
-              aiHint: { kind: 'freeCast' },
-            });
-            if (yes === 'yes') {
-              victim.exile.splice(victim.exile.indexOf(c), 1);
-              c.zone = 'nowhere';
-              const ok = await ctx.g.castSpell(ctx.you, c, { from: 'exile', asThoughAnyColor: true });
-              if (!ok) { c.zone = 'exile'; victim.exile.push(c); }
-            }
-          }
         }
       },
     }],

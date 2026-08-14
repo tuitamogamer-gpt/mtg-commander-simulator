@@ -43,6 +43,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return card.def.castCondBoth && controlsCommander(game, player) ? 2 : pick;
   }
 
+  function modeTargetsFor(game, entry, card, castOpts) {
+    if (!entry || !entry.targets) return [];
+    return typeof entry.targets === 'function'
+      ? entry.targets(game, card, castOpts || {}) || []
+      : entry.targets;
+  }
+
   function manaOptionLabel(option) {
     if (option.ANY) return `${option.n || 1} manu bilo koje boje`;
     return Object.entries(option)
@@ -523,6 +530,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     cost.generic = Math.max(0, generic);
+    // "Spend mana as though it were mana of any color" mijenja samo način
+    // plaćanja obojenih pipova; mana value i generički dio ostaju isti.
+    if (castOpts.asThoughAnyColor) {
+      cost.pips = cost.pips.map(pip => {
+        if (!pip.some(symbol => COLORS.includes(symbol))) return pip;
+        const special = pip.filter(symbol => symbol === 'PHY' || symbol === 'TWO');
+        return ['C', ...COLORS, ...special];
+      });
+    }
     // life component of alternative costs (Deep Analysis flashback)
     if (castOpts.lifeCost) cost.lifeCost = castOpts.lifeCost;
     return cost;
@@ -613,7 +629,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const specs = this.spellTargetSpecs(card, castOpts);
         if (specs) {
           for (const spec of specs) {
-            if (!spec.upTo && this.legalTargets(spec, card, p).length < (spec.count || 1)) return;
+            if (!spec.upTo && this.legalTargets(spec, card, p).length < (spec.count ?? 1)) return;
           }
         }
       }
@@ -626,8 +642,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const need = effectivePick === 'any' ? (md.min ?? 1) : effectivePick;
         let playable = 0;
         for (const m of md.list) {
-          const ok = !m.targets || m.targets.every(s => s.upTo ||
-            this.legalTargets(s, card, p).length >= (s.count || 1));
+          const targets = modeTargetsFor(this, m, card, Object.assign({}, castOpts, { xVal }));
+          const ok = !targets.length || targets.every(s => s.upTo ||
+            this.legalTargets(s, card, p).length >= (s.count ?? 1));
           if (ok) playable += md.repeats ? need : 1;
         }
         if (playable < need) return;
@@ -687,10 +704,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (card.meta && card.meta.plotted) consider(card, 'exile', { free: true, plotPlay: true, speed: 'sorcery' });
       if (this.hasExilePlayPermission(p, card)) {
         if (card.meta.needsOppLost && !this.players.some(q => q !== p && q.turnState.lifeLost > 0)) continue;
-        consider(card, 'exile', card.meta.freePlay ? { free: true } : {});
+        consider(card, 'exile', Object.assign(
+          card.meta.freePlay ? { free: true } : {},
+          card.meta.anyColor ? { asThoughAnyColor: true } : {},
+          card.meta.exileAfterPlay ? { exileAfter: true } : {},
+          { consumeExilePermission: true }));
         if (!card.meta.freePlay && p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && p.life > card.mv) {
           consider(card, 'exile', {
             free: true, bloodcaster: true, lifeCost: card.mv,
+            consumeExilePermission: true,
+            exileAfter: !!card.meta.exileAfterPlay,
+            asThoughAnyColor: !!card.meta.anyColor,
             label: `Plati ${card.mv} života umjesto mana cijene`,
           });
         }
@@ -704,11 +728,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!m || m.playableBy !== p || !this.hasExilePlayPermission(p, card)) continue;
         consider(card, 'exile', Object.assign(
           m.freePlay ? { free: true } : {},
-          m.anyColor ? { asThoughAnyColor: true } : {}));
+          m.anyColor ? { asThoughAnyColor: true } : {},
+          m.exileAfterPlay ? { exileAfter: true } : {},
+          { consumeExilePermission: true }));
         if (!m.freePlay && p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && p.life > card.mv) {
           consider(card, 'exile', {
             free: true, bloodcaster: true, lifeCost: card.mv,
             asThoughAnyColor: !!m.anyColor,
+            consumeExilePermission: true,
+            exileAfter: !!m.exileAfterPlay,
             label: `Plati ${card.mv} života umjesto mana cijene`,
           });
         }
@@ -794,7 +822,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Interni card-scriptovi istorijski koriste i kraći top-level oblik
     // (`{free:true, exileAfter:true}`), dok UI legalne liste nose isto pod
     // `alt`. Normalizuj oba oblika u jednu autoritativnu cast putanju.
-    for (const key of ['free', 'exileAfter', 'asThoughAnyColor', 'speed', 'flash', 'miracle']) {
+    for (const key of ['free', 'exileAfter', 'asThoughAnyColor', 'consumeExilePermission', 'speed', 'flash', 'miracle']) {
       if (opts[key] !== undefined && castOpts[key] === undefined) castOpts[key] = opts[key];
     }
     const d = card.def;
@@ -880,14 +908,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (pickN === 1) {
         const k = await p.controller.decide(this, {
           type: 'chooseOption', prompt: `${card.name}: izaberi mod`, options: opts2,
-          aiHint: { kind: 'mode', card },
+          aiHint: Object.assign({ kind: 'mode', card, x: xVal }, d.modes.aiHint || {}),
         });
         mode = [parseInt(k, 10)];
       } else {
         const ks = await p.controller.decide(this, {
           type: 'chooseMulti', prompt: `${card.name}: izaberi ${pickN === 'any' ? 'bilo koji broj' : pickN} modova`,
           options: opts2, min: pickN === 'any' ? (d.modes.min ?? 1) : pickN, max: pickN === 'any' ? d.modes.list.length : pickN,
-          repeats: d.modes.repeats, aiHint: { kind: 'modes', card },
+          repeats: d.modes.repeats, aiHint: Object.assign({ kind: 'modes', card, x: xVal }, d.modes.aiHint || {}),
         });
         mode = ks.map(k => parseInt(k, 10));
       }
@@ -909,7 +937,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (specs) {
       if (mode && d.modes) {
         specs = [];
-        for (const mi of mode) if (d.modes.list[mi].targets) specs = specs.concat(d.modes.list[mi].targets);
+        for (const mi of mode) specs = specs.concat(modeTargetsFor(this, d.modes.list[mi], card, castOpts));
       }
       so.targetSpecs = specs;
       const ctx = { g: this, src: card, you: p, so };
@@ -919,7 +947,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       so.wardTargets = ctx.wardTargets;
     } else if (mode && d.modes) {
       const specs2 = [];
-      for (const mi of mode) if (d.modes.list[mi].targets) specs2.push(...d.modes.list[mi].targets);
+      for (const mi of mode) specs2.push(...modeTargetsFor(this, d.modes.list[mi], card, castOpts));
       if (specs2.length) {
         so.targetSpecs = specs2;
         const ctx = { g: this, src: card, you: p, so };
@@ -1100,6 +1128,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // move card to stack
     this.remove(card);
     const fromZone = card.zone;
+    if (castOpts.consumeExilePermission && card.meta) {
+      for (const key of ['playableBy', 'playableUntil', 'playableUntilOwnTurn', 'freePlay', 'anyColor', 'exileAfterPlay']) {
+        delete card.meta[key];
+      }
+    }
     card.faceDown = false;
     if (card.meta) delete card.meta.revealedTo;
     card.zone = 'stack';
@@ -1645,10 +1678,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!this.bf().some(x => x.ctrl === p && (!filter || filter(this, x, c)) &&
             Object.values(x.counters).some(n => n > 0))) return;
         }
+        if (cost.removeCounterFromCreature && !this.creatures(p).some(x =>
+          Object.values(x.counters).some(n => n > 0))) return;
         if (cost.tapCreature && !this.creatures(p).some(x => x !== c && !x.tapped)) return;
         if (a.targets) {
           for (const spec of a.targets) {
-            if (!spec.upTo && this.legalTargets(spec, c, p).length < (spec.count || 1)) return;
+            if (!spec.upTo && this.legalTargets(spec, c, p).length < (spec.count ?? 1)) return;
           }
         }
         out.push({ card: c, ability: a, idx: ai });
@@ -1706,7 +1741,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const cost = a.cost || {};
         if (cost.mana && !this.canPayMana(p, U.parseCost(typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana))) return;
         if (cost.life && p.life <= cost.life) return;
-        if (a.targets && a.targets.some(spec => !spec.upTo && this.legalTargets(spec, c, p).length < (spec.count || 1))) return;
+        if (a.targets && a.targets.some(spec => !spec.upTo && this.legalTargets(spec, c, p).length < (spec.count ?? 1))) return;
         out.push({ card: c, ability: a, idx: `opp_${ai}`, opponentAbility: true });
       });
     }
@@ -2050,6 +2085,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (n > 0) { this.removeCounters(source, kind, n); ctx.x += n; }
       }
       if (ctx.x <= 0) return false;
+    }
+    if (cost.removeCounterFromCreature) {
+      const pool = this.creatures(p).filter(x => Object.values(x.counters).some(n => n > 0));
+      const picked = await p.controller.decide(this, {
+        type: 'chooseCards', from: pool, min: 1, max: 1,
+        prompt: 'Ukloni counter sa stvorenja (cijena)', aiHint: { kind: 'fainCounterCost', src: c },
+      });
+      const source = picked[0];
+      if (!source || !pool.includes(source)) return false;
+      const kinds = Object.keys(source.counters).filter(kind => (source.counters[kind] || 0) > 0);
+      let kind = kinds[0];
+      if (kinds.length > 1) kind = await p.controller.decide(this, {
+        type: 'chooseOption', prompt: `${source.name}: koji counter uklanjaš?`,
+        options: kinds.map(key => ({ key, label: key })),
+        aiHint: { kind: 'counterCostKind', card: source },
+      });
+      if (!kinds.includes(kind)) return false;
+      this.removeCounters(source, kind, 1);
+      ctx.removedCounterCost = { card: source, kind };
     }
     if (cost.tap) { if (c.tapped) return false; this.tap(c); }
     if (cost.untapSelf) { c.tapped = false; }
@@ -2742,6 +2796,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         c.attacking.grudges[p.idx] = (c.attacking.grudges[p.idx] || 0) + 1;
       }
     }
+    for (const defender of [...new Set(attackers.map(card => card.attacking)
+      .filter(target => target instanceof MTG.Player))]) {
+      await this.emit('attackedPlayer', {
+        player: p, defender,
+        attackers: attackers.filter(card => card.attacking === defender),
+      });
+    }
     if (attackers.some(card => card.commander)) p.turnState.attackedWithCommander = true;
     await this.emit('attackersDeclared', { player: p, attackers });
     // MYRIAD — "Whenever this creature attacks, for each opponent other than the
@@ -2902,19 +2963,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Zajednički rules validator za UI, live combat i AI generator. AI ne
   // duplira Ghostly Prison/Queen Mother/card-specific zabrane.
   G.canAttackTarget = function (c, target) {
-    if (!c || !target || c.ctrl === target || target.lost) return false;
-    const defender = target instanceof MTG.Player ? target : target.ctrl;
-    if (!defender || defender === c.ctrl || defender.lost) return false;
-    if (!(target instanceof MTG.Player) && !(target instanceof MTG.CardInst && target.is('Planeswalker') && target.zone === 'battlefield')) return false;
-    if (c.def.attackTargetRestriction && !c.def.attackTargetRestriction(this, c, target)) return false;
-    for (const e of this.untilEffects) {
-      if (e.kind === 'cantAttackPlayer' && e.who === c.ctrl && e.notPlayer === defender) return false;
-      if (e.kind === 'cantAttackPlayerCard' && e.iid === c.iid && e.notPlayer === defender &&
-        (e.timestamp === undefined || e.timestamp === c.timestamp)) return false;
-    }
-    for (const permanent of this.bf()) {
-      if (permanent.ctrl === defender && permanent.def.protectsController && permanent.def.protectsController(this, permanent, c, defender)) return false;
-    }
+    const legalWithoutSpecificAttack = candidate => {
+      if (!c || !candidate || c.ctrl === candidate || candidate.lost) return false;
+      const defender = candidate instanceof MTG.Player ? candidate : candidate.ctrl;
+      if (!defender || defender === c.ctrl || defender.lost) return false;
+      if (!(candidate instanceof MTG.Player) && !(candidate instanceof MTG.CardInst && candidate.is('Planeswalker') && candidate.zone === 'battlefield')) return false;
+      if (c.def.attackTargetRestriction && !c.def.attackTargetRestriction(this, c, candidate)) return false;
+      for (const e of this.untilEffects) {
+        if (e.kind === 'cantAttackPlayer' && e.who === c.ctrl && e.notPlayer === defender) return false;
+        if (e.kind === 'cantAttackPlayerCard' && e.iid === c.iid && e.notPlayer === defender &&
+          (e.timestamp === undefined || e.timestamp === c.timestamp)) return false;
+      }
+      for (const permanent of this.bf()) {
+        if (permanent.ctrl === defender && permanent.def.protectsController && permanent.def.protectsController(this, permanent, c, defender)) return false;
+      }
+      return true;
+    };
+    if (!legalWithoutSpecificAttack(target)) return false;
+    const forcedPlayer = c.meta && c.meta.mustAttackPlayer;
+    if (forcedPlayer && target !== forcedPlayer && legalWithoutSpecificAttack(forcedPlayer)) return false;
     return true;
   };
 
@@ -2936,6 +3003,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.isForcedToAttack = function (c) {
     if (c.def.mustAttack) return true;
+    if (c.meta && c.meta.mustAttackPlayer && this.canAttackTarget(c, c.meta.mustAttackPlayer)) return true;
     if (this.goadersOf(c).length) return true;
     for (const e of this.untilEffects) {
       if (e.kind === 'mustAttack' && e.who === c.ctrl) return true;

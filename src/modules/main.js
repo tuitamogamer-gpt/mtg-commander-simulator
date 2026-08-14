@@ -755,6 +755,82 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'mostHuman') {
+      void (async () => {
+        const take = name => {
+          const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+          g.remove(card);
+          card.ctrl = ui.me; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        take('Olivia, Opulent Outlaw');
+        take('Academy Manufactor');
+        const marauder = take('Aetherborn Marauder');
+        const defector = take('Humble Defector');
+        const marchesa = take('Queen Marchesa');
+        defector.counters['+1/+1'] = 2;
+        marchesa.counters['+1/+1'] = 3;
+        g.turnPlayer = ui.me; g.turnNo = 14; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        ui.toast('Most Wanted human: izaberi sa kojih permanenata i koliko countera premještaš na Maraudera.');
+        await g.emit('etb', { card: marauder });
+        await g.flushTriggers();
+        await g.resolveTop();
+        g.lg(`Most Wanted human provjera: Marauder ima ${marauder.counters['+1/+1'] || 0} +1/+1 countera.`, 'ai');
+        ui.showLog = true;
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'mostAI') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Most Wanted');
+        if (!bot) throw new Error('mostAI scenario zahtijeva smokeAIDeck=Most Wanted');
+        const takeBot = name => {
+          const zones = [bot.command, bot.hand, bot.library, bot.graveyard, bot.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], bot);
+          g.remove(card);
+          card.ctrl = bot; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        const grenzo = takeBot('Grenzo, Havoc Raiser');
+        const pilferer = takeBot('Impulsive Pilferer');
+        const victim = new MTG.CardInst(MTG.DEFS['Grave Titan'], ui.me);
+        victim.ctrl = ui.me; victim.zone = 'battlefield'; victim.sick = false;
+        g.battlefield.push(victim);
+        pilferer.counters.stun = 1;
+        bot.life = 8;
+        g.turnPlayer = bot; g.turnNo = 15; g.phase = 'combat'; g.step = 'damage'; g.paced = false;
+        g.recalc();
+
+        await g.emit('combatDamageToPlayer', { card: grenzo, player: ui.me, n: grenzo.power, combat: true });
+        await g.flushTriggers();
+        while (g.stack.length && !g.gameOver) await g.resolveTop();
+
+        const heliod = await bot.controller.decide(g, {
+          type: 'chooseOption',
+          options: [{ key: '0', label: 'Uništi X artefakata/enchantmenta' }, { key: '1', label: 'Dobij 2X života' }],
+          aiHint: { kind: 'heliodIntervention', x: 4 },
+        });
+        const rankle = await bot.controller.decide(g, {
+          type: 'chooseMulti', min: 0, max: 3,
+          options: [{ key: 'disc', label: 'Svi odbacuju' }, { key: 'draw', label: 'Svi vuku' }, { key: 'sac', label: 'Svi žrtvuju' }],
+          aiHint: { kind: 'rankleModes' },
+        });
+        const fain = await bot.controller.decide(g, {
+          type: 'chooseCards', from: [pilferer], min: 1, max: 1,
+          aiHint: { kind: 'fainCounterCost' }, prompt: 'Fain counter cijena',
+        });
+        g.lg(`Most Wanted AI: Grenzo=${g.isGoaded(victim) ? 'goad' : 'exile'}; Heliod mod=${heliod}; Rankle=${(rankle || []).join(',') || 'bez moda'}; Fain=${fain[0]?.name || 'bez izbora'}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Most Wanted AI scenario: Grenzo, Heliod, Rankle i Fain odluke razriješene.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     g.start().catch(err => {
       console.error(err);
       ui.toast('Greška u igri: ' + err.message);

@@ -529,7 +529,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       const t = ctx.targets[0];
       const mvv = t.mv;
-      if (await ctx.g.destroy(t)) await ctx.g.loseLife(ctx.you, mvv, 'feed');
+      await ctx.g.destroy(t);
+      await ctx.g.loseLife(ctx.you, mvv, 'feed');
     },
   };
   SC['Infernal Grasp'] = {

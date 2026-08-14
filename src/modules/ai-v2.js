@@ -837,6 +837,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (card.counters.stun || 0) + (card.counters.finality || 0) + (card.counters.doom || 0);
       return bad * 20 - value;
     }
+    if (hint === 'fainCounterCost') {
+      const bad = (card.counters['-1/-1'] || 0) + (card.counters['-0/-1'] || 0) +
+        (card.counters.stun || 0) + (card.counters.finality || 0) +
+        (card.counters.doom || 0) + (card.counters.bounty || 0);
+      const good = Math.max(0, Object.values(card.counters || {}).reduce((sum, n) => sum + n, 0) - bad);
+      return bad * 25 - good * 2.5 - permanentGameValue(game, card, player) * 0.12;
+    }
+    if (hint === 'aetherbornSources') {
+      return (card.counters['+1/+1'] || 0) * 5 - permanentGameValue(game, card, player) * 0.35;
+    }
+    if (hint === 'mariHit') return value;
     if (hint === 'stationTap') return Math.max(0, card.power) * 4 - value * 0.1;
     if (hint === 'bottomOrder') return -value;
     if (/discard|sacCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) return -value;
@@ -1171,6 +1182,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       } else if (hintKind === 'partnerSearch' || hintKind === 'rampChoice') {
         breakdown.choice = action.value === 'yes' ? 6 : -1;
+      } else if (hintKind === 'fameFortune') {
+        const bestCreature = game.creatures(player).map(card =>
+          permanentGameValue(game, card, player) + Math.max(0, card.power) * (card.tapped ? 0.25 : 0.8))
+          .sort((a, b) => b - a)[0] || 0;
+        // Birač minimizira korist casteru: Fame je privremena krađa njegovog
+        // najboljeg stvorenja, Fortune je karta + Treasure za castera.
+        breakdown.choice = action.value === 'fame' ? -bestCreature : -7.5;
+      } else if (hintKind === 'grenzoMode') {
+        const victim = q.data && q.data.player;
+        if (action.value === '0') {
+          const best = victim ? game.creatures(victim)
+            .map(card => permanentGameValue(game, card, player) + Math.max(0, card.power) * 0.4)
+            .sort((a, b) => b - a)[0] : null;
+          breakdown.choice = Number.isFinite(best) ? best * 0.62 : -100;
+        } else {
+          // Vrh protivničke biblioteke je skriven; koristi očekivanu vrijednost,
+          // bez zavirivanja u stvarnu kartu.
+          breakdown.choice = victim && victim.library.length ? 4.8 : -20;
+        }
+      } else if (hintKind === 'heliodIntervention') {
+        const x = Number(q.aiHint && q.aiHint.x || 0);
+        if (action.value === '0') {
+          const eligible = game.bf().filter(card => card.is('Artifact') || card.is('Enchantment'));
+          const values = eligible.map(card => card.ctrl === player
+            ? -permanentGameValue(game, card, player) * 1.5
+            : permanentGameValue(game, card, player)).sort((a, b) => b - a);
+          breakdown.choice = values.length >= x ? values.slice(0, x).reduce((sum, value) => sum + value, 0) : -100;
+        } else {
+          const urgency = player.life <= 10 ? 1.8 : player.life <= 20 ? 1.1 : 0.55;
+          breakdown.choice = 2 * x * urgency;
+        }
       } else if (hintKind === 'elvenFarsight') {
         const card = q.aiHint && q.aiHint.card;
         breakdown.choice = action.value === 'yes' && card && card.is('Creature') ? 4 :
@@ -1248,6 +1290,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         breakdown.safety -= lifeCost * (player.life <= 10 ? 1.4 : 0.55);
         if (lifeCost >= player.life) breakdown.safety -= 1000;
+      } else if (q && q.aiHint && q.aiHint.kind === 'rankleModes') {
+        const selected = new Set(action.value || []);
+        if (selected.has('disc')) {
+          const own = player.hand.map(card => cardDefinitionValue(card.def)).sort((a, b) => a - b)[0] || 0;
+          const theirs = player.opponents(game).reduce((sum, opponent) => sum +
+            (opponent.hand.map(card => cardDefinitionValue(card.def)).sort((a, b) => a - b)[0] || 0), 0);
+          breakdown.choice += theirs * 0.58 - own;
+        }
+        if (selected.has('draw')) {
+          const ownNeed = Math.max(0.8, 5.5 - player.hand.length) * 0.9;
+          const opponentBenefit = player.opponents(game).length * 1.5;
+          breakdown.choice += ownNeed - opponentBenefit - (player.life <= 8 ? 4 : 0.35);
+        }
+        if (selected.has('sac')) {
+          const sacrificeCost = card => {
+            const diesValue = (card.def.triggers || []).some(trigger => trigger.on === 'dies');
+            return permanentGameValue(game, card, player) * (card.isToken ? 0.35 : diesValue ? 0.5 : 1);
+          };
+          const own = game.creatures(player).map(sacrificeCost).sort((a, b) => a - b)[0] || 0;
+          const theirs = player.opponents(game).reduce((sum, opponent) => sum +
+            (game.creatures(opponent).map(sacrificeCost).sort((a, b) => a - b)[0] || 0), 0);
+          breakdown.choice += theirs * 0.8 - own;
+        }
       } else {
         breakdown.choice = (action.options || []).reduce((sum, option) =>
           sum + (/draw|token|destroy|exile|counter/i.test(option.label || '') ? 2 : 0.3), 0);

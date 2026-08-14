@@ -1566,7 +1566,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               ? entry.targets(this, tr.src, tr.data || {})
               : entry.targets;
             return !(specs || []).some(spec => !spec.upTo &&
-              this.legalTargets(spec, tr.src, ctrl).length < (spec.count || 1));
+              this.legalTargets(spec, tr.src, ctrl).length < (spec.count ?? 1));
           })
           .map(({ entry, index }) => Object.assign({
             key: String(index), label: entry.label,
@@ -1575,6 +1575,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const picked = await ctrl.controller.decide(this, {
           type: 'chooseOption', prompt: `${tr.src ? tr.src.name : ''}: izaberi mod`,
           options,
+          data: tr.data,
           aiHint: Object.assign({ kind: 'mode', src: tr.src }, tr.modes.aiHint || {}),
         });
         mode = Number.parseInt(picked, 10);
@@ -1595,6 +1596,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (targetSpecs && targetSpecs.length) {
         const ok = await this.pickTargets(ctx, targetSpecs, tr.src, ctrl);
         if (!ok) return; // no legal targets → fizzle
+      }
+      // Crime se počini čim trigger cilja protivnika, njegov permanent, spell
+      // ili kartu u njegovom groblju — ne tek na rezoluciji. Spellovi i
+      // aktivirane sposobnosti imaju isti obračun u svojim cast/activate
+      // putanjama; triggerima je ranije nedostajao.
+      {
+        const victims = new Set();
+        for (const target of (ctx.targets || []).flat().filter(Boolean)) {
+          if (target instanceof MTG.Player) {
+            if (target !== ctrl) victims.add(target);
+            continue;
+          }
+          const victim = target.zone === 'battlefield' || target.zone === 'stack'
+            ? target.ctrl
+            : target.owner || target.ctrl;
+          if (victim && victim !== ctrl) victims.add(victim);
+        }
+        if (victims.size) await this.emit('crime', { player: ctrl, victims: [...victims] });
       }
       // put on stack as trigger — allow responses
       const so = {
@@ -1645,9 +1664,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return out;
       }
       if (spec.what === 'any') { // creature, player, planeswalker
-        for (const p of this.alivePlayers()) if (checkProt(p)) out.push(p);
+        for (const p of this.alivePlayers()) {
+          if (spec.filter && !spec.filter(this, p, ctrl, src)) continue;
+          if (checkProt(p)) out.push(p);
+        }
         for (const c of this.bf()) {
           if (!(c.is('Creature') || c.is('Planeswalker'))) continue;
+          if (spec.filter && !spec.filter(this, c, ctrl, src)) continue;
           if (!checkProt(c)) continue;
           out.push(c);
         }
@@ -1688,15 +1711,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const excluded = new Set(ctx.targets.flat().filter(Boolean));
           cands = cands.filter(candidate => !excluded.has(candidate));
         }
-        const min = spec.min !== undefined ? spec.min : (spec.upTo ? 0 : (spec.count || 1));
-        const max = spec.count || 1;
+        const min = spec.min !== undefined ? spec.min : (spec.upTo ? 0 : (spec.count ?? 1));
+        const max = spec.count ?? 1;
         if (cands.length < min) return false;
         if (max === 0) { ctx.targets.push([]); continue; }
-        const picked = await ctrl.controller.decide(this, {
+        const decision = await ctrl.controller.decide(this, {
           type: 'chooseTargets', spec, candidates: cands, min: Math.min(min, cands.length), max,
           src, prompt: spec.prompt || 'Izaberi metu', aiHint: spec.aiHint,
         });
-        if (!picked || (picked.length < min)) return false;
+        const picked = Array.isArray(decision) ? [...new Set(decision)] : [];
+        if (picked.length < min || picked.length > max || picked.some(target => !cands.includes(target))) return false;
         // Ward nije dodatni target/cast trošak. Ciljani spell ili ability prvo
         // normalno ide na stack; zatim Ward trigger ide iznad njega i tek na
         // svojoj rezoluciji traži plaćanje ili pokušava counterovati original.

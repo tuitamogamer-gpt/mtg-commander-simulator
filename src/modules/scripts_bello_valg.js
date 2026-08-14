@@ -608,8 +608,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{ on: 'etb', filter: etbSelf, desc: '2 Treasura', run: async ctx => { await ctx.g.makeTokens('treasure', ctx.you, { n: 2 }); } }],
     grantsCascade: (g, self, card, castData, so) => {
       if (!so.treasureUsed) return false;
-      if (self.ctrl.turnState._rainUsed) return false;
-      self.ctrl.turnState._rainUsed = true;
+      const key = `_rainUsed_${self.iid}`;
+      if (self.ctrl.turnState[key]) return false;
+      self.ctrl.turnState[key] = true;
       return true;
     },
   };
