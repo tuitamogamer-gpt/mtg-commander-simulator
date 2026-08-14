@@ -1378,6 +1378,89 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'avengersHuman') {
+      void (async () => {
+        const take = (name, zone = 'battlefield') => {
+          const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+          g.remove(card);
+          card.ctrl = ui.me; card.zone = zone; card.sick = false;
+          if (zone === 'battlefield') g.battlefield.push(card); else ui.me[zone].push(card);
+          return card;
+        };
+        const settle = async () => {
+          let guard = 0;
+          while ((g.pendingTriggers.length || g.stack.length) && guard++ < 120) {
+            await g.flushTriggers();
+            if (g.stack.length) await g.resolveTop();
+          }
+          if (guard >= 120) throw new Error('Avengers human scenario trigger guard');
+        };
+        const quinjet = take('Avengers Quinjet');
+        const ironMan = take('Iron Man, Armored Avenger', 'hand');
+        const jocasta = take('Jocasta, Automaton Avenger', 'graveyard');
+        take('Captain Marvel, Apex Avenger');
+        g.turnPlayer = ui.me; g.turnNo = 28; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        const resolveHandChoice = new URLSearchParams(window.location.search).get('smokeResolve') === 'hand';
+        ui.toast(resolveHandChoice
+          ? 'Avengers Quinjet: choose the real Hero card that will move from hand to the battlefield.'
+          : 'Avengers Quinjet: choose the hand mode or the graveyard mode, then choose its real card.');
+        ui.render();
+        if (resolveHandChoice) {
+          await quinjet.def.triggers[0].run({ g, src: quinjet, you: ui.me, mode: 0, targets: [], data: { card: quinjet } });
+        } else {
+          await g.emit('etb', { card: quinjet, ctrl: ui.me });
+          await settle();
+        }
+        g.lg(`Avengers human: Iron Man=${ironMan.zone}; Jocasta=${jocasta.zone}; Quinjet=${quinjet.zone}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Avengers human scenario: the chosen Quinjet mode and card resolved through the stack.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'avengersAI') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Avengers Assemble');
+        if (!bot) throw new Error('avengersAI scenario zahtijeva smokeAIDeck=Avengers Assemble');
+        const takeBot = (name, zone = 'battlefield') => {
+          const zones = [bot.command, bot.hand, bot.library, bot.graveyard, bot.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], bot);
+          g.remove(card);
+          card.ctrl = bot; card.zone = zone; card.sick = false;
+          if (zone === 'battlefield') g.battlefield.push(card); else bot[zone].push(card);
+          return card;
+        };
+        const settle = async () => {
+          let guard = 0;
+          while ((g.pendingTriggers.length || g.stack.length) && guard++ < 160) {
+            await g.flushTriggers();
+            if (g.stack.length) await g.resolveTop();
+          }
+          if (guard >= 160) throw new Error('Avengers AI scenario trigger guard');
+        };
+        const captainMarvel = takeBot('Captain Marvel, Apex Avenger');
+        const antMan = takeBot('Ant-Man, Elusive Avenger');
+        const door = takeBot('Door of Destinies', 'hand');
+        g.remove(door); door.zone = 'nowhere';
+        const quinjet = takeBot('Avengers Quinjet');
+        const ironMan = takeBot('Iron Man, Armored Avenger', 'hand');
+        const jocasta = takeBot('Jocasta, Automaton Avenger', 'graveyard');
+        g.turnPlayer = bot; g.turnNo = 29; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        await g.move(door, 'battlefield', { ctrl: bot });
+        g.addCounters(antMan, 'shield', 2, false, bot);
+        await settle();
+        await g.emit('etb', { card: quinjet, ctrl: bot });
+        await settle();
+        const recent = (g.aiDecisionLog || []).filter(entry => entry.playerName === bot.name).slice(-20);
+        g.lg(`Avengers AI: Door=${door.meta.chosenType || 'nema'}; Marvel shield=${captainMarvel.counters.shield || 0}; Iron Man=${ironMan.zone}; Jocasta=${jocasta.zone}; odluke=${recent.length}; fallback=${recent.some(entry => entry.fallback) ? 'DA' : 'NE'}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Avengers AI scenario: Hero type, Captain Marvel counters, and Quinjet mode resolved.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     if (smokeScenario === 'generalEffects') {
       void (async () => {
         g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = true;

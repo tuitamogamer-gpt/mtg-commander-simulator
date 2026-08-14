@@ -465,7 +465,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // detach everything
         for (const aid of card.attachments.slice()) {
           const a = this.byIid(aid);
-          if (a) { a.attachedTo = null; if (a.hasSub('Aura')) await this.move(a, 'graveyard'); }
+          if (a) {
+            // Auras such as Gift of Immortality trigger after both the creature
+            // and the Aura have reached the graveyard. Preserve which object
+            // the Aura enchanted so its graveyard trigger can use LKI.
+            a.meta = a.meta || {};
+            a.meta._lastAttachedTo = card.iid;
+            a.attachedTo = null;
+            if (a.hasSub('Aura')) await this.move(a, 'graveyard');
+          }
         }
         card.attachments = [];
         if (card.attachedTo) {
@@ -619,6 +627,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let d = card.def;
       const entryMinusCounters = [];
       const entryPlusCounters = [];
+      const entryCounterEvents = [];
       card.meta = card.meta || {};
       // Copy i drugi as-enters replacementi postavljaju karakteristike prije
       // enters-tapped i enters-with-counters replacementa kopirane karte.
@@ -644,6 +653,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             kind: 'counter', card, counterKind: d.etbCounters.kind, n,
           });
           this.markCounterPut(card.ctrl, card, n);
+          entryCounterEvents.push({ kind: d.etbCounters.kind, n, before: 0, after: n, by: card.ctrl });
           if (d.etbCounters.kind === '-1/-1') entryMinusCounters.push({ n, by: card.ctrl });
           if (d.etbCounters.kind === '+1/+1') entryPlusCounters.push({ n, before: 0, after: n });
         }
@@ -659,6 +669,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           });
           const by = opts.additionalCounterBy || card.ctrl;
           this.markCounterPut(by, card, n);
+          entryCounterEvents.push({
+            kind, n, before: (card.counters[kind] || 0) - n,
+            after: card.counters[kind] || 0, by,
+          });
           if (kind === '-1/-1') entryMinusCounters.push({ n, by });
           if (kind === '+1/+1') entryPlusCounters.push({
             n, before: (card.counters[kind] || 0) - n, after: card.counters[kind] || 0,
@@ -667,9 +681,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (card.castMeta && card.castMeta.grantedSunburstColors > 0) {
         const kind = card.is('Creature') ? '+1/+1' : 'charge';
-        card.counters[kind] = (card.counters[kind] || 0) + card.castMeta.grantedSunburstColors;
+        const before = card.counters[kind] || 0;
+        card.counters[kind] = before + card.castMeta.grantedSunburstColors;
         this.notifyEffect(`◆ ${card.name}: sunburst adds ${card.castMeta.grantedSunburstColors} ${kind} counters.`, {
           kind: 'counter', card, counterKind: kind, n: card.castMeta.grantedSunburstColors,
+        });
+        entryCounterEvents.push({
+          kind, n: card.castMeta.grantedSunburstColors,
+          before, after: card.counters[kind], by: card.ctrl,
         });
       }
       if (d.loyalty && card.is('Planeswalker')) {
@@ -686,18 +705,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const r of this.replacers('etbCounters')) {
           if (r.run(this, card, r.src)) {
             const nn = typeof r.n === 'function' ? r.n(this, card, r.src) : (r.n || 1);
-            if (nn > 0) this.addCounters(card, '+1/+1', nn, true);
+            if (nn > 0) this.addCounters(card, '+1/+1', nn, true, r.src.ctrl);
           }
         }
         for (const player of this.players) for (const source of player.graveyard) {
           if (!source.def.graveyardEtbCounters) continue;
           const nn = source.def.graveyardEtbCounters(this, source, card) || 0;
-          if (nn > 0) this.addCounters(card, '+1/+1', nn, true);
+          if (nn > 0) this.addCounters(card, '+1/+1', nn, true, source.ctrl);
         }
       }
       if (d.saga) { card.counters['lore'] = 0; }
       this.recalc();
       const evData = { card, ctrl: card.ctrl };
+      // Generic counter event preserves the actual kind. Cards such as
+      // Captain Marvel must copy shield/charge/etc. counters, not only +1/+1.
+      for (const event of entryCounterEvents) {
+        await this.emit('countersPlaced', {
+          card, kind: event.kind, n: event.n, before: event.before,
+          after: event.after, ctrl: card.ctrl, by: event.by, enters: true,
+        });
+      }
       // "Enters with" counteri su dio samog ulaska, ali permanenti koji ih
       // posmatraju (Auntie Ool, Hapatra, Wickersmith's Tools...) ipak moraju
       // dobiti isti m1Added događaj prije običnih ETB triggera.
@@ -918,10 +945,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.notifyEffect(`◆ ${counterText}`, { kind: 'counter', card, counterKind: kind, n }, !!silent);
       this.recalc();
       this.emitSync('countersAdded', { card, kind, n });
+      // `emit` queues triggers synchronously even though their resolution is
+      // asynchronous. Keep the UI notification above and expose the full
+      // rules event separately so observers can retain the counter kind.
+      const counterBy = by || this.turnPlayer;
+      void this.emit('countersPlaced', {
+        card, kind, n, before, after: card.counters[kind], ctrl: card.ctrl, by: counterBy,
+      });
       // Većina starijih skripti nastala je prije eksplicitnog `by` argumenta.
       // Aktivni igrač je kompatibilni fallback, dok nove/instant putanje
       // prosljeđuju stvarnog igrača koji stavlja counter.
-      this.markCounterPut(by || this.turnPlayer, card, n);
+      this.markCounterPut(counterBy, card, n);
       if (kind === '+1/+1' && card.zone === 'battlefield' && card.is && card.is('Creature')) {
         this.emit('plusAdded', { card, n, before, after: card.counters[kind], ctrl: card.ctrl }); // sync queue triggera
       }

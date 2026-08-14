@@ -477,6 +477,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
   };
 
+  G.expirePersistentMana = function () {
+    for (const player of this.players) player.persistMana = {};
+  };
+
   G.artifactAbilityDiscountAmount = function (p) {
     if ((p.turnState.artifactAbilitiesActivated || 0) !== 0) return 0;
     return 2 * this.bf().filter(card => card.ctrl === p && card.def.firstArtifactAbilityDiscount).length;
@@ -2791,6 +2795,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.delayed = this.delayed.filter(d => d.expires !== 'eot');
     this.expireOwnTurnExilePermissions(p);
     // blitz / dash sacrifice already via delayed triggers at end step
+    // "Until end of turn, you don't lose this mana" ends during cleanup.
+    // Drop the retention allowance before the final pool-emptying event.
+    this.expirePersistentMana();
     this.emptyPool();
     for (const q of this.players) q.tempReductions = [];
     this.recalc();
@@ -3143,6 +3150,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     await this.flushTriggers();
     if (!this.gameOver) await this.priorityRound(p);   // CR 511.3
+    this.delayed = this.delayed.filter(effect => effect.expires !== 'combat');
     for (const c of this.bf()) { c.attacking = null; c.blocking = null; c.blockedBy = []; c.wasBlocked = false; c.meta._dealtFirstStrike = false; }
     this.combat = null;
     this.step = '';

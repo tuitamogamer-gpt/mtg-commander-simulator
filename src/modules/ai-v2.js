@@ -1164,7 +1164,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       breakdown.choice = action.picks.reduce((sum, card) => sum + choiceCardValue(game, player, card, q || {}), 0);
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
-      if (hintKind === 'vote') {
+      if (hintKind === 'chooseType') {
+        const counts = q.aiHint.counts || {};
+        const type = String(action.value || '');
+        breakdown.choice = Number(counts[type] || action.option && action.option.count || 0) * 3 +
+          (type === 'Hero' && player.deck && player.deck.name === 'Avengers Assemble' ? 25 : 0);
+      } else if (hintKind === 'photonMana') {
+        const color = String(action.value || '');
+        const cards = [...player.hand, ...player.command];
+        const demand = cards.reduce((sum, card) =>
+          sum + ((card.def.cost || '').match(new RegExp(`\\{${color}[^}]*\\}`, 'g')) || []).length, 0);
+        breakdown.choice = demand * 3 + Math.max(0, 2 - (player.pool[color] || 0));
+      } else if (hintKind === 'quinjetMode') {
+        const handHero = player.hand.filter(card => card.is('Creature') && card.hasSub('Hero'))
+          .map(card => cardDefinitionValue(card.def)).sort((a, b) => b - a)[0];
+        const graveHero = player.graveyard.filter(card => card.is('Creature') && card.hasSub('Hero'))
+          .map(card => cardDefinitionValue(card.def)).sort((a, b) => b - a)[0];
+        breakdown.choice = action.value === '0'
+          ? (Number.isFinite(handHero) ? handHero + 4 : -100)
+          : (Number.isFinite(graveHero) ? graveHero * 0.7 + 2 : -100);
+      } else if (hintKind === 'visionMode') {
+        const vision = q.aiHint.card;
+        const threatened = vision && vision.zone === 'battlefield' && vision.toughness - vision.damage <= 1;
+        breakdown.choice = action.value === 'phase' ? (threatened ? 18 : 1) : (threatened ? 2 : 9);
+      } else if (hintKind === 'heraldReveal') {
+        breakdown.choice = action.value === 'yes'
+          ? cardDefinitionValue(q.aiHint.card && q.aiHint.card.def) + 3
+          : 0;
+      } else if (hintKind === 'vote') {
         breakdown.choice = tacticalVoteScore(game, player, action.option, q);
       } else if (hintKind === 'chooseOpponent') {
         breakdown.choice = opponentChoiceScore(game, player, action.option, q);
