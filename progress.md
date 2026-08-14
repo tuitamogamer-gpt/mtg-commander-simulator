@@ -6,6 +6,8 @@ Aktivni zahtjev (2026-08-14): Deck-by-deck real-time audit `Scions & Spellcraft`
 
 Aktivni zahtjev (2026-08-14): Deck-by-deck real-time audit `Avengers Assemble`, kao ljudski igrač i lokalni AI bot. Svi efekti, odluke, mete, stack/combat tokovi i AI procjene moraju raditi; po završetku odmah commit, push i production deploy.
 
+Aktivni zahtjev (2026-08-14): Deck-by-deck real-time audit `The Fantastic Four`, kao ljudski igrač i lokalni AI bot. Svi efekti, odluke, mete, stack/combat tokovi i AI procjene moraju raditi; po završetku odmah commit, push i production deploy.
+
 # Desktop Commander overhaul
 
 ## Scope
@@ -34,6 +36,10 @@ Aktivni zahtjev (2026-08-14): Deck-by-deck real-time audit `Avengers Assemble`, 
 - Desktop Playwright: završni Scions human i AI Partner/mehanika/odluka tokovi vizuelno pregledani, prazan stack/pending, bez console/page greške i bez AI fallbacka.
 
 ## Dnevnik
+
+- 2026-08-14: `The Fantastic Four` deck-by-deck audit završen kao ljudski deck i lokalni AI V2 protivnik. Ispravljeni su stvarni reflexive targeti i plaćanja za Invisible Woman/The Thing, Black Bolt/Lockjaw/Reed/Human Torch/Galactus/Surfer/Willie triggeri i trajanja, Power Pack pravi exile-cast, modalne/cast-time mete i troškovi za Force Field/Collective Effort/Elasticity/Five Arrive/Nova/Quantum/Seize/Tragic Arrogance/Ultimate Nullification, puna Mirage Mirror kopija, Fantasticar/Unstable Suit/Cosmic Crucible/Watcher/Baxter te Path/Promise rubni tokovi. AI sada kontekstualno bira RGWU plaćanja, Surferovu političku metu, Willie draw, escalate modove/tap cijenu, Cosmic kopiju i Fantasticar sacrifice. Novi Fantastic suite prolazi 29/29, uključujući dvije pune partije bez fallbacka; puni repo 397/397, syntax PASS, audit 100/87 uz 0 duplicate/0 simplified i strict certifikacija 1237/1237 aktivnih jedinstvenih, 1722/1722 card/deck te 1288/1288 raw karata. Human browser je odigrao Collective Effort kroz modove, obje mete i stvarni escalate tap; AI browser je usmjerio treću stranu Surferom, odbio praznu Thing uplatu i napravio dvije Arcane Signet rezolucije kroz Cosmic Crucible, uz prazan stack, 0 fallbacka i 0 console/page grešaka. Artefakti: `output/playwright/fantastic-final-human` i `fantastic-final-ai-v4`. Spremno za odobreni commit/push/production deploy.
+
+- 2026-08-14: Započet deck-by-deck real-time audit `The Fantastic Four`, kao ljudski deck i lokalni AI V2 bot, uz odobren commit/push/deploy po završetku. Worktree je krenuo čist i HEAD `7cbf197` odgovara origin grani; slijede semantic inventar svih jedinstvenih karata, ciljane reprodukcije i stvarni human/AI browser tokovi.
 
 - 2026-08-14: Započet deck-by-deck real-time audit `Avengers Assemble`, kao ljudski deck i lokalni AI V2 bot, uz odobren commit/push/deploy po završetku. Worktree je krenuo čist i HEAD `49069fe` odgovara origin grani; slijede semantic inventar svih jedinstvenih karata, ciljane reprodukcije i stvarni human/AI browser tokovi.
 

@@ -1461,6 +1461,96 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'fantasticHuman') {
+      void (async () => {
+        const take = (name, zone = 'battlefield') => {
+          const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+          g.remove(card);
+          card.ctrl = ui.me; card.zone = zone; card.sick = false;
+          if (zone === 'battlefield') g.battlefield.push(card); else ui.me[zone].push(card);
+          return card;
+        };
+        const willie = take('Willie Lumpkin, Postman');
+        take('Mister Fantastic, Reed Richards');
+        const opponent = g.players.find(player => player !== ui.me);
+        const threat = new MTG.CardInst(MTG.DEFS["Silver Surfer, Galactus's Herald"], opponent);
+        threat.ctrl = opponent; threat.zone = 'battlefield'; threat.sick = false;
+        g.battlefield.push(threat);
+        const effort = take('Collective Effort', 'hand');
+        ui.me.pool.W = 3;
+        g.turnPlayer = ui.me; g.turnNo = 30; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        ui.toast('Collective Effort: choose removal plus counters, then lock the target/player and tap one creature for escalate.');
+        ui.render();
+        await g.castSpell(ui.me, effort, { from: 'hand' });
+        while (g.pendingTriggers.length || g.stack.length) {
+          await g.flushTriggers();
+          if (g.stack.length) await g.resolveTop();
+        }
+        g.lg(`Fantastic human: Surfer=${threat.zone}; Willie +1/+1=${willie.counters['+1/+1'] || 0}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Fantastic Four human scenario: modalni targeti i escalate trošak su potpuno razriješeni.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'fantasticAI') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'The Fantastic Four');
+        if (!bot) throw new Error('fantasticAI scenario zahtijeva smokeAIDeck=The Fantastic Four');
+        const takeBot = (name, zone = 'battlefield') => {
+          const zones = [bot.command, bot.hand, bot.library, bot.graveyard, bot.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], bot);
+          g.remove(card);
+          card.ctrl = bot; card.zone = zone; card.sick = false;
+          if (zone === 'battlefield') g.battlefield.push(card); else bot[zone].push(card);
+          return card;
+        };
+        const settle = async () => {
+          let guard = 0;
+          while ((g.pendingTriggers.length || g.stack.length) && guard++ < 160) {
+            await g.flushTriggers();
+            if (g.stack.length) await g.resolveTop();
+          }
+          if (guard >= 160) throw new Error('Fantastic AI scenario trigger guard');
+        };
+        const surfer = takeBot("Silver Surfer, Galactus's Herald");
+        const thing = takeBot('The Thing');
+        takeBot('Cosmic Crucible');
+        const opponents = g.players.filter(player => player !== bot && !player.lost);
+        const victim = opponents[0];
+        const third = opponents[1];
+        const victimCreature = new MTG.CardInst(MTG.DEFS['Galactus, Devourer of Worlds'], victim);
+        victimCreature.ctrl = victim; victimCreature.zone = 'battlefield'; victimCreature.sick = false;
+        const thirdCreature = new MTG.CardInst(MTG.DEFS['Mister Fantastic, Reed Richards'], third);
+        thirdCreature.ctrl = third; thirdCreature.zone = 'battlefield'; thirdCreature.sick = false;
+        g.battlefield.push(victimCreature, thirdCreature);
+        g.turnPlayer = bot; g.turnNo = 31; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.priorityRound = async () => {};
+        g.recalc();
+
+        await g.emit('combatDamageToPlayer', { card: surfer, player: victim, n: 4 });
+        await settle();
+        bot.pool = { W: 1, U: 1, B: 0, R: 1, G: 1, C: 0 };
+        await g.emit('attacks', { card: thing, player: bot, defender: victim });
+        await settle();
+        const thingPaid = bot.pool.W === 0 && bot.pool.U === 0 && bot.pool.R === 0 && bot.pool.G === 0;
+        bot.pool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 2 };
+        const signet = takeBot('Arcane Signet', 'hand');
+        if (!await g.castSpell(bot, signet, { from: 'hand' })) throw new Error('Fantastic AI Arcane Signet cast nije uspio');
+        await settle();
+        const forced = g.untilEffects.some(effect => effect.kind === 'mustAttackPlayerCard' &&
+          effect.iid === thirdCreature.iid && effect.targetPlayer === victim);
+        const copies = g.bf().filter(card => card.ctrl === bot && card.name === 'Arcane Signet').length;
+        const recent = (g.aiDecisionLog || []).filter(entry => entry.playerName === bot.name).slice(-24);
+        g.lg(`Fantastic AI: Surfer third-party force=${forced ? 'DA' : 'NE'}; Thing empty pay=${thingPaid ? 'DA' : 'NE'}; Signet copies=${copies}; odluke=${recent.length}; fallback=${recent.some(entry => entry.fallback) ? 'DA' : 'NE'}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Fantastic Four AI scenario: Surfer, Thing i Cosmic Crucible odluke su razriješene.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     if (smokeScenario === 'generalEffects') {
       void (async () => {
         g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = true;

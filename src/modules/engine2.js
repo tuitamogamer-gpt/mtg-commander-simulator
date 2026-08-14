@@ -638,7 +638,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // additional cost feasibility (sac/discard)
       const ac = card.def.addlCost;
       if (ac && !(alt && alt.adventure)) {
-        if (ac.sacCreature && !this.creatures(p).some(c => this.canSacrifice(c))) return;
+        if (ac.sacCreature && !this.creatures(p).some(c =>
+          (!ac.sacCreatureFilter || ac.sacCreatureFilter(this, c, p, card)) && this.canSacrifice(c))) return;
         if (ac.sacArtifactOrCreature && !this.bf().some(c => c.ctrl === p &&
           (c.is('Artifact') || c.is('Creature')) && this.canSacrifice(c))) return;
         if (ac.discard && p.hand.filter(c => c !== card).length < ac.discard) return;
@@ -1016,11 +1017,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // additional costs
     const ac = castOpts.adventure ? null : d.addlCost;
-    const paidAddl = { sacd: [], discarded: [], life: 0, blightCard: null, blightN: 0, choice: null };
+    const paidAddl = { sacd: [], tapped: [], discarded: [], life: 0, blightCard: null, blightN: 0, choice: null };
     if (ac) {
       if (ac.sacCreature || ac.sacArtifactOrCreature || ac.sacAnyCreatures || ac.sacCreaturesEqualTargets) {
         const pool = this.bf().filter(c => c.ctrl === p &&
           (ac.sacCreature ? c.is('Creature') : ac.sacArtifactOrCreature ? (c.is('Artifact') || c.is('Creature')) : c.is('Creature')) &&
+          (!ac.sacCreatureFilter || ac.sacCreatureFilter(this, c, p, card)) &&
           this.canSacrifice(c));
         const targetCount = ac.sacCreaturesEqualTargets
           ? (so.targets || []).flat().filter(Boolean).length
@@ -1034,6 +1036,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         if (picked.length < min) return false;
         paidAddl.sacd = picked;
+      }
+      if (ac.tapCreaturesForExtraModes) {
+        const required = Math.max(0, typeof ac.tapCreaturesForExtraModes === 'function'
+          ? Number(ac.tapCreaturesForExtraModes(this, p, card, so)) || 0
+          : Math.max(0, (so.mode || []).length - 1));
+        const pool = this.creatures(p).filter(creature => !creature.tapped);
+        if (pool.length < required) return false;
+        if (required > 0) {
+          const picked = await p.controller.decide(this, {
+            type: 'chooseCards', from: pool, min: required, max: required,
+            prompt: `${card.name}: tap ${required} untapped creature${required === 1 ? '' : 's'} for escalate`,
+            aiHint: { kind: 'addlTap', card, required },
+          });
+          if (picked.length !== required || picked.some(creature => !pool.includes(creature))) return false;
+          paidAddl.tapped = picked;
+        }
       }
       if (ac.discard) {
         const pool = p.hand.filter(c => c !== card);
@@ -1156,7 +1174,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // pay mana
     const paySpell = { card };
     if (!castOpts.free) {
-      const ok = await this.payMana(p, cost, paySpell, { xVal, isSpell: true });
+      const ok = await this.payMana(p, cost, paySpell, {
+        xVal, isSpell: true, excludeCards: paidAddl.tapped,
+      });
       if (!ok) { this.lg(`${card.name}: mana nije plaćena.`); return false; }
       if (cost.lifeCost) await this.loseLife(p, cost.lifeCost, 'altcost');
       // consume one-shot reductions that applied
@@ -1187,8 +1207,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // pay additional
     so.sacdN = paidAddl.sacd.length;
     so.sacdSnaps = paidAddl.sacd.map(c => this.snapshot(c));
+    so.additionalTapped = paidAddl.tapped.slice();
     so.discardedCards = paidAddl.discarded.slice();
     if (paidAddl.sacd.length) await this.sacrificeMany(p, paidAddl.sacd);
+    for (const c of paidAddl.tapped) if (c.zone === 'battlefield' && c.ctrl === p && !c.tapped) this.tap(c);
     for (const c of paidAddl.discarded) await this.discard(p, [c]);
     if (paidAddl.life) await this.loseLife(p, paidAddl.life, card.name);
     if (paidAddl.blightCard) await this.addM1(paidAddl.blightCard, paidAddl.blightN, p);
@@ -2733,6 +2755,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!p.lost) await this.mainPhase(p);
     if (this.gameOver) return;
 
+    // Effects such as Seize the Day can legally be cast in the postcombat main
+    // phase.  Their instruction still inserts a combat followed by another
+    // main phase; previously those phases existed only when the spell was cast
+    // in main 1, so a main-2 cast silently did nothing beyond untapping.
+    let postMainCombatGuard = 0;
+    while (this._extraCombats > 0 && postMainCombatGuard++ < 3) {
+      this._extraCombats--;
+      this.lg('⚔️ ADDITIONAL combat phase after the postcombat main phase!', 'attack');
+      if (!p.lost) await this.combatPhase(p);
+      if (this.gameOver) return;
+      this.emptyPool();
+      this.phase = 'main2';
+      this.note('phase', {});
+      await this.emit('postcombatMain', { player: p, additional: true });
+      await this.flushTriggers();
+      if (!p.lost) await this.mainPhase(p);
+      if (this.gameOver) return;
+    }
+
     // END STEP
     this.phase = 'end';
     this.note('phase', {});
@@ -2775,7 +2816,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const card = this.byIid(effect.iid);
       if (card && card.zone === 'battlefield' && card.ctrl === effect.to) card.ctrl = effect.from;
     }
-    this.untilEffects = this.untilEffects.filter(e => e.expires !== 'eot' && !(e.expires === 'yourNext' && e.ctrl === this.nextPlayer(p)));
+    this.untilEffects = this.untilEffects.filter(e => e.expires !== 'eot' &&
+      !(e.expires === 'yourNext' && e.ctrl === this.nextPlayer(p)) &&
+      !(e.expires === 'throughTurnOf' && e.whoTurn === p &&
+        (e.afterTurnsStarted === undefined || p.turnsStarted >= e.afterTurnsStarted)));
     for (const c of this.bf()) {
       c.meta.tempHaste = false;
       if (c.meta.canAttackDefender) c.meta.canAttackDefender = false;
@@ -3179,7 +3223,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const e of this.untilEffects) {
         if (e.kind === 'cantAttackPlayer' && e.who === c.ctrl && e.notPlayer === defender) return false;
         if (e.kind === 'cantAttackPlayerCard' && e.iid === c.iid && e.notPlayer === defender &&
-          (e.timestamp === undefined || e.timestamp === c.timestamp)) return false;
+          (e.timestamp === undefined || e.timestamp === c.timestamp) &&
+          (!e.whileCounter || (c.counters[e.whileCounter] || 0) > 0)) return false;
       }
       for (const permanent of this.bf()) {
         if (permanent.ctrl === defender && permanent.def.protectsController && permanent.def.protectsController(this, permanent, c, defender)) return false;
@@ -3189,6 +3234,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!legalWithoutSpecificAttack(target)) return false;
     const forcedPlayer = c.meta && c.meta.mustAttackPlayer;
     if (forcedPlayer && target !== forcedPlayer && legalWithoutSpecificAttack(forcedPlayer)) return false;
+    const forcedByEffect = this.untilEffects.find(e => e.kind === 'mustAttackPlayerCard' && e.iid === c.iid &&
+      (e.timestamp === undefined || e.timestamp === c.timestamp) && e.targetPlayer && !e.targetPlayer.lost);
+    if (forcedByEffect && target !== forcedByEffect.targetPlayer && legalWithoutSpecificAttack(forcedByEffect.targetPlayer)) return false;
     return true;
   };
 
@@ -3209,12 +3257,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   G.isForcedToAttack = function (c) {
+    if (c.cur && c.cur.mustAttack) return true;
     if (c.def.mustAttack) return true;
     if (c.meta && c.meta.mustAttackTurn === this.turnNo) return true;
     if (c.meta && c.meta.mustAttackPlayer && this.canAttackTarget(c, c.meta.mustAttackPlayer)) return true;
     if (this.goadersOf(c).length) return true;
     for (const e of this.untilEffects) {
       if (e.kind === 'mustAttack' && e.who === c.ctrl) return true;
+      if (e.kind === 'mustAttackPlayerCard' && e.iid === c.iid &&
+        (e.timestamp === undefined || e.timestamp === c.timestamp) && e.targetPlayer &&
+        this.canAttackTarget(c, e.targetPlayer)) return true;
       if (e.kind === 'goadCard' && e.iid === c.iid) return true;
     }
     return false;

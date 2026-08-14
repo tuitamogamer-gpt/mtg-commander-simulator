@@ -469,9 +469,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Path to Exile'] = {
     targets: [T.creature({ prompt: 'Egzilaj', aiHint: { goal: 'removal' } })],
     resolve: async ctx => {
-      const t = ctx.targets[0], c2 = t.ctrl;
+      const t = ctx.targets[0];
+      if (!t) return;
+      const c2 = t.ctrl;
       await ctx.g.exileCard(t);
-      await E.searchBasic(ctx.g, c2, { tapped: true });
+      const search = await c2.controller.decide(ctx.g, {
+        type: 'chooseOption', prompt: `${c2.name}: search for a basic land after Path to Exile?`,
+        options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
+        aiHint: { kind: 'rampChoice' },
+      });
+      if (search === 'yes') await E.searchBasic(ctx.g, c2, { tapped: true });
     },
   };
   SC['Pull from Tomorrow'] = {

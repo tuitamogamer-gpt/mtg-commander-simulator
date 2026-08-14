@@ -787,6 +787,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (target instanceof U.CardInst) {
       const value = permanentGameValue(game, target, player);
       const hostile = target.ctrl !== player;
+      if (hint === 'forceAttack') {
+        const victim = q.aiHint && q.aiHint.victim;
+        if (!victim || target.ctrl === victim) return -100;
+        if (target.ctrl === player) return Math.max(0, target.power) * 0.45 + value * 0.08;
+        return value + Math.max(0, target.power) * 1.8;
+      }
       if (hint === 'blight') return hostile ? -100 : blightRecipientValue(game, player, target, q.aiHint && q.aiHint.n || 1);
       if (hint === 'counterRemoval') {
         return Object.entries(target.counters || {}).reduce((sum, [kind, amount]) =>
@@ -816,7 +822,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // eksplicitnog svrstavanja u hostile ciljeve evaluator je mogao dati
       // viši zbir vlastitim Veyran/Storm-Kiln metama samo zato što su vrednije.
       if (/removal|damage|destroy|exile|bounce|counter|tap/i.test(hint)) return hostile ? value : -value * 1.8;
-      if (/buff|pump|protect|copy|recur|return|attach|equip/i.test(hint)) return hostile ? -value : value;
+      if (/buff|pump|protect|copy|recur|return|attach|equip|untap/i.test(hint)) return hostile ? -value : value;
       return hostile ? value * 0.7 : value * 0.5;
     }
     if (target && target.kind) {
@@ -862,6 +868,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const bad = (card.counters['-1/-1'] || 0) + (card.counters['-0/-1'] || 0) +
         (card.counters.stun || 0) + (card.counters.finality || 0) + (card.counters.doom || 0);
       return bad * 20 - value;
+    }
+    if (hint === 'addlTap') return -permanentGameValue(game, card, player);
+    if (hint === 'tragicKeep') {
+      return q.aiHint && q.aiHint.owner === player
+        ? permanentGameValue(game, card, player)
+        : -permanentGameValue(game, card, player);
     }
     if (hint === 'fainCounterCost') {
       const bad = (card.counters['-1/-1'] || 0) + (card.counters['-0/-1'] || 0) +
@@ -1175,6 +1187,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const demand = cards.reduce((sum, card) =>
           sum + ((card.def.cost || '').match(new RegExp(`\\{${color}[^}]*\\}`, 'g')) || []).length, 0);
         breakdown.choice = demand * 3 + Math.max(0, 2 - (player.pool[color] || 0));
+      } else if (hintKind === 'manaColor') {
+        const color = String(action.value || '');
+        const cards = [...player.hand, ...player.command];
+        const demand = cards.reduce((sum, card) =>
+          sum + ((card.def.cost || '').match(new RegExp(`\\{${color}[^}]*\\}`, 'g')) || []).length, 0);
+        breakdown.choice = demand * 2.2 + Math.max(0, 2 - (player.pool[color] || 0)) * 0.6;
       } else if (hintKind === 'quinjetMode') {
         const handHero = player.hand.filter(card => card.is('Creature') && card.hasSub('Hero'))
           .map(card => cardDefinitionValue(card.def)).sort((a, b) => b - a)[0];
@@ -1187,6 +1205,47 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const vision = q.aiHint.card;
         const threatened = vision && vision.zone === 'battlefield' && vision.toughness - vision.damage <= 1;
         breakdown.choice = action.value === 'phase' ? (threatened ? 18 : 1) : (threatened ? 2 : 9);
+      } else if (hintKind === 'fantasticPay') {
+        if (action.value !== 'yes') breakdown.choice = 0;
+        else if (q.aiHint.effect === 'thing') {
+          const counters = game.bf().filter(card => card.ctrl === player)
+            .reduce((sum, card) => sum + Object.values(card.counters || {}).reduce((a, n) => a + Math.max(0, n), 0), 0);
+          breakdown.choice = counters > 0 ? counters * 2.4 - 2.5 : -25;
+        } else if (q.aiHint.effect === 'torch') {
+          const torch = q.aiHint.src || q.data && q.data.card;
+          breakdown.choice = Math.max(0, player.opponents(game).length - 1) * Math.max(2, torch && torch.power || 3) - 2;
+        } else {
+          const attackers = q.data && q.data.attackers || [];
+          breakdown.choice = attackers.length ? Math.max(...attackers.map(card => Math.max(0, card.power))) + game.creatures(player).length * 0.8 - 2 : -20;
+        }
+      } else if (hintKind === 'willieDraw') {
+        if (action.value !== 'yes') breakdown.choice = 0;
+        else {
+          const protectedPlayer = q.aiHint.protectedPlayer;
+          const attackPower = game.creatures(player).filter(card => !card.tapped && !card.cur.cantAttack)
+            .reduce((sum, card) => sum + Math.max(0, card.power), 0);
+          const targetThreat = protectedPlayer ? playerThreatForGame(game, player, protectedPlayer) : 0;
+          breakdown.choice = 4.5 + Math.max(0, 5 - player.hand.length) * 0.65 - attackPower * 0.28 - targetThreat * 0.08;
+        }
+      } else if (hintKind === 'cosmicCopy') {
+        if (action.value !== 'yes') breakdown.choice = 0;
+        else {
+          const spell = q.data && q.data.so && q.data.so.card;
+          breakdown.choice = spell ? cardDefinitionValue(spell.def) + 2 : 1;
+          if (spell && inferCardSemantics(spell.def).roles.includes('board-wipe')) {
+            const mine = boardValueFor(game, player);
+            const theirs = player.opponents(game).reduce((sum, opponent) => sum + boardValueFor(game, opponent), 0);
+            breakdown.choice += (theirs - mine) * 0.35;
+            if (mine > theirs) breakdown.safety -= 16;
+          }
+        }
+      } else if (hintKind === 'fantasticarSacrifice') {
+        const tokenPayoffs = game.bf().filter(card => card.ctrl === player && /token/i.test(card.def.oracle || '')).length;
+        breakdown.choice = action.value === 'yes' ? 13 + tokenPayoffs * 1.4 : 0;
+      } else if (hintKind === 'explore') {
+        const card = q.aiHint.card;
+        const value = card ? cardDefinitionValue(card.def) : 0;
+        breakdown.choice = action.value === 'top' ? value : Math.max(0, 3 - value);
       } else if (hintKind === 'heraldReveal') {
         breakdown.choice = action.value === 'yes'
           ? cardDefinitionValue(q.aiHint.card && q.aiHint.card.def) + 3
@@ -1469,7 +1528,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (/lose|gubi|sacrifice|žrtvuj|discard|odbaci/.test(label)) breakdown.choice -= 1.5;
       }
     } else if (action.kind === 'chooseMulti') {
-      if (q && q.aiHint && q.aiHint.kind === 'farewellModes') {
+      if (q && q.aiHint && q.aiHint.kind === 'collectiveEffort') {
+        const selected = new Set((action.options || []).map(option => Number(option.key)));
+        if (selected.has(0)) {
+          breakdown.choice += Math.max(0, ...game.bf().filter(card => card.is('Creature') && card.power >= 4)
+            .map(card => card.ctrl === player ? -permanentGameValue(game, card, player) : permanentGameValue(game, card, player)));
+        }
+        if (selected.has(1)) {
+          breakdown.choice += Math.max(0, ...game.bf().filter(card => card.is('Enchantment'))
+            .map(card => card.ctrl === player ? -permanentGameValue(game, card, player) : permanentGameValue(game, card, player)));
+        }
+        if (selected.has(2)) breakdown.choice += game.creatures(player).length * 2.2;
+        const extra = Math.max(0, selected.size - 1);
+        const tapCosts = game.creatures(player).filter(card => !card.tapped)
+          .map(card => permanentGameValue(game, card, player)).sort((a, b) => a - b).slice(0, extra);
+        if (tapCosts.length < extra) breakdown.safety -= 1000;
+        else breakdown.choice -= tapCosts.reduce((sum, value) => sum + value * 0.22, 0);
+      } else if (q && q.aiHint && q.aiHint.kind === 'farewellModes') {
         for (const option of action.options || []) {
           const index = Number(option.key);
           if (index === 3) {

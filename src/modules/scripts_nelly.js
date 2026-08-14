@@ -557,7 +557,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         g.addCounters(keep, 'vow', 1, true);
         for (const c of mine.slice()) if (c !== keep) await g.sacrifice(q, c);
         if (q !== you) {
-          g.untilEffects.push({ kind: 'cantAttackPlayerCard', iid: keep.iid, notPlayer: you, expires: 'never' });
+          g.untilEffects.push({
+            kind: 'cantAttackPlayerCard', iid: keep.iid, timestamp: keep.timestamp,
+            notPlayer: you, expires: 'never', whileCounter: 'vow',
+          });
         }
       }
     },
