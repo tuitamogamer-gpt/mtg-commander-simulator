@@ -62,6 +62,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return U.mv(this.def.cost || '', this.castMeta && this.castMeta.x || 0);
     }
     get colors() {
+      if (this.cur && this.cur.colors) return this.cur.colors;
       if (this.def.colorsOverride) return this.def.colorsOverride;
       return U.colorsOfCost(this.def.cost || '');
     }
@@ -517,6 +518,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async fireLeaveAndDie(card, snap, died) {
+      // Prepared spell-kopija postoji samo dok je izvor prepared na bojnom
+      // polju. Ako izvor ode prije castanja, kopija iz egzila prestaje postojati.
+      if (card.meta && card.meta.preparedCopy) {
+        const preparedCopy = this.byIid(card.meta.preparedCopy);
+        if (preparedCopy && preparedCopy.zone === 'exile') {
+          this.remove(preparedCopy);
+          preparedCopy.zone = 'ceased';
+        }
+        card.meta.prepared = false;
+        delete card.meta.preparedCopy;
+      }
       this.recalc();
       await this.emit('lto', { card, snap });
       if (died) {
@@ -1342,6 +1354,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const d = c.def;
         const cur = {
           types: d.types.slice(), subtypes: d.subtypes.slice(), super: (d.super || []).slice(),
+          colors: d.colorsOverride ? d.colorsOverride.slice() : U.colorsOfCost(d.cost || ''),
           kw: new Set(d.kws || []),
           power: 0, toughness: 0, basePower: 0, baseToughness: 0,
           cantAttack: false, cantBlock: false, cantSacrifice: false, mustAttack: false,
@@ -1508,10 +1521,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const found = this.collectTriggers(name, data || {});
       for (const { card, t, ctrlOverride } of found) {
         if (t.oncePerTurn) card.meta['_once_' + t.on] = this.turnNo;
-        // Veyran doubling: magecraft-style triggers fire twice
+        // Veyran doubles every permanent trigger caused by casting/copying an
+        // instant or sorcery. Prowess lives on `castNonCreature`, Manaform on
+        // `cast`, and other engines use castFirst/castSecond.
         let times = 1;
-        if ((name === 'castIS' || name === 'spellCopied') && data && (data.player === card.ctrl || data.ctrl === card.ctrl)) {
-          if (this.bf().some(v => v.def.doublesMagecraft && v.ctrl === card.ctrl)) times = 2;
+        const castOrCopyIS = data && data.isInstantSorcery &&
+          (name === 'spellCopied' || name === 'targeted' || name === 'cast' || name.startsWith('cast'));
+        const castOrCopyController = data && (data.player || data.ctrl || data.byPlayer);
+        if (castOrCopyIS && castOrCopyController === card.ctrl) {
+          times += this.bf().filter(v => v.def.doublesMagecraft && v.ctrl === card.ctrl).length;
         }
         for (const doubler of this.bf()) {
           if (doubler.ctrl === card.ctrl && doubler.def.doubleTriggerFilter &&
@@ -1786,7 +1804,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             ctx.wardTargets.push({ target: t, ward: Object.assign({}, t.cur.wardCost) });
           }
         }
-        for (const t of picked) if (t && t.iid !== undefined && t !== src) targetedNow.push(t);
+        for (const t of picked) if (t && t.iid !== undefined && t !== src && !targetedNow.includes(t)) targetedNow.push(t);
         if (max === 1) ctx.targets.push(picked[0]);
         else ctx.targets.push(picked);
       }
@@ -1794,8 +1812,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // niko nije emitovao pa je okidač bio mrtav. Emituje se TEK kad su sve
       // mete izabrane: usred petlje bi okidač mogao promijeniti stanje table
       // dok se ostale mete još biraju.
+      const isSpell = !!(ctx.so && ctx.so.kind === 'spell');
+      const isInstantSorcery = isSpell && !!(src && (src.is('Instant') || src.is('Sorcery') ||
+        ctx.so.castOpts && ctx.so.castOpts.adventure &&
+          /Instant|Sorcery/.test(ctx.so.castOpts.types || src.def.adventure && src.def.adventure.types || '')));
       for (const t of targetedNow) await this.emit('targeted', {
-        card: t, byPlayer: ctrl, src, isSpell: !!(ctx.so && ctx.so.kind === 'spell'),
+        card: t, byPlayer: ctrl, src, isSpell, isInstantSorcery, so: ctx.so || null,
       });
       return true;
     }

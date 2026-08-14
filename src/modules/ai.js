@@ -602,7 +602,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (enemyPerms.length) return [enemyPerms[0]];
           return pick(cands);
         }
-        case 'buff': case 'copyBestToken': case 'octavia': {
+        case 'buff': case 'copy': case 'copyBestToken': case 'octavia': {
           if (goal === 'octavia') {
             const smallMine = myPerms.filter(c => c.is('Creature')).sort((a, b) => a.power - b.power);
             if (smallMine.length) return [smallMine[0]];
@@ -612,6 +612,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             return [sorted[0]];
           }
           return pick(cands);
+        }
+        case 'tap': {
+          return pick(enemyPerms.length ? enemyPerms : byThreatDesc);
+        }
+        case 'magmaOpusDamage': {
+          const chosen = [];
+          let left = 4;
+          const killable = enemyPerms.filter(card => card.is('Creature') || card.is('Planeswalker'))
+            .sort((a, b) => this.permThreat(g, b) - this.permThreat(g, a));
+          for (const card of killable) {
+            const need = Math.max(1, card.toughness - card.damage);
+            if (need <= left && chosen.length < max) { chosen.push(card); left -= need; }
+          }
+          if (chosen.length) return chosen;
+          if (oppPlayers.length) return [this.pickOppPlayer(g, oppPlayers)];
+          return min ? pick(cands) : [];
         }
         case 'chargeCounter': {
           const score = card => {
@@ -768,6 +784,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'bestCard': case 'reunion': case 'reanimate': {
           return byValDesc.slice(0, Math.max(min, Math.min(max, 1) || 1)).slice(0, max);
         }
+        case 'brudicladToken': {
+          const score = card => this.permThreat(g, card) + (card.def.mana ? 1.5 : 0);
+          const sorted = from.slice().sort((a, b) => score(b) - score(a));
+          return sorted.length ? [sorted[0]] : [];
+        }
+        case 'danceFreeCasts': {
+          return byValDesc.filter(card => this.cardValue(g, card) > 1.5).slice(0, max);
+        }
+        case 'digBottomOrder': return byValAsc.slice(0, max);
         case 'castFreeUpTo': return byValDesc.slice(0, max);
         case 'hideaway': {
           return [byValDesc[0]];
@@ -1000,11 +1025,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (killable && keys.includes('1')) return '1';
           return counters > 0 && keys.includes('0') ? '0' : keys[0];
         }
+        case 'demonstrate': {
+          const card = q.aiHint && q.aiHint.card;
+          if (card && card.name === 'Replication Technique') {
+            const mine = g.bf().filter(permanent => permanent.ctrl === this.p && !permanent.is('Land'));
+            return mine.some(permanent => this.permThreat(g, permanent) >= 4) && keys.includes('yes') ? 'yes' : 'no';
+          }
+          return keys.includes('yes') ? 'yes' : keys[0];
+        }
+        case 'danceContinue': return (q.aiHint && q.aiHint.total || 0) < 10 && keys.includes('yes') ? 'yes' : 'no';
+        case 'prismariCharm': {
+          const killable = g.bf().some(permanent => permanent.ctrl !== this.p && permanent.is('Creature') && permanent.toughness - permanent.damage <= 1);
+          if (killable && keys.includes('1')) return '1';
+          const threat = g.bf().some(permanent => permanent.ctrl !== this.p && !permanent.is('Land') && this.permThreat(g, permanent) >= 4);
+          if (threat && keys.includes('2')) return '2';
+          return keys.includes('0') ? '0' : keys[0];
+        }
         case 'freeCast': return 'yes';
         case 'tataruDraw': return 'yes';
         case 'kicker': return 'yes';
         case 'offspring': return 'yes';
-        case 'newTargets': return 'no';
+        case 'newTargets': {
+          const so = q.aiHint && q.aiHint.so;
+          if (so) {
+            const specs = so.targetSpecs || g.spellTargetSpecs(so.card, so.castOpts || {}, this.p);
+            if (!g.targetsStillOk(so.targets || [], specs, so.card, this.p) && keys.includes('yes')) return 'yes';
+          }
+          return keys.includes('no') ? 'no' : keys[0];
+        }
         case 'gearhulk': {
           const caster = q.aiHint.caster;
           // let them draw if we're healthy, else take mill+damage? Opposite: mill+dmg hurts us. Draw3 helps them.
@@ -1030,7 +1078,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (card && this.permThreat(g, card) < 4 && this.p.life > 12) return keys.find(k => k === 'sac') || keys[0];
           return keys.find(k => k === 'dmg') || keys[0];
         }
-        case 'mode': case 'modes': case 'shadrix': case 'rootcast': {
+        case 'mode': {
+          const card = q.aiHint && q.aiHint.card;
+          if (card && card.name === 'Prismari Charm') {
+            const killable = g.bf().some(permanent => permanent.ctrl !== this.p && permanent.is('Creature') && permanent.toughness - permanent.damage <= 1);
+            if (killable && keys.includes('1')) return '1';
+            const threat = g.bf().some(permanent => permanent.ctrl !== this.p && !permanent.is('Land') && this.permThreat(g, permanent) >= 4);
+            if (threat && keys.includes('2')) return '2';
+            if (keys.includes('0')) return '0';
+          }
+          if (card && card.name === 'Abrade') {
+            const artifact = g.bf().filter(permanent => permanent.ctrl !== this.p && permanent.is('Artifact'))
+              .sort((a, b) => this.permThreat(g, b) - this.permThreat(g, a))[0];
+            const creature = g.bf().filter(permanent => permanent.ctrl !== this.p && permanent.is('Creature') && permanent.toughness - permanent.damage <= 3)
+              .sort((a, b) => this.permThreat(g, b) - this.permThreat(g, a))[0];
+            if (artifact && (!creature || this.permThreat(g, artifact) > this.permThreat(g, creature)) && keys.includes('1')) return '1';
+            if (creature && keys.includes('0')) return '0';
+          }
+          return keys[Math.floor(this.r(g) * keys.length)];
+        }
+        case 'modes': case 'shadrix': case 'rootcast': {
           return keys[Math.floor(this.r(g) * keys.length)];
         }
         default: {
@@ -1044,6 +1111,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     chooseMulti(g, q) {
       const min = q.min ?? 1, max = Math.min(q.max ?? 1, q.options.length);
       const keys = q.options.map(o => o.key);
+      if (q.aiHint && q.aiHint.kind === 'prismariCommand') {
+        const scores = new Map(keys.map(key => [key, 0]));
+        if (scores.has('0')) {
+          const killable = g.bf().filter(card => card.ctrl !== this.p && card.is('Creature') && card.toughness - card.damage <= 2);
+          scores.set('0', killable.length ? 6 : 1.5);
+        }
+        if (scores.has('1')) scores.set('1', this.p.hand.length <= 3 ? 5 : 3);
+        if (scores.has('2')) scores.set('2', g.turnNo < 14 ? 5 : 2.5);
+        if (scores.has('3')) {
+          const artifact = g.bf().filter(card => card.ctrl !== this.p && card.is('Artifact'))
+            .sort((a, b) => this.permThreat(g, b) - this.permThreat(g, a))[0];
+          scores.set('3', artifact ? 4 + this.permThreat(g, artifact) : 0);
+        }
+        return keys.slice().sort((a, b) => scores.get(b) - scores.get(a)).slice(0, max);
+      }
       const n = Math.max(min, Math.min(max, 2));
       const out = [];
       const pool = keys.slice();
@@ -1070,6 +1152,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (kind === 'fireCovenantDamage') {
         const target = q.aiHint && q.aiHint.target;
         return target ? Math.max(q.min, Math.min(q.max, Math.max(1, target.toughness - target.damage))) : q.min;
+      }
+      if (kind === 'magmaOpusDamage') {
+        const target = q.aiHint && q.aiHint.target;
+        return target instanceof MTG.CardInst
+          ? Math.max(q.min, Math.min(q.max, Math.max(1, target.toughness - target.damage)))
+          : q.min;
       }
       if (kind === 'expelN') {
         // destroy as much of opponents' board as possible while keeping mine

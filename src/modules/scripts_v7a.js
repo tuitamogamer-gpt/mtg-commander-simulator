@@ -97,6 +97,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     });
   };
+  E7.exileAtNextEnd = (g, cards, you) => {
+    const iids = cards.map(c => c.iid);
+    g.delayed.push({
+      on: 'endStep', name: 'Egzilaj privremene tokene', ctrl: you,
+      run: async ctx => {
+        const remaining = iids.map(iid => ctx.g.byIid(iid))
+          .filter(card => card && card.zone === 'battlefield');
+        for (const card of remaining) await ctx.g.exileCard(card);
+      },
+    });
+  };
   E7.mobilize = async (g, card, n) => {
     // napravi n tapovanih 1/1 red Warrior tokena koji napadaju; žrtvuj na sljedećem end stepu
     if (!g.combat || !(card.attacking)) return;

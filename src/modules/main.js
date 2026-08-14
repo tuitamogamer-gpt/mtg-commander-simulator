@@ -894,6 +894,96 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'prismariHuman') {
+      void (async () => {
+        const take = (name, owner = ui.me, zone = 'battlefield') => {
+          const zones = [owner.command, owner.hand, owner.library, owner.graveyard, owner.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], owner);
+          g.remove(card);
+          card.ctrl = owner; card.zone = zone; card.sick = false;
+          if (zone === 'battlefield') g.battlefield.push(card);
+          else owner[zone].push(card);
+          return card;
+        };
+        const opponent = g.players.find(player => player !== ui.me && !player.lost);
+        if (!opponent) throw new Error('Prismari human scenario zahtijeva protivnika');
+        take('Veyran, Voice of Duality');
+        take('Storm-Kiln Artist');
+        take('Manaform Hellkite');
+        const goldspan = take('Goldspan Dragon');
+        const ownRock = take('Arcane Signet');
+        const enemyCreature = take('Stormcatch Mentor', opponent);
+        const enemyRock = take('Sol Ring', opponent);
+        const opus = take('Magma Opus', ui.me, 'hand');
+        ui.me.pool.C = 6; ui.me.pool.U = 1; ui.me.pool.R = 1;
+        g.turnPlayer = ui.me; g.turnNo = 20; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        ui.toast('Prismari human: Magma Opus — izaberi Goldspan + protivničko stvorenje za štetu, zatim oba mana artefakta za tapovanje i podijeli 4 štete.');
+        ui.render();
+        if (!await g.castSpell(ui.me, opus, { from: 'hand' })) throw new Error('Magma Opus cast nije uspio');
+        const dragons = g.creatures(ui.me).filter(card => card.isToken && card.hasSub('Dragon'));
+        const treasures = g.bf().filter(card => card.ctrl === ui.me && card.hasSub('Treasure'));
+        g.lg(`Prismari human provjera: Manaform zmajevi=${dragons.length}; Treasure=${treasures.length}; Goldspan šteta=${goldspan.damage}; protivnički ${enemyCreature.name} zona=${enemyCreature.zone}; tap artefakti=${Number(ownRock.tapped) + Number(enemyRock.tapped)}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Prismari human scenario: mete, podjela štete, Veyran, magecraft, Manaform i Goldspan su razriješeni.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'prismariAI') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Prismari Artistry');
+        if (!bot) throw new Error('prismariAI scenario zahtijeva smokeAIDeck=Prismari Artistry');
+        const takeBot = (name, zone = 'battlefield') => {
+          const zones = [bot.command, bot.hand, bot.library, bot.graveyard, bot.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], bot);
+          g.remove(card);
+          card.ctrl = bot; card.zone = zone; card.sick = false;
+          if (zone === 'battlefield') g.battlefield.push(card);
+          else bot[zone].push(card);
+          return card;
+        };
+        const addHuman = name => {
+          const card = new MTG.CardInst(MTG.DEFS[name], ui.me);
+          card.ctrl = ui.me; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        takeBot('Veyran, Voice of Duality');
+        takeBot('Storm-Kiln Artist');
+        takeBot('Manaform Hellkite');
+        takeBot('Goldspan Dragon');
+        takeBot('Brudiclad, Telchor Engineer');
+        await g.makeTokens('treasure', bot);
+        await g.makeTokens('elementalUR44', bot);
+        addHuman('Stormcatch Mentor');
+        addHuman('Harmonic Prodigy');
+        addHuman('Sol Ring');
+        addHuman('Arcane Signet');
+        const opus = takeBot('Magma Opus', 'hand');
+        bot.pool.C = 6; bot.pool.U = 1; bot.pool.R = 1;
+        g.turnPlayer = bot; g.turnNo = 21; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        if (!await g.castSpell(bot, opus, { from: 'hand' })) throw new Error('Prismari AI nije castovao Magma Opus');
+
+        g.phase = 'combat'; g.step = 'begin';
+        await g.emit('beginCombat', { player: bot });
+        await g.flushTriggers();
+        await g.priorityRound(bot);
+
+        g.phase = 'main2'; g.step = 'main';
+        const command = takeBot('Prismari Command', 'hand');
+        bot.pool.C = 1; bot.pool.U = 1; bot.pool.R = 1;
+        if (!await g.castSpell(bot, command, { from: 'hand' })) throw new Error('Prismari AI nije castovao Prismari Command');
+        const recent = (g.aiDecisionLog || []).filter(entry => entry.playerName === bot.name).slice(-20);
+        const tokenNames = [...new Set(g.bf().filter(card => card.ctrl === bot && card.isToken).map(card => card.name))];
+        g.lg(`Prismari AI provjera: tokeni=${tokenNames.join(', ') || 'nema'}; odluke=${recent.length}; fallback=${recent.some(entry => entry.fallback) ? 'DA' : 'NE'}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Prismari AI scenario: Magma Opus, Veyran/magecraft, Brudiclad i Command odluke su razriješene.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     if (smokeScenario === 'marduHuman') {
       void (async () => {
         const take = name => {

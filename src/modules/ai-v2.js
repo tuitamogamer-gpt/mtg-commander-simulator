@@ -812,7 +812,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (['Darksteel Reactor', 'Lux Artillery', 'Moxite Refinery'].includes(target.name)) return -50;
         return 5 - value * 0.16 - Object.values(target.counters).reduce((sum, n) => sum + Math.max(0, n), 0);
       }
-      if (/removal|damage|destroy|exile|bounce|counter/i.test(hint)) return hostile ? value : -value * 1.8;
+      // Tapovanje je za Magma Opus obavezna, neprijateljska interakcija. Bez
+      // eksplicitnog svrstavanja u hostile ciljeve evaluator je mogao dati
+      // viši zbir vlastitim Veyran/Storm-Kiln metama samo zato što su vrednije.
+      if (/removal|damage|destroy|exile|bounce|counter|tap/i.test(hint)) return hostile ? value : -value * 1.8;
       if (/buff|pump|protect|copy|recur|return|attach|equip/i.test(hint)) return hostile ? -value : value;
       return hostile ? value * 0.7 : value * 0.5;
     }

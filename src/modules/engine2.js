@@ -606,6 +606,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.castableList = function (p) {
     // returns [{card, from, alt}] of spells p could cast now (mana-feasible)
+    // Prepared kopiju može castati trenutni kontrolor prepared permanenta,
+    // čak i kada se kontrola promijenila nakon pripreme.
+    for (const owner of this.players) for (const card of owner.exile) {
+      if (!card.meta || !card.meta.preparedBy) continue;
+      const preparer = this.byIid(card.meta.preparedBy);
+      if (preparer && preparer.zone === 'battlefield' && preparer.meta.prepared) card.meta.playableBy = preparer.ctrl;
+    }
     const out = [];
     const consider = (card, from, alt) => {
       if (card.is('Land')) return;
@@ -808,7 +815,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const yes = await p.controller.decide(this, {
       type: 'chooseOption', prompt: `Demonstrate: kopiraj ${card.name}? (izabrani protivnik takođe dobija kopiju)`,
       options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
-      aiHint: { kind: 'freeCast', card },
+      aiHint: { kind: 'demonstrate', card },
     });
     if (yes !== 'yes') return false;
     const opponent = await MTG.E.chooseOpponent(this, p, {
@@ -914,7 +921,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let mode = null;
     if (d.modes && !(castOpts.overloaded)) {
       const pickN = modePickFor(this, p, card, Object.assign({}, castOpts, { _kicked: kicked }));
-      const opts2 = d.modes.list.map((m, i) => ({ key: String(i), label: m.label }));
+      const opts2 = d.modes.list.map((m, i) => ({ mode: m, index: i }))
+        .filter(({ mode: candidateMode }) => {
+          const candidateTargets = modeTargetsFor(this, candidateMode, card, Object.assign({}, castOpts, { xVal }));
+          return candidateTargets.every(spec => spec.upTo ||
+            this.legalTargets(spec, card, p).length >= (spec.count ?? 1));
+        })
+        .map(({ mode: candidateMode, index }) => ({ key: String(index), label: candidateMode.label }));
+      if (!opts2.length) return false;
+      if (pickN !== 'any' && !d.modes.repeats && opts2.length < pickN) return false;
       if (pickN === 1) {
         const k = await p.controller.decide(this, {
           type: 'chooseOption', prompt: `${card.name}: izaberi mod`, options: opts2,
@@ -927,7 +942,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           options: opts2, min: pickN === 'any' ? (d.modes.min ?? 1) : pickN, max: pickN === 'any' ? d.modes.list.length : pickN,
           repeats: d.modes.repeats, aiHint: Object.assign({ kind: 'modes', card, x: xVal }, d.modes.aiHint || {}),
         });
-        mode = ks.map(k => parseInt(k, 10));
+        // Modalne instrukcije se izvršavaju redoslijedom odštampanim na karti,
+        // ne redoslijedom kojim je igrač kliknuo izabrane modove.
+        mode = ks.map(k => parseInt(k, 10)).sort((a, b) => a - b);
       }
       // Spree modovi su dodatni troškovi, ne tekst koji se obračunava tek na
       // rezoluciji. Svaki izabrani mod povećava generički dio cijene.
@@ -974,6 +991,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (typeof d.prepareTargets === 'function') {
       const prepared = await d.prepareTargets({ g: this, src: card, you: p, so, targets: so.targets });
       if (prepared === false) return false;
+    }
+
+    // Strive je dodatna cijena određena nakon izbora meta: prva meta je u
+    // osnovnoj cijeni, a svaka sljedeća dodaje odštampani strive trošak.
+    if (d.strive && !castOpts.free) {
+      const chosenTargets = (so.targets || []).flat().filter(Boolean).length;
+      const extraTargets = Math.max(0, chosenTargets - 1);
+      if (extraTargets > 0) {
+        const striveCost = U.parseCost(d.strive);
+        cost.generic += striveCost.generic * extraTargets;
+        for (let i = 0; i < extraTargets; i++) cost.pips = cost.pips.concat(striveCost.pips);
+      }
+      so.striveTargets = chosenTargets;
     }
 
     // additional costs
@@ -1264,9 +1294,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (let i = 0; i < gn; i++) await this.copySpell(so, p, { mayNewTargets: false });
       }
     }
-    // demonstrate (Creative/Replication Technique)
+    // Demonstrate je stvarni cast trigger: ide na stack i kopira original tek
+    // kada se rezolvira, pa protivnici mogu odgovoriti prije nastanka kopija.
     if (d.demonstrate && !castOpts.free && !so.isCopy) {
-      await this.applyDemonstrate(p, so, card);
+      this.queueTrigger({
+        src: card, ctrl: p, name: 'Demonstrate', data: { so },
+        run: async triggerCtx => {
+          const original = triggerCtx.data.so;
+          if (triggerCtx.g.stack.includes(original)) {
+            await triggerCtx.g.applyDemonstrate(triggerCtx.you, original, original.card);
+          }
+        },
+      });
     }
     // cascade (own keyword, granted next-spell effects, battlefield grants like Wildsear/Rain of Riches)
     let cascades = 0;
@@ -1344,6 +1383,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       x: so.x, mode: so.mode, castOpts: so.castOpts, kicked: so.kicked, copyOf: so, isCopy: true,
       targetSpecs: so.targetSpecs || null,
       counterDistribution: so.counterDistribution ? so.counterDistribution.map(entry => Object.assign({}, entry)) : null,
+      damageDivision: so.damageDivision ? so.damageDivision.map(entry => Object.assign({}, entry)) : null,
     };
     // forceTarget: kopija ide na tačno određenu metu (Mirrorwing Dragon)
     if (opts.forceTarget) {
@@ -1353,6 +1393,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let wardTargets = (copy.targets || []).flat().filter(target =>
       target instanceof MTG.CardInst && target.ctrl !== ctrl && target.cur && target.cur.wardCost)
       .map(target => ({ target, ward: Object.assign({}, target.cur.wardCost) }));
+    let targetsWereRepicked = false;
     // new targets?
     if (opts.mayNewTargets && so.targets.length) {
       const specs = so.targetSpecs || this.spellTargetSpecs(so.card, so.castOpts || {}, ctrl);
@@ -1363,9 +1404,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           aiHint: { kind: 'newTargets', so },
         });
         if (redo === 'yes') {
+          // Kopija zadržava broj targeta iz originalnog spella. "May choose new
+          // targets" ne dopušta ponovni izbor koliko meta spell ima.
+          const copyTargetSpecs = specs.map((spec, index) => {
+            const current = so.targets[index];
+            const count = Array.isArray(current) ? current.filter(Boolean).length : (current ? 1 : 0);
+            return Object.assign({}, spec, { count, min: count, upTo: false });
+          });
           const ctx = { g: this, src: so.card, you: ctrl, so: copy };
-          const ok = await this.pickTargets(ctx, specs, so.card, ctrl);
-          if (ok) { copy.targets = ctx.targets; wardTargets = ctx.wardTargets; }
+          const ok = await this.pickTargets(ctx, copyTargetSpecs, so.card, ctrl);
+          if (ok) { copy.targets = ctx.targets; wardTargets = ctx.wardTargets; targetsWereRepicked = true; }
         }
       }
     }
@@ -1374,11 +1422,39 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       copy.counterDistribution = (copy.targets || []).flat().filter(Boolean)
         .slice(0, amounts.length).map((target, index) => ({ iid: target.iid, n: amounts[index] }));
     }
+    if (copy.damageDivision) {
+      const amounts = copy.damageDivision.map(entry => entry.n);
+      const damageTargets = Array.isArray(copy.targets[0]) ? copy.targets[0] : (copy.targets || []).flat().filter(Boolean);
+      copy.damageDivision = damageTargets.slice(0, amounts.length).map((target, index) => ({
+        iid: target.iid,
+        playerIdx: target instanceof MTG.Player ? target.idx : null,
+        n: amounts[index],
+      }));
+    }
+    // Zadržana ili forceTarget meta postaje metom nove spell-kopije jednako kao
+    // i ručno retargetovana meta. pickTargets je event već emitovao samo kada je
+    // retargetovanje stvarno uspjelo.
+    if (!targetsWereRepicked) {
+      const seen = new Set();
+      const isInstantSorcery = so.card.is('Instant') || so.card.is('Sorcery') ||
+        !!(so.castOpts && so.castOpts.adventure &&
+          /Instant|Sorcery/.test(so.castOpts.types || so.card.def.adventure && so.card.def.adventure.types || ''));
+      for (const target of (copy.targets || []).flat().filter(Boolean)) {
+        if (!(target instanceof MTG.CardInst) || seen.has(target.iid)) continue;
+        seen.add(target.iid);
+        await this.emit('targeted', {
+          card: target, byPlayer: ctrl, src: so.card, isSpell: true, isInstantSorcery, so: copy,
+        });
+      }
+    }
     this.stack.push(copy);
     this.queueWardTriggers(copy, { wardTargets });
     this.note('stack', {});
     this.notifyEffect(`📋 ${ctrl.name} kopira spell ${so.name}.`, { kind: 'spellCopy', spell: copy, player: ctrl });
-    await this.emit('spellCopied', { so: copy, ctrl, isInstantSorcery: so.card.is('Instant') || so.card.is('Sorcery') });
+    const copiedIS = so.card.is('Instant') || so.card.is('Sorcery') ||
+      !!(so.castOpts && so.castOpts.adventure &&
+        /Instant|Sorcery/.test(so.castOpts.types || so.card.def.adventure && so.card.def.adventure.types || ''));
+    await this.emit('spellCopied', { so: copy, ctrl, isInstantSorcery: copiedIS });
     return copy;
   };
 
@@ -2187,6 +2263,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!ok) { if (cost.tap) c.tapped = false; return false; }
     }
     if (cost.life) await this.loseLife(p, cost.life, 'cost');
+    if (cost.returnSelf) {
+      if (c.zone !== 'battlefield' || c.ctrl !== p) return false;
+      await this.move(c, 'hand');
+    }
     if (cost.sacSelf) {
       if (!this.canSacrifice(c)) return false;
       ctx.sacdSelf = this.snapshot(c);
@@ -2678,6 +2758,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         c.isCopyOf = null;
         delete c.meta.cursedMirrorOriginal;
         delete c.meta.cursedMirrorTurn;
+      }
+      if (c.meta.temporaryCopyTurn === this.turnNo && c.meta.characteristicOriginalDef) {
+        c.def = c.meta.characteristicOriginalDef;
+        c.isCopyOf = null;
+        delete c.meta.characteristicOriginalDef;
+        delete c.meta.temporaryCopyTurn;
       }
     }
     this.delayed = this.delayed.filter(d => d.expires !== 'eot');

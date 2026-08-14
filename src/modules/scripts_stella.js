@@ -100,18 +100,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Žrtvuj: kopije po commander castovima', cost: { mana: '{2}{U}', sacSelf: true },
       run: async ctx => {
-        const n = ctx.you.commanderCasts;
-        if (!n) return;
         const you = ctx.you;
         ctx.g.delayed.push({
           on: 'castIS', once: true, expires: 'eot', ctrl: you, name: 'Thunderclap kopije',
           filter: (g, d) => d.player === you,
           run: async c2 => {
             const so = c2.data.so;
+            if (!c2.g.stack.includes(so)) return;
+            const n = you.commanderCasts;
             for (let i = 0; i < n; i++) await c2.g.copySpell(so, you, { mayNewTargets: true });
           },
         });
-        ctx.g.lg(`Sljedeći I/S će biti kopiran ×${n}.`);
+        ctx.g.lg('Sljedeći I/S se kopira po broju dosadašnjih castova komandera.');
       },
     }],
   });
@@ -251,7 +251,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       for (const c of top) p.library.splice(p.library.indexOf(c), 1);
       for (const c of picked) { c.zone = 'hand'; p.hand.push(c); }
-      for (const c of top) if (!picked.includes(c)) { c.zone = 'library'; p.library.unshift(c); }
+      const rest = top.filter(c => !picked.includes(c));
+      const proposed = rest.length ? await p.controller.decide(g, {
+        type: 'chooseCards', from: rest, min: rest.length, max: rest.length,
+        prompt: 'Dig Through Time: redoslijed na dnu (prva karta najdublje)',
+        aiHint: { kind: 'digBottomOrder' },
+      }) : [];
+      const order = Array.isArray(proposed) && proposed.length === rest.length && proposed.every(card => rest.includes(card))
+        ? proposed : rest;
+      for (const card of order) card.zone = 'library';
+      p.library.unshift(...order);
     },
   };
   SC['Galvanic Iteration'] = {
@@ -506,10 +515,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Volcanic Torrent'] = {
     cascade: true,
     resolve: async ctx => {
-      const x = ctx.g.totalSpellsThisTurn();
+      const x = ctx.you.turnState.spellsCast;
       for (const c of ctx.g.bf().filter(c => (c.is('Creature') || c.is('Planeswalker')) && c.ctrl !== ctx.you).slice()) {
-        await ctx.g.damageCreature(ctx.src, c, x);
+        await ctx.g.damageCreature(ctx.src, c, x, { deferSBA: true });
       }
+      await ctx.g.checkSBA();
     },
   };
   SC['Windfall'] = {

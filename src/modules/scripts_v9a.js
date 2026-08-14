@@ -110,19 +110,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'beginCombat', desc: 'Myr + uniformisanje', filter: (g, self, d) => d.player === self.ctrl,
       run: async ctx => {
         await ctx.g.makeTokens('myrU21', ctx.you);
-        const toks = ctx.g.bf().filter(c => c.ctrl === ctx.you && c.isToken && c.is('Creature'));
+        const toks = ctx.g.bf().filter(c => c.ctrl === ctx.you && c.isToken);
         if (toks.length < 2) return;
-        const best = toks.slice().sort((a, b) => b.power - a.power)[0];
-        if (best.power >= 3) {
-          const base = best.isCopyOf || best.def;
-          for (const t of toks) {
-            if (t === best) continue;
-            t.isCopyOf = base;
-            t.def = Object.assign({}, base);
-          }
-          ctx.g.recalc();
-          ctx.g.lg(`Brudiclad: svi tokeni postaju ${best.name}!`);
+        const picked = await ctx.you.controller.decide(ctx.g, {
+          type: 'chooseCards', from: toks, min: 0, max: 1,
+          prompt: 'Brudiclad: izaberi token čiju kopiju postaju svi ostali tokeni',
+          aiHint: { kind: 'brudicladToken', source: ctx.src },
+        });
+        const chosen = picked[0];
+        if (!chosen || !toks.includes(chosen)) return;
+        const base = chosen.isCopyOf || chosen.def;
+        for (const token of toks) {
+          if (token === chosen) continue;
+          token.isCopyOf = base;
+          token.def = Object.assign({}, base);
         }
+        ctx.g.recalc();
+        ctx.g.lg(`Brudiclad: svi ostali tokeni postaju ${chosen.name}!`);
       },
     }],
   };
@@ -156,7 +160,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Galazeth Prismari'] = {
     triggers: [{ on: 'etb', desc: 'Treasure', filter: etbSelf, run: async ctx => { await ctx.g.makeTokens('treasure', ctx.you); } }],
     grantMana: {
-      filter: (g, x) => x.is('Artifact') && !x.def.mana,
+      filter: (g, x) => x.is('Artifact'),
       produce: [{ ANY: true, n: 1 }],
       restrict: (g, forSpell) => forSpell && forSpell.card && (forSpell.card.is('Instant') || forSpell.card.is('Sorcery')),
     },
@@ -168,7 +172,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }, {
       // druga polovina okidača: "or becomes the target of a spell".
       // Ranije je nedostajala jer 'targeted' event nije postojao.
-      on: 'targeted', desc: 'Treasure (ciljan)', filter: (g, self, d) => d.card === self,
+      on: 'targeted', desc: 'Treasure (ciljan)', filter: (g, self, d) => d.card === self && d.isSpell,
       run: async ctx => { await ctx.g.makeTokens('treasure', ctx.you); },
     }],
     // "Treasures you control have '{T}, Sacrifice this artifact: Add two mana
@@ -197,8 +201,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         },
       },
       {
-        on: 'combatDamageToPlayer', desc: "Prepare Maestro's Gift", oncePerTurn: true,
-        filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card.isToken,
+        on: 'combatDamageGroupToPlayer', desc: "Prepare Maestro's Gift",
+        filter: (g, self, d) => d.cards.some(card => card.ctrl === self.ctrl && card.isToken),
         run: async ctx => {
           prepareSpell(ctx.g, ctx.src, {
             name: "Maestro's Gift", cost: '{3}{U}{R}', types: ['Sorcery'],
@@ -224,7 +228,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Composeri neblokabilni', cost: { mana: '{2}{U}' },
       run: async ctx => {
-        for (const c of ctx.g.creatures(ctx.you).filter(x => x.name === 'Leitmotif Composer')) {
+        for (const c of ctx.g.creatures().filter(x => x.name === 'Leitmotif Composer')) {
           const iid = c.iid;
           ctx.g.untilEffects.push({
             expires: 'eot', kind: 'unblockable',
@@ -241,13 +245,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'cast', desc: 'X/X zmaj-iluzija',
       filter: (g, self, d) => d.player === self.ctrl && !d.card.is('Creature') && !d.card.is('Land'),
       run: async ctx => {
-        const x = ctx.data.mv || 0;
-        if (x <= 0) return;
+        const x = ctx.data.so && ctx.data.so.manaSpent || 0;
         const def = Object.assign({}, TK.elementalUR, { name: 'Dragon Illusion', subtypes: ['Dragon', 'Illusion'], power: String(x), toughness: String(x), kws: ['flying', 'haste'], colorsOverride: ['R'] });
         const made = await ctx.g.makeTokens(def, ctx.you);
-        for (const m of made) m.meta.exileEndCombat = false;
-        // egzil na kraju poteza
-        E7.sacAtNextEnd(ctx.g, made, ctx.you);
+        E7.exileAtNextEnd(ctx.g, made, ctx.you);
       },
     }],
   };
@@ -261,7 +262,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       run: async ctx => {
         const caster = ctx.data.player;
-        const others = ctx.g.creatures(caster).filter(c => c !== ctx.src);
+        const specs = ctx.data.so.targetSpecs || ctx.g.spellTargetSpecs(ctx.data.so.card, ctx.data.so.castOpts || {}, caster) || [];
+        const targetSpec = specs.find((spec, index) => {
+          const selected = ctx.data.so.targets[index];
+          return selected === ctx.src || Array.isArray(selected) && selected.includes(ctx.src);
+        });
+        const others = ctx.g.creatures(caster).filter(c => c !== ctx.src &&
+          (!targetSpec || ctx.g.legalTargets(targetSpec, ctx.data.so.card, caster).includes(c)));
         for (const c of others) {
           await ctx.g.copySpell(ctx.data.so, caster, { mayNewTargets: true, forceTarget: c });
         }
@@ -271,26 +278,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Muddle, the Ever-Changing'] = {
     triggers: [{
-      on: 'castIS', desc: 'Postani kopija + myriad', filter: (g, self, d) => d.player === self.ctrl, opt: true,
+      on: 'castIS', desc: 'Postani kopija + myriad', filter: (g, self, d) => d.player === self.ctrl,
+      targets: (g, self) => [T.yourCreature({
+        prompt: 'Muddle: kopiraj do jedno drugo nonlegendary stvorenje', upTo: true,
+        filter: (g2, card, ctrl) => card.zone === 'battlefield' && card.is('Creature') &&
+          card.ctrl === ctrl && card !== self && !(card.cur.super || []).includes('Legendary'),
+        aiHint: { goal: 'copy' },
+      })],
       run: async ctx => {
-        const cands = ctx.g.creatures(ctx.you).filter(c => c !== ctx.src && !(c.cur.super || []).includes('Legendary'));
-        if (!cands.length) return;
-        const best = cands.sort((a, b) => b.power - a.power)[0];
-        if (best.power <= ctx.src.power) return;
-        const iid = ctx.src.iid, base = best.isCopyOf || best.def;
-        ctx.g.untilEffects.push({
-          expires: 'eot', kind: 'muddle',
-          apply: (g2, bf) => {
-            const c = bf.find(y => y.iid === iid);
-            if (!c) return;
-            c.cur.basePower = parseInt(base.power || '0', 10) || 0;
-            c.cur.baseToughness = parseInt(base.toughness || '0', 10) || 0;
-            c.cur.kw.add('myriad');
-            for (const k of (base.kws || [])) c.cur.kw.add(k);
-          },
-        });
+        const target = ctx.targets[0];
+        if (!target || target.zone !== 'battlefield') return;
+        const base = target.isCopyOf || target.def;
+        if (!ctx.src.meta.characteristicOriginalDef) ctx.src.meta.characteristicOriginalDef = ctx.src.def;
+        ctx.src.meta.temporaryCopyTurn = ctx.g.turnNo;
+        ctx.src.isCopyOf = base;
+        ctx.src.def = Object.assign({}, base, { kws: [...new Set([...(base.kws || []), 'myriad'])] });
         ctx.g.recalc();
-        ctx.g.lg(`Muddle postaje ${best.name} (+myriad) do kraja poteza.`);
+        ctx.g.lg(`Muddle postaje ${target.name} (+myriad) do kraja poteza.`);
       },
     }],
   };
@@ -345,16 +349,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       {
         on: 'attacks', desc: 'Kopiraj I/S iz groblja', filter: (g, self, d) => d.card === self, opt: true,
+        targets: [{
+          zone: 'graveyard', what: 'card', upTo: true,
+          prompt: 'Egzilaj do jedan instant/sorcery iz svog groblja',
+          filter: (g, card) => card.is('Instant') || card.is('Sorcery'),
+          aiHint: { goal: 'bestGyCast' },
+        }],
         run: async ctx => {
-          const pool = ctx.you.graveyard.filter(c => c.is('Instant') || c.is('Sorcery'));
-          if (!pool.length) return;
-          const pick = await ctx.you.controller.decide(ctx.g, {
-            type: 'chooseCards', from: pool, min: 0, max: 1, prompt: 'Egzilaj i kopiraj:', aiHint: { kind: 'bestGyCast' },
+          const card = ctx.targets[0];
+          if (!card || card.zone !== 'graveyard') return;
+          await ctx.g.move(card, 'exile');
+          const cast = await ctx.you.controller.decide(ctx.g, {
+            type: 'chooseOption', prompt: `Renegade Bull: baci kopiju ${card.name} besplatno?`,
+            options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+            aiHint: { kind: 'freeCast', card },
           });
-          const c = pick[0];
-          if (!c) return;
-          ctx.g.remove(c); c.zone = 'exile'; ctx.you.exile.push(c);
-          await E.castCopyFromZone(ctx.g, ctx.you, c);
+          if (cast === 'yes') await E.castCopyFromZone(ctx.g, ctx.you, card);
         },
       },
     ],
@@ -362,30 +372,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Rionya, Fire Dancer'] = {
     triggers: [{
       on: 'beginCombat', desc: 'Kopije', filter: (g, self, d) => d.player === self.ctrl,
+      targets: (g, self) => [T.yourCreature({
+        prompt: 'Rionya: drugo stvorenje za kopiranje',
+        filter: (g2, card, ctrl) => card.zone === 'battlefield' && card.is('Creature') && card.ctrl === ctrl && card !== self,
+        aiHint: { goal: 'copy' },
+      })],
       run: async ctx => {
         const isN = ctx.you.turnState.spellsCastList.filter(x => x.card.is('Instant') || x.card.is('Sorcery')).length;
         const x = 1 + isN;
-        const cands = ctx.g.creatures(ctx.you).filter(c => c !== ctx.src);
-        if (!cands.length) return;
-        const best = cands.sort((a, b) => b.power - a.power)[0];
-        const made = [];
-        for (let i = 0; i < x; i++) made.push(...await ctx.g.copyPermanentToken(best, ctx.you, { haste: true }));
-        E7.sacAtNextEnd(ctx.g, made, ctx.you);
-        ctx.g.lg(`Rionya: ${x} kopija ${best.name}!`);
+        const target = ctx.targets[0];
+        if (!target || target.zone !== 'battlefield') return;
+        const made = await ctx.g.copyPermanentToken(target, ctx.you, { n: x, haste: true });
+        E7.exileAtNextEnd(ctx.g, made, ctx.you);
+        ctx.g.lg(`Rionya: ${x} kopija ${target.name}!`);
       },
     }],
   };
   SC['Rootha, Mercurial Artist'] = {
     abilities: [{
-      label: 'Kopiraj svoj I/S spell (vrati Roothu)', cost: { mana: '{2}' },
+      label: 'Kopiraj svoj I/S spell (vrati Roothu)', cost: { mana: '{2}', returnSelf: true },
       cond: (g, c, p) => g.stack.some(so => so.kind === 'spell' && so.ctrl === p && (so.card.is('Instant') || so.card.is('Sorcery'))),
+      targets: [{
+        zone: 'stack', what: 'spell', prompt: 'Tvoj instant/sorcery spell',
+        filter: (g, so, ctrl) => so.kind === 'spell' && so.ctrl === ctrl && (so.card.is('Instant') || so.card.is('Sorcery')),
+        aiHint: { goal: 'copySpell' },
+      }],
       run: async ctx => {
-        const so = ctx.g.stack.slice().reverse().find(s => s.kind === 'spell' && s.ctrl === ctx.you && (s.card.is('Instant') || s.card.is('Sorcery')));
+        const so = ctx.targets[0];
         if (!so) return;
-        // vrati Roothu u ruku
-        const c = ctx.src;
-        if (c.zone === 'battlefield') { ctx.g.remove(c); c.zone = 'hand'; c.owner.hand.push(c); ctx.g.recalc(); }
-        await ctx.g.copySpell(so, ctx.you, { mayNewTargets: true });
+        if (ctx.g.stack.includes(so)) await ctx.g.copySpell(so, ctx.you, { mayNewTargets: true });
       },
       aiScore: (g, c, p) => g.stack.some(so => so.kind === 'spell' && so.ctrl === p && U.mv(so.card.def.cost || '') >= 4) ? 6 : 0,
     }],
@@ -395,23 +410,47 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     costMods: [(g, self, q) => (q.player === self.ctrl && (q.card.is('Instant') || q.card.is('Sorcery'))) ? -1 : 0],
   };
   SC['Magma Opus'] = {
-    resolve: async ctx => {
-      // 4 štete raspoređene: najbolja meta(e)
-      const opps = ctx.g.bf().filter(c => c.is('Creature') && c.ctrl !== ctx.you).sort((a, b) => b.power - a.power);
+    targets: [
+      T.any({
+        prompt: 'Magma Opus: do četiri mete za podjelu 4 štete', count: 4, min: 0, upTo: true,
+        aiHint: { goal: 'magmaOpusDamage', n: 4 },
+      }),
+      T.permanent(null, {
+        prompt: 'Magma Opus: tačno dva permanenta za tapovanje', count: 2,
+        aiHint: { goal: 'tap' },
+      }),
+    ],
+    prepareTargets: async ctx => {
+      const targets = Array.isArray(ctx.targets[0]) ? ctx.targets[0] : [];
+      ctx.so.damageDivision = [];
       let left = 4;
-      for (const t of opps) {
-        if (left <= 0) break;
-        const dmg = Math.min(left, Math.max(1, t.toughness - t.damage));
-        await ctx.g.damageCreature(ctx.src, t, dmg);
-        left -= dmg;
+      for (let index = 0; index < targets.length; index++) {
+        const remaining = targets.length - index - 1;
+        const max = left - remaining;
+        const target = targets[index];
+        const chosen = index === targets.length - 1 ? left : await ctx.you.controller.decide(ctx.g, {
+          type: 'chooseX', min: 1, max, card: ctx.src,
+          prompt: `Magma Opus: šteta za ${target.name} (preostalo ${left})`,
+          aiHint: { kind: 'magmaOpusDamage', target, left, remaining },
+        });
+        const n = Math.max(1, Math.min(Number(chosen) || 1, max));
+        ctx.so.damageDivision.push({ iid: target.iid, playerIdx: target instanceof MTG.Player ? target.idx : null, n });
+        left -= n;
       }
-      if (left > 0) {
-        const o = E.eachOpp(ctx.g, ctx.you).sort((a, b) => a.life - b.life)[0];
-        if (o) await ctx.g.damagePlayer(ctx.src, o, left);
+      return true;
+    },
+    resolve: async ctx => {
+      const damageTargets = Array.isArray(ctx.targets[0]) ? ctx.targets[0] : [];
+      for (const target of damageTargets) {
+        const assignment = (ctx.so.damageDivision || []).find(entry =>
+          target instanceof MTG.Player ? entry.playerIdx === target.idx : entry.iid === target.iid);
+        if (!assignment) continue;
+        if (target instanceof MTG.Player) await ctx.g.damagePlayer(ctx.src, target, assignment.n);
+        else await ctx.g.damageCreature(ctx.src, target, assignment.n, { deferSBA: true });
       }
-      // tapuj 2
-      const tt = ctx.g.bf().filter(c => c.ctrl !== ctx.you && !c.tapped && c.is('Creature')).slice(0, 2);
-      for (const t of tt) t.tapped = true;
+      await ctx.g.checkSBA();
+      const tapTargets = Array.isArray(ctx.targets[1]) ? ctx.targets[1] : [];
+      for (const target of tapTargets) if (target.zone === 'battlefield') ctx.g.tap(target);
       await ctx.g.makeTokens('elementalUR44', ctx.you);
       await ctx.g.draw(ctx.you, 2);
     },
@@ -423,26 +462,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Prismari Charm'] = {
     modes: {
       pick: 1,
+      aiHint: { kind: 'prismariCharm' },
       list: [
         { label: 'Surveil 2 + karta' },
-        { label: '1 šteta (do 2 mete)', targets: [T.any({ prompt: '1 šteta', aiHint: { goal: 'removal', dmg: 1 } })] },
+        { label: '1 šteta (jedna ili dvije mete)', targets: [T.any({ prompt: '1 šteta svakoj meti', count: 2, min: 1, upTo: true, aiHint: { goal: 'damage', n: 1 } })] },
         { label: 'Bounce nonland', targets: [T.permanent((g, c) => !c.is('Land'), { prompt: 'Bounce', aiHint: { goal: 'bounce' } })] },
       ],
     },
     resolve: async ctx => {
       const mi = ctx.mode[0];
       if (mi === 0) { await E.surveil(ctx.g, ctx.you, 2); await ctx.g.draw(ctx.you, 1); }
-      else if (mi === 1) { if (ctx.targets[0]) await ctx.g.damageAny(ctx.src, ctx.targets[0], 1); }
+      else if (mi === 1) {
+        for (const target of (Array.isArray(ctx.targets[0]) ? ctx.targets[0] : []).filter(Boolean)) {
+          if (target instanceof MTG.Player) await ctx.g.damagePlayer(ctx.src, target, 1);
+          else await ctx.g.damageCreature(ctx.src, target, 1, { deferSBA: true });
+        }
+        await ctx.g.checkSBA();
+      }
       else { if (ctx.targets[0] && ctx.targets[0].zone === 'battlefield') await ctx.g.move(ctx.targets[0], 'hand'); }
     },
   };
   SC['Prismari Command'] = {
     modes: {
       pick: 2,
+      aiHint: { kind: 'prismariCommand' },
       list: [
         { label: '2 štete', targets: [T.any({ prompt: '2 štete', aiHint: { goal: 'removal', dmg: 2 } })] },
-        { label: 'Vuci 2, odbaci 2' },
-        { label: 'Treasure' },
+        { label: 'Ciljani igrač vuče 2, odbacuje 2', targets: [T.player({ prompt: 'Ko vuče i odbacuje?', aiHint: { goal: 'drawSelf' } })] },
+        { label: 'Ciljani igrač pravi Treasure', targets: [T.player({ prompt: 'Ko pravi Treasure?', aiHint: { goal: 'drawSelf' } })] },
         { label: 'Uništi artefakt', targets: [T.permanent((g, c) => c.is('Artifact'), { prompt: 'Artefakt', aiHint: { goal: 'removal' } })] },
       ],
     },
@@ -451,12 +498,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const mi of ctx.mode || []) {
         if (mi === 0) { const t = ctx.targets[ti++]; if (t) await ctx.g.damageAny(ctx.src, t, 2); }
         else if (mi === 1) {
-          await ctx.g.draw(ctx.you, 2);
-          const n = Math.min(2, ctx.you.hand.length);
-          const pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: ctx.you.hand, min: n, max: n, prompt: 'Odbaci 2', aiHint: { kind: 'addlDiscard' } });
-          await ctx.g.discard(ctx.you, pick);
+          const player = ctx.targets[ti++];
+          if (!player) continue;
+          await ctx.g.draw(player, 2);
+          const n = Math.min(2, player.hand.length);
+          const pick = await player.controller.decide(ctx.g, { type: 'chooseCards', from: player.hand, min: n, max: n, prompt: 'Prismari Command: odbaci 2', aiHint: { kind: 'addlDiscard' } });
+          await ctx.g.discard(player, pick);
         }
-        else if (mi === 2) await ctx.g.makeTokens('treasure', ctx.you);
+        else if (mi === 2) { const player = ctx.targets[ti++]; if (player) await ctx.g.makeTokens('treasure', player); }
         else { const t = ctx.targets[ti++]; if (t) await ctx.g.destroy(t); }
       }
     },
@@ -484,7 +533,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       const g = ctx.g, you = ctx.you;
       const pileA = [], pileB = [];
-      for (let i = 0; i < 4 && you.library.length; i++) { const c = you.library.pop(); c.zone = 'exile'; you.exile.push(c); pileA.push(c); }
+      for (let i = 0; i < 4 && you.library.length; i++) {
+        const c = you.library.pop(); c.zone = 'exile'; c.faceDown = true; you.exile.push(c); pileA.push(c);
+      }
       for (let i = 0; i < 4 && you.library.length; i++) { const c = you.library.pop(); c.zone = 'exile'; you.exile.push(c); pileB.push(c); }
       const chooser = await E.chooseOpponent(g, you, {
         prompt: 'Abstract Performance — koji protivnik bira hrpu?', goal: 'delegate',
@@ -500,7 +551,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }) : 'up';
       const toGY = pileKey === 'down' ? pileA : pileB;
       const keep = toGY === pileA ? pileB : pileA;
-      for (const c of toGY) { you.exile.splice(you.exile.indexOf(c), 1); c.zone = 'graveyard'; you.graveyard.push(c); }
+      for (const c of toGY) {
+        you.exile.splice(you.exile.indexOf(c), 1); c.faceDown = false; c.zone = 'graveyard'; you.graveyard.push(c);
+      }
+      for (const c of keep) c.faceDown = false; // kontrolor sada smije pogledati drugu hrpu
       g.lg(`Abstract Performance: ${chooser ? chooser.name : 'protivnik'} šalje hrpu od ${toGY.length} u groblje.`);
       const castable = keep.filter(c => !c.is('Land'));
       if (castable.length) {
@@ -521,11 +575,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Aether Gale'] = {
+    targets: [T.permanent((g, card) => !card.is('Land'), {
+      prompt: 'Aether Gale: tačno šest nonland permanenata', count: 6,
+      aiHint: { goal: 'bounce' },
+    })],
     resolve: async ctx => {
-      const cands = ctx.g.bf().filter(c => !c.is('Land') && c.ctrl !== ctx.you)
-        .sort((a, b) => (b.is('Creature') ? b.power : 3) - (a.is('Creature') ? a.power : 3)).slice(0, 6);
-      for (const c of cands) if (c.zone === 'battlefield') await ctx.g.move(c, 'hand');
-      ctx.g.lg(`Aether Gale: ${cands.length} permanenata vraćeno.`);
+      const targets = Array.isArray(ctx.targets[0]) ? ctx.targets[0] : [];
+      for (const card of targets) if (card.zone === 'battlefield') await ctx.g.move(card, 'hand');
+      ctx.g.lg(`Aether Gale: ${targets.length} permanenata vraćeno.`);
     },
   };
   SC['Creative Technique'] = {
@@ -540,11 +597,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!c.is('Land')) { hit = c; break; }
         bottom.push(c);
       }
+      U.shuffle(bottom, ctx.g.rnd);
       for (const c of bottom) you.library.unshift(c);
       if (hit) {
-        hit.zone = 'nowhere';
-        const ok = await ctx.g.castSpell(you, hit, { free: true, from: 'exile' });
-        if (!ok) { hit.zone = 'exile'; you.exile.push(hit); }
+        hit.zone = 'exile'; you.exile.push(hit);
+        await ctx.g.revealToHuman({ cards: [...bottom, hit], ctrl: you, kind: 'reveal' });
+        const yes = await you.controller.decide(ctx.g, {
+          type: 'chooseOption', prompt: `Creative Technique: baci ${hit.name} besplatno?`,
+          options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+          aiHint: { kind: 'freeCast', card: hit },
+        });
+        if (yes === 'yes') await ctx.g.castSpell(you, hit, { alt: { free: true }, from: 'exile' });
       }
     },
   };
@@ -554,25 +617,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       U.shuffle(you.library, g.rnd);
       const exiled = [];
       let total = 0;
-      while (you.library.length && total < 13) {
-        const top = you.library[you.library.length - 1];
+      while (you.library.length) {
+        const more = await you.controller.decide(g, {
+          type: 'chooseOption', prompt: `Dance with Calamity: ukupni mana value ${total}. Egzilaj sljedeću kartu?`,
+          options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Stani' }],
+          aiHint: { kind: 'danceContinue', total, exiled: exiled.slice() },
+        });
+        if (more !== 'yes') break;
+        const top = you.library.pop();
         const mv = U.mv(top.def.cost || '');
-        if (total + mv > 13) break;
-        you.library.pop(); top.zone = 'exile'; you.exile.push(top);
+        top.zone = 'exile'; you.exile.push(top);
         total += mv; exiled.push(top);
-        if (exiled.length >= 6) break;
+        await g.revealToHuman({ cards: [top], ctrl: you, kind: 'reveal' });
       }
       g.lg(`Dance with Calamity: egzilirano ${exiled.length} (mv ukupno ${total}).`);
-      for (const c of exiled.slice()) {
-        if (c.is('Land')) continue;
-        const yes = await you.controller.decide(g, {
-          type: 'chooseOption', prompt: `Baci besplatno: ${c.name}?`,
-          options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }], aiHint: { kind: 'freeCast' },
-        });
-        if (yes !== 'yes') continue;
-        you.exile.splice(you.exile.indexOf(c), 1); c.zone = 'nowhere';
-        const ok = await g.castSpell(you, c, { free: true, from: 'exile' });
-        if (!ok) { c.zone = 'exile'; you.exile.push(c); }
+      if (total <= 13) {
+        const spells = exiled.filter(card => !card.is('Land'));
+        const chosen = spells.length ? await you.controller.decide(g, {
+          type: 'chooseCards', from: spells, min: 0, max: spells.length,
+          prompt: 'Dance with Calamity: izaberi bilo koji broj spellova za besplatno bacanje',
+          aiHint: { kind: 'danceFreeCasts' },
+        }) : [];
+        for (const card of chosen) {
+          if (card.zone === 'exile') await g.castSpell(you, card, { alt: { free: true }, from: 'exile' });
+        }
       }
     },
   };
@@ -602,35 +670,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     demonstrate: true,
     targets: [T.permanent((g, c, ctrl) => c.ctrl === ctrl, { prompt: 'Kopiraj svoj permanent', aiHint: { goal: 'buff' } })],
     resolve: async ctx => {
-      const you = ctx.so.isCopy ? ctx.so.ctrl : ctx.you;
-      let t = ctx.targets[0];
-      if (ctx.so.isCopy || !t || t.ctrl !== you) {
-        const mine = ctx.g.bf().filter(c => c.ctrl === you && !c.is('Land'));
-        t = mine.sort((a, b) => (b.is('Creature') ? b.power : 2) - (a.is('Creature') ? a.power : 2))[0];
-      }
-      if (t) await ctx.g.copyPermanentToken(t, you, {});
+      const target = ctx.targets[0];
+      if (target && target.ctrl === ctx.you) await ctx.g.copyPermanentToken(target, ctx.you, {});
     },
   };
   // Rousing Refrain je već definisan (ispravno: CILJANI protivnik + persistMana +
   // suspend {1}{R}) u scripts_stella.js. Ovdje je stajala verzija koja je zbrajala
   // ruke SVIH protivnika i davala 3x previše mane.
   SC['Surge to Victory'] = {
+    targets: [{
+      zone: 'graveyard', what: 'card', prompt: 'Surge to Victory: instant/sorcery iz svog groblja',
+      filter: (g, card) => card.is('Instant') || card.is('Sorcery'), aiHint: { goal: 'bestGyCast' },
+    }],
     resolve: async ctx => {
-      const pool = ctx.you.graveyard.filter(c => c.is('Instant') || c.is('Sorcery'));
-      if (!pool.length) return;
-      const pick = await ctx.you.controller.decide(ctx.g, {
-        type: 'chooseCards', from: pool, min: 1, max: 1, prompt: 'Egzilaj (kopiraj na combat dmg):', aiHint: { kind: 'bestGyCast' },
-      });
-      const c = pick[0];
-      if (!c) return;
-      ctx.g.remove(c); c.zone = 'exile'; ctx.you.exile.push(c);
+      const c = ctx.targets[0];
+      if (!c || c.zone !== 'graveyard') return;
+      await ctx.g.move(c, 'exile');
       const x = U.mv(c.def.cost || '');
       for (const cr of ctx.g.creatures(ctx.you)) E.pumpUntilEOT(ctx.g, cr, x, 0);
       const you = ctx.you;
       ctx.g.delayed.push({
         on: 'combatDamageToPlayer', once: false, expires: 'eot', name: 'Surge to Victory', ctrl: you,
         filter: (g2, d) => d.card.ctrl === you,
-        run: async c2 => { await E.castCopyFromZone(c2.g, you, c); },
+        run: async c2 => {
+          if (c.zone !== 'exile') return;
+          const cast = await you.controller.decide(c2.g, {
+            type: 'chooseOption', prompt: `Surge to Victory: baci kopiju ${c.name} besplatno?`,
+            options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+            aiHint: { kind: 'freeCast', card: c },
+          });
+          if (cast === 'yes') await E.castCopyFromZone(c2.g, you, c);
+        },
       });
     },
   };
@@ -640,27 +710,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => { ctx.g.lg('Throes of Chaos: cascade.'); },
   };
   SC['Twinflame'] = {
-    kicker: { cost: '{2}{R}' },
-    targets: [T.yourCreature({ prompt: 'Kopiraj (haste)', aiHint: { goal: 'buff' } })],
+    strive: '{2}{R}',
+    targets: (g, card, castOpts, caster) => [T.yourCreature({
+      prompt: 'Twinflame: bilo koji broj tvojih stvorenja', count: g.creatures(caster).length, min: 0, upTo: true,
+      aiHint: { goal: 'copy' },
+    })],
     resolve: async ctx => {
-      const targets = [ctx.targets[0]].filter(Boolean);
-      if (ctx.kicked) {
-        const more = ctx.g.creatures(ctx.you).filter(c => c !== ctx.targets[0]);
-        if (more.length) targets.push(more.sort((a, b) => b.power - a.power)[0]);
-      }
+      const targets = Array.isArray(ctx.targets[0]) ? ctx.targets[0] : [];
       const made = [];
       for (const t of targets) made.push(...await ctx.g.copyPermanentToken(t, ctx.you, { haste: true }));
-      E7.sacAtNextEnd(ctx.g, made, ctx.you);
+      E7.exileAtNextEnd(ctx.g, made, ctx.you);
     },
   };
   SC['Volcanic Salvo'] = {
     selfCostAdjust: (g, card, p) => -g.creatures(p).reduce((s, c) => s + Math.max(0, c.power), 0),
-    targets: [
-      T.oppCreature({ prompt: '6 šteta #1', upTo: true, aiHint: { goal: 'removal', dmg: 6 } }),
-      T.oppCreature({ prompt: '6 šteta #2', upTo: true, aiHint: { goal: 'removal', dmg: 6 } }),
-    ],
+    targets: [{
+      what: 'permanent', count: 2, min: 0, upTo: true, prompt: 'Do dva stvorenja i/ili planeswalkera',
+      filter: (g, card) => card.zone === 'battlefield' && (card.is('Creature') || card.is('Planeswalker')),
+      aiHint: { goal: 'removal', dmg: 6 },
+    }],
     resolve: async ctx => {
-      for (const t of ctx.targets.filter(Boolean)) if (t.zone === 'battlefield') await ctx.g.damageCreature(ctx.src, t, 6);
+      const targets = Array.isArray(ctx.targets[0]) ? ctx.targets[0] : [];
+      for (const target of targets) if (target.zone === 'battlefield') await ctx.g.damageCreature(ctx.src, target, 6, { deferSBA: true });
+      await ctx.g.checkSBA();
     },
   };
   // Volcanic Torrent je već definisan (ispravno, jednostrano) u scripts_stella.js.
@@ -680,8 +752,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const toks = ctx.g.bf().filter(c => c.ctrl === ctx.you && c.isToken && c.is('Creature'));
         if (!toks.length) return;
-        const best = toks.sort((a, b) => b.power - a.power)[0];
-        const made = await ctx.g.copyPermanentToken(best, ctx.you, { haste: true });
+        const picked = await ctx.you.controller.decide(ctx.g, {
+          type: 'chooseCards', from: toks, min: 1, max: 1,
+          prompt: 'Populate: izaberi creature token za kopiranje', aiHint: { kind: 'brudicladToken' },
+        });
+        const chosen = picked[0];
+        if (!chosen || !toks.includes(chosen)) return;
+        const made = await ctx.g.copyPermanentToken(chosen, ctx.you, { haste: true });
         E7.sacAtNextEnd(ctx.g, made, ctx.you);
       },
     }],
@@ -716,14 +793,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     entersTapped: (g, card) => g.lands(card.ctrl).filter(l => l !== card && l.hasSub('Island')).length < 3,
     mana: { cost: { tap: true }, produce: [{ U: 1 }] },
     triggers: [{
-      on: 'etb', desc: 'I/S na vrh', filter: (g, self, d) => d.card === self && !self.tapped, opt: true,
+      on: 'etb', desc: 'I/S na vrh', filter: (g, self, d) => d.card === self && !self.tapped,
+      targets: [{
+        zone: 'graveyard', what: 'card', prompt: 'Instant/sorcery na vrh biblioteke',
+        filter: (g, card) => card.is('Instant') || card.is('Sorcery'), aiHint: { goal: 'bestGyCast' },
+      }],
       run: async ctx => {
-        const pool = ctx.you.graveyard.filter(c => c.is('Instant') || c.is('Sorcery'));
-        if (!pool.length) return;
-        const pick = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseCards', from: pool, min: 0, max: 1, prompt: 'Na vrh biblioteke:', aiHint: { kind: 'bestGyCast' },
+        const card = ctx.targets[0];
+        if (!card || card.zone !== 'graveyard') return;
+        const yes = await ctx.you.controller.decide(ctx.g, {
+          type: 'chooseOption', prompt: `Mystic Sanctuary: stavi ${card.name} na vrh biblioteke?`,
+          options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+          aiHint: { kind: 'optTrigger', src: ctx.src },
         });
-        if (pick[0]) { ctx.g.remove(pick[0]); pick[0].zone = 'library'; ctx.you.library.push(pick[0]); }
+        if (yes === 'yes') await ctx.g.move(card, 'library');
       },
     }],
   };
@@ -740,7 +823,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             const c = bf.find(x => x.iid === iid);
             if (!c) return;
             if (!c.cur.types.includes('Creature')) c.cur.types.push('Creature');
+            if (!c.cur.subtypes.includes('Elemental')) c.cur.subtypes.push('Elemental');
+            c.cur.colors = ['U', 'R'];
             c.cur.basePower = 2; c.cur.baseToughness = 1;
+            c.cur.power = 2 + (c.counters['+1/+1'] || 0) - (c.counters['-1/-1'] || 0);
+            c.cur.toughness = 1 + (c.counters['+1/+1'] || 0) - (c.counters['-1/-1'] || 0);
             if (g2.turnPlayer === c.ctrl) c.cur.kw.add('first strike');
           },
         });
@@ -771,7 +858,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         cost: { tap: true, mana: '{1}' }, produce: [{ ANY: true, n: 1 }],
         onProduce: async (g, c, p, chosen, forSpell) => {
           if (forSpell && forSpell.card && forSpell.card.commander) {
-            const n = p.commanderCasts || 0;
+            const n = (p.commanderCasts || 0) + (forSpell.card.zone === 'command' ? 1 : 0);
             if (n > 0) g.queueTrigger({ src: c, name: 'Study Hall — scry', ctrl: p, run: async ctx => { await E.scry(ctx.g, ctx.you, n); } });
           }
         },

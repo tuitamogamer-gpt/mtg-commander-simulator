@@ -460,11 +460,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const cols = new Set();
         for (const l of g.bf()) {
           if (l.is('Land') && l.ctrl !== p) {
-            for (const col of (l.def.producesColors || [])) cols.add(col);
+            const dynamicIdentity = l.name === 'Command Tower' || l.name === 'Path of Ancestry';
+            const available = dynamicIdentity ? l.ctrl.colorIdentity : (l.def.producesColors || []);
+            for (const col of available) cols.add(col);
           }
         }
-        if (!cols.size) return [];
-        return [...cols].map(col => ({ [col]: 1 }));
+        const available = [...cols].filter(col => COLORS.includes(col));
+        if (!available.length) return [];
+        return available.map(col => ({ [col]: 1 }));
       },
     },
   };
@@ -510,7 +513,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Blasphemous Act'] = {
     selfCostAdjust: (g, card, p) => -Math.min(8, g.bf().filter(c => c.is('Creature')).length),
     resolve: async ctx => {
-      for (const c of ctx.g.bf().filter(c => c.is('Creature'))) await ctx.g.damageCreature(ctx.src, c, 13);
+      for (const c of ctx.g.bf().filter(c => c.is('Creature')).slice()) {
+        await ctx.g.damageCreature(ctx.src, c, 13, { deferSBA: true });
+      }
+      await ctx.g.checkSBA();
     },
   };
   SC['Big Score'] = {
