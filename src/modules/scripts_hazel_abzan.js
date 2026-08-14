@@ -38,7 +38,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           continue;
         }
         for (const kind of Object.keys(subject.counters)) {
-          if ((subject.counters[kind] || 0) > 0) g.addCounters(subject, kind, 1);
+          if ((subject.counters[kind] || 0) <= 0) continue;
+          if (kind === '-1/-1') await g.addM1(subject, 1, p, true);
+          else g.addCounters(subject, kind, 1, false, p);
         }
       }
       g.recalc();
@@ -768,11 +770,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         targets: [{
           what: 'permanent', prompt: 'Uništi nonland protivnika',
           filter: (g, c, ctrl) => c.zone === 'battlefield' && !c.is('Land') && c.ctrl !== ctrl,
-          upTo: true, aiHint: { goal: 'removal' },
+          aiHint: { goal: 'removal' },
         }],
         run: async ctx => { if (ctx.targets[0]) await ctx.g.destroy(ctx.targets[0]); },
       },
-      { run: async ctx => { await E.searchBasic(ctx.g, ctx.you, { filter: d => d.subtypes.includes('Forest'), tapped: true }); } },
+      { run: async ctx => { await E.searchLandByName(ctx.g, ctx.you, ['Forest'], { tapped: true }); } },
       { run: async ctx => { E.pumpAllUntilEOT(ctx.g, (g, c) => c.ctrl === ctx.you, 0, 0, ['deathtouch']); } },
     ],
     triggers: [{

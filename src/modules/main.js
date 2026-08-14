@@ -646,6 +646,115 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'blightHuman') {
+      void (async () => {
+        const take = name => {
+          const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+          g.remove(card);
+          card.ctrl = ui.me; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        take('Auntie Ool, Cursewretch');
+        take('Hapatra, Vizier of Poisons');
+        const tools = take("Wickersmith's Tools");
+        take('Flourishing Defenses');
+        take('Lasting Tarfire');
+        const goat = take('Oft-Nabbed Goat');
+        g.turnPlayer = ui.me; g.turnNo = 10; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        await g.addM1(goat, 3, ui.me);
+        await g.flushTriggers();
+        await g.priorityRound(ui.me);
+        await g.emit('endStep', { player: ui.me });
+        await g.flushTriggers();
+        await g.priorityRound(ui.me);
+        g.lg(`Blight human provjera: Goat ${goat.counters['-1/-1'] || 0} m1; Tools ${tools.counters.charge || 0} charge.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Blight human scenario: one-or-more triggeri i izbor Elf tokena razriješeni.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'blightWard') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Blight Curse');
+        if (!bot) throw new Error('blightWard scenario zahtijeva smokeAIDeck=Blight Curse');
+        const ool = new MTG.CardInst(MTG.DEFS['Auntie Ool, Cursewretch'], bot);
+        ool.ctrl = bot; ool.zone = 'battlefield'; ool.sick = false;
+        const recipient = new MTG.CardInst(MTG.DEFS['Grave Titan'], ui.me);
+        recipient.ctrl = ui.me; recipient.zone = 'battlefield'; recipient.sick = false;
+        const trophy = new MTG.CardInst(MTG.DEFS["Assassin's Trophy"], ui.me);
+        trophy.zone = 'hand'; ui.me.hand.push(trophy);
+        g.battlefield.push(ool, recipient);
+        ui.me.pool.B = 1; ui.me.pool.G = 1;
+        g.turnPlayer = ui.me; g.turnNo = 11; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        // Headless smoke nema canvas metu za klik, zato samo prvi izbor mete
+        // zaključaj deterministički. Ward—Blight i svi naredni izbori i dalje
+        // prolaze kroz pravi ljudski controller/UI.
+        const humanController = ui.me.controller;
+        let trophyTargetPending = true;
+        ui.me.controller = {
+          decide(game, request) {
+            if (trophyTargetPending && request.type === 'chooseTargets') {
+              trophyTargetPending = false;
+              return Promise.resolve([ool]);
+            }
+            return humanController.decide(game, request);
+          },
+        };
+        try {
+          await g.castSpell(ui.me, trophy, { from: 'hand' });
+        } finally {
+          ui.me.controller = humanController;
+        }
+        ui.showLog = true;
+        ui.toast(`Ward—Blight scenario: ${recipient.name} ima ${recipient.counters['-1/-1'] || 0} m1 countera.`);
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'blightAI') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Blight Curse');
+        if (!bot) throw new Error('blightAI scenario zahtijeva smokeAIDeck=Blight Curse');
+        const takeBot = name => {
+          const zones = [bot.command, bot.hand, bot.library, bot.graveyard, bot.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], bot);
+          g.remove(card);
+          card.ctrl = bot; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        takeBot('Auntie Ool, Cursewretch');
+        const goat = takeBot('Oft-Nabbed Goat');
+        const glissa = takeBot('Glissa Sunslayer');
+        const reactor = new MTG.CardInst(MTG.DEFS['Darksteel Reactor'], ui.me);
+        reactor.ctrl = ui.me; reactor.zone = 'battlefield'; reactor.sick = false; reactor.counters.charge = 5;
+        const defenses = new MTG.CardInst(MTG.DEFS['Flourishing Defenses'], ui.me);
+        defenses.ctrl = ui.me; defenses.zone = 'battlefield'; defenses.sick = false;
+        g.battlefield.push(reactor, defenses);
+        goat.counters['-1/-1'] = 1;
+        g.turnPlayer = bot; g.turnNo = 12; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        await MTG.DEFS["Eventide's Shadow"].resolve({ g, src: null, you: bot, targets: [] });
+        await g.emit('combatDamageToPlayer', { card: glissa, player: ui.me, n: 3, combat: true });
+        await g.flushTriggers();
+        await g.priorityRound(bot);
+        const curiosity = [bot.hand, bot.library, bot.graveyard, bot.exile].flat()
+          .find(card => card.name === 'Burning Curiosity') || new MTG.CardInst(MTG.DEFS['Burning Curiosity'], bot);
+        g.remove(curiosity); curiosity.zone = 'hand'; bot.hand.push(curiosity);
+        bot.pool.C = 2; bot.pool.R = 1;
+        await g.castSpell(bot, curiosity, { from: 'hand' });
+        g.lg(`Blight AI provjera: Goat ${goat.counters['-1/-1'] || 0} m1; Reactor ${reactor.counters.charge || 0}; Glissa enchantment ${defenses.zone}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Blight AI scenario: Eventide, Glissa i Burning Curiosity odluke razriješene.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     g.start().catch(err => {
       console.error(err);
       ui.toast('Greška u igri: ' + err.message);

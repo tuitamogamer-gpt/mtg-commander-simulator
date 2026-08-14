@@ -174,6 +174,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return v;
     }
 
+    blightRecipientScore(g, card, n = 1) {
+      const value = this.permThreat(g, card);
+      const dies = card.toughness <= n;
+      const oracle = (card.def.oracle || '').toLowerCase();
+      const deathValue = /when(?:ever)? .*dies|when this creature dies|persist|undying/.test(oracle) ? 5 : 0;
+      const tokenValue = card.isToken ? 3 : 0;
+      const alreadyBlighted = (card.counters['-1/-1'] || 0) > 0 ? 1.5 : 0;
+      return -value + deathValue + tokenValue + alreadyBlighted - (dies && !deathValue && !tokenValue ? 12 : 0);
+    }
+
+    counterRemovalScore(card, kind, n = 1) {
+      const harmful = new Set(['-1/-1', '-0/-1', 'stun', 'finality', 'doom', 'bounty']);
+      const goodForController = !harmful.has(kind);
+      return (card.ctrl === this.p ? (goodForController ? -1 : 1) : (goodForController ? 1 : -1)) * n;
+    }
+
     playerThreat(g, q) {
       return MTG.threat(g, q, this.p);
     }
@@ -560,6 +576,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const myPerms = byThreatDesc.filter(x => x.ctrl === p);
       const oppPlayers = cands.filter(x => x instanceof MTG.Player && x !== p);
       switch (goal) {
+        case 'blight': {
+          const n = q.aiHint && q.aiHint.n || 1;
+          const mine = myPerms.slice().sort((a, b) => this.blightRecipientScore(g, b, n) - this.blightRecipientScore(g, a, n));
+          return mine.length ? [mine[0]] : pick(cands);
+        }
+        case 'counterRemoval': {
+          const scored = byThreatDesc.slice().map(card => ({
+            card,
+            score: Object.entries(card.counters || {}).reduce((sum, [kind, amount]) =>
+              sum + this.counterRemovalScore(card, kind, amount), 0),
+          })).sort((a, b) => b.score - a.score || this.permThreat(g, b.card) - this.permThreat(g, a.card));
+          return scored.length ? [scored[0].card] : pick(cands);
+        }
         case 'removal': case 'removalLand': {
           if (enemyPerms.length) return pick(enemyPerms);
           if (min === 0) return [];
@@ -780,13 +809,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return [from[0]];
         }
         case 'blight': {
-          // -1/-1 na najmanje vrijedno svoje stvorenje (idealno već otrovano/token)
-          const sorted = from.slice().sort((a, b) => {
-            const am = (a.counters['-1/-1'] || 0) > 0 ? -2 : 0;
-            const bm = (b.counters['-1/-1'] || 0) > 0 ? -2 : 0;
-            return (this.permThreat(g, a) + am) - (this.permThreat(g, b) + bm);
-          });
+          const n = q.aiHint && q.aiHint.n || 1;
+          const sorted = from.slice().sort((a, b) => this.blightRecipientScore(g, b, n) - this.blightRecipientScore(g, a, n));
           return [sorted[0]];
+        }
+        case 'eventidePermanents': {
+          return from.filter(card => Object.entries(card.counters || {}).some(([counterKind, amount]) =>
+            amount > 0 && this.counterRemovalScore(card, counterKind, amount) > 0)).slice(0, max);
         }
         case 'stationTap': {
           // tapuj NAJJAČE slobodno stvorenje koje nije potrebno za napad (najviše charge-a)
@@ -867,7 +896,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const best = keys.filter(k => COLORS.includes(k)).sort((a, b) => (needs[b] || 0) - (needs[a] || 0))[0];
           return best || keys[0];
         }
-        case 'ward': return this.p.life > 10 ? 'yes' : 'no';
+        case 'ward': {
+          if (q.aiHint && q.aiHint.payment === 'blight') {
+            const n = q.aiHint.n || 1;
+            const best = g.creatures(this.p).map(card => this.blightRecipientScore(g, card, n)).sort((a, b) => b - a)[0];
+            return Number.isFinite(best) && best > -9 ? 'yes' : 'no';
+          }
+          return this.p.life > 10 ? 'yes' : 'no';
+        }
+        case 'burningCuriosity': {
+          const n = q.aiHint && q.aiHint.n || 1;
+          const best = g.creatures(this.p).map(card => this.blightRecipientScore(g, card, n)).sort((a, b) => b - a)[0];
+          return Number.isFinite(best) && best > -7 && keys.includes('yes') ? 'yes' : 'no';
+        }
+        case 'glissaMode': {
+          const enchantment = g.bf().filter(card => card.is('Enchantment') && card.ctrl !== this.p)
+            .sort((a, b) => this.permThreat(g, b) - this.permThreat(g, a))[0];
+          if (enchantment && this.permThreat(g, enchantment) >= 3 && keys.includes('1')) return '1';
+          const counterValue = g.bf().reduce((best, card) => Math.max(best,
+            Object.entries(card.counters || {}).reduce((sum, [counterKind, amount]) =>
+              sum + this.counterRemovalScore(card, counterKind, Math.min(3, amount)), 0)), 0);
+          if (counterValue > 0 && keys.includes('2')) return '2';
+          return keys.includes('0') ? '0' : keys[0];
+        }
+        case 'moveCounterKind': {
+          const target = q.aiHint && q.aiHint.target;
+          if (target) {
+            const best = keys.slice().sort((a, b) => this.counterRemovalScore(target, a) - this.counterRemovalScore(target, b))[0];
+            if (best) return best;
+          }
+          return keys[0];
+        }
         case 'optTrigger': return 'yes';
         case 'inspiritCounter': {
           const target = q.aiHint && q.aiHint.target;
@@ -967,6 +1026,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     chooseX(g, q) {
       const kind = q.aiHint && q.aiHint.kind;
+      if (kind === 'flourishingDefenses') return q.max;
+      if (kind === 'eventideCounter' || kind === 'glissaCounter') {
+        const hint = q.aiHint || {};
+        return hint.target && this.counterRemovalScore(hint.target, hint.counterKind, q.max) > 0 ? q.max : 0;
+      }
+      if (kind === 'fireCovenant') {
+        const targets = q.aiHint && q.aiHint.targets || [];
+        const lethal = targets.reduce((sum, card) => sum + Math.max(1, card.toughness - card.damage), 0);
+        return Math.max(q.min, Math.min(q.max, Math.max(0, this.p.life - 1), lethal));
+      }
+      if (kind === 'fireCovenantDamage') {
+        const target = q.aiHint && q.aiHint.target;
+        return target ? Math.max(q.min, Math.min(q.max, Math.max(1, target.toughness - target.damage))) : q.min;
+      }
       if (kind === 'expelN') {
         // destroy as much of opponents' board as possible while keeping mine
         const myMax = Math.max(0, ...g.creatures(this.p).map(c => c.power), 0);

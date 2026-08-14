@@ -756,6 +756,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return value;
   }
 
+  function counterRemovalValue(card, player, kind, amount = 1) {
+    const harmful = new Set(['-1/-1', '-0/-1', 'stun', 'finality', 'doom', 'bounty']);
+    const goodForController = !harmful.has(kind);
+    return (card.ctrl === player ? (goodForController ? -1 : 1) : (goodForController ? 1 : -1)) * amount;
+  }
+
+  function blightRecipientValue(game, player, card, amount = 1) {
+    const value = permanentGameValue(game, card, player);
+    const dies = card.toughness <= amount;
+    const oracle = String(card.def.oracle || '').toLowerCase();
+    const deathValue = /when(?:ever)? .*dies|when this creature dies|persist|undying/.test(oracle) ? 7 : 0;
+    const tokenValue = card.isToken ? 4 : 0;
+    const alreadyBlighted = (card.counters['-1/-1'] || 0) > 0 ? 1.5 : 0;
+    return -value + deathValue + tokenValue + alreadyBlighted - (dies && !deathValue && !tokenValue ? 18 : 0);
+  }
+
   function targetValue(game, player, target, q) {
     const hint = q.aiHint && q.aiHint.goal || '';
     if (target instanceof U.Player) {
@@ -770,6 +786,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (target instanceof U.CardInst) {
       const value = permanentGameValue(game, target, player);
       const hostile = target.ctrl !== player;
+      if (hint === 'blight') return hostile ? -100 : blightRecipientValue(game, player, target, q.aiHint && q.aiHint.n || 1);
+      if (hint === 'counterRemoval') {
+        return Object.entries(target.counters || {}).reduce((sum, [kind, amount]) =>
+          sum + counterRemovalValue(target, player, kind, Math.min(3, amount)), 0) * 5;
+      }
       if (hint === 'proliferate') {
         const beneficial = new Set(['+1/+1', 'loyalty', 'charge', 'indestructible', 'shield', 'lore', 'quest', 'acorn', 'soul', 'hour', 'level', 'oil']);
         const harmful = new Set(['-1/-1', '-0/-1', 'stun', 'finality', 'doom', 'bounty']);
@@ -806,6 +827,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!(card instanceof U.CardInst)) return 0;
     const hint = q.aiHint && q.aiHint.kind || '';
     const value = cardDefinitionValue(card.def) + (card.commander ? 8 : 0);
+    if (hint === 'blight') return blightRecipientValue(game, player, card, q.aiHint && q.aiHint.n || 1);
+    if (hint === 'eventidePermanents') {
+      return Object.entries(card.counters || {}).reduce((sum, [kind, amount]) =>
+        sum + counterRemovalValue(card, player, kind, amount), 0) * 5;
+    }
     if (hint === 'counterCost') {
       const bad = (card.counters['-1/-1'] || 0) + (card.counters['-0/-1'] || 0) +
         (card.counters.stun || 0) + (card.counters.finality || 0) + (card.counters.doom || 0);
@@ -1104,6 +1130,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } else if (hintKind === 'clashPlace') {
         const value = q.aiHint.card ? cardDefinitionValue(q.aiHint.card.def) : 0;
         breakdown.choice = action.value === 'top' ? value : Math.max(0, 3.2 - value);
+      } else if (hintKind === 'ward' && q.aiHint && q.aiHint.payment === 'blight') {
+        const amount = q.aiHint.n || 1;
+        const best = game.creatures(player).map(card => blightRecipientValue(game, player, card, amount))
+          .sort((a, b) => b - a)[0];
+        breakdown.choice = action.value === 'yes' ? (Number.isFinite(best) ? best + 6 : -100) : 0;
+      } else if (hintKind === 'burningCuriosity') {
+        const amount = q.aiHint.n || 1;
+        const best = game.creatures(player).map(card => blightRecipientValue(game, player, card, amount))
+          .sort((a, b) => b - a)[0];
+        breakdown.choice = action.value === 'yes' ? (Number.isFinite(best) ? best + 5.5 : -100) : 0;
+      } else if (hintKind === 'glissaMode') {
+        if (action.value === '0') breakdown.choice = 4 + Math.max(0, 5 - player.hand.length) * 0.45;
+        if (action.value === '1') {
+          const best = Math.max(0, ...game.bf().filter(card => card.is('Enchantment'))
+            .map(card => card.ctrl === player ? -permanentGameValue(game, card, player) : permanentGameValue(game, card, player)));
+          breakdown.choice = best;
+        }
+        if (action.value === '2') {
+          breakdown.choice = Math.max(0, ...game.bf().map(card => Object.entries(card.counters || {})
+            .reduce((sum, [kind, amount]) => sum + counterRemovalValue(card, player, kind, Math.min(3, amount)), 0))) * 2.5;
+        }
+      } else if (hintKind === 'moveCounterKind') {
+        const target = q.aiHint && q.aiHint.target;
+        breakdown.choice = target ? -counterRemovalValue(target, player, action.value, 1) * 4 : 0;
       } else if (hintKind === 'creatureType') {
         breakdown.choice = Number(action.option && action.option.keepValue || 0) * 1.4;
       } else if (hintKind === 'typhoidMary') {
@@ -1214,6 +1264,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // Na niskom životu ostaje strogo konzervativan.
         breakdown.safety -= x * (player.life <= 8 ? 1.6 : player.life <= 15 ? 0.45 : 0.22);
         if (x >= player.life) breakdown.safety -= 1000;
+      } else if (q && ['eventideCounter', 'glissaCounter'].includes(q.aiHint && q.aiHint.kind)) {
+        const amount = Number(action.value) || 0;
+        breakdown.choice = q.aiHint.target ? counterRemovalValue(q.aiHint.target, player, q.aiHint.counterKind, amount) * 4 : 0;
+      } else if (q && q.aiHint && q.aiHint.kind === 'flourishingDefenses') {
+        breakdown.choice = (Number(action.value) || 0) * 3;
+      } else if (q && q.aiHint && q.aiHint.kind === 'fireCovenant') {
+        const x = Number(action.value) || 0;
+        const targets = q.aiHint.targets || [];
+        let budget = x;
+        const ordered = targets.slice().sort((a, b) => permanentGameValue(game, b, player) - permanentGameValue(game, a, player));
+        for (const target of ordered) {
+          const lethal = Math.max(1, target.toughness - target.damage);
+          if (budget >= lethal) { breakdown.choice += permanentGameValue(game, target, player); budget -= lethal; }
+        }
+        breakdown.safety -= x * (player.life <= 10 ? 1.8 : player.life <= 18 ? 0.8 : 0.35);
+        if (x >= player.life) breakdown.safety -= 1000;
+      } else if (q && q.aiHint && q.aiHint.kind === 'fireCovenantDamage') {
+        const x = Number(action.value) || 0;
+        const target = q.aiHint.target;
+        const lethal = target ? Math.max(1, target.toughness - target.damage) : 1;
+        breakdown.choice = target && x >= lethal ? permanentGameValue(game, target, player) : -Math.abs(lethal - x) * 2;
       } else breakdown.choice = action.value * 0.7;
       const source = q && q.src;
       if (source && /lose.*life|pay.*life/i.test(source.def && source.def.oracle || '')) breakdown.safety -= action.value * 0.5;

@@ -385,7 +385,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       forSpell.convokedCards = forSpell.convokedCards || [];
       if (!forSpell.convokedCards.includes(c)) forSpell.convokedCards.push(c);
     }
-    if (cost.counter) this.addCounters(c, cost.counter, 1, true);
+    if (cost.counter === '-1/-1') await this.addM1(c, 1, p);
+    else if (cost.counter) this.addCounters(c, cost.counter, 1, true, p);
     if (cost.rmCounter) this.removeCounters(c, cost.rmCounter.kind || cost.rmCounter, cost.rmCounter.n || 1);
     if (s.m.oncePerTurn) c.meta['_mana_' + (s.m.key || 0)] = this.turnNo;
     if (s.m.onProduce) await s.m.onProduce(this, c, p, chosen, forSpell);
@@ -915,6 +916,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const ok = await this.pickTargets(ctx, specs, card, p);
       if (!ok) { this.lg(`${card.name}: nema legalnih meta.`); return false; }
       so.targets = ctx.targets;
+      so.wardTargets = ctx.wardTargets;
     } else if (mode && d.modes) {
       const specs2 = [];
       for (const mi of mode) if (d.modes.list[mi].targets) specs2.push(...d.modes.list[mi].targets);
@@ -924,12 +926,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const ok = await this.pickTargets(ctx, specs2, card, p);
         if (!ok) { this.lg(`${card.name}: nema legalnih meta.`); return false; }
         so.targets = ctx.targets;
+        so.wardTargets = ctx.wardTargets;
       }
     }
 
     // additional costs
     const ac = castOpts.adventure ? null : d.addlCost;
-    const paidAddl = { sacd: [], discarded: [], life: 0 };
+    const paidAddl = { sacd: [], discarded: [], life: 0, blightCard: null, blightN: 0 };
     if (ac && !castOpts.free) {
       if (ac.sacCreature || ac.sacArtifactOrCreature || ac.sacAnyCreatures) {
         const pool = this.bf().filter(c => c.ctrl === p &&
@@ -954,13 +957,54 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         paidAddl.discarded = picked;
       }
       if (ac.lifeX) {
+        const targeted = (so.targets || []).flat().filter(Boolean).length;
+        const minLife = ac.divideAmongTargets ? targeted : 0;
+        const maxLife = ac.divideAmongTargets && targeted === 0 ? 0 : p.life;
         const thresholds = [...new Set(this.bf().filter(c => c.is('Creature'))
           .map(c => Math.max(0, c.toughness)).filter(n => n <= p.life))].sort((a, b) => a - b);
         const chosen = await p.controller.decide(this, {
-          type: 'chooseX', min: 0, max: p.life, thresholds, src: card,
-          prompt: `${card.name}: plati X života`, aiHint: { kind: ac.aiKind || 'lifeX', card },
+          type: 'chooseX', min: minLife, max: maxLife, thresholds, src: card,
+          prompt: `${card.name}: plati X života`,
+          aiHint: { kind: ac.aiKind || 'lifeX', card, targets: (so.targets || []).flat().filter(Boolean) },
         });
-        paidAddl.life = Math.max(0, Math.min(Number(chosen) || 0, p.life));
+        paidAddl.life = Math.max(minLife, Math.min(Number(chosen) || 0, p.life));
+      }
+      if (ac.optionalBlight) {
+        const pool = this.creatures(p);
+        if (pool.length) {
+          const choice = await p.controller.decide(this, {
+            type: 'chooseOption', prompt: `${card.name}: plati dodatni Blight ${ac.optionalBlight}?`,
+            options: [{ key: 'yes', label: `Da — Blight ${ac.optionalBlight}` }, { key: 'no', label: 'Ne' }],
+            aiHint: { kind: 'burningCuriosity', card, n: ac.optionalBlight },
+          });
+          if (choice === 'yes') {
+            const picked = await p.controller.decide(this, {
+              type: 'chooseCards', from: pool, min: 1, max: 1,
+              prompt: `Blight ${ac.optionalBlight}: izaberi svoje stvorenje`,
+              aiHint: { kind: 'blight', n: ac.optionalBlight, source: card },
+            });
+            if (!picked.length) return false;
+            paidAddl.blightCard = picked[0];
+            paidAddl.blightN = ac.optionalBlight;
+          }
+        }
+      }
+    }
+    if (ac && ac.lifeX && ac.divideAmongTargets && paidAddl.life > 0) {
+      const targets = (so.targets || []).flat().filter(Boolean);
+      so.damageDivision = [];
+      let left = paidAddl.life;
+      for (let index = 0; index < targets.length; index++) {
+        const remainingTargets = targets.length - index - 1;
+        const max = left - remainingTargets;
+        const n = index === targets.length - 1 ? left : await p.controller.decide(this, {
+          type: 'chooseX', min: 1, max, card,
+          prompt: `${card.name}: šteta za ${targets[index].name} (preostalo ${left})`,
+          aiHint: { kind: 'fireCovenantDamage', card, target: targets[index], left, remainingTargets },
+        });
+        const assigned = Math.max(1, Math.min(Number(n) || 1, max));
+        so.damageDivision.push({ iid: targets[index].iid, n: assigned });
+        left -= assigned;
       }
     }
     if (castOpts.jumpstart) {
@@ -1047,7 +1091,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const c of paidAddl.sacd) await this.sacrifice(p, c);
     for (const c of paidAddl.discarded) await this.discard(p, [c]);
     if (paidAddl.life) await this.loseLife(p, paidAddl.life, card.name);
+    if (paidAddl.blightCard) await this.addM1(paidAddl.blightCard, paidAddl.blightN, p);
     so.additionalLifePaid = paidAddl.life;
+    so.additionalBlightPaid = paidAddl.blightN;
     for (const c of delveExiled) await this.move(c, 'exile');
     for (const c of escapeExiled) await this.move(c, 'exile');
 
@@ -1165,6 +1211,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (castData.nthThisTurn === 1) await this.emit('castFirst', castData);
     if (castData.nthThisTurn === 2) await this.emit('castSecond', castData);
 
+    this.queueWardTriggers(so, { wardTargets: so.wardTargets || [] });
     await this.flushTriggers();
     await this.priorityRound(p);
     return true;
@@ -1223,6 +1270,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       copy.targets = so.targets.map(t => (Array.isArray(t) ? [opts.forceTarget] : opts.forceTarget));
       opts = Object.assign({}, opts, { mayNewTargets: false });
     }
+    let wardTargets = (copy.targets || []).flat().filter(target =>
+      target instanceof MTG.CardInst && target.ctrl !== ctrl && target.cur && target.cur.wardCost)
+      .map(target => ({ target, ward: Object.assign({}, target.cur.wardCost) }));
     // new targets?
     if (opts.mayNewTargets && so.targets.length) {
       const specs = so.targetSpecs || this.spellTargetSpecs(so.card, so.castOpts || {});
@@ -1235,11 +1285,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (redo === 'yes') {
           const ctx = { g: this, src: so.card, you: ctrl, so: copy };
           const ok = await this.pickTargets(ctx, specs, so.card, ctrl);
-          if (ok) copy.targets = ctx.targets;
+          if (ok) { copy.targets = ctx.targets; wardTargets = ctx.wardTargets; }
         }
       }
     }
     this.stack.push(copy);
+    this.queueWardTriggers(copy, { wardTargets });
     this.note('stack', {});
     this.notifyEffect(`📋 ${ctrl.name} kopira spell ${so.name}.`, { kind: 'spellCopy', spell: copy, player: ctrl });
     await this.emit('spellCopied', { so: copy, ctrl, isInstantSorcery: so.card.is('Instant') || so.card.is('Sorcery') });
@@ -1253,6 +1304,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       kind: so.kind, name: `${so.name} (kopija)`, ctrl, ctx: copyCtx, run: so.run,
       targets: copyCtx.targets, srcCard: so.srcCard, targetSpecs: so.targetSpecs || null,
     };
+    let wardTargets = (copy.targets || []).flat().filter(target =>
+      target instanceof MTG.CardInst && target.ctrl !== ctrl && target.cur && target.cur.wardCost)
+      .map(target => ({ target, ward: Object.assign({}, target.cur.wardCost) }));
     if (opts.mayNewTargets && copy.targetSpecs && copy.targets.length) {
       const choice = await ctrl.controller.decide(this, {
         type: 'chooseOption', prompt: `Kopija ${so.name}: nove mete?`,
@@ -1261,10 +1315,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       if (choice === 'yes') {
         const ok = await this.pickTargets(copyCtx, copy.targetSpecs, so.srcCard, ctrl);
-        if (ok) copy.targets = copyCtx.targets;
+        if (ok) { copy.targets = copyCtx.targets; wardTargets = copyCtx.wardTargets; }
       }
     }
     this.stack.push(copy);
+    this.queueWardTriggers(copy, { wardTargets });
     this.note('stack', {});
     this.notifyEffect(`📋 ${ctrl.name} kopira ${so.kind === 'trigger' ? 'trigger' : 'sposobnost'} ${so.name}.`, {
       kind: 'abilityCopy', ability: copy, player: ctrl,
@@ -2069,7 +2124,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       for (const x of picked) await this.move(x, 'exile');
     }
-    if (cost.counter) this.addCounters(c, cost.counter, 1, true);
+    if (cost.counter === '-1/-1') await this.addM1(c, 1, p);
+    else if (cost.counter) this.addCounters(c, cost.counter, 1, true, p);
     if (a.oncePerTurn) c.meta['_ab_' + entry.idx] = this.turnNo;
     // loyalty
     if (a.loyalty !== undefined) {
@@ -2112,6 +2168,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx, run: a.run, targets: ctx.targets, srcCard: c, targetSpecs: a.targets || null,
     };
     this.stack.push(so);
+    this.queueWardTriggers(so, ctx);
     this.note('stack', {});
     await this.flushTriggers();
     await this.priorityRound(p);

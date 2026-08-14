@@ -69,12 +69,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ---------- E7 helperi ----------
   const E7 = MTG.E7 = {};
   E7.m1 = (g, card, n, by) => g.addM1(card, n, by);
+  E7.addM1Batch = async (g, cards, n, by) => {
+    for (const card of [...new Set(cards)].filter(card => card && card.zone === 'battlefield')) {
+      await g.addM1(card, n, by, true);
+    }
+    await g.checkSBA();
+  };
   E7.blight = async (g, p, n, src) => {
     // stavi n -1/-1 na SVOJE stvorenje (izbor)
     const pool = g.creatures(p);
     if (!pool.length) return false;
     const pick = await p.controller.decide(g, {
-      type: 'chooseCards', from: pool, min: 1, max: 1, prompt: `Blight ${n}: -1/-1 na svoje stvorenje`, aiHint: { kind: 'blight' },
+      type: 'chooseCards', from: pool, min: 1, max: 1, prompt: `Blight ${n}: -1/-1 na svoje stvorenje`, aiHint: { kind: 'blight', n, source: src },
     });
     if (!pick.length) return false;
     await g.addM1(pick[0], n, p);

@@ -590,17 +590,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Premjesti counter', cost: { tap: true, mana: '{1}' }, sorcery: true,
       targets: [
         T.permanent((g, c, ctrl) => c.ctrl === ctrl && Object.keys(c.counters).some(k => c.counters[k] > 0), { prompt: 'Sa (tvoj permanent)', aiHint: { goal: 'buff' } }),
-        T.permanent(null, { prompt: 'Na', aiHint: { goal: 'buff' } }),
+        T.permanent(null, { prompt: 'Na drugi permanent', differentFromPrevious: true, aiHint: { goal: 'buff' } }),
       ],
       run: async ctx => {
         const [from, to] = ctx.targets;
         if (!from || !to || from === to) return;
         const kinds = Object.keys(from.counters).filter(k => from.counters[k] > 0);
         if (!kinds.length) return;
-        const kind = kinds.includes('-1/-1') && to.ctrl !== ctx.you ? '-1/-1' : kinds[0];
+        let kind = kinds[0];
+        if (kinds.length > 1) kind = await ctx.you.controller.decide(ctx.g, {
+          type: 'chooseOption', prompt: `${from.name}: koji counter premještaš?`,
+          options: kinds.map(key => ({ key, label: key })),
+          aiHint: { kind: 'moveCounterKind', source: from, target: to },
+        });
+        if (!kinds.includes(kind)) return;
         ctx.g.removeCounters(from, kind, 1);
         if (kind === '-1/-1') await ctx.g.addM1(to, 1, ctx.you);
-        else ctx.g.addCounters(to, kind, 1);
+        else ctx.g.addCounters(to, kind, 1, false, ctx.you);
       },
     }],
   };
@@ -609,7 +615,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', filter: (g, self, d) => d.card === self, desc: 'Sac → basic + 1 život',
       run: async ctx => {
-        await ctx.g.sacrifice(ctx.you, ctx.src);
+        if (!await ctx.g.sacrifice(ctx.you, ctx.src)) return;
         await E.searchBasic(ctx.g, ctx.you, { tapped: true, filter: d => ['Swamp', 'Mountain', 'Forest'].some(t => d.subtypes.includes(t)) });
         await ctx.g.gainLife(ctx.you, 1);
       },

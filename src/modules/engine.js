@@ -515,17 +515,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (died) {
         this.turnPlayer && (snap.ctrl.turnState.creaturesDiedUnder += snap.types.includes('Creature') ? 1 : 0);
         await this.emit('dies', { card, snap });
-        // persist / undying
+        // Persist/undying su stvarne dies-triggered sposobnosti. Karta ostaje u
+        // groblju dok protivnici dobiju priority; vraća se tek na rezoluciji.
         const d = card.def;
         if (snap.types.includes('Creature') && card.zone === 'graveyard') {
           if (d.undying && !snap.plus1) {
-            this.lg(`${card.name} se vraća (undying).`);
-            await this.move(card, 'battlefield', { ctrl: snap.owner });
-            this.addCounters(card, '+1/+1', 1);
+            this.queueTrigger({
+              src: card, ctrl: snap.ctrl, name: 'Undying', data: { card, snap },
+              onlyIf: () => card.zone === 'graveyard',
+              run: async ctx => {
+                if (card.zone !== 'graveyard') return;
+                ctx.g.lg(`${card.name} se vraća (undying).`);
+                await ctx.g.move(card, 'battlefield', {
+                  ctrl: snap.owner, additionalCounters: { '+1/+1': 1 }, additionalCounterBy: snap.owner,
+                });
+              },
+            });
           } else if (d.persist && !(snap.minus1 > 0)) {
-            this.lg(`${card.name} se vraća (persist).`);
-            await this.move(card, 'battlefield', { ctrl: snap.owner });
-            this.addCounters(card, '-1/-1', 1);
+            this.queueTrigger({
+              src: card, ctrl: snap.ctrl, name: 'Persist', data: { card, snap },
+              onlyIf: () => card.zone === 'graveyard',
+              run: async ctx => {
+                if (card.zone !== 'graveyard') return;
+                ctx.g.lg(`${card.name} se vraća (persist).`);
+                await ctx.g.move(card, 'battlefield', {
+                  ctrl: snap.owner,
+                  additionalCounters: { '-1/-1': 1 },
+                  additionalCounterBy: snap.owner,
+                });
+              },
+            });
           }
         }
       }
@@ -533,6 +552,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async handleETB(card, opts) {
       let d = card.def;
+      const entryMinusCounters = [];
+      const entryPlusCounters = [];
       card.meta = card.meta || {};
       // Copy i drugi as-enters replacementi postavljaju karakteristike prije
       // enters-tapped i enters-with-counters replacementa kopirane karte.
@@ -556,6 +577,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           card.counters[d.etbCounters.kind] = (card.counters[d.etbCounters.kind] || 0) + n;
           this.notifyEffect(`◆ ${card.name} ulazi sa ${n} ${d.etbCounters.kind} ${U.plural(n, 'counterom', 'countera')}.`, {
             kind: 'counter', card, counterKind: d.etbCounters.kind, n,
+          });
+          this.markCounterPut(card.ctrl, card, n);
+          if (d.etbCounters.kind === '-1/-1') entryMinusCounters.push({ n, by: card.ctrl });
+          if (d.etbCounters.kind === '+1/+1') entryPlusCounters.push({ n, before: 0, after: n });
+        }
+      }
+      if (opts.additionalCounters) {
+        for (const [kind, rawN] of Object.entries(opts.additionalCounters)) {
+          let n = Math.max(0, Number(rawN) || 0);
+          if (kind === '+1/+1') n = this.adjustPlusCounters(card, n);
+          if (!n) continue;
+          card.counters[kind] = (card.counters[kind] || 0) + n;
+          this.notifyEffect(`◆ ${card.name} ulazi sa dodatnih ${n} ${kind} ${U.plural(n, 'counterom', 'countera')}.`, {
+            kind: 'counter', card, counterKind: kind, n,
+          });
+          const by = opts.additionalCounterBy || card.ctrl;
+          this.markCounterPut(by, card, n);
+          if (kind === '-1/-1') entryMinusCounters.push({ n, by });
+          if (kind === '+1/+1') entryPlusCounters.push({
+            n, before: (card.counters[kind] || 0) - n, after: card.counters[kind] || 0,
           });
         }
       }
@@ -592,6 +633,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (d.saga) { card.counters['lore'] = 0; }
       this.recalc();
       const evData = { card, ctrl: card.ctrl };
+      // "Enters with" counteri su dio samog ulaska, ali permanenti koji ih
+      // posmatraju (Auntie Ool, Hapatra, Wickersmith's Tools...) ipak moraju
+      // dobiti isti m1Added događaj prije običnih ETB triggera.
+      for (const event of entryMinusCounters) {
+        await this.emit('m1Added', { card, n: event.n, by: event.by, ctrl: card.ctrl, enters: true });
+      }
+      for (const event of entryPlusCounters) {
+        await this.emit('plusAdded', {
+          card, n: event.n, before: event.before, after: event.after,
+          ctrl: card.ctrl, enters: true,
+        });
+      }
       if (card.is('Land')) {
         card.ctrl.turnState.landsEntered++;
         await this.emit('landfall', evData);
@@ -768,7 +821,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       return n;
     }
-    addCounters(card, kind, n, silent) {
+    markCounterPut(by, card, n) {
+      if (!by || !card || n <= 0 || !(by instanceof Player) || !card.is || !card.is('Creature')) return;
+      by.turnState._putCounterThisTurn = (by.turnState._putCounterThisTurn || 0) + n;
+    }
+    addCounters(card, kind, n, silent, by) {
       if (n <= 0) return;
       if (kind === '+1/+1' && card.is && card.is('Creature')) n = this.adjustPlusCounters(card, n);
       const before = card.counters[kind] || 0;
@@ -778,8 +835,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.notifyEffect(`◆ ${counterText}`, { kind: 'counter', card, counterKind: kind, n }, !!silent);
       this.recalc();
       this.emitSync('countersAdded', { card, kind, n });
+      // Većina starijih skripti nastala je prije eksplicitnog `by` argumenta.
+      // Aktivni igrač je kompatibilni fallback, dok nove/instant putanje
+      // prosljeđuju stvarnog igrača koji stavlja counter.
+      this.markCounterPut(by || this.turnPlayer, card, n);
       if (kind === '+1/+1' && card.zone === 'battlefield' && card.is && card.is('Creature')) {
-        if (this.turnPlayer) this.turnPlayer.turnState._putCounterThisTurn = (this.turnPlayer.turnState._putCounterThisTurn || 0) + 1;
         this.emit('plusAdded', { card, n, before, after: card.counters[kind], ctrl: card.ctrl }); // sync queue triggera
       }
     }
@@ -990,7 +1050,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // -1/-1 counteri sa centralnim eventom ('m1Added') za Auntie Ool/Hapatra/Blowfly...
     async addM1(card, n, by, deferSBA) {
       if (n <= 0 || card.zone !== 'battlefield') return;
-      this.addCounters(card, '-1/-1', n);
+      this.addCounters(card, '-1/-1', n, false, by);
       await this.emit('m1Added', { card, n, by, ctrl: card.ctrl });
       if (!deferSBA) await this.checkSBA();
     }
@@ -1539,9 +1599,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // put on stack as trigger — allow responses
       const so = {
         kind: 'trigger', name: (tr.src ? tr.src.name + ': ' : '') + (tr.name || 'trigger'),
-        ctrl, ctx, run: tr.run, srcCard: tr.src, targetSpecs: targetSpecs || null, mode,
+        ctrl, ctx, run: tr.run, targets: ctx.targets, srcCard: tr.src, targetSpecs: targetSpecs || null, mode,
       };
       this.stack.push(so);
+      this.queueWardTriggers(so, ctx);
       this.note('stack', {});
       return true;
     }
@@ -1614,6 +1675,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async pickTargets(ctx, specs, src, ctrl) {
       ctx.targets = [];
+      ctx.wardTargets = [];
       const targetedNow = [];
       for (const spec of specs) {
         let cands = this.legalTargets(spec, src, ctrl);
@@ -1622,7 +1684,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const excluded = new Set(Array.isArray(previous) ? previous : [previous]);
           cands = cands.filter(candidate => !excluded.has(candidate));
         }
-        const min = spec.upTo ? 0 : (spec.count || 1);
+        if (spec.differentFromAllPrevious && ctx.targets.length) {
+          const excluded = new Set(ctx.targets.flat().filter(Boolean));
+          cands = cands.filter(candidate => !excluded.has(candidate));
+        }
+        const min = spec.min !== undefined ? spec.min : (spec.upTo ? 0 : (spec.count || 1));
         const max = spec.count || 1;
         if (cands.length < min) return false;
         if (max === 0) { ctx.targets.push([]); continue; }
@@ -1631,14 +1697,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           src, prompt: spec.prompt || 'Izaberi metu', aiHint: spec.aiHint,
         });
         if (!picked || (picked.length < min)) return false;
-        // ward
-        for (const t of picked.slice()) {
+        // Ward nije dodatni target/cast trošak. Ciljani spell ili ability prvo
+        // normalno ide na stack; zatim Ward trigger ide iznad njega i tek na
+        // svojoj rezoluciji traži plaćanje ili pokušava counterovati original.
+        for (const t of picked) {
           if (t instanceof CardInst && t.ctrl !== ctrl && t.cur && t.cur.wardCost) {
-            const paid = await this.payWard(ctrl, t);
-            if (!paid) picked.splice(picked.indexOf(t), 1);
+            ctx.wardTargets.push({ target: t, ward: Object.assign({}, t.cur.wardCost) });
           }
         }
-        if (picked.length < min) return false;
         for (const t of picked) if (t && t.iid !== undefined && t !== src) targetedNow.push(t);
         if (max === 1) ctx.targets.push(picked[0]);
         else ctx.targets.push(picked);
@@ -1653,19 +1719,50 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
 
-    async payWard(ctrl, target) {
-      const w = target.cur.wardCost;
+    queueWardTriggers(stackObject, ctx) {
+      if (!stackObject || !ctx || !ctx.wardTargets || !ctx.wardTargets.length) return;
+      const seen = new Set();
+      for (const entry of ctx.wardTargets) {
+        const target = entry.target;
+        const w = entry.ward;
+        if (!target || seen.has(target.iid)) continue;
+        seen.add(target.iid);
+        this.queueTrigger({
+          src: target,
+          ctrl: target.ctrl,
+          name: w.blight ? `Ward—Blight ${w.blight}` : `Ward ${w.life ? `${w.life} života` : w.mana}`,
+          data: { stackObject, payer: stackObject.ctrl, target, ward: w },
+          run: async wardCtx => {
+            const original = wardCtx.data.stackObject;
+            if (!wardCtx.g.stack.includes(original)) return;
+            if (original.kind === 'spell' && MTG.isUncounterable && MTG.isUncounterable(wardCtx.g, original)) {
+              wardCtx.g.lg(`${original.name}: Ward ga ne može counterovati.`);
+              return;
+            }
+            const paid = await wardCtx.g.payWard(wardCtx.data.payer, wardCtx.data.target, wardCtx.data.ward);
+            if (paid) return;
+            if (original.kind === 'spell') original.countered = true;
+            else wardCtx.g.stack.splice(wardCtx.g.stack.indexOf(original), 1);
+            wardCtx.g.lg(`${original.name}: Ward counteruje ${original.kind === 'spell' ? 'spell' : 'sposobnost'}.`);
+            wardCtx.g.note('stack', {});
+          },
+        });
+      }
+    }
+
+    async payWard(ctrl, target, wardOverride) {
+      const w = wardOverride || target.cur.wardCost;
       if (w.blight) {
         const pool = this.creatures(ctrl);
         if (!pool.length) { this.lg(`${ctrl.name} ne može platiti Ward—Blight (nema stvorenja).`); return false; }
         const yes = await ctrl.controller.decide(this, {
           type: 'chooseOption', prompt: `Ward — stavi ${w.blight} -1/-1 countera na svoje stvorenje da ciljaš ${target.name}?`,
           options: [{ key: 'yes', label: `Blight ${w.blight}` }, { key: 'no', label: 'Odustani' }],
-          aiHint: { kind: 'ward', target },
+          aiHint: { kind: 'ward', target, payment: 'blight', n: w.blight },
         });
         if (yes !== 'yes') return false;
         const picked = await ctrl.controller.decide(this, {
-          type: 'chooseCards', from: pool, min: 1, max: 1, prompt: `Blight ${w.blight}: izaberi svoje stvorenje`, aiHint: { kind: 'sacCost' },
+          type: 'chooseCards', from: pool, min: 1, max: 1, prompt: `Blight ${w.blight}: izaberi svoje stvorenje`, aiHint: { kind: 'blight', n: w.blight, source: target },
         });
         if (!picked.length) return false;
         await this.addM1(picked[0], w.blight, ctrl);
