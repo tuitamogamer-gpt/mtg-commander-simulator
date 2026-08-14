@@ -56,7 +56,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'castNonCreature', desc: 'Drain 2 / +2 života',
       filter: (g, self, d) => d.player === self.ctrl && d.card && mvOf(d.card) >= 3,
       run: async ctx => {
-        for (const o of ctx.g.players) if (o !== ctx.you && !o.lost) await ctx.g.damagePlayer(ctx.src, o, 2, { deferSBA: true });
+        await ctx.g.damageOpponents(ctx.src, ctx.you, 2, { deferSBA: true });
         await ctx.g.gainLife(ctx.you, 2);
         await ctx.g.checkSBA();
       },
@@ -97,7 +97,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'castNonCreature', desc: '1 šteta svima / +1 život',
       filter: (g, self, d) => d.player === self.ctrl,
       run: async ctx => {
-        for (const o of ctx.g.players) if (o !== ctx.you && !o.lost) await ctx.g.damagePlayer(ctx.src, o, 1);
+        await ctx.g.damageOpponents(ctx.src, ctx.you, 1);
         await ctx.g.gainLife(ctx.you, 1);
       },
     }],
@@ -308,8 +308,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Exsanguinate'] = SC['Exsanguinate'] || {
     resolve: async ctx => {
       const x = (ctx.src && ctx.src.castMeta && ctx.src.castMeta.x) || 0;
-      let tot = 0;
-      for (const o of ctx.g.players) if (o !== ctx.you && !o.lost) { await ctx.g.loseLife(o, x, 'Exsanguinate'); tot += x; }
+      const tot = await ctx.g.loseLifeOpponents(ctx.src, ctx.you, x, 'Exsanguinate');
       if (tot) await ctx.g.gainLife(ctx.you, tot);
     },
   };

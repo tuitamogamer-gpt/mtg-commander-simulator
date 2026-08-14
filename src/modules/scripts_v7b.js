@@ -271,7 +271,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const x = ctx.data.snap.minus1;
         await ctx.g.draw(ctx.src.owner, x);
-        for (const q of ctx.g.alivePlayers()) if (q !== ctx.src.owner) await ctx.g.loseLife(q, x, 'goat');
+        await ctx.g.loseLifeOpponents(ctx.src, ctx.src.owner, x, 'goat');
       },
     }],
   };
@@ -713,7 +713,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         on: 'dies', desc: 'Drain 1', filter: (g, self, d) => d.snap.ctrl === self.ctrl && d.snap.types.includes('Creature'),
         run: async ctx => {
-          for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 1, 'venerations');
+          await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1, 'venerations');
           await ctx.g.gainLife(ctx.you, 1);
         },
       },
@@ -724,7 +724,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'endStep', desc: '2 štete protivnicima',
       filter: (g, self, d) => (self.ctrl.turnState._putCounterThisTurn || 0) > 0,
       run: async ctx => {
-        for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, 2);
+        await ctx.g.damageOpponents(ctx.src, ctx.you, 2);
       },
     }],
   };
@@ -1303,7 +1303,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           for (const c of ctx.g.bf()) if (c.ctrl === ctx.you && (c.is('Artifact') || c.is('Creature'))) total += Object.values(c.counters).reduce((a, b) => a + b, 0);
           if (total >= 30) {
             ctx.g.lg('Lux Artillery: 30+ countera → 10 šteta svakom protivniku!');
-            for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, 10);
+            await ctx.g.damageOpponents(ctx.src, ctx.you, 10);
           }
         },
       },

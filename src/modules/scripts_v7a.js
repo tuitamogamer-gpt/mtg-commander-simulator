@@ -297,9 +297,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         on: 'combatDamageToPlayer', once: false, ctrl: p, name: 'The Ring: −3 života',
         filter: (g2, d) => isBearer(d.card),
         run: async ctx => {
-          for (const o of ctx.g.players) {
-            if (o !== p && !o.lost) await ctx.g.loseLife(o, 3, 'The Ring');
-          }
+          await ctx.g.loseLifeOpponents(ctx.src, p, 3, 'The Ring');
         },
       });
     }
@@ -481,7 +479,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: '3 života tebi, -3 svima', cost: { tap: true, sacSelf: true, mana: '{2}' },
       run: async ctx => {
         await ctx.g.gainLife(ctx.you, 3);
-        for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 3, 'pizzasaur');
+        await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 3, 'pizzasaur');
       },
       aiScore: (g, c, p) => E.eachOpp(g, p).some(o => o.life <= 6) ? 9 : 2,
     }],
@@ -1203,7 +1201,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         filter: (g, self, d) => d.snap.ctrl === self.ctrl && d.snap.isToken && d.snap.types.includes('Creature'),
         run: async ctx => {
           if (ctx.data.snap.attacking) await ctx.g.draw(ctx.you, 1);
-          else for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 1, 'zurgo');
+          else await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1, 'zurgo');
         },
       },
     ],

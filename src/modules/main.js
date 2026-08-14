@@ -319,6 +319,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ TVOJ POTEZ' : `Potez ${g.turnNo}: ${e.p.name}`, e.p === ui.me);
         if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
         if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind);
+        if (e.type === 'battlefieldArrival') ui.showBattlefieldArrival(e);
         ui.queueRender();
       },
     });
@@ -1323,6 +1324,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'generalEffects') {
+      void (async () => {
+        g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = true;
+        const commander = ui.me.commanders[0];
+        if (!commander) throw new Error('General effects scenario nema komandera');
+        await g.move(commander, 'battlefield', { ctrl: ui.me });
+        await g.damageOpponents(commander, ui.me, 2);
+        g.lg('General effects smoke: globalna šteta potvrđena i primijenjena.', 'effect');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     g.start().catch(err => {
       console.error(err);
       ui.toast('Greška u igri: ' + err.message);
@@ -1370,6 +1383,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       pending: pending ? {
         type: pending.type,
         prompt: pending.prompt || null,
+        effect: pending.type === 'effectReview' ? {
+          kind: pending.effectKind,
+          source: pending.source && pending.source.name,
+          amount: pending.amount,
+          targets: (pending.targets || []).map(player => ({ name: player.name, life: player.life })),
+        } : undefined,
         actions: (pending.casts || []).map(entry => ({
           card: entry.card && entry.card.name,
           from: entry.from,

@@ -304,6 +304,46 @@ img { -webkit-user-drag: none; }
 .manavalid.ok { background: #173525; color: #9be4b8; }
 .manavalid.bad { background: #3a2022; color: #f1adb2; }
 
+/* Blokirajući pregled "each opponent" efekata. */
+.effectreviewmodal { max-width: 900px; padding: 22px; border: 1px solid rgba(221,103,70,.6) !important; }
+.effectreviewkicker { color: #ff9b78; font: 700 11px/1.2 var(--tbl-cond,inherit); letter-spacing: .24em; text-transform: uppercase; margin-bottom: 12px; }
+.effectreviewhero { display: grid; grid-template-columns: 84px minmax(0,1fr) auto; align-items: center; gap: 14px; padding: 12px; background: linear-gradient(100deg,rgba(92,29,18,.5),rgba(17,20,18,.86)); border: 1px solid rgba(226,130,90,.28); }
+.effectreviewhero > img { width: 84px; height: 112px; object-fit: cover; border-radius: 3px; box-shadow: 0 10px 28px #000a; }
+.effectreviewhero small,.effectreviewhero b,.effectreviewhero span { display:block; }
+.effectreviewhero small { color:#a9a293; font-size:9px; letter-spacing:.18em; }
+.effectreviewhero b { color:#fff3e6; font:700 24px/1.05 var(--tbl-serif,serif); margin:5px 0; }
+.effectreviewhero span { color:#c0b7aa; font-size:12px; }
+.effectreviewamount { min-width: 104px; text-align:center; padding:10px 14px; border-left:1px solid rgba(255,255,255,.1); }
+.effectreviewamount strong,.effectreviewamount span { display:block; }
+.effectreviewamount strong { color:#ff8b61; font:800 44px/.9 var(--tbl-cond,inherit); text-shadow:0 0 22px rgba(255,91,46,.36); }
+.effectreviewamount span { color:#d8c5b7; font-size:10px; letter-spacing:.08em; text-transform:uppercase; margin-top:7px; }
+.effectreviewtargets { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:8px; margin:12px 0; }
+.effectreviewtarget { padding:10px 12px; background:#111512; border:1px solid rgba(255,255,255,.11); border-left:3px solid #a96149; }
+.effectreviewtarget.human { background:rgba(102,31,24,.38); border-color:#de7455; }
+.effectreviewtarget span,.effectreviewtarget b { display:block; }
+.effectreviewtarget span { color:#8f928b; font-size:8px; letter-spacing:.2em; }
+.effectreviewtarget b { color:#f0eadf; font-size:13px; margin:3px 0 6px; }
+.effectreviewtarget strong { color:#ffb09a; font:700 18px/1 var(--tbl-cond,inherit); }
+.effectreviewnote { color:#aaa79f; font-size:11px; line-height:1.4; margin:2px 0 12px; }
+.effectreviewmodal.lifeloss { border-color:rgba(151,106,187,.62) !important; }
+.effectreviewmodal.lifeloss .effectreviewkicker,.effectreviewmodal.lifeloss .effectreviewamount strong { color:#d3a2f0; }
+
+/* Kratak, neblokirajući signal za Commandera i velike creature ulaske. */
+.battlefieldarrival { position:fixed; top:26px; left:50%; z-index:165; width:min(620px,calc(100vw - 80px)); min-height:116px; transform:translateX(-50%); display:grid; grid-template-columns:86px minmax(0,1fr); align-items:center; gap:16px; overflow:hidden; pointer-events:none; padding:10px 22px 10px 12px; color:#fff6df; background:linear-gradient(100deg,rgba(16,13,8,.98),rgba(72,48,16,.96),rgba(10,13,11,.98)); border:1px solid rgba(239,190,91,.72); box-shadow:0 26px 75px #000d,0 0 48px rgba(232,173,70,.2); animation:arrivalIn .46s cubic-bezier(.16,.82,.2,1); }
+.battlefieldarrival.powerhouse { background:linear-gradient(100deg,rgba(8,14,16,.98),rgba(22,59,64,.96),rgba(8,12,13,.98)); border-color:rgba(92,186,196,.65); }
+.battlefieldarrival > img { position:relative; z-index:1; width:86px; height:96px; object-fit:cover; object-position:center 18%; border:1px solid rgba(255,231,174,.55); box-shadow:0 8px 24px #000c; }
+.arrivalcopy { position:relative; z-index:1; min-width:0; }
+.arrivalcopy small,.arrivalcopy b,.arrivalcopy span { display:block; }
+.arrivalcopy small { color:#f0bd76; font:700 10px/1 var(--tbl-cond,inherit); letter-spacing:.28em; }
+.arrivalcopy b { overflow:hidden; color:#fff8e9; font:700 27px/1.05 var(--tbl-serif,serif); text-overflow:ellipsis; white-space:nowrap; margin:8px 0 6px; text-shadow:0 4px 24px #000; }
+.arrivalcopy span { color:#d1c5ad; font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+.arrivalflare { position:absolute; inset:-60% -20%; background:radial-gradient(circle,rgba(255,203,104,.25),transparent 26%),linear-gradient(110deg,transparent 38%,rgba(255,238,188,.18) 49%,transparent 59%); animation:arrivalFlare 1.25s ease-out; }
+.battlefieldarrival.leaving { opacity:0; transform:translateX(-50%) translateY(-18px) scale(.97); transition:.3s ease; }
+.mini.arrival-highlight { z-index:8; animation:permanentArrival 1.05s ease-in-out 3; }
+@keyframes arrivalIn { from { opacity:0; transform:translateX(-50%) translateY(-24px) scale(.94); filter:blur(5px); } to { opacity:1; transform:translateX(-50%); filter:none; } }
+@keyframes arrivalFlare { from { transform:translateX(-35%); opacity:0; } 35% { opacity:1; } to { transform:translateX(35%); opacity:0; } }
+@keyframes permanentArrival { 0%,100% { box-shadow:0 0 8px rgba(226,174,64,.45); } 50% { box-shadow:0 0 0 3px #f0bd76,0 0 34px 12px rgba(240,189,118,.8); transform:translateY(-8px) scale(1.08); } }
+
 .mini.facedown { background: radial-gradient(circle at 35% 30%, #493d63, #171522 62%); border-color: #9c84c5; }
 .mini.facedown > img { opacity: .28; filter: grayscale(1) contrast(1.2); }
 .facedowntag { position: absolute; left: 4px; right: 4px; bottom: 22px; background: #171421e8; color: #e4d9ff; border: 1px solid #8d78b5; border-radius: 4px; padding: 2px 3px; font-size: 8px; text-align: center; overflow: hidden; white-space: nowrap; }
@@ -2338,6 +2378,7 @@ span.msym.mana-glyph {
 
 @media (prefers-reduced-motion: reduce) {
   #game *, #game::before, #game::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+  .battlefieldarrival { animation-duration: .01ms !important; }
 }
 
 /* ============================================================

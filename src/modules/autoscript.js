@@ -144,7 +144,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (what === 'each opponent') {
         return mk(null, async ctx => {
           const n = nRaw === 'X' ? (ctx.x || 0) : parseInt(nRaw, 10);
-          for (const oo of ctx.g.alivePlayers().filter(q => q !== ctx.you)) await ctx.g.damagePlayer(ctx.src, oo, n);
+          await ctx.g.damageOpponents(ctx.src, ctx.you, n);
         });
       }
       const spec = what.includes('creature') && !what.includes('any')
@@ -253,8 +253,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (m) {
       return mk(null, async ctx => {
         const n = m[1] === 'X' ? (ctx.x || 0) : parseInt(m[1], 10);
-        let tot = 0;
-        for (const oo of ctx.g.alivePlayers().filter(q => q !== ctx.you)) tot += await ctx.g.loseLife(oo, n);
+        const tot = await ctx.g.loseLifeOpponents(ctx.src, ctx.you, n);
         if (/you gain (that much|life equal)/i.test(o)) await ctx.g.gainLife(ctx.you, tot);
       });
     }

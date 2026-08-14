@@ -486,7 +486,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         on: 'attacks', desc: 'Drain 1',
         filter: (g, self, d) => d.card.ctrl === self.ctrl && (d.card.counters['+1/+1'] || 0) > 0,
         run: async ctx => {
-          for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 1, 'inkcaster');
+          await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1, 'inkcaster');
           await ctx.g.gainLife(ctx.you, 1);
         },
       },
@@ -810,8 +810,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!ctx.g.canPayMana(ctx.you, U.parseCost('{W/B}'))) return;
           const ok = await ctx.g.payMana(ctx.you, U.parseCost('{W/B}'));
           if (!ok) return;
-          let gained = 0;
-          for (const o of E.eachOpp(ctx.g, ctx.you)) { await ctx.g.loseLife(o, 1, 'extort'); gained++; }
+          const gained = await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1, 'extort');
           if (gained) await ctx.g.gainLife(ctx.you, gained);
         },
       },

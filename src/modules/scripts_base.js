@@ -96,7 +96,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       triggers: [{
         on: 'castNonCreature', desc: 'Wizard: 1 šteta svakom protivniku',
         filter: (g, self, d) => d.player === self.ctrl,
-        run: async ctx => { for (const o of ctx.g.players) if (o !== ctx.you && !o.lost) await ctx.g.damagePlayer(ctx.src, o, 1); },
+        run: async ctx => { await ctx.g.damageOpponents(ctx.src, ctx.you, 1); },
       }],
     }),
   };
@@ -569,7 +569,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         on: 'dies', desc: 'Drain 1',
         filter: (g, self, d) => d.snap.types.includes('Creature') && d.snap.ctrl === self.ctrl && d.card !== self,
         run: async ctx => {
-          for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 1);
+          await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1);
           await ctx.g.gainLife(ctx.you, 1);
         },
       },

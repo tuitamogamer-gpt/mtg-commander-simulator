@@ -75,7 +75,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Electrostatic Field'] = {
     triggers: [{
       on: 'castIS', desc: '1 šteta protivnicima', filter: myCastIS,
-      run: async ctx => { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, 1); },
+      run: async ctx => { await ctx.g.damageOpponents(ctx.src, ctx.you, 1); },
     }],
   };
   SC['Eris, Roar of the Storm'] = {
@@ -121,7 +121,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Guttersnipe'] = {
     triggers: [{
       on: 'castIS', desc: '2 štete protivnicima', filter: myCastIS,
-      run: async ctx => { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, 2); },
+      run: async ctx => { await ctx.g.damageOpponents(ctx.src, ctx.you, 2); },
     }],
   };
   SC['Kaza, Roil Chaser'] = {

@@ -288,7 +288,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Teapot Slinger'] = {
     triggers: [{
       on: 'expend4', filter: (g, self, d) => d.player === self.ctrl, desc: '2 štete protivnicima',
-      run: async ctx => { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, 2); },
+      run: async ctx => { await ctx.g.damageOpponents(ctx.src, ctx.you, 2); },
     }],
   };
   SC['Tendershoot Dryad'] = {
@@ -485,7 +485,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         filter: (g, self, d) => d.player === self.ctrl && (self.meta.level || 1) >= 3 && d.so.treasureUsed,
         run: async ctx => {
           const n = ctx.data.mv;
-          for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, n);
+          await ctx.g.damageOpponents(ctx.src, ctx.you, n);
         },
       },
     ],
@@ -804,7 +804,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [
       {
         on: 'etb', filter: etbSelf, desc: '4 štete protivnicima',
-        run: async ctx => { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, 4); },
+        run: async ctx => { await ctx.g.damageOpponents(ctx.src, ctx.you, 4); },
       },
       {
         on: 'damageToPlayer', desc: 'Delirium: šteta stvorenju',
@@ -861,8 +861,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'etb', filter: etbSelf, desc: 'Drain devotion',
       run: async ctx => {
         const x = ctx.g.devotion(ctx.you, ['B']);
-        let total = 0;
-        for (const o of E.eachOpp(ctx.g, ctx.you)) total += await ctx.g.loseLife(o, x);
+        const total = await ctx.g.loseLifeOpponents(ctx.src, ctx.you, x);
         await ctx.g.gainLife(ctx.you, total);
       },
     }],
@@ -898,7 +897,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         on: 'dies', desc: 'Drain 1',
         filter: (g, self, d) => d.snap.types.includes('Creature') && d.snap.attacking,
         run: async ctx => {
-          for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 1);
+          await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1);
           await ctx.g.gainLife(ctx.you, 1);
         },
       },
@@ -1067,12 +1066,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         on: 'dies', desc: '1 šteta protivnicima',
         filter: (g, self, d) => d.card !== self && d.snap.types.includes('Creature'),
-        run: async ctx => { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, 1); },
+        run: async ctx => { await ctx.g.damageOpponents(ctx.src, ctx.you, 1); },
       },
       {
         on: 'cardToGraveyard', desc: '1 šteta protivnicima',
         filter: (g, self, d) => d.card.is('Creature') && d.from !== 'battlefield',
-        run: async ctx => { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, 1); },
+        run: async ctx => { await ctx.g.damageOpponents(ctx.src, ctx.you, 1); },
       },
     ],
     abilities: [{
@@ -1086,7 +1085,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           options: [{ key: 'dmg', label: '3 štete svakom protivniku' }, { key: 'impulse', label: 'Impulse 2 (1 od 2)' }],
           aiHint: { kind: 'tectonic' },
         });
-        if (k === 'dmg') { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, 3); }
+        if (k === 'dmg') await ctx.g.damageOpponents(ctx.src, ctx.you, 3);
         else {
           const top = ctx.you.library.slice(-2).reverse();
           if (!top.length) return;
@@ -1202,7 +1201,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await ctx.g.draw(ctx.you, 2);
       const disc = ctx.so.discardedCards && ctx.so.discardedCards[0];
       if (disc && !disc.def.types.includes('Land')) {
-        for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, 2);
+        await ctx.g.damageOpponents(ctx.src, ctx.you, 2);
       }
     },
   };

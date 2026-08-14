@@ -55,7 +55,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [
       {
         on: 'discardedLands', desc: 'Drain 2', filter: (g, self, d) => d.player === self.ctrl,
-        run: async ctx => { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 2, 'doom'); },
+        run: async ctx => { await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 2, 'doom'); },
       },
       {
         on: 'beginCombat', desc: 'Villain connive + menace', filter: (g, self, d) => d.player === self.ctrl,
@@ -170,7 +170,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         on: 'draw', desc: 'Drain 1', filter: (g, self, d) => d.player === self.ctrl && d.nth === 2,
         run: async ctx => {
-          for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 1, 'kang');
+          await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1, 'kang');
           await ctx.g.gainLife(ctx.you, 1);
         },
       },
@@ -247,7 +247,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         if (!hit) return;
         const diff = Math.abs(originalMv - hit.mv);
-        if (diff > 0) for (const o of E.eachOpp(g, you)) await g.damagePlayer(ctx.src, o, diff);
+        if (diff > 0) await g.damageOpponents(ctx.src, you, diff);
         const yes = await you.controller.decide(g, {
           type: 'chooseOption', prompt: `Lady Loki: baci besplatno ${hit.name}?`,
           options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }], aiHint: { kind: 'freeCast', card: hit },
@@ -578,7 +578,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (k === 't') await ctx.g.makeTokens('treasure', ctx.you);
         else if (k === 'd') await ctx.g.draw(ctx.you, 1);
         else {
-          for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 2, 'mary');
+          await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 2, 'mary');
           await ctx.g.gainLife(ctx.you, 2);
         }
       },
@@ -1133,7 +1133,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filter: (g, self, d) => d.player === self.ctrl && !d.card.is('Creature') && !d.card.is('Land'),
       run: async ctx => {
         const x = (ctx.data.card.colors || []).length;
-        if (x) for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, x);
+        if (x) await ctx.g.damageOpponents(ctx.src, ctx.you, x);
       },
     }],
   };

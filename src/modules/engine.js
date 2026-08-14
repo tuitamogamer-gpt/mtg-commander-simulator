@@ -230,6 +230,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }));
     }
 
+    // Globalni efekti bez pojedinačne mete lako nestanu između stacka i tri
+    // odvojena life-log reda. Prije primjene pokaži jedan zajednički pregled i
+    // sačekaj ljudski Proceed. Ovo je samo UX checkpoint: ne otvara priority i
+    // ne mijenja način na koji se prevention/replacement efekti razrješavaju.
+    async reviewGlobalEffectWithHuman(payload) {
+      const hu = this.human();
+      const targets = (payload && payload.targets || []).filter(p => p && !p.lost);
+      if (!this.paced || !hu || !hu.controller || this.gameOver || !targets.length) return null;
+      return hu.controller.decide(this, Object.assign({}, payload, {
+        type: 'effectReview', player: hu, targets,
+      }));
+    }
+
     // istakni AI akciju usmjerenu na igrača i daj mu vremena da je pročita
     async spotlight(text, opts) {
       opts = opts || {};
@@ -515,6 +528,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.meta._enteredTurn = this.turnNo;
         if (card.hasSub && card.hasSub('Elf')) card.ctrl.turnState.elfEntries.push(card.iid);
         await this.handleETB(card, opts);
+        // Commander i zaista veliki nontoken creature ulasci dobijaju centralni
+        // vizuelni signal. Event nastaje tek nakon as-enters/counter obrade, pa
+        // UI vidi konačan P/T i stvarni battlefield objekat.
+        const impactfulCreature = !card.isToken && card.is('Creature') &&
+          (card.commander || card.mv >= 6 || card.power >= 6 || card.toughness >= 7);
+        if (card.commander || impactfulCreature) {
+          const kind = card.commander ? 'commander' : 'powerhouse';
+          this.lg(`${card.commander ? '👑' : '✦'} ${card.ctrl.name} uvodi ${card.name} na bojno polje.`, 'arrival');
+          this.note('battlefieldArrival', {
+            card, player: card.ctrl, kind,
+            power: card.is('Creature') ? card.power : null,
+            toughness: card.is('Creature') ? card.toughness : null,
+          });
+        }
         // Permanent koji NIJE bačen (reanimacija, "put onto the battlefield",
         // blink) nikad se ne pojavi na stacku, pa ga igrač inače ne bi vidio.
         // Tokene pokriva makeTokens, landove namjerno preskačemo.
@@ -940,6 +967,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.note('life', { p });
       await this.emit('lifeLost', { player: p, n, events: p.turnState.lifeLossEvents });
       return n;
+    }
+
+    // Jedna autoritativna putanja za "each opponent" life-loss efekte. Pored
+    // zajedničkog Proceed pregleda vraća ukupan izgubljeni život (drain karte
+    // ga koriste za lifegain), kao ranije ručno sabrane petlje.
+    async loseLifeOpponents(src, controller, n, why) {
+      const targets = this.alivePlayers().filter(p => p !== controller);
+      if (n <= 0 || !targets.length) return 0;
+      await this.reviewGlobalEffectWithHuman({
+        effectKind: 'lifeLossAllOpponents', source: src, controller, targets, amount: n,
+      });
+      let total = 0;
+      for (const target of targets) total += await this.loseLife(target, n, why);
+      return total;
+    }
+
+    // Grupna šteta je simultan događaj. Svaki igrač i dalje prolazi kroz isti
+    // damagePlayer replacement/prevention sloj, a SBA se provjerava tek nakon
+    // cijele grupe (osim kada pozivalac već upravlja batchom).
+    async damageOpponents(src, controller, n, opts = {}) {
+      const targets = this.alivePlayers().filter(p => p !== controller);
+      if (n <= 0 || !targets.length) return 0;
+      await this.reviewGlobalEffectWithHuman({
+        effectKind: 'damageAllOpponents', source: src, controller, targets, amount: n,
+      });
+      let total = 0;
+      const damageOpts = Object.assign({}, opts, { deferSBA: true });
+      for (const target of targets) total += await this.damagePlayer(src, target, n, damageOpts);
+      if (!opts.deferSBA) await this.checkSBA();
+      return total;
     }
 
     async damagePlayer(src, p, n, opts = {}) {

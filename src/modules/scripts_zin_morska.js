@@ -76,7 +76,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', desc: '1 šteta protivnicima',
       filter: (g, self, d) => d.card !== self && d.card.ctrl === self.ctrl && d.card.is('Creature'),
-      run: async ctx => { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, 1); },
+      run: async ctx => { await ctx.g.damageOpponents(ctx.src, ctx.you, 1); },
     }],
   };
   SC['Arthur, Marigold Knight'] = {
@@ -974,7 +974,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     cdaToughness: (g, c) => c.ctrl.hand.length,
     triggers: [{
       on: 'draw', desc: 'Protivnici gube 1', filter: (g, self, d) => d.player === self.ctrl,
-      run: async ctx => { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 1); },
+      run: async ctx => { await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1); },
     }],
   };
   SC['Selvala, Explorer Returned'] = {

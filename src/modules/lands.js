@@ -306,14 +306,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Svaki protivnik gubi 1', cost: { tap: true, mana: '{B}' },
       cond: (g, c, p) => g.bf().filter(x => x.ctrl === p && x.colors.includes('B')).length >= 2,
-      run: async ctx => { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 1); },
+      run: async ctx => { await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1); },
     }],
   };
   SC['Shivan Gorge'] = {
     producesColors: [], mana: tapFor([{ C: 1 }]),
     abilities: [{
       label: '1 šteta svakom protivniku', cost: { tap: true, mana: '{2}{R}' },
-      run: async ctx => { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.damagePlayer(ctx.src, o, 1); },
+      run: async ctx => { await ctx.g.damageOpponents(ctx.src, ctx.you, 1); },
     }],
   };
   SC['Swarmyard'] = {

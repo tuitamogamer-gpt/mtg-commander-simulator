@@ -298,7 +298,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'lto', desc: 'Drain 1',
       filter: (g, self, d) => d.snap.isToken && d.snap.ctrl === self.ctrl,
       run: async ctx => {
-        for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 1);
+        await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1);
         await ctx.g.gainLife(ctx.you, 1);
       },
     }],
@@ -338,7 +338,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Poison-Tip Archer'] = {
     triggers: [{
       on: 'dies', desc: 'Svaki protivnik gubi 1', filter: anotherCreatureDies,
-      run: async ctx => { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 1); },
+      run: async ctx => { await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1); },
     }],
   };
   SC['Prosperous Innkeeper'] = {
@@ -482,7 +482,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'dies', desc: 'Drain 1',
       filter: (g, self, d) => d.snap.types.includes('Creature') && d.snap.ctrl === self.ctrl,
       run: async ctx => {
-        for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 1);
+        await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1);
         await ctx.g.gainLife(ctx.you, 1);
       },
     }],
@@ -961,7 +961,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Svaki protivnik gubi X', cost: { mana: '{2}{B}', tap: true },
       run: async ctx => {
         const x = ctx.g.creatures(ctx.you).filter(c => c.kw('defender')).length;
-        for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, x);
+        await ctx.g.loseLifeOpponents(ctx.src, ctx.you, x);
       },
     }],
   };
@@ -1030,7 +1030,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'endStep', desc: 'Drain 3', filter: (g, self, d) => d.player === self.ctrl,
       onlyIf: (g, self) => self.ctrl.turnState.lifeGained >= 3,
-      run: async ctx => { for (const o of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(o, 3); },
+      run: async ctx => { await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 3); },
     }],
   };
   SC['Jaddi Offshoot'] = {

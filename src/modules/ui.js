@@ -1118,6 +1118,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const mayLookFaceDown = !!shownFaceDownDef;
       const faceName = mayLookFaceDown ? shownFaceDownDef.name : c.name;
       const d = el('div', 'mini' + (opts.sm ? ' sm' : '') + (c.tapped ? ' tapped' : '') + (c.sick && c.is('Creature') && !c.kw('haste') ? ' sick' : '') + (threatened ? ' threatened' : '') + (c.faceDown ? ' facedown' : ''));
+      d.dataset.iid = String(c.iid);
       const colors = c.colors.length ? c.colors : ['C'];
       const grad = colors.length > 1
         ? `linear-gradient(135deg, ${colors.map(x => COLHEX[x]).join(',')})`
@@ -1483,12 +1484,46 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!pd) return null;
       const q = pd.q;
       if (q.type === 'threatAlert') return this.renderThreatAlert(g, q);
-      const types = ['mulligan', 'bottomCards', 'chooseCards', 'chooseOption', 'chooseMulti', 'chooseX', 'scry', 'orderTriggers', 'combatReview', 'chooseManaSources'];
+      const types = ['mulligan', 'bottomCards', 'chooseCards', 'chooseOption', 'chooseMulti', 'chooseX', 'scry', 'orderTriggers', 'combatReview', 'effectReview', 'chooseManaSources'];
       if (!types.includes(q.type)) return null;
       const ov = el('div', 'overlay');
       const m = el('div', 'modal');
       ov.appendChild(m);
       const btn = (label, fn, cls) => { const b = el('button', 'pbtn ' + (cls || ''), label); b.onclick = fn; return b; };
+
+      if (q.type === 'effectReview') {
+        const damage = q.effectKind === 'damageAllOpponents';
+        const source = q.source;
+        const targets = (q.targets || []).filter(player => player && !player.lost);
+        m.classList.add('wide', 'effectreviewmodal', damage ? 'damage' : 'lifeloss');
+        m.dataset.testid = 'global-effect-review';
+        m.appendChild(el('div', 'effectreviewkicker', damage
+          ? '🔥 GLOBALNA ŠTETA · SVI PROTIVNICI'
+          : '☠ GLOBALNI GUBITAK ŽIVOTA · SVI PROTIVNICI'));
+        const hero = el('div', 'effectreviewhero');
+        if (source && source.name) {
+          hero.innerHTML = `<img src="${imgURL(source.name)}" onerror="MTG.imgFail(this)">` +
+            `<div><small>IZVOR EFEKTA</small><b>${esc(source.name)}</b><span>${esc(q.controller ? q.controller.name : '')}</span></div>`;
+        } else {
+          hero.innerHTML = '<div><small>IZVOR EFEKTA</small><b>Globalni efekat</b></div>';
+        }
+        hero.appendChild(el('div', 'effectreviewamount',
+          `<strong>${Number(q.amount) || 0}</strong><span>${damage ? 'štete svakom' : 'života svakom'}</span>`));
+        m.appendChild(hero);
+        const victims = el('div', 'effectreviewtargets');
+        for (const player of targets) {
+          const hit = el('div', 'effectreviewtarget' + (player === this.me ? ' human' : ''));
+          hit.innerHTML = `<span>${player === this.me ? 'TI' : 'PROTIVNIK'}</span>` +
+            `<b>${esc(player.name)}</b><strong>${player.life} ❯ ${Math.max(0, player.life - (Number(q.amount) || 0))}</strong>`;
+          victims.appendChild(hit);
+        }
+        m.appendChild(victims);
+        m.appendChild(el('div', 'effectreviewnote', damage
+          ? 'Prikazana je najavljena šteta. Prevention i replacement efekti se primjenjuju poslije potvrde.'
+          : 'Efekat se primjenjuje na sve protivnike nakon potvrde.'));
+        m.appendChild(btn('Proceed ▶', () => this.resolvePendingEntry(pd, null), 'primary wide effectproceed'));
+        return ov;
+      }
 
       if (q.type === 'chooseManaSources') {
         if (!pd.manaInit) {
@@ -2280,6 +2315,34 @@ Sorcerije i stvorenja možeš igrati samo u svojoj glavnoj fazi; instanti i kart
           if (!stack.children.length) stack.remove();
         }, 220);
       }, 4200);
+    }
+
+    showBattlefieldArrival(event) {
+      const card = event && event.card;
+      if (!card || !card.name) return;
+      const previous = document.querySelector('.battlefieldarrival');
+      if (previous) previous.remove();
+      const commander = event.kind === 'commander';
+      const splash = el('div', `battlefieldarrival ${commander ? 'commander' : 'powerhouse'}`);
+      splash.dataset.iid = String(card.iid);
+      splash.innerHTML = `
+        <div class="arrivalflare" aria-hidden="true"></div>
+        <img src="${imgURL(card.name, true)}" onerror="MTG.imgFail(this)">
+        <div class="arrivalcopy">
+          <small>${commander ? '👑 COMMANDER ENTERS' : '✦ POWERHOUSE ENTERS'}</small>
+          <b>${esc(card.name)}</b>
+          <span>${esc(event.player ? event.player.name : '')}${event.power !== null && event.power !== undefined ? ` · ${event.power}/${event.toughness}` : ''}</span>
+        </div>`;
+      document.body.appendChild(splash);
+      requestAnimationFrame(() => {
+        const permanent = document.querySelector(`.mini[data-iid="${card.iid}"]`);
+        if (permanent) permanent.classList.add('arrival-highlight');
+      });
+      setTimeout(() => {
+        splash.classList.add('leaving');
+        document.querySelector(`.mini[data-iid="${card.iid}"]`)?.classList.remove('arrival-highlight');
+        setTimeout(() => splash.remove(), 320);
+      }, 3200);
     }
 
     showBanner(text, gold) {
