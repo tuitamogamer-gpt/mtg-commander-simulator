@@ -1352,7 +1352,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (name === 'draw' && this.bf().some(v => v.def.doubleDrawTriggers && v.ctrl === card.ctrl)) times *= 2;
         for (let i = 0; i < times; i++) {
           this.queueTrigger({
-            src: card, name: t.desc || name, run: t.run, targets: t.targets,
+            src: card,
+            ctrl: typeof t.controller === 'function' ? t.controller(this, card, data || {}) : t.controller,
+            name: t.desc || name, run: t.run, targets: t.targets, modes: t.modes,
             opt: t.opt, data, onlyIf: t.onlyIf,
           });
         }
@@ -1432,11 +1434,43 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         if (yes !== 'yes') return;
       }
+      // Modalni trigger bira mod i mete dok se stavlja na stack, kao spell.
+      // Ovo je bitno za "choose one" ETB sposobnosti: protivnici moraju vidjeti
+      // i izabrani mod i mete prije nego što dobiju priority.
+      let mode = null;
+      if (tr.modes && tr.modes.list && tr.modes.list.length) {
+        const options = tr.modes.list.map((entry, index) => ({ entry, index }))
+          .filter(({ entry }) => {
+            const specs = typeof entry.targets === 'function'
+              ? entry.targets(this, tr.src, tr.data || {})
+              : entry.targets;
+            return !(specs || []).some(spec => !spec.upTo &&
+              this.legalTargets(spec, tr.src, ctrl).length < (spec.count || 1));
+          })
+          .map(({ entry, index }) => Object.assign({
+            key: String(index), label: entry.label,
+          }, entry.aiMeta || {}));
+        if (!options.length) return;
+        const picked = await ctrl.controller.decide(this, {
+          type: 'chooseOption', prompt: `${tr.src ? tr.src.name : ''}: izaberi mod`,
+          options,
+          aiHint: Object.assign({ kind: 'mode', src: tr.src }, tr.modes.aiHint || {}),
+        });
+        mode = Number.parseInt(picked, 10);
+        if (!Number.isInteger(mode) || !tr.modes.list[mode]) mode = 0;
+        ctx.mode = mode;
+      }
       // Mete mogu zavisiti od trigger podatka (npr. "za svakog protivnika"
       // ili Batrocov X), pa ih računamo kada trigger ide na stack.
-      const targetSpecs = typeof tr.targets === 'function'
+      let targetSpecs = typeof tr.targets === 'function'
         ? tr.targets(this, tr.src, tr.data || {})
         : tr.targets;
+      if (mode !== null) {
+        const selectedTargets = tr.modes.list[mode].targets;
+        targetSpecs = typeof selectedTargets === 'function'
+          ? selectedTargets(this, tr.src, tr.data || {})
+          : selectedTargets || null;
+      }
       if (targetSpecs && targetSpecs.length) {
         const ok = await this.pickTargets(ctx, targetSpecs, tr.src, ctrl);
         if (!ok) return; // no legal targets → fizzle
@@ -1444,7 +1478,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // put on stack as trigger — allow responses
       const so = {
         kind: 'trigger', name: (tr.src ? tr.src.name + ': ' : '') + (tr.name || 'trigger'),
-        ctrl, ctx, run: tr.run, srcCard: tr.src, targetSpecs: targetSpecs || null,
+        ctrl, ctx, run: tr.run, srcCard: tr.src, targetSpecs: targetSpecs || null, mode,
       };
       this.stack.push(so);
       this.note('stack', {});
@@ -1521,7 +1555,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx.targets = [];
       const targetedNow = [];
       for (const spec of specs) {
-        const cands = this.legalTargets(spec, src, ctrl);
+        let cands = this.legalTargets(spec, src, ctrl);
+        if (spec.differentFromPrevious && ctx.targets.length) {
+          const previous = ctx.targets[ctx.targets.length - 1];
+          const excluded = new Set(Array.isArray(previous) ? previous : [previous]);
+          cands = cands.filter(candidate => !excluded.has(candidate));
+        }
         const min = spec.upTo ? 0 : (spec.count || 1);
         const max = spec.count || 1;
         if (cands.length < min) return false;

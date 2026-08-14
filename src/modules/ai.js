@@ -836,6 +836,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         case 'ward': return this.p.life > 10 ? 'yes' : 'no';
         case 'optTrigger': return 'yes';
+        case 'partnerSearch': case 'rampChoice': return keys.includes('yes') ? 'yes' : keys[0];
+        case 'tmntAlliance': {
+          const hasFoodEngine = g.bf().some(card => card.ctrl === this.p &&
+            ['Ninja Pizza', 'Donatello, the Brains', 'Leonardo, the Balance'].includes(card.name));
+          if (hasFoodEngine && keys.includes('food')) return 'food';
+          if (keys.includes('counter')) return 'counter';
+          if (keys.includes('food')) return 'food';
+          return keys[0];
+        }
+        case 'aggroAmalgam': {
+          const source = q.aiHint && q.aiHint.src;
+          const counters = source && (source.counters['+1/+1'] || 0);
+          const killable = source && g.bf().some(card => card.is('Creature') && card.ctrl !== this.p &&
+            card.toughness - card.damage <= source.power && card.power < source.toughness);
+          if (killable && keys.includes('1')) return '1';
+          return counters > 0 && keys.includes('0') ? '0' : keys[0];
+        }
         case 'freeCast': return 'yes';
         case 'tataruDraw': return 'yes';
         case 'kicker': return 'yes';

@@ -727,6 +727,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.spellTargetSpecs = function (card, castOpts) {
     const d = card.def;
+    if (castOpts && castOpts.splitHalf && d.splitHalves && d.splitHalves[castOpts.splitHalf]) {
+      return d.splitHalves[castOpts.splitHalf].targets || null;
+    }
+    if (castOpts && castOpts.splitFuse && d.splitHalves) {
+      const right = d.splitHalves[castOpts.splitFuse];
+      return [...(d.targets || []), ...(right && right.targets || [])];
+    }
     if (castOpts && castOpts.adventure) return d.adventure.targets || null;
     if (castOpts && castOpts.room) return castOpts.room.targets || null;
     if (castOpts && castOpts.overloaded) return null;
@@ -867,7 +874,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // build stack object early for target ctx
     const so = {
-      kind: 'spell', card, ctrl: p, name: card.name, targets: [], x: xVal, mode,
+      kind: 'spell', card, ctrl: p,
+      name: (castOpts.splitHalf || castOpts.splitFuse) && castOpts.name ? castOpts.name : card.name,
+      targets: [], x: xVal, mode,
       castOpts, kicked, offspring, from: opts.from || card.zone, copyOf: null,
     };
 
@@ -1054,9 +1063,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const used = p.tempFlashFilters.find(grant => grant.turn === this.turnNo && grant.filter(this, card, p));
       if (used && used.once) p.tempFlashFilters.splice(p.tempFlashFilters.indexOf(used), 1);
     }
-    p.turnState.spellsCastList.push({ name: card.name, mv: U.mv(d.cost || '', xVal), card, so });
+    // Alternativni trošak inače ne mijenja mana value. Split polovina je
+    // izuzetak jer na stacku ima mana cost izabrane polovine; fused spell ima
+    // zbir obje polovine (ovdje zapisan u split altCostStr).
+    const stackMV = (castOpts.splitHalf || castOpts.splitFuse) && castOpts.altCostStr !== undefined
+      ? U.mv(castOpts.altCostStr || '', xVal)
+      : U.mv(d.cost || '', xVal);
+    p.turnState.spellsCastList.push({ name: so.name, mv: stackMV, card, so });
     const castData = {
-      player: p, card, so, mv: U.mv(d.cost || '', xVal) + (castOpts.adventure || castOpts.room ? 0 : 0),
+      player: p, card, so, mv: stackMV,
       isInstantSorcery: card.is('Instant') || card.is('Sorcery') || !!castOpts.adventure && d.adventure.types === 'Instant',
       isCreature: card.is('Creature') && !castOpts.adventure,
       fromHand: so.from === 'hand', nthThisTurn: p.turnState.spellsCast,
@@ -1289,6 +1304,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       kicked: so.kicked,
     };
     const co = so.castOpts || {};
+    if (co.splitHalf && d.splitHalves && d.splitHalves[co.splitHalf]) {
+      await d.splitHalves[co.splitHalf].resolve(ctx);
+      if (!so.isCopy && card.zone === 'stack') await this.move(card, 'graveyard');
+      await this.checkSBA(); await this.flushTriggers();
+      return;
+    }
+    if (co.splitFuse && d.splitHalves && d.splitHalves[co.splitFuse]) {
+      const leftCount = (d.targets || []).length;
+      await d.resolve(Object.assign({}, ctx, { targets: ctx.targets.slice(0, leftCount) }));
+      await d.splitHalves[co.splitFuse].resolve(Object.assign({}, ctx, { targets: ctx.targets.slice(leftCount) }));
+      if (!so.isCopy && card.zone === 'stack') await this.move(card, 'graveyard');
+      await this.checkSBA(); await this.flushTriggers();
+      return;
+    }
     if (co.adventure) {
       // resolve adventure half then exile with permission to cast later
       await d.adventure.resolve(ctx);
@@ -2449,9 +2478,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await this.pace(p.isAI ? 330 : 0);
     // forced attackers
     const forced = elig.filter(c => c.cur.mustAttack || c.def.mustAttack || this.isForcedToAttack(c));
-    const decl = await p.controller.decide(this, {
+    const declared = await p.controller.decide(this, {
       type: 'attackers', eligible: elig, opponents: oppList, forced,
     });
+    const decl = Array.isArray(declared) ? declared : [];
     // decl: [{card, target(player or pw iid)}]
     const cantAttackTarget = (c, tgt) => !this.canAttackTarget(c, tgt);
     const attackers = [];

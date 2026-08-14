@@ -18,9 +18,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       const t = ctx.targets[0];
       if (!t) return;
-      const owner = t.ctrl;
+      const controller = t.ctrl;
       await ctx.g.destroy(t);
-      await E.searchBasic(ctx.g, owner, {});
+      const search = await controller.controller.decide(ctx.g, {
+        type: 'chooseOption', prompt: `Assassin's Trophy: ${controller.name} može naći basic land`,
+        options: [{ key: 'yes', label: 'Da, traži basic' }, { key: 'no', label: 'Ne' }],
+        aiHint: { kind: 'rampChoice' },
+      });
+      if (search === 'yes') await E.searchBasic(ctx.g, controller, { tapped: false });
     },
   };
   SC['Terminate'] = {

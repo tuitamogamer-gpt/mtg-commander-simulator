@@ -396,13 +396,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     ],
   };
-  SC['Big Apple, 3 a.m.'] = anyColorLand({
+  SC['Big Apple, 3 a.m.'] = {
+    producesColors: COLORS,
     entersTapped: true,
+    asEnters: async (g, card) => {
+      const options = COLORS.map(color => ({ key: color, label: color }));
+      const choice = await card.ctrl.controller.decide(g, {
+        type: 'chooseOption', prompt: `${card.name}: izaberi boju`, options,
+        aiHint: { kind: 'manaColor' },
+      });
+      card.meta.chosenColor = COLORS.includes(choice) ? choice : 'G';
+    },
+    mana: {
+      cost: { tap: true },
+      produce: (g, card) => [{ [card.meta.chosenColor || 'G']: 1 }],
+    },
     abilities: [{
       label: 'Rat po protivniku', cost: { tap: true, mana: '{5}' },
       run: async ctx => { await ctx.g.makeTokens('rat', ctx.you, { n: E.eachOpp(ctx.g, ctx.you).length }); },
     }],
-  });
+  };
   SC['Hidden Hideout'] = {
     producesColors: COLORS, entersTapped: true,
     mana: { cost: { tap: true }, produce: (g, c, p) => p.colorIdentity.map(col => ({ [col]: 1 })) },
@@ -455,8 +468,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Sac: nađi basic', cost: { tap: true, sacSelf: true },
       run: async ctx => {
-        const untap = ctx.g.lands(ctx.you).length >= 4;
-        await E.searchBasic(ctx.g, ctx.you, { tapped: !untap });
+        const found = await E.searchBasic(ctx.g, ctx.you, { tapped: true });
+        const land = found[0];
+        if (land && ctx.g.lands(ctx.you).length >= 4) {
+          land.tapped = false;
+          ctx.g.lg(`Fabled Passage: ${land.name} se untapuje.`);
+          ctx.g.recalc();
+        }
       },
       aiScore: (g, c, p) => 6,
     }],

@@ -586,7 +586,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         .filter((target, index, list) => list.indexOf(target) === index);
       const next = [];
       for (const node of beam) {
-        if (!forced.has(attacker)) next.push({ assignments: node.assignments.slice(), score: node.score });
+        // "Must attack if able" ne zahtijeva nemoguću deklaraciju. Ako ovaj
+        // napadač nema nijednu legalnu metu, plan mora ostati validan umjesto
+        // da cijeli combat generator ostane bez akcije.
+        if (!forced.has(attacker) || !targets.length) next.push({ assignments: node.assignments.slice(), score: node.score });
         for (const target of targets) {
           next.push({
             assignments: node.assignments.concat({ card: attacker, target }),
@@ -597,6 +600,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       beam = next.sort((a, b) => b.score - a.score || actionKey({ kind: 'declareAttackers', assignments: a.assignments }).localeCompare(actionKey({ kind: 'declareAttackers', assignments: b.assignments })))
         .slice(0, config.beamWidth);
     }
+    if (!beam.length) beam = [{ assignments: [], score: 0 }];
     if (!beam.some(plan => plan.assignments.length === 0) && !forced.size) beam.push({ assignments: [], score: 0 });
     return beam.map(plan => ({ kind: 'declareAttackers', assignments: plan.assignments, _combatScore: plan.score }));
   }
@@ -712,6 +716,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       else if (q.type === 'chooseManaSources') actions.push({ kind: 'chooseManaSources', value: [] });
       else if (q.type === 'chooseX') actions.push({ kind: 'chooseX', value: Number(q.min || 0) });
       else if (q.type === 'chooseOption') actions.push({ kind: 'chooseOption', value: q.options && q.options[0] ? q.options[0].key : null });
+      else if (q.type === 'attackers') actions.push({ kind: 'declareAttackers', assignments: [] });
+      else if (q.type === 'blockers') actions.push({ kind: 'declareBlockers', assignments: [] });
       else actions.push({ kind: q.type === 'priority' ? 'pass' : 'done' });
     }
     const seen = new Set();
@@ -1074,6 +1080,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         } else {
           breakdown.choice = -(Number(action.option.lifeCost || 2) * (player.life <= 10 ? 2.5 : 1)) -
             Number(action.option.cardsForOpponent || 0) * 2.6;
+        }
+      } else if (hintKind === 'partnerSearch' || hintKind === 'rampChoice') {
+        breakdown.choice = action.value === 'yes' ? 6 : -1;
+      } else if (hintKind === 'tmntAlliance') {
+        if (action.value === 'counter') {
+          breakdown.choice = 3.2 + game.bf().filter(card => card.ctrl === player &&
+            ['High Score', 'Humongous Fungus', 'Casey Jones, Back Alley Brute'].includes(card.name)).length * 1.2;
+        } else if (action.value === 'food') {
+          breakdown.choice = 2.8 + game.bf().filter(card => card.ctrl === player &&
+            ['Ninja Pizza', 'Donatello, the Brains', 'Leonardo, the Balance'].includes(card.name)).length * 1.7;
+        } else if (action.value === 'scry') {
+          breakdown.choice = player.library.length ? (player.hand.length >= 6 ? 2.3 : 1.7) : -2;
+        }
+      } else if (hintKind === 'aggroAmalgam') {
+        const source = q.aiHint && q.aiHint.src;
+        if (source && action.value === '0') {
+          breakdown.choice = (source.counters['+1/+1'] || 0) * 1.8 + Math.max(0, source.power) * 0.35;
+        } else if (source && action.value === '1') {
+          const candidates = game.bf().filter(card => card.is('Creature') && card.ctrl !== player);
+          const best = candidates.map(card => {
+            const kills = card.toughness - card.damage <= source.power;
+            const survives = source.toughness - source.damage > card.power;
+            return (kills ? permanentGameValue(game, card, player) : 0) + (survives ? 2.5 : -permanentGameValue(game, source, player));
+          }).sort((a, b) => b - a)[0];
+          breakdown.choice = Number.isFinite(best) ? best : -20;
         }
       } else if (hintKind === 'freeCast') {
         const freeCard = q.aiHint.card;
