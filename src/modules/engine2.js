@@ -51,7 +51,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function manaOptionLabel(option) {
-    if (option.ANY) return `${option.n || 1} manu bilo koje boje`;
+    if (option.ANY) return `${option.n || 1} mana of any color`;
     return Object.entries(option)
       .filter(([key]) => key !== 'n')
       .map(([color, amount]) => `${amount}×${color}`)
@@ -338,7 +338,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const cards = Array.isArray(choice) ? choice : choice && choice.cards;
         const manual = this.manualManaSelectionSolution(p, cost, forSpell, cards, opts);
         if (!manual) {
-          this.lg(`${forSpell && forSpell.card ? forSpell.card.name : 'Spell'}: izabrani mana izvori ne mogu platiti cijenu.`);
+          this.lg(`${forSpell && forSpell.card ? forSpell.card.name : 'Spell'}: the selected mana sources cannot pay the cost.`);
           return false;
         }
         sol = manual;
@@ -815,12 +815,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.applyDemonstrate = async function (p, so, card) {
     const yes = await p.controller.decide(this, {
       type: 'chooseOption', prompt: `Demonstrate: kopiraj ${card.name}? (izabrani protivnik takođe dobija kopiju)`,
-      options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+      options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
       aiHint: { kind: 'demonstrate', card },
     });
     if (yes !== 'yes') return false;
     const opponent = await MTG.E.chooseOpponent(this, p, {
-      prompt: `Demonstrate — ko takođe kopira ${card.name}?`, goal: 'gift',
+      prompt: `Demonstrate — who also copies ${card.name}?`, goal: 'gift',
     });
     await this.copySpell(so, p, { mayNewTargets: true });
     if (opponent) {
@@ -853,7 +853,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let maxX = this.maxAffordableX(p, cost, card);
       if (typeof d.xMax === 'function') maxX = Math.min(maxX, Math.max(0, Number(d.xMax(this, card, p, castOpts)) || 0));
       xVal = opts.xVal !== undefined ? opts.xVal : await p.controller.decide(this, {
-        type: 'chooseX', min: 0, max: maxX, card, prompt: `X za ${card.name}?`,
+        type: 'chooseX', min: 0, max: maxX, card, prompt: `X for ${card.name}?`,
         aiHint: { kind: 'chooseX', card },
       });
       xVal = Math.max(0, Math.min(xVal, maxX));
@@ -869,8 +869,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const combined = { generic: cost.generic + kCost.generic, x: cost.x, xReduction: cost.xReduction || 0, pips: cost.pips.concat(kCost.pips) };
       if (this.canPayMana(p, combined, { card }, { xVal })) {
         const yes = await p.controller.decide(this, {
-          type: 'chooseOption', prompt: `Kicker ${d.kicker.cost} za ${card.name}?`,
-          options: [{ key: 'yes', label: 'Da (kicked)' }, { key: 'no', label: 'Ne' }],
+          type: 'chooseOption', prompt: `Kicker ${d.kicker.cost} for ${card.name}?`,
+          options: [{ key: 'yes', label: 'Yes (kicked)' }, { key: 'no', label: 'No' }],
           aiHint: { kind: 'kicker', card },
         });
         if (yes === 'yes') { kicked = true; castOpts._kicked = true; cost.generic += kCost.generic; cost.pips = cost.pips.concat(kCost.pips); }
@@ -889,7 +889,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (maxN > 0) {
         paidTimes = await p.controller.decide(this, {
           type: 'chooseX', min: 0, max: maxN, card,
-          prompt: `${d.squad ? 'Squad' : 'Multikicker'} ${repCostStr} — koliko puta?`,
+          prompt: `${d.squad ? 'Squad' : 'Multikicker'} ${repCostStr} — how many times?`,
           aiHint: { kind: 'squad', card },
         });
         paidTimes = Math.max(0, Math.min(paidTimes, maxN));
@@ -912,8 +912,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const combined = { generic: cost.generic + oCost.generic, x: cost.x, xReduction: cost.xReduction || 0, pips: cost.pips.concat(oCost.pips) };
       if (this.canPayMana(p, combined, { card }, { xVal })) {
         const yes = await p.controller.decide(this, {
-          type: 'chooseOption', prompt: `Offspring ${offspringCost} za ${card.name} (1/1 kopija)?`,
-          options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+          type: 'chooseOption', prompt: `Offspring ${offspringCost} for ${card.name} (1/1 copy)?`,
+          options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
           aiHint: { kind: 'offspring', card },
         });
         if (yes === 'yes') { offspring = true; cost.generic += oCost.generic; cost.pips = cost.pips.concat(oCost.pips); }
@@ -1078,7 +1078,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (pool.length) {
           const choice = await p.controller.decide(this, {
             type: 'chooseOption', prompt: `${card.name}: plati dodatni Blight ${ac.optionalBlight}?`,
-            options: [{ key: 'yes', label: `Da — Blight ${ac.optionalBlight}` }, { key: 'no', label: 'Ne' }],
+            options: [{ key: 'yes', label: `Yes — Blight ${ac.optionalBlight}` }, { key: 'no', label: 'No' }],
             aiHint: { kind: 'burningCuriosity', card, n: ac.optionalBlight },
           });
           if (choice === 'yes') {
@@ -1103,7 +1103,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const max = left - remainingTargets;
         const n = index === targets.length - 1 ? left : await p.controller.decide(this, {
           type: 'chooseX', min: 1, max, card,
-          prompt: `${card.name}: šteta za ${targets[index].name} (preostalo ${left})`,
+          prompt: `${card.name}: damage for ${targets[index].name} (${left} remaining)`,
           aiHint: { kind: 'fireCovenantDamage', card, target: targets[index], left, remainingTargets },
         });
         const assigned = Math.max(1, Math.min(Number(n) || 1, max));
@@ -1137,7 +1137,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const avail = p.graveyard.filter(c => c !== card);
       const maxDelve = Math.min(cost.generic, avail.length);
       const picked = await p.controller.decide(this, {
-        type: 'chooseCards', from: avail, min: 0, max: maxDelve, prompt: `Delve: egzilaj iz groblja (do ${maxDelve})`,
+        type: 'chooseCards', from: avail, min: 0, max: maxDelve, prompt: `Delve: exile from the graveyard (up to ${maxDelve})`,
         aiHint: { kind: 'delve', card },
       });
       delveExiled = picked;
@@ -1236,7 +1236,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     this.stack.push(so);
     this.note('stack', {});
-    this.lg(`${p.name} baca ${card.name}${xVal ? ` (X=${xVal})` : ''}${castOpts.free ? ' (besplatno)' : ''}${so.from === 'command' ? ' iz command zone' : ''}.`, 'cast');
+    this.lg(`${p.name} casts ${card.name}${xVal ? ` (X=${xVal})` : ''}${castOpts.free ? ' (free)' : ''}${so.from === 'command' ? ' from the command zone' : ''}.`, 'cast');
     await this.pace(p.isAI ? 1000 : 150);
 
     // cast tracking + triggers
@@ -1365,8 +1365,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.lg(`Cascade (${fromCard.name}): otkriva ${exiled.length} karata${hit ? `, pogodak: ${hit.name}` : ''}.`);
     if (hit) {
       const yes = await p.controller.decide(this, {
-        type: 'chooseOption', prompt: `Cascade: baci ${hit.name} besplatno?`,
-        options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+        type: 'chooseOption', prompt: `Cascade: cast ${hit.name} for free?`,
+        options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
         aiHint: { kind: 'freeCast', card: hit },
       });
       if (yes === 'yes') {
@@ -1619,8 +1619,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               run: async c2 => {
                 if (card.zone !== 'exile') return;
                 const yes = await owner.controller.decide(c2.g, {
-                  type: 'chooseOption', prompt: `Rebound: baci ${card.name} besplatno?`,
-                  options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+                  type: 'chooseOption', prompt: `Rebound: cast ${card.name} for free?`,
+                  options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
                   aiHint: { kind: 'freeCast' },
                 });
                 if (yes !== 'yes') return;
@@ -1636,7 +1636,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             const source = this.byIid(so.foundrySource);
             const store = await p.controller.decide(this, {
               type: 'chooseOption', prompt: `Forger's Foundry: egzilaj ${card.name} umjesto groblja?`,
-              options: [{ key: 'yes', label: 'Da, pohrani u Foundry' }, { key: 'no', label: 'Ne, u groblje' }],
+              options: [{ key: 'yes', label: 'Yes, store it in the Foundry' }, { key: 'no', label: 'No, put it in the graveyard' }],
               aiHint: { kind: 'freeCast', card },
             });
             if (store === 'yes') {
@@ -1966,7 +1966,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         chosen = source.produce[Number(choice)] || source.produce[0];
       }
       this.markAbilityActivated(p, c);
-      this.lg(`${p.name} aktivira: ${c.name} — ${entry.label}.`, 'mana');
+      this.lg(`${p.name} activates: ${c.name} — ${entry.label}.`, 'mana');
       await this.activateManaSource(p, source, chosen, null, [], true);
       await this.emit('abilityActivated', { player: p, card: c, isMana: true });
       this.note('mana', { p });
@@ -1982,8 +1982,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.markAbilityActivated(p, c);
       this.remove(c); c.zone = 'graveyard'; c.owner.graveyard.push(c);
       const ctx = { g: this, src: c, you: p, targets: [] };
-      this.stack.push({ kind: 'ability', name: `${c.name} — ${a.label || 'iz ruke'}`, ctrl: p, ctx, run: a.run, targets: [] });
-      this.lg(`${p.name} aktivira: ${c.name} — ${a.label || 'iz ruke'}.`, 'activate');
+      this.stack.push({ kind: 'ability', name: `${c.name} — ${a.label || 'from hand'}`, ctrl: p, ctx, run: a.run, targets: [] });
+      this.lg(`${p.name} activates: ${c.name} — ${a.label || 'from hand'}.`, 'activate');
       this.note('stack', {});
       await this.emit('abilityActivated', { player: p, card: c, isMana: false });
       await this.flushTriggers();
@@ -1997,7 +1997,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (d.xCycling) {
         const maxX = this.maxAffordableX(p, Object.assign({}, cost, { x: 1 }), c);
         cycleX = await p.controller.decide(this, {
-          type: 'chooseX', min: 0, max: maxX, card: c, prompt: `X za cycling ${c.name}?`, aiHint: { kind: 'chooseX', card: c },
+          type: 'chooseX', min: 0, max: maxX, card: c, prompt: `X for cycling ${c.name}?`, aiHint: { kind: 'chooseX', card: c },
         });
         cost.generic += cycleX;
       }
@@ -2037,7 +2037,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const cands = equipCandidates(this, c, p);
       if (!cands.length) return false;
       const tgt = uiTargets && uiTargets[0] || (await p.controller.decide(this, {
-        type: 'chooseTargets', candidates: cands, min: 1, max: 1, prompt: `Equip ${c.name} na:`,
+        type: 'chooseTargets', candidates: cands, min: 1, max: 1, prompt: `Equip ${c.name} to:`,
         aiHint: { kind: 'equipTarget', card: c },
       }))[0];
       if (!tgt || !cands.includes(tgt)) return false;
@@ -2080,7 +2080,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (await equipCtx.g.attach(c, host)) equipCtx.g.lg(`${c.name} → ${host.name}.`);
         },
       };
-      this.lg(`${p.name} aktivira: ${c.name} — Equip.`, 'activate');
+      this.lg(`${p.name} activates: ${c.name} — Equip.`, 'activate');
       await this.emit('abilityActivated', { player: p, card: c, isMana: false });
       this.stack.push(so);
       this.note('stack', {});
@@ -2218,7 +2218,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         Object.values(x.counters).some(n => n > 0));
       const picked = await p.controller.decide(this, {
         type: 'chooseCards', from: pool, min: 1, max: 1,
-        prompt: 'Ukloni countere sa:', aiHint: { kind: 'counterCost', src: c },
+        prompt: 'Remove counters from:', aiHint: { kind: 'counterCost', src: c },
       });
       const source = picked[0];
       if (!source || !pool.includes(source)) return false;
@@ -2228,7 +2228,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const available = source.counters[kind] || 0;
         const amount = await p.controller.decide(this, {
           type: 'chooseX', min: 0, max: available, card: source,
-          prompt: `Koliko ${kind} countera uklanjaš?`,
+          prompt: `How many ${kind} counters do you remove?`,
           aiHint: { kind: 'moveCounters', source, counterKind: kind },
         });
         const n = Math.max(0, Math.min(available, Number(amount) || 0));
@@ -2263,7 +2263,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const maxX = this.maxAffordableX(p, mc, c, { artifactAbilityAlreadyUsed: c.is('Artifact') });
         ctx.x = await p.controller.decide(this, {
           type: 'chooseX', min: 0, max: maxX, card: c,
-          prompt: `X za ${c.name} — ${a.label || 'sposobnost'}?`, aiHint: { kind: 'chooseX', card: c },
+          prompt: `X for ${c.name} — ${a.label || 'ability'}?`, aiHint: { kind: 'chooseX', card: c },
         });
         ctx.x = Math.max(0, Math.min(Number(ctx.x) || 0, maxX));
       }
@@ -2314,7 +2314,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.discardX) {
       ctx.x = await p.controller.decide(this, {
         type: 'chooseX', min: 0, max: p.hand.length, card: c,
-        prompt: `Koliko karata odbacuješ za ${c.name}?`, aiHint: { kind: 'chooseX', card: c },
+        prompt: `How many cards do you discard for ${c.name}?`, aiHint: { kind: 'chooseX', card: c },
       });
       ctx.x = Math.max(0, Math.min(Number(ctx.x) || 0, p.hand.length));
       if (ctx.x > 0) {
@@ -2350,7 +2350,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     this.markAbilityActivated(p, c);
-    this.lg(`${p.name} aktivira: ${c.name}${a.label ? ' — ' + a.label : ''}.`, 'activate');
+    this.lg(`${p.name} activates: ${c.name}${a.label ? ' — ' + a.label : ''}.`, 'activate');
     await this.pace(p.isAI ? 800 : 0);
     await this.emit('abilityActivated', { player: p, card: c, isMana: false });
     // crime: ciljanje protivnika/njihovih stvari kroz ability
@@ -2521,15 +2521,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ikona, množilac pauze, opis. Normalna je sada osjetno sporija nego ranije —
   // cilj je da se VIDI šta bot radi, korak po korak.
   MTG.SPEEDS = {
-    normal: ['▶️', 1.6, 'Normalna — vidi se svaki potez bota'],
-    slow: ['🐢', 2.6, 'Sporo — za pažljivo praćenje'],
-    fast: ['⏩', 0.6, 'Brzo — za preskakanje'],
+    normal: ['▶️', 1.6, 'Normal — every bot action remains visible'],
+    slow: ['🐢', 2.6, 'Slow — for careful tracking'],
+    fast: ['⏩', 0.6, 'Fast — for skipping ahead'],
   };
   MTG.PRIO_MODES = [
-    { key: 'end', icon: '🌙', short: 'END', label: 'Combat reakcije + prije mog poteza', desc: 'Staje u combatu kad imaš legalan odgovor i na end stepu igrača neposredno prije tebe. Protivničke nonland karte se uvijek pokažu.' },
-    { key: 'combat', icon: '⚔️', short: 'COMBAT', label: 'Combat + end step', desc: 'Staje poslije napadača, blokera i first-strike štete, te na end stepu prije tvog poteza.' },
-    { key: 'off', icon: '▶', short: 'AKCIJE', label: 'Samo obavezne akcije', desc: 'Bez praznih priority stopova; svaka protivnička nonland karta se ipak pokaže i čeka Proceed.' },
-    { key: 'full', icon: '🎛️', short: 'FULL', label: 'Full control', desc: 'Staje na svakom priority prozoru kao za stolom na turniru.' },
+    { key: 'end', icon: '🌙', short: 'END', label: 'Combat responses + before my turn', desc: 'Stops during combat when you have a legal response and during the end step immediately before your turn. Opposing nonland cards are always shown.' },
+    { key: 'combat', icon: '⚔️', short: 'COMBAT', label: 'Combat + end step', desc: 'Stops after attackers, blockers, first-strike damage, and during the end step before your turn.' },
+    { key: 'off', icon: '▶', short: 'ACTIONS', label: 'Required actions only', desc: 'No empty priority stops. Every opposing nonland card is still shown and waits for Proceed.' },
+    { key: 'full', icon: '🎛️', short: 'FULL', label: 'Full control', desc: 'Stops at every priority window, like a tournament table.' },
   ];
 
   G.askPriorityAction = async function (p) {
@@ -2584,7 +2584,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const fromZone = card.zone;
     this.remove(card);
     card.zone = 'nowhere';
-    this.lg(`${p.name} igra land: ${card.name}.`, 'land');
+    this.lg(`${p.name} plays a land: ${card.name}.`, 'land');
     await this.pace(p.isAI ? 700 : 0);
     await this.move(card, 'battlefield', { ctrl: p });
     await this.emit('landPlayed', { player: p, card, from: fromZone });
@@ -2619,7 +2619,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // u prevAttackers, a novi se puni tokom ovog kruga.
     p.prevAttackers = p.lastAttackers || new Set();
     p.lastAttackers = new Set();
-    this.lg(`——— Potez ${this.turnNo}: ${p.name} ———`, 'turn');
+    this.lg(`——— Turn ${this.turnNo}: ${p.name} ———`, 'turn');
     this.note('turn', { p });
     await this.pace(p.isAI ? 1000 : 500);
 
@@ -2745,7 +2745,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (p.hand.length > maxHand) {
       const n = p.hand.length - maxHand;
       const picked = await p.controller.decide(this, {
-        type: 'chooseCards', from: p.hand, min: n, max: n, prompt: `Odbaci do ${maxHand} u ruci (${n})`,
+        type: 'chooseCards', from: p.hand, min: n, max: n, prompt: `Discard down to ${maxHand} cards in hand (${n})`,
         aiHint: { kind: 'cleanupDiscard' },
       });
       await this.discard(p, picked);
@@ -2796,7 +2796,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const q = this.extraTurns.shift();
       if (q && !q.lost) {
         this.extraTurnDepth++;
-        this.lg(`⏰ ${q.name} igra EKSTRA potez!`);
+        this.lg(`⏰ ${q.name} takes an EXTRA turn!`);
         this.turnPlayer = q;
         return;
       }
@@ -2856,7 +2856,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }));
     const key = await ctrl.controller.decide(this, {
       type: 'chooseOption',
-      prompt: `${sourceLabel || token && token.name || 'Token'}: koga napada token?`,
+      prompt: `${sourceLabel || token && token.name || 'Token'}: who does the token attack?`,
       options,
       aiHint: { kind: 'attackDestination', token, restrictedDefender },
     });
@@ -2907,8 +2907,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (cantAttackTarget(c, tgt)) {
         const others = oppList.filter(o => o !== tgt && !cantAttackTarget(c, o));
-        if (others.length) { this.lg(`${c.name} ne smije napasti ${tgt.name} — preusmjeren.`); tgt = others[0]; }
-        else { this.lg(`${c.name} ne smije napasti (ograničenje).`); continue; }
+        if (others.length) { this.lg(`${c.name} cannot attack ${tgt.name} — redirected.`); tgt = others[0]; }
+        else { this.lg(`${c.name} cannot attack (restriction).`); continue; }
       }
       c.attacking = tgt;
       if (!c.kw('vigilance')) this.tap(c);
@@ -2927,7 +2927,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         c.attacking = tgt;
         if (!c.kw('vigilance')) this.tap(c);
         attackers.push(c);
-        this.lg(`${c.name} mora napasti (${tgt.name}).`);
+        this.lg(`${c.name} must attack (${tgt.name}).`);
       }
     }
     // attack taxes (Propaganda)
@@ -2940,11 +2940,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const cost = { generic: tax, x: 0, pips: [] };
         const paid = this.canPayMana(p, cost) && await this.payMana(p, cost);
         if (!paid) {
-          this.lg(`${c.name} ne napada — porez (${tax}) nije plaćen.`);
+          this.lg(`${c.name} does not attack — the tax (${tax}) was not paid.`);
           c.attacking = null; c.tapped = c.kw('vigilance') ? c.tapped : false;
           attackers.splice(attackers.indexOf(c), 1);
         } else {
-          this.lg(`${p.name} plaća porez ${tax} za napad (${c.name}).`);
+          this.lg(`${p.name} pays the ${tax} attack tax (${c.name}).`);
         }
       }
     }
@@ -3012,8 +3012,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const hit = [];
       for (const opp of others) {
         const go = (await p.controller.decide(this, {
-          type: 'chooseOption', prompt: `Myriad (${c.name}): kopija za ${opp.name}?`,
-          options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+          type: 'chooseOption', prompt: `Myriad (${c.name}): create a copy for ${opp.name}?`,
+          options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
           aiHint: { kind: 'myriadCopy', src: c, opponent: opp },
         })) === 'yes';
         if (!go) continue;
@@ -3055,7 +3055,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const chooser = this.untilEffects.find(e => e.kind === 'chooseBlocksFor' && e.who !== dp);
       let blocks;
       if (chooser) {
-        this.lg(`${chooser.who.name} bira blokove za ${dp.name} (Odric).`);
+        this.lg(`${chooser.who.name} chooses blockers for ${dp.name} (Odric).`);
         blocks = chooser.who.isAI ? [] : await chooser.who.controller.decide(this, {
           type: 'blockers', attackers: atks, potential, player: dp, chosenByAttacker: true,
         });
@@ -3074,7 +3074,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const a of atks) {
         if (a.kw('menace') && a.blockedBy.length === 1) {
           const b = a.blockedBy[0]; b.blocking = null; a.blockedBy = [];
-          this.lg(`${a.name} ima menace — jedan bloker nije dovoljan.`);
+          this.lg(`${a.name} has menace — one blocker is not enough.`);
         }
       }
       // CR 509.1h: jednom blokiran — uvijek blokiran. Ostaje blokiran i ako mu

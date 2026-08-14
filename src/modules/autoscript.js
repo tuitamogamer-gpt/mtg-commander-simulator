@@ -148,10 +148,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       }
       const spec = what.includes('creature') && !what.includes('any')
-        ? { what: 'creature', filter: (g2, c) => c.zone === 'battlefield' && (c.is('Creature') || c.is('Planeswalker')), prompt: 'Šteta u:', aiHint: { goal: 'damage' } }
+        ? { what: 'creature', filter: (g2, c) => c.zone === 'battlefield' && (c.is('Creature') || c.is('Planeswalker')), prompt: 'Damage to:', aiHint: { goal: 'damage' } }
         : what.includes('player') || what.includes('opponent')
-          ? { what: what.includes('opponent') ? 'opponent' : 'player', prompt: 'Šteta igraču:', aiHint: { goal: 'drain' } }
-          : { what: 'any', prompt: 'Šteta u:', aiHint: { goal: 'damage' } };
+          ? { what: what.includes('opponent') ? 'opponent' : 'player', prompt: 'Damage to player:', aiHint: { goal: 'drain' } }
+          : { what: 'any', prompt: 'Damage to:', aiHint: { goal: 'damage' } };
       return mk([spec], async ctx => {
         const n = nRaw === 'X' ? (ctx.x || 0) : parseInt(nRaw, 10);
         await ctx.g.damageAny(ctx.src, ctx.targets[0], n);

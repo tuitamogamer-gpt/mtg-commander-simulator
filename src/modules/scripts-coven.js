@@ -317,7 +317,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Kurbis, Harvest Celebrant'] = {
     etbCounters: { kind: '+1/+1', n: (g, card) => (card.castMeta && card.castMeta.manaSpent) || 0 },
     abilities: [{
-      label: 'Skini counter: spriječi svu štetu stvorenju', cost: { rmCounter: { kind: '+1/+1', n: 1 } },
+      label: 'Remove a counter: prevent all damage to a creature', cost: { rmCounter: { kind: '+1/+1', n: 1 } },
       // T.creature prima samo opcije — filter ide kroz T.permanent
       targets: [T.creature({
         prompt: 'Zaštiti drugo stvorenje',
@@ -516,7 +516,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', desc: 'Vrati ciljanu kartu iz groblja', filter: etbSelf,
       targets: [{
-        zone: 'graveyard', what: 'card', prompt: 'Ciljana karta u tvom groblju',
+        zone: 'graveyard', what: 'card', prompt: 'Target card in your graveyard',
         filter: (g, c, ctrl) => c.owner === ctrl,
         aiHint: { goal: 'recur' },
       }],
@@ -564,7 +564,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Kessig Cagebreakers'] = {
     triggers: [{
-      on: 'attacks', desc: 'Wolf po stvorenju u groblju', filter: (g, self, d) => d.card === self,
+      on: 'attacks', desc: 'One Wolf per creature in your graveyard', filter: (g, self, d) => d.card === self,
       run: async ctx => {
         const n = ctx.you.graveyard.filter(c => c.is('Creature')).length;
         for (let i = 0; i < n; i++) await ctx.g.makeTokens('wolfG', ctx.you, { tapped: true, attacking: ctx.src.attacking });
@@ -670,7 +670,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!pool.length) break;
           const picked = await ctx.you.controller.decide(ctx.g, {
             type: 'chooseCards', from: pool, min: 0, max: 1,
-            prompt: `Moorland Rescuer: vrati stvorenje (preostala snaga ${budget}) ili završi`,
+            prompt: `Moorland Rescuer: return a creature (remaining power ${budget}) or finish`,
             aiHint: { kind: 'moorlandRescuer', budget, source: ctx.src },
           });
           const card = picked[0];

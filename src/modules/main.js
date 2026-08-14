@@ -6,8 +6,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   if (typeof document === 'undefined') return;
   const U = MTG;
   const $ = s => document.querySelector(s);
-  const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
-  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = U.uiText(html); return e; };
+  const esc = s => U.uiText(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
   function commanderImg(deckName) {
     const d = MTG.DECKS[deckName];
@@ -34,15 +34,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     head.innerHTML = `
       <div class="menumark" aria-hidden="true"></div>
       <div class="menutitles">
-        <div class="menu-kicker">Commander Simulator <span>Desktop klijent</span></div>
-        <h1 class="title">Sastavi svoj Commander pod.</h1>
-        <div class="subtitle">${nDecks} precon deckova iz perioda 2021-2026, spremnih za puni četveroigrački sto.</div>
+        <div class="menu-kicker">Commander Simulator <span>Desktop Client</span></div>
+        <h1 class="title">Assemble your Commander pod.</h1>
+        <div class="subtitle">${nDecks} preconstructed decks from 2021-2026, ready for a full four-player table.</div>
+        <div class="menu-mana-showcase" aria-label="Official white, blue, black, red, green, and colorless mana symbols">
+          <span>Mana identities</span>
+          <div>${['W', 'U', 'B', 'R', 'G', 'C'].map(color => `<img src="/assets/mana/${color}.svg" alt="{${color}}" title="{${color}}">`).join('')}</div>
+        </div>
       </div>
-      <div class="menupill"><span class="menupillmark" aria-hidden="true"></span><span><b>Main menu</b>Priprema partije</span></div>`;
+      <div class="menupill"><span class="menupillmark" aria-hidden="true"></span><span><b>Main Menu</b>Game setup</span></div>`;
     root.appendChild(head);
 
     const state = {
       deck: null, ai: 3, difficulty: 'normal', seed: '',
+      aiDecks: ['', '', ''],
       aiStyles: ['random', 'random', 'random'],
       commanders: [], aiRandomCommanders: false, sumPartnerDamage: false,
     };
@@ -53,7 +58,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const right = el('div', 'setupright');
     grid.appendChild(left); grid.appendChild(right);
 
-    left.appendChild(el('div', 'seclabel', '<i>Precon</i> Izaberi svoj deck <em>Komandna biblioteka</em>'));
+    left.appendChild(el('div', 'seclabel', '<i>Precon</i> Choose your deck <em>Command library</em>'));
     const deckList = el('div', 'decklist');
     for (const [name, deck] of Object.entries(MTG.DECKS)) {
       const meta = MTG.DECK_META[name] || {};
@@ -80,6 +85,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.setAttribute('aria-pressed', 'true');
         startBtn.disabled = false;
         renderCmdBox();
+        for (let i = 0; i < state.aiDecks.length; i++) if (state.aiDecks[i] === name) state.aiDecks[i] = '';
+        renderBotStyles();
         updateStartLabel();
       };
       deckList.appendChild(card);
@@ -88,21 +95,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // ---------- 2 · KOMANDER ----------
     right.appendChild(el('div', 'controlintro', `
-      <span>Postavke poda</span>
-      <h2>Konfiguriši partiju</h2>
-      <p>Izbori ostaju ovdje dok pregledavaš biblioteku. Pokreni partiju kada je pod spreman.</p>`));
-    right.appendChild(el('div', 'seclabel', '<i>Izbor</i> Komander'));
+      <span>Pod settings</span>
+      <h2>Configure the game</h2>
+      <p>Your choices remain here while you browse the library. Start when the pod is ready.</p>`));
+    right.appendChild(el('div', 'seclabel', '<i>Choice</i> Commander'));
     const cmdBox = el('div', 'cmdbox');
     right.appendChild(cmdBox);
     const updateStartLabel = () => {
       if (!state.deck) return;
       const c = state.commanders;
-      startBtn.textContent = 'Pokreni partiju';
+      startBtn.textContent = 'Start game';
       startBtn.title = `${state.deck}: ${c.map(n => n.split(',')[0]).join(' + ')}`;
     };
     function renderCmdBox() {
       cmdBox.innerHTML = '';
-      if (!state.deck) { cmdBox.appendChild(el('div', 'cmdhint', 'Prvo izaberi deck lijevo.')); return; }
+      if (!state.deck) { cmdBox.appendChild(el('div', 'cmdhint', 'Choose a deck on the left first.')); return; }
       const deck = MTG.DECKS[state.deck];
       const legals = MTG.legalCommanders(deck, MTG.DEFS);
       const chosen = el('div', 'cmdchosen');
@@ -122,10 +129,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       cmdBox.appendChild(chosen);
       const partnerable = legals.filter(l => l.tag.kind).length;
       cmdBox.appendChild(el('div', 'cmdhint',
-        `${legals.length} legalnih komandera u ovom deku` +
-        (partnerable ? ` · ${partnerable} sa partner sposobnošću 🤝` : '') +
-        (state.commanders.length === 2 ? ' · igraš sa DVA komandera' : '')));
-      const btn = el('button', 'pbtn wide', legals.length > 1 ? '🔄 Promijeni komandera / partnere' : '🔒 Ovaj deck ima samo jednog');
+        `${legals.length} legal commander${legals.length === 1 ? '' : 's'} in this deck` +
+        (partnerable ? ` · ${partnerable} with a partner ability 🤝` : '') +
+        (state.commanders.length === 2 ? ' · you are playing TWO commanders' : '')));
+      const btn = el('button', 'pbtn wide', legals.length > 1 ? '🔄 Change commander / partners' : '🔒 This deck has only one');
       btn.disabled = legals.length <= 1;
       btn.onclick = async () => {
         const res = await pickCommanders(state.deck, state.commanders);
@@ -134,23 +141,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       cmdBox.appendChild(btn);
     }
 
-    right.appendChild(el('div', 'seclabel', '<i>Pod</i> Protivnici <em>AI dobijaju nasumične precone</em>'));
+    right.appendChild(el('div', 'seclabel', '<i>Pod</i> Opponents <em>Choose each AI deck</em>'));
     const aiRow = el('div', 'btnrow center');
     const botStyles = el('div', 'botstyles');
-    const styleOptions = [['random', 'Nasumičan stil']]
+    const styleOptions = [['random', 'Random style']]
       .concat(Object.entries(MTG.AI_STYLES).map(([k, s]) => [k, `${s.icon} ${s.label}`]));
     const STYLE_DESC = {
-      aggressive: 'Napada bez milosti, juri ranjene igrače, ne voli da blokira.',
-      opportunist: 'Izbjegava najjačeg i navaljuje na ranjene. Kljuca svakoga ko posrne.',
-      passive: 'Kornjača: gradi tablu, čuva blokere, udara tek kad je sigurno.',
-      teaser: 'Haos: bocka sve pomalo, mijenja mete, obožava goad i politiku.',
-      balanced: 'Standardna, uravnotežena AI logika.',
-      random: 'Svaki bot dobija nasumičnu ličnost (vidjećeš je u igri).',
+      aggressive: 'Attacks relentlessly, hunts wounded players, and dislikes blocking.',
+      opportunist: 'Avoids the leader and overwhelms wounded players.',
+      passive: 'Builds its board, keeps blockers, and attacks when it is safe.',
+      teaser: 'Spreads chaos, changes targets, and loves goad and politics.',
+      balanced: 'Standard, balanced AI logic.',
+      random: 'Each bot receives a random personality, revealed in game.',
     };
     const renderBotStyles = () => {
       botStyles.innerHTML = '';
-      const botNames = ['AI Zmaj', 'AI Vuk', 'AI Gavran'];
+      const botNames = ['AI Dragon', 'AI Wolf', 'AI Raven'];
+      const deckNames = Object.keys(MTG.DECKS).filter(name => !MTG.DECKS[name].custom).sort((a, b) => a.localeCompare(b));
       for (let i = 0; i < state.ai; i++) {
+        const config = el('div', 'botconfig');
         const row = el('div', 'botstylerow');
         const badge = el('span', 'pbadge');
         const setBadge = k => {
@@ -160,60 +169,85 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           badge.title = STYLE_DESC[k] || '';
         };
         setBadge(state.aiStyles[i]);
-        const lbl = el('span', 'botname', esc(botNames[i]));
+        const identity = el('div', 'botidentity', `<span class="botname">${esc(botNames[i])}</span><small>Seat 0${i + 1}</small>`);
+        const fields = el('div', 'botfields');
+        const deckField = el('label', 'botfield', '<span>Deck</span>');
+        const deckSelect = el('select', 'styleselect deckselect');
+        deckSelect.setAttribute('aria-label', `${botNames[i]} deck`);
+        const randomDeck = el('option', '', 'Random deck');
+        randomDeck.value = '';
+        deckSelect.appendChild(randomDeck);
+        const unavailable = new Set([state.deck, ...state.aiDecks.filter((deckName, index) => index !== i && deckName)]);
+        for (const deckName of deckNames) {
+          const option = el('option', '', deckName);
+          option.value = deckName;
+          option.disabled = unavailable.has(deckName);
+          option.selected = state.aiDecks[i] === deckName;
+          deckSelect.appendChild(option);
+        }
+        deckSelect.onchange = () => {
+          state.aiDecks[i] = deckSelect.value;
+          renderBotStyles();
+        };
+        deckField.appendChild(deckSelect);
+
+        const styleField = el('label', 'botfield', '<span>Play style</span>');
         const sel = el('select', 'styleselect');
+        sel.setAttribute('aria-label', `${botNames[i]} play style`);
         for (const [k, label] of styleOptions) {
           const o = el('option', '', label);
           o.value = k;
           if (state.aiStyles[i] === k) o.selected = true;
           sel.appendChild(o);
         }
+        styleField.appendChild(sel);
         const desc = el('div', 'styledesc', STYLE_DESC[state.aiStyles[i]] || '');
         sel.onchange = () => { state.aiStyles[i] = sel.value; desc.textContent = STYLE_DESC[sel.value] || ''; setBadge(sel.value); };
-        row.appendChild(badge); row.appendChild(lbl); row.appendChild(sel);
-        botStyles.appendChild(row);
-        botStyles.appendChild(desc);
+        fields.appendChild(deckField); fields.appendChild(styleField);
+        row.appendChild(badge); row.appendChild(identity); row.appendChild(fields);
+        config.appendChild(row); config.appendChild(desc);
+        botStyles.appendChild(config);
       }
     };
     for (const n of [1, 2, 3]) {
-      const b = el('button', 'pbtn choice' + (n === 3 ? ' selected' : ''), n === 1 ? '1 AI duel' : n === 3 ? '3 AI pod' : '2 AI');
+      const b = el('button', 'pbtn choice' + (n === 3 ? ' selected' : ''), n === 1 ? '1 AI duel' : n === 3 ? '3 AI pod' : '2 AI players');
       b.onclick = () => { state.ai = n; aiRow.querySelectorAll('.pbtn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); renderBotStyles(); };
       aiRow.appendChild(b);
     }
     right.appendChild(aiRow);
-    right.appendChild(el('div', 'seclabel', '<i>AI</i> Stil botova'));
+    right.appendChild(el('div', 'seclabel', '<i>AI</i> Bot loadouts'));
     right.appendChild(botStyles);
     renderBotStyles();
 
     const randRow = el('label', 'cmdcheck');
-    randRow.innerHTML = '<input type="checkbox"> <span>AI botovi biraju nasumične (i partner) komandere</span>';
+    randRow.innerHTML = '<input type="checkbox"> <span>AI bots choose random commanders (including partners)</span>';
     randRow.querySelector('input').onchange = e => { state.aiRandomCommanders = e.target.checked; };
     right.appendChild(randRow);
 
     const houseRow = el('label', 'cmdcheck');
-    houseRow.title = 'Zvanično pravilo 903.10a: 21 šteta od ISTOG komandera. ' +
-      'Uključi ovo ako tvoja grupa igra da se šteta oba partnera zbraja.';
-    houseRow.innerHTML = '<input type="checkbox"> <span>Kućno pravilo: šteta oba partnera se ZBRAJA (nije po 903.10a)</span>';
+    houseRow.title = 'Official rule 903.10a: 21 damage from the SAME commander. ' +
+      'Enable this only if your group combines damage from both partners.';
+    houseRow.innerHTML = '<input type="checkbox"> <span>House rule: COMBINE damage from both partners (not rule 903.10a)</span>';
     houseRow.querySelector('input').onchange = e => { state.sumPartnerDamage = e.target.checked; };
     right.appendChild(houseRow);
 
-    right.appendChild(el('div', 'seclabel', '<i>AI</i> Težina'));
+    right.appendChild(el('div', 'seclabel', '<i>AI</i> Difficulty'));
     const diffRow = el('div', 'btnrow center');
-    for (const [k, label] of [['easy', 'Laka'], ['normal', 'Normalna'], ['hard', 'Teška']]) {
+    for (const [k, label] of [['easy', 'Easy'], ['normal', 'Normal'], ['hard', 'Hard']]) {
       const b = el('button', 'pbtn choice' + (k === 'normal' ? ' selected' : ''), label);
       b.onclick = () => { state.difficulty = k; diffRow.querySelectorAll('.pbtn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); };
       diffRow.appendChild(b);
     }
     right.appendChild(diffRow);
 
-    const startBtn = el('button', 'pbtn primary start', 'Prvo izaberi deck');
+    const startBtn = el('button', 'pbtn primary start', 'Choose a deck first');
     startBtn.disabled = true;
     startBtn.onclick = () => startGame(state);
     right.appendChild(startBtn);
     renderCmdBox();
 
     right.appendChild(el('div', 'credits',
-      'Sve karte i slike: <b>Scryfall</b>. Fiksni skup zvaničnih WotC precona prolazi zasebnu card-by-card certifikaciju.'));
+      'All cards and images: <b>Scryfall</b>. The fixed set of official WotC precons passes separate card-by-card certification.'));
   }
 
   // ---------- Izbor komandera (1 ili 2 partnera) ----------
@@ -225,11 +259,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return new Promise(resolve => {
       const ov = el('div', 'overlay dark');
       const m = el('div', 'modal wide');
-      m.appendChild(el('div', 'mtitle', `👑 Komanderi: ${esc(deckName)}`));
+      m.appendChild(el('div', 'mtitle', `👑 Commanders: ${esc(deckName)}`));
       m.appendChild(el('div', 'cmdhint',
-        'Klikni kartu da je izabereš. Karte sa 🤝 <b>Partner</b> mogu ići u paru. ' +
-        'izaberi jednu, pa klikni drugu koja joj odgovara (obrubljene zeleno). ' +
-        'Ostatak deka ostaje isti; neizabrani legendarci idu u biblioteku.'));
+        'Click a card to select it. Cards with 🤝 <b>Partner</b> may be paired. ' +
+        'Choose one, then click a compatible second card outlined in green. ' +
+        'The rest of the deck stays unchanged; unselected legends go into the library.'));
 
       const grid = el('div', 'cmdgrid');
       m.appendChild(grid);
@@ -237,9 +271,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       m.appendChild(status);
 
       const row = el('div', 'btnrow');
-      const okBtn = el('button', 'pbtn primary', 'Potvrdi ✔');
-      const defBtn = el('button', 'pbtn', '↩ Originalni');
-      const cancel = el('button', 'pbtn danger', 'Otkaži');
+      const okBtn = el('button', 'pbtn primary', 'Confirm ✔');
+      const defBtn = el('button', 'pbtn', '↩ Original');
+      const cancel = el('button', 'pbtn danger', 'Cancel');
       row.appendChild(okBtn); row.appendChild(defBtn); row.appendChild(cancel);
       m.appendChild(row);
 
@@ -253,7 +287,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           c.innerHTML = `
             <img loading="lazy" src="${cardImg(L.name)}" onerror="MTG.imgFail(this)">
             <div class="cmdoptinfo">
-              <div class="cmdoptname">${on ? '👑 ' : ''}${esc(L.name)}${L.isDefault ? ' <span class="deft">(originalni)</span>' : ''}</div>
+              <div class="cmdoptname">${on ? '👑 ' : ''}${esc(L.name)}${L.isDefault ? ' <span class="deft">(original)</span>' : ''}</div>
               <div class="cmdopttype">${esc(typeLine(L.def))} · ${esc(L.def.cost || '')}</div>
               ${L.tag.kind ? `<div class="cmdbadge">${esc(L.partnerLabel)}</div>` : ''}
             </div>`;
@@ -269,7 +303,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const v = MTG.validateCommanders(deck, sel, MTG.DEFS);
         status.className = 'cmdstatus ' + (v.ok ? 'good' : 'bad');
         status.innerHTML = v.ok
-          ? `✅ ${sel.map(n => esc(n)).join(' <b>+</b> ')}${sel.length === 2 ? ' (dva komandera)' : ''}`
+          ? `✅ ${sel.map(n => esc(n)).join(' <b>+</b> ')}${sel.length === 2 ? ' (two commanders)' : ''}`
           : `⛔ ${esc(v.why)}`;
         okBtn.disabled = !v.ok;
       }
@@ -285,14 +319,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function startGame(state) {
-    const forcedAIDecks = [...new Set(state.aiDecks || [])]
-      .filter(deckName => deckName !== state.deck && MTG.DECKS[deckName] && !MTG.DECKS[deckName].custom);
-    const allDecks = Object.keys(MTG.DECKS)
-      .filter(d => d !== state.deck && !forcedAIDecks.includes(d) && !MTG.DECKS[d].custom);
     const seed = state.seed ? parseInt(state.seed, 10) : Math.floor(Math.random() * 1e9);
     const rnd = MTG.mulberry32(seed);
-    MTG.shuffle(allDecks, rnd);
-    const aiDecks = forcedAIDecks.concat(allDecks).slice(0, state.ai);
+    const aiDecks = MTG.selectAIDecks(state.deck, state.ai, state.aiDecks, rnd);
 
     const ui = new MTG.UI();
     $('#setup').style.display = 'none';
@@ -307,7 +336,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       sumPartnerDamage: state.sumPartnerDamage,
       seed,
       difficulty: state.difficulty,
-      humanName: 'Ti',
+      humanName: 'You',
       maxTurns: 200,
       paced: true,
       humanController: (p) => {
@@ -316,7 +345,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return ui.controllerFor(p);
       },
       onEvent: (e) => {
-        if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ TVOJ POTEZ' : `Potez ${g.turnNo}: ${e.p.name}`, e.p === ui.me);
+        if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ YOUR TURN' : `Turn ${g.turnNo}: ${e.p.name}`, e.p === ui.me);
         if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
         if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind);
         if (e.type === 'battlefieldArrival') ui.showBattlefieldArrival(e);
@@ -330,7 +359,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ui.render();
     const cmdTxt = (state.commanders || []).map(n => n.split(',')[0]).join(' + ');
     const smokeScenario = new URLSearchParams(window.location.search).get('smokeScenario');
-    if (!smokeScenario) ui.toast(`Seed: ${seed} · 👑 ${cmdTxt} · Protivnici: ${aiDecks.join(', ')}`);
+    if (!smokeScenario) ui.toast(`Seed: ${seed} · 👑 ${cmdTxt} · Opponents: ${aiDecks.join(', ')}`);
     // Deterministički browser scenario za card-sheet interakcije koje bi kroz
     // nasumičnu biblioteku bilo teško pouzdano dovesti na ekran. Aktivira se
     // isključivo eksplicitnim smokeScenario query parametrom.
@@ -579,7 +608,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await farsight.def.resolve({ g, src: farsight, you: bot });
         const madeBird = g.creatures(bot).some(card => card.isToken && card.hasSub('Bird'));
         const declinedBadReveal = bot.hand.length === handBefore;
-        g.lg(`Elven AI provjera: Radagast ${madeBird ? 'Bird ✓' : 'nije Bird'}; Farsight loš reveal ${declinedBadReveal ? 'odbijen ✓' : 'prihvaćen'}.`, 'ai');
+        g.lg(`Elven AI check: Radagast ${madeBird ? 'Bird ✓' : 'not a Bird'}; bad Farsight reveal ${declinedBadReveal ? 'declined ✓' : 'accepted'}.`, 'ai');
         ui.showLog = true;
         ui.toast('Elven AI scenario: kontekstualne odluke razriješene.');
         ui.render();
@@ -1338,7 +1367,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     g.start().catch(err => {
       console.error(err);
-      ui.toast('Greška u igri: ' + err.message);
+        ui.toast('Game error: ' + err.message);
     });
   }
 

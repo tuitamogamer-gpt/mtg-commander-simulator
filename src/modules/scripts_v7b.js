@@ -437,7 +437,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       {
         label: '-3: Uništi (sa -1/-1)', loyalty: -3, sorcery: true,
-        targets: [T.creature({ prompt: 'Sa -1/-1 counterom', filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') && hasM1(c), aiHint: { goal: 'removal' } })],
+        targets: [T.creature({ prompt: 'With a -1/-1 counter', filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') && hasM1(c), aiHint: { goal: 'removal' } })],
         run: async ctx => { if (ctx.targets[0]) await ctx.g.destroy(ctx.targets[0]); },
       },
       {
@@ -460,7 +460,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       {
         label: '-2: Pretvori u Treasure', loyalty: -2, sorcery: true,
-        targets: [T.creature({ prompt: 'U Treasure', aiHint: { goal: 'removal' } })],
+        targets: [T.creature({ prompt: 'Into a Treasure', aiHint: { goal: 'removal' } })],
         run: async ctx => {
           const t = ctx.targets[0];
           if (!t) return;
@@ -493,7 +493,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     modes: {
       pick: 1,
       list: [
-        { label: '3 štete stvorenju/PW', targets: [{ what: 'permanent', prompt: 'Meta', filter: (g, c) => c.zone === 'battlefield' && (c.is('Creature') || c.is('Planeswalker')), aiHint: { goal: 'removal', dmg: 3 } }] },
+        { label: '3 damage to a creature or planeswalker', targets: [{ what: 'permanent', prompt: 'Target', filter: (g, c) => c.zone === 'battlefield' && (c.is('Creature') || c.is('Planeswalker')), aiHint: { goal: 'removal', dmg: 3 } }] },
         { label: 'Odbaci do 2 → vuci', targets: null },
       ],
     },
@@ -959,7 +959,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Artefakt iz groblja možeš baciti ovaj potez', cost: { tap: true },
       cond: (g, c, p) => p.graveyard.some(x => x.is('Artifact')),
       targets: [{
-        zone: 'graveyard', what: 'card', prompt: 'Ciljani artefakt u tvom groblju',
+        zone: 'graveyard', what: 'card', prompt: 'Target artifact in your graveyard',
         filter: (g, card, ctrl) => card.owner === ctrl && card.is('Artifact'),
         aiHint: { goal: 'bestGyCast' },
       }],

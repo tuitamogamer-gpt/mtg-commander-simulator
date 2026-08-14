@@ -282,7 +282,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       want = want.filter(Boolean).slice(0, 2);
       const check = MTG.validateCommanders ? MTG.validateCommanders(deckData, want, defs) : { ok: true };
       if (!check.ok) {
-        this.lg(`⚠️ Nevažeći izbor komandera (${check.why}) — koristim ${deckData.commander}.`, 'warn');
+        this.lg(`⚠️ Invalid commander selection (${check.why}) — using ${deckData.commander}.`, 'warn');
         want = [deckData.commander];
       }
       const need = {};
@@ -316,7 +316,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // opening hands with one free mulligan (Commander), then London
       for (const p of this.players) await this.openingHand(p);
       this.turnPlayer = this.players[0];
-      this.lg(`Igra počinje. Redoslijed: ${this.players.map(p => p.name).join(' → ')}.`);
+      this.lg(`The game begins. Turn order: ${this.players.map(p => p.name).join(' → ')}.`);
       await this.runGame();
     }
 
@@ -333,7 +333,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const doMull = canMull && await p.controller.decide(this, { type: 'mulligan', player: p, mulls, free });
         if (doMull) {
           if (free) free = false; else mulls++;
-          this.lg(`${p.name} mulliganuje.`);
+          this.lg(`${p.name} takes a mulligan.`);
         } else keeping = true;
       }
       if (mulls > 0) {
@@ -344,7 +344,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           p.library.unshift(c);
         }
       }
-      this.lg(`${p.name} zadržava ${p.hand.length} karata.`);
+      this.lg(`${p.name} keeps ${p.hand.length} cards.`);
     }
 
     // ------------- helpers -------------
@@ -448,10 +448,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
       // commander zone replacement
       if (card.commander && ['graveyard', 'exile', 'hand', 'library'].includes(toZone) && !opts.noCmdReplace) {
-        const zoneLabels = { graveyard: 'Groblje', exile: 'Egzil', hand: 'Ruka', library: 'Biblioteka' };
+        const zoneLabels = { graveyard: 'Graveyard', exile: 'Exile', hand: 'Hand', library: 'Library' };
         const keep = await card.owner.controller.decide(this, {
-          type: 'chooseOption', prompt: `${card.name}: vrati u command zonu?`,
-          options: [{ key: 'cz', label: 'Command zona' }, { key: 'stay', label: zoneLabels[toZone] }],
+          type: 'chooseOption', prompt: `${card.name}: return it to the command zone?`,
+          options: [{ key: 'cz', label: 'Command zone' }, { key: 'stay', label: zoneLabels[toZone] }],
           aiHint: { kind: 'commanderZone', card, toZone },
         });
         if (keep === 'cz') toZone = 'command';
@@ -640,7 +640,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (n > 0 && d.etbCounters.kind === '+1/+1') n = this.adjustPlusCounters(card, n);
         if (n > 0) {
           card.counters[d.etbCounters.kind] = (card.counters[d.etbCounters.kind] || 0) + n;
-          this.notifyEffect(`◆ ${card.name} ulazi sa ${n} ${d.etbCounters.kind} ${U.plural(n, 'counterom', 'countera')}.`, {
+          this.notifyEffect(`◆ ${card.name} enters with ${n} ${d.etbCounters.kind} ${U.plural(n, 'counter', 'counters')}.`, {
             kind: 'counter', card, counterKind: d.etbCounters.kind, n,
           });
           this.markCounterPut(card.ctrl, card, n);
@@ -654,7 +654,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (kind === '+1/+1') n = this.adjustPlusCounters(card, n);
           if (!n) continue;
           card.counters[kind] = (card.counters[kind] || 0) + n;
-          this.notifyEffect(`◆ ${card.name} ulazi sa dodatnih ${n} ${kind} ${U.plural(n, 'counterom', 'countera')}.`, {
+          this.notifyEffect(`◆ ${card.name} enters with ${n} additional ${kind} ${U.plural(n, 'counter', 'counters')}.`, {
             kind: 'counter', card, counterKind: kind, n,
           });
           const by = opts.additionalCounterBy || card.ctrl;
@@ -668,7 +668,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (card.castMeta && card.castMeta.grantedSunburstColors > 0) {
         const kind = card.is('Creature') ? '+1/+1' : 'charge';
         card.counters[kind] = (card.counters[kind] || 0) + card.castMeta.grantedSunburstColors;
-        this.notifyEffect(`◆ ${card.name}: sunburst dodaje ${card.castMeta.grantedSunburstColors} ${kind} countera.`, {
+        this.notifyEffect(`◆ ${card.name}: sunburst adds ${card.castMeta.grantedSunburstColors} ${kind} counters.`, {
           kind: 'counter', card, counterKind: kind, n: card.castMeta.grantedSunburstColors,
         });
       }
@@ -677,7 +677,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (d.compleated && card.castMeta && card.castMeta.phyrexianLifePaid > 0) {
           card.counters['loyalty'] = Math.max(0, card.counters['loyalty'] - 2);
         }
-        this.notifyEffect(`◆ ${card.name} ulazi sa ${card.counters['loyalty']} loyalty countera.`, {
+        this.notifyEffect(`◆ ${card.name} enters with ${card.counters['loyalty']} loyalty counters.`, {
           kind: 'counter', card, counterKind: 'loyalty', n: card.counters['loyalty'],
         });
       }
@@ -809,8 +809,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await this.move(card, 'battlefield', {
         ctrl: player, faceDownDef: originalDef, faceDownKind: kind,
       });
-      this.lg(`${player.name} stavlja kartu licem nadolje kao 2/2${kind === 'cloak' ? ' sa ward {2}' : ''}.`);
-      this.notifyEffect(`🃏 ${player.name}: nova face-down 2/2 karta.`, { kind: 'faceDown', card, player }, false);
+      this.lg(`${player.name} puts a card face down as a 2/2${kind === 'cloak' ? ' with ward {2}' : ''}.`);
+      this.notifyEffect(`🃏 ${player.name}: new face-down 2/2 card.`, { kind: 'faceDown', card, player }, false);
       return card;
     }
 
@@ -831,7 +831,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (seen.length > 1) {
         const pick = await player.controller.decide(this, {
           type: 'chooseCards', from: seen, min: 1, max: 1,
-          prompt: 'Manifest dread: izaberi kartu koju manifestujes',
+          prompt: 'Manifest dread: choose the card to manifest',
           aiHint: { kind: 'manifestDread' },
         });
         if (pick && seen.includes(pick[0])) chosen = pick[0];
@@ -839,7 +839,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const other = seen.find(card => card !== chosen) || null;
       const manifested = await this.manifestCard(player, chosen);
       if (other) await this.move(other, 'graveyard');
-      this.lg(`${player.name} manifest dread${other ? ' i stavlja drugu kartu u groblje' : ''}.`);
+      this.lg(`${player.name} manifests dread${other ? ' and puts the other card into the graveyard' : ''}.`);
       return manifested;
     }
 
@@ -875,8 +875,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       delete card.meta.faceDownKind;
       card.faceDown = false;
       this.recalc();
-      this.lg(`${player.name} okrece ${card.name} licem gore.`, 'effect');
-      this.notifyEffect(`🃏 ${card.name} je okrenut licem gore.`, { kind: 'faceUp', card, player }, false);
+      this.lg(`${player.name} turns ${card.name} face up.`, 'effect');
+      this.notifyEffect(`🃏 ${card.name} was turned face up.`, { kind: 'faceUp', card, player }, false);
       await this.emit('turnedFaceUp', { card, player });
       await this.checkSBA();
       return true;
@@ -1004,7 +1004,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const preventionAllowed = !this.bf().some(card => card.def.damageCantBePrevented);
       if (preventionAllowed && opts.combat && src && src.is && src.is('Creature') && !src.hasSub('Elf') &&
         this.untilEffects.some(e => e.kind === 'preventNonElfCombat')) {
-        this.lg(`Galadhrim Ambush sprječava combat štetu od ${src.name}.`);
+        this.lg(`Galadhrim Ambush prevents combat damage from ${src.name}.`);
         await this.emit('damagePrevented', { src, target: p, player: p, n, combat: true });
         return 0;
       }
@@ -1015,14 +1015,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           !(opts._appliedRedirects && opts._appliedRedirects.has(e))) {
           const c = this.byIid(e.iid);
           if (c && c.zone === 'battlefield') {
-            this.lg(`Šteta preusmjerena na ${c.name}.`);
+            this.lg(`Damage redirected to ${c.name}.`);
             const applied = new Set(opts._appliedRedirects || []); applied.add(e);
             return this.damageCreature(src, c, n, Object.assign({}, opts, { _appliedRedirects: applied }));
           }
           continue;
         }
         if (preventionAllowed && e.kind === 'comeuppance' && src && src.ctrl !== p) {
-          this.lg(`Comeuppance sprječava ${n} štete igraču ${p.name}.`);
+          this.lg(`Comeuppance prevents ${n} damage to ${p.name}.`);
           await this.emit('damagePrevented', { src, target: p, player: p, n, combat: !!opts.combat });
           if (src.is && src.is('Creature')) {
             await this.damageCreature(e.sourceCard || null, src, n, Object.assign({}, opts, { combat: false }));
@@ -1032,19 +1032,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return 0;
         }
         if (preventionAllowed && e.kind === 'preventCombatToPlayer' && opts.combat) {
-          this.lg(`Šteta igraču ${p.name} spriječena.`);
+          this.lg(`Damage to ${p.name} was prevented.`);
           await this.emit('damagePrevented', { src, target: p, player: p, n, combat: true });
           return 0;
         }
         if (preventionAllowed && e.kind === 'preventToPlayer') {
-          this.lg(`Šteta igraču ${p.name} spriječena.`);
+          this.lg(`Damage to ${p.name} was prevented.`);
           await this.emit('damagePrevented', { src, target: p, player: p, n, combat: !!opts.combat });
           if (e.reflectCreatures && src && src.is && src.is('Creature')) await this.damageCreature(null, src, n, {});
           return 0;
         }
         if (preventionAllowed && e.kind === 'preventNextToPlayer' && (!e.source || e.source === src)) {
           this.untilEffects.splice(this.untilEffects.indexOf(e), 1);
-          this.lg(`Sljedeća šteta igraču ${p.name} spriječena.`);
+          this.lg(`The next damage to ${p.name} was prevented.`);
           await this.emit('damagePrevented', { src, target: p, player: p, n, combat: !!opts.combat });
           if (e.reflectToController && src && src.ctrl) {
             // Deflecting Palm: šteta ide kontroloru izvora, ma šta izvor bio
@@ -1058,7 +1058,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       n = this.applyDamageReplacements(src, p, n, opts);
       if (n <= 0) return 0;
-      this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete igraču ${p.name}.`, 'dmg');
+      this.lg(`${src ? src.name : 'Source'} deals ${n} damage to ${p.name}.`, 'dmg');
       if (opts.combat && src && src.commander) {
         p.commanderDamage[src.iid] = (p.commanderDamage[src.iid] || 0) + n;
       }
@@ -1081,12 +1081,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const preventionAllowed = !this.bf().some(card => card.def.damageCantBePrevented);
       if (preventionAllowed && opts.combat && src && src.is && src.is('Creature') && !src.hasSub('Elf') &&
         this.untilEffects.some(e => e.kind === 'preventNonElfCombat')) {
-        this.lg(`Galadhrim Ambush sprječava combat štetu od ${src.name}.`);
+        this.lg(`Galadhrim Ambush prevents combat damage from ${src.name}.`);
         await this.emit('damagePrevented', { src, target, n, combat: true });
         return 0;
       }
       if (preventionAllowed && this.isProtectedFrom(target, src)) {
-        this.lg(`${target.name}: zaštita sprječava štetu od ${src ? src.name : 'izvora'}.`);
+        this.lg(`${target.name}: protection prevents damage from ${src ? src.name : 'the source'}.`);
         await this.emit('damagePrevented', { src, target, n, combat: !!opts.combat });
         return 0;
       }
@@ -1095,14 +1095,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           !(opts._appliedRedirects && opts._appliedRedirects.has(e))) {
           const chosen = this.byIid(e.iid);
           if (chosen && chosen.zone === 'battlefield') {
-            this.lg(`Šteta sa ${target.name} preusmjerena na ${chosen.name}.`);
+            this.lg(`Damage from ${target.name} was redirected to ${chosen.name}.`);
             const applied = new Set(opts._appliedRedirects || []); applied.add(e);
             return this.damageCreature(src, chosen, n, Object.assign({}, opts, { _appliedRedirects: applied }));
           }
         }
         if (preventionAllowed && e.kind === 'comeuppance' && target.is('Planeswalker') &&
           e.who === target.ctrl && src && src.ctrl !== e.who) {
-          this.lg(`Comeuppance sprječava ${n} štete planeswalkeru ${target.name}.`);
+          this.lg(`Comeuppance prevents ${n} damage to planeswalker ${target.name}.`);
           await this.emit('damagePrevented', { src, target, n, combat: !!opts.combat });
           if (src.is && src.is('Creature')) {
             await this.damageCreature(e.sourceCard || null, src, n, Object.assign({}, opts, { combat: false }));
@@ -1116,14 +1116,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (n <= 0) return 0;
       // prevencija sve štete određenom stvorenju (Kurbis i sl.)
       if (preventionAllowed && this.untilEffects.some(e => e.kind === 'preventToCreature' && e.iid === target.iid)) {
-        this.lg(`Šteta stvorenju ${target.name} je spriječena.`);
+        this.lg(`Damage to ${target.name} was prevented.`);
         await this.emit('damagePrevented', { src, target, n, combat: !!opts.combat });
         return 0;
       }
       // shield counter: upija jedan damage event
       if (preventionAllowed && (target.counters['shield'] || 0) > 0) {
         this.removeCounters(target, 'shield', 1);
-        this.lg(`${target.name}: shield counter upija štetu.`);
+        this.lg(`${target.name}: a shield counter absorbs the damage.`);
         await this.emit('damagePrevented', { src, target, n, combat: !!opts.combat });
         await this.emit('shieldRemoved', { card: target });
         return 0;
@@ -1719,7 +1719,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // sigurnosni ventil: nijedna trigger petlja ne smije zamrznuti igru
       this._trigsThisTurn = (this._trigsThisTurn || 0) + 1;
       if (this._trigsThisTurn > 800) {
-        if (this._trigsThisTurn === 801) this.lg('⚠️ Previše okidača u jednom potezu — sigurnosni ventil preskače ostatak.');
+        if (this._trigsThisTurn === 801) this.lg('⚠️ Too many triggers in one turn — the safety limit skips the rest.');
         return;
       }
       const ctrl = tr.ctrl || (tr.src ? tr.src.ctrl : this.players[0]);
@@ -1729,8 +1729,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // optional trigger?
       if (tr.opt) {
         const yes = await ctrl.controller.decide(this, {
-          type: 'chooseOption', prompt: `${tr.src ? tr.src.name : ''}: ${tr.name} — iskoristi?`,
-          options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+          type: 'chooseOption', prompt: `${tr.src ? tr.src.name : ''}: ${tr.name} — use it?`,
+          options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
           aiHint: Object.assign({ kind: 'optTrigger', src: tr.src, name: tr.name }, tr.aiHint || {}),
           data: tr.data,
         });
@@ -1945,20 +1945,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.queueTrigger({
           src: target,
           ctrl: target.ctrl,
-          name: w.blight ? `Ward—Blight ${w.blight}` : `Ward ${w.life ? `${w.life} života` : w.mana}`,
+          name: w.blight ? `Ward—Blight ${w.blight}` : `Ward ${w.life ? `${w.life} life` : w.mana}`,
           data: { stackObject, payer: stackObject.ctrl, target, ward: w },
           run: async wardCtx => {
             const original = wardCtx.data.stackObject;
             if (!wardCtx.g.stack.includes(original)) return;
             if (original.kind === 'spell' && MTG.isUncounterable && MTG.isUncounterable(wardCtx.g, original)) {
-              wardCtx.g.lg(`${original.name}: Ward ga ne može counterovati.`);
+              wardCtx.g.lg(`${original.name}: Ward cannot counter it.`);
               return;
             }
             const paid = await wardCtx.g.payWard(wardCtx.data.payer, wardCtx.data.target, wardCtx.data.ward);
             if (paid) return;
             if (original.kind === 'spell') original.countered = true;
             else wardCtx.g.stack.splice(wardCtx.g.stack.indexOf(original), 1);
-            wardCtx.g.lg(`${original.name}: Ward counteruje ${original.kind === 'spell' ? 'spell' : 'sposobnost'}.`);
+            wardCtx.g.lg(`${original.name}: Ward counters the ${original.kind === 'spell' ? 'spell' : 'ability'}.`);
             wardCtx.g.note('stack', {});
           },
         });
@@ -1969,15 +1969,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const w = wardOverride || target.cur.wardCost;
       if (w.blight) {
         const pool = this.creatures(ctrl);
-        if (!pool.length) { this.lg(`${ctrl.name} ne može platiti Ward—Blight (nema stvorenja).`); return false; }
+        if (!pool.length) { this.lg(`${ctrl.name} cannot pay Ward—Blight (no creatures).`); return false; }
         const yes = await ctrl.controller.decide(this, {
-          type: 'chooseOption', prompt: `Ward — stavi ${w.blight} -1/-1 countera na svoje stvorenje da ciljaš ${target.name}?`,
-          options: [{ key: 'yes', label: `Blight ${w.blight}` }, { key: 'no', label: 'Odustani' }],
+          type: 'chooseOption', prompt: `Ward — put ${w.blight} -1/-1 counters on your creature to target ${target.name}?`,
+          options: [{ key: 'yes', label: `Blight ${w.blight}` }, { key: 'no', label: 'Cancel' }],
           aiHint: { kind: 'ward', target, payment: 'blight', n: w.blight },
         });
         if (yes !== 'yes') return false;
         const picked = await ctrl.controller.decide(this, {
-          type: 'chooseCards', from: pool, min: 1, max: 1, prompt: `Blight ${w.blight}: izaberi svoje stvorenje`, aiHint: { kind: 'blight', n: w.blight, source: target },
+          type: 'chooseCards', from: pool, min: 1, max: 1, prompt: `Blight ${w.blight}: choose your creature`, aiHint: { kind: 'blight', n: w.blight, source: target },
         });
         if (!picked.length) return false;
         await this.addM1(picked[0], w.blight, ctrl);
@@ -1985,18 +1985,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (w.life) {
         const yes = await ctrl.controller.decide(this, {
-          type: 'chooseOption', prompt: `Ward — plati ${w.life} života da ciljaš ${target.name}?`,
-          options: [{ key: 'yes', label: `Plati ${w.life} života` }, { key: 'no', label: 'Odustani' }],
+          type: 'chooseOption', prompt: `Ward — pay ${w.life} life to target ${target.name}?`,
+          options: [{ key: 'yes', label: `Pay ${w.life} life` }, { key: 'no', label: 'Cancel' }],
           aiHint: { kind: 'ward', target },
         });
         if (yes === 'yes') { await this.loseLife(ctrl, w.life, 'ward'); return true; }
         return false;
       }
       const cost = U.parseCost(w.mana);
-      if (!this.canPayMana(ctrl, cost)) { this.lg(`${ctrl.name} ne može platiti ward za ${target.name}.`); return false; }
+      if (!this.canPayMana(ctrl, cost)) { this.lg(`${ctrl.name} cannot pay ward for ${target.name}.`); return false; }
       const yes = await ctrl.controller.decide(this, {
-        type: 'chooseOption', prompt: `Ward — plati ${w.mana} da ciljaš ${target.name}?`,
-        options: [{ key: 'yes', label: `Plati ${w.mana}` }, { key: 'no', label: 'Odustani' }],
+        type: 'chooseOption', prompt: `Ward — pay ${w.mana} to target ${target.name}?`,
+        options: [{ key: 'yes', label: `Pay ${w.mana}` }, { key: 'no', label: 'Cancel' }],
         aiHint: { kind: 'ward', target },
       });
       if (yes !== 'yes') return false;
@@ -2023,7 +2023,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (!need || this.gameOver) continue;
             if ((c.counters['charge'] || 0) < need) continue;
             const w = c.ctrl;
-            this.lg(`💥 ${w.name} POBJEĐUJE — ${c.name} sa ${need}+ charge countera!`, 'win');
+            this.lg(`💥 ${w.name} WINS — ${c.name} has ${need}+ charge counters!`, 'win');
             for (const q of this.players) if (q !== w) q.lost = true;
             this.gameOver = true; this.winner = w;
             this.note('gameover', { winner: w });
@@ -2033,8 +2033,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           for (const p of this.players) {
             if (p.lost) continue;
             let dead = false, why = '';
-            if (p.life <= 0) { dead = true; why = 'život na 0'; }
-            if (p.deckedOut) { dead = true; why = 'prazna biblioteka'; }
+            if (p.life <= 0) { dead = true; why = 'life reached 0'; }
+            if (p.deckedOut) { dead = true; why = 'empty library'; }
             // 903.10a: 21 štete od ISTOG komandera. Kućno pravilo može tražiti zbir partnera.
             if (this.houseRules && this.houseRules.sumPartnerDamage) {
               const byOwner = {};
@@ -2044,10 +2044,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 const k = byOwner[iid] !== undefined ? 'p' + byOwner[iid] : iid;
                 tot[k] = (tot[k] || 0) + dmg;
               }
-              for (const k in tot) if (tot[k] >= 21) { dead = true; why = 'commander šteta (21+, kućno pravilo: zbir partnera)'; }
+              for (const k in tot) if (tot[k] >= 21) { dead = true; why = 'commander damage (21+, house rule: combined partner damage)'; }
             } else {
               for (const [iid, dmg] of Object.entries(p.commanderDamage)) {
-                if (dmg >= 21) { dead = true; why = 'commander šteta (21+)'; }
+                if (dmg >= 21) { dead = true; why = 'commander damage (21+)'; }
               }
             }
             if (dead) { await this.playerLoses(p, why); any = true; }
@@ -2148,7 +2148,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async playerLoses(p, why) {
       if (p.lost) return;
       p.lost = true;
-      this.lg(`☠️ ${p.name} gubi (${why}).`, 'lose');
+      this.lg(`☠️ ${p.name} loses (${why}).`, 'lose');
       // CR 800.4a: PRVO prestaju efekti koji su mu davali kontrolu nad tuđim
       // permanentima — ti se vraćaju vlasniku i ostaju u igri. Tek onda iz igre
       // odlazi ono što on POSJEDUJE.
@@ -2157,7 +2157,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           c.ctrl = c.owner;
           c.sick = true;
           if (c.meta) { delete c.meta._brokerOrig; delete c.meta._brokerBy; }
-          this.lg(`${c.name} se vraća igraču ${c.owner.name} (kontrolor je ispao).`);
+          this.lg(`${c.name} returns to ${c.owner.name} (its controller was eliminated).`);
         }
       }
       for (const c of this.bf().filter(c => c.owner === p)) {
@@ -2170,7 +2170,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.monarch === p) {
         const next = (this.turnPlayer && this.turnPlayer !== p && !this.turnPlayer.lost) ? this.turnPlayer : this.nextPlayer(p);
         this.monarch = (next && !next.lost && next !== p) ? next : null;
-        this.lg(this.monarch ? `👑📜 Kruna prelazi na ${this.monarch.name}.` : '👑📜 Nema monarha.');
+        this.lg(this.monarch ? `👑📜 The crown passes to ${this.monarch.name}.` : '👑📜 There is no monarch.');
       }
       this.stack = this.stack.filter(so => so.ctrl !== p);
       this.recalc();
@@ -2178,7 +2178,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (alive.length <= 1) {
         this.gameOver = true;
         this.winner = alive[0] || null;
-        this.lg(`🏆 ${this.winner ? this.winner.name + ' POBJEĐUJE!' : 'Nema pobjednika.'}`, 'win');
+        this.lg(`🏆 ${this.winner ? this.winner.name + ' WINS!' : 'No winner.'}`, 'win');
         this.note('gameover', { winner: this.winner });
       }
     }

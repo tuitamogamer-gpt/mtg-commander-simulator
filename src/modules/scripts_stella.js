@@ -15,9 +15,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => { E.exileTopPlayable(ctx.g, ctx.you, ctx.src, 1, 'next'); },
     }],
     abilities: [{
-      label: 'Kopiraj I/S spell', cost: { tap: true },
+      label: 'Copy an instant or sorcery spell', cost: { tap: true },
       cond: (g, c, p) => p.turnState.spellsCast >= 3,
-      targets: [T.spell((g, so) => (so.card.is('Instant') || so.card.is('Sorcery')), { prompt: 'Tvoj I/S spell', aiHint: { goal: 'copySpell' } })],
+      targets: [T.spell((g, so) => (so.card.is('Instant') || so.card.is('Sorcery')), { prompt: 'Your instant or sorcery spell', aiHint: { goal: 'copySpell' } })],
       run: async ctx => {
         const so = ctx.targets[0];
         if (so && ctx.g.stack.includes(so)) await ctx.g.copySpell(so, ctx.you, { mayNewTargets: true });
@@ -50,7 +50,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         g.addCounters(ctx.src, '+1/+1', times);
         const cands = p.graveyard.filter(c => (c.is('Instant') || c.is('Sorcery')) && U.mv(c.def.cost || '') <= 3);
         const picked = await p.controller.decide(g, {
-          type: 'chooseCards', from: cands, min: 0, max: times, prompt: `Kopiraj do ${times} I/S iz groblja`, aiHint: { kind: 'bestCard' },
+          type: 'chooseCards', from: cands, min: 0, max: times, prompt: `Copy up to ${times} instants or sorceries from the graveyard`, aiHint: { kind: 'bestCard' },
         });
         for (const c of picked) {
           await E.castCopyFromZone(g, p, c);
@@ -68,8 +68,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Crackling Spellslinger'] = {
     kws: ['flash'],
     triggers: [{
-      on: 'etb', filter: etbSelf, desc: 'Storm na sljedeći I/S',
-      run: async ctx => { ctx.you.stormNext = true; ctx.g.lg('Sljedeći I/S ovaj potez ima STORM.'); },
+      on: 'etb', filter: etbSelf, desc: 'Storm on your next instant or sorcery',
+      run: async ctx => { ctx.you.stormNext = true; ctx.g.lg('Your next instant or sorcery this turn has STORM.'); },
     }],
   };
   SC['Electrostatic Field'] = {
@@ -98,7 +98,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Goblin Electromancer'] = isCostReducer;
   SC['Thunderclap Drake'] = Object.assign({}, isCostReducer, {
     abilities: [{
-      label: 'Žrtvuj: kopije po commander castovima', cost: { mana: '{2}{U}', sacSelf: true },
+      label: 'Sacrifice: copies per commander cast', cost: { mana: '{2}{U}', sacSelf: true },
       run: async ctx => {
         const you = ctx.you;
         ctx.g.delayed.push({
@@ -111,7 +111,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             for (let i = 0; i < n; i++) await c2.g.copySpell(so, you, { mayNewTargets: true });
           },
         });
-        ctx.g.lg('Sljedeći I/S se kopira po broju dosadašnjih castova komandera.');
+        ctx.g.lg('The next instant or sorcery is copied for each previous commander cast.');
       },
     }],
   });
@@ -127,13 +127,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Kaza, Roil Chaser'] = {
     colorIdentityExtra: ['U', 'R'],
     abilities: [{
-      label: 'Sljedeći I/S jeftiniji', cost: { tap: true },
+      label: 'Reduce the cost of your next instant or sorcery', cost: { tap: true },
       run: async ctx => {
         const x = ctx.g.creatures(ctx.you).filter(c => c.hasSub('Wizard')).length;
         if (!x) return;
         ctx.you.tempReductions = ctx.you.tempReductions || [];
         ctx.you.tempReductions.push({ filter: (g, c) => c.is('Instant') || c.is('Sorcery'), delta: -x, once: true });
-        ctx.g.lg(`Kaza: sljedeći I/S košta {${x}} manje.`);
+        ctx.g.lg(`Kaza: your next instant or sorcery costs {${x}} less.`);
       },
     }],
   };
@@ -272,7 +272,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         filter: (g, d) => d.player === you,
         run: async c2 => { await c2.g.copySpell(c2.data.so, you, { mayNewTargets: true }); },
       });
-      ctx.g.lg('Sljedeći I/S ovaj potez se kopira.');
+      ctx.g.lg('Your next instant or sorcery this turn is copied.');
     },
   };
   SC['Opt'] = { resolve: async ctx => { await E.scry(ctx.g, ctx.you, 1); await ctx.g.draw(ctx.you, 1); } };
@@ -430,7 +430,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     exileOnResolve: true,
     altCosts: [{ label: 'Overload {5}{R}{R}{R}', altCostStr: '{5}{R}{R}{R}', overloaded: true, speed: 'sorcery' }],
     targets: [{
-      zone: 'graveyard', what: 'card', prompt: 'I/S iz groblja',
+      zone: 'graveyard', what: 'card', prompt: 'Instant or sorcery from the graveyard',
       filter: (g, c) => c.is('Instant') || c.is('Sorcery'),
       aiHint: { goal: 'bestGyCast' },
     }],
@@ -479,7 +479,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Rousing Refrain'] = {
     suspend: { cost: '{1}{R}', n: 3 },
-    targets: [T.opponent({ prompt: 'Po čijoj ruci?', aiHint: { goal: 'maxHand' } })],
+    targets: [T.opponent({ prompt: 'Whose hand?', aiHint: { goal: 'maxHand' } })],
     resolve: async ctx => {
       const n = ctx.targets[0].hand.length;
       ctx.you.pool.R += n;
@@ -593,7 +593,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Leyline Dowser'] = {
     abilities: [
       {
-        label: 'Mill 1 (I/S u ruku)', cost: { mana: '{1}', tap: true },
+        label: 'Mill 1 (instant or sorcery to hand)', cost: { mana: '{1}', tap: true },
         run: async ctx => {
           const milled = await ctx.g.mill(ctx.you, 1);
           const c = milled[0];

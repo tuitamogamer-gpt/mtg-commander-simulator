@@ -37,7 +37,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   TK.scarecrow22 = tok('Scarecrow', ['Artifact', 'Creature'], ['Scarecrow'], 2, 2, [], []);
   TK.mercenaryR = tok('Mercenary', ['Creature'], ['Mercenary'], 1, 1, [], ['R'], {
     abilities: [{
-      label: '+1/+0 stvorenju', cost: { tap: true }, sorcery: true,
+      label: '+1/+0 to a creature', cost: { tap: true }, sorcery: true,
       targets: [T.yourCreature({ prompt: '+1/+0', aiHint: { goal: 'buff' } })],
       run: async ctx => { E.pumpUntilEOT(ctx.g, ctx.targets[0], 1, 0); },
       aiScore: () => 1,
@@ -321,7 +321,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         g.lg(`💍 ${pick[0].name} je Ring-bearer (The Ring, nivo ${em.level}).`);
       }
     } else {
-      g.lg(`💍 The Ring — nivo ${em.level} (nemaš stvorenja za Ring-bearera).`);
+      g.lg(`💍 The Ring — level ${em.level} (you have no creature for the Ring-bearer).`);
     }
     g.recalc();
     return E7.ringBearer(g, p);
@@ -754,7 +754,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     }],
     triggers: ['lto', 'cardToGraveyard'].map(event => ({
-      on: event, zone: event === 'cardToGraveyard' ? 'graveyard' : 'self', desc: 'U library',
+      on: event, zone: event === 'cardToGraveyard' ? 'graveyard' : 'self', desc: 'Into library',
       filter: (g, self, d) => d.card === self,
       run: async ctx => {
         const c = ctx.src;
@@ -833,7 +833,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     splitHalves: {
       flyingKick: {
         targets: [
-          T.yourCreature({ prompt: 'Flying Kick: tvoje stvorenje', aiHint: { goal: 'fightMine' } }),
+          T.yourCreature({ prompt: 'Flying Kick: your creature', aiHint: { goal: 'fightMine' } }),
           T.oppCreature({ prompt: 'Flying Kick: protivničko stvorenje', aiHint: { goal: 'removal' } }),
         ],
         resolve: async ctx => {
@@ -955,7 +955,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const mine = ctx.g.creatures(ctx.you);
         const opps = ctx.g.bf().filter(c => c.is('Creature') && c.ctrl !== ctx.you);
         if (!mine.length || !opps.length) break;
-        const a = (await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: mine, min: 1, max: 1, prompt: 'Super Combo: tvoje stvorenje', aiHint: { kind: 'fightMine' } }))[0];
+      const a = (await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: mine, min: 1, max: 1, prompt: 'Super Combo: your creature', aiHint: { kind: 'fightMine' } }))[0];
         const b = (await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: opps, min: 1, max: 1, prompt: 'Super Combo: meta', aiHint: { kind: 'removalPick' } }))[0];
         if (a && b) await ctx.g.damageCreature(a, b, a.power);
       }
@@ -1040,7 +1040,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Exploding Barrel'] = {
     mana: { cost: { tap: true, counter: 'pressure' }, produce: [{ ANY: true, n: 1 }] },
     abilities: [{
-      label: '20 šteta stvorenju', sorcery: true,
+      label: '20 damage to a creature', sorcery: true,
       cost: { tap: true, sacSelf: true, mana: (g, c) => '{' + Math.max(0, 8 - (c.counters['pressure'] || 0)) + '}' },
       targets: [T.creature({ prompt: '20 šteta', aiHint: { goal: 'removal', dmg: 20 } })],
       run: async ctx => { await ctx.g.damageCreature(ctx.src, ctx.targets[0], 20); },
@@ -1117,7 +1117,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['High Score'] = {
     plusCountersAdjust: (n, g, card, self) => card.ctrl === self.ctrl ? n + 1 : n,
     triggers: [{
-      on: 'endStep', desc: 'Vuci ako imaš najjače', filter: (g, self, d) => d.player === self.ctrl,
+      on: 'endStep', desc: 'Draw if you control the strongest creature', filter: (g, self, d) => d.player === self.ctrl,
       run: async ctx => {
         const best = Math.max(0, ...ctx.g.bf().filter(c => c.is('Creature')).map(c => c.power));
         if (ctx.g.creatures(ctx.you).some(c => c.power >= best && best > 0)) await ctx.g.draw(ctx.you, 1);
@@ -1305,7 +1305,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
     abilities: [{
       label: 'Odbaci X: ukradi X karata s vrha', cost: { mana: '{4}{B}{B}{B}', discardX: true },
-      targets: [T.opponent({ prompt: 'Protivnik čiju biblioteku egziliraš', aiHint: { goal: 'mill' } })],
+      targets: [T.opponent({ prompt: 'Opponent whose library you exile', aiHint: { goal: 'mill' } })],
       run: async ctx => {
         const opponent = ctx.targets[0];
         if (!opponent) return;
@@ -1624,7 +1624,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       aiHint: { kind: 'willMardu' },
       list: [
         { label: 'Warrior tokeni prema target playeru', targets: [T.player({ prompt: 'Igrač čija stvorenja brojiš', aiHint: { goal: 'marduTokenCount' } })] },
-        { label: 'Šteta target stvorenju', targets: [T.creature({ prompt: 'Stvorenje za štetu', aiHint: { goal: 'removal' } })] },
+        { label: 'Damage to target creature', targets: [T.creature({ prompt: 'Creature to damage', aiHint: { goal: 'removal' } })] },
       ],
     },
     castCondBoth: true,

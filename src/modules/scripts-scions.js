@@ -436,7 +436,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC["Blue Mage's Cane"] = {
     equip: '{2}',
     triggers: [jobSelect, {
-      on: 'attacks', desc: 'Egzilaj i kopiraj I/S branioca',
+      on: 'attacks', desc: "Exile and copy the defending player's instant or sorcery",
       filter: (g, self, d) => {
         if (!self.attachedTo || d.card.iid !== self.attachedTo) return false;
         const defender = d.card.attacking instanceof MTG.Player ? d.card.attacking : d.card.attacking && d.card.attacking.ctrl;
@@ -584,7 +584,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return (info.castOpts && info.castOpts.from === 'graveyard') ? -2 : 0;
     }],
     triggers: [{
-      on: 'lifeLost', desc: 'Baci I/S iz groblja', opt: true, oncePerTurn: true,
+      on: 'lifeLost', desc: 'Cast an instant or sorcery from the graveyard', opt: true, oncePerTurn: true,
       aiHint: { kind: 'scionsGraveCast', free: false },
       filter: (g, self, d) => d.player && d.player !== self.ctrl &&
         self.ctrl.graveyard.some(card => card.is('Instant') || card.is('Sorcery')),
@@ -640,7 +640,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC['Murderous Rider'] = {
     triggers: [{
-      on: 'dies', desc: 'Na dno biblioteke', filter: (g, self, d) => d.card === self,
+      on: 'dies', desc: 'To the bottom of the library', filter: (g, self, d) => d.card === self,
       run: async ctx => {
         const c = ctx.src;
         if (c.zone !== 'graveyard') return;

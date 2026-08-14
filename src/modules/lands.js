@@ -357,7 +357,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Raging Ravine'] = {
     producesColors: ['R', 'G'], entersTapped: true, mana: tapFor(['R', 'G']),
     abilities: [{
-      label: 'Postaje 3/3 stvorenje', cost: { mana: '{2}{R}{G}' },
+      label: 'Becomes a 3/3 creature', cost: { mana: '{2}{R}{G}' },
       run: async ctx => {
         const iid = ctx.src.iid;
         ctx.g.untilEffects.push({
@@ -442,7 +442,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: COLORS, entersTapped: true,
     mana: { cost: { tap: true }, produce: (g, c, p) => p.colorIdentity.map(col => ({ [col]: 1 })) },
     abilities: [{
-      label: 'Lifelink stvorenju s counterom', cost: { tap: true, mana: '{2}' },
+      label: 'Give lifelink to a creature with a counter', cost: { tap: true, mana: '{2}' },
       targets: [T.yourCreature({
         prompt: 'Stvorenje s counterom',
         filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl === ctrl && Object.keys(c.counters).some(k => c.counters[k] > 0),
@@ -602,8 +602,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Premjesti counter', cost: { tap: true, mana: '{1}' }, sorcery: true,
       targets: [
-        T.permanent((g, c, ctrl) => c.ctrl === ctrl && Object.keys(c.counters).some(k => c.counters[k] > 0), { prompt: 'Sa (tvoj permanent)', aiHint: { goal: 'buff' } }),
-        T.permanent(null, { prompt: 'Na drugi permanent', differentFromPrevious: true, aiHint: { goal: 'buff' } }),
+        T.permanent((g, c, ctrl) => c.ctrl === ctrl && Object.keys(c.counters).some(k => c.counters[k] > 0), { prompt: 'From (your permanent)', aiHint: { goal: 'buff' } }),
+        T.permanent(null, { prompt: 'To another permanent', differentFromPrevious: true, aiHint: { goal: 'buff' } }),
       ],
       run: async ctx => {
         const [from, to] = ctx.targets;
@@ -660,7 +660,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Artefakt iz groblja u ruku', cost: { tap: true, sacSelf: true, mana: '{2}' },
       cond: (g, c, p) => p.graveyard.some(x => x.is('Artifact')),
       targets: [{
-        zone: 'graveyard', what: 'card', prompt: 'Ciljana artifact karta u tvom groblju',
+        zone: 'graveyard', what: 'card', prompt: 'Target artifact card in your graveyard',
         filter: (g, card, ctrl) => card.owner === ctrl && card.is('Artifact'),
         aiHint: { goal: 'reanimate' },
       }],

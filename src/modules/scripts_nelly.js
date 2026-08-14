@@ -72,7 +72,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const pool = g.creatures(q);
           if (!pool.length) continue;
           const pick = await q.controller.decide(g, {
-            type: 'chooseCards', from: pool, min: 0, max: 1, prompt: 'Agitator Ant: +2 countera (i goad)?', aiHint: { kind: 'agitator' },
+            type: 'chooseCards', from: pool, min: 0, max: 1, prompt: 'Agitator Ant: +2 counters (and goad)?', aiHint: { kind: 'agitator' },
           });
           if (pick.length) {
             g.addCounters(pick[0], '+1/+1', 2);
@@ -458,7 +458,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC["Gideon's Sacrifice"] = {
     targets: [T.permanent((g, c, ctrl) => c.ctrl === ctrl && (c.is('Creature') || c.is('Planeswalker')), {
-      prompt: 'Tvoje stvorenje ili planeswalker', aiHint: { goal: 'protect' },
+      prompt: 'Your creature or planeswalker', aiHint: { goal: 'protect' },
     })],
     resolve: async ctx => {
       const you = ctx.you, iid = ctx.targets[0].iid;
@@ -527,8 +527,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const choices = new Map();
       for (const o of E.eachOpp(g, ctx.you)) {
         const k = await o.controller.decide(g, {
-          type: 'chooseOption', prompt: "Prisoner's Dilemma: šuti ili cinkaj?",
-          options: [{ key: 'silence', label: '🤐 Šuti' }, { key: 'snitch', label: '🗣️ Cinkaj' }],
+          type: 'chooseOption', prompt: "Prisoner's Dilemma: stay silent or snitch?",
+          options: [{ key: 'silence', label: '🤐 Stay silent' }, { key: 'snitch', label: '🗣️ Snitch' }],
           aiHint: { kind: 'dilemma' },
         });
         choices.set(o, k);
@@ -613,7 +613,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       host.cur.goadedBy = (host.cur.goadedBy || []).concat([self.ctrl]);
     },
     abilities: [{
-      label: 'Pripoji protivničkom stvorenju', cost: { mana: '{1}' }, sorcery: true,
+      label: "Attach to an opponent's creature", cost: { mana: '{1}' }, sorcery: true,
       targets: [{
         what: 'creature', prompt: 'Protivničko stvorenje',
         filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl !== ctrl,
@@ -935,7 +935,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Needle Spires'] = {
     producesColors: ['R', 'W'], entersTapped: true, mana: tapFor(['R', 'W']),
     abilities: [{
-      label: 'Postaje 2/1 double strike', cost: { mana: '{2}{R}{W}' },
+      label: 'Becomes a 2/1 with double strike', cost: { mana: '{2}{R}{W}' },
       run: async ctx => {
         const iid = ctx.src.iid;
         ctx.g.untilEffects.push({

@@ -66,7 +66,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   const PERSONAS = {
     aggressive: {
-      label: 'Agresivan', icon: '🗡️',
+      label: 'Aggressive', icon: '🗡️',
       atkThr: -0.6,        // napada i u lošim razmjenama
       atkRnd: 0.55,        // šansa da napadne i na graničnom skoru
       blockThr: 1.6,       // nerado blokira — čuva napadače
@@ -77,7 +77,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       counterBias: -0.5,
     },
     opportunist: {
-      label: 'Strvinar', icon: '🦅',
+      label: 'Opportunist', icon: '🦅',
       // Zamjena za Pregovarača, koji se preklapao sa Uravnoteženim i nije
       // imao putanju do pobjede. Strvinar je mehanički njegova suprotnost:
       // pušta najjačeg da bježi i navaljuje na svakoga ko posrne.
@@ -90,7 +90,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       counterBias: -0.2,
     },
     passive: {
-      label: 'Pasivan', icon: '🛡️',
+      label: 'Defensive', icon: '🛡️',
       atkThr: 2.4, atkRnd: 0.05,
       blockThr: -1.2,      // rado blokira
       lowLifeHunt: 0.5, focusLeader: 0.5,
@@ -99,7 +99,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       wipeBias: 1.5, counterBias: 0.6,
     },
     teaser: {
-      label: 'Provokator', icon: '🃏',
+      label: 'Provocateur', icon: '🃏',
       atkThr: 0.2, atkRnd: 0.45,
       blockThr: 0.8,
       lowLifeHunt: 0.8, focusLeader: 1.2,
@@ -108,7 +108,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       wipeBias: 0.5, counterBias: 0.2,
     },
     balanced: {
-      label: 'Uravnotežen', icon: '⚖️',
+      label: 'Balanced', icon: '⚖️',
       atkThr: 0.6, atkRnd: 0.3, blockThr: 0,
       lowLifeHunt: 1.2, focusLeader: 1.5,
       castCreature: 0, castDamage: 0, castDefense: 0, castPolitics: 0.3,

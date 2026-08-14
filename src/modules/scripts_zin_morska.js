@@ -81,7 +81,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Arthur, Marigold Knight'] = {
     triggers: [{
-      on: 'attacks', filter: attacksSelf, desc: 'Pojačanje',
+      on: 'attacks', filter: attacksSelf, desc: 'Boost',
       onlyIf: (g, self) => g.combat && g.combat.attackers.length >= 2,
       run: async ctx => {
         const g = ctx.g, p = ctx.you;
@@ -208,7 +208,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => { await ctx.g.draw(ctx.you, 1); },
       },
       {
-        on: 'attacks', filter: attacksSelf, desc: 'Zečevi',
+        on: 'attacks', filter: attacksSelf, desc: 'Rabbits',
         run: async ctx => { const n = Math.max(0, ctx.src.power); if (n) await ctx.g.makeTokens('rabbit', ctx.you, { n }); },
       },
     ],
@@ -303,7 +303,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', filter: etbSelf, opt: true, desc: 'Flicker',
       targets: [{
-        what: 'creature', prompt: 'Tvoje ne-Angel stvorenje', upTo: true,
+        what: 'creature', prompt: 'Your non-Angel creature', upTo: true,
         filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl === ctrl && !c.hasSub('Angel'),
         aiHint: { goal: 'protect' },
       }],
@@ -815,7 +815,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         },
       },
       {
-        on: 'endStep', desc: 'Untapuj landove i zaključaj spellove', opt: true,
+        on: 'endStep', desc: 'Untap lands and lock spells', opt: true,
         aiHint: { kind: 'innocuousUntap' },
         filter: (g, self, d) => d.player === self.ctrl,
         run: async ctx => {
@@ -914,7 +914,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
     abilities: [{
       label: 'Žrtvuj X Clue: ukradi', cost: { tap: true, sac: (g, x) => x.hasSub('Clue'), sacN: 'X' },
-      targets: [T.opponent({ prompt: 'Čiju biblioteku otkrivaš?', aiHint: { goal: 'mill' } })],
+      targets: [T.opponent({ prompt: 'Whose library do you reveal?', aiHint: { goal: 'mill' } })],
       run: async ctx => {
         const g = ctx.g, x = ctx.x || 0;
         if (!x) return;

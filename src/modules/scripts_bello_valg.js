@@ -351,7 +351,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         label: '-2: Fight', loyalty: -2, sorcery: true,
         targets: [
-          T.yourCreature({ prompt: 'Tvoje stvorenje', aiHint: { goal: 'fightMine' } }),
+          T.yourCreature({ prompt: 'Your creature', aiHint: { goal: 'fightMine' } }),
           { what: 'creature', prompt: 'Protivničko stvorenje', filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl !== ctrl, aiHint: { goal: 'removal' } },
         ],
         run: async ctx => {
@@ -367,7 +367,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     modes: {
       pick: 1,
       list: [
-        { label: '3 štete stvorenju', targets: [T.creature({ prompt: 'Meta', aiHint: { goal: 'removal', dmg: 3 } })] },
+        { label: '3 damage to a creature', targets: [T.creature({ prompt: 'Target', aiHint: { goal: 'removal', dmg: 3 } })] },
         { label: 'Uništi artefakt', targets: [T.permanent((g, c) => c.is('Artifact'), { prompt: 'Artefakt', aiHint: { goal: 'removal' } })] },
       ],
     },
@@ -582,7 +582,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (c.zone === 'battlefield') g.addCounters(c, '+1/+1', 1);
           const k = await p.controller.decide(g, {
             type: 'chooseOption', prompt: `${top.name}: ostavi na vrhu ili u groblje?`,
-            options: [{ key: 'top', label: 'Vrh' }, { key: 'gy', label: 'Groblje' }],
+            options: [{ key: 'top', label: 'Top' }, { key: 'gy', label: 'Graveyard' }],
             aiHint: { kind: 'explore', card: top },
           });
           if (k === 'gy') { p.library.pop(); await g.move(top, 'graveyard'); }
@@ -780,8 +780,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const g = ctx.g, o = ctx.targets[0], p = ctx.you;
         const k = await o.controller.decide(g, {
-          type: 'chooseOption', prompt: `Gearhulk: ${p.name} vuče 3 ILI mill 3 + šteta?`,
-          options: [{ key: 'draw', label: `${p.name} vuče 3` }, { key: 'burn', label: 'Mill 3 + šteta meni' }],
+          type: 'chooseOption', prompt: `Gearhulk: ${p.name} draws 3 OR mill 3 + damage?`,
+          options: [{ key: 'draw', label: `${p.name} draws 3` }, { key: 'burn', label: 'Mill 3 + damage to me' }],
           aiHint: { kind: 'gearhulk', caster: p },
         });
         if (k === 'draw') await g.draw(p, 3);
@@ -807,7 +807,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => { await ctx.g.damageOpponents(ctx.src, ctx.you, 4); },
       },
       {
-        on: 'damageToPlayer', desc: 'Delirium: šteta stvorenju',
+        on: 'damageToPlayer', desc: 'Delirium: damage to a creature',
         filter: (g, self, d) => {
           if (d.combat || !d.src || d.src.ctrl !== self.ctrl) return false;
           if (d.player === self.ctrl) return false;
@@ -820,7 +820,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const cands = ctx.g.creatures(victim);
           if (!cands.length) return;
           const t = await ctx.you.controller.decide(ctx.g, {
-            type: 'chooseTargets', candidates: cands, min: 1, max: 1, prompt: 'Šteta stvorenju:', aiHint: { goal: 'removal' },
+            type: 'chooseTargets', candidates: cands, min: 1, max: 1, prompt: 'Damage to a creature:', aiHint: { goal: 'removal' },
           });
           if (t.length) await ctx.g.damageCreature(ctx.src, t[0], ctx.data.n);
         },

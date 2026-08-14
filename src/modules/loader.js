@@ -22,27 +22,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
-      'Squirreled Away': { icon: '🐿️', colors: ['B', 'G'], style: 'Tokeni i žrtvovanje', blurb: 'Vjeverice, Foodovi i sac-sinergije. Široke table i drain efekti.', set: 'Bloomburrow Commander (2024)' },
-      'Animated Army': { icon: '🥁', colors: ['R', 'G'], style: 'Animirani artefakti', blurb: 'Bello pretvara artefakte i enchantmente u 4/4 vojsku sa haste.', set: 'Bloomburrow Commander (2024)' },
-      'Family Matters': { icon: '🐭', colors: ['U', 'R', 'W'], style: 'Offspring/letači', blurb: 'Zinnia daje offspring svakom stvorenju — porodica malih kopija u zraku.', set: 'Bloomburrow Commander (2024)' },
-      'Endless Punishment': { icon: '👹', colors: ['B', 'R'], style: 'Kažnjavanje', blurb: 'Valgavoth raste dok protivnici krvare na svakom koraku.', set: 'Duskmourn Commander (2024)' },
-      'Quick Draw': { icon: '🎯', colors: ['U', 'R'], style: 'Spellslinger', blurb: 'Stella Lee kopira instante i sorcerije — brzina i preciznost.', set: 'Outlaws of Thunder Junction Commander (2024)' },
-      'Abzan Armor': { icon: '🛡️', colors: ['W', 'B', 'G'], style: 'Toughness/zidovi', blurb: 'Felothar: zidovi napadaju po toughnessu. Spora, neprobojna sila.', set: 'Tarkir: Dragonstorm Commander (2025)' },
-      'Deep Clue Sea': { icon: '🔍', colors: ['G', 'W', 'U'], style: 'Clue/card draw', blurb: 'Morska istražuje — Clue tokeni, brda karata i veliki finišeri.', set: 'Murders at Karlov Manor Commander (2024)' },
-      'Blame Game': { icon: '⚖️', colors: ['R', 'W'], style: 'Goad/politika', blurb: 'Nelly Borca huška protivnike jedne na druge — čisti multiplayer haos.', set: 'Murders at Karlov Manor Commander (2024)' },
-      'Turtle Power': { icon: '🐢', colors: ['W', 'U', 'B', 'R', 'G'], style: '+1/+1 counteri/tokeni', blurb: 'Kornjače! Heroes in a Half Shell: Mutanti, Ninje i Kornjače rastu sa svakim udarcem. Cowabunga!', set: 'Teenage Mutant Ninja Turtles Commander (2026)' },
-      'Mardu Surge': { icon: '⚔️', colors: ['R', 'W', 'B'], style: 'Go-wide tokeni', blurb: 'Zurgo Stormrender: mobilize horde, tokeni napadaju u talasima, svaki koji ode nosi vrijednost.', set: 'Tarkir: Dragonstorm Commander (2025)' },
-      'Blight Curse': { icon: '🍄', colors: ['B', 'R', 'G'], style: '-1/-1 counteri/wither', blurb: 'Auntie Ool: -1/-1 counteri truju sve — wither, Necroskitter krade leševe, Hapatra pravi zmije.', set: 'Lorwyn Eclipsed Commander (2026)' },
-      'Counter Intelligence': { icon: '🛸', colors: ['U', 'R', 'W'], style: 'Artefakti/charge', blurb: 'Inspirit, svemirski brod: station charge counteri, proliferate, Darksteel Reactor win-con.', set: 'Edge of Eternities Commander (2025)' },
-      'Most Wanted': { icon: '🤠', colors: ['R', 'W', 'B'], style: 'Outlawi/Treasure', blurb: 'Olivia: odmetnici pljačkaju — Treasure za svaki udarac, krađe i politika Divljeg zapada.', set: 'Outlaws of Thunder Junction Commander (2024)' },
-      'Elven Council': { icon: '🧝', colors: ['G', 'U'], style: 'Elfovi/glasanje', blurb: 'Galadriel: vijeće glasa svaki combat — elfovi, Prsten iskušava, politika i mudrost.', set: 'LOTR: Tales of Middle-earth Commander (2023)' },
-      'Prismari Artistry': { icon: '🎨', colors: ['U', 'R'], style: 'Spellslinger/kopije', blurb: 'Rootha: svaki instant/sorcery pravi X/X elementale — umjetnost je eksplozija!', set: 'Secrets of Strixhaven Commander (2026)' },
-      'Avengers Assemble': { icon: '🛡️', colors: ['U', 'R', 'W'], style: 'Hero tribal/counteri', blurb: 'Captain America okuplja Osvetnike — svaki Hero jača tim. Avengers, assemble!', set: 'Marvel Super Heroes Commander (2026)' },
-      'Doom Prevails': { icon: '🤖', colors: ['U', 'B', 'R'], style: 'Villaini/connive', blurb: 'Doctor Doom i galerija zlikovaca: connive, mayhem iz groblja, krađe i kazne.', set: 'Marvel Super Heroes Commander (2026)' },
-      'The Fantastic Four': { icon: '4️⃣', colors: ['R', 'G', 'W', 'U'], style: 'Noncreature sinergije', blurb: 'Prva porodica: svaki noncreature spell pali sposobnosti — Flame On, Clobberin Time!', set: 'Marvel Super Heroes Commander (2026)' },
-      'Wakanda Forever': { icon: '🐾', colors: ['G', 'W'], style: 'Artefakti/monarh', blurb: 'T\'Challa: Vibranium mana, oprema i borba za krunu. Wakanda forever!', set: 'Marvel Super Heroes Commander (2026)' },
-      'Scions & Spellcraft': { icon: '🔮', colors: ['W', 'U', 'B'], style: 'Spellslinger/drain', blurb: 'Y\'shtola: svaki noncreature spell MV 3+ drena svakog protivnika za 2. Scioni, kopije i kontrola.', set: 'Final Fantasy Commander (2025)' },
-      'Coven Counters': { icon: '🌾', colors: ['G', 'W'], style: '+1/+1 counteri/Coven', blurb: 'Leinore: counter svaki combat, a tri stvorenja različite snage vuku kartu. Coven i ljudi.', set: 'Innistrad: Midnight Hunt Commander (2021)' },
+      'Squirreled Away': { icon: '🐿️', colors: ['B', 'G'], style: 'Tokens and sacrifice', blurb: 'Squirrels, Food, and sacrifice synergies build wide boards and drain the table.', set: 'Bloomburrow Commander (2024)' },
+      'Animated Army': { icon: '🥁', colors: ['R', 'G'], style: 'Animated artifacts', blurb: 'Bello turns artifacts and enchantments into a hasty 4/4 army.', set: 'Bloomburrow Commander (2024)' },
+      'Family Matters': { icon: '🐭', colors: ['U', 'R', 'W'], style: 'Offspring and fliers', blurb: 'Zinnia gives offspring to every creature, filling the skies with small copies.', set: 'Bloomburrow Commander (2024)' },
+      'Endless Punishment': { icon: '👹', colors: ['B', 'R'], style: 'Group slug', blurb: 'Valgavoth grows while opponents bleed for every action.', set: 'Duskmourn Commander (2024)' },
+      'Quick Draw': { icon: '🎯', colors: ['U', 'R'], style: 'Spellslinger', blurb: 'Stella Lee copies instants and sorceries with speed and precision.', set: 'Outlaws of Thunder Junction Commander (2024)' },
+      'Abzan Armor': { icon: '🛡️', colors: ['W', 'B', 'G'], style: 'Toughness and defenders', blurb: 'Felothar lets walls attack with toughness: slow, impenetrable force.', set: 'Tarkir: Dragonstorm Commander (2025)' },
+      'Deep Clue Sea': { icon: '🔍', colors: ['G', 'W', 'U'], style: 'Clues and card draw', blurb: 'Morska investigates with Clue tokens, piles of cards, and huge finishers.', set: 'Murders at Karlov Manor Commander (2024)' },
+      'Blame Game': { icon: '⚖️', colors: ['R', 'W'], style: 'Goad and politics', blurb: 'Nelly Borca turns opponents against one another in multiplayer chaos.', set: 'Murders at Karlov Manor Commander (2024)' },
+      'Turtle Power': { icon: '🐢', colors: ['W', 'U', 'B', 'R', 'G'], style: '+1/+1 counters and tokens', blurb: 'Heroes in a Half Shell: Mutants, Ninjas, and Turtles grow with every hit. Cowabunga!', set: 'Teenage Mutant Ninja Turtles Commander (2026)' },
+      'Mardu Surge': { icon: '⚔️', colors: ['R', 'W', 'B'], style: 'Go-wide tokens', blurb: 'Zurgo Stormrender mobilizes waves of attacking tokens that keep their value when they leave.', set: 'Tarkir: Dragonstorm Commander (2025)' },
+      'Blight Curse': { icon: '🍄', colors: ['B', 'R', 'G'], style: '-1/-1 counters and wither', blurb: 'Auntie Ool poisons boards while Necroskitter steals corpses and Hapatra creates Snakes.', set: 'Lorwyn Eclipsed Commander (2026)' },
+      'Counter Intelligence': { icon: '🛸', colors: ['U', 'R', 'W'], style: 'Artifacts and charge counters', blurb: 'Inspirit stations a spacecraft, proliferates charge counters, and threatens a Darksteel Reactor win.', set: 'Edge of Eternities Commander (2025)' },
+      'Most Wanted': { icon: '🤠', colors: ['R', 'W', 'B'], style: 'Outlaws and Treasure', blurb: 'Olivia leads outlaw heists with Treasure for every hit, theft, and Wild West politics.', set: 'Outlaws of Thunder Junction Commander (2024)' },
+      'Elven Council': { icon: '🧝', colors: ['G', 'U'], style: 'Elves and voting', blurb: 'Galadriel calls a vote each combat amid Elves, Ring temptations, politics, and wisdom.', set: 'LOTR: Tales of Middle-earth Commander (2023)' },
+      'Prismari Artistry': { icon: '🎨', colors: ['U', 'R'], style: 'Spellslinger and copies', blurb: 'Rootha turns every instant and sorcery into explosive X/X Elemental art.', set: 'Secrets of Strixhaven Commander (2026)' },
+      'Avengers Assemble': { icon: '🛡️', colors: ['U', 'R', 'W'], style: 'Hero typal and counters', blurb: 'Captain America assembles the Avengers, and every Hero strengthens the team.', set: 'Marvel Super Heroes Commander (2026)' },
+      'Doom Prevails': { icon: '🤖', colors: ['U', 'B', 'R'], style: 'Villains and connive', blurb: 'Doctor Doom leads a gallery of villains through connive, graveyard mayhem, theft, and punishment.', set: 'Marvel Super Heroes Commander (2026)' },
+      'The Fantastic Four': { icon: '4️⃣', colors: ['R', 'G', 'W', 'U'], style: 'Noncreature synergies', blurb: "Marvel's first family triggers abilities with every noncreature spell. Flame On! It's Clobberin' Time!", set: 'Marvel Super Heroes Commander (2026)' },
+      'Wakanda Forever': { icon: '🐾', colors: ['G', 'W'], style: 'Artifacts and monarch', blurb: "T'Challa harnesses Vibranium mana, equipment, and the fight for the crown. Wakanda forever!", set: 'Marvel Super Heroes Commander (2026)' },
+      'Scions & Spellcraft': { icon: '🔮', colors: ['W', 'U', 'B'], style: 'Spellslinger and drain', blurb: "Y'shtola drains each opponent whenever you cast a noncreature spell with mana value 3 or greater.", set: 'Final Fantasy Commander (2025)' },
+      'Coven Counters': { icon: '🌾', colors: ['G', 'W'], style: '+1/+1 counters and Coven', blurb: 'Leinore adds a counter each combat, while three different powers unlock Coven card draw.', set: 'Innistrad: Midnight Hunt Commander (2021)' },
     };
     if (MTG.buildDeckAIProfiles) MTG.buildDeckAIProfiles();
   };
@@ -77,10 +77,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ljudski čitljiv opis partner sposobnosti
   MTG.cmdTagLabel = function (tag) {
     if (!tag || !tag.kind) return '';
-    if (tag.kind === 'with') return '🤝 Partner sa: ' + tag.with;
+    if (tag.kind === 'with') return '🤝 Partner with: ' + tag.with;
     if (tag.kind === 'named') return '🤝 Partner — ' + tag.label;
     if (tag.kind === 'partner') return '🤝 Partner';
-    if (tag.kind === 'background') return '🤝 Bira Background';
+    if (tag.kind === 'background') return '🤝 Choose a Background';
     if (tag.kind === 'doctorsCompanion') return '🤝 Doctor\'s companion';
     return '';
   };
@@ -169,25 +169,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.validateCommanders = function (deckData, names, defs) {
     defs = defs || MTG.DEFS;
     names = (names || []).filter(Boolean);
-    if (!names.length) return { ok: false, why: 'Nije izabran nijedan komander.' };
-    if (names.length > 2) return { ok: false, why: 'Najviše dva komandera.' };
+    if (!names.length) return { ok: false, why: 'No commander selected.' };
+    if (names.length > 2) return { ok: false, why: 'Choose no more than two commanders.' };
     const pool = {};
     for (const entry of (deckData.cards || [])) pool[entry.name] = (pool[entry.name] || 0) + entry.n;
     for (const n of names) {
-      if (!pool[n]) return { ok: false, why: `${n} nije u ovom deku.` };
-      if (!MTG.canBeCommander(defs[n], deckData)) return { ok: false, why: `${n} ne može biti komander.` };
+      if (!pool[n]) return { ok: false, why: `${n} is not in this deck.` };
+      if (!MTG.canBeCommander(defs[n], deckData)) return { ok: false, why: `${n} cannot be a commander.` };
     }
     if (names.length === 2) {
-      if (names[0] === names[1]) return { ok: false, why: 'Isti komander dvaput.' };
+      if (names[0] === names[1]) return { ok: false, why: 'The same commander cannot be selected twice.' };
       if (!MTG.canPartner(defs[names[0]], defs[names[1]]))
-        return { ok: false, why: `${names[0]} i ${names[1]} nisu partneri.` };
+        return { ok: false, why: `${names[0]} and ${names[1]} are not partners.` };
     }
     const commanderColors = new Set();
     for (const name of names) for (const color of MTG.cardColorIdentity(defs[name])) commanderColors.add(color);
     const deckColors = MTG.deckColorIdentity(deckData, defs);
     const outside = deckColors.filter(color => !commanderColors.has(color));
     if (outside.length) {
-      return { ok: false, why: `Deck sadrži boje izvan identiteta komandera: ${outside.join(', ')}.` };
+      return { ok: false, why: `The deck contains colors outside the commanders' color identity: ${outside.join(', ')}.` };
     }
     return { ok: true, why: '' };
   };
@@ -211,18 +211,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // KLASIFIKACIJA PRIJETNJE — šta mi je bot upravo uperio u glavu?
   // ============================================================
   MTG.THREAT_KINDS = {
-    counter: { icon: '🚫', label: 'Counterspell', cls: 'counter', hint: 'Kontrira ti spell — ako imaš odgovor, sad je trenutak.' },
-    exile: { icon: '🌀', label: 'Exile', cls: 'exile', hint: 'Egzil — karta se ne vraća u groblje. Regeneracija i „vrati iz groblja" ne pomažu.' },
-    destroy: { icon: '💀', label: 'Removal', cls: 'destroy', hint: 'Uništava ti permanent.' },
-    sacrifice: { icon: '🔪', label: 'Prisilna žrtva', cls: 'destroy', hint: 'Tjera te da žrtvuješ — hexproof i indestructible te NE spašavaju.' },
-    bounce: { icon: '↩️', label: 'Bounce', cls: 'bounce', hint: 'Vraća ti permanent u ruku.' },
-    damage: { icon: '🔥', label: 'Direktna šteta', cls: 'damage', hint: 'Šteta na tebe ili tvoje stvorenje.' },
-    steal: { icon: '🤝', label: 'Krađa', cls: 'steal', hint: 'Preuzima kontrolu nad tvojim permanentom.' },
-    discard: { icon: '🃏', label: 'Discard', cls: 'discard', hint: 'Tjera te da odbaciš karte.' },
-    debuff: { icon: '⬇️', label: 'Slabljenje', cls: 'debuff', hint: 'Smanjuje/tapuje/blokira tvoje stvorenje.' },
-    tax: { icon: '💸', label: 'Porez / gubitak', cls: 'debuff', hint: 'Gubiš život, resurse ili plaćaš.' },
-    goad: { icon: '😈', label: 'Goad / politika', cls: 'steal', hint: 'Tjera tvoja stvorenja da napadaju drugoga.' },
-    target: { icon: '🎯', label: 'Ciljano na tebe', cls: 'target', hint: 'Bot je uperio ovo u tebe.' },
+    counter: { icon: '🚫', label: 'Counterspell', cls: 'counter', hint: 'This counters your spell. If you have a response, now is the time.' },
+    exile: { icon: '🌀', label: 'Exile', cls: 'exile', hint: 'Exiled cards do not go to the graveyard. Regeneration and graveyard recursion do not help.' },
+    destroy: { icon: '💀', label: 'Removal', cls: 'destroy', hint: 'This destroys your permanent.' },
+    sacrifice: { icon: '🔪', label: 'Forced sacrifice', cls: 'destroy', hint: 'You must sacrifice. Hexproof and indestructible do not save it.' },
+    bounce: { icon: '↩️', label: 'Bounce', cls: 'bounce', hint: 'This returns your permanent to your hand.' },
+    damage: { icon: '🔥', label: 'Direct damage', cls: 'damage', hint: 'Damage is aimed at you or your creature.' },
+    steal: { icon: '🤝', label: 'Control change', cls: 'steal', hint: 'This takes control of your permanent.' },
+    discard: { icon: '🃏', label: 'Discard', cls: 'discard', hint: 'This makes you discard cards.' },
+    debuff: { icon: '⬇️', label: 'Debuff', cls: 'debuff', hint: 'This weakens, taps, or restricts your creature.' },
+    tax: { icon: '💸', label: 'Tax or life loss', cls: 'debuff', hint: 'You lose life or resources, or must pay a cost.' },
+    goad: { icon: '😈', label: 'Goad and politics', cls: 'steal', hint: 'Your creatures are forced to attack someone else.' },
+    target: { icon: '🎯', label: 'Targeting you', cls: 'target', hint: 'The bot aimed this at you.' },
   };
 
   // vraća {key, icon, label, cls, hint} — najspecifičnija kategorija koja se poklopi
@@ -252,8 +252,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const out = [];
     for (const x of (targets || []).flat()) {
       if (!x) continue;
-      if (x === human) out.push('TEBE');
-      else if (x.kind && !x.zone) out.push(`tvoj spell „${x.name || (x.card && x.card.name) || '?'}"`);
+      if (x === human) out.push('YOU');
+      else if (x.kind && !x.zone) out.push(`your spell "${x.name || (x.card && x.card.name) || '?'}"`);
       else if (x.name) out.push(x.name);
     }
     return out;
@@ -285,6 +285,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return rows;
   };
 
+  MTG.selectAIDecks = function (humanDeck, aiCount, selections, rnd) {
+    const chosen = Array.from({ length: aiCount }, (_, index) => {
+      const name = (selections || [])[index];
+      return name && name !== humanDeck && MTG.DECKS[name] && !MTG.DECKS[name].custom ? name : '';
+    });
+    const seen = new Set([humanDeck]);
+    for (let i = 0; i < chosen.length; i++) {
+      if (!chosen[i] || seen.has(chosen[i])) chosen[i] = '';
+      else seen.add(chosen[i]);
+    }
+    const pool = Object.keys(MTG.DECKS).filter(name => !seen.has(name) && !MTG.DECKS[name].custom);
+    U.shuffle(pool, rnd || Math.random);
+    return chosen.map(name => name || pool.shift()).filter(Boolean);
+  };
+
   MTG.newGame = function (opts) {
     // opts: {humanDeck, aiDecks:[names], aiStyles:[keys], seed, onEvent, humanController, difficulty, maxTurns,
     //        humanCommanders:[names], aiRandomCommanders:bool}
@@ -293,7 +308,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       houseRules: Object.assign({}, opts.houseRules,
         opts.sumPartnerDamage !== undefined ? { sumPartnerDamage: !!opts.sumPartnerDamage } : {}),
     });
-    const names = ['Ti', 'AI Zmaj', 'AI Vuk', 'AI Gavran'];
+    const names = ['You', 'AI Dragon', 'AI Wolf', 'AI Raven'];
     const players = [];
     const humanP = g.addPlayer(opts.humanName || names[0], MTG.DECKS[opts.humanDeck], null, !opts.humanController);
     if (opts.humanCommanders && opts.humanCommanders.length) humanP.chosenCommanders = opts.humanCommanders.slice(0, 2);
@@ -325,7 +340,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const p of g.players) {
       const nm = p.commanders.map(c => c.name);
       if (nm.length > 1 || (nm.length === 1 && nm[0] !== p.deck.commander))
-        g.lg(`👑 ${p.name}: ${nm.join(' + ')}${nm.length > 1 ? ' (partneri)' : ''}`);
+        g.lg(`👑 ${p.name}: ${nm.join(' + ')}${nm.length > 1 ? ' (partners)' : ''}`);
     }
     // randomize turn order
     U.shuffle(g.players, g.rnd);
@@ -334,7 +349,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const p of g.players) {
       if (p.isAI && p.aiStyle && MTG.AI_STYLES && MTG.AI_STYLES[p.aiStyle]) {
         const m = MTG.AI_STYLES[p.aiStyle];
-        g.lg(`🎭 ${p.name} (${p.deckName}) igra stilom: ${m.icon} ${m.label}`);
+        g.lg(`🎭 ${p.name} (${p.deckName}) plays with style: ${m.icon} ${m.label}`);
       }
     }
     return g;

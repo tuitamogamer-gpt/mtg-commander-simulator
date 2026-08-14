@@ -152,7 +152,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => { await ctx.g.draw(ctx.you, 1); },
     }],
     abilities: [{
-      label: 'Svi vuku', cost: { mana: '{3}{U}' },
+      label: 'Everyone draws', cost: { mana: '{3}{U}' },
       run: async ctx => { for (const q of ctx.g.alivePlayers()) await ctx.g.draw(q, 1); },
       aiScore: () => 1,
     }],
@@ -226,7 +226,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     ],
     abilities: [{
-      label: 'Composeri neblokabilni', cost: { mana: '{2}{U}' },
+      label: "Composers can't be blocked", cost: { mana: '{2}{U}' },
       run: async ctx => {
         for (const c of ctx.g.creatures().filter(x => x.name === 'Leitmotif Composer')) {
           const iid = c.iid;
@@ -337,7 +337,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Prismari Pianist'] = {
     triggers: [{
-      on: 'castIS', desc: 'Elemental(i)', filter: (g, self, d) => d.player === self.ctrl,
+      on: 'castIS', desc: 'Elemental tokens', filter: (g, self, d) => d.player === self.ctrl,
       run: async ctx => { await ctx.g.makeTokens('elementalUR', ctx.you, { n: (ctx.data.mv || 0) >= 5 ? 3 : 1 }); },
     }],
   };
@@ -348,7 +348,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => { E.pumpUntilEOT(ctx.g, ctx.src, ctx.data.mv || 0, 0); },
       },
       {
-        on: 'attacks', desc: 'Kopiraj I/S iz groblja', filter: (g, self, d) => d.card === self, opt: true,
+        on: 'attacks', desc: 'Copy an instant or sorcery from the graveyard', filter: (g, self, d) => d.card === self, opt: true,
         targets: [{
           zone: 'graveyard', what: 'card', upTo: true,
           prompt: 'Egzilaj do jedan instant/sorcery iz svog groblja',
@@ -390,7 +390,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Rootha, Mercurial Artist'] = {
     abilities: [{
-      label: 'Kopiraj svoj I/S spell (vrati Roothu)', cost: { mana: '{2}', returnSelf: true },
+      label: 'Copy your instant or sorcery spell (return Rootha)', cost: { mana: '{2}', returnSelf: true },
       cond: (g, c, p) => g.stack.some(so => so.kind === 'spell' && so.ctrl === p && (so.card.is('Instant') || so.card.is('Sorcery'))),
       targets: [{
         zone: 'stack', what: 'spell', prompt: 'Tvoj instant/sorcery spell',
@@ -545,7 +545,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         type: 'chooseOption', prompt: 'Abstract Performance — koju hrpu stavljaš u groblje?',
         options: [
           { key: 'down', label: `Hrpa licem nadolje (${pileA.length} skrivenih karata)`, denyValue: pileA.length * 3.1 },
-          { key: 'up', label: `Hrpa licem nagore (${pileB.map(card => card.name).join(', ') || 'prazna'})`, denyValue: faceUpValue },
+          { key: 'up', label: `Pile face up (${pileB.map(card => card.name).join(', ') || 'empty'})`, denyValue: faceUpValue },
         ],
         aiHint: { kind: 'abstractPile', faceDownCount: pileA.length },
       }) : 'up';
@@ -725,7 +725,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Volcanic Salvo'] = {
     selfCostAdjust: (g, card, p) => -g.creatures(p).reduce((s, c) => s + Math.max(0, c.power), 0),
     targets: [{
-      what: 'permanent', count: 2, min: 0, upTo: true, prompt: 'Do dva stvorenja i/ili planeswalkera',
+      what: 'permanent', count: 2, min: 0, upTo: true, prompt: 'Up to two creatures and/or planeswalkers',
       filter: (g, card) => card.zone === 'battlefield' && (card.is('Creature') || card.is('Planeswalker')),
       aiHint: { goal: 'removal', dmg: 6 },
     }],
@@ -793,7 +793,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     entersTapped: (g, card) => g.lands(card.ctrl).filter(l => l !== card && l.hasSub('Island')).length < 3,
     mana: { cost: { tap: true }, produce: [{ U: 1 }] },
     triggers: [{
-      on: 'etb', desc: 'I/S na vrh', filter: (g, self, d) => d.card === self && !self.tapped,
+      on: 'etb', desc: 'Instant or sorcery on top', filter: (g, self, d) => d.card === self && !self.tapped,
       targets: [{
         zone: 'graveyard', what: 'card', prompt: 'Instant/sorcery na vrh biblioteke',
         filter: (g, card) => card.is('Instant') || card.is('Sorcery'), aiHint: { goal: 'bestGyCast' },
@@ -814,7 +814,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: ['U', 'R'], entersTapped: true,
     mana: { cost: { tap: true }, produce: [{ U: 1 }, { R: 1 }] },
     abilities: [{
-      label: 'Postaje 2/1 stvorenje', cost: { mana: '{U}{R}' },
+      label: 'Becomes a 2/1 creature', cost: { mana: '{U}{R}' },
       run: async ctx => {
         const iid = ctx.src.iid;
         ctx.g.untilEffects.push({
@@ -1031,7 +1031,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', 1); },
       },
       {
-        on: 'attackersDeclared', desc: 'Iz groblja u napad', opt: true,
+        on: 'attackersDeclared', desc: 'From the graveyard into combat', opt: true,
         filter: (g, self, d) => d.player === self.ctrl && self.zone === 'graveyard' && d.attackers.some(a => a.commander),
         run: async ctx => {
           const c = ctx.src;
@@ -1384,7 +1384,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     modes: {
       pick: 1,
       list: [
-        { label: '3 štete stvorenju/PW', targets: [{ what: 'permanent', prompt: 'Meta', filter: (g, c) => c.zone === 'battlefield' && (c.is('Creature') || c.is('Planeswalker')), aiHint: { goal: 'removal', dmg: 3 } }] },
+        { label: '3 damage to a creature or planeswalker', targets: [{ what: 'permanent', prompt: 'Target', filter: (g, c) => c.zone === 'battlefield' && (c.is('Creature') || c.is('Planeswalker')), aiHint: { goal: 'removal', dmg: 3 } }] },
         { label: 'Uništi artefakt/ench', targets: [T.permanent((g, c) => c.is('Artifact') || c.is('Enchantment'), { prompt: 'Meta', aiHint: { goal: 'removal' } })] },
       ],
     },

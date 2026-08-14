@@ -100,7 +100,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       pick: 1,
       list: [
         {
-          label: '4 štete igraču ili planeswalkeru',
+          label: '4 damage to a player or planeswalker',
           targets: [T.any({
             prompt: 'Igrač ili planeswalker',
             filter: (g, target) => target instanceof MTG.Player || target instanceof MTG.CardInst && target.is('Planeswalker'),
@@ -125,7 +125,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       aiHint: { kind: 'heliodIntervention' },
       list: [
         {
-          label: 'Uništi X artefakata i/ili enchantmenta',
+          label: 'Destroy X artifacts and/or enchantments',
           targets: (g, card, castOpts) => [T.permanent(
             (g2, target) => target.is('Artifact') || target.is('Enchantment'),
             { count: castOpts.xVal || 0, prompt: `Tačno ${castOpts.xVal || 0} meta`, aiHint: { goal: 'removal' } },

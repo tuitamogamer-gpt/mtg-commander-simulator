@@ -1107,18 +1107,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const modes = [
           { key: 'token', label: 'Igrač pravi Inkling' },
           { key: 'draw', label: 'Igrač vuče i gubi 1' },
-          { key: 'counters', label: 'Igrač stavlja counter na svoja stvorenja' },
+          { key: 'counters', label: 'Player puts a counter on their creatures' },
         ];
         const picked = [];
         for (let i = 0; i < 2; i++) {
           const avail = modes.filter(m => !picked.includes(m.key));
           const k = await p.controller.decide(g, {
-            type: 'chooseOption', prompt: `Shadrix mod ${i + 1}/2:`, options: avail, aiHint: { kind: 'shadrix' },
+            type: 'chooseOption', prompt: `Shadrix mode ${i + 1}/2:`, options: avail, aiHint: { kind: 'shadrix' },
           });
           picked.push(k);
           const players = g.alivePlayers();
           const tgt = await p.controller.decide(g, {
-            type: 'chooseTargets', candidates: players, min: 1, max: 1, prompt: 'Za kog igrača?', aiHint: { goal: 'shadrixTarget', mode: k },
+            type: 'chooseTargets', candidates: players, min: 1, max: 1, prompt: 'Which player?', aiHint: { goal: 'shadrixTarget', mode: k },
           });
           const t = tgt[0];
           if (k === 'token') await g.makeTokens('inkling', t);
@@ -1220,7 +1220,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Wall of Reverence'] = {
     triggers: [{
       on: 'endStep', opt: true, desc: 'Životi = power', filter: (g, self, d) => d.player === self.ctrl,
-      targets: [T.yourCreature({ prompt: 'Po čijem poweru?', aiHint: { goal: 'lifegainMax' } })],
+      targets: [T.yourCreature({ prompt: 'Whose power?', aiHint: { goal: 'lifegainMax' } })],
       run: async ctx => { await ctx.g.gainLife(ctx.you, Math.max(0, ctx.targets[0].power)); },
     }],
   };

@@ -1248,6 +1248,42 @@ body:has(#setup) { background: #08090d; }
     letter-spacing: .015em;
   }
 
+  #setup .menu-mana-showcase {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  #setup .menu-mana-showcase > span {
+    color: var(--wr-dim);
+    font: 600 8px/1 var(--tbl-cond);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+  }
+
+  #setup .menu-mana-showcase > div { display: flex; align-items: center; gap: 6px; }
+  #setup .menu-mana-showcase img,
+  #setup .deckmana {
+    display: block;
+    width: 23px;
+    height: 23px;
+    object-fit: contain;
+    border-radius: 50%;
+    filter: drop-shadow(0 3px 7px rgba(0,0,0,.62));
+  }
+
+  #setup .menu-mana-showcase img {
+    width: 29px;
+    height: 29px;
+    transition: transform .2s ease, filter .2s ease;
+  }
+
+  #setup .menu-mana-showcase img:hover {
+    transform: translateY(-2px) scale(1.08);
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,.78)) brightness(1.08);
+  }
+
   #setup .menupill {
     min-width: 188px;
     padding: 13px 16px;
@@ -1403,7 +1439,7 @@ body:has(#setup) { background: #08090d; }
     text-overflow: ellipsis;
   }
 
-  #setup .deckcolors { margin: 0 0 8px; }
+  #setup .deckcolors { display: flex; align-items: center; gap: 5px; margin: 0 0 8px; }
   #setup .dot.big { width: 9px; height: 9px; box-shadow: 0 0 0 1px rgba(255,255,255,.12); }
   #setup .deckstyle { color: var(--wr-muted); font-size: 10px; letter-spacing: .03em; }
 
@@ -1542,8 +1578,35 @@ body:has(#setup) { background: #08090d; }
     border-color: var(--wr-line);
   }
 
-  #setup .botstylerow { gap: 8px; }
-  #setup .styledesc { color: var(--wr-dim); }
+  #setup .botconfig {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--wr-line);
+  }
+  #setup .botconfig:last-child { border-bottom: 0; }
+  #setup .botstylerow {
+    display: grid;
+    grid-template-columns: 34px 72px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+  }
+  #setup .botidentity { display: grid; gap: 3px; min-width: 0; }
+  #setup .botidentity small {
+    color: var(--wr-dim);
+    font: 600 8px/1 var(--tbl-cond);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  #setup .botname { min-width: 0; color: var(--wr-ink); font-size: 11.5px; }
+  #setup .botfields { display: grid; grid-template-columns: minmax(0, 1fr); gap: 7px; }
+  #setup .botfield { display: grid; grid-template-columns: 58px minmax(0, 1fr); align-items: center; gap: 7px; }
+  #setup .botfield > span {
+    color: var(--wr-dim);
+    font: 600 8px/1 var(--tbl-cond);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  #setup .botfield .styleselect { width: 100%; min-width: 0; }
+  #setup .styledesc { margin: 7px 0 0 114px; color: var(--wr-dim); }
   #setup .cmdcheck { color: var(--wr-muted); line-height: 1.35; }
   #setup .cmdcheck input { accent-color: var(--wr-copper); }
 

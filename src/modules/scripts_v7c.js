@@ -165,7 +165,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', desc: 'Outlaw iz groblja', filter: etbSelf,
       targets: [{
-        zone: 'graveyard', what: 'card', prompt: 'Ciljaj outlaw kartu u svom groblju',
+        zone: 'graveyard', what: 'card', prompt: 'Target an outlaw card in your graveyard',
         filter: (g, card) => isOutlaw(card), aiHint: { goal: 'recur' },
       }],
       run: async ctx => {
@@ -178,7 +178,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Dire Fleet Daredevil'] = {
     triggers: [{
-      on: 'etb', desc: 'Ukradi I/S iz groblja', filter: etbSelf,
+      on: 'etb', desc: 'Steal an instant or sorcery from a graveyard', filter: etbSelf,
       targets: [{
         zone: 'graveyard', anyGraveyard: true, what: 'card',
         prompt: 'Ciljaj protivnički instant ili sorcery',
@@ -396,7 +396,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   function misfortuneTarget() {
     return {
-      zone: 'graveyard', anyGraveyard: true, what: 'card', prompt: 'Ciljaj kartu u groblju',
+      zone: 'graveyard', anyGraveyard: true, what: 'card', prompt: 'Target a card in a graveyard',
       aiHint: { goal: 'gyHate' },
     };
   }
@@ -447,7 +447,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Rankle, Master of Pranks'] = {
     triggers: [{
-      on: 'combatDamageToPlayer', desc: 'Izaberi bilo koje', filter: (g, self, d) => d.card === self,
+      on: 'combatDamageToPlayer', desc: 'Choose any', filter: (g, self, d) => d.card === self,
       run: async ctx => {
         const ks = await ctx.you.controller.decide(ctx.g, {
           type: 'chooseMulti', prompt: 'Rankle: izaberi (0-3)',
@@ -547,7 +547,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filter: (g, self, d) => d.player === self.ctrl && self.ctrl.turnState.lifeGained > 0,
       targets: [{
         zone: 'graveyard', what: 'card', upTo: true, count: 1,
-        prompt: 'Do jedne mete stvorenja u svom groblju',
+        prompt: 'Up to one target creature in your graveyard',
         filter: (g, card) => card.is('Creature'), aiHint: { goal: 'recur' },
       }],
       run: async ctx => {
@@ -584,7 +584,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           c.meta._gunslinger = ctx.g.turnNo;
         }
       }
-      ctx.g.lg('Dead Before Sunrise: outlawi +1/+0 i mogu tapovanjem nanijeti štetu jednaku snazi stvorenju.');
+      ctx.g.lg('Dead Before Sunrise: outlaws get +1/+0 and can tap to deal damage equal to their power to a creature.');
     },
   };
   SC['Shoot the Sheriff'] = {
@@ -671,7 +671,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       list: [
         { label: '+{1}: Uništi artefakt', targets: [T.permanent((g, c) => c.is('Artifact'), { prompt: 'Artefakt', aiHint: { goal: 'removal' } })] },
         { label: '+{1}: Uništi enchantment', targets: [T.permanent((g, c) => c.is('Enchantment'), { prompt: 'Enchantment', aiHint: { goal: 'removal' } })] },
-        { label: '+{1}: +1/+1 counteri igraču', targets: [T.player({ prompt: 'Kome counteri?', aiHint: { goal: 'self' } })] },
+        { label: '+{1}: +1/+1 counters to a player', targets: [T.player({ prompt: 'Who gets the counters?', aiHint: { goal: 'self' } })] },
       ],
     },
     spreeCost: 1,
@@ -975,8 +975,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Círdan the Shipwright'] = {
     triggers: [
-      { on: 'etb', desc: 'Tajno vijeće', filter: etbSelf, run: async ctx => { await cirdanCouncil(ctx); } },
-      { on: 'attacks', desc: 'Tajno vijeće', filter: (g, self, d) => d.card === self, run: async ctx => { await cirdanCouncil(ctx); } },
+      { on: 'etb', desc: 'Secret council', filter: etbSelf, run: async ctx => { await cirdanCouncil(ctx); } },
+      { on: 'attacks', desc: 'Secret council', filter: (g, self, d) => d.card === self, run: async ctx => { await cirdanCouncil(ctx); } },
     ],
   };
   async function cirdanCouncil(ctx) {
@@ -1001,7 +1001,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
   SC['Elrond of the White Council'] = {
     triggers: [{
-      on: 'etb', desc: 'Tajno vijeće: fellowship/aid', filter: etbSelf,
+      on: 'etb', desc: 'Secret council: fellowship/aid', filter: etbSelf,
       run: async ctx => {
         const g = ctx.g;
         const { votes, picks } = await E7.secretVote(g, ctx.you, ctx.src, [
@@ -1054,7 +1054,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const pool = ctx.you.hand.filter(x => x.is('Creature'));
         const pick = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseCards', from: pool, min: 0, max: 1, prompt: 'Na battlefield:', aiHint: { kind: 'piperPick' },
+          type: 'chooseCards', from: pool, min: 0, max: 1, prompt: 'Onto the battlefield:', aiHint: { kind: 'piperPick' },
         });
         if (pick[0]) await ctx.g.move(pick[0], 'battlefield', { ctrl: ctx.you });
       },
@@ -1399,7 +1399,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } else {
         for (const q of ctx.g.alivePlayers()) {
           const yes = await q.controller.decide(ctx.g, {
-            type: 'chooseOption', prompt: 'Odbaci ruku i vuci 7?',
+            type: 'chooseOption', prompt: 'Discard your hand and draw 7?',
             options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
             aiHint: { kind: 'wheel' },
           });
@@ -1437,7 +1437,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Windswift Slice'] = {
     targets: [
-      T.yourCreature({ prompt: 'Tvoje stvorenje', aiHint: { goal: 'buff' } }),
+      T.yourCreature({ prompt: 'Your creature', aiHint: { goal: 'buff' } }),
       T.oppCreature({ prompt: 'Meta', aiHint: { goal: 'removal' } }),
     ],
     resolve: async ctx => {
@@ -1522,7 +1522,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if ((votes.get('time') || 0) > (votes.get('knowledge') || 0)) {
         ctx.g.extraTurns = ctx.g.extraTurns || [];
         ctx.g.extraTurns.push(ctx.you);
-        ctx.g.lg(`${ctx.you.name} dobija EKSTRA POTEZ!`);
+        ctx.g.lg(`${ctx.you.name} gets an EXTRA TURN!`);
       } else {
         await ctx.g.draw(ctx.you, 3);
       }
