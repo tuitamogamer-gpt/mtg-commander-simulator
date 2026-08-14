@@ -561,6 +561,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   G.canCastTiming = function (p, card, alt) {
     if (p.cantCastUntilTurnStart && p.turnsStarted < p.cantCastUntilTurnStart) return false;
+    if (p.turnState && p.turnState.cantCastAdditional) return false;
     // Adventure polovina ima SVOJ tip: Instant adventure na stvorenju bez flasha
     // se ipak baca u tuđem potezu (npr. Mesmeric Glare na Hypnotic Sprite).
     const advSpeed = alt && alt.adventure && alt.types
@@ -840,6 +841,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   G.castSpell = async function (p, card, opts = {}) {
     // opts: {alt, from, xVal, aiChosen...}
+    if (p.turnState && p.turnState.cantCastAdditional && !opts.ignoreAdditionalCastLock) return false;
     const alt = opts.alt || null;
     const castOpts = alt ? Object.assign({}, alt) : {};
     if (opts.from !== undefined && castOpts.from === undefined) castOpts.from = opts.from;
@@ -1832,6 +1834,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!possible) return;
         }
         if (cost.sacSelf && !this.canSacrifice(c)) return;
+        if (cost.exileSelf && c.zone !== 'battlefield') return;
         if (cost.sacCreature && !this.creatures(p).filter(x => (!cost.sacOther || x !== c) && this.canSacrifice(x)).length) return;
         if (cost.sac && !this.bf().some(x => x.ctrl === p && cost.sac(this, x, c) && this.canSacrifice(x))) return;
         if (cost.life && p.life <= cost.life) return;
@@ -2310,6 +2313,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.returnSelf) {
       if (c.zone !== 'battlefield' || c.ctrl !== p) return false;
       await this.move(c, 'hand');
+    }
+    if (cost.exileSelf) {
+      if (c.zone !== 'battlefield' || c.ctrl !== p) return false;
+      ctx.exiledSelf = this.snapshot(c);
+      await this.move(c, 'exile', { noCmdReplace: true });
     }
     if (cost.sacSelf) {
       if (!this.canSacrifice(c)) return false;

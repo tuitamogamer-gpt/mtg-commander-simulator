@@ -837,6 +837,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!(card instanceof U.CardInst)) return 0;
     const hint = q.aiHint && q.aiHint.kind || '';
     const value = cardDefinitionValue(card.def) + (card.commander ? 8 : 0);
+    if (hint === 'wakandaBattlefield') {
+      const duplicateLegend = (card.def.super || []).includes('Legendary') &&
+        game.bf().some(existing => existing.ctrl === player && existing.name === card.name);
+      if (duplicateLegend) return -100;
+      const landNeed = card.is('Land') ? Math.max(0, 6 - game.lands(player).length) * 0.9 : 0;
+      // The permanent also receives a durable indestructible counter, so even
+      // a utility land should beat declining when mana development is useful.
+      return value + landNeed + (card.is('Creature') ? 2.4 : 1.7);
+    }
     if (hint === 'celestialKeep') {
       return card.ctrl === player ? permanentGameValue(game, card, player) * 1.5 : -permanentGameValue(game, card, player);
     }
@@ -1519,6 +1528,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (mine > theirs) breakdown.safety -= 14;
           }
         } else if (action.value === 'no') breakdown.choice = 0;
+      } else if (hintKind === 'conduitCast') {
+        const card = q.aiHint.card;
+        const value = card ? cardDefinitionValue(card.def) : 0;
+        breakdown.choice = action.value === 'yes' && card ? value + 2.5 : 0;
+      } else if (hintKind === 'nyamiTop') {
+        const card = q.aiHint.card;
+        const duplicateLegend = card && (card.def.super || []).includes('Legendary') &&
+          game.bf().some(existing => existing.ctrl === player && existing.name === card.name);
+        breakdown.choice = action.value === 'yes' && card && !duplicateLegend
+          ? cardDefinitionValue(card.def) + (card.is('Land') && game.lands(player).length < 6 ? 3 : 1.5)
+          : action.value === 'yes' ? -100 : 1.5;
+      } else if (hintKind === 'wakandaBead') {
+        const used = q.aiHint.source && q.aiHint.source.meta && q.aiHint.source.meta._beads || [];
+        if (action.value === 'av') breakdown.choice = 4.8 + Math.max(0, 5 - player.hand.length) * 0.8;
+        if (action.value === 'comm') breakdown.choice = 7 + (profile.primarySynergies.includes('tokens') ? 2 : 0);
+        if (action.value === 'prime') {
+          const lifeUrgency = player.life <= 10 ? 12 : player.life <= 20 ? 7 : 3;
+          breakdown.choice = lifeUrgency + 3.5 + used.length * 1.2;
+        }
       } else {
         const key = String(action.value).toLowerCase();
         if (/yes|da|keep|accept|use/.test(key)) breakdown.choice = q && q.aiHint && q.aiHint.kind === 'ward' ? 1.5 : 1;

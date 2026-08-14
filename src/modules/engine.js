@@ -446,6 +446,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         opts = Object.assign({}, opts, { noCmdReplace: true });
       }
 
+      // A finality counter creates a replacement effect: a permanent that would
+      // go from the battlefield to a graveyard is exiled instead.  This is not a
+      // dies event, so apply it before commander replacement and LTB dispatch.
+      if (wasBattlefield && toZone === 'graveyard' && (snap.counters.finality || 0) > 0) {
+        toZone = 'exile';
+      }
+
       // commander zone replacement
       if (card.commander && ['graveyard', 'exile', 'hand', 'library'].includes(toZone) && !opts.noCmdReplace) {
         const zoneLabels = { graveyard: 'Graveyard', exile: 'Exile', hand: 'Hand', library: 'Library' };
@@ -528,6 +535,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         // CR 400.7: permanent koji uđe na bojno polje je NOV objekat — svjež meta.
         if (fromZone !== 'battlefield') card.meta = {};
+        card.meta._enteredFromZone = fromZone;
         if (opts.faceDownDef) {
           card.meta.faceDownDef = opts.faceDownDef;
           card.meta.faceDownKind = opts.faceDownKind || 'manifest';
@@ -1561,11 +1569,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           c.cur.toughness += (c.counters['+1/+1'] || 0) - (c.counters['-1/-1'] || 0);
           c.cur.toughness -= (c.counters['-0/-1'] || 0);
           if ((c.counters['flying'] || 0) > 0) c.cur.kw.add('flying');
-          // keyword counteri koje karte stvarno stavljaju (Spectacular Showdown…)
-          for (const kwc of ['double strike', 'first strike', 'deathtouch', 'lifelink',
-            'trample', 'vigilance', 'menace', 'reach', 'hexproof', 'indestructible']) {
-            if ((c.counters[kwc] || 0) > 0) c.cur.kw.add(kwc);
-          }
+        }
+        // Keyword counters modify any permanent that can have the ability, not
+        // only creatures.  Wakanda Forever! can put indestructible on an artifact
+        // or land, and that counter must still stop destroy effects.
+        for (const kwc of ['double strike', 'first strike', 'deathtouch', 'lifelink',
+          'trample', 'vigilance', 'menace', 'reach', 'hexproof', 'indestructible']) {
+          if ((c.counters[kwc] || 0) > 0) c.cur.kw.add(kwc);
         }
       }
       // pass 4: until-EOT effects in timestamp order

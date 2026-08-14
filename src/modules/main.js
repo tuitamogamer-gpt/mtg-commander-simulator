@@ -1551,6 +1551,95 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'wakandaHuman') {
+      void (async () => {
+        const take = (name, zone = 'battlefield') => {
+          const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+          g.remove(card);
+          card.ctrl = ui.me; card.zone = zone; card.sick = false;
+          if (zone === 'battlefield') g.battlefield.push(card); else ui.me[zone].push(card);
+          return card;
+        };
+        const revealed = [
+          take('Harmonize', 'library'),
+          take('Fight for the Throne', 'library'),
+          take('Birds of Paradise', 'library'),
+          take('Sol Ring', 'library'),
+          take('Forest', 'library'),
+          take('Canopy Vista', 'library'),
+        ];
+        const spell = take('Wakanda Forever!', 'graveyard');
+        g.turnPlayer = ui.me; g.turnNo = 32; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.priorityRound = async () => {};
+        g.recalc();
+        ui.toast('Wakanda Forever!: pregledaj šest karata, zatim odvojeno izaberi permanent za battlefield i drugi permanent za ruku.');
+        ui.render();
+        await spell.def.resolve({ g, src: spell, you: ui.me, targets: [], so: { card: spell } });
+        const battlefield = revealed.find(card => card.zone === 'battlefield');
+        const hand = revealed.find(card => card.zone === 'hand');
+        const graveyard = revealed.filter(card => card.zone === 'graveyard').length;
+        g.lg(`Wakanda human: battlefield=${battlefield ? battlefield.name : 'none'} (${battlefield && battlefield.counters.indestructible || 0} indestructible); hand=${hand ? hand.name : 'none'}; graveyard=${graveyard}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Wakanda human scenario: oba nezavisna izbora i indestructible counter su razriješeni.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'wakandaAI') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Wakanda Forever');
+        if (!bot) throw new Error('wakandaAI scenario zahtijeva smokeAIDeck=Wakanda Forever');
+        const takeBot = (name, zone = 'battlefield') => {
+          const zones = [bot.command, bot.hand, bot.library, bot.graveyard, bot.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], bot);
+          g.remove(card);
+          card.ctrl = bot; card.zone = zone; card.sick = false;
+          if (zone === 'battlefield') g.battlefield.push(card); else bot[zone].push(card);
+          return card;
+        };
+        const settle = async () => {
+          let guard = 0;
+          while ((g.pendingTriggers.length || g.stack.length) && guard++ < 160) {
+            await g.flushTriggers();
+            if (g.stack.length) await g.resolveTop();
+          }
+          if (guard >= 160) throw new Error('Wakanda AI scenario trigger guard');
+        };
+        const revealed = [
+          takeBot('Harmonize', 'library'),
+          takeBot('Fight for the Throne', 'library'),
+          takeBot('Birds of Paradise', 'library'),
+          takeBot('Sol Ring', 'library'),
+          takeBot('Forest', 'library'),
+          takeBot('Canopy Vista', 'library'),
+        ];
+        const spell = takeBot('Wakanda Forever!', 'graveyard');
+        const conduit = takeBot('Conduit of Worlds');
+        const conduitCard = takeBot("Black Panther's Claws", 'graveyard');
+        takeBot('Kimoyo Beads');
+        g.turnPlayer = bot; g.turnNo = 33; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.priorityRound = async () => {};
+        g.recalc();
+        await spell.def.resolve({ g, src: spell, you: bot, targets: [], so: { card: spell } });
+        bot.pool.C = 4;
+        const conduitEntry = g.activatableList(bot).find(entry => entry.card === conduit && entry.ability);
+        if (!conduitEntry || !await g.activateAbility(bot, conduitEntry)) throw new Error('Wakanda AI Conduit activation nije uspjela');
+        await settle();
+        bot.life = 8;
+        g.phase = 'end'; g.step = 'end';
+        await g.emit('endStep', { player: bot });
+        await settle();
+        const battlefield = revealed.find(card => card.zone === 'battlefield');
+        const hand = revealed.find(card => card.zone === 'hand');
+        const recent = (g.aiDecisionLog || []).filter(entry => entry.playerName === bot.name).slice(-24);
+        g.lg(`Wakanda AI: battlefield=${battlefield ? battlefield.name : 'none'} (${battlefield && battlefield.counters.indestructible || 0} indestructible); hand=${hand ? hand.name : 'none'}; Conduit=${conduitCard.zone}; life=${bot.life}; odluke=${recent.length}; fallback=${recent.some(entry => entry.fallback) ? 'DA' : 'NE'}.`, 'ai');
+        ui.showLog = true;
+        ui.toast('Wakanda AI scenario: Wakanda Forever!, Conduit i Kimoyo odluke su razriješene.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     if (smokeScenario === 'generalEffects') {
       void (async () => {
         g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = true;

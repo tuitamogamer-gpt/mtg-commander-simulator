@@ -784,6 +784,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'bestCard': case 'reunion': case 'reanimate': {
           return byValDesc.slice(0, Math.max(min, Math.min(max, 1) || 1)).slice(0, max);
         }
+        case 'wakandaBattlefield': {
+          const legal = byValDesc.filter(card => !((card.def.super || []).includes('Legendary') &&
+            g.bf().some(existing => existing.ctrl === this.p && existing.name === card.name)));
+          return legal.length ? [legal[0]] : [];
+        }
         case 'brudicladToken': {
           const score = card => this.permThreat(g, card) + (card.def.mana ? 1.5 : 0);
           const sorted = from.slice().sort((a, b) => score(b) - score(a));
@@ -1084,6 +1089,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return keys.includes('0') ? '0' : keys[0];
         }
         case 'freeCast': return 'yes';
+        case 'conduitCast': return keys.includes('yes') ? 'yes' : keys[0];
+        case 'nyamiTop': {
+          const card = q.aiHint && q.aiHint.card;
+          const duplicateLegend = card && (card.def.super || []).includes('Legendary') &&
+            g.bf().some(existing => existing.ctrl === this.p && existing.name === card.name);
+          return card && !duplicateLegend && keys.includes('yes') ? 'yes' : (keys.includes('no') ? 'no' : keys[0]);
+        }
+        case 'wakandaBead': {
+          if (this.p.life <= 20 && keys.includes('prime')) return 'prime';
+          if (this.p.hand.length <= 3 && keys.includes('av')) return 'av';
+          if (keys.includes('comm')) return 'comm';
+          return keys[0];
+        }
         case 'tataruDraw': return 'yes';
         case 'kicker': return 'yes';
         case 'offspring': return 'yes';

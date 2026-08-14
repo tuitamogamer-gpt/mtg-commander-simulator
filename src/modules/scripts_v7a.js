@@ -963,7 +963,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Vanquish the Horde'] = {
     selfCostAdjust: (g, card, p) => -g.bf().filter(c => c.is('Creature')).length,
-    resolve: async ctx => { for (const c of ctx.g.bf().filter(c => c.is('Creature')).slice()) await ctx.g.destroy(c); },
+    resolve: async ctx => { await ctx.g.destroyMany(ctx.g.bf().filter(c => c.is('Creature'))); },
   };
   SC['Wave Goodbye'] = {
     resolve: async ctx => {
