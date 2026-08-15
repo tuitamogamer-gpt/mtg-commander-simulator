@@ -1,6 +1,6 @@
 # MTG Commander Simulator
 
-Desktop-only, browser-based Magic: The Gathering Commander simulator for 20 fixed, scripted preconstructed decks. The UI is in Bosnian (`lang="bs"`) and is designed for screens at least 1280 px wide.
+Desktop-only, browser-based Magic: The Gathering Commander simulator for 20 fixed, scripted preconstructed decks. The UI is in English (`lang="en"`) and is designed for screens at least 1280 px wide.
 
 Every opponent nonland spell is shown on a central action stage and waits for **Proceed**. The client also exposes real stack/priority passes, configurable end-step/combat/full-control stops, visible combat assignments, and deck/card certification reports.
 

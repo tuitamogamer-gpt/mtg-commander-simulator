@@ -536,6 +536,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // CR 400.7: permanent koji uđe na bojno polje je NOV objekat — svjež meta.
         if (fromZone !== 'battlefield') card.meta = {};
         card.meta._enteredFromZone = fromZone;
+        // An Aura put onto the battlefield without being cast chooses what it
+        // enchants immediately before it enters. Establish the attachment
+        // before ETB processing so static effects and triggers observe the
+        // Aura already attached (CR 303.4f).
+        let enteredAttachedTo = null;
+        if (opts.attachTo instanceof CardInst && opts.attachTo.zone === 'battlefield') {
+          enteredAttachedTo = opts.attachTo;
+          card.attachedTo = enteredAttachedTo.iid;
+          if (!enteredAttachedTo.attachments.includes(card.iid)) enteredAttachedTo.attachments.push(card.iid);
+          if (card.def.onAttach) card.def.onAttach(this, card, enteredAttachedTo);
+        }
+        if (opts.cursedPlayer instanceof Player) card.meta.cursedPlayer = opts.cursedPlayer;
         if (opts.faceDownDef) {
           card.meta.faceDownDef = opts.faceDownDef;
           card.meta.faceDownKind = opts.faceDownKind || 'manifest';
@@ -544,6 +556,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.meta._enteredTurn = this.turnNo;
         if (card.hasSub && card.hasSub('Elf')) card.ctrl.turnState.elfEntries.push(card.iid);
         await this.handleETB(card, opts);
+        if (enteredAttachedTo) await this.emit('attached', { att: card, host: enteredAttachedTo });
         // Commander i zaista veliki nontoken creature ulasci dobijaju centralni
         // vizuelni signal. Event nastaje tek nakon as-enters/counter obrade, pa
         // UI vidi konačan P/T i stvarni battlefield objekat.

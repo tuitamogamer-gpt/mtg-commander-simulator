@@ -668,6 +668,48 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'chaosWarp') {
+      void (async () => {
+        const opponent = g.players.find(player => player !== ui.me && !player.lost);
+        if (!opponent) throw new Error('Chaos Warp scenario requires an opponent');
+        const warp = [ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile]
+          .flat().find(card => card.name === 'Chaos Warp') || new MTG.CardInst(MTG.DEFS['Chaos Warp'], ui.me);
+        g.remove(warp);
+        warp.zone = 'hand';
+        ui.me.hand.push(warp);
+
+        for (const card of ui.me.library) card.zone = 'nowhere';
+        ui.me.library.length = 0;
+        const haven = new MTG.CardInst(MTG.DEFS['Wolfwillow Haven'], ui.me);
+        haven.zone = 'library';
+        ui.me.library.push(haven);
+
+        const island = new MTG.CardInst(MTG.DEFS.Island, ui.me);
+        island.ctrl = ui.me; island.zone = 'battlefield'; island.sick = false;
+        const stolenRing = new MTG.CardInst(MTG.DEFS['Sol Ring'], ui.me);
+        stolenRing.ctrl = opponent; stolenRing.zone = 'battlefield'; stolenRing.sick = false;
+        // Keep Sol Ring first so keyboard-only smoke QA can select the intended
+        // Chaos Warp target before the Aura choice offers the lone Island.
+        g.battlefield.push(stolenRing, island);
+        ui.collapsed.delete(opponent.idx);
+
+        g.rnd = () => 0;
+        g.turnPlayer = ui.me; g.turnNo = 9; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        ui.me.pool.R = 1; ui.me.pool.C = 2;
+        g.recalc();
+        ui.toast('Chaos Warp: target the Sol Ring controlled by an opponent, then attach the revealed Wolfwillow Haven to Island.');
+        ui.render();
+
+        await g.castSpell(ui.me, warp, { from: 'hand' });
+        await g.checkSBA();
+        const attached = haven.zone === 'battlefield' && haven.attachedTo === island.iid;
+        g.lg(`Chaos Warp browser check: owner library used; Aura ${attached ? 'attached correctly' : 'attachment failed'}.`, 'effect');
+        ui.showLog = true;
+        ui.sheet = { card: haven };
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     if (smokeScenario === 'counterAI') {
       void (async () => {
         const bot = g.players.find(player => player.isAI && player.deckName === 'Counter Intelligence');

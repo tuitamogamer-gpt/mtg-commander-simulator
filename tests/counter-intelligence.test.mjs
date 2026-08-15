@@ -154,11 +154,79 @@ test('Chaos Warp nudi commander replacement za biblioteku i ne gubi Inspirit u d
     chooseOption: (g, q) => q.options.some(option => option.key === 'cz') ? 'cz' : q.options[0]?.key,
   }, 2);
   const inspirit = permanent(game, counter, 'Inspirit, Flagship Vessel', { commander: true });
-  inZone(counter, 'Island', 'library');
+  const island = inZone(counter, 'Island', 'library');
   await MTG.DEFS['Chaos Warp'].resolve({ g: game, src: null, you: counter, targets: [inspirit] });
   assert.equal(inspirit.zone, 'command');
   assert.equal(counter.command.includes(inspirit), true);
   assert.equal(counter.library.includes(inspirit), false);
+  assert.equal(island.zone, 'battlefield', 'commander replacement does not stop the reveal and put instruction');
+});
+
+test('Chaos Warp uses the permanent owner library and puts a revealed permanent under that owner control', async () => {
+  const { game, players: [caster, owner] } = rulesGame({}, 2);
+  game.rnd = () => 0;
+  const stolen = permanent(game, owner, 'Sol Ring');
+  stolen.ctrl = caster;
+  const island = inZone(owner, 'Island', 'library');
+  game.recalc();
+
+  await MTG.DEFS['Chaos Warp'].resolve({ g: game, src: null, you: caster, targets: [stolen] });
+
+  assert.equal(stolen.zone, 'library');
+  assert.equal(owner.library.includes(stolen), true);
+  assert.equal(island.zone, 'battlefield');
+  assert.equal(island.ctrl, owner);
+});
+
+test('Chaos Warp reveals but does not move a nonpermanent top card', async () => {
+  const { game, players: [caster, owner] } = rulesGame({}, 2);
+  game.rnd = () => 0;
+  const target = permanent(game, owner, 'Sol Ring');
+  const plan = inZone(owner, 'Arcane Denial', 'library');
+
+  await MTG.DEFS['Chaos Warp'].resolve({ g: game, src: null, you: caster, targets: [target] });
+
+  assert.equal(target.zone, 'library');
+  assert.equal(plan.zone, 'library');
+  assert.equal(owner.library[owner.library.length - 1], plan);
+});
+
+test('Chaos Warp attaches a revealed Aura without targeting its host', async () => {
+  let host;
+  let attachedAsItEntered = false;
+  const { game, players: [caster, owner] } = rulesGame({
+    chooseTargets: (g, q) => q.src?.name === 'Wolfwillow Haven' ? [host] : q.candidates.slice(0, q.min || 0),
+  }, 2);
+  game.rnd = () => 0;
+  host = permanent(game, owner, 'Island');
+  host.def = Object.assign({}, host.def, { kws: [...(host.def.kws || []), 'shroud'] });
+  const target = permanent(game, owner, 'Sol Ring');
+  const aura = inZone(owner, 'Wolfwillow Haven', 'library');
+  aura.def = Object.assign({}, aura.def, {
+    asEnters: (g, card) => { attachedAsItEntered = card.attachedTo === host.iid; },
+  });
+  game.recalc();
+
+  await MTG.DEFS['Chaos Warp'].resolve({ g: game, src: null, you: caster, targets: [target] });
+
+  assert.equal(aura.zone, 'battlefield');
+  assert.equal(aura.ctrl, owner);
+  assert.equal(aura.attachedTo, host.iid, 'entering Aura choice is not targeting, so shroud does not stop it');
+  assert.equal(host.attachments.includes(aura.iid), true);
+  assert.equal(attachedAsItEntered, true, 'the Aura is attached before as-enters and ETB processing');
+});
+
+test('Chaos Warp leaves a revealed Aura in the library when it cannot enchant anything', async () => {
+  const { game, players: [caster, owner] } = rulesGame({}, 2);
+  game.rnd = () => 0;
+  const target = permanent(game, owner, 'Sol Ring');
+  const aura = inZone(owner, 'Wolfwillow Haven', 'library');
+
+  await MTG.DEFS['Chaos Warp'].resolve({ g: game, src: null, you: caster, targets: [target] });
+
+  assert.equal(aura.zone, 'library');
+  assert.equal(owner.library[owner.library.length - 1], aura);
+  assert.equal(game.bf().includes(aura), false);
 });
 
 test('Emry daje ciljanoj artifact karti normalnu cast dozvolu do kraja poteza bez instantnog castanja', async () => {

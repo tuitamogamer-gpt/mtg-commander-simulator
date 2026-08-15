@@ -536,21 +536,60 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   SC['Chaos Warp'] = {
-    targets: [T.permanent(null, { prompt: 'Meta: permanent', aiHint: { goal: 'removal' } })],
+    targets: [T.permanent(null, { prompt: 'Target permanent', aiHint: { goal: 'removal' } })],
     resolve: async ctx => {
       const t = ctx.targets[0], g = ctx.g;
       if (!t || t.zone !== 'battlefield') return;
       const owner = t.owner;
       await g.move(t, 'library');
       U.shuffle(owner.library, g.rnd);
-      g.lg(`${t.name} je zamiješan u biblioteku.`);
+      if (t.zone === 'library') g.lg(`${owner.name} shuffles ${t.name} into their library.`);
+      else if (t.zone === 'command') g.lg(`${t.name} moves to the command zone; ${owner.name} still shuffles their library.`);
+      else g.lg(`${t.name} leaves the battlefield; ${owner.name} shuffles their library.`);
       if (owner.library.length) {
         const top = owner.library[owner.library.length - 1];
-        g.lg(`${owner.name} otkriva: ${top.name}.`);
-        if (top.is('Creature') || top.is('Artifact') || top.is('Enchantment') || top.is('Land') || top.is('Planeswalker')) {
-          owner.library.pop(); top.zone = 'nowhere';
-          await g.move(top, 'battlefield', { ctrl: owner });
+        g.lg(`${owner.name} reveals ${top.name}.`);
+        const permanentTypes = ['Artifact', 'Battle', 'Creature', 'Enchantment', 'Land', 'Planeswalker'];
+        if (!permanentTypes.some(type => top.is(type))) return;
+
+        // An Aura put onto the battlefield without being cast must enter
+        // attached to something it can legally enchant (CR 303.4f). This is a
+        // choice, not a target, so shroud and hexproof do not exclude a host;
+        // protection from the Aura still does.
+        let auraHost = null;
+        if ((top.def.subtypes || []).includes('Aura')) {
+          const spec = top.def.auraTarget && top.def.auraTarget[0];
+          let candidates = [];
+          if (spec && (spec.what === 'player' || spec.what === 'opponent')) {
+            candidates = g.alivePlayers().filter(player =>
+              (spec.what !== 'opponent' || player !== owner) &&
+              (!spec.filter || spec.filter(g, player, owner, top)));
+          } else if (spec) {
+            candidates = g.bf().filter(card =>
+              (!spec.filter || spec.filter(g, card, owner, top)) &&
+              !g.isProtectedFrom(card, top));
+          }
+          if (!candidates.length) {
+            g.lg(`${top.name} cannot legally enchant anything, so it remains in the library.`);
+            return;
+          }
+          const picked = await owner.controller.decide(g, {
+            type: 'chooseTargets', spec, candidates, min: 1, max: 1, src: top,
+            prompt: 'Choose what it enchants',
+            aiHint: Object.assign({ kind: 'aura', card: top }, spec.aiHint || {}),
+          });
+          auraHost = Array.isArray(picked) && candidates.includes(picked[0]) ? picked[0] : null;
+          if (!auraHost) return;
         }
+
+        owner.library.pop();
+        top.zone = 'nowhere';
+        await g.move(top, 'battlefield', {
+          ctrl: owner,
+          attachTo: auraHost instanceof MTG.CardInst ? auraHost : null,
+          cursedPlayer: auraHost instanceof MTG.Player ? auraHost : null,
+        });
+        if (auraHost) g.lg(`${top.name} enchants ${auraHost.name}.`);
       }
     },
   };

@@ -891,14 +891,14 @@ body:has(#setup) { background: #08090d; }
 /* --- sekcijski naslovi (kao u dizajnu) --- */
 #game .myboard { position: relative; padding-top: 20px !important; }
 #game .myboard::before {
-  content: 'Tvoja tabla'; position: absolute; top: 4px; left: 12px;
+  content: 'Your battlefield'; position: absolute; top: 4px; left: 12px;
   font-family: var(--tbl-cond); font-size: 9px; letter-spacing: .26em;
   text-transform: uppercase; color: var(--tbl-mute2);
 }
 #game .opprow { position: relative; }
 #game .oppstrip { position: relative; padding-top: 14px; }
 #game .oppstrip::before {
-  content: 'Bojno polje'; position: absolute; top: 0; left: 2px;
+  content: 'Battlefield'; position: absolute; top: 0; left: 2px;
   font-family: var(--tbl-cond); font-size: 8px; letter-spacing: .22em;
   text-transform: uppercase; color: rgba(141,135,120,.55);
 }
@@ -2104,7 +2104,7 @@ span.msym.mana-glyph {
   }
 
   #game .myboard::before {
-    content: 'SEAT 04  ·  TVOJA TABLA';
+    content: 'SEAT 04  ·  YOUR BATTLEFIELD';
     top: 10px;
     left: 20px;
     color: rgba(240,189,118,.58);
@@ -2242,7 +2242,7 @@ span.msym.mana-glyph {
   }
 
   #game .handwrap::before {
-    content: 'RUKA';
+    content: 'HAND';
     position: absolute;
     left: 18px;
     top: 10px;
@@ -2960,7 +2960,7 @@ span.msym.mana-glyph {
   }
 
   #game .myboard::before {
-    content: 'TVAJA TABLA';
+    content: 'YOUR BATTLEFIELD';
     color: rgba(255, 205, 129, .78);
   }
 

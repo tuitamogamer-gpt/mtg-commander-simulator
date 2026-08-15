@@ -8,6 +8,8 @@ Aktivni zahtjev (2026-08-14): Deck-by-deck real-time audit `Avengers Assemble`, 
 
 Aktivni zahtjev (2026-08-14): Deck-by-deck real-time audit `The Fantastic Four`, kao ljudski igrač i lokalni AI bot. Svi efekti, odluke, mete, stack/combat tokovi i AI procjene moraju raditi; po završetku odmah commit, push i production deploy.
 
+Aktivni zahtjev (2026-08-15): Dovršiti preostale English UI prevode i provjeriti/popraviti puni Chaos Warp tok. Početni audit je potvrdio više zaostalih B/H/S fragmenata u player-facing promptovima/opisima te rules propust kada Chaos Warp otkrije Auru: ulazila je neprikačena i završavala u groblju.
+
 # Desktop Commander overhaul
 
 ## Scope
@@ -36,6 +38,8 @@ Aktivni zahtjev (2026-08-14): Deck-by-deck real-time audit `The Fantastic Four`,
 - Desktop Playwright: završni Scions human i AI Partner/mehanika/odluka tokovi vizuelno pregledani, prazan stack/pending, bez console/page greške i bez AI fallbacka.
 
 ## Dnevnik
+
+- 2026-08-15: Završeni preostali English UI popravci i puna Chaos Warp provjera. Presentation fallback sada čisti zaostale B/H/S artefakt/counter/combat/choice izraze, a CSS-generated battlefield/hand oznake su prevedene direktno. Chaos Warp koristi vlasnikovu biblioteku i vlasnik dobija otkriveni permanent; commander replacement više ne prekida shuffle/reveal dio, nonpermanent ostaje na vrhu, a otkrivena Aura prije ETB obrade bira legalan predmet koji enchantuje bez targetovanja ili ostaje u biblioteci kada takav predmet ne postoji. Regresije prolaze 34/34, puni repo 422/422, syntax PASS, audit 20 deckova sa 0 duplicate/0 simplified i strict certifikacija 1237/1237 aktivnih jedinstvenih, 1722/1722 card/deck te 1288/1288 raw karata. Stvarni browser tok je prebacio protivnički kontrolisan ljudski Sol Ring u biblioteku vlasnika, otkrio Wolfwillow Haven i prikačio ga na Island; završio je sa praznim stackom/pending stanjem, bez vidljivog B/H/S teksta i sa 0 console/page grešaka. Artefakti: `output/playwright/chaos-warp-final/`.
 
 - 2026-08-14: `The Fantastic Four` deck-by-deck audit završen kao ljudski deck i lokalni AI V2 protivnik. Ispravljeni su stvarni reflexive targeti i plaćanja za Invisible Woman/The Thing, Black Bolt/Lockjaw/Reed/Human Torch/Galactus/Surfer/Willie triggeri i trajanja, Power Pack pravi exile-cast, modalne/cast-time mete i troškovi za Force Field/Collective Effort/Elasticity/Five Arrive/Nova/Quantum/Seize/Tragic Arrogance/Ultimate Nullification, puna Mirage Mirror kopija, Fantasticar/Unstable Suit/Cosmic Crucible/Watcher/Baxter te Path/Promise rubni tokovi. AI sada kontekstualno bira RGWU plaćanja, Surferovu političku metu, Willie draw, escalate modove/tap cijenu, Cosmic kopiju i Fantasticar sacrifice. Novi Fantastic suite prolazi 29/29, uključujući dvije pune partije bez fallbacka; puni repo 397/397, syntax PASS, audit 100/87 uz 0 duplicate/0 simplified i strict certifikacija 1237/1237 aktivnih jedinstvenih, 1722/1722 card/deck te 1288/1288 raw karata. Human browser je odigrao Collective Effort kroz modove, obje mete i stvarni escalate tap; AI browser je usmjerio treću stranu Surferom, odbio praznu Thing uplatu i napravio dvije Arcane Signet rezolucije kroz Cosmic Crucible, uz prazan stack, 0 fallbacka i 0 console/page grešaka. Artefakti: `output/playwright/fantastic-final-human` i `fantastic-final-ai-v4`. Spremno za odobreni commit/push/production deploy.
 
