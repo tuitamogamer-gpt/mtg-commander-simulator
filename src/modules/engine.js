@@ -2142,10 +2142,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             // odlazila u groblje.
             const subs = (c.cur && c.cur.subtypes) || c.def.subtypes || [];
             if (subs.includes('Aura')) {
-              // Aura na IGRAČU (curse) nema attachedTo — prati igrača dok je u igri
-              if (c.def.isPlayerAura) {
-                const vic = c.meta && c.meta.cursedPlayer;
-                if (vic && vic.lost) { await this.move(c, 'graveyard'); any = true; continue; }
+              // An Aura enchanting a player stores that Player directly; an
+              // Aura enchanting a permanent stores the permanent iid. Derive
+              // the attachment kind from the actual host instead of optional
+              // per-card metadata.
+              const vic = c.meta && c.meta.cursedPlayer;
+              if (vic instanceof Player) {
+                if (vic.lost) { await this.move(c, 'graveyard'); any = true; continue; }
               } else {
                 const host = c.attachedTo ? this.byIid(c.attachedTo) : null;
                 if (!host || host.zone !== 'battlefield') { await this.move(c, 'graveyard'); any = true; continue; }

@@ -355,6 +355,30 @@ test('Eternal Witness zaključava graveyard target, Curse egzilira umrlo stvoren
   assert.equal(game.creatures(coven).some(card => card.isToken && card.hasSub('Spider')), true);
 });
 
+test('Enchant player Aura ostaje na bojnom polju vezana za izabranog protivnika', async () => {
+  let cursed;
+  const { game, players: [coven, opponent] } = rulesGame([
+    (g, q) => q.type === 'chooseTargets' && q.src?.name === 'Curse of Clinging Webs'
+      ? [cursed]
+      : defaultDecision(g, q),
+  ], 2);
+  cursed = opponent;
+  const curse = inZone(coven, 'Curse of Clinging Webs', 'hand');
+  coven.pool.G = 1;
+  coven.pool.C = 2;
+  game.priorityRound = async () => {};
+
+  assert.equal(await game.castSpell(coven, curse), true);
+  const stackObject = game.stack.find(item => item.card === curse);
+  assert.ok(stackObject);
+  assert.equal(stackObject.targets[0], cursed);
+
+  await resolveAll(game);
+  assert.equal(curse.zone, 'battlefield');
+  assert.equal(curse.meta.cursedPlayer, cursed);
+  assert.equal(game.bf().includes(curse), true);
+});
+
 test('Moorland Rescuer vraća izabrani paket do LKI budžeta i zatim egzilira sebe', async () => {
   let picks = 0;
   let cheap;

@@ -743,6 +743,49 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'enchantPlayer') {
+      void (async () => {
+        const opponent = g.players.find(player => player !== ui.me && !player.lost);
+        if (!opponent) throw new Error('Enchant player scenario requires an opponent');
+        const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+        const curse = zones.flat().find(card => card.name === 'Curse of Clinging Webs') ||
+          new MTG.CardInst(MTG.DEFS['Curse of Clinging Webs'], ui.me);
+        g.remove(curse);
+        curse.ctrl = ui.me; curse.zone = 'hand'; ui.me.hand.push(curse);
+        g.turnPlayer = ui.me; g.turnNo = 12; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        ui.collapsed = ui.collapsed || new Set();
+        ui.collapsed.delete(opponent.idx);
+        const resolveMode = new URLSearchParams(window.location.search).get('smokeResolve') || 'target';
+        if (resolveMode === 'stack') g.priorityRound = async () => {};
+        if (resolveMode === 'resolved') ui.prioMode = 'off';
+        g.recalc();
+
+        const casting = g.castSpell(ui.me, curse, { from: 'hand', free: true });
+        const targetDecision = ui.pending;
+        if (!targetDecision || targetDecision.q.type !== 'chooseTargets') {
+          throw new Error('Enchant player scenario did not open target selection');
+        }
+        targetDecision.sel = [opponent];
+        ui.toast(`Curse of Clinging Webs: review ${opponent.name} as the enchanted player, then lock the target.`);
+        ui.render();
+
+        await casting;
+        ui.showLog = true;
+        if (resolveMode === 'stack') {
+          if (!g.stack.some(item => item.card === curse)) throw new Error('Enchant player Aura is not on the stack');
+          g.lg(`Enchant player smoke: ${opponent.name} is locked as the target.`, 'effect');
+          ui.toast('Enchant player scenario: target is locked and the Aura is on the stack.');
+        } else if (resolveMode === 'resolved') {
+          if (curse.zone !== 'battlefield' || curse.meta.cursedPlayer !== opponent) {
+            throw new Error('Enchant player Aura did not resolve attached to the chosen player');
+          }
+          g.lg(`Enchant player smoke: ${curse.name} now enchants ${opponent.name}.`, 'effect');
+          ui.toast(`Resolved: ${curse.name} enchants ${opponent.name}.`);
+        }
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     if (smokeScenario === 'covenHuman') {
       void (async () => {
         const take = name => {
@@ -1716,6 +1759,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       attacking: c.attacking ? c.attacking.name : null,
       blocking: c.blocking || null,
       attachedTo: c.attachedTo ? (g.byIid(c.attachedTo)?.name || c.attachedTo) : null,
+      enchantedPlayer: c.meta && c.meta.cursedPlayer ? c.meta.cursedPlayer.name : null,
       attachments: (c.attachments || []).map(iid => g.byIid(iid)?.name || iid),
       counters: Object.fromEntries(Object.entries(c.counters || {}).filter(([, n]) => n)),
     });

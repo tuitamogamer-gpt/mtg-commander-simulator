@@ -1699,9 +1699,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const enterOpts = { ctrl: p };
     if (d.subtypes && d.subtypes.includes('Aura')) {
       const host = so.targets[0];
-      if (d.isPlayerAura && host instanceof MTG.Player) {
-        await this.move(card, 'battlefield', enterOpts);
-        card.meta.cursedPlayer = host;
+      // The resolved target is authoritative. Requiring every individual
+      // Enchant player definition to repeat an isPlayerAura marker made a
+      // legal player target fall through to the CardInst-only branch and put
+      // the Aura into the graveyard. Establish the enchanted player as part
+      // of the zone move so ETB/static processing sees the correct host.
+      if (host instanceof MTG.Player) {
+        await this.move(card, 'battlefield', Object.assign({}, enterOpts, { cursedPlayer: host }));
         this.lg(`${card.name} prati igrača ${host.name}.`);
         await this.checkSBA(); await this.flushTriggers();
         return;
