@@ -719,15 +719,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Tempestra, Dame of Games'] = {
     abilities: [{
+      // "copy of ANOTHER target creature ... except it isn't legendary"
       label: 'Kopija stvorenja (haste, sac EOT)', cost: { tap: true, mana: '{2}{R}', sac: (g, x, c) => x.is('Artifact') },
-      targets: [T.yourCreature({ prompt: 'Kopiraj', filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl === ctrl, aiHint: { goal: 'buff' } })],
+      targets: [T.yourCreature({
+        prompt: 'Kopiraj',
+        filter: (g, c, ctrl, src) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl === ctrl && c !== src,
+        aiHint: { goal: 'buff' },
+      })],
       run: async ctx => {
         const t = ctx.targets[0];
-        if (!t || t === ctx.src) return;
-        const made = await ctx.g.copyPermanentToken(t, ctx.you, { haste: true });
+        if (!t || t === ctx.src || t.zone !== 'battlefield') return;
+        const made = await ctx.g.copyPermanentToken(t, ctx.you, { haste: true, nonlegendary: true });
         E7.sacAtNextEnd(ctx.g, made, ctx.you);
       },
-      aiScore: (g, c, p) => g.creatures(p).some(x => x.power >= 4) ? 5 : 1,
+      aiScore: (g, c, p) => g.creatures(p).some(x => x !== c && x.power >= 4) ? 5 : 1,
     }],
   };
   SC['Tokka & Rahzar, Unsupervised'] = {

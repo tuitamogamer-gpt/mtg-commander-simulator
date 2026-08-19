@@ -19,7 +19,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const esc = (s) => U.uiText(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
   function imgURL(name, big) {
-    const face = name.split(' // ')[0];
+    const face = String(name).split(' // ')[0];
+    // Tokeni imaju fiksiran tačan print: exact-name lookup za "Treasure" i
+    // slična imena zna vratiti dvostrani token sa pogrešnim licem (dinosaurus).
+    const tokenPrint = MTG.TOKEN_IMG && MTG.TOKEN_IMG[face];
+    if (tokenPrint) return `https://api.scryfall.com/cards/${tokenPrint}?format=image&version=${big ? 'normal' : 'small'}`;
     return `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(face)}&format=image&version=${big ? 'normal' : 'small'}`;
   }
   const LOCAL_MANA = new Set(['W', 'U', 'B', 'R', 'G', 'C', 'X', 'T']);
@@ -235,7 +239,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.showStops) root.appendChild(this.renderStopSettings(g));
       const reveal = this.renderRevealPopup(g);
       if (reveal) root.appendChild(reveal);
-      const modal = this.renderAttackTargetPopup(g) || this.renderDecisionModal(g);
+      const modal = this.renderAttackTargetPopup(g) || this.renderBlockersModal(g) || this.renderDecisionModal(g);
       // stack popup stoji na sredini, pa se sklanja kad je otvoren bilo koji drugi
       // overlay — inače bi se preklapali baš na istom mjestu
       const blocked = !!modal || !!reveal || !!this.sheet || !!this.playerSheet || !!this.zoneBrowse ||
@@ -245,7 +249,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const sp = blocked ? null : this.renderStackPopup(g);
       if (sp && !stage) root.appendChild(sp);
       if (modal) root.appendChild(modal);
-      if (g.gameOver) root.appendChild(this.renderGameOver(g));
+      // Game-over overlay se sklanja dok je otvoren log/zona/sheet — inače je
+      // prekrivao "View log" i igra je izgledala zamrznuto na kraju partije.
+      const gameOverHidden = this.showLog || this.sheet || this.playerSheet || this.zoneBrowse;
+      if (g.gameOver && !gameOverHidden) root.appendChild(this.renderGameOver(g));
       U.localizeTree(root);
     }
 
@@ -1248,6 +1255,43 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
         }
       }
+      // 🌀 IMPULSE / PLOT: karte u egzilu koje trenutno smiješ igrati moraju
+      // biti stalno vidljive — inače igrač ne zna ŠTA je egzilirano i da li
+      // to još može baciti. Zelene su kad su bacive baš sada.
+      {
+        const exilePlayable = [];
+        for (const owner of g.players) {
+          for (const c of owner.exile) {
+            const meta = c.meta || {};
+            if ((meta.playableBy === me && g.hasExilePlayPermission(me, c)) ||
+              (owner === me && meta.plotted)) exilePlayable.push(c);
+          }
+        }
+        if (exilePlayable.length) {
+          const tray = el('div', 'exiletray');
+          tray.appendChild(el('div', 'exiletraytitle', '🌀 Exiled — you may play:'));
+          const list = el('div', 'exiletraylist');
+          for (const c of exilePlayable) {
+            const meta = c.meta || {};
+            const now = castable.has(c);
+            const until = meta.plotted ? 'plotted — cast in your main phase'
+              : meta.playableUntilOwnTurn !== undefined ? 'until the end of your turn'
+                : meta.playableUntil !== undefined && meta.playableUntil <= g.turnNo ? 'until end of THIS turn'
+                  : 'for a limited time';
+            const item = el('button', 'exiletraycard' + (now ? ' castable' : ''));
+            item.dataset.cname = c.name;
+            item.title = `${c.name}: playable from exile ${until}${meta.freePlay ? ' · FREE' : ''}`;
+            item.innerHTML = `
+              <img loading="lazy" src="${imgURL(c.name)}" onerror="MTG.imgFail(this)">
+              <span><b>${esc(c.name.split(' // ')[0])}</b><small>${meta.freePlay ? 'free · ' : ''}${esc(until)}</small></span>
+              ${now ? '<i class="exgo">PLAY ▶</i>' : ''}`;
+            item.onclick = () => { this.sheet = { card: c }; this.render(); };
+            list.appendChild(item);
+          }
+          tray.appendChild(list);
+          wrap.appendChild(tray);
+        }
+      }
       for (const c of me.hand) {
         const d = el('div', 'hcard' + (this.threatTargets && this.threatTargets.has(c.iid) ? ' threatened' : ''));
         const colors = c.colors.length ? c.colors : ['C'];
@@ -1440,7 +1484,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           bar.appendChild(atkRow);
           const blocks = [];
           for (const [b, a] of pd.assigns) blocks.push({ blocker: b, attacker: a });
-          bar.appendChild(btn(blocks.length ? `Confirm blocks (${blocks.length})` : 'No blocks ▶', () => this.resolvePending(blocks), 'primary'));
+          const brow = el('div', 'btnrow');
+          brow.appendChild(btn('🛡 Back to block overview', () => { pd.boardPeek = false; this.render(); }));
+          brow.appendChild(btn(blocks.length ? `Confirm blocks (${blocks.length})` : 'No blocks ▶', () => this.resolvePending(blocks), 'primary'));
+          bar.appendChild(brow);
           break;
         }
         case 'chooseTargets': {
@@ -1729,6 +1776,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const row = el('div', 'btnrow');
         if (pd.sel.length >= q.min) row.appendChild(btn(`Confirm ✓ (${pd.sel.length})`, () => this.resolvePending(pd.sel.slice()), 'primary'));
         if (q.min === 0) row.appendChild(btn('None', () => this.resolvePending([])));
+        // Sigurnosni izlaz: ako ponuda NE MOŽE zadovoljiti minimum (manje
+        // karata nego što se traži), prozor ne smije zarobiti igru — vrati
+        // prazan izbor, a pozivalac tretira nedovoljan izbor kao odustajanje.
+        if (q.min > 0 && (q.from || []).length < q.min) {
+          m.appendChild(el('div', 'sidenote', `⚠ Only ${(q.from || []).length} available — the requirement of ${q.min} cannot be met.`));
+          row.appendChild(btn('Cancel ✕', () => this.resolvePending([]), 'danger'));
+        }
         m.appendChild(row);
         return ov;
       }
@@ -1959,6 +2013,137 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.manualPick = { label, cb, players: opts.players };
       this.render();
       this.toast('🎯 ' + label + ': click a target');
+    }
+
+    // ---------- DECLARE BLOCKERS — veliki pregledni prozor ----------
+    // Svaki napadač je "lane" sa slikom, P/T, keywordima i predviđenim ishodom
+    // bloka. Ispod su svi tvoji slobodni blokeri. Klik na lane → klik na
+    // blokera. "Show battlefield" privremeno skloni prozor i vrati stari tok.
+    blockOutcome(g, attacker, blockers) {
+      const atkPow = Math.max(0, g.dmgAmount(attacker, 'normal'));
+      const totalBlockPow = blockers.reduce((sum, b) => sum + Math.max(0, g.dmgAmount(b, 'normal')), 0);
+      const attackerDies = blockers.length > 0 && (
+        totalBlockPow >= Math.max(1, attacker.toughness - attacker.damage) ||
+        blockers.some(b => b.kw('deathtouch') && g.dmgAmount(b, 'normal') > 0));
+      const dying = [];
+      let rem = atkPow;
+      const ordered = blockers.slice().sort((x, y) => (x.toughness - x.damage) - (y.toughness - y.damage));
+      for (const b of ordered) {
+        const lethal = attacker.kw('deathtouch') ? 1 : Math.max(1, b.toughness - b.damage);
+        if (rem >= lethal) { dying.push(b); rem -= lethal; } else break;
+      }
+      const trampleThrough = attacker.kw('trample') ? Math.max(0, rem) : 0;
+      return { attackerDies, dying, trampleThrough };
+    }
+
+    renderBlockersModal(g) {
+      const pd = this.pending;
+      if (!pd || pd.q.type !== 'blockers' || pd.boardPeek) return null;
+      const q = pd.q;
+      if (!pd.mode && q.attackers.length) pd.mode = q.attackers[0];
+      const KW = ['flying', 'trample', 'menace', 'first strike', 'double strike', 'deathtouch', 'lifelink'];
+      const assignedTo = attacker => [...pd.assigns.entries()].filter(([, a]) => a === attacker).map(([b]) => b);
+      const ov = el('div', 'overlay dark blockov');
+      const m = el('div', 'modal blockmodal');
+      ov.appendChild(m);
+      m.dataset.testid = 'blockers-modal';
+
+      const attackerName = q.attackers[0] && q.attackers[0].ctrl ? q.attackers[0].ctrl.name : 'Opponent';
+      m.appendChild(el('div', 'combatkicker', 'COMBAT · DECLARE BLOCKERS'));
+      let unblockedDamage = 0;
+      for (const a of q.attackers) {
+        if (!assignedTo(a).length) unblockedDamage += Math.max(0, g.dmgAmount(a, 'normal')) * (a.kw('double strike') ? 2 : 1);
+        else unblockedDamage += this.blockOutcome(g, a, assignedTo(a)).trampleThrough * (a.kw('double strike') ? 2 : 1);
+      }
+      const me = this.me;
+      m.appendChild(el('div', 'blockhead',
+        `<div><b>${esc(attackerName)}</b> attacks you with ${q.attackers.length} creature${q.attackers.length === 1 ? '' : 's'}.</div>` +
+        `<div class="blockdmg ${unblockedDamage >= me.life ? 'lethal' : unblockedDamage > 0 ? 'warn' : 'safe'}">` +
+        `Unblocked damage: <strong>${unblockedDamage}</strong> · your life: <strong>${me.life}</strong>` +
+        `${unblockedDamage >= me.life ? ' · ☠️ LETHAL WITHOUT BLOCKS' : ''}</div>`));
+
+      const lanes = el('div', 'blocklanes');
+      for (const a of q.attackers) {
+        const mine = assignedTo(a);
+        const outcome = this.blockOutcome(g, a, mine);
+        const lane = el('div', 'blocklane' + (pd.mode === a ? ' sel' : ''));
+        const kws = KW.filter(k => a.kw(k)).join(' · ');
+        const hitTarget = a.attacking === me ? 'YOU' : (a.attacking && a.attacking.name ? a.attacking.name : 'you');
+        let outcomeText;
+        if (!mine.length) {
+          const dmg = Math.max(0, g.dmgAmount(a, 'normal')) * (a.kw('double strike') ? 2 : 1);
+          outcomeText = `<span class="bo warn">UNBLOCKED → ${esc(hitTarget)} take${hitTarget === 'YOU' ? '' : 's'} ${dmg}</span>`;
+        } else {
+          const parts = [];
+          parts.push(outcome.attackerDies ? '<span class="bo good">attacker dies</span>' : '<span class="bo">attacker survives</span>');
+          if (outcome.dying.length) parts.push(`<span class="bo bad">${esc(outcome.dying.map(b => b.name).join(', '))} ${outcome.dying.length === 1 ? 'dies' : 'die'}</span>`);
+          if (outcome.trampleThrough > 0) parts.push(`<span class="bo warn">trample: ${outcome.trampleThrough} through</span>`);
+          outcomeText = parts.join(' ');
+        }
+        lane.innerHTML = `
+          <img src="${imgURL(a.name)}" onerror="MTG.imgFail(this)">
+          <div class="blocklaneinfo">
+            <b>${esc(a.name)}</b>
+            <span>${a.power}/${a.toughness}${kws ? ' · ' + esc(kws) : ''}</span>
+            <div class="blockassigned">${mine.length
+              ? mine.map(b => `<span class="blockchip" data-biid="${b.iid}">🛡 ${esc(b.name)} <i>×</i></span>`).join('')
+              : '<span class="blocknone">no blockers — click this row, then a blocker below</span>'}</div>
+            <div class="blockoutcome">${outcomeText}</div>
+          </div>`;
+        lane.onclick = ev => {
+          const chip = ev.target.closest('.blockchip');
+          if (chip) {
+            const b = mine.find(x => String(x.iid) === chip.dataset.biid);
+            if (b) { pd.assigns.delete(b); this.render(); return; }
+          }
+          pd.mode = a; this.render();
+        };
+        lanes.appendChild(lane);
+      }
+      m.appendChild(lanes);
+
+      m.appendChild(el('div', 'mtitle small blockyourstitle',
+        pd.mode ? `Your untapped creatures — click to block <b>${esc(pd.mode.name)}</b>:` : 'Your untapped creatures:'));
+      const row = el('div', 'blockcandidates');
+      for (const b of q.potential) {
+        const assigned = pd.assigns.get(b);
+        const canNow = pd.mode ? g.canBlock(b, pd.mode) : true;
+        const bkws = KW.concat(['reach', 'defender']).filter(k => b.kw(k)).join(' · ');
+        const cell = el('button', 'blockcand' + (assigned ? ' assigned' : '') + (!canNow && !assigned ? ' cant' : ''));
+        cell.innerHTML = `
+          <img src="${imgURL(b.name)}" onerror="MTG.imgFail(this)">
+          <span><b>${esc(b.name)}</b><small>${b.power}/${b.toughness}${bkws ? ' · ' + esc(bkws) : ''}</small>
+          ${assigned ? `<i class="assignedto">🛡 blocks ${esc(assigned.name)}</i>` : ''}</span>`;
+        cell.onclick = () => {
+          if (assigned) { pd.assigns.delete(b); this.render(); return; }
+          if (!pd.mode) { this.toast('First click the attacker row you want to block.'); return; }
+          if (!g.canBlock(b, pd.mode)) { this.toast(`${b.name} cannot block ${pd.mode.name} (flying, menace, or another restriction).`); return; }
+          pd.assigns.set(b, pd.mode);
+          this.render();
+        };
+        row.appendChild(cell);
+      }
+      if (!q.potential.length) row.appendChild(el('div', 'emptyrow', 'You have no creatures able to block.'));
+      m.appendChild(row);
+
+      // menace upozorenje
+      const menaceBroken = q.attackers.filter(a => a.kw('menace') && assignedTo(a).length === 1);
+      if (menaceBroken.length) {
+        m.appendChild(el('div', 'blockmenacewarn',
+          `👿 Menace: ${esc(menaceBroken.map(a => a.name).join(', '))} needs at least TWO blockers — a single block will be ignored.`));
+      }
+
+      const foot = el('div', 'btnrow blockfoot');
+      const blocks = [];
+      for (const [b, a] of pd.assigns) blocks.push({ blocker: b, attacker: a });
+      const peek = el('button', 'pbtn', '🗺 Show battlefield');
+      peek.onclick = () => { pd.boardPeek = true; this.render(); };
+      foot.appendChild(peek);
+      const confirm = el('button', 'pbtn primary', blocks.length ? `Confirm blocks (${blocks.length}) ✓` : 'No blocks ▶');
+      confirm.onclick = () => this.resolvePending(blocks);
+      foot.appendChild(confirm);
+      m.appendChild(foot);
+      return ov;
     }
 
     renderAttackTargetPopup(g) {
@@ -2215,7 +2400,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           cc.classList.add('inspectable');
           if (playableNow) {
             cc.classList.add('castable');
-            cc.appendChild(el('div', 'zoneplay', 'IGRAJ ▶'));
+            cc.appendChild(el('div', 'zoneplay', 'PLAY ▶'));
           }
           cc.onclick = () => {
             this.zoneBrowse = null;

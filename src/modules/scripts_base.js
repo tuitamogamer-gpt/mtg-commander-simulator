@@ -102,6 +102,39 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   // ============================================================
+  // TOKEN IMAGES — tačan Scryfall print (set/collector) po imenu tokena.
+  // Scryfall `named?exact=` za imena tokena zna vratiti dvostrani token
+  // ("Dinosaur // Treasure" → prikaže dinosaurusa) ili pogrešnu kartu.
+  // Ova mapa fiksira ispravan jednostrani print; imena koja nisu ovdje idu
+  // starim putem. Nijedno ime tokena se ne poklapa sa pravom kartom u setu.
+  // ============================================================
+  MTG.TOKEN_IMG = {
+    'Squirrel': 'tmsh/14', 'Saproling': 'tsoc/18', 'Rat': 'plst/TWOE-7', 'Pest': 'tsos/9',
+    'Goat': 'tmsc/22', 'Wolf': 'thob/9', 'Beast': 'tmsc/27', 'Cat': 'tsoc/2', 'Devil': 'tdsc/7',
+    'Drake': 'tfdn/8', 'Bird Illusion': 'totc/4', 'Bird': 'tmsc/21', 'Elemental': 'tsoc/20',
+    'Soldier': 'tmsh/23', 'Dragon Elemental': 'totc/13', 'Human Soldier': 'thob/2',
+    'Spider': 'tspm/3', 'Insect': 'tmsh/12', 'Wall': 'ttdc/7', 'Inkling': 'tsos/7',
+    'Boar': 'tsoc/15', 'Ape': 'tm3c/14', 'Hamster': 'tblc/22', 'Raccoon': 'tfdn/20',
+    'Eldrazi': 'plst/TM3C-1', 'Shapeshifter': 'tmsc/18', 'Treasure': 'thob/13', 'Food': 'sld/2551',
+    'Clue': 'tmsh/17', 'Blood': 'sld/2180', 'Shark': 'tdsc/4', 'Hero': 'tfin/33',
+    'Moogle': 'tfin/34', 'Wizard': 'tfin/35', 'Human': 'ttdc/5', 'Ogre': 'tmkc/14',
+    'Kobolds of Kher Keep': 'plst/TMKC-12', 'Construct': 'tmsc/30', 'Gold': 'ttdc/29',
+    'Lightning Rager': 'tmkc/13', 'Thopter': 'tsoc/28', 'Phyrexian Golem': 'tblc/38',
+    'Goblin': 'sld/2421', 'Spirit': 'tsoc/6', 'Faerie': 'tecl/5', 'Frog Lizard': 'tsoc/16',
+    'Rabbit': 'tfdn/5', 'Citizen': 'ttdc/26', 'Detective': 'tmkm/10', "Koma's Coil": 'tfdn/11',
+    'Tentacle': 'tmkc/9', 'Tiny': 'plst/TMKC-21', 'Rhino Warrior': 'tecc/6', 'Germ': 'tznc/4',
+    'Storm Crow': 'tblc/18', 'Illusion': 'tsoc/7', 'Mutagen': 'ttmt/9', 'Ninja': 'ttmt/5',
+    'Ooze': 'sld/2819', 'Robot': 'ttmt/10', 'Warrior': 'ttdm/13', 'Snake': 'tsoc/11',
+    'Zombie': 'tsoc/12', 'Elf Warrior': 'sld/7170', 'Myr': 'sld/2101', 'Servo': 'ttdc/31',
+    'Gnome': 'teoc/11', 'Golem': 'teoc/14', 'Scarecrow': 'tecc/11', 'Mercenary': 'totj/10',
+    'Assassin': 'tacr/4', 'Rogue': 'tmsc/25', 'Angel': 'tmsc/20', 'Dog': 'plst/TMKM-1',
+    'Bat': 'tblb/10', 'Phyrexian Myr': 'tsoc/8', 'Merfolk': 'tmsh/24', 'Villain': 'tmsh/25',
+    'Robot Villain': 'tmsh/26', 'Ape Villain': 'tmsc/26', 'Ox': 'tmsc/23', 'Elephant': 'tmsc/28',
+    'Vibranium': 'tmsc/31', 'Eldrazi Spawn': 'plst/TMH3-2', 'Knight': 'tfin/10',
+    'Centaur': 'trvr/10', 'Rhino': 'tmsc/29', 'Dragon Illusion': 'tsoc/13',
+  };
+
+  // ============================================================
   // Effect helpers
   // ============================================================
   const E = MTG.E = {};

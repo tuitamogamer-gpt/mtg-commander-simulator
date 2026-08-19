@@ -1839,8 +1839,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         if (cost.sacSelf && !this.canSacrifice(c)) return;
         if (cost.exileSelf && c.zone !== 'battlefield') return;
-        if (cost.sacCreature && !this.creatures(p).filter(x => (!cost.sacOther || x !== c) && this.canSacrifice(x)).length) return;
-        if (cost.sac && !this.bf().some(x => x.ctrl === p && cost.sac(this, x, c) && this.canSacrifice(x))) return;
+        // sacN: cijena može tražiti VIŠE žrtava (Olivia: "Sacrifice two
+        // Treasures"). Sa jednim dostupnim permanentom ability ne smije ni
+        // biti ponuđen — inače igrač upadne u chooseCards prozor bez izlaza.
+        const sacNeed = cost.sacN === 'X' ? 1 : (cost.sacN || 1);
+        if (cost.sacCreature && this.creatures(p).filter(x => (!cost.sacOther || x !== c) && this.canSacrifice(x)).length < sacNeed) return;
+        if (cost.sac && this.bf().filter(x => x.ctrl === p && cost.sac(this, x, c) && this.canSacrifice(x)).length < sacNeed) return;
         if (cost.life && p.life <= cost.life) return;
         if (cost.discard && p.hand.length < cost.discard) return;
         if (cost.exileFromGY) {
@@ -2293,12 +2297,39 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.removeCounters(source, kind, 1);
       ctx.removedCounterCost = { card: source, kind };
     }
+    // Žrtve za sacrifice cijenu se biraju PRIJE plaćanja mane i izuzimaju se
+    // iz mana izvora. Inače je payMana znao pojesti baš te permanente
+    // (Treasure za Olivijin "{3}, Sacrifice two Treasures"), pa je izbor
+    // žrtava ostajao bez dovoljno kandidata i prozor se zaglavio.
+    let sacPicked = null;
+    if (cost.sacCreature || cost.sac) {
+      const pool = this.bf().filter(x => x.ctrl === p &&
+        (cost.sacCreature ? x.is('Creature') : cost.sac(this, x, c)) &&
+        (!cost.sacOther || x !== c) && this.canSacrifice(x));
+      const nsac = cost.sacN === 'X' ? null : (cost.sacN || 1);
+      if (nsac === null) {
+        sacPicked = await p.controller.decide(this, {
+          type: 'chooseCards', from: pool, min: 1, max: pool.length, prompt: `Žrtvuj (X):`, aiHint: { kind: 'sacX', src: c },
+        });
+        if (!sacPicked.length) return false;
+        ctx.x = sacPicked.length;
+      } else {
+        if (pool.length < nsac) return false;
+        sacPicked = await p.controller.decide(this, {
+          type: 'chooseCards', from: pool, min: nsac, max: nsac, prompt: `Žrtvuj:`, aiHint: { kind: 'sacCost', src: c },
+        });
+        if (sacPicked.length < nsac || sacPicked.some(x => !pool.includes(x))) return false;
+      }
+    }
     if (cost.tap) { if (c.tapped) return false; this.tap(c); }
     if (cost.untapSelf) { c.tapped = false; }
     if (resolvedManaCost) {
       const mc = resolvedManaCost;
+      const manaExclude = (cost.tap ? [c] : []).concat(sacPicked || []);
       if (a.xCost) {
-        const maxX = this.maxAffordableX(p, mc, c, { artifactAbilityAlreadyUsed: c.is('Artifact') });
+        const maxX = this.maxAffordableX(p, mc, c, {
+          artifactAbilityAlreadyUsed: c.is('Artifact'), excludeCards: manaExclude,
+        });
         ctx.x = await p.controller.decide(this, {
           type: 'chooseX', min: 0, max: maxX, card: c,
           prompt: `X for ${c.name} — ${a.label || 'ability'}?`, aiHint: { kind: 'chooseX', card: c },
@@ -2310,6 +2341,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const ok = await this.payMana(p, mc, { card: c, isAbility: true }, {
         xVal: ctx.x || 0,
         artifactAbilityAlreadyUsed: c.is('Artifact'),
+        excludeCards: manaExclude,
       });
       if (!ok) { if (cost.tap) c.tapped = false; return false; }
     }
@@ -2328,25 +2360,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx.sacdSelf = this.snapshot(c);
       await this.sacrifice(p, c);
     }
-    if (cost.sacCreature || cost.sac) {
-      const pool = this.bf().filter(x => x.ctrl === p &&
-        (cost.sacCreature ? x.is('Creature') : cost.sac(this, x, c)) &&
-        (!cost.sacOther || x !== c) && this.canSacrifice(x));
-      const nsac = cost.sacN === 'X' ? null : (cost.sacN || 1);
-      let picked;
-      if (nsac === null) {
-        picked = await p.controller.decide(this, {
-          type: 'chooseCards', from: pool, min: 1, max: pool.length, prompt: `Žrtvuj (X):`, aiHint: { kind: 'sacX', src: c },
-        });
-        ctx.x = picked.length;
-      } else {
-        picked = await p.controller.decide(this, {
-          type: 'chooseCards', from: pool, min: nsac, max: nsac, prompt: `Žrtvuj:`, aiHint: { kind: 'sacCost', src: c },
-        });
-        if (picked.length < nsac) { return false; }
-      }
-      ctx.sacd = picked.map(x => this.snapshot(x));
-      for (const x of picked) await this.sacrifice(p, x);
+    if (sacPicked) {
+      ctx.sacd = sacPicked.map(x => this.snapshot(x));
+      for (const x of sacPicked) if (this.canSacrifice(x)) await this.sacrifice(p, x);
     }
     if (cost.discard) {
       const picked = await p.controller.decide(this, {
@@ -2884,6 +2900,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await this.flushTriggers();
       await this.checkSBA();
       if (this.gameOver) return;
+      // Trigger koji je na stack stigao mimo cast/activate putanje (npr. ETB
+      // odigranog landa) mora dobiti pravi priority krug ODMAH. Bez ovoga je
+      // visio na stacku, main prozor je izgledao "zaglavljeno" i rezolvirao se
+      // tek klikom na Next phase — što je kršilo i pravila i UX.
+      if (this.stack.length) {
+        await this.priorityRound(p);
+        if (this.gameOver) return;
+        continue;
+      }
       const casts = this.castableList(p).filter(e => !failed.has(keyOf(e)));
       const acts = this.activatableList(p);
       const lands = this.playableLands(p);

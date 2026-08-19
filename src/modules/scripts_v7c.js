@@ -40,7 +40,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => { await ctx.g.makeTokens('treasure', ctx.you); },
     }],
     abilities: [{
-      label: '2× +1/+1 svima (sac 2 Treasure)', sorcery: true,
+      label: 'Two +1/+1 counters on each creature (sac 2 Treasures)', sorcery: true,
       cost: { mana: '{3}', sac: (g, x, c) => x.hasSub('Treasure'), sacN: 2 },
       run: async ctx => { for (const c of ctx.g.creatures(ctx.you)) ctx.g.addCounters(c, '+1/+1', 2); },
       aiScore: (g, c, p) => g.creatures(p).length >= 3 ? 6 : 2,

@@ -558,21 +558,56 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
   MTG.scoreBotOpponentChoice = opponentChoiceScore;
 
-  function attackAssignmentScore(game, player, card, target) {
+  // Procjena jednog napada UZ svijest o stvarnim blokovima branioca:
+  // - "free block" (bloker ubija napadača i preživi) čini napad čistim gubitkom;
+  // - trade se vrednuje razlikom vrijednosti;
+  // - blokirani napadač bez tramplea NE nanosi štetu igraču;
+  // - `priorAttackers` modeluje swarm: braniocu ponestane blokera.
+  function attackAssignmentScore(game, player, card, target, priorAttackers = 0) {
     const defender = target instanceof U.Player ? target : target.ctrl;
-    const hit = Math.max(0, game.dmgAmount ? game.dmgAmount(card, 'normal') : card.power || 0) * (card.kw('double strike') ? 2 : 1);
-    const blockers = game.creatures(defender).filter(blocker => game.canBlock(blocker, card));
-    const lethal = target instanceof U.Player && hit >= target.life ? 90 : 0;
+    const baseHit = Math.max(0, game.dmgAmount ? game.dmgAmount(card, 'normal') : card.power || 0);
+    const hit = baseHit * (card.kw('double strike') ? 2 : 1);
+    const allBlockers = game.creatures(defender).filter(blocker => game.canBlock(blocker, card));
+    // menace: jedan bloker nije dovoljan; swarm: raniji napadači vežu blokere
+    const capacity = Math.max(0, allBlockers.length - priorAttackers);
+    const blockable = card.kw('menace') ? capacity >= 2 : capacity >= 1;
+    const blockers = blockable ? allBlockers : [];
+    const myToughLeft = Math.max(1, (card.toughness || 0) - (card.damage || 0));
+    const myValue = permanentGameValue(game, card, player);
+    let freeBlock = false, bestTradeLoss = 0, minBlockerTough = Infinity;
+    for (const blocker of blockers) {
+      const bPow = Math.max(0, blocker.power || 0);
+      const bToughLeft = Math.max(1, (blocker.toughness || 0) - (blocker.damage || 0));
+      minBlockerTough = Math.min(minBlockerTough, bToughLeft);
+      const killsMe = bPow >= myToughLeft || (blocker.kw('deathtouch') && bPow > 0);
+      const dies = baseHit >= bToughLeft || (card.kw('deathtouch') && baseHit > 0);
+      const bFirst = (blocker.kw('first strike') || blocker.kw('double strike')) && !card.kw('first strike') && !card.kw('double strike');
+      if (killsMe && (!dies || bFirst)) freeBlock = true;
+      else if (killsMe && dies) {
+        bestTradeLoss = Math.max(bestTradeLoss, myValue - permanentGameValue(game, blocker, player));
+      }
+    }
+    // očekivana šteta koja stvarno prolazi do mete
+    let expDamage;
+    if (!blockers.length) expDamage = hit;
+    else if (card.kw('trample') && Number.isFinite(minBlockerTough)) expDamage = Math.max(0, hit - minBlockerTough);
+    else expDamage = hit * 0.25; // branilac vjerovatno blokira profitabilan blok
+    const lethal = target instanceof U.Player && expDamage > 0 && expDamage >= target.life ? 90 : 0;
     let commander = 0;
-    if (card.commander && target instanceof U.Player) {
+    if (card.commander && target instanceof U.Player && expDamage > 0) {
       const dealt = Number(target.commanderDamage && target.commanderDamage[card.iid] || 0);
-      if (dealt + hit >= 21) commander = 120;
-      else commander = hit * 0.65;
+      if (dealt + expDamage >= 21) commander = 120;
+      else commander = expDamage * 0.65;
     }
     const threat = playerThreatForGame(game, player, defender) * 0.13;
-    const tradeRisk = blockers.length ? Math.min(...blockers.map(blocker => Math.max(0, blocker.power || 0))) >= card.toughness ? permanentGameValue(game, card, player) * 0.9 : 1.2 : 0;
-    const crackback = game.creatures(defender).filter(creature => !creature.tapped).reduce((sum, creature) => sum + Math.max(0, creature.power || 0), 0) * 0.08;
-    return hit * 1.15 + lethal + commander + threat - tradeRisk - crackback;
+    let risk = 0;
+    if (freeBlock) risk += myValue * 1.05 + 3;                // poginem, ništa ne dobijem
+    else if (bestTradeLoss > 0) risk += bestTradeLoss * 0.8 + 1; // nepovoljan trade
+    else if (blockers.length) risk += 0.8;                    // chump im poklanja tempo, mala cijena
+    const vigilance = card.kw('vigilance');
+    const crackback = vigilance ? 0 : game.creatures(defender).filter(creature => !creature.tapped)
+      .reduce((sum, creature) => sum + Math.max(0, creature.power || 0), 0) * 0.08;
+    return expDamage * 1.15 + lethal + commander + threat - risk - crackback;
   }
 
   function generateAttackPlans(game, player, q, config) {
@@ -591,9 +626,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // da cijeli combat generator ostane bez akcije.
         if (!forced.has(attacker) || !targets.length) next.push({ assignments: node.assignments.slice(), score: node.score });
         for (const target of targets) {
+          const defender = target instanceof U.Player ? target : target.ctrl;
+          const prior = node.assignments.filter(item =>
+            (item.target instanceof U.Player ? item.target : item.target.ctrl) === defender).length;
           next.push({
             assignments: node.assignments.concat({ card: attacker, target }),
-            score: node.score + attackAssignmentScore(game, player, attacker, target),
+            score: node.score + attackAssignmentScore(game, player, attacker, target, prior),
           });
         }
       }
@@ -778,6 +816,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (hint === 'proliferate') return target === player ? -100 : 8 + (target.poison || 0) * 2;
       if (hint === 'drawSelf') return target === player ? 100 : -100;
       if (hint === 'marduTokenCount') return game.creatures(target).length * 12 - target.idx * 0.001;
+      if (hint === 'lifeSwap') {
+        // Tree of Perdition: razmjena život ↔ žilavost. Ima smisla SAMO kad
+        // protivnik gubi život (life > toughness) — inače ga liječimo.
+        const swapToughness = q.src && Number(q.src.toughness) || 13;
+        const delta = target.life - swapToughness;
+        return delta <= 0 ? -100 : delta * 2.2;
+      }
       const threat = playerThreatForGame(game, player, target);
       const lethal = target.life <= 7 ? 12 : 0;
       const friendly = target === player ? (/gain|protect|draw/i.test(hint) ? 20 : -30) : 0;
@@ -1104,7 +1149,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (sem.roles.includes('ramp') && game.turnNo <= 16) breakdown.resources += 3;
       if (sem.roles.includes('card-draw') || sem.roles.includes('card-selection')) breakdown.resources += Math.max(0, 4 - player.hand.length) * 0.7;
-      if ((card.is('Instant') || card.kw('flash')) && phase === 'main1' && !sem.roles.includes('card-draw')) breakdown.timing -= 1.8;
+      // Tempiranje instanata: reaktivne karte (trick/protection/counter) se
+      // drže za tuđe akcije, a value instanti se radije bacaju na kraju tuđeg
+      // poteza nego u vlastitoj main fazi sa praznim stackom.
+      const instantSpeed = card.is('Instant') || card.kw('flash');
+      if (instantSpeed && !game.stack.length && game.turnPlayer === player && (phase === 'main1' || phase === 'main2')) {
+        if (sem.roles.includes('combat-trick') || sem.roles.includes('protection')) breakdown.timing -= 10;
+        else if (sem.roles.includes('single-target-removal')) breakdown.timing -= 2.2;
+        else if (!sem.roles.includes('ramp') && !sem.roles.includes('mana-rock')) breakdown.timing -= 3;
+      }
+      if (instantSpeed && phase === 'end' && game.turnPlayer !== player && !game.stack.length &&
+        (sem.roles.includes('card-draw') || sem.roles.includes('card-selection') || sem.roles.includes('token-maker'))) {
+        breakdown.timing += 2.5;
+      }
       if (sem.roles.includes('counterspell')) {
         const top = game.stack[game.stack.length - 1];
         if (!top || top.ctrl === player) breakdown.timing -= 25;
@@ -1121,12 +1178,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         else breakdown.threat += best.score * 0.85;
       }
       if (sem.roles.includes('board-wipe')) {
-        const mine = boardValueFor(game, player);
-        const theirs = game.players.filter(other => other !== player && !other.lost).reduce((sum, other) => sum + boardValueFor(game, other), 0);
-        breakdown.threat += (theirs - mine) * 0.36;
-        if (mine > theirs * 0.65) breakdown.safety -= 14;
+        // Wipe se procjenjuje po STVARNOM učinku na stvorenja, ne po ukupnoj
+        // vrijednosti table: Blasphemous Act ubija i vlastita stvorenja, ali
+        // preskače indestructible i (kod damage wipeova) preveliku žilavost.
+        const oracle = textOf(card.def);
+        const damageMatch = /(\d+)\s+damage\s+to\s+each\s+creature/.exec(oracle);
+        const wipeDamage = damageMatch ? Number(damageMatch[1]) : null;
+        const wouldDie = creature => {
+          if (creature.kw('indestructible') || (creature.counters && (creature.counters.shield || 0) > 0)) return false;
+          if (wipeDamage !== null) return (creature.toughness || 0) - (creature.damage || 0) <= wipeDamage;
+          return true;
+        };
+        let mineLoss = 0, theirsLoss = 0;
+        for (const creature of game.bf().filter(item => item.is('Creature'))) {
+          if (!wouldDie(creature)) continue;
+          const value = permanentGameValue(game, creature, player);
+          if (creature.ctrl === player) mineLoss += value; else theirsLoss += value;
+        }
+        breakdown.threat += (theirsLoss - mineLoss) * 0.45;
+        if (theirsLoss < mineLoss + 3) breakdown.timing -= 20;   // gubim više nego protivnici
+        if (theirsLoss < 4) breakdown.timing -= 8;               // nema se šta počistiti
         const evalNow = MTG.evaluateState(view, player.idx, profile);
-        if (evalNow.immediateLossRisk > 40) breakdown.safety += 35;
+        if (evalNow.immediateLossRisk > 40 && theirsLoss > 0) breakdown.safety += 35;
+      }
+      // X spellovi: vrijednost raste sa stvarno dostupnim X. Bacanje damage/draw
+      // X spella dok je X sitno je trošenje karte.
+      if (cost.x && !(action.alt && action.alt.free)) {
+        let maxX = 0;
+        try { maxX = game.maxAffordableX(player, cost, card); } catch (error) { maxX = 0; }
+        breakdown.base += Math.min(6, maxX * 0.7) - 1.5;
+        if (maxX <= 1 && game.turnNo > 4) breakdown.timing -= 6;
       }
       const openAfter = availableManaEstimate(game, player) - spend;
       const hasInteraction = (player.hand || []).some(held => held !== card && inferCardSemantics(held.def).roles.some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role)));

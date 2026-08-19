@@ -213,7 +213,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: ['B'], entersTapped: true, mana: tapFor(['B']),
     triggers: [{
       on: 'etb', filter: (g, self, d) => d.card === self, desc: 'Egzilaj groblje',
-      targets: [T.player({ prompt: 'Čije groblje egzilirati?', aiHint: { goal: 'gyHate' } })],
+      targets: [T.player({ prompt: 'Whose graveyard do you exile?', aiHint: { goal: 'gyHate' } })],
       run: async ctx => {
         const t = ctx.targets[0];
         const n = t.graveyard.length;

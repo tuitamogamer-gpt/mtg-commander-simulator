@@ -382,7 +382,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Tree of Perdition'] = {
     abilities: [{
       label: 'Zamijeni život sa toughness', cost: { tap: true },
-      targets: [T.opponent({ prompt: 'Kome?', aiHint: { goal: 'drain' } })],
+      targets: [T.opponent({ prompt: 'Kome?', aiHint: { goal: 'lifeSwap' } })],
       run: async ctx => {
         const o = ctx.targets[0];
         if (!o) return;

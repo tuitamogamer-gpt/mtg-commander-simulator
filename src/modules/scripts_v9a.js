@@ -704,7 +704,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       aiHint: { goal: 'copy' },
     })],
     resolve: async ctx => {
-      const targets = Array.isArray(ctx.targets[0]) ? ctx.targets[0] : [];
+      // pickTargets sa count=1 (samo jedno stvorenje na stolu) sprema JEDAN
+      // objekat, ne niz — normalizuj oba oblika da kopija uvijek nastane.
+      const targets = [ctx.targets[0]].flat().filter(t => t && t.zone === 'battlefield');
       const made = [];
       for (const t of targets) made.push(...await ctx.g.copyPermanentToken(t, ctx.you, { haste: true }));
       E7.exileAtNextEnd(ctx.g, made, ctx.you);
