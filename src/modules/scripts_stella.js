@@ -17,7 +17,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Copy an instant or sorcery spell', cost: { tap: true },
       cond: (g, c, p) => p.turnState.spellsCast >= 3,
-      targets: [T.spell((g, so) => (so.card.is('Instant') || so.card.is('Sorcery')), { prompt: 'Your instant or sorcery spell', aiHint: { goal: 'copySpell' } })],
+      targets: [T.spell((g, so, ctrl) => so.ctrl === ctrl && (so.card.is('Instant') || so.card.is('Sorcery')), { prompt: 'Your instant or sorcery spell', aiHint: { goal: 'copySpell' } })],
       run: async ctx => {
         const so = ctx.targets[0];
         if (so && ctx.g.stack.includes(so)) await ctx.g.copySpell(so, ctx.you, { mayNewTargets: true });
@@ -36,7 +36,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const g = ctx.g, p = ctx.you;
         let times = 0;
-        while (times < 3 && g.canPayMana(p, U.parseCost('{2}{R}'))) {
+        while (g.canPayMana(p, U.parseCost('{2}{R}'))) {
           const yes = await p.controller.decide(g, {
             type: 'chooseOption', prompt: 'Plati {2}{R} za Adversary?',
             options: [{ key: 'no', label: 'Ne' }, { key: 'yes', label: 'Da' }],
@@ -53,6 +53,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           type: 'chooseCards', from: cands, min: 0, max: times, prompt: `Copy up to ${times} instants or sorceries from the graveyard`, aiHint: { kind: 'bestCard' },
         });
         for (const c of picked) {
+          await g.move(c, 'exile');
           await E.castCopyFromZone(g, p, c);
         }
       },
@@ -68,7 +69,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Crackling Spellslinger'] = {
     kws: ['flash'],
     triggers: [{
-      on: 'etb', filter: etbSelf, desc: 'Storm on your next instant or sorcery',
+      on: 'etb', filter: (g, self, d) => d.card === self && self.meta._enteredFromZone === 'stack', desc: 'Storm on your next instant or sorcery',
       run: async ctx => { ctx.you.stormNext = true; ctx.g.lg('Your next instant or sorcery this turn has STORM.'); },
     }],
   };
@@ -311,7 +312,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Curse of the Swine'] = {
     targets: (g, card, castOpts) => [{
-      what: 'creature', prompt: 'Egzilaj X stvorenja', count: 6, upTo: true,
+      what: 'creature', prompt: 'Egzilaj X stvorenja', count: Math.max(0, (castOpts && castOpts.xVal) || 0), upTo: true,
       filter: (g2, c) => c.zone === 'battlefield' && c.is('Creature'),
       aiHint: { goal: 'removal' },
     }],
@@ -338,13 +339,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       const g = ctx.g, p = ctx.you, x = ctx.x || 0;
       const top = [];
-      for (let i = 0; i < x && p.library.length; i++) { const c = p.library.pop(); c.zone = 'exile-temp'; top.push(c); }
+      for (let i = 0; i < x && p.library.length; i++) {
+        const c = p.library.pop();
+        c.zone = 'exile'; p.exile.push(c); top.push(c);
+      }
       g.lg(`Epic Experiment (X=${x}): ${top.map(c => c.name).join(', ') || 'ništa'}.`);
       for (const c of top) {
         if ((c.is('Instant') || c.is('Sorcery')) && U.mv(c.def.cost || '') <= x) {
-          c.zone = 'hand'; p.hand.push(c);
           const ok = await E.mayCastFree(g, p, c, {});
-          if (!ok) { p.hand.splice(p.hand.indexOf(c), 1); await g.move(c, 'graveyard'); }
+          if (!ok && c.zone === 'exile') await g.move(c, 'graveyard');
         } else {
           await g.move(c, 'graveyard');
         }
@@ -382,19 +385,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => { await E.mayDrawDiscard(ctx.g, ctx.you, 2, 2); },
   };
   SC['Finale of Promise'] = {
+    targets: (g, card, castOpts) => {
+      const x = Math.max(0, (castOpts && castOpts.xVal) || 0);
+      return [
+        {
+          zone: 'graveyard', what: 'card', prompt: 'Up to one instant card (MV ≤ X)', upTo: true,
+          filter: (g2, c) => c.is('Instant') && U.mv(c.def.cost || '') <= x, aiHint: { goal: 'recast' },
+        },
+        {
+          zone: 'graveyard', what: 'card', prompt: 'Up to one sorcery card (MV ≤ X)', upTo: true,
+          filter: (g2, c) => c.is('Sorcery') && U.mv(c.def.cost || '') <= x, aiHint: { goal: 'recast' },
+        },
+      ];
+    },
     resolve: async ctx => {
       const g = ctx.g, p = ctx.you, x = ctx.x || 0;
-      const inst = p.graveyard.filter(c => c.is('Instant') && U.mv(c.def.cost || '') <= x);
-      const sorc = p.graveyard.filter(c => c.is('Sorcery') && U.mv(c.def.cost || '') <= x);
-      for (const pool of [inst, sorc]) {
-        if (!pool.length) continue;
-        const picked = await p.controller.decide(g, {
-          type: 'chooseCards', from: pool, min: 0, max: 1, prompt: 'Baci besplatno iz groblja:', aiHint: { kind: 'bestCard' },
-        });
-        if (picked.length) {
-          const c = picked[0];
-          await g.castSpell(p, c, { alt: { free: true, exileAfter: true }, from: 'graveyard' });
-        }
+      for (const card of (ctx.targets || []).flat().filter(Boolean)) {
+        if (card.zone !== 'graveyard') continue;
+        const ok = await g.castSpell(p, card, { alt: { free: true, exileAfter: true }, from: 'graveyard' });
+        if (!ok || x < 10) continue;
+        const original = g.stack.find(so => so.kind === 'spell' && so.card === card);
+        if (!original) continue;
+        await g.copySpell(original, p, { mayNewTargets: true });
+        await g.copySpell(original, p, { mayNewTargets: true });
       }
     },
   };
@@ -456,8 +469,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const g = ctx.g, p = ctx.you;
       const top = p.library.slice(-3).reverse();
       if (top.length) {
+        const ordered = await p.controller.decide(g, {
+          type: 'chooseCards', from: top, min: top.length, max: top.length,
+          prompt: 'Poredaj vrh (prva izabrana ide na vrh):', aiHint: { kind: 'ponderOrder' },
+        });
+        const order = ordered && ordered.length === top.length ? ordered : top;
+        for (const c of top) p.library.splice(p.library.indexOf(c), 1);
+        for (const c of order.slice().reverse()) { c.zone = 'library'; p.library.push(c); }
         const k = await p.controller.decide(g, {
-          type: 'chooseOption', prompt: `Vrh: ${top.map(c => c.name).join(', ')}. Shuffle?`,
+          type: 'chooseOption', prompt: `Vrh: ${order.map(c => c.name).join(', ')}. Shuffle?`,
           options: [{ key: 'keep', label: 'Zadrži' }, { key: 'shuffle', label: 'Promiješaj' }],
           aiHint: { kind: 'ponder', top },
         });
@@ -609,7 +629,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => {
           const pool = ctx.g.creatures(ctx.you).filter(x => (x.cur.super || []).includes('Legendary') && !x.tapped);
           if (!pool.length) return;
-          pool[0].tapped = true;
+          const picked = await ctx.you.controller.decide(ctx.g, {
+            type: 'chooseCards', from: pool, min: 1, max: 1,
+            prompt: 'Leyline Dowser: tapuj untapped legendary creature', aiHint: { kind: 'dowserUntapCost' },
+          });
+          if (!picked.length) return;
+          picked[0].tapped = true;
           ctx.src.tapped = false;
         },
       },

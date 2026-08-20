@@ -64,6 +64,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Tap X tokena: X mane (plati 2 života)',
       cost: { tap: true, life: 2 },
       cond: (g, c, p) => g.bf().some(x => x.ctrl === p && x.isToken && !x.tapped),
+      // ne plaćaj 2 života i ne skidaj tokene kad mana nema legalnu upotrebu
+      aiScore: (g, c, p) => g.castableList(p).some(entry => entry.card && !entry.card.is('Land')) ? 3 : -5,
       run: async ctx => {
         const g = ctx.g, p = ctx.you;
         const pool = g.bf().filter(x => x.ctrl === p && x.isToken && !x.tapped);
@@ -104,7 +106,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: (g, defs, ctrl, src) => {
         const out = [];
         for (const d of defs) {
-          const key = typeof d === 'string' ? d : null;
+          // token def može biti string ključ ili inline objekat (token kopija) — oba su "create a token"
+          const key = typeof d === 'string'
+            ? d.toLowerCase()
+            : ((((d && d.subtypes) || []).find(s => ['Clue', 'Food', 'Treasure'].includes(s)) || '')).toLowerCase();
           if (key === 'clue' || key === 'food' || key === 'treasure') out.push('clue', 'food', 'treasure');
           else out.push(d);
         }
@@ -166,7 +171,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
     statics: [{
       apply: (g, self, bf) => {
-        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature') && c.hasSub('Squirrel') && c !== self) { c.cur.power++; c.cur.toughness++; }
+        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature') && c.hasSub('Squirrel')) { c.cur.power++; c.cur.toughness++; }
       },
     }],
   };
@@ -268,7 +273,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             aiHint: { kind: 'frugivore' },
           });
           if (yes !== 'yes') break;
-          for (let i = 0; i < 3; i++) { const c = p.graveyard[p.graveyard.length - 1]; if (c) await g.move(c, 'exile'); }
+          const picks = await p.controller.decide(g, {
+            type: 'chooseCards', from: p.graveyard.slice(), min: 3, max: 3,
+            prompt: 'Exile three cards from your graveyard', aiHint: { kind: 'exileFromGy' },
+          });
+          for (const c of picks) await g.move(c, 'exile');
+          if (picks.length < 3) break;
         }
       },
     }],
@@ -367,12 +377,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         on: 'attacks', filter: (g, self, d) => d.card === self, desc: 'Myriad ×2',
         run: async ctx => {
-          const g = ctx.g, self = ctx.src;
-          if (!(self.attacking instanceof MTG.Player)) return;
+          const g = ctx.g, self = ctx.src, p = ctx.you;
+          // "Myriad, myriad": defending player je i pw-kontrolor; svaka kopija je "you may"
+          const tgt = self.attacking instanceof MTG.Player ? self.attacking : (self.attacking && self.attacking.ctrl);
+          if (!tgt) return;
           for (let round = 0; round < 2; round++) {
-            for (const o of E.eachOpp(g, ctx.you)) {
-              if (o === self.attacking) continue;
-              const made = await g.copyPermanentToken(self, ctx.you, { tapped: true, attacking: o });
+            for (const o of E.eachOpp(g, p)) {
+              if (o === tgt || o.lost) continue;
+              const go = (await p.controller.decide(g, {
+                type: 'chooseOption', prompt: `Myriad (${self.name}): create a copy for ${o.name}?`,
+                options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
+                aiHint: { kind: 'myriadCopy', src: self, opponent: o },
+              })) === 'yes';
+              if (!go) continue;
+              const made = await g.copyPermanentToken(self, p, {
+                tapped: true, attacking: o,
+                chooseAttacking: (game, token) => game.chooseAttackingDestination(p, o, token, `Myriad — ${self.name}`),
+              });
               for (const m of made) m.meta.exileEndCombat = true;
             }
           }
@@ -441,8 +462,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     }],
     triggers: [{
-      on: 'combatDamageToPlayer', oncePerTurn: true, desc: 'Vuci kartu',
-      filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card.hasSub('Squirrel'),
+      on: 'combatDamageGroupToPlayer', desc: 'Vuci kartu',
+      filter: (g, self, d) => (d.cards || []).some(card => card.ctrl === self.ctrl && card.hasSub('Squirrel')),
       run: async ctx => { await ctx.g.draw(ctx.you, 1); },
     }],
   };
@@ -536,10 +557,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Plumb the Forbidden'] = {
     addlCost: { sacAnyCreatures: true },
+    copyPerSacrifice: true,
     resolve: async ctx => {
-      const n = 1 + (ctx.so.sacdN || 0);
-      await ctx.g.draw(ctx.you, n);
-      await ctx.g.loseLife(ctx.you, n);
+      await ctx.g.draw(ctx.you, 1);
+      await ctx.g.loseLife(ctx.you, 1);
     },
   };
   SC['Putrefy'] = {
@@ -583,16 +604,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC["Windgrace's Judgment"] = {
     targets: [{
-      what: 'permanent', prompt: 'Nonland permanenti protivnika (do 3)', count: 3, upTo: true,
+      what: 'permanent', prompt: 'Opponent nonland permanents (up to 3, one per opponent)', count: 3, upTo: true, distinctCtrl: true,
       filter: (g, c, ctrl) => c.zone === 'battlefield' && !c.is('Land') && c.ctrl !== ctrl,
       aiHint: { goal: 'removal' },
     }],
     resolve: async ctx => {
-      const seen = new Set();
       for (const t of (ctx.targets[0] || [])) {
         if (!t || t.zone !== 'battlefield') continue;
-        if (seen.has(t.ctrl.idx)) continue;
-        seen.add(t.ctrl.idx);
         await ctx.g.destroy(t);
       }
     },
@@ -804,6 +822,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             artifact.cur.extraAbilities.push({
               label: 'Food: žrtvuj za +3 života',
               cost: { mana: '{2}', tap: true, sacSelf: true },
+              aiScore: (g2, c2, p2) => p2.life <= 12 ? 4 : 0.5,
               run: async ctx => { await ctx.g.gainLife(ctx.you, 3); },
             });
           }
@@ -812,12 +831,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
     abilities: [
       {
-        label: 'Level 2', cost: { mana: '{2}{G}' }, sorcery: true,
+        label: 'Level 2', cost: { mana: '{2}{G}' }, sorcery: true, aiScore: () => 7,
         cond: (g, c) => (c.meta.level || 1) === 1,
         run: async ctx => { ctx.src.meta.level = 2; ctx.g.lg("Gourmand's Talent → Level 2."); },
       },
       {
-        label: 'Level 3', cost: { mana: '{3}{G}' }, sorcery: true,
+        label: 'Level 3', cost: { mana: '{3}{G}' }, sorcery: true, aiScore: () => 7,
         cond: (g, c) => (c.meta.level || 1) === 2,
         run: async ctx => { ctx.src.meta.level = 3; ctx.g.lg("Gourmand's Talent → Level 3."); },
       },
@@ -842,9 +861,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Squirrel Nest'] = {
     auraTarget: [T.permanent((g, c) => c.is('Land'), { prompt: 'Enchantaj land', aiHint: { goal: 'aura' } })],
-    abilities: [{
-      label: 'Tapuj land: vjeverica', cost: { tapHost: true },
-      run: async ctx => { await ctx.g.makeTokens('squirrel', ctx.you); },
+    // "Enchanted land has ..." — sposobnost pripada landu, pa je aktivira kontrolor landa
+    statics: [{
+      apply: (g, self, bf) => {
+        const host = self.attachedTo ? g.byIid(self.attachedTo) : null;
+        if (!host || host.zone !== 'battlefield') return;
+        host.cur.extraAbilities.push({
+          label: 'Tap: create a Squirrel', cost: { tap: true },
+          run: async ctx => { await ctx.g.makeTokens('squirrel', ctx.you); },
+        });
+      },
     }],
   };
   SC['Wolfwillow Haven'] = {
@@ -924,10 +950,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Baldin, Century Herdmaster'] = {
     toughnessCombatAll: true,
     triggers: [{
-      on: 'attacks', filter: (g, self, d) => d.card === self, desc: '+0/+X svima',
+      on: 'attacks', filter: (g, self, d) => d.card === self, desc: '+0/+X targetima',
+      targets: [{
+        what: 'creature', prompt: 'Do 100 creatures dobija +0/+X', count: 100, upTo: true,
+        filter: (g, c) => c.zone === 'battlefield' && c.is('Creature'), aiHint: { goal: 'buff' },
+      }],
       run: async ctx => {
         const x = ctx.you.hand.length;
-        if (x) E.pumpAllUntilEOT(ctx.g, (g, c) => c.ctrl === ctx.you, 0, x);
+        if (!x) return;
+        for (const target of (ctx.targets[0] || [])) E.pumpUntilEOT(ctx.g, target, 0, x);
       },
     }],
   };
@@ -1056,9 +1087,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Protector of the Wastes'] = {
     triggers: [{
-      on: 'etb', filter: etbSelf, desc: 'Egzilaj art/ench', run: async ctx => { await protectorExile(ctx); },
+      on: 'etb', filter: etbSelf, desc: 'Egzilaj art/ench',
+      targets: [protectorTargets()], run: protectorExile,
     }, {
-      on: 'monstrous', filter: (g, self, d) => d.card === self, desc: 'Egzilaj art/ench', run: async ctx => { await protectorExile(ctx); },
+      on: 'monstrous', filter: (g, self, d) => d.card === self, desc: 'Egzilaj art/ench',
+      targets: [protectorTargets()], run: protectorExile,
     }],
     abilities: [{
       label: 'Monstrosity 3', cost: { mana: '{4}{W}' },
@@ -1066,19 +1099,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => { await E.monstrosity(ctx.g, ctx.src, 3); },
     }],
   };
-  async function protectorExile(ctx) {
-    const g = ctx.g, p = ctx.you;
-    const cands = g.bf().filter(c => (c.is('Artifact') || c.is('Enchantment')) && !c.is('Creature'));
-    const picked = await p.controller.decide(g, {
-      type: 'chooseTargets', candidates: cands, min: 0, max: 2, prompt: 'Egzilaj do 2 (različiti igrači)',
+  function protectorTargets() {
+    return {
+      what: 'permanent', prompt: 'Egzilaj do 2 artifact/enchantment permanenta', count: 2, upTo: true,
+      distinctCtrl: true,
+      filter: (g, c) => c.zone === 'battlefield' && (c.is('Artifact') || c.is('Enchantment')),
       aiHint: { goal: 'removal' },
-    });
-    const seen = new Set();
-    for (const t of picked || []) {
-      if (seen.has(t.ctrl.idx)) continue;
-      seen.add(t.ctrl.idx);
-      await g.exileCard(t);
-    }
+    };
+  }
+  async function protectorExile(ctx) {
+    for (const target of (ctx.targets[0] || [])) await ctx.g.exileCard(target);
   }
   SC['Rampart Architect'] = {
     triggers: [
@@ -1110,17 +1140,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           { key: 'counters', label: 'Player puts a counter on their creatures' },
         ];
         const picked = [];
+        const targetedPlayers = new Set();
         for (let i = 0; i < 2; i++) {
           const avail = modes.filter(m => !picked.includes(m.key));
           const k = await p.controller.decide(g, {
             type: 'chooseOption', prompt: `Shadrix mode ${i + 1}/2:`, options: avail, aiHint: { kind: 'shadrix' },
           });
           picked.push(k);
-          const players = g.alivePlayers();
+          const players = g.alivePlayers().filter(player => !targetedPlayers.has(player));
           const tgt = await p.controller.decide(g, {
             type: 'chooseTargets', candidates: players, min: 1, max: 1, prompt: 'Which player?', aiHint: { goal: 'shadrixTarget', mode: k },
           });
           const t = tgt[0];
+          if (!t || targetedPlayers.has(t)) return;
+          targetedPlayers.add(t);
           if (k === 'token') await g.makeTokens('inkling', t);
           else if (k === 'draw') { await g.draw(t, 1); await g.loseLife(t, 1); }
           else { for (const c of g.creatures(t)) g.addCounters(c, '+1/+1', 1, true); g.recalc(); }
@@ -1163,7 +1196,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const p = ctx.you, c = ctx.src;
         const oldLife = p.life, oldT = c.toughness;
-        p.life = oldT;
+        const delta = oldT - oldLife;
+        if (delta > 0) {
+          const gained = await ctx.g.gainLife(p, delta, c);
+          if (gained !== delta) return;
+        } else if (delta < 0) {
+          const lost = await ctx.g.loseLife(p, -delta, c.name);
+          if (lost !== -delta) return;
+        }
         c.meta.touOverride = oldLife;
         ctx.g.recalc();
         ctx.g.lg(`Tree of Redemption: život ${oldLife} ↔ toughness ${oldT}.`);

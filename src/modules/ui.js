@@ -1968,6 +1968,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const pd = this.pending;
       if (!pd || pd.q.type !== 'chooseTargets') return false;
+      if (pd.q.spec && pd.q.spec.distinctCtrl && x && x.ctrl && pd.sel.some(s => s !== x && s.ctrl === x.ctrl)) return false;
       return pd.sel.length < pd.q.max && pd.q.candidates.includes(x) && !pd.sel.includes(x);
     }
     selectedTargetIndex(x) {
@@ -2004,6 +2005,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!pd) return;
       if (pd.sel.includes(x)) { this.removeTargetCandidate(x); return; }
       if (pd.sel.length >= pd.q.max) return;
+      if (pd.q.type === 'chooseTargets' && pd.q.spec && pd.q.spec.distinctCtrl && x && x.ctrl && pd.sel.some(s => s.ctrl === x.ctrl)) return;
       pd.sel.push(x);
       this.render();
     }

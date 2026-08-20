@@ -334,8 +334,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const c = p.library.pop();
       c.zone = 'exile'; p.exile.push(c);
       c.meta = c.meta || {};
-      c.meta.playableUntil = g.turnNo + (duration === 'next' ? 1 : 0);
-      c.meta.playableBy = p;
+      if (duration === 'next') c.meta.playableUntilOwnTurn = p.turnsStarted + 1;
+      else c.meta.playableUntil = g.turnNo;
       c.meta.playableBy = p;
       c.meta.impulseSrc = card ? card.name : '';
       out.push(c);
@@ -388,6 +388,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   MTG.isUncounterable = (g, so) => {
     if (so.card.def.uncounterable) return true;
+    if (so.card.is('Creature') && so.ctrl.turnState && so.ctrl.turnState.uncounterableCreatureSpells) return true;
     return g.bf().some(c => c.def.uncounterableSpells && c.ctrl === so.ctrl);
   };
   const T = MTG.T = {
@@ -406,7 +407,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     any: (o) => Object.assign({ what: 'any' }, o),
     player: (o) => Object.assign({ what: 'player' }, o),
     opponent: (o) => Object.assign({ what: 'opponent' }, o),
-    spell: (f, o) => Object.assign({ zone: 'stack', what: 'spell', filter: (g, so) => so.kind === 'spell' && (!f || f(g, so)) }, o),
+    spell: (f, o) => Object.assign({
+      zone: 'stack', what: 'spell',
+      filter: (g, so, ctrl, src) => so.kind === 'spell' && (!f || f(g, so, ctrl, src)),
+    }, o),
     ability: (f, o) => Object.assign({ zone: 'stack', what: 'ability', filter: (g, so, ctrl, src) => (so.kind === 'ability' || so.kind === 'trigger') && (!f || f(g, so, ctrl, src)) }, o),
     gyCreature: (o) => Object.assign({
       zone: 'graveyard', what: 'card', filter: (g, c) => c.is('Creature'),

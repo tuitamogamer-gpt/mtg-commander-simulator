@@ -402,6 +402,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.rmCounter) this.removeCounters(c, cost.rmCounter.kind || cost.rmCounter, cost.rmCounter.n || 1);
     if (s.m.oncePerTurn) c.meta['_mana_' + (s.m.key || 0)] = this.turnNo;
     if (s.m.onProduce) await s.m.onProduce(this, c, p, chosen, forSpell);
+    const actualProduced = {};
     if (chosen.ANY) {
       const n = chosen.n || 1;
       for (let i = 0; i < n; i++) {
@@ -416,11 +417,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           });
         }
         p.pool[col] = (p.pool[col] || 0) + 1;
+        actualProduced[col] = (actualProduced[col] || 0) + 1;
       }
     } else {
       for (const col of Object.keys(chosen)) {
         if (col === 'n') continue;
         p.pool[col] = (p.pool[col] || 0) + chosen[col];
+        actualProduced[col] = (actualProduced[col] || 0) + chosen[col];
       }
     }
     if (c.is('Land')) {
@@ -431,7 +434,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // battlefield hooks (Barbflare Gremlin)
       for (const b of this.bf()) {
-        if (b.def.landTapHook) await b.def.landTapHook(this, b, c, p, chosen);
+        if (b.def.landTapHook) await b.def.landTapHook(this, b, c, p, actualProduced);
       }
       await this.emit('tappedForMana', { card: c, player: p });
     }
@@ -595,6 +598,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.hasExilePlayPermission = function (p, card) {
     const m = card && card.meta;
     if (!m || (m.playableBy && m.playableBy !== p)) return false;
+    if (m.theaterSource) {
+      const theater = this.byIid(m.theaterSource);
+      if (!theater || theater.zone !== 'battlefield' || theater.ctrl !== p) return false;
+    }
     if (m.playableUntilOwnTurn !== undefined) return p.turnsStarted <= m.playableUntilOwnTurn;
     return m.playableUntil !== undefined && m.playableUntil >= this.turnNo;
   };
@@ -1258,6 +1265,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.lg(`${p.name} casts ${card.name}${xVal ? ` (X=${xVal})` : ''}${castOpts.free ? ' (free)' : ''}${so.from === 'command' ? ' from the command zone' : ''}.`, 'cast');
     await this.pace(p.isAI ? 1000 : 150);
 
+    if (fromZone === 'graveyard') await this.emit('cardLeftGraveyard', { card, to: 'stack' });
+
     // cast tracking + triggers
     p.turnState.spellsCast++;
     if (p.tempFlashFilters) {
@@ -1308,6 +1317,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.lg(`Storm ×${stormN}!`, 'cast');
         for (let i = 0; i < stormN; i++) await this.copySpell(so, p, { mayNewTargets: false });
       }
+    }
+    // "Copy this spell for each creature sacrificed this way" (Plumb the Forbidden)
+    if (d.copyPerSacrifice && so.sacdN) {
+      this.lg(`${card.name}: copy ×${so.sacdN}.`, 'cast');
+      for (let i = 0; i < so.sacdN; i++) await this.copySpell(so, p, { mayNewTargets: false });
     }
     // gravestorm (Follow the Bodies)
     if (d.gravestorm && !castOpts.free) {
@@ -1820,6 +1834,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (a.sorcery && (this.turnPlayer !== p || this.stack.length || (this.phase !== 'main1' && this.phase !== 'main2'))) return;
         if (a.cond && !a.cond(this, c, p)) return;
         if (a.oncePerTurn && c.meta['_ab_' + ai] === this.turnNo) return;
+        // loyalty se troši jednom po potezu — iskorišteni planeswalker se ne nudi ponovo
+        if (a.loyalty !== undefined && c.meta._loyUsed === this.turnNo) return;
         const cost = a.cost || {};
         if (cost.tap && (c.tapped)) return;
         if (cost.tap && c.is('Creature') && c.sick && !c.kw('haste')) return;
@@ -2896,6 +2912,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Zato ga pamtimo i ne nudimo ponovo u istoj fazi.
     const failed = new Set();
     const keyOf = e => e.card.iid + '|' + ((e.alt && (e.alt.name || e.alt.label)) || '');
+    const actKeyOf = e => e.card.iid + '|act|' + ((e.ability && e.ability.label) ||
+      (e.crew ? 'crew' : e.equip !== undefined ? 'equip' : e.cycling ? 'cycling' : ''));
     while (!this.gameOver && guard++ < 200) {
       await this.flushTriggers();
       await this.checkSBA();
@@ -2910,7 +2928,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         continue;
       }
       const casts = this.castableList(p).filter(e => !failed.has(keyOf(e)));
-      const acts = this.activatableList(p);
+      const acts = this.activatableList(p).filter(e => !failed.has(actKeyOf(e)));
       const lands = this.playableLands(p);
       const act = await p.controller.decide(this, {
         type: 'main', player: p, casts, acts, lands, phase: this.phase,
@@ -2918,6 +2936,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!act || act.kind === 'done') break;
       const ok = await this.performAction(p, act);
       if (ok === false && act.kind === 'cast') failed.add(keyOf(act));
+      // Aktivacija koja tiho pukne (npr. loyalty već potrošen) isto ne smije
+      // vrtiti guard petlju do isteka — ne nudi se ponovo u istoj fazi.
+      if (ok === false && act.kind === 'activate' && act.entry) failed.add(actKeyOf(act.entry));
       // after each action, give others a priority window via stack (castSpell already does)
       if (this.gameOver) return;
     }

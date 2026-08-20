@@ -466,6 +466,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
       // persist / undying (death replacements to return later — handled post-dies for simplicity)
 
+      // Odlazak sa bojnog polja mora biti vidljiv u logu (destroy, exile,
+      // combat/SBA smrti, bounce) — do sada je bio potpuno nijem.
+      if (wasBattlefield && toZone !== 'battlefield') {
+        const verb = toZone === 'graveyard' ? (snap.types.includes('Creature') ? 'dies' : 'is put into the graveyard')
+          : toZone === 'exile' ? 'is exiled'
+            : toZone === 'command' ? 'returns to the command zone'
+              : toZone === 'hand' ? "returns to its owner's hand"
+                : toZone === 'library' ? "goes to its owner's library"
+                  : 'leaves the battlefield';
+        this.lg(`${card.name} ${verb}.`);
+      }
+
       this.remove(card);
 
       if (wasBattlefield) {
@@ -587,6 +599,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         } else if (toZone === 'graveyard') {
           await this.emit('cardToGraveyard', { card, from: fromZone });
         }
+      }
+      if (fromZone === 'graveyard' && toZone !== 'graveyard') {
+        await this.emit('cardLeftGraveyard', { card, to: toZone });
       }
       this.recalc();
       return card;
@@ -1196,6 +1211,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         target.meta._damageFrom.ids.add(src.iid);
       }
+      // per-controller iznosi štete ovom stvorenju u OVOM potezu (Grothama LTB draw)
+      if (src && src.ctrl) {
+        if (!target.meta._damageByCtrl || target.meta._damageByCtrl.turn !== this.turnNo) {
+          target.meta._damageByCtrl = { turn: this.turnNo, by: {} };
+        }
+        target.meta._damageByCtrl.by[src.ctrl.idx] = (target.meta._damageByCtrl.by[src.ctrl.idx] || 0) + n;
+      }
       // wither: šteta stvorenjima postaje -1/-1 counteri
       const wither = (src && src.kw && src.kw('wither')) || this.bf().some(x => x.def.allDamageWither);
       if (wither) {
@@ -1537,6 +1559,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const c of bf) {
         if (c.def.dynTypes) {
           for (const t of c.def.dynTypes(this, c) || []) if (!c.cur.types.includes(t)) c.cur.types.push(t);
+        }
+        // Crew: Vehicle postaje artifact creature do kraja poteza (CR 702.121c);
+        // mora prije statics passa da anthemi/pumpe vide stvorenje.
+        if (c.meta.crewedTurn === this.turnNo && c.hasSub('Vehicle') && !c.cur.types.includes('Creature')) {
+          c.cur.types.push('Creature');
         }
       }
       // pass 1: type-changing + CDA + statics (timestamp order)
@@ -1967,6 +1994,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         const picked = Array.isArray(decision) ? [...new Set(decision)] : [];
         if (picked.length < min || picked.length > max || picked.some(target => !cands.includes(target))) return false;
+        // "for any number of opponents/players ... that player controls" — najviše jedna meta po kontroloru
+        if (spec.distinctCtrl) {
+          const ctrls = picked.filter(t => t && t.ctrl).map(t => t.ctrl);
+          if (new Set(ctrls).size !== ctrls.length) return false;
+        }
         // Ward nije dodatni target/cast trošak. Ciljani spell ili ability prvo
         // normalno ide na stack; zatim Ward trigger ide iznad njega i tek na
         // svojoj rezoluciji traži plaćanje ili pokušava counterovati original.

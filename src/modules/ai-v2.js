@@ -711,7 +711,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (q.type === 'blockers') {
       actions.push(...generateBlockPlans(game, player, q, config));
     } else if (q.type === 'chooseTargets') {
-      const ranked = (q.candidates || []).slice().sort((a, b) => targetValue(game, player, b, q) - targetValue(game, player, a, q) || targetStableKey(a).localeCompare(targetStableKey(b))).slice(0, config.targetLimit);
+      let ranked = (q.candidates || []).slice().sort((a, b) => targetValue(game, player, b, q) - targetValue(game, player, a, q) || targetStableKey(a).localeCompare(targetStableKey(b))).slice(0, config.targetLimit);
+      if (q.spec && q.spec.distinctCtrl) {
+        // najviše jedna meta po kontroloru — zadrži najbolju po svakom
+        const perCtrl = new Set();
+        ranked = ranked.filter(target => {
+          const key = target && target.ctrl ? target.ctrl.idx : Symbol();
+          if (perCtrl.has(key)) return false;
+          perCtrl.add(key);
+          return true;
+        });
+      }
       if (q.aiHint && ['proliferate', 'depthshaker'].includes(q.aiHint.goal)) {
         const strategic = ranked.filter(target => targetValue(game, player, target, q) > 0).slice(0, q.max || ranked.length);
         actions.push({ kind: 'chooseTargets', picks: strategic });
@@ -897,6 +907,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (hint === 'covenDifferentPowers' || hint === 'bolster') {
       return card.ctrl === player ? permanentGameValue(game, card, player) + (card.counters['+1/+1'] || 0) * 0.8 : -100;
     }
+    if (hint === 'hazelMana') return card.is('Creature') ? -1.2 : 0.6;
     if (hint === 'moorlandRescuer' || hint === 'wallMourning') return value * 1.25;
     if (hint === 'esixCopy') return permanentGameValue(game, card, player) * 1.6;
     if (hint === 'scionsCopyToken') return permanentGameValue(game, card, player) * 1.7;
@@ -1169,7 +1180,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const spell = top.card || top.srcCard;
           const spellValue = spell ? cardDefinitionValue(spell.def) : 3;
           breakdown.threat += spellValue * 1.6 + playerThreatForGame(game, player, top.ctrl) * 0.12;
-          if (top.targets && top.targets.flat().some(target => target === player || target.ctrl === player)) breakdown.safety += 12;
+          if (top.targets && top.targets.flat().some(target => target && (target === player || target.ctrl === player))) breakdown.safety += 12;
         }
       }
       if (sem.roles.includes('single-target-removal')) {
@@ -1212,6 +1223,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const openAfter = availableManaEstimate(game, player) - spend;
       const hasInteraction = (player.hand || []).some(held => held !== card && inferCardSemantics(held.def).roles.some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role)));
       if (hasInteraction && openAfter <= 0 && phase === 'main1') breakdown.resources -= 2.7;
+      // Rezervacija za komandera: instant-speed trošenje u vlastitim
+      // pre/post-main priority prozorima ne smije pojesti manu za (re)cast
+      // komandera iz command zone u nadolazećoj main fazi.
+      if (q && q.type === 'priority' && game.turnPlayer === player && !(card.commander && card.zone === 'command')) {
+        const inCz = (player.commanders || []).filter(cmd => cmd.zone === 'command');
+        if (inCz.length) {
+          const needed = Math.min(...inCz.map(cmd => U.mv(cmd.def.cost || '') + 2 * (cmd.cmdCasts || 0)));
+          const availableNow = availableManaEstimate(game, player);
+          if (availableNow >= needed && openAfter < needed) {
+            breakdown.resources -= 6 * (profile.weights && profile.weights.commanderProgress || 1);
+          }
+        }
+      }
       const opponentRisk = Math.max(0, ...view.players.filter(row => row.id !== player.idx && !row.lost).map(row => estimateInteractionRisk(view, row.id)));
       if (sem.roles.includes('finisher') || sem.roles.includes('combo-piece')) breakdown.safety -= opponentRisk * 0.22;
       if (q && q.type === 'priority') {
@@ -1220,7 +1244,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // spell preko vlastitog stack objekta je skoro uvijek sequencing greška
         // i kod ponovljivih aktivacija može praviti beskrajni priority niz.
         if (top && top.ctrl === player) breakdown.timing -= 45;
-        if (!top && game.turnPlayer === player && (phase === 'main1' || phase === 'main2')) breakdown.timing -= 35;
+        // Vlastiti potez, prazan stack: sve van combata (upkeep/draw/main/end)
+        // je sequencing greška — akcije idu kroz main prozor, ne kroz priority.
+        if (!top && game.turnPlayer === player && phase !== 'combat') breakdown.timing -= 35;
       }
     } else if (action.kind === 'activate') {
       const entry = action.entry;
@@ -1235,6 +1261,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (entry.crew) breakdown.combat += phase === 'main1' ? 2.5 : -0.5;
       if (entry.cycling) breakdown.resources += player.hand.length < 4 ? 1.5 : 0.4;
+      // Ne cycluj land dok si kratak sa landovima a land drop je još otvoren
+      if (entry.cycling && card.is('Land') && game.turnPlayer === player &&
+        player.landsPlayed < player.maxLands && game.lands(player).length < 5) breakdown.resources -= 8;
       const sem = inferCardSemantics(card.def);
       breakdown.synergy += sem.synergyTags.filter(tag => profile.primarySynergies.includes(tag)).length * 0.7;
       if (ability && ability.targets && ability.targets.some(spec => spec.aiHint && spec.aiHint.goal === 'removal')) {
@@ -1243,10 +1272,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         breakdown.threat += best * 0.75;
         if (best < 3) breakdown.timing -= 5;
       }
+      // "Prijateljski" ciljane sposobnosti (protect/buff/untap) nikad ne
+      // aktiviraj kad su jedine legalne mete protivničke — poklanjaš vrijednost.
+      if (ability && ability.targets && ability.targets.some(spec => spec.aiHint && /^(protect|buff|pump|untap)$/.test(String(spec.aiHint.goal || '')))) {
+        const candidates = game.legalTargets(ability.targets[0], card, player);
+        if (!candidates.some(target => target instanceof U.CardInst && target.ctrl === player)) breakdown.base -= 40;
+      }
       if (q && q.type === 'priority') {
         const top = game.stack[game.stack.length - 1];
         if (top && top.ctrl === player) breakdown.timing -= 45;
-        if (!top && game.turnPlayer === player && (phase === 'main1' || phase === 'main2')) breakdown.timing -= 35;
+        if (!top && game.turnPlayer === player && phase !== 'combat') breakdown.timing -= 35;
       }
     } else if (action.kind === 'pass' || action.kind === 'done') {
       breakdown.base = 0.2;
@@ -1255,9 +1290,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (q && q.type === 'priority' && game.stack.length) {
         const top = game.stack[game.stack.length - 1];
         if (top.ctrl === player) breakdown.timing += 30;
-        if (top.ctrl !== player && top.targets && top.targets.flat().some(target => target === player || target.ctrl === player)) breakdown.safety -= 10;
+        if (top.ctrl !== player && top.targets && top.targets.flat().some(target => target && (target === player || target.ctrl === player))) breakdown.safety -= 10;
       }
-      if (q && q.type === 'priority' && !game.stack.length && game.turnPlayer === player && (phase === 'main1' || phase === 'main2')) breakdown.timing += 25;
+      if (q && q.type === 'priority' && !game.stack.length && game.turnPlayer === player && phase !== 'combat') breakdown.timing += 25;
     } else if (action.kind === 'declareAttackers' || action.kind === 'declareBlockers') {
       breakdown.combat = action._combatScore || 0;
     } else if (action.kind === 'chooseTargets') {

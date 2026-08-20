@@ -566,7 +566,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     chooseTargets(g, q) {
       const goal = q.aiHint && q.aiHint.goal || (q.spec && q.spec.aiHint && q.spec.aiHint.goal) || 'generic';
-      const cands = q.candidates.slice();
+      let cands = q.candidates.slice();
+      if (q.spec && q.spec.distinctCtrl) {
+        // najviše jedna meta po kontroloru — zadrži najprijeteću po svakom
+        const seenCtrl = new Set();
+        cands = cands.slice().sort((a, b) =>
+          (b instanceof MTG.CardInst ? this.permThreat(g, b) : 0) - (a instanceof MTG.CardInst ? this.permThreat(g, a) : 0)
+        ).filter(x => {
+          if (!(x instanceof MTG.CardInst) || !x.ctrl) return true;
+          if (seenCtrl.has(x.ctrl)) return false;
+          seenCtrl.add(x.ctrl);
+          return true;
+        });
+      }
       const p = this.p;
       const min = q.min !== undefined ? q.min : 1;
       const max = q.max || 1;
@@ -827,7 +839,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return out;
         }
         case 'hazelMana': {
-          const toks = from.filter(c => !c.is('Creature') || true);
+          // preferiraj non-creature tokene (Food/Treasure/Clue) — ne skidaj vlastite napadače/blokere
+          const nonCreature = from.filter(c => !c.is('Creature'));
+          const toks = nonCreature.length ? nonCreature : from;
           return toks.slice(0, Math.min(3, toks.length));
         }
         case 'bounceLandChoice': {

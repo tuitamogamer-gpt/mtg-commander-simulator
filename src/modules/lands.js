@@ -121,14 +121,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!c.meta.hideIid) return false;
         const hid = g.byIid(c.meta.hideIid);
         if (!hid || hid.zone !== 'exile') return false;
+        // "play" land troši land drop — bez slobodnog dropa sposobnost nema efekta
+        if (hid.is('Land') && p.landsPlayed >= p.maxLands) return false;
         return condFn(g, c, p);
       },
       run: async ctx => {
         const hid = ctx.g.byIid(ctx.src.meta.hideIid);
         if (!hid || hid.zone !== 'exile') return;
         if (hid.is('Land')) {
+          if (ctx.you.landsPlayed >= ctx.you.maxLands) return;
           ctx.you.exile.splice(ctx.you.exile.indexOf(hid), 1);
           hid.zone = 'nowhere';
+          ctx.you.landsPlayed++;
           await ctx.g.move(hid, 'battlefield', { ctrl: ctx.you });
         } else {
           await E.mayCastFree(ctx.g, ctx.you, hid);
