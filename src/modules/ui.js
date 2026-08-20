@@ -619,15 +619,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
 
       if (view.incoming.length) {
-        panel.appendChild(el('div', 'dipsectiontitle', `INCOMING · ${view.incoming.length}`));
+        panel.appendChild(el('div', 'dipsectiontitle', `AWAITING YOUR DECISION · ${view.incoming.length}`));
         for (const proposal of view.incoming) {
-          const card = el('div', 'dipincoming');
-          card.innerHTML = `<b>${esc(proposal.fromName)} proposes:</b>` +
-            `<p><span>THEY ASK</span>${esc(proposal.request)}</p>` +
-            `<p><span>THEY OFFER</span>${esc(proposal.offer)}</p>` +
+          const card = el('div', 'dipincoming' + (proposal.isCounteroffer ? ' counteroffer' : ''));
+          card.innerHTML = proposal.isCounteroffer
+            ? `<b>↩ ${esc(proposal.fromName)} countered your offer</b><div class="diproute">Your original terms were not accepted. This is a new proposal from the bot.</div>`
+            : `<b>→ ${esc(proposal.fromName)} sent you an offer</b><div class="diproute">The bot initiated this proposal. You are the responder.</div>`;
+          card.innerHTML +=
+            `<p><span>${esc(proposal.fromName)} ASKS YOU TO</span>${esc(proposal.request)}</p>` +
+            `<p><span>${esc(proposal.fromName)} OFFERS TO</span>${esc(proposal.offer)}</p>` +
             (proposal.reason ? `<small>${esc(proposal.reason)}</small>` : '');
           const row = el('div', 'dipactions');
-          const accept = el('button', 'pbtn primary', 'Accept');
+          const accept = el('button', 'pbtn primary', proposal.isCounteroffer ? 'Accept counteroffer' : 'Accept offer');
           accept.onclick = () => {
             const result = g.respondToDiplomacyProposal(proposal.id, true, this.me);
             this.toast(result.status === 'accepted' ? '🤝 Agreement accepted and active.' : result.reason || 'The proposal expired.');
@@ -646,6 +649,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         item.appendChild(el('b', '', `Agreement #${contract.id}`));
         for (const clause of contract.clauses) item.appendChild(el('p', 'state-' + clause.state, `${clause.state === 'active' ? '◆' : '✓'} ${esc(clause.label)}`));
         panel.appendChild(item);
+      }
+
+      if (view.recent.length) {
+        panel.appendChild(el('div', 'dipsectiontitle', 'RECENT TABLE NEGOTIATIONS'));
+        const recent = el('div', 'diprecent');
+        for (const event of view.recent.slice().reverse()) {
+          recent.appendChild(el('p', `kind-${event.kind}`, `<span>T${event.turn || '—'}</span>${esc(event.text)}`));
+        }
+        panel.appendChild(recent);
       }
 
       panel.appendChild(el('div', 'dipsectiontitle', `PLAYERS · ${view.offersRemaining} OFFER${view.offersRemaining === 1 ? '' : 'S'} LEFT THIS ROUND`));
@@ -677,9 +689,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const modal = el('div', 'modal diplomacymodal');
       ov.appendChild(modal);
       ov.onclick = event => { if (event.target === ov) { this.diplomacyComposer = null; this.render(); } };
-      modal.appendChild(el('div', 'combatkicker', 'STRUCTURED AGREEMENT'));
-      modal.appendChild(el('div', 'mtitle', `Offer to ${esc(to.name)}`));
-      modal.appendChild(el('div', 'dippreamble', 'Choose one exact promise from each side. The game enforces accepted promises and displays them to the whole table.'));
+      modal.appendChild(el('div', 'combatkicker', `YOU → ${esc(to.name)} · NEW PROPOSAL`));
+      modal.appendChild(el('div', 'mtitle', `You are offering a deal to ${esc(to.name)}`));
+      modal.appendChild(el('div', 'dippreamble', 'You are the initiator. Choose what you want the bot to promise and what you promise in return. The bot will independently accept, reject, or counter based on the current board.'));
 
       const field = (title, sub, options, value, onChange) => {
         const label = el('label', 'dipfield');
@@ -694,14 +706,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
 
       const fields = el('div', 'dipfields');
-      fields.appendChild(field('I ASK', `${to.name} promises`, requests, composer.requestKey, value => { composer.requestKey = value; this.render(); }));
-      fields.appendChild(field('I OFFER', 'You promise', offers, composer.offerKey, value => { composer.offerKey = value; this.render(); }));
+      fields.appendChild(field(`YOU ASK ${to.name.toUpperCase()} TO`, 'If accepted, the bot makes this promise', requests, composer.requestKey, value => { composer.requestKey = value; this.render(); }));
+      fields.appendChild(field(`YOU OFFER ${to.name.toUpperCase()}`, 'If accepted, you make this promise', offers, composer.offerKey, value => { composer.offerKey = value; this.render(); }));
       modal.appendChild(fields);
 
       const request = requests.find(option => option.key === composer.requestKey);
       const offer = offers.find(option => option.key === composer.offerKey);
-      modal.appendChild(el('div', 'dipreview', `<b>EXACT CONTRACT</b><p><span>${esc(to.name)}</span>${esc(request.label)}</p><p><span>You</span>${esc(offer.label)}</p>`));
-      modal.appendChild(el('div', 'dipwarning', 'Accepted terms are binding for voluntary choices. If a Magic rule forces an incompatible action, that clause ends without a penalty.'));
+      modal.appendChild(el('div', 'dipreview', `<b>YOUR PROPOSED CONTRACT</b><p><span>THE BOT</span>${esc(request.label)}</p><p><span>YOU</span>${esc(offer.label)}</p>`));
+      modal.appendChild(el('div', 'dipwarning', 'Sending is not acceptance. The bot weighs board value, threat, opportunity cost, personality, and recent reliability. Accepted terms bind voluntary choices; forced Magic actions remain legal.'));
 
       const actions = el('div', 'btnrow');
       const send = el('button', 'pbtn primary', 'Send offer');
@@ -709,7 +721,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const result = g.proposeDiplomacy(this.me, to, composer.requestKey, composer.offerKey);
         this.diplomacyComposer = null;
         if (result.status === 'accepted') this.toast(`🤝 ${to.name} accepted. Agreement #${result.contract.id} is active.`);
-        else if (result.status === 'countered') this.toast(`🕊️ ${to.name} made a counteroffer. Review it in Diplomacy.`);
+        else if (result.status === 'countered') this.toast(`↩ Your offer was not accepted. ${to.name} sent a counteroffer for you to review.`);
         else this.toast(`Proposal rejected: ${result.reason || 'No deal.'}`);
         this.sidebarTab = 'diplomacy';
         this.render();

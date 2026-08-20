@@ -29,6 +29,20 @@ function addCreature(game, owner, name = 'Stormcatch Mentor') {
   return card;
 }
 
+function makeOfferState(spec) {
+  const state = makeGame();
+  const [human, bot, third, fourth] = state.players;
+  human.life = spec.humanLife;
+  bot.life = spec.botLife;
+  third.life = spec.thirdLife;
+  for (let i = 0; i < spec.humanCreatures; i++) addCreature(state.game, human);
+  for (let i = 0; i < spec.botCreatures; i++) addCreature(state.game, bot);
+  addCreature(state.game, third);
+  addCreature(state.game, fourth);
+  state.game.recalc();
+  return state;
+}
+
 function activeClause(game, type, actor, beneficiary) {
   return game.diplomacy.contracts.flatMap(contract => contract.clauses)
     .find(clause => clause.type === type && clause.actorId === actor.idx && clause.beneficiaryId === beneficiary.idx);
@@ -55,9 +69,10 @@ test('diplomacy is optional, defaults to inert state, and unlocks only after thr
   assert.equal(game.diplomacyStatus().rounds, 3);
 });
 
-test('a balanced reciprocal combat truce is accepted and filters voluntary attacks', () => {
+test('a materially favorable reciprocal combat truce is accepted and filters voluntary attacks', () => {
   const { game, players: [human, bot, third] } = makeGame();
-  const humanCreature = addCreature(game, human);
+  const humanCreature = addCreature(game, human, 'Inferno Titan');
+  addCreature(game, human, 'Inferno Titan');
   const botCreature = addCreature(game, bot);
 
   const result = game.proposeDiplomacy(
@@ -74,7 +89,8 @@ test('a balanced reciprocal combat truce is accepted and filters voluntary attac
 
 test('forced attacks override an impossible truce without recording a betrayal', () => {
   const { game, players: [human, bot] } = makeGame();
-  addCreature(game, human);
+  addCreature(game, human, 'Inferno Titan');
+  addCreature(game, human, 'Inferno Titan');
   const attacker = addCreature(game, bot);
   const result = game.proposeDiplomacy(human, bot, `no_attack:${human.idx}`, `no_attack:${bot.idx}`);
   assert.equal(result.status, 'accepted');
@@ -89,6 +105,8 @@ test('forced attacks override an impossible truce without recording a betrayal',
 
 test('harmful targeting is filtered while a mandatory Magic target voids only that clause', () => {
   const { game, players: [human, bot, third] } = makeGame();
+  addCreature(game, human);
+  addCreature(game, bot, 'Inferno Titan');
   const result = game.proposeDiplomacy(
     human, bot,
     `no_target_player:${human.idx}`,
@@ -113,7 +131,8 @@ test('harmful targeting is filtered while a mandatory Magic target voids only th
 
 test('anti-abuse rules stop multi-bot combat shields and runaway-leader protection', () => {
   const { game, players: [human, botA, botB] } = makeGame();
-  addCreature(game, human);
+  addCreature(game, human, 'Inferno Titan');
+  addCreature(game, human, 'Inferno Titan');
   addCreature(game, botA);
   addCreature(game, botB);
 
@@ -144,8 +163,79 @@ test('bot-bot negotiations use the same public rules and create visible contract
   assert.equal(result.contract.fromId, botA.idx);
   assert.equal(result.contract.toId, botB.idx);
   assert.ok(result.contract.clauses.some(clause => clause.type === 'pressure_player' && clause.targetPlayerId === human.idx));
-  assert.ok(result.contract.clauses.some(clause => clause.type === 'no_attack'));
+  assert.ok(result.contract.clauses.some(clause => ['no_attack', 'no_target_player', 'protect_permanent'].includes(clause.type)));
   assert.match(game.log.at(-1).msg, /Agreement #/);
+});
+
+test('bot-bot negotiation also occurs around a meaningful shared threat before it becomes runaway', () => {
+  const { game, players: [thirdParty, botA, botB] } = makeGame();
+  addCreature(game, thirdParty, 'Inferno Titan');
+  addCreature(game, botA);
+  addCreature(game, botB);
+  assert.equal(game.diplomacyRunawayThreat(), null);
+
+  const result = game.processDiplomacyCheckpoint(botA);
+  assert.equal(result.status, 'accepted');
+  assert.ok(result.contract);
+  assert.ok(game.diplomacy.proposals.length >= 1);
+  assert.ok(game.diplomacy.history.some(entry => entry.kind === 'accepted'));
+  assert.ok(game.log.some(entry => /offered a short agreement/.test(entry.msg)));
+});
+
+test('the response model accepts, counters, and rejects across a broad offer matrix instead of auto-accepting', () => {
+  const counts = { accepted: 0, countered: 0, rejected: 0, total: 0 };
+  for (let sample = 1; sample <= 12; sample++) {
+    const spec = {
+      humanLife: 28 + (sample % 4) * 6,
+      botLife: 25 + (sample % 5) * 5,
+      thirdLife: 32 + (sample % 3) * 4,
+      humanCreatures: 1 + (sample % 4),
+      botCreatures: 1 + ((sample * 3) % 4),
+    };
+    const template = makeOfferState(spec);
+    const requestCount = template.game.diplomacyClauseOptions(template.players[1], template.players[0]).length;
+    const offerCount = template.game.diplomacyClauseOptions(template.players[0], template.players[1]).length;
+    for (let requestIndex = 0; requestIndex < requestCount; requestIndex++) {
+      for (let offerIndex = 0; offerIndex < offerCount; offerIndex++) {
+        const { game, players: [human, bot] } = makeOfferState(spec);
+        const requests = game.diplomacyClauseOptions(bot, human);
+        const offers = game.diplomacyClauseOptions(human, bot);
+        const result = game.proposeDiplomacy(human, bot, requests[requestIndex].key, offers[offerIndex].key);
+        counts[result.status]++;
+        counts.total++;
+      }
+    }
+  }
+  const acceptanceRate = counts.accepted / counts.total;
+  assert.ok(acceptanceRate >= 0.2 && acceptanceRate <= 0.55, `unexpected acceptance rate ${acceptanceRate}`);
+  assert.ok(counts.countered > 0, 'matrix should produce counteroffers');
+  assert.ok(counts.rejected > 0, 'matrix should produce direct rejections');
+});
+
+test('a counteroffer is explicitly linked to the human original proposal', () => {
+  let found = null;
+  for (let sample = 1; sample <= 12 && !found; sample++) {
+    const spec = { humanLife: 34, botLife: 40, thirdLife: 36, humanCreatures: sample % 3 + 1, botCreatures: 2 };
+    const template = makeOfferState(spec);
+    const requestCount = template.game.diplomacyClauseOptions(template.players[1], template.players[0]).length;
+    const offerCount = template.game.diplomacyClauseOptions(template.players[0], template.players[1]).length;
+    for (let requestIndex = 0; requestIndex < requestCount && !found; requestIndex++) {
+      for (let offerIndex = 0; offerIndex < offerCount && !found; offerIndex++) {
+        const { game, players: [human, bot] } = makeOfferState(spec);
+        const requests = game.diplomacyClauseOptions(bot, human);
+        const offers = game.diplomacyClauseOptions(human, bot);
+        const originalId = game.diplomacy.nextProposalId;
+        const result = game.proposeDiplomacy(human, bot, requests[requestIndex].key, offers[offerIndex].key);
+        if (result.status === 'countered') found = { game, human, originalId, result };
+      }
+    }
+  }
+  assert.ok(found, 'expected at least one counteroffer in the search space');
+  assert.equal(found.result.proposal.isCounteroffer, true);
+  assert.equal(found.result.proposal.originalProposalId, found.originalId);
+  const incoming = found.game.diplomacyView(found.human).incoming[0];
+  assert.equal(incoming.isCounteroffer, true);
+  assert.equal(incoming.originalProposalId, found.originalId);
 });
 
 test('bot response does not change when only the human hidden hand changes', () => {
@@ -165,9 +255,29 @@ test('bot response does not change when only the human hidden hand changes', () 
   assert.deepEqual(run(false), run(true));
 });
 
+test('a bot never evaluates another bot hidden hand while considering its promise', () => {
+  const run = withHiddenCard => {
+    const { game, players: [, proposer, recipient] } = makeGame();
+    addCreature(game, proposer);
+    addCreature(game, recipient);
+    if (withHiddenCard) {
+      const hidden = new MTG.CardInst(MTG.DEFS['Beast Within'], proposer);
+      hidden.zone = 'hand'; proposer.hand.push(hidden);
+    }
+    const result = game.proposeDiplomacy(
+      proposer, recipient,
+      `no_target_player:${proposer.idx}`,
+      `no_target_player:${recipient.idx}`,
+    );
+    return { status: result.status, reason: result.reason };
+  };
+  assert.deepEqual(run(false), run(true));
+});
+
 test('agreements complete at their exact combat or turn boundary and diplomacy closes at heads-up', () => {
   const { game, players: [human, bot, third, fourth] } = makeGame();
-  addCreature(game, human);
+  addCreature(game, human, 'Inferno Titan');
+  addCreature(game, human, 'Inferno Titan');
   addCreature(game, bot);
   const result = game.proposeDiplomacy(human, bot, `no_attack:${human.idx}`, `no_attack:${bot.idx}`);
   assert.equal(result.status, 'accepted');
@@ -185,6 +295,8 @@ test('agreements complete at their exact combat or turn boundary and diplomacy c
 test('a targeting promise made during the actor turn survives that cleanup and ends after their following turn', () => {
   const { game, players: [human, bot] } = makeGame();
   game.turnPlayer = human;
+  addCreature(game, human);
+  addCreature(game, bot, 'Inferno Titan');
   const result = game.proposeDiplomacy(
     human, bot,
     `no_target_player:${human.idx}`,

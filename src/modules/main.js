@@ -388,10 +388,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       g.turnPlayer = ui.me; g.turnNo = 13; g.phase = 'main1'; g.step = 'main'; g.paced = false;
       g.recalc();
-      if (new URLSearchParams(window.location.search).get('botDiplomacy') === '1') {
+      const botDiplomacyScenario = new URLSearchParams(window.location.search).get('botDiplomacy');
+      if (botDiplomacyScenario === '1') {
         // Poseban vizuelni canary: napravi objektivnog runaway lidera i pusti
         // dva bota da sama sklope javni, vremenski ograničen ugovor.
         ui.me.life = 500;
+        const initiator = g.players.find(player => player.isAI && !player.lost);
+        g.processDiplomacyCheckpoint(initiator);
+      } else if (botDiplomacyScenario === 'shared') {
+        // Jači, ali ne runaway, javni permanent je dovoljan razlog da dva bota
+        // pregovaraju. Ovaj canary čuva upravo taj uobičajeni Commander slučaj.
+        const threat = new MTG.CardInst(MTG.DEFS['Inferno Titan'], ui.me);
+        threat.ctrl = ui.me; threat.zone = 'battlefield'; threat.sick = false; threat.tapped = false;
+        g.battlefield.push(threat);
+        g.recalc();
         const initiator = g.players.find(player => player.isAI && !player.lost);
         g.processDiplomacyCheckpoint(initiator);
       }
@@ -1895,7 +1905,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           enabled: true, unlocked: view.status.unlocked, completedRounds: view.status.rounds,
           unlockRounds: view.status.unlockRounds, reason: view.status.reason,
           offersRemaining: view.offersRemaining,
-          incoming: view.incoming.map(proposal => ({ id: proposal.id, from: proposal.fromName })),
+          incoming: view.incoming.map(proposal => ({
+            id: proposal.id, from: proposal.fromName,
+            kind: proposal.isCounteroffer ? 'counteroffer' : 'bot-initiated',
+          })),
+          recentNegotiations: view.recent,
           activeContracts: view.activeContracts.map(contract => ({
             id: contract.id,
             clauses: contract.clauses.map(clause => ({ state: clause.state, label: clause.label })),

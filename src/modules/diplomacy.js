@@ -282,16 +282,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return Math.max(0, power * (blockers ? 0.12 : 0.32));
   }
 
-  function targetInteractionValue(game, actor, beneficiary) {
+  function targetInteractionValue(game, actor, beneficiary, perspective, includePrivate = true) {
     const publicTargets = game.bf().filter(card => card.ctrl === beneficiary && !card.is('Land'))
       .reduce((best, card) => Math.max(best, publicPermanentValue(game, card)), 0);
-    const ownKnownInteraction = actor.isAI
+    // Privatna ruka smije uticati samo na odluku njenog vlasnika. Kada bot
+    // procjenjuje šta drugi bot ili čovjek obećava, koristi samo javnu tablu.
+    const ownKnownInteraction = includePrivate && actor === perspective && actor.isAI
       ? actor.hand.filter(card => /destroy target|exile target|counter target|deals? .* damage to target|return target .* hand/i.test(card.def.oracle || '')).length
       : 0;
     return Math.min(7, publicTargets * 0.18 + ownKnownInteraction * 0.7 + 0.8);
   }
 
-  function clauseDelta(game, clause, perspective) {
+  function clauseDelta(game, clause, perspective, opts = {}) {
     const actor = player(game, clause.actorId), beneficiary = player(game, clause.beneficiaryId);
     if (!actor || !beneficiary) return -20;
     let benefit = 0, cost = 0;
@@ -300,7 +302,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (perspective === beneficiary) benefit += value;
       if (perspective === actor) cost += value * 0.8;
     } else if (clause.type === 'no_target_player') {
-      const value = targetInteractionValue(game, actor, beneficiary);
+      const value = targetInteractionValue(game, actor, beneficiary, perspective, !opts.publicOnly);
       if (perspective === beneficiary) benefit += value;
       if (perspective === actor) cost += value * 0.75;
     } else if (clause.type === 'protect_permanent') {
@@ -323,21 +325,77 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return benefit - cost;
   }
 
+  function stableFraction(text) {
+    let hash = 2166136261;
+    for (let i = 0; i < text.length; i++) {
+      hash ^= text.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0) / 4294967295;
+  }
+
+  function clauseFingerprint(clause) {
+    return [clause.type, clause.actorId, clause.beneficiaryId, clause.targetPlayerId || '',
+      clause.targetName || ''].join(':');
+  }
+
+  function negotiationStateFingerprint(game) {
+    const scores = new Map(threatRows(game).map(row => [row.p.idx, row.score]));
+    return JSON.stringify({
+      players: activePlayers(game).map(candidate => [candidate.idx, candidate.life, candidate.hand.length,
+        scores.get(candidate.idx) || 0]),
+      battlefield: game.bf().map(card => [card.name, card.ctrl && card.ctrl.idx, card.tapped,
+        card.is('Creature') ? card.power : null, card.is('Creature') ? card.toughness : null,
+        Object.entries(card.counters || {}).filter(([, amount]) => amount > 0).sort()])
+        .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))),
+      stack: game.stack.map(item => [item.kind, item.name, item.ctrl && item.ctrl.idx]),
+    });
+  }
+
   function rapportValue(game, a, b) {
     const d = state(game);
     return d && d.rapport[`${a.idx}:${b.idx}`] || 0;
   }
 
-  function evaluateProposal(game, proposal, bot) {
-    const net = clauseDelta(game, proposal.request, bot) + clauseDelta(game, proposal.offer, bot) +
-      Math.min(1.2, rapportValue(game, bot, player(game, proposal.fromId)) * 0.35);
+  function evaluateProposal(game, proposal, bot, opts = {}) {
+    const proposer = player(game, proposal.fromId);
+    const rapport = rapportValue(game, bot, proposer);
+    const rawNet = clauseDelta(game, proposal.request, bot, opts) + clauseDelta(game, proposal.offer, bot, opts);
+    const styleCaution = {
+      aggressive: 0.68,
+      opportunist: 0.5,
+      passive: 0.08,
+      teaser: 0.34,
+      balanced: 0.32,
+    }[bot.aiStyle || 'balanced'] ?? 0.32;
+    const fingerprint = [completedRounds(game), bot.idx, proposal.fromId,
+      clauseFingerprint(proposal.request), clauseFingerprint(proposal.offer), negotiationStateFingerprint(game)].join('|');
+    // Seedovana sklonost pregovaranju daje personama karakter, ali je potpuno
+    // deterministička: isti javni state i ista ponuda uvijek daju isti odgovor.
+    const temperament = (stableFraction(fingerprint) - 0.5) * 0.7;
+    const pressuresRunaway = [proposal.request, proposal.offer].some(clause => clause.type === 'pressure_player');
+    const shared = proposer ? sharedTableThreat(game, bot, proposer) : null;
+    const sharedThreatDiscount = shared ? Math.min(0.32, shared.gap * 0.035) : 0;
+    const threshold = 0.28 + styleCaution + temperament - Math.max(-0.25, Math.min(0.35, rapport * 0.16)) -
+      (pressuresRunaway ? 0.42 : 0) - sharedThreatDiscount;
+    const net = rawNet + Math.max(-0.5, Math.min(0.65, rapport * 0.22));
+    const margin = net - threshold;
     const runaway = runawayThreat(game);
     const benefitsLeader = runaway && [proposal.request, proposal.offer].some(clause =>
       clause.beneficiaryId === runaway.p.idx && PROTECTION_TYPES.has(clause.type));
-    if (benefitsLeader) return { status: 'rejected', reason: REASONS.unsafe, net };
-    if (net >= 0.15) return { status: 'accepted', reason: 'The exchange is short, measurable, and mutually useful.', net };
-    if (net >= -3.5) return { status: 'countered', reason: 'The bot wants a more balanced reciprocal promise.', net };
-    return { status: 'rejected', reason: REASONS.oneSided, net };
+    const math = { rawNet, rapport, styleCaution, temperament, sharedThreatDiscount, threshold, net, margin };
+    if (benefitsLeader) return { status: 'rejected', reason: REASONS.unsafe, net, math };
+    if (margin >= 0) return {
+      status: 'accepted',
+      reason: 'The offered value clears this bot’s current risk and opportunity-cost threshold.',
+      net, math,
+    };
+    if (margin >= -0.35) return {
+      status: 'countered',
+      reason: 'The bot sees some value, but your offer does not fully cover what you are asking it to give up.',
+      net, math,
+    };
+    return { status: 'rejected', reason: REASONS.oneSided, net, math };
   }
 
   function bumpRapport(game, a, b, amount) {
@@ -356,6 +414,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       bumpRapport(game, a, b, 1); bumpRapport(game, b, a, 1);
     }
     game.lg(`🤝 Agreement #${contract.id} completed${contract.status === 'completed' ? '.' : ' with a forced exception.'}`, 'diplomacy');
+    state(game).history.push({
+      turn: game.turnNo, kind: 'completed', fromId: contract.fromId, toId: contract.toId,
+      contractId: contract.id,
+      text: `Agreement #${contract.id} completed${contract.status === 'completed' ? '.' : ' with a forced exception.'}`,
+    });
     game.note('diplomacy', { text: `Agreement #${contract.id} completed.`, contract });
   }
 
@@ -380,6 +443,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     d.contracts.push(contract);
     proposal.status = 'accepted'; proposal.contractId = contract.id;
+    const from = player(game, proposal.fromId), to = player(game, proposal.toId);
+    d.history.push({
+      turn: game.turnNo, kind: 'accepted', fromId: proposal.fromId, toId: proposal.toId,
+      contractId: contract.id,
+      text: `${from ? from.name : 'A player'} and ${to ? to.name : 'another player'} accepted Agreement #${contract.id}.`,
+    });
     game.lg(`🤝 Agreement #${contract.id}: ${contract.clauses.map(clause => clauseLabel(game, clause)).join(' ')}`, 'diplomacy');
     game.note('diplomacy', { text: `Agreement #${contract.id} is active.`, contract });
     return contract;
@@ -400,18 +469,40 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     d.pairProposalCounts[pairRound] = (d.pairProposalCounts[pairRound] || 0) + 1;
   }
 
-  function reciprocalCounter(game, original, bot, human) {
-    const botPromise = Object.assign({}, original.request, { state: 'proposed' });
-    let humanKey = `no_attack:${bot.idx}`;
-    let humanPromise = clauseFromKey(game, human, bot, humanKey);
-    if (!humanPromise) {
-      humanKey = `no_target_player:${bot.idx}`;
-      humanPromise = clauseFromKey(game, human, bot, humanKey);
+  function reciprocalCounter(game, original, responder, originalSender) {
+    const requestOptions = clauseOptions(game, originalSender, responder);
+    const offerOptions = clauseOptions(game, responder, originalSender);
+    const candidates = [];
+    for (const requestOption of requestOptions) {
+      for (const offerOption of offerOptions) {
+        const request = buildClause(game, originalSender, responder, requestOption.key);
+        const offer = buildClause(game, responder, originalSender, offerOption.key);
+        if (!request || !offer) continue;
+        const unchanged = clauseFingerprint(request) === clauseFingerprint(original.offer) &&
+          clauseFingerprint(offer) === clauseFingerprint(original.request);
+        if (unchanged) continue;
+        const candidate = {
+          fromId: responder.idx, toId: originalSender.idx, request, offer,
+          source: 'bot-counter', status: 'created', createdTurn: game.turnNo,
+          createdRound: completedRounds(game),
+        };
+        if (!validateProposal(game, candidate, { botInitiated: true }).ok) continue;
+        const responderVerdict = evaluateProposal(game, candidate, responder);
+        if (responderVerdict.status !== 'accepted') continue;
+        const publicValueForOther = clauseDelta(game, request, originalSender, { publicOnly: true }) +
+          clauseDelta(game, offer, originalSender, { publicOnly: true });
+        const variety = stableFraction(`${clauseFingerprint(request)}|${clauseFingerprint(offer)}`) * 0.08;
+        candidates.push({ request, offer, score: responderVerdict.math.margin + Math.min(1.5, publicValueForOther) * 0.35 + variety });
+      }
     }
-    if (!humanPromise) return null;
-    const counter = makeProposal(game, bot, human, humanPromise, botPromise, 'bot-counter');
-    counter.status = 'pending-human';
-    counter.reason = 'Counteroffer: the bot asks for a reciprocal short promise.';
+    candidates.sort((a, b) => b.score - a.score);
+    if (!candidates.length) return null;
+    const chosen = candidates[0];
+    const counter = makeProposal(game, responder, originalSender, chosen.request, chosen.offer, 'bot-counter');
+    counter.status = originalSender.isAI ? 'created' : 'pending-human';
+    counter.isCounteroffer = true;
+    counter.originalProposalId = original.id;
+    counter.reason = `${responder.name} did not accept the original terms and proposes a different exchange.`;
     return counter;
   }
 
@@ -484,12 +575,67 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return { key: 'neutral', label: 'Neutral' };
   }
 
+  function sharedTableThreat(game, a, b) {
+    const rows = threatRows(game);
+    const pairScores = rows.filter(row => row.p === a || row.p === b).map(row => row.score);
+    const outsider = rows.find(row => row.p !== a && row.p !== b);
+    if (!outsider || pairScores.length !== 2) return null;
+    const ceiling = Math.max(...pairScores);
+    const gap = outsider.score - ceiling;
+    return gap >= Math.max(3.5, Math.max(1, ceiling) * 0.08) ? { p: outsider.p, score: outsider.score, gap } : null;
+  }
+
+  function botProposalCandidates(game, from, recipients) {
+    const runaway = runawayThreat(game);
+    const candidates = [];
+    for (const to of recipients) {
+      const shared = sharedTableThreat(game, from, to);
+      // Bez runaway/shared prijetnje ili stvarnog stack objekta nema razloga za
+      // nasumičnu razmjenu imuniteta između botova.
+      const hasStackOpportunity = game.stack.some(item => item.ctrl === from || item.ctrl === to);
+      if (!runaway && !shared && !hasStackOpportunity) continue;
+      if (!runaway && shared && (shared.p === from || shared.p === to)) continue;
+      const requests = clauseOptions(game, to, from);
+      const offers = clauseOptions(game, from, to);
+      for (const requestOption of requests) {
+        for (const offerOption of offers) {
+          const request = buildClause(game, to, from, requestOption.key);
+          const offer = buildClause(game, from, to, offerOption.key);
+          if (!request || !offer) continue;
+          const pressureCount = Number(request.type === 'pressure_player') + Number(offer.type === 'pressure_player');
+          const pressuresLeader = pressureCount > 0;
+          if (runaway && !pressuresLeader) continue;
+          if (pressureCount > 1) continue;
+          if (!runaway && pressuresLeader) continue;
+          if (!hasStackOpportunity && !shared && !pressuresLeader) continue;
+          const proposal = {
+            fromId: from.idx, toId: to.idx, request, offer,
+            source: 'bot', status: 'created', createdTurn: game.turnNo,
+            createdRound: completedRounds(game),
+          };
+          if (!validateProposal(game, proposal, { botInitiated: true, pendingHuman: !to.isAI }).ok) continue;
+          const initiator = evaluateProposal(game, proposal, from);
+          if (initiator.status !== 'accepted') continue;
+          const publicRecipient = evaluateProposal(game, proposal, to, { publicOnly: true });
+          if (to.isAI && publicRecipient.status === 'rejected') continue;
+          const sharedBonus = shared ? Math.min(0.7, shared.gap * 0.04) : 0;
+          const variety = stableFraction(`${from.idx}|${to.idx}|${completedRounds(game)}|${clauseFingerprint(request)}|${clauseFingerprint(offer)}`) * 0.12;
+          candidates.push({
+            to, request, offer,
+            score: initiator.math.margin + Math.max(-0.4, publicRecipient.math.margin) * 0.45 + sharedBonus + variety,
+          });
+        }
+      }
+    }
+    return candidates.sort((a, b) => b.score - a.score || a.to.idx - b.to.idx);
+  }
+
   U.initDiplomacy = function (game, enabled) {
     game.diplomacy = {
       enabled: !!enabled, unlockAfterRounds: UNLOCK_ROUNDS,
       contracts: [], proposals: [], history: [], rapport: {},
       proposalCounts: {}, pairProposalCounts: {}, rejectedPairs: {},
-      botOfferRound: -1, nextProposalId: 1, nextContractId: 1, nextStackId: 1,
+      botRoundCounts: {}, botPairRounds: {}, nextProposalId: 1, nextContractId: 1, nextStackId: 1,
     };
     return game.diplomacy;
   };
@@ -521,6 +667,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     const verdict = evaluateProposal(this, proposal, to);
     proposal.reason = verdict.reason;
+    proposal.math = verdict.math;
     if (verdict.status === 'accepted') return { status: 'accepted', proposal, contract: activateProposal(this, proposal), reason: verdict.reason };
     if (verdict.status === 'countered' && !from.isAI) {
       proposal.status = 'countered';
@@ -534,7 +681,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     proposal.status = 'rejected';
     state(this).rejectedPairs[pairKey(from, to)] = boardSignature(this);
-    state(this).history.push({ turn: this.turnNo, kind: 'rejected', fromId: from.idx, toId: to.idx, reason: verdict.reason });
+    state(this).history.push({
+      turn: this.turnNo, kind: 'rejected', fromId: from.idx, toId: to.idx, reason: verdict.reason,
+      text: `${to.name} rejected ${from.name}’s proposal.`,
+    });
     return { status: 'rejected', proposal, reason: verdict.reason };
   };
 
@@ -545,7 +695,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!proposal || proposal.toId !== responder.idx) return { status: 'rejected', reason: REASONS.invalid };
     if (!accept) {
       proposal.status = 'declined';
-      d.history.push({ turn: this.turnNo, kind: 'declined', fromId: proposal.fromId, toId: proposal.toId });
+      d.history.push({
+        turn: this.turnNo, kind: 'declined', fromId: proposal.fromId, toId: proposal.toId,
+        text: `${responder.name} declined ${player(this, proposal.fromId)?.name || 'a player'}’s proposal.`,
+      });
       this.lg(`🕊️ ${responder.name} declined the diplomacy proposal.`, 'diplomacy');
       return { status: 'declined', proposal };
     }
@@ -627,9 +780,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       incoming: d.proposals.filter(proposal => proposal.status === 'pending-human' && proposal.toId === viewer.idx).map(proposal => ({
         id: proposal.id, fromId: proposal.fromId, fromName: player(this, proposal.fromId)?.name || 'Bot',
         request: clauseLabel(this, proposal.request), offer: clauseLabel(this, proposal.offer), reason: proposal.reason || '',
+        isCounteroffer: !!proposal.isCounteroffer, originalProposalId: proposal.originalProposalId || null,
       })),
       opponents: viewer.opponents(this).map(other => ({ id: other.idx, name: other.name, relation: relation(this, viewer, other) })),
-      recent: d.history.slice(-5),
+      recent: d.history.slice(-6).map(entry => ({
+        turn: entry.turn, kind: entry.kind, text: entry.text || entry.reason || 'A negotiation ended.',
+      })),
       offersRemaining: Math.max(0, 2 - (d.proposalCounts[key] || 0)),
     };
   };
@@ -637,39 +793,56 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.processDiplomacyCheckpoint = function (active) {
     refresh(this);
     const d = state(this), st = status(this);
-    if (!d || !st.unlocked || d.botOfferRound === st.rounds || d.proposals.some(proposal => proposal.status === 'pending-human')) return null;
+    if (!d || !st.unlocked || !active || !active.isAI || d.proposals.some(proposal => proposal.status === 'pending-human')) return null;
+    const round = String(st.rounds);
+    if ((d.botRoundCounts[round] || 0) >= 1) return null;
     const runaway = runawayThreat(this);
-    if (!runaway) return null;
-    const bots = activePlayers(this).filter(candidate => candidate.isAI && candidate !== runaway.p)
-      .sort((a, b) => a.idx - b.idx);
-    if (!bots.length) return null;
-    const from = bots.includes(active) ? active : bots[0];
-    const recipients = bots.filter(candidate => candidate !== from && !hasPairContract(this, from, candidate));
-    const human = activePlayers(this).find(candidate => !candidate.isAI && candidate !== runaway.p && candidate !== from);
-    const to = recipients[0] || (human && !hasPairContract(this, from, human) ? human : null);
-    if (!to) return null;
-    const request = clauseFromKey(this, to, from, `pressure_player:${runaway.p.idx}`);
-    const offerOptions = clauseOptions(this, from, to);
-    const offer = clauseFromKey(this, from, to,
-      (offerOptions.find(option => option.type === 'no_attack') || offerOptions.find(option => option.type === 'no_target_player') || {}).key);
-    if (!request || !offer) return null;
-    const proposal = makeProposal(this, from, to, request, offer, 'bot');
-    const check = validateProposal(this, proposal, { botInitiated: true, pendingHuman: !to.isAI });
-    if (!check.ok) return null;
-    d.botOfferRound = st.rounds;
+    if (runaway && runaway.p === active) return null;
+    const from = active;
+    const botRecipients = activePlayers(this).filter(candidate => candidate.isAI && candidate !== from &&
+      candidate !== runaway?.p && !hasPairContract(this, from, candidate) &&
+      d.botPairRounds[`${round}:${pairKey(from, candidate)}`] !== true);
+    let candidates = botProposalCandidates(this, from, botRecipients);
+    if (!candidates.length && runaway) {
+      const human = activePlayers(this).find(candidate => !candidate.isAI && candidate !== runaway.p && candidate !== from &&
+        !hasPairContract(this, from, candidate));
+      if (human) candidates = botProposalCandidates(this, from, [human]);
+    }
+    if (!candidates.length) return null;
+    const chosen = candidates[0], to = chosen.to;
+    const proposal = makeProposal(this, from, to, chosen.request, chosen.offer, 'bot');
+    d.botRoundCounts[round] = (d.botRoundCounts[round] || 0) + 1;
+    d.botPairRounds[`${round}:${pairKey(from, to)}`] = true;
     d.proposals.push(proposal);
     if (!to.isAI) {
       proposal.status = 'pending-human';
-      proposal.reason = `${from.name} wants short-term help against the objective leading threat.`;
+      proposal.reason = `${from.name} sees a short-term table interest and is asking you directly.`;
       this.lg(`🕊️ ${from.name} sent ${to.name} a diplomacy proposal.`, 'diplomacy');
       this.note('diplomacy', { text: `${from.name} sent you a diplomacy proposal.`, proposal });
       return { status: proposal.status, proposal };
     }
+    this.lg(`🕊️ ${from.name} offered a short agreement to ${to.name}.`, 'diplomacy');
     const verdict = evaluateProposal(this, proposal, to);
     proposal.reason = verdict.reason;
+    proposal.math = verdict.math;
     if (verdict.status === 'accepted') return { status: 'accepted', proposal, contract: activateProposal(this, proposal) };
-    proposal.status = 'rejected';
-    d.history.push({ turn: this.turnNo, kind: 'bot-rejected', fromId: from.idx, toId: to.idx, reason: verdict.reason });
+    if (verdict.status === 'countered') {
+      proposal.status = 'countered';
+      const counter = reciprocalCounter(this, proposal, to, from);
+      if (counter) {
+        d.proposals.push(counter);
+        this.lg(`🕊️ ${to.name} countered ${from.name}’s proposal.`, 'diplomacy');
+        const reply = evaluateProposal(this, counter, from);
+        counter.reason = reply.reason; counter.math = reply.math;
+        if (reply.status === 'accepted') return { status: 'accepted', proposal: counter, contract: activateProposal(this, counter) };
+        counter.status = 'rejected';
+      }
+    } else proposal.status = 'rejected';
+    d.history.push({
+      turn: this.turnNo, kind: 'bot-rejected', fromId: from.idx, toId: to.idx, reason: verdict.reason,
+      text: `${from.name} and ${to.name} negotiated but did not reach an agreement.`,
+    });
+    this.lg(`🕊️ ${from.name} and ${to.name} did not reach an agreement.`, 'diplomacy');
     return { status: 'rejected', proposal, reason: verdict.reason };
   };
 })();
