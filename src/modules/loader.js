@@ -302,7 +302,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   MTG.newGame = function (opts) {
     // opts: {humanDeck, aiDecks:[names], aiStyles:[keys], seed, onEvent, humanController, difficulty, maxTurns,
-    //        humanCommanders:[names], aiRandomCommanders:bool}
+    //        humanCommanders:[names], aiRandomCommanders:bool, diplomacyEnabled:bool}
     const g = new MTG.Game({
       seed: opts.seed, onEvent: opts.onEvent, maxTurns: opts.maxTurns, paced: opts.paced,
       houseRules: Object.assign({}, opts.houseRules,
@@ -345,6 +345,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // randomize turn order
     U.shuffle(g.players, g.rnd);
     g.players.forEach((p, idx) => p.idx = idx);
+    if (MTG.initDiplomacy) MTG.initDiplomacy(g, !!opts.diplomacyEnabled);
     // objavi stilove botova u log
     for (const p of g.players) {
       if (p.isAI && p.aiStyle && MTG.AI_STYLES && MTG.AI_STYLES[p.aiStyle]) {

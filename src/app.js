@@ -1,6 +1,7 @@
 import './modules/util.js';
 import './modules/engine.js';
 import './modules/engine2.js';
+import './modules/diplomacy.js';
 import './modules/scripts_base.js';
 import './modules/lands.js';
 import './modules/scripts_hazel_abzan.js';

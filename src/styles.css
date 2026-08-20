@@ -1164,6 +1164,97 @@ body:has(#setup) { background: #08090d; }
 .oppsizebar .zval { min-width: 34px; text-align: center; color: #b9a06a; }
 .oppsizebar .zspacer { flex: 1; }
 .activeaitag { flex: none; padding: 3px 6px; color: #161108; background: linear-gradient(180deg,var(--tbl-gold-lt),var(--tbl-gold)); font: 800 8px/1 var(--tbl-cond); letter-spacing: .14em; }
+
+/* ============================================================
+   DIPLOMACY & POLITICS
+   ============================================================ */
+#setup .diplomacysetup {
+  align-items: flex-start; margin: 12px 0 2px; padding: 11px 12px;
+  color: var(--wr-muted, rgba(233,230,223,.62));
+  border: 1px solid rgba(231,177,94,.15); border-radius: 9px;
+  background: rgba(231,177,94,.025); transition: border-color .15s, background .15s;
+}
+#setup .diplomacysetup.enabled { border-color: rgba(231,177,94,.48); background: rgba(231,177,94,.075); }
+#setup .diplomacysetup > span { display: grid; gap: 3px; }
+#setup .diplomacysetup b { color: #eee4cf; font-size: 12px; letter-spacing: .04em; }
+#setup .diplomacysetup small { color: rgba(233,230,223,.42); font-size: 10px; line-height: 1.4; }
+
+#game .sidebartabs {
+  display: grid; grid-template-columns: .85fr 1.35fr .7fr; flex: none;
+  border: 1px solid rgba(231,215,181,.16); border-radius: 9px; overflow: hidden;
+  background: rgba(4,8,9,.75);
+}
+#game .sidebartab {
+  padding: 9px 5px; color: #77766f; background: transparent; border: 0;
+  border-right: 1px solid rgba(231,215,181,.1); cursor: pointer;
+  font: 800 8.5px/1 var(--tbl-cond); letter-spacing: .14em;
+}
+#game .sidebartab:last-child { border-right: 0; }
+#game .sidebartab:hover { color: #d6ccb7; background: rgba(255,255,255,.025); }
+#game .sidebartab.on { color: #f0bd76; background: linear-gradient(180deg,rgba(211,151,76,.15),rgba(211,151,76,.035)); box-shadow: inset 0 -2px #d3974c; }
+
+#game .diplomacypanel,
+#game .diplomacylog { flex: 1; min-height: 0; overflow-y: auto; }
+#game .diplomacypanel { display: flex; flex-direction: column; gap: 8px; padding-right: 2px; }
+#game .diplomacyhero {
+  display: grid; grid-template-columns: 32px minmax(0,1fr); gap: 9px; align-items: start;
+  padding: 12px; border: 1px solid rgba(231,177,94,.26); border-radius: 10px;
+  background: linear-gradient(145deg,rgba(28,28,22,.92),rgba(8,12,12,.92));
+}
+#game .diplomacyhero > span { font-size: 24px; filter: drop-shadow(0 0 10px rgba(240,189,118,.25)); }
+#game .diplomacyhero div { display: grid; gap: 4px; }
+#game .diplomacyhero b { color: #f3ead8; font: 16px/1.1 'Marcellus',Georgia,serif; }
+#game .diplomacyhero small { color: #77766e; font-size: 10px; line-height: 1.4; }
+#game .diplomacylock {
+  display: grid; gap: 6px; padding: 11px; color: #b8b1a2;
+  border: 1px solid rgba(145,145,135,.18); border-radius: 9px; background: rgba(12,16,16,.8);
+}
+#game .diplomacylock b { color: #d7d0c2; font-size: 12px; }
+#game .diplomacylock span, #game .diplomacylock small { color: #75746e; font-size: 10px; line-height: 1.35; }
+#game .dipprogress { height: 5px; overflow: hidden; border-radius: 5px; background: #050909; }
+#game .dipprogress i { display: block; height: 100%; background: linear-gradient(90deg,#5f7d68,#d3974c); }
+#game .dipsectiontitle { margin-top: 4px; color: #77766d; font: 800 8px/1 var(--tbl-cond); letter-spacing: .18em; }
+#game .dipempty { padding: 12px; color: #65665f; font-size: 10px; text-align: center; border: 1px dashed rgba(231,215,181,.12); border-radius: 8px; }
+#game .dipincoming, #game .dipcontract, #game .dipplayer {
+  border: 1px solid rgba(231,215,181,.15); border-radius: 9px;
+  background: linear-gradient(180deg,rgba(16,22,22,.88),rgba(7,11,12,.88));
+}
+#game .dipincoming { padding: 11px; box-shadow: inset 3px 0 rgba(211,151,76,.7); }
+#game .dipincoming > b { color: #f0d5a6; font-size: 12px; }
+#game .dipincoming p { display: grid; gap: 2px; margin: 8px 0 0; color: #c8c2b6; font-size: 10px; line-height: 1.35; }
+#game .dipincoming p span { color: #77776f; font: 800 7.5px/1 var(--tbl-cond); letter-spacing: .15em; }
+#game .dipincoming > small { display: block; margin-top: 7px; color: #77776f; font-size: 9px; }
+#game .dipactions { display: flex; gap: 6px; margin-top: 10px; }
+#game .dipactions .pbtn { flex: 1; padding: 7px; font-size: 10px; }
+#game .dipcontract { display: grid; gap: 6px; padding: 10px; }
+#game .dipcontract > b { color: #dfc38e; font: 800 9px/1 var(--tbl-cond); letter-spacing: .12em; }
+#game .dipcontract p { margin: 0; color: #aaa69d; font-size: 9.5px; line-height: 1.4; }
+#game .dipcontract p.state-active { color: #d4d0c6; }
+#game .dipplayer { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: 9px 10px; }
+#game .dipplayer > div { display: grid; gap: 2px; min-width: 0; }
+#game .dipplayer b { overflow: hidden; color: #e8e2d6; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+#game .dipplayer small { color: #73746e; font-size: 9px; }
+#game .dipplayer.relation-active small { color: #f0bd76; }
+#game .dipplayer.relation-reliable small { color: #8fc58d; }
+#game .dipplayer.relation-wary small { color: #dc8c78; }
+#game .dipplayer .pbtn { flex: none; padding: 6px 8px; font-size: 9px; }
+#game .diprules { padding: 10px; color: #666861; font-size: 9px; line-height: 1.45; border-top: 1px solid rgba(231,215,181,.1); }
+#game .sideloglist .k-diplomacy { color: #dfc38e; }
+
+.diplomacyov { z-index: 180; }
+.diplomacymodal { width: min(780px,calc(100vw - 80px)) !important; max-width: 780px !important; padding: 22px !important; }
+.dippreamble { margin: 4px 0 16px; color: #8b887f; font-size: 12px; line-height: 1.5; }
+.dipfields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dipfield { display: grid; gap: 7px; padding: 12px; border: 1px solid rgba(231,215,181,.15); border-radius: 9px; background: rgba(5,9,10,.7); }
+.dipfield > span { color: #d8bd88; font: 800 9px/1 var(--tbl-cond); letter-spacing: .16em; }
+.dipfield > span small { display: block; margin-top: 5px; color: #73746e; font: 10px/1.3 var(--tbl-font); letter-spacing: 0; }
+.dipfield select { width: 100%; min-height: 58px; color: #e8e3d8; background: #0c1213; border-color: rgba(231,177,94,.28); white-space: normal; }
+.dipreview { display: grid; gap: 7px; margin-top: 14px; padding: 13px; border: 1px solid rgba(231,177,94,.34); border-radius: 9px; background: rgba(211,151,76,.055); }
+.dipreview > b { color: #d8bd88; font: 800 8px/1 var(--tbl-cond); letter-spacing: .17em; }
+.dipreview p { display: grid; grid-template-columns: 90px minmax(0,1fr); gap: 10px; margin: 0; color: #d4cfc3; font-size: 11px; line-height: 1.4; }
+.dipreview p span { color: #817d73; font-weight: 800; }
+.dipwarning { margin: 12px 0; padding: 9px 11px; color: #8c887e; font-size: 10px; line-height: 1.4; border-left: 2px solid rgba(211,151,76,.65); background: rgba(211,151,76,.035); }
+
 @media (min-width: 1280px) {
   .oppswrap.active-ai-turn { display: flex; flex-direction: row !important; align-items: stretch; }
   .oppswrap.active-ai-turn .opprow { width: 0; flex: 1 1 0; transition: flex-grow .2s ease; }

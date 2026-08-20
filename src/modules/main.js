@@ -50,6 +50,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       aiDecks: ['', '', ''],
       aiStyles: ['random', 'random', 'random'],
       commanders: [], aiRandomCommanders: false, sumPartnerDamage: false,
+      diplomacyEnabled: false,
     };
 
     const grid = el('div', 'setupgrid');
@@ -231,6 +232,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     houseRow.querySelector('input').onchange = e => { state.sumPartnerDamage = e.target.checked; };
     right.appendChild(houseRow);
 
+    const diplomacyRow = el('label', 'cmdcheck diplomacysetup');
+    diplomacyRow.title = 'Optional structured agreements between every player. Disabled for the first three full table rounds.';
+    diplomacyRow.innerHTML = `<input type="checkbox"> <span><b>Diplomacy &amp; Politics</b><small>Short public deals between you and bots, and between bots. Unlocks after every player completes turn 3.</small></span>`;
+    diplomacyRow.querySelector('input').onchange = e => {
+      state.diplomacyEnabled = e.target.checked;
+      diplomacyRow.classList.toggle('enabled', state.diplomacyEnabled);
+    };
+    right.appendChild(diplomacyRow);
+
     right.appendChild(el('div', 'seclabel', '<i>AI</i> Difficulty'));
     const diffRow = el('div', 'btnrow center');
     for (const [k, label] of [['easy', 'Easy'], ['normal', 'Normal'], ['hard', 'Hard']]) {
@@ -334,6 +344,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       humanCommanders: (state.commanders && state.commanders.length) ? state.commanders : undefined,
       aiRandomCommanders: state.aiRandomCommanders,
       sumPartnerDamage: state.sumPartnerDamage,
+      diplomacyEnabled: state.diplomacyEnabled,
       seed,
       difficulty: state.difficulty,
       humanName: 'You',
@@ -349,6 +360,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
         if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind);
         if (e.type === 'battlefieldArrival') ui.showBattlefieldArrival(e);
+        if (e.type === 'diplomacy' && e.text) ui.toast(`🕊️ ${e.text}`);
         ui.queueRender();
       },
     });
@@ -363,6 +375,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Deterministički browser scenario za card-sheet interakcije koje bi kroz
     // nasumičnu biblioteku bilo teško pouzdano dovesti na ekran. Aktivira se
     // isključivo eksplicitnim smokeScenario query parametrom.
+    if (smokeScenario === 'diplomacy') {
+      // Stabilna javna tabla za provjeru optional toggle-a, otključavanja,
+      // offer buildera i aktivnog ugovora bez čekanja dvanaest prirodnih
+      // poteza. Dostupno isključivo eksplicitnom browser-smoke parametru.
+      if (!g.diplomacy || !g.diplomacy.enabled) MTG.initDiplomacy(g, true);
+      for (const player of g.players) {
+        player.turnsStarted = 3;
+        const creature = new MTG.CardInst(MTG.DEFS['Stormcatch Mentor'], player);
+        creature.ctrl = player; creature.zone = 'battlefield'; creature.sick = false; creature.tapped = false;
+        g.battlefield.push(creature);
+      }
+      g.turnPlayer = ui.me; g.turnNo = 13; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+      g.recalc();
+      if (new URLSearchParams(window.location.search).get('botDiplomacy') === '1') {
+        // Poseban vizuelni canary: napravi objektivnog runaway lidera i pusti
+        // dva bota da sama sklope javni, vremenski ograničen ugovor.
+        ui.me.life = 500;
+        const initiator = g.players.find(player => player.isAI && !player.lost);
+        g.processDiplomacyCheckpoint(initiator);
+      }
+      ui.sidebarTab = 'diplomacy';
+      ui.render();
+      return;
+    }
     if (smokeScenario === 'infernoTargeting') {
       void (async () => {
         const titan = new MTG.CardInst(MTG.DEFS['Inferno Titan'], ui.me);
@@ -1782,6 +1818,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       coordinateSystem: 'Commander seats are ordered by players[]; the human seat is marked isAI=false.',
       turn: g.turnNo, activePlayer: g.turnPlayer ? g.turnPlayer.name : null,
       phase: g.phase, step: g.step, winner: g.winner ? g.winner.name : null,
+      diplomacy: g.diplomacy && g.diplomacy.enabled && ui && ui.me ? (() => {
+        const view = g.diplomacyView(ui.me);
+        return {
+          enabled: true, unlocked: view.status.unlocked, completedRounds: view.status.rounds,
+          unlockRounds: view.status.unlockRounds, reason: view.status.reason,
+          offersRemaining: view.offersRemaining,
+          incoming: view.incoming.map(proposal => ({ id: proposal.id, from: proposal.fromName })),
+          activeContracts: view.activeContracts.map(contract => ({
+            id: contract.id,
+            clauses: contract.clauses.map(clause => ({ state: clause.state, label: clause.label })),
+          })),
+        };
+      })() : { enabled: false },
       pending: pending ? {
         type: pending.type,
         prompt: pending.prompt || null,
@@ -1882,6 +1931,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         aiStyles: ['balanced', 'balanced', 'balanced'],
         aiRandomCommanders: false,
         sumPartnerDamage: false,
+        diplomacyEnabled: smoke.get('diplomacy') === '1',
         difficulty: 'normal',
         seed: smoke.get('seed') || '11081',
       });

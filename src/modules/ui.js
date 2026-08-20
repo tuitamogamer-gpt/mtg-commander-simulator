@@ -82,6 +82,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // sidebar nestaje i tabla dobija punu širinu ekrana
       this.showThreat = localStorage.getItem('mtgThreat') !== '0';
       this.showSideLog = localStorage.getItem('mtgSideLog') !== '0';
+      this.sidebarTab = 'table';
+      this.diplomacyComposer = null;
       // THE STACK kao popup na sredini — sam iskoči kad nešto stane na stack
       this.stackPopup = localStorage.getItem('mtgStackPop') !== '0';
       this.stackPopDismissed = 0;   // dužina stacka na kojoj je igrač zatvorio popup
@@ -213,7 +215,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       root.classList.toggle('combat-phase', g.phase === 'combat');
       root.style.setProperty('--arena-turn-accent', g.turnPlayer === this.me ? '#d3974c' : '#778f63');
       // oba panela ugašena → sidebar se uklanja i tabla ide preko cijele širine
-      root.classList.toggle('nosidebar', !this.showThreat && !this.showSideLog);
+      const diplomacyEnabled = !!(g.diplomacy && g.diplomacy.enabled);
+      root.classList.toggle('nosidebar', !diplomacyEnabled && !this.showThreat && !this.showSideLog);
       root.appendChild(this.renderTopbar(g));
       // action ticker — zadnji log
       const last = g.log.length ? g.log[g.log.length - 1] : null;
@@ -239,7 +242,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.showStops) root.appendChild(this.renderStopSettings(g));
       const reveal = this.renderRevealPopup(g);
       if (reveal) root.appendChild(reveal);
-      const modal = this.renderAttackTargetPopup(g) || this.renderBlockersModal(g) || this.renderDecisionModal(g);
+      const diplomacyModal = this.renderDiplomacyModal(g);
+      const modal = diplomacyModal || this.renderAttackTargetPopup(g) || this.renderBlockersModal(g) || this.renderDecisionModal(g);
       // stack popup stoji na sredini, pa se sklanja kad je otvoren bilo koji drugi
       // overlay — inače bi se preklapali baš na istom mjestu
       const blocked = !!modal || !!reveal || !!this.sheet || !!this.playerSheet || !!this.zoneBrowse ||
@@ -473,6 +477,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // ---------- desktop sidebar: threat panel + tok igre ----------
     renderSidebar(g) {
       const side = el('div', 'sidebar');
+      const diplomacyEnabled = !!(g.diplomacy && g.diplomacy.enabled);
+      if (diplomacyEnabled) {
+        const tabs = el('div', 'sidebartabs');
+        for (const [key, label] of [['table', 'TABLE'], ['diplomacy', 'DIPLOMACY'], ['log', 'LOG']]) {
+          const tab = el('button', 'sidebartab' + (this.sidebarTab === key ? ' on' : ''), label);
+          tab.onclick = () => { this.sidebarTab = key; this.render(); };
+          tabs.appendChild(tab);
+        }
+        side.appendChild(tabs);
+        if (this.sidebarTab === 'diplomacy') {
+          side.appendChild(this.renderDiplomacyPanel(g));
+          return side;
+        }
+        if (this.sidebarTab === 'log') {
+          side.appendChild(this.renderSidebarLog(g));
+          return side;
+        }
+      }
       // THE STACK — šta trenutno čeka na rezoluciju
       {
         const sp = el('div', 'stackpanel');
@@ -520,7 +542,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         side.appendChild(cd);
       }
       // THREAT
-      if (this.showThreat) {
+      if (diplomacyEnabled || this.showThreat) {
       const tp = el('div', 'threatpanel');
       tp.appendChild(el('div', 'sidetitle', '🎯 Threat: who is most dangerous?'));
       const table = MTG.threatTable ? MTG.threatTable(g) : [];
@@ -543,7 +565,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       side.appendChild(tp);
       }
       // TOK IGRE
-      if (this.showSideLog) {
+      if (!diplomacyEnabled && this.showSideLog) {
         const lp = el('div', 'sidelog');
         lp.appendChild(el('div', 'sidetitle', '📜 Game log'));
         const list = el('div', 'sideloglist');
@@ -557,6 +579,147 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return side;
     }
 
+    renderSidebarLog(g) {
+      const lp = el('div', 'sidelog diplomacylog');
+      lp.appendChild(el('div', 'sidetitle', 'GAME LOG'));
+      const list = el('div', 'sideloglist');
+      for (const entry of g.log.slice(-120)) list.appendChild(el('div', 'll k-' + (entry.cls || entry.kind || 'x'), esc(entry.msg)));
+      lp.appendChild(list);
+      requestAnimationFrame(() => { list.scrollTop = list.scrollHeight; });
+      return lp;
+    }
+
+    beginDiplomacyOffer(g, to) {
+      const st = g.diplomacyStatus ? g.diplomacyStatus() : { unlocked: false, reason: 'Diplomacy is unavailable.' };
+      if (!st.unlocked) { this.toast(st.reason); return; }
+      const requests = g.diplomacyClauseOptions(to, this.me);
+      const offers = g.diplomacyClauseOptions(this.me, to);
+      if (!requests.length || !offers.length) {
+        this.toast('There is no meaningful, measurable exchange available with this player right now.');
+        return;
+      }
+      this.diplomacyComposer = { toId: to.idx, requestKey: requests[0].key, offerKey: offers[0].key };
+      this.sidebarTab = 'diplomacy';
+      this.render();
+    }
+
+    renderDiplomacyPanel(g) {
+      const panel = el('div', 'diplomacypanel');
+      const view = g.diplomacyView(this.me);
+      panel.appendChild(el('div', 'diplomacyhero', `
+        <span>🕊️</span><div><b>Diplomacy &amp; Politics</b><small>Short, public, binding agreements. Every player still plays to win.</small></div>`));
+
+      if (!view.status.unlocked) {
+        const progress = Math.min(view.status.unlockRounds, view.status.rounds);
+        const lock = el('div', 'diplomacylock');
+        lock.innerHTML = `<b>🔒 Negotiations locked</b><span>${esc(view.status.reason)}</span>` +
+          `<div class="dipprogress"><i style="width:${Math.round(100 * progress / view.status.unlockRounds)}%"></i></div>` +
+          `<small>${progress} / ${view.status.unlockRounds} full table rounds completed</small>`;
+        panel.appendChild(lock);
+      }
+
+      if (view.incoming.length) {
+        panel.appendChild(el('div', 'dipsectiontitle', `INCOMING · ${view.incoming.length}`));
+        for (const proposal of view.incoming) {
+          const card = el('div', 'dipincoming');
+          card.innerHTML = `<b>${esc(proposal.fromName)} proposes:</b>` +
+            `<p><span>THEY ASK</span>${esc(proposal.request)}</p>` +
+            `<p><span>THEY OFFER</span>${esc(proposal.offer)}</p>` +
+            (proposal.reason ? `<small>${esc(proposal.reason)}</small>` : '');
+          const row = el('div', 'dipactions');
+          const accept = el('button', 'pbtn primary', 'Accept');
+          accept.onclick = () => {
+            const result = g.respondToDiplomacyProposal(proposal.id, true, this.me);
+            this.toast(result.status === 'accepted' ? '🤝 Agreement accepted and active.' : result.reason || 'The proposal expired.');
+            this.render();
+          };
+          const decline = el('button', 'pbtn', 'Decline');
+          decline.onclick = () => { g.respondToDiplomacyProposal(proposal.id, false, this.me); this.toast('Proposal declined.'); this.render(); };
+          row.appendChild(accept); row.appendChild(decline); card.appendChild(row); panel.appendChild(card);
+        }
+      }
+
+      panel.appendChild(el('div', 'dipsectiontitle', `ACTIVE AGREEMENTS · ${view.activeContracts.length}`));
+      if (!view.activeContracts.length) panel.appendChild(el('div', 'dipempty', 'No active agreements.'));
+      for (const contract of view.activeContracts) {
+        const item = el('div', 'dipcontract');
+        item.appendChild(el('b', '', `Agreement #${contract.id}`));
+        for (const clause of contract.clauses) item.appendChild(el('p', 'state-' + clause.state, `${clause.state === 'active' ? '◆' : '✓'} ${esc(clause.label)}`));
+        panel.appendChild(item);
+      }
+
+      panel.appendChild(el('div', 'dipsectiontitle', `PLAYERS · ${view.offersRemaining} OFFER${view.offersRemaining === 1 ? '' : 'S'} LEFT THIS ROUND`));
+      for (const row of view.opponents) {
+        const other = g.players.find(player => player.idx === row.id);
+        const item = el('div', 'dipplayer relation-' + row.relation.key);
+        item.innerHTML = `<div><b>${esc(row.name)}</b><small>${esc(row.relation.label)}</small></div>`;
+        const make = el('button', 'pbtn', 'Make offer');
+        make.disabled = !view.status.unlocked || !view.offersRemaining || !other || other.lost;
+        make.onclick = () => this.beginDiplomacyOffer(g, other);
+        item.appendChild(make); panel.appendChild(item);
+      }
+      panel.appendChild(el('div', 'diprules', 'No alliances, open-ended favors, secret-vote deals, concessions, or promises beyond one combat or one turn. Forced Magic actions override agreements without blame.'));
+      return panel;
+    }
+
+    renderDiplomacyModal(g) {
+      const composer = this.diplomacyComposer;
+      if (!composer || !g.diplomacy || !g.diplomacy.enabled || !this.me) return null;
+      const to = g.players.find(player => player.idx === composer.toId && !player.lost);
+      if (!to) { this.diplomacyComposer = null; return null; }
+      const requests = g.diplomacyClauseOptions(to, this.me);
+      const offers = g.diplomacyClauseOptions(this.me, to);
+      if (!requests.length || !offers.length) { this.diplomacyComposer = null; return null; }
+      if (!requests.some(option => option.key === composer.requestKey)) composer.requestKey = requests[0].key;
+      if (!offers.some(option => option.key === composer.offerKey)) composer.offerKey = offers[0].key;
+
+      const ov = el('div', 'overlay dark diplomacyov');
+      const modal = el('div', 'modal diplomacymodal');
+      ov.appendChild(modal);
+      ov.onclick = event => { if (event.target === ov) { this.diplomacyComposer = null; this.render(); } };
+      modal.appendChild(el('div', 'combatkicker', 'STRUCTURED AGREEMENT'));
+      modal.appendChild(el('div', 'mtitle', `Offer to ${esc(to.name)}`));
+      modal.appendChild(el('div', 'dippreamble', 'Choose one exact promise from each side. The game enforces accepted promises and displays them to the whole table.'));
+
+      const field = (title, sub, options, value, onChange) => {
+        const label = el('label', 'dipfield');
+        label.innerHTML = `<span>${esc(title)}<small>${esc(sub)}</small></span>`;
+        const select = el('select', 'styleselect');
+        for (const option of options) {
+          const node = el('option', '', option.label); node.value = option.key; node.selected = option.key === value; select.appendChild(node);
+        }
+        select.onchange = () => onChange(select.value);
+        label.appendChild(select);
+        return label;
+      };
+
+      const fields = el('div', 'dipfields');
+      fields.appendChild(field('I ASK', `${to.name} promises`, requests, composer.requestKey, value => { composer.requestKey = value; this.render(); }));
+      fields.appendChild(field('I OFFER', 'You promise', offers, composer.offerKey, value => { composer.offerKey = value; this.render(); }));
+      modal.appendChild(fields);
+
+      const request = requests.find(option => option.key === composer.requestKey);
+      const offer = offers.find(option => option.key === composer.offerKey);
+      modal.appendChild(el('div', 'dipreview', `<b>EXACT CONTRACT</b><p><span>${esc(to.name)}</span>${esc(request.label)}</p><p><span>You</span>${esc(offer.label)}</p>`));
+      modal.appendChild(el('div', 'dipwarning', 'Accepted terms are binding for voluntary choices. If a Magic rule forces an incompatible action, that clause ends without a penalty.'));
+
+      const actions = el('div', 'btnrow');
+      const send = el('button', 'pbtn primary', 'Send offer');
+      send.onclick = () => {
+        const result = g.proposeDiplomacy(this.me, to, composer.requestKey, composer.offerKey);
+        this.diplomacyComposer = null;
+        if (result.status === 'accepted') this.toast(`🤝 ${to.name} accepted. Agreement #${result.contract.id} is active.`);
+        else if (result.status === 'countered') this.toast(`🕊️ ${to.name} made a counteroffer. Review it in Diplomacy.`);
+        else this.toast(`Proposal rejected: ${result.reason || 'No deal.'}`);
+        this.sidebarTab = 'diplomacy';
+        this.render();
+      };
+      const cancel = el('button', 'pbtn', 'Cancel');
+      cancel.onclick = () => { this.diplomacyComposer = null; this.render(); };
+      actions.appendChild(send); actions.appendChild(cancel); modal.appendChild(actions);
+      return ov;
+    }
+
     // tastatura: Space/Enter = glavno dugme, Esc = zatvori panele
     initKeys() {
       if (this._keysInit) return;
@@ -564,9 +727,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       document.addEventListener('keydown', ev => {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(ev.target.tagName)) return;
         if (ev.key === 'Escape') {
-          if (this.sheet || this.playerSheet || this.zoneBrowse || this.showLog || this.showHelp || this.showJudge) {
+          if (this.sheet || this.playerSheet || this.zoneBrowse || this.showLog || this.showHelp || this.showJudge || this.diplomacyComposer) {
             this.sheet = null; this.playerSheet = null; this.zoneBrowse = null;
             this.showLog = false; this.showHelp = false; this.showJudge = false;
+            this.diplomacyComposer = null;
             this.render();
             ev.preventDefault();
           }
@@ -726,21 +890,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const setB = el('button', 'tbtn stopbtn', `${curMode.icon} ${curMode.short}`);
       setB.title = `Stops: ${curMode.label}. ${curMode.desc}`;
       setB.onclick = () => { this.showStops = true; this.render(); };
+      const diplomacyEnabled = !!(g.diplomacy && g.diplomacy.enabled);
       // desktop panel toggle-i: gase threat/tok igre da tabla dobije punu širinu
-      const thB = el('button', 'tbtn deskonly' + (this.showThreat ? ' on' : ''), '🎯');
-      thB.title = (this.showThreat ? 'Hide' : 'Show') + ' Threat panel';
+      const thB = el('button', 'tbtn deskonly' + (diplomacyEnabled ? (this.sidebarTab === 'table' ? ' on' : '') : (this.showThreat ? ' on' : '')), '🎯');
+      thB.title = diplomacyEnabled ? 'Open table information' : (this.showThreat ? 'Hide' : 'Show') + ' Threat panel';
       thB.onclick = () => {
+        if (diplomacyEnabled) { this.sidebarTab = 'table'; this.render(); return; }
         this.showThreat = !this.showThreat;
         localStorage.setItem('mtgThreat', this.showThreat ? '1' : '0');
         this.render();
       };
-      const slB = el('button', 'tbtn deskonly' + (this.showSideLog ? ' on' : ''), '📋');
-      slB.title = (this.showSideLog ? 'Hide' : 'Show') + ' game log';
+      const slB = el('button', 'tbtn deskonly' + (diplomacyEnabled ? (this.sidebarTab === 'log' ? ' on' : '') : (this.showSideLog ? ' on' : '')), '📋');
+      slB.title = diplomacyEnabled ? 'Open sidebar game log' : (this.showSideLog ? 'Hide' : 'Show') + ' game log';
       slB.onclick = () => {
+        if (diplomacyEnabled) { this.sidebarTab = 'log'; this.render(); return; }
         this.showSideLog = !this.showSideLog;
         localStorage.setItem('mtgSideLog', this.showSideLog ? '1' : '0');
         this.render();
       };
+      const dipB = diplomacyEnabled ? el('button', 'tbtn deskonly' + (this.sidebarTab === 'diplomacy' ? ' on' : ''), '🕊️') : null;
+      if (dipB) {
+        const incoming = g.diplomacyView ? g.diplomacyView(this.me).incoming.length : 0;
+        dipB.textContent = incoming ? `🕊️ ${incoming}` : '🕊️';
+        dipB.title = incoming ? `${incoming} unanswered diplomacy proposal${incoming === 1 ? '' : 's'}` : 'Open Diplomacy & Politics';
+        dipB.onclick = () => { this.sidebarTab = 'diplomacy'; this.render(); };
+      }
       const stB = el('button', 'tbtn' + (this.stackPopup ? ' on' : ''), '🃏');
       stB.title = (this.stackPopup ? 'Disable' : 'Enable') + ' the centered stack popup';
       stB.onclick = () => {
@@ -754,7 +928,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       newB.onclick = () => { if (confirm('Start a new game? The current game will be lost.')) location.reload(); };
       btns.appendChild(helpB); btns.appendChild(logB);
       btns.appendChild(stB);
-      btns.appendChild(thB); btns.appendChild(slB);
+      btns.appendChild(thB); if (dipB) btns.appendChild(dipB); btns.appendChild(slB);
       btns.appendChild(setB); btns.appendChild(newB);
       bar.appendChild(btns);
       return bar;
@@ -2173,7 +2347,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       body.appendChild(card);
 
       const choices = el('div', 'attacktargets');
-      for (const target of pd.q.opponents) {
+      const forced = (pd.q.forced || []).includes(attacker);
+      const diplomacyTargets = g.diplomacyAttackTargetsFor
+        ? g.diplomacyAttackTargetsFor(attacker, pd.q.opponents, forced)
+        : pd.q.opponents;
+      for (const target of diplomacyTargets) {
         const creatures = g.creatures(target);
         const blockers = creatures.filter(c => !c.tapped && !c.cur.cantBlock && g.canBlock(c, attacker));
         const option = el('button', 'attacktarget' + (selected && selected.target === target ? ' selected' : ''));
@@ -2190,6 +2368,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
         choices.appendChild(option);
       }
+      if (!diplomacyTargets.length) choices.appendChild(el('div', 'emptyrow', 'Every legal defender is protected by an active agreement.'));
       body.appendChild(choices);
       modal.appendChild(body);
       const foot = el('div', 'attackpickfoot');

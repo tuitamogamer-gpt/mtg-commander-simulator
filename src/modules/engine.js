@@ -804,6 +804,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // token replacements (Academy Manufactor, Chatterfang)
       if (!opts.noReplace) {
         const pending = this.replacers('createToken').filter(r => r.ctrl === ctrl);
+        // Svaka Kaya -2 je zaseban replacement effect. Uključi ih u isti
+        // redoslijed kao ostale token replacere i primijeni svaku (x2, x4...).
+        for (const effect of this.untilEffects.filter(e => e.kind === 'tokenDouble' && e.who === ctrl)) {
+          pending.push({
+            ctrl, src: effect.sourceCard || null, label: effect.label || 'Kaya, Geist Hunter',
+            run: async (g, current) => current.concat(current.slice()),
+          });
+        }
         while (pending.length) {
           let index = 0;
           if (pending.length > 1 && ctrl.controller && ctrl.controller.decide) {
@@ -811,7 +819,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               type: 'chooseOption',
               prompt: 'Redoslijed replacement efekata za tokene — koji primjenjuješ sljedeći?',
               options: pending.map((entry, i) => ({
-                key: String(i), label: entry.src ? entry.src.name : `Replacement ${i + 1}`,
+                key: String(i), label: entry.src ? entry.src.name : (entry.label || `Replacement ${i + 1}`),
                 source: entry.src,
               })),
               aiHint: { kind: 'tokenReplacementOrder', defs: defs.slice(), replacements: pending.slice() },
@@ -822,8 +830,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const [r] = pending.splice(index, 1);
           defs = await r.run(this, defs, ctrl, r.src) || defs;
         }
-        // privremeno dupliranje tokena (Kaya -2)
-        if (this.untilEffects.some(e => e.kind === 'tokenDouble' && e.who === ctrl)) defs = defs.concat(defs.slice());
       }
       const made = [];
       for (const sp of defs) {
@@ -1202,6 +1208,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.removeCounters(target, 'loyalty', n);
         this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete planeswalkeru ${target.name}.`, 'dmg');
         if (src && src.kw && src.kw('lifelink')) await this.gainLife(src.ctrl, n, src);
+        await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
         if (!opts.deferSBA) await this.checkSBA();
         return n;
       }
@@ -1809,7 +1816,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const ctrl = tr.ctrl || (tr.src ? tr.src.ctrl : this.players[0]);
       if (ctrl.lost) return;
       if (tr.onlyIf && !tr.onlyIf(this, tr.src, tr.data)) return;
-      const ctx = { g: this, src: tr.src, you: ctrl, data: tr.data, targets: [] };
+      const ctx = {
+        g: this, src: tr.src, you: ctrl, data: tr.data, targets: [],
+        // Obavezni trigger ne smije izgubiti Magic metu zbog društvenog
+        // ugovora. Ako je jedina moguća meta zaštićena dogovorom, Magic pravilo
+        // pobjeđuje, a diplomatija bilježi izuzetak bez krivice.
+        diplomacyForcedTargeting: !tr.opt,
+      };
       // optional trigger?
       if (tr.opt) {
         const yes = await ctrl.controller.decide(this, {
@@ -1831,7 +1844,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               ? entry.targets(this, tr.src, tr.data || {})
               : entry.targets;
             return !(specs || []).some(spec => !spec.upTo &&
-              this.legalTargets(spec, tr.src, ctrl).length < (spec.count ?? 1));
+              this.legalTargets(spec, tr.src, ctrl, { allowForced: !tr.opt }).length < (spec.count ?? 1));
           })
           .map(({ entry, index }) => Object.assign({
             key: String(index), label: entry.label,
@@ -1907,9 +1920,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return (target.cur.protectionFrom || []).some(test => test(this, source, target));
     }
 
-    legalTargets(spec, src, ctrl) {
+    legalTargets(spec, src, ctrl, opts = {}) {
       const out = [];
       const zone = spec.zone || 'battlefield';
+      const finish = () => this.diplomacyFilterTargets
+        ? this.diplomacyFilterTargets(out, spec, src, ctrl, opts)
+        : out;
       const checkProt = (c) => {
         if (!(c instanceof CardInst)) {
           // player target
@@ -1934,7 +1950,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!checkProt(p)) continue;
           out.push(p);
         }
-        return out;
+        return finish();
       }
       if (spec.what === 'any') { // creature, player, planeswalker
         for (const p of this.alivePlayers()) {
@@ -1947,7 +1963,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!checkProt(c)) continue;
           out.push(c);
         }
-        return out;
+        return finish();
       }
       if (zone === 'battlefield') {
         for (const c of this.bf()) {
@@ -1966,7 +1982,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!spec.filter || spec.filter(this, so, ctrl, src)) out.push(so);
         }
       }
-      return out;
+      return finish();
     }
 
     async pickTargets(ctx, specs, src, ctrl) {
@@ -1974,7 +1990,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx.wardTargets = [];
       const targetedNow = [];
       for (const spec of specs) {
-        let cands = this.legalTargets(spec, src, ctrl);
+        let cands = this.legalTargets(spec, src, ctrl, { allowForced: !!ctx.diplomacyForcedTargeting });
         if (spec.differentFromPrevious && ctx.targets.length) {
           const previous = ctx.targets[ctx.targets.length - 1];
           const excluded = new Set(Array.isArray(previous) ? previous : [previous]);
@@ -1994,6 +2010,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         const picked = Array.isArray(decision) ? [...new Set(decision)] : [];
         if (picked.length < min || picked.length > max || picked.some(target => !cands.includes(target))) return false;
+        if (ctx.diplomacyForcedTargeting && this.diplomacyHandleForcedTarget) {
+          for (const target of picked) this.diplomacyHandleForcedTarget(ctrl, target, src, spec);
+        }
         // "for any number of opponents/players ... that player controls" — najviše jedna meta po kontroloru
         if (spec.distinctCtrl) {
           const ctrls = picked.filter(t => t && t.ctrl).map(t => t.ctrl);

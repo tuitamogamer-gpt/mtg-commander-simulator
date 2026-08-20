@@ -1836,6 +1836,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (a.oncePerTurn && c.meta['_ab_' + ai] === this.turnNo) return;
         // loyalty se troši jednom po potezu — iskorišteni planeswalker se ne nudi ponovo
         if (a.loyalty !== undefined && c.meta._loyUsed === this.turnNo) return;
+        // Minus sposobnost se ne smije nuditi ako planeswalker nema dovoljno
+        // loyalty countera da plati trošak (CR 606.5a).
+        if (a.loyalty < 0 && (c.counters.loyalty || 0) < -a.loyalty) return;
         const cost = a.cost || {};
         if (cost.tap && (c.tapped)) return;
         if (cost.tap && c.is('Creature') && c.sick && !c.kw('haste')) return;
@@ -1996,6 +1999,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const c = entry.card;
     if (entry.turnFaceUp) return this.turnFaceUp(p, c, entry.faceUpCost);
     if (c.zone === 'battlefield' && c.cur && c.cur.activationDisabled) return false;
+    // Loyalty je trošak. Provjeri ga prije biranja meta i plaćanja drugih
+    // troškova, a oznaku korištenja postavi tek kada je aktivacija legalna.
+    const loyaltyAbility = entry.ability && entry.ability.loyalty !== undefined ? entry.ability : null;
+    if (loyaltyAbility && (c.meta._loyUsed === this.turnNo ||
+      (loyaltyAbility.loyalty < 0 && (c.counters.loyalty || 0) < -loyaltyAbility.loyalty))) return false;
     if (entry.manaAbility) {
       const source = entry.manaSource;
       const cost = source.extraCost || {};
@@ -2417,12 +2425,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // loyalty
     if (a.loyalty !== undefined) {
       if (c.meta._loyUsed === this.turnNo) return false;
-      c.meta._loyUsed = this.turnNo;
       if (a.loyalty > 0) this.addCounters(c, 'loyalty', a.loyalty, true);
       else if (a.loyalty < 0) {
         if ((c.counters['loyalty'] || 0) < -a.loyalty) return false;
         this.removeCounters(c, 'loyalty', -a.loyalty);
       }
+      c.meta._loyUsed = this.turnNo;
     }
     this.markAbilityActivated(p, c);
     this.lg(`${p.name} activates: ${c.name}${a.label ? ' — ' + a.label : ''}.`, 'activate');
@@ -2682,6 +2690,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.runTurn = async function () {
     const p = this.turnPlayer;
+    if (this.diplomacyRefresh) this.diplomacyRefresh();
     this.turnNo++;
     p.turnsStarted++;
     this.diedThisTurn = [];
@@ -2770,6 +2779,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await this.pace(p.isAI ? 330 : 0);
     await this.emit('precombatMain', { player: p });
     await this.flushTriggers();
+    // Diplomatski botovi pregovaraju samo na neutralnom checkpointu, nikad
+    // usred targetiranja, rezolucije ili borbe. Sistem sam provjerava da li su
+    // završene prve tri pune runde i da li postoji stvarna vodeća prijetnja.
+    if (this.processDiplomacyCheckpoint) this.processDiplomacyCheckpoint(p);
     if (!p.lost) await this.mainPhase(p);
     if (this.gameOver) return;
 
@@ -2890,6 +2903,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const q of this.players) q.tempReductions = [];
     this.recalc();
     await this.checkSBA();
+    if (this.diplomacyEndTurn) this.diplomacyEndTurn(p);
 
     // ekstra potezi (Plea for Power i sl.)
     if (this.extraTurns && this.extraTurns.length && this.extraTurnDepth < 3) {
@@ -3019,6 +3033,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const others = oppList.filter(o => o !== tgt);
         if (others.length) tgt = others[0];
       }
+      if (this.diplomacyAttackBlocked && this.diplomacyAttackBlocked(p, tgt)) {
+        const alternatives = this.legalAttackTargets(c).filter(target => !this.diplomacyAttackBlocked(p, target));
+        if (alternatives.length) {
+          this.lg(`${c.name} honors a diplomacy agreement and attacks ${alternatives[0].name} instead.`, 'diplomacy');
+          tgt = alternatives[0];
+        } else if (forced.includes(c)) {
+          this.diplomacyVoidAttackPromise(p, tgt, 'a forced attack had no compliant defender');
+        } else {
+          this.lg(`${c.name} does not attack ${tgt.name} because of an active agreement.`, 'diplomacy');
+          continue;
+        }
+      }
       if (cantAttackTarget(c, tgt)) {
         const others = oppList.filter(o => o !== tgt && !cantAttackTarget(c, o));
         if (others.length) { this.lg(`${c.name} cannot attack ${tgt.name} — redirected.`); tgt = others[0]; }
@@ -3028,16 +3054,43 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!c.kw('vigilance')) this.tap(c);
       attackers.push(c);
     }
+    // "Pressure the leader" is an exact one-combat promise, not an alliance.
+    // If the actor is able to keep it, one legal attacker is assigned. If no
+    // creature can legally do so, the clause becomes void without blame.
+    if (this.diplomacyRequiredAttackTarget) {
+      const pressureTarget = this.diplomacyRequiredAttackTarget(p);
+      const alreadyPressuring = pressureTarget && attackers.some(card =>
+        (card.attacking instanceof MTG.Player ? card.attacking : card.attacking && card.attacking.ctrl) === pressureTarget);
+      if (pressureTarget && !alreadyPressuring) {
+        const candidates = elig.filter(card => this.canAttackTarget(card, pressureTarget) &&
+          !(this.diplomacyAttackBlocked && this.diplomacyAttackBlocked(p, pressureTarget)))
+          .sort((a, b) => (forced.includes(a) - forced.includes(b)) ||
+            this.dmgAmount(a, 'normal') - this.dmgAmount(b, 'normal') || a.iid - b.iid);
+        const chosen = candidates[0];
+        if (chosen) {
+          chosen.attacking = pressureTarget;
+          if (!chosen.kw('vigilance') && !chosen.tapped) this.tap(chosen);
+          if (!attackers.includes(chosen)) attackers.push(chosen);
+          this.lg(`🤝 ${chosen.name} attacks ${pressureTarget.name} to fulfill a diplomacy agreement.`, 'diplomacy');
+        } else this.diplomacyVoidAttackPromise(p, pressureTarget, 'no creature could legally attack the promised player');
+      }
+    }
     // forced but not declared → auto-declare vs random opp
     for (const c of forced) {
       if (!attackers.includes(c) && !c.tapped) {
-        const legalOpps = oppList.filter(target => !cantAttackTarget(c, target));
+        const magicLegal = oppList.filter(target => !cantAttackTarget(c, target));
+        let legalOpps = this.diplomacyAttackBlocked
+          ? magicLegal.filter(target => !this.diplomacyAttackBlocked(p, target))
+          : magicLegal;
+        if (!legalOpps.length && magicLegal.length) legalOpps = magicLegal;
         if (!legalOpps.length) continue;
         let tgt = legalOpps[Math.floor(this.rnd() * legalOpps.length)];
         if (this.isForcedAttackOther(c)) {
           const notme = legalOpps.filter(o => o !== this.forcedVictimException(c));
           if (notme.length) tgt = notme[0];
         }
+        if (this.diplomacyAttackBlocked && this.diplomacyAttackBlocked(p, tgt))
+          this.diplomacyVoidAttackPromise(p, tgt, 'a forced attack had no compliant defender');
         c.attacking = tgt;
         if (!c.kw('vigilance')) this.tap(c);
         attackers.push(c);
@@ -3256,6 +3309,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const c of this.bf()) { c.attacking = null; c.blocking = null; c.blockedBy = []; c.wasBlocked = false; c.meta._dealtFirstStrike = false; }
     this.combat = null;
     this.step = '';
+    if (this.diplomacyAfterCombat) this.diplomacyAfterCombat(p);
   };
 
   G.canAttackAtAll = function (c) {
@@ -3279,12 +3333,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!(candidate instanceof MTG.Player) && !(candidate instanceof MTG.CardInst && candidate.is('Planeswalker') && candidate.zone === 'battlefield')) return false;
       if (c.def.attackTargetRestriction && !c.def.attackTargetRestriction(this, c, candidate)) return false;
       for (const e of this.untilEffects) {
-        if (e.kind === 'cantAttackPlayer' && e.who === c.ctrl && e.notPlayer === defender) return false;
-        if (e.kind === 'cantAttackPlayerCard' && e.iid === c.iid && e.notPlayer === defender &&
+        if (candidate instanceof MTG.Player && e.kind === 'cantAttackPlayer' && e.who === c.ctrl && e.notPlayer === defender) return false;
+        if (candidate instanceof MTG.Player && e.kind === 'cantAttackPlayerCard' && e.iid === c.iid && e.notPlayer === defender &&
           (e.timestamp === undefined || e.timestamp === c.timestamp) &&
           (!e.whileCounter || (c.counters[e.whileCounter] || 0) > 0)) return false;
       }
-      for (const permanent of this.bf()) {
+      if (candidate instanceof MTG.Player) for (const permanent of this.bf()) {
         if (permanent.ctrl === defender && permanent.def.protectsController && permanent.def.protectsController(this, permanent, c, defender)) return false;
       }
       return true;
@@ -3302,6 +3356,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const players = c.ctrl.opponents(this);
     const planeswalkers = this.bf().filter(card => card.is('Planeswalker') && card.ctrl !== c.ctrl);
     return players.concat(planeswalkers).filter(target => this.canAttackTarget(c, target));
+  };
+
+  // Goad zahtijeva napad na drugog IGRAČA ako je to moguće; planeswalker
+  // goadera nije prečica za ispunjavanje tog zahtjeva.
+  G.legalDeclarationAttackTargets = function (c) {
+    const targets = this.legalAttackTargets(c);
+    if (!this.isForcedAttackOther(c)) return targets;
+    const except = this.forcedVictimException(c);
+    const otherPlayers = targets.filter(target => target instanceof MTG.Player && target !== except);
+    return otherPlayers.length ? otherPlayers : targets;
   };
 
   // Goad se u ovom kodu bilježi na tri načina: untilEffects (E.goad), trajni

@@ -616,9 +616,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const planeswalkers = game.bf().filter(card => card.is('Planeswalker') && card.ctrl !== player);
     let beam = [{ assignments: [], score: 0 }];
     for (const attacker of eligible) {
-      const targets = (game.legalAttackTargets ? game.legalAttackTargets(attacker) : q.opponents || [])
+      const magicTargets = (game.legalAttackTargets ? game.legalAttackTargets(attacker) : q.opponents || [])
         .concat(planeswalkers.filter(card => !game.legalAttackTargets || game.canAttackTarget(attacker, card)))
         .filter((target, index, list) => list.indexOf(target) === index);
+      const targets = game.diplomacyAttackTargetsFor
+        ? game.diplomacyAttackTargetsFor(attacker, magicTargets, forced.has(attacker))
+        : magicTargets;
       const next = [];
       for (const node of beam) {
         // "Must attack if able" ne zahtijeva nemoguću deklaraciju. Ako ovaj
@@ -640,7 +643,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (!beam.length) beam = [{ assignments: [], score: 0 }];
     if (!beam.some(plan => plan.assignments.length === 0) && !forced.size) beam.push({ assignments: [], score: 0 });
-    return beam.map(plan => ({ kind: 'declareAttackers', assignments: plan.assignments, _combatScore: plan.score }));
+    let plans = beam.map(plan => ({ kind: 'declareAttackers', assignments: plan.assignments, _combatScore: plan.score }));
+    const promisedTarget = game.diplomacyRequiredAttackTarget && game.diplomacyRequiredAttackTarget(player);
+    if (promisedTarget) {
+      const canFulfill = eligible.some(attacker => game.canAttackTarget(attacker, promisedTarget) &&
+        (!game.diplomacyAttackBlocked || !game.diplomacyAttackBlocked(player, promisedTarget)));
+      if (canFulfill) {
+        const fulfilling = plans.filter(plan => plan.assignments.some(item =>
+          (item.target instanceof U.Player ? item.target : item.target && item.target.ctrl) === promisedTarget));
+        if (fulfilling.length) plans = fulfilling;
+      }
+    }
+    return plans;
   }
 
   function blockAssignmentScore(game, blocker, attacker, defender) {
