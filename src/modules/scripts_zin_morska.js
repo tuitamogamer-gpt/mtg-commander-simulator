@@ -1160,12 +1160,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         label: '-2: Artefakt → 4/4', loyalty: -2, sorcery: true,
         targets: [T.permanent((g, c, ctrl) => c.is('Artifact') && c.ctrl === ctrl, { prompt: 'Artefakt', aiHint: { goal: 'buff' } })],
         run: async ctx => {
-          const iid = ctx.targets[0].iid;
+          const iid = ctx.targets[0].iid, timestamp = ctx.targets[0].timestamp;
           ctx.g.untilEffects.push({
             expires: 'never', kind: 'tezz44',
             apply: (g2, bf) => {
-              const c = bf.find(x => x.iid === iid);
+              const c = bf.find(x => x.iid === iid && x.timestamp === timestamp);
               if (!c) return;
+              if (!c.cur.types.includes('Artifact')) c.cur.types.push('Artifact');
               if (!c.cur.types.includes('Creature')) c.cur.types.push('Creature');
               if (!c.hasSub('Vehicle')) {
                 c.cur.basePower = 4; c.cur.baseToughness = 4;

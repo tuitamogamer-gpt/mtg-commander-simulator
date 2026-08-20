@@ -418,7 +418,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { label: '+1: Tri vojnika', loyalty: 1, sorcery: true, run: async ctx => { await ctx.g.makeTokens('soldierW', ctx.you, { n: 3 }); } },
       {
         label: '-3: Uništi power 4+', loyalty: -3, sorcery: true,
-        run: async ctx => { for (const c of ctx.g.bf().filter(c => c.is('Creature') && c.power >= 4).slice()) await ctx.g.destroy(c); },
+        run: async ctx => { await ctx.g.destroyMany(ctx.g.bf().filter(c => c.is('Creature') && c.power >= 4)); },
       },
       {
         label: '-7: Emblem +2/+2 flying', loyalty: -7, sorcery: true,

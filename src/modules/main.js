@@ -1773,6 +1773,55 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'planeswalkerCombat') {
+      const makePermanent = (name, ctrl, loyalty) => {
+        const card = new MTG.CardInst(MTG.DEFS[name], ctrl);
+        card.ctrl = ctrl; card.zone = 'battlefield'; card.sick = false; card.tapped = false;
+        g.battlefield.push(card);
+        if (loyalty !== undefined) card.counters.loyalty = loyalty;
+        return card;
+      };
+      const attackers = [
+        makePermanent('Riders of Gavony', ui.me),
+        makePermanent('Humble Defector', ui.me),
+        makePermanent('Stormcatch Mentor', ui.me),
+        makePermanent('Academy Manufactor', ui.me),
+        makePermanent('Whirler Rogue', ui.me),
+      ];
+      const walkers = [
+        makePermanent("Vraska, Betrayal's Sting", g.players[1], 6),
+        makePermanent("Elspeth, Sun's Champion", g.players[2], 4),
+        makePermanent('Tezzeret, Betrayer of Flesh', g.players[3], 4),
+      ];
+      g.turnPlayer = ui.me; g.turnNo = 20; g.phase = 'combat'; g.step = 'attackers'; g.paced = false;
+      g.combat = { attackers: [], defenders: new Map() };
+      g.recalc();
+      const opponents = ui.me.opponents(g);
+      void ui.me.controller.decide(g, {
+        type: 'attackers', eligible: attackers, opponents,
+        attackTargets: opponents.concat(walkers), forced: [attackers[0]],
+      }).then(declared => {
+        const valid = Array.isArray(declared) ? declared.filter(entry =>
+          attackers.includes(entry.card) && g.legalDeclarationAttackTargets(entry.card).includes(entry.target)) : [];
+        for (const entry of valid) {
+          entry.card.attacking = entry.target;
+          if (!entry.card.kw('vigilance')) g.tap(entry.card);
+        }
+        g.combat.attackers = valid.map(entry => entry.card);
+        g.lg(`Planeswalker combat smoke: ${valid.length} attackers assigned.`, 'attack');
+        ui.render();
+      });
+      // Browser canary namjerno fokusira planeswalkera: prvi klik na eligible
+      // kartu mora je dodijeliti upravo Vraska laneu, bez per-card popupa.
+      if (ui.pending) {
+        ui.pending.attackTarget = walkers[0];
+        if (new URLSearchParams(window.location.search).get('smokePreset') === 'assigned') {
+          ui.pending.sel.push({ card: attackers[0], target: walkers[0] });
+        }
+      }
+      ui.render();
+      return;
+    }
     g.start().catch(err => {
       console.error(err);
         ui.toast('Game error: ' + err.message);
@@ -1895,6 +1944,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         nodes: entry.analyzedNodes, depth: entry.reachedDepth,
         tieBreak: entry.tieBreak, fallback: entry.fallback,
       })),
+      pendingDecision: ui && ui.pending ? {
+        type: ui.pending.q.type,
+        eligible: (ui.pending.q.eligible || []).map(card => card.name),
+        forced: (ui.pending.q.forced || []).map(card => card.name),
+        assignments: (ui.pending.sel || []).map(entry => ({ card: entry.card.name, target: entry.target.name })),
+      } : null,
       players,
       recentLog: g.log.slice(-10),
     };

@@ -1582,7 +1582,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         label: '-2: Dupli tokeni (EOT)', loyalty: -2, sorcery: true,
         run: async ctx => {
-          ctx.g.untilEffects.push({ expires: 'eot', kind: 'tokenDouble', who: ctx.you });
+          ctx.g.untilEffects.push({
+            expires: 'eot', kind: 'tokenDouble', who: ctx.you,
+            sourceCard: ctx.src, label: 'Kaya, Geist Hunter',
+          });
           ctx.g.lg('Kaya: tokeni se dupliraju do kraja poteza.');
         },
       },
@@ -1591,8 +1594,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => {
           let n = 0;
           for (const q of ctx.g.players) {
-            n += q.graveyard.length;
-            while (q.graveyard.length) { const c = q.graveyard.pop(); c.zone = 'exile'; q.exile.push(c); }
+            for (const c of q.graveyard.slice()) {
+              await ctx.g.move(c, 'exile');
+              if (c.zone === 'exile') n++;
+            }
           }
           await ctx.g.makeTokens('spiritW', ctx.you, { n });
         },

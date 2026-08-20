@@ -366,8 +366,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => {
           const a = ctx.targets[0], b = ctx.targets[1];
           if (a.zone !== 'battlefield' || b.zone !== 'battlefield') return;
-          await ctx.g.damageCreature(a, b, a.power);
-          await ctx.g.damageCreature(b, a, b.power);
+          const aPower = a.power, bPower = b.power;
+          await ctx.g.damageCreature(a, b, aPower, { deferSBA: true });
+          await ctx.g.damageCreature(b, a, bPower, { deferSBA: true });
+          await ctx.g.checkSBA();
         },
       },
     ],

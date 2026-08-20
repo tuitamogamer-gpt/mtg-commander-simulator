@@ -3018,23 +3018,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await this.pace(p.isAI ? 330 : 0);
     // forced attackers
     const forced = elig.filter(c => c.cur.mustAttack || c.def.mustAttack || this.isForcedToAttack(c));
+    const attackTargets = oppList.concat(this.bf().filter(card => card.is('Planeswalker') && card.ctrl !== p));
     const declared = await p.controller.decide(this, {
-      type: 'attackers', eligible: elig, opponents: oppList, forced,
+      type: 'attackers', eligible: elig, opponents: oppList, attackTargets, forced,
     });
     const decl = Array.isArray(declared) ? declared : [];
-    // decl: [{card, target(player or pw iid)}]
-    const cantAttackTarget = (c, tgt) => !this.canAttackTarget(c, tgt);
+    // decl: [{card, target(Player or planeswalker CardInst)}]
+    const declarationTargets = c => this.legalDeclarationAttackTargets(c);
+    const cantAttackTarget = (c, tgt) => !declarationTargets(c).includes(tgt);
     const attackers = [];
     for (const a of decl) {
       const c = a.card;
       if (!elig.includes(c)) continue;
       let tgt = a.target;
-      if (this.isForcedAttackOther(c) && tgt === this.forcedVictimException(c)) {
-        const others = oppList.filter(o => o !== tgt);
-        if (others.length) tgt = others[0];
-      }
       if (this.diplomacyAttackBlocked && this.diplomacyAttackBlocked(p, tgt)) {
-        const alternatives = this.legalAttackTargets(c).filter(target => !this.diplomacyAttackBlocked(p, target));
+        const alternatives = declarationTargets(c).filter(target => !this.diplomacyAttackBlocked(p, target));
         if (alternatives.length) {
           this.lg(`${c.name} honors a diplomacy agreement and attacks ${alternatives[0].name} instead.`, 'diplomacy');
           tgt = alternatives[0];
@@ -3046,7 +3044,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       if (cantAttackTarget(c, tgt)) {
-        const others = oppList.filter(o => o !== tgt && !cantAttackTarget(c, o));
+        const others = declarationTargets(c).filter(o => o !== tgt);
         if (others.length) { this.lg(`${c.name} cannot attack ${tgt.name} — redirected.`); tgt = others[0]; }
         else { this.lg(`${c.name} cannot attack (restriction).`); continue; }
       }
@@ -3078,17 +3076,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // forced but not declared → auto-declare vs random opp
     for (const c of forced) {
       if (!attackers.includes(c) && !c.tapped) {
-        const magicLegal = oppList.filter(target => !cantAttackTarget(c, target));
+        const magicLegal = declarationTargets(c);
         let legalOpps = this.diplomacyAttackBlocked
           ? magicLegal.filter(target => !this.diplomacyAttackBlocked(p, target))
           : magicLegal;
         if (!legalOpps.length && magicLegal.length) legalOpps = magicLegal;
         if (!legalOpps.length) continue;
         let tgt = legalOpps[Math.floor(this.rnd() * legalOpps.length)];
-        if (this.isForcedAttackOther(c)) {
-          const notme = legalOpps.filter(o => o !== this.forcedVictimException(c));
-          if (notme.length) tgt = notme[0];
-        }
         if (this.diplomacyAttackBlocked && this.diplomacyAttackBlocked(p, tgt))
           this.diplomacyVoidAttackPromise(p, tgt, 'a forced attack had no compliant defender');
         c.attacking = tgt;
@@ -3099,7 +3093,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // attack taxes (Propaganda)
     for (const c of attackers.slice()) {
-      const dp = c.attacking instanceof MTG.Player ? c.attacking : (c.attacking && c.attacking.ctrl);
+      // "can't attack you unless..." štiti igrača, ne njegov planeswalker.
+      const dp = c.attacking instanceof MTG.Player ? c.attacking : null;
       if (!dp) continue;
       let tax = 0;
       for (const b of this.bf()) if (b.ctrl === dp && b.def.attackTax) tax += b.def.attackTax;
@@ -3139,7 +3134,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (mine.length) {
           const pw = mine.reduce((s, c) => s + (c.cur ? c.cur.power : 0), 0);
           await this.spotlight(
-            `⚔️ ${p.name} napada TEBE — ${mine.length} ${U.plural(mine.length, 'stvorenje', 'stvorenja')} (${pw} štete): ${mine.map(c => c.name).slice(0, 4).join(', ')}`,
+            `⚔️ ${p.name} napada TEBE ILI TVOJ PLANESWALKER — ${mine.length} ${U.plural(mine.length, 'stvorenje', 'stvorenja')} (${pw} štete): ${mine.map(c => c.name).slice(0, 4).join(', ')}`,
             { kind: 'danger', ms: 1800 });
         }
       }

@@ -96,7 +96,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.holdNext = false;     // ručni "stani na sljedećem prioritetu"
       this.react = null;         // otvoren prozor za reakciju
       this.actionStageDismissed = new WeakSet();
-      this.attackPicker = null;  // napadač za kojeg biramo branitelja u popupu
+      this.attackPicker = null;  // legacy state; attack allocation lives in the single combat modal
       this.showStops = false;
       this.renderQueued = false;
       this.imgCache = {};
@@ -243,7 +243,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const reveal = this.renderRevealPopup(g);
       if (reveal) root.appendChild(reveal);
       const diplomacyModal = this.renderDiplomacyModal(g);
-      const modal = diplomacyModal || this.renderAttackTargetPopup(g) || this.renderBlockersModal(g) || this.renderDecisionModal(g);
+      const modal = diplomacyModal || this.renderAttackersModal(g) || this.renderBlockersModal(g) || this.renderDecisionModal(g);
       // stack popup stoji na sredini, pa se sklanja kad je otvoren bilo koji drugi
       // overlay — inače bi se preklapali baš na istom mjestu
       const blocked = !!modal || !!reveal || !!this.sheet || !!this.playerSheet || !!this.zoneBrowse ||
@@ -1080,13 +1080,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         map.appendChild(el('div', 'combatmaptitle', `Combat · ${esc(this.phaseName(g))}`));
         const lanes = new Map();
         for (const attacker of g.combat.attackers) {
-          const target = attacker.attacking instanceof MTG.Player ? attacker.attacking : attacker.attacking && attacker.attacking.ctrl;
+          const target = attacker.attacking;
           if (!target) continue;
           if (!lanes.has(target)) lanes.set(target, []);
           lanes.get(target).push(attacker);
         }
         for (const [target, attackers] of lanes) {
-          const lane = el('div', 'combatlane' + (target === this.me ? ' tome' : ''));
+          const targetOwner = target instanceof MTG.Player ? target : target.ctrl;
+          const lane = el('div', 'combatlane' + (target === this.me || targetOwner === this.me ? ' tome' : ''));
           const cards = el('div', 'combatattackers');
           let rawDamage = 0;
           for (const attacker of attackers) {
@@ -1100,7 +1101,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           lane.appendChild(cards);
           lane.appendChild(el('div', 'combatarrow', '<span></span>'));
-          lane.appendChild(el('div', 'combatdefender', `<b>${esc(target.name)}</b><span>${attackers.length} attacker${attackers.length === 1 ? '' : 's'} · up to ${rawDamage} damage</span>`));
+          const targetDetail = target instanceof MTG.Player
+            ? `${target.life} life`
+            : `Planeswalker · ${target.counters.loyalty || 0} loyalty · ${targetOwner.name}`;
+          lane.appendChild(el('div', 'combatdefender', `<b>${esc(target.name)}</b><span>${esc(targetDetail)} · ${attackers.length} attacker${attackers.length === 1 ? '' : 's'} · up to ${rawDamage} damage</span>`));
           map.appendChild(lane);
         }
         wrap.appendChild(map);
@@ -1643,8 +1647,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         case 'attackers': {
           const n = pd.sel.length;
-          bar.appendChild(el('div', 'ptext', `⚔️ Attack: choose attackers (${n}). Click a creature, then choose a defender in the popup.`));
-          bar.appendChild(btn(n ? `Attack! (${n})` : 'No attacks ▶', () => this.resolvePending(pd.sel.map(s => ({ card: s.card, target: s.target }))), 'primary'));
+          bar.appendChild(el('div', 'ptext', `⚔️ Assign attackers in the open combat table (${n} selected).`));
           break;
         }
         case 'blockers': {
@@ -1860,7 +1863,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const atMe = attackers.filter(c => c.attacking === this.me || (c.attacking && c.attacking.ctrl === this.me));
         const lanes = new Map();
         for (const card of attackers) {
-          const target = card.attacking instanceof MTG.Player ? card.attacking : card.attacking && card.attacking.ctrl;
+          const target = card.attacking;
           if (!target) continue;
           if (!lanes.has(target)) lanes.set(target, []);
           lanes.get(target).push(card);
@@ -1869,13 +1872,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         m.appendChild(el('div', 'combatkicker', 'COMBAT · ATTACKERS DECLARED'));
         m.appendChild(el('div', 'combatreviewhead',
           `<div><b>${esc(attacker ? attacker.name : 'Player')}</b> attacks with ${attackers.length} creature${attackers.length === 1 ? '' : 's'}.</div>` +
-          `<span class="${atMe.length ? 'danger' : 'safe'}">${atMe.length ? `${atMe.length} ATTACKING YOU` : 'YOU ARE NOT IN COMBAT'}</span>`));
+          `<span class="${atMe.length ? 'danger' : 'safe'}">${atMe.length ? `${atMe.length} ATTACKING YOU / YOUR WALKER` : 'YOU ARE NOT IN COMBAT'}</span>`));
         const body = el('div', 'combatreviewlanes');
         for (const [target, cards] of lanes) {
           const rawDamage = cards.reduce((sum, card) => sum + g.dmgAmount(card, 'normal'), 0);
-          const lane = el('div', 'combatreviewlane' + (target === this.me ? ' tome' : ''));
+          const targetOwner = target instanceof MTG.Player ? target : target.ctrl;
+          const lane = el('div', 'combatreviewlane' + (target === this.me || targetOwner === this.me ? ' tome' : ''));
           const laneHead = el('div', 'combatreviewtarget');
-          laneHead.innerHTML = `<div><small>DEFENDER</small><b>${esc(target.name)}</b></div>` +
+          const targetMeta = target instanceof MTG.Player
+            ? `${target.life} life`
+            : `PLANESWALKER · ${target.counters.loyalty || 0} LOYALTY · ${targetOwner.name}`;
+          laneHead.innerHTML = `<div><small>${esc(targetMeta)}</small><b>${esc(target.name)}</b></div>` +
             `<div class="combatestimate"><strong>${rawDamage}</strong><span>possible damage</span></div>`;
           lane.appendChild(laneHead);
           const grid = el('div', 'combatreviewcards');
@@ -2322,68 +2329,153 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return ov;
     }
 
-    renderAttackTargetPopup(g) {
+    renderAttackersModal(g) {
       const pd = this.pending;
-      const attacker = this.attackPicker;
-      if (!pd || pd.q.type !== 'attackers' || !attacker || !pd.q.eligible.includes(attacker)) {
-        this.attackPicker = null;
-        return null;
+      if (!pd || pd.q.type !== 'attackers') return null;
+      const q = pd.q;
+      const eligible = (q.eligible || []).filter(card => card.zone === 'battlefield');
+      const forced = new Set(q.forced || []);
+      pd.sel = (pd.sel || []).filter(entry => eligible.includes(entry.card));
+
+      const legalTargets = card => {
+        const raw = g.legalDeclarationAttackTargets
+          ? g.legalDeclarationAttackTargets(card)
+          : (g.legalAttackTargets ? g.legalAttackTargets(card) : q.attackTargets || q.opponents || []);
+        return g.diplomacyAttackTargetsFor
+          ? g.diplomacyAttackTargetsFor(card, raw, forced.has(card))
+          : raw;
+      };
+      const playerOrder = q.opponents || [];
+      const offered = q.attackTargets || playerOrder.concat(g.bf().filter(card =>
+        card.is('Planeswalker') && card.ctrl !== this.me));
+      const targets = [];
+      for (const player of playerOrder) {
+        if (offered.includes(player) && eligible.some(card => legalTargets(card).includes(player))) targets.push(player);
+        for (const walker of offered.filter(target => !(target instanceof MTG.Player) && target.ctrl === player)) {
+          if (eligible.some(card => legalTargets(card).includes(walker))) targets.push(walker);
+        }
       }
-      const selected = pd.sel.find(s => s.card === attacker);
-      const ov = el('div', 'overlay dark attackpickov');
-      const modal = el('div', 'modal attackpickmodal');
+      for (const target of offered) {
+        if (!targets.includes(target) && eligible.some(card => legalTargets(card).includes(target))) targets.push(target);
+      }
+      pd.sel = pd.sel.filter(entry => legalTargets(entry.card).includes(entry.target));
+      if (!targets.includes(pd.attackTarget)) pd.attackTarget = targets[0] || null;
+
+      const assignmentFor = card => pd.sel.find(entry => entry.card === card);
+      const assign = (card, target) => {
+        if (!card || !target || !legalTargets(card).includes(target)) {
+          this.toast(`${card ? card.name : 'This creature'} cannot attack that defender.`);
+          return;
+        }
+        const current = assignmentFor(card);
+        if (current) current.target = target;
+        else pd.sel.push({ card, target });
+        pd.attackTarget = target;
+        this.render();
+      };
+      const unassign = card => {
+        const current = assignmentFor(card);
+        if (current) pd.sel.splice(pd.sel.indexOf(current), 1);
+        this.render();
+      };
+
+      const ov = el('div', 'overlay dark attackallocov');
+      const modal = el('div', 'modal attackallocmodal');
       ov.appendChild(modal);
-      ov.onclick = e => { if (e.target === ov) { this.attackPicker = null; this.render(); } };
+      modal.appendChild(el('div', 'combatkicker', 'DECLARE ATTACKERS'));
+      const totalPower = pd.sel.reduce((sum, entry) => sum + g.dmgAmount(entry.card, 'normal'), 0);
+      const head = el('div', 'attackallochead');
+      head.innerHTML = `<div><h2>Assign the whole attack</h2><p>Select a defender, then click eligible creatures below — or drag them directly into a lane.</p></div>` +
+        `<div class="attackallocscore"><strong>${pd.sel.length}</strong><span>attackers</span><b>${totalPower}</b><span>power</span></div>`;
+      modal.appendChild(head);
 
-      modal.appendChild(el('div', 'combatkicker', 'DECLARE ATTACKER'));
-      modal.appendChild(el('div', 'attackpicktitle', 'Who does <b>' + esc(attacker.name) + '</b> attack?'));
-      const body = el('div', 'attackpickbody');
-      const card = el('div', 'attackpickcard');
-      const keywords = ['flying', 'trample', 'menace', 'first strike', 'double strike', 'deathtouch', 'lifelink']
-        .filter(k => attacker.kw(k));
-      card.innerHTML = `<img src="${imgURL(attacker.name, true)}" onerror="MTG.imgFail(this)">` +
-        `<div><b>${esc(attacker.name)}</b><span>${attacker.power}/${attacker.toughness}</span>` +
-        `<small>${keywords.length ? esc(keywords.join(' · ')) : 'no combat keywords'}</small></div>`;
-      body.appendChild(card);
+      const lanes = el('div', 'attackalloclanes');
+      for (const target of targets) {
+        const owner = target instanceof MTG.Player ? target : target.ctrl;
+        const isWalker = !(target instanceof MTG.Player);
+        const legalCards = eligible.filter(card => legalTargets(card).includes(target));
+        const assigned = pd.sel.filter(entry => entry.target === target).map(entry => entry.card);
+        const lane = el('button', 'attackalloclane' + (pd.attackTarget === target ? ' focused' : '') + (isWalker ? ' walker' : ' player'));
+        lane.type = 'button';
+        lane.dataset.target = isWalker ? `planeswalker-${target.iid}` : `player-${target.idx}`;
+        const possibleBlockers = g.creatures(owner).filter(card => !card.tapped && !card.cur.cantBlock);
+        const stat = isWalker ? `${target.counters.loyalty || 0} loyalty` : `${target.life} life`;
+        lane.innerHTML = `<div class="attacklanehead"><span class="attacklaneicon">${isWalker ? '◆' : ((MTG.DECK_META[owner.deckName] || {}).icon || '🛡')}</span>` +
+          `<span><small>${isWalker ? `PLANESWALKER · ${esc(owner.name)}` : 'PLAYER'}</small><b>${esc(target.name)}</b><i>${esc(stat)} · ${possibleBlockers.length} possible blocker${possibleBlockers.length === 1 ? '' : 's'}</i></span>` +
+          `<em>${assigned.length}</em></div>`;
+        const stack = el('div', 'attacklaneassigned');
+        for (const card of assigned) {
+          const chip = el('span', 'attackassignedchip', `<img src="${imgURL(card.name)}" onerror="MTG.imgFail(this)"><span><b>${esc(card.name)}</b><small>${card.power}/${card.toughness}</small></span><i>×</i>`);
+          chip.title = `Remove ${card.name} from combat`;
+          chip.onclick = event => { event.stopPropagation(); unassign(card); };
+          stack.appendChild(chip);
+        }
+        if (!assigned.length) stack.appendChild(el('span', 'attackdropempty', legalCards.length ? 'Drop attackers here' : 'No creature can attack this defender'));
+        lane.appendChild(stack);
+        lane.onclick = () => { pd.attackTarget = target; this.render(); };
+        lane.ondragover = event => { event.preventDefault(); lane.classList.add('dragover'); };
+        lane.ondragleave = () => lane.classList.remove('dragover');
+        lane.ondrop = event => {
+          event.preventDefault(); lane.classList.remove('dragover');
+          const card = eligible.find(candidate => String(candidate.iid) === event.dataTransfer.getData('text/plain'));
+          assign(card, target);
+        };
+        lanes.appendChild(lane);
+      }
+      if (!targets.length) lanes.appendChild(el('div', 'attackallocempty', 'No legal defender is available for these creatures.'));
+      modal.appendChild(lanes);
 
-      const choices = el('div', 'attacktargets');
-      const forced = (pd.q.forced || []).includes(attacker);
-      const diplomacyTargets = g.diplomacyAttackTargetsFor
-        ? g.diplomacyAttackTargetsFor(attacker, pd.q.opponents, forced)
-        : pd.q.opponents;
-      for (const target of diplomacyTargets) {
-        const creatures = g.creatures(target);
-        const blockers = creatures.filter(c => !c.tapped && !c.cur.cantBlock && g.canBlock(c, attacker));
-        const option = el('button', 'attacktarget' + (selected && selected.target === target ? ' selected' : ''));
-        const meta = MTG.DECK_META[target.deckName] || {};
-        option.innerHTML = `<span class="attacktargeticon">${meta.icon || '🛡️'}</span>` +
-          `<span class="attacktargetmain"><b>${esc(target.name)}</b><small>${esc(target.deckName || '')}</small></span>` +
-          `<span class="attacktargetstats"><strong>${target.life}❤</strong><small>${blockers.length} possible blocker${blockers.length === 1 ? '' : 's'} · ✋${target.hand.length}</small></span>` +
-          `<span class="attacktargetgo">→</span>`;
-        option.onclick = () => {
-          if (selected) selected.target = target;
-          else pd.sel.push({ card: attacker, target });
-          this.attackPicker = null;
-          this.render();
+      const poolHead = el('div', 'attackpoolhead', '<span>ELIGIBLE ATTACKERS</span><small>Click toggles assignment to the highlighted lane. Drag works too.</small>');
+      modal.appendChild(poolHead);
+      const pool = el('div', 'attackpool');
+      for (const card of eligible) {
+        const current = assignmentFor(card);
+        const canFocus = pd.attackTarget && legalTargets(card).includes(pd.attackTarget);
+        const keywords = ['flying', 'trample', 'menace', 'first strike', 'double strike', 'deathtouch', 'lifelink']
+          .filter(keyword => card.kw(keyword));
+        const cell = el('button', 'attackpoolcard' + (current ? ' assigned' : '') + (forced.has(card) ? ' forced' : '') + (!canFocus && !current ? ' cantfocus' : ''));
+        cell.type = 'button';
+        cell.draggable = true;
+        cell.dataset.attacker = String(card.iid);
+        cell.innerHTML = `<img src="${imgURL(card.name)}" onerror="MTG.imgFail(this)"><span><b>${esc(card.name)}</b><strong>${card.power}/${card.toughness}</strong>` +
+          `<small>${keywords.length ? esc(keywords.join(' · ')) : 'ready to attack'}</small>` +
+          `${current ? `<i>→ ${esc(current.target.name)}</i>` : ''}</span>${forced.has(card) ? '<em>MUST ATTACK</em>' : ''}`;
+        cell.onclick = () => {
+          if (current && current.target === pd.attackTarget) unassign(card);
+          else if (pd.attackTarget && legalTargets(card).includes(pd.attackTarget)) assign(card, pd.attackTarget);
+          else if (current) unassign(card);
+          else this.toast('Choose a legal defender lane for this creature.');
         };
-        choices.appendChild(option);
-      }
-      if (!diplomacyTargets.length) choices.appendChild(el('div', 'emptyrow', 'Every legal defender is protected by an active agreement.'));
-      body.appendChild(choices);
-      modal.appendChild(body);
-      const foot = el('div', 'attackpickfoot');
-      if (selected) {
-        const remove = el('button', 'pbtn danger', 'Do not attack');
-        remove.onclick = () => {
-          pd.sel.splice(pd.sel.indexOf(selected), 1);
-          this.attackPicker = null;
-          this.render();
+        cell.ondragstart = event => {
+          event.dataTransfer.setData('text/plain', String(card.iid));
+          event.dataTransfer.effectAllowed = 'move';
         };
-        foot.appendChild(remove);
+        pool.appendChild(cell);
       }
-      const cancel = el('button', 'pbtn', 'Cancel');
-      cancel.onclick = () => { this.attackPicker = null; this.render(); };
-      foot.appendChild(cancel);
+      modal.appendChild(pool);
+
+      const required = [...forced].filter(card => legalTargets(card).length && !assignmentFor(card));
+      const foot = el('div', 'attackallocfoot');
+      const note = el('div', 'attackallocnote', required.length
+        ? `<b>${required.length} forced attacker${required.length === 1 ? '' : 's'} still need a defender.</b>`
+        : (pd.sel.length ? `${pd.sel.length} attacker${pd.sel.length === 1 ? '' : 's'} assigned across ${new Set(pd.sel.map(entry => entry.target)).size} defender lane${new Set(pd.sel.map(entry => entry.target)).size === 1 ? '' : 's'}.` : 'You may declare no attacks.'));
+      foot.appendChild(note);
+      const actions = el('div', 'btnrow');
+      const clear = el('button', 'pbtn', 'Clear all');
+      clear.disabled = !pd.sel.length;
+      clear.onclick = () => { pd.sel = []; this.render(); };
+      actions.appendChild(clear);
+      if (!pd.sel.length) {
+        const none = el('button', 'pbtn', 'No attacks ▶');
+        none.disabled = required.length > 0;
+        none.onclick = () => this.resolvePending([]);
+        actions.appendChild(none);
+      }
+      const confirm = el('button', 'pbtn primary', pd.sel.length ? `Confirm attack (${pd.sel.length}) ✓` : 'Confirm attack');
+      confirm.disabled = !pd.sel.length || required.length > 0;
+      confirm.onclick = () => this.resolvePending(pd.sel.map(entry => ({ card: entry.card, target: entry.target })));
+      actions.appendChild(confirm);
+      foot.appendChild(actions);
       modal.appendChild(foot);
       return ov;
     }
@@ -2391,7 +2483,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     toggleAttacker(c) {
       const pd = this.pending;
       if (!pd || pd.q.type !== 'attackers' || !pd.q.eligible.includes(c)) return;
-      this.attackPicker = c;
+      const target = pd.attackTarget || (pd.q.attackTargets || pd.q.opponents || [])[0];
+      const current = pd.sel.find(entry => entry.card === c);
+      if (current) pd.sel.splice(pd.sel.indexOf(current), 1);
+      else if (target) pd.sel.push({ card: c, target });
       this.render();
     }
 

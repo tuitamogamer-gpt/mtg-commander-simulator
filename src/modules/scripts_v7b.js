@@ -466,9 +466,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!t) return;
           const original = t.def;
           const originalName = t.name;
-          t.meta.characteristicOriginalDef = original;
+          const originalColors = t.colors.slice();
+          if (!t.meta.characteristicOriginalDef) t.meta.characteristicOriginalDef = original;
           t.def = Object.assign({}, TK.treasure, {
             name: originalName,
+            cost: original.cost,
+            super: (original.super || []).slice(),
+            colorsOverride: originalColors,
             oracle: '{T}, Sacrifice this artifact: Add one mana of any color.',
           });
           t.isCopyOf = null;

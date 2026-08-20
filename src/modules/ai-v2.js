@@ -613,12 +613,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function generateAttackPlans(game, player, q, config) {
     const eligible = (q.eligible || []).slice().sort((a, b) => a.iid - b.iid);
     const forced = new Set(q.forced || []);
-    const planeswalkers = game.bf().filter(card => card.is('Planeswalker') && card.ctrl !== player);
     let beam = [{ assignments: [], score: 0 }];
     for (const attacker of eligible) {
-      const magicTargets = (game.legalAttackTargets ? game.legalAttackTargets(attacker) : q.opponents || [])
-        .concat(planeswalkers.filter(card => !game.legalAttackTargets || game.canAttackTarget(attacker, card)))
-        .filter((target, index, list) => list.indexOf(target) === index);
+      const magicTargets = game.legalDeclarationAttackTargets
+        ? game.legalDeclarationAttackTargets(attacker)
+        : (game.legalAttackTargets ? game.legalAttackTargets(attacker) : q.attackTargets || q.opponents || []);
       const targets = game.diplomacyAttackTargetsFor
         ? game.diplomacyAttackTargetsFor(attacker, magicTargets, forced.has(attacker))
         : magicTargets;
