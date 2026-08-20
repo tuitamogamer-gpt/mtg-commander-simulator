@@ -996,7 +996,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Hangarback Walker'] = {
     xCost: true,
-    etbCounters: { kind: '+1/+1', n: (g, card) => card.castMeta ? (card.castMeta.x || 0) : 1 },
+    etbCounters: { kind: '+1/+1', n: (g, card) => card.castMeta ? (card.castMeta.x || 0) : 0 },
     triggers: [{
       on: 'dies', desc: 'Thopteri', filter: (g, self, d) => d.card === self,
       run: async ctx => { const n = ctx.data.snap.plus1 || 0; if (n) await ctx.g.makeTokens('thopter', ctx.you, { n }); },

@@ -248,10 +248,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         planAcc.some(st => st.src && st.src.card === s.card && st.src.extraCost && st.src.extraCost.tap)) {
         return tryCover(idx + 1, needPips, needGen, planAcc, artifactAbilityUsed);
       }
-      // option: skip this source
-      const skip = tryCover(idx + 1, needPips, needGen, planAcc, artifactAbilityUsed);
-      if (skip) return skip;
-      // option: use source for one of its produce options
+      // Try the least-flexible/least-costly sources first (the source list is
+      // already ordered that way). The old skip-first DFS explored 2^N
+      // subsets before discovering that a large X spell needed most lands,
+      // hitting the 6000-node guard around X=10 even with 25 Forests.
       for (const optn of s.produce) {
         const isArtifactAbility = s.card && s.card.is && s.card.is('Artifact') && !(s.m && s.m.viaConvoke);
         const consume = s.rawConsume ? {
@@ -295,7 +295,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
         }
       }
-      return null;
+      // option: preserve/skip this source
+      return tryCover(idx + 1, needPips, needGen, planAcc, artifactAbilityUsed);
     };
     const res = tryCover(0, need.pips, need.generic, []);
     if (!res) return null;
@@ -635,6 +636,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       castOpts.from = from;
       const cost = this.spellCost(p, card, castOpts);
       const xVal = cost.x ? (castOpts.xFixed !== undefined ? castOpts.xFixed : 0) : 0;
+      if (cost.x && typeof card.def.xValues === 'function') {
+        const maxX = this.maxAffordableX(p, cost, card);
+        if (!this.legalXValues(p, card, castOpts, maxX).length) return;
+      }
       if (alt && alt.delve) {
         // delve: reduce generic by available gy cards
         const avail = p.graveyard.length;
@@ -866,13 +871,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.x && !castOpts.free) {
       let maxX = this.maxAffordableX(p, cost, card);
       if (typeof d.xMax === 'function') maxX = Math.min(maxX, Math.max(0, Number(d.xMax(this, card, p, castOpts)) || 0));
-      xVal = opts.xVal !== undefined ? opts.xVal : await p.controller.decide(this, {
-        type: 'chooseX', min: 0, max: maxX, card, prompt: `X for ${card.name}?`,
+      const legalValues = this.legalXValues(p, card, castOpts, maxX);
+      if (legalValues && !legalValues.length) return false;
+      const minX = legalValues ? legalValues[0] : 0;
+      const maxChoice = legalValues ? legalValues[legalValues.length - 1] : maxX;
+      xVal = opts.xVal !== undefined ? Number(opts.xVal) : await p.controller.decide(this, {
+        type: 'chooseX', min: minX, max: maxChoice, values: legalValues || undefined,
+        card, prompt: `X for ${card.name}?`,
         aiHint: { kind: 'chooseX', card },
       });
-      xVal = Math.max(0, Math.min(xVal, maxX));
+      xVal = Number(xVal);
+      if (legalValues) {
+        if (!legalValues.includes(xVal)) {
+          this.lg(`${card.name}: X=${Number.isFinite(xVal) ? xVal : '?'} nema legalnu metu.`);
+          return false;
+        }
+      } else xVal = Math.max(0, Math.min(Number.isFinite(xVal) ? xVal : 0, maxX));
     }
-    if (castOpts.free && opts.xVal !== undefined) xVal = opts.xVal;
+    // CR 107.3b: if an effect casts a spell without paying its mana cost, X
+    // is 0. An externally supplied xVal must never bypass that rule.
+    if (castOpts.free) xVal = 0;
     // X mora biti vidljiv filterima meta (npr. "target creature with mana value X")
     castOpts.xVal = xVal;
 
@@ -1379,11 +1397,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let n = 0; for (const q of this.players) if (q !== p) n += q.turnState.spellsCast; return n;
   };
 
+  G.legalXValues = function (p, card, castOpts, maxX) {
+    if (!card || typeof card.def.xValues !== 'function') return null;
+    const raw = card.def.xValues(this, card, p, castOpts) || [];
+    return [...new Set(raw.map(Number)
+      .filter(value => Number.isInteger(value) && value >= 0 && value <= maxX))]
+      .sort((a, b) => a - b);
+  };
+
   G.maxAffordableX = function (p, cost, card, opts = {}) {
-    for (let x = 20; x >= 0; x--) {
-      if (this.canPayMana(p, cost, { card }, Object.assign({}, opts, { xVal: x }))) return x;
+    if (!cost || !(cost.x > 0)) return 0;
+    const canPay = x => this.canPayMana(p, cost, { card }, Object.assign({}, opts, { xVal: x }));
+    if (!canPay(0)) return 0;
+
+    // Affordability is monotonic in X. Exponential search removes the old,
+    // rules-incorrect X≤20 ceiling, then binary search finds the exact maximum
+    // without linearly probing every possible value.
+    let low = 0;
+    let high = 1;
+    while (high < Number.MAX_SAFE_INTEGER && canPay(high)) {
+      low = high;
+      high = Math.min(Number.MAX_SAFE_INTEGER, high * 2);
     }
-    return 0;
+    if (high === Number.MAX_SAFE_INTEGER && canPay(high)) return high;
+    while (low + 1 < high) {
+      const mid = low + Math.floor((high - low) / 2);
+      if (canPay(mid)) low = mid;
+      else high = mid;
+    }
+    return low;
   };
 
   G.doCascade = async function (p, fromCard) {

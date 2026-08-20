@@ -578,6 +578,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ui.render();
       return;
     }
+    if (smokeScenario === 'xManaHaldir') {
+      void (async () => {
+        const forest = new MTG.CardInst(MTG.DEFS.Forest, ui.me);
+        forest.ctrl = ui.me; forest.zone = 'battlefield'; forest.sick = false; forest.tapped = false;
+        const haldir = new MTG.CardInst(MTG.DEFS['Haldir, Lórien Lieutenant'], ui.me);
+        haldir.zone = 'hand'; ui.me.hand.push(haldir);
+        g.battlefield.push(forest);
+        g.turnPlayer = ui.me; g.turnNo = 1; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        ui.toast('Haldir browser canary: one Forest means the only legal choice is X=0.');
+        ui.render();
+        if (!await g.castSpell(ui.me, haldir, { from: 'hand' })) {
+          throw new Error('Haldir X=0 cast was unexpectedly rejected.');
+        }
+        const result = haldir.zone === 'graveyard' ? '0/0 and died immediately ✓' : `unexpectedly ended in ${haldir.zone}`;
+        g.lg(`Haldir X=0 browser check: ${result}.`, 'ai');
+        ui.showLog = true;
+        ui.toast(`Haldir X=0: ${result}.`);
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     if (smokeScenario === 'doomHiddenExile') {
       void (async () => {
         const klaw = new MTG.CardInst(MTG.DEFS['Klaw, Master of Sound'], ui.me);
@@ -1883,6 +1905,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       pending: pending ? {
         type: pending.type,
         prompt: pending.prompt || null,
+        xChoice: pending.type === 'chooseX' ? {
+          min: pending.min, max: pending.max,
+          legalValues: pending.values || undefined,
+          current: ui.pending && ui.pending.xVal,
+        } : undefined,
         selectedTargets: pending.type === 'chooseTargets' && ui.pending
           ? (ui.pending.sel || []).map((target, index) => ({
             order: index + 1, name: target.name || target.card && target.card.name || 'stack object',

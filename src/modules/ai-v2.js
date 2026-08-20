@@ -758,7 +758,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const picks of pickSets) actions.push({ kind: 'chooseMulti', value: picks.map(option => option.key ?? option), options: picks });
     } else if (q.type === 'chooseX') {
       const min = Number(q.min || 0), max = Number(q.max || min);
-      const strategic = [...new Set([min, max, Math.min(max, min + 1), Math.min(max, 3), Math.min(max, 5), ...((q.thresholds || []).map(Number))])].filter(value => value >= min && value <= max).sort((a, b) => a - b);
+      const legalValues = Array.isArray(q.values) && q.values.length
+        ? [...new Set(q.values.map(Number))].filter(value => value >= min && value <= max).sort((a, b) => a - b)
+        : null;
+      const strategic = legalValues || [...new Set([min, max, Math.min(max, min + 1), Math.min(max, 3), Math.min(max, 5), ...((q.thresholds || []).map(Number))])].filter(value => value >= min && value <= max).sort((a, b) => a - b);
       for (const value of strategic) actions.push({ kind: 'chooseX', value });
     } else if (q.type === 'mulligan') {
       actions.push({ kind: 'mulligan', value: false }, { kind: 'mulligan', value: true });

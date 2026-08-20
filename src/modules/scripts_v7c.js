@@ -593,6 +593,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Back in Town'] = {
     xCost: true,
+    xMax: (g, card, p) => p.graveyard.filter(target => target.is('Creature') && isOutlaw(target)).length,
     targets: (g, card, castOpts) => [{
       zone: 'graveyard', what: 'card', count: castOpts.xVal || 0,
       prompt: `Ciljaj tačno ${castOpts.xVal || 0} outlaw stvorenja`,
@@ -1556,7 +1557,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     xCost: true,
     resolve: async ctx => {
       const x = ctx.x || 0;
-      if (x <= 0) return;
       const o1 = await E.chooseOpponent(ctx.g, ctx.you, {
         prompt: 'Sylvan Offering — ko dobija Treefolk?', goal: 'gift',
       });

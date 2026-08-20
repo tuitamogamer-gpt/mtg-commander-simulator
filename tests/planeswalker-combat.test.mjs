@@ -129,10 +129,14 @@ test('minus loyalty nije ponuđen bez countera i neuspjeh ne troši Vraska aktiv
 test('Vraska compleated, 0, -2 i -9 imaju pune Oracle ishode', async () => {
   const { game, players: [hero, opponent] } = rulesGame();
   const paidLife = inZone(hero, "Vraska, Betrayal's Sting", 'hand');
+  game.remove(paidLife);
+  paidLife.zone = 'stack';
   paidLife.castMeta = { phyrexianLifePaid: 1 };
   await game.move(paidLife, 'battlefield', { ctrl: hero });
   assert.equal(paidLife.counters.loyalty, 4, 'compleated life payment ulazi sa dva loyalty manje');
   const paidMana = inZone(hero, "Vraska, Betrayal's Sting", 'hand');
+  game.remove(paidMana);
+  paidMana.zone = 'stack';
   paidMana.castMeta = { phyrexianLifePaid: 0 };
   await game.move(paidMana, 'battlefield', { ctrl: hero });
   assert.equal(paidMana.counters.loyalty, 6);

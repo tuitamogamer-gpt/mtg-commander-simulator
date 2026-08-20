@@ -59,7 +59,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     get toughness() { return this.cur ? this.cur.toughness : 0; }
     get mv() {
       if (this.zone === 'battlefield' && this.isToken && !this.isCopyOf) return 0;
-      return U.mv(this.def.cost || '', this.castMeta && this.castMeta.x || 0);
+      // CR 202.3e: X has the chosen value only while the spell is on the
+      // stack. Everywhere else (including after an X permanent resolves), X
+      // is 0. Keeping the old cast value on battlefield made effects such as
+      // Mycosynth Gardens overcharge for Hangarback Walker and made graveyard
+      // mana-value checks see a value the card no longer has.
+      const x = this.zone === 'stack' && this.castMeta ? (this.castMeta.x || 0) : 0;
+      return U.mv(this.def.cost || '', x);
     }
     get colors() {
       if (this.cur && this.cur.colors) return this.cur.colors;
@@ -547,6 +553,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         // CR 400.7: permanent koji uđe na bojno polje je NOV objekat — svjež meta.
         if (fromZone !== 'battlefield') card.meta = {};
+        // Only a spell resolving from the stack carries cast choices into its
+        // own entry replacement/trigger processing. Reanimation, blink,
+        // Genesis Wave and similar non-cast entries must not reuse X,
+        // sunburst colors, compleated life or mana spent by an older object.
+        if (fromZone !== 'stack') card.castMeta = null;
         card.meta._enteredFromZone = fromZone;
         // An Aura put onto the battlefield without being cast chooses what it
         // enchants immediately before it enters. Establish the attachment
@@ -798,7 +809,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // ============================================================
     async makeTokens(spec, ctrl, opts = {}) {
       // spec: token def name from MTG.TOKENS or inline def; opts: {n, tapped, attacking, copyOf}
-      let n = opts.n || 1;
+      // Explicit zero is meaningful for X spells. `opts.n || 1` turned X=0
+      // into one token for Grand Crescendo, Martial Coup, Sylvan Offering and
+      // every other shared makeTokens caller.
+      const n = opts.n === undefined ? 1 : Math.max(0, Number(opts.n) || 0);
       let defs = Array.isArray(spec) ? spec.slice() : [];
       if (!Array.isArray(spec)) for (let i = 0; i < n; i++) defs.push(spec);
       // token replacements (Academy Manufactor, Chatterfang)
@@ -959,7 +973,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (opts.addSubtypes) def.subtypes = [...new Set([...(def.subtypes || []), ...opts.addSubtypes])];
       if (opts.name) def.name = opts.name;
       const made = await this.makeTokens(def, ctrl, {
-        n: opts.n || 1, copyOf: def, tapped: opts.tapped, attacking: opts.attacking,
+        n: opts.n === undefined ? 1 : opts.n, copyOf: def, tapped: opts.tapped, attacking: opts.attacking,
         chooseAttacking: opts.chooseAttacking, noReplace: opts.noReplace, haste: opts.haste,
       });
       return made;

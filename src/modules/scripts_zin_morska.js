@@ -545,6 +545,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // "Return target creature with mana value X" — meta mora imati MV TAČNO X.
     // Ranije je filter bio "bilo koje stvorenje", pa je za {U}{U} (X=0) bounceovao
     // i komandera protivnika.
+    xValues: (g, card, p) => [...new Set(g.legalTargets(T.creature({
+      filter: (g2, creature) => creature.zone === 'battlefield' && creature.is('Creature'),
+    }), card, p).map(creature => creature.mv))],
     targets: (g, card, castOpts) => [{
       what: 'creature', prompt: 'Vrati u ruku (MV = X)',
       filter: (g2, c) => c.zone === 'battlefield' && c.is('Creature') &&

@@ -1229,6 +1229,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     chooseX(g, q) {
+      if (Array.isArray(q.values) && q.values.length) {
+        return [...new Set(q.values.map(Number).filter(Number.isFinite))].sort((a, b) => a - b).at(-1);
+      }
       const kind = q.aiHint && q.aiHint.kind;
       if (kind === 'flourishingDefenses') return q.max;
       if (kind === 'eventideCounter' || kind === 'glissaCounter') {

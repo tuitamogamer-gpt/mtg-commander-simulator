@@ -748,8 +748,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         if (this.pending && this.pending.q.type === 'chooseX' && (ev.key === 'ArrowLeft' || ev.key === 'ArrowRight')) {
           const pd = this.pending, q = pd.q;
+          const values = Array.isArray(q.values) && q.values.length ? q.values : null;
           const current = pd.xVal === undefined ? q.min : pd.xVal;
-          pd.xVal = Math.max(q.min, Math.min(q.max, current + (ev.key === 'ArrowRight' ? 1 : -1)));
+          if (values) {
+            const currentIndex = Math.max(0, values.indexOf(current));
+            pd.xVal = values[Math.max(0, Math.min(values.length - 1,
+              currentIndex + (ev.key === 'ArrowRight' ? 1 : -1)))];
+          } else {
+            pd.xVal = Math.max(q.min, Math.min(q.max, current + (ev.key === 'ArrowRight' ? 1 : -1)));
+          }
           this.render(); ev.preventDefault(); return;
         }
         if (ev.key === ' ' || ev.key === 'Enter') {
@@ -1991,9 +1998,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return ov;
       }
       if (q.type === 'chooseX') {
-        pd.xVal = pd.xVal === undefined
-          ? Math.max(q.min, Math.min(q.max, Number.isFinite(q.suggested) ? q.suggested : q.min))
-          : pd.xVal;
+        const legalValues = Array.isArray(q.values) && q.values.length
+          ? [...new Set(q.values.map(Number).filter(Number.isFinite))].sort((a, b) => a - b)
+          : null;
+        const suggested = Number.isFinite(q.suggested) ? q.suggested : q.min;
+        if (pd.xVal === undefined) {
+          pd.xVal = legalValues
+            ? (legalValues.includes(suggested) ? suggested : legalValues[0])
+            : Math.max(q.min, Math.min(q.max, suggested));
+        }
         if (q.allocation && q.allocation.kind === 'damage') {
           const allocation = q.allocation;
           const targets = allocation.targets || [];
@@ -2056,10 +2069,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           m.appendChild(btn(label, () => this.resolvePending(pd.xVal), 'primary wide damageconfirm'));
           return ov;
         }
-        m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Choose X') + ` (${q.min}-${q.max})`));
+        m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Choose X') +
+          (legalValues ? ` (legal: ${legalValues.join(', ')})` : ` (${q.min}-${q.max})`)));
         const xrow = el('div', 'xrow');
-        const minus = btn('−', () => { pd.xVal = Math.max(q.min, pd.xVal - 1); this.render(); });
-        const plus = btn('+', () => { pd.xVal = Math.min(q.max, pd.xVal + 1); this.render(); });
+        const stepX = delta => {
+          if (legalValues) {
+            const index = Math.max(0, legalValues.indexOf(pd.xVal));
+            pd.xVal = legalValues[Math.max(0, Math.min(legalValues.length - 1, index + delta))];
+          } else pd.xVal = Math.max(q.min, Math.min(q.max, pd.xVal + delta));
+          this.render();
+        };
+        const minus = btn('−', () => stepX(-1));
+        const plus = btn('+', () => stepX(1));
+        minus.disabled = legalValues ? pd.xVal === legalValues[0] : pd.xVal <= q.min;
+        plus.disabled = legalValues ? pd.xVal === legalValues[legalValues.length - 1] : pd.xVal >= q.max;
         xrow.appendChild(minus);
         xrow.appendChild(el('div', 'xval', String(pd.xVal)));
         xrow.appendChild(plus);
