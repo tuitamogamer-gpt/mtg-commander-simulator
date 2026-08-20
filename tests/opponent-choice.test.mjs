@@ -123,7 +123,12 @@ test('Abstract Performance prvo bira protivnika, a taj protivnik bira hrpu bez u
 
   assert.equal(pileQuestion.aiHint.kind, 'abstractPile');
   assert.equal('pileA' in pileQuestion.aiHint, false);
-  assert.ok(pileQuestion.options.find(option => option.key === 'down').label.includes('skrivenih'));
+  const hiddenOption = pileQuestion.options.find(option => option.key === 'down');
+  const faceUpOption = pileQuestion.options.find(option => option.key === 'up');
+  assert.ok(hiddenOption.label.includes('skrivenih'));
+  assert.equal(hiddenOption.hiddenCount, 4);
+  assert.equal('cards' in hiddenOption, false, 'face-down pile must not expose its identities through UI metadata');
+  assert.deepEqual([...faceUpOption.cards].map(c => c.name), ['Island', 'Island', 'Island', 'Island']);
   assert.deepEqual([...human.graveyard].map(c => c.name), ['Swamp', 'Swamp', 'Swamp', 'Swamp']);
   assert.deepEqual([...human.hand].map(c => c.name), ['Island', 'Island', 'Island', 'Island']);
 });
@@ -158,9 +163,12 @@ test('Clash koristi izabranog protivnika i oba igrača biraju vrh ili dno', asyn
   const low = card(botB, 'Sol Ring');
   for (const [owner, top] of [[human, mine], [botA, high], [botB, low]]) { top.zone = 'library'; owner.library.push(top); }
   const placementPrompts = [];
+  const placementCards = [];
   human.controller = scriptedController(question => {
     if (question.aiHint && question.aiHint.kind === 'chooseOpponent') return String(botB.idx);
-    if (question.aiHint && question.aiHint.kind === 'clashPlace') { placementPrompts.push(question.prompt); return 'top'; }
+    if (question.aiHint && question.aiHint.kind === 'clashPlace') {
+      placementPrompts.push(question.prompt); placementCards.push(question.card); return 'top';
+    }
     return null;
   });
   botB.controller = scriptedController(question => { placementPrompts.push(question.prompt); return 'bottom'; });
@@ -170,7 +178,22 @@ test('Clash koristi izabranog protivnika i oba igrača biraju vrh ili dno', asyn
 
   assert.equal(won, true, 'Cultivate pobjeđuje izabranog Sol Ring protivnika, ne prvog Blasphemous Act protivnika');
   assert.equal(placementPrompts.length, 2);
+  assert.equal(placementCards[0], mine, 'Clash decision carries the revealed card for central visual rendering');
   assert.equal(botB.library[0], low);
+});
+
+test('Discover odluka nosi poznatu egziliranu kartu za centralni vizuelni prikaz', async () => {
+  const { game, players: [human] } = choiceFixture();
+  const hit = card(human, 'Night\'s Whisper');
+  hit.zone = 'library'; human.library.push(hit);
+  let question = null;
+  human.controller = scriptedController(q => { question = q; return 'hand'; });
+
+  await MTG.E7.discover(game, human, 2);
+
+  assert.equal(question.aiHint.kind, 'freeCastOrHand');
+  assert.equal(question.card, hit);
+  assert.equal(hit.zone, 'hand');
 });
 
 test('AI V2 generator poštuje repeatable mode izbore', () => {

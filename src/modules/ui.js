@@ -198,6 +198,110 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       requestAnimationFrame(() => { this.renderQueued = false; this.render(); });
     }
 
+    stackObjectTargets(so) {
+      const groups = so && (so.targets || so.ctx && so.ctx.targets) || [];
+      return (Array.isArray(groups) ? groups : [groups]).flat(Infinity).filter(Boolean);
+    }
+
+    stackObjectSource(so) {
+      return so && (so.card || so.srcCard || so.ctx && so.ctx.src) || null;
+    }
+
+    stackDisplayName(so) {
+      if (!so) return 'Effect';
+      const source = this.stackObjectSource(so);
+      const base = source && source.name || so.name || 'Effect';
+      return so.isCopy ? `${base} — COPY #${so.copyIndex || '?'}` : (so.name || base);
+    }
+
+    stackTargetSummary(so) {
+      const targets = this.stackObjectTargets(so);
+      if (!targets.length) return 'No targets';
+      return targets.map(target => {
+        if (target instanceof MTG.Player) return target === this.me ? 'You' : target.name;
+        if (target && target.kind && target.card) return `${target.card.name} on stack`;
+        if (target instanceof MTG.CardInst && target.faceDown && !this.maySeeFaceDown(target)) return 'Face-down permanent';
+        return target.name || target.card && target.card.name || 'Stack object';
+      }).join(' · ');
+    }
+
+    stackTargetAmount(so, target) {
+      const division = so && (so.damageDivision || so.ctx && so.ctx.damageDivision) || [];
+      const damage = division.find(entry => target instanceof MTG.Player
+        ? entry.playerIdx === target.idx
+        : entry.iid === target.iid);
+      if (damage) return `${damage.n} DAMAGE`;
+      const counters = so && (so.counterDistribution || so.ctx && so.ctx.counterDistribution) || [];
+      const counter = counters.find(entry => entry.iid === target.iid);
+      return counter ? `${counter.n} COUNTER${counter.n === 1 ? '' : 'S'}` : '';
+    }
+
+    renderStackTargetFlow(so, opts = {}) {
+      if (!so) return null;
+      const compact = !!opts.compact;
+      const includeSource = opts.includeSource !== false;
+      const targets = this.stackObjectTargets(so);
+      const maxTargets = opts.maxTargets || (compact ? 4 : 12);
+      const shown = targets.slice(0, maxTargets);
+      const flow = el('div', 'stacktargetflow' + (compact ? ' compact' : '') + (so.isCopy ? ' copy' : ''));
+      flow.dataset.copyIndex = so.isCopy ? String(so.copyIndex || '') : '';
+
+      if (includeSource) {
+        const source = this.stackObjectSource(so);
+        const sourceCard = source && source.card || source;
+        const sourceBox = el('div', 'stackflowsource');
+        if (sourceCard && sourceCard.name) {
+          const image = el('img');
+          image.src = imgURL(sourceCard.name);
+          image.onerror = () => MTG.imgFail(image);
+          sourceBox.appendChild(image);
+        }
+        const copyLabel = so.isCopy ? `SPELL COPY #${so.copyIndex || '?'}` : (so.kind || 'effect').toUpperCase();
+        const sourceText = el('div');
+        sourceText.innerHTML = `<small>${esc(copyLabel)}</small><b>${esc(sourceCard && sourceCard.name || so.name || 'Effect')}</b>`;
+        if (so.copySource && so.copySource.name) sourceText.innerHTML += `<em>Created by ${esc(so.copySource.name)}</em>`;
+        else if (so.isCopy && so.copyRoot) sourceText.innerHTML += `<em>Copied from the original spell</em>`;
+        sourceBox.appendChild(sourceText);
+        flow.appendChild(sourceBox);
+        flow.appendChild(el('div', 'stackflowarrow', '<span></span><b>targets</b>'));
+      }
+
+      const targetWrap = el('div', 'stackflowtargets');
+      if (!shown.length) {
+        targetWrap.appendChild(el('div', 'stackflownone', 'NO TARGETS'));
+      }
+      shown.forEach((target, index) => {
+        const stackTarget = target && target.kind && target.card ? target.card : null;
+        const targetCard = stackTarget || (target instanceof MTG.CardInst ? target : null);
+        const hidden = targetCard && targetCard.faceDown && !this.maySeeFaceDown(targetCard);
+        const name = target instanceof MTG.Player
+          ? (target === this.me ? 'YOU' : target.name)
+          : hidden ? 'Face-down permanent' : targetCard && targetCard.name || target.name || 'Stack object';
+        const targetBox = el('div', 'stackflowtarget' + (target === this.me ? ' human' : '') + (hidden ? ' hidden' : ''));
+        targetBox.dataset.targetName = name;
+        targetBox.appendChild(el('span', 'stackflowtargetn', String(index + 1)));
+        if (target instanceof MTG.Player) {
+          targetBox.appendChild(el('div', 'stackflowplayer', `<b>${String(target.idx + 1).padStart(2, '0')}</b><span>PLAYER</span>`));
+        } else if (targetCard) {
+          const image = el('img');
+          image.src = hidden ? MTG.BLANK_PX : imgURL(targetCard.name);
+          image.onerror = () => MTG.imgFail(image);
+          targetBox.appendChild(image);
+        } else targetBox.appendChild(el('div', 'stackflowplayer', '<b>◇</b><span>STACK</span>'));
+        const info = el('div', 'stackflowtargetinfo');
+        const amount = this.stackTargetAmount(so, target);
+        const owner = target instanceof MTG.Player
+          ? `${target.life} LIFE`
+          : target && target.ctrl ? target.ctrl.name : target && target.kind ? 'ON THE STACK' : '';
+        info.innerHTML = `<b>${esc(name)}</b><small>${esc(amount || owner || 'LOCKED TARGET')}</small>`;
+        targetBox.appendChild(info);
+        targetWrap.appendChild(targetBox);
+      });
+      if (targets.length > shown.length) targetWrap.appendChild(el('div', 'stackflowmore', `+${targets.length - shown.length}`));
+      flow.appendChild(targetWrap);
+      return flow;
+    }
+
     render() {
       const g = this.game;
       if (!g) return;
@@ -275,7 +379,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
       const q = entry.q;
       const canAct = ((q.casts || []).length + (q.acts || []).length) > 0;
-      const kind = top.kind === 'spell' ? 'Card on the stack' : top.kind === 'trigger' ? 'Trigger on the stack' : 'Ability on the stack';
+      const kind = top.isCopy
+        ? `Spell copy #${top.copyIndex || '?'} on the stack`
+        : top.kind === 'spell' ? 'Card on the stack' : top.kind === 'trigger' ? 'Trigger on the stack' : 'Ability on the stack';
       const targetGroups = top.targets || top.ctx && top.ctx.targets || [];
       const targets = targetGroups.flat().filter(Boolean);
       const damageDivision = top.damageDivision || top.ctx && top.ctx.damageDivision || [];
@@ -299,9 +405,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       stage.appendChild(art);
       const info = el('div', 'actionstageinfo');
       info.appendChild(el('div', 'actionstageeyebrow', `${esc(kind)} · ${esc(top.ctrl ? top.ctrl.name : '')}`));
-      info.appendChild(el('div', 'actionstagename', esc(top.name || source.name)));
+      info.appendChild(el('div', 'actionstagename', esc(this.stackDisplayName(top))));
+      if (top.isCopy) {
+        const copyCause = top.copySource && top.copySource.name
+          ? `Created by ${top.copySource.name}`
+          : 'Created from the original spell';
+        const targetMode = top.targetMode === 'new'
+          ? 'NEW TARGETS CHOSEN'
+          : top.targetMode === 'forced' ? 'FORCED TARGET' : 'SAME TARGETS RETAINED';
+        info.appendChild(el('div', 'actionstagecopyline', `<b>${esc(copyCause)}</b><span>${esc(targetMode)}</span>`));
+      }
       info.appendChild(el('div', 'actionstagetype', `${costHTML(def.cost || '')}<span>${esc([...(def.super || []), ...(def.types || [])].join(' '))}${(def.subtypes || []).length ? ' - ' + esc(def.subtypes.join(' ')) : ''}</span>`));
-      info.appendChild(el('div', 'actionstagetarget', `🎯 ${esc(targetText)}`));
+      info.appendChild(el('div', 'actionstagetarget', `🎯 LOCKED TARGET MAP · ${targets.length} target${targets.length === 1 ? '' : 's'}${targets.length ? ` · ${esc(targetText)}` : ''}`));
+      const targetFlow = this.renderStackTargetFlow(top);
+      if (targetFlow) info.appendChild(targetFlow);
       if (damageDivision.length) {
         const split = el('div', 'actionstagedivision');
         dividedTargets.forEach((target, index) => {
@@ -418,21 +535,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const body = el('div', 'stackpopbody');
       const items = g.stack.slice().reverse();   // vrh stacka prvi — prvi se i rješava
       items.forEach((so, i) => {
-        const it = el('div', 'stackpopitem' + (so.ctrl === this.me ? ' mine' : '') + (i === 0 ? ' next' : ''));
-        const nm = so.name || (so.card && so.card.name) || 'Effect';
+        const it = el('div', 'stackpopitem' + (so.ctrl === this.me ? ' mine' : '') + (i === 0 ? ' next' : '') + (so.isCopy ? ' copy' : ''));
+        const main = el('div', 'stackpopmain');
+        const nm = this.stackDisplayName(so);
         const kind = so.kind === 'trigger' ? 'trigger' : so.kind === 'ability' ? 'ability' : 'spell';
         if (so.card) {
           const img = el('img');
           img.loading = 'lazy';
           img.src = imgURL(so.card.name);
           img.onerror = () => MTG.imgFail(img);
-          it.appendChild(img);
+          main.appendChild(img);
         }
         const info = el('div', 'stackpopinfo');
         info.appendChild(el('div', 'stackpopname', esc(nm)));
-        info.appendChild(el('div', 'stackpopsub', `${esc(so.ctrl ? so.ctrl.name : '')} · ${kind}`));
-        it.appendChild(info);
-        it.appendChild(el('div', 'stackpopidx', i === 0 ? 'NEXT' : '#' + (items.length - i)));
+        info.appendChild(el('div', 'stackpopsub', `${esc(so.ctrl ? so.ctrl.name : '')} · ${so.isCopy ? `copy #${so.copyIndex || '?'} · ` : ''}${kind}`));
+        info.appendChild(el('div', 'stackpoptargetsummary', `🎯 ${esc(this.stackTargetSummary(so))}`));
+        main.appendChild(info);
+        main.appendChild(el('div', 'stackpopidx', i === 0 ? 'NEXT' : '#' + (items.length - i)));
+        it.appendChild(main);
+        const targetFlow = this.renderStackTargetFlow(so, { compact: true, includeSource: false, maxTargets: 3 });
+        if (targetFlow) it.appendChild(targetFlow);
         if (so.card) it.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
         body.appendChild(it);
       });
@@ -508,9 +630,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           body.innerHTML = '<div class="stackempty"><span>◇</span>the stack is empty</div>';
         } else {
           for (const so of g.stack.slice().reverse()) {
-            const it = el('div', 'stackitem' + (so.ctrl === this.me ? ' mine' : ''));
-            it.innerHTML = `<div class="siname">${esc(so.name || (so.card && so.card.name) || 'Effect')}</div>` +
-              `<div class="sisub">${esc(so.ctrl ? so.ctrl.name : '')}${so.kind ? ' · ' + esc(so.kind) : ''}</div>`;
+            const it = el('div', 'stackitem' + (so.ctrl === this.me ? ' mine' : '') + (so.isCopy ? ' copy' : ''));
+            it.innerHTML = `<div class="siname">${esc(this.stackDisplayName(so))}</div>` +
+              `<div class="sisub">${esc(so.ctrl ? so.ctrl.name : '')}${so.isCopy ? ` · COPY #${esc(so.copyIndex || '?')}` : so.kind ? ' · ' + esc(so.kind) : ''}</div>` +
+              `<div class="sitargets">🎯 ${esc(this.stackTargetSummary(so))}</div>`;
             if (so.card) it.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
             body.appendChild(it);
           }
@@ -859,6 +982,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       left.appendChild(stepper);
       bar.appendChild(left);
+      if (g.monarch) {
+        const since = g.monarchSince || {};
+        const holder = g.monarch === this.me ? 'YOU' : g.monarch.name;
+        const when = since.turn !== undefined
+          ? `Since turn ${since.turn}${since.phase ? ` · ${this.phaseName({ phase: since.phase, step: since.step || '' })}` : ''}`
+          : 'Current holder';
+        const crown = el('div', 'monarchstatus' + (g.monarch === this.me ? ' mine' : ''));
+        crown.title = `${g.monarch.name} is the Monarch. ${when}. Combat damage to that player transfers the crown.`;
+        crown.innerHTML = `<span aria-hidden="true">♛</span><div><small>MONARCH</small><b>${esc(holder)}</b><em>${esc(when)}</em></div>`;
+        bar.appendChild(crown);
+      }
       const btns = el('div', 'topbtns');
       // brzina AI poteza
       const speeds = MTG.SPEEDS;
@@ -967,8 +1101,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         seatNo++;
         const meta = MTG.DECK_META[p.deckName] || {};
         const isActiveAi = activeAiTurn && g.turnPlayer === p;
-        const row = el('div', `opprow seat-${seatNo}` + (p.lost ? ' lost' : '') + (g.turnPlayer === p ? ' active' : '') + (isActiveAi ? ' activeai' : ''));
+        const isMonarch = g.monarch === p;
+        const row = el('div', `opprow seat-${seatNo}` + (p.lost ? ' lost' : '') + (g.turnPlayer === p ? ' active' : '') +
+          (isActiveAi ? ' activeai' : '') + (isMonarch ? ' monarch' : ''));
         row.dataset.seat = String(seatNo).padStart(2, '0');
+        if (isMonarch) row.title = `${p.name} is the Monarch`;
         row.style.setProperty('--seat-accent', COLHEX[(meta.colors || [])[0]] || '#778f63');
         if (isActiveAi) row.style.setProperty('--opp-scale', String(Math.min(2, this.oppScale * 1.2)));
         const isCandidate = this.isCandidate(p);
@@ -984,7 +1121,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         head.innerHTML = `
           <span class="chev">${collapsed ? '▸' : '▾'}</span>
           <span class="seatindex">${String(seatNo).padStart(2, '0')}</span>
-          <span class="oppname">${meta.icon || '🤖'} ${esc(p.name)}</span>
+          <span class="oppname">${isMonarch ? '<i class="seatcrown" aria-label="Monarch">♛</i> ' : ''}${meta.icon || '🤖'} ${esc(p.name)}</span>
           ${isActiveAi ? '<span class="activeaitag">ACTIVE TURN</span>' : ''}
           ${styleMeta ? `<span class="personachip" title="Style: ${esc(styleMeta.label)}">${styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
           <span class="opplife" role="button">${p.life}❤</span>
@@ -1133,8 +1270,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         st.appendChild(el('div', 'stacktitle', `STACK (${g.stack.length})`));
         for (let i = g.stack.length - 1; i >= 0; i--) {
           const so = g.stack[i];
-          const item = el('div', 'stackitem' + (i === g.stack.length - 1 ? ' top' : ''));
-          item.innerHTML = `<b>${esc(so.name)}</b><span class="who">${esc(so.ctrl.name)}</span>`;
+          const item = el('div', 'stackitem' + (i === g.stack.length - 1 ? ' top' : '') + (so.isCopy ? ' copy' : ''));
+          item.innerHTML = `<b>${esc(this.stackDisplayName(so))}</b><span class="who">${esc(so.ctrl.name)}</span><small class="stackinlinegoal">🎯 ${esc(this.stackTargetSummary(so))}</small>`;
+          const targetFlow = this.renderStackTargetFlow(so, { compact: true, includeSource: true, maxTargets: 4 });
+          if (targetFlow) item.appendChild(targetFlow);
           if (this.markSelectedTarget(item, so)) { /* selected stack target remains removable */ }
           else if (this.isCandidate(so)) { item.classList.add('targetable'); item.onclick = () => this.pickCandidate(so); }
           else if (so.card) item.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
@@ -1250,7 +1389,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const maySeeLibraryTop = g.bf().some(card => card.ctrl === me && card.def.revealOwnTop);
       const libraryTop = maySeeLibraryTop ? me.library[me.library.length - 1] : null;
       const info = el('div', 'meinfo');
+      if (g.monarch === me) info.classList.add('monarch');
       info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="melife">${me.life}<small>life</small></div>
+        ${g.monarch === me ? '<div class="memonarch"><span>♛</span><b>MONARCH</b></div>' : ''}
         <div class="manapool">${poolStr}</div>
         <div class="zbtns">
           <button class="zbtn" data-z="library-top">📚${me.library.length}${libraryTop ? ' · 👁' : ''}</button>
@@ -1612,7 +1753,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           break;
         }
         case 'main': {
-          let hint = g.phase === 'main1' ? '🎴 Main phase 1: click a card for actions' : '🎴 Main phase 2';
+          const additionalMain = g.phase === 'main2' && g.step === 'additional';
+          let hint = additionalMain
+            ? '◆ Additional main phase: click a card for actions'
+            : g.phase === 'main1' ? '🎴 Main phase 1: click a card for actions' : '🎴 Main phase 2';
           if (this.actable && this.actable.size) hint += ` · <span class="hintact">⚙️ = ability (${this.actable.size})</span>`;
           bar.appendChild(el('div', 'ptext', hint));
           const oz = offZoneRow();
@@ -1620,7 +1764,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const row = el('div', 'btnrow');
           const jb = judgeBtn();
           if (jb) row.appendChild(jb);
-          row.appendChild(btn(g.phase === 'main1' ? 'Continue ▶ (combat)' : 'End turn ▶', () => this.resolvePending({ kind: 'done' }), 'primary'));
+          row.appendChild(btn(additionalMain ? 'Continue ▶ (next phase)'
+            : g.phase === 'main1' ? 'Continue ▶ (combat)' : 'End turn ▶',
+          () => this.resolvePending({ kind: 'done' }), 'primary'));
           bar.appendChild(row);
           break;
         }
@@ -1666,7 +1812,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         case 'attackers': {
           const n = pd.sel.length;
-          bar.appendChild(el('div', 'ptext', `⚔️ Assign attackers in the open combat table (${n} selected).`));
+          if (pd.boardPeek) {
+            bar.classList.add('combatboardpeek');
+            bar.appendChild(el('div', 'ptext', `🗺 Battlefield view · ${n} attacker${n === 1 ? '' : 's'} still assigned.`));
+            const row = el('div', 'btnrow');
+            const back = btn('⚔ Back to Attack Overview', () => { pd.boardPeek = false; this.render(); }, 'primary');
+            back.dataset.testid = 'back-to-combat-overlay';
+            row.appendChild(back);
+            bar.appendChild(row);
+          } else bar.appendChild(el('div', 'ptext', `⚔️ Assign attackers in the open combat table (${n} selected).`));
           break;
         }
         case 'blockers': {
@@ -1681,9 +1835,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const blocks = [];
           for (const [b, a] of pd.assigns) blocks.push({ blocker: b, attacker: a });
           const brow = el('div', 'btnrow');
-          brow.appendChild(btn('🛡 Back to block overview', () => { pd.boardPeek = false; this.render(); }));
+          const back = btn('🛡 Back to Block Overview', () => { pd.boardPeek = false; this.render(); });
+          back.dataset.testid = 'back-to-combat-overlay';
+          brow.appendChild(back);
           brow.appendChild(btn(blocks.length ? `Confirm blocks (${blocks.length})` : 'No blocks ▶', () => this.resolvePending(blocks), 'primary'));
           bar.appendChild(brow);
+          break;
+        }
+        case 'combatReview': {
+          if (pd.boardPeek) {
+            bar.classList.add('combatboardpeek');
+            bar.appendChild(el('div', 'ptext', '🗺 Battlefield view · the declared combat is paused for your review.'));
+            const row = el('div', 'btnrow');
+            const back = btn('⚔ Back to Combat Review', () => { pd.boardPeek = false; this.render(); });
+            back.dataset.testid = 'back-to-combat-overlay';
+            row.appendChild(back);
+            row.appendChild(btn('Proceed ▶', () => this.resolvePendingEntry(pd, null), 'primary'));
+            bar.appendChild(row);
+          } else bar.appendChild(el('div', 'ptext', '⚔ Review all declared attackers before combat continues.'));
           break;
         }
         case 'chooseTargets': {
@@ -1750,6 +1919,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         </div>`;
       m.appendChild(body);
 
+      const targetObject = q.stackObject || {
+        kind: q.source === 'ability' ? 'ability' : 'spell',
+        card: q.card, srcCard: q.card, ctrl: q.by,
+        name: q.card.name, targets: q.allTargets || q.targets || [],
+      };
+      const targetMap = el('div', 'threattargetmap');
+      targetMap.appendChild(el('div', 'threattargetmaphead',
+        `LOCKED TARGET MAP · ${this.stackObjectTargets(targetObject).length} TARGET${this.stackObjectTargets(targetObject).length === 1 ? '' : 'S'}`));
+      const targetFlow = this.renderStackTargetFlow(targetObject, { includeSource: false });
+      if (targetFlow) targetMap.appendChild(targetFlow);
+      m.appendChild(targetMap);
+
       const canAnswer = this.myInstantCount(g) > 0;
       const row = el('div', 'btnrow');
       const ok = el('button', 'pbtn primary', 'Got it ▶');
@@ -1789,6 +1970,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!pd) return null;
       const q = pd.q;
       if (q.type === 'threatAlert') return this.renderThreatAlert(g, q);
+      if (q.type === 'combatReview' && pd.boardPeek) return null;
       const types = ['mulligan', 'bottomCards', 'chooseCards', 'chooseOption', 'chooseMulti', 'chooseX', 'scry', 'orderTriggers', 'combatReview', 'effectReview', 'chooseManaSources'];
       if (!types.includes(q.type)) return null;
       const ov = el('div', 'overlay');
@@ -1921,7 +2103,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         m.appendChild(el('div', 'combatreviewnote', atMe.length
           ? 'Review the attackers. After Proceed, attack triggers, priority, and blocker selection follow.'
           : 'This attack is not aimed at you, but combat remains visible and under your control.'));
-        m.appendChild(btn('Proceed ▶', () => this.resolvePendingEntry(pd, null), 'primary wide combatproceed'));
+        const actions = el('div', 'btnrow combatreviewactions');
+        const peek = btn('🗺 Show Battlefield', () => { pd.boardPeek = true; this.render(); });
+        peek.dataset.testid = 'show-combat-battlefield';
+        actions.appendChild(peek);
+        actions.appendChild(btn('Proceed ▶', () => this.resolvePendingEntry(pd, null), 'primary combatproceed'));
+        m.appendChild(actions);
         return ov;
       }
 
@@ -1988,8 +2175,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (q.type === 'chooseOption') {
         m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Choose')));
+        const decisionCards = this.renderDecisionCards(q);
+        if (decisionCards) {
+          m.classList.add('cardchoicemodal');
+          m.appendChild(decisionCards);
+        }
         for (const o of q.options) {
-          m.appendChild(btn(esc(o.label), () => this.resolvePending(o.key), 'wide'));
+          const visualOption = this.renderVisualChoiceOption(o, () => this.resolvePending(o.key));
+          if (visualOption) {
+            m.classList.add('cardchoicemodal');
+            m.appendChild(visualOption);
+          } else {
+            const optionButton = btn(esc(o.label), () => this.resolvePending(o.key), 'wide');
+            optionButton.dataset.choiceKey = String(o.key);
+            m.appendChild(optionButton);
+          }
         }
         return ov;
       }
@@ -2143,6 +2343,80 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return null;
     }
 
+    decisionCards(q) {
+      const cards = [];
+      const seen = new Set();
+      const add = value => {
+        if (Array.isArray(value)) { value.forEach(add); return; }
+        if (!(value instanceof MTG.CardInst) || seen.has(value)) return;
+        seen.add(value);
+        cards.push(value);
+      };
+      add(q.card); add(q.source); add(q.src); add(q.target);
+      const hint = q.aiHint || {};
+      add(hint.card); add(hint.source); add(hint.src); add(hint.target); add(hint.top); add(hint.cards);
+      if (q.data) { add(q.data.card); add(q.data.source); add(q.data.src); add(q.data.target); }
+      return cards;
+    }
+
+    renderDecisionCards(q) {
+      const cards = this.decisionCards(q);
+      if (!cards.length) return null;
+      const wrap = el('div', 'decisioncards');
+      wrap.dataset.testid = 'decision-card-visuals';
+      wrap.appendChild(el('div', 'decisioncardslabel', cards.length === 1 ? 'CARD IN THIS CHOICE' : 'CARDS IN THIS CHOICE'));
+      const grid = el('div', 'cardgrid decisioncardgrid');
+      for (const card of cards) grid.appendChild(this.bigCardEl(card));
+      wrap.appendChild(grid);
+      return wrap;
+    }
+
+    optionCards(option) {
+      const cards = [];
+      const seen = new Set();
+      const add = value => {
+        if (Array.isArray(value)) { value.forEach(add); return; }
+        if (!(value instanceof MTG.CardInst) || seen.has(value)) return;
+        seen.add(value);
+        cards.push(value);
+      };
+      add(option.card); add(option.cards); add(option.source); add(option.target);
+      return cards;
+    }
+
+    renderVisualChoiceOption(option, choose) {
+      const cards = this.optionCards(option);
+      const hiddenCount = Math.max(0, Number(option.hiddenCount) || 0);
+      if (!cards.length && !hiddenCount) return null;
+      const button = el('button', 'pbtn wide choicevisualoption');
+      button.type = 'button';
+      button.dataset.choiceKey = String(option.key);
+      const art = el('span', 'choiceoptionart');
+      for (const card of cards) {
+        const shown = this.visibleFaceDownDef(card);
+        const hidden = card.faceDown && !shown;
+        const name = hidden ? 'Face-down card' : (shown ? shown.name : card.name);
+        const thumb = el('span', 'choiceoptionthumb');
+        thumb.dataset.cardName = name;
+        const image = el('img');
+        image.loading = 'lazy';
+        image.alt = name;
+        image.src = hidden ? MTG.BLANK_PX : imgURL(name);
+        image.onerror = () => MTG.imgFail(image);
+        thumb.appendChild(image);
+        art.appendChild(thumb);
+      }
+      for (let index = 0; index < hiddenCount; index++) {
+        const back = el('span', 'choiceoptionthumb hidden');
+        back.setAttribute('aria-label', 'Face-down card');
+        art.appendChild(back);
+      }
+      button.appendChild(art);
+      button.appendChild(el('span', 'choiceoptionlabel', esc(option.label)));
+      button.onclick = choose;
+      return button;
+    }
+
     cardGrid(g, cards, selOpts) {
       const pd = this.pending;
       const grid = el('div', 'cardgrid');
@@ -2170,9 +2444,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const hidden = c instanceof MTG.CardInst && c.faceDown && !shown;
       const name = hidden ? 'Face-down card' : (shown ? shown.name : (c.name || (c.card && c.card.name) || '?'));
       const faceDownNote = c instanceof MTG.CardInst && c.faceDown && shown ? ' · FACE-DOWN (vidljivo tebi)' : '';
+      cc.dataset.cardName = name;
       cc.innerHTML = `
         <img loading="lazy" src="${hidden ? MTG.BLANK_PX : imgURL(name)}" onerror="MTG.imgFail(this,'noimg')">
         <div class="bcname">${esc(name + faceDownNote)}</div>`;
+      cc.querySelector('img').alt = name;
       return cc;
     }
 
@@ -2354,7 +2630,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const foot = el('div', 'btnrow blockfoot');
       const blocks = [];
       for (const [b, a] of pd.assigns) blocks.push({ blocker: b, attacker: a });
-      const peek = el('button', 'pbtn', '🗺 Show battlefield');
+      const peek = el('button', 'pbtn', '🗺 Show Battlefield');
+      peek.dataset.testid = 'show-combat-battlefield';
       peek.onclick = () => { pd.boardPeek = true; this.render(); };
       foot.appendChild(peek);
       const confirm = el('button', 'pbtn primary', blocks.length ? `Confirm blocks (${blocks.length}) ✓` : 'No blocks ▶');
@@ -2366,7 +2643,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     renderAttackersModal(g) {
       const pd = this.pending;
-      if (!pd || pd.q.type !== 'attackers') return null;
+      if (!pd || pd.q.type !== 'attackers' || pd.boardPeek) return null;
       const q = pd.q;
       const eligible = (q.eligible || []).filter(card => card.zone === 'battlefield');
       const forced = new Set(q.forced || []);
@@ -2496,6 +2773,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         : (pd.sel.length ? `${pd.sel.length} attacker${pd.sel.length === 1 ? '' : 's'} assigned across ${new Set(pd.sel.map(entry => entry.target)).size} defender lane${new Set(pd.sel.map(entry => entry.target)).size === 1 ? '' : 's'}.` : 'You may declare no attacks.'));
       foot.appendChild(note);
       const actions = el('div', 'btnrow');
+      const peek = el('button', 'pbtn', '🗺 Show Battlefield');
+      peek.dataset.testid = 'show-combat-battlefield';
+      peek.onclick = () => { pd.boardPeek = true; this.render(); };
+      actions.appendChild(peek);
       const clear = el('button', 'pbtn', 'Clear all');
       clear.disabled = !pd.sel.length;
       clear.onclick = () => { pd.sel = []; this.render(); };
@@ -2941,8 +3222,12 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       setTimeout(() => t.remove(), 2500);
     }
 
-    showEffectNotice(text, kind) {
+    showEffectNotice(text, kind, event = {}) {
       if (!text) return;
+      if (kind === 'spellCopy' && event.spell) {
+        this.showSpellCopy(event);
+        return;
+      }
       let stack = document.querySelector('.effectnoticestack');
       if (!stack) {
         stack = el('div', 'effectnoticestack');
@@ -2958,6 +3243,43 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
           if (!stack.children.length) stack.remove();
         }, 220);
       }, 4200);
+    }
+
+    showSpellCopy(event) {
+      const spell = event && event.spell;
+      if (!spell) return;
+      let stack = document.querySelector('.spellcopynoticestack');
+      if (!stack) {
+        stack = el('div', 'spellcopynoticestack');
+        document.body.appendChild(stack);
+      }
+      const source = this.stackObjectSource(spell);
+      const notice = el('div', 'spellcopynotice' + (spell.ctrl === this.me ? ' mine' : ''));
+      if (source && source.name) {
+        const image = el('img');
+        image.src = imgURL(source.name);
+        image.onerror = () => MTG.imgFail(image);
+        notice.appendChild(image);
+      }
+      const info = el('div', 'spellcopynoticeinfo');
+      const targetMode = spell.targetMode === 'new'
+        ? 'NEW TARGETS'
+        : spell.targetMode === 'forced' ? 'FORCED TARGET' : 'SAME TARGETS';
+      info.innerHTML = `<small>STACK UPDATE · COPY #${esc(spell.copyIndex || '?')} · ${esc(targetMode)}</small>` +
+        `<b>${esc(source && source.name || spell.name || 'Spell copy')}</b>` +
+        `<em>${esc(spell.copySource && spell.copySource.name ? `Created by ${spell.copySource.name}` : `Copied by ${spell.ctrl && spell.ctrl.name || ''}`)}</em>`;
+      const flow = this.renderStackTargetFlow(spell, { compact: true, includeSource: false, maxTargets: 3 });
+      if (flow) info.appendChild(flow);
+      notice.appendChild(info);
+      stack.appendChild(notice);
+      while (stack.children.length > 4) stack.firstElementChild.remove();
+      setTimeout(() => {
+        notice.classList.add('leaving');
+        setTimeout(() => {
+          notice.remove();
+          if (!stack.children.length) stack.remove();
+        }, 260);
+      }, 5200);
     }
 
     showBattlefieldArrival(event) {
@@ -2992,6 +3314,38 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const b = el('div', 'turnbanner' + (gold ? ' gold' : ''), esc(text));
       document.body.appendChild(b);
       setTimeout(() => b.remove(), 1500);
+    }
+
+    showMonarchChange(event) {
+      const old = document.querySelector('.monarchannouncement');
+      if (old) old.remove();
+      const player = event && event.player;
+      const previous = event && event.previous;
+      const notice = el('div', 'monarchannouncement' + (player === this.me ? ' mine' : ''));
+      const phase = event && event.phase
+        ? this.phaseName({ phase: event.phase, step: event.step || '' })
+        : 'Game state';
+      const when = `TURN ${event && event.turn !== undefined ? event.turn : this.game.turnNo} · ${phase}`;
+      if (player) {
+        const holder = player === this.me ? 'YOU' : player.name;
+        const detail = event.source && event.source.name
+          ? `Via ${event.source.name}`
+          : event.reason || (previous ? `Crown taken from ${previous.name}` : 'The crown enters the game');
+        notice.innerHTML = `
+          <span class="monarchannouncementcrown" aria-hidden="true">♛</span>
+          <div class="monarchannouncementcopy">
+            <small>${previous ? 'THE CROWN CHANGES HANDS' : 'A MONARCH RISES'} · ${esc(when)}</small>
+            <b>${esc(holder)} ${player === this.me ? 'ARE' : 'IS'} THE MONARCH</b>
+            <em>${esc(detail)}${previous && previous !== player ? ` · Previous: ${esc(previous.name)}` : ''}</em>
+          </div>`;
+      } else {
+        notice.innerHTML = `<span class="monarchannouncementcrown" aria-hidden="true">♛</span><div class="monarchannouncementcopy"><small>${esc(when)}</small><b>THERE IS NO MONARCH</b><em>${esc(event.reason || '')}</em></div>`;
+      }
+      document.body.appendChild(notice);
+      setTimeout(() => {
+        notice.classList.add('leaving');
+        setTimeout(() => notice.remove(), 320);
+      }, 3600);
     }
 
     applySpeed() {

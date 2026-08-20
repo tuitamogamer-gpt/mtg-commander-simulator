@@ -148,8 +148,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ctx.src.meta._exertedTurn = g.turnNo;
         ctx.src.meta.noUntapOnce = true;
         for (const c of g.creatures(ctx.you)) if (c !== ctx.src && c.tapped) { c.tapped = false; c.meta._untapExtra = false; }
-        g._extraCombats = (g._extraCombats || 0) + 1;
-        g.lg('Combat Celebrant: EXERT — dodatna combat faza!');
+        g.scheduleAdditionalCombat();
+        g.lg('Combat Celebrant: EXERT — additional combat phase!');
       },
     }],
   };

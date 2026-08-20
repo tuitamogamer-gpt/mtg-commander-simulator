@@ -1164,7 +1164,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (choices.length > 1) {
           const key = await ctx.you.controller.decide(ctx.g, {
             type: 'chooseOption', prompt: `Vial Smasher: ${opponent.name} ili njihov planeswalker?`,
-            options: choices.map((target, index) => ({ key: String(index), label: target.name })),
+            options: choices.map((target, index) => ({ key: String(index), label: target.name, target })),
             aiHint: { kind: 'vialSmasher', opponent, n: ctx.data.mv },
           });
           chosen = choices[Number.parseInt(key, 10)] || opponent;

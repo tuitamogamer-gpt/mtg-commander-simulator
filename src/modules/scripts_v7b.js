@@ -701,7 +701,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [
       {
         on: 'etb', desc: 'Monarh', filter: etbSelf,
-        run: async ctx => { ctx.g.monarch = ctx.you; ctx.g.lg(`👑📜 ${ctx.you.name} postaje MONARH!`); },
+        run: async ctx => { await ctx.g.becomeMonarch(ctx.you, { source: ctx.src }); },
       },
       {
         on: 'endStep', desc: 'Vrati iz groblja', filter: (g, self, d) => d.player === self.ctrl && g.monarch === self.ctrl,

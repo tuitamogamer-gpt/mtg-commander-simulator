@@ -491,8 +491,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (a.zone === 'battlefield') { a.tapped = false; E.goad(g, a, you); }
         }
       }
-      g._extraCombats = (g._extraCombats || 0) + 1;
-      g.lg('Take the Bait: štit + goad + dodatni combat!');
+      g.scheduleAdditionalCombat();
+      g.lg('Take the Bait: shield + goad + additional combat phase!');
     },
   };
   SC['Disrupt Decorum'] = {

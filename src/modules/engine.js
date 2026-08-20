@@ -150,9 +150,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.onEvent = opts.onEvent || (() => {});
       this.gameOver = false;
       this.winner = null;
+      // Keep the pre-crown state `undefined` for compatibility with existing
+      // rules scripts; `setMonarch` owns every later transition.
+      this.monarch = undefined;
+      this.monarchSince = null;
       this.combat = null;
       this.turnNo = 0;
       this.extraTurnDepth = 0;
+      // Additional phases are queued in the exact order in which they must be
+      // played.  `_extraCombats` remains as a small public counter for card/UI
+      // diagnostics, while this queue preserves compound instructions such as
+      // "an additional combat phase followed by an additional main phase."
+      this._additionalPhases = [];
+      this._extraCombats = 0;
       this.dieRolls = 0;
       this.uiHooks = opts.uiHooks || {};
       this.diedThisTurn = [];       // card snapshots
@@ -1041,12 +1051,42 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return n;
     }
 
-    async becomeMonarch(player) {
-      if (!player || player.lost || this.monarch === player) return;
+    async setMonarch(player, opts = {}) {
+      if ((player && player.lost) || this.monarch === player) return false;
       const previous = this.monarch;
-      this.monarch = player;
-      this.lg(`👑📜 ${player.name} postaje MONARH!`);
-      await this.emit('monarchChanged', { previous, player });
+      this.monarch = player || null;
+      this.monarchSince = player ? {
+        turn: this.turnNo,
+        phase: this.phase,
+        step: this.step || '',
+        reason: opts.reason || '',
+        sourceName: opts.source && opts.source.name || '',
+      } : null;
+      const payload = {
+        previous,
+        player: this.monarch,
+        turn: this.turnNo,
+        phase: this.phase,
+        step: this.step || '',
+        reason: opts.reason || '',
+        source: opts.source || null,
+      };
+      if (player) {
+        const transfer = previous && previous !== player ? ` — taking the crown from ${previous.name}` : '';
+        const cause = payload.source ? ` via ${payload.source.name}` : payload.reason ? ` — ${payload.reason}` : '';
+        this.lg(`👑 ${player.name} becomes the MONARCH${transfer}${cause}!`, 'monarch');
+      } else this.lg('👑 There is no Monarch.', 'monarch');
+      // `emit` is the rules event used by cards such as Palace Jailer.  `note`
+      // is the simultaneous presentation event that makes the crown change
+      // impossible to miss even when no card triggers from it.
+      this.note('monarchChanged', payload);
+      await this.emit('monarchChanged', payload);
+      return true;
+    }
+
+    async becomeMonarch(player, opts = {}) {
+      if (!player) return false;
+      return this.setMonarch(player, opts);
     }
 
     async loseLife(p, n, why) {
@@ -1156,7 +1196,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         src.ctrl.turnState.combatDamageHits.push({ card: src, ctrl: src.ctrl, player: p, n });
       }
       if (opts.combat && this.monarch === p && src && src.ctrl && src.ctrl !== p) {
-        await this.becomeMonarch(src.ctrl);
+        await this.becomeMonarch(src.ctrl, { reason: 'combat damage', source: src });
       }
       if (src && src.kw && src.kw('lifelink')) await this.gainLife(src.ctrl, n, src);
       p.turnState.damageTaken = (p.turnState.damageTaken || 0) + n;
@@ -2296,8 +2336,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // CR 725: kruna ne smije ostati kod ispalog igrača
       if (this.monarch === p) {
         const next = (this.turnPlayer && this.turnPlayer !== p && !this.turnPlayer.lost) ? this.turnPlayer : this.nextPlayer(p);
-        this.monarch = (next && !next.lost && next !== p) ? next : null;
-        this.lg(this.monarch ? `👑📜 The crown passes to ${this.monarch.name}.` : '👑📜 There is no monarch.');
+        if (next && !next.lost && next !== p) {
+          await this.becomeMonarch(next, { reason: `${p.name} was eliminated` });
+        } else await this.setMonarch(null, { reason: `${p.name} was eliminated` });
       }
       this.stack = this.stack.filter(so => so.ctrl !== p);
       this.recalc();

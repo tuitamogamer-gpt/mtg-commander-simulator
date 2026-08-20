@@ -1323,7 +1323,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const kind = MTG.threatKind(d, so.targets);
         const names = MTG.threatTargetNames(mine, this.human());
         this.lg(`${kind.icon} ${p.name} → ${card.name} (${kind.label}) cilja ${names.join(', ')}`, 'spot');
-        await this.alertHuman({ card, by: p, targets: mine, kind, names, source: 'spell', ms: 1600 });
+        await this.alertHuman({
+          card, by: p, targets: mine, allTargets: (so.targets || []).flat().filter(Boolean),
+          stackObject: so, kind, names, source: 'spell', ms: 1600,
+        });
       }
     }
     // storm
@@ -1457,9 +1460,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   G.copySpell = async function (so, ctrl, opts = {}) {
+    const copyRoot = so.copyRoot || so.copyOf || so;
+    copyRoot._copySerial = (copyRoot._copySerial || 0) + 1;
     const copy = {
       kind: 'spell', card: so.card, ctrl, name: so.name + ' (kopija)', targets: so.targets.slice(),
       x: so.x, mode: so.mode, castOpts: so.castOpts, kicked: so.kicked, copyOf: so, isCopy: true,
+      copyRoot, copyIndex: copyRoot._copySerial, copySource: opts.copySource || null,
+      targetMode: opts.forceTarget ? 'forced' : 'same',
       targetSpecs: so.targetSpecs || null,
       counterDistribution: so.counterDistribution ? so.counterDistribution.map(entry => Object.assign({}, entry)) : null,
       damageDivision: so.damageDivision ? so.damageDivision.map(entry => Object.assign({}, entry)) : null,
@@ -1492,7 +1499,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           });
           const ctx = { g: this, src: so.card, you: ctrl, so: copy };
           const ok = await this.pickTargets(ctx, copyTargetSpecs, so.card, ctrl);
-          if (ok) { copy.targets = ctx.targets; wardTargets = ctx.wardTargets; targetsWereRepicked = true; }
+          if (ok) {
+            copy.targets = ctx.targets;
+            copy.wardTargets = ctx.wardTargets;
+            copy.targetMode = 'new';
+            copy.retargeted = true;
+            wardTargets = ctx.wardTargets;
+            targetsWereRepicked = true;
+          }
         }
       }
     }
@@ -1529,7 +1543,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.stack.push(copy);
     this.queueWardTriggers(copy, { wardTargets });
     this.note('stack', {});
-    this.notifyEffect(`📋 ${ctrl.name} kopira spell ${so.name}.`, { kind: 'spellCopy', spell: copy, player: ctrl });
+    const targetCount = (copy.targets || []).flat().filter(Boolean).length;
+    const sourceText = copy.copySource ? ` via ${copy.copySource.name}` : '';
+    const targetText = copy.targetMode === 'new' ? ' with new targets' : copy.targetMode === 'forced' ? ' with a forced target' : ' with the same targets';
+    this.notifyEffect(
+      `📋 ${ctrl.name} creates copy #${copy.copyIndex} of ${so.card && so.card.name || so.name}${sourceText}${targetCount ? targetText : ''}.`,
+      { kind: 'spellCopy', spell: copy, original: copyRoot, player: ctrl, targets: (copy.targets || []).flat().filter(Boolean) },
+    );
     const copiedIS = so.card.is('Instant') || so.card.is('Sorcery') ||
       !!(so.castOpts && so.castOpts.adventure &&
         /Instant|Sorcery/.test(so.castOpts.types || so.card.def.adventure && so.card.def.adventure.types || ''));
@@ -2495,7 +2515,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const names = MTG.threatTargetNames(mine, this.human());
         this.lg(`${kind.icon} ${p.name} → ${c.name}${a.label ? ' (' + a.label + ')' : ''} (${kind.label}) cilja ${names.join(', ')}`, 'spot');
         await this.alertHuman({
-          card: c, by: p, targets: mine, kind, names, source: 'ability',
+          card: c, by: p, targets: mine, allTargets: (ctx.targets || []).flat().filter(Boolean), kind, names, source: 'ability',
           abilityLabel: a.label || '', ms: 1400,
         });
       }
@@ -2702,6 +2722,46 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   // Turn structure
   // ============================================================
+  G.scheduleAdditionalPhases = function (kinds) {
+    const phases = (kinds || []).map(kind => ({ kind, additional: true }))
+      .filter(entry => entry.kind === 'combat' || entry.kind === 'main');
+    if (!phases.length) return;
+    if (!Array.isArray(this._additionalPhases)) this._additionalPhases = [];
+    // A phase created "after this phase" happens before phases that were
+    // already waiting after it.  Inserting at the front also keeps a compound
+    // combat → main instruction together and in its printed order.
+    this._additionalPhases.unshift(...phases);
+    this._extraCombats = (this._extraCombats || 0) + phases.filter(entry => entry.kind === 'combat').length;
+  };
+
+  G.scheduleAdditionalCombat = function (opts = {}) {
+    this.scheduleAdditionalPhases(opts.followedByMain ? ['combat', 'main'] : ['combat']);
+  };
+
+  G.runAdditionalPhases = async function (p) {
+    while (this._additionalPhases.length) {
+      const next = this._additionalPhases.shift();
+      if (next.kind === 'combat') {
+        this._extraCombats = Math.max(0, (this._extraCombats || 0) - 1);
+        this.lg('⚔️ ADDITIONAL combat phase!', 'attack');
+        if (!p.lost) await this.combatPhase(p);
+        if (this.gameOver) return;
+        this.emptyPool();
+        continue;
+      }
+
+      this.phase = 'main2';
+      this.step = 'additional';
+      this.lg('◆ ADDITIONAL main phase.', 'turn');
+      this.note('phase', { additional: true });
+      await this.pace(p.isAI ? 330 : 0);
+      await this.emit('postcombatMain', { player: p, additional: true });
+      await this.flushTriggers();
+      if (!p.lost) await this.mainPhase(p);
+      if (this.gameOver) return;
+    }
+  };
+
   G.playLand = async function (p, card) {
     if (p.landsPlayed >= p.maxLands) return false;
     if (this.turnPlayer !== p || this.stack.length || (this.phase !== 'main1' && this.phase !== 'main2')) return false;
@@ -2738,6 +2798,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.diedThisTurn = [];
     this._trigsThisTurn = 0;
     this._extraCombats = 0;
+    this._additionalPhases = [];
     for (const q of this.players) q.turnState = q.freshTurnState();
     p.landsPlayed = 0; p.maxLands = 1;
     // Ko me napao u SVOM prošlom potezu (Weathered Sentinels i sl.). Set se ne
@@ -2816,7 +2877,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (this.gameOver) return;
 
     // MAIN 1
-    this.phase = 'main1';
+    this.phase = 'main1'; this.step = '';
     this.note('phase', {});
     await this.pace(p.isAI ? 330 : 0);
     await this.emit('precombatMain', { player: p });
@@ -2827,57 +2888,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (this.processDiplomacyCheckpoint) this.processDiplomacyCheckpoint(p);
     if (!p.lost) await this.mainPhase(p);
     if (this.gameOver) return;
+    await this.runAdditionalPhases(p);
+    if (this.gameOver) return;
 
-    // COMBAT (+ moguće dodatne combat faze — Combat Celebrant, Take the Bait)
-    // _extraCombats se NE resetuje ovdje: Seize the Day i sl. se bacaju u main1
-    // i njihov dodatni combat bi bio pojeden. Reset ide na početak poteza.
-    let combatGuard = 0;
-    do {
-      const wantExtra = this._extraCombats;
-      if (!p.lost) await this.combatPhase(p);
-      if (this.gameOver) return;
-      if (this._extraCombats > wantExtra) { /* nova faza tražena tokom ove */ }
-      if (this._extraCombats > 0) {
-        this._extraCombats--;
-        this.lg('⚔️ DODATNA combat faza!', 'attack');
-        for (const c of this.bf()) if (c.ctrl === p && c.meta._untapExtra) { c.tapped = false; c.meta._untapExtra = false; }
-      } else break;
-    } while (combatGuard++ < 3);
+    // NORMAL COMBAT. Any phase created during it is inserted immediately
+    // afterwards, before the normal postcombat main phase.
+    if (!p.lost) await this.combatPhase(p);
+    if (this.gameOver) return;
     this.emptyPool();          // CR 500.4 — mana iz combata ne curi u main 2
+    await this.runAdditionalPhases(p);
+    if (this.gameOver) return;
 
     // MAIN 2
-    this.phase = 'main2';
+    this.phase = 'main2'; this.step = '';
     this.note('phase', {});
     await this.pace(p.isAI ? 330 : 0);
     await this.emit('postcombatMain', { player: p });
     await this.flushTriggers();
     if (!p.lost) await this.mainPhase(p);
     if (this.gameOver) return;
-
-    // Effects such as Seize the Day can legally be cast in the postcombat main
-    // phase.  Their instruction still inserts a combat followed by another
-    // main phase; previously those phases existed only when the spell was cast
-    // in main 1, so a main-2 cast silently did nothing beyond untapping.
-    let postMainCombatGuard = 0;
-    while (this._extraCombats > 0 && postMainCombatGuard++ < 3) {
-      this._extraCombats--;
-      this.lg('⚔️ ADDITIONAL combat phase after the postcombat main phase!', 'attack');
-      if (!p.lost) await this.combatPhase(p);
-      if (this.gameOver) return;
-      this.emptyPool();
-      this.phase = 'main2';
-      this.note('phase', {});
-      await this.emit('postcombatMain', { player: p, additional: true });
-      await this.flushTriggers();
-      if (!p.lost) await this.mainPhase(p);
-      if (this.gameOver) return;
-    }
+    await this.runAdditionalPhases(p);
+    if (this.gameOver) return;
 
     // END STEP
     this.phase = 'end';
     this.note('phase', {});
     await this.pace(p.isAI ? 330 : 0);
-    if (this.monarch === p && !p.lost) { this.lg(`👑📜 Monarh ${p.name} vuče kartu.`); await this.draw(p, 1); }
+    if (this.monarch === p && !p.lost) {
+      this.lg(`👑 Monarch benefit — ${p.name} draws a card at the end step.`, 'monarch');
+      await this.draw(p, 1);
+    }
     await this.emit('endStep', { player: p });
     await this.flushTriggers();
     await this.priorityRound(p);

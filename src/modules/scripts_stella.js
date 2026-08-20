@@ -20,7 +20,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       targets: [T.spell((g, so, ctrl) => so.ctrl === ctrl && (so.card.is('Instant') || so.card.is('Sorcery')), { prompt: 'Your instant or sorcery spell', aiHint: { goal: 'copySpell' } })],
       run: async ctx => {
         const so = ctx.targets[0];
-        if (so && ctx.g.stack.includes(so)) await ctx.g.copySpell(so, ctx.you, { mayNewTargets: true });
+        if (so && ctx.g.stack.includes(so)) {
+          await ctx.g.copySpell(so, ctx.you, { mayNewTargets: true, copySource: ctx.src });
+        }
       },
     }],
   };

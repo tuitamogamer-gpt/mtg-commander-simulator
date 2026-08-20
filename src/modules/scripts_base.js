@@ -376,6 +376,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   E.mayCastFree = async function (g, p, card, opts = {}) {
     const yes = await p.controller.decide(g, {
       type: 'chooseOption', prompt: `Baci ${card.name} besplatno?`,
+      card,
       options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
       aiHint: { kind: 'freeCast', card },
     });

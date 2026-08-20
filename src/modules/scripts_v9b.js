@@ -1612,8 +1612,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       const target = ctx.targets[0];
       if (target && target.zone === 'battlefield') target.tapped = false;
-      ctx.g._extraCombats = (ctx.g._extraCombats || 0) + 1;
-      ctx.g.lg('Seize the Day: dodatni combat!');
+      ctx.g.scheduleAdditionalCombat({ followedByMain: true });
+      ctx.g.lg('Seize the Day: additional combat followed by an additional main phase.');
     },
   };
   SC['Taunt from the Rampart'] = {

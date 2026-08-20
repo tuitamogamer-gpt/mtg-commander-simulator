@@ -358,8 +358,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       onEvent: (e) => {
         if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ YOUR TURN' : `Turn ${g.turnNo}: ${e.p.name}`, e.p === ui.me);
         if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
-        if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind);
+        if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind, e);
         if (e.type === 'battlefieldArrival') ui.showBattlefieldArrival(e);
+        if (e.type === 'monarchChanged') ui.showMonarchChange(e);
         if (e.type === 'diplomacy' && e.text) ui.toast(`🕊️ ${e.text}`);
         ui.queueRender();
       },
@@ -407,6 +408,139 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       ui.sidebarTab = 'diplomacy';
       ui.render();
+      return;
+    }
+    if (smokeScenario === 'visualCardChoice') {
+      void (async () => {
+        const choice = new URLSearchParams(window.location.search).get('smokeChoice') || 'clash';
+        g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        if (choice === 'clash') {
+          const opponent = g.players.find(player => player !== ui.me);
+          for (const player of g.players) if (player !== ui.me && player !== opponent) player.lost = true;
+          const mine = new MTG.CardInst(MTG.DEFS.Cultivate, ui.me);
+          mine.zone = 'library'; ui.me.library.push(mine);
+          const theirs = new MTG.CardInst(MTG.DEFS['Sol Ring'], opponent);
+          theirs.zone = 'library'; opponent.library.push(theirs);
+          ui.toast('Clash canary: the revealed card must appear as art before choosing top or bottom.');
+          ui.render();
+          const won = await MTG.E7.clash(g, ui.me);
+          g.lg(`Clash visual canary resolved: ${won ? 'won' : 'lost or tied'}.`, 'effect');
+        } else if (choice === 'discover') {
+          const hit = new MTG.CardInst(MTG.DEFS["Night's Whisper"], ui.me);
+          hit.zone = 'library'; ui.me.library.push(hit);
+          ui.toast('Discover canary: the exiled card must appear as art before choosing cast or hand.');
+          ui.render();
+          await MTG.E7.discover(g, ui.me, 2);
+          g.lg(`Discover visual canary resolved: Night's Whisper moved to ${hit.zone}.`, 'effect');
+        } else if (choice === 'piles') {
+          const faceUp = ['Island', 'Cultivate', 'Sol Ring', "Night's Whisper"].map(name => {
+            const card = new MTG.CardInst(MTG.DEFS[name], ui.me);
+            card.zone = 'exile';
+            return card;
+          });
+          ui.toast('Exile-pile canary: face-up cards show art; hidden cards show only card backs.');
+          ui.render();
+          const pile = await ui.me.controller.decide(g, {
+            type: 'chooseOption', prompt: 'Exile piles — which pile goes to the graveyard?',
+            options: [
+              { key: 'down', label: 'Face-down pile (4 hidden cards)', hiddenCount: 4 },
+              { key: 'up', label: 'Face-up pile', cards: faceUp },
+            ],
+            aiHint: { kind: 'abstractPile', faceDownCount: 4 },
+          });
+          g.lg(`Exile-pile visual canary resolved: chose ${pile === 'down' ? 'face-down' : 'face-up'} pile.`, 'effect');
+        } else {
+          throw new Error(`Unknown visual card choice canary: ${choice}`);
+        }
+        ui.showLog = true;
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'monarchVisibility') {
+      void (async () => {
+        const mode = new URLSearchParams(window.location.search).get('smokeCrown') || 'initial';
+        g.turnPlayer = ui.me; g.turnNo = 9; g.phase = mode === 'transfer' ? 'combat' : 'main1';
+        g.step = mode === 'transfer' ? 'damage' : 'main'; g.paced = false;
+        if (mode === 'transfer') {
+          g.monarch = ui.me;
+          g.monarchSince = { turn: 8, phase: 'main1', step: '', reason: 'Palace Jailer entered', sourceName: 'Palace Jailer' };
+          const opponent = g.players.find(player => player !== ui.me && !player.lost);
+          g.turnPlayer = opponent;
+          const attacker = new MTG.CardInst(MTG.DEFS['Willie Lumpkin, Postman'], opponent);
+          attacker.ctrl = opponent; attacker.zone = 'battlefield'; attacker.sick = false;
+          attacker.attacking = ui.me;
+          g.battlefield.push(attacker);
+          g.recalc(); ui.render();
+          await g.damagePlayer(attacker, ui.me, 1, { combat: true, deferSBA: true });
+        } else {
+          const jailer = new MTG.CardInst(MTG.DEFS['Palace Jailer'], ui.me);
+          jailer.ctrl = ui.me; jailer.zone = 'battlefield'; jailer.sick = false;
+          g.battlefield.push(jailer);
+          g.recalc(); ui.render();
+          await g.becomeMonarch(ui.me, { reason: 'entered the battlefield', source: jailer });
+        }
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'spellTargetVisibility') {
+      void (async () => {
+        const mode = new URLSearchParams(window.location.search).get('smokeStack') || 'original';
+        const opponent = g.players.find(player => player !== ui.me && !player.lost);
+        g.turnPlayer = opponent; g.turnNo = 12; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+
+        const place = (player, name) => {
+          const card = new MTG.CardInst(MTG.DEFS[name], player);
+          card.ctrl = player; card.zone = 'battlefield'; card.sick = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        const solRing = place(ui.me, 'Sol Ring');
+        const jailer = place(ui.me, 'Palace Jailer');
+        const signet = place(ui.me, 'Arcane Signet');
+        const stella = place(opponent, 'Stella Lee, Wild Card');
+        g.recalc();
+        const warp = new MTG.CardInst(MTG.DEFS['Chaos Warp'], opponent);
+        warp.ctrl = opponent; warp.zone = 'stack';
+        const targetSpec = {
+          zone: 'battlefield', what: 'permanent', count: 1,
+          filter: (game, card) => card.ctrl === ui.me,
+        };
+        const original = {
+          kind: 'spell', card: warp, ctrl: opponent, name: warp.name,
+          targets: [solRing], targetSpecs: [targetSpec], castOpts: {}, copyOf: null,
+        };
+        g.stack.push(original);
+        g.note('stack', {});
+
+        if (mode !== 'original') {
+          const previousController = opponent.controller;
+          let wanted = jailer;
+          opponent.controller = {
+            decide: async (game, q) => {
+              if (q.type === 'chooseOption' && q.aiHint && q.aiHint.kind === 'newTargets') return 'yes';
+              if (q.type === 'chooseTargets' && q.candidates.includes(wanted)) return [wanted];
+              return previousController.decide(game, q);
+            },
+          };
+          await g.copySpell(original, opponent, { mayNewTargets: true, copySource: stella });
+          if (mode === 'multi') {
+            wanted = signet;
+            await g.copySpell(original, opponent, { mayNewTargets: true, copySource: stella });
+          }
+          opponent.controller = previousController;
+        }
+
+        g.recalc();
+        ui.stackPopup = true;
+        ui.stackPopDismissed = 0;
+        ui.react = {
+          q: { type: 'priority', player: ui.me, casts: [], acts: [] },
+          resolve: () => {},
+        };
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
     if (smokeScenario === 'infernoTargeting') {
@@ -514,6 +648,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ui.render();
       return;
     }
+    if (smokeScenario === 'combatBattlefieldToggle') {
+      const attackerPlayer = g.players.find(player => player !== ui.me && !player.lost);
+      const otherDefender = g.players.find(player => player !== ui.me && player !== attackerPlayer && !player.lost);
+      const makeAttacker = (name, target) => {
+        const card = new MTG.CardInst(MTG.DEFS[name], attackerPlayer);
+        card.ctrl = attackerPlayer; card.zone = 'battlefield'; card.sick = false; card.tapped = true; card.attacking = target;
+        g.battlefield.push(card);
+        return card;
+      };
+      const attackers = [
+        makeAttacker('Stalwart Pathlighter', ui.me),
+        makeAttacker('Academy Manufactor', ui.me),
+        makeAttacker('Humble Defector', otherDefender || ui.me),
+      ];
+      g.turnPlayer = attackerPlayer; g.turnNo = 7; g.phase = 'combat'; g.step = 'attackers'; g.paced = false;
+      g.combat = { attackers, defenders: new Map() };
+      g.recalc();
+      void ui.me.controller.decide(g, {
+        type: 'combatReview', attackingPlayer: attackerPlayer, attackers,
+        prompt: 'Review the declared combat before continuing.',
+      });
+      if (ui.pending && new URLSearchParams(window.location.search).get('smokePeek') === '1') ui.pending.boardPeek = true;
+      ui.render();
+      return;
+    }
     if (smokeScenario === 'doomMoonstoneExile') {
       void (async () => {
         const take = (name, zone) => {
@@ -606,6 +765,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         g.lg(`Haldir X=0 browser check: ${result}.`, 'ai');
         ui.showLog = true;
         ui.toast(`Haldir X=0: ${result}.`);
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'seizeTheDay') {
+      void (async () => {
+        const take = (name, zone = 'battlefield') => {
+          const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+          const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+          g.remove(card);
+          card.ctrl = ui.me; card.zone = zone; card.sick = zone === 'battlefield'; card.tapped = zone === 'battlefield';
+          if (zone === 'battlefield') g.battlefield.push(card); else ui.me[zone].push(card);
+          return card;
+        };
+        const target = take('Willie Lumpkin, Postman');
+        take('Mister Fantastic, Reed Richards');
+        const seize = take('Seize the Day', 'hand');
+        ui.me.pool.R = 1; ui.me.pool.C = 3;
+        g.turnPlayer = ui.me; g.turnNo = 20; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g._extraCombats = 0; g._additionalPhases = [];
+        g.recalc();
+        ui.toast('Seize the Day: choose one tapped creature, then Proceed. The next phases must be additional combat → additional main.');
+        ui.render();
+        if (!await g.castSpell(ui.me, seize, { from: 'hand' })) throw new Error('Seize the Day browser cast was rejected.');
+        if (target.tapped) throw new Error('Seize the Day did not untap the chosen creature.');
+        if (g._additionalPhases.map(entry => entry.kind).join(',') !== 'combat,main') {
+          throw new Error('Seize the Day did not schedule combat followed by main.');
+        }
+        await g.runAdditionalPhases(ui.me);
+        ui.showLog = true;
         ui.render();
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
@@ -1793,6 +1982,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'birdsAICombat') {
+      void (async () => {
+        const bot = g.players.find(player => player.isAI && player.deckName === 'Wakanda Forever');
+        if (!bot) throw new Error('birdsAICombat scenario zahtijeva smokeAIDeck=Wakanda Forever');
+        const zones = [bot.command, bot.hand, bot.library, bot.graveyard, bot.exile];
+        const birds = zones.flat().find(card => card.name === 'Birds of Paradise') || new MTG.CardInst(MTG.DEFS['Birds of Paradise'], bot);
+        g.remove(birds);
+        birds.ctrl = bot; birds.zone = 'battlefield'; birds.sick = false; birds.tapped = false;
+        g.battlefield.push(birds);
+        g.turnPlayer = bot; g.turnNo = 2; g.phase = 'combat'; g.step = 'attackers'; g.paced = false;
+        g.recalc();
+        const opponents = bot.opponents(g);
+        const q = { type: 'attackers', player: bot, eligible: [birds], opponents, attackTargets: opponents, forced: [] };
+        const decision = await MTG.chooseBotAction({ gameState: g, botPlayerId: bot.idx, seed: 9, actionWindow: q });
+        const assignments = MTG.unwrapBotDecisionAction(decision.action);
+        if (assignments.length) throw new Error(`Birds AI canary je izabrao ${assignments.length} nepotreban napad`);
+        g.combat = { attackers: [], defenders: new Map() };
+        g.lg('AI combat canary: Birds of Paradise stays untapped — no attacks on turn 2.', 'ai');
+        ui.showLog = true;
+        ui.toast('AI correctly keeps Birds of Paradise untapped for mana.');
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     if (smokeScenario === 'generalEffects') {
       void (async () => {
         g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = true;
@@ -1850,6 +2063,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (new URLSearchParams(window.location.search).get('smokePreset') === 'assigned') {
           ui.pending.sel.push({ card: attackers[0], target: walkers[0] });
         }
+        if (new URLSearchParams(window.location.search).get('smokePeek') === '1') ui.pending.boardPeek = true;
       }
       ui.render();
       return;
@@ -1899,6 +2113,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       coordinateSystem: 'Commander seats are ordered by players[]; the human seat is marked isAI=false.',
       turn: g.turnNo, activePlayer: g.turnPlayer ? g.turnPlayer.name : null,
       phase: g.phase, step: g.step, winner: g.winner ? g.winner.name : null,
+      monarch: g.monarch ? {
+        name: g.monarch.name,
+        isHuman: g.monarch === ui.me,
+        since: g.monarchSince || null,
+      } : null,
+      additionalPhases: (g._additionalPhases || []).map(entry => entry.kind),
+      extraCombats: g._extraCombats || 0,
       diplomacy: g.diplomacy && g.diplomacy.enabled && ui && ui.me ? (() => {
         const view = g.diplomacyView(ui.me);
         return {
@@ -1969,6 +2190,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } : null,
       stack: g.stack.map((item, index) => ({
         index, kind: item.kind, name: item.name, controller: item.ctrl && item.ctrl.name,
+        isCopy: !!item.isCopy,
+        copyIndex: item.copyIndex || null,
+        copiedFrom: item.copyOf && (item.copyOf.card && item.copyOf.card.name || item.copyOf.name) || null,
+        copiedBy: item.copySource && item.copySource.name || null,
+        targetMode: item.targetMode || null,
+        targets: (item.targets || item.ctx && item.ctx.targets || []).flat(Infinity).filter(Boolean).map(target => ({
+          name: target instanceof MTG.Player
+            ? target.name
+            : target.faceDown && target.ctrl !== ui.me ? 'Face-down permanent' : target.card && target.card.name || target.name || 'Stack object',
+          controller: target.ctrl && target.ctrl.name || null,
+        })),
         damageDivision: (item.damageDivision || item.ctx && item.ctx.damageDivision || []).map(entry => ({
           target: entry.playerIdx !== null && entry.playerIdx !== undefined
             ? g.players.find(player => player.idx === entry.playerIdx)?.name

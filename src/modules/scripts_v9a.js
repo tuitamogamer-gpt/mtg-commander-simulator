@@ -532,8 +532,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const pileKey = chooser ? await chooser.controller.decide(g, {
         type: 'chooseOption', prompt: 'Abstract Performance — koju hrpu stavljaš u groblje?',
         options: [
-          { key: 'down', label: `Hrpa licem nadolje (${pileA.length} skrivenih karata)`, denyValue: pileA.length * 3.1 },
-          { key: 'up', label: `Pile face up (${pileB.map(card => card.name).join(', ') || 'empty'})`, denyValue: faceUpValue },
+          { key: 'down', label: `Hrpa licem nadolje (${pileA.length} skrivenih karata)`, hiddenCount: pileA.length, denyValue: pileA.length * 3.1 },
+          { key: 'up', label: `Pile face up (${pileB.map(card => card.name).join(', ') || 'empty'})`, cards: pileB.slice(), denyValue: faceUpValue },
         ],
         aiHint: { kind: 'abstractPile', faceDownCount: pileA.length },
       }) : 'up';

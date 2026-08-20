@@ -599,12 +599,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (dealt + expDamage >= 21) commander = 120;
       else commander = expDamage * 0.65;
     }
-    const threat = playerThreatForGame(game, player, defender) * 0.13;
+    // Pritisak na vodeću prijetnju vrijedi samo ako napad zaista može nanijeti
+    // combat damage. Ranije je i 0/1 Birds of Paradise dobijao isti threat
+    // bonus, pa je AI na ranom potezu tapovao izvor mane za doslovno 0 štete.
+    const dealsDamage = expDamage > 0;
+    const threat = dealsDamage ? playerThreatForGame(game, player, defender) * 0.13 : 0;
     let risk = 0;
     if (freeBlock) risk += myValue * 1.05 + 3;                // poginem, ništa ne dobijem
     else if (bestTradeLoss > 0) risk += bestTradeLoss * 0.8 + 1; // nepovoljan trade
     else if (blockers.length) risk += 0.8;                    // chump im poklanja tempo, mala cijena
     const vigilance = card.kw('vigilance');
+    if (!dealsDamage) risk += 2.5;                            // dobrovoljni napad bez štete nema combat korist
+    const tapsForMana = !vigilance && !!(card.def.mana && (!card.def.mana.cost || card.def.mana.cost.tap));
+    if (tapsForMana) risk += game.turnNo <= 12 ? 3.5 : 1.75; // čuvaj rani mana razvoj za main 2/reakcije
     const crackback = vigilance ? 0 : game.creatures(defender).filter(creature => !creature.tapped)
       .reduce((sum, creature) => sum + Math.max(0, creature.power || 0), 0) * 0.08;
     return expDamage * 1.15 + lethal + commander + threat - risk - crackback;

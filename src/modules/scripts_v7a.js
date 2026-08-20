@@ -132,6 +132,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (hit) {
       const k = await p.controller.decide(g, {
         type: 'chooseOption', prompt: `Discover ${n}: ${hit.name} — baci besplatno ili u ruku?`,
+        card: hit,
         options: [{ key: 'cast', label: 'Baci besplatno' }, { key: 'hand', label: 'U ruku' }],
         aiHint: { kind: 'freeCastOrHand', card: hit },
       });
@@ -160,7 +161,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!player || !card) return;
       const where = await player.controller.decide(g, {
         type: 'chooseOption', prompt: `Clash — ${card.name} ostaje na vrhu ili ide na dno?`,
-        options: [{ key: 'top', label: 'Ostavi na vrhu' }, { key: 'bottom', label: 'Stavi na dno' }],
+        card,
+        options: [{ key: 'top', label: 'Leave on top' }, { key: 'bottom', label: 'Put on the bottom' }],
         aiHint: { kind: 'clashPlace', card },
       });
       if (where === 'bottom' && player.library[player.library.length - 1] === card) {

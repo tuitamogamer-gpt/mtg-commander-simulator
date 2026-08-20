@@ -396,6 +396,29 @@ test('Seize the Day has a real target and untaps exactly the chosen creature', a
   assert.equal(wanted.tapped, false);
   assert.equal(other.tapped, true);
   assert.equal(game._extraCombats, 1);
+  assert.equal(game._additionalPhases.map(entry => entry.kind).join(','), 'combat,main');
+});
+
+test('Seize the Day inserts combat then main before the normal combat and postcombat main', async () => {
+  const { game, players: [fantastic] } = rulesGame([], 2);
+  const target = permanent(game, fantastic, 'Willie Lumpkin, Postman');
+  const seize = inZone(fantastic, 'Seize the Day', 'graveyard');
+  for (let index = 0; index < 4; index++) inZone(fantastic, 'Forest', 'library');
+
+  const phases = [];
+  let cast = false;
+  game.mainPhase = async () => {
+    phases.push(game.phase);
+    if (!cast && game.phase === 'main1') {
+      cast = true;
+      await seize.def.resolve({ g: game, src: seize, you: fantastic, targets: [target], so: { card: seize } });
+    }
+  };
+  game.combatPhase = async () => { phases.push('combat'); };
+
+  await game.runTurn();
+  assert.deepEqual(phases, ['main1', 'combat', 'main2', 'combat', 'main2']);
+  assert.equal(game._extraCombats, 0);
 });
 
 test('Tragic Arrogance follows the caster choices and permits one multitype permanent to fill two categories', async () => {

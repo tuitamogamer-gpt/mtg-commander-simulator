@@ -293,6 +293,34 @@ test('AI napada kad defender nema blokere', async () => {
   assert.equal(picks[0].target, foe);
 });
 
+test('AI na turnu 2 ne tapuje Birds of Paradise za dobrovoljni napad od 0 štete', async () => {
+  const { game, players: [bot, foe] } = rulesGame([], 2);
+  const birds = permanent(game, bot, 'Birds of Paradise');
+  game.turnNo = 2;
+  game.phase = 'combat';
+  game.step = 'attackers';
+  game.recalc();
+  const q = { type: 'attackers', player: bot, eligible: [birds], opponents: [foe], forced: [] };
+  const decision = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 9, actionWindow: q });
+  assert.equal(MTG.unwrapBotDecisionAction(decision.action).length, 0, 'Birds treba ostati untapped mana izvor');
+  assert.equal(birds.tapped, false);
+});
+
+test('Birds of Paradise i dalje napada kada je napad obavezan', async () => {
+  const { game, players: [bot, foe] } = rulesGame([], 2);
+  const birds = permanent(game, bot, 'Birds of Paradise');
+  game.turnNo = 2;
+  game.phase = 'combat';
+  game.step = 'attackers';
+  game.recalc();
+  const q = { type: 'attackers', player: bot, eligible: [birds], opponents: [foe], forced: [birds] };
+  const decision = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 9, actionWindow: q });
+  const picks = MTG.unwrapBotDecisionAction(decision.action);
+  assert.equal(picks.length, 1, 'must attack pravilo ima prednost nad AI procjenom vrijednosti');
+  assert.equal(picks[0].card, birds);
+  assert.equal(picks[0].target, foe);
+});
+
 test('AI swarm: sa više napadača od blokera napad postaje isplativ', async () => {
   const { game, players: [bot, foe] } = rulesGame();
   const attackers = ['One', 'Two', 'Three'].map(suffix =>
