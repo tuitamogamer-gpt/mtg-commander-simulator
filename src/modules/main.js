@@ -112,7 +112,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.innerHTML = `
         <img class="deckart" loading="lazy" decoding="async" alt="${esc(deck.commander)}" src="${commanderImg(name)}" onerror="MTG.imgFail(this)">
         <div class="deckinfo">
-          <div class="decktopline"><div class="deckname">${esc(name)}</div><span class="deckyear">${esc(year)}</span></div>
+          <div class="decktopline"><div class="decktitle"><div class="deckname">${esc(name)}</div><span class="deckselectedmark"><b>✓</b> Selected for your seat</span></div><span class="deckyear">${esc(year)}</span></div>
           <div class="deckcmd"><span>Commander</span><b>${esc(deck.commander)}</b></div>
           <div class="deckcolors">${(meta.colors || []).map(c => `<img class="deckmana" src="/assets/mana/${c}.svg" alt="{${c}}" title="{${c}}">`).join('')} <span class="deckstyle">${esc(meta.style || '').replace(/[—–]/g, '-')}</span></div>
           <div class="deckblurb">${esc(meta.blurb || '').replace(/[—–]/g, '-')}</div>
@@ -2132,6 +2132,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'playerEffects') {
+      const place = (player, name, meta = {}) => {
+        const card = new MTG.CardInst(MTG.DEFS[name], player);
+        card.ctrl = player; card.zone = 'battlefield'; card.sick = false; card.tapped = false;
+        Object.assign(card.meta, meta);
+        g.battlefield.push(card);
+        return card;
+      };
+      const opponent = g.players.find(player => player !== ui.me && !player.lost);
+      g.turnPlayer = ui.me; g.turnNo = 11; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+      place(ui.me, 'Patchwork Banner', { chosenType: 'Human' });
+      place(ui.me, "Gourmand's Talent", { level: 2 });
+      ui.me.cityBlessing = true;
+      ui.me.emblems.push({ name: 'Garruk emblem' });
+      g.untilEffects.push({ kind: 'tokenDouble', who: ui.me, expires: 'eot', label: 'Kaya, Geist Hunter' });
+      place(opponent, "Progenitor's Icon", { chosenType: 'Wizard' });
+      place(opponent, 'Outpost Siege', { siegeMode: 'dragons' });
+      opponent.noMaxHandForever = true;
+      g.recalc();
+      ui.playerSheet = new URLSearchParams(window.location.search).get('smokePlayer') === 'human' ? ui.me : opponent;
+      ui.render();
+      return;
+    }
     if (smokeScenario === 'generalEffects') {
       void (async () => {
         g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = true;
@@ -2231,6 +2254,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       exile: p === ui.me ? p.exile.map(card) : undefined,
       visibleLibraryTop: p === ui.me && g.bf().some(source => source.ctrl === p && source.def.revealOwnTop) && p.library.length
         ? card(p.library[p.library.length - 1]) : undefined,
+      activeEffects: ui && ui.playerStatusEffects ? ui.playerStatusEffects(g, p).map(effect => ({
+        kind: effect.kind, label: effect.label, detail: effect.detail,
+        source: effect.source || null, duration: effect.duration || null,
+      })) : [],
     }));
     const pending = ui && ui.pending ? ui.pending.q : (ui && ui.react ? ui.react.q : null);
     return {

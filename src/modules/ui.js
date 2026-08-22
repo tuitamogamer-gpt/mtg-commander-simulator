@@ -248,6 +248,106 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return counter ? `${counter.n} COUNTER${counter.n === 1 ? '' : 'S'}` : '';
     }
 
+    // Public, currently relevant player state that would otherwise be easy to
+    // lose in the game log. Keep this presentation-only: it reads the same
+    // card/player metadata used by the rules engine and never exposes secret
+    // choices such as Stalking Leonin's hidden opponent.
+    playerStatusEffects(g, p) {
+      const effects = [];
+      const seen = new Set();
+      const add = effect => {
+        if (!effect || seen.has(effect.key)) return;
+        seen.add(effect.key);
+        effects.push(effect);
+      };
+      const colorName = { W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green', C: 'Colorless' };
+      const words = value => String(value || '').replace(/[_-]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
+
+      if (g.monarch === p) add({
+        key: 'monarch', kind: 'role', icon: '♛', label: 'Monarch',
+        detail: g.monarchSince && g.monarchSince.turn !== undefined
+          ? `Held since turn ${g.monarchSince.turn}` : 'Current table role',
+        duration: 'Until another player takes the crown',
+      });
+      if (p.cityBlessing) add({
+        key: 'city-blessing', kind: 'role', icon: '☀', label: "City's Blessing",
+        detail: 'This player has ascended.', duration: 'For the rest of the game',
+      });
+      if (p.noMaxHandForever) add({
+        key: 'no-max-hand', kind: 'effect', icon: '∞', label: 'No maximum hand size',
+        detail: 'A lasting player effect is active.', duration: 'For the rest of the game',
+      });
+
+      for (const [index, emblem] of (p.emblems || []).entries()) {
+        const ring = !!emblem.ring;
+        add({
+          key: `emblem:${index}:${emblem.name || (ring ? 'ring' : 'emblem')}`,
+          kind: 'emblem', icon: ring ? '💍' : '◆',
+          label: ring ? `The Ring — Level ${emblem.level || 0}` : (emblem.name || 'Emblem'),
+          detail: ring ? 'Ring abilities remain active and cumulative.' : 'An emblem effect is active.',
+          duration: 'For the rest of the game',
+        });
+      }
+
+      const battlefield = typeof g.bf === 'function' ? g.bf() : (g.battlefield || []);
+      for (const card of battlefield.filter(candidate => candidate && candidate.ctrl === p && !candidate.phasedOut)) {
+        const meta = card.meta || {};
+        const source = card.name || 'Permanent';
+        const sourceKey = card.iid === undefined ? source : card.iid;
+        const addChoice = (key, label, value, detail) => {
+          if (value === undefined || value === null || value === '') return;
+          add({
+            key: `choice:${sourceKey}:${key}`, kind: 'choice', icon: '✦',
+            label, detail: detail || String(value), source,
+            duration: 'While this permanent remains on the battlefield',
+          });
+        };
+        addChoice('creature-type', 'Chosen creature type', meta.chosenType);
+        addChoice('color', 'Chosen color', meta.chosenColor, colorName[meta.chosenColor] || words(meta.chosenColor));
+        addChoice('thriving-color', 'Chosen color', meta.thrivingColor, colorName[meta.thrivingColor] || words(meta.thrivingColor));
+        addChoice('siege-mode', 'Chosen mode', meta.siegeMode, words(meta.siegeMode));
+        if (Number.isFinite(meta.level)) addChoice('class-level', 'Class level', meta.level, `Level ${meta.level}`);
+        if (Array.isArray(meta.unlocked) && meta.unlocked.length) {
+          addChoice('unlocked-rooms', meta.unlocked.length === 1 ? 'Unlocked room' : 'Unlocked rooms',
+            meta.unlocked.join('|'), meta.unlocked.map(words).join(' · '));
+        }
+      }
+
+      const playerEffectLabels = {
+        chooseBlocksFor: 'Chooses how opponents block',
+        mustAttack: 'Must attack if able',
+        cantAttackPlayer: 'Attack restriction',
+        preventToPlayer: 'All damage prevented',
+        preventCombatToPlayer: 'Combat damage prevented',
+        preventNextToPlayer: 'Next damage prevented and reflected',
+        redirectAllDamage: 'Damage redirected',
+        comeuppance: 'Comeuppance shield',
+        tokenDouble: 'Token creation doubled',
+      };
+      for (const [index, effect] of (g.untilEffects || []).entries()) {
+        if (!effect || effect.who !== p || !playerEffectLabels[effect.kind]) continue;
+        const source = effect.sourceCard || (effect.srcIid && typeof g.byIid === 'function' ? g.byIid(effect.srcIid) : null);
+        add({
+          key: `temporary:${index}:${effect.kind}`, kind: 'temporary', icon: '⛨',
+          label: playerEffectLabels[effect.kind],
+          detail: source && source.name ? `Source: ${source.name}` : 'A public player effect is active.',
+          source: source && source.name || undefined,
+          duration: effect.expires === 'eot' ? 'Until end of turn' : 'Until its stated condition ends',
+        });
+      }
+
+      if (g.diplomacy && g.diplomacy.enabled && typeof g.diplomacyView === 'function') {
+        const view = g.diplomacyView(p);
+        for (const contract of (view.activeContracts || [])) add({
+          key: `agreement:${contract.id}`, kind: 'agreement', icon: '🤝',
+          label: `Agreement #${contract.id}`,
+          detail: (contract.clauses || []).filter(clause => clause.state === 'active').map(clause => clause.label).join(' · ') || 'Public agreement active',
+          duration: 'Until the listed clauses expire or are completed',
+        });
+      }
+      return effects;
+    }
+
     renderStackTargetFlow(so, opts = {}) {
       if (!so) return null;
       const compact = !!opts.compact;
@@ -617,7 +717,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderSidebar(g) {
       const side = el('div', 'sidebar');
       const diplomacyEnabled = !!(g.diplomacy && g.diplomacy.enabled);
-      const drawerHead = el('div', 'utilitydrawerhead', '<div><span>Arena utility</span><b>Table details</b></div>');
+      const drawerTitle = this.sidebarTab === 'diplomacy' && diplomacyEnabled
+        ? 'Diplomacy & Politics' : this.sidebarTab === 'log' ? 'Game log' : 'Table details';
+      const drawerHead = el('div', 'utilitydrawerhead', `<div><span>Arena utility</span><b>${esc(drawerTitle)}</b></div>`);
       const close = el('button', 'utilitydrawerclose', '×');
       close.type = 'button';
       close.setAttribute('aria-label', 'Close table details');
@@ -1001,20 +1103,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderMobileViewTabs(g) {
       const tabs = el('nav', 'mobileviewtabs');
       tabs.setAttribute('aria-label', 'Arena view');
-      const incoming = g.diplomacy && g.diplomacy.enabled && g.diplomacyView
-        ? g.diplomacyView(this.me).incoming.length : 0;
-      for (const [key, label] of [['mine', 'MINE'], ['table', 'TABLE'], ['stack', `STACK ${g.stack.length || ''}`]]) {
-        const button = el('button', 'mobileviewtab' + (this.mobileView === key ? ' on' : ''), label.trim());
+      const diplomacyView = g.diplomacy && g.diplomacy.enabled && g.diplomacyView ? g.diplomacyView(this.me) : null;
+      const incoming = diplomacyView ? diplomacyView.incoming.length : 0;
+      const items = [['mine', 'MINE'], ['table', 'TABLE'], ['stack', `STACK ${g.stack.length || ''}`]];
+      if (diplomacyView) items.push(['diplomacy', `🕊 POLITICS${incoming ? ` ${incoming}` : ''}`]);
+      for (const [key, label] of items) {
+        const isPolitics = key === 'diplomacy';
+        const isOn = isPolitics
+          ? this.utilityDrawerOpen && this.sidebarTab === 'diplomacy'
+          : this.mobileView === key;
+        const button = el('button', 'mobileviewtab' + (isOn ? ' on' : '') + (isPolitics ? ' politics' : ''), label.trim());
         button.type = 'button';
         button.onclick = () => {
+          if (isPolitics) { this.openUtility('diplomacy'); return; }
           this.mobileView = key;
           this.utilityDrawerOpen = key === 'stack';
           if (key === 'stack') this.sidebarTab = 'table';
           this.render();
         };
+        if (isPolitics && incoming) button.title = `${incoming} unanswered diplomacy proposal${incoming === 1 ? '' : 's'}`;
         tabs.appendChild(button);
       }
-      if (incoming) tabs.lastChild.title = `${incoming} unanswered diplomacy proposal${incoming === 1 ? '' : 's'}`;
       return tabs;
     }
 
@@ -1037,8 +1146,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       add('table', 'STACK', g.stack.length, 'Open the stack and table information');
       add('log', 'LOG', 0, 'Open the game log');
       if (g.diplomacy && g.diplomacy.enabled) {
-        const incoming = g.diplomacyView ? g.diplomacyView(this.me).incoming.length : 0;
-        add('diplomacy', 'POLITICS', incoming, 'Open Diplomacy & Politics');
+        const view = g.diplomacyView ? g.diplomacyView(this.me) : null;
+        const incoming = view ? view.incoming.length : 0;
+        const active = view ? view.activeContracts.length : 0;
+        add('diplomacy', 'POLITICS', incoming || active || '•', 'Open Diplomacy & Politics');
       }
       return rail;
     }
@@ -1063,6 +1174,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         crown.innerHTML = `<span aria-hidden="true">♛</span><div><small>MONARCH</small><b>${esc(holder)}</b></div>`;
         crown.onclick = () => { this.playerSheet = g.monarch; this.render(); };
         bar.appendChild(crown);
+      }
+
+      if (g.diplomacy && g.diplomacy.enabled && g.diplomacyView) {
+        const view = g.diplomacyView(this.me);
+        const incoming = view.incoming.length;
+        const active = view.activeContracts.length;
+        const politics = el('button', 'politicsstatus' + (incoming ? ' incoming' : '') + (view.status.unlocked ? ' ready' : ' locked'));
+        politics.type = 'button';
+        politics.title = view.status.unlocked
+          ? `${active} active agreement${active === 1 ? '' : 's'} · ${incoming} proposal${incoming === 1 ? '' : 's'} awaiting you`
+          : view.status.reason;
+        politics.innerHTML = `<span aria-hidden="true">🕊</span><div><small>DIPLOMACY &amp; POLITICS</small><b>${incoming ? `${incoming} OFFER${incoming === 1 ? '' : 'S'}` : active ? `${active} ACTIVE` : view.status.unlocked ? 'READY' : 'LOCKED · TURN 3'}</b></div>`;
+        politics.onclick = () => this.openUtility('diplomacy');
+        bar.appendChild(politics);
       }
 
       const buttons = el('div', 'topbtns');
@@ -1167,8 +1292,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const meta = MTG.DECK_META[p.deckName] || {};
         const isActiveAi = activeAiTurn && g.turnPlayer === p;
         const isMonarch = g.monarch === p;
+        const statusEffects = this.playerStatusEffects(g, p);
         const row = el('div', `opprow seat-${seatNo}` + (p.lost ? ' lost' : '') + (g.turnPlayer === p ? ' active' : '') +
-          (isActiveAi ? ' activeai' : '') + (isMonarch ? ' monarch' : ''));
+          (isActiveAi ? ' activeai' : '') + (isMonarch ? ' monarch' : '') + (statusEffects.length ? ' has-effects' : ''));
         row.dataset.seat = String(seatNo).padStart(2, '0');
         if (isMonarch) row.title = `${p.name} is the Monarch`;
         row.style.setProperty('--seat-accent', COLHEX[(meta.colors || [])[0]] || '#778f63');
@@ -1190,10 +1316,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ${isActiveAi ? '<span class="activeaitag">ACTIVE TURN</span>' : ''}
           ${styleMeta ? `<span class="personachip" title="Style: ${esc(styleMeta.label)}">${styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
           <span class="opplife" role="button">${p.life}❤</span>
-          <span class="oppmeta">✋${p.hand.length} 📚${p.library.length}</span>
+          <span class="oppmeta">✋${p.hand.length} 📚${p.library.length}${statusEffects.length ? ` <button type="button" class="playereffectsbadge" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>✦</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}</span>
           <span class="oppcmd" title="${esc(cmdTitle)}">👑${esc(cmdState)}</span>
           <button class="tbtn small">ℹ️</button>`;
-        head.querySelector('button').onclick = (e) => { e.stopPropagation(); this.playerSheet = p; this.render(); };
+        head.querySelector('.tbtn.small').onclick = (e) => { e.stopPropagation(); this.playerSheet = p; this.render(); };
+        const effectsBadge = head.querySelector('.playereffectsbadge');
+        if (effectsBadge) effectsBadge.onclick = (e) => { e.stopPropagation(); this.playerSheet = p; this.render(); };
         // EDHLAB-style: life tap = detalji (commander dmg itd.), ostatak = collapse
         head.querySelector('.opplife').onclick = (e) => {
           if (isCandidate || isSelectedTarget) return; // pusti glavni handler
@@ -1455,8 +1583,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const libraryTop = maySeeLibraryTop ? me.library[me.library.length - 1] : null;
       const info = el('div', 'meinfo');
       if (g.monarch === me) info.classList.add('monarch');
+      const statusEffects = this.playerStatusEffects(g, me);
+      if (statusEffects.length) info.classList.add('has-effects');
       info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="melife">${me.life}<small>life</small></div>
         ${g.monarch === me ? '<div class="memonarch"><span>♛</span><b>MONARCH</b></div>' : ''}
+        ${statusEffects.length ? `<button type="button" class="playereffectsbadge mine" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>✦</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}
         <div class="manapool">${poolStr}</div>
         <div class="zbtns">
           <button class="zbtn" data-z="library-top">📚${me.library.length}${libraryTop ? ' · 👁' : ''}</button>
@@ -1471,6 +1602,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           this.render();
         };
       });
+      const effectsBadge = info.querySelector('.playereffectsbadge');
+      if (effectsBadge) effectsBadge.onclick = () => { this.playerSheet = me; this.render(); };
       const myLife = info.querySelector('.melife');
       if (this.markSelectedTarget(myLife, me)) {
         // selected player target can be removed directly
@@ -3007,6 +3140,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ? `<div class="cdnote">🏠 House rule: partner damage is COMBINED by owner.</div>`
           : `<div class="cdnote">Rule 903.10a: each commander tracks its own 21 damage. Partners are not combined.</div>`) +
         cmdDmg));
+      const statusEffects = this.playerStatusEffects(g, p);
+      const statusPanel = el('section', 'playerstatuspanel' + (statusEffects.length ? '' : ' empty'));
+      statusPanel.appendChild(el('div', 'playerstatushead', `<span>✦ ACTIVE EFFECTS &amp; CHOICES</span><b>${statusEffects.length}</b>`));
+      if (!statusEffects.length) {
+        statusPanel.appendChild(el('div', 'playerstatusnone', 'No tracked public effects or persistent choices are active.'));
+      } else {
+        const list = el('div', 'playerstatuslist');
+        for (const effect of statusEffects) {
+          const item = el('div', `playerstatusitem kind-${effect.kind || 'effect'}`);
+          item.innerHTML = `<span class="playerstatusicon" aria-hidden="true">${effect.icon || '✦'}</span>` +
+            `<div><b>${esc(effect.label)}</b><p>${esc(effect.detail || '')}</p>` +
+            `${effect.source ? `<small>SOURCE · ${esc(effect.source)}</small>` : ''}` +
+            `${effect.duration ? `<em>${esc(effect.duration)}</em>` : ''}</div>`;
+          list.appendChild(item);
+        }
+        statusPanel.appendChild(list);
+      }
+      m.appendChild(statusPanel);
       const zrow = el('div', 'btnrow');
       for (const z of ['graveyard', 'exile']) {
         const b = el('button', 'pbtn', `${z === 'graveyard' ? '🪦' : '🌀'} ${p[z].length}`);

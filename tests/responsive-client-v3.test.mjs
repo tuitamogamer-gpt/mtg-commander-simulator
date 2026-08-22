@@ -43,6 +43,9 @@ test('Main Page V3 keeps discovery and mobile pod controls functional', () => {
   assert.match(main, /const filterDecks = \(\) =>/);
   assert.match(main, /const mobileBar = el\('div', 'setupmobilebar'\)/);
   assert.match(main, /right\.classList\.add\('mobile-open'\)/);
+  assert.match(main, /deckselectedmark/);
+  assert.match(css, /#setup \.deckcard\.selected::after \{[\s\S]*?content: none !important;[\s\S]*?display: none !important;/);
+  assert.match(css, /#setup \.deckcard\.selected \.deckselectedmark \{ display: inline-flex; \}/);
 });
 
 test('deck strategy filter classifies every supported archetype without false combat fallbacks', () => {
@@ -63,8 +66,29 @@ test('Arena V3 uses a compact HUD and utilities without bypassing action review'
   assert.match(ui, /<span>HOLD<\/span>/);
   assert.match(ui, /<span>MANA<\/span>/);
   assert.match(ui, /<span>MENU<\/span>/);
+  assert.match(ui, /el\('button', 'politicsstatus/);
+  assert.match(ui, /items\.push\(\['diplomacy'/);
   assert.match(ui, /const stage = blocked \? null : this\.renderActionStage\(g\)/);
   assert.match(ui, /const sp = blocked \? null : this\.renderStackPopup\(g\)/);
+});
+
+test('player effect indicators expose public persistent choices without leaking secret choices', () => {
+  const harness = loadUIForKeyboardTest();
+  const arena = new harness.UI();
+  const player = { name: 'You', cityBlessing: true, emblems: [], noMaxHandForever: false };
+  const publicChoice = { iid: 10, name: 'Patchwork Banner', ctrl: player, meta: { chosenType: 'Human' } };
+  const classCard = { iid: 11, name: "Gourmand's Talent", ctrl: player, meta: { level: 2 } };
+  const secretChoice = { iid: 12, name: 'Stalking Leonin', ctrl: player, meta: { chosen: 3 } };
+  const game = {
+    monarch: null, battlefield: [publicChoice, classCard, secretChoice], untilEffects: [],
+    bf() { return this.battlefield; },
+  };
+
+  const effects = arena.playerStatusEffects(game, player);
+  assert.deepEqual(Array.from(effects, effect => effect.label), ["City's Blessing", 'Chosen creature type', 'Class level']);
+  assert.equal(effects.find(effect => effect.label === 'Chosen creature type').detail, 'Human');
+  assert.equal(effects.find(effect => effect.label === 'Class level').detail, 'Level 2');
+  assert.equal(effects.some(effect => /Stalking Leonin|secret/i.test(`${effect.label} ${effect.detail}`)), false);
 });
 
 test('Arena menus own keyboard input and new human decisions return mobile UI to Mine', async () => {
