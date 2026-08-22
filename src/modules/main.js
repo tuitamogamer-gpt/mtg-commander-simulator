@@ -3,6 +3,15 @@
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 // Setup screen + game bootstrap (browser only)
 (function () {
+  MTG.deckStrategy = function (style) {
+    const text = String(style || '').toLowerCase();
+    if (/token|offspring|go-wide/.test(text)) return 'tokens';
+    if (/counter|toughness|wither/.test(text)) return 'counters';
+    if (/spell|noncreature|copy|connive/.test(text)) return 'spells';
+    if (/artifact|treasure|clue/.test(text)) return 'artifacts';
+    if (/goad|voting|politic|group slug/.test(text)) return 'politics';
+    return 'combat';
+  };
   if (typeof document === 'undefined') return;
   const U = MTG;
   const $ = s => document.querySelector(s);
@@ -28,53 +37,101 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function renderSetup() {
     const root = $('#setup');
     root.innerHTML = '';
+    document.body.classList.remove('game-active');
     const nDecks = Object.keys(MTG.DECKS).filter(d => !MTG.DECKS[d].custom).length;
-    // Desktop war-room zaglavlje: proizvod ostaje jasan, a zadatak je u prvom planu.
+    // Setup V3: zadatak je podijeljen u tri jasna koraka, bez gubitka naprednih opcija.
     const head = el('div', 'menuhead');
     head.innerHTML = `
-      <div class="menumark" aria-hidden="true"></div>
-      <div class="menutitles">
-        <div class="menu-kicker">Commander Simulator <span>Desktop Client</span></div>
-        <h1 class="title">Assemble your Commander pod.</h1>
-        <div class="subtitle">${nDecks} preconstructed decks from 2021-2026, ready for a full four-player table.</div>
-        <div class="menu-mana-showcase" aria-label="Official white, blue, black, red, green, and colorless mana symbols">
-          <span>Mana identities</span>
-          <div>${['W', 'U', 'B', 'R', 'G', 'C'].map(color => `<img src="/assets/mana/${color}.svg" alt="{${color}}" title="{${color}}">`).join('')}</div>
-        </div>
+      <div class="setupbrand"><span class="menumark" aria-hidden="true"></span><b>COMMANDER</b><small>SIMULATOR</small></div>
+      <nav class="setupsteps" aria-label="Game setup progress">
+        <button type="button" class="setupstep on" data-step="deck"><span>1</span><b>Deck</b></button>
+        <button type="button" class="setupstep" data-step="pod"><span>2</span><b>Pod</b></button>
+        <button type="button" class="setupstep" data-step="review"><span>3</span><b>Review</b></button>
+      </nav>
+      <div class="menu-mana-showcase" aria-label="Official white, blue, black, red, green, and colorless mana symbols">
+        ${['W', 'U', 'B', 'R', 'G', 'C'].map(color => `<img src="/assets/mana/${color}.svg" alt="{${color}}" title="{${color}}">`).join('')}
       </div>
-      <div class="menupill"><span class="menupillmark" aria-hidden="true"></span><span><b>Main Menu</b>Game setup</span></div>`;
+      <div class="setuphero">
+        <div class="menu-kicker">Build your table</div>
+        <h1 class="title">Choose your commander.</h1>
+        <p class="subtitle">Browse ${nDecks} tested preconstructed decks, then configure a four-player pod.</p>
+      </div>`;
     root.appendChild(head);
 
+    let savedFavorites = [];
+    try {
+      const parsed = JSON.parse(localStorage.getItem('mtgDeckFavorites') || '[]');
+      if (Array.isArray(parsed)) savedFavorites = parsed;
+    } catch {
+      localStorage.removeItem('mtgDeckFavorites');
+    }
     const state = {
       deck: null, ai: 3, difficulty: 'normal', seed: '',
       aiDecks: ['', '', ''],
       aiStyles: ['random', 'random', 'random'],
       commanders: [], aiRandomCommanders: false, sumPartnerDamage: false,
       diplomacyEnabled: false,
+      search: '', color: 'all', strategy: 'all', year: 'all', favoritesOnly: false,
+      favorites: new Set(savedFavorites),
     };
 
     const grid = el('div', 'setupgrid');
     root.appendChild(grid);
-    const left = el('div', 'setupleft');
-    const right = el('div', 'setupright');
+    const left = el('section', 'setupleft');
+    left.id = 'deck-explorer';
+    const right = el('aside', 'setupright podbuilder');
+    right.id = 'pod-builder';
     grid.appendChild(left); grid.appendChild(right);
 
-    left.appendChild(el('div', 'seclabel', '<i>Precon</i> Choose your deck <em>Command library</em>'));
+    const explorerHead = el('div', 'deckexplorerhead', `
+      <div><span class="eyebrow">Deck explorer</span><h2>Find your playstyle</h2></div>
+      <span class="deckresultcount">${nDecks} decks</span>`);
+    left.appendChild(explorerHead);
+    const deckTools = el('div', 'decktools');
+    deckTools.innerHTML = `
+      <label class="decksearch"><span aria-hidden="true">⌕</span><input type="search" placeholder="Search decks or commanders" aria-label="Search decks or commanders"></label>
+      <label><span class="sr-only">Colors</span><select data-filter="color" aria-label="Filter by color"><option value="all">Colors</option>${['W', 'U', 'B', 'R', 'G', 'C'].map(c => `<option value="${c}">${c === 'C' ? 'Colorless' : `{${c}}`}</option>`).join('')}</select></label>
+      <label><span class="sr-only">Strategy</span><select data-filter="strategy" aria-label="Filter by strategy"><option value="all">Strategy</option><option value="tokens">Tokens</option><option value="counters">Counters</option><option value="spells">Spells</option><option value="artifacts">Artifacts</option><option value="combat">Combat</option><option value="politics">Politics</option></select></label>
+      <label><span class="sr-only">Year</span><select data-filter="year" aria-label="Filter by year"><option value="all">Year</option>${[2026, 2025, 2024, 2023, 2022, 2021].map(y => `<option value="${y}">${y}</option>`).join('')}</select></label>
+      <button type="button" class="favoritefilter" aria-pressed="false">☆ Favorites</button>`;
+    left.appendChild(deckTools);
     const deckList = el('div', 'decklist');
     for (const [name, deck] of Object.entries(MTG.DECKS)) {
+      if (deck.custom) continue;
       const meta = MTG.DECK_META[name] || {};
+      const strategy = MTG.deckStrategy(meta.style);
+      const year = ((meta.set || '').match(/20\d{2}/) || [''])[0];
+      const entry = el('div', 'deckentry');
+      entry.dataset.name = `${name} ${deck.commander}`.toLowerCase();
+      entry.dataset.colors = (meta.colors || []).join('');
+      entry.dataset.strategy = strategy;
+      entry.dataset.year = year;
       const card = el('button', 'deckcard');
       card.type = 'button';
       card.setAttribute('aria-pressed', 'false');
       card.innerHTML = `
         <img class="deckart" loading="lazy" decoding="async" alt="${esc(deck.commander)}" src="${commanderImg(name)}" onerror="MTG.imgFail(this)">
         <div class="deckinfo">
-          <div class="deckname">${esc(name)}</div>
-          <div class="deckcmd"><span>Commander</span>${esc(deck.commander)}</div>
+          <div class="decktopline"><div class="deckname">${esc(name)}</div><span class="deckyear">${esc(year)}</span></div>
+          <div class="deckcmd"><span>Commander</span><b>${esc(deck.commander)}</b></div>
           <div class="deckcolors">${(meta.colors || []).map(c => `<img class="deckmana" src="/assets/mana/${c}.svg" alt="{${c}}" title="{${c}}">`).join('')} <span class="deckstyle">${esc(meta.style || '').replace(/[—–]/g, '-')}</span></div>
           <div class="deckblurb">${esc(meta.blurb || '').replace(/[—–]/g, '-')}</div>
-          <div class="deckset">${esc(meta.set || '').replace(/[—–]/g, '-')}</div>
+          <div class="deckset">${esc(meta.set || '').replace(/[—–]/g, '-')}<span>View deck →</span></div>
         </div>`;
+      const favorite = el('button', 'deckfavorite', state.favorites.has(name) ? '★' : '☆');
+      favorite.type = 'button';
+      favorite.title = state.favorites.has(name) ? `Remove ${name} from favorites` : `Add ${name} to favorites`;
+      favorite.setAttribute('aria-label', favorite.title);
+      favorite.setAttribute('aria-pressed', state.favorites.has(name) ? 'true' : 'false');
+      favorite.onclick = () => {
+        if (state.favorites.has(name)) state.favorites.delete(name); else state.favorites.add(name);
+        localStorage.setItem('mtgDeckFavorites', JSON.stringify([...state.favorites]));
+        favorite.textContent = state.favorites.has(name) ? '★' : '☆';
+        favorite.setAttribute('aria-pressed', state.favorites.has(name) ? 'true' : 'false');
+        favorite.title = state.favorites.has(name) ? `Remove ${name} from favorites` : `Add ${name} to favorites`;
+        favorite.setAttribute('aria-label', favorite.title);
+        filterDecks();
+      };
       card.onclick = () => {
         state.deck = name;
         state.commanders = [deck.commander];
@@ -89,16 +146,51 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (let i = 0; i < state.aiDecks.length; i++) if (state.aiDecks[i] === name) state.aiDecks[i] = '';
         renderBotStyles();
         updateStartLabel();
+        mobileDeck.innerHTML = `<img src="${commanderImg(name)}" alt="${esc(deck.commander)}" onerror="MTG.imgFail(this)"><span><small>Selected deck</small><b>${esc(name)}</b></span>`;
+        mobileContinue.disabled = false;
+        root.querySelectorAll('.setupstep').forEach(step => step.classList.toggle('on', step.dataset.step === 'pod'));
       };
-      deckList.appendChild(card);
+      entry.appendChild(card);
+      entry.appendChild(favorite);
+      deckList.appendChild(entry);
     }
     left.appendChild(deckList);
 
-    // ---------- 2 · KOMANDER ----------
-    right.appendChild(el('div', 'controlintro', `
-      <span>Pod settings</span>
-      <h2>Configure the game</h2>
-      <p>Your choices remain here while you browse the library. Start when the pod is ready.</p>`));
+    const filterDecks = () => {
+      let visible = 0;
+      deckList.querySelectorAll('.deckentry').forEach(entry => {
+        const matches = (!state.search || entry.dataset.name.includes(state.search)) &&
+          (state.color === 'all' || entry.dataset.colors.includes(state.color)) &&
+          (state.strategy === 'all' || entry.dataset.strategy === state.strategy) &&
+          (state.year === 'all' || entry.dataset.year === state.year) &&
+          (!state.favoritesOnly || state.favorites.has(entry.querySelector('.deckname').textContent));
+        entry.hidden = !matches;
+        if (matches) visible++;
+      });
+      explorerHead.querySelector('.deckresultcount').textContent = `${visible} deck${visible === 1 ? '' : 's'}`;
+      deckList.classList.toggle('noresults', visible === 0);
+    };
+    deckTools.querySelector('input').oninput = e => { state.search = e.target.value.trim().toLowerCase(); filterDecks(); };
+    deckTools.querySelector('[data-filter="color"]').onchange = e => { state.color = e.target.value; filterDecks(); };
+    deckTools.querySelector('[data-filter="strategy"]').onchange = e => { state.strategy = e.target.value; filterDecks(); };
+    deckTools.querySelector('[data-filter="year"]').onchange = e => { state.year = e.target.value; filterDecks(); };
+    const favoriteFilter = deckTools.querySelector('.favoritefilter');
+    favoriteFilter.onclick = () => {
+      state.favoritesOnly = !state.favoritesOnly;
+      favoriteFilter.classList.toggle('on', state.favoritesOnly);
+      favoriteFilter.setAttribute('aria-pressed', state.favoritesOnly ? 'true' : 'false');
+      favoriteFilter.textContent = state.favoritesOnly ? '★ Favorites' : '☆ Favorites';
+      filterDecks();
+    };
+
+    // ---------- 2 · POD BUILDER ----------
+    const podHead = el('div', 'controlintro', `
+      <button type="button" class="podclose" aria-label="Close Pod Builder">×</button>
+      <span>Pod builder</span>
+      <h2>Ready your table</h2>
+      <p>Your selections stay here while you browse. Review the seats and start when the pod is ready.</p>`);
+    podHead.querySelector('.podclose').onclick = () => right.classList.remove('mobile-open');
+    right.appendChild(podHead);
     right.appendChild(el('div', 'seclabel', '<i>Choice</i> Commander'));
     const cmdBox = el('div', 'cmdbox');
     right.appendChild(cmdBox);
@@ -220,17 +312,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     right.appendChild(botStyles);
     renderBotStyles();
 
+    const advanced = el('details', 'advancedrules');
+    advanced.appendChild(el('summary', '', '<span>Advanced rules</span><small>Commander options, politics and difficulty</small>'));
+    const advancedBody = el('div', 'advancedbody');
+    advanced.appendChild(advancedBody);
+
     const randRow = el('label', 'cmdcheck');
     randRow.innerHTML = '<input type="checkbox"> <span>AI bots choose random commanders (including partners)</span>';
     randRow.querySelector('input').onchange = e => { state.aiRandomCommanders = e.target.checked; };
-    right.appendChild(randRow);
+    advancedBody.appendChild(randRow);
 
     const houseRow = el('label', 'cmdcheck');
     houseRow.title = 'Official rule 903.10a: 21 damage from the SAME commander. ' +
       'Enable this only if your group combines damage from both partners.';
     houseRow.innerHTML = '<input type="checkbox"> <span>House rule: COMBINE damage from both partners (not rule 903.10a)</span>';
     houseRow.querySelector('input').onchange = e => { state.sumPartnerDamage = e.target.checked; };
-    right.appendChild(houseRow);
+    advancedBody.appendChild(houseRow);
 
     const diplomacyRow = el('label', 'cmdcheck diplomacysetup');
     diplomacyRow.title = 'Optional structured agreements between every player. Disabled for the first three full table rounds.';
@@ -239,16 +336,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       state.diplomacyEnabled = e.target.checked;
       diplomacyRow.classList.toggle('enabled', state.diplomacyEnabled);
     };
-    right.appendChild(diplomacyRow);
+    advancedBody.appendChild(diplomacyRow);
 
-    right.appendChild(el('div', 'seclabel', '<i>AI</i> Difficulty'));
+    advancedBody.appendChild(el('div', 'seclabel', '<i>AI</i> Difficulty'));
     const diffRow = el('div', 'btnrow center');
     for (const [k, label] of [['easy', 'Easy'], ['normal', 'Normal'], ['hard', 'Hard']]) {
       const b = el('button', 'pbtn choice' + (k === 'normal' ? ' selected' : ''), label);
       b.onclick = () => { state.difficulty = k; diffRow.querySelectorAll('.pbtn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); };
       diffRow.appendChild(b);
     }
-    right.appendChild(diffRow);
+    advancedBody.appendChild(diffRow);
+    right.appendChild(advanced);
 
     const startBtn = el('button', 'pbtn primary start', 'Choose a deck first');
     startBtn.disabled = true;
@@ -258,6 +356,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     right.appendChild(el('div', 'credits',
       'All cards and images: <b>Scryfall</b>. The fixed set of official WotC precons passes separate card-by-card certification.'));
+
+    const mobileBar = el('div', 'setupmobilebar');
+    const mobileDeck = el('div', 'mobiledeck', '<span><small>Step 1 of 3</small><b>Choose a deck</b></span>');
+    const mobileContinue = el('button', 'pbtn primary', 'Continue');
+    mobileContinue.type = 'button';
+    mobileContinue.disabled = true;
+    mobileContinue.onclick = () => {
+      right.classList.add('mobile-open');
+      right.scrollTop = 0;
+    };
+    mobileBar.appendChild(mobileDeck);
+    mobileBar.appendChild(mobileContinue);
+    root.appendChild(mobileBar);
+
+    root.querySelectorAll('.setupstep').forEach(step => {
+      step.onclick = () => {
+        const target = step.dataset.step;
+        root.querySelectorAll('.setupstep').forEach(item => item.classList.toggle('on', item === step));
+        if (target === 'deck') {
+          right.classList.remove('mobile-open');
+          left.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          right.classList.add('mobile-open');
+          (target === 'review' ? startBtn : right).scrollIntoView({ behavior: 'smooth', block: target === 'review' ? 'center' : 'start' });
+        }
+      };
+    });
   }
 
   // ---------- Izbor komandera (1 ili 2 partnera) ----------
@@ -334,6 +459,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const aiDecks = MTG.selectAIDecks(state.deck, state.ai, state.aiDecks, rnd);
 
     const ui = new MTG.UI();
+    document.body.classList.add('game-active');
     $('#setup').style.display = 'none';
     $('#game').style.display = 'flex';
 

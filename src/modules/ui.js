@@ -83,6 +83,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.showThreat = localStorage.getItem('mtgThreat') !== '0';
       this.showSideLog = localStorage.getItem('mtgSideLog') !== '0';
       this.sidebarTab = 'table';
+      this.utilityDrawerOpen = false;
+      this.quickMenuOpen = false;
+      this.mobileView = 'mine';
       this.diplomacyComposer = null;
       // THE STACK kao popup na sredini — sam iskoči kad nešto stane na stack
       this.stackPopup = localStorage.getItem('mtgStackPop') !== '0';
@@ -120,6 +123,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (auto !== undefined) { resolve(auto); return; }
             // "auto" mod: ne blokiraj — daj kratak prozor sa dugmetom REAGUJ
             if (ui.openReactWindow(g, q, resolve)) return;
+            ui.focusDecisionView();
             ui.pendings = ui.pendings || [];
             ui.pendings.push({ q, resolve, sel: [], assigns: new Map(), mode: null });
             ui.render();
@@ -140,6 +144,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return undefined;
     }
 
+    focusDecisionView() {
+      this.mobileView = 'mine';
+      this.utilityDrawerOpen = false;
+      this.quickMenuOpen = false;
+    }
+
     // ---------- prozor za reakciju (auto mod) ----------
     // BEZ odbrojavanja: prozor se otvara samo kad zaista imaš šta odigrati, i
     // čeka tebe. Igra nastavlja tek kad klikneš REAGUJ ili Pusti.
@@ -149,6 +159,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!['end', 'combat', 'auto', 'smart'].includes(this.prioMode || 'end')) return false;
       // sigurnosno: ako je nekim čudom već otvoren prozor, zatvori ga (pusti dalje)
       if (this.react) this.skipReactWindow();
+      this.focusDecisionView();
       this.react = { q, resolve };
       this.render();
       return true;
@@ -157,6 +168,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const w = this.react;
       if (!w) return;
       this.react = null;
+      this.focusDecisionView();
       this.pendings = this.pendings || [];
       this.pendings.push({ q: w.q, resolve: w.resolve, sel: [], assigns: new Map(), mode: null });
       this.render();
@@ -317,10 +329,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       root.classList.toggle('human-turn', g.turnPlayer === this.me);
       root.classList.toggle('ai-turn', !!(g.turnPlayer && g.turnPlayer.isAI));
       root.classList.toggle('combat-phase', g.phase === 'combat');
+      root.classList.toggle('sidebar-open', this.utilityDrawerOpen);
+      root.dataset.mobileView = this.mobileView;
       root.style.setProperty('--arena-turn-accent', g.turnPlayer === this.me ? '#d3974c' : '#778f63');
-      // oba panela ugašena → sidebar se uklanja i tabla ide preko cijele širine
-      const diplomacyEnabled = !!(g.diplomacy && g.diplomacy.enabled);
-      root.classList.toggle('nosidebar', !diplomacyEnabled && !this.showThreat && !this.showSideLog);
+      // V3 koristi utility drawer: battlefield uvijek dobija punu širinu.
+      root.classList.toggle('nosidebar', !this.utilityDrawerOpen);
       root.appendChild(this.renderTopbar(g));
       // action ticker — zadnji log
       const last = g.log.length ? g.log[g.log.length - 1] : null;
@@ -329,12 +342,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         tick.onclick = () => { this.showLog = true; this.render(); };
         root.appendChild(tick);
       }
+      root.appendChild(this.renderMobileViewTabs(g));
       root.appendChild(this.renderOpponents(g));
       root.appendChild(this.renderCenter(g));
       root.appendChild(this.renderMyBoard(g));
       root.appendChild(this.renderPromptBar(g));
       root.appendChild(this.renderHand(g));
       root.appendChild(this.renderSidebar(g));
+      root.appendChild(this.renderUtilityRail(g));
       this.initHoverPreview();
       this.initKeys();
       if (this.sheet) root.appendChild(this.renderCardSheet(g));
@@ -344,6 +359,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.showHelp) root.appendChild(this.renderHelp(g));
       if (this.showJudge) root.appendChild(this.renderJudge(g));
       if (this.showStops) root.appendChild(this.renderStopSettings(g));
+      const quickMenu = this.renderQuickMenu(g);
+      if (quickMenu) root.appendChild(quickMenu);
       const reveal = this.renderRevealPopup(g);
       if (reveal) root.appendChild(reveal);
       const diplomacyModal = this.renderDiplomacyModal(g);
@@ -351,7 +368,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // stack popup stoji na sredini, pa se sklanja kad je otvoren bilo koji drugi
       // overlay — inače bi se preklapali baš na istom mjestu
       const blocked = !!modal || !!reveal || !!this.sheet || !!this.playerSheet || !!this.zoneBrowse ||
-        this.showLog || this.showHelp || this.showJudge || this.showStops;
+        this.showLog || this.showHelp || this.showJudge || this.showStops || this.quickMenuOpen;
       const stage = blocked ? null : this.renderActionStage(g);
       if (stage) root.appendChild(stage);
       const sp = blocked ? null : this.renderStackPopup(g);
@@ -600,22 +617,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderSidebar(g) {
       const side = el('div', 'sidebar');
       const diplomacyEnabled = !!(g.diplomacy && g.diplomacy.enabled);
-      if (diplomacyEnabled) {
-        const tabs = el('div', 'sidebartabs');
-        for (const [key, label] of [['table', 'TABLE'], ['diplomacy', 'DIPLOMACY'], ['log', 'LOG']]) {
-          const tab = el('button', 'sidebartab' + (this.sidebarTab === key ? ' on' : ''), label);
-          tab.onclick = () => { this.sidebarTab = key; this.render(); };
-          tabs.appendChild(tab);
-        }
-        side.appendChild(tabs);
-        if (this.sidebarTab === 'diplomacy') {
-          side.appendChild(this.renderDiplomacyPanel(g));
-          return side;
-        }
-        if (this.sidebarTab === 'log') {
-          side.appendChild(this.renderSidebarLog(g));
-          return side;
-        }
+      const drawerHead = el('div', 'utilitydrawerhead', '<div><span>Arena utility</span><b>Table details</b></div>');
+      const close = el('button', 'utilitydrawerclose', '×');
+      close.type = 'button';
+      close.setAttribute('aria-label', 'Close table details');
+      close.onclick = () => {
+        this.utilityDrawerOpen = false;
+        if (this.mobileView === 'stack') this.mobileView = 'mine';
+        this.render();
+      };
+      drawerHead.appendChild(close);
+      side.appendChild(drawerHead);
+      const tabs = el('div', 'sidebartabs');
+      const tabItems = [['table', 'TABLE'], ['log', 'LOG']];
+      if (diplomacyEnabled) tabItems.splice(1, 0, ['diplomacy', 'POLITICS']);
+      for (const [key, label] of tabItems) {
+        const tab = el('button', 'sidebartab' + (this.sidebarTab === key ? ' on' : ''), label);
+        tab.onclick = () => { this.sidebarTab = key; this.render(); };
+        tabs.appendChild(tab);
+      }
+      side.appendChild(tabs);
+      if (this.sidebarTab === 'diplomacy' && diplomacyEnabled) {
+        side.appendChild(this.renderDiplomacyPanel(g));
+        return side;
+      }
+      if (this.sidebarTab === 'log') {
+        side.appendChild(this.renderSidebarLog(g));
+        return side;
       }
       // THE STACK — šta trenutno čeka na rezoluciju
       {
@@ -665,7 +693,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         side.appendChild(cd);
       }
       // THREAT
-      if (diplomacyEnabled || this.showThreat) {
+      if (diplomacyEnabled || this.showThreat || this.utilityDrawerOpen) {
       const tp = el('div', 'threatpanel');
       tp.appendChild(el('div', 'sidetitle', '🎯 Threat: who is most dangerous?'));
       const table = MTG.threatTable ? MTG.threatTable(g) : [];
@@ -686,18 +714,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       tp.appendChild(el('div', 'sidenote', 'Bots use this estimate and personal grudge memory of past attackers.'));
       side.appendChild(tp);
-      }
-      // TOK IGRE
-      if (!diplomacyEnabled && this.showSideLog) {
-        const lp = el('div', 'sidelog');
-        lp.appendChild(el('div', 'sidetitle', '📜 Game log'));
-        const list = el('div', 'sideloglist');
-        for (const entry of g.log.slice(-90)) {
-          list.appendChild(el('div', 'll k-' + (entry.cls || entry.kind || 'x'), esc(entry.msg)));
-        }
-        lp.appendChild(list);
-        side.appendChild(lp);
-        requestAnimationFrame(() => { list.scrollTop = list.scrollHeight; });
       }
       return side;
     }
@@ -862,15 +878,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       document.addEventListener('keydown', ev => {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(ev.target.tagName)) return;
         if (ev.key === 'Escape') {
-          if (this.sheet || this.playerSheet || this.zoneBrowse || this.showLog || this.showHelp || this.showJudge || this.diplomacyComposer) {
+          if (this.sheet || this.playerSheet || this.zoneBrowse || this.showLog || this.showHelp || this.showJudge ||
+            this.showStops || this.diplomacyComposer || this.quickMenuOpen || this.utilityDrawerOpen) {
             this.sheet = null; this.playerSheet = null; this.zoneBrowse = null;
-            this.showLog = false; this.showHelp = false; this.showJudge = false;
+            this.showLog = false; this.showHelp = false; this.showJudge = false; this.showStops = false;
             this.diplomacyComposer = null;
+            this.quickMenuOpen = false; this.utilityDrawerOpen = false;
+            if (this.mobileView === 'stack') this.mobileView = 'mine';
             this.render();
             ev.preventDefault();
           }
           return;
         }
+        // Drawer i Game Menu imaju vlastite fokusirane kontrole. Dok su otvoreni,
+        // Enter/Space ne smiju aktivirati skriveni gameplay prompt ispod njih.
+        if ((this.quickMenuOpen || this.utilityDrawerOpen) && (ev.key === ' ' || ev.key === 'Enter')) return;
         // R = reaguj / armiraj HOLD; Space u prozoru reakcije = pusti dalje
         if (ev.key === 'r' || ev.key === 'R') {
           if (this.react) { this.takeReactWindow(); ev.preventDefault(); return; }
@@ -969,123 +991,166 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return s;
     }
 
-    renderTopbar(g) {
-      const bar = el('div', 'topbar');
+    openUtility(tab) {
+      this.sidebarTab = tab || 'table';
+      this.utilityDrawerOpen = true;
+      this.quickMenuOpen = false;
+      this.render();
+    }
+
+    renderMobileViewTabs(g) {
+      const tabs = el('nav', 'mobileviewtabs');
+      tabs.setAttribute('aria-label', 'Arena view');
+      const incoming = g.diplomacy && g.diplomacy.enabled && g.diplomacyView
+        ? g.diplomacyView(this.me).incoming.length : 0;
+      for (const [key, label] of [['mine', 'MINE'], ['table', 'TABLE'], ['stack', `STACK ${g.stack.length || ''}`]]) {
+        const button = el('button', 'mobileviewtab' + (this.mobileView === key ? ' on' : ''), label.trim());
+        button.type = 'button';
+        button.onclick = () => {
+          this.mobileView = key;
+          this.utilityDrawerOpen = key === 'stack';
+          if (key === 'stack') this.sidebarTab = 'table';
+          this.render();
+        };
+        tabs.appendChild(button);
+      }
+      if (incoming) tabs.lastChild.title = `${incoming} unanswered diplomacy proposal${incoming === 1 ? '' : 's'}`;
+      return tabs;
+    }
+
+    renderUtilityRail(g) {
+      const rail = el('nav', 'utilityrail');
+      rail.setAttribute('aria-label', 'Arena utilities');
+      const add = (key, label, count, title) => {
+        const button = el('button', 'utilitybutton' + (this.utilityDrawerOpen && this.sidebarTab === key ? ' on' : ''),
+          `<span>${esc(label)}</span>${count ? `<b>${esc(count)}</b>` : ''}`);
+        button.type = 'button';
+        button.title = title;
+        button.onclick = () => {
+          if (this.utilityDrawerOpen && this.sidebarTab === key) {
+            this.utilityDrawerOpen = false;
+            this.render();
+          } else this.openUtility(key);
+        };
+        rail.appendChild(button);
+      };
+      add('table', 'STACK', g.stack.length, 'Open the stack and table information');
+      add('log', 'LOG', 0, 'Open the game log');
+      if (g.diplomacy && g.diplomacy.enabled) {
+        const incoming = g.diplomacyView ? g.diplomacyView(this.me).incoming.length : 0;
+        add('diplomacy', 'POLITICS', incoming, 'Open Diplomacy & Politics');
+      }
+      return rail;
+    }
+
+    renderArenaHeader(g) {
+      const bar = el('header', 'topbar arenaheader');
       const left = el('div', 'phasewrap');
-      left.appendChild(el('div', 'phase', `<b>Turn ${g.turnNo}</b> · ${esc(g.turnPlayer ? g.turnPlayer.name : '')}${g.phase === 'combat' && g.step ? ' · ' + this.phaseName(g) : ''}`));
-      // EDHLAB-style phase stepper
-      const steps = [['untap', 'UT'], ['upkeep', 'UK'], ['draw', 'DR'], ['main1', 'M1'], ['combat', '⚔'], ['main2', 'M2'], ['end', 'END']];
+      left.appendChild(el('div', 'phase', `<b>Turn ${g.turnNo}</b><span>${esc(g.turnPlayer ? g.turnPlayer.name : '')}</span><em>${esc(this.phaseName(g))}</em>`));
+      const steps = [['untap', 'UT'], ['upkeep', 'UK'], ['draw', 'DR'], ['main1', 'M1'], ['combat', 'COMBAT'], ['main2', 'M2'], ['end', 'END']];
       const cur = g.phase === 'cleanup' ? 'end' : g.phase;
       const stepper = el('div', 'stepper');
-      for (const [key, label] of steps) {
-        stepper.appendChild(el('span', 'step' + (cur === key ? ' on' : ''), label));
-      }
+      for (const [key, label] of steps) stepper.appendChild(el('span', 'step' + (cur === key ? ' on' : ''), label));
       left.appendChild(stepper);
       bar.appendChild(left);
+
       if (g.monarch) {
         const since = g.monarchSince || {};
         const holder = g.monarch === this.me ? 'YOU' : g.monarch.name;
-        const when = since.turn !== undefined
-          ? `Since turn ${since.turn}${since.phase ? ` · ${this.phaseName({ phase: since.phase, step: since.step || '' })}` : ''}`
-          : 'Current holder';
-        const crown = el('div', 'monarchstatus' + (g.monarch === this.me ? ' mine' : ''));
-        crown.title = `${g.monarch.name} is the Monarch. ${when}. Combat damage to that player transfers the crown.`;
-        crown.innerHTML = `<span aria-hidden="true">♛</span><div><small>MONARCH</small><b>${esc(holder)}</b><em>${esc(when)}</em></div>`;
+        const crown = el('button', 'monarchstatus' + (g.monarch === this.me ? ' mine' : ''));
+        crown.type = 'button';
+        crown.title = `${g.monarch.name} is the Monarch${since.turn !== undefined ? ` since turn ${since.turn}` : ''}.`;
+        crown.innerHTML = `<span aria-hidden="true">♛</span><div><small>MONARCH</small><b>${esc(holder)}</b></div>`;
+        crown.onclick = () => { this.playerSheet = g.monarch; this.render(); };
         bar.appendChild(crown);
       }
-      const btns = el('div', 'topbtns');
-      // brzina AI poteza
-      const speeds = MTG.SPEEDS;
-      this.speed = this.speed || 'normal';
-      const spB = el('button', 'tbtn', speeds[this.speed][0]);
-      spB.title = 'AI turn speed: ' + speeds[this.speed][2];
-      spB.onclick = () => {
-        const order = ['normal', 'slow', 'fast'];
-        this.speed = order[(order.indexOf(this.speed) + 1) % order.length];
-        this.applySpeed();
-        this.toast('AI turn speed: ' + speeds[this.speed][2]);
-        this.render();
-      };
-      const helpB = el('button', 'tbtn', '❓');
-      helpB.onclick = () => { this.showHelp = true; this.render(); };
-      btns.appendChild(spB);
-      const logB = el('button', 'tbtn', '📜');
-      logB.onclick = () => { this.showLog = !this.showLog; this.render(); };
-      // ručni HOLD — "stani na sljedećem prioritetu"
-      const holdB = el('button', 'tbtn' + (this.holdNext ? ' armed' : ''), '🖐️');
-      holdB.title = this.holdNext
+
+      const buttons = el('div', 'topbtns');
+      const hold = el('button', 'tbtn hudaction' + (this.holdNext ? ' armed' : ''), '<span>HOLD</span>');
+      hold.type = 'button';
+      hold.title = this.holdNext
         ? 'HOLD armed. The game stops at the next priority window. Click to cancel.'
-        : 'HOLD: stop at the next priority window when you want to cast an instant.';
-      holdB.onclick = () => {
+        : 'Stop at the next priority window so you can react.';
+      hold.onclick = () => {
         if (this.react) { this.takeReactWindow(); return; }
         this.holdNext = !this.holdNext;
         this.toast(this.holdNext ? '🖐️ HOLD: stopping at the next priority window.' : 'HOLD cancelled.');
         this.render();
       };
-      btns.appendChild(holdB);
-      const manaB = el('button', 'tbtn manamode' + (this.manaMode === 'manual' ? ' on' : ''),
-        this.manaMode === 'manual' ? '🖐 MANA' : '✨ MANA');
-      manaB.title = this.manaMode === 'manual'
-        ? 'Manual mana: choose the exact lands and mana sources for every spell. Click for automatic mana.'
-        : 'Automatic mana: the engine chooses sources. Click for manual selection.';
-      manaB.onclick = () => {
+      buttons.appendChild(hold);
+
+      const mana = el('button', 'tbtn hudaction manamode' + (this.manaMode === 'manual' ? ' on' : ''), '<span>MANA</span>');
+      mana.type = 'button';
+      mana.title = this.manaMode === 'manual'
+        ? 'Manual mana is active. Click for automatic mana.'
+        : 'Automatic mana is active. Click to choose sources manually.';
+      mana.onclick = () => {
         this.manaMode = this.manaMode === 'manual' ? 'auto' : 'manual';
         localStorage.setItem('mtgManaMode', this.manaMode);
         if (this.me) this.me.manualMana = this.manaMode === 'manual';
-        this.toast(this.manaMode === 'manual'
-          ? '🖐 Manual mana enabled. Choose sources for every spell.'
-          : '✨ Automatic mana enabled.');
+        this.toast(this.manaMode === 'manual' ? '🖐 Manual mana enabled.' : '✨ Automatic mana enabled.');
         this.render();
       };
-      btns.appendChild(manaB);
-      const modes = MTG.PRIO_MODES;
-      const curMode = modes.find(m => m.key === (this.prioMode || 'end')) || modes[0];
-      const setB = el('button', 'tbtn stopbtn', `${curMode.icon} ${curMode.short}`);
-      setB.title = `Stops: ${curMode.label}. ${curMode.desc}`;
-      setB.onclick = () => { this.showStops = true; this.render(); };
-      const diplomacyEnabled = !!(g.diplomacy && g.diplomacy.enabled);
-      // desktop panel toggle-i: gase threat/tok igre da tabla dobije punu širinu
-      const thB = el('button', 'tbtn deskonly' + (diplomacyEnabled ? (this.sidebarTab === 'table' ? ' on' : '') : (this.showThreat ? ' on' : '')), '🎯');
-      thB.title = diplomacyEnabled ? 'Open table information' : (this.showThreat ? 'Hide' : 'Show') + ' Threat panel';
-      thB.onclick = () => {
-        if (diplomacyEnabled) { this.sidebarTab = 'table'; this.render(); return; }
-        this.showThreat = !this.showThreat;
-        localStorage.setItem('mtgThreat', this.showThreat ? '1' : '0');
-        this.render();
+      buttons.appendChild(mana);
+
+      const menu = el('button', 'tbtn hudaction menubutton', '<span>MENU</span>');
+      menu.type = 'button';
+      menu.title = 'Game controls and display settings';
+      menu.onclick = () => { this.quickMenuOpen = true; this.render(); };
+      buttons.appendChild(menu);
+      bar.appendChild(buttons);
+      return bar;
+    }
+
+    renderQuickMenu(g) {
+      if (!this.quickMenuOpen) return null;
+      const overlay = el('div', 'quickmenuov');
+      const panel = el('div', 'quickmenu');
+      const head = el('div', 'quickmenuhead', '<div><span>Game menu</span><h2>Arena controls</h2></div>');
+      const close = el('button', 'quickmenuclose', '×');
+      close.type = 'button';
+      close.setAttribute('aria-label', 'Close game menu');
+      close.onclick = () => { this.quickMenuOpen = false; this.render(); };
+      head.appendChild(close);
+      panel.appendChild(head);
+      const list = el('div', 'quickmenulist');
+      const action = (label, meta, run) => {
+        const button = el('button', 'quickmenuitem', `<span>${esc(label)}</span><small>${esc(meta)}</small>`);
+        button.type = 'button';
+        button.onclick = run;
+        list.appendChild(button);
       };
-      const slB = el('button', 'tbtn deskonly' + (diplomacyEnabled ? (this.sidebarTab === 'log' ? ' on' : '') : (this.showSideLog ? ' on' : '')), '📋');
-      slB.title = diplomacyEnabled ? 'Open sidebar game log' : (this.showSideLog ? 'Hide' : 'Show') + ' game log';
-      slB.onclick = () => {
-        if (diplomacyEnabled) { this.sidebarTab = 'log'; this.render(); return; }
-        this.showSideLog = !this.showSideLog;
-        localStorage.setItem('mtgSideLog', this.showSideLog ? '1' : '0');
+      this.speed = this.speed || 'normal';
+      action('AI turn speed', MTG.SPEEDS[this.speed][2], () => {
+        const order = ['normal', 'slow', 'fast'];
+        this.speed = order[(order.indexOf(this.speed) + 1) % order.length];
+        this.applySpeed();
         this.render();
-      };
-      const dipB = diplomacyEnabled ? el('button', 'tbtn deskonly' + (this.sidebarTab === 'diplomacy' ? ' on' : ''), '🕊️') : null;
-      if (dipB) {
-        const incoming = g.diplomacyView ? g.diplomacyView(this.me).incoming.length : 0;
-        dipB.textContent = incoming ? `🕊️ ${incoming}` : '🕊️';
-        dipB.title = incoming ? `${incoming} unanswered diplomacy proposal${incoming === 1 ? '' : 's'}` : 'Open Diplomacy & Politics';
-        dipB.onclick = () => { this.sidebarTab = 'diplomacy'; this.render(); };
-      }
-      const stB = el('button', 'tbtn' + (this.stackPopup ? ' on' : ''), '🃏');
-      stB.title = (this.stackPopup ? 'Disable' : 'Enable') + ' the centered stack popup';
-      stB.onclick = () => {
+      });
+      const mode = MTG.PRIO_MODES.find(item => item.key === (this.prioMode || 'end')) || MTG.PRIO_MODES[0];
+      action('Priority stops', mode.label, () => { this.quickMenuOpen = false; this.showStops = true; this.render(); });
+      action('Centered stack preview', this.stackPopup ? 'On' : 'Off', () => {
         this.stackPopup = !this.stackPopup;
         this.stackPopDismissed = 0;
         localStorage.setItem('mtgStackPop', this.stackPopup ? '1' : '0');
-        this.toast(this.stackPopup ? '🃏 Stack popup enabled' : '🃏 Stack popup disabled');
         this.render();
+      });
+      action('Table information', 'Stack, damage and threat', () => this.openUtility('table'));
+      action('Game log', `${g.log.length} events`, () => this.openUtility('log'));
+      if (g.diplomacy && g.diplomacy.enabled) action('Diplomacy & Politics', 'Deals and proposals', () => this.openUtility('diplomacy'));
+      action('Help & shortcuts', 'Rules and controls', () => { this.quickMenuOpen = false; this.showHelp = true; this.render(); });
+      action('New game', 'Return to setup', () => {
+        if (confirm('Start a new game? The current game will be lost.')) location.reload();
+      });
+      panel.appendChild(list);
+      overlay.appendChild(panel);
+      overlay.onclick = event => {
+        if (event.target === overlay) { this.quickMenuOpen = false; this.render(); }
       };
-      const newB = el('button', 'tbtn', '↺');
-      newB.onclick = () => { if (confirm('Start a new game? The current game will be lost.')) location.reload(); };
-      btns.appendChild(helpB); btns.appendChild(logB);
-      btns.appendChild(stB);
-      btns.appendChild(thB); if (dipB) btns.appendChild(dipB); btns.appendChild(slB);
-      btns.appendChild(setB); btns.appendChild(newB);
-      bar.appendChild(btns);
-      return bar;
+      return overlay;
     }
+
+    renderTopbar(g) { return this.renderArenaHeader(g); }
 
     renderOpponents(g) {
       this.collapsed = this.collapsed || new Set();
