@@ -1279,6 +1279,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     this.stack.push(so);
+    if (this.diplomacyRecordRemovalAttempt) this.diplomacyRecordRemovalAttempt(p, card, so.targets);
     this.note('stack', {});
     this.lg(`${p.name} casts ${card.name}${xVal ? ` (X=${xVal})` : ''}${castOpts.free ? ' (free)' : ''}${so.from === 'command' ? ' from the command zone' : ''}.`, 'cast');
     await this.pace(p.isAI ? 1000 : 150);

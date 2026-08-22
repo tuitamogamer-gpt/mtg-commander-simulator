@@ -1372,7 +1372,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           c.meta.playableUntil = ctx.g.turnNo;
           c.meta.anyColor = true;
           c.meta.spellsOnly = true;
-          ctx.g.lg(`Grenzo egzilira ${c.name} — ${ctx.you.name} smije baciti do kraja poteza.`);
+          ctx.g.lg(c.is('Land')
+            ? `Grenzo egzilira ${c.name} — land nije spell i ne može se igrati ovom "cast" dozvolom; ostaje u egzilu.`
+            : `Grenzo egzilira ${c.name} — ${ctx.you.name} smije baciti do kraja poteza.`);
         }
       },
     }],

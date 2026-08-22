@@ -487,7 +487,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind, e);
         if (e.type === 'battlefieldArrival') ui.showBattlefieldArrival(e);
         if (e.type === 'monarchChanged') ui.showMonarchChange(e);
-        if (e.type === 'diplomacy' && e.text) ui.toast(`🕊️ ${e.text}`);
+        if (e.type === 'diplomacy' && e.text) {
+          ui.showDiplomacyEvent(e);
+          if (e.proposal && e.proposal.status === 'pending-human' && e.proposal.toId === ui.me?.idx) {
+            ui.sidebarTab = 'diplomacy';
+            ui.utilityDrawerOpen = true;
+          }
+        }
         ui.queueRender();
       },
     });
@@ -531,6 +537,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         g.recalc();
         const initiator = g.players.find(player => player.isAI && !player.lost);
         g.processDiplomacyCheckpoint(initiator);
+      } else if (botDiplomacyScenario === 'human') {
+        // Regression canary for the old routing bug: an AI with a meaningful
+        // public deal must ask the human directly instead of always choosing a bot.
+        const leader = g.players.find(player => player.isAI && !player.lost);
+        const initiator = g.players.find(player => player.isAI && !player.lost && player !== leader);
+        leader.life = 500;
+        const threat = new MTG.CardInst(MTG.DEFS['Inferno Titan'], leader);
+        threat.ctrl = leader; threat.zone = 'battlefield'; threat.sick = false;
+        g.battlefield.push(threat); g.recalc();
+        g.processDiplomacyCheckpoint(initiator);
+      } else if (botDiplomacyScenario === 'group') {
+        // Three-player pact canary: remover + human + one bot coordinate against
+        // an objective bot leader, with the exact spell and permanent public.
+        const leader = g.players.find(player => player.isAI && !player.lost);
+        const remover = g.players.find(player => player.isAI && !player.lost && player !== leader);
+        leader.life = 500;
+        const threat = new MTG.CardInst(MTG.DEFS['Inferno Titan'], leader);
+        threat.ctrl = leader; threat.zone = 'battlefield'; threat.sick = false;
+        g.battlefield.push(threat);
+        for (let i = 0; i < 3; i++) {
+          const forest = new MTG.CardInst(MTG.DEFS.Forest, remover);
+          forest.ctrl = remover; forest.zone = 'battlefield'; forest.sick = false; forest.tapped = false;
+          g.battlefield.push(forest);
+        }
+        const removal = new MTG.CardInst(MTG.DEFS['Beast Within'], remover);
+        removal.zone = 'hand'; remover.hand.push(removal);
+        g.turnPlayer = remover; g.recalc();
+        g.processDiplomacyCheckpoint(remover);
       }
       ui.sidebarTab = 'diplomacy';
       ui.render();
@@ -770,7 +804,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       g.turnPlayer = attackerPlayer; g.turnNo = 1; g.phase = 'combat'; g.step = 'blockers';
       g.combat = { attackers: [attacker], defenders: new Map() };
       g.recalc();
-      void g.askPriorityAction(ui.me);
+      void g.askPriorityAction(ui.me).then(action => action && g.performAction(ui.me, action));
+      ui.render();
+      return;
+    }
+    if (smokeScenario === 'counterSwords') {
+      const opponent = g.players.find(player => player !== ui.me && !player.lost);
+      const commander = new MTG.CardInst(MTG.DEFS['Riders of Gavony'], ui.me);
+      commander.ctrl = ui.me; commander.zone = 'battlefield'; commander.commander = true; commander.sick = false;
+      g.battlefield.push(commander);
+      for (let i = 0; i < 2; i++) {
+        const island = new MTG.CardInst(MTG.DEFS.Island, ui.me);
+        island.ctrl = ui.me; island.zone = 'battlefield'; island.sick = false; island.tapped = false;
+        g.battlefield.push(island);
+      }
+      const answer = new MTG.CardInst(MTG.DEFS['Arcane Denial'], ui.me);
+      answer.zone = 'hand'; ui.me.hand.push(answer);
+      const swords = new MTG.CardInst(MTG.DEFS['Swords to Plowshares'], opponent);
+      swords.ctrl = opponent; swords.zone = 'stack';
+      const targetSpecs = g.spellTargetSpecs(swords, { from: 'hand' }, opponent);
+      const stackObject = { kind: 'spell', card: swords, ctrl: opponent, name: swords.name,
+        targets: [commander], targetSpecs, castOpts: { from: 'hand' }, from: 'hand' };
+      g.stack.push(stackObject);
+      g.turnPlayer = opponent; g.turnNo = 4; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+      g.recalc(); g.note('stack', {});
+      void g.askPriorityAction(ui.me).then(action => action && g.performAction(ui.me, action));
       ui.render();
       return;
     }
@@ -2281,7 +2339,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           offersRemaining: view.offersRemaining,
           incoming: view.incoming.map(proposal => ({
             id: proposal.id, from: proposal.fromName,
-            kind: proposal.isCounteroffer ? 'counteroffer' : 'bot-initiated',
+            kind: proposal.kind === 'group-removal' ? 'group-removal' : proposal.isCounteroffer ? 'counteroffer' : 'bot-initiated',
+            title: proposal.title,
+            participants: proposal.participantNames,
+            clauses: proposal.clauses,
           })),
           recentNegotiations: view.recent,
           activeContracts: view.activeContracts.map(contract => ({

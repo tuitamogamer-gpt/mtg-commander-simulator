@@ -672,7 +672,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         it.appendChild(main);
         const targetFlow = this.renderStackTargetFlow(so, { compact: true, includeSource: false, maxTargets: 3 });
         if (targetFlow) it.appendChild(targetFlow);
-        if (so.card) it.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
+        if (this.markSelectedTarget(it, so)) { /* click again removes the selected spell target */ }
+        else if (this.isCandidate(so)) { it.classList.add('targetable'); it.onclick = () => this.pickCandidate(so); }
+        else if (so.card) it.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
         body.appendChild(it);
       });
       pop.appendChild(body);
@@ -764,7 +766,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             it.innerHTML = `<div class="siname">${esc(this.stackDisplayName(so))}</div>` +
               `<div class="sisub">${esc(so.ctrl ? so.ctrl.name : '')}${so.isCopy ? ` · COPY #${esc(so.copyIndex || '?')}` : so.kind ? ' · ' + esc(so.kind) : ''}</div>` +
               `<div class="sitargets">🎯 ${esc(this.stackTargetSummary(so))}</div>`;
-            if (so.card) it.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
+            if (this.markSelectedTarget(it, so)) { /* selected stack target stays removable */ }
+            else if (this.isCandidate(so)) { it.classList.add('targetable'); it.onclick = () => this.pickCandidate(so); }
+            else if (so.card) it.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
             body.appendChild(it);
           }
         }
@@ -844,6 +848,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.render();
     }
 
+    beginGroupRemovalOffer(g) {
+      const options = g.diplomacyGroupRemovalOptions ? g.diplomacyGroupRemovalOptions(this.me) : [];
+      if (!options.length) { this.toast('No legal table-removal deal is available right now.'); return; }
+      this.diplomacyComposer = { mode: 'group-removal', optionKey: options[0].key };
+      this.sidebarTab = 'diplomacy';
+      this.render();
+    }
+
     renderDiplomacyPanel(g) {
       const panel = el('div', 'diplomacypanel');
       const view = g.diplomacyView(this.me);
@@ -863,13 +875,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         panel.appendChild(el('div', 'dipsectiontitle', `AWAITING YOUR DECISION · ${view.incoming.length}`));
         for (const proposal of view.incoming) {
           const card = el('div', 'dipincoming' + (proposal.isCounteroffer ? ' counteroffer' : ''));
-          card.innerHTML = proposal.isCounteroffer
+          card.innerHTML = proposal.kind === 'group-removal'
+            ? `<b>◉ ${esc(proposal.fromName)} proposed a three-player table deal</b><div class="diproute">Participants: ${esc(proposal.participantNames.join(' · '))}</div>`
+            : proposal.isCounteroffer
             ? `<b>↩ ${esc(proposal.fromName)} countered your offer</b><div class="diproute">Your original terms were not accepted. This is a new proposal from the bot.</div>`
             : `<b>→ ${esc(proposal.fromName)} sent you an offer</b><div class="diproute">The bot initiated this proposal. You are the responder.</div>`;
-          card.innerHTML +=
-            `<p><span>${esc(proposal.fromName)} ASKS YOU TO</span>${esc(proposal.request)}</p>` +
-            `<p><span>${esc(proposal.fromName)} OFFERS TO</span>${esc(proposal.offer)}</p>` +
-            (proposal.reason ? `<small>${esc(proposal.reason)}</small>` : '');
+          if (proposal.kind === 'group-removal') {
+            card.innerHTML += proposal.clauses.map((clause, index) => `<p><span>PUBLIC TERM ${index + 1}</span>${esc(clause)}</p>`).join('');
+          } else {
+            card.innerHTML += `<p><span>${esc(proposal.fromName)} ASKS YOU TO</span>${esc(proposal.request)}</p>` +
+              `<p><span>${esc(proposal.fromName)} OFFERS TO</span>${esc(proposal.offer)}</p>`;
+          }
+          card.innerHTML += proposal.reason ? `<small>${esc(proposal.reason)}</small>` : '';
           const row = el('div', 'dipactions');
           const accept = el('button', 'pbtn primary', proposal.isCounteroffer ? 'Accept counteroffer' : 'Accept offer');
           accept.onclick = () => {
@@ -887,9 +904,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!view.activeContracts.length) panel.appendChild(el('div', 'dipempty', 'No active agreements.'));
       for (const contract of view.activeContracts) {
         const item = el('div', 'dipcontract');
-        item.appendChild(el('b', '', `Agreement #${contract.id}`));
+        item.appendChild(el('b', '', `${contract.kind === 'group-removal' ? 'TABLE DEAL' : 'AGREEMENT'} #${contract.id} · ${esc(contract.title)}`));
+        item.appendChild(el('small', 'diproute', esc(contract.participantNames.join(' · '))));
         for (const clause of contract.clauses) item.appendChild(el('p', 'state-' + clause.state, `${clause.state === 'active' ? '◆' : '✓'} ${esc(clause.label)}`));
         panel.appendChild(item);
+      }
+
+      if (view.groupRemovalOptions && view.groupRemovalOptions.length) {
+        panel.appendChild(el('div', 'dipsectiontitle', 'TABLE DEAL AVAILABLE'));
+        const group = el('div', 'dipgroupdeal');
+        const option = view.groupRemovalOptions[0];
+        group.innerHTML = `<b>◉ Coordinate removal of ${esc(option.targetName)}</b>` +
+          `<small>${esc(option.participantNames.join(' · '))} · public, three-player, one-turn deadline</small>` +
+          `<p>You announce ${esc(option.sourceName)}; the other two players promise short protection in return.</p>`;
+        const makeGroup = el('button', 'pbtn primary', 'Propose table deal');
+        makeGroup.disabled = !view.offersRemaining;
+        makeGroup.onclick = () => this.beginGroupRemovalOffer(g);
+        group.appendChild(makeGroup); panel.appendChild(group);
       }
 
       if (view.recent.length) {
@@ -918,6 +949,42 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderDiplomacyModal(g) {
       const composer = this.diplomacyComposer;
       if (!composer || !g.diplomacy || !g.diplomacy.enabled || !this.me) return null;
+      if (composer.mode === 'group-removal') {
+        const options = g.diplomacyGroupRemovalOptions(this.me);
+        if (!options.length) { this.diplomacyComposer = null; return null; }
+        if (!options.some(option => option.key === composer.optionKey)) composer.optionKey = options[0].key;
+        const selected = options.find(option => option.key === composer.optionKey);
+        const ov = el('div', 'overlay dark diplomacyov');
+        const modal = el('div', 'modal diplomacymodal'); ov.appendChild(modal);
+        ov.onclick = event => { if (event.target === ov) { this.diplomacyComposer = null; this.render(); } };
+        modal.appendChild(el('div', 'combatkicker', 'THREE-PLAYER · PUBLIC TABLE DEAL'));
+        modal.appendChild(el('div', 'mtitle', `Coordinate removal of ${esc(selected.targetName)}`));
+        modal.appendChild(el('div', 'dippreamble', `Participants: ${esc(selected.participantNames.join(' · '))}. The leading threat (${esc(selected.targetPlayerName)}) is not part of this pact.`));
+        const label = el('label', 'dipfield');
+        label.innerHTML = '<span>CHOOSE THE REMOVAL PLAN<small>Only answers you can legally cast and pay for now are listed</small></span>';
+        const select = el('select', 'styleselect');
+        for (const option of options) {
+          const node = el('option', '', `${esc(option.sourceName)} → ${esc(option.targetName)}`);
+          node.value = option.key; node.selected = option.key === selected.key; select.appendChild(node);
+        }
+        select.onchange = () => { composer.optionKey = select.value; this.render(); };
+        label.appendChild(select); modal.appendChild(label);
+        const preview = el('div', 'dippreview'); preview.appendChild(el('b', '', 'PUBLIC CONTRACT'));
+        selected.labels.forEach((term, index) => preview.appendChild(el('p', '', `<span>TERM ${index + 1}</span>${esc(term)}`)));
+        modal.appendChild(preview);
+        modal.appendChild(el('div', 'dipwarning', 'The spell is not free and the target is not removed automatically. You must legally cast and pay for the announced spell targeting the named permanent. Opponents may still respond or counter it; failing to cast it before the deadline is recorded as a broken promise.'));
+        const actions = el('div', 'btnrow');
+        const send = el('button', 'pbtn primary', 'Propose to the table');
+        send.onclick = () => {
+          const result = g.proposeGroupRemovalDiplomacy(this.me, composer.optionKey);
+          this.diplomacyComposer = null;
+          this.toast(result.status === 'accepted' ? `🤝 Table Deal #${result.contract.id} is active.` : result.reason || 'No table deal was reached.');
+          this.sidebarTab = 'diplomacy'; this.render();
+        };
+        const cancel = el('button', 'pbtn', 'Cancel'); cancel.onclick = () => { this.diplomacyComposer = null; this.render(); };
+        actions.appendChild(send); actions.appendChild(cancel); modal.appendChild(actions);
+        return ov;
+      }
       const to = g.players.find(player => player.idx === composer.toId && !player.lost);
       if (!to) { this.diplomacyComposer = null; return null; }
       const requests = g.diplomacyClauseOptions(to, this.me);
@@ -3562,6 +3629,31 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         notice.classList.add('leaving');
         setTimeout(() => notice.remove(), 320);
       }, 3600);
+    }
+
+    showDiplomacyEvent(event) {
+      document.querySelector('.diplomacyannouncement')?.remove();
+      const proposal = event && event.proposal;
+      const contract = event && event.contract;
+      const ids = proposal && proposal.participantIds || contract && contract.participantIds ||
+        proposal && [proposal.fromId, proposal.toId] || contract && [contract.fromId, contract.toId] || [];
+      const names = ids.map(id => this.game.players.find(player => player.idx === id)?.name).filter(Boolean);
+      const rawClauses = proposal && (proposal.clauses || [proposal.request, proposal.offer]) || contract && contract.clauses || [];
+      const labels = rawClauses.filter(Boolean).map(clause => MTG.diplomacyClauseLabel ? MTG.diplomacyClauseLabel(this.game, clause) : '').filter(Boolean);
+      const notice = el('div', 'diplomacyannouncement' + (proposal && proposal.toId === this.me?.idx ? ' incoming' : ''));
+      notice.innerHTML = `<span class="diplomacyannouncementicon" aria-hidden="true">🕊</span><div class="diplomacyannouncementcopy">` +
+        `<small>${esc(event.kind === 'agreement' ? 'PUBLIC AGREEMENT' : event.kind === 'completed' ? 'AGREEMENT UPDATE' : 'TABLE NEGOTIATION')}</small>` +
+        `<b>${esc(event.title || 'Diplomacy & Politics')}</b>` +
+        (names.length ? `<em>${esc(names.join(' · '))}</em>` : '') +
+        `<p>${esc(labels.slice(0, 3).join(' ') || event.text || '')}</p></div>`;
+      const open = el('button', 'pbtn diplomacyannouncementopen', proposal && proposal.toId === this.me?.idx ? 'Review & respond' : 'Open Politics');
+      open.type = 'button';
+      open.onclick = () => { notice.remove(); this.openUtility('diplomacy'); };
+      notice.appendChild(open); document.body.appendChild(notice);
+      setTimeout(() => {
+        if (!notice.isConnected) return;
+        notice.classList.add('leaving'); setTimeout(() => notice.remove(), 320);
+      }, proposal && proposal.toId === this.me?.idx ? 9000 : 6200);
     }
 
     applySpeed() {

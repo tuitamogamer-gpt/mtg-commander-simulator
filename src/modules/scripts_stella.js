@@ -216,7 +216,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{ on: 'castIS', desc: 'Elemental', filter: myCastIS, run: async ctx => { await ctx.g.makeTokens('elemental11', ctx.you); } }],
   };
   SC['Arcane Denial'] = {
-    targets: [T.spell(null, { prompt: 'Counter spell', aiHint: { goal: 'counter' } })],
+    targets: [T.spell(null, { prompt: 'Choose a spell on the stack to counter', aiHint: { goal: 'counter' } })],
     resolve: async ctx => {
       const so = ctx.targets[0], g = ctx.g;
       if (!so || !g.stack.includes(so)) return;

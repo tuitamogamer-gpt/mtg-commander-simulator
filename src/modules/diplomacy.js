@@ -7,7 +7,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const UNLOCK_ROUNDS = 3;
   const PROTECTION_TYPES = new Set(['no_attack', 'no_target_player', 'protect_permanent', 'let_resolve']);
   const COMBAT_TYPES = new Set(['no_attack', 'pressure_player']);
-  const TURN_TYPES = new Set(['no_target_player', 'protect_permanent']);
+  const TURN_TYPES = new Set(['no_target_player', 'protect_permanent', 'remove_permanent']);
 
   const REASONS = {
     disabled: 'Diplomacy & Politics is disabled for this game.',
@@ -123,6 +123,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function clauseTargetName(game, clause) {
     if (clause.type === 'protect_permanent') return game.byIid(clause.targetCardId)?.name || clause.targetName || 'the named permanent';
+    if (clause.type === 'remove_permanent') return game.byIid(clause.targetCardId)?.name || clause.targetName || 'the named threat';
     if (clause.type === 'let_resolve') return stackByKey(game, clause.stackId)?.name || clause.targetName || 'the named stack object';
     if (clause.type === 'pressure_player') return player(game, clause.targetPlayerId)?.name || 'the leading threat';
     return player(game, clause.beneficiaryId)?.name || 'that player';
@@ -138,6 +139,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (clause.type === 'protect_permanent') return `${actorName} will not choose ${clauseTargetName(game, clause)} as a harmful target through their next turn.`;
     if (clause.type === 'let_resolve') return `${actorName} will not counter or harmfully target ${clauseTargetName(game, clause)} on the stack.`;
     if (clause.type === 'pressure_player') return `${actorName} will attack ${clauseTargetName(game, clause)} with at least one creature during their next combat, if able.`;
+    if (clause.type === 'remove_permanent') return `${actorName} will cast ${clause.sourceName || 'the announced removal spell'} targeting ${clauseTargetName(game, clause)} by the end of their next turn.`;
     return `${actorName} made a short-term commitment to ${beneficiaryName}.`;
   }
 
@@ -219,7 +221,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function hasPairContract(game, a, b) {
     const key = pairKey(a, b);
-    return activeContracts(game).some(contract => contract.pairKey === key);
+    return activeContracts(game).some(contract => contract.pairKey === key ||
+      (contract.participantIds || []).includes(a.idx) && (contract.participantIds || []).includes(b.idx));
   }
 
   function promiseConflict(game, clause) {
@@ -407,19 +410,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function finishContract(game, contract) {
     if (!contract || contract.status !== 'active' || contract.clauses.some(clause => clause.state === 'active')) return;
-    contract.status = contract.clauses.some(clause => clause.state === 'void') ? 'completed-with-exception' : 'completed';
+    contract.status = contract.clauses.some(clause => clause.state === 'broken') ? 'broken' :
+      contract.clauses.some(clause => clause.state === 'void') ? 'completed-with-exception' : 'completed';
     contract.completedTurn = game.turnNo;
     const a = player(game, contract.fromId), b = player(game, contract.toId);
     if (a && b && contract.status === 'completed') {
       bumpRapport(game, a, b, 1); bumpRapport(game, b, a, 1);
     }
-    game.lg(`🤝 Agreement #${contract.id} completed${contract.status === 'completed' ? '.' : ' with a forced exception.'}`, 'diplomacy');
+    const ending = contract.status === 'completed' ? 'completed.' : contract.status === 'broken' ? 'was broken.' : 'completed with a forced exception.';
+    game.lg(`🤝 Agreement #${contract.id} ${ending}`, 'diplomacy');
     state(game).history.push({
       turn: game.turnNo, kind: 'completed', fromId: contract.fromId, toId: contract.toId,
       contractId: contract.id,
-      text: `Agreement #${contract.id} completed${contract.status === 'completed' ? '.' : ' with a forced exception.'}`,
+      text: `Agreement #${contract.id} ${ending}`,
     });
-    game.note('diplomacy', { text: `Agreement #${contract.id} completed.`, contract });
+    game.note('diplomacy', { kind: 'completed', title: contract.title || `Agreement #${contract.id}`, text: `Agreement #${contract.id} ${ending}`, contract });
   }
 
   function setClauseState(game, contract, clause, nextState, reason) {
@@ -428,6 +433,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     clause.completedTurn = game.turnNo;
     clause.completionReason = reason || '';
     if (nextState === 'void') game.lg(`⚖️ Agreement exception: ${clauseLabel(game, clause)} (${reason || 'no longer possible'})`, 'diplomacy');
+    if (nextState === 'broken') game.lg(`💔 Promise broken: ${clauseLabel(game, clause)} (${reason || 'deadline missed'})`, 'diplomacy');
     finishContract(game, contract);
   }
 
@@ -436,6 +442,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const contract = {
       id: d.nextContractId++, fromId: proposal.fromId, toId: proposal.toId,
       pairKey: pairKey(player(game, proposal.fromId), player(game, proposal.toId)),
+      kind: 'bilateral', title: `${player(game, proposal.fromId)?.name || 'A player'} ↔ ${player(game, proposal.toId)?.name || 'another player'}`,
+      participantIds: [proposal.fromId, proposal.toId],
       createdTurn: game.turnNo, createdRound: completedRounds(game), status: 'active',
       clauses: [proposal.request, proposal.offer].map(clause => Object.assign({}, clause, {
         state: 'active', createdActorTurns: player(game, clause.actorId).turnsStarted,
@@ -450,7 +458,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       text: `${from ? from.name : 'A player'} and ${to ? to.name : 'another player'} accepted Agreement #${contract.id}.`,
     });
     game.lg(`🤝 Agreement #${contract.id}: ${contract.clauses.map(clause => clauseLabel(game, clause)).join(' ')}`, 'diplomacy');
-    game.note('diplomacy', { text: `Agreement #${contract.id} is active.`, contract });
+    game.note('diplomacy', { kind: 'agreement', title: `AGREEMENT #${contract.id} ACTIVE`, text: contract.clauses.map(clause => clauseLabel(game, clause)).join(' '), contract });
     return contract;
   }
 
@@ -528,6 +536,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const card = game.byIid(clause.targetCardId);
         if (!card || card.zone !== 'battlefield' || card.ctrl.idx !== clause.targetControllerId)
           setClauseState(game, contract, clause, 'void', 'the named permanent left or changed controller');
+      } else if (clause.type === 'remove_permanent') {
+        const card = game.byIid(clause.targetCardId);
+        if (!card || card.zone !== 'battlefield' || card.ctrl.idx !== clause.targetControllerId)
+          setClauseState(game, contract, clause, 'fulfilled', 'the named threat left the battlefield');
       } else if (clause.type === 'let_resolve' && !stackByKey(game, clause.stackId)) {
         setClauseState(game, contract, clause, 'fulfilled', 'the stack object left the stack');
       }
@@ -585,6 +597,118 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return gap >= Math.max(3.5, Math.max(1, ceiling) * 0.08) ? { p: outsider.p, score: outsider.score, gap } : null;
   }
 
+  // A table deal is offered only around an objective public leader. This keeps
+  // three-player politics tactical and short instead of creating permanent teams.
+  function objectiveTableThreat(game) {
+    const rows = threatRows(game);
+    if (rows.length < 4) return null;
+    const first = rows[0], second = rows[1];
+    const gap = first.score - second.score;
+    return gap >= Math.max(3.5, Math.max(1, second.score) * 0.08) ? { p: first.p, score: first.score, gap } : null;
+  }
+
+  function removalOracle(card, alt) {
+    if (alt && alt.adventure && card.def.adventure) return String(card.def.adventure.oracle || card.def.adventure.text || '');
+    return String(card.def.oracle || '');
+  }
+
+  function isRemovalSpell(card, alt) {
+    return /destroy target|exile target|return target [^.]* to (?:its owner's|their) hand/i.test(removalOracle(card, alt));
+  }
+
+  function supportClause(game, supporter, remover, allowCombatShield) {
+    if (allowCombatShield && visibleAttackPower(game, supporter, remover) > 0) {
+      return { type: 'no_attack', actorId: supporter.idx, beneficiaryId: remover.idx, state: 'proposed' };
+    }
+    return { type: 'no_target_player', actorId: supporter.idx, beneficiaryId: remover.idx, state: 'proposed' };
+  }
+
+  function groupRemovalOptions(game, remover) {
+    const d = state(game), st = status(game), threat = objectiveTableThreat(game);
+    if (!d || !st.unlocked || !remover || remover.lost || !threat || threat.p === remover) return [];
+    const supporters = activePlayers(game).filter(candidate => candidate !== remover && candidate !== threat.p);
+    if (supporters.length !== 2) return [];
+    const participants = [remover, ...supporters];
+    for (let i = 0; i < participants.length; i++) for (let j = i + 1; j < participants.length; j++) {
+      if (hasPairContract(game, participants[i], participants[j])) return [];
+    }
+    const options = [];
+    for (const entry of game.castableList(remover)) {
+      if (!isRemovalSpell(entry.card, entry.alt)) continue;
+      const specs = game.spellTargetSpecs(entry.card, Object.assign({}, entry.alt || {}, { from: entry.from }), remover) || [];
+      const targets = specs.flatMap(spec => game.legalTargets(spec, entry.card, remover))
+        .filter(target => target && target.zone === 'battlefield' && target.ctrl === threat.p && !target.is('Land'));
+      const target = [...new Set(targets)].sort((a, b) => publicPermanentValue(game, b) - publicPermanentValue(game, a) || a.iid - b.iid)[0];
+      if (!target) continue;
+      const remove = {
+        type: 'remove_permanent', actorId: remover.idx, beneficiaryId: supporters[0].idx,
+        targetCardId: target.iid, targetName: target.name, targetControllerId: threat.p.idx,
+        sourceCardId: entry.card.iid, sourceName: entry.card.name, state: 'proposed',
+      };
+      // Only one supporter grants combat immunity; the second grants targeting
+      // restraint. This preserves the existing anti-pillow-fort rule.
+      const clauses = [remove, ...supporters.map((candidate, index) => supportClause(game, candidate, remover, index === 0))];
+      options.push({
+        key: `${entry.card.iid}:${target.iid}`, title: `Remove ${target.name}`,
+        removerId: remover.idx, removerName: remover.name, sourceCardId: entry.card.iid, sourceName: entry.card.name,
+        targetCardId: target.iid, targetName: target.name, targetPlayerId: threat.p.idx, targetPlayerName: threat.p.name,
+        participantIds: participants.map(candidate => candidate.idx),
+        participantNames: participants.map(candidate => candidate.name), supporterIds: supporters.map(candidate => candidate.idx),
+        clauses, labels: clauses.map(clause => clauseLabel(game, clause)), score: publicPermanentValue(game, target) + threat.gap,
+      });
+    }
+    return options.sort((a, b) => b.score - a.score || a.key.localeCompare(b.key));
+  }
+
+  function makeGroupRemovalProposal(game, option, source) {
+    const d = state(game);
+    const humanResponder = option.supporterIds.map(id => player(game, id)).find(candidate => candidate && !candidate.isAI);
+    return {
+      id: d.nextProposalId++, kind: 'group-removal', title: option.title,
+      fromId: option.removerId, toId: humanResponder ? humanResponder.idx : option.supporterIds[0],
+      participantIds: option.participantIds.slice(), supporterIds: option.supporterIds.slice(),
+      optionKey: option.key, clauses: option.clauses.map(clause => Object.assign({}, clause)),
+      source: source || 'bot', status: 'created', createdTurn: game.turnNo, createdRound: completedRounds(game),
+    };
+  }
+
+  function validateGroupRemovalProposal(game, proposal) {
+    const remover = player(game, proposal.fromId);
+    const current = groupRemovalOptions(game, remover).find(option => option.key === proposal.optionKey);
+    if (!current) return { ok: false, reason: REASONS.invalid };
+    if (current.participantIds.join(':') !== (proposal.participantIds || []).join(':')) return { ok: false, reason: REASONS.invalid };
+    return { ok: true, option: current, reason: '' };
+  }
+
+  function activateGroupRemovalProposal(game, proposal) {
+    const check = validateGroupRemovalProposal(game, proposal);
+    if (!check.ok) return null;
+    const d = state(game), option = check.option;
+    const contract = {
+      id: d.nextContractId++, kind: 'group-removal', title: option.title,
+      fromId: proposal.fromId, toId: proposal.toId, participantIds: option.participantIds.slice(),
+      createdTurn: game.turnNo, createdRound: completedRounds(game), status: 'active',
+      clauses: option.clauses.map(clause => Object.assign({}, clause, {
+        state: 'active', createdActorTurns: player(game, clause.actorId).turnsStarted,
+      })),
+    };
+    d.contracts.push(contract);
+    proposal.status = 'accepted'; proposal.contractId = contract.id;
+    const names = option.participantNames.join(', ');
+    const terms = contract.clauses.map(clause => clauseLabel(game, clause)).join(' ');
+    d.history.push({ turn: game.turnNo, kind: 'accepted', fromId: proposal.fromId, toId: proposal.toId,
+      contractId: contract.id, text: `${names} accepted Table Deal #${contract.id}: ${option.title}.` });
+    game.lg(`🤝 Table Deal #${contract.id} (${names}): ${terms}`, 'diplomacy');
+    game.note('diplomacy', { kind: 'agreement', title: `TABLE DEAL #${contract.id} ACTIVE`, text: terms, contract });
+    return contract;
+  }
+
+  function announceProposal(game, proposal, directText) {
+    const clauses = proposal.kind === 'group-removal' ? proposal.clauses : [proposal.request, proposal.offer];
+    const text = directText || clauses.map(clause => clauseLabel(game, clause)).join(' ');
+    game.note('diplomacy', { kind: 'proposal', title: proposal.kind === 'group-removal' ? 'NEW TABLE DEAL' : 'NEW POLITICS OFFER', text, proposal });
+  }
+
   function botProposalCandidates(game, from, recipients) {
     const runaway = runawayThreat(game);
     const candidates = [];
@@ -635,7 +759,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       enabled: !!enabled, unlockAfterRounds: UNLOCK_ROUNDS,
       contracts: [], proposals: [], history: [], rapport: {},
       proposalCounts: {}, pairProposalCounts: {}, rejectedPairs: {},
-      botRoundCounts: {}, botPairRounds: {}, nextProposalId: 1, nextContractId: 1, nextStackId: 1,
+      botRoundCounts: {}, botPairRounds: {}, botHumanOfferRound: -99,
+      nextProposalId: 1, nextContractId: 1, nextStackId: 1,
     };
     return game.diplomacy;
   };
@@ -646,6 +771,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.diplomacyStatus = function () { refresh(this); return status(this); };
   G.diplomacyClauseOptions = function (actor, beneficiary) { refresh(this); return clauseOptions(this, actor, beneficiary); };
+  G.diplomacyGroupRemovalOptions = function (actor) { refresh(this); return groupRemovalOptions(this, actor); };
   G.diplomacyRunawayThreat = function () { return runawayThreat(this); };
   G.diplomacyStackKey = function (item) { return stackKey(this, item); };
 
@@ -662,9 +788,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!to.isAI) {
       proposal.status = 'pending-human';
       this.lg(`🕊️ ${from.name} sent ${to.name} a diplomacy proposal.`, 'diplomacy');
-      this.note('diplomacy', { text: `${from.name} sent you a diplomacy proposal.`, proposal });
+      announceProposal(this, proposal, `${from.name} sent ${to.name} a proposal. ${clauseLabel(this, proposal.request)} ${clauseLabel(this, proposal.offer)}`);
       return { status: proposal.status, proposal };
     }
+    announceProposal(this, proposal, `${from.name} offered ${to.name}: ${clauseLabel(this, proposal.request)} ${clauseLabel(this, proposal.offer)}`);
     const verdict = evaluateProposal(this, proposal, to);
     proposal.reason = verdict.reason;
     proposal.math = verdict.math;
@@ -688,6 +815,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return { status: 'rejected', proposal, reason: verdict.reason };
   };
 
+  G.proposeGroupRemovalDiplomacy = function (from, optionKey) {
+    refresh(this);
+    const option = groupRemovalOptions(this, from).find(candidate => candidate.key === optionKey);
+    if (!option) return { status: 'rejected', reason: REASONS.invalid };
+    const proposal = makeGroupRemovalProposal(this, option, from.isAI ? 'bot' : 'human');
+    const check = validateGroupRemovalProposal(this, proposal);
+    if (!check.ok) return { status: 'rejected', reason: check.reason };
+    if (!from.isAI) recordHumanAttempt(this, from, player(this, option.supporterIds[0]));
+    state(this).proposals.push(proposal);
+    const responder = player(this, proposal.toId);
+    if (responder && !responder.isAI && responder !== from) {
+      proposal.status = 'pending-human';
+      proposal.reason = `${from.name} proposes a public three-player answer to ${option.targetPlayerName}’s lead.`;
+      this.lg(`🕊️ ${from.name} proposed a table deal to ${option.participantNames.join(', ')}.`, 'diplomacy');
+      announceProposal(this, proposal);
+      return { status: proposal.status, proposal };
+    }
+    const contract = activateGroupRemovalProposal(this, proposal);
+    return contract ? { status: 'accepted', proposal, contract } : { status: 'rejected', proposal, reason: REASONS.invalid };
+  };
+
   G.respondToDiplomacyProposal = function (proposalId, accept, responder) {
     refresh(this);
     const d = state(this);
@@ -701,6 +849,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       this.lg(`🕊️ ${responder.name} declined the diplomacy proposal.`, 'diplomacy');
       return { status: 'declined', proposal };
+    }
+    if (proposal.kind === 'group-removal') {
+      const check = validateGroupRemovalProposal(this, proposal);
+      if (!check.ok) { proposal.status = 'expired'; return { status: 'rejected', reason: check.reason, proposal }; }
+      const contract = activateGroupRemovalProposal(this, proposal);
+      return contract ? { status: 'accepted', proposal, contract } : { status: 'rejected', reason: REASONS.invalid, proposal };
     }
     const check = validateProposal(this, proposal, { botInitiated: true });
     if (!check.ok) { proposal.status = 'expired'; return { status: 'rejected', reason: check.reason, proposal }; }
@@ -750,15 +904,43 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // `createdActorTurns` prevents cleanup on the creation turn from shortening
     // "through your next turn" to only a few remaining phases.
     for (const { contract, clause } of activeClauses(this, current => current.actorId === actor.idx &&
-      TURN_TYPES.has(current.type) && actor.turnsStarted > current.createdActorTurns))
-      setClauseState(this, contract, clause, 'fulfilled', 'the promised turn ended');
+      TURN_TYPES.has(current.type) && actor.turnsStarted > current.createdActorTurns)) {
+      if (clause.type === 'remove_permanent') {
+        const target = this.byIid(clause.targetCardId);
+        setClauseState(this, contract, clause,
+          target && target.zone === 'battlefield' && target.ctrl.idx === clause.targetControllerId ? 'broken' : 'fulfilled',
+          target && target.zone === 'battlefield' ? 'the announced removal deadline was missed' : 'the named threat left the battlefield');
+      } else setClauseState(this, contract, clause, 'fulfilled', 'the promised turn ended');
+    }
     refresh(this);
   };
 
   G.diplomacyFilterTargets = function (candidates, spec, src, ctrl, opts = {}) {
     refresh(this);
     if (!state(this) || !status(this).unlocked || opts.allowForced) return candidates;
-    return candidates.filter(target => !targetBlockingEntries(this, ctrl, target, src, spec).length);
+    let filtered = candidates.filter(target => !targetBlockingEntries(this, ctrl, target, src, spec).length);
+    const removal = activeClauses(this, clause => clause.type === 'remove_permanent' && clause.actorId === ctrl.idx &&
+      clause.sourceCardId === (src && src.iid))[0];
+    if (removal) {
+      const promised = filtered.find(target => target && target.iid === removal.clause.targetCardId);
+      if (promised) filtered = [promised];
+    }
+    return filtered;
+  };
+
+  G.diplomacyRequiredRemovalTarget = function (actor, source) {
+    refresh(this);
+    const entry = activeClauses(this, clause => clause.type === 'remove_permanent' && clause.actorId === actor.idx &&
+      (!source || clause.sourceCardId === source.iid))[0];
+    return entry ? this.byIid(entry.clause.targetCardId) : null;
+  };
+
+  G.diplomacyRecordRemovalAttempt = function (actor, source, targets) {
+    const picked = (targets || []).flat().filter(Boolean);
+    for (const { contract, clause } of activeClauses(this, current => current.type === 'remove_permanent' &&
+      current.actorId === actor.idx && current.sourceCardId === source.iid && picked.some(target => target.iid === current.targetCardId))) {
+      setClauseState(this, contract, clause, 'fulfilled', `${source.name} was cast targeting the named threat`);
+    }
   };
 
   G.diplomacyHandleForcedTarget = function (ctrl, target, src, spec) {
@@ -774,12 +956,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return {
       status: st,
       activeContracts: activeContracts(this).map(contract => ({
-        id: contract.id, status: contract.status, fromId: contract.fromId, toId: contract.toId,
+        id: contract.id, kind: contract.kind || 'bilateral', title: contract.title || `Agreement #${contract.id}`,
+        status: contract.status, fromId: contract.fromId, toId: contract.toId,
+        participantIds: (contract.participantIds || [contract.fromId, contract.toId]).slice(),
+        participantNames: (contract.participantIds || [contract.fromId, contract.toId]).map(id => player(this, id)?.name || 'Player'),
         clauses: contract.clauses.map(clause => ({ state: clause.state, label: clauseLabel(this, clause) })),
       })),
       incoming: d.proposals.filter(proposal => proposal.status === 'pending-human' && proposal.toId === viewer.idx).map(proposal => ({
-        id: proposal.id, fromId: proposal.fromId, fromName: player(this, proposal.fromId)?.name || 'Bot',
-        request: clauseLabel(this, proposal.request), offer: clauseLabel(this, proposal.offer), reason: proposal.reason || '',
+        id: proposal.id, kind: proposal.kind || 'bilateral', title: proposal.title || 'New offer',
+        fromId: proposal.fromId, fromName: player(this, proposal.fromId)?.name || 'Bot',
+        participantNames: (proposal.participantIds || [proposal.fromId, proposal.toId]).map(id => player(this, id)?.name || 'Player'),
+        clauses: (proposal.clauses || [proposal.request, proposal.offer]).filter(Boolean).map(clause => clauseLabel(this, clause)),
+        request: proposal.request ? clauseLabel(this, proposal.request) : '', offer: proposal.offer ? clauseLabel(this, proposal.offer) : '', reason: proposal.reason || '',
         isCounteroffer: !!proposal.isCounteroffer, originalProposalId: proposal.originalProposalId || null,
       })),
       opponents: viewer.opponents(this).map(other => ({ id: other.idx, name: other.name, relation: relation(this, viewer, other) })),
@@ -787,6 +975,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         turn: entry.turn, kind: entry.kind, text: entry.text || entry.reason || 'A negotiation ended.',
       })),
       offersRemaining: Math.max(0, 2 - (d.proposalCounts[key] || 0)),
+      groupRemovalOptions: groupRemovalOptions(this, viewer).map(option => ({
+        key: option.key, title: option.title, sourceName: option.sourceName, targetName: option.targetName,
+        targetPlayerName: option.targetPlayerName, participantNames: option.participantNames.slice(), labels: option.labels.slice(),
+      })),
     };
   };
 
@@ -799,29 +991,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const runaway = runawayThreat(this);
     if (runaway && runaway.p === active) return null;
     const from = active;
-    const botRecipients = activePlayers(this).filter(candidate => candidate.isAI && candidate !== from &&
+    const group = groupRemovalOptions(this, from)[0];
+    if (group) {
+      d.botRoundCounts[round] = (d.botRoundCounts[round] || 0) + 1;
+      const result = this.proposeGroupRemovalDiplomacy(from, group.key);
+      if (result && result.status === 'pending-human') d.botHumanOfferRound = st.rounds;
+      return result;
+    }
+    const recipients = activePlayers(this).filter(candidate => candidate !== from &&
       candidate !== runaway?.p && !hasPairContract(this, from, candidate) &&
       d.botPairRounds[`${round}:${pairKey(from, candidate)}`] !== true);
-    let candidates = botProposalCandidates(this, from, botRecipients);
-    if (!candidates.length && runaway) {
-      const human = activePlayers(this).find(candidate => !candidate.isAI && candidate !== runaway.p && candidate !== from &&
-        !hasPairContract(this, from, candidate));
-      if (human) candidates = botProposalCandidates(this, from, [human]);
-    }
+    const candidates = botProposalCandidates(this, from, recipients);
     if (!candidates.length) return null;
-    const chosen = candidates[0], to = chosen.to;
+    // If a human has a meaningful public-board deal available, bots address
+    // them directly instead of silently spending every checkpoint on bot-bot deals.
+    const humanCandidate = st.rounds - d.botHumanOfferRound >= 2 ? candidates.find(candidate => !candidate.to.isAI) : null;
+    const chosen = humanCandidate || candidates[0], to = chosen.to;
     const proposal = makeProposal(this, from, to, chosen.request, chosen.offer, 'bot');
     d.botRoundCounts[round] = (d.botRoundCounts[round] || 0) + 1;
     d.botPairRounds[`${round}:${pairKey(from, to)}`] = true;
     d.proposals.push(proposal);
     if (!to.isAI) {
       proposal.status = 'pending-human';
+      d.botHumanOfferRound = st.rounds;
       proposal.reason = `${from.name} sees a short-term table interest and is asking you directly.`;
       this.lg(`🕊️ ${from.name} sent ${to.name} a diplomacy proposal.`, 'diplomacy');
-      this.note('diplomacy', { text: `${from.name} sent you a diplomacy proposal.`, proposal });
+      announceProposal(this, proposal, `${from.name} is asking you directly. ${clauseLabel(this, proposal.request)} ${clauseLabel(this, proposal.offer)}`);
       return { status: proposal.status, proposal };
     }
     this.lg(`🕊️ ${from.name} offered a short agreement to ${to.name}.`, 'diplomacy');
+    announceProposal(this, proposal, `${from.name} offered ${to.name}: ${clauseLabel(this, proposal.request)} ${clauseLabel(this, proposal.offer)}`);
     const verdict = evaluateProposal(this, proposal, to);
     proposal.reason = verdict.reason;
     proposal.math = verdict.math;

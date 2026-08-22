@@ -1210,6 +1210,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const best = bestRemovalCandidate(game, player, card, action.alt);
         if (!best || best.score < 3.4) breakdown.timing -= 10;
         else breakdown.threat += best.score * 0.85;
+        const promised = game.diplomacyRequiredRemovalTarget && game.diplomacyRequiredRemovalTarget(player, card);
+        if (promised) {
+          // A public removal pact should materially change the bot's plan. The
+          // target picker is constrained by diplomacy.js; this bonus makes the
+          // bot actually cast the announced answer before its deadline.
+          breakdown.timing += 28;
+          breakdown.threat += 12;
+        }
       }
       if (sem.roles.includes('board-wipe')) {
         // Wipe se procjenjuje po STVARNOM učinku na stvorenja, ne po ukupnoj

@@ -29,6 +29,17 @@ function addCreature(game, owner, name = 'Stormcatch Mentor') {
   return card;
 }
 
+function addLand(game, owner, name = 'Forest') {
+  const card = new MTG.CardInst(MTG.DEFS[name], owner);
+  card.ctrl = owner;
+  card.zone = 'battlefield';
+  card.sick = false;
+  card.tapped = false;
+  game.battlefield.push(card);
+  game.recalc();
+  return card;
+}
+
 function makeOfferState(spec) {
   const state = makeGame();
   const [human, bot, third, fourth] = state.players;
@@ -180,6 +191,84 @@ test('bot-bot negotiation also occurs around a meaningful shared threat before i
   assert.ok(game.diplomacy.proposals.length >= 1);
   assert.ok(game.diplomacy.history.some(entry => entry.kind === 'accepted'));
   assert.ok(game.log.some(entry => /offered a short agreement/.test(entry.msg)));
+});
+
+test('a bot addresses the human directly when they share a meaningful public enemy', () => {
+  const { game, players: [human, botA, leader, botB] } = makeGame();
+  leader.life = 500;
+  addCreature(game, human, 'Inferno Titan');
+  addCreature(game, botA, 'Inferno Titan');
+  addCreature(game, leader, 'Inferno Titan');
+  addCreature(game, botB);
+
+  const result = game.processDiplomacyCheckpoint(botA);
+  assert.equal(result.status, 'pending-human');
+  assert.equal(result.proposal.toId, human.idx);
+  assert.equal(game.diplomacyView(human).incoming[0].fromId, botA.idx);
+  assert.ok(game.log.some(entry => /sent You a diplomacy proposal/.test(entry.msg)));
+});
+
+test('a three-player table deal binds an announced removal spell to its public target and records the attempt', () => {
+  const { game, players: [human, leader, supporterA, supporterB] } = makeGame();
+  game.turnPlayer = human;
+  game.phase = 'main1';
+  game.step = 'main';
+  leader.life = 500;
+  const threat = addCreature(game, leader, 'Inferno Titan');
+  addCreature(game, supporterA);
+  addCreature(game, supporterB);
+  addCreature(game, human);
+  addLand(game, human); addLand(game, human); addLand(game, human);
+  const removal = new MTG.CardInst(MTG.DEFS['Beast Within'], human);
+  removal.zone = 'hand'; human.hand.push(removal);
+  game.recalc();
+
+  const options = game.diplomacyGroupRemovalOptions(human);
+  assert.ok(options.length > 0);
+  assert.equal(options[0].targetCardId, threat.iid);
+  assert.equal(options[0].participantIds.length, 3);
+  const result = game.proposeGroupRemovalDiplomacy(human, options[0].key);
+  assert.equal(result.status, 'accepted');
+  assert.equal(result.contract.kind, 'group-removal');
+  assert.equal(result.contract.clauses.filter(clause => clause.type === 'no_attack').length, 1,
+    'the table deal must preserve the one-combat-shield anti-abuse rule');
+
+  const spec = game.spellTargetSpecs(removal, { from: 'hand' }, human)[0];
+  const legal = game.legalTargets(spec, removal, human);
+  assert.equal(legal.length, 1);
+  assert.equal(legal[0], threat);
+  game.diplomacyRecordRemovalAttempt(human, removal, [[threat]]);
+  const promise = result.contract.clauses.find(clause => clause.type === 'remove_permanent');
+  assert.equal(promise.state, 'fulfilled');
+  assert.match(promise.completionReason, /cast targeting/);
+});
+
+test('an AI remover prioritizes the exact spell it publicly promised in a table deal', async () => {
+  const { game, players: [human, leader, remover, supporter] } = makeGame();
+  game.turnPlayer = remover;
+  game.phase = 'main1';
+  game.step = 'main';
+  leader.life = 500;
+  addCreature(game, leader, 'Inferno Titan');
+  addCreature(game, human);
+  addCreature(game, remover);
+  addCreature(game, supporter);
+  addLand(game, remover); addLand(game, remover); addLand(game, remover);
+  const removal = new MTG.CardInst(MTG.DEFS['Beast Within'], remover);
+  removal.zone = 'hand'; remover.hand.push(removal);
+  game.recalc();
+
+  const option = game.diplomacyGroupRemovalOptions(remover)[0];
+  const proposal = game.proposeGroupRemovalDiplomacy(remover, option.key);
+  assert.equal(proposal.status, 'pending-human');
+  const accepted = game.respondToDiplomacyProposal(proposal.proposal.id, true, human);
+  assert.equal(accepted.status, 'accepted');
+
+  const action = await remover.controller.decide(game, {
+    type: 'main', player: remover, casts: game.castableList(remover), acts: [], lands: [], phase: game.phase,
+  });
+  assert.equal(action.kind, 'cast');
+  assert.equal(action.card, removal);
 });
 
 test('the response model accepts, counters, and rejects across a broad offer matrix instead of auto-accepting', () => {

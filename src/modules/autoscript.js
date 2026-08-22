@@ -99,7 +99,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // Counter target spell
     if (/^Counter target spell/i.test(first)) {
-      return mk([{ zone: 'stack', what: 'spell', filter: (g2, so) => so.kind === 'spell', prompt: 'Counter spell', aiHint: { goal: 'counter' } }],
+      return mk([{ zone: 'stack', what: 'spell', filter: (g2, so) => so.kind === 'spell', prompt: 'Choose a spell on the stack to counter', aiHint: { goal: 'counter' } }],
         async ctx => {
           const so = ctx.targets[0], gg = ctx.g;
           if (so && gg.stack.includes(so) && !MTG.isUncounterable(gg, so)) {
