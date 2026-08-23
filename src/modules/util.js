@@ -465,6 +465,12 @@ MTG.deepClone = function (o) { return JSON.parse(JSON.stringify(o)); };
 
 MTG.plural = function (n, s, p) { return n === 1 ? s : (p || s + 's'); };
 
+// Player seats use the display name "You" for the human. Keep verbs in the
+// first person for that seat while preserving third-person grammar for bots.
+MTG.playerVerb = function (player, firstPerson, thirdPerson) {
+  return `${player.name} ${player.name === 'You' ? firstPerson : thirdPerson}`;
+};
+
 MTG.cap = function (s) { return s.charAt(0).toUpperCase() + s.slice(1); };
 
 // 1x1 providna slika — kad Scryfall art ne stigne, ubacimo je da browser

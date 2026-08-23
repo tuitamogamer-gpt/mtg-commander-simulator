@@ -2353,7 +2353,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })() : { enabled: false },
       pending: pending ? {
         type: pending.type,
-        prompt: pending.prompt || null,
+        prompt: pending.prompt ? MTG.uiText(pending.prompt) : null,
         xChoice: pending.type === 'chooseX' ? {
           min: pending.min, max: pending.max,
           legalValues: pending.values || undefined,
@@ -2385,16 +2385,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           card: entry.card && entry.card.name,
           from: entry.from,
           label: entry.from === 'exile'
-            ? `Igraj ${entry.card && entry.card.name} iz egzila`
-            : `Baci ${entry.card && entry.card.name}`,
+            ? `Play ${entry.card && entry.card.name} from exile`
+            : `Cast ${entry.card && entry.card.name}`,
         })).concat((pending.acts || []).map(entry => ({
           card: entry.card && entry.card.name,
-          label: entry.manaAbility ? entry.label :
+          label: MTG.uiText(entry.manaAbility ? entry.label :
             entry.turnFaceUp ? entry.label :
-            entry.handAbility ? entry.card.def.handAbility.label :
-              entry.gyAbility ? (entry.gyAbilityOverride || entry.card.def.gyAbility).label :
-            entry.ability ? entry.ability.label :
-              entry.equip ? 'Equip' : entry.crew ? 'Crew' : entry.cycling ? 'Cycling' : 'Aktiviraj',
+              entry.handAbility ? entry.card.def.handAbility.label :
+                entry.gyAbility ? (entry.gyAbilityOverride || entry.card.def.gyAbility).label :
+                  entry.ability ? entry.ability.label :
+                    entry.equip ? 'Equip' : entry.crew ? 'Crew' : entry.cycling ? 'Cycling' : 'Activate'),
         }))),
       } : null,
       priority: g.priorityState ? {
@@ -2426,8 +2426,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         attackers: g.combat.attackers.map(card),
       } : null,
       aiDecisions: (g.aiDecisionLog || []).slice(-3).map(entry => ({
-        turn: entry.turn, player: entry.playerName, chosen: entry.chosen,
-        score: entry.score, reason: entry.scoreBreakdown,
+        turn: entry.turn, player: entry.playerName, chosen: MTG.uiText(entry.chosen),
+        score: entry.score, reason: Array.isArray(entry.scoreBreakdown)
+          ? entry.scoreBreakdown.map(MTG.uiText)
+          : typeof entry.scoreBreakdown === 'string'
+            ? MTG.uiText(entry.scoreBreakdown)
+            : entry.scoreBreakdown,
         nodes: entry.analyzedNodes, depth: entry.reachedDepth,
         tieBreak: entry.tieBreak, fallback: entry.fallback,
       })),
@@ -2435,10 +2439,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         type: ui.pending.q.type,
         eligible: (ui.pending.q.eligible || []).map(card => card.name),
         forced: (ui.pending.q.forced || []).map(card => card.name),
-        assignments: (ui.pending.sel || []).map(entry => ({ card: entry.card.name, target: entry.target.name })),
+        assignments: ui.pending.q.type === 'attackers'
+          ? (ui.pending.sel || []).filter(entry => entry && entry.card && entry.target)
+            .map(entry => ({ card: entry.card.name, target: entry.target.name }))
+          : [],
       } : null,
       players,
-      recentLog: g.log.slice(-10),
+      recentLog: g.log.slice(-10).map(entry => ({ ...entry, msg: MTG.uiText(entry.msg) })),
     };
   };
   window.render_game_to_text = () => JSON.stringify(MTG.renderGameState());

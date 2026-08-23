@@ -61,7 +61,11 @@ function issuesFor(name) {
     issues.push(`Oracle ima ${oracleActivated} aktiviranih sposobnosti, izvršnih putanja je ${implementedActivated}`);
   }
   if (types.includes('Planeswalker')) {
-    const oracleLoyalty = oracle.split('\n').filter(line => /^\s*\[[+−-]?\d+\]/.test(line)).length;
+    // Current Oracle text writes loyalty costs as "+1:" / "−2:" while
+    // older imports wrapped the same costs in brackets ("[+1]:"). Accept
+    // both forms so certification measures abilities, not typography.
+    const oracleLoyalty = oracle.split('\n').filter(line =>
+      /^\s*(?:\[[+−-]?\d+\]|[+−-]?\d+):/.test(line)).length;
     const scriptedLoyalty = (def.abilities || []).filter(ability => ability.loyalty !== undefined).length;
     if (oracleLoyalty !== scriptedLoyalty) issues.push(`Planeswalker ima ${oracleLoyalty} Oracle loyalty sposobnosti, skriptovano ${scriptedLoyalty}`);
   }

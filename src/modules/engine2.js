@@ -1281,7 +1281,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.stack.push(so);
     if (this.diplomacyRecordRemovalAttempt) this.diplomacyRecordRemovalAttempt(p, card, so.targets);
     this.note('stack', {});
-    this.lg(`${p.name} casts ${card.name}${xVal ? ` (X=${xVal})` : ''}${castOpts.free ? ' (free)' : ''}${so.from === 'command' ? ' from the command zone' : ''}.`, 'cast');
+    this.lg(`${U.playerVerb(p, 'cast', 'casts')} ${card.name}${xVal ? ` (X=${xVal})` : ''}${castOpts.free ? ' (free)' : ''}${so.from === 'command' ? ' from the command zone' : ''}.`, 'cast');
     await this.pace(p.isAI ? 1000 : 150);
 
     if (fromZone === 'graveyard') await this.emit('cardLeftGraveyard', { card, to: 'stack' });
@@ -1323,7 +1323,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (mine.length) {
         const kind = MTG.threatKind(d, so.targets);
         const names = MTG.threatTargetNames(mine, this.human());
-        this.lg(`${kind.icon} ${p.name} → ${card.name} (${kind.label}) cilja ${names.join(', ')}`, 'spot');
+        this.lg(`${kind.icon} ${U.playerVerb(p, 'target', 'targets')} ${names.join(', ')} with ${card.name} (${kind.label})`, 'spot');
         await this.alertHuman({
           card, by: p, targets: mine, allTargets: (so.targets || []).flat().filter(Boolean),
           stackObject: so, kind, names, source: 'spell', ms: 1600,
@@ -2095,7 +2095,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         chosen = source.produce[Number(choice)] || source.produce[0];
       }
       this.markAbilityActivated(p, c);
-      this.lg(`${p.name} activates: ${c.name} — ${entry.label}.`, 'mana');
+      this.lg(`${U.playerVerb(p, 'activate', 'activates')}: ${c.name} — ${entry.label}.`, 'mana');
       await this.activateManaSource(p, source, chosen, null, [], true);
       await this.emit('abilityActivated', { player: p, card: c, isMana: true });
       this.note('mana', { p });
@@ -2112,7 +2112,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.remove(c); c.zone = 'graveyard'; c.owner.graveyard.push(c);
       const ctx = { g: this, src: c, you: p, targets: [] };
       this.stack.push({ kind: 'ability', name: `${c.name} — ${a.label || 'from hand'}`, ctrl: p, ctx, run: a.run, targets: [] });
-      this.lg(`${p.name} activates: ${c.name} — ${a.label || 'from hand'}.`, 'activate');
+      this.lg(`${U.playerVerb(p, 'activate', 'activates')}: ${c.name} — ${a.label || 'from hand'}.`, 'activate');
       this.note('stack', {});
       await this.emit('abilityActivated', { player: p, card: c, isMana: false });
       await this.flushTriggers();
@@ -2133,7 +2133,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const ok = await this.payMana(p, cost);
       if (!ok) return false;
       this.remove(c); c.zone = 'graveyard'; p.graveyard.push(c);
-      this.lg(`${p.name} cyclira ${c.name}.`);
+      this.lg(`${U.playerVerb(p, 'cycle', 'cycles')} ${c.name}.`);
       if (d.effect) {
         const ctx = { g: this, src: c, you: p, targets: [], cycleX };
         if (d.targets) { const ok2 = await this.pickTargets(ctx, d.targets, c, p); if (!ok2) { await this.draw(p, 1); return true; } }
@@ -2149,7 +2149,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!ok) return false;
       this.remove(c); c.zone = 'exile'; p.exile.push(c);
       c.meta = { plotted: true };
-      this.lg(`${p.name} plotuje ${c.name}.`);
+      this.lg(`${U.playerVerb(p, 'plot', 'plots')} ${c.name}.`);
       return true;
     }
     if (entry.suspend) {
@@ -2157,7 +2157,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!ok) return false;
       this.remove(c); c.zone = 'exile'; p.exile.push(c);
       c.meta = { suspended: c.def.suspend.n };
-      this.lg(`${p.name} suspenduje ${c.name} (${c.def.suspend.n}).`);
+      this.lg(`${U.playerVerb(p, 'suspend', 'suspends')} ${c.name} (${c.def.suspend.n}).`);
       return true;
     }
     if (entry.equip) {
@@ -2209,7 +2209,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (await equipCtx.g.attach(c, host)) equipCtx.g.lg(`${c.name} → ${host.name}.`);
         },
       };
-      this.lg(`${p.name} activates: ${c.name} — Equip.`, 'activate');
+      this.lg(`${U.playerVerb(p, 'activate', 'activates')}: ${c.name} — Equip.`, 'activate');
       await this.emit('abilityActivated', { player: p, card: c, isMana: false });
       this.stack.push(so);
       this.note('stack', {});
@@ -2496,7 +2496,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       c.meta._loyUsed = this.turnNo;
     }
     this.markAbilityActivated(p, c);
-    this.lg(`${p.name} activates: ${c.name}${a.label ? ' — ' + a.label : ''}.`, 'activate');
+    this.lg(`${U.playerVerb(p, 'activate', 'activates')}: ${c.name}${a.label ? ' — ' + a.label : ''}.`, 'activate');
     await this.pace(p.isAI ? 800 : 0);
     await this.emit('abilityActivated', { player: p, card: c, isMana: false });
     // crime: ciljanje protivnika/njihovih stvari kroz ability
@@ -2514,7 +2514,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (mine.length) {
         const kind = MTG.threatKind({ oracle: (a.label || '') + '\n' + (c.def.oracle || '') }, ctx.targets);
         const names = MTG.threatTargetNames(mine, this.human());
-        this.lg(`${kind.icon} ${p.name} → ${c.name}${a.label ? ' (' + a.label + ')' : ''} (${kind.label}) cilja ${names.join(', ')}`, 'spot');
+        this.lg(`${kind.icon} ${U.playerVerb(p, 'target', 'targets')} ${names.join(', ')} with ${c.name}${a.label ? ' (' + a.label + ')' : ''} (${kind.label})`, 'spot');
         await this.alertHuman({
           card: c, by: p, targets: mine, allTargets: (ctx.targets || []).flat().filter(Boolean), kind, names, source: 'ability',
           abilityLabel: a.label || '', ms: 1400,
@@ -2770,7 +2770,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const fromZone = card.zone;
     this.remove(card);
     card.zone = 'nowhere';
-    this.lg(`${p.name} plays a land: ${card.name}.`, 'land');
+    this.lg(`${U.playerVerb(p, 'play', 'plays')} a land: ${card.name}.`, 'land');
     await this.pace(p.isAI ? 700 : 0);
     await this.move(card, 'battlefield', { ctrl: p });
     await this.emit('landPlayed', { player: p, card, from: fromZone });
@@ -2870,7 +2870,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (p.lost) { /* CR 800.4e: potez se nastavlja, ali bez aktivnog igrača */ }
     else if (!skipsFirstDraw) {
       await this.draw(p, 1);
-    } else this.lg(`${p.name} preskače prvo vučenje (duel — CR 103.8).`);
+    } else this.lg(`${U.playerVerb(p, 'skip', 'skips')} the first draw (duel — CR 103.8).`);
     await this.emit('drawStep', { player: p });
     await this.flushTriggers();
     await this.priorityRound(p);
@@ -2916,7 +2916,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.note('phase', {});
     await this.pace(p.isAI ? 330 : 0);
     if (this.monarch === p && !p.lost) {
-      this.lg(`👑 Monarch benefit — ${p.name} draws a card at the end step.`, 'monarch');
+      this.lg(`👑 Monarch benefit — ${U.playerVerb(p, 'draw', 'draws')} a card at the end step.`, 'monarch');
       await this.draw(p, 1);
     }
     await this.emit('endStep', { player: p });
@@ -3189,7 +3189,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           c.attacking = null; c.tapped = c.kw('vigilance') ? c.tapped : false;
           attackers.splice(attackers.indexOf(c), 1);
         } else {
-          this.lg(`${p.name} pays the ${tax} attack tax (${c.name}).`);
+          this.lg(`${U.playerVerb(p, 'pay', 'pays')} the ${tax} attack tax (${c.name}).`);
         }
       }
     }
@@ -3201,7 +3201,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.recalc();
     for (const c of attackers) {
       const tname = c.attacking instanceof MTG.Player ? c.attacking.name : (c.attacking && c.attacking.name);
-      this.lg(`⚔️ ${c.name} napada → ${tname}.`, 'attack');
+      this.lg(`⚔️ ${c.name} attacks → ${tname}.`, 'attack');
       const dp = c.attacking instanceof MTG.Player ? c.attacking : (c.attacking && c.attacking.ctrl);
       if (dp) { dp.lastAttackers = dp.lastAttackers || new Set(); dp.lastAttackers.add(p); }
     }
@@ -3217,7 +3217,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (mine.length) {
           const pw = mine.reduce((s, c) => s + (c.cur ? c.cur.power : 0), 0);
           await this.spotlight(
-            `⚔️ ${p.name} napada TEBE ILI TVOJ PLANESWALKER — ${mine.length} ${U.plural(mine.length, 'stvorenje', 'stvorenja')} (${pw} štete): ${mine.map(c => c.name).slice(0, 4).join(', ')}`,
+            `⚔️ ${p.name} attacks YOU OR YOUR PLANESWALKER — ${mine.length} ${mine.length === 1 ? 'creature' : 'creatures'} (${pw} damage): ${mine.map(c => c.name).slice(0, 4).join(', ')}`,
             { kind: 'danger', ms: 1800 });
         }
       }

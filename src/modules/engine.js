@@ -349,7 +349,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const doMull = canMull && await p.controller.decide(this, { type: 'mulligan', player: p, mulls, free });
         if (doMull) {
           if (free) free = false; else mulls++;
-          this.lg(`${p.name} takes a mulligan.`);
+          this.lg(`${U.playerVerb(p, 'take', 'takes')} a mulligan.`);
         } else keeping = true;
       }
       if (mulls > 0) {
@@ -360,7 +360,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           p.library.unshift(c);
         }
       }
-      this.lg(`${p.name} keeps ${p.hand.length} cards.`);
+      this.lg(`${U.playerVerb(p, 'keep', 'keeps')} ${p.hand.length} cards.`);
     }
 
     // ------------- helpers -------------
@@ -597,7 +597,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           (card.commander || card.mv >= 6 || card.power >= 6 || card.toughness >= 7);
         if (card.commander || impactfulCreature) {
           const kind = card.commander ? 'commander' : 'powerhouse';
-          this.lg(`${card.commander ? '👑' : '✦'} ${card.ctrl.name} uvodi ${card.name} na bojno polje.`, 'arrival');
+          this.lg(`${card.commander ? '👑' : '✦'} ${U.playerVerb(card.ctrl, 'put', 'puts')} ${card.name} onto the battlefield.`, 'arrival');
           this.note('battlefieldArrival', {
             card, player: card.ctrl, kind,
             power: card.is('Creature') ? card.power : null,
@@ -874,7 +874,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (made.length) {
         const names = {};
         for (const m of made) names[m.name] = (names[m.name] || 0) + 1;
-        this.lg(`${ctrl.name} pravi ${Object.entries(names).map(([k, v]) => v > 1 ? `${v}× ${k}` : k).join(', ')}.`, 'token');
+        this.lg(`${U.playerVerb(ctrl, 'create', 'creates')} ${Object.entries(names).map(([k, v]) => v > 1 ? `${v}× ${k}` : k).join(', ')}.`, 'token');
         await this.emit('tokensCreated', { ctrl, tokens: made });
         // tokeni ne prolaze kroz stack — pokaži ih na sredini i sačekaj Proceed
         await this.revealToHuman({ cards: made, ctrl, kind: 'tokens' });
@@ -1348,7 +1348,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             onlyIf: () => c.zone === 'hand',
             run: async ctx => {
               if (c.zone !== 'hand') return;
-              ctx.g.lg(`${ctx.you.name} otkriva ${c.name} za Miracle ${c.def.miracle}.`);
+              ctx.g.lg(`${U.playerVerb(ctx.you, 'reveal', 'reveals')} ${c.name} for Miracle ${c.def.miracle}.`);
               await ctx.g.castSpell(ctx.you, c, {
                 from: 'hand', alt: { altCostStr: c.def.miracle, speed: 'instant', miracle: true },
               });
@@ -1356,7 +1356,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           });
         }
       }
-      if (drawn) this.lg(`${p.name} vuče ${drawn} ${U.plural(drawn, 'kartu', 'karte')}.`, 'draw');
+      if (drawn) this.lg(`${U.playerVerb(p, 'draw', 'draws')} ${drawn} ${drawn === 1 ? 'card' : 'cards'}.`, 'draw');
       this.note('hand', { p });
       return drawn;
     }
@@ -1368,7 +1368,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await this.move(c, 'graveyard');
         milled.push(c);
       }
-      if (milled.length) this.lg(`${p.name} melje ${milled.length} karata.`);
+      if (milled.length) this.lg(`${U.playerVerb(p, 'mill', 'mills')} ${milled.length} ${milled.length === 1 ? 'card' : 'cards'}.`);
       return milled;
     }
 
@@ -1383,7 +1383,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await this.emit('discarded', { player: p, card: c });
       }
       if (landsN) await this.emit('discardedLands', { player: p, n: landsN });
-      if (cards.length) this.lg(`${p.name} odbacuje ${cards.length} karata.`);
+      if (cards.length) this.lg(`${U.playerVerb(p, 'discard', 'discards')} ${cards.length} ${cards.length === 1 ? 'card' : 'cards'}.`);
     }
 
     // connive: vuci 1, odbaci 1; ako je odbačena nonland — +1/+1 counter (event 'connive')
@@ -1412,7 +1412,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (card && card.zone === 'battlefield') this.lg(`${card.name} ne može biti žrtvovan.`);
         return false;
       }
-      this.lg(`${p.name} žrtvuje ${card.name}.`, 'sac');
+      this.lg(`${U.playerVerb(p, 'sacrifice', 'sacrifices')} ${card.name}.`, 'sac');
       await this.move(card, 'graveyard');
       await this.emit('sacrificed', { player: p, card });
       return true;
@@ -1428,7 +1428,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
       try {
         for (const card of unique) {
-          this.lg(`${p.name} žrtvuje ${card.name}.`, 'sac');
+          this.lg(`${U.playerVerb(p, 'sacrifice', 'sacrifices')} ${card.name}.`, 'sac');
           await this.move(card, 'graveyard');
           await this.emit('sacrificed', { player: p, card });
         }
@@ -2315,7 +2315,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async playerLoses(p, why) {
       if (p.lost) return;
       p.lost = true;
-      this.lg(`☠️ ${p.name} loses (${why}).`, 'lose');
+      this.lg(`☠️ ${U.playerVerb(p, 'lose', 'loses')} (${why}).`, 'lose');
       // CR 800.4a: PRVO prestaju efekti koji su mu davali kontrolu nad tuđim
       // permanentima — ti se vraćaju vlasniku i ostaju u igri. Tek onda iz igre
       // odlazi ono što on POSJEDUJE.

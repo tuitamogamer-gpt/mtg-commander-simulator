@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
 import { loadEngine } from './helpers/load-engine.mjs';
 
 const MTG = loadEngine();
@@ -26,6 +27,28 @@ test('presentation layer translates core game prompts and logs into English', ()
 test('discard localization does not get corrupted by the cast translation', () => {
   assert.equal(MTG.uiText('Odbaci kartu'), 'Discard card');
   assert.equal(MTG.uiText('Baci spell'), 'Cast spell');
+});
+
+test('browser text-state mirrors the English presentation used by the visible UI', () => {
+  const mainSource = readFileSync(new URL('../src/modules/main.js', import.meta.url), 'utf8');
+  assert.match(mainSource, /prompt: pending\.prompt \? MTG\.uiText\(pending\.prompt\) : null/);
+  assert.match(mainSource, /recentLog: g\.log\.slice\(-10\)\.map\(entry => \(\{ \.\.\.entry, msg: MTG\.uiText\(entry\.msg\) \}\)\)/);
+  assert.match(mainSource, /assignments: ui\.pending\.q\.type === 'attackers'[\s\S]*?filter\(entry => entry && entry\.card && entry\.target\)/);
+  assert.doesNotMatch(mainSource, /`Igraj \$\{entry\.card/);
+  assert.doesNotMatch(mainSource, /`Baci \$\{entry\.card/);
+  const engineSource = readFileSync(new URL('../src/modules/engine.js', import.meta.url), 'utf8');
+  const coreLogLines = engineSource.split('\n').filter(line => /\.lg\(/.test(line)).join('\n');
+  assert.doesNotMatch(coreLogLines, /\b(?:uvodi|vuče|melje|odbacuje|pravi)\b/);
+  const phaseSource = readFileSync(new URL('../src/modules/engine2.js', import.meta.url), 'utf8');
+  const phaseLogLines = phaseSource.split('\n').filter(line => /(?:\.lg\(|spotlight\()/.test(line)).join('\n');
+  assert.doesNotMatch(phaseLogLines, /\b(?:napada|TEBE|ILI|TVOJ)\b/);
+  assert.doesNotMatch(phaseSource, /napada TEBE ILI TVOJ PLANESWALKER/);
+  assert.equal(MTG.playerVerb({ name: 'You' }, 'draw', 'draws'), 'You draw');
+  assert.equal(MTG.playerVerb({ name: 'AI Wolf' }, 'draw', 'draws'), 'AI Wolf draws');
+  assert.match(engineSource, /U\.playerVerb\(p, 'draw', 'draws'\)/);
+  assert.match(engineSource, /U\.playerVerb\(p, 'discard', 'discards'\)/);
+  assert.match(engineSource, /U\.playerVerb\(ctrl, 'create', 'creates'\)/);
+  assert.doesNotMatch(phaseSource, /\$\{p\.name\} (?:casts|plays|activates|draws|pays)\b/);
 });
 
 test('scripted player-facing labels do not retain known Bosnian fragments', () => {
