@@ -163,12 +163,12 @@ test('anti-abuse rules stop multi-bot combat shields and runaway-leader protecti
   assert.match(leaderDeal.reason, /leading threat/i);
 });
 
-test('bot-bot negotiations use the same public rules and create visible contracts only when a runaway threat exists', () => {
+test('bot-bot negotiations use the same public rules and create visible contracts only when a runaway threat exists', async () => {
   const { game, players: [human, botA, botB] } = makeGame();
   human.life = 500;
   addCreature(game, botA, 'Inferno Titan');
   addCreature(game, botB, 'Stormcatch Mentor');
-  const result = game.processDiplomacyCheckpoint(botA);
+  const result = await game.processDiplomacyCheckpoint(botA);
 
   assert.equal(result.status, 'accepted');
   assert.equal(result.contract.fromId, botA.idx);
@@ -178,14 +178,14 @@ test('bot-bot negotiations use the same public rules and create visible contract
   assert.match(game.log.at(-1).msg, /Agreement #/);
 });
 
-test('bot-bot negotiation also occurs around a meaningful shared threat before it becomes runaway', () => {
+test('bot-bot negotiation also occurs around a meaningful shared threat before it becomes runaway', async () => {
   const { game, players: [thirdParty, botA, botB] } = makeGame();
   addCreature(game, thirdParty, 'Inferno Titan');
   addCreature(game, botA);
   addCreature(game, botB);
   assert.equal(game.diplomacyRunawayThreat(), null);
 
-  const result = game.processDiplomacyCheckpoint(botA);
+  const result = await game.processDiplomacyCheckpoint(botA);
   assert.equal(result.status, 'accepted');
   assert.ok(result.contract);
   assert.ok(game.diplomacy.proposals.length >= 1);
@@ -193,7 +193,7 @@ test('bot-bot negotiation also occurs around a meaningful shared threat before i
   assert.ok(game.log.some(entry => /offered a short agreement/.test(entry.msg)));
 });
 
-test('a bot addresses the human directly when they share a meaningful public enemy', () => {
+test('a bot addresses the human directly when they share a meaningful public enemy', async () => {
   const { game, players: [human, botA, leader, botB] } = makeGame();
   leader.life = 500;
   addCreature(game, human, 'Inferno Titan');
@@ -201,11 +201,111 @@ test('a bot addresses the human directly when they share a meaningful public ene
   addCreature(game, leader, 'Inferno Titan');
   addCreature(game, botB);
 
-  const result = game.processDiplomacyCheckpoint(botA);
+  const result = await game.processDiplomacyCheckpoint(botA);
   assert.equal(result.status, 'pending-human');
   assert.equal(result.proposal.toId, human.idx);
   assert.equal(game.diplomacyView(human).incoming[0].fromId, botA.idx);
   assert.ok(game.log.some(entry => /sent You a diplomacy proposal/.test(entry.msg)));
+});
+
+test('bot-to-bot politics hard-pauses the checkpoint until the human clicks Proceed', async () => {
+  const { game, players: [human, botA, botB] } = makeGame();
+  human.life = 500;
+  addCreature(game, botA, 'Inferno Titan');
+  addCreature(game, botB, 'Stormcatch Mentor');
+
+  let review = null;
+  let release = null;
+  human.controller = {
+    decide(_game, q) {
+      review = q;
+      return new Promise(resolve => { release = resolve; });
+    },
+  };
+  let settled = false;
+  const checkpoint = game.processDiplomacyCheckpoint(botA).then(result => {
+    settled = true;
+    return result;
+  });
+  await Promise.resolve();
+
+  assert.equal(review.type, 'diplomacyReview');
+  assert.equal(review.source, 'bot-checkpoint');
+  assert.equal(review.proposal.fromId, botA.idx);
+  assert.equal(review.proposal.toId, botB.idx);
+  assert.equal(settled, false, 'the active bot must not continue before Proceed');
+  release({ status: 'proceeded' });
+  const result = await checkpoint;
+  assert.equal(result.status, 'accepted');
+  assert.equal(settled, true);
+});
+
+test('bot-to-human offer hard-pauses until the human accepts or declines', async () => {
+  const { game, players: [human, botA, leader, botB] } = makeGame();
+  leader.life = 500;
+  addCreature(game, human, 'Inferno Titan');
+  addCreature(game, botA, 'Inferno Titan');
+  addCreature(game, leader, 'Inferno Titan');
+  addCreature(game, botB);
+
+  let review = null;
+  let release = null;
+  human.controller = {
+    decide(_game, q) {
+      review = q;
+      return new Promise(resolve => { release = resolve; });
+    },
+  };
+  let settled = false;
+  const checkpoint = game.processDiplomacyCheckpoint(botA).then(result => {
+    settled = true;
+    return result;
+  });
+  await Promise.resolve();
+
+  assert.equal(review.type, 'diplomacyReview');
+  assert.equal(review.proposal.status, 'pending-human');
+  assert.equal(review.proposal.toId, human.idx);
+  assert.equal(settled, false);
+  const decision = game.respondToDiplomacyProposal(review.proposal.id, true, human);
+  assert.equal(decision.status, 'accepted');
+  release(decision);
+  await checkpoint;
+  assert.equal(settled, true);
+  assert.equal(game.diplomacy.contracts.length, 1);
+});
+
+test('a human-initiated offer result waits for an explicit Proceed review', async () => {
+  const { game, players: [human, bot] } = makeGame();
+  addCreature(game, human, 'Inferno Titan');
+  addCreature(game, human, 'Inferno Titan');
+  addCreature(game, bot);
+  const result = game.proposeDiplomacy(human, bot, `no_attack:${human.idx}`, `no_attack:${bot.idx}`);
+  assert.equal(result.status, 'accepted');
+
+  let review = null;
+  let release = null;
+  human.controller = {
+    decide(_game, q) {
+      review = q;
+      return new Promise(resolve => { release = resolve; });
+    },
+  };
+  let settled = false;
+  const wait = game.reviewDiplomacyWithHuman({
+    source: 'human-offer', status: result.status, proposal: result.proposal, contract: result.contract,
+  }).then(value => {
+    settled = true;
+    return value;
+  });
+  await Promise.resolve();
+
+  assert.equal(review.type, 'diplomacyReview');
+  assert.equal(review.source, 'human-offer');
+  assert.equal(settled, false);
+  release({ status: 'proceeded' });
+  await wait;
+  assert.equal(settled, true);
 });
 
 test('a three-player table deal binds an announced removal spell to its public target and records the attempt', () => {

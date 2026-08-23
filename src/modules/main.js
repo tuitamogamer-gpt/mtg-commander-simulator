@@ -527,7 +527,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // dva bota da sama sklope javni, vremenski ograničen ugovor.
         ui.me.life = 500;
         const initiator = g.players.find(player => player.isAI && !player.lost);
-        g.processDiplomacyCheckpoint(initiator);
+        void g.processDiplomacyCheckpoint(initiator);
       } else if (botDiplomacyScenario === 'shared') {
         // Jači, ali ne runaway, javni permanent je dovoljan razlog da dva bota
         // pregovaraju. Ovaj canary čuva upravo taj uobičajeni Commander slučaj.
@@ -536,7 +536,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         g.battlefield.push(threat);
         g.recalc();
         const initiator = g.players.find(player => player.isAI && !player.lost);
-        g.processDiplomacyCheckpoint(initiator);
+        void g.processDiplomacyCheckpoint(initiator);
       } else if (botDiplomacyScenario === 'human') {
         // Regression canary for the old routing bug: an AI with a meaningful
         // public deal must ask the human directly instead of always choosing a bot.
@@ -546,7 +546,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const threat = new MTG.CardInst(MTG.DEFS['Inferno Titan'], leader);
         threat.ctrl = leader; threat.zone = 'battlefield'; threat.sick = false;
         g.battlefield.push(threat); g.recalc();
-        g.processDiplomacyCheckpoint(initiator);
+        void g.processDiplomacyCheckpoint(initiator);
       } else if (botDiplomacyScenario === 'group') {
         // Three-player pact canary: remover + human + one bot coordinate against
         // an objective bot leader, with the exact spell and permanent public.
@@ -564,7 +564,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const removal = new MTG.CardInst(MTG.DEFS['Beast Within'], remover);
         removal.zone = 'hand'; remover.hand.push(removal);
         g.turnPlayer = remover; g.recalc();
-        g.processDiplomacyCheckpoint(remover);
+        void g.processDiplomacyCheckpoint(remover);
+      } else if (botDiplomacyScenario === 'human-compose') {
+        // Human-initiated offer canary: open the real composer so browser QA
+        // clicks the production Send handler and reaches the blocking result
+        // review instead of constructing a synthetic pending decision.
+        const [leader, recipient] = g.players.filter(player => player.isAI && !player.lost);
+        leader.life = 500;
+        for (let i = 0; i < 2; i++) {
+          const creature = new MTG.CardInst(MTG.DEFS['Inferno Titan'], ui.me);
+          creature.ctrl = ui.me; creature.zone = 'battlefield'; creature.sick = false; creature.tapped = false;
+          g.battlefield.push(creature);
+        }
+        g.recalc();
+        ui.beginDiplomacyOffer(g, recipient);
+        if (ui.diplomacyComposer) {
+          ui.diplomacyComposer.requestKey = `no_attack:${ui.me.idx}`;
+          ui.diplomacyComposer.offerKey = `no_attack:${recipient.idx}`;
+          ui.render();
+        }
       }
       ui.sidebarTab = 'diplomacy';
       ui.render();

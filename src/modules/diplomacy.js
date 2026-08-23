@@ -982,7 +982,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
   };
 
-  G.processDiplomacyCheckpoint = function (active) {
+  G.processDiplomacyCheckpoint = async function (active) {
     refresh(this);
     const d = state(this), st = status(this);
     if (!d || !st.unlocked || !active || !active.isAI || d.proposals.some(proposal => proposal.status === 'pending-human')) return null;
@@ -996,6 +996,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       d.botRoundCounts[round] = (d.botRoundCounts[round] || 0) + 1;
       const result = this.proposeGroupRemovalDiplomacy(from, group.key);
       if (result && result.status === 'pending-human') d.botHumanOfferRound = st.rounds;
+      if (result && this.reviewDiplomacyWithHuman) await this.reviewDiplomacyWithHuman({
+        source: 'bot-checkpoint', status: result.status, proposal: result.proposal,
+        contract: result.contract || null, reason: result.reason || '',
+      });
       return result;
     }
     const recipients = activePlayers(this).filter(candidate => candidate !== from &&
@@ -1017,14 +1021,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       proposal.reason = `${from.name} sees a short-term table interest and is asking you directly.`;
       this.lg(`🕊️ ${from.name} sent ${to.name} a diplomacy proposal.`, 'diplomacy');
       announceProposal(this, proposal, `${from.name} is asking you directly. ${clauseLabel(this, proposal.request)} ${clauseLabel(this, proposal.offer)}`);
-      return { status: proposal.status, proposal };
+      const result = { status: proposal.status, proposal };
+      if (this.reviewDiplomacyWithHuman) await this.reviewDiplomacyWithHuman({
+        source: 'bot-checkpoint', status: result.status, proposal,
+      });
+      return result;
     }
     this.lg(`🕊️ ${from.name} offered a short agreement to ${to.name}.`, 'diplomacy');
     announceProposal(this, proposal, `${from.name} offered ${to.name}: ${clauseLabel(this, proposal.request)} ${clauseLabel(this, proposal.offer)}`);
     const verdict = evaluateProposal(this, proposal, to);
     proposal.reason = verdict.reason;
     proposal.math = verdict.math;
-    if (verdict.status === 'accepted') return { status: 'accepted', proposal, contract: activateProposal(this, proposal) };
+    if (verdict.status === 'accepted') {
+      const result = { status: 'accepted', proposal, contract: activateProposal(this, proposal) };
+      if (this.reviewDiplomacyWithHuman) await this.reviewDiplomacyWithHuman({
+        source: 'bot-checkpoint', status: result.status, proposal, contract: result.contract,
+      });
+      return result;
+    }
     if (verdict.status === 'countered') {
       proposal.status = 'countered';
       const counter = reciprocalCounter(this, proposal, to, from);
@@ -1033,7 +1047,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.lg(`🕊️ ${to.name} countered ${from.name}’s proposal.`, 'diplomacy');
         const reply = evaluateProposal(this, counter, from);
         counter.reason = reply.reason; counter.math = reply.math;
-        if (reply.status === 'accepted') return { status: 'accepted', proposal: counter, contract: activateProposal(this, counter) };
+        if (reply.status === 'accepted') {
+          const result = { status: 'accepted', proposal: counter, contract: activateProposal(this, counter) };
+          if (this.reviewDiplomacyWithHuman) await this.reviewDiplomacyWithHuman({
+            source: 'bot-checkpoint', status: result.status, proposal: counter, contract: result.contract,
+          });
+          return result;
+        }
         counter.status = 'rejected';
       }
     } else proposal.status = 'rejected';
@@ -1042,6 +1062,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       text: `${from.name} and ${to.name} negotiated but did not reach an agreement.`,
     });
     this.lg(`🕊️ ${from.name} and ${to.name} did not reach an agreement.`, 'diplomacy');
-    return { status: 'rejected', proposal, reason: verdict.reason };
+    const result = { status: 'rejected', proposal, reason: verdict.reason };
+    if (this.reviewDiplomacyWithHuman) await this.reviewDiplomacyWithHuman({
+      source: 'bot-checkpoint', status: result.status, proposal, reason: result.reason,
+    });
+    return result;
   };
 })();

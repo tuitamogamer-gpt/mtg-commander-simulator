@@ -3598,7 +3598,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Diplomatski botovi pregovaraju samo na neutralnom checkpointu, nikad
     // usred targetiranja, rezolucije ili borbe. Sistem sam provjerava da li su
     // završene prve tri pune runde i da li postoji stvarna vodeća prijetnja.
-    if (this.processDiplomacyCheckpoint) this.processDiplomacyCheckpoint(p);
+    // A visible politics offer is a hard table pause. Awaiting the checkpoint
+    // prevents the active bot, timers, and later phases from advancing until
+    // the human accepts/declines an incoming offer or acknowledges it with
+    // Proceed.
+    if (this.processDiplomacyCheckpoint) await this.processDiplomacyCheckpoint(p);
     if (!p.lost) await this.mainPhase(p);
     if (this.gameOver) return;
     await this.runAdditionalPhases(p);

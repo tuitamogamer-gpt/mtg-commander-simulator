@@ -975,11 +975,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         modal.appendChild(el('div', 'dipwarning', 'The spell is not free and the target is not removed automatically. You must legally cast and pay for the announced spell targeting the named permanent. Opponents may still respond or counter it; failing to cast it before the deadline is recorded as a broken promise.'));
         const actions = el('div', 'btnrow');
         const send = el('button', 'pbtn primary', 'Propose to the table');
-        send.onclick = () => {
+        send.onclick = async () => {
+          send.disabled = true;
           const result = g.proposeGroupRemovalDiplomacy(this.me, composer.optionKey);
           this.diplomacyComposer = null;
           this.toast(result.status === 'accepted' ? `🤝 Table Deal #${result.contract.id} is active.` : result.reason || 'No table deal was reached.');
           this.sidebarTab = 'diplomacy'; this.render();
+          if (g.reviewDiplomacyWithHuman) await g.reviewDiplomacyWithHuman({
+            source: 'human-offer', status: result.status, proposal: result.proposal || null,
+            contract: result.contract || null, reason: result.reason || '',
+          });
+          this.render();
         };
         const cancel = el('button', 'pbtn', 'Cancel'); cancel.onclick = () => { this.diplomacyComposer = null; this.render(); };
         actions.appendChild(send); actions.appendChild(cancel); modal.appendChild(actions);
@@ -1025,13 +1031,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
       const actions = el('div', 'btnrow');
       const send = el('button', 'pbtn primary', 'Send offer');
-      send.onclick = () => {
+      send.dataset.testid = 'send-diplomacy-offer';
+      send.onclick = async () => {
+        send.disabled = true;
         const result = g.proposeDiplomacy(this.me, to, composer.requestKey, composer.offerKey);
         this.diplomacyComposer = null;
         if (result.status === 'accepted') this.toast(`🤝 ${to.name} accepted. Agreement #${result.contract.id} is active.`);
         else if (result.status === 'countered') this.toast(`↩ Your offer was not accepted. ${to.name} sent a counteroffer for you to review.`);
         else this.toast(`Proposal rejected: ${result.reason || 'No deal.'}`);
         this.sidebarTab = 'diplomacy';
+        this.render();
+        if (g.reviewDiplomacyWithHuman) await g.reviewDiplomacyWithHuman({
+          source: 'human-offer', status: result.status, proposal: result.proposal || null,
+          contract: result.contract || null, reason: result.reason || '',
+        });
         this.render();
       };
       const cancel = el('button', 'pbtn', 'Cancel');
@@ -2009,6 +2022,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         bar.appendChild(el('div', 'ptext', '⏸️ Paused. Review what the bot is sending at you.'));
         return bar;
       }
+      if (q.type === 'diplomacyReview') {
+        const incoming = q.proposal && q.proposal.status === 'pending-human' && q.proposal.toId === this.me?.idx;
+        bar.classList.add('diplomacypausebar');
+        bar.appendChild(el('div', 'ptext', incoming
+          ? '⏸️ Politics paused. Accept or decline the offer before the game can continue.'
+          : '⏸️ Politics paused. Review the full negotiation, then click Proceed.'));
+        return bar;
+      }
       switch (q.type) {
         case 'manualResolve': {
           bar.appendChild(el('div', 'ptext', `⚒️ <b>${esc(q.card.name)}</b>: perform the effect manually, then confirm`));
@@ -2236,6 +2257,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!pd) return null;
       const q = pd.q;
       if (q.type === 'threatAlert') return this.renderThreatAlert(g, q);
+      if (q.type === 'diplomacyReview') return this.renderDiplomacyReviewModal(g, q, pd);
       if (q.type === 'combatReview' && pd.boardPeek) return null;
       const types = ['mulligan', 'bottomCards', 'chooseCards', 'chooseOption', 'chooseMulti', 'chooseX', 'scry', 'orderTriggers', 'combatReview', 'effectReview', 'chooseManaSources'];
       if (!types.includes(q.type)) return null;
@@ -2904,6 +2926,95 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       confirm.onclick = () => this.resolvePending(blocks);
       foot.appendChild(confirm);
       m.appendChild(foot);
+      return ov;
+    }
+
+    renderDiplomacyReviewModal(g, q, pd) {
+      // The blocking review already contains the full public announcement.
+      // Remove the transient banner so it cannot cover the route or terms.
+      document.querySelector('.diplomacyannouncement')?.remove();
+      const proposal = q.proposal || null;
+      const from = proposal && g.players.find(player => player.idx === proposal.fromId);
+      const to = proposal && g.players.find(player => player.idx === proposal.toId);
+      const participantIds = proposal && (proposal.participantIds || [proposal.fromId, proposal.toId]) || [];
+      const participants = participantIds.map(id => g.players.find(player => player.idx === id)).filter(Boolean);
+      const clauses = proposal
+        ? (proposal.clauses || [proposal.request, proposal.offer]).filter(Boolean)
+        : [];
+      const labels = clauses.map(clause => MTG.diplomacyClauseLabel
+        ? MTG.diplomacyClauseLabel(g, clause)
+        : '').filter(Boolean);
+      const incoming = !!(proposal && proposal.status === 'pending-human' && proposal.toId === this.me?.idx);
+      const humanInitiated = q.source === 'human-offer';
+      const botToBot = !!(from && to && from.isAI && to.isAI);
+      const status = incoming ? 'awaiting your decision' : q.status || proposal && proposal.status || 'review';
+      const ov = el('div', 'overlay dark diplomacyov diplomacyreviewov');
+      const statusClass = String(status).toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+      const modal = el('div', `modal diplomacymodal diplomacyreviewmodal status-${statusClass}`);
+      modal.dataset.testid = 'diplomacy-hard-pause';
+      ov.appendChild(modal);
+
+      const kicker = incoming ? `${esc(from ? from.name : 'BOT')} → YOU · DECISION REQUIRED`
+        : humanInitiated ? 'YOUR OFFER · RESULT PAUSED'
+          : botToBot ? 'BOT ↔ BOT · TABLE POLITICS PAUSED'
+            : 'TABLE POLITICS · PAUSED FOR REVIEW';
+      modal.appendChild(el('div', 'combatkicker', kicker));
+      modal.appendChild(el('div', 'mtitle', incoming
+        ? `${esc(from ? from.name : 'A bot')} is offering you a deal`
+        : botToBot
+          ? `${esc(from.name)} negotiated with ${esc(to.name)}`
+          : humanInitiated
+            ? `Your proposal to ${esc(to ? to.name : 'the table')}`
+            : 'A public table deal is ready for review'));
+      modal.appendChild(el('div', 'dippreamble', incoming
+        ? 'The entire game is stopped. Read every public term, then accept or decline; there is no timer.'
+        : 'The entire game is stopped. No bot action, timer, phase, or turn can advance until you click Proceed.'));
+
+      if (participants.length) {
+        modal.appendChild(el('div', 'diplomacyreviewroute', participants.map(player =>
+          `<span class="${player === this.me ? 'human' : 'bot'}">${player === this.me ? 'YOU' : esc(player.name)}</span>`).join('<i>↔</i>')));
+      }
+
+      const terms = el('div', 'dippreview diplomacyreviewterms');
+      terms.appendChild(el('b', '', proposal && proposal.kind === 'group-removal' ? 'PUBLIC TABLE TERMS' : 'PUBLIC OFFER TERMS'));
+      if (labels.length) labels.forEach((label, index) => terms.appendChild(el('p', '', `<span>TERM ${index + 1} ·</span>${esc(label)}`)));
+      else terms.appendChild(el('p', '', '<span>STATUS</span>The proposal could not be formed under the current table rules.'));
+      modal.appendChild(terms);
+
+      if (!incoming) {
+        const outcome = el('div', `diplomacyreviewoutcome ${status === 'accepted' ? 'accepted' : status === 'rejected' ? 'rejected' : ''}`);
+        outcome.innerHTML = `<span>${status === 'accepted' ? '✓' : status === 'rejected' ? '×' : '↩'}</span><div>` +
+          `<small>NEGOTIATION RESULT</small><b>${esc(status === 'accepted' ? 'Agreement accepted and active' : status === 'rejected' ? 'No agreement was reached' : status)}</b>` +
+          `${q.reason || proposal && proposal.reason ? `<p>${esc(q.reason || proposal.reason)}</p>` : ''}</div>`;
+        modal.appendChild(outcome);
+      } else if (proposal.reason) {
+        modal.appendChild(el('div', 'dipwarning', esc(proposal.reason)));
+      }
+
+      const actions = el('div', 'btnrow diplomacyreviewactions');
+      if (incoming) {
+        const accept = el('button', 'pbtn primary', proposal.isCounteroffer ? 'Accept counteroffer' : 'Accept offer');
+        accept.dataset.testid = 'accept-diplomacy-offer';
+        accept.onclick = () => {
+          const result = g.respondToDiplomacyProposal(proposal.id, true, this.me);
+          this.toast(result.status === 'accepted' ? '🤝 Agreement accepted and active.' : result.reason || 'The proposal expired.');
+          this.resolvePendingEntry(pd, result);
+        };
+        const decline = el('button', 'pbtn', 'Decline');
+        decline.dataset.testid = 'decline-diplomacy-offer';
+        decline.onclick = () => {
+          const result = g.respondToDiplomacyProposal(proposal.id, false, this.me);
+          this.toast('Proposal declined.');
+          this.resolvePendingEntry(pd, result);
+        };
+        actions.appendChild(accept); actions.appendChild(decline);
+      } else {
+        const proceed = el('button', 'pbtn primary wide', 'Proceed ▶');
+        proceed.dataset.testid = 'proceed-diplomacy-review';
+        proceed.onclick = () => this.resolvePendingEntry(pd, { status: 'proceeded' });
+        actions.appendChild(proceed);
+      }
+      modal.appendChild(actions);
       return ov;
     }
 

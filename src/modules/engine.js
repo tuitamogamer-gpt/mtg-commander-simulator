@@ -266,6 +266,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }));
     }
 
+    // Diplomacy is a table event, not background AI bookkeeping. Every offer
+    // therefore enters the same blocking human-controller path as combat and
+    // global-effect reviews. Incoming offers wait for Accept/Decline; resolved
+    // human or bot-to-bot negotiations wait for an explicit Proceed.
+    async reviewDiplomacyWithHuman(payload) {
+      const hu = this.human();
+      if (!hu || hu.lost || !hu.controller || this.gameOver) return null;
+      return hu.controller.decide(this, Object.assign({}, payload, {
+        type: 'diplomacyReview', player: hu,
+      }));
+    }
+
     // istakni AI akciju usmjerenu na igrača i daj mu vremena da je pročita
     async spotlight(text, opts) {
       opts = opts || {};
