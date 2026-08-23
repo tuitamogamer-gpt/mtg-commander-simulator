@@ -1853,7 +1853,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         for (const l of (pd.q.lands || [])) castable.set(l, castable.get(l) || []);
         for (const a of (pd.q.acts || [])) {
-          if ((a.cycling || a.plot || a.suspend) && a.card.zone === 'hand') {
+          if ((a.cycling || a.plot || a.foretell || a.suspend || a.ninjutsu) && a.card.zone === 'hand') {
             if (!castable.has(a.card)) castable.set(a.card, []);
           }
         }
@@ -1867,7 +1867,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           for (const c of owner.exile) {
             const meta = c.meta || {};
             if ((meta.playableBy === me && g.hasExilePlayPermission(me, c)) ||
-              (owner === me && meta.plotted)) exilePlayable.push(c);
+              (owner === me && (meta.plotted || meta.foretold))) exilePlayable.push(c);
           }
         }
         if (exilePlayable.length) {
@@ -1878,6 +1878,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             const meta = c.meta || {};
             const now = castable.has(c);
             const until = meta.plotted ? 'plotted — cast in your main phase'
+              : meta.foretold ? 'foretold — cast on a later turn'
               : meta.playableUntilOwnTurn !== undefined ? 'until the end of your turn'
                 : meta.playableUntil !== undefined && meta.playableUntil <= g.turnNo ? 'until end of THIS turn'
                   : 'for a limited time';
@@ -3148,7 +3149,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (a.card !== card) continue;
           if (a.ability) usedAbilities.add(a.ability);
           let label = a.turnFaceUp ? a.label : a.manaAbility ? a.label : a.handAbility ? card.def.handAbility.label :
-            a.gyAbility ? (a.gyAbilityOverride || card.def.gyAbility).label : a.cycling ? 'Cycling' : a.plot ? `Plot ${U.costStr(U.parseCost(card.def.plot))}` : a.suspend ? 'Suspend' :
+            a.gyAbility ? (a.gyAbilityOverride || card.def.gyAbility).label : a.cycling ? 'Cycling' : a.plot ? `Plot ${U.costStr(U.parseCost(card.def.plot))}` : a.foretell ? 'Foretell {2}' : a.ninjutsu ? `Ninjutsu ${a.ninjutsuCost}` : a.suspend ? 'Suspend' :
             a.equip ? `Equip ${U.costStr(U.parseCost(card.def.equip))}` : a.crew ? `Crew ${card.def.crew}` :
               (a.ability && a.ability.label) || 'Activate';
           const b = el('button', 'pbtn wide', (a.turnFaceUp ? '🃏 ' : a.manaAbility ? '⚡ ' : '⚙️ ') + esc(label));

@@ -497,7 +497,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!action) return 'none';
     if (action.kind === 'cast') return `cast:${action.card.iid}:${action.from}:${action.alt && (action.alt.name || action.alt.label || action.alt.altCostStr) || ''}`;
     if (action.kind === 'land') return `land:${action.card.iid}`;
-    if (action.kind === 'activate') return `activate:${action.entry.card.iid}:${action.entry.idx ?? ''}:${action.entry.equip ? 'equip' : ''}:${action.entry.crew ? 'crew' : ''}:${action.entry.cycling ? 'cycling' : ''}:${action.entry.label || ''}`;
+    if (action.kind === 'activate') return `activate:${action.entry.card.iid}:${action.entry.idx ?? ''}:${action.entry.equip ? 'equip' : ''}:${action.entry.crew ? 'crew' : ''}:${action.entry.cycling ? 'cycling' : ''}:${action.entry.plot ? 'plot' : ''}:${action.entry.foretell ? 'foretell' : ''}:${action.entry.ninjutsu ? 'ninjutsu' : ''}:${action.entry.suspend ? 'suspend' : ''}:${action.entry.label || ''}`;
     if (action.kind === 'declareAttackers') return `attack:${action.assignments.map(item => `${item.card.iid}>${item.target.idx ?? item.target.iid}`).sort().join('|')}`;
     if (action.kind === 'declareBlockers') return `block:${action.assignments.map(item => `${item.blocker.iid}>${item.attacker.iid}`).sort().join('|')}`;
     if (action.picks) return `${action.kind}:${action.picks.map(item => item.iid ?? item.idx ?? item.name).join(',')}`;
@@ -931,6 +931,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return card.ctrl === player ? permanentGameValue(game, card, player) + (card.counters['+1/+1'] || 0) * 0.8 : -100;
     }
     if (hint === 'hazelMana') return card.is('Creature') ? -1.2 : 0.6;
+    if (hint === 'ninjutsuReturn') return -permanentGameValue(game, card, player);
     if (hint === 'moorlandRescuer' || hint === 'wallMourning') return value * 1.25;
     if (hint === 'esixCopy') return permanentGameValue(game, card, player) * 1.6;
     if (hint === 'scionsCopyToken') return permanentGameValue(game, card, player) * 1.7;
@@ -1292,6 +1293,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (entry.crew) breakdown.combat += phase === 'main1' ? 2.5 : -0.5;
       if (entry.cycling) breakdown.resources += player.hand.length < 4 ? 1.5 : 0.4;
+      if (entry.foretell) breakdown.resources += player.hand.length > 3 ? 1.4 : 0.5;
+      if (entry.ninjutsu) breakdown.combat += 5;
       // Ne cycluj land dok si kratak sa landovima a land drop je još otvoren
       if (entry.cycling && card.is('Land') && game.turnPlayer === player &&
         player.landsPlayed < player.maxLands && game.lands(player).length < 5) breakdown.resources -= 8;
@@ -1349,6 +1352,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const demand = cards.reduce((sum, card) =>
           sum + ((card.def.cost || '').match(new RegExp(`\\{${color}[^}]*\\}`, 'g')) || []).length, 0);
         breakdown.choice = demand * 2.2 + Math.max(0, 2 - (player.pool[color] || 0)) * 0.6;
+      } else if (hintKind === 'dredge') {
+        breakdown.choice = action.option && action.option.card
+          ? choiceCardValue(game, player, action.option.card, q || {}) + Number(action.option.card.def.dredge || 0) * 0.35
+          : 0;
       } else if (hintKind === 'quinjetMode') {
         const handHero = player.hand.filter(card => card.is('Creature') && card.hasSub('Hero'))
           .map(card => cardDefinitionValue(card.def)).sort((a, b) => b - a)[0];
@@ -1873,7 +1880,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function fullStateFingerprint(game) {
     return JSON.stringify({
       turnNo: game.turnNo, phase: game.phase, step: game.step,
-      players: game.players.map(player => ({ idx: player.idx, life: player.life, lost: player.lost, pool: player.pool,
+      players: game.players.map(player => ({ idx: player.idx, life: player.life, lost: player.lost,
+        pool: player.pool, coloredOnlyPool: player.coloredOnlyPool,
         hand: player.hand.map(card => [card.iid, card.name, card.zone]), library: player.library.map(card => [card.iid, card.name, card.zone]),
         graveyard: player.graveyard.map(card => [card.iid, card.name, card.zone]), exile: player.exile.map(card => [card.iid, card.name, card.zone]), command: player.command.map(card => [card.iid, card.name, card.zone]) })),
       battlefield: game.battlefield.map(card => [card.iid, card.name, card.zone, card.ctrl && card.ctrl.idx, card.tapped, card.damage, card.sick, card.attacking && (card.attacking.idx ?? card.attacking.iid), card.blocking]),
@@ -1916,7 +1924,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!card) return null;
       const entry = clone.activatableList(card.ctrl).find(candidate => candidate.card.iid === card.iid &&
         candidate.idx === action.entry.idx && !!candidate.equip === !!action.entry.equip && !!candidate.crew === !!action.entry.crew &&
-        !!candidate.cycling === !!action.entry.cycling && !!candidate.handAbility === !!action.entry.handAbility && !!candidate.gyAbility === !!action.entry.gyAbility &&
+        !!candidate.cycling === !!action.entry.cycling && !!candidate.plot === !!action.entry.plot && !!candidate.foretell === !!action.entry.foretell &&
+        !!candidate.ninjutsu === !!action.entry.ninjutsu &&
+        !!candidate.suspend === !!action.entry.suspend && !!candidate.handAbility === !!action.entry.handAbility && !!candidate.gyAbility === !!action.entry.gyAbility &&
         !!candidate.turnFaceUp === !!action.entry.turnFaceUp && !!candidate.manaAbility === !!action.entry.manaAbility);
       return entry ? { kind: 'activate', entry } : null;
     }

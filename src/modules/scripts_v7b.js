@@ -777,6 +777,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return spare.length && g.phase === 'main2' ? 6 : (spare.length > 2 ? 4 : 0.5);
     },
   }, extra || {});
+  E.stationAbility = stationAbility;
 
   SC['Inspirit, Flagship Vessel'] = {
     canBeCommanderExtra: true,   // legendarni Spacecraft: "can be your commander" (Forge tekst to izostavlja)

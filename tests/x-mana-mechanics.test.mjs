@@ -6,38 +6,68 @@ const MTG = loadEngine();
 
 const ACTIVE_X_SPELLS = [
   'Aggro Amalgam',
+  'Altered Ego',
+  "Animist's Awakening",
   'Astral Cornucopia',
   'Back in Town',
+  'Benevolent Hydra',
+  'Biomass Mutation',
   "Black Sun's Zenith",
   'Champions from Beyond',
+  "Commander's Insight",
   'Curse of the Swine',
   'Disorder in the Court',
+  'Electrodominance',
+  'Entrancing Melody',
   'Epic Experiment',
+  'Expansion Algorithm',
   'Exsanguinate',
   'Finale of Promise',
   'Finale of Revelation',
+  'Fractal Harness',
+  'Gaze of Granite',
   'Genesis Wave',
+  'Goldvein Hydra',
   'Grand Crescendo',
   'Haldir, Lórien Lieutenant',
   'Hangarback Walker',
   "Heliod's Intervention",
   'Here Comes a New Hero!',
   'Hydroid Krasis',
+  'Ingenious Prodigy',
   'Jacked Rabbit',
+  'Kinetic Ooze',
   'Kurbis, Harvest Celebrant',
+  'Lattice Library',
+  'Lifeblood Hydra',
+  'Mana Bloom',
   'Martial Coup',
   'Mikaeus, the Lunarch',
   'Nova Flame',
+  'Open the Way',
+  'Pest Infestation',
+  'Primal Might',
+  'Primo, the Unbounded',
+  'Primordial Hydra',
   'Pull from Tomorrow',
   'Royal Talon Fighter Jet',
   'Shellshock',
+  'Silkguard',
   'Slash Clone',
+  'Springleaf Parade',
   'Starstorm',
+  'Steelbane Hydra',
   'Stolen by the Fae',
+  'Stonecoil Serpent',
+  'Stroke of Genius',
   'Sylvan Offering',
   'Tempt with Vengeance',
+  'The Goose Mother',
+  "Tyvar's Stand",
   'Universal Surveillance',
   'West Coast Expansion',
+  "Worldsoul's Rage",
+  'Zenith Festival',
 ].sort();
 
 function defaultDecision(game, q) {
@@ -116,7 +146,7 @@ async function resolveAll(game) {
   assert.ok(guard < 180, 'X trigger/stack petlja se nije smirila');
 }
 
-test('inventar pokriva svih 33 aktivna spella i sve dodatne X-mana putanje', () => {
+test('inventar pokriva sva 63 aktivna X spella i sve dodatne X-mana putanje', () => {
   const active = [...new Set(Object.values(MTG.DECKS).flatMap(deck => deck.cards.map(entry => entry.name)))]
     .filter(name => MTG.parseCost(MTG.DEFS[name].cost || '').x > 0)
     .sort();
@@ -128,7 +158,10 @@ test('inventar pokriva svih 33 aktivna spella i sve dodatne X-mana putanje', () 
     if (def.types.includes('Instant') || def.types.includes('Sorcery')) {
       assert.equal(typeof def.resolve, 'function', `${name}: X spell mora imati resolver`);
     } else {
-      assert.ok(def.etbCounters || def.triggers?.length, `${name}: X permanent mora koristiti X pri ulasku/triggeru`);
+      assert.ok(
+        def.etbCounters || def.triggers?.length || typeof def.asEnters === 'function',
+        `${name}: X permanent mora koristiti X pri ulasku/triggeru`,
+      );
     }
   }
 

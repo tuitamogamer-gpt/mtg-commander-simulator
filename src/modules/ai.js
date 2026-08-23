@@ -362,6 +362,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return 0;
       }
       if (e.plot) return this.p.hand.length > 4 ? 1.2 : 0;
+      if (e.foretell) return this.p.hand.length > 3 ? 1.4 : 0.6;
+      if (e.ninjutsu) {
+        const weakest = Math.min(...(e.ninjutsuAttackers || []).map(card => this.cardValue(g, card)));
+        return Number.isFinite(weakest) ? Math.max(1.2, this.cardValue(g, c) - weakest + 2) : 0;
+      }
       if (e.suspend) return 1.5;
       if (e.equip) {
         const cands = g.creatures(this.p).filter(x => x.iid !== c.attachedTo);
@@ -762,7 +767,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           return pickc ? [pickc] : (from.length ? [from[0]] : []);
         }
-        case 'cleanupDiscard': case 'addlDiscard': {
+        case 'cleanupDiscard': case 'addlDiscard': case 'ninjutsuReturn': {
           return byValAsc.slice(0, Math.max(min, 0));
         }
         case 'bottomOrder': return byValAsc.slice(0, 1);
@@ -925,6 +930,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const kind = q.aiHint && q.aiHint.kind || '';
       const keys = q.options.map(o => o.key);
       switch (kind) {
+        case 'dredge': {
+          const offered = q.options.filter(option => option.card);
+          if (!offered.length) return keys[0];
+          return offered.slice().sort((a, b) =>
+            this.cardValue(g, b.card) - this.cardValue(g, a.card) ||
+            Number(b.card.def.dredge || 0) - Number(a.card.def.dredge || 0))[0].key;
+        }
         case 'vote': {
           if (MTG.pickBotVoteOption) return MTG.pickBotVoteOption(g, this.p, q);
           const preferred = q.aiHint && q.aiHint.aiPick && q.aiHint.aiPick(this.p);

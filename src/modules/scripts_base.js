@@ -390,7 +390,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.isUncounterable = (g, so) => {
     if (so.card.def.uncounterable) return true;
     if (so.card.is('Creature') && so.ctrl.turnState && so.ctrl.turnState.uncounterableCreatureSpells) return true;
-    return g.bf().some(c => c.def.uncounterableSpells && c.ctrl === so.ctrl);
+    return g.bf().some(c => c.def.uncounterableSpells === 'all' ||
+      c.def.uncounterableSpells === true && c.ctrl === so.ctrl);
   };
   const T = MTG.T = {
     creature: (o) => Object.assign({ what: 'creature', filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') }, o),

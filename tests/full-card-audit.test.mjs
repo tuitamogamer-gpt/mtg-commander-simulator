@@ -50,12 +50,12 @@ function tokenOnBattlefield(MTG, game, player, tokenName) {
   return card;
 }
 
-test('svih 1288 raw karata, uključujući 1237 aktivnih, ima eksplicitnu nepojednostavljenu putanju', () => {
+test('svih 1626 raw karata, uključujući 1580 aktivnih, ima eksplicitnu nepojednostavljenu putanju', () => {
   const MTG = loadEngine();
   const active = new Set(Object.values(MTG.DECKS).flatMap(deck => deck.cards.map(entry => entry.name)));
   const raw = new Set(Object.keys(MTG.RAW_DATA.cards));
-  assert.equal(active.size, 1237);
-  assert.equal(raw.size, 1288);
+  assert.equal(active.size, 1580);
+  assert.equal(raw.size, 1626);
 
   for (const name of raw) {
     const def = MTG.DEFS[name];

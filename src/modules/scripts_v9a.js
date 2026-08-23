@@ -21,6 +21,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     g.lg(`${source.name} je prepared: ${copy.name} je spreman u egzilu.`);
     return copy;
   };
+  E.prepareSpell = prepareSpell;
   const tok = (name, types, subtypes, p, t, kws, cols, extra) => Object.assign({
     name, cost: null, types, subtypes, super: [], power: String(p), toughness: String(t),
     oracle: '', kws: kws || [], isTokenDef: true, colorsOverride: cols || [],

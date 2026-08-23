@@ -85,6 +85,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.life = 40;
       this.library = []; this.hand = []; this.graveyard = []; this.exile = []; this.command = [];
       this.pool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
+      this.coloredOnlyPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
       this.poolMeta = [];           // restricted/persistent mana entries {color,n,restrict,persist}
       this.landsPlayed = 0;
       this.maxLands = 1;
@@ -106,8 +107,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return {
         spellsCast: 0, nonCreatureSpells: 0, spellsCastList: [], lifeGained: 0, lifeLost: 0, lifeLossEvents: 0,
         manaSpentOnSpells: 0, expendFired: {}, landsEntered: 0, tokensCreated: 0,
+        cardsFromHandLibraryToGraveyard: 0,
         creaturesDiedUnder: 0, drewThisTurn: 0, firstSpellDone: false, secondSpellDone: false,
-        gainedLifeFirst: false, attackedMe: [], artifactAbilitiesActivated: 0, combatDamageHits: [],
+        gainedLifeFirst: false, attackedMe: [], artifactAbilitiesActivated: 0, targetedAbilitiesActivated: 0, combatDamageHits: [],
+        gravePermanentTypesUsed: [],
         // Entry history is rules state, not a battlefield snapshot. Galadriel
         // must still remember an Elf that entered earlier this turn even if it
         // died, was bounced, or entered before Galadriel herself.
@@ -406,7 +409,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (card.zone === 'battlefield') {
         const i = this.battlefield.indexOf(card); if (i >= 0) this.battlefield.splice(i, 1);
       } else if (card.zone === 'stack') {
-        const i = this.stack.findIndex(s => s.card === card); if (i >= 0) this.stack.splice(i, 1);
+        // A spell copy references the same physical CardInst as its original,
+        // but it is an independent stack object. Moving the physical card must
+        // remove only the original spell; copies remain on the stack.
+        const i = this.stack.findIndex(s => s.card === card && !s.isCopy);
+        if (i >= 0) this.stack.splice(i, 1);
       } else {
         const arr = card.owner[card.zone];
         if (arr) { const i = arr.indexOf(card); if (i >= 0) arr.splice(i, 1); }
@@ -467,6 +474,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // dies event, so apply it before commander replacement and LTB dispatch.
       if (wasBattlefield && toZone === 'graveyard' && (snap.counters.finality || 0) > 0) {
         toZone = 'exile';
+      }
+
+      // Dauthi-style replacement: a nontoken card that would enter an
+      // opponent's graveyard is exiled with a void counter instead. Apply it
+      // before the commander replacement prompt so the owner can still choose
+      // the command zone instead of the resulting exile destination.
+      let voidReplacement = null;
+      if (toZone === 'graveyard' && !card.isToken) {
+        voidReplacement = this.bf().find(source => source.def.opponentGraveyardVoid && source.ctrl !== card.owner) || null;
+        if (voidReplacement) toZone = 'exile';
       }
 
       // commander zone replacement
@@ -614,6 +631,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.ctrl = card.owner;
         const arr = card.owner[toZone];
         if (opts.toBottom) arr.unshift(card); else arr.push(card);
+        if (voidReplacement && toZone === 'exile') {
+          card.counters.void = (card.counters.void || 0) + 1;
+          card.meta.voidExiledBy = voidReplacement.ctrl;
+        }
         if (wasBattlefield) {
           if (toZone === 'graveyard') { this.diedThisTurn.push(snap); await this.fireLeaveAndDie(card, snap, true); }
           else await this.fireLeaveAndDie(card, snap, false);
@@ -621,11 +642,65 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           await this.emit('cardToGraveyard', { card, from: fromZone });
         }
       }
+      // "One or more cards are put into your graveyard" needs one event for
+      // the complete instruction, while older scripts still consume the
+      // per-card cardToGraveyard/LTB events above.  Simultaneous helpers open a
+      // batch; an isolated move is a one-card batch of its own.
+      if (toZone === 'graveyard' && fromZone !== 'graveyard' && !card.isToken) {
+        if ((fromZone === 'hand' || fromZone === 'library') && card.owner && card.owner.turnState) {
+          card.owner.turnState.cardsFromHandLibraryToGraveyard =
+            (card.owner.turnState.cardsFromHandLibraryToGraveyard || 0) + 1;
+        }
+        const entry = { card, from: fromZone };
+        if (this._graveyardEnterBatch) this._graveyardEnterBatch.push(entry);
+        else await this.emit('cardsToGraveyard', { cards: [card], froms: [fromZone], from: fromZone });
+      }
       if (fromZone === 'graveyard' && toZone !== 'graveyard') {
         await this.emit('cardLeftGraveyard', { card, to: toZone });
+        if (this._graveyardLeaveBatch) this._graveyardLeaveBatch.push({ card, to: toZone });
+        else await this.emit('cardsLeftGraveyard', { cards: [card], to: toZone });
       }
       this.recalc();
       return card;
+    }
+
+    async withGraveyardEntryBatch(run) {
+      const previous = this._graveyardEnterBatch;
+      const batch = [];
+      this._graveyardEnterBatch = batch;
+      let result;
+      try {
+        result = await run();
+      } finally {
+        this._graveyardEnterBatch = previous;
+      }
+      if (previous) previous.push(...batch);
+      else if (batch.length) await this.emit('cardsToGraveyard', {
+        cards: batch.map(entry => entry.card),
+        froms: batch.map(entry => entry.from),
+        from: batch.every(entry => entry.from === batch[0].from) ? batch[0].from : null,
+      });
+      return result;
+    }
+
+    async moveGraveyardBatch(cards, toZone, opts = {}) {
+      const unique = [...new Set(cards)].filter(card => card && card.zone === 'graveyard');
+      if (!unique.length) return [];
+      const previous = this._graveyardLeaveBatch;
+      const batch = [];
+      this._graveyardLeaveBatch = batch;
+      try {
+        for (const card of unique) if (card.zone === 'graveyard') await this.move(card, toZone, opts);
+      } finally {
+        this._graveyardLeaveBatch = previous;
+      }
+      if (previous) previous.push(...batch);
+      else if (batch.length) await this.emit('cardsLeftGraveyard', {
+        cards: batch.map(entry => entry.card),
+        destinations: batch.map(entry => entry.to),
+        to: batch.every(entry => entry.to === batch[0].to) ? batch[0].to : null,
+      });
+      return batch.map(entry => entry.card);
     }
 
     async fireLeaveAndDie(card, snap, died) {
@@ -697,6 +772,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (t) card.tapped = true;
       }
       if (opts.tapped) card.tapped = true;
+      // Horizon Explorer-style replacement. It applies after every printed or
+      // effect-imposed tapped entry instruction, so the land is already
+      // untapped when landfall and ETB observers see it.
+      if (card.is('Land') && this.bf().some(source =>
+        source !== card && source.ctrl === card.ctrl && source.def.landsEnterUntapped)) {
+        card.tapped = false;
+      }
       if (card.is('Creature') && this.bf().some(source =>
         source.ctrl !== card.ctrl && source.def.opponentsCreaturesEnterTapped)) {
         card.tapped = true;
@@ -1331,6 +1413,41 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let drawn = 0;
       for (let i = 0; i < total; i++) {
         if (p.lost) break;
+        // Dredge is a replacement effect for an individual draw. Offer every
+        // eligible card before checking an empty library: dredging can still
+        // replace that draw as long as the required number of cards can be
+        // milled.
+        const dredgers = p.graveyard.filter(card => {
+          const amount = Number(card.def.dredge || 0);
+          return amount > 0 && p.library.length >= amount;
+        });
+        if (dredgers.length) {
+          const choice = await p.controller.decide(this, {
+            type: 'chooseOption',
+            prompt: 'Replace this draw with dredge?',
+            options: [
+              { key: 'draw', label: 'Draw a card' },
+              ...dredgers.map(card => ({
+                key: `dredge:${card.iid}`,
+                label: `Dredge ${card.def.dredge} — ${card.name}`,
+                card,
+              })),
+            ],
+            min: 1,
+            max: 1,
+            aiHint: { kind: 'dredge', player: p, cards: dredgers },
+          });
+          const key = Array.isArray(choice) ? choice[0] : choice;
+          const selected = dredgers.find(card => key === `dredge:${card.iid}`);
+          if (selected && dredgers.includes(selected)) {
+            const amount = Number(selected.def.dredge);
+            await this.mill(p, amount);
+            if (selected.zone === 'graveyard') await this.move(selected, 'hand');
+            this.lg(`${U.playerVerb(p, 'dredge', 'dredges')} ${selected.name} (${amount}).`, 'draw');
+            await this.emit('dredged', { player: p, card: selected, amount, srcCard });
+            continue;
+          }
+        }
         if (!p.library.length) { p.deckedOut = true; await this.checkSBA(); break; }
         const c = p.library.pop();
         p.hand.push(c); c.zone = 'hand';
@@ -1363,25 +1480,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async mill(p, n) {
       const milled = [];
-      for (let i = 0; i < n && p.library.length; i++) {
-        const c = p.library.pop();
-        await this.move(c, 'graveyard');
-        milled.push(c);
-      }
+      await this.withGraveyardEntryBatch(async () => {
+        for (let i = 0; i < n && p.library.length; i++) {
+          const c = p.library[p.library.length - 1];
+          await this.move(c, 'graveyard');
+          milled.push(c);
+        }
+      });
       if (milled.length) this.lg(`${U.playerVerb(p, 'mill', 'mills')} ${milled.length} ${milled.length === 1 ? 'card' : 'cards'}.`);
       return milled;
     }
 
     async discard(p, cards) {
       let landsN = 0;
-      for (const c of cards) {
-        const wasLand = c.is('Land');
-        await this.move(c, 'graveyard');
-        c.meta._discardedTurn = this.turnNo; // za mayhem
-        p.turnState.discardedN = (p.turnState.discardedN || 0) + 1;
-        if (wasLand) landsN++;
-        await this.emit('discarded', { player: p, card: c });
-      }
+      await this.withGraveyardEntryBatch(async () => {
+        for (const c of cards) {
+          const wasLand = c.is('Land');
+          await this.move(c, 'graveyard');
+          c.meta._discardedTurn = this.turnNo; // za mayhem
+          p.turnState.discardedN = (p.turnState.discardedN || 0) + 1;
+          if (wasLand) landsN++;
+          await this.emit('discarded', { player: p, card: c });
+        }
+      });
       if (landsN) await this.emit('discardedLands', { player: p, n: landsN });
       if (cards.length) this.lg(`${U.playerVerb(p, 'discard', 'discards')} ${cards.length} ${cards.length === 1 ? 'card' : 'cards'}.`);
     }
@@ -1427,11 +1548,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const batch = unique.map(card => ({ card, ctrl: card.ctrl }));
       this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
       try {
-        for (const card of unique) {
-          this.lg(`${U.playerVerb(p, 'sacrifice', 'sacrifices')} ${card.name}.`, 'sac');
-          await this.move(card, 'graveyard');
-          await this.emit('sacrificed', { player: p, card });
-        }
+        await this.withGraveyardEntryBatch(async () => {
+          for (const card of unique) {
+            this.lg(`${U.playerVerb(p, 'sacrifice', 'sacrifices')} ${card.name}.`, 'sac');
+            await this.move(card, 'graveyard');
+            await this.emit('sacrificed', { player: p, card });
+          }
+        });
       } finally {
         this._simultaneousLeaveSources = previous;
       }
@@ -1494,7 +1617,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const batch = doomed.map(card => ({ card, ctrl: card.ctrl }));
       this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
       try {
-        for (const card of doomed) if (card.zone === 'battlefield') await this.move(card, 'graveyard');
+        await this.withGraveyardEntryBatch(async () => {
+          for (const card of doomed) if (card.zone === 'battlefield') await this.move(card, 'graveyard');
+        });
       } finally {
         this._simultaneousLeaveSources = previous;
       }
@@ -1655,6 +1780,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // emblems
       for (const p of this.players) for (const e of p.emblems) if (e.apply) e.apply(this, p, bf);
+      // Continuous abilities that function specifically from the graveyard
+      // (Wonder and similar cards) are evaluated every recalc, so they also
+      // see lands/permanents that entered before the source reached the yard.
+      for (const player of this.players) for (const source of player.graveyard) {
+        const statics = source.def.graveyardStatics || (source.def.graveyardStatic ? [source.def.graveyardStatic] : []);
+        for (const effect of statics) {
+          if (effect.cond && !effect.cond(this, source, player)) continue;
+          if (effect.apply) effect.apply(this, source, bf, player);
+        }
+      }
       // equipment/aura grants
       for (const c of bf) {
         if (c.attachedTo) {
@@ -2045,6 +2180,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const targetedNow = [];
       for (const spec of specs) {
         let cands = this.legalTargets(spec, src, ctrl, { allowForced: !!ctx.diplomacyForcedTargeting });
+        if (typeof spec.dependentFilter === 'function') {
+          cands = cands.filter(candidate => spec.dependentFilter(this, candidate, ctx.targets, ctrl, src));
+        }
         if (spec.differentFromPrevious && ctx.targets.length) {
           const previous = ctx.targets[ctx.targets.length - 1];
           const excluded = new Set(Array.isArray(previous) ? previous : [previous]);
@@ -2080,7 +2218,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             ctx.wardTargets.push({ target: t, ward: Object.assign({}, t.cur.wardCost) });
           }
         }
-        for (const t of picked) if (t && t.iid !== undefined && t !== src && !targetedNow.includes(t)) targetedNow.push(t);
+        for (const t of picked) if (t && t.iid !== undefined && !targetedNow.includes(t)) targetedNow.push(t);
         if (max === 1) ctx.targets.push(picked[0]);
         else ctx.targets.push(picked);
       }
@@ -2089,11 +2227,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // mete izabrane: usred petlje bi okidač mogao promijeniti stanje table
       // dok se ostale mete još biraju.
       const isSpell = !!(ctx.so && ctx.so.kind === 'spell');
+      const isActivatedAbility = !!ctx.isActivatedAbility;
+      const isTriggeredAbility = !isSpell && !isActivatedAbility;
       const isInstantSorcery = isSpell && !!(src && (src.is('Instant') || src.is('Sorcery') ||
         ctx.so.castOpts && ctx.so.castOpts.adventure &&
           /Instant|Sorcery/.test(ctx.so.castOpts.types || src.def.adventure && src.def.adventure.types || '')));
       for (const t of targetedNow) await this.emit('targeted', {
-        card: t, byPlayer: ctrl, src, isSpell, isInstantSorcery, so: ctx.so || null,
+        card: t, byPlayer: ctrl, src, isSpell, isInstantSorcery,
+        isActivatedAbility, isTriggeredAbility, ability: ctx.ability || null, so: ctx.so || null,
       });
       return true;
     }
