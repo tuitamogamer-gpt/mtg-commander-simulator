@@ -233,7 +233,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.manaSolve = function (p, cost, forSpell, opts = {}) {
     // cost: parsed {generic, x, pips} with x already multiplied in via opts.xVal
     const pips = cost.pips.slice();
-    let generic = Math.max(0, cost.generic + (opts.xVal || 0) * (cost.x || 0) - (cost.xReduction || 0));
+    const initialGeneric = Math.max(0, cost.generic + (opts.xVal || 0) * (cost.x || 0) - (cost.xReduction || 0));
+    let generic = initialGeneric;
     // first: use floating pool
     const pool = Object.assign({}, p.pool);
     const coloredOnlyPool = Object.assign({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, p.coloredOnlyPool || {});
@@ -257,6 +258,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     for (const col of ['C', 'W', 'U', 'B', 'R', 'G']) {
       while (generic > 0 && pool[col] - (coloredOnlyPool[col] || 0) > 0) { pool[col]--; usedPool[col]++; generic--; }
+    }
+    // A pip-first allocation is normally best, but it is not the only legal
+    // one when an unrestricted mana of that same color is already floating
+    // and a later source can produce mana that may pay only colored costs.
+    // Preserve a generic-first pool state as a second solver branch.
+    const alternatePool = Object.assign({}, p.pool);
+    const alternateColoredOnlyPool = Object.assign({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, p.coloredOnlyPool || {});
+    const alternateUsedPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
+    let alternateGeneric = initialGeneric;
+    for (const col of ['C', 'W', 'U', 'B', 'R', 'G']) {
+      while (alternateGeneric > 0 && alternatePool[col] - (alternateColoredOnlyPool[col] || 0) > 0) {
+        alternatePool[col]--; alternateUsedPool[col]++; alternateGeneric--;
+      }
+    }
+    const alternateRemainingPips = [];
+    for (const pip of pips) {
+      let done = false;
+      for (const optc of pip) {
+        if ((COLORS.includes(optc) || optc === 'C') && alternatePool[optc] > 0) {
+          alternatePool[optc]--; alternateUsedPool[optc]++;
+          if (alternateColoredOnlyPool[optc] > 0) alternateColoredOnlyPool[optc]--;
+          done = true; break;
+        }
+      }
+      if (!done) alternateRemainingPips.push(pip);
     }
     // then sources
     const onlyCards = opts.onlyCards ? new Set(opts.onlyCards) : null;
@@ -321,6 +347,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const consGen = consume ? consume.generic : 0;
         if (optn.ANY) {
           const n = optn.n || 1;
+          if (!s.m.coloredOnly && needGen > 0) {
+            const np = needPips.slice(); let ng = needGen; let units = n;
+            while (units > 0 && ng > 0) { ng--; units--; }
+            for (let i = 0; i < np.length && units > 0;) {
+              if (np[i].some(o => COLORS.includes(o))) { np.splice(i, 1); units--; }
+              else i++;
+            }
+            if (np.length < needPips.length || ng < needGen) {
+              const r = tryCover(idx + 1, np.concat(consPips), ng + consGen,
+                planAcc.concat([{ src: s, chosen: optn, consume }]), usedAfter);
+              if (r) return r;
+            }
+          }
           const np = needPips.slice(); let ng = needGen; let units = n;
           for (let i = 0; i < np.length && units > 0;) {
             const pp = np[i];
@@ -334,6 +373,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (r) return r;
           }
         } else {
+          if (!s.m.coloredOnly && needGen > 0) {
+            const np = needPips.slice(); let ng = needGen; let usedAnything = false;
+            const gives = Object.assign({}, optn);
+            // Spend colors that cannot satisfy a remaining pip first. If all
+            // produced colors match, this branch intentionally explores using
+            // one of them for generic before the normal pip-first branch.
+            const colors = Object.keys(gives).filter(col => col !== 'n').sort((a, b) =>
+              Number(np.some(pip => pip.includes(a))) - Number(np.some(pip => pip.includes(b))));
+            for (const col of colors) {
+              let cnt = gives[col];
+              while (cnt > 0 && ng > 0) { ng--; cnt--; usedAnything = true; }
+              for (let i = 0; i < np.length && cnt > 0;) {
+                if (np[i].includes(col)) { np.splice(i, 1); cnt--; usedAnything = true; }
+                else i++;
+              }
+            }
+            if (usedAnything) {
+              const r = tryCover(idx + 1, np.concat(consPips), ng + consGen,
+                planAcc.concat([{ src: s, chosen: optn, consume }]), usedAfter);
+              if (r) return r;
+            }
+          }
           const np = needPips.slice(); let ng = needGen; let usedAnything = false;
           const gives = Object.assign({}, optn);
           for (const col of Object.keys(gives)) {
@@ -354,9 +415,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // option: preserve/skip this source
       return tryCover(idx + 1, needPips, needGen, planAcc, artifactAbilityUsed);
     };
-    const res = tryCover(0, need.pips, need.generic, []);
+    let res = tryCover(0, need.pips, need.generic, []);
+    if (res) return { plan: res, usedPool };
+    nodes = 0;
+    res = tryCover(0, alternateRemainingPips, alternateGeneric, []);
     if (!res) return null;
-    return { plan: res, usedPool };
+    return { plan: res, usedPool: alternateUsedPool };
   };
 
   G.canPayMana = function (p, cost, forSpell, opts) {
@@ -628,8 +692,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   G.spellCost = function (p, card, castOpts = {}) {
     // returns parsed cost with reductions applied
-    let str = castOpts.altCostStr !== undefined ? castOpts.altCostStr : card.def.cost;
-    if (castOpts.free) return { generic: 0, x: 0, pips: [] };
+    // "Without paying its mana cost" replaces only the printed/alternative
+    // mana cost. Start from an empty base, then keep using the normal total-
+    // cost layer for commander tax, increases and reductions. In particular,
+    // a residual generic reduction must be able to reduce a later kicker,
+    // tier, squad, offspring, or Strive payment.
+    let str = castOpts.free ? ''
+      : (castOpts.altCostStr !== undefined ? castOpts.altCostStr : card.def.cost);
     const cost = U.parseCost(str || '');
     let generic = cost.generic;
     // commander tax
@@ -793,7 +862,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const targets = modeTargetsFor(this, m, card, Object.assign({}, castOpts, { xVal }));
           let ok = !targets.length || targets.every(s => s.upTo ||
             this.legalTargets(s, card, p).length >= (s.count ?? 1));
-          if (ok && m.tierCost && !(alt && alt.free)) {
+          if (ok && m.tierCost) {
             const tier = U.parseCost(m.tierCost);
             const withTier = {
               generic: cost.generic + tier.generic,
@@ -1019,6 +1088,52 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return true;
   };
 
+  // CR 707.10: a spell copy keeps choices made while casting (modes, X,
+  // additional-cost choices, divisions, and card-specific locked choices),
+  // but it is not cast and did not itself spend mana, tap/convoked creatures,
+  // use Treasures, or acquire later stack state such as countered/ward data.
+  const COPIABLE_SPELL_CHOICE_KEYS = [
+    'quality', 'lifestreamX',
+    'striveTargets', 'counterDistribution', 'damageDivision',
+    'squadN', 'sacdN', 'sacdSnaps', 'additionalTapped', 'harmonizeCreature', 'discardedCards',
+    'additionalLifePaid', 'additionalBlightPaid', 'additionalCostChoice',
+  ];
+
+  function cloneCopiableSpellChoice(value, seen = new Map()) {
+    if (!value || typeof value !== 'object') return value;
+    if (value instanceof MTG.CardInst || value instanceof MTG.Player) return value;
+    if (seen.has(value)) return seen.get(value);
+    if (Array.isArray(value)) {
+      const out = [];
+      seen.set(value, out);
+      for (const entry of value) out.push(cloneCopiableSpellChoice(entry, seen));
+      return out;
+    }
+    const proto = Object.getPrototypeOf(value);
+    if (proto !== Object.prototype && proto !== null) return value;
+    const out = {};
+    seen.set(value, out);
+    for (const [key, entry] of Object.entries(value)) out[key] = cloneCopiableSpellChoice(entry, seen);
+    return out;
+  }
+
+  function spellCopyChoices(so, extraKeys = []) {
+    const choices = {};
+    const stored = so.copiableChoices;
+    if (stored) {
+      for (const [key, value] of Object.entries(stored)) choices[key] = cloneCopiableSpellChoice(value);
+      return choices;
+    }
+    for (const key of new Set(COPIABLE_SPELL_CHOICE_KEYS.concat(extraKeys))) {
+      if (Object.prototype.hasOwnProperty.call(so, key)) choices[key] = cloneCopiableSpellChoice(so[key]);
+    }
+    return choices;
+  }
+
+  function rememberCopiableSpellChoices(so, extraKeys = []) {
+    so.copiableChoices = spellCopyChoices(so, extraKeys);
+  }
+
   // ============================================================
   // Casting
   // ============================================================
@@ -1099,7 +1214,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // kicker
     let kicked = false;
-    if (d.kicker && !castOpts.free) {
+    // Casting without paying the mana cost replaces only that mana cost. The
+    // player may still choose and must actually pay optional additional costs.
+    if (d.kicker) {
       const kCost = U.parseCost(d.kicker.cost);
       const combined = { generic: cost.generic + kCost.generic, x: cost.x, xReduction: cost.xReduction || 0, pips: cost.pips.concat(kCost.pips) };
       if (this.canPayMana(p, combined, { card }, { xVal })) {
@@ -1114,7 +1231,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // squad / multikicker: plati N puta dodatnu cijenu
     let paidTimes = 0;
     const repCostStr = d.squad || d.multikicker;
-    if (repCostStr && !castOpts.free) {
+    if (repCostStr) {
       const rCost = U.parseCost(repCostStr);
       let maxN = 0;
       for (let k = 1; k <= 4; k++) {
@@ -1142,7 +1259,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (c.ctrl === p && c.def.grantsOffspring) { offspringCost = c.def.grantsOffspring; break; }
       }
     }
-    if (offspringCost && !castOpts.free) {
+    if (offspringCost) {
       const oCost = U.parseCost(offspringCost);
       const combined = { generic: cost.generic + oCost.generic, x: cost.x, xReduction: cost.xReduction || 0, pips: cost.pips.concat(oCost.pips) };
       if (this.canPayMana(p, combined, { card }, { xVal })) {
@@ -1164,7 +1281,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const candidateTargets = modeTargetsFor(this, candidateMode, card, Object.assign({}, castOpts, { xVal }));
           if (!candidateTargets.every(spec => spec.upTo ||
             this.legalTargets(spec, card, p).length >= (spec.count ?? 1))) return false;
-          if (candidateMode.tierCost && !castOpts.free) {
+          if (candidateMode.tierCost) {
             const tier = U.parseCost(candidateMode.tierCost);
             return this.canPayMana(p, {
               generic: cost.generic + tier.generic,
@@ -1197,8 +1314,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // Spree modovi su dodatni troškovi, ne tekst koji se obračunava tek na
       // rezoluciji. Svaki izabrani mod povećava generički dio cijene.
-      if (d.spreeCost && !castOpts.free) cost.generic += d.spreeCost * mode.length;
-      if (!castOpts.free) for (const mi of mode) {
+      if (d.spreeCost) cost.generic += d.spreeCost * mode.length;
+      for (const mi of mode) {
         const tierCost = d.modes.list[mi].tierCost;
         if (!tierCost) continue;
         const tier = U.parseCost(tierCost);
@@ -1245,14 +1362,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // they are being cast (for example Biogenic Upgrade).  Keep that choice on
     // the stack object so responses cannot retroactively change it.
     const prepareTargets = castOpts.adventure && d.adventure && d.adventure.prepareTargets || d.prepareTargets;
+    const preparedChoiceKeys = [];
     if (typeof prepareTargets === 'function') {
+      const keysBeforePrepare = new Set(Object.keys(so));
       const prepared = await prepareTargets({ g: this, src: card, you: p, so, targets: so.targets });
       if (prepared === false) return false;
+      for (const key of Object.keys(so)) if (!keysBeforePrepare.has(key)) preparedChoiceKeys.push(key);
     }
 
     // Strive je dodatna cijena određena nakon izbora meta: prva meta je u
     // osnovnoj cijeni, a svaka sljedeća dodaje odštampani strive trošak.
-    if (d.strive && !castOpts.free) {
+    if (d.strive) {
       const chosenTargets = (so.targets || []).flat().filter(Boolean).length;
       const extraTargets = Math.max(0, chosenTargets - 1);
       if (extraTargets > 0) {
@@ -1422,18 +1542,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // pay mana
     const paySpell = { card, castOpts, xVal };
-    if (!castOpts.free) {
+    const hasAdditionalManaCost = cost.generic > 0 || cost.x > 0 || (cost.pips || []).length > 0;
+    if (!castOpts.free || hasAdditionalManaCost) {
       const ok = await this.payMana(p, cost, paySpell, {
         xVal, isSpell: true, excludeCards: paidAddl.tapped.concat(harmonizeCreature ? [harmonizeCreature] : []),
       });
       if (!ok) { this.lg(`${card.name}: mana nije plaćena.`); return false; }
       if (cost.lifeCost) await this.loseLife(p, cost.lifeCost, 'altcost');
-      // consume one-shot reductions that applied
-      if (p.tempReductions && p.tempReductions.length) {
-        p.tempReductions = p.tempReductions.filter(r => !(r.once && r.filter(this, card)));
-      }
     } else {
       await this.trackSpentOnSpell(p, 0);
+    }
+    // A "next spell costs less" permission is consumed by that cast even if
+    // a free base plus no generic additions leaves zero mana to physically
+    // pay. Keep this after successful payment so failed casts consume nothing.
+    if (p.tempReductions && p.tempReductions.length) {
+      p.tempReductions = p.tempReductions.filter(r => !(r.once && r.filter(this, card)));
     }
     if (castOpts.bloodcaster) {
       const grant = p.bloodcasterAlternative;
@@ -1495,6 +1618,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     card.castMeta = {
       x: xVal, alt: castOpts, from: so.from, kicked, offspring,
+      paidTimes, squadN: paidTimes,
       manaSpent: so.manaSpent,
       castPhase: this.phase,
       artifactManaSpent: so.artifactManaSpent,
@@ -1502,6 +1626,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       phyrexianLifePaid: so.phyrexianLifePaid,
     };
     if (paidTimes) { card.meta.paidTimes = paidTimes; so.squadN = paidTimes; }
+    rememberCopiableSpellChoices(so, preparedChoiceKeys);
     if (card.commander && so.from === 'command') card.cmdCasts = (card.cmdCasts || 0) + 1;
     if (card.meta && card.meta.preparedBy) {
       const preparer = this.byIid(card.meta.preparedBy);
@@ -1564,7 +1689,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     // storm
-    let hasStorm = (d.storm && !castOpts.free);
+    let hasStorm = !!d.storm;
     if (p.stormNext && castData.isInstantSorcery) { hasStorm = true; p.stormNext = false; }
     if (hasStorm) {
       const stormN = this.totalSpellsThisTurn() - 1;
@@ -1579,7 +1704,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (let i = 0; i < so.sacdN; i++) await this.copySpell(so, p, { mayNewTargets: false });
     }
     // gravestorm (Follow the Bodies)
-    if (d.gravestorm && !castOpts.free) {
+    if (d.gravestorm) {
       const gn = this.diedThisTurn.length;
       if (gn > 0) {
         this.lg(`Gravestorm ×${gn}!`, 'cast');
@@ -1601,15 +1726,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // cascade (own keyword, granted next-spell effects, battlefield grants like Wildsear/Rain of Riches)
     let cascades = 0;
-    if (d.cascade && !castOpts.free) cascades += d.cascade === true ? 1 : Math.max(0, Number(d.cascade) || 0);
+    if (d.cascade) cascades += d.cascade === true ? 1 : Math.max(0, Number(d.cascade) || 0);
     if (p.nextCascade && p.nextCascade.length) {
       const idx = p.nextCascade.findIndex(f => f(this, card, castData));
       if (idx >= 0) { cascades++; p.nextCascade.splice(idx, 1); }
     }
-    if (!castOpts.free) {
-      for (const c of this.bf()) {
-        if (c.def.grantsCascade && c.ctrl === p && c.def.grantsCascade(this, c, card, castData, so)) cascades++;
-      }
+    for (const c of this.bf()) {
+      if (c.def.grantsCascade && c.ctrl === p && c.def.grantsCascade(this, c, card, castData, so)) cascades++;
     }
     for (let i = 0; i < cascades; i++) await this.doCascade(p, card);
 
@@ -1701,15 +1824,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.copySpell = async function (so, ctrl, opts = {}) {
     const copyRoot = so.copyRoot || so.copyOf || so;
     copyRoot._copySerial = (copyRoot._copySerial || 0) + 1;
+    const copiableChoices = spellCopyChoices(so);
     const copy = {
       kind: 'spell', card: so.card, ctrl, name: so.name + ' (kopija)', targets: so.targets.slice(),
-      x: so.x, mode: so.mode, castOpts: so.castOpts, kicked: so.kicked, copyOf: so, isCopy: true,
+      x: so.x, mode: Array.isArray(so.mode) ? so.mode.slice() : so.mode,
+      castOpts: Object.assign({}, so.castOpts || {}), kicked: so.kicked, offspring: so.offspring,
+      copyOf: so, isCopy: true, copiableChoices,
       copyRoot, copyIndex: copyRoot._copySerial, copySource: opts.copySource || null,
       targetMode: opts.forceTarget ? 'forced' : 'same',
       targetSpecs: so.targetSpecs || null,
       counterDistribution: so.counterDistribution ? so.counterDistribution.map(entry => Object.assign({}, entry)) : null,
       damageDivision: so.damageDivision ? so.damageDivision.map(entry => Object.assign({}, entry)) : null,
     };
+    for (const [key, value] of Object.entries(copiableChoices)) copy[key] = cloneCopiableSpellChoice(value);
     // forceTarget: kopija ide na tačno određenu metu (Mirrorwing Dragon)
     if (opts.forceTarget) {
       copy.targets = so.targets.map(t => (Array.isArray(t) ? [opts.forceTarget] : opts.forceTarget));
@@ -1907,6 +2034,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       kicked: so.kicked,
     };
     const co = so.castOpts || {};
+    const queueEvokeSacrifice = permanent => {
+      if (!co.evoke || !permanent || permanent.zone !== 'battlefield') return;
+      // Evoke is a triggered ability of the permanent that entered. A copy of
+      // an evoked permanent spell enters as a token, but it still has the
+      // copied spell's paid alternative cost and therefore creates this same
+      // respondable sacrifice trigger after entering.
+      this.queueTrigger({
+        src: permanent,
+        ctrl: permanent.ctrl,
+        name: `${permanent.name} — Evoke sacrifice`,
+        onlyIf: () => permanent.zone === 'battlefield',
+        run: async triggerCtx => {
+          if (permanent.zone === 'battlefield') await triggerCtx.g.sacrifice(permanent.ctrl, permanent);
+        },
+      });
+    };
     if (co.splitHalf && d.splitHalves && d.splitHalves[co.splitHalf]) {
       await d.splitHalves[co.splitHalf].resolve(ctx);
       if (!so.isCopy && card.zone === 'stack') await this.move(card, 'graveyard');
@@ -2014,7 +2157,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // permanent spell
     if (so.isCopy) {
       // becomes token copy
-      const made = await this.copyPermanentToken(card, p, {});
+      const made = await this.copyPermanentToken(card, p, {
+        // Do not reuse card.castMeta: it contains payment bookkeeping from the
+        // physical original. A spell copy carries only copiable cast choices.
+        castMeta: {
+          x: so.x,
+          alt: Object.assign({}, so.castOpts || {}),
+          from: so.from,
+          kicked: !!so.kicked,
+          offspring: !!so.offspring,
+        },
+        entryMeta: so.squadN ? { paidTimes: so.squadN } : null,
+      });
       if (d.subtypes && d.subtypes.includes('Aura')) {
         const host = so.targets[0];
         for (const aura of made) {
@@ -2023,10 +2177,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           else await this.move(aura, 'graveyard');
         }
       }
+      // Offspring checks whether its additional cost was paid for the copied
+      // permanent spell. The copy is not cast and does not pay again, but it
+      // retains that copiable decision and therefore creates its own 1/1.
+      if (so.offspring && d.offspringToken !== false) {
+        await this.copyPermanentToken(card, p, { modPT: [1, 1] });
+      }
+      for (const permanent of made) queueEvokeSacrifice(permanent);
       await this.checkSBA(); await this.flushTriggers();
       return;
     }
-    const enterOpts = { ctrl: p };
+    const enterOpts = {
+      ctrl: p,
+      // `move` establishes a fresh battlefield object and resets script
+      // scratch metadata. Reinstall only the Squad paid-count cast choice so
+      // the permanent's own ETB keyword sees it; derived tokens get no count.
+      entryMeta: so.squadN ? { paidTimes: so.squadN } : null,
+    };
     if (d.subtypes && d.subtypes.includes('Aura')) {
       const host = so.targets[0];
       // The resolved target is authoritative. Requiring every individual
@@ -2058,19 +2225,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (co.escape && d.escapeCounters) this.addCounters(card, '+1/+1', d.escapeCounters);
     if (co.blitz) { card.meta.blitzed = true; card.meta.tempHaste = true; this.recalc(); }
     if (co.dash) { card.meta.tempHaste = true; this.recalc(); }
-    if (co.evoke && card.zone === 'battlefield') {
-      // Evoke creates a normal triggered ability. It shares the ETB trigger
-      // batch, can be ordered by its controller, and can be responded to.
-      this.queueTrigger({
-        src: card,
-        ctrl: p,
-        name: `${card.name} — Evoke sacrifice`,
-        onlyIf: () => card.zone === 'battlefield',
-        run: async triggerCtx => {
-          if (card.zone === 'battlefield') await triggerCtx.g.sacrifice(card.ctrl, card);
-        },
-      });
-    }
+    queueEvokeSacrifice(card);
     await this.checkSBA(); await this.flushTriggers();
   };
 
@@ -2314,10 +2469,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (d.plot && this.turnPlayer === p && !this.stack.length && (this.phase === 'main1' || this.phase === 'main2')) {
         if (this.canPayMana(p, U.parseCost(d.plot))) out.push({ card: c, plot: true });
       }
-      if (d.suspend && this.turnPlayer === p && !this.stack.length && (this.phase === 'main1' || this.phase === 'main2')) {
+      // Suspend is a special action available whenever this card could begin
+      // to be cast from hand. This includes an instant during another
+      // player's turn and while another object is already on the stack.
+      if (d.suspend && this.canCastTiming(p, c, null)) {
         if (this.canPayMana(p, U.parseCost(d.suspend.cost))) out.push({ card: c, suspend: true });
       }
-      if (d.foretell && this.turnPlayer === p && !this.stack.length && (this.phase === 'main1' || this.phase === 'main2')) {
+      // Foretell is a special action during any priority window on your turn.
+      // `instantOnly` is supplied by askPriorityAction; the second branch is
+      // the normal empty-stack main-phase action window.
+      const hasOwnTurnPriority = this.turnPlayer === p && (instantOnly ||
+        (!this.stack.length && (this.phase === 'main1' || this.phase === 'main2')));
+      if (d.foretell && hasOwnTurnPriority) {
         if (this.canPayMana(p, U.parseCost('{2}'))) out.push({ card: c, foretell: true });
       }
       if (d.ninjutsu && this.combat && ['blockers', 'firstStrike', 'damage', 'endCombat'].includes(this.step)) {
@@ -2520,6 +2683,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
     if (entry.foretell) {
+      const hasMainAction = this.turnPlayer === p && !this.stack.length &&
+        (this.phase === 'main1' || this.phase === 'main2');
+      const hasActionWindow = this.priorityState ? this.priorityState.holder === p : hasMainAction;
+      if (c.zone !== 'hand' || this.turnPlayer !== p || !hasActionWindow) return false;
       const ok = await this.payMana(p, U.parseCost('{2}'));
       if (!ok) return false;
       this.remove(c); c.zone = 'exile'; p.exile.push(c);
@@ -2542,13 +2709,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const cost = U.parseCost(entry.ninjutsuCost || (typeof c.def.ninjutsu === 'string' ? c.def.ninjutsu : c.def.ninjutsu.cost));
       if (!await this.payMana(p, cost, { card: c, isAbility: true })) return false;
       const attacked = returned.attacking;
+      const sourceZoneVersion = c.zoneVersion;
       await this.move(returned, 'hand');
       this.lg(`${p.name}: ${c.name} — Ninjutsu (${returned.name} returned).`, 'activate');
-      const ctx = { g: this, src: c, you: p, targets: [], attacked };
+      const ctx = { g: this, src: c, you: p, targets: [], attacked, sourceZoneVersion };
       this.stack.push({
         kind: 'ability', name: `${c.name} — Ninjutsu`, ctrl: p, ctx, targets: [],
         run: async abilityCtx => {
-          if (c.zone !== 'hand' || !abilityCtx.g.combat) return;
+          if (c.zone !== 'hand' || c.zoneVersion !== abilityCtx.sourceZoneVersion || !abilityCtx.g.combat) return;
           await abilityCtx.g.move(c, 'battlefield', { ctrl: p, tapped: true, attacking: abilityCtx.attacked });
         },
       });
@@ -2559,6 +2727,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
     if (entry.suspend) {
+      const hasMainAction = this.turnPlayer === p && !this.stack.length &&
+        (this.phase === 'main1' || this.phase === 'main2');
+      const hasActionWindow = this.priorityState ? this.priorityState.holder === p : hasMainAction;
+      if (c.zone !== 'hand' || !hasActionWindow || !this.canCastTiming(p, c, null)) return false;
       const ok = await this.payMana(p, U.parseCost(c.def.suspend.cost));
       if (!ok) return false;
       this.remove(c); c.zone = 'exile'; p.exile.push(c);
@@ -3187,7 +3359,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
     const acts = this.activatableList(p, true).filter(e => {
       if (this.stack.length || this.turnPlayer !== p || (this.phase !== 'main1' && this.phase !== 'main2')) {
-        return !(e.ability && e.ability.sorcery) && !e.equip && !e.plot && !e.foretell && !e.suspend && !(e.crew);
+        // Foretell/Suspend already perform their exact timing checks inside
+        // activatableList. Do not discard otherwise-legal special actions
+        // merely because this is not an empty-stack main phase.
+        return !(e.ability && e.ability.sorcery) && !e.equip && !e.plot && !(e.crew);
       }
       return true;
     });
@@ -3261,6 +3436,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.playLand = async function (p, card) {
     if (p.landsPlayed >= this.landPlayLimit(p)) return false;
     if (this.turnPlayer !== p || this.stack.length || (this.phase !== 'main1' && this.phase !== 'main2')) return false;
+    // The UI and both AI controllers normally submit only playableLands(), but
+    // the rules engine remains authoritative for stale/custom actions too. A
+    // direct call must not turn an arbitrary library, opponent-hand, or
+    // unpermitted exile card into the player's normal land drop.
+    if (!this.playableLands(p).includes(card)) return false;
     const fromZone = card.zone;
     if (fromZone === 'graveyard') {
       const hasOpenTypePermission = !(p.turnState.gravePermanentTypesUsed || []).includes('Land') &&
@@ -3344,28 +3524,48 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.note('phase', {});
     await this.pace(p.isAI ? 330 : 0);
     await this.emit('upkeep', { player: p });
-    // suspend
-    for (const q of this.players) {
-      if (q !== p) continue;
-      for (const c of q.exile.slice()) {
-        if (c.meta && c.meta.suspended > 0) {
+    // Each suspended card creates a normal beginning-of-upkeep trigger. The
+    // counter is removed only when that trigger resolves. Removing the last
+    // counter then creates a second trigger, so players receive priority both
+    // before the counter removal and before the mandatory free-cast attempt.
+    for (const c of p.exile.slice()) {
+      if (!c.meta || c.meta.suspended <= 0) continue;
+      this.queueTrigger({
+        src: c,
+        ctrl: p,
+        name: `${c.name} — Suspend: remove a time counter`,
+        onlyIf: () => c.zone === 'exile' && c.meta && c.meta.suspended > 0,
+        run: async removeCtx => {
+          if (c.zone !== 'exile' || !c.meta || c.meta.suspended <= 0) return;
           c.meta.suspended--;
-          this.lg(`${c.name}: suspend ${c.meta.suspended} preostalo.`);
-          if (c.meta.suspended === 0) {
-            const choice = await q.controller.decide(this, {
-              type: 'chooseOption', prompt: `Suspend — cast ${c.name} without paying its mana cost?`,
-              card: c,
-              options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
-              aiHint: { kind: 'suspendCast', card: c },
-            });
-            if (choice === 'yes') {
-              await this.castSpell(q, c, { alt: { free: true }, from: 'exile' });
-            } else {
-              this.lg(`${q.name} leaves ${c.name} suspended in exile with no time counters.`);
-            }
-          }
-        }
-      }
+          removeCtx.g.lg(`${c.name}: suspend ${c.meta.suspended} remaining.`);
+          if (c.meta.suspended !== 0) return;
+          removeCtx.g.queueTrigger({
+            src: c,
+            ctrl: p,
+            name: `${c.name} — Suspend: cast`,
+            // Adding a new time counter in response does not undo the fact
+            // that the last counter was removed; the cast trigger only cares
+            // that this card is still in exile when it resolves.
+            onlyIf: () => c.zone === 'exile',
+            run: async castCtx => {
+              if (c.zone !== 'exile') return;
+              // Suspend ignores normal timing, but it does not bypass effects
+              // that prohibit this player from casting spells. castSpell then
+              // remains authoritative for targets, modes and other legal
+              // choices; if it returns false, the card simply stays exiled.
+              const castProhibited =
+                (p.cantCastUntilTurnStart && p.turnsStarted < p.cantCastUntilTurnStart) ||
+                (p.turnState && p.turnState.cantCastAdditional) ||
+                castCtx.g.bf().some(source => locksOpponentsOnControllersTurn(castCtx.g, source, p));
+              const cast = !castProhibited && await castCtx.g.castSpell(p, c, {
+                alt: { free: true, suspend: true }, from: 'exile',
+              });
+              if (!cast) castCtx.g.lg(`${p.name} cannot cast ${c.name}; it remains in exile with no time counters.`);
+            },
+          });
+        },
+      });
     }
     await this.flushTriggers();
     await this.priorityRound(p);

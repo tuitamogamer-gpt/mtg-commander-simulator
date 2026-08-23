@@ -105,7 +105,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const g = ctx.g, p = ctx.you;
           let cards = (ctx.src.meta.hide || []).map(iid => g.byIid(iid)).filter(c => c && c.zone === 'exile');
           // "play" land i dalje troši land drop — bez slobodnog dropa land nije igriv
-          if (p.landsPlayed >= p.maxLands) cards = cards.filter(c => !c.is('Land'));
+          cards = cards.filter(c => !c.is('Land') || E.canPlayLandNow(g, p));
           if (!cards.length) return;
           const picked = await p.controller.decide(g, {
             type: 'chooseCards', from: cards, min: 0, max: 1, prompt: 'Igraj besplatno:', aiHint: { kind: 'bestCard' },
@@ -113,9 +113,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!picked.length) return;
           const c = picked[0];
           if (c.is('Land')) {
-            p.exile.splice(p.exile.indexOf(c), 1); c.zone = 'nowhere';
-            p.landsPlayed++;
-            await g.move(c, 'battlefield', { ctrl: p });
+            await E.playExiledLand(g, p, c);
           } else await E.mayCastFree(g, p, c);
         },
       },

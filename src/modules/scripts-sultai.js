@@ -541,10 +541,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } finally {
       ctx.g._simultaneousLeaveSources = previous;
     }
-    for (const player of ctx.g.players) {
-      const cards = exiled.get(player) || [];
-      for (const card of cards) if (card.zone === 'exile') await ctx.g.move(card, 'battlefield', { ctrl: player });
+    const returns = [];
+    for (const player of ctx.g.players) for (const card of exiled.get(player) || []) {
+      if (card.zone === 'exile') returns.push({ card, opts: { ctrl: player } });
     }
+    await ctx.g.moveBattlefieldBatch(returns);
   } };
 
   SC['Will of the Sultai'] = {

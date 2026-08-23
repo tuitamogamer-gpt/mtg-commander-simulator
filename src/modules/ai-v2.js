@@ -1297,7 +1297,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (entry.ninjutsu) breakdown.combat += 5;
       // Ne cycluj land dok si kratak sa landovima a land drop je još otvoren
       if (entry.cycling && card.is('Land') && game.turnPlayer === player &&
-        player.landsPlayed < player.maxLands && game.lands(player).length < 5) breakdown.resources -= 8;
+        player.landsPlayed < game.landPlayLimit(player) && game.lands(player).length < 5) breakdown.resources -= 8;
       const sem = inferCardSemantics(card.def);
       breakdown.synergy += sem.synergyTags.filter(tag => profile.primarySynergies.includes(tag)).length * 0.7;
       if (ability && ability.targets && ability.targets.some(spec => spec.aiHint && spec.aiHint.goal === 'removal')) {

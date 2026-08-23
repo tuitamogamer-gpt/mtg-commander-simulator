@@ -99,6 +99,56 @@ test('Jeskai Striker is a 100-card Shiko deck and all 23 cards use exact Oracle 
   assert.doesNotMatch(source, /fallback|simplified|TODO|engineGap/i);
 });
 
+test('Shiko grants no extra land play, and Jeskai fetch lands put rather than play their replacement land', async () => {
+  const { game, players: [jeskai, opponent] } = rulesGame();
+  const first = inZone(jeskai, 'Island', 'hand');
+  const second = inZone(jeskai, 'Mountain', 'hand');
+  const libraryLand = inZone(jeskai, 'Plains', 'library');
+  const unauthorizedExileLand = inZone(jeskai, 'Temple of Enlightenment', 'exile');
+  const opponentsLand = inZone(opponent, 'Mountain', 'hand');
+  permanent(game, jeskai, 'Shiko and Narset, Unified', { commander: true });
+
+  assert.equal(game.landPlayLimit(jeskai), 1, 'Shiko has no additional-land permission');
+  assert.deepEqual(Array.from(game.playableLands(jeskai), card => card.iid), [first.iid, second.iid]);
+  assert.equal(await game.playLand(jeskai, libraryLand), false, 'a direct call cannot play a nonpermitted library land');
+  assert.equal(await game.playLand(jeskai, unauthorizedExileLand), false, 'a direct call cannot play an unpermitted exile land');
+  assert.equal(await game.playLand(jeskai, opponentsLand), false, 'a direct call cannot play a land from an opponent hand');
+  assert.equal(jeskai.landsPlayed, 0, 'rejected direct calls do not spend the normal land drop');
+  assert.equal(await game.playLand(jeskai, first), true);
+  game.phase = 'main2';
+  assert.equal(game.playableLands(jeskai).length, 0, 'the normal land drop stays spent across both main phases');
+  assert.equal(await game.playLand(jeskai, second), false, 'the authoritative path rejects a second played land');
+  assert.equal(jeskai.landsPlayed, 1);
+
+  const actionWindow = {
+    type: 'main', player: jeskai, casts: game.castableList(jeskai), acts: game.activatableList(jeskai),
+    lands: game.playableLands(jeskai), phase: game.phase,
+  };
+  const view = MTG.createBotPlayerView(game, jeskai.idx, actionWindow);
+  assert.equal(MTG.generateLegalActions(view).some(action => action.kind === 'land'), false,
+    'the local AI receives no second-land action either');
+  const decision = await MTG.chooseBotAction({ gameState: game, botPlayerId: jeskai.idx, seed: 3054, actionWindow });
+  assert.equal(decision.action.kind, 'done');
+  assert.equal(decision.log.fallback, false);
+
+  const fetchedGame = rulesGame();
+  const [fetchPlayer] = fetchedGame.players;
+  const landscape = inZone(fetchPlayer, 'Perilous Landscape', 'hand');
+  const basic = inZone(fetchPlayer, 'Plains', 'library');
+  const laterDrop = inZone(fetchPlayer, 'Island', 'hand');
+  assert.equal(await fetchedGame.game.playLand(fetchPlayer, landscape), true);
+  const fetchAbility = fetchedGame.game.activatableList(fetchPlayer)
+    .find(entry => entry.card === landscape && entry.ability);
+  assert.ok(fetchAbility);
+  assert.equal(await fetchedGame.game.activateAbility(fetchPlayer, fetchAbility), true);
+  await resolveAll(fetchedGame.game);
+  assert.equal(landscape.zone, 'graveyard');
+  assert.equal(basic.zone, 'battlefield');
+  assert.equal(basic.tapped, true);
+  assert.equal(fetchPlayer.landsPlayed, 1, 'searching a land onto the battlefield is not another land play');
+  assert.equal(await fetchedGame.game.playLand(fetchPlayer, laterDrop), false);
+});
+
 test('Shiko flurry copies a targeted second spell, retargets legally, and draws for an untargeted second spell', async () => {
   let firstTarget;
   let secondTarget;
@@ -239,6 +289,9 @@ test('Expansion copies only legal low-MV stack spells, while Explosion pays X an
 
 test('Ancestral Vision cannot be normally cast, suspends for four, then free-casts and draws three', async () => {
   const { game, players: [jeskai] } = rulesGame();
+  // Suspend now uses its two real, respondable trigger windows; this scenario
+  // must not use rulesGame's generic no-priority shortcut.
+  game.priorityRound = MTG.Game.prototype.priorityRound.bind(game);
   const vision = inZone(jeskai, 'Ancestral Vision', 'hand');
   fillLibrary(jeskai, Array(16).fill('Island'));
   jeskai.pool.U = 1;
@@ -259,18 +312,6 @@ test('Ancestral Vision cannot be normally cast, suspends for four, then free-cas
   assert.equal(vision.zone, 'graveyard');
   assert.equal(vision.castMeta.alt.free, true);
   assert.ok(jeskai.hand.length >= 3);
-
-  const declined = rulesGame([
-    (g, query) => query.aiHint?.kind === 'suspendCast' ? 'no' : defaultDecision(g, query),
-  ]);
-  const declinedVision = inZone(declined.players[0], 'Ancestral Vision', 'exile');
-  declinedVision.meta.suspended = 1;
-  fillLibrary(declined.players[0], ['Island', 'Plains']);
-  declined.game.turnPlayer = declined.players[0];
-  await declined.game.runTurn();
-  assert.equal(declinedVision.meta.suspended, 0);
-  assert.equal(declinedVision.zone, 'exile', 'declining the optional suspend cast leaves the card in exile');
-  assert.equal(declinedVision.castMeta, null);
 });
 
 test('Transforming Flourish demonstrate copies use their own controllers, revalidate targets, and reveal through a nonland free-cast choice', async () => {

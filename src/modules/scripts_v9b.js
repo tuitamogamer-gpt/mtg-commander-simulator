@@ -97,7 +97,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const x = ctx.src.meta.paidTimes || 0;
         if (!x) return;
         const pow = ctx.src.power;
-        for (const target of (ctx.targets[0] || [])) {
+        // A single chosen target is represented as a scalar; two or more are
+        // grouped in the first target slot. Multikicker X=1 must execute the
+        // same loop instead of attempting to iterate the Card/Player object.
+        const targets = Array.isArray(ctx.targets[0]) ? ctx.targets[0] : ctx.targets.filter(Boolean);
+        for (const target of targets) {
           if (target instanceof MTG.Player) await ctx.g.damagePlayer(ctx.src, target, pow);
           else await ctx.g.damageCreature(ctx.src, target, pow);
         }

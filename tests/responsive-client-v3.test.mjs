@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
+import { loadEngine } from './helpers/load-engine.mjs';
 
 const index = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const main = readFileSync(new URL('../src/modules/main.js', import.meta.url), 'utf8');
@@ -56,6 +57,24 @@ test('deck strategy filter classifies every supported archetype without false co
   assert.equal(strategy('Clues and card draw'), 'artifacts');
   assert.equal(strategy('Group slug'), 'politics');
   assert.equal(strategy('Aggressive combat'), 'combat');
+});
+
+test('every active deck has complete setup metadata and real mana-symbol colors', () => {
+  const MTG = loadEngine();
+  for (const [name, deck] of Object.entries(MTG.DECKS)) {
+    const meta = MTG.DECK_META[name];
+    assert.ok(meta, `${name} is missing DECK_META`);
+    assert.ok(meta.icon, `${name} is missing its table icon`);
+    assert.ok(meta.style, `${name} is missing its setup playstyle`);
+    assert.ok(meta.blurb, `${name} is missing its setup description`);
+    assert.match(meta.set || '', /\(20\d{2}\)$/, `${name} is missing a setup release year`);
+    assert.deepEqual(
+      Array.from(meta.colors).sort(),
+      Array.from(MTG.deckColorIdentity(deck, MTG.DEFS)).sort(),
+      `${name} setup mana icons do not match its complete deck color identity`,
+    );
+  }
+  assert.match(main, /class="deckmana" src="\/assets\/mana\/\$\{c\}\.svg"/);
 });
 
 test('Arena V3 uses a compact HUD and utilities without bypassing action review', () => {

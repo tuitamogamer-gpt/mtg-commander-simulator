@@ -33,6 +33,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.faceDown = false;
       this.meta = {};               // script scratch space (persists while on battlefield)
       this.timestamp = 0;
+      // Incremented by every central zone transition. Effects that refer to a
+      // particular zone object (such as ninjutsu's revealed hand card) can
+      // distinguish it from the new object represented by the same card later.
+      this.zoneVersion = 0;
       this.attacking = null;        // player or planeswalker iid during combat
       this.blocking = null;         // iid of attacker
       this.blockedBy = [];
@@ -367,7 +371,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     // ------------- helpers -------------
-    bf() { return this.battlefield.filter(c => c.zone === 'battlefield' && !c.phasedOut); }
+    bf() {
+      // Replacement choices for one simultaneous entry event only see the
+      // permanents that existed immediately before that event. Trigger/event
+      // collection resumes against the complete post-entry battlefield.
+      const cards = this._entryReplacementPhase && this._battlefieldEntryReplacementSnapshot
+        ? this._battlefieldEntryReplacementSnapshot : this.battlefield;
+      return cards.filter(c => c.zone === 'battlefield' && !c.phasedOut);
+    }
     creatures(p) { return this.bf().filter(c => c.is('Creature') && (!p || c.ctrl === p)); }
     lands(p) { return this.bf().filter(c => c.is('Land') && (!p || c.ctrl === p)); }
     byIid(iid) {
@@ -482,7 +493,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // the command zone instead of the resulting exile destination.
       let voidReplacement = null;
       if (toZone === 'graveyard' && !card.isToken) {
-        voidReplacement = this.bf().find(source => source.def.opponentGraveyardVoid && source.ctrl !== card.owner) || null;
+        const liveSource = this.bf().find(source => source.def.opponentGraveyardVoid && source.ctrl !== card.owner) || null;
+        const leavingSource = (this._simultaneousLeaveSources || []).find(entry =>
+          entry.card && entry.card.def.opponentGraveyardVoid && entry.ctrl !== card.owner) || null;
+        // A simultaneous event is evaluated from its pre-event game state.
+        // destroyMany/sacrificeMany are represented internally as sequential
+        // moves, so retain the LKI controller of a replacement source that an
+        // earlier loop iteration has already removed from the live battlefield.
+        if (liveSource) voidReplacement = { source: liveSource, ctrl: liveSource.ctrl };
+        else if (leavingSource) voidReplacement = { source: leavingSource.card, ctrl: leavingSource.ctrl };
         if (voidReplacement) toZone = 'exile';
       }
 
@@ -496,6 +515,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         if (keep === 'cz') toZone = 'command';
       }
+
+      if (fromZone !== toZone) card.zoneVersion = (card.zoneVersion || 0) + 1;
 
       // persist / undying (death replacements to return later — handled post-dies for simplicity)
 
@@ -580,11 +601,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         // CR 400.7: permanent koji uđe na bojno polje je NOV objekat — svjež meta.
         if (fromZone !== 'battlefield') card.meta = {};
+        // A resolving permanent-spell copy may need the paid-count choice for
+        // an ETB keyword such as squad. This is explicit entry state, never a
+        // wholesale copy of the physical card's runtime scratch metadata.
+        if (opts.entryMeta) Object.assign(card.meta, opts.entryMeta);
         // Only a spell resolving from the stack carries cast choices into its
         // own entry replacement/trigger processing. Reanimation, blink,
         // Genesis Wave and similar non-cast entries must not reuse X,
         // sunburst colors, compleated life or mana spent by an older object.
-        if (fromZone !== 'stack') card.castMeta = null;
+        if (fromZone !== 'stack') {
+          // Normally a non-stack entry has no cast history. The sole explicit
+          // exception is a token created by resolving a permanent-spell copy:
+          // its caller supplies an already filtered set of copiable choices.
+          card.castMeta = opts.castMeta ? Object.assign({}, opts.castMeta, {
+            alt: Object.assign({}, opts.castMeta.alt || {}),
+          }) : null;
+        }
         card.meta._enteredFromZone = fromZone;
         // An Aura put onto the battlefield without being cast chooses what it
         // enchants immediately before it enters. Establish the attachment
@@ -606,7 +638,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.meta._enteredTurn = this.turnNo;
         if (card.hasSub && card.hasSub('Elf')) card.ctrl.turnState.elfEntries.push(card.iid);
         await this.handleETB(card, opts);
-        if (enteredAttachedTo) await this.emit('attached', { att: card, host: enteredAttachedTo });
+        if (enteredAttachedTo) await this.emitBattlefieldEntry('attached', { att: card, host: enteredAttachedTo });
         // Commander i zaista veliki nontoken creature ulasci dobijaju centralni
         // vizuelni signal. Event nastaje tek nakon as-enters/counter obrade, pa
         // UI vidi konačan P/T i stvarni battlefield objekat.
@@ -703,6 +735,59 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return batch.map(entry => entry.card);
     }
 
+    async withBattlefieldEntryBatch(run) {
+      const previous = this._battlefieldEntryEvents;
+      const previousSnapshot = this._battlefieldEntryReplacementSnapshot;
+      const batch = [];
+      this._battlefieldEntryEvents = batch;
+      // Snapshot before the first structural move so earlier array insertion
+      // cannot turn one co-entrant into another co-entrant's replacement source.
+      if (!previousSnapshot) this._battlefieldEntryReplacementSnapshot = this.bf().slice();
+      let result;
+      try {
+        result = await run();
+      } finally {
+        this._battlefieldEntryEvents = previous;
+        this._battlefieldEntryReplacementSnapshot = previousSnapshot;
+      }
+      if (previous) previous.push(...batch);
+      else for (const event of batch) {
+        if (event.run) await event.run();
+        else await this.emit(event.name, event.data);
+      }
+      return result;
+    }
+
+    async emitBattlefieldEntry(name, data) {
+      if (this._battlefieldEntryEvents) {
+        this._battlefieldEntryEvents.push({ name, data });
+        return;
+      }
+      await this.emit(name, data);
+    }
+
+    async deferBattlefieldEntry(run) {
+      if (this._battlefieldEntryEvents) {
+        this._battlefieldEntryEvents.push({ run });
+        return;
+      }
+      await run();
+    }
+
+    async moveBattlefieldBatch(entries) {
+      const normalized = (entries || []).map(entry => entry instanceof CardInst
+        ? { card: entry, opts: {} }
+        : { card: entry && entry.card, opts: entry && entry.opts || {} })
+        .filter(entry => entry.card && entry.card.zone !== 'battlefield');
+      if (!normalized.length) return [];
+      await this.withBattlefieldEntryBatch(async () => {
+        for (const entry of normalized) {
+          if (entry.card.zone !== 'battlefield') await this.move(entry.card, 'battlefield', entry.opts);
+        }
+      });
+      return normalized.map(entry => entry.card).filter(card => card.zone === 'battlefield');
+    }
+
     async fireLeaveAndDie(card, snap, died) {
       // Prepared spell-kopija postoji samo dok je izvor prepared na bojnom
       // polju. Ako izvor ode prije castanja, kopija iz egzila prestaje postojati.
@@ -761,6 +846,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const entryPlusCounters = [];
       const entryCounterEvents = [];
       card.meta = card.meta || {};
+      const batchedReplacement = !!this._battlefieldEntryReplacementSnapshot;
+      if (batchedReplacement) this._entryReplacementPhase = (this._entryReplacementPhase || 0) + 1;
+      try {
       // Copy i drugi as-enters replacementi postavljaju karakteristike prije
       // enters-tapped i enters-with-counters replacementa kopirane karte.
       if (d.asEnters) {
@@ -853,13 +941,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (nn > 0) this.addCounters(card, '+1/+1', nn, true, source.ctrl);
         }
       }
+      } finally {
+        if (batchedReplacement) {
+          this._entryReplacementPhase--;
+          if (!this._entryReplacementPhase) delete this._entryReplacementPhase;
+        }
+      }
       if (d.saga) { card.counters['lore'] = 0; }
       this.recalc();
       const evData = { card, ctrl: card.ctrl };
       // Generic counter event preserves the actual kind. Cards such as
       // Captain Marvel must copy shield/charge/etc. counters, not only +1/+1.
       for (const event of entryCounterEvents) {
-        await this.emit('countersPlaced', {
+        await this.emitBattlefieldEntry('countersPlaced', {
           card, kind: event.kind, n: event.n, before: event.before,
           after: event.after, ctrl: card.ctrl, by: event.by, enters: true,
         });
@@ -868,20 +962,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // posmatraju (Auntie Ool, Hapatra, Wickersmith's Tools...) ipak moraju
       // dobiti isti m1Added događaj prije običnih ETB triggera.
       for (const event of entryMinusCounters) {
-        await this.emit('m1Added', { card, n: event.n, by: event.by, ctrl: card.ctrl, enters: true });
+        await this.emitBattlefieldEntry('m1Added', { card, n: event.n, by: event.by, ctrl: card.ctrl, enters: true });
       }
       for (const event of entryPlusCounters) {
-        await this.emit('plusAdded', {
+        await this.emitBattlefieldEntry('plusAdded', {
           card, n: event.n, before: event.before, after: event.after,
           ctrl: card.ctrl, enters: true,
         });
       }
       if (card.is('Land')) {
         card.ctrl.turnState.landsEntered++;
-        await this.emit('landfall', evData);
+        await this.emitBattlefieldEntry('landfall', evData);
       }
-      await this.emit('etb', evData);
-      if (d.saga) await this.sagaChapter(card);
+      await this.emitBattlefieldEntry('etb', evData);
+      if (d.saga) await this.deferBattlefieldEntry(async () => this.sagaChapter(card));
     }
 
     async sagaChapter(card) {
@@ -948,7 +1042,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const attackTarget = typeof opts.chooseAttacking === 'function'
           ? await opts.chooseAttacking(this, c, made.length, opts.attacking)
           : opts.attacking;
-        await this.move(c, 'battlefield', { ctrl, tapped: opts.tapped, attacking: attackTarget });
+        await this.move(c, 'battlefield', {
+          ctrl, tapped: opts.tapped, attacking: attackTarget,
+          castMeta: opts.castMeta, entryMeta: opts.entryMeta,
+        });
         if (opts.haste) c.meta.tempHaste = true;
         made.push(c);
         ctrl.turnState.tokensCreated++;
@@ -1067,6 +1164,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const made = await this.makeTokens(def, ctrl, {
         n: opts.n === undefined ? 1 : opts.n, copyOf: def, tapped: opts.tapped, attacking: opts.attacking,
         chooseAttacking: opts.chooseAttacking, noReplace: opts.noReplace, haste: opts.haste,
+        castMeta: opts.castMeta, entryMeta: opts.entryMeta,
       });
       return made;
     }

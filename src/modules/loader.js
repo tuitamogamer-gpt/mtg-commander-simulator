@@ -43,6 +43,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       'Wakanda Forever': { icon: '🐾', colors: ['G', 'W'], style: 'Artifacts and monarch', blurb: "T'Challa harnesses Vibranium mana, equipment, and the fight for the crown. Wakanda forever!", set: 'Marvel Super Heroes Commander (2026)' },
       'Scions & Spellcraft': { icon: '🔮', colors: ['W', 'U', 'B'], style: 'Spellslinger and drain', blurb: "Y'shtola drains each opponent whenever you cast a noncreature spell with mana value 3 or greater.", set: 'Final Fantasy Commander (2025)' },
       'Coven Counters': { icon: '🌾', colors: ['G', 'W'], style: '+1/+1 counters and Coven', blurb: 'Leinore adds a counter each combat, while three different powers unlock Coven card draw.', set: 'Innistrad: Midnight Hunt Commander (2021)' },
+      'Quandrix Unlimited': { icon: '♾️', colors: ['U', 'G'], style: 'Landfall and counters', blurb: 'Zimone turns landfall into a growing equation of counters, card advantage, and enormous Fractals.', set: 'Secrets of Strixhaven Commander (2026)' },
+      'Dance of the Elements': { icon: '🌈', colors: ['W', 'U', 'B', 'R', 'G'], style: 'Elemental typal and graveyard', blurb: 'Ashling conducts all five colors, returning Elementals from the graveyard for one limitless final dance.', set: 'Lorwyn Eclipsed Commander (2026)' },
+      'World Shaper': { icon: '🌍', colors: ['B', 'R', 'G'], style: 'Lands and sacrifice', blurb: 'Hearthhull stations a living worldship while sacrificed lands fuel recursion, tokens, and landfall.', set: 'Edge of Eternities Commander (2025)' },
+      'Limit Break': { icon: '⚔️', colors: ['W', 'R', 'G'], style: 'Equipment and modified creatures', blurb: 'Cloud equips a party of heroes, turns modified creatures into threats, and climbs toward a decisive Limit Break.', set: 'Final Fantasy Commander (2025)' },
+      'Temur Roar': { icon: '🐉', colors: ['U', 'R', 'G'], style: 'Dragons and combat', blurb: 'Ureni calls Dragons from the library while Temur ramp, haste, and combat pressure keep the skies roaring.', set: 'Tarkir: Dragonstorm Commander (2025)' },
+      'Sultai Arisen': { icon: '🪦', colors: ['U', 'B', 'G'], style: 'Graveyard and reanimation', blurb: 'Teval mills and recycles a deep graveyard, turning every fallen card into another source of value.', set: 'Tarkir: Dragonstorm Commander (2025)' },
+      'Jeskai Striker': { icon: '🥋', colors: ['W', 'U', 'R'], style: 'Spellslinger and copies', blurb: 'Shiko and Narset reward the second spell each turn with precise copies, fresh cards, and explosive prowess turns.', set: 'Tarkir: Dragonstorm Commander (2025)' },
     };
     if (MTG.buildDeckAIProfiles) MTG.buildDeckAIProfiles();
   };

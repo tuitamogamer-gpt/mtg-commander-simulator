@@ -139,6 +139,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   const E = MTG.E = {};
 
+  E.canPlayLandNow = function (g, p) {
+    return !!g && !!p && g.turnPlayer === p && !g.stack.length &&
+      (g.phase === 'main1' || g.phase === 'main2') &&
+      p.landsPlayed < g.landPlayLimit(p);
+  };
+
+  E.playExiledLand = async function (g, p, card) {
+    if (!card || !card.is('Land') || card.zone !== 'exile' || !E.canPlayLandNow(g, p)) return false;
+    card.meta = card.meta || {};
+    const permissionKeys = ['playableBy', 'playableUntil', 'playableUntilOwnTurn', 'spellsOnly', 'playableCondition'];
+    const previous = new Map(permissionKeys.map(key => [key, {
+      present: Object.prototype.hasOwnProperty.call(card.meta, key), value: card.meta[key],
+    }]));
+    card.meta.playableBy = p;
+    card.meta.playableUntil = g.turnNo;
+    delete card.meta.playableUntilOwnTurn;
+    delete card.meta.spellsOnly;
+    delete card.meta.playableCondition;
+    let played = false;
+    try {
+      played = await g.playLand(p, card);
+    } finally {
+      if (!played && card.zone === 'exile') {
+        for (const key of permissionKeys) delete card.meta[key];
+        for (const [key, saved] of previous) if (saved.present) card.meta[key] = saved.value;
+      }
+    }
+    return played;
+  };
+
   // Damage that is "divided as you choose" is locked in while the spell or
   // trigger is put on the stack.  Every decision carries the complete split
   // context so the human UI can show all selected targets, numbered rows and
