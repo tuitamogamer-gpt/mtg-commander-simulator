@@ -31,6 +31,7 @@ The sharing-readiness pass was completed locally before release authorization. I
 - Tablet opponent headers use a stable grid for name, life, meta, commander, information, and `ACTIVE TURN` state.
 - Mobile phase navigation no longer sits under the HUD; phase controls, player life, opponent info, and zone controls preserve practical touch targets.
 - On 568px-tall phones, an action prompt could have 89px of content inside a 54px row, leaving Continue partially hidden behind the hand. When a real prompt action exists, the mobile grid now reserves 96px for it and proportionally compacts opponent/hand rows; the full 44px Continue/Proceed control remains visible without page overflow.
+- The production canary caught a final short-phone pressure case: an overfull player battlefield still inherited bottom alignment, which pushed its first rows upward and let Library Top/Command Zone content cross neighboring rows. Mobile battlefield rows now keep their intrinsic height, start at the top, and scroll as one contained surface instead of overlapping.
 - Short-desktop rows now reserve enough height for the complete mini card, Library Top, command zone, player rail, action stage, and hand instead of clipping them under section headings.
 - Desktop opponent Info/life and the human life/zone controls now use at least 36px hit targets (44px on mobile) instead of the previous 21–30px targets.
 - Manual-mana and HOLD messages are consistently English (`choose mana sources`, `sacrifice this card`, `granted by`).

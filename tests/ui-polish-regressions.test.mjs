@@ -165,6 +165,11 @@ test('short phones keep card-sheet actions above the fold without removing card 
   assert.match(css, /@media \(max-width: 420px\) and \(max-height: 700px\)[\s\S]*?#game \.sheetimg:not\(\.noimg\) \{ width: min\(46vw, 150px\); max-height: 210px; object-fit: contain; \}/);
   assert.match(css, /@media \(max-width: 767px\) and \(max-height: 700px\)[\s\S]*?#game:has\(\.promptbar \.btnrow \.pbtn\) \{[\s\S]*?grid-template-rows: 76px 48px 96px minmax\(112px, 1fr\) 96px 108px !important;/);
   assert.match(css, /#game:has\(\.promptbar \.btnrow \.pbtn\) \.promptbar \{ min-height: 96px; max-height: 96px; \}/);
+  assert.match(css, /#game \.myboard \{[^}]*justify-content: flex-start;[^}]*overflow-y: auto !important;[^}]*overscroll-behavior: contain;/);
+  assert.match(css, /#game \.landrow \{ min-height: 52px; flex-shrink: 0; \}/);
+  assert.match(css, /#game \.czrow \{ flex-shrink: 0; \}/);
+  assert.match(css, /#game \.myboard:has\(\.playerrail\.has-library-top\) \.landrow \{ order: -1; \}/);
+  assert.match(css, /#game \.myboard:has\(\.playerrail\.has-library-top\) \.playerrail \{ order: -1; \}/);
 });
 
 test('short tablets reserve a complete row for the visible library-top control', () => {
