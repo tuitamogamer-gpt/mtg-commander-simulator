@@ -199,11 +199,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return { ok: true, why: '' };
   };
 
+  // Turtle Power is presented and played with its canonical two-Commander
+  // Character select pairing. Other decks retain their printed face commander.
+  MTG.defaultCommanders = function (deckData, defs) {
+    const names = deckData && deckData.name === 'Turtle Power'
+      ? ['Leonardo, the Balance', 'Michelangelo, the Heart']
+      : [deckData && deckData.commander].filter(Boolean);
+    return MTG.validateCommanders(deckData, names, defs || MTG.DEFS).ok
+      ? names : [deckData.commander];
+  };
+
   // AI/nasumičan izbor: face commander, ili slučajan legalan (par ako može)
   MTG.randomCommanders = function (deckData, rnd, defs) {
     defs = defs || MTG.DEFS;
     const legals = MTG.legalCommanders(deckData, defs);
-    if (!legals.length) return [deckData.commander];
+    if (!legals.length) return MTG.defaultCommanders(deckData, defs);
     const pick = legals[Math.floor(rnd() * legals.length)];
     const mates = legals.filter(l => MTG.canPartner(pick.def, l.def) &&
       MTG.validateCommanders(deckData, [pick.name, l.name], defs).ok);

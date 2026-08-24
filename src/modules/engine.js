@@ -313,12 +313,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     buildDeck(p, deckData, defs, chosen) {
       // izbor komandera: eksplicitno prosljeđen → p.chosenCommanders → face commander iz deka
-      let want = chosen || p.chosenCommanders || [deckData.commander];
+      let want = chosen || p.chosenCommanders || (MTG.defaultCommanders
+        ? MTG.defaultCommanders(deckData, defs) : [deckData.commander]);
       want = want.filter(Boolean).slice(0, 2);
       const check = MTG.validateCommanders ? MTG.validateCommanders(deckData, want, defs) : { ok: true };
       if (!check.ok) {
-        this.lg(`⚠️ Invalid commander selection (${check.why}) — using ${deckData.commander}.`, 'warn');
-        want = [deckData.commander];
+        want = MTG.defaultCommanders ? MTG.defaultCommanders(deckData, defs) : [deckData.commander];
+        this.lg(`⚠️ Invalid commander selection (${check.why}) — using ${want.join(' + ')}.`, 'warn');
       }
       const need = {};
       for (const n of want) need[n] = (need[n] || 0) + 1;

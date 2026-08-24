@@ -140,7 +140,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
       card.onclick = () => {
         state.deck = name;
-        state.commanders = [deck.commander];
+        state.commanders = MTG.defaultCommanders(deck, MTG.DEFS);
         deckList.querySelectorAll('.deckcard').forEach(c => {
           c.classList.remove('selected');
           c.setAttribute('aria-pressed', 'false');
@@ -406,7 +406,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function pickCommanders(deckName, current) {
     const deck = MTG.DECKS[deckName];
     const legals = MTG.legalCommanders(deck, MTG.DEFS);
-    let sel = (current && current.length ? current : [deck.commander]).slice(0, 2);
+    let sel = (current && current.length ? current : MTG.defaultCommanders(deck, MTG.DEFS)).slice(0, 2);
 
     return new Promise(resolve => {
       const ov = el('div', 'overlay dark');
@@ -424,7 +424,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
       const row = el('div', 'btnrow');
       const okBtn = el('button', 'pbtn primary', 'Confirm ✔');
-      const defBtn = el('button', 'pbtn', '↩ Original');
+      const defBtn = el('button', 'pbtn', '↩ Default');
       const cancel = el('button', 'pbtn danger', 'Cancel');
       row.appendChild(okBtn); row.appendChild(defBtn); row.appendChild(cancel);
       m.appendChild(row);
@@ -462,7 +462,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       draw();
 
       okBtn.onclick = () => { ov.remove(); resolve(sel.slice()); };
-      defBtn.onclick = () => { sel = [deck.commander]; draw(); };
+      defBtn.onclick = () => { sel = MTG.defaultCommanders(deck, MTG.DEFS); draw(); };
       cancel.onclick = () => { ov.remove(); resolve(null); };
       ov.onclick = e => { if (e.target === ov) { ov.remove(); resolve(null); } };
       ov.appendChild(m);
@@ -2283,6 +2283,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
+    if (smokeScenario === 'commanderIntro') {
+      void (async () => {
+        const requested = new URLSearchParams(window.location.search).get('smokeCommander');
+        const commander = ui.me.commanders.find(card => card.name === requested) || ui.me.commanders[0];
+        if (!commander) throw new Error('Commander intro scenario nema komandera');
+        g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        await g.move(commander, 'battlefield', { ctrl: ui.me });
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
     if (smokeScenario === 'planeswalkerCombat') {
       const makePermanent = (name, ctrl, loyalty) => {
         const card = new MTG.CardInst(MTG.DEFS[name], ctrl);
@@ -2532,7 +2543,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const smokeAIDeck = smoke.get('smokeAIDeck');
       startGame({
         deck: smokeDeck,
-        commanders: [MTG.DECKS[smokeDeck].commander],
+        commanders: MTG.defaultCommanders(MTG.DECKS[smokeDeck], MTG.DEFS),
         ai: 3,
         aiDecks: smokeAIDeck && MTG.DECKS[smokeAIDeck] ? [smokeAIDeck] : [],
         aiStyles: ['balanced', 'balanced', 'balanced'],

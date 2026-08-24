@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <symbol id="icon-crown" viewBox="0 0 24 24">
+      <path d="m3 7 4.5 4L12 4l4.5 7L21 7l-2 11H5L3 7Z"/>
+      <path d="M5 18h14M7 14h10"/>
+    </symbol>
+    <symbol id="icon-stack" viewBox="0 0 24 24">
+      <path d="m12 3 9 5-9 5-9-5 9-5Z"/>
+      <path d="m5 12-2 1 9 5 9-5-2-1M5 17l-2 1 9 5 9-5-2-1"/>
+    </symbol>
+    <symbol id="icon-log" viewBox="0 0 24 24">
+      <path d="M6 4h14v16H6zM3 7h3M3 12h3M3 17h3M10 9h6M10 13h6M10 17h4"/>
+    </symbol>
+    <symbol id="icon-deals" viewBox="0 0 24 24">
+      <path d="m3 12 4-4 4 4-4 4-4-4Zm10 0 4-4 4 4-4 4-4-4Z"/>
+      <path d="M9 10h6M9 14h6M7 16l4 4 3-3M17 16l-2 2"/>
+    </symbol>
+    <symbol id="icon-hold" viewBox="0 0 24 24">
+      <path d="M6 12V6a2 2 0 0 1 4 0v5-7a2 2 0 0 1 4 0v7-5a2 2 0 0 1 4 0v7-3a2 2 0 0 1 4 0v4c0 5-3 8-8 8h-2c-3 0-5-2-7-5l-3-4a2 2 0 0 1 3-3l1 2Z"/>
+    </symbol>
+    <symbol id="icon-mana" viewBox="0 0 24 24">
+      <path d="M12 2c3 5 7 8 7 13a7 7 0 1 1-14 0c0-5 4-8 7-13Z"/>
+      <path d="M9 17c.6 1.2 1.6 2 3 2 2 0 3-1.3 3-3"/>
+    </symbol>
+    <symbol id="icon-menu" viewBox="0 0 24 24">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+      <circle cx="8" cy="6" r="1.5"/><circle cx="16" cy="12" r="1.5"/><circle cx="10" cy="18" r="1.5"/>
+    </symbol>
+    <symbol id="icon-attack" viewBox="0 0 24 24">
+      <path d="m4 20 7-7M14 10l6-6M14 4h6v6M20 20l-7-7M10 10 4 4M4 4h6v6"/>
+    </symbol>
+    <symbol id="icon-shield" viewBox="0 0 24 24">
+      <path d="M12 3 20 6v6c0 5-3.2 8-8 10-4.8-2-8-5-8-10V6l8-3Z"/>
+      <path d="M12 7v10M8 12h8"/>
+    </symbol>
+    <symbol id="icon-target" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+    </symbol>
+    <symbol id="icon-library" viewBox="0 0 24 24">
+      <path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z"/>
+      <path d="M7 16h12M8 8h8M8 11h6"/>
+    </symbol>
+    <symbol id="icon-cards" viewBox="0 0 24 24">
+      <rect x="7" y="3" width="12" height="16" rx="1"/>
+      <path d="m7 7-3 1.2a1.5 1.5 0 0 0-1 1.9l3.4 9.2a1.5 1.5 0 0 0 1.9.9l7.2-2.7M10 7h6M10 11h6M10 15h4"/>
+    </symbol>
+    <symbol id="icon-graveyard" viewBox="0 0 24 24">
+      <path d="M6 21V9a6 6 0 0 1 12 0v12H6Z"/>
+      <path d="M9 10h6M12 7v6M4 21h16"/>
+    </symbol>
+    <symbol id="icon-exile" viewBox="0 0 24 24">
+      <path d="m12 2 7 4v8l-7 8-7-8V6l7-4Z"/>
+      <path d="m8 8 8 8M16 8l-8 8"/>
+    </symbol>
+    <symbol id="icon-effects" viewBox="0 0 24 24">
+      <path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Z"/>
+      <path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z"/>
+    </symbol>
+    <symbol id="icon-player" viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4"/><path d="M4 22c.7-5 3.3-8 8-8s7.3 3 8 8"/>
+    </symbol>
+    <symbol id="icon-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/><path d="M12 10v7M12 7h.01"/>
+    </symbol>
+    <symbol id="icon-ring" viewBox="0 0 24 24">
+      <ellipse cx="12" cy="13" rx="7" ry="9"/><ellipse cx="12" cy="13" rx="3.5" ry="5"/><path d="m9 4 3-2 3 2"/>
+    </symbol>
+  </defs>
+</svg>

@@ -1217,7 +1217,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
     resolve: async ctx => {
       const g = ctx.g, x = ctx.x || 0;
-      const list = (ctx.targets[0] || []).slice(0, x);
+      const selected = ctx.targets[0];
+      const list = (Array.isArray(selected) ? selected : [selected].filter(Boolean)).slice(0, x);
       const flicked = [];
       for (const t of list) {
         if (t.zone !== 'battlefield' || t.isToken) { if (t.isToken) await g.exileCard(t); continue; }

@@ -319,7 +319,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       aiHint: { goal: 'removal' },
     }],
     resolve: async ctx => {
-      const list = (ctx.targets[0] || []).slice(0, ctx.x || 0);
+      const selected = ctx.targets[0];
+      const list = (Array.isArray(selected) ? selected : [selected].filter(Boolean)).slice(0, ctx.x || 0);
       for (const t of list) {
         if (t.zone !== 'battlefield') continue;
         const c2 = t.ctrl;

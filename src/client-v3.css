@@ -750,11 +750,16 @@
   border-radius: 7px !important;
   font: 800 8px/1 'Barlow Semi Condensed', sans-serif !important;
   letter-spacing: .13em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
+#game .arenaheader .hudaction > .gameicon { width: 15px; height: 15px; color: var(--v3-gold); }
 #game .arenaheader .hudaction:hover,
 #game .arenaheader .hudaction.on,
 #game .arenaheader .hudaction.armed { color: var(--v3-gold-bright) !important; border-color: rgba(212, 161, 95, .62) !important; background: rgba(212, 161, 95, .09) !important; }
-#game .arenaheader .menubutton::before { content: '•••'; display: block; margin-bottom: 2px; color: var(--v3-gold); letter-spacing: .08em; }
+#game .arenaheader .menubutton::before { display: none; }
 
 #game .arenaheader .monarchstatus {
   flex: 0 0 auto;
@@ -762,7 +767,8 @@
   padding: 5px 9px !important;
   border-radius: 7px !important;
 }
-#game .arenaheader .monarchstatus > span { font-size: 21px !important; }
+#game .arenaheader .monarchstatus > span { display: grid; place-items: center; font-size: 21px !important; }
+#game .arenaheader .monarchstatus .gameicon { width: 21px; height: 21px; }
 #game .arenaheader .monarchstatus > div { display: flex; flex-direction: column; }
 
 #game .politicsstatus {
@@ -784,6 +790,7 @@
 #game .politicsstatus.incoming { border-color: var(--v3-gold-bright); box-shadow: 0 0 0 2px rgba(212, 161, 95, .12), 0 0 24px rgba(212, 161, 95, .16); }
 #game .politicsstatus.locked { opacity: .82; }
 #game .politicsstatus > span { font-size: 19px; }
+#game .politicsstatus .gameicon { width: 19px; height: 19px; }
 #game .politicsstatus > div { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
 #game .politicsstatus small { color: #7da495; font: 800 6px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .12em; }
 #game .politicsstatus b { color: #eef3f0; font: 800 8px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .1em; }
@@ -827,6 +834,7 @@
 }
 #game .playereffectsbadge:hover { background: rgba(120, 83, 31, .58); border-color: #e8bb76; }
 #game .playereffectsbadge > span { font-size: 10px; }
+#game .playereffectsbadge > span .gameicon { width: 10px; height: 10px; }
 #game .playereffectsbadge > b { color: #fff1d4; font: 800 8px/1 'Barlow Semi Condensed', sans-serif; }
 #game .playereffectsbadge > small { color: #b99a69; font: 800 6px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .08em; }
 #game .playereffectsbadge.mine { min-height: 34px; margin: 0; padding-inline: 8px; }
@@ -926,6 +934,7 @@
   cursor: pointer;
 }
 #game .utilitybutton .utilityicon { color: #9b8a68; font: 400 18px/1 'Marcellus', serif; }
+#game .utilitybutton .utilityicon .gameicon { width: 19px; height: 19px; }
 #game .utilitybutton .utilitylabel { font: 800 7px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .1em; text-transform: uppercase; }
 #game .utilitybutton b {
   position: absolute;
@@ -1302,7 +1311,8 @@ body:has(#game .overlay) .toastmsg {
     background: rgba(6, 10, 11, .9);
     border-bottom: 1px solid var(--v3-line-soft);
   }
-  #game .mobileviewtab { min-height: 44px; flex: 1; color: #707a78; background: transparent; border: 0; border-bottom: 2px solid transparent; font: 800 8px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .13em; }
+  #game .mobileviewtab { min-height: 44px; flex: 1; display: inline-flex; align-items: center; justify-content: center; color: #707a78; background: transparent; border: 0; border-bottom: 2px solid transparent; font: 800 8px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .13em; }
+  #game .mobileviewtab .gameicon { width: 13px; height: 13px; margin-right: 5px; color: currentColor; }
   #game .mobileviewtab.on { color: var(--v3-gold-bright); border-bottom-color: var(--v3-gold); }
   #game .mobileviewtab.politics { color: #7da495; }
   #game .mobileviewtab.politics.on { color: #bce1d1; border-bottom-color: #6eab94; }

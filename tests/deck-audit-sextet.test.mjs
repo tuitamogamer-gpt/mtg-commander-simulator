@@ -515,12 +515,15 @@ test('Crackling Spellslinger daje storm samo ako je bačen', async () => {
   assert.equal(me.stormNext, true, 'stvarno bačen Spellslinger mora dati storm');
 });
 
-test('Curse of the Swine bira najviše tačno X meta', () => {
-  const { game, players: [me] } = rulesGame();
+test('Curse of the Swine bira najviše tačno X meta i prihvata jednu metu kao scalar', async () => {
+  const { game, players: [me, opp] } = rulesGame();
   const spell = new MTG.CardInst(MTG.DEFS['Curse of the Swine'], me);
   const [spec] = spell.def.targets(game, spell, { xVal: 2 });
   assert.equal(spec.count, 2);
   assert.equal(spec.upTo, true);
+  const victim = permanent(game, opp, 'Graf Mole');
+  await spell.def.resolve({ g: game, you: me, targets: [victim], x: 1 });
+  assert.equal(victim.zone, 'exile');
 });
 
 test('Epic Experiment baca odabrani spell iz egzila, ne iz ruke', async () => {

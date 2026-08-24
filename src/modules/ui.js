@@ -1219,14 +1219,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       tabs.setAttribute('aria-label', 'Arena view');
       const diplomacyView = g.diplomacy && g.diplomacy.enabled && g.diplomacyView ? g.diplomacyView(this.me) : null;
       const incoming = diplomacyView ? diplomacyView.incoming.length : 0;
-      const items = [['mine', 'MINE'], ['table', 'TABLE'], ['stack', `STACK ${g.stack.length || ''}`]];
-      if (diplomacyView) items.push(['diplomacy', `🕊 POLITICS${incoming ? ` ${incoming}` : ''}`]);
-      for (const [key, label] of items) {
+      const items = [['mine', 'player', 'MINE'], ['table', 'cards', 'TABLE'], ['stack', 'stack', `STACK ${g.stack.length || ''}`]];
+      if (diplomacyView) items.push(['diplomacy', 'deals', `POLITICS${incoming ? ` ${incoming}` : ''}`]);
+      for (const [key, icon, label] of items) {
         const isPolitics = key === 'diplomacy';
         const isOn = isPolitics
           ? this.utilityDrawerOpen && this.sidebarTab === 'diplomacy'
           : this.mobileView === key;
-        const button = el('button', 'mobileviewtab' + (isOn ? ' on' : '') + (isPolitics ? ' politics' : ''), label.trim());
+        const button = el('button', 'mobileviewtab' + (isOn ? ' on' : '') + (isPolitics ? ' politics' : ''), `${U.icon(icon)}<span>${esc(label.trim())}</span>`);
         button.type = 'button';
         button.onclick = () => {
           if (isPolitics) { this.openUtility('diplomacy'); return; }
@@ -1246,7 +1246,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       rail.setAttribute('aria-label', 'Arena utilities');
       const add = (key, icon, label, count, title) => {
         const button = el('button', 'utilitybutton' + (this.utilityDrawerOpen && this.sidebarTab === key ? ' on' : ''),
-          `<span class="utilityicon" aria-hidden="true">${esc(icon)}</span><span class="utilitylabel">${esc(label)}</span>${count ? `<b>${esc(count)}</b>` : ''}`);
+          `<span class="utilityicon" aria-hidden="true">${U.icon(icon)}</span><span class="utilitylabel">${esc(label)}</span>${count ? `<b>${esc(count)}</b>` : ''}`);
         button.type = 'button';
         button.title = title;
         button.setAttribute('aria-label', title);
@@ -1258,13 +1258,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
         rail.appendChild(button);
       };
-      add('table', '◇', 'Stack', g.stack.length, 'Open the stack and table information');
-      add('log', '≡', 'Log', 0, 'Open the game log');
+      add('table', 'stack', 'Stack', g.stack.length, 'Open the stack and table information');
+      add('log', 'log', 'Log', 0, 'Open the game log');
       if (g.diplomacy && g.diplomacy.enabled) {
         const view = g.diplomacyView ? g.diplomacyView(this.me) : null;
         const incoming = view ? view.incoming.length : 0;
         const active = view ? view.activeContracts.length : 0;
-        add('diplomacy', '♢', 'Deals', incoming || active || '•', 'Open Diplomacy & Politics');
+        add('diplomacy', 'deals', 'Deals', incoming || active || '•', 'Open Diplomacy & Politics');
       }
       return rail;
     }
@@ -1286,7 +1286,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const crown = el('button', 'monarchstatus' + (g.monarch === this.me ? ' mine' : ''));
         crown.type = 'button';
         crown.title = `${g.monarch.name} is the Monarch${since.turn !== undefined ? ` since turn ${since.turn}` : ''}.`;
-        crown.innerHTML = `<span aria-hidden="true">♛</span><div><small>MONARCH</small><b>${esc(holder)}</b></div>`;
+        crown.innerHTML = `<span aria-hidden="true">${U.icon('crown')}</span><div><small>MONARCH</small><b>${esc(holder)}</b></div>`;
         crown.onclick = () => { this.playerSheet = g.monarch; this.render(); };
         bar.appendChild(crown);
       }
@@ -1300,13 +1300,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         politics.title = view.status.unlocked
           ? `${active} active agreement${active === 1 ? '' : 's'} · ${incoming} proposal${incoming === 1 ? '' : 's'} awaiting you`
           : view.status.reason;
-        politics.innerHTML = `<span aria-hidden="true">🕊</span><div><small>DIPLOMACY &amp; POLITICS</small><b>${incoming ? `${incoming} OFFER${incoming === 1 ? '' : 'S'}` : active ? `${active} ACTIVE` : view.status.unlocked ? 'READY' : 'LOCKED · TURN 3'}</b></div>`;
+        politics.innerHTML = `<span aria-hidden="true">${U.icon('deals')}</span><div><small>DIPLOMACY &amp; POLITICS</small><b>${incoming ? `${incoming} OFFER${incoming === 1 ? '' : 'S'}` : active ? `${active} ACTIVE` : view.status.unlocked ? 'READY' : 'LOCKED · TURN 3'}</b></div>`;
         politics.onclick = () => this.openUtility('diplomacy');
         bar.appendChild(politics);
       }
 
       const buttons = el('div', 'topbtns');
-      const hold = el('button', 'tbtn hudaction' + (this.holdNext ? ' armed' : ''), '<span>HOLD</span>');
+      const hold = el('button', 'tbtn hudaction' + (this.holdNext ? ' armed' : ''), `${U.icon('hold')}<span>HOLD</span>`);
       hold.type = 'button';
       hold.title = this.holdNext
         ? 'HOLD armed. The game stops at the next priority window. Click to cancel.'
@@ -1319,7 +1319,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
       buttons.appendChild(hold);
 
-      const mana = el('button', 'tbtn hudaction manamode' + (this.manaMode === 'manual' ? ' on' : ''), '<span>MANA</span>');
+      const mana = el('button', 'tbtn hudaction manamode' + (this.manaMode === 'manual' ? ' on' : ''), `${U.icon('mana')}<span>MANA</span>`);
       mana.type = 'button';
       mana.title = this.manaMode === 'manual'
         ? 'Manual mana is active. Click for automatic mana.'
@@ -1333,7 +1333,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
       buttons.appendChild(mana);
 
-      const menu = el('button', 'tbtn hudaction menubutton', '<span>MENU</span>');
+      const menu = el('button', 'tbtn hudaction menubutton', `${U.icon('menu')}<span>MENU</span>`);
       menu.type = 'button';
       menu.title = 'Game controls and display settings';
       menu.onclick = () => { this.quickMenuOpen = true; this.render(); };
@@ -1443,13 +1443,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         head.innerHTML = `
           <span class="chev">${collapsed ? '▸' : '▾'}</span>
           <span class="seatindex">${String(seatNo).padStart(2, '0')}</span>
-          <span class="oppname">${isMonarch ? '<i class="seatcrown" aria-label="Monarch">♛</i> ' : ''}${meta.icon || '🤖'} ${esc(p.name)}</span>
+          <span class="oppname">${isMonarch ? `<i class="seatcrown" aria-label="Monarch">${U.icon('crown')}</i> ` : ''}${U.icon('player', 'oppidentityicon')} ${esc(p.name)}</span>
           ${isActiveAi ? '<span class="activeaitag">ACTIVE TURN</span>' : ''}
           ${styleMeta ? `<span class="personachip" title="Style: ${esc(styleMeta.label)}">${styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
           <span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${p.life}❤</span>
-          <span class="oppmeta">✋${p.hand.length} 📚${p.library.length}${statusEffects.length ? ` <button type="button" class="playereffectsbadge" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>✦</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}</span>
-          <span class="oppcmd" title="${esc(cmdTitle)}">👑${esc(cmdState)}</span>
-          <button class="tbtn small" type="button" aria-label="Open ${esc(p.name)} player details" title="Open ${esc(p.name)} player details">ℹ️</button>`;
+          <span class="oppmeta">${U.icon('cards')}${p.hand.length} ${U.icon('library')}${p.library.length}${statusEffects.length ? ` <button type="button" class="playereffectsbadge" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}</span>
+          <span class="oppcmd" title="${esc(cmdTitle)}">${U.icon('crown')}${esc(cmdState)}</span>
+          <button class="tbtn small" type="button" aria-label="Open ${esc(p.name)} player details" title="Open ${esc(p.name)} player details">${U.icon('info')}</button>`;
         head.querySelector('.tbtn.small').onclick = (e) => { e.stopPropagation(); this.playerSheet = p; this.render(); };
         const effectsBadge = head.querySelector('.playereffectsbadge');
         if (effectsBadge) effectsBadge.onclick = (e) => { e.stopPropagation(); this.playerSheet = p; this.render(); };
@@ -1734,13 +1734,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const statusEffects = this.playerStatusEffects(g, me);
       if (statusEffects.length) info.classList.add('has-effects');
       info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="melife" role="button" tabindex="0" aria-label="You: ${me.life} life. Open player details." title="Open your player details">${me.life}<small>life</small></div>
-        ${g.monarch === me ? '<div class="memonarch"><span>♛</span><b>MONARCH</b></div>' : ''}
-        ${statusEffects.length ? `<button type="button" class="playereffectsbadge mine" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>✦</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}
+        ${g.monarch === me ? `<div class="memonarch"><span>${U.icon('crown')}</span><b>MONARCH</b></div>` : ''}
+        ${statusEffects.length ? `<button type="button" class="playereffectsbadge mine" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}
         <div class="manapool">${poolStr}</div>
         <div class="zbtns">
-          <button class="zbtn" data-z="library-top" aria-label="Library: ${me.library.length} cards${libraryTop ? '. The top card is shown beside this control.' : ''}" title="Library: ${me.library.length} cards${libraryTop ? ' · top card visible beside this control' : ''}">📚${me.library.length}</button>
-          <button class="zbtn" data-z="graveyard" aria-label="Graveyard: ${me.graveyard.length} cards" title="Open graveyard">🪦${me.graveyard.length}</button>
-          <button class="zbtn" data-z="exile" aria-label="Exile: ${me.exile.length} cards" title="Open exile">🌀${me.exile.length}</button>
+          <button class="zbtn" data-z="library-top" aria-label="Library: ${me.library.length} cards${libraryTop ? '. The top card is shown beside this control.' : ''}" title="Library: ${me.library.length} cards${libraryTop ? ' · top card visible beside this control' : ''}">${U.icon('library')}<b>${me.library.length}</b></button>
+          <button class="zbtn" data-z="graveyard" aria-label="Graveyard: ${me.graveyard.length} cards" title="Open graveyard">${U.icon('graveyard')}<b>${me.graveyard.length}</b></button>
+          <button class="zbtn" data-z="exile" aria-label="Exile: ${me.exile.length} cards" title="Open exile">${U.icon('exile')}<b>${me.exile.length}</b></button>
         </div>`;
       info.querySelectorAll('.zbtn[data-z]').forEach(b => {
         b.onclick = () => {
@@ -1802,7 +1802,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           cz.innerHTML = `
             <img loading="lazy" src="${imgURL(cmd.name)}" onerror="MTG.imgFail(this)">
             <div class="czinfo">
-              <div class="czlabel">👑 COMMAND ZONE</div>
+              <div class="czlabel">${U.icon('crown')} COMMAND ZONE</div>
               <div class="czname">${esc(cmd.name.split(',')[0])}</div>
               <div class="czcost">Cost: ${costHTML(U.costStr(cost))}${cmd.cmdCasts ? ` <span class="tax">(tax +${2 * cmd.cmdCasts})</span>` : ''}</div>
             </div>
@@ -1830,7 +1830,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ];
       const d = el('div', 'czcard ringcard');
       d.innerHTML = `
-        <div class="ringart">💍</div>
+        <div class="ringart">${U.icon('ring')}</div>
         <div class="czinfo">
           <div class="czlabel">THE RING · LEVEL ${em.level}/4</div>
           <div class="czname">${bearer ? esc(bearer.name.split(',')[0]) : '<span class="ringnone">no Ring-bearer</span>'}</div>
@@ -1875,11 +1875,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       d.style.setProperty('--frame', grad);
       const pd = this.pending;
       const badges = [];
-      if (c.commander) badges.push('👑');
-      if (c.meta.ringBearer) badges.push('💍');
-      if (c.attacking) badges.push('⚔️');
-      if (c.blocking) badges.push('🛡️');
-      if (this.actable && this.actable.has(c.iid)) { badges.push('⚙️'); d.classList.add('actable'); }
+      if (c.commander) badges.push(U.icon('crown'));
+      if (c.meta.ringBearer) badges.push(U.icon('ring'));
+      if (c.attacking) badges.push(U.icon('attack'));
+      if (c.blocking) badges.push(U.icon('shield'));
+      if (this.actable && this.actable.has(c.iid)) { badges.push(U.icon('effects')); d.classList.add('actable'); }
       if (c.commander) d.classList.add('cmdr');
       const pt = c.is('Creature') ? `<div class="pt">${c.power}/${c.toughness}</div>` : (c.is('Planeswalker') ? `<div class="pt">◆${c.counters['loyalty'] || 0}</div>` : '');
       const cnt = (c.counters['+1/+1'] || 0) ? `<div class="cnt">+${c.counters['+1/+1']}</div>` : '';
@@ -3801,17 +3801,36 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const previous = document.querySelector('.battlefieldarrival');
       if (previous) previous.remove();
       const commander = event.kind === 'commander';
+      const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const introURL = commander && !reducedMotion && MTG.COMMANDER_INTROS && MTG.COMMANDER_INTROS[card.name];
+      const introLabel = MTG.COMMANDER_INTRO_LABELS && MTG.COMMANDER_INTRO_LABELS[card.name] || card.name;
       const splash = el('div', `battlefieldarrival ${commander ? 'commander' : 'powerhouse'}`);
       splash.dataset.iid = String(card.iid);
+      splash.setAttribute('role', 'status');
+      splash.setAttribute('aria-live', 'polite');
+      const media = introURL
+        ? `<div class="arrivalmedia"><video class="arrivalvideo" autoplay muted playsinline preload="metadata" poster="${imgURL(card.name, true)}"><source src="${introURL}" type="video/mp4"></video><img class="arrivalfallback" hidden src="${imgURL(card.name, true)}" onerror="MTG.imgFail(this)"><div class="arrivalscan" aria-hidden="true"></div></div>`
+        : `<img src="${imgURL(card.name, true)}" onerror="MTG.imgFail(this)">`;
       splash.innerHTML = `
         <div class="arrivalflare" aria-hidden="true"></div>
-        <img src="${imgURL(card.name, true)}" onerror="MTG.imgFail(this)">
+        ${media}
         <div class="arrivalcopy">
-          <small>${commander ? '👑 COMMANDER ENTERS' : '✦ POWERHOUSE ENTERS'}</small>
-          <b>${esc(card.name)}</b>
+          <small>${commander ? `${U.icon('crown')} COMMANDER ENTERS` : `${U.icon('effects')} POWERHOUSE ENTERS`}</small>
+          <b>${esc(introLabel)}</b>
           <span>${esc(event.player ? event.player.name : '')}${event.power !== null && event.power !== undefined ? ` · ${event.power}/${event.toughness}` : ''}</span>
         </div>`;
       document.body.appendChild(splash);
+      const video = splash.querySelector('.arrivalvideo');
+      if (video) {
+        const fallback = () => {
+          video.hidden = true;
+          const image = splash.querySelector('.arrivalfallback');
+          if (image) image.hidden = false;
+        };
+        video.addEventListener('error', fallback, { once: true });
+        const playback = video.play();
+        if (playback && typeof playback.catch === 'function') playback.catch(fallback);
+      }
       requestAnimationFrame(() => {
         const permanent = document.querySelector(`.mini[data-iid="${card.iid}"]`);
         if (permanent) permanent.classList.add('arrival-highlight');
@@ -3820,7 +3839,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         splash.classList.add('leaving');
         document.querySelector(`.mini[data-iid="${card.iid}"]`)?.classList.remove('arrival-highlight');
         setTimeout(() => splash.remove(), 320);
-      }, 3200);
+      }, introURL ? 4300 : 3200);
     }
 
     showBanner(text, gold) {
