@@ -133,7 +133,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         },
         {
           label: 'Ciljani igrač dobija 2X života',
-          targets: [T.player({ prompt: 'Ko dobija život?', aiHint: { goal: 'lifegain' } })],
+          targets: [T.player({ prompt: 'Who gains the life?', aiHint: { goal: 'lifegain' } })],
         },
       ],
     },

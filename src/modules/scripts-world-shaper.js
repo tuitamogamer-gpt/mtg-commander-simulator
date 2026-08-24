@@ -451,7 +451,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
 
-  SC['Oracle of Mul Daya'] = { playTop: (game, card, top) => top.is('Land'), additionalLandPlays: 1 };
+  SC['Oracle of Mul Daya'] = {
+    revealOwnTop: true,
+    playTop: (game, card, top) => top.is('Land'),
+    additionalLandPlays: 1,
+  };
 
   const windgraceLandTrigger = on => ({
     on, desc: 'Land iz groblja tapovan', filter: on === 'etb' ? etbSelf : attacksSelf,

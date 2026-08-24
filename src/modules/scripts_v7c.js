@@ -255,7 +255,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Vuci 2, daj protivniku', cost: { tap: true },
       cond: (g, c, p) => g.turnPlayer === p,
-      targets: [T.opponent({ prompt: 'Ko dobija Humble Defectora?', aiHint: { goal: 'gift' } })],
+      targets: [T.opponent({ prompt: 'Who gets Humble Defector?', aiHint: { goal: 'gift' } })],
       run: async ctx => {
         await ctx.g.draw(ctx.you, 2);
         const o = ctx.targets[0];
@@ -1558,13 +1558,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       const x = ctx.x || 0;
       const o1 = await E.chooseOpponent(ctx.g, ctx.you, {
-        prompt: 'Sylvan Offering — ko dobija Treefolk?', goal: 'gift',
+        prompt: 'Sylvan Offering — who gets the Treefolk?', goal: 'gift',
       });
       const treeDef = Object.assign({}, TK.beast33, { name: 'Treefolk', subtypes: ['Treefolk'], power: String(x), toughness: String(x) });
       await ctx.g.makeTokens(treeDef, ctx.you);
       if (o1) await ctx.g.makeTokens(treeDef, o1);
       const o2 = await E.chooseOpponent(ctx.g, ctx.you, {
-        prompt: 'Sylvan Offering — ko dobija Elf Warriore?', goal: 'gift',
+        prompt: 'Sylvan Offering — who gets the Elf Warriors?', goal: 'gift',
       });
       await ctx.g.makeTokens('elfWarrior', ctx.you, { n: x });
       if (o2) await ctx.g.makeTokens('elfWarrior', o2, { n: x });

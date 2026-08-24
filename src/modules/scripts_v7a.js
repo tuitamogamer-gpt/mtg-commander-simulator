@@ -1022,7 +1022,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'SVE (5 boja)', cost: { tap: true, sacSelf: true, mana: '{2}{W}{U}{B}{R}{G}' },
       targets: [
-        T.player({ prompt: 'Ko dobija 3 života i vuče kartu?', aiHint: { goal: 'drawSelf' } }),
+        T.player({ prompt: 'Who gains 3 life and draws a card?', aiHint: { goal: 'drawSelf' } }),
         T.any({ prompt: '3 štete', aiHint: { goal: 'damage', n: 3 } }),
         T.creature({ upTo: true, prompt: 'Do jedno stvorenje dobija 3 countera', aiHint: { goal: 'buff' } }),
       ],

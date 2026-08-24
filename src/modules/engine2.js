@@ -89,14 +89,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function manualManaLabel(source) {
     const cost = source.extraCost || {};
     const costParts = [];
-    if (cost.mana) costParts.push(typeof cost.mana === 'string' ? cost.mana : 'plati manu');
+    if (cost.mana) costParts.push(typeof cost.mana === 'string' ? cost.mana : 'pay mana');
     if (cost.tap) costParts.push('tap');
-    if (cost.sacSelf) costParts.push('žrtvuj ovu kartu');
-    if (cost.sac) costParts.push(`žrtvuj ${cost.sacN || 1} permanent${(cost.sacN || 1) === 1 ? '' : 'a'}`);
-    if (cost.life) costParts.push(`plati ${cost.life} života`);
+    if (cost.sacSelf) costParts.push('sacrifice this card');
+    if (cost.sac) costParts.push(`sacrifice ${cost.sacN || 1} permanent${(cost.sacN || 1) === 1 ? '' : 's'}`);
+    if (cost.life) costParts.push(`pay ${cost.life} life`);
     if (cost.mill) costParts.push(`mill ${cost.mill}`);
-    const produces = source.produce.map(manaOptionLabel).join(' ili ');
-    const grantedBy = source.grantedBy ? ` — daje ${source.grantedBy.name}` : '';
+    const produces = source.produce.map(manaOptionLabel).join(' or ');
+    const grantedBy = source.grantedBy ? ` — granted by ${source.grantedBy.name}` : '';
     return `Mana: ${costParts.length ? costParts.join(' + ') + ' → ' : ''}${produces}${grantedBy}`;
   }
 
@@ -453,7 +453,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const choice = await p.controller.decide(this, {
         type: 'chooseManaSources', player: p, cost, forSpell, opts,
         candidates, sources: allSources, suggested,
-        prompt: `${forSpell && forSpell.card ? forSpell.card.name : 'Spell'}: izaberi mana izvore`,
+        prompt: `${forSpell && forSpell.card ? forSpell.card.name : 'Spell'}: choose mana sources`,
       });
       if (!(choice && choice.auto)) {
         const cards = Array.isArray(choice) ? choice : choice && choice.cards;

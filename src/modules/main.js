@@ -74,6 +74,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       search: '', color: 'all', strategy: 'all', year: 'all', favoritesOnly: false,
       favorites: new Set(savedFavorites),
     };
+    const setupSteps = [...root.querySelectorAll('.setupstep')];
+    setupSteps.filter(step => step.dataset.step !== 'deck').forEach(step => {
+      step.disabled = true;
+      step.setAttribute('aria-disabled', 'true');
+      step.title = 'Choose your deck first';
+    });
 
     const grid = el('div', 'setupgrid');
     root.appendChild(grid);
@@ -116,7 +122,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <div class="deckcmd"><span>Commander</span><b>${esc(deck.commander)}</b></div>
           <div class="deckcolors">${(meta.colors || []).map(c => `<img class="deckmana" src="/assets/mana/${c}.svg" alt="{${c}}" title="{${c}}">`).join('')} <span class="deckstyle">${esc(meta.style || '').replace(/[—–]/g, '-')}</span></div>
           <div class="deckblurb">${esc(meta.blurb || '').replace(/[—–]/g, '-')}</div>
-          <div class="deckset">${esc(meta.set || '').replace(/[—–]/g, '-')}<span>View deck →</span></div>
+          <div class="deckset">${esc(meta.set || '').replace(/[—–]/g, '-')}<span>Select deck →</span></div>
         </div>`;
       const favorite = el('button', 'deckfavorite', state.favorites.has(name) ? '★' : '☆');
       favorite.type = 'button';
@@ -148,6 +154,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         updateStartLabel();
         mobileDeck.innerHTML = `<img src="${commanderImg(name)}" alt="${esc(deck.commander)}" onerror="MTG.imgFail(this)"><span><small>Selected deck</small><b>${esc(name)}</b></span>`;
         mobileContinue.disabled = false;
+        setupSteps.forEach(step => {
+          step.disabled = false;
+          step.removeAttribute('aria-disabled');
+          step.removeAttribute('title');
+        });
         root.querySelectorAll('.setupstep').forEach(step => step.classList.toggle('on', step.dataset.step === 'pod'));
       };
       entry.appendChild(card);
@@ -205,6 +216,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!state.deck) { cmdBox.appendChild(el('div', 'cmdhint', 'Choose a deck on the left first.')); return; }
       const deck = MTG.DECKS[state.deck];
       const legals = MTG.legalCommanders(deck, MTG.DEFS);
+      const deckSummary = el('div', 'selecteddecksummary');
+      deckSummary.setAttribute('role', 'status');
+      deckSummary.setAttribute('aria-live', 'polite');
+      deckSummary.innerHTML = `<span><small>Selected deck</small><b>${esc(state.deck)}</b></span><em>Ready</em>`;
+      cmdBox.appendChild(deckSummary);
       const chosen = el('div', 'cmdchosen');
       for (const nm of state.commanders) {
         const def = MTG.DEFS[nm] || {};
@@ -372,6 +388,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     root.querySelectorAll('.setupstep').forEach(step => {
       step.onclick = () => {
+        if (step.disabled) return;
         const target = step.dataset.step;
         root.querySelectorAll('.setupstep').forEach(item => item.classList.toggle('on', item === step));
         if (target === 'deck') {
@@ -763,12 +780,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ui.render();
       return;
     }
+    if (smokeScenario === 'libraryTop') {
+      const take = (name, zone) => {
+        const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+        const card = zones.flat().find(candidate => candidate.name === name) || new MTG.CardInst(MTG.DEFS[name], ui.me);
+        g.remove(card);
+        card.ctrl = ui.me; card.zone = zone; card.sick = false;
+        if (zone === 'battlefield') g.battlefield.push(card); else ui.me[zone].push(card);
+        return card;
+      };
+      take('Oracle of Mul Daya', 'battlefield');
+      const top = take('Forest', 'library');
+      g.turnPlayer = ui.me; g.turnNo = 6; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+      ui.me.landsPlayed = 0;
+      g.recalc();
+      const q = {
+        type: 'main', player: ui.me,
+        casts: g.castableList(ui.me), acts: g.activatableList(ui.me), lands: g.playableLands(ui.me), phase: g.phase,
+      };
+      void ui.me.controller.decide(g, q).then(action => g.performAction(ui.me, action));
+      g.lg(`Library top smoke: ${top.name} is revealed and playable via Oracle of Mul Daya.`, 'effect');
+      ui.render();
+      return;
+    }
     if (smokeScenario === 'opponentChoice') {
       g.turnPlayer = ui.me; g.turnNo = 1; g.phase = 'main1'; g.step = 'main';
       void MTG.E.chooseOpponent(g, ui.me, {
-        prompt: 'Sylvan Offering: ko dobija Treefolk?', goal: 'gift',
+        prompt: 'Sylvan Offering: who gets the Treefolk?', goal: 'gift',
       }).then(opponent => {
-        if (opponent) ui.toast(`Izabran protivnik: ${opponent.name}`);
+        if (opponent) ui.toast(`Chosen opponent: ${opponent.name}`);
         ui.render();
       });
       ui.render();
@@ -910,7 +950,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const smokeView = new URLSearchParams(window.location.search).get('smokeView');
         if (smokeView === 'exile') ui.zoneBrowse = { player: ui.me, zone: 'exile' };
         if (smokeView === 'sheet') ui.sheet = { card: spell };
-        ui.toast(`Moonstone: ${spell.name} je legalan iz exilea do kraja ovog poteza.`);
+        ui.toast(`Moonstone: ${spell.name} can be played from exile until the end of this turn.`);
         ui.render();
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;

@@ -105,6 +105,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.imgCache = {};
     }
 
+    makeKeyboardButton(node, label) {
+      if (!node || typeof node.onclick !== 'function') return node;
+      node.setAttribute('role', 'button');
+      node.setAttribute('tabindex', '0');
+      node.setAttribute('aria-label', label);
+      node.title = label;
+      node.onkeydown = event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        event.stopPropagation();
+        node.click();
+      };
+      return node;
+    }
+
     // ---------- controller protocol ----------
     get pending() { return this.pendings && this.pendings.length ? this.pendings[this.pendings.length - 1] : null; }
     set pending(v) {
@@ -672,9 +687,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         it.appendChild(main);
         const targetFlow = this.renderStackTargetFlow(so, { compact: true, includeSource: false, maxTargets: 3 });
         if (targetFlow) it.appendChild(targetFlow);
-        if (this.markSelectedTarget(it, so)) { /* click again removes the selected spell target */ }
-        else if (this.isCandidate(so)) { it.classList.add('targetable'); it.onclick = () => this.pickCandidate(so); }
-        else if (so.card) it.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
+        let stackItemLabel = `${nm}. Open stack card details.`;
+        if (this.markSelectedTarget(it, so)) stackItemLabel = `${nm}. Selected target. Remove this target.`;
+        else if (this.isCandidate(so)) {
+          it.classList.add('targetable');
+          it.onclick = () => this.pickCandidate(so);
+          stackItemLabel = `${nm}. Select this spell as a target.`;
+        } else if (so.card) it.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
+        this.makeKeyboardButton(it, stackItemLabel);
         body.appendChild(it);
       });
       pop.appendChild(body);
@@ -718,6 +738,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // ---------- desktop sidebar: threat panel + tok igre ----------
     renderSidebar(g) {
       const side = el('div', 'sidebar');
+      const sidebarAccessible = this.utilityDrawerOpen || this.mobileView === 'stack';
+      side.setAttribute('aria-hidden', sidebarAccessible ? 'false' : 'true');
+      side.inert = !sidebarAccessible;
       const diplomacyEnabled = !!(g.diplomacy && g.diplomacy.enabled);
       const drawerTitle = this.sidebarTab === 'diplomacy' && diplomacyEnabled
         ? 'Diplomacy & Politics' : this.sidebarTab === 'log' ? 'Game log' : 'Table details';
@@ -766,9 +789,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             it.innerHTML = `<div class="siname">${esc(this.stackDisplayName(so))}</div>` +
               `<div class="sisub">${esc(so.ctrl ? so.ctrl.name : '')}${so.isCopy ? ` · COPY #${esc(so.copyIndex || '?')}` : so.kind ? ' · ' + esc(so.kind) : ''}</div>` +
               `<div class="sitargets">🎯 ${esc(this.stackTargetSummary(so))}</div>`;
-            if (this.markSelectedTarget(it, so)) { /* selected stack target stays removable */ }
-            else if (this.isCandidate(so)) { it.classList.add('targetable'); it.onclick = () => this.pickCandidate(so); }
-            else if (so.card) it.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
+            const stackName = this.stackDisplayName(so);
+            let stackItemLabel = `${stackName}. Open stack card details.`;
+            if (this.markSelectedTarget(it, so)) stackItemLabel = `${stackName}. Selected target. Remove this target.`;
+            else if (this.isCandidate(so)) {
+              it.classList.add('targetable');
+              it.onclick = () => this.pickCandidate(so);
+              stackItemLabel = `${stackName}. Select this spell as a target.`;
+            } else if (so.card) it.onclick = () => { this.sheet = { card: so.card, stack: true }; this.render(); };
+            this.makeKeyboardButton(it, stackItemLabel);
             body.appendChild(it);
           }
         }
@@ -1075,12 +1104,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // Drawer i Game Menu imaju vlastite fokusirane kontrole. Dok su otvoreni,
         // Enter/Space ne smiju aktivirati skriveni gameplay prompt ispod njih.
         if ((this.quickMenuOpen || this.utilityDrawerOpen) && (ev.key === ' ' || ev.key === 'Enter')) return;
+        // A focused control owns Enter/Space. Letting the same key bubble into
+        // the global shortcut layer can open a sheet and immediately activate
+        // its primary action (for example: open a hand card and cast it at once).
+        if ((ev.key === ' ' || ev.key === 'Enter') && ev.target.closest &&
+          ev.target.closest('button, [role="button"], a[href], input, textarea, select, [contenteditable="true"]')) return;
         // R = reaguj / armiraj HOLD; Space u prozoru reakcije = pusti dalje
         if (ev.key === 'r' || ev.key === 'R') {
           if (this.react) { this.takeReactWindow(); ev.preventDefault(); return; }
           if (!this.pending) {
             this.holdNext = !this.holdNext;
-            this.toast(this.holdNext ? '🖐️ HOLD: stajem na sljedećem prioritetu.' : 'HOLD otkazan.');
+            this.toast(this.holdNext ? '🖐️ HOLD: armed for the next priority window.' : 'HOLD canceled.');
             this.render(); ev.preventDefault();
           }
           return;
@@ -1210,11 +1244,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderUtilityRail(g) {
       const rail = el('nav', 'utilityrail');
       rail.setAttribute('aria-label', 'Arena utilities');
-      const add = (key, label, count, title) => {
+      const add = (key, icon, label, count, title) => {
         const button = el('button', 'utilitybutton' + (this.utilityDrawerOpen && this.sidebarTab === key ? ' on' : ''),
-          `<span>${esc(label)}</span>${count ? `<b>${esc(count)}</b>` : ''}`);
+          `<span class="utilityicon" aria-hidden="true">${esc(icon)}</span><span class="utilitylabel">${esc(label)}</span>${count ? `<b>${esc(count)}</b>` : ''}`);
         button.type = 'button';
         button.title = title;
+        button.setAttribute('aria-label', title);
         button.onclick = () => {
           if (this.utilityDrawerOpen && this.sidebarTab === key) {
             this.utilityDrawerOpen = false;
@@ -1223,13 +1258,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
         rail.appendChild(button);
       };
-      add('table', 'STACK', g.stack.length, 'Open the stack and table information');
-      add('log', 'LOG', 0, 'Open the game log');
+      add('table', '◇', 'Stack', g.stack.length, 'Open the stack and table information');
+      add('log', '≡', 'Log', 0, 'Open the game log');
       if (g.diplomacy && g.diplomacy.enabled) {
         const view = g.diplomacyView ? g.diplomacyView(this.me) : null;
         const incoming = view ? view.incoming.length : 0;
         const active = view ? view.activeContracts.length : 0;
-        add('diplomacy', 'POLITICS', incoming || active || '•', 'Open Diplomacy & Politics');
+        add('diplomacy', '♢', 'Deals', incoming || active || '•', 'Open Diplomacy & Politics');
       }
       return rail;
     }
@@ -1340,6 +1375,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         localStorage.setItem('mtgStackPop', this.stackPopup ? '1' : '0');
         this.render();
       });
+      action('Opponent card size', `${Math.round(this.oppScale * 100)}%`, () => {
+        const sizes = [0.8, 1, 1.2, 1.4];
+        const current = sizes.findIndex(size => Math.abs(size - this.oppScale) < 0.01);
+        this.oppScale = sizes[(current + 1 + sizes.length) % sizes.length];
+        localStorage.setItem('mtgOppS', String(this.oppScale));
+        this.render();
+      });
+      action('Opponent area height', `${this.oppHeight}%`, () => {
+        const heights = [30, 36, 42, 50];
+        const current = heights.indexOf(this.oppHeight);
+        this.oppHeight = heights[(current + 1 + heights.length) % heights.length];
+        localStorage.setItem('mtgOppH', String(this.oppHeight));
+        this.render();
+      });
       action('Table information', 'Stack, damage and threat', () => this.openUtility('table'));
       action('Game log', `${g.log.length} events`, () => this.openUtility('log'));
       if (g.diplomacy && g.diplomacy.enabled) action('Diplomacy & Politics', 'Deals and proposals', () => this.openUtility('diplomacy'));
@@ -1384,6 +1433,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const collapsed = this.collapsed.has(p.idx);
         // header
         const head = el('div', 'opphead' + (isCandidate ? ' targetable' : ''));
+        head.title = isCandidate ? `Choose ${p.name} as the target`
+          : collapsed ? `Expand ${p.name}'s battlefield` : `Collapse ${p.name}'s battlefield`;
         const cmdList = (p.commanders && p.commanders.length) ? p.commanders : p.command;
         const cmdState = cmdList.map(c => c.zone === 'battlefield' ? 'battlefield' : c.zone === 'command' ? 'CZ' : '🪦')
           .join(' / ') || '-';
@@ -1395,10 +1446,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span class="oppname">${isMonarch ? '<i class="seatcrown" aria-label="Monarch">♛</i> ' : ''}${meta.icon || '🤖'} ${esc(p.name)}</span>
           ${isActiveAi ? '<span class="activeaitag">ACTIVE TURN</span>' : ''}
           ${styleMeta ? `<span class="personachip" title="Style: ${esc(styleMeta.label)}">${styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
-          <span class="opplife" role="button">${p.life}❤</span>
+          <span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${p.life}❤</span>
           <span class="oppmeta">✋${p.hand.length} 📚${p.library.length}${statusEffects.length ? ` <button type="button" class="playereffectsbadge" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>✦</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}</span>
           <span class="oppcmd" title="${esc(cmdTitle)}">👑${esc(cmdState)}</span>
-          <button class="tbtn small">ℹ️</button>`;
+          <button class="tbtn small" type="button" aria-label="Open ${esc(p.name)} player details" title="Open ${esc(p.name)} player details">ℹ️</button>`;
         head.querySelector('.tbtn.small').onclick = (e) => { e.stopPropagation(); this.playerSheet = p; this.render(); };
         const effectsBadge = head.querySelector('.playereffectsbadge');
         if (effectsBadge) effectsBadge.onclick = (e) => { e.stopPropagation(); this.playerSheet = p; this.render(); };
@@ -1406,6 +1457,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         head.querySelector('.opplife').onclick = (e) => {
           if (isCandidate || isSelectedTarget) return; // pusti glavni handler
           e.stopPropagation(); this.playerSheet = p; this.render();
+        };
+        head.querySelector('.opplife').onkeydown = (e) => {
+          if (e.key !== 'Enter' && e.key !== ' ') return;
+          e.preventDefault(); e.currentTarget.click();
         };
         head.onclick = () => {
           if (isSelectedTarget) { this.removeTargetCandidate(p); return; }
@@ -1642,6 +1697,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       wrap.appendChild(row1);
       // lands & info row
       const row2 = el('div', 'landrow');
+      const landStrip = el('div', 'landstrip');
       const groups = this.landGroups(g, me);
       for (const [name, lands] of Object.entries(groups)) {
         const untapped = lands.filter(l => !l.tapped).length;
@@ -1653,26 +1709,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (selectedLand) this.markSelectedTarget(lc, selectedLand);
         else if (cand) { lc.classList.add('targetable'); lc.onclick = () => this.pickCandidate(cand); }
         else lc.onclick = () => { this.sheet = { card: lands[0] }; this.render(); };
-        row2.appendChild(lc);
+        landStrip.appendChild(lc);
       }
+      if (landStrip.children.length) row2.appendChild(landStrip);
       // mana pool
       const pool = me.pool;
       const poolStr = Object.entries(pool).filter(([k, v]) => v > 0)
         .map(([k, v]) => `<span class="manapoolchip">${manaGlyph(k, 'poolglyph')}<b>${v}</b></span>`).join('');
-      const maySeeLibraryTop = g.bf().some(card => card.ctrl === me && card.def.revealOwnTop);
+      const libraryTopSources = g.bf().filter(card => card.ctrl === me && card.def.revealOwnTop);
+      const maySeeLibraryTop = libraryTopSources.length > 0;
       const libraryTop = maySeeLibraryTop ? me.library[me.library.length - 1] : null;
+      const pendingMain = this.pending && (this.pending.q.type === 'main' || this.pending.q.type === 'priority')
+        ? this.pending.q : null;
+      const libraryTopPlayableNow = !!(libraryTop && pendingMain && (
+        (pendingMain.lands || []).includes(libraryTop) ||
+        (pendingMain.casts || []).some(entry => entry.card === libraryTop)
+      ));
+      const libraryTopPermitted = !!(libraryTop && libraryTopSources.some(source => {
+        if (typeof source.def.playTop !== 'function') return false;
+        try { return source.def.playTop(g, source, libraryTop, me); } catch { return false; }
+      }));
       const info = el('div', 'meinfo');
       if (g.monarch === me) info.classList.add('monarch');
       const statusEffects = this.playerStatusEffects(g, me);
       if (statusEffects.length) info.classList.add('has-effects');
-      info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="melife">${me.life}<small>life</small></div>
+      info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="melife" role="button" tabindex="0" aria-label="You: ${me.life} life. Open player details." title="Open your player details">${me.life}<small>life</small></div>
         ${g.monarch === me ? '<div class="memonarch"><span>♛</span><b>MONARCH</b></div>' : ''}
         ${statusEffects.length ? `<button type="button" class="playereffectsbadge mine" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>✦</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}
         <div class="manapool">${poolStr}</div>
         <div class="zbtns">
-          <button class="zbtn" data-z="library-top">📚${me.library.length}${libraryTop ? ' · 👁' : ''}</button>
-          <button class="zbtn" data-z="graveyard">🪦${me.graveyard.length}</button>
-          <button class="zbtn" data-z="exile">🌀${me.exile.length}</button>
+          <button class="zbtn" data-z="library-top" aria-label="Library: ${me.library.length} cards${libraryTop ? '. The top card is shown beside this control.' : ''}" title="Library: ${me.library.length} cards${libraryTop ? ' · top card visible beside this control' : ''}">📚${me.library.length}</button>
+          <button class="zbtn" data-z="graveyard" aria-label="Graveyard: ${me.graveyard.length} cards" title="Open graveyard">🪦${me.graveyard.length}</button>
+          <button class="zbtn" data-z="exile" aria-label="Exile: ${me.exile.length} cards" title="Open exile">🌀${me.exile.length}</button>
         </div>`;
       info.querySelectorAll('.zbtn[data-z]').forEach(b => {
         b.onclick = () => {
@@ -1694,7 +1762,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } else {
         myLife.onclick = () => { this.playerSheet = me; this.render(); };
       }
-      row2.appendChild(info);
+      myLife.onkeydown = (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault(); e.currentTarget.click();
+      };
+      const playerRail = el('div', 'playerrail' + (libraryTop ? ' has-library-top' : ''));
+      if (libraryTop) {
+        const sourceNames = libraryTopSources.map(source => source.name).filter((name, index, list) => list.indexOf(name) === index);
+        const landPlayUsed = libraryTop.is('Land') && me.landsPlayed >= g.landPlayLimit(me);
+        const status = libraryTopPlayableNow ? 'PLAY NOW'
+          : libraryTopPermitted && landPlayUsed ? 'LAND PLAY USED'
+            : libraryTopPermitted ? 'PLAYABLE FROM TOP'
+              : 'TOP CARD REVEALED';
+        const topCard = el('button', 'librarytoppeek' + (libraryTopPlayableNow ? ' playable' : '') + (landPlayUsed ? ' used' : ''));
+        topCard.type = 'button';
+        topCard.dataset.testid = 'library-top-peek';
+        topCard.dataset.cname = libraryTop.name;
+        topCard.title = `${libraryTop.name} · ${status.toLowerCase()} · revealed by ${sourceNames.join(', ')}`;
+        topCard.setAttribute('aria-label', `Top of library: ${libraryTop.name}. ${status}. Revealed by ${sourceNames.join(', ')}. Open card details.`);
+        topCard.innerHTML = `
+          <img loading="lazy" src="${imgURL(libraryTop.name)}" alt="" aria-hidden="true" onerror="MTG.imgFail(this)">
+          <span><small>LIBRARY TOP</small><b>${esc(libraryTop.name.split(' // ')[0])}</b><em>${esc(status)}</em><i>via ${esc(sourceNames.join(', '))}</i></span>`;
+        topCard.onclick = () => { this.sheet = { card: libraryTop }; this.render(); };
+        playerRail.appendChild(topCard);
+      }
+      playerRail.appendChild(info);
+      row2.appendChild(playerRail);
       wrap.appendChild(row2);
       // COMMAND ZONE — always visible when commander is there.
       // The Ring emblem stoji uz komandera i ostaje vidljiv i kad je
@@ -1716,6 +1809,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             ${castEntry ? '<div class="czgo">CAST ▶</div>' : ''}`;
           if (castEntry) cz.classList.add('castable');
           cz.onclick = () => { this.sheet = { card: cmd }; this.render(); };
+          this.makeKeyboardButton(cz, `${cmd.name}. Open commander actions.`);
           czRow.appendChild(cz);
         }
         if (ringEm) czRow.appendChild(this.ringCard(me, ringEm));
@@ -1752,7 +1846,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
         this.render();
       };
-      return d;
+      return this.makeKeyboardButton(d, `The Ring, level ${em.level} of 4. Open Ring details.`);
     }
 
     canLookFaceDown(c) {
@@ -1815,14 +1909,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ${pt}${cnt}${oc}${crewed}${att}${tok}${fd}${stackN}
         ${badges.length ? `<div class="badge">${badges.join('')}</div>` : ''}`;
       d.dataset.cname = mayLookFaceDown ? faceName : c.name;
+      const accessibleName = c.faceDown && !mayLookFaceDown ? 'Face-down permanent' : faceName;
       // interactions
       if (this.markSelectedTarget(d, c)) {
-        return d;
+        return this.makeKeyboardButton(d, `${accessibleName}. Selected target. Remove this target.`);
       }
       if (this.isCandidate(c)) {
         d.classList.add('targetable');
         d.onclick = () => this.pickCandidate(c);
-        return d;
+        return this.makeKeyboardButton(d, `${accessibleName}. Select this card as a target.`);
       }
       if (pd && pd.q.type === 'attackers' && c.ctrl === this.me) {
         const sel = pd.sel.find(s => s.card === c);
@@ -1834,7 +1929,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             d.appendChild(el('div', 'atkchip', `⚔ ${esc(tname)}`));
           }
           d.onclick = () => this.toggleAttacker(c);
-          return d;
+          return this.makeKeyboardButton(d, `${accessibleName}. ${sel ? 'Remove this attacker.' : 'Assign this creature as an attacker.'}`);
         }
       }
       if (pd && pd.q.type === 'blockers') {
@@ -1846,11 +1941,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             d.appendChild(el('div', 'atkchip', `🛡 ${esc(assigned.name)}`));
           }
           d.onclick = () => this.assignBlocker(c);
-          return d;
+          return this.makeKeyboardButton(d, `${accessibleName}. ${assigned ? 'Remove this blocker assignment.' : 'Assign this creature as a blocker.'}`);
         }
       }
       d.onclick = () => { this.sheet = { card: c }; this.render(); };
-      return d;
+      return this.makeKeyboardButton(d, `${accessibleName}. Open card details.`);
     }
 
     renderHand(g) {
@@ -1927,6 +2022,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (castable.has(c)) d.classList.add('castable');
           d.onclick = () => { this.sheet = { card: c }; this.render(); };
         }
+        const handAction = d.classList.contains('targetable')
+          ? 'Legal target. Select this card.'
+          : d.classList.contains('castable')
+            ? 'Playable now. Open card actions.'
+            : 'Open card details.';
+        d.setAttribute('role', 'button');
+        d.setAttribute('tabindex', '0');
+        d.setAttribute('aria-label', `${c.name}. ${handAction}`);
+        d.title = `${c.name} · ${handAction}`;
+        d.onkeydown = event => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          event.stopPropagation();
+          d.click();
+        };
         row.appendChild(d);
       }
       if (!me.hand.length) row.appendChild(el('div', 'emptyrow', 'Empty hand'));
@@ -3549,7 +3659,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ov.onclick = (e) => { if (e.target === ov) { this.showHelp = false; this.render(); } };
       const m = el('div', 'sheet tall');
       ov.appendChild(m);
-      m.appendChild(el('div', 'mtitle', '❓ How to play'));
+      const head = el('div', 'sheettitlebar');
+      head.appendChild(el('div', 'mtitle', '❓ How to play'));
+      const dismiss = el('button', 'sheetclose', '×');
+      dismiss.type = 'button';
+      dismiss.setAttribute('aria-label', 'Close help');
+      dismiss.title = 'Close help';
+      dismiss.onclick = () => { this.showHelp = false; this.render(); };
+      head.appendChild(dismiss);
+      m.appendChild(head);
       m.appendChild(el('div', 'helptext', `
 <b>🎴 Playing cards:</b> click a card in your hand to open its available actions, such as Cast, Play land, or Cycling. Cards with a <span style="color:#5aa860">green frame</span> can be played now. The <b>✨/🖐 MANA</b> button switches between automatic payment and choosing exact mana sources.<br><br>
 <b>👑 Commander:</b> your commander stays in the COMMAND ZONE above your hand until cast. Click it, then choose Cast. When it dies, you may return it to the command zone; each recast adds {2} commander tax.<br><br>

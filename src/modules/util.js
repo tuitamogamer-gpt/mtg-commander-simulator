@@ -142,6 +142,9 @@ const UI_ENGLISH_PRIORITY_RULES = [
   [/izvan identiteta komandera/g, "outside the commanders' color identity"],
   [/igraš sa dva komandera/gi, 'you are playing two commanders'],
   [/izaberi tačne/g, 'choose the exact'], [/Prvo izaberi/g, 'First choose'], [/prvo izaberi/g, 'first choose'],
+  [/Prokletstvo na igrača/g, 'Curse a player'], [/prokletstvo na igrača/g, 'curse a player'],
+  [/Prokuni igrača/g, 'Curse a player'], [/prokuni igrača/g, 'curse a player'],
+  [/ne može blokirati ovaj potez/g, "can't block this turn"],
 ];
 
 const UI_ENGLISH_RULES = [
@@ -151,6 +154,8 @@ const UI_ENGLISH_RULES = [
   [/Potez (\d+):/g, 'Turn $1:'],
   [/zadržava/g, 'keeps'],
   [/Sljedeći spell plaćaš životima/g, 'Pay life for the next spell'],
+  [/Ciljaj/g, 'Target'], [/ciljaj/g, 'target'], [/Enchantaj/g, 'Enchant'], [/enchantaj/g, 'enchant'],
+  [/Goaduj/g, 'Goad'], [/goaduj/g, 'goad'], [/Prokuni/g, 'Curse'], [/prokuni/g, 'curse'],
   [/više nisu/g, 'are no longer'],
   [/pokazati/g, 'reveal'], [/Heroja/g, 'Hero'],
   [/protivničkog/g, "opponent's"], [/protivničkom/g, "opponent's"], [/protivničkima/g, 'opponents'],
@@ -210,6 +215,9 @@ const UI_ENGLISH_RULES = [
   [/bilo čemu/g, 'anything'], [/Bacač/g, 'Fighter'], [/Čija/g, 'Whose'], [/Širi/g, 'Spread'],
   [/tuđi/g, "another player's"], [/zločin/g, 'crime'], [/trećinu/g, 'a third'], [/oslobađa/g, 'releases'],
   [/otišao/g, 'gone'], [/daš/g, 'give'], [/možda/g, 'maybe'], [/niču/g, 'appear'], [/spasiš/g, 'save'],
+  [/\bSvako\b/g, 'Each'], [/\bJedno\b/g, 'One'], [/\bTvoje\b/g, 'Your'], [/\btvoje\b/g, 'your'], [/\bDrugo\b/g, 'Another'], [/\bdrugo\b/g, 'another'],
+  [/\bdrugog\b/g, 'another'], [/\bbira(?!š)\b/g, 'chooses'], [/\bmelje\b/g, 'mills'], [/\bkontroloru\b/g, 'its controller'],
+  [/\bVillaina\b/g, 'Villain'], [/\bconnivea\b/g, 'connives'],
   [/tuđa/g, "another player's"], [/uništeni/g, 'destroyed'], [/uništena/g, 'destroyed'], [/špilu/g, 'deck'],
   [/odbačenom/g, 'discarded'], [/duže/g, 'longer'], [/exileš/g, 'exile'], [/kažnjava/g, 'punishes'], [/veže/g, 'attaches'],
   [/Udvostruči/g, 'Double'], [/letače/g, 'flyers'], [/uskrsnuće/g, 'resurrection'], [/pojačanje/g, 'boost'],

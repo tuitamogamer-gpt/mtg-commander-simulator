@@ -188,7 +188,7 @@ img { -webkit-user-drag: none; }
 .czrow { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 0 2px; }
 .czcard { display: flex; align-items: center; gap: 8px; background: linear-gradient(90deg,#2a2416,#1c2029); border: 2px solid #c9a03a88; border-radius: 10px; padding: 5px 8px; flex: 1 1 230px; min-width: 0; position: relative; }
 .czcard.castable { border-color: #5aa860; box-shadow: 0 0 10px #5aa86055; }
-.czcard img { width: 40px; height: 54px; object-fit: cover; border-radius: 5px; flex-shrink: 0; }
+.czcard > img { width: 40px; height: 54px; object-fit: cover; border-radius: 5px; flex-shrink: 0; }
 .czinfo { flex: 1; min-width: 0; }
 .czlabel { font-size: 8.5px; letter-spacing: 1.2px; color: #c9a03a; font-weight: 800; }
 .czname { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -233,6 +233,12 @@ img { -webkit-user-drag: none; }
 .hcard .mname { position: absolute; bottom: 0; left: 0; right: 0; font-size: 8.6px; background: #000c; padding: 2px 3px; }
 .hcard .hcost { position: absolute; top: 2px; right: 2px; display: flex; gap: 1px; flex-wrap: wrap; justify-content: flex-end; max-width: 90%; }
 .hcard.castable { border-color: #5aa860; box-shadow: 0 0 10px #5aa86077; }
+.hcard[role="button"] { cursor: pointer; }
+.hcard[role="button"]:focus-visible,
+.mini[role="button"]:focus-visible,
+.czcard[role="button"]:focus-visible,
+.stackpopitem[role="button"]:focus-visible,
+.stackitem[role="button"]:focus-visible { outline: 2px solid #f0bd76; outline-offset: 3px; }
 .msym { width: 14px; height: 14px; vertical-align: -2px; border-radius: 50%; box-shadow: 0 1px 1px #0006; }
 .czcost .msym, .stype .msym { width: 13px; height: 13px; }
 .pip { display: inline-flex; align-items: center; justify-content: center; min-width: 13px; height: 13px; border-radius: 50%; font-size: 8.5px; font-weight: 800; padding: 0 2px; border: 1px solid #0006; }
@@ -323,6 +329,11 @@ img { -webkit-user-drag: none; }
 
 .sheet { background: #1c2029; border-radius: 16px 16px 0 0; width: 100%; max-width: 640px; max-height: 88dvh; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
 .sheet.tall { min-height: 55dvh; }
+.sheettitlebar { position: sticky; top: -12px; z-index: 3; margin: -12px -12px 0; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: linear-gradient(180deg,rgba(24,29,38,.99),rgba(24,29,38,.95)); border-bottom: 1px solid rgba(231,215,181,.12); }
+.sheettitlebar .mtitle { margin: 0; }
+.sheetclose { width: 44px; height: 44px; flex: 0 0 44px; display: grid; place-items: center; color: #cbd2d0; background: rgba(7,11,12,.72); border: 1px solid rgba(231,215,181,.2); border-radius: 50%; font-size: 20px; cursor: pointer; }
+.sheetclose:hover { color: #fff; border-color: rgba(231,177,94,.7); }
+.sheetclose:focus-visible { outline: 3px solid #f0bd76; outline-offset: 2px; }
 .sheetimg { width: min(62vw, 250px); border-radius: 12px; align-self: center; }
 .sheetimg.noimg { display: none; }
 .sname { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -1120,6 +1131,61 @@ body:has(#setup) { background: #08090d; }
 .stacktargetflow.compact .stackflowtargetinfo small { font-size: 5.5px; }
 .stacktargetflow.compact .stackflowtargetn { width: 13px; height: 13px; top: -3px; left: -3px; font-size: 6px; }
 
+/* The desktop action-stage grid collapses its information column to zero on
+   phones. Keep the same explicit source/target context, but present it as a
+   single, scrollable action sheet with full-width decisions. */
+@media (max-width: 700px) {
+  .actionstagewrap {
+    padding: 8px;
+    place-items: center;
+  }
+
+  .actionstage {
+    width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    display: block;
+    padding: 15px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .actionstageart { display: none; }
+  .actionstageinfo { width: 100%; justify-content: flex-start; }
+  .actionstageeyebrow { font-size: 8px; letter-spacing: .18em; }
+  .actionstagename { margin-top: 7px; font-size: 25px; }
+  .actionstagetype { margin-top: 7px; font-size: 10px; }
+  .actionstagetarget { margin-top: 10px; padding: 8px 9px; font-size: 11px; line-height: 1.35; }
+  .actionstageoracle { max-height: 126px; margin-top: 10px; font-size: 12px; line-height: 1.45; }
+  .actionstagestack { margin-top: 11px; font-size: 7px; }
+
+  .actionstage .stacktargetflow { gap: 5px; padding: 6px; }
+  .actionstage .stackflowsource {
+    width: 112px;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 5px;
+    padding: 4px;
+  }
+  .actionstage .stackflowsource > img { width: 30px; height: 42px; }
+  .actionstage .stackflowarrow { width: 26px; }
+  .actionstage .stackflowtarget { min-width: 100px; flex-basis: 100px; grid-template-columns: 30px minmax(0, 1fr); }
+  .actionstage .stackflowtarget > img,
+  .actionstage .stackflowplayer { width: 30px; height: 42px; }
+
+  .actionstagebuttons {
+    position: sticky;
+    bottom: -15px;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    margin: 12px -15px -15px;
+    padding: 10px 15px 15px;
+    background: linear-gradient(180deg, rgba(7, 10, 11, .25), #070a0b 26%);
+  }
+  .actionstagebuttons .pbtn { min-width: 0; min-height: 48px; padding: 9px 7px; }
+  .actionstagebuttons .pbtn:only-child { grid-column: 1 / -1; }
+}
+
 /* Priority stop preset panel. */
 #game .stopbtn { width: auto; min-width: 86px; padding-inline: 10px; font: 700 9px/1 var(--tbl-cond); letter-spacing: .13em; }
 .stopmodal { width: min(680px, calc(100vw - 80px)); }
@@ -1258,6 +1324,35 @@ body:has(#setup) { background: #08090d; }
   .attackallocfoot .btnrow { justify-content: flex-end; }
 }
 
+@media (max-width: 520px) {
+  .attackallocmodal { display: flex; flex-direction: column; min-height: 0; }
+  .attackallochead { flex: none; margin-bottom: 11px; }
+  .attackalloclanes { flex: 1 1 auto; max-height: 22dvh; }
+  .attackpoolhead { flex: none; margin: 10px 2px 6px; }
+  .attackpool { flex: 1 1 auto; max-height: 26dvh; }
+  .attackallocfoot { flex: none; gap: 7px; margin-top: 8px; padding-top: 8px; }
+  .attackallocfoot .btnrow {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .attackallocfoot .pbtn { min-width: 0; min-height: 44px; padding: 7px 6px; font-size: 8px; }
+
+  .overlay .modal:has(> .cardgrid) > .btnrow {
+    position: sticky;
+    bottom: 0;
+    z-index: 4;
+    margin: 8px -2px -2px;
+    padding: 9px 2px 2px;
+    background: linear-gradient(180deg, rgba(28, 32, 41, 0), #1c2029 28%);
+  }
+  .overlay .modal:has(> .cardgrid) > .btnrow .pbtn {
+    min-height: 44px;
+    flex: 1;
+  }
+}
+
 /* Obavezni pregled svakog proglašenog combata. */
 .combatreviewmodal { width: min(1100px, calc(100vw - 80px)) !important; max-width: 1100px !important; padding: 22px; background: linear-gradient(145deg,#151b1e,#070a0b 72%); border: 1px solid rgba(200,134,60,.58); box-shadow: 0 30px 110px #000; }
 .combatreviewhead { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 8px 0 18px; color: #f5ecda; font: 24px/1.2 'Marcellus',serif; }
@@ -1286,6 +1381,38 @@ body:has(#setup) { background: #08090d; }
 .combatreviewactions { margin-top: 14px; }
 .combatreviewmodal .combatproceed { padding: 13px 18px; }
 .combatboardpeek { box-shadow: 0 -8px 28px rgba(0,0,0,.5); }
+
+@media (max-width: 700px) {
+  .combatreviewmodal {
+    width: calc(100vw - 16px) !important;
+    max-height: calc(100dvh - 16px);
+    padding: 14px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .combatreviewhead {
+    display: grid;
+    align-items: start;
+    gap: 10px;
+    margin: 6px 0 12px;
+    font-size: 22px;
+  }
+  .combatreviewhead span {
+    width: 100%;
+    white-space: normal;
+    line-height: 1.3;
+  }
+  .combatreviewlanes { max-height: 48dvh; }
+  .combatreviewlane { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 10px; }
+  .combatreviewtarget {
+    padding: 0 0 8px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(185,160,106,.13);
+  }
+  .combatreviewcard { min-width: 158px; }
+  .combatreviewactions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .combatreviewactions .pbtn { min-width: 0; min-height: 44px; padding: 8px 6px; }
+}
 
 /* ============================================================
    Podesive AI table — visina zone i veličina karata
@@ -1457,6 +1584,16 @@ body:has(#setup) { background: #08090d; }
 .diplomacyreviewactions { position: sticky; bottom: -22px; z-index: 2; margin-top: 16px; padding: 14px 0 22px; background: linear-gradient(180deg,rgba(8,12,12,0),#080c0c 28%); }
 .diplomacyreviewactions .pbtn { min-height: 44px; }
 .diplomacypausebar { border-color: rgba(211,151,76,.58) !important; box-shadow: inset 3px 0 #d3974c; }
+
+@media (max-width: 520px) {
+  .diplomacymodal { width: calc(100vw - 24px) !important; max-height: calc(100dvh - 24px) !important; padding: 16px !important; }
+  .dipfields { grid-template-columns: minmax(0,1fr); gap: 8px; }
+  .dipfield { padding: 10px; }
+  .dipfield select { min-height: 48px; }
+  .dipreview p { grid-template-columns: 64px minmax(0,1fr); gap: 8px; }
+  .diplomacymodal > .btnrow { position: sticky; bottom: -16px; z-index: 3; margin: 8px -16px -16px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: linear-gradient(180deg,rgba(8,12,12,0),#080c0c 24%); }
+  .diplomacymodal > .btnrow .pbtn { min-height: 44px; flex: 1; }
+}
 
 @media (min-width: 1280px) {
   .oppswrap.active-ai-turn { display: flex; flex-direction: row !important; align-items: stretch; }
@@ -2784,7 +2921,7 @@ span.msym.mana-glyph {
   #game .permanentpile.sm { width: calc(52px * var(--opp-scale,1)); }
   #game .czrow { padding-top: 2px; }
   #game .czcard { min-height: 46px; }
-  #game .czcard img { width: 34px; height: 46px; }
+  #game .czcard > img { width: 34px; height: 46px; }
   #game .czname { font-size: 12px; }
   #game .meinfo { min-height: 38px; }
   #game .melife { font-size: 25px; }
