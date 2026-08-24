@@ -57,7 +57,7 @@
   border-radius: 0 !important;
   background:
     linear-gradient(90deg, rgba(8, 12, 13, .97), rgba(12, 18, 18, .92)),
-    url('/assets/backgrounds/commander-war-room.jpg') center 45% / cover !important;
+    url('../assets/backgrounds/commander-war-room.jpg') center 45% / cover !important;
   box-shadow: 0 16px 54px rgba(0, 0, 0, .24) !important;
 }
 
@@ -663,7 +663,7 @@
   background:
     radial-gradient(ellipse 75% 55% at 48% 50%, rgba(69, 83, 51, .2), transparent 70%),
     linear-gradient(180deg, rgba(3, 6, 7, .64), rgba(3, 6, 7, .13) 42%, rgba(3, 6, 7, .78)),
-    url('/assets/backgrounds/commander-arena-table.jpg') center / cover no-repeat,
+    url('../assets/backgrounds/commander-arena-table.jpg') center / cover no-repeat,
     var(--v3-bg) !important;
 }
 
@@ -1486,4 +1486,269 @@ body:has(#game .overlay) .toastmsg {
 
 @media (prefers-reduced-motion: reduce) {
   #game .sidebar { transition: none; }
+}
+
+/* COMMANDER LIVE — the same warm brass / black-green war-room system as the
+   existing setup and battlefield, with room state kept visually explicit. */
+#setup .matchtype {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(211, 151, 76, .22);
+  border-radius: 10px;
+  background: linear-gradient(145deg, rgba(20, 27, 25, .9), rgba(7, 11, 12, .92));
+}
+#setup .matchtypecopy { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+#setup .matchtypecopy span,
+.online-section-title,
+.online-lobby small,
+.online-remote-game small { color: #bca172; font-size: 9px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; }
+#setup .matchtypecopy b { color: #efe6d2; font-size: 12px; }
+#setup .matchtypechoices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+#setup .matchtypebtn {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 11px 12px;
+  text-align: left;
+  color: #a8a294;
+  border: 1px solid rgba(255, 255, 255, .09);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, .025);
+  cursor: pointer;
+}
+#setup .matchtypebtn strong { color: #ddd3bf; font-size: 11px; }
+#setup .matchtypebtn small { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+#setup .matchtypebtn.selected { border-color: #d3974c; background: rgba(211, 151, 76, .1); box-shadow: inset 0 0 0 1px rgba(211, 151, 76, .12); }
+#setup .matchtypebtn.live strong { display: flex; align-items: center; gap: 6px; }
+#setup .matchtypebtn.live i,
+.online-room-state i,
+.onlineseatstatus i,
+.online-guest-wait i,
+.online-decision.waiting i,
+.online-waiting-game i,
+.online-unavailable-card > i {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #67bd82;
+  box-shadow: 0 0 12px rgba(103, 189, 130, .8);
+}
+
+.online-lobby,
+.online-remote-game {
+  min-height: 100dvh;
+  padding: clamp(22px, 4vw, 58px);
+  color: #e8deca;
+  background:
+    linear-gradient(rgba(4, 8, 8, .88), rgba(4, 8, 8, .94)),
+    url('../assets/backgrounds/commander-war-room.jpg') center/cover fixed;
+}
+.online-lobby-head,
+.online-game-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 22px;
+  max-width: 1500px;
+  margin: 0 auto 26px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(211, 151, 76, .22);
+}
+.online-lobby-head > div:first-of-type { max-width: 760px; }
+.online-lobby-head span:first-child,
+.online-game-head > div > span { color: #d3974c; font-size: 10px; font-weight: 700; letter-spacing: .2em; }
+.online-lobby-head h1 { margin: 8px 0 5px; color: #f5eddb; font: 42px/1.06 'Marcellus', serif; }
+.online-lobby-head p { margin: 0; color: #a6a092; font-size: 13px; line-height: 1.6; }
+.online-back,
+.online-copy,
+.online-start,
+.online-choice,
+.online-decision-choices select {
+  min-height: 42px;
+  padding: 10px 14px;
+  color: #ded3be;
+  font: 700 10px/1.2 'Barlow', sans-serif;
+  letter-spacing: .04em;
+  border: 1px solid rgba(211, 151, 76, .26);
+  border-radius: 6px;
+  background: rgba(10, 15, 15, .9);
+  cursor: pointer;
+}
+.online-back:hover,
+.online-copy:hover,
+.online-choice:hover { border-color: #d3974c; }
+.online-room-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  color: #8fd0a3;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  border: 1px solid rgba(103, 189, 130, .25);
+  border-radius: 999px;
+  background: rgba(21, 72, 42, .15);
+}
+.online-invite {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  max-width: 1500px;
+  margin: 0 auto 22px;
+  padding: 16px 18px;
+  border: 1px solid rgba(211, 151, 76, .28);
+  border-radius: 8px;
+  background: rgba(14, 20, 19, .9);
+}
+.online-invite div { display: grid; gap: 5px; min-width: 0; }
+.online-invite b { overflow: hidden; color: #f1dfbf; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.online-seats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+.onlineseat {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto minmax(230px, 1fr) auto auto;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .11);
+  border-radius: 10px;
+  background: linear-gradient(160deg, rgba(24, 31, 28, .96), rgba(7, 11, 12, .97));
+}
+.onlineseat.mine { border-color: rgba(211, 151, 76, .6); box-shadow: 0 0 28px rgba(211, 151, 76, .1); }
+.onlineseat.bot { border-color: rgba(108, 139, 111, .28); }
+.onlineseatnum { color: rgba(211, 151, 76, .35); font: 34px/1 'Marcellus', serif; }
+.onlineseatstatus { display: flex; align-items: center; gap: 6px; color: #8cc29b; font-size: 8px; font-weight: 700; letter-spacing: .13em; }
+.onlineseatstatus i { width: 5px; height: 5px; }
+.onlineseat.waiting .onlineseatstatus { color: #8b877f; }
+.onlineseat.waiting .onlineseatstatus i { background: #68665f; box-shadow: none; }
+.onlineseat > img { width: 100%; min-height: 230px; height: 100%; object-fit: cover; border-radius: 6px; filter: saturate(.8) contrast(1.05); }
+.onlineseatempty { display: grid; min-height: 230px; place-items: center; color: rgba(211, 151, 76, .35); font: 54px/1 'Marcellus', serif; border: 1px dashed rgba(211, 151, 76, .2); border-radius: 6px; }
+.onlineseatcopy { display: grid; gap: 3px; min-width: 0; }
+.onlineseatcopy b { overflow: hidden; color: #f0e7d5; font: 20px/1.15 'Marcellus', serif; text-overflow: ellipsis; white-space: nowrap; }
+.onlineseatcopy span { overflow: hidden; color: #aba496; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.online-deck-select {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 10px;
+  color: #e7dcc8;
+  border: 1px solid rgba(211, 151, 76, .25);
+  border-radius: 5px;
+  background: #0c1111;
+}
+.online-lobby-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: 1500px;
+  margin: 18px auto 0;
+  padding: 18px;
+  border-top: 1px solid rgba(211, 151, 76, .2);
+  background: rgba(7, 11, 12, .8);
+}
+.online-lobby-actions > div:first-child { display: grid; gap: 3px; }
+.online-lobby-actions b { color: #f0e6d2; }
+.online-lobby-actions span { color: #8f897d; font-size: 10px; }
+.online-start,
+.online-choice.primary {
+  color: #1b160e;
+  border-color: #e4aa61;
+  background: linear-gradient(135deg, #e8b46d, #b97735);
+  box-shadow: 0 7px 24px rgba(211, 151, 76, .18);
+}
+.online-start { min-width: 210px; min-height: 52px; }
+.online-start:disabled,
+.online-choice:disabled { opacity: .38; cursor: not-allowed; }
+.online-guest-wait { display: flex !important; align-items: center; gap: 8px; color: #aaa295; font-size: 11px; }
+.online-error { max-width: 1500px; margin: 0 auto 14px; padding: 12px 15px; color: #f0b3a5; border: 1px solid rgba(204, 83, 61, .45); background: rgba(94, 25, 18, .45); }
+.online-unavailable-card,
+.online-waiting-game {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  max-width: 900px;
+  min-height: 240px;
+  margin: 80px auto;
+  padding: 30px;
+  text-align: left;
+  border: 1px solid rgba(211, 151, 76, .25);
+  border-radius: 10px;
+  background: rgba(8, 13, 13, .92);
+}
+.online-unavailable-card > i,
+.online-waiting-game > i { width: 13px; height: 13px; }
+.online-unavailable-card div { display: grid; gap: 5px; }
+.online-unavailable-card b { color: #eee2cc; font-size: 17px; }
+.online-unavailable-card span,
+.online-waiting-game p { color: #999287; }
+
+.online-remote-game { padding: 20px 24px 30px; }
+.online-game-head { align-items: center; margin-bottom: 14px; padding-bottom: 14px; }
+.online-game-head > div:first-child { display: grid; gap: 5px; }
+.online-game-head b { color: #f0e7d4; font: 21px/1.1 'Marcellus', serif; }
+.online-player-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
+.online-player { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 12px; border: 1px solid rgba(255, 255, 255, .09); background: rgba(8, 13, 13, .9); }
+.online-player.active { border-color: rgba(211, 151, 76, .58); }
+.online-player.lost { opacity: .4; }
+.online-player small,
+.online-player b,
+.online-player span,
+.online-player i { grid-column: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.online-player b { color: #eee3ce; }
+.online-player span,
+.online-player i { color: #8f897e; font-size: 9px; font-style: normal; }
+.online-player strong { grid-column: 2; grid-row: 1 / span 4; align-self: center; color: #f0c17e; font: 27px/1 'Marcellus', serif; }
+.online-player strong em { display: block; margin-top: 3px; color: #8b7d68; font: 7px/1 'Barlow', sans-serif; letter-spacing: .12em; }
+.online-remote-board { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 10px; min-height: 280px; }
+.online-battlefield,
+.online-stack,
+.online-own-hand,
+.online-decision { padding: 12px; border: 1px solid rgba(255, 255, 255, .08); background: rgba(7, 11, 12, .88); }
+.online-section-title { display: flex; justify-content: space-between; margin-bottom: 9px; }
+.online-card-row { display: flex; gap: 8px; min-height: 190px; padding: 4px; overflow-x: auto; }
+.online-remote-card { position: relative; flex: 0 0 132px; display: grid; align-content: start; gap: 5px; color: #ded5c4; }
+.online-remote-card img,
+.online-card-back { width: 132px; height: 184px; object-fit: cover; border-radius: 6px; }
+.online-card-back { display: grid; place-items: center; color: #b98749; font: 11px/1 'Marcellus', serif; letter-spacing: .12em; border: 1px solid #8c6335; background: radial-gradient(circle, #26342f, #090d0d 65%); }
+.online-remote-card b { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.online-remote-card > span { position: absolute; right: 4px; bottom: 25px; padding: 3px 5px; color: #fff; font-weight: 700; border-radius: 4px; background: rgba(0, 0, 0, .8); }
+.online-remote-card.tapped img { transform: rotate(2deg); filter: brightness(.72); }
+.online-stack-list { display: grid; gap: 7px; }
+.online-stack-item { display: grid; gap: 2px; padding: 10px; border-left: 2px solid #d3974c; background: rgba(211, 151, 76, .06); }
+.online-stack-item b { color: #eee2cd; font-size: 11px; }
+.online-stack-item span,
+.online-empty-stack { color: #837e75; font-size: 9px; }
+.online-own-hand { margin-top: 10px; }
+.online-own-hand .online-card-row { min-height: 210px; }
+.online-decision { position: sticky; bottom: 0; z-index: 4; margin-top: 10px; box-shadow: 0 -14px 35px rgba(0, 0, 0, .38); }
+.online-decision.waiting > div { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; align-items: center; }
+.online-decision.waiting i { grid-row: 1 / span 3; }
+.online-decision.waiting b { color: #e9deca; }
+.online-decision.waiting span { color: #8d887e; font-size: 10px; }
+.online-decision-head h2 { margin: 5px 0 10px; color: #f3e8d2; font: 22px/1.15 'Marcellus', serif; }
+.online-decision-choices { display: flex; flex-wrap: wrap; gap: 7px; }
+.online-choice { display: grid; gap: 2px; min-width: 120px; text-align: left; }
+.online-choice span { color: #8f897e; font-size: 9px; }
+.online-choice.selected { border-color: #67bd82; background: rgba(103, 189, 130, .12); }
+.online-decision-choices select { min-width: 180px; }
+.online-number-choice { display: flex; gap: 8px; }
+.online-number-choice input { width: 110px; padding: 8px; color: #f2e5cd; border: 1px solid rgba(211, 151, 76, .3); background: #080d0d; }
+.online-assignment { align-self: center; color: #b8ad9a; font-size: 10px; }
+
+@media (max-width: 1100px) {
+  .online-seats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .online-player-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .online-remote-board { grid-template-columns: minmax(0, 1fr); }
 }

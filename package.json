@@ -11,10 +11,16 @@
     "test:ai": "node --test tests/ai-v2.test.mjs tests/headless-smoke.test.mjs",
     "benchmark:ai": "node scripts/benchmark-ai.mjs",
     "serve": "python3 -m http.server 8000 --bind 127.0.0.1",
+    "test:server": "node --test tests/vercel-multiplayer-server.test.mjs",
     "test": "node --test tests/*.test.mjs",
     "test:baseline": "node --test tests/baseline.test.mjs"
   },
   "engines": {
     "node": ">=22"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "ioredis": "^6.0.0",
+    "ws": "^8.21.3"
   }
 }

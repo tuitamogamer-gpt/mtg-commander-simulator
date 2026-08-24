@@ -49,7 +49,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <button type="button" class="setupstep" data-step="review"><span>3</span><b>Review</b></button>
       </nav>
       <div class="menu-mana-showcase" aria-label="Official white, blue, black, red, green, and colorless mana symbols">
-        ${['W', 'U', 'B', 'R', 'G', 'C'].map(color => `<img src="/assets/mana/${color}.svg" alt="{${color}}" title="{${color}}">`).join('')}
+        ${['W', 'U', 'B', 'R', 'G', 'C'].map(color => `<img src="./assets/mana/${color}.svg" alt="{${color}}" title="{${color}}">`).join('')}
       </div>
       <div class="setuphero">
         <div class="menu-kicker">Build your table</div>
@@ -66,7 +66,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       localStorage.removeItem('mtgDeckFavorites');
     }
     const state = {
-      deck: null, ai: 3, difficulty: 'normal', seed: '',
+      deck: null, ai: 3, mode: 'solo', difficulty: 'normal', seed: '',
       aiDecks: ['', '', ''],
       aiStyles: ['random', 'random', 'random'],
       commanders: [], aiRandomCommanders: false, sumPartnerDamage: false,
@@ -120,7 +120,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <div class="deckinfo">
           <div class="decktopline"><div class="decktitle"><div class="deckname">${esc(name)}</div><span class="deckselectedmark"><b>✓</b> Selected for your seat</span></div><span class="deckyear">${esc(year)}</span></div>
           <div class="deckcmd"><span>Commander</span><b>${esc(deck.commander)}</b></div>
-          <div class="deckcolors">${(meta.colors || []).map(c => `<img class="deckmana" src="/assets/mana/${c}.svg" alt="{${c}}" title="{${c}}">`).join('')} <span class="deckstyle">${esc(meta.style || '').replace(/[—–]/g, '-')}</span></div>
+          <div class="deckcolors">${(meta.colors || []).map(c => `<img class="deckmana" src="./assets/mana/${c}.svg" alt="{${c}}" title="{${c}}">`).join('')} <span class="deckstyle">${esc(meta.style || '').replace(/[—–]/g, '-')}</span></div>
           <div class="deckblurb">${esc(meta.blurb || '').replace(/[—–]/g, '-')}</div>
           <div class="deckset">${esc(meta.set || '').replace(/[—–]/g, '-')}<span>Select deck →</span></div>
         </div>`;
@@ -202,13 +202,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       <p>Your selections stay here while you browse. Review the seats and start when the pod is ready.</p>`);
     podHead.querySelector('.podclose').onclick = () => right.classList.remove('mobile-open');
     right.appendChild(podHead);
+    const matchType = el('div', 'matchtype');
+    matchType.innerHTML = `
+      <div class="matchtypecopy"><span>Match type</span><b>Choose how you enter the pod</b></div>
+      <div class="matchtypechoices">
+        <button type="button" class="matchtypebtn selected" data-mode="solo"><strong>Solo table</strong><small>You + 1–3 AI V2 bots</small></button>
+        <button type="button" class="matchtypebtn live" data-mode="online"><strong><i></i> 2 players live</strong><small>Friend link + 2 AI V2 bots</small></button>
+      </div>`;
+    right.appendChild(matchType);
     right.appendChild(el('div', 'seclabel', '<i>Choice</i> Commander'));
     const cmdBox = el('div', 'cmdbox');
     right.appendChild(cmdBox);
     const updateStartLabel = () => {
       if (!state.deck) return;
       const c = state.commanders;
-      startBtn.textContent = 'Start game';
+      startBtn.textContent = state.mode === 'online' ? 'Create live room' : 'Start game';
       startBtn.title = `${state.deck}: ${c.map(n => n.split(',')[0]).join(' + ')}`;
     };
     function renderCmdBox() {
@@ -250,7 +258,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       cmdBox.appendChild(btn);
     }
 
-    right.appendChild(el('div', 'seclabel', '<i>Pod</i> Opponents <em>Choose each AI deck</em>'));
+    const opponentsLabel = el('div', 'seclabel', '<i>Pod</i> Opponents <em>Choose each AI deck</em>');
+    right.appendChild(opponentsLabel);
     const aiRow = el('div', 'btnrow center');
     const botStyles = el('div', 'botstyles');
     const styleOptions = [['random', 'Random style']]
@@ -366,9 +375,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const startBtn = el('button', 'pbtn primary start', 'Choose a deck first');
     startBtn.disabled = true;
-    startBtn.onclick = () => startGame(state);
+    startBtn.onclick = () => state.mode === 'online' ? openOnlineLobby(state) : startGame(state);
     right.appendChild(startBtn);
     renderCmdBox();
+
+    const setMatchMode = mode => {
+      state.mode = mode === 'online' ? 'online' : 'solo';
+      state.ai = state.mode === 'online' ? 2 : 3;
+      matchType.querySelectorAll('.matchtypebtn').forEach(button => {
+        const selected = button.dataset.mode === state.mode;
+        button.classList.toggle('selected', selected);
+        button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      });
+      aiRow.hidden = state.mode === 'online';
+      opponentsLabel.innerHTML = state.mode === 'online'
+        ? '<i>Live pod</i> Two AI V2 seats <em>Player 2 chooses a deck after joining</em>'
+        : '<i>Pod</i> Opponents <em>Choose each AI deck</em>';
+      diplomacyRow.hidden = state.mode === 'online';
+      if (state.mode === 'online') {
+        state.diplomacyEnabled = false;
+        diplomacyRow.querySelector('input').checked = false;
+      }
+      renderBotStyles();
+      updateStartLabel();
+    };
+    matchType.querySelectorAll('.matchtypebtn').forEach(button => {
+      button.setAttribute('aria-pressed', button.dataset.mode === state.mode ? 'true' : 'false');
+      button.onclick = () => setMatchMode(button.dataset.mode);
+    });
 
     right.appendChild(el('div', 'credits',
       'All cards and images: <b>Scryfall</b>. The fixed set of official WotC precons passes separate card-by-card certification.'));
@@ -470,12 +504,67 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
   }
 
+  async function openOnlineLobby(state, roomCode = null) {
+    const root = $('#setup');
+    root.style.display = 'block';
+    $('#game').style.display = 'none';
+    document.body.classList.remove('game-active');
+    if (typeof MTG.createHiggsfieldRoomClient !== 'function') {
+      root.innerHTML = `
+        <main class="online-lobby unavailable">
+          <header class="online-lobby-head"><button type="button" class="online-back">← Back</button><div><span>COMMANDER LIVE</span><h1>Live rooms open on the deployed game.</h1><p>The local build includes the complete multiplayer engine and UI. Open the Vercel preview or Higgsfield Games link to create or join an internet room.</p></div></header>
+          <section class="online-unavailable-card"><i></i><div><small>LOCAL PREVIEW</small><b>The online room service is not active on this origin</b><span>No account, token, or external AI service is required by the game itself.</span></div></section>
+        </main>`;
+      root.querySelector('.online-back').onclick = renderSetup;
+      return null;
+    }
+    root.innerHTML = '<main class="online-lobby loading"><div class="online-waiting-game"><i></i><h1>Opening your private table…</h1></div></main>';
+    try {
+      const client = await MTG.createHiggsfieldRoomClient({ create: !roomCode, roomCode });
+      return MTG.mountOnlineLobby({
+        root,
+        client,
+        initialSelection: state ? {
+          name: 'Host', deck: state.deck, commanders: state.commanders,
+          aiDecks: state.aiDecks.slice(0, 2), aiStyles: state.aiStyles.slice(0, 2),
+          seed: state.seed ? parseInt(state.seed, 10) : Math.floor(Math.random() * 1e9),
+        } : null,
+        onHostStart: (view, roomClient) => MTG.startOnlineHostGame(view, roomClient),
+        onBack: () => {
+          if (roomCode) location.href = location.pathname;
+          else renderSetup();
+        },
+      });
+    } catch (error) {
+      root.innerHTML = `<main class="online-lobby unavailable"><header class="online-lobby-head"><button type="button" class="online-back">← Back</button><div><span>COMMANDER LIVE</span><h1>The live room could not open.</h1><p>${esc(error.message)}</p></div></header></main>`;
+      root.querySelector('.online-back').onclick = renderSetup;
+      return null;
+    }
+  }
+
+  MTG.openOnlineLobby = openOnlineLobby;
+
   function startGame(state) {
     const seed = state.seed ? parseInt(state.seed, 10) : Math.floor(Math.random() * 1e9);
     const rnd = MTG.mulberry32(seed);
-    const aiDecks = MTG.selectAIDecks(state.deck, state.ai, state.aiDecks, rnd);
+    const aiDecks = state.remoteHuman
+      ? MTG.selectOnlineBotDecks([state.deck, state.remoteHuman.deck], state.aiDecks, rnd)
+      : MTG.selectAIDecks(state.deck, state.ai, state.aiDecks, rnd);
 
     const ui = new MTG.UI();
+    let gameRef = null;
+    let onlineSyncQueued = false;
+    const queueOnlineSync = () => {
+      if (!state.onlineBridge || !gameRef || onlineSyncQueued) return;
+      onlineSyncQueued = true;
+      queueMicrotask(() => {
+        onlineSyncQueued = false;
+        state.onlineBridge.syncGame(gameRef).catch(error => {
+          console.error(error);
+          ui.toast(`Live sync paused: ${error.message}`);
+        });
+      });
+    };
     document.body.classList.add('game-active');
     $('#setup').style.display = 'none';
     $('#game').style.display = 'flex';
@@ -485,6 +574,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       aiDecks,
       aiStyles: state.aiStyles.slice(0, state.ai),
       humanCommanders: (state.commanders && state.commanders.length) ? state.commanders : undefined,
+      remoteHuman: state.remoteHuman,
       aiRandomCommanders: state.aiRandomCommanders,
       sumPartnerDamage: state.sumPartnerDamage,
       diplomacyEnabled: state.diplomacyEnabled,
@@ -512,8 +602,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
         }
         ui.queueRender();
+        queueOnlineSync();
       },
     });
+    gameRef = g;
     ui.game = g;
     ui.applySpeed();
     window._game = g;
@@ -562,7 +654,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         leader.life = 500;
         const threat = new MTG.CardInst(MTG.DEFS['Inferno Titan'], leader);
         threat.ctrl = leader; threat.zone = 'battlefield'; threat.sick = false;
-        g.battlefield.push(threat); g.recalc();
+        const safeAttacker = new MTG.CardInst(MTG.DEFS['Inferno Titan'], ui.me);
+        safeAttacker.ctrl = ui.me; safeAttacker.zone = 'battlefield'; safeAttacker.sick = false;
+        g.battlefield.push(threat, safeAttacker); g.recalc();
         void g.processDiplomacyCheckpoint(initiator);
       } else if (botDiplomacyScenario === 'group') {
         // Three-player pact canary: remover + human + one bot coordinate against
@@ -2348,7 +2442,41 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       console.error(err);
         ui.toast('Game error: ' + err.message);
     });
+    return g;
   }
+
+  // The generated Higgsfield client supplies a tiny roomClient adapter. The
+  // existing engine remains host-authoritative while every Player 2 decision
+  // is validated by the room contract before this controller hydrates it.
+  MTG.startOnlineHostGame = function (roomView, roomClient) {
+    if (!roomView || roomView.phase !== 'running' || roomView.you !== 0)
+      throw new Error('Only the connected host can start the live Commander engine.');
+    const seats = roomView.seats || [];
+    const host = seats.find(seat => seat.seat === 0);
+    const guest = seats.find(seat => seat.seat === 1);
+    const bots = seats.filter(seat => seat.kind === 'bot').sort((a, b) => a.seat - b.seat);
+    if (!host || !guest || bots.length !== 2) throw new Error('Live Commander requires two humans and two bots.');
+    const bridge = MTG.onlineHostBridge(roomClient);
+    return startGame({
+      deck: host.deckId,
+      commanders: host.commanderNames,
+      remoteHuman: {
+        deck: guest.deckId,
+        name: guest.name || 'Player 2',
+        commanders: guest.commanderNames,
+        controller: player => MTG.remoteControllerFor(player, bridge),
+      },
+      ai: 2,
+      aiDecks: bots.map(bot => bot.deckId),
+      aiStyles: bots.map(bot => bot.aiStyle || 'balanced'),
+      aiRandomCommanders: false,
+      sumPartnerDamage: !!roomView.settings.sumPartnerDamage,
+      diplomacyEnabled: false,
+      difficulty: roomView.settings.difficulty || 'normal',
+      seed: String(roomView.settings.seed),
+      onlineBridge: bridge,
+    });
+  };
 
   // Stabilan, semantički prikaz trenutno vidljivog stanja. Koriste ga desktop
   // smoke-testovi i card-by-card scenariji; ne sadrži skrivene biblioteke AI-a.
@@ -2412,6 +2540,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             title: proposal.title,
             participants: proposal.participantNames,
             clauses: proposal.clauses,
+            publicBalance: proposal.publicBalance,
           })),
           recentNegotiations: view.recent,
           activeContracts: view.activeContracts.map(contract => ({
@@ -2534,10 +2663,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   window.addEventListener('DOMContentLoaded', () => {
     MTG.initData(MTG.RAW_DATA);
+    const initialParams = new URLSearchParams(window.location.search);
+    const onlineSmoke = initialParams.get('onlineSmoke');
+    if (onlineSmoke === 'host' || onlineSmoke === 'guest') {
+      MTG.createHiggsfieldRoomClient = async () => MTG.createOnlineSmokeRoomClient(onlineSmoke);
+      void openOnlineLobby(null, 'smoke');
+      return;
+    }
+    const liveRoom = initialParams.get('room');
+    if (liveRoom && typeof MTG.createHiggsfieldRoomClient === 'function') {
+      void openOnlineLobby(null, liveRoom);
+      return;
+    }
     renderSetup();
     // Reproducibilan desktop smoke ulaz. Ne mijenja normalan UX; test otvara
     // stvarnu partiju i zaustavlja se na prvoj ljudskoj odluci (mulligan).
-    const smoke = new URLSearchParams(window.location.search);
+    const smoke = initialParams;
     const smokeDeck = smoke.get('smokeDeck');
     if (smokeDeck && MTG.DECKS[smokeDeck]) {
       const smokeAIDeck = smoke.get('smokeAIDeck');

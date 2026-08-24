@@ -2310,7 +2310,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const decision = await ctrl.controller.decide(this, {
           type: 'chooseTargets', spec, candidates: cands, min: Math.min(min, cands.length), max,
           src, prompt: spec.prompt || 'Izaberi metu', aiHint: spec.aiHint,
+          cancelable: !!ctx.cancelable,
         });
+        if (ctx.cancelable && decision && decision.kind === 'cancel') {
+          ctx.cancelled = true;
+          return false;
+        }
         const picked = Array.isArray(decision) ? [...new Set(decision)] : [];
         if (picked.length < min || picked.length > max || picked.some(target => !cands.includes(target))) return false;
         if (ctx.diplomacyForcedTargeting && this.diplomacyHandleForcedTarget) {

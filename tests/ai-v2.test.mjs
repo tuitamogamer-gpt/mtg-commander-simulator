@@ -406,5 +406,5 @@ test('AI V2 nema mrežne/model/auth zavisnosti', () => {
   assert.doesNotMatch(source, /\bfetch\s*\(/);
   assert.doesNotMatch(source, /WebSocket|XMLHttpRequest|navigator\.gpu|onnx|embedding|api[_-]?key|authorization\s*:/i);
   const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-  assert.equal(pkg.dependencies, undefined);
+  assert.deepEqual(Object.keys(pkg.dependencies || {}).sort(), ['express', 'ioredis', 'ws']);
 });

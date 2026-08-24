@@ -15,8 +15,8 @@ test('svaki default main commander ima zaseban cinematic asset', () => {
   for (const name of defaults) {
     const asset = MTG.COMMANDER_INTROS[name];
     assert.ok(asset, `${name} nema cinematic mapiranje`);
-    assert.match(asset, /^\/assets\/commander-intros\/[a-z0-9-]+\.mp4$/);
-    const file = path.join(root, asset.slice(1));
+    assert.match(asset, /^\.\/assets\/commander-intros\/[a-z0-9-]+\.mp4$/);
+    const file = path.join(root, asset.slice(2));
     assert.ok(fs.existsSync(file), `${name} nema lokalni video ${file}`);
     assert.ok(fs.statSync(file).size > 10_000, `${name} video je prazan ili nepotpun`);
   }

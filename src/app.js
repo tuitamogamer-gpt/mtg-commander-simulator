@@ -28,6 +28,8 @@ import './modules/scripts-jeskai.js';
 import './modules/autoscript.js';
 import './modules/ai-v2.js';
 import './modules/ai.js';
+import './modules/multiplayer.js';
+import './modules/multiplayer-ui.js';
 import './modules/loader.js';
 import './modules/ui.js';
 import './modules/main.js';

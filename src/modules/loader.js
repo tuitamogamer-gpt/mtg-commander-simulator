@@ -319,7 +319,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   MTG.newGame = function (opts) {
     // opts: {humanDeck, aiDecks:[names], aiStyles:[keys], seed, onEvent, humanController, difficulty, maxTurns,
-    //        humanCommanders:[names], aiRandomCommanders:bool, diplomacyEnabled:bool}
+    //        humanCommanders:[names], remoteHuman?:{deck,name,commanders,controller}, aiRandomCommanders:bool,
+    //        diplomacyEnabled:bool}. Online Commander always supplies one remote human and two AI decks.
     const g = new MTG.Game({
       seed: opts.seed, onEvent: opts.onEvent, maxTurns: opts.maxTurns, paced: opts.paced,
       houseRules: Object.assign({}, opts.houseRules,
@@ -328,20 +329,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const names = ['You', 'AI Dragon', 'AI Wolf', 'AI Raven'];
     const players = [];
     const humanP = g.addPlayer(opts.humanName || names[0], MTG.DECKS[opts.humanDeck], null, !opts.humanController);
+    humanP.onlineSeat = 0;
     if (opts.humanCommanders && opts.humanCommanders.length) humanP.chosenCommanders = opts.humanCommanders.slice(0, 2);
-    let i = 1;
+    players.push(humanP);
+    let remoteP = null;
+    if (opts.remoteHuman) {
+      if (!opts.remoteHuman.deck || !MTG.DECKS[opts.remoteHuman.deck]) throw new Error('Online Player 2 needs a valid deck.');
+      if (!opts.remoteHuman.controller) throw new Error('Online Player 2 needs a remote controller.');
+      remoteP = g.addPlayer(opts.remoteHuman.name || 'Player 2', MTG.DECKS[opts.remoteHuman.deck], null, false);
+      remoteP.onlineSeat = 1;
+      remoteP.onlineConnected = true;
+      if (opts.remoteHuman.commanders && opts.remoteHuman.commanders.length)
+        remoteP.chosenCommanders = opts.remoteHuman.commanders.slice(0, 2);
+      players.push(remoteP);
+    }
     const styleKeys = Object.keys(MTG.AI_STYLES || {}).filter(k => k !== 'balanced');
     const styles = [];
-    for (const dk of opts.aiDecks) {
-      const q = g.addPlayer(names[i] + '', MTG.DECKS[dk], null, true);
-      let st = (opts.aiStyles && opts.aiStyles[i - 1]) || 'random';
+    for (let botIndex = 0; botIndex < opts.aiDecks.length; botIndex++) {
+      const dk = opts.aiDecks[botIndex];
+      const q = g.addPlayer(names[botIndex + 1] + '', MTG.DECKS[dk], null, true);
+      q.onlineSeat = botIndex + (remoteP ? 2 : 1);
+      let st = (opts.aiStyles && opts.aiStyles[botIndex]) || 'random';
       if (st === 'random') st = styleKeys.length ? styleKeys[Math.floor(g.rnd() * styleKeys.length)] : 'balanced';
       styles.push({ player: q, style: st });
-      i++;
+      players.push(q);
     }
     for (const p of g.players) {
       if (p === humanP && opts.humanController) {
         p.controller = opts.humanController(p);
+        p.isAI = false;
+      } else if (p === remoteP) {
+        p.controller = typeof opts.remoteHuman.controller === 'function'
+          ? opts.remoteHuman.controller(p) : opts.remoteHuman.controller;
         p.isAI = false;
       } else {
         const st = (styles.find(s => s.player === p) || {}).style || 'balanced';
@@ -362,7 +381,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // randomize turn order
     U.shuffle(g.players, g.rnd);
     g.players.forEach((p, idx) => p.idx = idx);
-    if (MTG.initDiplomacy) MTG.initDiplomacy(g, !!opts.diplomacyEnabled);
+    // Diplomacy already understands more than one non-AI responder, but the
+    // current host spotlight UI is single-seat. Keep it off for live games
+    // until its review surface is also routed through the room.
+    if (MTG.initDiplomacy) MTG.initDiplomacy(g, remoteP ? false : !!opts.diplomacyEnabled);
     // objavi stilove botova u log
     for (const p of g.players) {
       if (p.isAI && p.aiStyle && MTG.AI_STYLES && MTG.AI_STYLES[p.aiStyle]) {

@@ -28,8 +28,8 @@ function loadUIForKeyboardTest() {
 }
 
 test('responsive V3 stylesheet replaces the former desktop-only gate', () => {
-  assert.ok(index.includes('<link rel="stylesheet" href="/src/client-v3.css">'));
-  assert.ok(index.indexOf('/src/client-v3.css') > index.indexOf('/src/styles.css'));
+  assert.ok(index.includes('<link rel="stylesheet" href="./src/client-v3.css">'));
+  assert.ok(index.indexOf('./src/client-v3.css') > index.indexOf('./src/styles.css'));
   assert.match(css, /#desktop-only \{ display: none !important; \}/);
   assert.match(css, /@media \(max-width: 1279px\)/);
   assert.match(css, /@media \(max-width: 767px\)/);
@@ -74,7 +74,7 @@ test('every active deck has complete setup metadata and real mana-symbol colors'
       `${name} setup mana icons do not match its complete deck color identity`,
     );
   }
-  assert.match(main, /class="deckmana" src="\/assets\/mana\/\$\{c\}\.svg"/);
+  assert.match(main, /class="deckmana" src="\.\/assets\/mana\/\$\{c\}\.svg"/);
 });
 
 test('Arena V3 uses a compact HUD and utilities without bypassing action review', () => {

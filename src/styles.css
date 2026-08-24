@@ -232,6 +232,8 @@ img { -webkit-user-drag: none; }
 .promptbar { background: #1a1e26; border-top: 1px solid #2a2f3a; padding: 7px 10px; display: flex; flex-direction: column; gap: 6px; }
 .ptext { font-size: 13px; }
 .ptext.dim { color: #789; }
+.priorityruleshint { padding: 7px 9px; border: 1px solid rgba(98,179,255,.32); border-radius: 7px; background: rgba(30,79,118,.22); color: #c9e8ff; font-size: 11px; line-height: 1.35; }
+.priorityruleshint b { color: #8dceff; }
 .pbtn { background: #2e3542; color: #e8e8ea; border: none; border-radius: 10px; padding: 10px 14px; font-size: 14px; font-weight: 600; }
 .pbtn.primary { background: linear-gradient(90deg,#c9973a,#d95a4a); color: #fff; }
 .pbtn.danger { background: #8a3a3a; }
@@ -1144,6 +1146,8 @@ body:has(#setup) { background: #08090d; }
 .actionstagecopyline b { color: #cceeff; background: #10232e; border: 1px solid #65b5df66; }
 .actionstagecopyline span { color: #f3d887; background: #28200d; border: 1px solid #c99c3955; }
 .actionstagetype { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; color: #9d998e; font-size: 12px; }
+.actionstagerules { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; padding: 9px 11px; border: 1px solid rgba(98,179,255,.34); border-radius: 7px; background: rgba(30,79,118,.2); color: #c9e8ff; font-size: 11px; line-height: 1.35; }
+.actionstagerules b { color: #8dceff; font: 800 9px/1.2 var(--tbl-cond); letter-spacing: .12em; }
 .actionstagetarget { margin-top: 16px; padding: 9px 11px; color: #e8d5a4; background: rgba(200,134,60,.09); border-left: 2px solid var(--tbl-gold); font-size: 13px; }
 .actionstagedivision { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap: 6px; margin-top: 8px; }
 .actionstagedamagetarget { display: grid; grid-template-columns: 22px minmax(0,1fr) auto; align-items: center; gap: 7px; padding: 6px 8px; border: 1px solid rgba(255,111,65,.34); border-radius: 6px; background: rgba(99,30,13,.22); }
@@ -1217,6 +1221,7 @@ body:has(#setup) { background: #08090d; }
   .actionstageeyebrow { font-size: 8px; letter-spacing: .18em; }
   .actionstagename { margin-top: 7px; font-size: 25px; }
   .actionstagetype { margin-top: 7px; font-size: 10px; }
+  .actionstagerules { margin-top: 8px; padding: 7px 8px; font-size: 10px; }
   .actionstagetarget { margin-top: 10px; padding: 8px 9px; font-size: 11px; line-height: 1.35; }
   .actionstageoracle { max-height: 126px; margin-top: 10px; font-size: 12px; line-height: 1.45; }
   .actionstagestack { margin-top: 11px; font-size: 7px; }
@@ -1584,6 +1589,14 @@ body:has(#setup) { background: #08090d; }
 #game .dipincoming p { display: grid; gap: 2px; margin: 8px 0 0; color: #c8c2b6; font-size: 10px; line-height: 1.35; }
 #game .dipincoming p span { color: #77776f; font: 800 7.5px/1 var(--tbl-cond); letter-spacing: .15em; }
 #game .dipincoming > small { display: block; margin-top: 7px; color: #77776f; font-size: 9px; }
+#game .dipvaluecheck {
+  display: grid; gap: 3px; margin-top: 9px; padding: 8px 9px;
+  border: 1px solid rgba(126,166,194,.24); border-radius: 7px; background: rgba(35,57,65,.24);
+}
+#game .dipvaluecheck b { color: #a9c7d5; font: 800 7.5px/1 var(--tbl-cond); letter-spacing: .15em; }
+#game .dipvaluecheck span { color: #d5d2c8; font-size: 10px; line-height: 1.35; }
+#game .dipvaluecheck small { color: #7f8e90; font-size: 8.5px; line-height: 1.35; }
+#game .diplomacyreviewvalue { margin: 10px 0 0; padding: 11px 12px; }
 #game .dipactions { display: flex; gap: 6px; margin-top: 10px; }
 #game .dipactions .pbtn { flex: 1; padding: 7px; font-size: 10px; }
 #game .dipcontract { display: grid; gap: 6px; padding: 10px; }
@@ -3061,7 +3074,7 @@ span.msym.mana-glyph {
     background:
       linear-gradient(90deg, rgba(5, 8, 10, .82) 0%, rgba(5, 8, 10, .58) 55%, rgba(5, 8, 10, .24) 100%),
       linear-gradient(180deg, rgba(4, 7, 8, .1), rgba(4, 7, 8, .78)),
-      url('/assets/backgrounds/commander-war-room.jpg') center top / cover fixed no-repeat;
+      url('../assets/backgrounds/commander-war-room.jpg') center top / cover fixed no-repeat;
   }
 
   body:has(#setup)::before {
@@ -3359,7 +3372,7 @@ span.msym.mana-glyph {
     background:
       linear-gradient(90deg, rgba(4, 7, 8, .12) 0%, rgba(4, 7, 8, .02) 72%, rgba(4, 7, 8, .52) 100%),
       linear-gradient(180deg, rgba(2, 5, 6, .46), rgba(2, 5, 6, .04) 28%, rgba(2, 5, 6, .08) 68%, rgba(2, 5, 6, .72)),
-      url('/assets/backgrounds/commander-arena-table.jpg') center / cover no-repeat,
+      url('../assets/backgrounds/commander-arena-table.jpg') center / cover no-repeat,
       #070b0c;
   }
 

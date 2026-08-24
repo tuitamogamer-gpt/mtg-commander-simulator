@@ -1340,9 +1340,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const mi of mode) specs = specs.concat(modeTargetsFor(this, d.modes.list[mi], card, castOpts));
       }
       so.targetSpecs = specs;
-      const ctx = { g: this, src: card, you: p, so };
+      // Target selection is still part of proposing the spell. No mana or
+      // additional cost has been paid and the card has not moved yet, so the
+      // human may safely abort here without rewinding game information.
+      const ctx = { g: this, src: card, you: p, so, cancelable: true };
       const ok = await this.pickTargets(ctx, specs, card, p);
-      if (!ok) { this.lg(`${card.name}: nema legalnih meta.`); return false; }
+      if (!ok) {
+        this.lg(ctx.cancelled ? `${card.name}: casting cancelled.` : `${card.name}: nema legalnih meta.`);
+        return false;
+      }
       so.targets = ctx.targets;
       so.wardTargets = ctx.wardTargets;
     } else if (mode && d.modes) {
@@ -1350,9 +1356,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const mi of mode) specs2.push(...modeTargetsFor(this, d.modes.list[mi], card, castOpts));
       if (specs2.length) {
         so.targetSpecs = specs2;
-        const ctx = { g: this, src: card, you: p, so };
+        const ctx = { g: this, src: card, you: p, so, cancelable: true };
         const ok = await this.pickTargets(ctx, specs2, card, p);
-        if (!ok) { this.lg(`${card.name}: nema legalnih meta.`); return false; }
+        if (!ok) {
+          this.lg(ctx.cancelled ? `${card.name}: casting cancelled.` : `${card.name}: nema legalnih meta.`);
+          return false;
+        }
         so.targets = ctx.targets;
         so.wardTargets = ctx.wardTargets;
       }
@@ -3851,25 +3860,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!c.kw('vigilance')) this.tap(c);
       attackers.push(c);
     }
-    // "Pressure the leader" is an exact one-combat promise, not an alliance.
-    // If the actor is able to keep it, one legal attacker is assigned. If no
-    // creature can legally do so, the clause becomes void without blame.
+    // "Pressure the leader" is a conditional one-combat promise, not an
+    // unconditional must-attack effect. A legal but tactically losing attack
+    // (especially a certain free block) makes the clause void without blame.
     if (this.diplomacyRequiredAttackTarget) {
       const pressureTarget = this.diplomacyRequiredAttackTarget(p);
       const alreadyPressuring = pressureTarget && attackers.some(card =>
         (card.attacking instanceof MTG.Player ? card.attacking : card.attacking && card.attacking.ctrl) === pressureTarget);
       if (pressureTarget && !alreadyPressuring) {
-        const candidates = elig.filter(card => this.canAttackTarget(card, pressureTarget) &&
-          !(this.diplomacyAttackBlocked && this.diplomacyAttackBlocked(p, pressureTarget)))
-          .sort((a, b) => (forced.includes(a) - forced.includes(b)) ||
-            this.dmgAmount(a, 'normal') - this.dmgAmount(b, 'normal') || a.iid - b.iid);
+        const safe = this.diplomacyPressureAttackOpportunity
+          ? this.diplomacyPressureAttackOpportunity(p, pressureTarget).attackers
+          : elig.filter(card => this.canAttackTarget(card, pressureTarget));
+        const candidates = safe.filter(card => elig.includes(card) &&
+          !(this.diplomacyAttackBlocked && this.diplomacyAttackBlocked(p, pressureTarget)));
         const chosen = candidates[0];
         if (chosen) {
           chosen.attacking = pressureTarget;
           if (!chosen.kw('vigilance') && !chosen.tapped) this.tap(chosen);
           if (!attackers.includes(chosen)) attackers.push(chosen);
           this.lg(`🤝 ${chosen.name} attacks ${pressureTarget.name} to fulfill a diplomacy agreement.`, 'diplomacy');
-        } else this.diplomacyVoidAttackPromise(p, pressureTarget, 'no creature could legally attack the promised player');
+        } else this.diplomacyVoidAttackPromise(p, pressureTarget, 'no tactically sound attack remained; a certain free block did not count as able');
       }
     }
     // forced but not declared → auto-declare vs random opp

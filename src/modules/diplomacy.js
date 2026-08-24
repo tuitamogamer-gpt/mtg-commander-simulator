@@ -26,6 +26,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     invalid: 'That agreement is no longer legal or measurable.',
     oneSided: 'The exchange is too one-sided.',
     unsafe: 'The deal would help the leading threat too much.',
+    unsafeAttack: 'That attack promise is available only while a tactically sound attack exists; a certain free block does not count.',
   };
 
   function state(game) {
@@ -92,6 +93,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }, 0);
   }
 
+  function pressureAttackOpportunity(game, actor, target) {
+    if (!actor || !target || actor === target || actor.lost || target.lost) return { safe: false, attackers: [], expectedDamage: 0, bestScore: -Infinity };
+    const attackers = game.creatures(actor).filter(card => {
+      const committed = defenderOf(card.attacking) === target;
+      return committed || (!card.tapped && !card.cur.cantAttack && (!card.sick || card.kw('haste')) &&
+        game.canAttackAtAll(card) && game.canAttackTarget(card, target) &&
+        (!game.diplomacyAttackBlocked || !game.diplomacyAttackBlocked(actor, target)));
+    })
+      .map(card => {
+        const committed = defenderOf(card.attacking) === target;
+        const assessment = U.assessAttackAssignment
+          ? U.assessAttackAssignment(game, actor, card, target, 0)
+          : { score: Math.max(0, game.dmgAmount(card, 'normal')), freeBlock: false,
+              expectedDamage: Math.max(0, game.dmgAmount(card, 'normal')), dealsDamage: true };
+        return { card, assessment, committed };
+      })
+      // A legal attack is not enough. The deal may bind this player only when
+      // the shared combat model says the attack is meaningful and the defender
+      // cannot simply kill the attacker with a blocker that survives for free.
+      .filter(entry => entry.committed || (!entry.assessment.freeBlock && entry.assessment.dealsDamage &&
+        (entry.assessment.score >= 0.75 || entry.assessment.lethal || entry.assessment.commanderLethal)))
+      .sort((a, b) => b.assessment.score - a.assessment.score || a.card.iid - b.card.iid);
+    return {
+      safe: attackers.length > 0,
+      attackers: attackers.map(entry => entry.card),
+      expectedDamage: attackers.length ? attackers[0].assessment.expectedDamage : 0,
+      bestScore: attackers.length ? attackers[0].assessment.score : -Infinity,
+      blocked: attackers.length ? attackers[0].assessment.blockable : false,
+    };
+  }
+
   function boardSignature(game) {
     return JSON.stringify({
       alive: activePlayers(game).map(candidate => [candidate.idx, candidate.life, candidate.lost]),
@@ -138,7 +170,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (clause.type === 'no_target_player') return `${actorName} will not choose ${beneficiaryName} or their permanents as harmful targets through their next turn.`;
     if (clause.type === 'protect_permanent') return `${actorName} will not choose ${clauseTargetName(game, clause)} as a harmful target through their next turn.`;
     if (clause.type === 'let_resolve') return `${actorName} will not counter or harmfully target ${clauseTargetName(game, clause)} on the stack.`;
-    if (clause.type === 'pressure_player') return `${actorName} will attack ${clauseTargetName(game, clause)} with at least one creature during their next combat, if able.`;
+    if (clause.type === 'pressure_player') return `${actorName} will make a tactically sound attack on ${clauseTargetName(game, clause)} during their next combat, if one remains available; a certain free block never counts as able.`;
     if (clause.type === 'remove_permanent') return `${actorName} will cast ${clause.sourceName || 'the announced removal spell'} targeting ${clauseTargetName(game, clause)} by the end of their next turn.`;
     return `${actorName} made a short-term commitment to ${beneficiaryName}.`;
   }
@@ -148,7 +180,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (type === 'no_target_player') return `Do not harmfully target ${beneficiary.name} or their permanents through your next turn`;
     if (type === 'protect_permanent') return `Do not harmfully target ${target.name} through your next turn`;
     if (type === 'let_resolve') return `Let ${target.name} resolve`;
-    if (type === 'pressure_player') return `Attack ${target.name} during your next combat, if able`;
+    if (type === 'pressure_player') return `Make a tactically sound attack on ${target.name} next combat, if one remains available`;
     return 'Short-term promise';
   }
 
@@ -172,7 +204,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: optionLabel(game, actor, beneficiary, 'let_resolve', item),
     }));
     const runaway = runawayThreat(game);
-    if (runaway && runaway.p !== actor && runaway.p !== beneficiary && visibleAttackPower(game, actor, runaway.p) > 0) {
+    if (runaway && runaway.p !== actor && runaway.p !== beneficiary && pressureAttackOpportunity(game, actor, runaway.p).safe) {
       out.push({
         key: `pressure_player:${runaway.p.idx}`, type: 'pressure_player', targetPlayerId: runaway.p.idx,
         label: optionLabel(game, actor, beneficiary, 'pressure_player', runaway.p),
@@ -256,6 +288,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (clause.type === 'pressure_player') {
         const runaway = runawayThreat(game);
         if (!runaway || runaway.p.idx !== clause.targetPlayerId) return { ok: false, reason: REASONS.pressure };
+        const actor = player(game, clause.actorId), target = player(game, clause.targetPlayerId);
+        if (!pressureAttackOpportunity(game, actor, target).safe) return { ok: false, reason: REASONS.unsafeAttack };
       }
       if (PROTECTION_TYPES.has(clause.type)) {
         const runaway = runawayThreat(game);
@@ -280,9 +314,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function expectedAttackValue(game, actor, target) {
-    const power = visibleAttackPower(game, actor, target);
-    const blockers = game.creatures(target).filter(card => !card.tapped && !card.cur.cantBlock).length;
-    return Math.max(0, power * (blockers ? 0.12 : 0.32));
+    const opportunity = pressureAttackOpportunity(game, actor, target);
+    if (opportunity.safe) return Math.max(0.5,
+      opportunity.expectedDamage * (opportunity.blocked ? 0.28 : 0.42) + Math.max(0, opportunity.bestScore) * 0.4);
+    return Math.max(0, visibleAttackPower(game, actor, target) * 0.04);
   }
 
   function targetInteractionValue(game, actor, beneficiary, perspective, includePrivate = true) {
@@ -321,11 +356,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (clause.type === 'pressure_player') {
       const target = player(game, clause.targetPlayerId);
       const runaway = runawayThreat(game);
-      const value = runaway && target === runaway.p ? Math.min(8, 3 + (runaway.score - threatRows(game)[1].score) * 0.15) : 0;
+      const opportunity = pressureAttackOpportunity(game, actor, target);
+      const gap = runaway && threatRows(game)[1] ? runaway.score - threatRows(game)[1].score : 0;
+      const value = runaway && target === runaway.p && opportunity.safe
+        ? Math.min(6, 1.25 + opportunity.expectedDamage * 0.45 + gap * 0.1) : 0;
       if (perspective === beneficiary) benefit += value;
-      if (perspective === actor) cost += Math.max(0.4, 2.2 - value * 0.3);
+      if (perspective === actor) {
+        const tacticalDiscount = Math.min(0.65, Math.max(0, opportunity.bestScore) * 0.08);
+        cost += opportunity.safe ? Math.max(0.7, 1.35 - tacticalDiscount + (opportunity.blocked ? 0.2 : 0)) : 8;
+      }
     }
     return benefit - cost;
+  }
+
+  function publicProposalBalance(game, proposal) {
+    const impactFor = participant => {
+      const deltas = [proposal.request, proposal.offer].filter(Boolean)
+        .map(clause => clauseDelta(game, clause, participant, { publicOnly: true }));
+      const benefit = deltas.reduce((sum, delta) => sum + Math.max(0, delta), 0);
+      const cost = deltas.reduce((sum, delta) => sum + Math.max(0, -delta), 0);
+      return { playerId: participant.idx, benefit, cost, net: benefit - cost };
+    };
+    const from = player(game, proposal.fromId), to = player(game, proposal.toId);
+    return { from: impactFor(from), to: impactFor(to) };
+  }
+
+  function publicExchangeIsFair(game, proposal, recipient) {
+    const balance = proposal.publicBalance || publicProposalBalance(game, proposal);
+    const side = recipient.idx === proposal.fromId ? balance.from : balance.to;
+    // A bot may negotiate hard, but it may not send a proposal whose visible
+    // benefit fails to cover the visible commitment it asks from the recipient.
+    return side.benefit >= 0.75 && side.net >= -0.2 && side.cost <= side.benefit * 1.3 + 0.2;
   }
 
   function stableFraction(text) {
@@ -464,11 +525,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function makeProposal(game, from, to, request, offer, source) {
     const d = state(game);
-    return {
+    const proposal = {
       id: d.nextProposalId++, fromId: from.idx, toId: to.idx, request, offer,
       source: source || 'human', status: 'created', createdTurn: game.turnNo,
       createdRound: completedRounds(game),
     };
+    proposal.publicBalance = publicProposalBalance(game, proposal);
+    return proposal;
   }
 
   function recordHumanAttempt(game, from, to) {
@@ -494,9 +557,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           source: 'bot-counter', status: 'created', createdTurn: game.turnNo,
           createdRound: completedRounds(game),
         };
+        candidate.publicBalance = publicProposalBalance(game, candidate);
         if (!validateProposal(game, candidate, { botInitiated: true }).ok) continue;
         const responderVerdict = evaluateProposal(game, candidate, responder);
         if (responderVerdict.status !== 'accepted') continue;
+        if (!publicExchangeIsFair(game, candidate, originalSender)) continue;
         const publicValueForOther = clauseDelta(game, request, originalSender, { publicOnly: true }) +
           clauseDelta(game, offer, originalSender, { publicOnly: true });
         const variety = stableFraction(`${clauseFingerprint(request)}|${clauseFingerprint(offer)}`) * 0.08;
@@ -737,11 +802,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             source: 'bot', status: 'created', createdTurn: game.turnNo,
             createdRound: completedRounds(game),
           };
+          proposal.publicBalance = publicProposalBalance(game, proposal);
           if (!validateProposal(game, proposal, { botInitiated: true, pendingHuman: !to.isAI }).ok) continue;
           const initiator = evaluateProposal(game, proposal, from);
           if (initiator.status !== 'accepted') continue;
           const publicRecipient = evaluateProposal(game, proposal, to, { publicOnly: true });
-          if (to.isAI && publicRecipient.status === 'rejected') continue;
+          if (!publicExchangeIsFair(game, proposal, to)) continue;
           const sharedBonus = shared ? Math.min(0.7, shared.gap * 0.04) : 0;
           const variety = stableFraction(`${from.idx}|${to.idx}|${completedRounds(game)}|${clauseFingerprint(request)}|${clauseFingerprint(offer)}`) * 0.12;
           candidates.push({
@@ -773,6 +839,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.diplomacyClauseOptions = function (actor, beneficiary) { refresh(this); return clauseOptions(this, actor, beneficiary); };
   G.diplomacyGroupRemovalOptions = function (actor) { refresh(this); return groupRemovalOptions(this, actor); };
   G.diplomacyRunawayThreat = function () { return runawayThreat(this); };
+  G.diplomacyPressureAttackOpportunity = function (actor, target) { refresh(this); return pressureAttackOpportunity(this, actor, target); };
   G.diplomacyStackKey = function (item) { return stackKey(this, item); };
 
   G.proposeDiplomacy = function (from, to, requestKey, offerKey) {
@@ -783,6 +850,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const proposal = makeProposal(this, from, to, request, offer, from.isAI ? 'bot' : 'human');
     const check = validateProposal(this, proposal);
     if (!check.ok) return { status: 'rejected', reason: check.reason };
+    if (from.isAI && !to.isAI && !publicExchangeIsFair(this, proposal, to)) {
+      proposal.status = 'rejected'; proposal.reason = REASONS.oneSided;
+      return { status: 'rejected', reason: REASONS.oneSided, proposal };
+    }
     if (!from.isAI) recordHumanAttempt(this, from, to);
     state(this).proposals.push(proposal);
     if (!to.isAI) {
@@ -879,7 +950,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.diplomacyRequiredAttackTarget = function (actor) {
     refresh(this);
     const entry = activeClauses(this, clause => clause.type === 'pressure_player' && clause.actorId === actor.idx)[0];
-    return entry ? player(this, entry.clause.targetPlayerId) : null;
+    if (!entry) return null;
+    const target = player(this, entry.clause.targetPlayerId);
+    const opportunity = pressureAttackOpportunity(this, actor, target);
+    if (opportunity.safe) return target;
+    setClauseState(this, entry.contract, entry.clause, 'void', 'no tactically sound attack remained; a certain free block did not count as able');
+    return null;
   };
 
   G.diplomacyVoidAttackPromise = function (actor, target, reason) {
@@ -968,6 +1044,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         participantNames: (proposal.participantIds || [proposal.fromId, proposal.toId]).map(id => player(this, id)?.name || 'Player'),
         clauses: (proposal.clauses || [proposal.request, proposal.offer]).filter(Boolean).map(clause => clauseLabel(this, clause)),
         request: proposal.request ? clauseLabel(this, proposal.request) : '', offer: proposal.offer ? clauseLabel(this, proposal.offer) : '', reason: proposal.reason || '',
+        publicBalance: proposal.publicBalance ? Object.assign({}, proposal.publicBalance.to) : null,
         isCounteroffer: !!proposal.isCounteroffer, originalProposalId: proposal.originalProposalId || null,
       })),
       opponents: viewer.opponents(this).map(other => ({ id: other.idx, name: other.name, relation: relation(this, viewer, other) })),
@@ -1018,7 +1095,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!to.isAI) {
       proposal.status = 'pending-human';
       d.botHumanOfferRound = st.rounds;
-      proposal.reason = `${from.name} sees a short-term table interest and is asking you directly.`;
+      proposal.reason = `${from.name} sees a short-term table interest. Public threat value and your visible commitment cost were both checked before this offer was sent.`;
       this.lg(`🕊️ ${from.name} sent ${to.name} a diplomacy proposal.`, 'diplomacy');
       announceProposal(this, proposal, `${from.name} is asking you directly. ${clauseLabel(this, proposal.request)} ${clauseLabel(this, proposal.offer)}`);
       const result = { status: proposal.status, proposal };

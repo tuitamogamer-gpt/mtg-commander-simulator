@@ -172,7 +172,8 @@ test('bot-bot negotiations use the same public rules and create visible contract
 
   assert.equal(result.status, 'accepted');
   assert.equal(result.contract.fromId, botA.idx);
-  assert.equal(result.contract.toId, botB.idx);
+  assert.notEqual(result.contract.toId, human.idx);
+  assert.notEqual(result.contract.toId, botA.idx);
   assert.ok(result.contract.clauses.some(clause => clause.type === 'pressure_player' && clause.targetPlayerId === human.idx));
   assert.ok(result.contract.clauses.some(clause => ['no_attack', 'no_target_player', 'protect_permanent'].includes(clause.type)));
   assert.match(game.log.at(-1).msg, /Agreement #/);
@@ -204,8 +205,61 @@ test('a bot addresses the human directly when they share a meaningful public ene
   const result = await game.processDiplomacyCheckpoint(botA);
   assert.equal(result.status, 'pending-human');
   assert.equal(result.proposal.toId, human.idx);
+  assert.ok(result.proposal.publicBalance.to.net >= -0.2);
+  assert.ok(result.proposal.publicBalance.to.cost <= result.proposal.publicBalance.to.benefit * 1.3 + 0.2);
   assert.equal(game.diplomacyView(human).incoming[0].fromId, botA.idx);
+  assert.ok(game.diplomacyView(human).incoming[0].publicBalance.net >= -0.2);
   assert.ok(game.log.some(entry => /sent You a diplomacy proposal/.test(entry.msg)));
+});
+
+test('a bot cannot send the human a publicly one-sided exchange', () => {
+  const { game, players: [human, bot, leader] } = makeGame();
+  leader.life = 500;
+  addCreature(game, human, 'Inferno Titan');
+  addCreature(game, human, 'Inferno Titan');
+
+  const result = game.proposeDiplomacy(
+    bot, human,
+    `no_attack:${bot.idx}`,
+    `no_target_player:${human.idx}`,
+  );
+
+  assert.equal(result.status, 'rejected');
+  assert.match(result.reason, /one-sided/i);
+  assert.ok(result.proposal.publicBalance.to.net < -0.2);
+});
+
+test('pressure clauses require a meaningful attack and void if a free block appears later', () => {
+  const { game, players: [human, bot, leader] } = makeGame();
+  leader.life = 500;
+  addCreature(game, human, 'Stormcatch Mentor');
+  const blocker = addCreature(game, leader, 'Inferno Titan');
+
+  let options = game.diplomacyClauseOptions(human, bot);
+  assert.equal(options.some(option => option.key === `pressure_player:${leader.idx}`), false,
+    'a legal suicide attack into a free block is not a diplomacy option');
+
+  blocker.tapped = true;
+  game.recalc();
+  options = game.diplomacyClauseOptions(human, bot);
+  assert.equal(options.some(option => option.key === `pressure_player:${leader.idx}`), true,
+    'the pressure option appears when combat is tactically sound');
+
+  const offered = game.proposeDiplomacy(
+    bot, human,
+    `pressure_player:${leader.idx}`,
+    `no_target_player:${human.idx}`,
+  );
+  assert.equal(offered.status, 'pending-human');
+  assert.equal(game.respondToDiplomacyProposal(offered.proposal.id, true, human).status, 'accepted');
+
+  blocker.tapped = false;
+  game.recalc();
+  assert.equal(game.diplomacyRequiredAttackTarget(human), null,
+    'the agreement must not force the now-losing attack');
+  const clause = activeClause(game, 'pressure_player', human, bot);
+  assert.equal(clause.state, 'void');
+  assert.match(clause.completionReason, /free block did not count as able/i);
 });
 
 test('bot-to-bot politics hard-pauses the checkpoint until the human clicks Proceed', async () => {
@@ -232,7 +286,8 @@ test('bot-to-bot politics hard-pauses the checkpoint until the human clicks Proc
   assert.equal(review.type, 'diplomacyReview');
   assert.equal(review.source, 'bot-checkpoint');
   assert.equal(review.proposal.fromId, botA.idx);
-  assert.equal(review.proposal.toId, botB.idx);
+  assert.notEqual(review.proposal.toId, human.idx);
+  assert.notEqual(review.proposal.toId, botA.idx);
   assert.equal(settled, false, 'the active bot must not continue before Proceed');
   release({ status: 'proceeded' });
   const result = await checkpoint;

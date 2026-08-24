@@ -563,7 +563,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // - trade se vrednuje razlikom vrijednosti;
   // - blokirani napadač bez tramplea NE nanosi štetu igraču;
   // - `priorAttackers` modeluje swarm: braniocu ponestane blokera.
-  function attackAssignmentScore(game, player, card, target, priorAttackers = 0) {
+  function attackAssignmentAssessment(game, player, card, target, priorAttackers = 0) {
     const defender = target instanceof U.Player ? target : target.ctrl;
     const baseHit = Math.max(0, game.dmgAmount ? game.dmgAmount(card, 'normal') : card.power || 0);
     const hit = baseHit * (card.kw('double strike') ? 2 : 1);
@@ -614,8 +614,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (tapsForMana) risk += game.turnNo <= 12 ? 3.5 : 1.75; // čuvaj rani mana razvoj za main 2/reakcije
     const crackback = vigilance ? 0 : game.creatures(defender).filter(creature => !creature.tapped)
       .reduce((sum, creature) => sum + Math.max(0, creature.power || 0), 0) * 0.08;
-    return expDamage * 1.15 + lethal + commander + threat - risk - crackback;
+    const score = expDamage * 1.15 + lethal + commander + threat - risk - crackback;
+    return {
+      score, freeBlock, expectedDamage: expDamage, bestTradeLoss,
+      blockable: blockers.length > 0, blockerCount: blockers.length,
+      dealsDamage, lethal: lethal > 0, commanderLethal: commander >= 120,
+    };
   }
+
+  function attackAssignmentScore(game, player, card, target, priorAttackers = 0) {
+    return attackAssignmentAssessment(game, player, card, target, priorAttackers).score;
+  }
+  // Diplomacy uses the exact same public combat-risk model as the bot planner.
+  // This prevents a political promise from calling an attack "available" when
+  // the combat AI can already see that a defender will eat the attacker for free.
+  MTG.assessAttackAssignment = attackAssignmentAssessment;
 
   function generateAttackPlans(game, player, q, config) {
     const eligible = (q.eligible || []).slice().sort((a, b) => a.iid - b.iid);

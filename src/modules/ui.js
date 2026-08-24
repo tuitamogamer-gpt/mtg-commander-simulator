@@ -27,7 +27,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(face)}&format=image&version=${big ? 'normal' : 'small'}`;
   }
   const LOCAL_MANA = new Set(['W', 'U', 'B', 'R', 'G', 'C', 'X', 'T']);
-  const MANA_PATH = '/assets/mana/';
+  const MANA_PATH = './assets/mana/';
   function manaGlyph(code, extraClass = '') {
     const safe = String(code || '').toUpperCase();
     if (LOCAL_MANA.has(safe)) {
@@ -548,6 +548,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         info.appendChild(el('div', 'actionstagecopyline', `<b>${esc(copyCause)}</b><span>${esc(targetMode)}</span>`));
       }
       info.appendChild(el('div', 'actionstagetype', `${costHTML(def.cost || '')}<span>${esc([...(def.super || []), ...(def.types || [])].join(' '))}${(def.subtypes || []).length ? ' - ' + esc(def.subtypes.join(' ')) : ''}</span>`));
+      const creatureSpell = top.kind === 'spell' && source.is && source.is('Creature') &&
+        !(top.castOpts && top.castOpts.adventure);
+      if (creatureSpell) {
+        info.appendChild(el('div', 'actionstagerules',
+          `<b>CREATURE SPELL — NOT ON THE BATTLEFIELD YET</b>` +
+          `<span>Normal “target creature” removal cannot select it on the Stack. Counter it now, or click Proceed; after it resolves, removal can target it when you receive priority.</span>`));
+      }
       info.appendChild(el('div', 'actionstagetarget', `🎯 LOCKED TARGET MAP · ${targets.length} target${targets.length === 1 ? '' : 's'}${targets.length ? ` · ${esc(targetText)}` : ''}`));
       const targetFlow = this.renderStackTargetFlow(top);
       if (targetFlow) info.appendChild(targetFlow);
@@ -914,6 +921,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           } else {
             card.innerHTML += `<p><span>${esc(proposal.fromName)} ASKS YOU TO</span>${esc(proposal.request)}</p>` +
               `<p><span>${esc(proposal.fromName)} OFFERS TO</span>${esc(proposal.offer)}</p>`;
+          }
+          if (proposal.publicBalance) {
+            card.innerHTML += `<div class="dipvaluecheck"><b>PUBLIC VALUE CHECK</b><span>You receive ${proposal.publicBalance.benefit.toFixed(1)} value · visible commitment cost ${proposal.publicBalance.cost.toFixed(1)}</span><small>Includes public threat and safe-combat risk.</small></div>`;
           }
           card.innerHTML += proposal.reason ? `<small>${esc(proposal.reason)}</small>` : '';
           const row = el('div', 'dipactions');
@@ -2194,6 +2204,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             ? ` <span class="hintact">${nOpt} option${nOpt === 1 ? '' : 's'}${inHandN ? ': click a card in your hand' : ''}</span>`
             : '';
           bar.appendChild(el('div', 'ptext', label + hint));
+          const creatureSpell = top && top.kind === 'spell' && top.card && top.card.is('Creature') &&
+            !(top.castOpts && top.castOpts.adventure);
+          if (creatureSpell) {
+            bar.appendChild(el('div', 'priorityruleshint',
+              `<b>Rules:</b> ${esc(top.name)} is still a creature <i>spell</i> on the Stack, not a creature on the battlefield. ` +
+              `Counter it now, or let it resolve; normal “target creature” removal can target it only after it enters the battlefield and you receive priority.`));
+          }
           const oz2 = offZoneRow();
           if (oz2) bar.appendChild(oz2);
           const row = el('div', 'btnrow');
@@ -2262,8 +2279,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             `<strong>${pd.sel.length} / ${max}</strong>`));
           bar.appendChild(el('div', 'targetprompthint',
             pd.sel.length < min
-              ? `Choose ${min - pd.sel.length} more target${min - pd.sel.length === 1 ? '' : 's'}. Glowing cards and players are legal.`
-              : 'Review the numbered targets, then confirm. Click a selected target or × to remove it.'));
+              ? `Choose ${min - pd.sel.length} more target${min - pd.sel.length === 1 ? '' : 's'}. Glowing cards and players are legal.${q.cancelable ? ' No mana or other cost has been paid yet.' : ''}`
+              : `Review the numbered targets, then confirm.${q.cancelable ? ' You can still abort with no mana spent.' : ''} Click a selected target or × to remove it.`));
           const picked = el('div', 'targetpickchips');
           pd.sel.forEach((target, index) => {
             const chip = el('button', 'targetpickchip',
@@ -2276,8 +2293,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!pd.sel.length) picked.appendChild(el('div', 'targetpickempty', 'No targets selected yet'));
           bar.appendChild(picked);
           const actions = el('div', 'btnrow targetpromptactions');
+          if (q.cancelable) actions.appendChild(btn('Abort cast ↩', () => {
+            this.resolvePendingEntry(pd, { kind: 'cancel' });
+          }, 'danger'));
           if (pd.sel.length >= min) actions.appendChild(btn(
-            pd.sel.length ? `Lock ${pd.sel.length} target${pd.sel.length === 1 ? '' : 's'} ✓` : 'Choose no targets ✓',
+            pd.sel.length
+              ? `${q.cancelable ? 'Lock & cast with' : 'Lock'} ${pd.sel.length} target${pd.sel.length === 1 ? '' : 's'} ✓`
+              : (q.cancelable ? 'Cast with no targets ✓' : 'Choose no targets ✓'),
             () => this.resolvePending(pd.sel.slice()), 'primary'));
           if (pd.sel.length) actions.appendChild(btn('Clear', () => { pd.sel = []; this.render(); }));
           if (min === 0 && !pd.sel.length) actions.appendChild(btn('Skip', () => this.resolvePending([])));
@@ -3090,6 +3112,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (labels.length) labels.forEach((label, index) => terms.appendChild(el('p', '', `<span>TERM ${index + 1} ·</span>${esc(label)}`)));
       else terms.appendChild(el('p', '', '<span>STATUS</span>The proposal could not be formed under the current table rules.'));
       modal.appendChild(terms);
+
+      const incomingBalance = incoming && proposal.publicBalance && proposal.publicBalance.to;
+      if (incomingBalance) {
+        modal.appendChild(el('div', 'dipvaluecheck diplomacyreviewvalue',
+          `<b>PUBLIC VALUE CHECK</b><span>You receive ${incomingBalance.benefit.toFixed(1)} value · visible commitment cost ${incomingBalance.cost.toFixed(1)}</span><small>Threat assessment and safe-combat risk are included. A certain free block cannot make an attack mandatory.</small>`));
+      }
 
       if (!incoming) {
         const outcome = el('div', `diplomacyreviewoutcome ${status === 'accepted' ? 'accepted' : status === 'rejected' ? 'rejected' : ''}`);

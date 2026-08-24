@@ -1,0 +1,9 @@
+id,role,type,description,size/ratio,style line ref,source
+arena_background,Four-seat battlefield backdrop,image,Existing premium top-down Commander arena table,16:9,Existing Commander Client V2 visual system,reference_media[0]
+menu_background,Deck selection and lobby backdrop,image,Existing cinematic Commander war-room scene,16:9,Existing Commander Client V2 visual system,reference_media[1]
+game_ui_sprite,Arena lobby zone and status icons,svg,Existing local Commander icon sprite,scalable,Existing Commander Client V2 visual system,reference_media[2]
+mana_symbols,Mana costs pools and deck identities,svg_set,Existing local W U B R G C X T symbol set,scalable,Official card-symbol language already used by the client,reference_media[3]
+commander_intros,Commander battlefield arrival cinematics,video_set,Existing silent H.264 intro for each default commander,4:3 720x540,Premium fantasy-card cinematic system already approved,reference_media[4]
+scryfall_card_art,Card faces sheets and remote-player choices,runtime_image_set,Existing named-card artwork fetched at runtime,card portrait,Official Magic card presentation already used by the client,reference_media[5]
+multiplayer_lobby,Host join seat readiness and connection state,css_ui,New controls composed from the existing setup panel primitives,responsive flat frontal,Existing Commander Client V2 visual system,reference_media[6]
+remote_decision_stage,Remote player prompt options targets and proceed state,css_ui,Existing action stage adapted for a remote human controller,responsive flat frontal,Existing Commander Client V2 visual system,reference_media[7]
