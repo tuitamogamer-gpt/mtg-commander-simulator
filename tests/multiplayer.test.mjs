@@ -125,3 +125,16 @@ test('newGame supports Player 2 plus exactly two deterministic AI V2 controllers
   assert.ok(game.players.filter(player => player.isAI).every(player => player.controller instanceof MTG.AIController));
   assert.deepEqual(new Set(game.players.map(player => player.deckName)).size, 4);
 });
+
+test('Vercel room invite restores the consumed private share token and room code', () => {
+  const MTG = loadEngine();
+  const invite = new URL(MTG.onlineRoomShareUrl(
+    'https://commander-live.vercel.app/?commander_share=private-token&onlineSmoke=host&noise=1#debug',
+    'room-42',
+  ));
+  assert.equal(invite.searchParams.get('_vercel_share'), 'private-token');
+  assert.equal(invite.searchParams.get('room'), 'room-42');
+  assert.equal(invite.searchParams.has('onlineSmoke'), false);
+  assert.equal(invite.searchParams.has('noise'), false);
+  assert.equal(invite.hash, '');
+});

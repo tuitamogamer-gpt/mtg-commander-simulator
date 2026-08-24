@@ -649,6 +649,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Adapter shared by the Higgsfield room kernel and the Vercel WebSocket room
   // service. Both expose the same join/action/state protocol to the Commander
   // lobby and host bridge.
+  function onlineRoomShareUrl(currentUrl, room) {
+    const share = new URL(currentUrl);
+    // Vercel consumes `_vercel_share` before the app loads. The private entry
+    // URL therefore carries the same short-lived token as `commander_share`
+    // so the lobby can put the official parameter back on the friend link.
+    const vercelShare = share.searchParams.get('_vercel_share') || share.searchParams.get('commander_share');
+    share.search = '';
+    if (vercelShare) share.searchParams.set('_vercel_share', vercelShare);
+    share.searchParams.set('room', room);
+    share.hash = '';
+    return share.toString();
+  }
+
   function createHiggsfieldRoomClient(options = {}) {
     if (typeof window === 'undefined' || typeof WebSocket === 'undefined') {
       throw new Error('Higgsfield rooms require a browser WebSocket runtime.');
@@ -670,10 +683,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       playerId = `p-${crypto.randomUUID()}`;
       sessionStorage.setItem('commander-live-player-id', playerId);
     }
-    const share = new URL(location.href);
-    share.search = '';
-    share.searchParams.set('room', room);
-    share.hash = '';
+    const shareUrl = onlineRoomShareUrl(location.href, room);
     const base = location.pathname.replace(/\/+$/, '');
     const websocketOrigin = `${location.protocol === 'https:' ? 'wss://' : 'ws://'}${location.host}`;
     const isVercel = /(^|\.)vercel\.app$/i.test(location.hostname);
@@ -790,7 +800,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return {
       platformAutoJoin: true,
       get isHost() { return latest ? latest.you === 0 : !!options.create; },
-      shareUrl: share.toString(),
+      shareUrl,
       current: () => latest,
       subscribe(listener) {
         listeners.add(listener);
@@ -822,6 +832,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.onlineHostBridge = onlineHostBridge;
   MTG.selectOnlineBotDecks = selectOnlineBotDecks;
   MTG.createOnlineSmokeRoomClient = createOnlineSmokeRoomClient;
+  MTG.onlineRoomShareUrl = onlineRoomShareUrl;
   if (typeof location !== 'undefined' && /(^|\.)(?:higgsfield\.(?:ai|app)|vercel\.app)$/i.test(location.hostname)) {
     MTG.createHiggsfieldRoomClient = createHiggsfieldRoomClient;
   }
