@@ -32,6 +32,16 @@
 
 /* Main page --------------------------------------------------------------- */
 
+body:has(#setup) {
+  background: var(--v3-bg) !important;
+}
+
+body:has(#setup)::before,
+#setup::before {
+  content: none !important;
+  display: none !important;
+}
+
 #setup {
   width: min(100%, 1560px) !important;
   max-width: none !important;
@@ -39,6 +49,7 @@
   margin: 0 auto !important;
   padding: 0 28px 72px !important;
   color: var(--v3-text);
+  background: var(--v3-bg) !important;
 }
 
 #setup .menuhead {
@@ -56,9 +67,18 @@
   border-bottom: 1px solid var(--v3-line) !important;
   border-radius: 0 !important;
   background:
-    linear-gradient(90deg, rgba(8, 12, 13, .97), rgba(12, 18, 18, .92)),
-    url('../assets/backgrounds/commander-war-room.jpg') center 45% / cover !important;
+    linear-gradient(180deg, transparent 50%, var(--v3-bg) 100%),
+    linear-gradient(90deg, rgba(8, 12, 13, .98) 0%, rgba(8, 12, 13, .94) 56%, rgba(10, 15, 16, .86) 100%) !important;
   box-shadow: 0 16px 54px rgba(0, 0, 0, .24) !important;
+}
+
+@media (min-width: 1280px) {
+  #setup .menuhead {
+    background:
+      linear-gradient(180deg, transparent 50%, var(--v3-bg) 100%),
+      linear-gradient(90deg, rgba(8, 12, 13, .98) 0%, rgba(8, 12, 13, .94) 56%, rgba(10, 15, 16, .86) 100%),
+      url('../assets/backgrounds/commander-war-room.jpg') center 18% / cover no-repeat !important;
+  }
 }
 
 #setup .setupbrand {
@@ -522,7 +542,10 @@
   body.game-active #game { display: grid !important; }
 
   #setup { padding-inline: 22px !important; }
-  #setup .menuhead { margin-inline: -22px !important; padding-inline: 22px !important; }
+  #setup .menuhead {
+    margin-inline: -22px !important;
+    padding-inline: 22px !important;
+  }
   #setup .setupgrid { grid-template-columns: minmax(0, 1fr) !important; }
   #setup .setupright {
     position: fixed !important;
@@ -562,6 +585,15 @@
   }
 }
 
+@media (min-width: 701px) and (max-width: 1279px) {
+  #setup .menuhead {
+    background:
+      linear-gradient(180deg, transparent 48%, var(--v3-bg) 100%),
+      linear-gradient(90deg, rgba(8, 12, 13, .98) 0%, rgba(8, 12, 13, .93) 58%, rgba(10, 15, 16, .84) 100%),
+      url('../assets/backgrounds/commander-war-room.jpg') center 18% / 140% auto no-repeat !important;
+  }
+}
+
 @media (max-width: 900px) {
   #setup .menuhead {
     grid-template-columns: 1fr auto !important;
@@ -585,6 +617,9 @@
     padding: 15px 14px 24px !important;
     grid-template-columns: 1fr auto !important;
     grid-template-areas: "brand mana" "steps steps" "hero hero" !important;
+    background:
+      radial-gradient(circle at 84% 24%, rgba(78, 91, 60, .13), transparent 34%),
+      linear-gradient(180deg, #090d0e 0%, var(--v3-bg) 100%) !important;
   }
   #setup .setupbrand { grid-template-columns: 28px auto; }
   #setup .setupbrand .menumark { width: 18px; height: 18px; }
@@ -660,6 +695,13 @@
 #game {
   --v3-rail: 48px;
   color: var(--v3-text);
+  background:
+    radial-gradient(ellipse 75% 55% at 48% 50%, rgba(69, 83, 51, .2), transparent 70%),
+    linear-gradient(180deg, rgba(3, 6, 7, .64), rgba(3, 6, 7, .13) 42%, rgba(3, 6, 7, .78)),
+    var(--v3-bg) !important;
+}
+
+body.game-active #game {
   background:
     radial-gradient(ellipse 75% 55% at 48% 50%, rgba(69, 83, 51, .2), transparent 70%),
     linear-gradient(180deg, rgba(3, 6, 7, .64), rgba(3, 6, 7, .13) 42%, rgba(3, 6, 7, .78)),
