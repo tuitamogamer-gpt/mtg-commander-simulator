@@ -30,13 +30,11 @@ npm run benchmark:ai
 
 The generated per-deck/per-card results are in `reports/card-certification.md` and `reports/card-certification.json`.
 
-## External services
+## Card images and external services
 
-The app calls one public, keyless service at runtime:
+Card art and mana symbols are bundled locally, so gameplay does not call a card-image API. `npm run sync:card-images` is the explicit maintenance command that resolves the fixed deck/token inventory through Scryfall, converts it to WebP, and regenerates the hardcoded local manifest in `src/card-images.js`.
 
-- **Scryfall** — `/cards/named` and card-symbol endpoints for card art and mana symbols
-
-Deck data is bundled. Arbitrary/Moxfield deck import is intentionally not part of this product. No API keys or credentials are required or stored.
+Deck data is also bundled. Arbitrary/Moxfield deck import is intentionally not part of this product. No API keys or credentials are required or stored.
 
 ## Deployment
 

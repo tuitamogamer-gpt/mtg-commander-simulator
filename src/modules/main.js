@@ -23,12 +23,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return artURL(d.commander);
   }
   function artURL(name) {
-    const face = String(name).split(' // ')[0];
-    return `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(face)}&format=image&version=art_crop`;
+    return MTG.cardImageURL(name, 'art');
   }
   function cardImg(name) {
-    const face = String(name).split(' // ')[0];
-    return `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(face)}&format=image&version=small`;
+    return MTG.cardImageURL(name);
   }
   function typeLine(def) {
     return `${(def.super || []).join(' ')} ${(def.types || []).join(' ')}${(def.subtypes || []).length ? ' - ' + def.subtypes.join(' ') : ''}`.trim();

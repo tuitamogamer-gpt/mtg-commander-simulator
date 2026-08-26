@@ -2,7 +2,7 @@
 'use strict';
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
-  const U = MTG, E = MTG.E, T = MTG.T, SC = MTG.SCRIPTS;
+  const U = MTG, E = MTG.E, T = MTG.T, SC = MTG.SCRIPTS, TK = MTG.TOKENS;
 
   const etbSelf = (g, self, data) => data.card === self;
   const attacksSelf = (g, self, data) => data.card === self;
@@ -23,9 +23,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     power: String(power), toughness: String(toughness), oracle: '', kws,
     colorsOverride: colors, isTokenDef: true,
   });
-  const zombieDruid = token('Zombie Druid', ['Zombie', 'Druid'], 2, 2, ['B']);
+  const zombieDruid = TK.sultaiZombieDruid ||= token('Zombie Druid', ['Zombie', 'Druid'], 2, 2, ['B']);
   const insect = token('Insect', ['Insect'], 1, 1, ['G']);
-  const salamander = token('Salamander Warrior', ['Salamander', 'Warrior'], 4, 3, ['U']);
+  const salamander = TK.sultaiSalamander ||= token('Salamander Warrior', ['Salamander', 'Warrior'], 4, 3, ['U']);
 
   async function chooseCards(game, player, pool, min, max, prompt, aiHint) {
     if (!pool.length || max <= 0) return [];

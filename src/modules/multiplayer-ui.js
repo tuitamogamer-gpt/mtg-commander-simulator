@@ -12,7 +12,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (html !== undefined) node.innerHTML = html;
     return node;
   };
-  const artURL = name => `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(String(name || '').split(' // ')[0])}&format=image&version=small`;
+  const artURL = name => MTG.cardImageURL(name);
 
   function deckCatalog() {
     return Object.entries(MTG.DECKS || {}).filter(([, deck]) => !deck.custom).map(([name, deck]) => ({

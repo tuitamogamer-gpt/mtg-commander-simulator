@@ -18,13 +18,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   const esc = (s) => U.uiText(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
-  function imgURL(name, big) {
-    const face = String(name).split(' // ')[0];
-    // Tokeni imaju fiksiran tačan print: exact-name lookup za "Treasure" i
-    // slična imena zna vratiti dvostrani token sa pogrešnim licem (dinosaurus).
-    const tokenPrint = MTG.TOKEN_IMG && MTG.TOKEN_IMG[face];
-    if (tokenPrint) return `https://api.scryfall.com/cards/${tokenPrint}?format=image&version=${big ? 'normal' : 'small'}`;
-    return `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(face)}&format=image&version=${big ? 'normal' : 'small'}`;
+  function imgURL(name) {
+    return MTG.cardImageURL(name);
   }
   const LOCAL_MANA = new Set(['W', 'U', 'B', 'R', 'G', 'C', 'X', 'T']);
   const MANA_PATH = './assets/mana/';

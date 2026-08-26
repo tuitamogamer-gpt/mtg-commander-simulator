@@ -6,6 +6,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const E = MTG.E;
   const T = MTG.T;
   const SC = MTG.SCRIPTS;
+  const TK = MTG.TOKENS;
 
   const etbSelf = (g, self, data) => data.card === self;
   const attacksSelf = (g, self, data) => data.card === self;
@@ -35,7 +36,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
   const elemental53 = token('Elemental', ['Creature'], ['Elemental'], 5, 3, { colorsOverride: ['G'] });
   const golem33 = token('Golem', ['Artifact', 'Creature', 'Enchantment'], ['Golem'], 3, 3, { colorsOverride: [] });
-  const lander = token('Lander', ['Artifact'], ['Lander'], undefined, undefined, {
+  const lander = TK.worldShaperLander ||= token('Lander', ['Artifact'], ['Lander'], undefined, undefined, {
     abilities: [{
       label: 'Lander: traži basic land', cost: { mana: '{2}', tap: true, sacSelf: true },
       run: async ctx => { await E.searchBasic(ctx.g, ctx.you, { n: 1, tapped: true }); },
