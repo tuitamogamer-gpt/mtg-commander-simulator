@@ -32,7 +32,7 @@ The generated per-deck/per-card results are in `reports/card-certification.md` a
 
 ## Card images and external services
 
-Card art and mana symbols are bundled locally, so gameplay does not call a card-image API. `npm run sync:card-images` is the explicit maintenance command that resolves the fixed deck/token inventory through Scryfall, converts it to WebP, and regenerates the hardcoded local manifest in `src/card-images.js`.
+Card art and mana symbols are bundled locally. The 17 flavor-name prints that cannot be resolved by Scryfall's collection endpoint use its named image API at runtime, with the local card back as an error fallback. `npm run sync:card-images` is the explicit maintenance command that resolves the fixed deck/token inventory through Scryfall, converts it to WebP, and regenerates the hardcoded manifest in `src/card-images.js`.
 
 Deck data is also bundled. Arbitrary/Moxfield deck import is intentionally not part of this product. No API keys or credentials are required or stored.
 

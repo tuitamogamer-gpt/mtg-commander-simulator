@@ -496,6 +496,13 @@ MTG.symFail = function (img, col, fg, code) {
 };
 MTG.imgFail = function (img, cls) {
   if (!img || img._failed) return;
+  const requested = String(img.getAttribute && img.getAttribute('src') || img.src || '');
+  if (!img._apiFallback && MTG.CARD_IMAGE_API_BASE && requested.startsWith(MTG.CARD_IMAGE_API_BASE)) {
+    img._apiFallback = true;
+    img.removeAttribute('srcset');
+    img.src = MTG.CARD_IMAGE_PLACEHOLDER;
+    return;
+  }
   img._failed = true;
   img.classList.add(cls || 'imgfail');
   img.removeAttribute('srcset');
