@@ -875,6 +875,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return;
     }
     if (smokeScenario === 'battlefieldLayout') {
+      const smokeStation = new URLSearchParams(window.location.search).get('smokeStation') || 'offline';
       const place = (player, name) => {
         const card = new MTG.CardInst(MTG.DEFS[name], player);
         card.ctrl = player; card.zone = 'battlefield'; card.sick = false; card.tapped = false;
@@ -890,6 +891,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       place(ui.me, 'Skullclamp');
       place(ui.me, 'Sol Ring');
       place(ui.me, 'Arcane Signet');
+      const stationVessel = place(ui.me, 'Inspirit, Flagship Vessel');
+      stationVessel.counters.charge = smokeStation === 'online' ? 8 : 7;
       const animatedSpire = place(ui.me, 'Restless Spire');
       void animatedSpire.def.abilities[0].run({ g, src: animatedSpire, you: ui.me });
       addLands(ui.me, ['Forest', 'Forest', 'Island', 'Plains']);
@@ -911,7 +914,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
       g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = false;
       g.recalc();
-      g.lg('Battlefield layout smoke: creatures, support permanents, and mana resources are separated.', 'effect');
+      g.lg(`Battlefield layout smoke: Station is ${stationVessel.is('Creature') ? 'online in CREATURES' : 'offline in SUPPORT'}; current permanent types control every zone.`, 'effect');
       ui.render();
       return;
     }

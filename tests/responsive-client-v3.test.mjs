@@ -107,6 +107,8 @@ test('Arena V3 uses a compact HUD and utilities without bypassing action review'
   assert.match(ui, /items\.push\(\['diplomacy'/);
   assert.match(ui, /const stage = blocked \? null : this\.renderActionStage\(g\)/);
   assert.match(ui, /const sp = blocked \? null : this\.renderStackPopup\(g\)/);
+  assert.match(ui, /RECIPROCITY CHECK/);
+  assert.match(ui, /Commitment scope: receive/);
 });
 
 test('Arena groups creatures, support permanents, and mana artifacts into stable battlefield lanes', () => {
@@ -152,6 +154,35 @@ test('Arena groups creatures, support permanents, and mana artifacts into stable
   assert.match(css, /#game\[data-mobile-view="table"\] \.opprow \{[\s\S]*?flex-direction: column !important;/);
   assert.match(css, /#game\[data-mobile-view="table"\] \.oppresourcelane \{[\s\S]*?flex-basis: 78px;/);
   assert.match(css, /@media \(max-width: 767px\)[\s\S]*?#game \.landrow \{ flex-direction: column;/);
+});
+
+test('Arena re-zones Station Spacecraft from support to creatures using current types', () => {
+  const MTG = loadEngine();
+  const game = new MTG.Game({ seed: 43, paced: false, maxTurns: 20 });
+  const player = game.addPlayer('You', { name: 'Counter Intelligence' }, null, false);
+  const arena = new (loadUIForKeyboardTest().UI)();
+  const inspirit = new MTG.CardInst(MTG.DEFS['Inspirit, Flagship Vessel'], player);
+  inspirit.ctrl = player; inspirit.zone = 'battlefield'; inspirit.sick = false;
+  game.battlefield.push(inspirit);
+
+  inspirit.counters.charge = 7;
+  game.recalc();
+  let groups = arena.battlefieldGroups(game, player);
+  assert.equal(inspirit.is('Creature'), false);
+  assert.equal(groups.support.includes(inspirit), true);
+  assert.equal(groups.creatures.includes(inspirit), false);
+
+  game.addCounters(inspirit, 'charge', 1, true, player);
+  groups = arena.battlefieldGroups(game, player);
+  assert.equal(inspirit.is('Creature'), true);
+  assert.equal(groups.creatures.includes(inspirit), true);
+  assert.equal(groups.support.includes(inspirit), false);
+
+  game.removeCounters(inspirit, 'charge', 1);
+  groups = arena.battlefieldGroups(game, player);
+  assert.equal(inspirit.is('Creature'), false);
+  assert.equal(groups.support.includes(inspirit), true);
+  assert.match(main, /Station is \$\{stationVessel\.is\('Creature'\) \? 'online in CREATURES' : 'offline in SUPPORT'\}/);
 });
 
 test('Arena keeps decoded card images and ambient AI state stable across bot renders', () => {

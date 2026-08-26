@@ -205,10 +205,12 @@ test('a bot addresses the human directly when they share a meaningful public ene
   const result = await game.processDiplomacyCheckpoint(botA);
   assert.equal(result.status, 'pending-human');
   assert.equal(result.proposal.toId, human.idx);
-  assert.ok(result.proposal.publicBalance.to.net >= -0.2);
-  assert.ok(result.proposal.publicBalance.to.cost <= result.proposal.publicBalance.to.benefit * 1.3 + 0.2);
+  assert.ok(result.proposal.publicBalance.to.net >= 0);
+  assert.ok(result.proposal.publicBalance.to.cost <= result.proposal.publicBalance.to.benefit * 1.15 + 0.1);
+  assert.ok(result.proposal.publicBalance.to.scopeNet >= -0.1);
+  assert.ok(result.proposal.publicBalance.to.scopeCost <= result.proposal.publicBalance.to.scopeBenefit * 1.25 + 0.1);
   assert.equal(game.diplomacyView(human).incoming[0].fromId, botA.idx);
-  assert.ok(game.diplomacyView(human).incoming[0].publicBalance.net >= -0.2);
+  assert.ok(game.diplomacyView(human).incoming[0].publicBalance.net >= 0);
   assert.ok(game.log.some(entry => /sent You a diplomacy proposal/.test(entry.msg)));
 });
 
@@ -227,6 +229,30 @@ test('a bot cannot send the human a publicly one-sided exchange', () => {
   assert.equal(result.status, 'rejected');
   assert.match(result.reason, /one-sided/i);
   assert.ok(result.proposal.publicBalance.to.net < -0.2);
+});
+
+test('a bot cannot buy a full no-attack promise by protecting one cheap artifact', () => {
+  const { game, players: [human, bot, leader] } = makeGame();
+  leader.life = 500;
+  addCreature(game, human, 'Stormcatch Mentor');
+  addCreature(game, bot, 'Stormcatch Mentor');
+  const ring = new MTG.CardInst(MTG.DEFS['Sol Ring'], human);
+  ring.ctrl = human; ring.zone = 'battlefield'; ring.sick = false; ring.tapped = false;
+  game.battlefield.push(ring);
+  game.recalc();
+
+  const result = game.proposeDiplomacy(
+    bot, human,
+    `no_attack:${bot.idx}`,
+    `protect_permanent:${ring.iid}`,
+  );
+
+  assert.equal(result.status, 'rejected');
+  assert.match(result.reason, /one-sided/i);
+  assert.ok(result.proposal.publicBalance.to.net > 0,
+    'the old value-only gate incorrectly considered this positive');
+  assert.ok(result.proposal.publicBalance.to.scopeCost > result.proposal.publicBalance.to.scopeBenefit * 1.25 + 0.1,
+    'commitment breadth must expose why the exchange is disproportionate');
 });
 
 test('pressure clauses require a meaningful attack and void if a free block appears later', () => {

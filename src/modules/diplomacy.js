@@ -369,13 +369,49 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return benefit - cost;
   }
 
+  function clauseCommitmentScope(game, clause) {
+    // Expected board value is only half of reciprocity. A promise may be broad
+    // even when its immediate tactical value is low: "do not attack me" binds
+    // a whole combat, while "do not target this Sol Ring" protects one object.
+    // Keep this public and deterministic so hidden hands never affect the gate.
+    if (clause.type === 'no_attack') return 2.5;
+    if (clause.type === 'no_target_player') return 3;
+    if (clause.type === 'protect_permanent') {
+      const card = game.byIid(clause.targetCardId);
+      return Math.min(2.5, 0.75 + publicPermanentValue(game, card) * 0.2);
+    }
+    if (clause.type === 'let_resolve') {
+      const item = stackByKey(game, clause.stackId);
+      const value = item && item.card ? U.mv(item.card.def.cost || '') + (item.card.commander ? 2 : 0) : 3;
+      return Math.min(2.8, 0.75 + Math.max(0, value) * 0.3);
+    }
+    if (clause.type === 'pressure_player') return 2.3;
+    return 1;
+  }
+
+  function clauseScopeDelta(game, clause, perspective) {
+    const actor = player(game, clause.actorId), beneficiary = player(game, clause.beneficiaryId);
+    if (!actor || !beneficiary) return -20;
+    const scope = clauseCommitmentScope(game, clause);
+    if (perspective === beneficiary) return scope;
+    if (perspective === actor) return -scope;
+    return 0;
+  }
+
   function publicProposalBalance(game, proposal) {
     const impactFor = participant => {
-      const deltas = [proposal.request, proposal.offer].filter(Boolean)
+      const clauses = [proposal.request, proposal.offer].filter(Boolean);
+      const deltas = clauses
         .map(clause => clauseDelta(game, clause, participant, { publicOnly: true }));
+      const scopeDeltas = clauses.map(clause => clauseScopeDelta(game, clause, participant));
       const benefit = deltas.reduce((sum, delta) => sum + Math.max(0, delta), 0);
       const cost = deltas.reduce((sum, delta) => sum + Math.max(0, -delta), 0);
-      return { playerId: participant.idx, benefit, cost, net: benefit - cost };
+      const scopeBenefit = scopeDeltas.reduce((sum, delta) => sum + Math.max(0, delta), 0);
+      const scopeCost = scopeDeltas.reduce((sum, delta) => sum + Math.max(0, -delta), 0);
+      return {
+        playerId: participant.idx, benefit, cost, net: benefit - cost,
+        scopeBenefit, scopeCost, scopeNet: scopeBenefit - scopeCost,
+      };
     };
     const from = player(game, proposal.fromId), to = player(game, proposal.toId);
     return { from: impactFor(from), to: impactFor(to) };
@@ -384,9 +420,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function publicExchangeIsFair(game, proposal, recipient) {
     const balance = proposal.publicBalance || publicProposalBalance(game, proposal);
     const side = recipient.idx === proposal.fromId ? balance.from : balance.to;
-    // A bot may negotiate hard, but it may not send a proposal whose visible
-    // benefit fails to cover the visible commitment it asks from the recipient.
-    return side.benefit >= 0.75 && side.net >= -0.2 && side.cost <= side.benefit * 1.3 + 0.2;
+    // A bot may negotiate hard, but an unsolicited offer or counteroffer must
+    // favor its recipient on both axes: expected public-board value and the
+    // breadth/duration of the commitments. This rejects deals such as a full
+    // no-attack promise in exchange for protecting one low-value artifact.
+    const valueFair = side.benefit >= 0.75 && side.net >= 0 &&
+      side.cost <= side.benefit * 1.15 + 0.1;
+    const scopeFair = side.scopeBenefit >= 0.75 && side.scopeNet >= -0.1 &&
+      side.scopeCost <= side.scopeBenefit * 1.25 + 0.1;
+    return valueFair && scopeFair;
   }
 
   function stableFraction(text) {
@@ -439,7 +481,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const temperament = (stableFraction(fingerprint) - 0.5) * 0.7;
     const pressuresRunaway = [proposal.request, proposal.offer].some(clause => clause.type === 'pressure_player');
     const shared = proposer ? sharedTableThreat(game, bot, proposer) : null;
-    const sharedThreatDiscount = shared ? Math.min(0.32, shared.gap * 0.035) : 0;
+    // A genuinely shared public threat should make balanced, reciprocal terms
+    // easier to accept. The separate value+scope gate still blocks one-sided
+    // exchanges before this strategic discount is considered.
+    const sharedThreatDiscount = shared ? Math.min(0.4, shared.gap * 0.045) : 0;
     const threshold = 0.28 + styleCaution + temperament - Math.max(-0.25, Math.min(0.35, rapport * 0.16)) -
       (pressuresRunaway ? 0.42 : 0) - sharedThreatDiscount;
     const net = rawNet + Math.max(-0.5, Math.min(0.65, rapport * 0.22));
@@ -808,6 +853,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (initiator.status !== 'accepted') continue;
           const publicRecipient = evaluateProposal(game, proposal, to, { publicOnly: true });
           if (!publicExchangeIsFair(game, proposal, to)) continue;
+          // Bot↔bot offers should not consume a table checkpoint on terms the
+          // recipient already knows it will reject. Human recipients remain
+          // public-only and retain the real accept/decline decision.
+          if (to.isAI && evaluateProposal(game, proposal, to).status !== 'accepted') continue;
           const sharedBonus = shared ? Math.min(0.7, shared.gap * 0.04) : 0;
           const variety = stableFraction(`${from.idx}|${to.idx}|${completedRounds(game)}|${clauseFingerprint(request)}|${clauseFingerprint(offer)}`) * 0.12;
           candidates.push({

@@ -959,7 +959,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               `<p><span>${esc(proposal.fromName)} OFFERS TO</span>${esc(proposal.offer)}</p>`;
           }
           if (proposal.publicBalance) {
-            card.innerHTML += `<div class="dipvaluecheck"><b>PUBLIC VALUE CHECK</b><span>You receive ${proposal.publicBalance.benefit.toFixed(1)} value · visible commitment cost ${proposal.publicBalance.cost.toFixed(1)}</span><small>Includes public threat and safe-combat risk.</small></div>`;
+            card.innerHTML += `<div class="dipvaluecheck"><b>RECIPROCITY CHECK</b><span>Expected value: receive ${proposal.publicBalance.benefit.toFixed(1)} · commit ${proposal.publicBalance.cost.toFixed(1)}</span><span>Commitment scope: receive ${proposal.publicBalance.scopeBenefit.toFixed(1)} · commit ${proposal.publicBalance.scopeCost.toFixed(1)}</span><small>Public board value and promise breadth must both favor you.</small></div>`;
           }
           card.innerHTML += proposal.reason ? `<small>${esc(proposal.reason)}</small>` : '';
           const row = el('div', 'dipactions');
@@ -3248,7 +3248,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const incomingBalance = incoming && proposal.publicBalance && proposal.publicBalance.to;
       if (incomingBalance) {
         modal.appendChild(el('div', 'dipvaluecheck diplomacyreviewvalue',
-          `<b>PUBLIC VALUE CHECK</b><span>You receive ${incomingBalance.benefit.toFixed(1)} value · visible commitment cost ${incomingBalance.cost.toFixed(1)}</span><small>Threat assessment and safe-combat risk are included. A certain free block cannot make an attack mandatory.</small>`));
+          `<b>RECIPROCITY CHECK</b><span>Expected value: receive ${incomingBalance.benefit.toFixed(1)} · commit ${incomingBalance.cost.toFixed(1)}</span><span>Commitment scope: receive ${incomingBalance.scopeBenefit.toFixed(1)} · commit ${incomingBalance.scopeCost.toFixed(1)}</span><small>Public board value and promise breadth must both favor you. A certain free block cannot make an attack mandatory.</small>`));
       }
 
       if (!incoming) {
