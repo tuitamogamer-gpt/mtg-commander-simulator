@@ -2345,9 +2345,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const isSpell = !!(ctx.so && ctx.so.kind === 'spell');
       const isActivatedAbility = !!ctx.isActivatedAbility;
       const isTriggeredAbility = !isSpell && !isActivatedAbility;
-      const isInstantSorcery = isSpell && !!(src && (src.is('Instant') || src.is('Sorcery') ||
-        ctx.so.castOpts && ctx.so.castOpts.adventure &&
-          /Instant|Sorcery/.test(ctx.so.castOpts.types || src.def.adventure && src.def.adventure.types || '')));
+      const isInstantSorcery = isSpell && this.isInstantSorcerySpell(ctx.so);
       for (const t of targetedNow) await this.emit('targeted', {
         card: t, byPlayer: ctrl, src, isSpell, isInstantSorcery,
         isActivatedAbility, isTriggeredAbility, ability: ctx.ability || null, so: ctx.so || null,

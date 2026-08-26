@@ -212,6 +212,46 @@ test('Rootha vraća sebe kao cijenu i kopira tačno ciljani vlastiti spell', asy
   assert.equal(game.stack.at(-1).copyOf, original);
 });
 
+test('Petty Theft je Adventure instant: koristi vlastiti cost/MV i aktivira obje Roothe', async () => {
+  const { game, players: [prismari, opponent] } = rulesGame([], 2);
+  permanent(game, prismari, 'Rootha, Mastering the Moment', { commander: true });
+  const mercurial = permanent(game, prismari, 'Rootha, Mercurial Artist');
+  const target = permanent(game, opponent, 'Sol Ring');
+  const borrower = inZone(prismari, 'Brazen Borrower', 'hand');
+  const adventure = Object.assign({ adventure: true }, borrower.def.adventure);
+
+  const cost = game.spellCost(prismari, borrower, adventure);
+  assert.equal(cost.generic, 1, 'Petty Theft koristi {1}{U}, ne Brazen Borrowerov {1}{U}{U}');
+  assert.equal(cost.pips.length, 1);
+  assert.equal(cost.pips[0].includes('U'), true);
+
+  prismari.pool.C = 1;
+  prismari.pool.U = 1;
+  assert.equal(await game.castSpell(prismari, borrower, { from: 'hand', alt: adventure }), true);
+  const spell = game.stack.find(item => item.kind === 'spell' && item.card === borrower);
+  assert.ok(spell);
+  assert.equal(spell.name, 'Petty Theft');
+  assert.equal(game.isInstantSorcerySpell(spell), true);
+  assert.equal(game.stackSpellManaValue(spell), 2);
+  assert.equal(prismari.turnState.spellsCastList.at(-1).isInstantSorcery, true);
+  assert.equal(prismari.turnState.spellsCastList.at(-1).isCreature, false);
+  assert.equal(prismari.turnState.spellsCastList.at(-1).mv, 2);
+
+  const copyAbility = mercurial.def.abilities[0];
+  assert.equal(copyAbility.cond(game, mercurial, prismari), true,
+    'Rootha, Mercurial Artist vidi Adventure instant na Stacku');
+  assert.equal(copyAbility.targets[0].filter(game, spell, prismari), true);
+
+  await resolveAll(game);
+  assert.equal(target.zone, 'hand', 'Petty Theft se normalno rezolvira');
+  await game.emit('beginCombat', { player: prismari });
+  await resolveAll(game);
+  const elemental = game.creatures(prismari).find(card => card.isToken && card.hasSub('Elemental'));
+  assert.ok(elemental, 'Rootha, Mastering the Moment pravi Elemental nakon Adventure instanta');
+  assert.equal(elemental.power, 2);
+  assert.equal(elemental.toughness, 2);
+});
+
 test('Thunderclap računa commander castove kada se delayed trigger rezolvira', async () => {
   const { game, players: [prismari] } = rulesGame([], 2);
   const drake = permanent(game, prismari, 'Thunderclap Drake');

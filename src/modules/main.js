@@ -874,6 +874,66 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ui.render();
       return;
     }
+    if (smokeScenario === 'battlefieldLayout') {
+      const place = (player, name) => {
+        const card = new MTG.CardInst(MTG.DEFS[name], player);
+        card.ctrl = player; card.zone = 'battlefield'; card.sick = false; card.tapped = false;
+        g.battlefield.push(card);
+        return card;
+      };
+      const addLands = (player, names) => names.forEach(name => place(player, name));
+
+      place(ui.me, 'Stormcatch Mentor');
+      place(ui.me, 'Harmonic Prodigy');
+      place(ui.me, 'Academy Manufactor');
+      place(ui.me, "Gourmand's Talent");
+      place(ui.me, 'Skullclamp');
+      place(ui.me, 'Sol Ring');
+      place(ui.me, 'Arcane Signet');
+      const animatedSpire = place(ui.me, 'Restless Spire');
+      void animatedSpire.def.abilities[0].run({ g, src: animatedSpire, you: ui.me });
+      addLands(ui.me, ['Forest', 'Forest', 'Island', 'Plains']);
+
+      const opponents = g.players.filter(player => player !== ui.me && !player.lost);
+      opponents.forEach((player, index) => {
+        place(player, index === 0 ? 'Stormcatch Mentor' : index === 1 ? 'Oracle of Mul Daya' : 'Academy Manufactor');
+        place(player, 'Outpost Siege');
+        place(player, 'Skullclamp');
+        place(player, index === 1 ? 'Mind Stone' : 'Sol Ring');
+        if (index === 0) {
+          const botSpire = place(player, 'Restless Spire');
+          void botSpire.def.abilities[0].run({ g, src: botSpire, you: player });
+        }
+        addLands(player, index === 0 ? ['Mountain', 'Island', 'Mountain'] : index === 1 ? ['Forest', 'Forest', 'Swamp'] : ['Plains', 'Island', 'Swamp']);
+        ui.collapsed = ui.collapsed || new Set();
+        ui.collapsed.delete(player.idx);
+      });
+
+      g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+      g.recalc();
+      g.lg('Battlefield layout smoke: creatures, support permanents, and mana resources are separated.', 'effect');
+      ui.render();
+      return;
+    }
+    if (smokeScenario === 'suspendVisibility') {
+      const suspendFromHand = new MTG.CardInst(MTG.DEFS['Rousing Refrain'], ui.me);
+      suspendFromHand.ctrl = ui.me; suspendFromHand.zone = 'hand';
+      ui.me.hand.push(suspendFromHand);
+      const alreadySuspended = new MTG.CardInst(MTG.DEFS['Rousing Refrain'], ui.me);
+      alreadySuspended.ctrl = ui.me; alreadySuspended.zone = 'exile'; alreadySuspended.meta = { suspended: 2 };
+      ui.me.exile.push(alreadySuspended);
+      g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+      ui.me.pool.C = 1; ui.me.pool.R = 1;
+      g.recalc();
+      const q = {
+        type: 'main', player: ui.me,
+        casts: g.castableList(ui.me), acts: g.activatableList(ui.me), lands: g.playableLands(ui.me), phase: g.phase,
+      };
+      void ui.me.controller.decide(g, q).then(action => g.performAction(ui.me, action));
+      g.lg('Suspend visibility smoke: Rousing Refrain is ready in hand and another copy has 2 time counters.', 'effect');
+      ui.render();
+      return;
+    }
     if (smokeScenario === 'libraryTop') {
       const take = (name, zone) => {
         const zones = [ui.me.command, ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
@@ -2486,6 +2546,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!g) return { mode: 'setup', deckCount: MTG.DECKS ? Object.keys(MTG.DECKS).length : 0 };
     const card = c => ({
       id: c.iid, name: c.name, zone: c.zone, tapped: !!c.tapped,
+      types: c.cur && c.cur.types ? [...c.cur.types] : [...(c.def.types || [])],
+      subtypes: c.cur && c.cur.subtypes ? [...c.cur.subtypes] : [...(c.def.subtypes || [])],
+      landCreature: c.is('Land') && c.is('Creature'),
+      suspended: c.meta && Object.prototype.hasOwnProperty.call(c.meta, 'suspended')
+        ? Math.max(0, Number(c.meta.suspended) || 0) : undefined,
       faceDown: !!c.faceDown,
       hiddenIdentity: c.faceDown && c.ctrl === ui.me && c.meta && c.meta.faceDownDef
         ? c.meta.faceDownDef.name : undefined,
@@ -2592,7 +2657,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               entry.handAbility ? entry.card.def.handAbility.label :
                 entry.gyAbility ? (entry.gyAbilityOverride || entry.card.def.gyAbility).label :
                   entry.ability ? entry.ability.label :
-                    entry.equip ? 'Equip' : entry.crew ? 'Crew' : entry.cycling ? 'Cycling' : 'Activate'),
+                    entry.equip ? 'Equip' : entry.crew ? 'Crew' : entry.cycling ? 'Cycling' :
+                      entry.suspend ? `Suspend ${entry.card.def.suspend.cost} with ${entry.card.def.suspend.n} time counters` : 'Activate'),
         }))),
       } : null,
       priority: g.priorityState ? {

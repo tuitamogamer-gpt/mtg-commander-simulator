@@ -42,6 +42,10 @@ body:has(#setup)::before,
   display: none !important;
 }
 
+body:not(.game-active) #game { display: none !important; }
+body.game-active #setup { display: none !important; }
+body.game-active #game { display: grid !important; }
+
 #setup {
   width: min(100%, 1560px) !important;
   max-width: none !important;
@@ -537,9 +541,6 @@ body:has(#setup)::before,
 
 @media (max-width: 1279px) {
   #setup { display: block !important; }
-  #game { display: none !important; }
-  body.game-active #setup { display: none !important; }
-  body.game-active #game { display: grid !important; }
 
   #setup { padding-inline: 22px !important; }
   #setup .menuhead {
@@ -1452,7 +1453,19 @@ body:has(#game .overlay) .toastmsg {
   #game[data-mobile-view="table"] .myboard,
   #game[data-mobile-view="table"] .handwrap { display: none !important; }
   #game[data-mobile-view="table"] .oppswrap { align-content: start; grid-auto-rows: 150px; }
-  #game[data-mobile-view="table"] .opprow { display: flex !important; min-height: 150px; height: auto !important; }
+  #game[data-mobile-view="table"] .opprow {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 150px;
+    height: auto !important;
+  }
+  #game[data-mobile-view="table"] .opphead { width: 100%; flex: 0 0 auto; }
+  #game[data-mobile-view="table"] .oppstrip { width: 100%; flex: 1 1 auto; }
+  #game[data-mobile-view="table"] .oppresourcelane {
+    flex-basis: 78px;
+    min-width: 78px;
+    max-width: 78px;
+  }
 
   #game[data-mobile-view="stack"] {
     grid-template-rows: 76px 48px minmax(0, 1fr) auto !important;
@@ -1793,4 +1806,225 @@ body:has(#game .overlay) .toastmsg {
   .online-seats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .online-player-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .online-remote-board { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Battlefield zoning: combat bodies first, support to the right, mana with lands. */
+#game .mybattlefieldmain {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(180px, .72fr);
+  align-items: stretch;
+  gap: 8px;
+  overflow: hidden;
+}
+
+#game .mybattlefieldmain > .emptyrow { grid-column: 1 / -1; }
+
+#game .boardlane,
+#game .resourcezone,
+#game .oppresourcelane {
+  position: relative;
+  min-width: 0;
+  padding: 17px 6px 4px;
+  overflow: hidden;
+  border: 1px solid rgba(231, 215, 181, .09);
+  border-radius: 7px;
+  background: rgba(5, 10, 10, .34);
+}
+
+#game .boardlane.supportlane {
+  border-color: rgba(143, 126, 184, .18);
+  background: linear-gradient(180deg, rgba(92, 72, 126, .08), rgba(5, 10, 10, .28));
+}
+
+#game .boardlanelabel {
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  z-index: 2;
+  overflow: hidden;
+  color: rgba(205, 193, 168, .48);
+  font: 800 7px/1 'Barlow Semi Condensed', sans-serif;
+  letter-spacing: .16em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#game .boardlanecards {
+  display: flex;
+  min-width: 0;
+  min-height: 100%;
+  align-items: flex-end;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+#game .resourcezone {
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 62px;
+  align-items: flex-end;
+  gap: 7px;
+  padding: 16px 5px 3px;
+  border-color: rgba(117, 151, 107, .15);
+  background: linear-gradient(180deg, rgba(74, 99, 66, .06), rgba(5, 10, 10, .3));
+}
+
+#game .resourcezone .landstrip {
+  flex: 1 1 auto;
+  align-self: center;
+}
+
+#game .manaartifactstrip,
+#game .oppresourcecards {
+  display: flex;
+  min-width: 0;
+  align-items: flex-end;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+#game .manaartifactstrip {
+  flex: 0 1 auto;
+  max-width: 44%;
+  padding-left: 7px;
+  border-left: 1px solid rgba(126, 162, 116, .16);
+}
+
+#game .manaartifactstrip .mini.sm,
+#game .oppresourcelane .mini.sm {
+  width: 40px !important;
+  height: 54px !important;
+}
+
+#game .manaartifactstrip .permanentpile.sm,
+#game .oppresourcelane .permanentpile.sm { width: 40px !important; }
+
+#game .manaartifactstrip .mini.sm .mname,
+#game .oppresourcelane .mini.sm .mname { font-size: 6px; max-height: 14px; }
+
+#game .landrow { overflow: hidden; }
+
+#game .oppstrip.battlefieldstrip {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  min-width: 0;
+  align-items: stretch;
+  gap: 5px;
+  padding: 6px 7px 8px !important;
+  overflow: hidden;
+}
+
+#game .oppstrip.battlefieldstrip::before { content: none; }
+
+#game .oppboardmain {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(76px, .72fr);
+  min-width: 0;
+  gap: 5px;
+}
+
+#game .oppboardmain .boardlane {
+  min-height: 0;
+  padding: 14px 4px 3px;
+  border-radius: 5px;
+}
+
+#game .oppboardmain .boardlane:only-child { grid-column: 1 / -1; }
+#game .oppboardmain .boardlanelabel { top: 4px; left: 5px; font-size: 6px; }
+#game .oppboardmain .boardlanecards { gap: 4px; }
+
+#game .oppresourcelane {
+  flex: 0 1 29%;
+  display: flex;
+  min-width: 54px;
+  max-width: 128px;
+  align-items: flex-end;
+  padding: 14px 4px 3px;
+  border-color: rgba(117, 151, 107, .14);
+  border-radius: 5px;
+  background: rgba(56, 79, 51, .08);
+}
+
+#game .oppresourcelane .boardlanelabel { top: 4px; left: 5px; font-size: 5.5px; }
+#game .oppresourcecards { width: 100%; }
+#game .oppresourcelane .oppLands { align-self: center; }
+
+/* Bot potezi emituju više uzastopnih state updatea. Ambient animacije na
+   ponovo nacrtanim čvorovima bi svaki put krenule od prvog framea i izgledale
+   kao mini refresh; aktivno mjesto ostaje jasno označeno bez pulsiranja. */
+#game.ai-turn .opprow.active,
+#game.ai-turn .oppswrap.active-ai-turn .opprow.activeai {
+  animation: none;
+  filter: brightness(1.045);
+}
+
+#game.ai-turn .stackempty span {
+  animation: none;
+  opacity: .5;
+  transform: rotate(22deg) scale(.98);
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  #game .mybattlefieldmain { grid-template-columns: minmax(0, 1.6fr) minmax(150px, .72fr); gap: 6px; }
+  #game .oppboardmain { grid-template-columns: minmax(0, 1.5fr) minmax(62px, .7fr); gap: 4px; }
+  #game .oppresourcelane { flex-basis: 27%; max-width: 105px; }
+}
+
+@media (max-width: 767px) {
+  #game .mybattlefieldmain {
+    grid-template-columns: minmax(0, 1.65fr) minmax(112px, .78fr);
+    gap: 5px;
+    overflow: visible;
+  }
+  #game .boardlane { padding: 14px 4px 3px; border-radius: 5px; }
+  #game .boardlanelabel { top: 4px; left: 5px; font-size: 5.8px; letter-spacing: .11em; }
+  #game .boardlanecards { gap: 4px; }
+  #game .resourcezone { min-height: 59px; padding-top: 14px; }
+  #game .resourcezone .landstrip { overflow-x: auto; }
+  #game .landrow { flex-direction: column; align-items: stretch; gap: 5px; overflow: visible; }
+  #game .resourcezone { width: 100%; flex: 0 0 auto; }
+  #game .playerrail { width: 100%; margin-left: 0; padding-left: 0; background: none; }
+  #game .playerrail:not(.has-library-top) .meinfo { width: 100%; margin-left: 0; justify-content: space-between; }
+  #game .manaartifactstrip { max-width: 42%; padding-left: 5px; }
+  #game .manaartifactstrip .mini.sm { width: 36px !important; height: 49px !important; }
+  #game .manaartifactstrip .permanentpile.sm { width: 36px !important; }
+  #game .oppstrip.battlefieldstrip { gap: 4px; padding: 3px 4px 4px !important; overflow-x: auto; }
+  #game .oppboardmain { min-width: 165px; grid-template-columns: minmax(80px, 1.45fr) minmax(68px, .8fr); gap: 4px; }
+  #game .oppboardmain .boardlane { padding: 11px 3px 2px; }
+  #game .oppboardmain .boardlanelabel,
+  #game .oppresourcelane .boardlanelabel { top: 3px; left: 4px; font-size: 5px; letter-spacing: .08em; }
+  #game .oppresourcelane { flex: 0 0 58px; min-width: 58px; padding: 11px 3px 2px; }
+  #game .oppresourcelane .mini.sm { width: 34px !important; height: 46px !important; }
+  #game .oppresourcelane .permanentpile.sm { width: 34px !important; }
+  #game .oppresourcelane .oppLands { min-width: 38px; padding: 3px 5px; font-size: 8px; }
+  #game[data-mobile-view="mine"] .oppboardmain .boardlane,
+  #game[data-mobile-view="mine"] .oppresourcelane { padding-top: 9px; }
+  #game[data-mobile-view="mine"] .oppboardmain .boardlanelabel,
+  #game[data-mobile-view="mine"] .oppresourcelane .boardlanelabel { top: 2px; font-size: 4.5px; }
+  #game[data-mobile-view="mine"] .oppboardmain .mini.sm {
+    width: 29px !important;
+    height: 38px !important;
+  }
+  #game[data-mobile-view="mine"] .oppboardmain .permanentpile.sm { width: 29px !important; }
+  #game[data-mobile-view="mine"] .oppresourcelane .mini.sm {
+    width: 28px !important;
+    height: 38px !important;
+  }
+  #game[data-mobile-view="mine"] .oppresourcelane .permanentpile.sm { width: 28px !important; }
+  #game[data-mobile-view="mine"] .oppboardmain .mini.sm .mname,
+  #game[data-mobile-view="mine"] .oppresourcelane .mini.sm .mname { font-size: 4.5px; max-height: 10px; }
+}
+
+@media (min-width: 1280px) and (max-height: 700px) {
+  #game .boardlane { padding-top: 14px; }
+  #game .resourcezone { min-height: 56px; padding-top: 14px; }
+  #game .manaartifactstrip .mini.sm { width: 36px !important; height: 49px !important; }
+  #game .manaartifactstrip .permanentpile.sm { width: 36px !important; }
+  #game .oppstrip.battlefieldstrip { padding-block: 4px 5px !important; }
+  #game .oppboardmain .boardlane,
+  #game .oppresourcelane { padding-top: 12px; }
 }

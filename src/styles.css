@@ -137,7 +137,10 @@ img { -webkit-user-drag: none; }
 .mini.sm .pt { font-size: 8.5px; padding: 0 3px; }
 .mini.cmdr { border-color: #c9a03a; box-shadow: 0 0 8px #c9a03a66; }
 .mini.actable { border-color: #4ab8d9; box-shadow: 0 0 9px #4ab8d977; }
+.mini.landcreature { border-color: #55d8ca; box-shadow: 0 0 0 1px #102f31, 0 0 12px #36cabb66; }
 .mini .toktag { position: absolute; top: 46%; left: 0; right: 0; text-align: center; font-size: 6.5px; letter-spacing: 1px; color: #fffc; background: #0008; padding: 1px 0; }
+.mini .landcreaturetag { position: absolute; left: 2px; right: 2px; bottom: 18px; z-index: 2; padding: 2px 1px; border: 1px solid #73e4d1; border-radius: 3px; background: #082a2bee; color: #c7fff5; font-size: 6.5px; font-weight: 900; line-height: 1; letter-spacing: .08em; text-align: center; white-space: nowrap; }
+.mini.sm .landcreaturetag { bottom: 14px; font-size: 5.5px; letter-spacing: .04em; }
 .mini .stackn { position: absolute; bottom: 20px; right: 2px; background: #e8c05a; color: #12141a; font-size: 10px; font-weight: 900; padding: 1px 5px; border-radius: 6px; box-shadow: 0 1px 3px #000a; }
 .mini.stacked { box-shadow: 2px 2px 0 #2e3542, 4px 4px 0 #262b36; margin-right: 4px; }
 .permanentpile {
@@ -531,6 +534,7 @@ img { -webkit-user-drag: none; }
 .mini.facedown > img { opacity: .28; filter: grayscale(1) contrast(1.2); }
 .facedowntag { position: absolute; left: 4px; right: 4px; bottom: 22px; background: #171421e8; color: #e4d9ff; border: 1px solid #8d78b5; border-radius: 4px; padding: 2px 3px; font-size: 8px; text-align: center; overflow: hidden; white-space: nowrap; }
 .facedownsheet { color: #e2d5ff; background: #302744; border: 1px solid #806aa7; border-radius: 6px; padding: 7px 9px; margin-bottom: 8px; font-size: 12px; letter-spacing: .04em; }
+.animatedpermanentstate { color: #c7fff5; background: linear-gradient(90deg,#0d3a3be8,#17453ee8); border: 1px solid #55d8ca; border-radius: 6px; padding: 7px 9px; margin-bottom: 2px; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
 
 /* ============================================================
    DESKTOP (≥1100px) — glavni raspored
@@ -3717,3 +3721,39 @@ span.msym.mana-glyph {
 .exiletraycard small { color: #7f8ea0; font-size: 9.5px; line-height: 1.25; }
 .exiletraycard.castable { border-color: rgba(143,212,138,.7); box-shadow: 0 0 12px rgba(90,168,96,.25); }
 .exiletraycard .exgo { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); color: #8fd48a; font: 800 10px/1 var(--tbl-cond); letter-spacing: .08em; font-style: normal; }
+
+/* ---------- Suspend: persistent exile state + clear hand action ---------- */
+.suspendtray { align-self: stretch; flex: 0 0 260px; min-width: 220px; max-width: min(320px, 36vw); height: calc(100% - 4px); display: grid; grid-template-rows: auto minmax(0,1fr); gap: 5px; padding: 7px; border: 1px solid rgba(213,158,70,.62); border-left: 3px solid #d59e46; border-radius: 5px; background: linear-gradient(145deg,rgba(54,39,13,.96),rgba(8,12,13,.98) 62%); box-shadow: inset 0 1px rgba(255,255,255,.04), 0 8px 22px rgba(0,0,0,.35); overflow: hidden; }
+.suspendtrayhead { display: grid; gap: 2px; min-width: 0; }
+.suspendtrayhead b { color: #f3c56f; font: 800 10px/1 var(--tbl-cond); letter-spacing: .14em; }
+.suspendtrayhead small { color: #aa956d; font: 700 7px/1.2 var(--tbl-cond); letter-spacing: .08em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.suspendtraylist { display: flex; min-height: 0; gap: 5px; overflow-x: auto; overflow-y: hidden; }
+.suspendtraycard { position: relative; flex: 0 0 min(228px, 100%); min-width: 0; display: grid; grid-template-columns: 36px minmax(0,1fr) 28px; gap: 6px; align-items: center; padding: 4px 5px; text-align: left; color: #ece5d7; cursor: pointer; border: 1px solid rgba(213,158,70,.36); border-radius: 4px; background: rgba(5,9,10,.88); }
+.suspendtraycard:hover, .suspendtraycard:focus-visible { border-color: #efc36f; outline: none; background: rgba(38,28,10,.9); }
+.suspendtraycard.casting { border-color: #8fd48a; box-shadow: 0 0 12px rgba(90,168,96,.25); }
+.suspendtraycard img { width: 36px; height: 48px; object-fit: cover; border-radius: 3px; display: block; }
+.suspendtraycard > span { min-width: 0; display: grid; gap: 3px; }
+.suspendtraycard > span b { overflow: hidden; color: #f3ead8; font: 700 10px/1.1 var(--tbl-cond); white-space: nowrap; text-overflow: ellipsis; }
+.suspendtraycard > span small { color: #a99b80; font: 600 8px/1.2 var(--tbl-cond); }
+.suspendcounter { width: 28px; height: 28px; display: grid; place-items: center; color: #251a08; background: radial-gradient(circle at 35% 30%,#ffe2a0,#d59e46 72%); border: 1px solid #ffe1a1; border-radius: 50%; box-shadow: 0 0 0 3px rgba(213,158,70,.14), 0 3px 8px #0008; font: 900 15px/1 var(--tbl-cond); font-style: normal; }
+.hcard.suspendready { border-color: #d5a14e !important; box-shadow: 0 0 0 1px rgba(239,195,111,.25), 0 0 18px rgba(213,158,70,.38) !important; }
+.handsuspendtag { position: absolute; z-index: 3; left: 3px; right: 3px; bottom: 17px; min-height: 17px; display: flex; align-items: center; justify-content: center; gap: 2px; padding: 2px 3px; color: #c7bda9; background: rgba(15,13,9,.92); border: 1px solid rgba(213,158,70,.46); border-radius: 3px; font: 800 6.5px/1 var(--tbl-cond); letter-spacing: .05em; white-space: nowrap; }
+.handsuspendtag.ready { color: #fff0c9; background: rgba(68,45,10,.95); border-color: #efc36f; }
+.handsuspendtag .mana-glyph { width: 11px; height: 11px; }
+.handsuspendtag b { color: #f3c56f; font-size: 8px; }
+.suspendstate { display: grid; gap: 5px; margin-bottom: 8px; padding: 9px 11px; border: 1px solid rgba(213,158,70,.58); border-left: 3px solid #d59e46; border-radius: 6px; background: linear-gradient(90deg,rgba(67,45,12,.68),rgba(16,20,20,.95)); }
+.suspendstate b { display: flex; align-items: center; flex-wrap: wrap; gap: 3px; color: #f3c56f; font: 800 10px/1.3 var(--tbl-cond); letter-spacing: .08em; }
+.suspendstate b .mana-glyph { width: 14px; height: 14px; }
+.suspendstate span { color: #d0c5b2; font: 600 10px/1.4 var(--tbl-cond); }
+.suspendstate.exile { border-color: rgba(115,181,201,.58); border-left-color: #73b5c9; background: linear-gradient(90deg,rgba(18,57,69,.72),rgba(14,19,21,.96)); }
+.suspendstate.exile b { color: #bfeafb; }
+.bigcard.suspendedcard { border-color: #d5a14e; box-shadow: 0 0 0 1px rgba(213,158,70,.22), 0 10px 24px #0009; }
+.zonesuspend { position: absolute; left: 5px; right: 5px; bottom: 22px; z-index: 3; padding: 4px 3px; color: #231805; background: linear-gradient(90deg,#f2c66f,#d59e46); border: 1px solid #ffe1a1; border-radius: 3px; font: 900 9px/1 var(--tbl-cond); letter-spacing: .08em; text-align: center; }
+
+@media (max-width: 767px) {
+  .suspendtray { flex-basis: 190px; min-width: 190px; max-width: 190px; padding: 5px; }
+  .suspendtrayhead small { font-size: 6px; }
+  .suspendtraycard { grid-template-columns: 30px minmax(0,1fr) 24px; padding: 3px; }
+  .suspendtraycard img { width: 30px; height: 40px; }
+  .suspendcounter { width: 24px; height: 24px; font-size: 13px; }
+}

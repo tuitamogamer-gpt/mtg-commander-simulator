@@ -7,6 +7,7 @@ import { loadEngine } from './helpers/load-engine.mjs';
 const index = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const main = readFileSync(new URL('../src/modules/main.js', import.meta.url), 'utf8');
 const ui = readFileSync(new URL('../src/modules/ui.js', import.meta.url), 'utf8');
+const styles = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../src/client-v3.css', import.meta.url), 'utf8');
 
 function loadDeckStrategy() {
@@ -34,6 +35,13 @@ test('responsive V3 stylesheet replaces the former desktop-only gate', () => {
   assert.match(css, /@media \(max-width: 1279px\)/);
   assert.match(css, /@media \(max-width: 767px\)/);
   assert.match(css, /body\.game-active #game \{ display: grid !important; \}/);
+});
+
+test('setup mode never leaves the inactive Arena below the Main Page', () => {
+  const inactiveArenaGate = css.indexOf('body:not(.game-active) #game { display: none !important; }');
+  const responsiveOverrides = css.indexOf('@media (max-width: 1279px)');
+  assert.ok(inactiveArenaGate >= 0, 'inactive Arena needs an explicit state gate');
+  assert.ok(inactiveArenaGate < responsiveOverrides, 'Arena state gate must apply at desktop widths too');
 });
 
 test('Main Page V3 keeps discovery and mobile pod controls functional', () => {
@@ -99,6 +107,79 @@ test('Arena V3 uses a compact HUD and utilities without bypassing action review'
   assert.match(ui, /items\.push\(\['diplomacy'/);
   assert.match(ui, /const stage = blocked \? null : this\.renderActionStage\(g\)/);
   assert.match(ui, /const sp = blocked \? null : this\.renderStackPopup\(g\)/);
+});
+
+test('Arena groups creatures, support permanents, and mana artifacts into stable battlefield lanes', () => {
+  const harness = loadUIForKeyboardTest();
+  const arena = new harness.UI();
+  const player = { name: 'You' };
+  const card = (name, types, extra = {}) => ({
+    name, ctrl: player, attachedTo: null,
+    def: { mana: extra.mana || null }, cur: { extraMana: extra.extraMana || [] },
+    is(type) { return types.includes(type); },
+  });
+  const creature = card('Bear', ['Creature']);
+  const artifactCreature = card('Mana Myr', ['Artifact', 'Creature'], { mana: {} });
+  const manaRock = card('Sol Ring', ['Artifact'], { mana: {} });
+  const enchantment = card('Rhystic Study', ['Enchantment']);
+  const utilityArtifact = card('Skullclamp', ['Artifact']);
+  const planeswalker = card('Teferi', ['Planeswalker']);
+  const animatedLand = card('Restless Spire', ['Land', 'Creature']);
+  const normalLand = card('Island', ['Land']);
+  const game = {
+    bf() { return [utilityArtifact, manaRock, creature, planeswalker, enchantment, artifactCreature, normalLand, animatedLand]; },
+    lands() { return [normalLand, animatedLand]; },
+    byIid() { return null; },
+  };
+
+  const groups = arena.battlefieldGroups(game, player);
+  assert.deepEqual(Array.from(groups.creatures, item => item.name), ['Bear', 'Mana Myr', 'Restless Spire']);
+  assert.deepEqual(Array.from(groups.manaArtifacts, item => item.name), ['Sol Ring']);
+  assert.deepEqual(Array.from(groups.support, item => item.name), ['Rhystic Study', 'Skullclamp', 'Teferi']);
+  assert.deepEqual(Object.keys(arena.landGroups(game, player)), ['Island']);
+  assert.match(ui, /'CREATURES'/);
+  assert.match(ui, /'ENCHANTMENTS · SUPPORT'/);
+  assert.match(ui, /'LANDS · MANA'/);
+  assert.match(ui, /className: 'creaturelane'/);
+  assert.match(ui, /className: 'supportlane'/);
+  assert.match(css, /#game \.mybattlefieldmain/);
+  assert.match(css, /#game \.resourcezone/);
+  assert.match(css, /#game \.oppboardmain/);
+  assert.match(ui, /LAND CREATURE/);
+  assert.match(styles, /\.mini\.landcreature/);
+  assert.match(styles, /\.animatedpermanentstate/);
+  assert.match(main, /landCreature: c\.is\('Land'\) && c\.is\('Creature'\)/);
+  assert.match(css, /#game\[data-mobile-view="table"\] \.opprow \{[\s\S]*?flex-direction: column !important;/);
+  assert.match(css, /#game\[data-mobile-view="table"\] \.oppresourcelane \{[\s\S]*?flex-basis: 78px;/);
+  assert.match(css, /@media \(max-width: 767px\)[\s\S]*?#game \.landrow \{ flex-direction: column;/);
+});
+
+test('Arena keeps decoded card images and ambient AI state stable across bot renders', () => {
+  assert.match(ui, /captureRenderedImages\(root\)/);
+  assert.match(ui, /reuseRenderedImages\(root, pool\)/);
+  assert.match(ui, /const renderedImages = this\.captureRenderedImages\(root\);/);
+  assert.match(ui, /this\.reuseRenderedImages\(root, renderedImages\);/);
+  assert.match(ui, /fresh\.replaceWith\(existing\);/);
+  assert.match(css, /#game\.ai-turn \.opprow\.active,[\s\S]*?animation: none;[\s\S]*?filter: brightness\(1\.045\);/);
+  assert.match(css, /#game\.ai-turn \.stackempty span \{[\s\S]*?animation: none;/);
+});
+
+test('Suspend stays visible from the hand through counters and automatic exile casting', () => {
+  assert.match(ui, /class="suspendtrayhead"><b>⏳ SUSPENDED<\/b>/);
+  assert.match(ui, /YOUR UPKEEP −1 · AT 0 AUTO-CAST FREE/);
+  assert.match(ui, /next counter comes off at your upkeep/);
+  assert.match(ui, /class="handsuspendtag\$\{canSuspendNow \? ' ready' : ''\}"/);
+  assert.match(ui, /Suspend .*— exile with .* time counters/);
+  assert.match(ui, /the game casts this card automatically for free if able/);
+  assert.match(ui, /you do not cast it manually from exile/);
+  assert.match(ui, /classList\.add\('suspendedcard'\)/);
+  assert.match(styles, /\.suspendtray \{/);
+  assert.match(styles, /\.suspendcounter \{/);
+  assert.match(styles, /\.handsuspendtag\.ready/);
+  assert.match(styles, /\.suspendstate\.exile/);
+  assert.match(main, /smokeScenario === 'suspendVisibility'/);
+  assert.match(main, /suspended: c\.meta && Object\.prototype\.hasOwnProperty\.call\(c\.meta, 'suspended'\)/);
+  assert.match(main, /entry\.suspend \? `Suspend \$\{entry\.card\.def\.suspend\.cost\} with \$\{entry\.card\.def\.suspend\.n\} time counters`/);
 });
 
 test('player effect indicators expose public persistent choices without leaking secret choices', () => {

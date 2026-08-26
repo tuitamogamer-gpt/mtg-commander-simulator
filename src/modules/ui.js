@@ -225,6 +225,40 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       requestAnimationFrame(() => { this.renderQueued = false; this.render(); });
     }
 
+    // Arena se često ponovo iscrta dok bot sekvencijalno rješava akcije. Safari
+    // kratko pokaže praznu sliku ako se isti <img> ukloni i odmah napravi novi,
+    // čak i kada je URL već u cacheu. Sačuvaj postojeće media čvorove po izvoru
+    // i vrati ih u novi prikaz da dekodirana slika ostane na ekranu bez bljeska.
+    captureRenderedImages(root) {
+      const pool = new Map();
+      for (const image of root.querySelectorAll('img[src]')) {
+        const key = image.getAttribute('src');
+        if (!key) continue;
+        if (!pool.has(key)) pool.set(key, []);
+        pool.get(key).push(image);
+      }
+      return pool;
+    }
+
+    reuseRenderedImages(root, pool) {
+      if (!pool || !pool.size) return;
+      for (const fresh of Array.from(root.querySelectorAll('img[src]'))) {
+        const key = fresh.getAttribute('src');
+        const matches = key && pool.get(key);
+        const existing = matches && matches.shift();
+        if (!existing) continue;
+        for (const attr of Array.from(existing.attributes)) {
+          if (!fresh.hasAttribute(attr.name)) existing.removeAttribute(attr.name);
+        }
+        for (const attr of Array.from(fresh.attributes)) {
+          if (existing.getAttribute(attr.name) !== attr.value) existing.setAttribute(attr.name, attr.value);
+        }
+        existing.onerror = fresh.onerror;
+        existing.onload = fresh.onload;
+        fresh.replaceWith(existing);
+      }
+    }
+
     stackObjectTargets(so) {
       const groups = so && (so.targets || so.ctx && so.ctx.targets) || [];
       return (Array.isArray(groups) ? groups : [groups]).flat(Infinity).filter(Boolean);
@@ -434,6 +468,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!g) return;
       const root = $('#game');
       if (!root) return;
+      const renderedImages = this.captureRenderedImages(root);
       // set of my cards with available activations (for ⚙ badges)
       this.actable = new Set();
       if (this.pending && (this.pending.q.type === 'main' || this.pending.q.type === 'priority')) {
@@ -494,6 +529,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const gameOverHidden = this.showLog || this.sheet || this.playerSheet || this.zoneBrowse;
       if (g.gameOver && !gameOverHidden) root.appendChild(this.renderGameOver(g));
       U.localizeTree(root);
+      this.reuseRenderedImages(root, renderedImages);
     }
 
     // Centralni action stage: svaka protivnička nonland karta na stacku dobija
@@ -1482,24 +1518,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         row.appendChild(head);
         // board strip (always visible unless collapsed)
         if (!collapsed && !p.lost) {
-          const strip = el('div', 'oppstrip');
-          const allPerms = g.bf().filter(c => c.ctrl === p && !c.is('Land'));
-          const perms = allPerms.filter(c => !this.attachedHost(g, c));
-          const creatures = perms.filter(c => c.is('Creature'));
-          const others = perms.filter(c => !c.is('Creature'));
-          for (const entry of this.groupPerms(creatures.concat(others))) {
-            strip.appendChild(this.permanentPile(g, entry.card, { sm: true, stackN: entry.n }));
-          }
-          // lands summary chip
-          const lands = g.lands(p);
+          const strip = el('div', 'oppstrip battlefieldstrip');
+          const groups = this.battlefieldGroups(g, p);
+          const boardMain = el('div', 'oppboardmain');
+          const creatures = this.permanentLane(g, 'CREATURES', groups.creatures, { sm: true, className: 'creaturelane' });
+          const support = this.permanentLane(g, 'ENCHANTMENTS · SUPPORT', groups.support, { sm: true, className: 'supportlane' });
+          if (creatures) boardMain.appendChild(creatures);
+          if (support) boardMain.appendChild(support);
+          if (boardMain.children.length) strip.appendChild(boardMain);
+
+          // Lands and noncreature mana artifacts share one resource lane.
+          const lands = g.lands(p).filter(land => !land.is('Creature'));
           const untapped = lands.filter(l => !l.tapped).length;
+          const resources = el('section', 'oppresourcelane');
+          resources.appendChild(el('div', 'boardlanelabel', 'LANDS · MANA'));
+          const resourceCards = el('div', 'oppresourcecards');
+          for (const entry of this.groupPerms(groups.manaArtifacts)) {
+            resourceCards.appendChild(this.permanentPile(g, entry.card, { sm: true, stackN: entry.n }));
+          }
           if (lands.length) {
             const lc = el('div', 'oppLands', `🌍<br>${untapped}/${lands.length}`);
             lc.title = 'Lands (untapped/total)';
             lc.onclick = () => { this.playerSheet = p; this.render(); };
-            strip.appendChild(lc);
+            resourceCards.appendChild(lc);
           }
-          if (!allPerms.length && !lands.length) strip.appendChild(el('div', 'emptystrip', 'empty battlefield'));
+          if (resourceCards.children.length) {
+            resources.appendChild(resourceCards);
+            strip.appendChild(resources);
+          }
+          if (!groups.all.length && !lands.length) strip.appendChild(el('div', 'emptystrip', 'empty battlefield'));
           row.appendChild(strip);
         }
         wrap.appendChild(row);
@@ -1684,29 +1731,62 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     landGroups(g, p) {
       const groups = {};
-      for (const l of g.lands(p)) {
+      for (const l of g.lands(p).filter(land => !land.is('Creature'))) {
         const key = l.name;
         (groups[key] = groups[key] || []).push(l);
       }
       return groups;
     }
 
+    isManaArtifact(card) {
+      if (!card || !card.is('Artifact') || card.is('Creature')) return false;
+      const ownMana = card.def && card.def.mana;
+      const grantedMana = card.cur && card.cur.extraMana;
+      return !!ownMana || !!(grantedMana && grantedMana.length);
+    }
+
+    battlefieldGroups(g, p) {
+      // Animated lands are creatures on the battlefield right now. Render
+      // them as individual combat permanents instead of hiding them inside
+      // the summarized land/resource counter.
+      const all = g.bf().filter(card => card.ctrl === p && (!card.is('Land') || card.is('Creature')));
+      const visible = all.filter(card => !this.attachedHost(g, card));
+      const creatures = visible.filter(card => card.is('Creature'));
+      const manaArtifacts = visible.filter(card => this.isManaArtifact(card));
+      const enchantments = visible.filter(card =>
+        !card.is('Creature') && !this.isManaArtifact(card) && card.is('Enchantment'));
+      const otherSupport = visible.filter(card =>
+        !card.is('Creature') && !this.isManaArtifact(card) && !card.is('Enchantment'));
+      return { all, creatures, manaArtifacts, support: enchantments.concat(otherSupport) };
+    }
+
+    permanentLane(g, label, cards, opts = {}) {
+      if (!cards.length) return null;
+      const lane = el('section', `boardlane ${opts.className || ''}`.trim());
+      lane.appendChild(el('div', 'boardlanelabel', label));
+      const cardWrap = el('div', 'boardlanecards');
+      for (const entry of this.groupPerms(cards)) {
+        cardWrap.appendChild(this.permanentPile(g, entry.card, { sm: !!opts.sm, stackN: entry.n }));
+      }
+      lane.appendChild(cardWrap);
+      return lane;
+    }
+
     renderMyBoard(g) {
       const me = this.me;
       const wrap = el('div', 'myboard');
-      // permanents (nonland)
-      const allPerms = g.bf().filter(c => c.ctrl === me && !c.is('Land'));
-      const perms = allPerms.filter(c => !this.attachedHost(g, c));
-      const row1 = el('div', 'cardrow');
-      const creatures = perms.filter(c => c.is('Creature'));
-      const others = perms.filter(c => !c.is('Creature'));
-      for (const entry of this.groupPerms(creatures.concat(others))) {
-        row1.appendChild(this.permanentPile(g, entry.card, { stackN: entry.n }));
-      }
-      if (!allPerms.length) row1.appendChild(el('div', 'emptyrow', 'Your battlefield is empty'));
-      wrap.appendChild(row1);
+      const battlefield = this.battlefieldGroups(g, me);
+      const row1 = el('div', 'cardrow mybattlefieldmain');
+      const creatures = this.permanentLane(g, 'CREATURES', battlefield.creatures, { className: 'creaturelane' });
+      const support = this.permanentLane(g, 'ENCHANTMENTS · SUPPORT', battlefield.support, { className: 'supportlane' });
+      if (creatures) row1.appendChild(creatures);
+      if (support) row1.appendChild(support);
+      if (!battlefield.all.length) row1.appendChild(el('div', 'emptyrow', 'Your battlefield is empty'));
+      if (row1.children.length) wrap.appendChild(row1);
       // lands & info row
       const row2 = el('div', 'landrow');
+      const resourceZone = el('section', 'resourcezone');
+      resourceZone.appendChild(el('div', 'boardlanelabel', 'LANDS · MANA'));
       const landStrip = el('div', 'landstrip');
       const groups = this.landGroups(g, me);
       for (const [name, lands] of Object.entries(groups)) {
@@ -1721,7 +1801,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         else lc.onclick = () => { this.sheet = { card: lands[0] }; this.render(); };
         landStrip.appendChild(lc);
       }
-      if (landStrip.children.length) row2.appendChild(landStrip);
+      if (landStrip.children.length) resourceZone.appendChild(landStrip);
+      if (battlefield.manaArtifacts.length) {
+        const manaArtifacts = el('div', 'manaartifactstrip');
+        for (const entry of this.groupPerms(battlefield.manaArtifacts)) {
+          manaArtifacts.appendChild(this.permanentPile(g, entry.card, { sm: true, stackN: entry.n }));
+        }
+        resourceZone.appendChild(manaArtifacts);
+      }
+      if (resourceZone.children.length > 1) row2.appendChild(resourceZone);
       // mana pool
       const pool = me.pool;
       const poolStr = Object.entries(pool).filter(([k, v]) => v > 0)
@@ -1876,7 +1964,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const shownFaceDownDef = this.visibleFaceDownDef(c);
       const mayLookFaceDown = !!shownFaceDownDef;
       const faceName = mayLookFaceDown ? shownFaceDownDef.name : c.name;
-      const d = el('div', 'mini' + (opts.sm ? ' sm' : '') + (c.tapped ? ' tapped' : '') + (c.sick && c.is('Creature') && !c.kw('haste') ? ' sick' : '') + (threatened ? ' threatened' : '') + (c.faceDown ? ' facedown' : ''));
+      const landCreature = c.is('Land') && c.is('Creature');
+      const d = el('div', 'mini' + (opts.sm ? ' sm' : '') + (c.tapped ? ' tapped' : '') + (c.sick && c.is('Creature') && !c.kw('haste') ? ' sick' : '') + (threatened ? ' threatened' : '') + (c.faceDown ? ' facedown' : '') + (landCreature ? ' landcreature' : ''));
       d.dataset.iid = String(c.iid);
       const colors = c.colors.length ? c.colors : ['C'];
       const grad = colors.length > 1
@@ -1910,16 +1999,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ? '<div class="crewtag" title="Crewed this turn">CREW</div>' : '';
       const att = c.attachments.length ? `<div class="att">🔗${c.attachments.length}</div>` : '';
       const tok = c.isToken ? `<div class="toktag">TOKEN</div>` : '';
+      const landCreatureTag = landCreature ? '<div class="landcreaturetag">LAND CREATURE</div>' : '';
       const fd = c.faceDown ? `<div class="facedowntag">${mayLookFaceDown ? 'FACE-DOWN · ' + esc(faceName.split(' // ')[0]) : 'FACE-DOWN'}</div>` : '';
       const stackN = opts.stackN && opts.stackN > 1 ? `<div class="stackn">×${opts.stackN}</div>` : '';
       if (opts.stackN > 1) d.classList.add('stacked');
       d.innerHTML = `
         <img loading="lazy" src="${c.faceDown && !mayLookFaceDown ? MTG.BLANK_PX : imgURL(faceName)}" onerror="MTG.imgFail(this)">
         <div class="mname">${esc(c.faceDown ? 'Face-down creature' : c.name.split(' // ')[0])}</div>
-        ${pt}${cnt}${oc}${crewed}${att}${tok}${fd}${stackN}
+        ${pt}${cnt}${oc}${crewed}${att}${tok}${landCreatureTag}${fd}${stackN}
         ${badges.length ? `<div class="badge">${badges.join('')}</div>` : ''}`;
       d.dataset.cname = mayLookFaceDown ? faceName : c.name;
-      const accessibleName = c.faceDown && !mayLookFaceDown ? 'Face-down permanent' : faceName;
+      const accessibleName = c.faceDown && !mayLookFaceDown
+        ? 'Face-down permanent'
+        : `${faceName}${landCreature ? `. Land creature ${c.power}/${c.toughness}` : ''}`;
       // interactions
       if (this.markSelectedTarget(d, c)) {
         return this.makeKeyboardButton(d, `${accessibleName}. Selected target. Remove this target.`);
@@ -1964,6 +2056,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const row = el('div', 'hand');
       const pd = this.pending;
       const castable = new Map();
+      const suspendReady = new Set();
       if (pd && (pd.q.type === 'main' || pd.q.type === 'priority')) {
         for (const e of (pd.q.casts || [])) {
           if (!castable.has(e.card)) castable.set(e.card, []);
@@ -1973,6 +2066,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const a of (pd.q.acts || [])) {
           if ((a.cycling || a.plot || a.foretell || a.suspend || a.ninjutsu) && a.card.zone === 'hand') {
             if (!castable.has(a.card)) castable.set(a.card, []);
+            if (a.suspend) suspendReady.add(a.card);
           }
         }
       }
@@ -2014,13 +2108,49 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           wrap.appendChild(tray);
         }
       }
+      // Suspend is not a normal "play from exile" permission: the game owns
+      // its upkeep counters and casts it automatically after the last one.
+      // Keep those cards beside the hand at all times so they never disappear
+      // behind the generic Exile count.
+      const suspended = me.exile.filter(c => c.meta && Object.prototype.hasOwnProperty.call(c.meta, 'suspended'));
+      if (suspended.length) {
+        const tray = el('section', 'suspendtray');
+        tray.setAttribute('aria-label', 'Your suspended cards');
+        tray.innerHTML = '<div class="suspendtrayhead"><b>⏳ SUSPENDED</b><small>YOUR UPKEEP −1 · AT 0 AUTO-CAST FREE</small></div>';
+        const list = el('div', 'suspendtraylist');
+        for (const c of suspended) {
+          const count = Math.max(0, Number(c.meta.suspended) || 0);
+          const removePending = g.stack.some(item => item.src === c && /Suspend: remove a time counter/.test(item.name || ''));
+          const castPending = g.stack.some(item => item.src === c && /Suspend: cast/.test(item.name || ''));
+          const status = castPending ? 'automatic cast trigger is on the Stack'
+            : removePending ? 'upkeep counter trigger is on the Stack'
+              : count > 0 ? 'next counter comes off at your upkeep'
+                : 'no counters · remains here only if it could not be cast';
+          const item = el('button', 'suspendtraycard' + (castPending ? ' casting' : ''));
+          item.dataset.cname = c.name;
+          item.title = `${c.name}: ${count} time counter${count === 1 ? '' : 's'} · ${status}`;
+          item.innerHTML = `
+            <img loading="lazy" src="${imgURL(c.name)}" onerror="MTG.imgFail(this)">
+            <span><b>${esc(c.name.split(' // ')[0])}</b><small>${esc(status)}</small></span>
+            <i class="suspendcounter" aria-label="${count} time counters">${count}</i>`;
+          item.onclick = () => { this.sheet = { card: c }; this.render(); };
+          list.appendChild(item);
+        }
+        tray.appendChild(list);
+        row.appendChild(tray);
+      }
       for (const c of me.hand) {
-        const d = el('div', 'hcard' + (this.threatTargets && this.threatTargets.has(c.iid) ? ' threatened' : ''));
+        const canSuspendNow = suspendReady.has(c);
+        const d = el('div', 'hcard' + (canSuspendNow ? ' suspendready' : '') + (this.threatTargets && this.threatTargets.has(c.iid) ? ' threatened' : ''));
         const colors = c.colors.length ? c.colors : ['C'];
         d.style.setProperty('--frame', colors.length > 1 ? `linear-gradient(135deg, ${colors.map(x => COLHEX[x]).join(',')})` : COLHEX[colors[0]]);
+        const suspendTag = c.def.suspend
+          ? `<div class="handsuspendtag${canSuspendNow ? ' ready' : ''}"><span>SUSPEND</span>${costHTML(c.def.suspend.cost)}<b>· ${c.def.suspend.n}</b></div>`
+          : '';
         d.innerHTML = `
           <img loading="lazy" src="${imgURL(c.name)}" onerror="MTG.imgFail(this)">
           <div class="hcost">${costHTML(c.def.cost || '')}</div>
+          ${suspendTag}
           <div class="mname">${esc(c.name.split(' // ')[0])}</div>`;
         d.dataset.cname = c.name;
         if (this.markSelectedTarget(d, c)) {
@@ -2034,6 +2164,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         const handAction = d.classList.contains('targetable')
           ? 'Legal target. Select this card.'
+          : canSuspendNow
+            ? `Suspend available now for ${c.def.suspend.cost} with ${c.def.suspend.n} time counters. Open card actions.`
           : d.classList.contains('castable')
             ? 'Playable now. Open card actions.'
             : 'Open card details.';
@@ -3362,9 +3494,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       img.onerror = () => img.classList.add('noimg');
       m.appendChild(img);
       const info = el('div', 'sheetinfo');
-      const typeLine = [(shownDef.super || []).join(' '), shownDef.types.join(' '), shownDef.subtypes.length ? '- ' + shownDef.subtypes.join(' ') : ''].join(' ');
+      const useCurrentCharacteristics = card.zone === 'battlefield' && card.cur && !hiddenFaceDown;
+      const shownTypes = useCurrentCharacteristics ? card.cur.types : shownDef.types;
+      const shownSubtypes = useCurrentCharacteristics ? card.cur.subtypes : shownDef.subtypes;
+      const typeLine = [(shownDef.super || []).join(' '), shownTypes.join(' '), shownSubtypes.length ? '- ' + shownSubtypes.join(' ') : ''].join(' ');
+      const landCreature = card.is('Land') && card.is('Creature');
+      const suspendInHand = card.zone === 'hand' && card.def.suspend;
+      const suspendInExile = card.zone === 'exile' && card.meta && Object.prototype.hasOwnProperty.call(card.meta, 'suspended');
+      const suspendCount = suspendInExile ? Math.max(0, Number(card.meta.suspended) || 0) : 0;
+      const suspendTiming = (card.def.types || []).includes('Sorcery')
+        ? 'Use in your main phase while the Stack is empty.'
+        : 'Use whenever you have priority and could cast this card.';
+      const suspendState = suspendInHand
+        ? `<div class="suspendstate fromhand"><b>⏳ SUSPEND FROM HAND · ${costHTML(card.def.suspend.cost)} · ${card.def.suspend.n} TIME COUNTERS</b><span>${esc(suspendTiming)} Suspend is a special action and does not use the Stack.</span></div>`
+        : suspendInExile
+          ? `<div class="suspendstate exile"><b>⏳ SUSPENDED · ${suspendCount} TIME COUNTER${suspendCount === 1 ? '' : 'S'}</b><span>At your upkeep remove one. When the last is removed, the game casts this card automatically for free if able — you do not cast it manually from exile.</span></div>`
+          : '';
       const faceDownLabel = card.zone === 'battlefield' ? 'FACE-DOWN 2/2' : 'FACE-DOWN EXILE';
       info.innerHTML = `${card.faceDown ? `<div class="facedownsheet">🃏 ${faceDownLabel}${mayLookFaceDown ? ' · only you can see its identity' : ''}</div>` : ''}` +
+        `${landCreature ? '<div class="animatedpermanentstate">LAND CREATURE · ACTIVE ON THE BATTLEFIELD</div>' : ''}` +
+        suspendState +
         `<div class="sname">${esc(shownName)} ${costHTML(shownDef.cost || '')}</div>
         <div class="stype">${esc(typeLine)}</div>
         ${card.is('Creature') && card.cur ? `<div class="spt">${card.power}/${card.toughness}${card.tapped ? ' · TAPPED' : ''}${Object.entries(card.counters).filter(([k, v]) => v > 0).map(([k, v]) => ` · ${v}×${k}`).join('')}</div>` : ''}
@@ -3374,6 +3523,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // actions
       const acts = el('div', 'sheetacts');
       const pd = this.pending;
+      let suspendActionOffered = false;
       if (pd && (pd.q.type === 'main' || pd.q.type === 'priority')) {
         const q = pd.q;
         for (const e of (q.casts || [])) {
@@ -3397,8 +3547,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const a of (q.acts || [])) {
           if (a.card !== card) continue;
           if (a.ability) usedAbilities.add(a.ability);
+          if (a.suspend) suspendActionOffered = true;
           let label = a.turnFaceUp ? a.label : a.manaAbility ? a.label : a.handAbility ? card.def.handAbility.label :
-            a.gyAbility ? (a.gyAbilityOverride || card.def.gyAbility).label : a.cycling ? 'Cycling' : a.plot ? `Plot ${U.costStr(U.parseCost(card.def.plot))}` : a.foretell ? 'Foretell {2}' : a.ninjutsu ? `Ninjutsu ${a.ninjutsuCost}` : a.suspend ? 'Suspend' :
+            a.gyAbility ? (a.gyAbilityOverride || card.def.gyAbility).label : a.cycling ? 'Cycling' : a.plot ? `Plot ${U.costStr(U.parseCost(card.def.plot))}` : a.foretell ? 'Foretell {2}' : a.ninjutsu ? `Ninjutsu ${a.ninjutsuCost}` : a.suspend ? `Suspend ${U.costStr(U.parseCost(card.def.suspend.cost))} — exile with ${card.def.suspend.n} time counters` :
             a.equip ? `Equip ${U.costStr(U.parseCost(card.def.equip))}` : a.crew ? `Crew ${card.def.crew}` :
               (a.ability && a.ability.label) || 'Activate';
           const b = el('button', 'pbtn wide', (a.turnFaceUp ? '🃏 ' : a.manaAbility ? '⚡ ' : '⚙️ ') + esc(label));
@@ -3420,6 +3571,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           b.disabled = true;
           acts.appendChild(b);
         }
+      }
+      if (suspendInHand && !suspendActionOffered) {
+        const cost = U.costStr(U.parseCost(card.def.suspend.cost));
+        const b = el('button', 'pbtn wide disabled', `⏳ Suspend ${cost}: ${suspendTiming} You also need the suspend cost.`);
+        b.disabled = true;
+        acts.appendChild(b);
       }
       const close = el('button', 'pbtn wide', 'Close');
       close.onclick = () => { this.sheet = null; this.render(); };
@@ -3510,6 +3667,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const actionQ = pd && (pd.q.type === 'main' || pd.q.type === 'priority') ? pd.q : null;
       for (const c of player[zone]) {
         const cc = this.bigCardEl(c);
+        if (zone === 'exile' && c.meta && Object.prototype.hasOwnProperty.call(c.meta, 'suspended')) {
+          const count = Math.max(0, Number(c.meta.suspended) || 0);
+          cc.classList.add('suspendedcard');
+          cc.appendChild(el('div', 'zonesuspend', `⏳ ${count} TIME`));
+        }
         if (judgeReturn) {
           cc.classList.add('targetable');
           cc.onclick = async () => {

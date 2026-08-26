@@ -51,9 +51,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   // ---------- E9 helperi ----------
   const E9 = MTG.E9 = {};
-  E9.castISThisTurn = (p) => p.turnState.spellsCastList.some(x => x.card.is('Instant') || x.card.is('Sorcery'));
-  E9.castNoncreatureThisTurn = (p) => p.turnState.spellsCastList.some(x => !x.card.is('Creature'));
-  E9.maxISMV = (p) => Math.max(0, ...p.turnState.spellsCastList.filter(x => x.card.is('Instant') || x.card.is('Sorcery')).map(x => x.mv));
+  E9.castEntryIsIS = (entry) => {
+    if (entry.isInstantSorcery !== undefined) return !!entry.isInstantSorcery;
+    const castOpts = entry.castOpts || entry.so && entry.so.castOpts || {};
+    if (castOpts.adventure) {
+      const types = castOpts.types || entry.card.def.adventure && entry.card.def.adventure.types || '';
+      return /Instant|Sorcery/.test(types);
+    }
+    return entry.card.is('Instant') || entry.card.is('Sorcery');
+  };
+  E9.castEntryIsCreature = (entry) => entry.isCreature !== undefined
+    ? !!entry.isCreature
+    : !(entry.so && entry.so.castOpts && entry.so.castOpts.adventure) && entry.card.is('Creature');
+  E9.castISThisTurn = (p) => p.turnState.spellsCastList.some(E9.castEntryIsIS);
+  E9.castNoncreatureThisTurn = (p) => p.turnState.spellsCastList.some(x => !E9.castEntryIsCreature(x));
+  E9.maxISMV = (p) => Math.max(0, ...p.turnState.spellsCastList.filter(E9.castEntryIsIS).map(x => x.mv));
   E9.bestSubtype = (g, p) => {
     const counts = {};
     for (const c of g.creatures(p).concat(p.hand.filter(x => x.is('Creature')))) {
@@ -132,7 +144,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Dirgur Focusmage'] = {
-    costMods: [(g, self, q) => (q.player === self.ctrl && (q.card.is('Instant') || q.card.is('Sorcery'))) ? -1 : 0],
+    costMods: [(g, self, q) => (q.player === self.ctrl && g.isInstantSorceryCast(q.card, q.castOpts || {})) ? -1 : 0],
     triggers: [{
       on: 'castIS', desc: 'Prepare Braingeyser',
       filter: (g, self, d) => d.player === self.ctrl && d.mv >= 5 && d.fromHand,
@@ -163,7 +175,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     grantMana: {
       filter: (g, x) => x.is('Artifact'),
       produce: [{ ANY: true, n: 1 }],
-      restrict: (g, forSpell) => forSpell && forSpell.card && (forSpell.card.is('Instant') || forSpell.card.is('Sorcery')),
+      restrict: (g, forSpell) => forSpell && forSpell.card && g.isInstantSorceryCast(forSpell.card, forSpell.castOpts || {}),
     },
   };
   SC['Goldspan Dragon'] = {
@@ -244,7 +256,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Manaform Hellkite'] = {
     triggers: [{
       on: 'cast', desc: 'X/X zmaj-iluzija',
-      filter: (g, self, d) => d.player === self.ctrl && !d.card.is('Creature') && !d.card.is('Land'),
+      filter: (g, self, d) => d.player === self.ctrl && !d.isCreature && !d.card.is('Land'),
       run: async ctx => {
         const x = ctx.data.so && ctx.data.so.manaSpent || 0;
         const def = Object.assign({}, TK.elementalUR, { name: 'Dragon Illusion', subtypes: ['Dragon', 'Illusion'], power: String(x), toughness: String(x), kws: ['flying', 'haste'], colorsOverride: ['R'] });
@@ -257,7 +269,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'cast', desc: 'Kopije za ostala stvorenja',
       filter: (g, self, d) => {
-        if (!d.card || !(d.card.is('Instant') || d.card.is('Sorcery'))) return false;
+        if (!d.card || !d.isInstantSorcery) return false;
         const ts = (d.so && d.so.targets || []).flat().filter(Boolean);
         return ts.length > 0 && ts.every(t => t === self);
       },
@@ -379,7 +391,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         aiHint: { goal: 'copy' },
       })],
       run: async ctx => {
-        const isN = ctx.you.turnState.spellsCastList.filter(x => x.card.is('Instant') || x.card.is('Sorcery')).length;
+        const isN = ctx.you.turnState.spellsCastList.filter(E9.castEntryIsIS).length;
         const x = 1 + isN;
         const target = ctx.targets[0];
         if (!target || target.zone !== 'battlefield') return;
@@ -392,10 +404,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Rootha, Mercurial Artist'] = {
     abilities: [{
       label: 'Copy your instant or sorcery spell (return Rootha)', cost: { mana: '{2}', returnSelf: true },
-      cond: (g, c, p) => g.stack.some(so => so.kind === 'spell' && so.ctrl === p && (so.card.is('Instant') || so.card.is('Sorcery'))),
+      cond: (g, c, p) => g.stack.some(so => so.ctrl === p && g.isInstantSorcerySpell(so)),
       targets: [{
         zone: 'stack', what: 'spell', prompt: 'Tvoj instant/sorcery spell',
-        filter: (g, so, ctrl) => so.kind === 'spell' && so.ctrl === ctrl && (so.card.is('Instant') || so.card.is('Sorcery')),
+        filter: (g, so, ctrl) => so.ctrl === ctrl && g.isInstantSorcerySpell(so),
         aiHint: { goal: 'copySpell' },
       }],
       run: async ctx => {
@@ -403,12 +415,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!so) return;
         if (ctx.g.stack.includes(so)) await ctx.g.copySpell(so, ctx.you, { mayNewTargets: true });
       },
-      aiScore: (g, c, p) => g.stack.some(so => so.kind === 'spell' && so.ctrl === p && U.mv(so.card.def.cost || '') >= 4) ? 6 : 0,
+      aiScore: (g, c, p) => g.stack.some(so => so.ctrl === p && g.isInstantSorcerySpell(so) && g.stackSpellManaValue(so) >= 4) ? 6 : 0,
     }],
   };
   SC['Stormcatch Mentor'] = {
     kws: ['haste'],
-    costMods: [(g, self, q) => (q.player === self.ctrl && (q.card.is('Instant') || q.card.is('Sorcery'))) ? -1 : 0],
+    costMods: [(g, self, q) => (q.player === self.ctrl && g.isInstantSorceryCast(q.card, q.castOpts || {})) ? -1 : 0],
   };
   SC['Magma Opus'] = {
     targets: [

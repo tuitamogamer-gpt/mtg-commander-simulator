@@ -687,6 +687,47 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
   };
 
+  // A modal/alternative face can have a different spell type and mana cost
+  // from the physical card that represents it. Adventure is the important
+  // case here: Brazen Borrower is a Creature card everywhere except while
+  // Petty Theft is being cast/on the stack, where it is an Instant spell.
+  G.castHasType = function (card, castOpts = {}, type) {
+    if (!card) return false;
+    if (castOpts && castOpts.adventure) {
+      const adventure = card.def && card.def.adventure;
+      const rawTypes = castOpts.types !== undefined ? castOpts.types : adventure && adventure.types;
+      const types = Array.isArray(rawTypes) ? rawTypes : String(rawTypes || '').split(/\s+/).filter(Boolean);
+      return types.includes(type);
+    }
+    return !!(card.is && card.is(type));
+  };
+
+  G.isInstantSorceryCast = function (card, castOpts = {}) {
+    return this.castHasType(card, castOpts, 'Instant') || this.castHasType(card, castOpts, 'Sorcery');
+  };
+
+  G.isInstantSorcerySpell = function (so) {
+    return !!(so && so.kind === 'spell' && this.isInstantSorceryCast(so.card, so.castOpts || {}));
+  };
+
+  G.isCreatureSpell = function (so) {
+    return !!(so && so.kind === 'spell' && this.castHasType(so.card, so.castOpts || {}, 'Creature'));
+  };
+
+  G.stackSpellManaValue = function (so) {
+    if (!so || !so.card) return 0;
+    const castOpts = so.castOpts || {};
+    let manaCost = so.card.def && so.card.def.cost || '';
+    if (castOpts.adventure && so.card.def && so.card.def.adventure) {
+      manaCost = castOpts.altCostStr !== undefined
+        ? castOpts.altCostStr
+        : (castOpts.cost !== undefined ? castOpts.cost : so.card.def.adventure.cost || '');
+    } else if ((castOpts.splitHalf || castOpts.splitFuse) && castOpts.altCostStr !== undefined) {
+      manaCost = castOpts.altCostStr;
+    }
+    return U.mv(manaCost || '', so.x || 0);
+  };
+
   // ============================================================
   // Cost computation (spells)
   // ============================================================
@@ -698,7 +739,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // a residual generic reduction must be able to reduce a later kicker,
     // tier, squad, offspring, or Strive payment.
     let str = castOpts.free ? ''
-      : (castOpts.altCostStr !== undefined ? castOpts.altCostStr : card.def.cost);
+      : (castOpts.altCostStr !== undefined ? castOpts.altCostStr
+        : castOpts.adventure && card.def.adventure
+          ? (castOpts.cost !== undefined ? castOpts.cost : card.def.adventure.cost)
+          : card.def.cost);
     const cost = U.parseCost(str || '');
     let generic = cost.generic;
     // commander tax
@@ -1327,7 +1371,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // build stack object early for target ctx
     const so = {
       kind: 'spell', card, ctrl: p,
-      name: (castOpts.splitHalf || castOpts.splitFuse) && castOpts.name ? castOpts.name : card.name,
+      name: (castOpts.adventure || castOpts.splitHalf || castOpts.splitFuse) && castOpts.name ? castOpts.name : card.name,
       targets: [], x: xVal, mode,
       castOpts, kicked, offspring, from: opts.from || card.zone, copyOf: null,
     };
@@ -1659,17 +1703,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const used = p.tempFlashFilters.find(grant => grant.turn === this.turnNo && grant.filter(this, card, p));
       if (used && used.once) p.tempFlashFilters.splice(p.tempFlashFilters.indexOf(used), 1);
     }
-    // Alternativni trošak inače ne mijenja mana value. Split polovina je
-    // izuzetak jer na stacku ima mana cost izabrane polovine; fused spell ima
-    // zbir obje polovine (ovdje zapisan u split altCostStr).
-    const stackMV = (castOpts.splitHalf || castOpts.splitFuse) && castOpts.altCostStr !== undefined
-      ? U.mv(castOpts.altCostStr || '', xVal)
-      : U.mv(d.cost || '', xVal);
-    p.turnState.spellsCastList.push({ name: so.name, mv: stackMV, card, so });
+    // Alternative costs normally do not change mana value. Adventure and
+    // split faces are exceptions because their selected face has its own mana
+    // cost while it is on the Stack.
+    const stackMV = this.stackSpellManaValue(so);
+    const isInstantSorcery = this.isInstantSorcerySpell(so);
+    const isCreatureSpell = this.isCreatureSpell(so);
+    p.turnState.spellsCastList.push({
+      name: so.name, mv: stackMV, card, so,
+      castOpts: so.castOpts || {}, isInstantSorcery, isCreature: isCreatureSpell,
+    });
     const castData = {
       player: p, card, so, mv: stackMV,
-      isInstantSorcery: card.is('Instant') || card.is('Sorcery') || !!castOpts.adventure && d.adventure.types === 'Instant',
-      isCreature: card.is('Creature') && !castOpts.adventure,
+      isInstantSorcery,
+      isCreature: isCreatureSpell,
       fromHand: so.from === 'hand', nthThisTurn: p.turnState.spellsCast,
     };
     if (!castData.isCreature) p.turnState.nonCreatureSpells++;
@@ -1904,9 +1951,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // retargetovanje stvarno uspjelo.
     if (!targetsWereRepicked) {
       const seen = new Set();
-      const isInstantSorcery = so.card.is('Instant') || so.card.is('Sorcery') ||
-        !!(so.castOpts && so.castOpts.adventure &&
-          /Instant|Sorcery/.test(so.castOpts.types || so.card.def.adventure && so.card.def.adventure.types || ''));
+      const isInstantSorcery = this.isInstantSorcerySpell(so);
       for (const target of (copy.targets || []).flat().filter(Boolean)) {
         if (!(target instanceof MTG.CardInst) || seen.has(target.iid)) continue;
         seen.add(target.iid);
@@ -1925,9 +1970,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       `📋 ${ctrl.name} creates copy #${copy.copyIndex} of ${so.card && so.card.name || so.name}${sourceText}${targetCount ? targetText : ''}.`,
       { kind: 'spellCopy', spell: copy, original: copyRoot, player: ctrl, targets: (copy.targets || []).flat().filter(Boolean) },
     );
-    const copiedIS = so.card.is('Instant') || so.card.is('Sorcery') ||
-      !!(so.castOpts && so.castOpts.adventure &&
-        /Instant|Sorcery/.test(so.castOpts.types || so.card.def.adventure && so.card.def.adventure.types || ''));
+    const copiedIS = this.isInstantSorcerySpell(so);
     await this.emit('spellCopied', { so: copy, ctrl, isInstantSorcery: copiedIS });
     return copy;
   };

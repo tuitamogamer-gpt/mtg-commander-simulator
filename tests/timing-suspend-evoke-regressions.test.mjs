@@ -159,6 +159,34 @@ test('Suspend upkeep uses two respondable triggers before the mandatory free cas
   assert.equal(vision.castMeta.alt.free, true);
 });
 
+test('Rousing Refrain suspends from hand and automatically casts before suspending itself again', async () => {
+  const { game, players: [player, opponent] } = rulesGame();
+  const refrain = inZone(player, 'Rousing Refrain', 'hand');
+  player.pool.C = 1;
+  player.pool.R = 1;
+  const suspend = game.activatableList(player).find(entry => entry.card === refrain && entry.suspend);
+
+  assert.ok(suspend, 'Rousing Refrain exposes its Suspend action in an empty-stack own main phase');
+  assert.equal(await game.activateAbility(player, suspend), true);
+  assert.equal(game.stack.length, 0, 'the Suspend action itself never becomes a spell or ability on the Stack');
+  assert.equal(refrain.zone, 'exile');
+  assert.equal(refrain.meta.suspended, 3);
+
+  refrain.meta.suspended = 1;
+  for (let i = 0; i < 3; i++) inZone(opponent, 'Mountain', 'hand');
+  for (let i = 0; i < 12; i++) {
+    inZone(player, 'Island', 'library');
+    inZone(opponent, 'Mountain', 'library');
+  }
+
+  await game.runTurn();
+
+  assert.equal(refrain.zone, 'exile', 'the automatically cast original exiles itself again after resolving');
+  assert.equal(refrain.meta.suspended, 3, 'Rousing Refrain restarts with three time counters');
+  assert.ok(player.turnState.spellsCastList.some(entry => entry.card === refrain && entry.name === 'Rousing Refrain' && entry.isInstantSorcery),
+    'the upkeep action produced a real free-cast Sorcery spell');
+});
+
 test('a casting prohibition makes the mandatory Suspend cast fail and leaves the card in exile', async () => {
   const seen = [];
   const blocked = (g, query) => {
