@@ -57,6 +57,8 @@ test('motion, dialog, sync, fatal recovery and recap paths remain visible and re
   assert.match(ui, /renderSystemStatus\(\)/);
   assert.match(ui, /renderFatalRecovery\(g\)/);
   assert.match(ui, /Rematch same pod/);
+  assert.match(ui, /if \(g\.gameOver\) this\.clearGameOverTransients\(\)/);
+  assert.match(ui, /'\.battlefieldarrival'[\s\S]*?'\.monarchannouncement'[\s\S]*?'\.effectnoticestack'[\s\S]*?'\.spotbar'/);
   assert.match(main, /MTG\.rematchLastGame = \(\) => startGame/);
   assert.match(main, /const rematchDecks = aiDecks\.slice\(\)/);
   assert.match(main, /aiDecks: rematchDecks\.slice\(\)/);

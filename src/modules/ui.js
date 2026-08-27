@@ -501,11 +501,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return flow;
     }
 
+    clearGameOverTransients() {
+      document.querySelectorAll([
+        '.battlefieldarrival', '.turnbanner', '.monarchannouncement',
+        '.diplomacyannouncement', '.effectnoticestack', '.spellcopynoticestack',
+        '.spotbar', '.toastmsg',
+      ].join(',')).forEach(node => node.remove());
+    }
+
     render() {
       const g = this.game;
       if (!g) return;
       const root = $('#game');
       if (!root) return;
+      // Završni rezultat je jedina blokirajuća informacija nakon kraja meča.
+      // Commander intro, Monarch banner ili activity notice sa pobjedničkog
+      // poteza ne smiju ga još nekoliko sekundi prekrivati iznad #game roota.
+      if (g.gameOver) this.clearGameOverTransients();
       const renderedImages = this.captureRenderedImages(root);
       // set of my cards with available activations (for ⚙ badges)
       this.actable = new Set();
