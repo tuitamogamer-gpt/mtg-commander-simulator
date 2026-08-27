@@ -2095,3 +2095,25 @@ body:has(#game .quickmenuov) > .toastmsg {
   #game .oppboardmain .boardlane,
   #game .oppresourcelane { padding-top: 12px; }
 }
+
+/* Eliminated seats leave the table entirely. The remaining battlefields
+   reclaim the freed width while their original seat numbers stay stable. */
+@media (min-width: 768px) {
+  #game .oppswrap[data-opponent-count="2"],
+  #game .oppswrap.active-ai-turn[data-opponent-count="2"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  #game .oppswrap.active-ai-turn[data-opponent-count="2"]:has(.opprow:first-child.activeai) {
+    grid-template-columns: 1.28fr 1fr !important;
+  }
+
+  #game .oppswrap.active-ai-turn[data-opponent-count="2"]:has(.opprow:last-child.activeai) {
+    grid-template-columns: 1fr 1.28fr !important;
+  }
+
+  #game .oppswrap[data-opponent-count="1"],
+  #game .oppswrap.active-ai-turn[data-opponent-count="1"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}

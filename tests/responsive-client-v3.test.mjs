@@ -195,6 +195,25 @@ test('Arena keeps decoded card images and ambient AI state stable across bot ren
   assert.match(css, /#game\.ai-turn \.stackempty span \{[\s\S]*?animation: none;/);
 });
 
+test('eliminated opponents leave the table and the remaining boards reclaim their columns', () => {
+  const harness = loadUIForKeyboardTest();
+  const arena = new harness.UI();
+  const human = { name: 'You', lost: false };
+  const first = { name: 'Seat 01', lost: false };
+  const eliminated = { name: 'Seat 02', lost: true };
+  const third = { name: 'Seat 03', lost: false };
+  arena.me = human;
+
+  assert.deepEqual(
+    Array.from(arena.visibleOpponentSeats({ players: [human, first, eliminated, third] }), entry => [entry.player.name, entry.seatNo]),
+    [['Seat 01', 1], ['Seat 03', 3]],
+  );
+  assert.match(ui, /wrap\.dataset\.opponentCount = String\(visibleSeats\.length\)/);
+  assert.match(css, /\.oppswrap\[data-opponent-count="2"\][\s\S]*?grid-template-columns: repeat\(2, minmax\(0, 1fr\)\) !important;/);
+  assert.match(css, /\.oppswrap\[data-opponent-count="1"\][\s\S]*?grid-template-columns: minmax\(0, 1fr\) !important;/);
+  assert.match(main, /smokeEliminate[\s\S]*?g\.playerLoses\(eliminated, 'controlled layout smoke'\)/);
+});
+
 test('Suspend stays visible from the hand through counters and automatic exile casting', () => {
   assert.match(ui, /class="suspendtrayhead"><b>⏳ SUSPENDED<\/b>/);
   assert.match(ui, /YOUR UPKEEP −1 · AT 0 AUTO-CAST FREE/);

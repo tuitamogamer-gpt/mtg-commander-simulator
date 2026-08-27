@@ -1503,23 +1503,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     renderTopbar(g) { return this.renderArenaHeader(g); }
 
+    visibleOpponentSeats(g) {
+      const seats = [];
+      let seatNo = 0;
+      for (const player of g.players) {
+        if (player === this.me) continue;
+        seatNo++;
+        if (!player.lost) seats.push({ player, seatNo });
+      }
+      return seats;
+    }
+
     renderOpponents(g) {
       this.collapsed = this.collapsed || new Set();
       const outer = el('div', 'oppsouter');
       const activeAiTurn = !!(g.turnPlayer && g.turnPlayer.isAI && g.turnPlayer !== this.me);
       const wrap = el('div', 'oppswrap' + (activeAiTurn ? ' active-ai-turn' : ''));
+      const visibleSeats = this.visibleOpponentSeats(g);
+      wrap.dataset.opponentCount = String(visibleSeats.length);
       // podesivo: visina zone (povlačenjem) i veličina karata (− / +)
       wrap.style.setProperty('--opp-h', this.oppHeight + 'dvh');
       wrap.style.setProperty('--opp-scale', String(this.oppScale));
-      let seatNo = 0;
-      for (const p of g.players) {
-        if (p === this.me) continue;
-        seatNo++;
+      for (const { player: p, seatNo } of visibleSeats) {
         const meta = MTG.DECK_META[p.deckName] || {};
         const isActiveAi = activeAiTurn && g.turnPlayer === p;
         const isMonarch = g.monarch === p;
         const statusEffects = this.playerStatusEffects(g, p);
-        const row = el('div', `opprow seat-${seatNo}` + (p.lost ? ' lost' : '') + (g.turnPlayer === p ? ' active' : '') +
+        const row = el('div', `opprow seat-${seatNo}` + (g.turnPlayer === p ? ' active' : '') +
           (isActiveAi ? ' activeai' : '') + (isMonarch ? ' monarch' : '') + (statusEffects.length ? ' has-effects' : ''));
         row.dataset.seat = String(seatNo).padStart(2, '0');
         if (isMonarch) row.title = `${p.name} is the Monarch`;
@@ -1569,7 +1579,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         row.appendChild(head);
         if (isActiveAi) row.appendChild(this.renderTurnTimeline(g, p));
         // board strip (always visible unless collapsed)
-        if (!collapsed && !p.lost) {
+        if (!collapsed) {
           const strip = el('div', 'oppstrip battlefieldstrip');
           const groups = this.battlefieldGroups(g, p);
           const boardMain = el('div', 'oppboardmain');

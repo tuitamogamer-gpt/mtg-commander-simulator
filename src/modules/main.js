@@ -1139,6 +1139,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (smokeScenario === 'battlefieldLayout') {
       const smokeStation = new URLSearchParams(window.location.search).get('smokeStation') || 'offline';
+      const smokeEliminate = Number(new URLSearchParams(window.location.search).get('smokeEliminate') || 0);
       const place = (player, name) => {
         const card = new MTG.CardInst(MTG.DEFS[name], player);
         card.ctrl = player; card.zone = 'battlefield'; card.sick = false; card.tapped = false;
@@ -1178,6 +1179,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = false;
       g.recalc();
       g.lg(`Battlefield layout smoke: Station is ${stationVessel.is('Creature') ? 'online in CREATURES' : 'offline in SUPPORT'}; current permanent types control every zone.`, 'effect');
+      if (smokeEliminate >= 1 && smokeEliminate <= opponents.length) {
+        const eliminated = opponents[smokeEliminate - 1];
+        void g.playerLoses(eliminated, 'controlled layout smoke').then(() => {
+          g.lg(`Elimination layout smoke: ${eliminated.name} left the table and the remaining seats reclaimed the space.`, 'effect');
+          ui.render();
+        });
+      }
       ui.render();
       return;
     }
