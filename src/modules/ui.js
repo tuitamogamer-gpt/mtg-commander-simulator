@@ -1641,7 +1641,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span class="seatindex">${String(seatNo).padStart(2, '0')}</span>
           <span class="oppname">${isMonarch ? `<i class="seatcrown" aria-label="Monarch">${U.icon('crown')}</i> ` : ''}${U.icon('player', 'oppidentityicon')} ${esc(p.name)}</span>
           ${isActiveAi ? '<span class="activeaitag">ACTIVE TURN</span>' : ''}
-          ${styleMeta ? `<span class="personachip" title="Style: ${esc(styleMeta.label)}">${styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
+          ${styleMeta ? `<span class="personachip${styleMeta.portrait ? ' hasportrait' : ''}" title="Style: ${esc(styleMeta.label)}">${styleMeta.portrait ? `<img src="${styleMeta.portrait}" alt="" onerror="MTG.imgFail(this)">` : styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
           <span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${p.life}❤</span>
           <span class="oppmeta">${U.icon('cards')}${p.hand.length} ${U.icon('library')}${p.library.length}${statusEffects.length ? ` <button type="button" class="playereffectsbadge" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}</span>
           <span class="oppcmd" title="${esc(cmdTitle)}">${U.icon('crown')}${esc(cmdState)}</span>

@@ -374,8 +374,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     right.appendChild(opponentsLabel);
     const aiRow = el('div', 'btnrow center');
     const botStyles = el('div', 'botstyles');
-    const styleOptions = [['random', 'Random style']]
-      .concat(Object.entries(MTG.AI_STYLES).map(([k, s]) => [k, `${s.icon} ${s.label}`]));
+    const styleGroups = [
+      ['Core archetypes', Object.entries(MTG.AI_STYLES).filter(([, style]) => !style.signature)],
+      ['Command Zone signatures', Object.entries(MTG.AI_STYLES).filter(([, style]) => style.signature)],
+    ];
     const STYLE_DESC = {
       aggressive: 'Attacks relentlessly, hunts wounded players, and dislikes blocking.',
       jimmy: 'Jimmy-inspired Aggressive pressure: builds around the commander, attacks open lanes, protects its win, then commits to an alpha strike.',
@@ -397,14 +399,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const config = el('div', 'botconfig');
         const row = el('div', 'botstylerow');
         const badge = el('span', 'pbadge');
+        badge.setAttribute('aria-hidden', 'true');
         const setBadge = k => {
           const badgeStyle = k === 'josh' ? 'passive' : k === 'jimmy' ? 'aggressive' : k === 'rachel' ? 'balanced' : k === 'post' ? 'opportunist' : k === 'olivia' ? 'teaser' : k;
           badge.className = 'pbadge ' + (['aggressive', 'opportunist', 'passive', 'teaser'].includes(badgeStyle) ? 'p-' + badgeStyle : 'p-none');
-          badge.textContent = ['aggressive', 'opportunist', 'passive', 'teaser'].includes(badgeStyle)
-            ? '' : (k === 'random' ? '?' : '=');
+          badge.replaceChildren();
+          const style = MTG.AI_STYLES[k];
+          if (style && style.portrait) {
+            const portrait = document.createElement('img');
+            portrait.src = style.portrait;
+            portrait.alt = '';
+            portrait.loading = 'eager';
+            portrait.decoding = 'async';
+            portrait.onerror = () => MTG.imgFail(portrait);
+            badge.appendChild(portrait);
+            badge.classList.add('hasportrait');
+          } else {
+            badge.textContent = ['aggressive', 'opportunist', 'passive', 'teaser'].includes(badgeStyle)
+              ? (style && style.icon || '') : (k === 'random' ? '?' : '=');
+          }
           badge.title = STYLE_DESC[k] || '';
         };
-        setBadge(state.aiStyles[i]);
         const identity = el('div', 'botidentity', `<span class="botname">${esc(botNames[i])}</span><small>Seat 0${i + 1}</small>`);
         const fields = el('div', 'botfields');
         const deckField = el('label', 'botfield', '<span>Deck</span>');
@@ -430,15 +445,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const styleField = el('label', 'botfield', '<span>Play style</span>');
         const sel = el('select', 'styleselect');
         sel.setAttribute('aria-label', `${botNames[i]} play style`);
-        for (const [k, label] of styleOptions) {
-          const o = el('option', '', label);
-          o.value = k;
-          if (state.aiStyles[i] === k) o.selected = true;
-          sel.appendChild(o);
+        const randomOption = el('option', '', '🎲 Random style');
+        randomOption.value = 'random';
+        randomOption.selected = state.aiStyles[i] === 'random';
+        sel.appendChild(randomOption);
+        for (const [groupLabel, styles] of styleGroups) {
+          const group = document.createElement('optgroup');
+          group.label = groupLabel;
+          for (const [k, style] of styles) {
+            const o = el('option', '', `${style.icon} ${style.label}`);
+            o.value = k;
+            if (state.aiStyles[i] === k) o.selected = true;
+            group.appendChild(o);
+          }
+          sel.appendChild(group);
         }
         styleField.appendChild(sel);
-        const desc = el('div', 'styledesc', STYLE_DESC[state.aiStyles[i]] || '');
-        sel.onchange = () => { state.aiStyles[i] = sel.value; desc.textContent = STYLE_DESC[sel.value] || ''; setBadge(sel.value); };
+        const desc = el('div', 'styledesc');
+        desc.setAttribute('role', 'status');
+        desc.setAttribute('aria-live', 'polite');
+        const updateStylePresentation = k => {
+          const style = MTG.AI_STYLES[k];
+          config.dataset.aiStyle = k;
+          config.classList.toggle('signaturestyle', !!(style && style.signature));
+          desc.innerHTML = `<span>${style && style.signature ? `${esc(style.name)} · ${esc(style.archetype)} signature` : style ? 'Core archetype' : 'Random assignment'}</span><p>${esc(STYLE_DESC[k] || '')}</p>`;
+          setBadge(k);
+        };
+        updateStylePresentation(state.aiStyles[i]);
+        sel.onchange = () => {
+          state.aiStyles[i] = sel.value;
+          updateStylePresentation(sel.value);
+        };
         fields.appendChild(deckField); fields.appendChild(styleField);
         row.appendChild(badge); row.appendChild(identity); row.appendChild(fields);
         config.appendChild(row); config.appendChild(desc);
@@ -555,20 +592,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const botNames = ['AI Dragon', 'AI Wolf', 'AI Raven'];
       const seats = state.mode === 'online'
         ? [
-          ['01', 'You', state.deck || 'Choose a deck'],
-          ['02', 'Friend', 'Chooses after joining'],
-          ['03', botNames[0], state.aiDecks[0] || 'Random deck'],
-          ['04', botNames[1], state.aiDecks[1] || 'Random deck'],
+          ['01', 'You', state.deck || 'Choose a deck', null],
+          ['02', 'Friend', 'Chooses after joining', null],
+          ['03', botNames[0], state.aiDecks[0] || 'Random deck', state.aiStyles[0]],
+          ['04', botNames[1], state.aiDecks[1] || 'Random deck', state.aiStyles[1]],
         ]
-        : [['01', 'You', state.deck || 'Choose a deck']].concat(Array.from({ length: state.ai }, (_, index) =>
-          [String(index + 2).padStart(2, '0'), botNames[index], state.aiDecks[index] || 'Random deck']));
+        : [['01', 'You', state.deck || 'Choose a deck', null]].concat(Array.from({ length: state.ai }, (_, index) =>
+          [String(index + 2).padStart(2, '0'), botNames[index], state.aiDecks[index] || 'Random deck', state.aiStyles[index]]));
+      const seatMarkup = seats.map(([number, name, deck, styleKey]) => {
+        const style = styleKey && MTG.AI_STYLES[styleKey];
+        const styleName = style ? style.label : styleKey === 'random' ? 'Random style' : '';
+        return `<div><i>${number}</i><span><b>${esc(name)}</b><small>${esc(deck)}</small></span>${styleName ? `<em class="reviewstyle" title="${esc(STYLE_DESC[styleKey] || styleName)}">${style && style.portrait ? `<img src="${style.portrait}" alt="" onerror="MTG.imgFail(this)">` : `<strong aria-hidden="true">${style ? style.icon : '🎲'}</strong>`}<b>${esc(styleName)}</b></em>` : ''}</div>`;
+      }).join('');
       reviewStage.innerHTML = `
         <div class="reviewhead"><span>Step 3 of 3</span><h2 id="setup-review-title">Review your table</h2><p>Everything below is public at the start of the game. You can go back without losing your choices.</p></div>
         <div class="reviewdeck">
           <img src="${state.deck ? commanderImg(state.deck) : MTG.BLANK_PX}" alt="" onerror="MTG.imgFail(this)">
           <div><small>YOUR DECK</small><b>${esc(state.deck || 'Not selected')}</b><span>${esc((state.commanders || []).join(' + ') || 'Choose a commander')}</span></div>
         </div>
-        <div class="reviewseats">${seats.map(([number, name, deck]) => `<div><i>${number}</i><span><b>${esc(name)}</b><small>${esc(deck)}</small></span></div>`).join('')}</div>
+        <div class="reviewseats">${seatMarkup}</div>
         <dl class="reviewrules">
           <div><dt>Mode</dt><dd>${state.mode === 'online' ? '2 players live + 2 local AI V2' : `Solo + ${state.ai} local AI V2`}</dd></div>
           <div><dt>Difficulty</dt><dd>${esc(state.difficulty)}</dd></div>

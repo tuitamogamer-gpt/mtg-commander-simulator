@@ -78,6 +78,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
     jimmy: {
       label: 'Jimmy — Aggressive Pressure', icon: '🔥', archetype: 'Aggressive', skill: 'jimmy-aggro-pressure',
+      signature: true, name: 'Jimmy Wong', portrait: './assets/ai-personas/jimmy-wong.webp',
       // Public-game-inspired fallback weights. AI V2 applies commander-first
       // development, combat pressure, win protection and alpha/race modes.
       atkThr: -0.8, atkRnd: 0.5,
@@ -88,6 +89,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
     rachel: {
       label: 'Rachel — Balanced Tablecraft', icon: '🧭', archetype: 'Balanced', skill: 'rachel-balanced-tablecraft',
+      signature: true, name: 'Rachel Weeks', portrait: './assets/ai-personas/rachel-weeks.webp',
       // Public-game-inspired fallback weights. AI V2 balances development,
       // table-aware pressure, defensive interaction and a decisive finish.
       atkThr: 0.65, atkRnd: 0.18,
@@ -112,6 +114,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
     post: {
       label: 'Post Malone — Opportunist Showstopper', icon: '🎤', archetype: 'Opportunist', skill: 'post-opportunist-showstopper',
+      signature: true, name: 'Post Malone', portrait: './assets/ai-personas/post-malone.webp',
       // Public-game-inspired fallback weights. AI V2 adds low-profile setup,
       // borrowed-power lines, calculated gambles and a decisive showtime.
       atkThr: 0.05, atkRnd: 0.32,
@@ -122,6 +125,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
     olivia: {
       label: 'Olivia — Saboteur Instigator', icon: '🃏', archetype: 'Saboteur', skill: 'olivia-saboteur-instigator',
+      signature: true, name: 'Olivia Gobert-Hicks', portrait: './assets/ai-personas/olivia-gobert-hicks.webp',
       // Public-game-inspired fallback weights. AI V2 adds safe probes,
       // threat-aware misdirection, targeted disruption and ambush finishes.
       atkThr: 0.25, atkRnd: 0.22,
@@ -142,6 +146,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
     josh: {
       label: 'Josh — Defensive Value', icon: '🧠', archetype: 'Defensive', skill: 'josh-value-engine',
+      signature: true, name: 'Josh Lee Kwai', portrait: './assets/ai-personas/josh-lee-kwai.webp',
       // Public-game-inspired fallback weights. AI V2 applies the full skill:
       // engine/card advantage, interaction reserve, end-step value and modes.
       atkThr: 2.8, atkRnd: 0.02,
