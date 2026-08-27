@@ -1409,6 +1409,73 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ui.render();
       return;
     }
+    if (smokeScenario === 'manaBloom') {
+      void (async () => {
+        const zones = [ui.me.hand, ui.me.library, ui.me.graveyard, ui.me.exile];
+        const bloom = zones.flat().find(card => card.name === 'Mana Bloom') ||
+          new MTG.CardInst(MTG.DEFS['Mana Bloom'], ui.me);
+        g.remove(bloom);
+        bloom.zone = 'hand';
+        ui.me.hand.length = 0;
+        ui.me.hand.push(bloom);
+        for (let i = 0; i < 4; i++) {
+          const forest = new MTG.CardInst(MTG.DEFS.Forest, ui.me);
+          forest.ctrl = ui.me; forest.zone = 'battlefield'; forest.sick = false; forest.tapped = false;
+          g.battlefield.push(forest);
+        }
+        g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+        g.recalc();
+        ui.toast('Mana Bloom browser canary: choose X, pay X plus one green, then inspect its charge counters.');
+        ui.render();
+        if (!await g.castSpell(ui.me, bloom, { from: 'hand' })) {
+          throw new Error('Mana Bloom browser cast was unexpectedly rejected.');
+        }
+        const counters = bloom.counters.charge || 0;
+        const result = bloom.zone === 'battlefield' && counters === (bloom.castMeta?.x || 0)
+          ? `X=${bloom.castMeta.x}, ${counters} charge counters ✓`
+          : `unexpected ${bloom.zone}, X=${bloom.castMeta?.x ?? '?'}, counters=${counters}`;
+        g.lg(`Mana Bloom browser check: ${result}.`, 'ai');
+        const acts = g.activatableList(ui.me);
+        void ui.me.controller.decide(g, {
+          type: 'main', player: ui.me, casts: [], acts, lands: [], phase: g.phase,
+        }).then(async action => {
+          if (!action || action.kind === 'done') return;
+          await g.performAction(ui.me, action);
+          ui.sheet = { card: bloom };
+          ui.render();
+        });
+        ui.sheet = { card: bloom };
+        ui.toast(`Mana Bloom: ${result}.`);
+        ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'troyanMana') {
+      const troyan = new MTG.CardInst(MTG.DEFS['Troyan, Gutsy Explorer'], ui.me);
+      troyan.ctrl = ui.me; troyan.zone = 'battlefield'; troyan.sick = false; troyan.tapped = false;
+      g.battlefield.push(troyan);
+      g.turnPlayer = ui.me; g.turnNo = 9; g.phase = 'main1'; g.step = 'main'; g.paced = false;
+      g.recalc();
+      const acts = g.activatableList(ui.me).filter(entry => entry.card === troyan);
+      void ui.me.controller.decide(g, {
+        type: 'main', player: ui.me, casts: [], acts, lands: [], phase: g.phase,
+      }).then(async action => {
+        if (!action || action.kind === 'done') return;
+        if (!await g.performAction(ui.me, action)) throw new Error('Troyan mana activation was rejected.');
+        const tracked = (ui.me.poolMeta || []).reduce((sum, entry) => sum + (entry.n || 0), 0);
+        const result = troyan.tapped && ui.me.pool.G === 1 && ui.me.pool.U === 1 && tracked === 2
+          ? 'tapped, G=1, U=1, restricted units=2 ✓'
+          : `unexpected tapped=${troyan.tapped}, G=${ui.me.pool.G}, U=${ui.me.pool.U}, tracked=${tracked}`;
+        g.lg(`Troyan restricted-mana browser check: ${result}.`, 'ai');
+        ui.sheet = { card: troyan };
+        ui.toast(`Troyan: ${result}.`);
+        ui.render();
+      }).catch(error => { console.error(error); ui.toast(error.message); });
+      ui.sheet = { card: troyan };
+      ui.toast('Troyan browser canary: activate the visible restricted G/U mana ability.');
+      ui.render();
+      return;
+    }
     if (smokeScenario === 'xManaHaldir') {
       void (async () => {
         const forest = new MTG.CardInst(MTG.DEFS.Forest, ui.me);

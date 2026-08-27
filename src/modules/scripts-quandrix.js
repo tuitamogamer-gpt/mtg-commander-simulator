@@ -172,7 +172,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Primo, the Unbounded'] = { xCost: true, etbCounters: xEtb(2), triggers: [{ on: 'combatDamageGroupToPlayer', desc: 'Base-0 Fractal',
     filter: (g, self, d) => d.hits.some(h => h.card.ctrl === self.ctrl && h.card.cur?.basePower === 0),
     run: async ctx => { const n = ctx.data.hits.filter(h => h.card.ctrl === ctx.you && h.card.cur?.basePower === 0).reduce((s, h) => s + Math.max(0, h.n || 0), 0); if (n) await fractal(ctx.g, ctx.you, n); } }] };
-  SC['Troyan, Gutsy Explorer'] = { mana: { cost: { tap: true }, produce: [{ G: 1, U: 1 }], restrict: (g, forSpell) => !!forSpell?.card && (forSpell.card.mv >= 5 || isXSpell(forSpell.card, { castOpts: forSpell.castOpts || {} })) },
+  SC['Troyan, Gutsy Explorer'] = { mana: { manual: true, cost: { tap: true }, produce: [{ G: 1, U: 1 }],
+    restrictLabel: 'only for MV 5+ or X spells', restrictAbilities: true,
+    restrict: (g, forSpell) => !!forSpell?.card && !forSpell.isAbility &&
+      (forSpell.card.mv >= 5 || isXSpell(forSpell.card, { castOpts: forSpell.castOpts || {} })) },
     abilities: [{ label: 'Vuci pa odbaci', cost: { mana: '{U}', tap: true }, run: async ctx => { await ctx.g.draw(ctx.you, 1); if (ctx.you.hand.length) { const p = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: ctx.you.hand, min: 1, max: 1, prompt: 'Odbaci', aiHint: { kind: 'cleanupDiscard' } }); if (p[0]) await ctx.g.discard(ctx.you, [p[0]]); } }, aiScore: () => 1 }] };
   SC['Yavimaya Bloomsage'] = { triggers: [{ on: 'endStep', desc: '+1/+1 i Prepare Channel', filter: (g, self, d) => d.player === self.ctrl,
     targets: [T.yourCreature({ prompt: 'Stvorenje za counter', aiHint: { goal: 'buff' } })], run: async ctx => { const c = ctx.targets[0]; if (!c) return; ctx.g.addCounters(c, '+1/+1', 1, false, ctx.you); if (c.power < 7) return;
@@ -287,8 +290,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   } } };
   SC['Hardened Scales'] = { plusCountersAdjust: (n, g, c, self) => c.ctrl === self.ctrl && c.is('Creature') ? n + 1 : n };
   SC['Mana Bloom'] = { xCost: true, etbCounters: { kind: 'charge', n: (g, c) => c.castMeta?.x || 0 },
-    mana: { key: 'manaBloom', oncePerTurn: true, cost: { rmCounter: { kind: 'charge', n: 1 } }, produce: [{ ANY: true, n: 1 }] },
-    triggers: [{ on: 'upkeep', desc: 'Vrati prazni Bloom', filter: (g, self, d) => d.player === self.ctrl && !(self.counters.charge || 0), run: async ctx => { if (ctx.src.zone === 'battlefield') await ctx.g.move(ctx.src, 'hand'); } }] };
+    // Za razliku od običnog landa/rocka, aktivacija bez trenutnog plaćanja je
+    // strateški bitna: igrač smije ukloniti posljednji counter u tuđem potezu
+    // da bi Bloom na svom upkeepu vratio u ruku. Zato je akcija vidljiva.
+    mana: { key: 'manaBloom', manual: true, oncePerTurn: true, cost: { rmCounter: { kind: 'charge', n: 1 } }, produce: [{ ANY: true, n: 1 }] },
+    triggers: [{ on: 'upkeep', desc: 'Vrati prazni Bloom', filter: (g, self, d) => d.player === self.ctrl && !(self.counters.charge || 0), run: async ctx => {
+      // Oracleov "if" je intervening-if: uslov se provjerava pri nastanku i
+      // ponovo pri rezoluciji. Stari trigger takođe ne smije vratiti novi
+      // battlefield objekat ako je fizička karta u međuvremenu otišla i ušla.
+      if (ctx.src.zone === 'battlefield' && ctx.src.zoneVersion === ctx.sourceZoneVersion &&
+        !(ctx.src.counters.charge || 0)) await ctx.g.move(ctx.src, 'hand');
+    } }] };
   SC['Lattice Library'] = { xCost: true, etbCounters: { kind: 'study', n: (g, c) => c.castMeta?.x || 0 }, triggers: [
     { on: 'etb', desc: 'Fractal', filter: etbSelf, run: async ctx => { await fractal(ctx.g, ctx.you, ctx.src.counters.study || 0); } },
     { on: 'cast', desc: 'Prvi X Fractal', filter: (g, self, d) => firstX(self, d), run: async ctx => { await fractal(ctx.g, ctx.you, ctx.src.counters.study || 0); } },

@@ -2118,6 +2118,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (tr.onlyIf && !tr.onlyIf(this, tr.src, tr.data)) return;
       const ctx = {
         g: this, src: tr.src, you: ctrl, data: tr.data, targets: [],
+        // A triggered ability belongs to the exact source object that created
+        // it. CardInst instances are reused across zones, so scripts that need
+        // to re-check an intervening-if condition at resolution must also be
+        // able to distinguish a permanent that left and later returned.
+        sourceZoneVersion: tr.src instanceof CardInst ? tr.src.zoneVersion : null,
         // Obavezni trigger ne smije izgubiti Magic metu zbog društvenog
         // ugovora. Ako je jedina moguća meta zaštićena dogovorom, Magic pravilo
         // pobjeđuje, a diplomatija bilježi izuzetak bez krivice.

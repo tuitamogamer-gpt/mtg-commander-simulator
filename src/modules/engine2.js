@@ -97,7 +97,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.mill) costParts.push(`mill ${cost.mill}`);
     const produces = source.produce.map(manaOptionLabel).join(' or ');
     const grantedBy = source.grantedBy ? ` — granted by ${source.grantedBy.name}` : '';
-    return `Mana: ${costParts.length ? costParts.join(' + ') + ' → ' : ''}${produces}${grantedBy}`;
+    const restriction = source.m.restrictLabel ? ` · ${source.m.restrictLabel}` : '';
+    return `Mana: ${costParts.length ? costParts.join(' + ') + ' → ' : ''}${produces}${restriction}${grantedBy}`;
   }
 
   function manualManaKey(source) {
@@ -114,6 +115,52 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       mana: typeof cost.mana === 'string' ? cost.mana : !!cost.mana,
       produce: source.produce,
     });
+  }
+
+  function manaRestrictionAllows(game, entry, forSpell) {
+    return !entry.restrict || !!entry.restrict(game, forSpell, entry.source);
+  }
+
+  function restrictedPoolSnapshot(game, player, forSpell) {
+    const pool = Object.assign({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, player.pool || {});
+    const coloredOnlyPool = Object.assign(
+      { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, player.coloredOnlyPool || {});
+    for (const entry of player.poolMeta || []) {
+      const n = Math.max(0, Number(entry.n) || 0);
+      if (!n || manaRestrictionAllows(game, entry, forSpell)) continue;
+      pool[entry.color] = Math.max(0, (pool[entry.color] || 0) - n);
+      if (entry.coloredOnly) {
+        coloredOnlyPool[entry.color] = Math.max(0, (coloredOnlyPool[entry.color] || 0) - n);
+      }
+    }
+    return { pool, coloredOnlyPool };
+  }
+
+  function spendPoolUnit(game, player, color, forSpell, generic) {
+    const entries = (player.poolMeta || []).filter(entry =>
+      entry.color === color && (Number(entry.n) || 0) > 0);
+    // Ograničenu manu troši prije neograničene kad je legalna za ovu cijenu;
+    // tako Troyanova G/U ne ostaje u poolu dok se nepotrebno troši obična mana.
+    const tracked = entries.find(entry => manaRestrictionAllows(game, entry, forSpell) &&
+      (!generic || !entry.coloredOnly));
+    if (tracked) {
+      tracked.n--;
+      player.pool[color]--;
+      if (tracked.coloredOnly && player.coloredOnlyPool) player.coloredOnlyPool[color]--;
+      player.poolMeta = player.poolMeta.filter(entry => (Number(entry.n) || 0) > 0);
+      return true;
+    }
+
+    const trackedTotal = entries.reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
+    const trackedColoredOnly = entries.filter(entry => entry.coloredOnly)
+      .reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
+    const untracked = Math.max(0, (player.pool[color] || 0) - trackedTotal);
+    const untrackedColoredOnly = Math.min(untracked, Math.max(0,
+      (player.coloredOnlyPool && player.coloredOnlyPool[color] || 0) - trackedColoredOnly));
+    if (untracked - (generic ? untrackedColoredOnly : 0) <= 0) return false;
+    player.pool[color]--;
+    if (!generic && untrackedColoredOnly > 0 && player.coloredOnlyPool) player.coloredOnlyPool[color]--;
+    return true;
   }
 
   // ============================================================
@@ -236,8 +283,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const initialGeneric = Math.max(0, cost.generic + (opts.xVal || 0) * (cost.x || 0) - (cost.xReduction || 0));
     let generic = initialGeneric;
     // first: use floating pool
-    const pool = Object.assign({}, p.pool);
-    const coloredOnlyPool = Object.assign({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, p.coloredOnlyPool || {});
+    const legalFloating = restrictedPoolSnapshot(this, p, forSpell);
+    const pool = Object.assign({}, legalFloating.pool);
+    const coloredOnlyPool = Object.assign({}, legalFloating.coloredOnlyPool);
     const usedPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
     const remainingPips = [];
     for (const pip of pips) {
@@ -263,8 +311,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // one when an unrestricted mana of that same color is already floating
     // and a later source can produce mana that may pay only colored costs.
     // Preserve a generic-first pool state as a second solver branch.
-    const alternatePool = Object.assign({}, p.pool);
-    const alternateColoredOnlyPool = Object.assign({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, p.coloredOnlyPool || {});
+    const alternatePool = Object.assign({}, legalFloating.pool);
+    const alternateColoredOnlyPool = Object.assign({}, legalFloating.coloredOnlyPool);
     const alternateUsedPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
     let alternateGeneric = initialGeneric;
     for (const col of ['C', 'W', 'U', 'B', 'R', 'G']) {
@@ -473,7 +521,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let phyPaidWithLife = 0;
     for (const step of steps) {
       if (step.phyrexianLife) { await this.loseLife(p, step.phyrexianLife, 'phyrexian'); phyPaidWithLife++; continue; }
-      if (step.consume) this.deductPool(p, step.consume);
+      if (step.consume) this.deductPool(p, step.consume, { card: step.src.card, isAbility: true });
       if (await this.activateManaSource(p, step.src, step.chosen, forSpell, needColors) === false) return false;
     }
     // deduct the full cost from pool (pre-existing pool + fresh production)
@@ -482,7 +530,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const phyPips = cost.pips.filter(pp => pp[1] === 'PHY');
     const payPips = normalPips.concat(phyPips.slice(phyPaidWithLife));
     this._payColors = new Set(); // sunburst/converge praćenje boja
-    this.deductPool(p, { generic: genTotal, pips: payPips });
+    this.deductPool(p, { generic: genTotal, pips: payPips }, forSpell);
     if (forSpell && forSpell.card) forSpell.card.meta._payColors = [...this._payColors];
     if (forSpell) forSpell.phyrexianLifePaid = phyPaidWithLife;
     // spent tracking for expend
@@ -573,6 +621,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         actualProduced[col] = (actualProduced[col] || 0) + chosen[col];
       }
     }
+    if (s.m.restrict) {
+      p.poolMeta = p.poolMeta || [];
+      for (const [color, n] of Object.entries(actualProduced)) {
+        if (!(Number(n) > 0)) continue;
+        p.poolMeta.push({
+          color, n, restrict: s.m.restrict, source: c,
+          coloredOnly: !!s.m.coloredOnly, persist: !!s.m.persist,
+        });
+      }
+    }
     if (c.is('Land')) {
       // aura hooks (Wolfwillow Haven)
       for (const aid of c.attachments) {
@@ -588,29 +646,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return true;
   };
 
-  G.deductPool = function (p, cost) {
+  G.deductPool = function (p, cost, forSpell) {
     const spent = this._payColors = this._payColors || new Set();
     for (const pip of cost.pips) {
       let done = false;
       for (const col of pip) {
-        if (p.pool[col] > 0) {
-          p.pool[col]--;
-          if (p.coloredOnlyPool && p.coloredOnlyPool[col] > 0) p.coloredOnlyPool[col]--;
+        if ((COLORS.includes(col) || col === 'C') && spendPoolUnit(this, p, col, forSpell, false)) {
           done = true; if (col !== 'C') spent.add(col); break;
         }
       }
       // fallback: ANY-color izvor je mogao proizvesti "pogrešnu" boju — skini bilo koju
       if (!done) {
         for (const col of ['C', 'W', 'U', 'B', 'R', 'G']) {
-          const unrestricted = p.pool[col] - (p.coloredOnlyPool && p.coloredOnlyPool[col] || 0);
-          if (unrestricted > 0) { p.pool[col]--; if (col !== 'C') spent.add(col); break; }
+          if (spendPoolUnit(this, p, col, forSpell, false)) {
+            if (col !== 'C') spent.add(col); break;
+          }
         }
       }
     }
     let gen = cost.generic;
     for (const col of ['C', 'W', 'U', 'B', 'R', 'G']) {
-      while (gen > 0 && p.pool[col] - (p.coloredOnlyPool && p.coloredOnlyPool[col] || 0) > 0) {
-        p.pool[col]--; gen--; if (col !== 'C') spent.add(col);
+      while (gen > 0 && spendPoolUnit(this, p, col, forSpell, true)) {
+        gen--; if (col !== 'C') spent.add(col);
       }
     }
   };
@@ -633,6 +690,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         p.pool[col] = Math.min(p.pool[col], keep);
         if (p.coloredOnlyPool) p.coloredOnlyPool[col] = Math.min(p.coloredOnlyPool[col] || 0, p.pool[col]);
       }
+      // Ograničenje pripada konkretnim jedinicama mane i nestaje zajedno s
+      // njima. `persist` ostavlja putanju za buduću restricted-persistent manu.
+      const kept = [];
+      const keptByColor = {};
+      for (const entry of p.poolMeta || []) {
+        if (!entry.persist) continue;
+        const available = Math.max(0, (p.pool[entry.color] || 0) - (keptByColor[entry.color] || 0));
+        const n = Math.min(available, Math.max(0, Number(entry.n) || 0));
+        if (!n) continue;
+        kept.push(Object.assign({}, entry, { n }));
+        keptByColor[entry.color] = (keptByColor[entry.color] || 0) + n;
+      }
+      p.poolMeta = kept;
     }
   };
 
@@ -2467,15 +2537,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // kopirana preko Brewmastera...), igrač mora moći eksplicitno izabrati
     // hoće li koristiti tu funkciju ili njegovu vlastitu/dodijeljenu mana
     // sposobnost. Ne nudimo obične mana-only permanente da meni ne postane
-    // popis svih landova, niti restriktivnu manu čije namjensko trošenje pool
-    // trenutno ne može pouzdano pratiti nakon ručnog floatanja.
+    // popis svih landova. Restricted mana se nudi samo ako je skripta izričito
+    // označi kao `manual`; poolMeta tada čuva njenu namjenu poslije floatanja.
     const manualManaSeen = new Set();
     for (const source of this.manaSources(p, null)) {
       const c = source.card;
       if (!c) continue;
       const utility = (c.def.abilities || []).concat(c.cur && c.cur.extraAbilities || [])
         .some(ability => !ability.manaAbilityOnly) || source.m.manual;
-      if (!utility || source.m.restrict) continue;
+      if (!utility || source.m.restrict && !source.m.manual) continue;
       const cost = source.extraCost || {};
       if (cost.life && p.life <= cost.life) continue;
       if (cost.mana) {
