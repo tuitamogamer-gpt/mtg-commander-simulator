@@ -97,7 +97,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Zimone, Infinite Analyst'] = {
     costMods: [(g, self, q) => q.player === self.ctrl && isXSpell(q.card, { castOpts: q.castOpts || {} }) && !xCasts(self.ctrl)
       ? -(self.counters['+1/+1'] || 0) : 0],
-    triggers: [{ on: 'cast', desc: 'Prvi X spell: dva countera', filter: (g, self, d) => firstX(self, d),
+    triggers: [{ on: 'cast', desc: 'First X spell: two counters', filter: (g, self, d) => firstX(self, d),
       run: async ctx => { if (ctx.src.zone === 'battlefield') ctx.g.addCounters(ctx.src, '+1/+1', 2, false, ctx.you); } }],
   };
   SC['Stonecoil Serpent'] = { xCost: true, etbCounters: xEtb(1), statics: [{ apply: (g, self) => {
@@ -159,8 +159,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => { const foods = ctx.g.bf().filter(c => c.ctrl === ctx.you && c.hasSub('Food') && ctx.g.canSacrifice(c)); const p = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: foods, min: 1, max: 1, prompt: 'Žrtvuj Food', aiHint: { kind: 'sacToken' } }); if (p[0]) { await ctx.g.sacrifice(ctx.you, p[0]); await ctx.g.draw(ctx.you, 1); } } },
   ] };
   SC['Zimone, Quandrix Prodigy'] = { abilities: [
-    { label: 'Land iz ruke tapped', cost: { mana: '{1}', tap: true }, run: async ctx => { await putLand(ctx.g, ctx.you, true, 'Zimone: land tapped'); }, aiScore: (g, c, p) => p.hand.some(x => x.is('Land')) ? 3 : 0 },
-    { label: 'Vuci (dvije sa 8+ landova)', cost: { mana: '{4}', tap: true }, run: async ctx => { await ctx.g.draw(ctx.you, ctx.g.lands(ctx.you).length >= 8 ? 2 : 1); }, aiScore: () => 3 },
+    { label: 'Land from hand tapped', cost: { mana: '{1}', tap: true }, run: async ctx => { await putLand(ctx.g, ctx.you, true, 'Zimone: put a land onto the battlefield tapped'); }, aiScore: (g, c, p) => p.hand.some(x => x.is('Land')) ? 3 : 0 },
+    { label: 'Draw (two with 8+ lands)', cost: { mana: '{4}', tap: true }, run: async ctx => { await ctx.g.draw(ctx.you, ctx.g.lands(ctx.you).length >= 8 ? 2 : 1); }, aiScore: () => 3 },
   ] };
   SC['Guardian Augmenter'] = { statics: [{ apply: (g, self, bf) => { for (const c of bf) if (c.ctrl === self.ctrl && c.commander && c.is('Creature')) { c.cur.power += 2; c.cur.toughness += 2; c.cur.kw.add('hexproof'); c.cur.hexproof = true; } } }] };
   SC['Kami of Whispered Hopes'] = { plusCountersAdjust: (n, g, c, self) => c.ctrl === self.ctrl ? n + 1 : n,

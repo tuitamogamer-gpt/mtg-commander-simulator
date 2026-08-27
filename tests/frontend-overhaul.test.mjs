@@ -63,3 +63,18 @@ test('motion, dialog, sync, fatal recovery and recap paths remain visible and re
   assert.match(main, /ui\.setSyncError/);
   assert.match(main, /ui\.handleFatal\(err\)/);
 });
+
+test('text-state diagnostics expose the same blocking decision actions as the visible modal', () => {
+  assert.match(main, /pending\.type === 'mulligan'[\s\S]*?label: 'Keep hand'[\s\S]*?label: 'Mulligan'/);
+  assert.match(main, /pending\.type === 'main'[\s\S]*?label: `Play \$\{card\.name\}`[\s\S]*?label: phaseLabel/);
+  assert.match(main, /pending\.type === 'priority'[\s\S]*?label: MTG\.isLastEndStepBeforeMyTurn[\s\S]*?value: \{ kind: 'pass' \}/);
+  assert.match(main, /pending\.type === 'combatReview' \|\| pending\.type === 'effectReview' \|\| pending\.type === 'cardReveal'[\s\S]*?label: 'Proceed'/);
+  assert.match(main, /pending\.type === 'threatAlert'[\s\S]*?label: 'Got it'[\s\S]*?label: 'I will respond \(HOLD\)'/);
+  assert.match(main, /pending\.type === 'attackers'[\s\S]*?Confirm attack/);
+  assert.match(main, /pending\.type === 'blockers'[\s\S]*?Confirm blocks/);
+  assert.match(main, /pending\.type === 'chooseTargets'/);
+  assert.match(main, /actions: pendingDecisionActions\.concat/);
+  assert.match(main, /ui\.pending\.q\.eligible \|\| ui\.pending\.q\.potential \|\| ui\.pending\.q\.candidates \|\| ui\.pending\.q\.from/);
+  assert.match(main, /legalAssignments/);
+  assert.match(main, /candidate\.faceDown && candidate\.ctrl !== ui\.me/);
+});

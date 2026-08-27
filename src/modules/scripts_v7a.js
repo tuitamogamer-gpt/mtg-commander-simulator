@@ -180,7 +180,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const q of order) {
       if (q.lost) continue;
       const k = await q.controller.decide(g, {
-        type: 'chooseOption', prompt: `${src.name}: glasaj`, options,
+        type: 'chooseOption', prompt: `${src.name}: vote`, options,
         aiHint: {
           kind: 'vote', src, options, voter: q, forWhom: you, aiPick, secret: false,
           // Will of the council je javno glasanje. Bot smije reagovati na već
@@ -193,7 +193,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       votes.set(k, (votes.get(k) || 0) + 1);
       const opt = options.find(o => o.key === k);
-      g.lg(`${q.name} glasa: ${opt ? opt.label : k}.`);
+      g.lg(`${q.name} votes for: ${opt ? opt.label : k}.`);
       votes['_by_' + q.idx] = k;
     }
     await g.emit('voteEnd', { src, by: you, votes, options });

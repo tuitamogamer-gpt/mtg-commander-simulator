@@ -3003,6 +3003,72 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
     });
     const pending = ui && ui.pending ? ui.pending.q : (ui && ui.react ? ui.react.q : null);
+    const pendingDecisionActions = (() => {
+      if (!pending) return [];
+      if (pending.type === 'main') {
+        const phaseLabel = g.phase === 'main1' ? 'Continue to combat' :
+          g.phase === 'main2' && g.step === 'additional' ? 'Continue to next phase' : 'End turn';
+        return (pending.lands || []).map(card => ({
+          card: card.name, from: card.zone, label: `Play ${card.name}`,
+        })).concat({ label: phaseLabel, value: { kind: 'done' } });
+      }
+      if (pending.type === 'priority') return [{
+        label: MTG.isLastEndStepBeforeMyTurn(g, ui.me) ? 'Continue to my turn' : 'Proceed',
+        value: { kind: 'pass' },
+      }];
+      if (pending.type === 'mulligan') return [
+        { label: 'Keep hand', value: false },
+        { label: 'Mulligan', value: true },
+      ];
+      if (pending.type === 'chooseOption') return (pending.options || []).map(option => ({
+        label: MTG.uiText(option.label), value: option.key,
+      }));
+      if (pending.type === 'chooseMulti') return (pending.options || []).map(option => ({
+        label: MTG.uiText(option.label), value: option.key,
+      }));
+      if (pending.type === 'combatReview' || pending.type === 'effectReview' || pending.type === 'cardReveal') {
+        return [{ label: 'Proceed', value: true }];
+      }
+      if (pending.type === 'threatAlert') return [
+        { label: 'Got it', value: { hold: false } },
+        { label: 'I will respond (HOLD)', value: { hold: true } },
+      ];
+      if (pending.type === 'attackers') {
+        const selected = ui && ui.pending ? (ui.pending.sel || []) : [];
+        const selectedCards = new Set(selected.map(entry => entry && entry.card).filter(Boolean));
+        const missingForced = (pending.forced || []).some(card => !selectedCards.has(card));
+        if (missingForced) return [];
+        return [{
+          label: selected.length ? `Confirm attack (${selected.length})` : 'No attacks',
+          value: selected.map(entry => ({ card: entry.card.name, target: entry.target.name })),
+        }];
+      }
+      if (pending.type === 'blockers') {
+        const selected = ui && ui.pending && ui.pending.assigns
+          ? [...ui.pending.assigns.entries()] : [];
+        return [{
+          label: selected.length ? `Confirm blocks (${selected.length})` : 'No blocks',
+          value: selected.map(([blocker, attacker]) => ({ blocker: blocker.name, attacker: attacker.name })),
+        }];
+      }
+      if (pending.type === 'bottomCards' || pending.type === 'chooseCards' || pending.type === 'chooseTargets') {
+        const selected = ui && ui.pending ? (ui.pending.sel || []) : [];
+        const actions = selected.length >= (pending.min || 0)
+          ? [{ label: `Confirm (${selected.length})`, value: selected.map(target => target.name || target.card && target.card.name || 'stack object') }]
+          : [];
+        if ((pending.type === 'chooseCards' || pending.type === 'chooseTargets') && pending.min === 0) {
+          actions.push({ label: 'None', value: [] });
+        }
+        return actions;
+      }
+      if (pending.type === 'chooseX') return [{
+        label: `Confirm X=${ui && ui.pending ? ui.pending.xVal : pending.min}`,
+        value: ui && ui.pending ? ui.pending.xVal : pending.min,
+      }];
+      if (pending.type === 'scry') return [{ label: 'Confirm scry', value: true }];
+      if (pending.type === 'orderTriggers') return [{ label: 'Confirm order', value: true }];
+      return [];
+    })();
     return {
       mode: g.gameOver ? 'gameover' : 'game',
       manaMode: ui ? ui.manaMode : 'auto',
@@ -3073,7 +3139,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           amount: pending.amount,
           targets: (pending.targets || []).map(player => ({ name: player.name, life: player.life })),
         } : undefined,
-        actions: (pending.casts || []).map(entry => ({
+        actions: pendingDecisionActions.concat((pending.casts || []).map(entry => ({
           card: entry.card && entry.card.name,
           from: entry.from,
           label: entry.from === 'exile'
@@ -3087,8 +3153,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 entry.gyAbility ? (entry.gyAbilityOverride || entry.card.def.gyAbility).label :
                   entry.ability ? entry.ability.label :
                     entry.equip ? 'Equip' : entry.crew ? 'Crew' : entry.cycling ? 'Cycling' :
-                      entry.suspend ? `Suspend ${entry.card.def.suspend.cost} with ${entry.card.def.suspend.n} time counters` : 'Activate'),
-        }))),
+                    entry.suspend ? `Suspend ${entry.card.def.suspend.cost} with ${entry.card.def.suspend.n} time counters` : 'Activate'),
+        })))),
       } : null,
       priority: g.priorityState ? {
         holder: g.priorityState.holder ? g.priorityState.holder.name : null,
@@ -3140,12 +3206,40 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })),
       pendingDecision: ui && ui.pending ? {
         type: ui.pending.q.type,
-        eligible: (ui.pending.q.eligible || []).map(card => card.name),
+        eligible: (ui.pending.q.eligible || ui.pending.q.potential || ui.pending.q.candidates || ui.pending.q.from || []).map(candidate => {
+          if (candidate instanceof MTG.Player) return candidate.name;
+          if (candidate && candidate.faceDown && candidate.ctrl !== ui.me) return 'Face-down permanent';
+          return candidate && (candidate.name || candidate.label) || 'Option';
+        }),
+        targets: ui.pending.q.type === 'attackers'
+          ? (ui.pending.q.attackTargets || ui.pending.q.opponents || []).map(target => target.name)
+          : ui.pending.q.type === 'blockers'
+            ? (ui.pending.q.attackers || []).map(card => card.name)
+            : [],
+        legalAssignments: ui.pending.q.type === 'attackers'
+          ? (ui.pending.q.eligible || []).flatMap(attacker => {
+            const targets = g.legalDeclarationAttackTargets
+              ? g.legalDeclarationAttackTargets(attacker)
+              : (ui.pending.q.attackTargets || ui.pending.q.opponents || []);
+            const legalTargets = g.diplomacyAttackTargetsFor
+              ? g.diplomacyAttackTargetsFor(attacker, targets, (ui.pending.q.forced || []).includes(attacker))
+              : targets;
+            return legalTargets.map(target => ({ card: attacker.name, target: target.name }));
+          })
+          : ui.pending.q.type === 'blockers'
+            ? (ui.pending.q.potential || []).flatMap(blocker => (ui.pending.q.attackers || [])
+              .filter(attacker => !g.canBlock || g.canBlock(blocker, attacker))
+              .map(attacker => ({ card: blocker.name, target: attacker.name })))
+            : [],
         forced: (ui.pending.q.forced || []).map(card => card.name),
         assignments: ui.pending.q.type === 'attackers'
           ? (ui.pending.sel || []).filter(entry => entry && entry.card && entry.target)
             .map(entry => ({ card: entry.card.name, target: entry.target.name }))
-          : [],
+          : ui.pending.q.type === 'blockers' && ui.pending.assigns
+            ? [...ui.pending.assigns.entries()].map(([blocker, attacker]) => ({
+              card: blocker.name, target: attacker.name,
+            }))
+            : [],
       } : null,
       players,
       recentLog: g.log.slice(-10).map(entry => ({ ...entry, msg: MTG.uiText(entry.msg) })),

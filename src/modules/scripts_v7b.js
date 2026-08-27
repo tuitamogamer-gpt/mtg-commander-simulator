@@ -999,7 +999,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     xCost: true,
     etbCounters: { kind: '+1/+1', n: (g, card) => card.castMeta ? (card.castMeta.x || 0) : 0 },
     triggers: [{
-      on: 'dies', desc: 'Thopteri', filter: (g, self, d) => d.card === self,
+      on: 'dies', desc: 'Create Thopters', filter: (g, self, d) => d.card === self,
       run: async ctx => { const n = ctx.data.snap.plus1 || 0; if (n) await ctx.g.makeTokens('thopter', ctx.you, { n }); },
     }],
     abilities: [{

@@ -234,11 +234,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       p.library.splice(p.library.indexOf(c), 1);
       if (opts.toHand || (opts.toHandN && i >= (opts.bfN || 1))) {
         c.zone = 'hand'; p.hand.push(c);
-        g.lg(`${p.name} traži ${c.name} u ruku.`);
+        g.lg(`${U.playerVerb(p, 'search for', 'searches for')} ${c.name} to hand.`);
       } else {
         c.zone = 'nowhere';
         await g.move(c, 'battlefield', { ctrl: p, tapped: opts.tapped !== false });
-        g.lg(`${p.name} stavlja ${c.name} na battlefield${opts.tapped !== false ? ' (tapped)' : ''}.`);
+        g.lg(`${U.playerVerb(p, 'put', 'puts')} ${c.name} onto the battlefield${opts.tapped !== false ? ' (tapped)' : ''}.`);
       }
       got.push(c);
     }
@@ -257,7 +257,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     p.library.splice(p.library.indexOf(c), 1);
     if (opts.toHand) {
       c.zone = 'hand'; p.hand.push(c);
-      g.lg(`${p.name} traži ${c.name} u ruku.`);
+      g.lg(`${U.playerVerb(p, 'search for', 'searches for')} ${c.name} to hand.`);
     } else {
       c.zone = 'nowhere';
       await g.move(c, 'battlefield', { ctrl: p, tapped: opts.tapped !== false });

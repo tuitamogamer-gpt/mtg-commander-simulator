@@ -2113,7 +2113,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       so.ctx.targets = checked.targets;
       so.targets = checked.targets;
       if (checked.anyChosen && !checked.anyLegal) {
-        this.lg(`${so.name}: sve mete nelegalne — fizzle.`);
+        this.lg(`${so.name}: all targets are illegal — trigger fizzles.`);
         return;
       }
       if (so.run) await so.run(so.ctx);
@@ -2128,7 +2128,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       so.targets = checked.targets;
       if (so.ctx) so.ctx.targets = checked.targets;
       if (checked.anyChosen && !checked.anyLegal) {
-        this.lg(`${so.name}: mete nelegalne — fizzle.`);
+        this.lg(`${so.name}: all targets are illegal — ability fizzles.`);
         return;
       }
       if (so.run) await so.run(so.ctx);
@@ -2145,7 +2145,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const checked = this.revalidateTargets(so.targets || [], so.targetSpecs, card, p);
     so.targets = checked.targets;
     if (checked.anyChosen && !checked.anyLegal) {
-      this.lg(`${card.name}: sve mete nelegalne — spell fizzla.`, 'resolve');
+      this.lg(`${card.name}: all targets are illegal — spell fizzles.`, 'resolve');
       if (!so.isCopy) await this.move(card, 'graveyard');
       return;
     }

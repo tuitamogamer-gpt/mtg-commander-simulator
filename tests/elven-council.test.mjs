@@ -339,9 +339,15 @@ test('Raise the Palisade pita tip, a Seeds of Renewal koristi stvarne graveyard 
 
 test('Travel Through Caradhras obavezno vraća kartu za svaki Mines glas', async () => {
   const mins = [];
+  const votePrompts = [];
+  const voteLabels = [];
   const decider = (g, q) => {
-    if (q.type === 'chooseOption' && q.aiHint?.kind === 'vote') return 'mines';
-    if (q.type === 'chooseCards' && q.prompt === 'U ruku:') { mins.push(q.min); return [q.from[0]]; }
+    if (q.type === 'chooseOption' && q.aiHint?.kind === 'vote') {
+      votePrompts.push(q.prompt);
+      voteLabels.push(q.options.map(option => option.label));
+      return 'mines';
+    }
+    if (q.type === 'chooseCards' && q.prompt === 'Return a card to hand:') { mins.push(q.min); return [q.from[0]]; }
     return defaultDecision(g, q);
   };
   const { game, players: [elven] } = rulesGame([decider, decider], 2);
@@ -351,6 +357,14 @@ test('Travel Through Caradhras obavezno vraća kartu za svaki Mines glas', async
   await travel.def.resolve({ g: game, src: travel, you: elven });
   assert.deepEqual(mins, [1, 1]);
   assert.equal(elven.graveyard.length, 0);
+  assert.deepEqual(votePrompts, ['Travel Through Caradhras: vote', 'Travel Through Caradhras: vote']);
+  assert.equal(voteLabels.flat().join('|'), [
+    '⛰️ Redhorn Pass (lands for you)',
+    '⚒️ Mines of Moria (graveyard cards for you)',
+    '⛰️ Redhorn Pass (lands for you)',
+    '⚒️ Mines of Moria (graveyard cards for you)',
+  ].join('|'));
+  assert.equal(game.log.every(entry => !/\b(glasa|landovi|groblje)\b/i.test(entry.msg)), true);
 });
 
 test('Lothlorien Blade targetira branioca i koristi napadača čak i nakon detachovanja', async () => {

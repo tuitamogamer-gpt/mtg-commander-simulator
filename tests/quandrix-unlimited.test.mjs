@@ -78,6 +78,40 @@ test('Zimone smanjuje samo prvi X spell i dobija tačno dva countera', async () 
     'drugi X spell nema Zimone popust');
 });
 
+test('active Zimone and Hangarback gameplay messages stay in English', async () => {
+  const { game, players: [quandrix] } = rulesGame();
+  quandrix.name = 'You';
+  const zimone = permanent(game, quandrix, 'Zimone, Infinite Analyst', { commander: true });
+  const walker = inZone(quandrix, 'Hangarback Walker', 'hand');
+  assert.equal(await game.castSpell(quandrix, walker, { from: 'hand', xVal: 0 }), true);
+  await resolveAll(game);
+
+  assert.equal(zimone.counters['+1/+1'], 2, 'X=0 still triggers Zimone');
+  assert.equal(walker.zone, 'graveyard', 'Hangarback Walker dies as a 0/0');
+  assert.ok(game.log.some(entry => entry.msg.endsWith(': First X spell: two counters.')),
+    game.log.map(entry => entry.msg).join('\n'));
+  assert.ok(game.log.some(entry => entry.msg.endsWith(': Create Thopters.')),
+    game.log.map(entry => entry.msg).join('\n'));
+  assert.equal(
+    Array.from(MTG.SCRIPTS['Zimone, Quandrix Prodigy'].abilities, ability => ability.label).join('|'),
+    'Land from hand tapped|Draw (two with 8+ lands)',
+  );
+});
+
+test('human basic-land search log uses first-person grammar', async () => {
+  const { game, players: [quandrix] } = rulesGame([ (g, q) => {
+    if (q.type === 'chooseCards' && q.search) return q.from.slice(0, 1);
+    return defaultDecision(g, q);
+  } ]);
+  quandrix.name = 'You';
+  inZone(quandrix, 'Forest', 'library');
+  const [forest] = await MTG.E.searchBasic(game, quandrix, { tapped: true, prompt: 'Search for basic land' });
+  assert.equal(forest.name, 'Forest');
+  assert.equal(forest.zone, 'battlefield');
+  assert.equal(forest.tapped, true);
+  assert.equal(game.log.at(-1).msg, 'You put Forest onto the battlefield (tapped).');
+});
+
 test('četiri Quandrix +1/+1 replacementa slažu se i Benevolent ne mijenja sebe', () => {
   const { game, players: [quandrix] } = rulesGame();
   permanent(game, quandrix, 'Hardened Scales');

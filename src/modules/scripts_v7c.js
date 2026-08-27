@@ -1574,15 +1574,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     exileOnResolve: true,
     resolve: async ctx => {
       const votes = await E7.vote(ctx.g, ctx.you, ctx.src, [
-        { key: 'pass', label: '⛰️ Redhorn Pass (landovi tebi)' },
-        { key: 'mines', label: '⚒️ Mines of Moria (groblje tebi)' },
+        { key: 'pass', label: '⛰️ Redhorn Pass (lands for you)' },
+        { key: 'mines', label: '⚒️ Mines of Moria (graveyard cards for you)' },
       ], (voter) => 'pass');
       const passN = votes.get('pass') || 0;
       const minesN = votes.get('mines') || 0;
       for (let i = 0; i < passN; i++) await E.searchBasic(ctx.g, ctx.you, { tapped: true });
       for (let i = 0; i < minesN && ctx.you.graveyard.length; i++) {
         const pick = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseCards', from: ctx.you.graveyard, min: 1, max: 1, prompt: 'U ruku:', aiHint: { kind: 'reanimate' },
+          type: 'chooseCards', from: ctx.you.graveyard, min: 1, max: 1, prompt: 'Return a card to hand:', aiHint: { kind: 'reanimate' },
         });
         if (!pick[0]) break;
         ctx.g.remove(pick[0]); pick[0].zone = 'hand'; ctx.you.hand.push(pick[0]);

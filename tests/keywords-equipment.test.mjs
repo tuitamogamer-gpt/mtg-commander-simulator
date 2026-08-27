@@ -88,6 +88,7 @@ test('meta koja dobije hexproof prije rezolucije postaje nelegalna i spell fizzl
 
   assert.equal(target.zone, 'battlefield');
   assert.equal(spell.zone, 'graveyard');
+  assert.equal(game.log.some(entry => entry.msg === 'Swords to Plowshares: all targets are illegal — spell fizzles.'), true);
 });
 
 test('equip ne može ciljati shroud, ali može vlastiti hexproof', async () => {
