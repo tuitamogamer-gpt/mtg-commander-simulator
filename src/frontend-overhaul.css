@@ -100,6 +100,7 @@
 #setup .deckemptyalternatives { grid-column: 2 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
 
 #setup .setupstagepanel { display: contents; }
+#setup .setupstagepanel > * { flex-shrink: 0; }
 #setup .reviewstage { display: none; }
 #setup .setupnext { display: none; }
 #setup .supportdiagnostics {

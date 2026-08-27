@@ -33,6 +33,7 @@ test('mobile Setup is a true three-stage flow with quick recommendations and rec
   assert.match(main, /const closestDeckEntries = \(\) =>/);
   assert.match(main, /class="debugimportbtn">↺ Import debug snapshot/);
   assert.match(overhaul, /#setup\[data-setup-stage="review"\] \.podstage \{ display: none; \}/);
+  assert.match(overhaul, /#setup \.setupstagepanel > \* \{ flex-shrink: 0; \}/);
 });
 
 test('Arena has one-level destinations, public activity hierarchy and a compact empty hand', () => {
