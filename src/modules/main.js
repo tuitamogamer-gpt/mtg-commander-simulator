@@ -3006,18 +3006,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         copiedFrom: item.copyOf && (item.copyOf.card && item.copyOf.card.name || item.copyOf.name) || null,
         copiedBy: item.copySource && item.copySource.name || null,
         targetMode: item.targetMode || null,
-        targets: (item.targets || item.ctx && item.ctx.targets || []).flat(Infinity).filter(Boolean).map(target => ({
-          name: target instanceof MTG.Player
-            ? target.name
-            : target.faceDown && target.ctrl !== ui.me ? 'Face-down permanent' : target.card && target.card.name || target.name || 'Stack object',
-          controller: target.ctrl && target.ctrl.name || null,
-        })),
-        damageDivision: (item.damageDivision || item.ctx && item.ctx.damageDivision || []).map(entry => ({
-          target: entry.playerIdx !== null && entry.playerIdx !== undefined
-            ? g.players.find(player => player.idx === entry.playerIdx)?.name
-            : g.byIid(entry.iid)?.name,
-          amount: entry.n,
-        })),
+        targets: (item.targets || item.ctx && item.ctx.targets || []).flat(Infinity).filter(Boolean).map(target => {
+          const cardTarget = target.card || target;
+          return {
+            name: target instanceof MTG.Player
+              ? target.name
+              : cardTarget.faceDown && cardTarget.ctrl !== ui.me ? 'Face-down permanent' : cardTarget.name || 'Stack object',
+            controller: cardTarget.ctrl && cardTarget.ctrl.name || null,
+            faceDown: !!cardTarget.faceDown,
+            zone: cardTarget.zone,
+          };
+        }),
+        damageDivision: (item.damageDivision || item.ctx && item.ctx.damageDivision || []).map(entry => {
+          const dividedTarget = entry.playerIdx !== null && entry.playerIdx !== undefined
+            ? g.players.find(player => player.idx === entry.playerIdx) : g.byIid(entry.iid);
+          return {
+            target: dividedTarget && dividedTarget.name,
+            amount: entry.n,
+            faceDown: !!(dividedTarget && dividedTarget.faceDown),
+            zone: dividedTarget && dividedTarget.zone,
+          };
+        }),
       })),
       combat: g.combat ? {
         attackers: g.combat.attackers.map(card),

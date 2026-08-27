@@ -479,6 +479,14 @@ MTG.redactDebugState = function (state) {
   for (const player of (copy.players || [])) {
     delete player.hand;
     delete player.exile;
+    delete player.library;
+    delete player.visibleLibraryTop;
+  }
+  if (copy.pending && typeof copy.pending === 'object') {
+    copy.pending = { type: copy.pending.type || null };
+  }
+  if (copy.pendingDecision && typeof copy.pendingDecision === 'object') {
+    copy.pendingDecision = { type: copy.pendingDecision.type || null };
   }
   const stripHiddenIdentity = value => {
     if (!value || typeof value !== 'object') return;
@@ -487,6 +495,11 @@ MTG.redactDebugState = function (state) {
       return;
     }
     delete value.hiddenIdentity;
+    if (value.faceDown) {
+      const label = value.zone === 'battlefield' ? 'Face-down permanent' : 'Face-down card';
+      if (Object.prototype.hasOwnProperty.call(value, 'name')) value.name = label;
+      if (Object.prototype.hasOwnProperty.call(value, 'target')) value.target = label;
+    }
     for (const child of Object.values(value)) stripHiddenIdentity(child);
   };
   stripHiddenIdentity(copy);

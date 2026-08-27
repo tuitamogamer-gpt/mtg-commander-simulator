@@ -57,13 +57,38 @@ test('debug bundle records an exact reproduction checkpoint without hidden card 
       {
         name: 'You',
         handCount: 1,
+        libraryCount: 60,
         exileCount: 1,
         hand: [{ name: 'Secret Human Card', hiddenIdentity: 'Secret Human Card' }],
+        library: [{ name: 'Secret Library Card' }],
         exile: [{ name: 'Face-down card', hiddenIdentity: 'Secret Exile Card' }],
-        battlefield: [{ name: 'Doctor Doom, King of Latveria' }],
+        visibleLibraryTop: { name: 'Secret Controller-only Top Card' },
+        battlefield: [
+          { name: 'Doctor Doom, King of Latveria' },
+          {
+            name: 'Secret Manifested Permanent', zone: 'battlefield', faceDown: true,
+            hiddenIdentity: 'Secret Manifested Permanent',
+          },
+        ],
       },
       { name: 'AI Dragon', handCount: 7, battlefield: [] },
     ],
+    combat: {
+      attackers: [{ name: 'Secret Nested Morph', zone: 'battlefield', faceDown: true }],
+    },
+    pending: {
+      type: 'main',
+      prompt: 'Cast Secret Foretold Card?',
+      actions: [{ card: 'Secret Foretold Card', from: 'exile', label: 'Play Secret Foretold Card from exile' }],
+    },
+    pendingDecision: {
+      type: 'chooseCards', eligible: ['Secret Pending Card'], forced: ['Secret Forced Card'],
+    },
+    stack: [{
+      name: 'Public spell',
+      targets: [{ name: 'Secret Stack Target', zone: 'battlefield', faceDown: true }],
+      damageDivision: [{ target: 'Secret Divided Target', zone: 'battlefield', faceDown: true, amount: 1 }],
+    }],
     recentLog: [{ msg: 'duplicate short log' }],
     aiDecisions: [{ chosen: 'duplicate short trace' }],
   };
@@ -87,12 +112,21 @@ test('debug bundle records an exact reproduction checkpoint without hidden card 
     { turn: 23, activePlayer: 'AI Dragon', phase: 'main1', step: 'main' },
   );
   assert.equal(bundle.publicState.players[0].hand, undefined);
+  assert.equal(bundle.publicState.players[0].library, undefined);
   assert.equal(bundle.publicState.players[0].exile, undefined);
+  assert.equal(bundle.publicState.players[0].visibleLibraryTop, undefined);
   assert.equal(bundle.publicState.players[0].handCount, 1);
+  assert.equal(bundle.publicState.players[0].libraryCount, 60);
   assert.equal(bundle.publicState.players[0].battlefield[0].name, 'Doctor Doom, King of Latveria');
+  assert.equal(bundle.publicState.players[0].battlefield[1].name, 'Face-down permanent');
+  assert.equal(bundle.publicState.combat.attackers[0].name, 'Face-down permanent');
+  assert.deepEqual(JSON.parse(JSON.stringify(bundle.publicState.pending)), { type: 'main' });
+  assert.deepEqual(JSON.parse(JSON.stringify(bundle.publicState.pendingDecision)), { type: 'chooseCards' });
+  assert.equal(bundle.publicState.stack[0].targets[0].name, 'Face-down permanent');
+  assert.equal(bundle.publicState.stack[0].damageDivision[0].target, 'Face-down permanent');
   assert.equal(bundle.publicState.recentLog, undefined);
   assert.equal(bundle.publicState.aiDecisions, undefined);
-  assert.doesNotMatch(serialized, /Secret Human Card|Secret Exile Card|hiddenIdentity/);
+  assert.doesNotMatch(serialized, /Secret Human Card|Secret Library Card|Secret Controller-only Top Card|Secret Exile Card|Secret Manifested Permanent|Secret Nested Morph|Secret Foretold Card|Secret Pending Card|Secret Forced Card|Secret Stack Target|Secret Divided Target|hiddenIdentity/);
   assert.equal(bundle.publicLog[0].message, 'AI Dragon casts a public spell.');
   assert.equal(bundle.aiTrace[0].chosen, 'Cast Inspirit, Flagship Vessel');
   assert.equal(MTG.debugBundleFilename(game), 'commander-debug-seed-26082637-turn-23.json');
