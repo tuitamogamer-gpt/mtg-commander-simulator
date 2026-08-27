@@ -100,6 +100,14 @@ test('Vercel room serves two private human seats and two local AI seats through 
   assert.deepEqual(guestPrivate.view.gameView.hand, ['guest-secret']);
   assert.doesNotMatch(JSON.stringify(guestPrivate.view), /host-secret/);
 
+  await guest.act({ type: 'manualAction', action: { type: 'setLife', playerSeat: 2, value: 23 } });
+  const hostManual = await host.waitFor(message => message.type === 'state' && message.view.pendingManualAction?.action?.value === 23);
+  assert.equal(hostManual.view.pendingManualAction.seat, 1);
+  assert.doesNotMatch(JSON.stringify(guest.messages.at(-1)?.view || {}), /pendingManualAction.*setLife/);
+  await host.act({ type: 'manualAck', manualId: hostManual.view.pendingManualAction.id, ok: true, message: 'AI Dragon life = 23' });
+  const guestManual = await guest.waitFor(message => message.type === 'state' && message.view.lastManualAction?.message === 'AI Dragon life = 23');
+  assert.equal(guestManual.view.lastManualAction.ok, true);
+
   guest.close();
   const paused = await host.waitFor(message => message.type === 'state' && message.view.phase === 'paused');
   assert.equal(paused.view.pause.seat, 1);

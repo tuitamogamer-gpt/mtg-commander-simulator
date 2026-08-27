@@ -80,6 +80,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.sidebarTab = 'table';
       this.utilityDrawerOpen = false;
       this.quickMenuOpen = false;
+      this.lastResortActive = false;
+      this.lastResortConfirm = false;
+      this.lastResortPlayerSeat = 0;
+      this.lastResortStatus = null;
       this.syncError = null;
       this.fatalError = null;
       this.reducedMotion = localStorage.getItem('mtgReducedMotion') === '1';
@@ -102,6 +106,41 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.showStops = false;
       this.renderQueued = false;
       this.imgCache = {};
+    }
+
+    lastResortSeat(player) { return player ? (player.onlineSeat ?? player.idx) : null; }
+
+    runLastResort(action, opts = {}) {
+      try {
+        const result = this.game.applyLastResortAction(this.me, action);
+        const returnToToolbox = !!(opts.closeSheet && this.sheet && this.sheet.lastResort && this.lastResortActive);
+        if (opts.closeSheet) this.sheet = null;
+        if (opts.closeZone) this.zoneBrowse = null;
+        if (returnToToolbox) this.showJudge = true;
+        this.lastResortStatus = { ok: true, text: result.text };
+        this.toast(`\u{1F6E0}\uFE0F ${result.text}`);
+        this.queueRender();
+        return result;
+      } catch (error) {
+        this.lastResortStatus = { ok: false, text: error.message };
+        this.toast(`Last Resort: ${error.message}`);
+        return null;
+      }
+    }
+
+    setLastResortActive(active, openToolbox = true) {
+      const next = !!active;
+      this.lastResortActive = next;
+      this.lastResortConfirm = false;
+      if (next) this.lastResortStatus = null;
+      this.quickMenuOpen = false;
+      this.manualPick = null;
+      if (this.game && this.game.setLastResortPaused) this.game.setLastResortPaused(next);
+      this.showJudge = next && openToolbox;
+      this.toast(next
+        ? '\u{1F6E0}\uFE0F Last Resort active. The engine is paused at a safe checkpoint.'
+        : '\u25B6 Last Resort closed. The game can continue.');
+      this.render();
     }
 
     makeKeyboardButton(node, label) {
@@ -478,6 +517,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       root.classList.toggle('human-turn', g.turnPlayer === this.me);
       root.classList.toggle('ai-turn', !!(g.turnPlayer && g.turnPlayer.isAI));
       root.classList.toggle('combat-phase', g.phase === 'combat');
+      root.classList.toggle('last-resort-active', this.lastResortActive);
       root.classList.toggle('sidebar-open', this.utilityDrawerOpen);
       root.dataset.mobileView = this.mobileView;
       root.style.setProperty('--arena-turn-accent', g.turnPlayer === this.me ? '#d3974c' : '#778f63');
@@ -514,6 +554,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.showStops) root.appendChild(this.renderStopSettings(g));
       const quickMenu = this.renderQuickMenu(g);
       if (quickMenu) root.appendChild(quickMenu);
+      const lastResortConfirm = this.renderLastResortConfirm();
+      if (lastResortConfirm) root.appendChild(lastResortConfirm);
       const reveal = this.renderRevealPopup(g);
       if (reveal) root.appendChild(reveal);
       const diplomacyModal = this.renderDiplomacyModal(g);
@@ -521,7 +563,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // stack popup stoji na sredini, pa se sklanja kad je otvoren bilo koji drugi
       // overlay — inače bi se preklapali baš na istom mjestu
       const blocked = !!modal || !!reveal || !!this.sheet || !!this.playerSheet || !!this.zoneBrowse ||
-        this.showLog || this.showHelp || this.showJudge || this.showStops || this.quickMenuOpen;
+        this.showLog || this.showHelp || this.showJudge || this.showStops || this.quickMenuOpen || this.lastResortConfirm;
       const stage = blocked ? null : this.renderActionStage(g);
       if (stage) root.appendChild(stage);
       const sp = blocked ? null : this.renderStackPopup(g);
@@ -1164,11 +1206,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(ev.target.tagName)) return;
         if (ev.key === 'Escape') {
           if (this.sheet || this.playerSheet || this.zoneBrowse || this.showLog || this.showHelp || this.showJudge ||
-            this.showStops || this.diplomacyComposer || this.quickMenuOpen || this.utilityDrawerOpen) {
+            this.showStops || this.diplomacyComposer || this.quickMenuOpen || this.lastResortConfirm || this.utilityDrawerOpen) {
             this.sheet = null; this.playerSheet = null; this.zoneBrowse = null;
             this.showLog = false; this.showHelp = false; this.showJudge = false; this.showStops = false;
             this.diplomacyComposer = null;
-            this.quickMenuOpen = false; this.utilityDrawerOpen = false;
+            this.quickMenuOpen = false; this.lastResortConfirm = false; this.utilityDrawerOpen = false;
             if (this.mobileView === 'stack') this.mobileView = 'mine';
             this.render();
             ev.preventDefault();
@@ -1177,7 +1219,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         // Drawer i Game Menu imaju vlastite fokusirane kontrole. Dok su otvoreni,
         // Enter/Space ne smiju aktivirati skriveni gameplay prompt ispod njih.
-        if ((this.quickMenuOpen || this.utilityDrawerOpen) && (ev.key === ' ' || ev.key === 'Enter')) return;
+        if ((this.quickMenuOpen || this.lastResortConfirm || this.utilityDrawerOpen) && (ev.key === ' ' || ev.key === 'Enter')) return;
         // A focused control owns Enter/Space. Letting the same key bubble into
         // the global shortcut layer can open a sheet and immediately activate
         // its primary action (for example: open a hand card and cast it at once).
@@ -1407,6 +1449,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
       buttons.appendChild(mana);
 
+      if (this.lastResortActive) {
+        const recovery = el('button', 'tbtn hudaction lastresortbutton on', '\u{1F6E0}\uFE0F<span>LAST RESORT</span>');
+        recovery.type = 'button';
+        recovery.title = 'Game paused for manual public-state recovery';
+        recovery.setAttribute('aria-label', 'Open active Last Resort recovery controls');
+        recovery.onclick = () => { this.showJudge = true; this.render(); };
+        buttons.appendChild(recovery);
+      }
+
       const menu = el('button', 'tbtn hudaction menubutton', `${U.icon('menu')}<span>MENU</span>`);
       menu.type = 'button';
       menu.title = 'Game controls and display settings';
@@ -1433,6 +1484,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         button.type = 'button';
         button.onclick = run;
         list.appendChild(button);
+        return button;
       };
       this.speed = this.speed || 'normal';
       action('AI turn speed', MTG.SPEEDS[this.speed][2], () => {
@@ -1472,6 +1524,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       action('Table information', 'Stack, damage and threat', () => this.openUtility('table'));
       action('Game log', `${g.log.length} events`, () => this.openUtility('log'));
       action('Support & diagnostics', 'Download share-safe debug snapshot', () => this.downloadDebugSnapshot(g));
+      const lastResort = action('Last Resort', this.lastResortActive ? 'ACTIVE \u00B7 paused recovery' : 'Emergency public-board recovery', () => {
+        this.quickMenuOpen = false;
+        if (this.lastResortActive) this.showJudge = true;
+        else this.lastResortConfirm = true;
+        this.render();
+      });
+      lastResort.classList.add('lastresortmenu');
+      if (this.lastResortActive) lastResort.classList.add('active');
       if (g.diplomacy && g.diplomacy.enabled) action('Diplomacy & Politics', 'Deals and proposals', () => this.openUtility('diplomacy'));
       action('Help & shortcuts', 'Rules and controls', () => { this.quickMenuOpen = false; this.showHelp = true; this.render(); });
       action('New game', 'Return to setup', () => {
@@ -1483,6 +1543,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (event.target === overlay) { this.quickMenuOpen = false; this.render(); }
       };
       return overlay;
+    }
+
+    renderLastResortConfirm() {
+      if (!this.lastResortConfirm) return null;
+      const ov = el('div', 'overlay dark lastresortconfirm');
+      ov.onclick = event => {
+        if (event.target === ov) { this.lastResortConfirm = false; this.render(); }
+      };
+      const modal = el('div', 'modal lastresortwarning');
+      modal.setAttribute('role', 'alertdialog');
+      modal.innerHTML = `
+        <div class="lastresortmark" aria-hidden="true">\u{1F6E0}\uFE0F</div>
+        <div class="mtitle">Enable Last Resort?</div>
+        <p>This is an emergency recovery tool. It pauses the game at the next safe engine checkpoint and lets you directly correct public state without firing normal card triggers.</p>
+        <ul>
+          <li>You can change life, mana, counters, controllers, public zones, tokens, permanents and battlefield order.</li>
+          <li>You cannot inspect another player or bot hand, library, or face-down card identity.</li>
+          <li>Every correction is recorded in the public game log.</li>
+        </ul>`;
+      const row = el('div', 'btnrow');
+      const cancel = el('button', 'pbtn', 'Cancel');
+      cancel.onclick = () => { this.lastResortConfirm = false; this.render(); };
+      const enable = el('button', 'pbtn danger', 'Enable & pause game');
+      enable.dataset.testid = 'enable-last-resort';
+      enable.onclick = () => this.setLastResortActive(true);
+      row.append(cancel, enable);
+      modal.appendChild(row);
+      ov.appendChild(modal);
+      return ov;
     }
 
     downloadDebugSnapshot(g) {
@@ -3655,8 +3744,49 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         b.disabled = true;
         acts.appendChild(b);
       }
-      const close = el('button', 'pbtn wide', 'Close');
-      close.onclick = () => { this.sheet = null; this.render(); };
+      const lastResortCard = this.lastResortActive && g.lastResortCardVisibleTo(card, this.me);
+      if (lastResortCard) {
+        const selected = g.lastResortPlayer(this.lastResortPlayerSeat) || card.ctrl || card.owner;
+        acts.appendChild(el('div', 'lastresortcardtitle', '🛠️ LAST RESORT · DIRECT CARD EDIT'));
+        const repair = (label, action) => {
+          const b = el('button', 'pbtn wide lastresortcardaction', label);
+          b.onclick = () => this.runLastResort(Object.assign({ cardToken: `c:${card.iid}` }, action), { closeSheet: true });
+          acts.appendChild(b);
+        };
+        if (card.zone === 'battlefield') {
+          repair(card.tapped ? '↻ Untap permanent' : '🔄 Tap permanent', { type: 'setTapped', value: !card.tapped });
+          repair('← Move left on battlefield', { type: 'reorder', direction: -1 });
+          repair('Move right on battlefield →', { type: 'reorder', direction: 1 });
+          repair(`🤝 Give control to ${selected.name}`, { type: 'setController', playerSeat: this.lastResortSeat(selected) });
+          const counters = el('button', 'pbtn wide lastresortcardaction', '◆ Set counter amount…');
+          counters.onclick = () => {
+            const counter = window.prompt('Counter name', Object.keys(card.counters)[0] || '+1/+1');
+            if (!counter) return;
+            const value = Number(window.prompt(`Exact ${counter} amount`, String(card.counters[counter] || 0)));
+            if (Number.isInteger(value)) this.runLastResort({ type: 'setCounter', cardToken: `c:${card.iid}`, counter, value }, { closeSheet: true });
+          };
+          acts.appendChild(counters);
+          const damage = el('button', 'pbtn wide lastresortcardaction', '🩸 Set marked damage…');
+          damage.onclick = () => {
+            const value = Number(window.prompt('Exact marked damage', String(card.damage || 0)));
+            if (Number.isInteger(value)) this.runLastResort({ type: 'setDamage', cardToken: `c:${card.iid}`, value }, { closeSheet: true });
+          };
+          acts.appendChild(damage);
+        }
+        for (const zone of ['battlefield', 'graveyard', 'exile', 'command', 'hand']) {
+          if (zone === card.zone) continue;
+          repair(`🗂️ Move to ${zone}${zone === 'hand' ? " (owner's, still hidden)" : ''}`, {
+            type: 'moveCard', toZone: zone, playerSeat: this.lastResortSeat(selected),
+          });
+        }
+      }
+      const close = el('button', 'pbtn wide', this.sheet.lastResort && this.lastResortActive ? '← Back to Last Resort' : 'Close');
+      close.onclick = () => {
+        const backToRecovery = this.sheet && this.sheet.lastResort && this.lastResortActive;
+        this.sheet = null;
+        if (backToRecovery) this.showJudge = true;
+        this.render();
+      };
       acts.appendChild(close);
       m.appendChild(acts);
       return ov;
@@ -3740,16 +3870,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       m.appendChild(el('div', 'mtitle', `${esc(player.name)}: ${names[zone] || zone} (${player[zone].length})`));
       const grid = el('div', 'cardgrid');
       const judgeReturn = this.zoneBrowse.judgeReturn;
+      const lastResort = this.zoneBrowse.lastResort && this.lastResortActive;
       const pd = this.pending;
       const actionQ = pd && (pd.q.type === 'main' || pd.q.type === 'priority') ? pd.q : null;
-      for (const c of player[zone]) {
+      const visibleCards = lastResort
+        ? player[zone].filter(card => g.lastResortCardVisibleTo(card, this.me))
+        : player[zone];
+      for (const c of visibleCards) {
         const cc = this.bigCardEl(c);
         if (zone === 'exile' && c.meta && Object.prototype.hasOwnProperty.call(c.meta, 'suspended')) {
           const count = Math.max(0, Number(c.meta.suspended) || 0);
           cc.classList.add('suspendedcard');
           cc.appendChild(el('div', 'zonesuspend', `⏳ ${count} TIME`));
         }
-        if (judgeReturn) {
+        if (lastResort) {
+          cc.classList.add('targetable', 'lastresortcard');
+          cc.appendChild(el('div', 'zoneplay', 'EDIT \u{1F6E0}\uFE0F'));
+          cc.onclick = () => {
+            this.zoneBrowse = null;
+            this.sheet = { card: c, lastResort: true };
+            this.render();
+          };
+        } else if (judgeReturn) {
           cc.classList.add('targetable');
           cc.onclick = async () => {
             this.zoneBrowse = null;
@@ -3774,10 +3916,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         grid.appendChild(cc);
       }
+      const hiddenCount = lastResort ? player[zone].length - visibleCards.length : 0;
+      if (hiddenCount) grid.appendChild(el('div', 'hiddenzonecards', `${hiddenCount} hidden card${hiddenCount === 1 ? '' : 's'} locked \u00B7 identity not shown`));
       if (!player[zone].length) grid.appendChild(el('div', 'emptyrow', 'Empty'));
       m.appendChild(grid);
-      const close = el('button', 'pbtn wide', 'Close');
-      close.onclick = () => { this.zoneBrowse = null; this.render(); };
+      const close = el('button', 'pbtn wide', lastResort ? '\u2190 Back to Last Resort' : 'Close');
+      close.onclick = () => {
+        this.zoneBrowse = null;
+        if (lastResort) this.showJudge = true;
+        this.render();
+      };
       m.appendChild(close);
       return ov;
     }
@@ -3812,6 +3960,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     renderJudge(g) {
+      if (this.lastResortActive && !(this.pending && this.pending.q.type === 'manualResolve')) {
+        return this.renderLastResort(g);
+      }
       const ov = el('div', 'overlay');
       ov.onclick = (e) => { if (e.target === ov) { this.showJudge = false; this.render(); } };
       const m = el('div', 'sheet tall');
@@ -3918,6 +4069,143 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const orig = b.onclick;
         b.onclick = () => { orig(); if (this.manualPick) { this.showJudge = false; this.render(); } };
       });
+      return ov;
+    }
+
+    renderLastResort(g) {
+      const ov = el('div', 'overlay lastresortoverlay');
+      ov.onclick = event => { if (event.target === ov) { this.showJudge = false; this.render(); } };
+      const sheet = el('div', 'sheet tall lastresortsheet');
+      ov.appendChild(sheet);
+
+      const head = el('div', 'lastresorthead');
+      head.innerHTML = '<span>\u{1F6E0}\uFE0F</span><div><small>GAME PAUSED \u00B7 RECOVERY MODE</small><h2>Last Resort</h2><p>Direct public-state correction. Normal triggers are not fired.</p></div>';
+      sheet.appendChild(head);
+      sheet.appendChild(el('div', 'lastresortprivacy', '<b>HIDDEN INFORMATION STAYS LOCKED</b><span>No bot/Player 2 hand, library, or opponent face-down identity is available here.</span>'));
+      if (this.lastResortStatus) sheet.appendChild(el('div', `lastresortstatus ${this.lastResortStatus.ok ? 'ok' : 'error'}`, esc(this.lastResortStatus.text)));
+
+      const players = g.players.filter(player => !player.lost);
+      if (!players.some(player => this.lastResortSeat(player) === Number(this.lastResortPlayerSeat))) {
+        this.lastResortPlayerSeat = this.lastResortSeat(this.me);
+      }
+      const selected = g.lastResortPlayer(this.lastResortPlayerSeat) || this.me;
+      const playerRow = el('label', 'lastresortplayer');
+      playerRow.innerHTML = '<span>EDIT PLAYER</span>';
+      const playerSelect = el('select', 'styleselect');
+      for (const player of players) {
+        const option = el('option', '', `${player.name}${player.isAI ? ' \u00B7 AI' : ' \u00B7 HUMAN'} \u00B7 ${player.life} life`);
+        option.value = String(this.lastResortSeat(player));
+        option.selected = this.lastResortSeat(player) === this.lastResortSeat(selected);
+        playerSelect.appendChild(option);
+      }
+      playerSelect.onchange = () => { this.lastResortPlayerSeat = Number(playerSelect.value); this.render(); };
+      playerRow.appendChild(playerSelect);
+      sheet.appendChild(playerRow);
+
+      const grid = el('div', 'judgegrid lastresortgrid');
+      const button = (label, run, cls = '') => {
+        const node = el('button', `pbtn ${cls}`.trim(), label);
+        node.type = 'button'; node.onclick = run; grid.appendChild(node); return node;
+      };
+      const askInt = (prompt, current) => {
+        const value = window.prompt(prompt, String(current));
+        if (value === null) return null;
+        const number = Number(value);
+        if (!Number.isInteger(number)) { this.toast('Enter a whole number.'); return null; }
+        return number;
+      };
+      const cardToken = card => `c:${card.iid}`;
+      const pickCard = (label, run) => this.startManualPick(label, target => {
+        if (target instanceof MTG.CardInst) run(target);
+      }, { players: false });
+
+      button(`\u2764\uFE0F Set life \u00B7 ${selected.life}`, () => {
+        const value = askInt(`${selected.name}: exact life total`, selected.life);
+        if (value !== null) this.runLastResort({ type: 'setLife', playerSeat: this.lastResortSeat(selected), value });
+      }, 'primary');
+      button('\u{1F52E} Set mana pool\u2026', () => {
+        const color = String(window.prompt('Mana color (W/U/B/R/G/C)', 'G') || '').toUpperCase();
+        if (!Object.prototype.hasOwnProperty.call(selected.pool, color)) return;
+        const value = askInt(`${selected.name}: exact {${color}} amount`, selected.pool[color]);
+        if (value !== null) this.runLastResort({ type: 'setMana', playerSeat: this.lastResortSeat(selected), color, value });
+      });
+      button('\u25C6 Set any counter\u2026', () => pickCard('Set counter', card => {
+        const counter = window.prompt('Counter name', Object.keys(card.counters)[0] || '+1/+1');
+        if (!counter) return;
+        const value = askInt(`${card.name}: exact ${counter} counter amount`, card.counters[counter] || 0);
+        if (value !== null) this.runLastResort({ type: 'setCounter', cardToken: cardToken(card), counter, value });
+      }));
+      button('\u{1FA78} Set marked damage\u2026', () => pickCard('Set marked damage', card => {
+        const value = askInt(`${card.name}: exact marked damage`, card.damage || 0);
+        if (value !== null) this.runLastResort({ type: 'setDamage', cardToken: cardToken(card), value });
+      }));
+      button('\u{1F504} Tap / untap\u2026', () => pickCard('Tap or untap', card => {
+        this.runLastResort({ type: 'setTapped', cardToken: cardToken(card), value: !card.tapped });
+      }));
+      button('\u{1F91D} Give control to selected player\u2026', () => pickCard('Change controller', card => {
+        this.runLastResort({ type: 'setController', cardToken: cardToken(card), playerSeat: this.lastResortSeat(selected) });
+      }));
+      button('\u2190 Move card left\u2026', () => pickCard('Move left', card => {
+        this.runLastResort({ type: 'reorder', cardToken: cardToken(card), direction: -1 });
+      }));
+      button('Move card right\u2026 \u2192', () => pickCard('Move right', card => {
+        this.runLastResort({ type: 'reorder', cardToken: cardToken(card), direction: 1 });
+      }));
+      button('\u{1F5C2}\uFE0F Move between zones\u2026', () => pickCard('Move between public zones', card => {
+        const toZone = String(window.prompt('Destination: battlefield / graveyard / exile / command / hand', 'battlefield') || '').toLowerCase();
+        this.runLastResort({ type: 'moveCard', cardToken: cardToken(card), toZone, playerSeat: this.lastResortSeat(selected) });
+      }));
+      for (const zone of ['graveyard', 'exile', 'command']) {
+        const icon = zone === 'graveyard' ? '\u{1FAA6}' : zone === 'exile' ? '\u{1F300}' : '\u{1F451}';
+        button(`${icon} Open ${zone} \u00B7 ${selected[zone].length}`, () => {
+          this.showJudge = false;
+          this.zoneBrowse = { player: selected, zone, lastResort: true };
+          this.render();
+        });
+      }
+      sheet.appendChild(grid);
+
+      sheet.appendChild(el('div', 'mtitle small', `Add to ${esc(selected.name)}'s battlefield`));
+      const tokenGrid = el('div', 'judgegrid lastresorttokens');
+      const addToken = (label, tokenKey) => {
+        const node = el('button', 'pbtn', label);
+        node.onclick = () => this.runLastResort({ type: 'createToken', playerSeat: this.lastResortSeat(selected), tokenKey, count: 1 });
+        tokenGrid.appendChild(node);
+      };
+      addToken('Treasure', 'treasure'); addToken('Clue', 'clue'); addToken('Food', 'food');
+      addToken('2/2 Drake \u2708', 'drake'); addToken('3/3 Beast', 'beast33');
+      const anyToken = el('button', 'pbtn', 'Token catalog\u2026');
+      anyToken.onclick = () => {
+        const key = window.prompt(`Token key (${Object.keys(MTG.TOKENS || {}).join(', ')})`, 'treasure');
+        if (key) this.runLastResort({ type: 'createToken', playerSeat: this.lastResortSeat(selected), tokenKey: key, count: 1 });
+      };
+      tokenGrid.appendChild(anyToken);
+      const custom = el('button', 'pbtn', '\u270F\uFE0F Custom P/T token\u2026');
+      custom.onclick = () => {
+        const spec = window.prompt('Format: 4/4 Angel flying', '2/2 Zombie');
+        if (!spec) return;
+        const match = /^(\d+)\/(\d+)\s+(.+?)(?:\s+(flying|vigilance|haste|trample|lifelink|deathtouch|reach|menace))?$/.exec(spec.trim());
+        if (!match) { this.toast('Use: 2/2 Name [keyword]'); return; }
+        this.runLastResort({ type: 'createToken', playerSeat: this.lastResortSeat(selected), count: 1,
+          custom: { power: Number(match[1]), toughness: Number(match[2]), name: match[3], keywords: match[4] ? [match[4]] : [] } });
+      };
+      tokenGrid.appendChild(custom);
+      const permanent = el('button', 'pbtn', '\u2795 Add known permanent\u2026');
+      permanent.onclick = () => {
+        const name = window.prompt('Exact card name to add to the battlefield', 'Sol Ring');
+        if (name) this.runLastResort({ type: 'addPermanent', playerSeat: this.lastResortSeat(selected), name });
+      };
+      tokenGrid.appendChild(permanent);
+      sheet.appendChild(tokenGrid);
+
+      const foot = el('div', 'lastresortfoot');
+      const hide = el('button', 'pbtn', 'Close toolbox \u00B7 keep paused');
+      hide.onclick = () => { this.showJudge = false; this.render(); };
+      const resume = el('button', 'pbtn primary', 'Finish recovery & resume \u25B6');
+      resume.dataset.testid = 'finish-last-resort';
+      resume.onclick = () => this.setLastResortActive(false);
+      foot.append(hide, resume);
+      sheet.appendChild(foot);
       return ov;
     }
 

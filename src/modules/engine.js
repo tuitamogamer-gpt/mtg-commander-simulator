@@ -182,8 +182,207 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // pauza da igrač VIDI svaku AI akciju zasebno — poštuje redoslijed i sekvence
     async pace(ms) {
+      await this.waitForLastResort();
       if (!this.paced || this.gameOver || !ms) return;
       await new Promise(r => setTimeout(r, Math.round(ms * this.speedFactor)));
+      await this.waitForLastResort();
+    }
+
+    // Last Resort is an explicit recovery pause, not a rules effect. It stops
+    // the engine at the next pacing checkpoint while the human repairs public
+    // state, then releases every waiter together when the toolbox is closed.
+    setLastResortPaused(paused) {
+      const next = !!paused;
+      if (this.lastResortPaused === next) return;
+      this.lastResortPaused = next;
+      if (!next && this._lastResortWaiters) {
+        for (const resolve of this._lastResortWaiters.splice(0)) resolve();
+      }
+      this.note('lastResortPause', { paused: next });
+    }
+
+    waitForLastResort() {
+      if (!this.lastResortPaused || this.gameOver) return Promise.resolve();
+      this._lastResortWaiters = this._lastResortWaiters || [];
+      return new Promise(resolve => this._lastResortWaiters.push(resolve));
+    }
+
+    lastResortPlayer(seat) {
+      const wanted = Number(seat);
+      return this.players.find(player => (player.onlineSeat ?? player.idx) === wanted) || null;
+    }
+
+    lastResortCardVisibleTo(card, actor) {
+      if (!card || !actor) return false;
+      if (card.zone === 'library') return false;
+      if (card.zone === 'hand' && card.owner !== actor) return false;
+      if (card.faceDown && card.ctrl !== actor) return false;
+      return ['battlefield', 'graveyard', 'exile', 'command', 'hand'].includes(card.zone);
+    }
+
+    lastResortCard(token, actor) {
+      const match = /^c:(-?\d+)$/.exec(String(token || ''));
+      if (!match) return null;
+      const card = this.byIid(Number(match[1]));
+      return this.lastResortCardVisibleTo(card, actor) ? card : null;
+    }
+
+    lastResortLog(actor, text) {
+      this.lg(`\u{1F6E0}\uFE0F LAST RESORT · ${actor.name}: ${text}`, 'warn');
+      this.note('lastResortAction', { actor, text });
+    }
+
+    lastResortDetach(card) {
+      if (card.attachedTo) {
+        const host = this.byIid(card.attachedTo);
+        if (host) host.attachments = host.attachments.filter(iid => iid !== card.iid);
+        card.attachedTo = null;
+      }
+      for (const iid of (card.attachments || []).slice()) {
+        const attachment = this.byIid(iid);
+        if (attachment) attachment.attachedTo = null;
+      }
+      card.attachments = [];
+      if (card.meta && card.meta.cursedPlayer) delete card.meta.cursedPlayer;
+    }
+
+    lastResortMove(card, toZone, controller) {
+      const fromZone = card.zone;
+      const leavingBattlefield = fromZone === 'battlefield';
+      if (leavingBattlefield) this.lastResortDetach(card);
+      this.remove(card);
+      card.zoneVersion = (card.zoneVersion || 0) + (fromZone === toZone ? 0 : 1);
+      card.attacking = null; card.blocking = null; card.blockedBy = [];
+      card.damage = 0; card.deathtouched = false; card.regenShield = 0;
+      if (card.isToken && toZone !== 'battlefield') {
+        card.zone = 'ceased';
+        return 'ceases to exist';
+      }
+      if (toZone === 'battlefield') {
+        card.zone = 'battlefield';
+        card.ctrl = controller || card.owner;
+        card.faceDown = false;
+        this.battlefield.push(card);
+      } else {
+        card.zone = toZone;
+        card.ctrl = card.owner;
+        card.tapped = false;
+        if (toZone !== 'exile') card.faceDown = false;
+        card.owner[toZone].push(card);
+      }
+      return `${fromZone} \u2192 ${toZone}`;
+    }
+
+    applyLastResortAction(actor, action) {
+      if (!actor || actor.isAI || !this.players.includes(actor)) throw new Error('Only a human player can use Last Resort.');
+      if (!action || typeof action !== 'object') throw new Error('Invalid Last Resort action.');
+      const type = String(action.type || '');
+      const int = (value, min, max, label) => {
+        const number = Number(value);
+        if (!Number.isInteger(number) || number < min || number > max) throw new Error(`Invalid ${label}.`);
+        return number;
+      };
+      const player = () => {
+        const target = this.lastResortPlayer(action.playerSeat);
+        if (!target) throw new Error('Unknown player.');
+        return target;
+      };
+      const publicCard = () => {
+        const target = this.lastResortCard(action.cardToken, actor);
+        if (!target) throw new Error('That card is hidden or no longer available.');
+        return target;
+      };
+      let text = '';
+
+      if (type === 'setLife') {
+        const target = player();
+        target.life = int(action.value, -999, 999, 'life total');
+        text = `${target.name} life = ${target.life}`;
+      } else if (type === 'setMana') {
+        const target = player();
+        const color = String(action.color || '').toUpperCase();
+        if (!Object.prototype.hasOwnProperty.call(target.pool, color)) throw new Error('Invalid mana color.');
+        target.pool[color] = int(action.value, 0, 99, 'mana amount');
+        text = `${target.name} ${color} mana = ${target.pool[color]}`;
+      } else if (type === 'setTapped') {
+        const card = publicCard();
+        if (card.zone !== 'battlefield') throw new Error('Only a battlefield card can be tapped.');
+        card.tapped = !!action.value;
+        text = `${card.name} ${card.tapped ? 'tapped' : 'untapped'}`;
+      } else if (type === 'setDamage') {
+        const card = publicCard();
+        if (card.zone !== 'battlefield') throw new Error('Only a battlefield permanent can hold damage.');
+        card.damage = int(action.value, 0, 999, 'marked damage');
+        text = `${card.name} marked damage = ${card.damage}`;
+      } else if (type === 'setCounter') {
+        const card = publicCard();
+        if (card.zone !== 'battlefield') throw new Error('Only a battlefield permanent can hold counters.');
+        const kind = String(action.counter || '').trim().slice(0, 40);
+        if (!kind || ['__proto__', 'prototype', 'constructor'].includes(kind)) throw new Error('Invalid counter name.');
+        const value = int(action.value, 0, 999, 'counter amount');
+        if (value) card.counters[kind] = value;
+        else delete card.counters[kind];
+        text = `${card.name} ${kind} counters = ${value}`;
+      } else if (type === 'setController') {
+        const card = publicCard();
+        const target = player();
+        if (card.zone !== 'battlefield' || target.lost) throw new Error('The controller change is not available.');
+        card.ctrl = target;
+        text = `${target.name} now controls ${card.name}`;
+      } else if (type === 'reorder') {
+        const card = publicCard();
+        if (card.zone !== 'battlefield') throw new Error('Only battlefield cards can be reordered.');
+        const direction = int(action.direction, -1, 1, 'move direction');
+        if (!direction) throw new Error('Move direction is required.');
+        const peers = this.battlefield.filter(entry => entry.zone === 'battlefield' && entry.ctrl === card.ctrl);
+        const peerIndex = peers.indexOf(card);
+        const swap = peers[peerIndex + direction];
+        if (swap) {
+          const a = this.battlefield.indexOf(card); const b = this.battlefield.indexOf(swap);
+          [this.battlefield[a], this.battlefield[b]] = [this.battlefield[b], this.battlefield[a]];
+        }
+        text = `${card.name} moved ${direction < 0 ? 'left' : 'right'} on ${card.ctrl.name}'s battlefield`;
+      } else if (type === 'moveCard') {
+        const card = publicCard();
+        const toZone = String(action.toZone || '');
+        if (!['battlefield', 'graveyard', 'exile', 'command', 'hand'].includes(toZone)) throw new Error('Invalid destination zone.');
+        const controller = toZone === 'battlefield' ? (this.lastResortPlayer(action.playerSeat) || card.owner) : card.owner;
+        const move = this.lastResortMove(card, toZone, controller);
+        text = `${card.name}: ${move}`;
+      } else if (type === 'createToken') {
+        const target = player();
+        const count = int(action.count ?? 1, 1, 20, 'token count');
+        let def = MTG.TOKENS && MTG.TOKENS[String(action.tokenKey || '')];
+        if (!def && action.custom && typeof action.custom === 'object') {
+          const name = String(action.custom.name || 'Token').trim().slice(0, 50) || 'Token';
+          const power = int(action.custom.power, 0, 999, 'token power');
+          const toughness = int(action.custom.toughness, 0, 999, 'token toughness');
+          const kws = ['flying', 'vigilance', 'haste', 'trample', 'lifelink', 'deathtouch', 'reach', 'menace']
+            .filter(keyword => Array.isArray(action.custom.keywords) && action.custom.keywords.includes(keyword));
+          def = { name, cost: null, types: ['Creature'], subtypes: [name], super: [], power: String(power), toughness: String(toughness), oracle: '', kws, isTokenDef: true, colorsOverride: [] };
+        }
+        if (!def) throw new Error('Unknown token.');
+        for (let index = 0; index < count; index++) {
+          const token = new CardInst(def, target);
+          token.isToken = true; token.zone = 'battlefield'; token.ctrl = target; token.sick = true;
+          this.battlefield.push(token);
+        }
+        text = `${target.name} added ${count}\u00D7 ${def.name} token${count === 1 ? '' : 's'}`;
+      } else if (type === 'addPermanent') {
+        const target = player();
+        const name = String(action.name || '').trim();
+        const def = MTG.DEFS && MTG.DEFS[name];
+        const permanentTypes = ['Artifact', 'Battle', 'Creature', 'Enchantment', 'Land', 'Planeswalker'];
+        if (!def || !(def.types || []).some(cardType => permanentTypes.includes(cardType))) throw new Error('Choose a known permanent card.');
+        const card = new CardInst(def, target);
+        card.zone = 'battlefield'; card.ctrl = target; card.sick = true;
+        this.battlefield.push(card);
+        text = `${target.name} added ${card.name} to the battlefield`;
+      } else throw new Error('Unsupported Last Resort action.');
+
+      this.recalc();
+      this.lastResortLog(actor, text);
+      return { ok: true, text };
     }
 
     // ljudski igrač za stolom (za "reflektor" na AI akcije koje ga diraju)

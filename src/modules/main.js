@@ -850,6 +850,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     });
     gameRef = g;
+    if (state.onlineBridge && state.onlineBridge.setManualActionHandler) {
+      state.onlineBridge.setManualActionHandler(async request => {
+        const actor = g.players.find(player => (player.onlineSeat ?? player.idx) === request.seat && !player.isAI);
+        if (!actor) throw new Error('The requesting human seat is not available.');
+        const action = request.action || {};
+        let result;
+        if (action.type === 'setPause') {
+          const paused = !!action.value;
+          ui.lastResortActive = paused;
+          ui.showJudge = false;
+          g.setLastResortPaused(paused);
+          g.lastResortLog(actor, paused ? 'opened remote recovery mode' : 'finished remote recovery mode');
+          result = { ok: true, text: paused ? 'Last Resort active.' : 'Recovery finished.' };
+        } else {
+          if (!g.lastResortPaused) throw new Error('Enable Last Resort before sending a correction.');
+          result = g.applyLastResortAction(actor, action);
+        }
+        ui.queueRender();
+        await state.onlineBridge.syncGame(g);
+        return result;
+      });
+    }
     if (!state.onlineBridge) {
       const rematchDecks = aiDecks.slice();
       const rematchStyles = g.players.filter(player => player.isAI)
@@ -2924,6 +2946,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return {
       mode: g.gameOver ? 'gameover' : 'game',
       manaMode: ui ? ui.manaMode : 'auto',
+      lastResort: ui ? {
+        active: !!ui.lastResortActive,
+        paused: !!g.lastResortPaused,
+        toolboxOpen: !!ui.showJudge && !!ui.lastResortActive,
+        hiddenInformation: 'opponent hands, libraries, and face-down identities stay hidden',
+      } : { active: false, paused: false, toolboxOpen: false },
       coordinateSystem: 'Commander seats are ordered by players[]; the human seat is marked isAI=false.',
       turn: g.turnNo, activePlayer: g.turnPlayer ? g.turnPlayer.name : null,
       phase: g.phase, step: g.step, winner: g.winner ? g.winner.name : null,

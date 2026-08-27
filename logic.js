@@ -66,6 +66,8 @@ export function setup(playerIds = []) {
     views: { 0: null, 1: null },
     pendingDecision: null,
     lastDecision: null,
+    pendingManualAction: null,
+    lastManualAction: null,
     pause: null,
     winnerSeat: null,
     lastEvent: { type: 'created', revision: 0 },
@@ -264,6 +266,32 @@ function validateRoomAction(state, action, playerId) {
     }
     return { ok: true };
   }
+  if (type === 'manualAction') {
+    if (state.phase !== 'running' || state.pendingManualAction) {
+      return { ok: false, error: 'A Last Resort correction is already pending.' };
+    }
+    if (!isObject(action.action) || byteSize(action.action) > 4_000) {
+      return { ok: false, error: 'Invalid Last Resort correction.' };
+    }
+    const manual = action.action;
+    const manualType = cleanText(manual.type, 40);
+    const allowed = new Set(['setPause', 'setLife', 'setMana', 'setTapped', 'setDamage', 'setCounter', 'setController', 'reorder', 'moveCard', 'createToken', 'addPermanent']);
+    if (!allowed.has(manualType)) return { ok: false, error: 'Unsupported Last Resort correction.' };
+    if (manualType === 'setPause' && typeof manual.value !== 'boolean') return { ok: false, error: 'Invalid Last Resort pause.' };
+    for (const field of ['playerSeat', 'direction', 'count']) {
+      if (manual[field] !== undefined && !Number.isInteger(manual[field])) return { ok: false, error: `Invalid Last Resort ${field}.` };
+    }
+    if (manual.value !== undefined && manualType !== 'setPause' && !Number.isInteger(manual.value)) return { ok: false, error: 'Invalid Last Resort value.' };
+    if (manual.playerSeat !== undefined && (manual.playerSeat < 0 || manual.playerSeat > 3)) return { ok: false, error: 'Invalid player seat.' };
+    if (manual.cardToken !== undefined && !/^c:-?\d+$/.test(String(manual.cardToken))) return { ok: false, error: 'Invalid public card reference.' };
+    return { ok: true };
+  }
+  if (type === 'manualAck') {
+    if (seat.seat !== 0 || !state.pendingManualAction || String(action.manualId) !== state.pendingManualAction.id) {
+      return { ok: false, error: 'No matching Last Resort correction to acknowledge.' };
+    }
+    return { ok: true };
+  }
   if (type === 'resume') {
     if (seat.seat !== 0 || state.phase !== 'paused' ||
       !state.seats.slice(0, 2).every(item => item.connected)) {
@@ -330,6 +358,21 @@ export function applyAction(state, playerId, action) {
     next.pendingDecision = null;
   } else if (type === 'decisionAck') {
     next.lastDecision = null;
+  } else if (type === 'manualAction') {
+    next.pendingManualAction = {
+      id: `last-resort:${next.revision + 1}:${seat.seat}`,
+      seat: seat.seat,
+      action: clone(action.action),
+    };
+    next.lastManualAction = null;
+  } else if (type === 'manualAck') {
+    next.lastManualAction = {
+      id: next.pendingManualAction.id,
+      seat: next.pendingManualAction.seat,
+      ok: action.ok !== false,
+      message: cleanText(action.message || '', 300),
+    };
+    next.pendingManualAction = null;
   } else if (type === 'resume') {
     next.phase = 'running';
     next.pause = null;
@@ -337,6 +380,7 @@ export function applyAction(state, playerId, action) {
     next.phase = 'finished';
     next.winnerSeat = action.winnerSeat ?? null;
     next.pendingDecision = null;
+    next.pendingManualAction = null;
     next.pause = null;
   }
   next.revision += 1;
@@ -377,6 +421,8 @@ export function viewFor(state, playerId) {
     gameView: seatIndex === 0 || seatIndex === 1 ? clone(state.views[seatIndex]) : null,
     pendingDecision: seatIndex === 1 ? clone(state.pendingDecision) : null,
     lastDecision: seatIndex === 0 ? clone(state.lastDecision) : null,
+    pendingManualAction: seatIndex === 0 ? clone(state.pendingManualAction) : null,
+    lastManualAction: state.lastManualAction && state.lastManualAction.seat === seatIndex ? clone(state.lastManualAction) : null,
     pause: clone(state.pause),
     winnerSeat: state.winnerSeat,
     lastEvent: clone(state.lastEvent),

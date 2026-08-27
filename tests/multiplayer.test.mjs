@@ -65,6 +65,28 @@ test('disconnect pauses a running room and host resumes only after both humans r
   assert.equal(state.phase, 'running');
 });
 
+test('Player 2 can request a validated Last Resort correction without exposing its payload to other guests', () => {
+  const MTG = loadEngine();
+  const L = MTG.onlineGameLogic;
+  let state = L.applyAction(configuredRoom(MTG), { type: 'start', seed: 42 }, 'host');
+  const request = { type: 'manualAction', action: { type: 'setLife', playerSeat: 2, value: 23 } };
+  assert.equal(L.validateAction(state, { type: 'manualAction', action: { type: 'setPause', value: true } }, 'guest').ok, true);
+  assert.equal(L.validateAction(state, request, 'guest').ok, true);
+  assert.equal(L.validateAction(state, { type: 'manualAction', action: { type: 'moveCard', cardToken: 'not-a-card', toZone: 'hand' } }, 'guest').ok, false);
+  state = L.applyAction(state, request, 'guest');
+  const hostView = L.viewFor(state, 'host');
+  const guestView = L.viewFor(state, 'guest');
+  assert.equal(JSON.stringify(hostView.pendingManualAction.action), JSON.stringify(request.action));
+  assert.equal(hostView.pendingManualAction.seat, 1);
+  assert.equal(guestView.pendingManualAction, null);
+  assert.equal(L.validateAction(state, request, 'guest').ok, false);
+  state = L.applyAction(state, {
+    type: 'manualAck', manualId: hostView.pendingManualAction.id, ok: true, message: 'AI Dragon life = 23',
+  }, 'host');
+  assert.equal(L.viewFor(state, 'host').lastManualAction, null);
+  assert.equal(L.viewFor(state, 'guest').lastManualAction.message, 'AI Dragon life = 23');
+});
+
 test('assignment validation rejects a globally visible but illegal card-target pair', () => {
   const MTG = loadEngine();
   const legal = {
@@ -78,6 +100,7 @@ test('assignment validation rejects a globally visible but illegal card-target p
 test('remote controller sends a private view and hydrates tokens back into engine objects', async () => {
   const MTG = loadEngine();
   const game = new MTG.Game({ seed: 7, paced: false });
+  game.lastResortPaused = true;
   const remote = game.addPlayer('Player 2', { name: 'Remote deck' }, null, false);
   remote.onlineSeat = 1;
   const opponent = game.addPlayer('Opponent', { name: 'Other deck' }, null, true);
@@ -86,6 +109,10 @@ test('remote controller sends a private view and hydrates tokens back into engin
   own.zone = 'hand'; remote.hand.push(own);
   const hidden = new MTG.CardInst(Object.assign({}, MTG.DEFS['Arcane Signet']), opponent);
   hidden.zone = 'hand'; opponent.hand.push(hidden);
+  const facedownExile = new MTG.CardInst(Object.assign({}, MTG.DEFS['Swords to Plowshares']), opponent);
+  facedownExile.zone = 'exile'; facedownExile.faceDown = true; opponent.exile.push(facedownExile);
+  const publicExile = new MTG.CardInst(Object.assign({}, MTG.DEFS['Sol Ring']), opponent);
+  publicExile.zone = 'exile'; opponent.exile.push(publicExile);
   let payload;
   remote.controller = MTG.remoteControllerFor(remote, {
     async requestDecision(request) {
@@ -101,6 +128,10 @@ test('remote controller sends a private view and hydrates tokens back into engin
   assert.equal(payload.view.players.find(player => player.seat === 1).hand[0].name, 'Sol Ring');
   assert.equal(payload.view.players.find(player => player.seat === 2).hand, undefined);
   assert.equal(payload.view.players.find(player => player.seat === 2).handCount, 1);
+  assert.equal(payload.view.players.find(player => player.seat === 2).exile[0].name, 'Hidden card');
+  assert.equal(payload.view.players.find(player => player.seat === 2).exile[0].hidden, true);
+  assert.equal(payload.view.players.find(player => player.seat === 2).exile[1].name, 'Sol Ring');
+  assert.equal(payload.view.lastResortPaused, true);
 });
 
 test('newGame supports Player 2 plus exactly two deterministic AI V2 controllers', () => {

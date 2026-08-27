@@ -390,6 +390,42 @@ img { -webkit-user-drag: none; }
 .impstatus { font-size: 12px; color: #c9b37a; min-height: 16px; }
 .judgegrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 6px 0; }
 .judgegrid .pbtn { font-size: 12.5px; padding: 9px 6px; }
+.lastresortconfirm { z-index: 185; }
+.lastresortwarning { width: min(560px, calc(100vw - 28px)); display: flex; flex-direction: column; gap: 12px; padding: 22px; border: 1px solid rgba(255,112,74,.56); background: linear-gradient(155deg,#24110e,#0d1114 62%); box-shadow: 0 34px 100px #000e,0 0 56px rgba(214,64,34,.18); }
+.lastresortwarning .lastresortmark { font-size: 42px; line-height: 1; }
+.lastresortwarning p,.lastresortwarning li { color: #c9b8b0; font-size: 12px; line-height: 1.5; }
+.lastresortwarning ul { margin: 0; padding-left: 20px; display: grid; gap: 7px; }
+.lastresortwarning .btnrow { justify-content: flex-end; }
+.pbtn.danger { color: #ffe4da; border-color: #bc4a31; background: linear-gradient(180deg,#87321f,#542117); }
+.lastresortoverlay { z-index: 180; }
+.lastresortsheet { width: min(720px,100%); border: 1px solid rgba(255,109,70,.46); background: linear-gradient(155deg,#1d1514,#11171a 48%,#0d1114); box-shadow: 0 30px 100px #000d,0 0 50px rgba(191,55,30,.14); }
+.lastresorthead { display: grid; grid-template-columns: 48px minmax(0,1fr); align-items: center; gap: 12px; padding: 11px 12px; border: 1px solid rgba(255,111,72,.34); border-radius: 10px; background: rgba(104,29,18,.24); }
+.lastresorthead > span { font-size: 34px; }
+.lastresorthead small { color: #e4775c; font: 800 9px/1 Barlow,sans-serif; letter-spacing: .15em; }
+.lastresorthead h2 { margin: 4px 0 2px; color: #ffe4d8; font-size: 22px; }
+.lastresorthead p { margin: 0; color: #9d8d87; font-size: 11px; }
+.lastresortprivacy { display: flex; flex-direction: column; gap: 4px; padding: 9px 11px; border-left: 3px solid #6e9a94; background: rgba(50,87,82,.14); }
+.lastresortprivacy b { color: #9ed0c8; font-size: 9px; letter-spacing: .12em; }
+.lastresortprivacy span { color: #9ea9a6; font-size: 10.5px; line-height: 1.4; }
+.lastresortstatus { padding: 8px 10px; color: #b5d9be; border-left: 3px solid #6bad7d; background: rgba(73,126,86,.13); font-size: 10.5px; }
+.lastresortstatus.error { color: #efaa96; border-color: #d75236; background: rgba(132,42,25,.16); }
+.lastresortplayer { display: grid; grid-template-columns: 110px minmax(0,1fr); align-items: center; gap: 10px; }
+.lastresortplayer > span { color: #b78776; font-size: 9px; font-weight: 800; letter-spacing: .14em; }
+.lastresortplayer select { width: 100%; min-height: 42px; }
+.lastresortgrid .pbtn,.lastresorttokens .pbtn { min-height: 46px; }
+.lastresortcardtitle { margin: 8px 0 3px; padding: 8px; color: #f4a086; border-top: 1px solid rgba(255,109,70,.3); border-bottom: 1px solid rgba(255,109,70,.16); background: rgba(115,34,20,.15); font-size: 9px; font-weight: 800; letter-spacing: .14em; text-align: center; }
+.lastresortcardaction { border-color: rgba(224,100,68,.4) !important; }
+.lastresortcard .zoneplay { color: #ffe1d4; background: #7e2b1d; }
+.hiddenzonecards { grid-column: 1/-1; padding: 16px; color: #9e958e; border: 1px dashed #4a4642; border-radius: 8px; background: #121517; font-size: 11px; text-align: center; }
+.lastresortfoot { position: sticky; bottom: -12px; z-index: 4; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 5px -12px -12px; padding: 12px; border-top: 1px solid rgba(255,112,72,.26); background: rgba(13,17,20,.97); }
+.lastresortfoot .pbtn { min-height: 48px; }
+
+@media (max-width: 600px) {
+  .lastresortsheet { max-height: 92dvh; }
+  .lastresortgrid,.lastresorttokens { grid-template-columns: 1fr; }
+  .lastresortplayer { grid-template-columns: 1fr; gap: 5px; }
+  .lastresortfoot { grid-template-columns: 1fr; }
+}
 
 .gameover { font-size: 24px; font-weight: 800; text-align: center; margin: 10px 0 16px; }
 .turnbanner { position: fixed; top: 34%; left: 50%; transform: translateX(-50%); background: #1c2029f2; border: 2px solid #4a5060; color: #e8e8ea; font-size: 18px; font-weight: 800; padding: 13px 26px; border-radius: 14px; z-index: 95; white-space: nowrap; animation: bannerIn 1.5s ease forwards; box-shadow: 0 6px 30px #000a; pointer-events: none; }

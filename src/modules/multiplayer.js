@@ -74,6 +74,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       views: { 0: null, 1: null },
       pendingDecision: null,
       lastDecision: null,
+      pendingManualAction: null,
+      lastManualAction: null,
       pause: null,
       winnerSeat: null,
       lastEvent: { type: 'created', revision: 0 },
@@ -221,6 +223,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return { ok: false, error: 'No matching decision to acknowledge.' };
       return { ok: true };
     }
+    if (type === 'manualAction') {
+      if (state.phase !== 'running' || state.pendingManualAction) return { ok: false, error: 'A Last Resort correction is already pending.' };
+      if (!isObject(action.action) || byteSize(action.action) > 4_000) return { ok: false, error: 'Invalid Last Resort correction.' };
+      const manual = action.action;
+      const manualType = cleanText(manual.type, 40);
+      const allowed = new Set(['setPause', 'setLife', 'setMana', 'setTapped', 'setDamage', 'setCounter', 'setController', 'reorder', 'moveCard', 'createToken', 'addPermanent']);
+      if (!allowed.has(manualType)) return { ok: false, error: 'Unsupported Last Resort correction.' };
+      if (manualType === 'setPause' && typeof manual.value !== 'boolean') return { ok: false, error: 'Invalid Last Resort pause.' };
+      const integerFields = ['playerSeat', 'direction', 'count'];
+      for (const field of integerFields) if (manual[field] !== undefined && !Number.isInteger(manual[field]))
+        return { ok: false, error: `Invalid Last Resort ${field}.` };
+      if (manual.value !== undefined && manualType !== 'setPause' && !Number.isInteger(manual.value))
+        return { ok: false, error: 'Invalid Last Resort value.' };
+      if (manual.playerSeat !== undefined && (manual.playerSeat < 0 || manual.playerSeat > 3)) return { ok: false, error: 'Invalid player seat.' };
+      if (manual.cardToken !== undefined && !/^c:-?\d+$/.test(String(manual.cardToken))) return { ok: false, error: 'Invalid public card reference.' };
+      return { ok: true };
+    }
+    if (type === 'manualAck') {
+      if (seat.seat !== 0 || !state.pendingManualAction || String(action.manualId) !== state.pendingManualAction.id)
+        return { ok: false, error: 'No matching Last Resort correction to acknowledge.' };
+      return { ok: true };
+    }
     if (type === 'resume') {
       if (seat.seat !== 0 || state.phase !== 'paused' || !state.seats.slice(0, 2).every(item => item.connected))
         return { ok: false, error: 'Both players must reconnect before the host resumes.' };
@@ -279,6 +303,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       next.pendingDecision = null;
     } else if (type === 'decisionAck') {
       next.lastDecision = null;
+    } else if (type === 'manualAction') {
+      next.pendingManualAction = {
+        id: `last-resort:${next.revision + 1}:${seat.seat}`,
+        seat: seat.seat,
+        action: clone(action.action),
+      };
+      next.lastManualAction = null;
+    } else if (type === 'manualAck') {
+      next.lastManualAction = {
+        id: next.pendingManualAction.id,
+        seat: next.pendingManualAction.seat,
+        ok: action.ok !== false,
+        message: cleanText(action.message || '', 300),
+      };
+      next.pendingManualAction = null;
     } else if (type === 'resume') {
       next.phase = 'running';
       next.pause = null;
@@ -286,6 +325,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       next.phase = 'finished';
       next.winnerSeat = action.winnerSeat ?? null;
       next.pendingDecision = null;
+      next.pendingManualAction = null;
       next.pause = null;
     }
     next.revision += 1;
@@ -314,6 +354,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       gameView: seatIndex === 0 || seatIndex === 1 ? clone(state.views[seatIndex]) : null,
       pendingDecision: seatIndex === 1 ? clone(state.pendingDecision) : null,
       lastDecision: seatIndex === 0 ? clone(state.lastDecision) : null,
+      pendingManualAction: seatIndex === 0 ? clone(state.pendingManualAction) : null,
+      lastManualAction: state.lastManualAction && state.lastManualAction.seat === seatIndex ? clone(state.lastManualAction) : null,
       pause: clone(state.pause),
       winnerSeat: state.winnerSeat,
       lastEvent: clone(state.lastEvent),
@@ -365,6 +407,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       lost: !!player.lost,
       handCount: player.hand.length,
       libraryCount: player.library.length,
+      manaPool: clone(player.pool || {}),
       hand: player === viewer ? player.hand.map(card => publicCard(card, viewer)) : undefined,
       graveyard: player.graveyard.map(card => publicCard(card, viewer)),
       exile: player.exile.map(card => publicCard(card, viewer)),
@@ -374,6 +417,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       turn: game.turnNo,
       phase: game.phase,
       step: game.step,
+      lastResortPaused: !!game.lastResortPaused,
       activeSeat: game.turnPlayer ? game.turnPlayer.onlineSeat ?? game.turnPlayer.idx : null,
       prioritySeat: game.priorityState && game.priorityState.holder
         ? game.priorityState.holder.onlineSeat ?? game.priorityState.holder.idx : null,
@@ -539,8 +583,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       throw new Error('Room client must implement dispatch(action) and subscribe(listener).');
     let latest = typeof roomClient.current === 'function' ? roomClient.current() : null;
     const waiters = new Set();
+    let manualHandler = null;
+    let manualProcessing = null;
+    const processManualAction = view => {
+      const request = view && view.pendingManualAction;
+      if (!request || !manualHandler || manualProcessing === request.id) return;
+      manualProcessing = request.id;
+      Promise.resolve().then(() => manualHandler(clone(request))).then(result =>
+        roomClient.dispatch({ type: 'manualAck', manualId: request.id, ok: true, message: result && result.text || 'Correction applied.' })
+      ).catch(error =>
+        roomClient.dispatch({ type: 'manualAck', manualId: request.id, ok: false, message: error && error.message || 'Correction rejected.' })
+      ).finally(() => { manualProcessing = null; });
+    };
     roomClient.subscribe(view => {
       latest = view;
+      processManualAction(view);
       for (const waiter of [...waiters]) {
         if (!waiter.match(view)) continue;
         waiters.delete(waiter);
@@ -553,6 +610,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const bridge = {
       current: () => latest,
+      setManualActionHandler(handler) {
+        manualHandler = typeof handler === 'function' ? handler : null;
+        processManualAction(latest);
+      },
       async syncGame(game) {
         const host = game.players.find(player => player.onlineSeat === 0);
         const guest = game.players.find(player => player.onlineSeat === 1);
