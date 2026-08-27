@@ -11,7 +11,116 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const EVAL_CACHE = new Map();
   const ROLE_CACHE = new WeakMap();
   const PROFILE_CACHE = new Map();
+  const STYLE_PROFILE_CACHE = new WeakMap();
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
+
+  // Signature styles are local scoring policies layered over the same legal
+  // actions and hidden-information-safe BotPlayerView as every other bot.
+  // Named styles are conservative syntheses of public gameplay, not claims
+  // that the client reproduces a real person's private decisions.
+  const AI_STYLE_SKILLS = Object.freeze({
+    jimmy: Object.freeze({
+      id: 'jimmy-aggro-pressure',
+      label: 'Jimmy — Aggressive Pressure',
+      archetype: 'Aggressive',
+      reserveMana: 1,
+      profileMultipliers: Object.freeze({
+        lifeSafety: 0.78,
+        boardPresence: 1.28,
+        cardAdvantage: 0.95,
+        manaDevelopment: 1.12,
+        interaction: 0.72,
+        commanderProgress: 1.45,
+        synergyProgress: 1.32,
+        graveyardValue: 0.9,
+        comboProgress: 1.15,
+        recoveryPotential: 0.75,
+      }),
+      modes: Object.freeze(['BUILD', 'PRESSURE', 'RACE', 'ALPHA']),
+      politics: Object.freeze({ temporaryReprieveForPressure: true, protectsOwnWin: true, honorsContracts: true }),
+    }),
+    rachel: Object.freeze({
+      id: 'rachel-balanced-tablecraft',
+      label: 'Rachel — Balanced Tablecraft',
+      archetype: 'Balanced',
+      reserveMana: 1,
+      profileMultipliers: Object.freeze({
+        lifeSafety: 1.05,
+        boardPresence: 1.08,
+        cardAdvantage: 1.1,
+        manaDevelopment: 1.06,
+        interaction: 1.08,
+        commanderProgress: 1.08,
+        synergyProgress: 1.12,
+        graveyardValue: 1,
+        comboProgress: 1,
+        recoveryPotential: 1.08,
+      }),
+      modes: Object.freeze(['DEVELOP', 'TABLE_READ', 'COMEBACK', 'FINISH']),
+      politics: Object.freeze({ sharedThreatFirst: true, letsGameDevelop: true, defensiveInteraction: true, honorsContracts: true }),
+    }),
+    post: Object.freeze({
+      id: 'post-opportunist-showstopper',
+      label: 'Post Malone — Opportunist Showstopper',
+      archetype: 'Opportunist',
+      reserveMana: 1,
+      profileMultipliers: Object.freeze({
+        lifeSafety: 0.88,
+        boardPresence: 1.02,
+        cardAdvantage: 1.28,
+        manaDevelopment: 1.08,
+        interaction: 1.15,
+        commanderProgress: 1.08,
+        synergyProgress: 1.24,
+        graveyardValue: 1.18,
+        comboProgress: 1.35,
+        recoveryPotential: 1.2,
+      }),
+      modes: Object.freeze(['LAY_LOW', 'HEIST', 'GAMBLE', 'SHOWTIME']),
+      politics: Object.freeze({ selfPreservationDeals: true, sharedThreatFirst: true, borrowedPower: true, honorsContracts: true }),
+    }),
+    olivia: Object.freeze({
+      id: 'olivia-saboteur-instigator',
+      label: 'Olivia — Saboteur Instigator',
+      archetype: 'Saboteur',
+      reserveMana: 1,
+      profileMultipliers: Object.freeze({
+        lifeSafety: 0.98,
+        boardPresence: 0.94,
+        cardAdvantage: 1.22,
+        manaDevelopment: 1.04,
+        interaction: 1.32,
+        commanderProgress: 1.05,
+        synergyProgress: 1.18,
+        graveyardValue: 1.08,
+        comboProgress: 1.14,
+        recoveryPotential: 1.12,
+      }),
+      modes: Object.freeze(['INFILTRATE', 'MISDIRECT', 'DISRUPT', 'AMBUSH']),
+      politics: Object.freeze({ breaksOpposingAlliances: true, sharedThreatFirst: true, exactShortDeals: true, honorsContracts: true }),
+    }),
+    josh: Object.freeze({
+      id: 'josh-value-engine',
+      label: 'Josh — Defensive Value Engine',
+      archetype: 'Defensive',
+      reserveMana: 2,
+      profileMultipliers: Object.freeze({
+        lifeSafety: 1.15,
+        boardPresence: 0.92,
+        cardAdvantage: 1.35,
+        manaDevelopment: 1.18,
+        interaction: 1.35,
+        commanderProgress: 1.05,
+        synergyProgress: 1.18,
+        graveyardValue: 1,
+        comboProgress: 1,
+        recoveryPotential: 1.25,
+      }),
+      modes: Object.freeze(['SETUP', 'VALUE', 'SHIELDS_UP', 'CLOSE']),
+      politics: Object.freeze({ exactShortDeals: true, sharedThreatFirst: true, honorsContracts: true }),
+    }),
+  });
+  MTG.AI_STYLE_SKILLS = AI_STYLE_SKILLS;
 
   const CARD_ROLES = [
     'land', 'ramp', 'mana-rock', 'card-draw', 'card-selection',
@@ -229,6 +338,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       (U.DECKS && U.DECKS[deckId] ? buildDeckProfile(deckId, U.DECKS[deckId]) : null);
   };
 
+  function styleSkillFor(player) {
+    return player && AI_STYLE_SKILLS[player.aiStyle] || null;
+  }
+
+  function profileForStyle(profile, player) {
+    const skill = styleSkillFor(player);
+    if (!profile || !skill) return profile;
+    let byStyle = STYLE_PROFILE_CACHE.get(profile);
+    if (!byStyle) { byStyle = new Map(); STYLE_PROFILE_CACHE.set(profile, byStyle); }
+    if (byStyle.has(player.aiStyle)) return byStyle.get(player.aiStyle);
+    const multipliers = skill.profileMultipliers || {};
+    const weights = Object.fromEntries(Object.entries(profile.weights || {}).map(([key, value]) =>
+      [key, round(value * (multipliers[key] || 1))]));
+    const styled = Object.freeze(Object.assign({}, profile, {
+      weights: Object.freeze(weights),
+      styleKey: player.aiStyle,
+      styleSkill: skill.id,
+    }));
+    byStyle.set(player.aiStyle, styled);
+    return styled;
+  }
+  MTG.getAIStyleSkill = style => AI_STYLE_SKILLS[style] || null;
+  MTG.getBotEvaluationProfile = player => {
+    const deckId = player && (player.deckName || player.deck && player.deck.name);
+    return profileForStyle(MTG.getDeckAIProfile(deckId), player);
+  };
+
   function resolvePlayer(game, id) {
     if (!game) return null;
     if (id && typeof id === 'object' && game.players.includes(id)) return id;
@@ -402,7 +538,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const perspective = getPlayerRow(view, perspectivePlayerId);
     if (!perspective) throw new Error(`AI V2 evaluator: nepoznat player ${perspectivePlayerId}`);
     const profile = deckProfile || MTG.getDeckAIProfile(perspective.deckId) || { weights: {}, primarySynergies: [], importantEngines: [], finishers: [], commanderImportance: 1 };
-    const cacheKey = `${stateHash(view)}|p${perspectivePlayerId}|${profile.deckId || ''}`;
+    const cacheKey = `${stateHash(view)}|p${perspectivePlayerId}|${profile.deckId || ''}|${profile.styleKey || ''}`;
     if (EVAL_CACHE.has(cacheKey)) return EVAL_CACHE.get(cacheKey);
     const board = controlledPermanents(view, perspectivePlayerId);
     const boardValue = board.reduce((sum, card) => sum + permanentValue(card, profile), 0);
@@ -991,7 +1127,55 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (hint === 'myrBattlesphere') return 4 - value * 0.03;
     if (hint === 'stationTap') return Math.max(0, card.power) * 4 - value * 0.1;
     if (hint === 'bottomOrder') return -value;
-    if (/discard|sacCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) return -value;
+    if (/discard|sacCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) {
+      let discardScore = -value;
+      if (player.aiStyle === 'josh') {
+        const sem = inferCardSemantics(card.def);
+        const lands = game.lands(player).length;
+        if (sem.roles.includes('land') && lands >= 6) discardScore += 6;
+        if ((sem.roles.includes('ramp') || sem.roles.includes('mana-rock')) && lands >= 7) discardScore += 3;
+        if (sem.roles.some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role))) discardScore -= 4;
+        if (sem.roles.includes('engine') || sem.roles.includes('card-draw')) discardScore -= 3;
+      }
+      if (player.aiStyle === 'jimmy') {
+        const sem = inferCardSemantics(card.def);
+        const lands = game.lands(player).length;
+        if (sem.roles.includes('land') && lands >= 5) discardScore += 4;
+        if (sem.roles.includes('board-wipe')) discardScore += 5;
+        if (sem.roles.includes('counterspell') && !sem.roles.includes('protection')) discardScore += 3;
+        if (card.commander || sem.roles.some(role => ['creature', 'finisher', 'anthem', 'combat-trick', 'protection'].includes(role))) discardScore -= 3;
+      }
+      if (player.aiStyle === 'rachel') {
+        const sem = inferCardSemantics(card.def);
+        const lands = game.lands(player).length;
+        const flexibleRoles = sem.roles.filter(role => ['ramp', 'mana-rock', 'card-draw', 'card-selection',
+          'single-target-removal', 'protection', 'creature', 'token-maker', 'engine', 'commander-support'].includes(role));
+        if (sem.roles.includes('land') && lands >= 6) discardScore += 5;
+        if (sem.roles.includes('counterspell') && !sem.roles.includes('protection')) discardScore += 2;
+        if (flexibleRoles.length >= 2) discardScore -= 4;
+        if (sem.roles.some(role => ['engine', 'card-draw', 'protection', 'finisher'].includes(role))) discardScore -= 2.5;
+      }
+      if (player.aiStyle === 'post') {
+        const sem = inferCardSemantics(card.def);
+        const oracle = textOf(card.def);
+        const lands = game.lands(player).length;
+        const borrowsPower = /gain control of|cast .* (?:an opponent|opponent's)|play .* (?:an opponent|opponent's)|from an opponent's graveyard|under your control/.test(oracle);
+        if (sem.roles.includes('land') && lands >= 6) discardScore += 5;
+        if (sem.roles.includes('stax')) discardScore += 7;
+        if (sem.roles.includes('board-wipe') && postOpportunistMode(game, player) !== 'GAMBLE') discardScore += 2.5;
+        if (sem.roles.some(role => ['engine', 'card-draw', 'combo-piece', 'finisher', 'reanimation'].includes(role)) || borrowsPower) discardScore -= 4;
+      }
+      if (player.aiStyle === 'olivia') {
+        const sem = inferCardSemantics(card.def);
+        const lands = game.lands(player).length;
+        const sabotage = saboteurCard(card.def);
+        if (sem.roles.includes('land') && lands >= 6) discardScore += 5;
+        if (sem.roles.includes('board-wipe') && oliviaSaboteurMode(game, player) !== 'DISRUPT') discardScore += 3;
+        if (sem.roles.includes('creature') && sem.roles.length === 1 && U.mv(card.def.cost || '') >= 4) discardScore += 2;
+        if (sabotage || sem.roles.some(role => ['single-target-removal', 'counterspell', 'card-draw', 'engine', 'protection'].includes(role))) discardScore -= 4;
+      }
+      return discardScore;
+    }
     if (card.ctrl && card.ctrl !== player) return value * 1.2;
     return value;
   }
@@ -1017,6 +1201,677 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function availableManaEstimate(game, player) {
     try { return game.manaSources(player, null).length + Object.values(player.pool || {}).reduce((sum, n) => sum + n, 0); }
     catch (error) { return game.lands(player).filter(card => !card.tapped).length; }
+  }
+
+  function jimmyAggroMode(game, player, view, profile) {
+    if (!player || player.aiStyle !== 'jimmy') return null;
+    const publicView = view || MTG.createBotPlayerView(game, player.idx);
+    const styledProfile = profileForStyle(profile || MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name), player);
+    const me = getPlayerRow(publicView, player.idx);
+    const board = controlledPermanents(publicView, player.idx);
+    const commanderOnline = board.some(card => card.commander);
+    const ready = game.creatures(player).filter(card => !card.tapped && (!card.sick || card.kw('haste')) &&
+      !card.cur.cantAttack && (!game.canAttackAtAll || game.canAttackAtAll(card)) && Math.max(0, card.power || 0) > 0);
+    const opponents = publicView.players.filter(row => row.id !== player.idx && !row.lost);
+    const canFinish = opponents.some(row => {
+      const target = resolvePlayer(game, row.id);
+      let prior = 0;
+      const legalReady = ready.filter(card => (!game.canAttackTarget || game.canAttackTarget(card, target)) &&
+        (!game.diplomacyAttackBlocked || !game.diplomacyAttackBlocked(player, target)));
+      const damage = legalReady.reduce((sum, card) => {
+        const assessment = attackAssignmentAssessment(game, player, card, target, prior++);
+        return sum + Math.max(0, assessment.expectedDamage || 0);
+      }, 0);
+      return damage >= row.life;
+    });
+    if (canFinish) return 'ALPHA';
+    const evaluation = MTG.evaluateState(publicView, player.idx, styledProfile);
+    const maxCommanderDamage = Math.max(0, ...Object.values(me.commanderDamage || {}).map(Number));
+    if (me.life <= 12 || maxCommanderDamage >= 17 || evaluation.immediateLossRisk >= 35) return 'RACE';
+    const ownTurns = Number(player.turnsStarted || Math.floor((game.turnNo || 0) / Math.max(1, publicView.players.length)));
+    if (ownTurns <= 3 && (!commanderOnline || ready.length < 2)) return 'BUILD';
+    return 'PRESSURE';
+  }
+  MTG.jimmyAggroMode = jimmyAggroMode;
+
+  function joshValueEngineMode(game, player, view, profile) {
+    if (!player || player.aiStyle !== 'josh') return null;
+    const publicView = view || MTG.createBotPlayerView(game, player.idx);
+    const styledProfile = profileForStyle(profile || MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name), player);
+    const me = getPlayerRow(publicView, player.idx);
+    const board = controlledPermanents(publicView, player.idx);
+    const engines = board.filter(card => card.roles.includes('engine') || card.roles.includes('card-draw') || card.roles.includes('combo-piece')).length;
+    const readyPower = board.filter(card => card.roles.includes('creature') && !card.tapped && !card.summoningSick)
+      .reduce((sum, card) => sum + Math.max(0, card.power || 0), 0);
+    const opponents = publicView.players.filter(row => row.id !== player.idx && !row.lost);
+    const evaluation = MTG.evaluateState(publicView, player.idx, styledProfile);
+    const maxCommanderDamage = Math.max(0, ...Object.values(me.commanderDamage || {}).map(Number));
+    if (me.life <= 14 || maxCommanderDamage >= 16 || evaluation.immediateLossRisk >= 32) return 'SHIELDS_UP';
+    const canFinish = opponents.some(row => readyPower >= row.life);
+    const myBoard = board.reduce((sum, card) => sum + permanentValue(card, styledProfile), 0);
+    const biggestOppBoard = Math.max(0, ...opponents.map(row => controlledPermanents(publicView, row.id)
+      .reduce((sum, card) => sum + permanentValue(card, MTG.getDeckAIProfile(row.deckId)), 0)));
+    const ownTurns = Number(player.turnsStarted || Math.floor((game.turnNo || 0) / Math.max(1, publicView.players.length)));
+    if (canFinish || (ownTurns >= 5 && engines >= 2 && me.handCount >= 4 && myBoard > biggestOppBoard * 1.18 + 3)) return 'CLOSE';
+    if (ownTurns <= 4 && engines < 2) return 'SETUP';
+    return 'VALUE';
+  }
+  MTG.joshValueEngineMode = joshValueEngineMode;
+
+  function rachelBalancedMode(game, player, view, profile) {
+    if (!player || player.aiStyle !== 'rachel') return null;
+    const publicView = view || MTG.createBotPlayerView(game, player.idx);
+    const styledProfile = profileForStyle(profile || MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name), player);
+    const me = getPlayerRow(publicView, player.idx);
+    const board = controlledPermanents(publicView, player.idx);
+    const opponents = publicView.players.filter(row => row.id !== player.idx && !row.lost);
+    const ready = game.creatures(player).filter(card => !card.tapped && (!card.sick || card.kw('haste')) &&
+      !card.cur.cantAttack && (!game.canAttackAtAll || game.canAttackAtAll(card)) && Math.max(0, card.power || 0) > 0);
+    const lethalOpponents = opponents.filter(row => {
+      const target = resolvePlayer(game, row.id);
+      let prior = 0;
+      const damage = ready.filter(card => (!game.canAttackTarget || game.canAttackTarget(card, target)) &&
+        (!game.diplomacyAttackBlocked || !game.diplomacyAttackBlocked(player, target)))
+        .reduce((sum, card) => sum + Math.max(0, attackAssignmentAssessment(game, player, card, target, prior++).expectedDamage || 0), 0);
+      return damage >= row.life;
+    });
+    // One vulnerable opponent is not automatically "the finish" in a pod.
+    // Rachel's public table philosophy leaves room for the game to develop;
+    // FINISH means the whole remaining table is closable, or the late engine is
+    // clearly ahead and should stop durdling.
+    if (opponents.length && lethalOpponents.length === opponents.length) return 'FINISH';
+    const evaluation = MTG.evaluateState(publicView, player.idx, styledProfile);
+    const maxCommanderDamage = Math.max(0, ...Object.values(me.commanderDamage || {}).map(Number));
+    const myBoard = board.reduce((sum, card) => sum + permanentValue(card, styledProfile), 0);
+    const biggestOppBoard = Math.max(0, ...opponents.map(row => controlledPermanents(publicView, row.id)
+      .reduce((sum, card) => sum + permanentValue(card, MTG.getDeckAIProfile(row.deckId)), 0)));
+    if (me.life <= 14 || maxCommanderDamage >= 16 || evaluation.immediateLossRisk >= 32 ||
+      biggestOppBoard > myBoard * 1.65 + 8) return 'COMEBACK';
+    const ownTurns = Number(player.turnsStarted || Math.floor((game.turnNo || 0) / Math.max(1, publicView.players.length)));
+    const engines = board.filter(card => card.roles.some(role => ['engine', 'card-draw', 'ramp', 'mana-rock'].includes(role))).length;
+    if (ownTurns >= 6 && engines >= 2 && me.handCount >= 3 && myBoard > biggestOppBoard * 1.22 + 4) return 'FINISH';
+    if (ownTurns <= 3 && (board.length < 3 || engines < 1)) return 'DEVELOP';
+    return 'TABLE_READ';
+  }
+  MTG.rachelBalancedMode = rachelBalancedMode;
+
+  function postOpportunistMode(game, player, view, profile) {
+    if (!player || player.aiStyle !== 'post') return null;
+    const publicView = view || MTG.createBotPlayerView(game, player.idx);
+    const styledProfile = profileForStyle(profile || MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name), player);
+    const me = getPlayerRow(publicView, player.idx);
+    const board = controlledPermanents(publicView, player.idx);
+    const opponents = publicView.players.filter(row => row.id !== player.idx && !row.lost);
+    const ready = game.creatures(player).filter(card => !card.tapped && (!card.sick || card.kw('haste')) &&
+      !card.cur.cantAttack && (!game.canAttackAtAll || game.canAttackAtAll(card)) && Math.max(0, card.power || 0) > 0);
+    const canPickOff = opponents.some(row => {
+      const target = resolvePlayer(game, row.id);
+      let prior = 0;
+      const damage = ready.filter(card => (!game.canAttackTarget || game.canAttackTarget(card, target)) &&
+        (!game.diplomacyAttackBlocked || !game.diplomacyAttackBlocked(player, target)))
+        .reduce((sum, card) => sum + Math.max(0, attackAssignmentAssessment(game, player, card, target, prior++).expectedDamage || 0), 0);
+      return damage >= row.life;
+    });
+    if (canPickOff) return 'SHOWTIME';
+    const evaluation = MTG.evaluateState(publicView, player.idx, styledProfile);
+    const maxCommanderDamage = Math.max(0, ...Object.values(me.commanderDamage || {}).map(Number));
+    const myBoard = board.reduce((sum, card) => sum + permanentValue(card, styledProfile), 0);
+    const biggestOppBoard = Math.max(0, ...opponents.map(row => controlledPermanents(publicView, row.id)
+      .reduce((sum, card) => sum + permanentValue(card, MTG.getDeckAIProfile(row.deckId)), 0)));
+    if (me.life <= 13 || maxCommanderDamage >= 16 || evaluation.immediateLossRisk >= 34 ||
+      biggestOppBoard > myBoard * 1.7 + 8) return 'GAMBLE';
+    const ownTurns = Number(player.turnsStarted || Math.floor((game.turnNo || 0) / Math.max(1, publicView.players.length)));
+    const engines = board.filter(card => card.roles.some(role => ['engine', 'card-draw', 'combo-piece', 'reanimation'].includes(role))).length;
+    if (ownTurns >= 6 && engines >= 2 && me.handCount >= 3 && myBoard > biggestOppBoard * 1.12 + 3) return 'SHOWTIME';
+    if (ownTurns <= 3 && engines < 2) return 'LAY_LOW';
+    return 'HEIST';
+  }
+  MTG.postOpportunistMode = postOpportunistMode;
+
+  function oliviaSaboteurMode(game, player, view, profile) {
+    if (!player || player.aiStyle !== 'olivia') return null;
+    const publicView = view || MTG.createBotPlayerView(game, player.idx);
+    const styledProfile = profileForStyle(profile || MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name), player);
+    const me = getPlayerRow(publicView, player.idx);
+    const board = controlledPermanents(publicView, player.idx);
+    const opponents = publicView.players.filter(row => row.id !== player.idx && !row.lost);
+    const ready = game.creatures(player).filter(card => !card.tapped && (!card.sick || card.kw('haste')) &&
+      !card.cur.cantAttack && (!game.canAttackAtAll || game.canAttackAtAll(card)) && Math.max(0, card.power || 0) > 0);
+    const canAmbush = opponents.some(row => {
+      const target = resolvePlayer(game, row.id);
+      let prior = 0;
+      const damage = ready.filter(card => (!game.canAttackTarget || game.canAttackTarget(card, target)) &&
+        (!game.diplomacyAttackBlocked || !game.diplomacyAttackBlocked(player, target)))
+        .reduce((sum, card) => sum + Math.max(0, attackAssignmentAssessment(game, player, card, target, prior++).expectedDamage || 0), 0);
+      return damage >= row.life;
+    });
+    if (canAmbush) return 'AMBUSH';
+    const evaluation = MTG.evaluateState(publicView, player.idx, styledProfile);
+    const maxCommanderDamage = Math.max(0, ...Object.values(me.commanderDamage || {}).map(Number));
+    const myBoard = board.reduce((sum, card) => sum + permanentValue(card, styledProfile), 0);
+    const opposingBoards = opponents.map(row => ({
+      row,
+      value: controlledPermanents(publicView, row.id)
+        .reduce((sum, card) => sum + permanentValue(card, MTG.getDeckAIProfile(row.deckId)), 0),
+      threat: playerThreatForGame(game, player, resolvePlayer(game, row.id)),
+    })).sort((a, b) => b.threat - a.threat || a.row.id - b.row.id);
+    const biggestOppBoard = Math.max(0, ...opposingBoards.map(entry => entry.value));
+    const threatGap = opposingBoards.length > 1 ? opposingBoards[0].threat - opposingBoards[1].threat : 0;
+    if (me.life <= 13 || maxCommanderDamage >= 16 || evaluation.immediateLossRisk >= 33 ||
+      biggestOppBoard > myBoard * 1.55 + 7 || threatGap >= 10) return 'DISRUPT';
+    const ownTurns = Number(player.turnsStarted || Math.floor((game.turnNo || 0) / Math.max(1, publicView.players.length)));
+    const engines = board.filter(card => card.roles.some(role => ['engine', 'card-draw', 'combo-piece'].includes(role))).length;
+    if (ownTurns >= 6 && engines >= 2 && me.handCount >= 3 && myBoard > biggestOppBoard * 1.18 + 4) return 'AMBUSH';
+    if (ownTurns <= 3 && engines < 2) return 'INFILTRATE';
+    return 'MISDIRECT';
+  }
+  MTG.oliviaSaboteurMode = oliviaSaboteurMode;
+
+  function styleSkillMode(game, player, view, profile) {
+    if (player && player.aiStyle === 'jimmy') return jimmyAggroMode(game, player, view, profile);
+    if (player && player.aiStyle === 'josh') return joshValueEngineMode(game, player, view, profile);
+    if (player && player.aiStyle === 'rachel') return rachelBalancedMode(game, player, view, profile);
+    if (player && player.aiStyle === 'post') return postOpportunistMode(game, player, view, profile);
+    if (player && player.aiStyle === 'olivia') return oliviaSaboteurMode(game, player, view, profile);
+    return null;
+  }
+  MTG.getAIStyleMode = styleSkillMode;
+
+  function applyJimmyAggroScore(view, action, profile, q, breakdown) {
+    const privateData = PRIVATE_VIEWS.get(view);
+    const game = privateData.game, player = privateData.player;
+    const mode = jimmyAggroMode(game, player, view, profile);
+    const ownBoard = game.bf().filter(card => card.ctrl === player);
+    const keyPieceOnline = ownBoard.some(card => card.commander || inferCardSemantics(card.def).roles
+      .some(role => ['finisher', 'combo-piece'].includes(role)));
+    const top = game.stack[game.stack.length - 1];
+    const topTargetsOwn = !!(top && top.ctrl !== player && (top.targets || []).flat()
+      .some(target => target === player || target && target.ctrl === player));
+    breakdown.pressurePlan = 0;
+
+    if (action.kind === 'cast') {
+      const card = action.card;
+      const sem = inferCardSemantics(card.def);
+      const cost = game.spellCost(player, card, Object.assign({}, action.alt || {}, { from: action.from }));
+      const spend = (cost.generic || 0) + (cost.pips || []).length;
+      if (card.commander) breakdown.pressurePlan += mode === 'BUILD' ? 8 : 5.5;
+      if (sem.roles.includes('creature')) breakdown.pressurePlan += mode === 'BUILD' ? 3.2 : 2;
+      if (sem.roles.includes('token-maker')) breakdown.pressurePlan += 3;
+      if (sem.roles.includes('anthem')) breakdown.pressurePlan += 3.5;
+      if (sem.roles.includes('direct-damage')) breakdown.pressurePlan += mode === 'RACE' || mode === 'ALPHA' ? 6 : 2.5;
+      if (sem.roles.includes('combat-trick')) breakdown.pressurePlan += game.phase === 'combat' ? 6 : 1.5;
+      if ((sem.roles.includes('ramp') || sem.roles.includes('mana-rock')) && mode === 'BUILD') breakdown.pressurePlan += 2.8;
+      if (sem.roles.includes('finisher')) breakdown.pressurePlan += mode === 'ALPHA' ? 8 : mode === 'RACE' ? 5 : 2;
+      if (sem.roles.includes('board-wipe')) breakdown.pressurePlan -= mode === 'RACE' ? 4 : 10;
+      if (sem.roles.includes('counterspell')) breakdown.pressurePlan += topTargetsOwn && keyPieceOnline ? 8 : -6;
+      if (sem.roles.includes('protection')) breakdown.pressurePlan += topTargetsOwn && keyPieceOnline ? 8 : keyPieceOnline ? 3 : 0;
+      const heldProtection = (player.hand || []).some(held => held !== card && inferCardSemantics(held.def).roles
+        .some(role => ['counterspell', 'protection', 'combat-trick'].includes(role)));
+      const available = availableManaEstimate(game, player);
+      if (heldProtection && keyPieceOnline && game.turnPlayer === player && game.phase === 'main1' &&
+        available - spend < 1 && !card.commander && !sem.roles.includes('finisher')) breakdown.pressurePlan -= 4.5;
+    } else if (action.kind === 'activate') {
+      const entry = action.entry;
+      const sem = inferCardSemantics(entry.card.def);
+      const label = String(entry.label || entry.ability && entry.ability.label || '').toLowerCase();
+      if (/damage|pump|gets? \+|haste|double strike|extra combat|untap|token/.test(label) ||
+        sem.roles.some(role => ['direct-damage', 'anthem', 'combat-trick', 'token-maker'].includes(role))) {
+        breakdown.pressurePlan += mode === 'ALPHA' ? 7 : mode === 'RACE' ? 5 : 3;
+      }
+    } else if (action.kind === 'pass' || action.kind === 'done') {
+      const heldProtection = (player.hand || []).some(card => inferCardSemantics(card.def).roles
+        .some(role => ['counterspell', 'protection', 'combat-trick'].includes(role)));
+      if (heldProtection && keyPieceOnline && availableManaEstimate(game, player) >= 1) breakdown.pressurePlan += 3;
+      if (game.turnPlayer === player && game.phase === 'main1' && mode === 'ALPHA') breakdown.pressurePlan -= 2;
+    } else if (action.kind === 'declareAttackers') {
+      const assignments = action.assignments || [];
+      const priorByDefender = new Map();
+      let damaging = 0;
+      for (const item of assignments) {
+        const defender = item.target instanceof U.Player ? item.target : item.target && item.target.ctrl;
+        if (!defender) continue;
+        const prior = priorByDefender.get(defender.idx) || 0;
+        priorByDefender.set(defender.idx, prior + 1);
+        const assessment = attackAssignmentAssessment(game, player, item.card, item.target, prior);
+        if (assessment.freeBlock || !assessment.dealsDamage) breakdown.pressurePlan -= 8;
+        else {
+          damaging++;
+          breakdown.pressurePlan += mode === 'BUILD' ? 1.8 : mode === 'PRESSURE' ? 4 : mode === 'RACE' ? 6 : 8;
+          if (!assessment.blockable) breakdown.pressurePlan += 2.5;
+          if (assessment.lethal || assessment.commanderLethal) breakdown.pressurePlan += 28;
+          if (game.monarch === defender) breakdown.pressurePlan += 5;
+          if (defender.life <= 18) breakdown.pressurePlan += 1.5;
+          if (item.card.commander) breakdown.pressurePlan += 2.5;
+          if (/combat damage|whenever .* attacks|attacks,|attack with/i.test(item.card.def.oracle || '')) breakdown.pressurePlan += 2.5;
+        }
+      }
+      if (damaging > 1) breakdown.pressurePlan += Math.min(5, damaging * 0.8);
+      if (!assignments.length) breakdown.pressurePlan -= mode === 'BUILD' ? 0.5 : mode === 'PRESSURE' ? 2.5 : mode === 'RACE' ? 6 : 12;
+    } else if (action.kind === 'declareBlockers') {
+      breakdown.pressurePlan -= (action.assignments || []).length * (mode === 'BUILD' ? 0.5 : 2.2);
+    } else if (action.kind === 'chooseTargets') {
+      const src = q && (q.src || q.data && (q.data.card || q.data.src));
+      const sourceSem = src && src.def ? inferCardSemantics(src.def) : { roles: [] };
+      const damageGoal = sourceSem.roles.includes('direct-damage') || q && q.aiHint && /damage|harm/i.test(q.aiHint.goal || '');
+      for (const target of action.picks || []) {
+        if (target instanceof U.Player && target !== player && damageGoal) {
+          breakdown.pressurePlan += Math.max(0, (25 - target.life) * 0.32);
+          const amount = Number(q && q.aiHint && (q.aiHint.damage || q.aiHint.amount) || 0);
+          if (amount && amount >= target.life) breakdown.pressurePlan += 30;
+        } else if (target instanceof U.CardInst && target.ctrl !== player && target.is('Creature')) {
+          if (!target.tapped && game.creatures(player).some(card => !card.tapped && !card.sick)) breakdown.pressurePlan += 2.5;
+        } else if (target instanceof U.CardInst && target.ctrl === player && target.commander &&
+          q && q.aiHint && /buff|pump|protect|untap/i.test(q.aiHint.goal || '')) breakdown.pressurePlan += 4;
+      }
+    }
+  }
+
+  function applyRachelBalancedScore(view, action, profile, q, breakdown) {
+    const privateData = PRIVATE_VIEWS.get(view);
+    const game = privateData.game, player = privateData.player;
+    const mode = rachelBalancedMode(game, player, view, profile);
+    const opponents = player.opponents(game).filter(opponent => !opponent.lost);
+    const leader = opponents.slice().sort((a, b) => playerThreatForGame(game, player, b) - playerThreatForGame(game, player, a) || a.idx - b.idx)[0] || null;
+    const ownBoard = game.bf().filter(card => card.ctrl === player);
+    const keyPieceOnline = ownBoard.some(card => card.commander || inferCardSemantics(card.def).roles
+      .some(role => ['engine', 'card-draw', 'finisher', 'combo-piece'].includes(role)));
+    const top = game.stack[game.stack.length - 1];
+    const topTargetsOwn = !!(top && top.ctrl !== player && (top.targets || []).flat()
+      .some(target => target === player || target && target.ctrl === player));
+    breakdown.tableBalance = 0;
+
+    if (action.kind === 'cast') {
+      const card = action.card;
+      const sem = inferCardSemantics(card.def);
+      const cost = game.spellCost(player, card, Object.assign({}, action.alt || {}, { from: action.from }));
+      const spend = (cost.generic || 0) + (cost.pips || []).length;
+      const flexibleRoles = sem.roles.filter(role => ['ramp', 'mana-rock', 'card-draw', 'card-selection',
+        'single-target-removal', 'protection', 'creature', 'token-maker', 'engine', 'commander-support'].includes(role));
+      if (flexibleRoles.length >= 2) breakdown.tableBalance += 3 + Math.min(2, flexibleRoles.length - 2);
+      if ((sem.roles.includes('ramp') || sem.roles.includes('mana-rock')) && mode === 'DEVELOP') breakdown.tableBalance += 3;
+      if (sem.roles.includes('card-draw') || sem.roles.includes('engine')) breakdown.tableBalance += mode === 'FINISH' ? 1.5 : 2.8;
+      if (sem.roles.includes('creature')) breakdown.tableBalance += mode === 'DEVELOP' ? 1.8 : 0.8;
+      if (card.commander) breakdown.tableBalance += mode === 'DEVELOP' ? 3.5 : 2;
+      if (sem.roles.includes('counterspell')) breakdown.tableBalance += topTargetsOwn && keyPieceOnline ? 7 : -4.5;
+      if (sem.roles.includes('protection')) breakdown.tableBalance += topTargetsOwn && keyPieceOnline ? 7 : keyPieceOnline ? 2.5 : 0;
+      if (sem.roles.includes('single-target-removal')) {
+        const best = bestRemovalCandidate(game, player, card, action.alt);
+        const promised = game.diplomacyRequiredRemovalTarget && game.diplomacyRequiredRemovalTarget(player, card);
+        const hitsLeader = best && best.target && best.target.ctrl === leader;
+        if (promised || hitsLeader || best && best.score >= 7) breakdown.tableBalance += mode === 'COMEBACK' ? 6 : 3.5;
+        else if (mode !== 'COMEBACK') breakdown.tableBalance -= 5;
+      }
+      if (sem.roles.includes('board-wipe')) {
+        const mine = boardValueFor(game, player);
+        const theirs = opponents.reduce((sum, opponent) => sum + boardValueFor(game, opponent), 0);
+        if (mode === 'COMEBACK' && theirs > mine * 1.25) breakdown.tableBalance += 8;
+        else if (mine >= theirs / Math.max(1, opponents.length)) breakdown.tableBalance -= 8;
+      }
+      if (sem.roles.includes('finisher')) breakdown.tableBalance += mode === 'FINISH' ? 7 : mode === 'DEVELOP' ? -2.5 : 1;
+      const heldInteraction = (player.hand || []).some(held => held !== card && inferCardSemantics(held.def).roles
+        .some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role)));
+      const available = availableManaEstimate(game, player);
+      if (heldInteraction && keyPieceOnline && game.turnPlayer === player && game.phase === 'main1' &&
+        available - spend < 1 && !sem.roles.includes('protection')) breakdown.tableBalance -= mode === 'COMEBACK' ? 7 : 3.5;
+    } else if (action.kind === 'activate') {
+      const entry = action.entry;
+      const sem = inferCardSemantics(entry.card.def);
+      const label = String(entry.label || entry.ability && entry.ability.label || '').toLowerCase();
+      if (sem.roles.some(role => ['engine', 'card-draw', 'ramp', 'token-maker'].includes(role)) ||
+        /draw|treasure|token|exile the top|untap|mana/.test(label)) breakdown.tableBalance += mode === 'COMEBACK' ? 2.5 : 3.5;
+    } else if (action.kind === 'pass' || action.kind === 'done') {
+      const heldDefense = (player.hand || []).some(card => inferCardSemantics(card.def).roles
+        .some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role)));
+      if (heldDefense && availableManaEstimate(game, player) >= 1 && keyPieceOnline) breakdown.tableBalance += mode === 'COMEBACK' ? 4 : 2;
+    } else if (action.kind === 'declareAttackers') {
+      const assignments = action.assignments || [];
+      const priorByDefender = new Map();
+      for (const item of assignments) {
+        const defender = item.target instanceof U.Player ? item.target : item.target && item.target.ctrl;
+        if (!defender) continue;
+        const prior = priorByDefender.get(defender.idx) || 0;
+        priorByDefender.set(defender.idx, prior + 1);
+        const assessment = attackAssignmentAssessment(game, player, item.card, item.target, prior);
+        if (assessment.freeBlock || !assessment.dealsDamage) breakdown.tableBalance -= 6;
+        else {
+          breakdown.tableBalance += mode === 'FINISH' ? 5 : mode === 'COMEBACK' ? 1 : 2.2;
+          if (defender === leader) breakdown.tableBalance += 4;
+          if (/combat damage|whenever .* attacks|attacks,|create .*treasure|exile the top|draw a card/i.test(item.card.def.oracle || '')) {
+            breakdown.tableBalance += 3.5;
+          }
+          if ((assessment.lethal || assessment.commanderLethal) && mode === 'FINISH') breakdown.tableBalance += 28;
+          else if ((assessment.lethal || assessment.commanderLethal) && defender !== leader && opponents.length > 1) breakdown.tableBalance -= 12;
+        }
+      }
+      const untappedAfter = game.creatures(player).filter(card => !card.tapped && !assignments.some(item => item.card === card)).length;
+      const enemyReadyPower = opponents.reduce((sum, opponent) => sum + game.creatures(opponent)
+        .filter(card => !card.tapped).reduce((power, card) => power + Math.max(0, card.power || 0), 0), 0);
+      if (assignments.length && untappedAfter === 0 && enemyReadyPower >= 4 && mode !== 'FINISH') breakdown.tableBalance -= 5;
+      if (!assignments.length && mode === 'FINISH') breakdown.tableBalance -= 10;
+    } else if (action.kind === 'declareBlockers') {
+      breakdown.tableBalance += (action.assignments || []).length * (mode === 'COMEBACK' ? 2.5 : 0.8);
+    } else if (action.kind === 'chooseTargets' && q && q.aiHint && /removal|damage|destroy|exile|bounce|counter|protect/i.test(q.aiHint.goal || '')) {
+      for (const target of action.picks || []) {
+        if (target instanceof U.CardInst && target.ctrl !== player) {
+          const sem = inferCardSemantics(target.def);
+          if (target.ctrl === leader) breakdown.tableBalance += 3;
+          if (sem.roles.some(role => ['engine', 'combo-piece', 'card-draw', 'finisher'].includes(role))) breakdown.tableBalance += 3;
+        } else if (target instanceof U.CardInst && target.ctrl === player &&
+          (target.commander || inferCardSemantics(target.def).roles.some(role => ['engine', 'card-draw', 'commander-support'].includes(role)))) {
+          breakdown.tableBalance += 3;
+        }
+      }
+    }
+  }
+
+  function borrowsOpposingPower(def) {
+    const oracle = textOf(def);
+    return /gain control of|cast .* (?:an opponent|opponent's)|play .* (?:an opponent|opponent's)|from an opponent's graveyard|under your control/.test(oracle);
+  }
+
+  function saboteurCard(def) {
+    const oracle = textOf(def);
+    return /goad|suspect|monarch|initiative|vote|gain control of|exchange control|change the target|choose new targets|attacks each combat|attacks a player other than you|can't attack you|target creature attacks|from an opponent's graveyard/.test(oracle);
+  }
+
+  function applyPostOpportunistScore(view, action, profile, q, breakdown) {
+    const privateData = PRIVATE_VIEWS.get(view);
+    const game = privateData.game, player = privateData.player;
+    const mode = postOpportunistMode(game, player, view, profile);
+    const opponents = player.opponents(game).filter(opponent => !opponent.lost);
+    const leader = opponents.slice().sort((a, b) => playerThreatForGame(game, player, b) - playerThreatForGame(game, player, a) || a.idx - b.idx)[0] || null;
+    const ownBoard = game.bf().filter(card => card.ctrl === player);
+    const top = game.stack[game.stack.length - 1];
+    const topIsDangerous = !!(top && top.ctrl !== player && ((top.targets || []).flat()
+      .some(target => target === player || target && target.ctrl === player) || top.ctrl === leader));
+    breakdown.showstopper = 0;
+
+    if (action.kind === 'cast') {
+      const card = action.card;
+      const sem = inferCardSemantics(card.def);
+      const cost = game.spellCost(player, card, Object.assign({}, action.alt || {}, { from: action.from }));
+      const spend = (cost.generic || 0) + (cost.pips || []).length;
+      const engine = sem.roles.includes('engine') || sem.roles.includes('card-draw');
+      const borrowedPower = borrowsOpposingPower(card.def);
+      if (sem.roles.includes('card-draw')) breakdown.showstopper += 4;
+      if (sem.roles.includes('engine')) breakdown.showstopper += 3.5;
+      if (sem.roles.includes('card-selection')) breakdown.showstopper += 1.5;
+      if ((sem.roles.includes('ramp') || sem.roles.includes('mana-rock')) && mode === 'LAY_LOW') breakdown.showstopper += 3;
+      if (sem.synergyTags.some(tag => ['auras', 'equipment'].includes(tag))) breakdown.showstopper += 2;
+      if (sem.roles.some(role => ['reanimation', 'combo-piece'].includes(role))) breakdown.showstopper += mode === 'SHOWTIME' ? 6 : 2.5;
+      if (borrowedPower) breakdown.showstopper += mode === 'HEIST' || mode === 'SHOWTIME' ? 6 : 4;
+      if (sem.roles.includes('stax')) breakdown.showstopper -= 9;
+      if (sem.roles.includes('counterspell')) breakdown.showstopper += topIsDangerous ? 6 : -4;
+      if (sem.roles.includes('single-target-removal')) {
+        const best = bestRemovalCandidate(game, player, card, action.alt);
+        const promised = game.diplomacyRequiredRemovalTarget && game.diplomacyRequiredRemovalTarget(player, card);
+        if (promised || best && (best.target.ctrl === leader || best.score >= 7)) breakdown.showstopper += mode === 'GAMBLE' ? 6 : 3.5;
+        else breakdown.showstopper -= 4.5;
+      }
+      if (sem.roles.includes('board-wipe')) {
+        const mine = boardValueFor(game, player);
+        const theirs = opponents.reduce((sum, opponent) => sum + boardValueFor(game, opponent), 0);
+        if (mode === 'GAMBLE' && theirs > mine * 1.25) breakdown.showstopper += 9;
+        else if (mine >= theirs / Math.max(1, opponents.length)) breakdown.showstopper -= 9;
+      }
+      if (sem.roles.includes('finisher')) breakdown.showstopper += mode === 'SHOWTIME' ? 9 : mode === 'LAY_LOW' && !engine ? -2 : 2;
+      const heldInteraction = (player.hand || []).some(held => held !== card && inferCardSemantics(held.def).roles
+        .some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role)));
+      const available = availableManaEstimate(game, player);
+      if (heldInteraction && game.turnPlayer === player && game.phase === 'main1' &&
+        available - spend < 1 && mode !== 'SHOWTIME' && !borrowedPower) breakdown.showstopper -= mode === 'GAMBLE' ? 6 : 3;
+    } else if (action.kind === 'activate') {
+      const entry = action.entry;
+      const sem = inferCardSemantics(entry.card.def);
+      const label = String(entry.label || entry.ability && entry.ability.label || '').toLowerCase();
+      if (sem.roles.some(role => ['engine', 'card-draw', 'combo-piece'].includes(role)) ||
+        /draw|treasure|exile the top|untap|gain control|reanimate|return .*graveyard/.test(label)) {
+        breakdown.showstopper += mode === 'SHOWTIME' ? 5 : 3.5;
+      }
+    } else if (action.kind === 'pass' || action.kind === 'done') {
+      const heldInteraction = (player.hand || []).some(card => inferCardSemantics(card.def).roles
+        .some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role)));
+      if (heldInteraction && availableManaEstimate(game, player) >= 1 && mode !== 'SHOWTIME') breakdown.showstopper += mode === 'GAMBLE' ? 4 : 2.5;
+    } else if (action.kind === 'declareAttackers') {
+      const assignments = action.assignments || [];
+      const priorByDefender = new Map();
+      for (const item of assignments) {
+        const defender = item.target instanceof U.Player ? item.target : item.target && item.target.ctrl;
+        if (!defender) continue;
+        const prior = priorByDefender.get(defender.idx) || 0;
+        priorByDefender.set(defender.idx, prior + 1);
+        const assessment = attackAssignmentAssessment(game, player, item.card, item.target, prior);
+        if (assessment.freeBlock || !assessment.dealsDamage) breakdown.showstopper -= 7;
+        else {
+          if (mode === 'LAY_LOW') breakdown.showstopper -= 2.5;
+          else breakdown.showstopper += mode === 'SHOWTIME' ? 6 : 2.5;
+          if (defender.life <= 18) breakdown.showstopper += Math.max(1, (20 - defender.life) * 0.35);
+          if (assessment.lethal || assessment.commanderLethal) breakdown.showstopper += 30;
+          if (item.card.owner && item.card.owner !== player) breakdown.showstopper += 5;
+          if (/combat damage|whenever .* attacks|attacks,|create .*treasure|exile the top|draw a card/i.test(item.card.def.oracle || '')) breakdown.showstopper += 3;
+        }
+      }
+      if (!assignments.length && mode === 'SHOWTIME') breakdown.showstopper -= 10;
+    } else if (action.kind === 'chooseTargets') {
+      const source = q && (q.src || q.data && (q.data.card || q.data.src));
+      const steals = source && source.def && borrowsOpposingPower(source.def);
+      const interactionGoal = q && q.aiHint && /removal|damage|destroy|exile|bounce|counter/i.test(q.aiHint.goal || '');
+      for (const target of action.picks || []) {
+        if (!(target instanceof U.CardInst) || target.ctrl === player) continue;
+        const sem = inferCardSemantics(target.def);
+        if (steals) breakdown.showstopper += 2 + permanentGameValue(game, target, player) * 0.35;
+        if (interactionGoal && target.ctrl === leader) breakdown.showstopper += 3;
+        if (sem.roles.some(role => ['engine', 'combo-piece', 'card-draw', 'finisher'].includes(role))) breakdown.showstopper += 2.5;
+      }
+    } else if (action.kind === 'chooseX' && mode === 'GAMBLE') {
+      const source = q && q.src;
+      if (source && /lose.*life|pay.*life/i.test(source.def && source.def.oracle || '')) {
+        const x = Number(action.value) || 0;
+        if (x < player.life && player.life - x >= 5) breakdown.showstopper += Math.min(4, x * 0.3);
+      }
+    }
+  }
+
+  function applyOliviaSaboteurScore(view, action, profile, q, breakdown) {
+    const privateData = PRIVATE_VIEWS.get(view);
+    const game = privateData.game, player = privateData.player;
+    const mode = oliviaSaboteurMode(game, player, view, profile);
+    const opponents = player.opponents(game).filter(opponent => !opponent.lost);
+    const threatOrder = opponents.slice().sort((a, b) =>
+      playerThreatForGame(game, player, b) - playerThreatForGame(game, player, a) || a.idx - b.idx);
+    const leader = threatOrder[0] || null;
+    const ownBoard = game.bf().filter(card => card.ctrl === player);
+    const top = game.stack[game.stack.length - 1];
+    const topIsDangerous = !!(top && top.ctrl !== player && (top.ctrl === leader || (top.targets || []).flat()
+      .some(target => target === player || target && target.ctrl === player)));
+    breakdown.instigation = 0;
+
+    if (action.kind === 'cast') {
+      const card = action.card;
+      const sem = inferCardSemantics(card.def);
+      const cost = game.spellCost(player, card, Object.assign({}, action.alt || {}, { from: action.from }));
+      const spend = (cost.generic || 0) + (cost.pips || []).length;
+      const sabotage = saboteurCard(card.def);
+      const oracle = textOf(card.def);
+      if (sabotage) breakdown.instigation += mode === 'DISRUPT' ? 7 : mode === 'MISDIRECT' ? 6 : 4;
+      if (/goad|suspect|attacks each combat|attacks a player other than you|can't attack you/.test(oracle)) breakdown.instigation += 3.5;
+      if (/change the target|choose new targets|gain control of|exchange control/.test(oracle)) breakdown.instigation += 4;
+      if (/monarch|initiative|vote/.test(oracle)) breakdown.instigation += 2.5;
+      if (sem.roles.includes('card-draw') || sem.roles.includes('engine')) breakdown.instigation += mode === 'INFILTRATE' ? 3.5 : 2;
+      if ((sem.roles.includes('ramp') || sem.roles.includes('mana-rock')) && mode === 'INFILTRATE') breakdown.instigation += 2.5;
+      if (sem.roles.includes('counterspell')) breakdown.instigation += topIsDangerous ? 7 : -4;
+      if (sem.roles.includes('single-target-removal')) {
+        const best = bestRemovalCandidate(game, player, card, action.alt);
+        const promised = game.diplomacyRequiredRemovalTarget && game.diplomacyRequiredRemovalTarget(player, card);
+        if (promised || best && (best.target.ctrl === leader || best.score >= 7)) breakdown.instigation += mode === 'DISRUPT' ? 7 : 4;
+        else breakdown.instigation -= 5;
+      }
+      if (sem.roles.includes('board-wipe')) {
+        const mine = boardValueFor(game, player);
+        const theirs = opponents.reduce((sum, opponent) => sum + boardValueFor(game, opponent), 0);
+        if (mode === 'DISRUPT' && theirs > mine * 1.3) breakdown.instigation += 8;
+        else breakdown.instigation -= 8;
+      }
+      if (sem.roles.includes('finisher')) breakdown.instigation += mode === 'AMBUSH' ? 8 : mode === 'INFILTRATE' ? -3 : 1;
+      if (sem.roles.includes('stax') && !sabotage) breakdown.instigation -= 6;
+      const heldInteraction = (player.hand || []).some(held => held !== card && inferCardSemantics(held.def).roles
+        .some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role)));
+      if (heldInteraction && game.turnPlayer === player && game.phase === 'main1' &&
+        availableManaEstimate(game, player) - spend < 1 && mode !== 'AMBUSH' && !sabotage) breakdown.instigation -= mode === 'DISRUPT' ? 6 : 3;
+    } else if (action.kind === 'activate') {
+      const entry = action.entry;
+      const sem = inferCardSemantics(entry.card.def);
+      const label = String(entry.label || entry.ability && entry.ability.label || '').toLowerCase();
+      if (saboteurCard(entry.card.def) || /goad|suspect|monarch|change.*target|gain control|tap target|can't attack you/.test(label)) {
+        breakdown.instigation += mode === 'DISRUPT' ? 7 : 5;
+      } else if (sem.roles.some(role => ['engine', 'card-draw', 'card-selection'].includes(role))) {
+        breakdown.instigation += mode === 'INFILTRATE' ? 3.5 : 2;
+      }
+    } else if (action.kind === 'pass' || action.kind === 'done') {
+      const heldInteraction = (player.hand || []).some(card => inferCardSemantics(card.def).roles
+        .some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role)));
+      if (heldInteraction && availableManaEstimate(game, player) >= 1 && mode !== 'AMBUSH') {
+        breakdown.instigation += mode === 'DISRUPT' ? 4 : 2;
+      }
+    } else if (action.kind === 'declareAttackers') {
+      const assignments = action.assignments || [];
+      const priorByDefender = new Map();
+      const distinctDefenders = new Set();
+      for (const item of assignments) {
+        const defender = item.target instanceof U.Player ? item.target : item.target && item.target.ctrl;
+        if (!defender) continue;
+        distinctDefenders.add(defender.idx);
+        const prior = priorByDefender.get(defender.idx) || 0;
+        priorByDefender.set(defender.idx, prior + 1);
+        const assessment = attackAssignmentAssessment(game, player, item.card, item.target, prior);
+        if (assessment.freeBlock || !assessment.dealsDamage) breakdown.instigation -= 8;
+        else {
+          breakdown.instigation += mode === 'INFILTRATE' ? 1.5 : mode === 'AMBUSH' ? 5.5 : 3;
+          if (!assessment.blockable) breakdown.instigation += 2.5;
+          if (defender === leader) breakdown.instigation += mode === 'DISRUPT' ? 5 : 2.5;
+          if (game.monarch === defender) breakdown.instigation += 5;
+          if (/combat damage|whenever .* attacks|attacks,|create .*treasure|exile the top|draw a card/i.test(item.card.def.oracle || '')) {
+            breakdown.instigation += 4;
+          }
+          if (assessment.lethal || assessment.commanderLethal) breakdown.instigation += mode === 'AMBUSH' ? 30 : defender === leader ? 18 : -8;
+        }
+      }
+      if (distinctDefenders.size > 1) breakdown.instigation += Math.min(4, distinctDefenders.size * 1.25);
+      const untappedAfter = game.creatures(player).filter(card => !card.tapped && !assignments.some(item => item.card === card)).length;
+      if (assignments.length && untappedAfter === 0 && mode !== 'AMBUSH') breakdown.instigation -= 4;
+      if (!assignments.length && mode === 'AMBUSH') breakdown.instigation -= 10;
+    } else if (action.kind === 'chooseTargets') {
+      const source = q && (q.src || q.data && (q.data.card || q.data.src));
+      const sourceOracle = textOf(source && source.def);
+      const manipulates = /goad|suspect|gain control of|exchange control|change the target|choose new targets|attacks each combat|can't attack you/.test(sourceOracle);
+      const interactionGoal = q && q.aiHint && /removal|damage|destroy|exile|bounce|counter|control|goad|suspect/i.test(q.aiHint.goal || '');
+      for (const target of action.picks || []) {
+        if (target instanceof U.CardInst && target.ctrl !== player) {
+          const targetSem = inferCardSemantics(target.def);
+          const value = permanentGameValue(game, target, player);
+          if (manipulates) breakdown.instigation += 2 + value * 0.3;
+          if (target.ctrl === leader && (manipulates || interactionGoal)) breakdown.instigation += 4;
+          if (targetSem.roles.some(role => ['engine', 'combo-piece', 'card-draw', 'finisher'].includes(role))) breakdown.instigation += 3;
+        } else if (target instanceof U.Player && target !== player) {
+          if (target === leader) breakdown.instigation += 4;
+          if (game.monarch === target) breakdown.instigation += 3;
+        }
+      }
+    } else if (action.kind === 'chooseOption') {
+      const value = String(action.value || action.option && (action.option.value || action.option.key || action.option.label) || '').toLowerCase();
+      if (/goad|suspect|monarch|initiative|steal|control|redirect|new target/.test(value)) breakdown.instigation += mode === 'DISRUPT' ? 7 : 5;
+    }
+  }
+
+  function applyStyleSkillScore(view, action, profile, q, breakdown) {
+    const privateData = PRIVATE_VIEWS.get(view);
+    const game = privateData.game, player = privateData.player;
+    const skill = styleSkillFor(player);
+    if (skill && skill.id === 'jimmy-aggro-pressure') {
+      applyJimmyAggroScore(view, action, profile, q, breakdown);
+      return;
+    }
+    if (skill && skill.id === 'rachel-balanced-tablecraft') {
+      applyRachelBalancedScore(view, action, profile, q, breakdown);
+      return;
+    }
+    if (skill && skill.id === 'post-opportunist-showstopper') {
+      applyPostOpportunistScore(view, action, profile, q, breakdown);
+      return;
+    }
+    if (skill && skill.id === 'olivia-saboteur-instigator') {
+      applyOliviaSaboteurScore(view, action, profile, q, breakdown);
+      return;
+    }
+    if (!skill || skill.id !== 'josh-value-engine') return;
+    const mode = joshValueEngineMode(game, player, view, profile);
+    breakdown.valueEngine = 0;
+    if (action.kind === 'cast') {
+      const card = action.card;
+      const sem = inferCardSemantics(card.def);
+      const cost = game.spellCost(player, card, Object.assign({}, action.alt || {}, { from: action.from }));
+      const spend = (cost.generic || 0) + (cost.pips || []).length;
+      const engineCard = sem.roles.includes('engine') || sem.roles.includes('card-draw');
+      if (sem.roles.includes('engine')) breakdown.valueEngine += 4.5;
+      if (sem.roles.includes('card-draw')) breakdown.valueEngine += 3;
+      if (sem.roles.includes('card-selection')) breakdown.valueEngine += 1.5;
+      if ((sem.roles.includes('ramp') || sem.roles.includes('mana-rock')) && mode === 'SETUP') breakdown.valueEngine += 3;
+      if (sem.roles.includes('protection')) breakdown.valueEngine += mode === 'SHIELDS_UP' ? 5 : 2;
+      if (sem.roles.includes('single-target-removal')) {
+        const best = bestRemovalCandidate(game, player, card, action.alt);
+        const promised = game.diplomacyRequiredRemovalTarget && game.diplomacyRequiredRemovalTarget(player, card);
+        if (!promised && (!best || best.score < 6.5) && mode !== 'SHIELDS_UP') breakdown.valueEngine -= 7;
+        else if (mode === 'SHIELDS_UP') breakdown.valueEngine += 4;
+      }
+      if (sem.roles.includes('counterspell') && mode === 'SHIELDS_UP') breakdown.valueEngine += 4;
+      if ((sem.roles.includes('finisher') || sem.roles.includes('combo-piece')) && mode === 'SETUP' && !engineCard) breakdown.valueEngine -= 3;
+      if (sem.roles.includes('creature') && !engineCard && !sem.roles.includes('ramp') && mode === 'SETUP') breakdown.valueEngine -= 1.5;
+      const heldInteraction = (player.hand || []).some(held => held !== card && inferCardSemantics(held.def).roles
+        .some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role)));
+      const available = availableManaEstimate(game, player);
+      const reserve = Math.min(skill.reserveMana, available);
+      if (heldInteraction && game.turnPlayer === player && game.phase === 'main1' && available - spend < reserve) {
+        breakdown.valueEngine -= mode === 'SHIELDS_UP' ? 10 : 5.5;
+      }
+      const instantSpeed = card.is('Instant') || card.kw('flash');
+      if (instantSpeed && game.phase === 'end' && game.turnPlayer !== player && !game.stack.length &&
+        (engineCard || sem.roles.includes('card-selection') || sem.roles.includes('token-maker'))) breakdown.valueEngine += 3;
+      if (mode === 'CLOSE' && sem.roles.includes('finisher')) breakdown.valueEngine += 5;
+    } else if (action.kind === 'activate') {
+      const entry = action.entry;
+      const sem = inferCardSemantics(entry.card.def);
+      const label = String(entry.label || entry.ability && entry.ability.label || '').toLowerCase();
+      const repeatableValue = sem.roles.includes('engine') || sem.roles.includes('card-draw') ||
+        /draw|vuci|karta|token|investigate|clue|treasure|untap/.test(label);
+      if (repeatableValue) breakdown.valueEngine += mode === 'SHIELDS_UP' ? 2 : 3.5;
+      if (repeatableValue && game.phase === 'end' && game.turnPlayer !== player && !game.stack.length) breakdown.valueEngine += 4;
+    } else if (action.kind === 'pass' || action.kind === 'done') {
+      const heldInteraction = (player.hand || []).some(card => inferCardSemantics(card.def).roles
+        .some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role)));
+      if (heldInteraction && game.turnPlayer === player && game.phase === 'main1' && availableManaEstimate(game, player) >= 2) {
+        breakdown.valueEngine += mode === 'SHIELDS_UP' ? 8 : 4.5;
+      }
+    } else if (action.kind === 'declareAttackers') {
+      const assignments = action.assignments || [];
+      const hitsMonarch = assignments.some(item => {
+        const defender = item.target instanceof U.Player ? item.target : item.target && item.target.ctrl;
+        return defender && game.monarch === defender;
+      });
+      if (mode === 'SETUP') breakdown.valueEngine -= assignments.length * 9;
+      else if (mode === 'VALUE') breakdown.valueEngine -= assignments.length * 4;
+      else if (mode === 'CLOSE') breakdown.valueEngine += assignments.length * 4;
+      if (hitsMonarch) breakdown.valueEngine += 8;
+      const untappedAfter = game.creatures(player).filter(card => !card.tapped && !assignments.some(item => item.card === card)).length;
+      if (assignments.length && untappedAfter === 0 && mode !== 'CLOSE') breakdown.valueEngine -= 3;
+    } else if (action.kind === 'declareBlockers') {
+      breakdown.valueEngine += (action.assignments || []).length * (mode === 'SHIELDS_UP' ? 2 : 0.7);
+    } else if (action.kind === 'chooseTargets' && q && q.aiHint && /removal|damage|destroy|exile|bounce|counter/i.test(q.aiHint.goal || '')) {
+      for (const target of action.picks || []) {
+        if (!(target instanceof U.CardInst) || target.ctrl === player) continue;
+        const sem = inferCardSemantics(target.def);
+        if (sem.roles.includes('engine') || sem.roles.includes('combo-piece') || sem.roles.includes('card-draw')) breakdown.valueEngine += 3;
+      }
+    }
   }
 
   function estimateInteractionRisk(view, targetId) {
@@ -1854,6 +2709,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (action.kind === 'chooseManaSources') {
       breakdown.resources = -(action.value || []).reduce((sum, source) => sum + (source.card && inferCardSemantics(source.card.def).roles.includes('engine') ? 2 : 0.2), 0);
     }
+    applyStyleSkillScore(view, action, profile, q, breakdown);
     const total = Object.values(breakdown).reduce((sum, value) => sum + value, 0);
     return { total: round(total), breakdown: Object.fromEntries(Object.entries(breakdown).map(([key, value]) => [key, round(value)])) };
   }
@@ -2112,7 +2968,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function reasonFor(action, breakdown, view, playerId) {
     const positives = Object.entries(breakdown).filter(([, value]) => value > 0.5).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([key]) => key);
-    const labels = { base: 'jaka osnovna vrijednost', timing: 'dobar trenutak', threat: 'smanjuje najveću prijetnju', synergy: 'napreduje plan decka', safety: 'štiti od poraza', resources: 'razvija ili čuva resurse', combat: 'najbolji combat ishod', choice: 'najvrjedniji legalan izbor', simulation: 'bolji simulirani nastavak', kingmaking: 'izbjegava kingmaking' };
+    const labels = { base: 'jaka osnovna vrijednost', timing: 'dobar trenutak', threat: 'smanjuje najveću prijetnju', synergy: 'napreduje plan decka', safety: 'štiti od poraza', resources: 'razvija ili čuva resurse', combat: 'najbolji combat ishod', choice: 'najvrjedniji legalan izbor', valueEngine: 'Josh value-engine plan', pressurePlan: 'Jimmy pressure plan', tableBalance: 'Rachel table-balance plan', showstopper: 'Post opportunist-showstopper plan', instigation: 'Olivia saboteur-instigator plan', simulation: 'bolji simulirani nastavak', kingmaking: 'izbjegava kingmaking' };
     const threats = Object.entries(MTG.evaluateState(view, playerId, MTG.getDeckAIProfile(getPlayerRow(view, playerId).deckId)).threatFromPlayers)
       .filter(([id]) => Number(id) !== playerId).sort((a, b) => b[1] - a[1]);
     const threatText = threats[0] && threats[0][1] > 25 ? ` Najveća javna prijetnja je Player ${threats[0][0]} (${round(threats[0][1])}).` : '';
@@ -2148,7 +3004,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const config = SEARCH_CONFIG[difficulty];
     const q = params.actionWindow || null;
     const view = MTG.createBotPlayerView(game, player.idx, q);
-    const profile = MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name) || buildDeckProfile('unknown', player.deck || { cards: [], commander: '' });
+    const baseProfile = MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name) || buildDeckProfile('unknown', player.deck || { cards: [], commander: '' });
+    const profile = profileForStyle(baseProfile, player);
     const seed = params.seed === undefined ? defaultSeed(game, view, player.idx) : Number(params.seed) >>> 0;
     const legalActions = MTG.generateLegalActions(view, { difficulty });
     const stats = { nodes: 0, depth: 0 };
@@ -2203,6 +3060,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         scoreBreakdown: chosen.breakdown, threatScores: threats, analyzedNodes: stats.nodes,
         reachedDepth: Math.max(stats.depth, chosen.depth || 0), tieBreak: selection.tieBreak, seed,
         decisionTimeMs: round(elapsed), fallback, difficulty,
+        style: player.aiStyle || 'balanced',
+        skill: styleSkillFor(player) && styleSkillFor(player).id || null,
+        mode: styleSkillMode(game, player, view, profile),
       },
     };
     game.aiDecisionLog = game.aiDecisionLog || [];

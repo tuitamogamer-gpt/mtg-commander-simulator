@@ -378,9 +378,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       .concat(Object.entries(MTG.AI_STYLES).map(([k, s]) => [k, `${s.icon} ${s.label}`]));
     const STYLE_DESC = {
       aggressive: 'Attacks relentlessly, hunts wounded players, and dislikes blocking.',
+      jimmy: 'Jimmy-inspired Aggressive pressure: builds around the commander, attacks open lanes, protects its win, then commits to an alpha strike.',
+      rachel: 'Rachel-inspired Balanced tablecraft: develops flexible value, reads the whole table, uses interaction defensively, and closes a real win.',
       opportunist: 'Avoids the leader and overwhelms wounded players.',
+      post: 'Post Malone-inspired Opportunist showstopper: lays low behind card advantage, borrows opposing power, takes calculated risks, then makes a flashy finish.',
+      olivia: 'Olivia-inspired Saboteur instigator: probes safe lanes, redirects pressure, disrupts the public leader, and springs a calculated ambush.',
       passive: 'Builds its board, keeps blockers, and attacks when it is safe.',
-      teaser: 'Spreads chaos, changes targets, and loves goad and politics.',
+      josh: 'Josh-inspired Defensive value engine: develops mana and cards, holds interaction, makes exact short deals, then closes.',
+      teaser: 'Sabotages plans with goad, misdirection, political pressure, and opportunistic disruption.',
       balanced: 'Standard, balanced AI logic.',
       random: 'Each bot receives a random personality, revealed in game.',
     };
@@ -393,8 +398,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const row = el('div', 'botstylerow');
         const badge = el('span', 'pbadge');
         const setBadge = k => {
-          badge.className = 'pbadge ' + (['aggressive', 'opportunist', 'passive', 'teaser'].includes(k) ? 'p-' + k : 'p-none');
-          badge.textContent = ['aggressive', 'opportunist', 'passive', 'teaser'].includes(k)
+          const badgeStyle = k === 'josh' ? 'passive' : k === 'jimmy' ? 'aggressive' : k === 'rachel' ? 'balanced' : k === 'post' ? 'opportunist' : k === 'olivia' ? 'teaser' : k;
+          badge.className = 'pbadge ' + (['aggressive', 'opportunist', 'passive', 'teaser'].includes(badgeStyle) ? 'p-' + badgeStyle : 'p-none');
+          badge.textContent = ['aggressive', 'opportunist', 'passive', 'teaser'].includes(badgeStyle)
             ? '' : (k === 'random' ? '?' : '=');
           badge.title = STYLE_DESC[k] || '';
         };
@@ -2926,22 +2932,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       attachments: (c.attachments || []).map(iid => g.byIid(iid)?.name || iid),
       counters: Object.fromEntries(Object.entries(c.counters || {}).filter(([, n]) => n)),
     });
-    const players = g.players.map(p => ({
-      name: p.name, deck: p.deckName, life: p.life, lost: !!p.lost, isAI: !!p.isAI,
-      handCount: p.hand.length, libraryCount: p.library.length,
-      graveyardCount: p.graveyard.length, exileCount: p.exile.length,
-      manaPool: Object.fromEntries(Object.entries(p.pool || {}).filter(([, amount]) => amount > 0)),
-      commanders: p.commanders.map(card),
-      battlefield: g.battlefield.filter(c => c.ctrl === p).map(card),
-      hand: p === ui.me ? p.hand.map(card) : undefined,
-      exile: p === ui.me ? p.exile.map(card) : undefined,
-      visibleLibraryTop: p === ui.me && g.bf().some(source => source.ctrl === p && source.def.revealOwnTop) && p.library.length
-        ? card(p.library[p.library.length - 1]) : undefined,
-      activeEffects: ui && ui.playerStatusEffects ? ui.playerStatusEffects(g, p).map(effect => ({
-        kind: effect.kind, label: effect.label, detail: effect.detail,
-        source: effect.source || null, duration: effect.duration || null,
-      })) : [],
-    }));
+    const players = g.players.map(p => {
+      const style = p.isAI && MTG.AI_STYLES && MTG.AI_STYLES[p.aiStyle];
+      const skill = p.isAI && MTG.getAIStyleSkill ? MTG.getAIStyleSkill(p.aiStyle) : null;
+      let styleMode = null;
+      if (p.isAI && MTG.getAIStyleMode) {
+        try { styleMode = MTG.getAIStyleMode(g, p); } catch (error) { styleMode = null; }
+      }
+      return {
+        name: p.name, deck: p.deckName, life: p.life, lost: !!p.lost, isAI: !!p.isAI,
+        aiStyle: style ? p.aiStyle : undefined,
+        aiStyleLabel: style ? style.label : undefined,
+        aiSkill: skill ? skill.id : undefined,
+        aiMode: styleMode || undefined,
+        handCount: p.hand.length, libraryCount: p.library.length,
+        graveyardCount: p.graveyard.length, exileCount: p.exile.length,
+        manaPool: Object.fromEntries(Object.entries(p.pool || {}).filter(([, amount]) => amount > 0)),
+        commanders: p.commanders.map(card),
+        battlefield: g.battlefield.filter(c => c.ctrl === p).map(card),
+        hand: p === ui.me ? p.hand.map(card) : undefined,
+        exile: p === ui.me ? p.exile.map(card) : undefined,
+        visibleLibraryTop: p === ui.me && g.bf().some(source => source.ctrl === p && source.def.revealOwnTop) && p.library.length
+          ? card(p.library[p.library.length - 1]) : undefined,
+        activeEffects: ui && ui.playerStatusEffects ? ui.playerStatusEffects(g, p).map(effect => ({
+          kind: effect.kind, label: effect.label, detail: effect.detail,
+          source: effect.source || null, duration: effect.duration || null,
+        })) : [],
+      };
+    });
     const pending = ui && ui.pending ? ui.pending.q : (ui && ui.react ? ui.react.q : null);
     return {
       mode: g.gameOver ? 'gameover' : 'game',
@@ -3069,6 +3087,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } : null,
       aiDecisions: (g.aiDecisionLog || []).slice(-3).map(entry => ({
         turn: entry.turn, player: entry.playerName, chosen: MTG.uiText(entry.chosen),
+        style: entry.style || null, skill: entry.skill || null, mode: entry.mode || null,
         score: entry.score, reason: Array.isArray(entry.scoreBreakdown)
           ? entry.scoreBreakdown.map(MTG.uiText)
           : typeof entry.scoreBreakdown === 'string'
@@ -3126,12 +3145,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const smokeDeck = smoke.get('smokeDeck');
     if (smokeDeck && MTG.DECKS[smokeDeck]) {
       const smokeAIDeck = smoke.get('smokeAIDeck');
+      const requestedSmokeStyle = smoke.get('smokeAIStyle');
+      const smokeAIStyle = requestedSmokeStyle && MTG.AI_STYLES[requestedSmokeStyle] ? requestedSmokeStyle : 'balanced';
       startGame({
         deck: smokeDeck,
         commanders: MTG.defaultCommanders(MTG.DECKS[smokeDeck], MTG.DEFS),
         ai: 3,
         aiDecks: smokeAIDeck && MTG.DECKS[smokeAIDeck] ? [smokeAIDeck] : [],
-        aiStyles: ['balanced', 'balanced', 'balanced'],
+        aiStyles: [smokeAIStyle, smokeAIStyle, smokeAIStyle],
         aiRandomCommanders: false,
         sumPartnerDamage: false,
         diplomacyEnabled: smoke.get('diplomacy') === '1',

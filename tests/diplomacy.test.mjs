@@ -179,6 +179,22 @@ test('bot-bot negotiations use the same public rules and create visible contract
   assert.match(game.log.at(-1).msg, /Agreement #/);
 });
 
+test('all five signature styles apply their bot-initiated anti-runaway diplomacy ranking', async () => {
+  for (const style of ['josh', 'jimmy', 'rachel', 'post', 'olivia']) {
+    const { game, players: [human, proposer, recipient] } = makeGame();
+    proposer.controller = new MTG.AIController(proposer, { difficulty: 'normal', style });
+    human.life = 500;
+    addCreature(game, proposer, 'Inferno Titan');
+    addCreature(game, recipient, 'Stormcatch Mentor');
+
+    const result = await game.processDiplomacyCheckpoint(proposer);
+    assert.equal(result.status, 'accepted', `${style} should complete a fair bot-bot anti-runaway agreement`);
+    assert.equal(result.proposal.source, 'bot');
+    assert.ok([result.proposal.request, result.proposal.offer]
+      .some(clause => clause.type === 'pressure_player' && clause.targetPlayerId === human.idx));
+  }
+});
+
 test('bot-bot negotiation also occurs around a meaningful shared threat before it becomes runaway', async () => {
   const { game, players: [thirdParty, botA, botB] } = makeGame();
   addCreature(game, thirdParty, 'Inferno Titan');

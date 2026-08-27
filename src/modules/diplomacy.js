@@ -469,8 +469,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const rawNet = clauseDelta(game, proposal.request, bot, opts) + clauseDelta(game, proposal.offer, bot, opts);
     const styleCaution = {
       aggressive: 0.68,
+      jimmy: 0.28,
+      rachel: 0,
       opportunist: 0.5,
+      post: 0,
+      olivia: -0.02,
       passive: 0.08,
+      josh: -0.06,
       teaser: 0.34,
       balanced: 0.32,
     }[bot.aiStyle || 'balanced'] ?? 0.32;
@@ -859,9 +864,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (to.isAI && evaluateProposal(game, proposal, to).status !== 'accepted') continue;
           const sharedBonus = shared ? Math.min(0.7, shared.gap * 0.04) : 0;
           const variety = stableFraction(`${from.idx}|${to.idx}|${completedRounds(game)}|${clauseFingerprint(request)}|${clauseFingerprint(offer)}`) * 0.12;
+          const joshPolitics = from.aiStyle === 'josh'
+            ? 0.35 + (pressuresLeader ? 0.2 : 0) + ([request.type, offer.type].includes('no_attack') ? 0.12 : 0)
+            : 0;
+          const jimmyPolitics = from.aiStyle === 'jimmy'
+            ? 0.24 + (pressuresLeader ? 0.42 : 0) +
+              (pressuresLeader && [request.type, offer.type].includes('no_attack') ? 0.18 : 0)
+            : 0;
+          const rachelPolitics = from.aiStyle === 'rachel'
+            ? 0.28 + (shared ? 0.22 : 0) + (pressuresLeader ? 0.38 : 0) +
+              ([request.type, offer.type].includes('no_attack') ? 0.08 : 0)
+            : 0;
+          const postPolitics = from.aiStyle === 'post'
+            ? 0.3 + (shared ? 0.2 : 0) + (pressuresLeader ? 0.3 : 0) +
+              ([request.type, offer.type].includes('no_attack') ? 0.22 : 0)
+            : 0;
+          const oliviaPolitics = from.aiStyle === 'olivia'
+            ? 0.36 + (shared ? 0.28 : 0) + (pressuresLeader ? 0.46 : 0) +
+              ([request.type, offer.type].includes('no_attack') ? 0.16 : 0)
+            : 0;
           candidates.push({
             to, request, offer,
-            score: initiator.math.margin + Math.max(-0.4, publicRecipient.math.margin) * 0.45 + sharedBonus + variety,
+            score: initiator.math.margin + Math.max(-0.4, publicRecipient.math.margin) * 0.45 + sharedBonus + variety + joshPolitics + jimmyPolitics + rachelPolitics + postPolitics + oliviaPolitics,
           });
         }
       }

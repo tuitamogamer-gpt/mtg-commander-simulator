@@ -76,6 +76,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       wipeBias: -1.5,      // ne voli wipe (ubija i njegove)
       counterBias: -0.5,
     },
+    jimmy: {
+      label: 'Jimmy — Aggressive Pressure', icon: '🔥', archetype: 'Aggressive', skill: 'jimmy-aggro-pressure',
+      // Public-game-inspired fallback weights. AI V2 applies commander-first
+      // development, combat pressure, win protection and alpha/race modes.
+      atkThr: -0.8, atkRnd: 0.5,
+      blockThr: 1.8,
+      lowLifeHunt: 1.5, focusLeader: 1.35,
+      castCreature: 1.15, castDamage: 1.2, castDefense: -0.7, castPolitics: 0.6,
+      wipeBias: -1.8, counterBias: -0.45,
+    },
+    rachel: {
+      label: 'Rachel — Balanced Tablecraft', icon: '🧭', archetype: 'Balanced', skill: 'rachel-balanced-tablecraft',
+      // Public-game-inspired fallback weights. AI V2 balances development,
+      // table-aware pressure, defensive interaction and a decisive finish.
+      atkThr: 0.65, atkRnd: 0.18,
+      blockThr: -0.15,
+      lowLifeHunt: 0.35, focusLeader: 1.9,
+      keepBlockers: true,
+      castCreature: 0.4, castDamage: 0.25, castDefense: 0.55, castPolitics: 1.05,
+      wipeBias: 0.45, counterBias: 0.1,
+    },
     opportunist: {
       label: 'Opportunist', icon: '🦅',
       // Zamjena za Pregovarača, koji se preklapao sa Uravnoteženim i nije
@@ -89,6 +110,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       wipeBias: -1.2,      // wipe bi mu pobrisao vlastite napadače
       counterBias: -0.2,
     },
+    post: {
+      label: 'Post Malone — Opportunist Showstopper', icon: '🎤', archetype: 'Opportunist', skill: 'post-opportunist-showstopper',
+      // Public-game-inspired fallback weights. AI V2 adds low-profile setup,
+      // borrowed-power lines, calculated gambles and a decisive showtime.
+      atkThr: 0.05, atkRnd: 0.32,
+      blockThr: 0.85,
+      lowLifeHunt: 3.15, focusLeader: -0.45,
+      castCreature: 0.25, castDamage: 0.75, castDefense: 0.05, castPolitics: 0.65,
+      wipeBias: -0.35, counterBias: 0.05,
+    },
+    olivia: {
+      label: 'Olivia — Saboteur Instigator', icon: '🃏', archetype: 'Saboteur', skill: 'olivia-saboteur-instigator',
+      // Public-game-inspired fallback weights. AI V2 adds safe probes,
+      // threat-aware misdirection, targeted disruption and ambush finishes.
+      atkThr: 0.25, atkRnd: 0.22,
+      blockThr: 0.45,
+      lowLifeHunt: 0.7, focusLeader: 1.75,
+      keepBlockers: true,
+      castCreature: 0.15, castDamage: 0.45, castDefense: 0.25, castPolitics: 1.85,
+      wipeBias: 0.25, counterBias: 0.35,
+    },
     passive: {
       label: 'Defensive', icon: '🛡️',
       atkThr: 2.4, atkRnd: 0.05,
@@ -98,8 +140,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       castCreature: 0.2, castDamage: -0.3, castDefense: 1.0, castPolitics: 0.2,
       wipeBias: 1.5, counterBias: 0.6,
     },
+    josh: {
+      label: 'Josh — Defensive Value', icon: '🧠', archetype: 'Defensive', skill: 'josh-value-engine',
+      // Public-game-inspired fallback weights. AI V2 applies the full skill:
+      // engine/card advantage, interaction reserve, end-step value and modes.
+      atkThr: 2.8, atkRnd: 0.02,
+      blockThr: -1.35,
+      lowLifeHunt: 0.25, focusLeader: 1.8,
+      keepBlockers: true,
+      castCreature: -0.1, castDamage: -0.15, castDefense: 1.2, castPolitics: 1.1,
+      wipeBias: 1.7, counterBias: 1.0,
+    },
     teaser: {
-      label: 'Provocateur', icon: '🃏',
+      label: 'Saboteur', icon: '🃏',
       atkThr: 0.2, atkRnd: 0.45,
       blockThr: 0.8,
       lowLifeHunt: 0.8, focusLeader: 1.2,
