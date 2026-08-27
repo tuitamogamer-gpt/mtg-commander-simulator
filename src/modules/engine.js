@@ -142,7 +142,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   class Game {
     constructor(opts) {
       this.opts = opts;
-      this.rnd = U.mulberry32(opts.seed || 42);
+      this.rnd = U.mulberry32(opts.seed ?? 42);
       this.players = [];
       this.battlefield = [];
       this.stack = [];

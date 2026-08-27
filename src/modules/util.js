@@ -471,6 +471,185 @@ MTG.devotionPips = function (str, colors) {
 
 MTG.deepClone = function (o) { return JSON.parse(JSON.stringify(o)); };
 
+// Debug snapshots are designed to be safe to share with a bug report. The
+// seed and public table state are enough to reproduce a game, so never export
+// a player's hand, their exile identities, or controller-only face-down data.
+MTG.redactDebugState = function (state) {
+  const copy = MTG.deepClone(state || {});
+  for (const player of (copy.players || [])) {
+    delete player.hand;
+    delete player.exile;
+  }
+  const stripHiddenIdentity = value => {
+    if (!value || typeof value !== 'object') return;
+    if (Array.isArray(value)) {
+      for (const item of value) stripHiddenIdentity(item);
+      return;
+    }
+    delete value.hiddenIdentity;
+    for (const child of Object.values(value)) stripHiddenIdentity(child);
+  };
+  stripHiddenIdentity(copy);
+  return copy;
+};
+
+MTG.buildDebugBundle = function (game, state, createdAt) {
+  if (!game) throw new Error('A running game is required for a debug snapshot.');
+  const opts = game.opts || {};
+  const players = game.players || [];
+  const playersByName = new Map(players.map(player => [player.name, player]));
+  const human = playersByName.get('You') || players.find(player => !player.isAI) || null;
+  const humans = players.filter(player => !player.isAI);
+  const bots = players.filter(player => player.isAI).sort((a, b) => {
+    const aSeat = Number.isInteger(a.onlineSeat) ? a.onlineSeat : a.idx;
+    const bSeat = Number.isInteger(b.onlineSeat) ? b.onlineSeat : b.idx;
+    return (aSeat || 0) - (bSeat || 0);
+  });
+  const cleanState = MTG.redactDebugState(state || {});
+  delete cleanState.aiDecisions;
+  delete cleanState.recentLog;
+  const publicLog = (game.log || []).slice(-100).map(entry => ({
+    turn: entry.t,
+    kind: entry.cls || '',
+    message: MTG.uiText(entry.msg || ''),
+  }));
+  const aiTrace = (game.aiDecisionLog || []).slice(-25).map(entry => ({
+    turn: entry.turn,
+    player: entry.playerName,
+    chosen: MTG.uiText(entry.chosen || ''),
+    score: entry.score,
+    reason: MTG.deepClone(entry.scoreBreakdown || null),
+    analyzedNodes: entry.analyzedNodes || 0,
+    reachedDepth: entry.reachedDepth || 0,
+    tieBreak: !!entry.tieBreak,
+    fallback: !!entry.fallback,
+  }));
+  return {
+    schema: 'mtg-commander-debug/v1',
+    createdAt: createdAt || new Date().toISOString(),
+    privacy: 'Share-safe public snapshot. Hand, exile identities, libraries, and controller-only face-down identities are redacted.',
+    reproduction: {
+      mode: humans.length > 1 ? 'online' : 'solo',
+      seed: opts.seed ?? 42,
+      difficulty: opts.difficulty || 'normal',
+      humanDeck: opts.humanDeck || human?.deckName || null,
+      humanCommanders: (human?.commanders || []).map(card => card.name),
+      aiRandomCommanders: !!opts.aiRandomCommanders,
+      bots: bots.map(player => ({
+        seat: player.name,
+        deck: player.deckName,
+        style: player.aiStyle || 'balanced',
+        requestedStyle: player.requestedAIStyle || player.aiStyle || 'balanced',
+        commanders: (player.commanders || []).map(card => card.name),
+      })),
+      turnOrder: players.map(player => player.name),
+      diplomacyEnabled: !!(game.diplomacy && game.diplomacy.enabled),
+      houseRules: MTG.deepClone(game.houseRules || {}),
+    },
+    checkpoint: {
+      turn: game.turnNo || 0,
+      activePlayer: game.turnPlayer ? game.turnPlayer.name : null,
+      phase: game.phase || 'setup',
+      step: game.step || '',
+    },
+    publicState: cleanState,
+    publicLog,
+    aiTrace,
+  };
+};
+
+MTG.debugBundleFilename = function (game) {
+  const seed = game && game.opts && game.opts.seed !== undefined ? game.opts.seed : 42;
+  const turn = game && game.turnNo ? game.turnNo : 0;
+  return `commander-debug-seed-${seed}-turn-${turn}.json`;
+};
+
+MTG.parseDebugBundle = function (input) {
+  const fail = message => { throw new Error(`Debug snapshot: ${message}`); };
+  let bundle = input;
+  if (typeof input === 'string') {
+    try { bundle = JSON.parse(input); }
+    catch { fail('the selected file is not valid JSON.'); }
+  }
+  if (!bundle || typeof bundle !== 'object' || Array.isArray(bundle)) fail('the root value must be an object.');
+  if (bundle.schema !== 'mtg-commander-debug/v1') fail('only mtg-commander-debug/v1 files can be replayed.');
+  const reproduction = bundle.reproduction;
+  if (!reproduction || typeof reproduction !== 'object' || Array.isArray(reproduction)) fail('reproduction settings are missing.');
+  if (reproduction.mode && reproduction.mode !== 'solo') fail('online-room snapshots cannot yet be replayed as a solo table.');
+
+  const activeDeck = name => typeof name === 'string' && MTG.DECKS && MTG.DECKS[name] && !MTG.DECKS[name].custom;
+  const humanDeck = reproduction.humanDeck;
+  if (!activeDeck(humanDeck)) fail('the human deck is not available in this build.');
+
+  const seed = Number(reproduction.seed);
+  if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffffffff) fail('seed must be an integer from 0 to 4294967295.');
+  const difficulty = reproduction.difficulty || 'normal';
+  if (!['easy', 'normal', 'hard'].includes(difficulty)) fail('difficulty must be easy, normal, or hard.');
+
+  const humanCommanders = Array.isArray(reproduction.humanCommanders) && reproduction.humanCommanders.length
+    ? reproduction.humanCommanders.slice() : MTG.defaultCommanders(MTG.DECKS[humanDeck], MTG.DEFS);
+  const humanCommanderCheck = MTG.validateCommanders(MTG.DECKS[humanDeck], humanCommanders, MTG.DEFS);
+  if (!humanCommanderCheck.ok) fail(`human commander selection is invalid: ${humanCommanderCheck.why}`);
+
+  const bots = reproduction.bots;
+  if (!Array.isArray(bots) || bots.length < 1 || bots.length > 3) fail('a solo replay requires one to three AI seats.');
+  const validStyles = new Set(['random', 'balanced', ...Object.keys(MTG.AI_STYLES || {})]);
+  const seenDecks = new Set([humanDeck]);
+  const seenSeats = new Set();
+  const normalizedBots = bots.map((bot, index) => {
+    if (!bot || typeof bot !== 'object' || Array.isArray(bot)) fail(`AI seat ${index + 1} is invalid.`);
+    if (typeof bot.seat !== 'string' || !bot.seat.trim() || seenSeats.has(bot.seat)) fail(`AI seat ${index + 1} has an invalid name.`);
+    seenSeats.add(bot.seat);
+    if (!activeDeck(bot.deck) || seenDecks.has(bot.deck)) fail(`AI seat ${bot.seat} has an unavailable or duplicate deck.`);
+    seenDecks.add(bot.deck);
+    const actualStyle = bot.style || 'balanced';
+    const requestedStyle = bot.requestedStyle || actualStyle;
+    if (!validStyles.has(actualStyle) || !validStyles.has(requestedStyle)) fail(`AI seat ${bot.seat} has an invalid play style.`);
+    if (Array.isArray(bot.commanders) && bot.commanders.length) {
+      const commanderCheck = MTG.validateCommanders(MTG.DECKS[bot.deck], bot.commanders, MTG.DEFS);
+      if (!commanderCheck.ok) fail(`AI seat ${bot.seat} commander selection is invalid: ${commanderCheck.why}`);
+    }
+    return { seat: bot.seat, deck: bot.deck, style: requestedStyle };
+  });
+
+  const canonicalBotSeats = ['AI Dragon', 'AI Wolf', 'AI Raven'].slice(0, normalizedBots.length);
+  if (normalizedBots.some((bot, index) => bot.seat !== canonicalBotSeats[index])) {
+    fail('AI seat names do not match the supported solo table order.');
+  }
+
+  const expectedNames = new Set(['You', ...normalizedBots.map(bot => bot.seat)]);
+  const turnOrder = reproduction.turnOrder;
+  if (!Array.isArray(turnOrder) || turnOrder.length !== expectedNames.size ||
+      new Set(turnOrder).size !== turnOrder.length || turnOrder.some(name => !expectedNames.has(name))) {
+    fail('turn order does not describe the same solo table as the replay settings.');
+  }
+
+  const checkpoint = bundle.checkpoint || {};
+  const capturedTurn = Number(checkpoint.turn || 0);
+  if (!Number.isSafeInteger(capturedTurn) || capturedTurn < 0) fail('checkpoint turn is invalid.');
+  return {
+    schema: bundle.schema,
+    createdAt: typeof bundle.createdAt === 'string' ? bundle.createdAt : null,
+    deck: humanDeck,
+    commanders: humanCommanders,
+    ai: normalizedBots.length,
+    aiDecks: normalizedBots.map(bot => bot.deck),
+    aiStyles: normalizedBots.map(bot => bot.style),
+    aiRandomCommanders: !!reproduction.aiRandomCommanders,
+    difficulty,
+    seed,
+    diplomacyEnabled: !!reproduction.diplomacyEnabled,
+    sumPartnerDamage: !!(reproduction.houseRules && reproduction.houseRules.sumPartnerDamage),
+    expectedTurnOrder: turnOrder.slice(),
+    checkpoint: {
+      turn: capturedTurn,
+      activePlayer: typeof checkpoint.activePlayer === 'string' ? checkpoint.activePlayer : null,
+      phase: typeof checkpoint.phase === 'string' ? checkpoint.phase : 'setup',
+      step: typeof checkpoint.step === 'string' ? checkpoint.step : '',
+    },
+  };
+};
+
 MTG.plural = function (n, s, p) { return n === 1 ? s : (p || s + 's'); };
 
 // Player seats use the display name "You" for the human. Keep verbs in the

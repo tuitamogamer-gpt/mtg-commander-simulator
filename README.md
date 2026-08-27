@@ -1,6 +1,6 @@
 # MTG Commander Simulator
 
-Desktop-only, browser-based Magic: The Gathering Commander simulator for 20 fixed, scripted preconstructed decks. The UI is in English (`lang="en"`) and is designed for screens at least 1280 px wide.
+Responsive, browser-based Magic: The Gathering Commander simulator for 27 fixed, scripted preconstructed decks. The UI is in English (`lang="en"`) and supports desktop, tablet, and mobile layouts.
 
 Every opponent nonland spell is shown on a central action stage and waits for **Proceed**. The client also exposes real stack/priority passes, configurable end-step/combat/full-control stops, visible combat assignments, and deck/card certification reports.
 
@@ -16,6 +16,12 @@ npm run serve
 ```
 
 Then visit `http://127.0.0.1:8000`.
+
+## Debug snapshots and replay
+
+During a solo game, open **Game Menu → Download debug snapshot** to save a share-safe `mtg-commander-debug/v1` JSON report. It includes the seed, table configuration, public checkpoint, recent public log, and AI decision trace, while redacting hand, library, exile, and controller-only face-down identities.
+
+Use **Import debug snapshot** on the Main Page to validate the file and restore its deck, commanders, AI decks/styles, difficulty, Politics, house rule, and seed. The imported configuration starts deterministically from turn 1; the public checkpoint is reference evidence rather than a mid-game save. Online-room snapshots are reported but are not currently accepted by the solo replay importer.
 
 ## Verification
 

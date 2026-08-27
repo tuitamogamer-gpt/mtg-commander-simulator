@@ -323,6 +323,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     //        diplomacyEnabled:bool}. Online Commander always supplies one remote human and two AI decks.
     const g = new MTG.Game({
       seed: opts.seed, onEvent: opts.onEvent, maxTurns: opts.maxTurns, paced: opts.paced,
+      difficulty: opts.difficulty || 'normal', humanDeck: opts.humanDeck,
+      aiRandomCommanders: !!opts.aiRandomCommanders,
       houseRules: Object.assign({}, opts.houseRules,
         opts.sumPartnerDamage !== undefined ? { sumPartnerDamage: !!opts.sumPartnerDamage } : {}),
     });
@@ -350,6 +352,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const q = g.addPlayer(names[botIndex + 1] + '', MTG.DECKS[dk], null, true);
       q.onlineSeat = botIndex + (remoteP ? 2 : 1);
       let st = (opts.aiStyles && opts.aiStyles[botIndex]) || 'random';
+      q.requestedAIStyle = st;
       if (st === 'random') st = styleKeys.length ? styleKeys[Math.floor(g.rnd() * styleKeys.length)] : 'balanced';
       styles.push({ player: q, style: st });
       players.push(q);

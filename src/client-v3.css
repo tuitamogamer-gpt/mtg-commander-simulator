@@ -228,6 +228,51 @@ body.game-active #game { display: grid !important; }
   font: 400 25px/1.05 'Marcellus', serif;
 }
 
+#setup .deckexploreractions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+#setup .debugimportbtn {
+  min-height: 40px;
+  padding: 0 13px;
+  color: #c9d0cd;
+  background: #0b1011;
+  border: 1px solid var(--v3-line);
+  border-radius: 7px;
+  font: 700 9px/1 'Barlow Semi Condensed', sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+#setup .debugimportbtn:hover,
+#setup .debugimportbtn:focus-visible {
+  color: var(--v3-gold-bright);
+  border-color: rgba(212, 161, 95, .58);
+  outline: 0;
+}
+
+#setup .debugimportbtn:disabled { opacity: .55; cursor: wait; }
+
+#setup .debugimportstatus {
+  margin: -7px 0 14px;
+  padding: 9px 11px;
+  color: #a9cdb7;
+  background: rgba(74, 128, 95, .1);
+  border: 1px solid rgba(102, 164, 123, .3);
+  border-radius: 7px;
+  font: 600 10px/1.4 'Barlow', sans-serif;
+}
+
+#setup .debugimportstatus.error {
+  color: #e6aaa2;
+  background: rgba(142, 61, 52, .12);
+  border-color: rgba(196, 91, 78, .38);
+}
+
 #setup .deckresultcount {
   padding-bottom: 3px;
   color: var(--v3-muted);
@@ -460,6 +505,21 @@ body.game-active #game { display: grid !important; }
 #setup .controlintro h2 { margin: 7px 0 4px !important; color: var(--v3-text) !important; font: 400 25px/1.05 'Marcellus', serif !important; }
 #setup .controlintro p { margin: 0 !important; color: var(--v3-muted) !important; font: 400 11px/1.45 'Barlow', sans-serif !important; }
 #setup .podclose { display: none; }
+#setup .debugreplaynotice {
+  margin: 0 0 4px;
+  padding: 11px 12px;
+  display: grid;
+  gap: 4px;
+  color: #dce5e0;
+  background: linear-gradient(135deg, rgba(67, 119, 91, .17), rgba(212, 161, 95, .07));
+  border: 1px solid rgba(110, 171, 132, .35);
+  border-radius: 8px;
+}
+#setup .debugreplaynotice[hidden] { display: none !important; }
+#setup .debugreplaynotice small { color: #86c39d; font: 800 7px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .17em; }
+#setup .debugreplaynotice b { color: #eef3ef; font: 700 12px/1.25 'Barlow', sans-serif; }
+#setup .debugreplaynotice span { color: #c3a97d; font: 700 9px/1.3 'Barlow Semi Condensed', sans-serif; letter-spacing: .05em; }
+#setup .debugreplaynotice p { margin: 3px 0 0; color: #7f8d88; font: 500 9px/1.4 'Barlow', sans-serif; }
 #setup .seclabel { margin: 15px 0 8px !important; color: #a2acaa !important; font: 700 9px/1 'Barlow Semi Condensed', sans-serif !important; letter-spacing: .12em !important; text-transform: uppercase; }
 #setup .seclabel i { color: var(--v3-gold) !important; background: none !important; font-style: normal; }
 #setup .seclabel em { color: #5f6968 !important; }
@@ -635,6 +695,8 @@ body.game-active #game { display: grid !important; }
   #setup .setuphero .subtitle { font-size: 12px !important; }
   #setup .deckexplorerhead { min-height: 44px; }
   #setup .deckexplorerhead h2 { font-size: 21px; }
+  #setup .deckexploreractions { flex-direction: column; align-items: flex-end; gap: 6px; }
+  #setup .debugimportbtn { min-height: 44px; }
   #setup .decktools {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1141,6 +1203,11 @@ body:has(#game .overlay) .toastmsg {
   padding: 18px;
   background: rgba(0, 0, 0, .72);
   backdrop-filter: blur(7px);
+}
+body:has(#game .quickmenuov) > .effectnoticestack,
+body:has(#game .quickmenuov) > .spellcopynoticestack,
+body:has(#game .quickmenuov) > .toastmsg {
+  visibility: hidden;
 }
 #game .quickmenu {
   width: min(440px, 100%);

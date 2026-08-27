@@ -80,6 +80,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.sidebarTab = 'table';
       this.utilityDrawerOpen = false;
       this.quickMenuOpen = false;
+      this.syncError = null;
+      this.fatalError = null;
+      this.reducedMotion = localStorage.getItem('mtgReducedMotion') === '1';
+      if (document.body && document.body.classList) document.body.classList.toggle('reduced-motion', this.reducedMotion);
       this.mobileView = 'mine';
       this.diplomacyComposer = null;
       // THE STACK kao popup na sredini — sam iskoči kad nešto stane na stack
@@ -480,6 +484,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // V3 koristi utility drawer: battlefield uvijek dobija punu širinu.
       root.classList.toggle('nosidebar', !this.utilityDrawerOpen);
       root.appendChild(this.renderTopbar(g));
+      const systemStatus = this.renderSystemStatus();
+      if (systemStatus) root.appendChild(systemStatus);
       // action ticker — zadnji log
       const last = g.log.length ? g.log[g.log.length - 1] : null;
       if (last) {
@@ -492,7 +498,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       root.appendChild(this.renderCenter(g));
       root.appendChild(this.renderMyBoard(g));
       root.appendChild(this.renderPromptBar(g));
-      root.appendChild(this.renderHand(g));
+      const handView = this.renderHand(g);
+      root.classList.toggle('empty-hand', handView.classList.contains('is-empty'));
+      root.appendChild(handView);
       root.appendChild(this.renderSidebar(g));
       root.appendChild(this.renderUtilityRail(g));
       this.initHoverPreview();
@@ -523,8 +531,42 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // prekrivao "View log" i igra je izgledala zamrznuto na kraju partije.
       const gameOverHidden = this.showLog || this.sheet || this.playerSheet || this.zoneBrowse;
       if (g.gameOver && !gameOverHidden) root.appendChild(this.renderGameOver(g));
+      if (this.fatalError) root.appendChild(this.renderFatalRecovery(g));
       U.localizeTree(root);
       this.reuseRenderedImages(root, renderedImages);
+      root.querySelectorAll('.overlay, .quickmenuov').forEach(overlay => {
+        const dialog = overlay.querySelector('.modal, .sheet, .quickmenu');
+        if (dialog) U.enhanceDialog(overlay, dialog);
+      });
+    }
+
+    renderSystemStatus() {
+      if (!this.syncError) return null;
+      const status = el('section', 'systemstatus syncerror');
+      status.setAttribute('role', 'alert');
+      status.innerHTML = `<span>${U.icon('info')}</span><div><small>LIVE SYNC</small><b>${esc(this.syncError.message)}</b></div>`;
+      if (this.syncError.retry) {
+        const retry = el('button', 'pbtn', 'Retry sync');
+        retry.onclick = () => this.syncError.retry();
+        status.appendChild(retry);
+      }
+      return status;
+    }
+
+    setSyncError(message, retry) {
+      this.syncError = { message: String(message || 'Live sync is unavailable.'), retry };
+      this.render();
+    }
+
+    clearSyncError() {
+      if (!this.syncError) return;
+      this.syncError = null;
+      this.render();
+    }
+
+    handleFatal(error) {
+      this.fatalError = error instanceof Error ? error : new Error(String(error || 'Unknown game error'));
+      this.render();
     }
 
     // Centralni action stage: svaka protivnička nonland karta na stacku dobija
@@ -793,15 +835,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
       drawerHead.appendChild(close);
       side.appendChild(drawerHead);
-      const tabs = el('div', 'sidebartabs');
-      const tabItems = [['table', 'TABLE'], ['log', 'LOG']];
-      if (diplomacyEnabled) tabItems.splice(1, 0, ['diplomacy', 'POLITICS']);
-      for (const [key, label] of tabItems) {
-        const tab = el('button', 'sidebartab' + (this.sidebarTab === key ? ' on' : ''), label);
-        tab.onclick = () => { this.sidebarTab = key; this.render(); };
-        tabs.appendChild(tab);
-      }
-      side.appendChild(tabs);
       if (this.sidebarTab === 'diplomacy' && diplomacyEnabled) {
         side.appendChild(this.renderDiplomacyPanel(g));
         return side;
@@ -1416,6 +1449,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         localStorage.setItem('mtgStackPop', this.stackPopup ? '1' : '0');
         this.render();
       });
+      action('Reduced motion', this.reducedMotion ? 'On' : 'Off', () => {
+        this.reducedMotion = !this.reducedMotion;
+        localStorage.setItem('mtgReducedMotion', this.reducedMotion ? '1' : '0');
+        document.body.classList.toggle('reduced-motion', this.reducedMotion);
+        this.render();
+      });
       action('Opponent card size', `${Math.round(this.oppScale * 100)}%`, () => {
         const sizes = [0.8, 1, 1.2, 1.4];
         const current = sizes.findIndex(size => Math.abs(size - this.oppScale) < 0.01);
@@ -1432,6 +1471,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       action('Table information', 'Stack, damage and threat', () => this.openUtility('table'));
       action('Game log', `${g.log.length} events`, () => this.openUtility('log'));
+      action('Support & diagnostics', 'Download share-safe debug snapshot', () => this.downloadDebugSnapshot(g));
       if (g.diplomacy && g.diplomacy.enabled) action('Diplomacy & Politics', 'Deals and proposals', () => this.openUtility('diplomacy'));
       action('Help & shortcuts', 'Rules and controls', () => { this.quickMenuOpen = false; this.showHelp = true; this.render(); });
       action('New game', 'Return to setup', () => {
@@ -1443,6 +1483,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (event.target === overlay) { this.quickMenuOpen = false; this.render(); }
       };
       return overlay;
+    }
+
+    downloadDebugSnapshot(g) {
+      const bundle = MTG.buildDebugBundle(g, MTG.renderGameState());
+      const blob = new Blob([JSON.stringify(bundle, null, 2) + '\n'], { type: 'application/json' });
+      const href = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = href;
+      link.download = MTG.debugBundleFilename(g);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(href), 0);
+      this.quickMenuOpen = false;
+      this.toast(`Debug snapshot downloaded · seed ${bundle.reproduction.seed} · turn ${bundle.checkpoint.turn}.`);
+      this.render();
     }
 
     renderTopbar(g) { return this.renderArenaHeader(g); }
@@ -1511,6 +1567,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
         if (isSelectedTarget) this.markSelectedTarget(head, p);
         row.appendChild(head);
+        if (isActiveAi) row.appendChild(this.renderTurnTimeline(g, p));
         // board strip (always visible unless collapsed)
         if (!collapsed && !p.lost) {
           const strip = el('div', 'oppstrip battlefieldstrip');
@@ -1607,6 +1664,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       grip.addEventListener('touchstart', startDrag, { passive: true });
       outer.appendChild(grip);
       return outer;
+    }
+
+    renderTurnTimeline(g, player) {
+      const timeline = el('section', 'turntimeline');
+      timeline.setAttribute('aria-label', `${player.name} public turn activity`);
+      const recent = g.log.filter(entry => entry.t === g.turnNo).slice(-3);
+      timeline.innerHTML = `
+        <div class="turntimelinehead"><span>${U.icon('player')}</span><div><small>PUBLIC BOT TURN</small><b>${esc(player.name)} · ${esc(this.phaseName(g))}</b></div></div>
+        <ol>${(recent.length ? recent : [{ msg: `${player.name} is considering legal actions.` }]).map((entry, index, rows) =>
+          `<li${index === rows.length - 1 ? ' class="current"' : ''}><i></i><span>${esc(entry.msg)}</span></li>`).join('')}</ol>`;
+      return timeline;
     }
 
     renderCenter(g) {
@@ -2176,8 +2244,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
         row.appendChild(d);
       }
-      if (!me.hand.length) row.appendChild(el('div', 'emptyrow', 'Empty hand'));
+      if (!me.hand.length) {
+        row.classList.add('is-empty');
+        row.appendChild(el('div', 'emptyrow', `${U.icon('cards')}<span><b>Empty hand</b><small>Your battlefield and priority controls remain active.</small></span>`));
+      }
       wrap.appendChild(row);
+      if (!me.hand.length && !wrap.querySelector('.exiletray, .suspendtray')) wrap.classList.add('is-empty');
       return wrap;
     }
 
@@ -3901,15 +3973,60 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
 
     renderGameOver(g) {
       const ov = el('div', 'overlay dark');
-      const m = el('div', 'modal');
+      const m = el('div', 'modal wide matchrecap');
       const won = g.winner === this.me;
-      m.appendChild(el('div', 'gameover', won ? '🏆 YOU WON!' : `☠️ ${g.winner ? esc(g.winner.name) + ' wins' : 'Game over'}`));
-      const b = el('button', 'pbtn primary wide', 'New game');
-      b.onclick = () => location.reload();
-      m.appendChild(b);
-      const l = el('button', 'pbtn wide', 'View log');
-      l.onclick = () => { this.showLog = true; ov.remove(); this.render(); };
-      m.appendChild(l);
+      const alive = g.players.filter(player => !player.lost);
+      const moments = g.log.filter(entry => ['win', 'combat', 'dmg', 'monarch', 'effect', 'arrival'].includes(entry.cls)).slice(-5);
+      m.appendChild(el('div', 'recaphead', `
+        <span>${won ? 'VICTORY' : 'MATCH COMPLETE'}</span>
+        <div class="gameover">${won ? 'You held the table.' : `${g.winner ? esc(g.winner.name) + ' wins.' : 'Game over.'}`}</div>
+        <p>${g.turnNo} turns · ${g.players.length} players · ${alive.length} survivor${alive.length === 1 ? '' : 's'}</p>`));
+      const standings = el('div', 'recapstandings');
+      [...g.players].sort((a, b) => Number(a.lost) - Number(b.lost) || b.life - a.life).forEach((player, index) => {
+        standings.appendChild(el('div', player === g.winner ? 'winner' : player.lost ? 'eliminated' : '',
+          `<i>${String(index + 1).padStart(2, '0')}</i><span><b>${esc(player.name)}</b><small>${esc(player.deckName || '')}</small></span><strong>${player.life}<small>LIFE</small></strong>`));
+      });
+      m.appendChild(standings);
+      const highlights = el('section', 'recaphighlights');
+      highlights.innerHTML = `<small>PUBLIC MATCH HIGHLIGHTS</small>${moments.length
+        ? `<ol>${moments.map(entry => `<li><span>T${entry.t}</span>${esc(entry.msg)}</li>`).join('')}</ol>`
+        : '<p>The complete public sequence is available in the game log.</p>'}`;
+      m.appendChild(highlights);
+      const actions = el('div', 'recapactions');
+      if (typeof MTG.rematchLastGame === 'function') {
+        const rematch = el('button', 'pbtn primary', 'Rematch same pod');
+        rematch.onclick = () => MTG.rematchLastGame();
+        actions.appendChild(rematch);
+      }
+      const setup = el('button', 'pbtn', 'New setup');
+      setup.onclick = () => location.reload();
+      actions.appendChild(setup);
+      const log = el('button', 'pbtn', 'View full log');
+      log.onclick = () => { this.showLog = true; ov.remove(); this.render(); };
+      actions.appendChild(log);
+      m.appendChild(actions);
+      ov.appendChild(m);
+      return ov;
+    }
+
+    renderFatalRecovery(g) {
+      const ov = el('div', 'overlay dark fatalrecoveryov');
+      const m = el('div', 'modal fatalrecovery');
+      m.appendChild(el('div', 'mtitle', 'The table stopped safely'));
+      m.appendChild(el('p', 'fatalcopy', `The current action could not continue. Your public state is still available for diagnostics. ${esc(this.fatalError.message)}`));
+      const actions = el('div', 'fatalactions');
+      const retry = el('button', 'pbtn primary', 'Retry render');
+      retry.onclick = () => { this.fatalError = null; this.render(); };
+      actions.appendChild(retry);
+      if (g) {
+        const debug = el('button', 'pbtn', 'Download debug snapshot');
+        debug.onclick = () => this.downloadDebugSnapshot(g);
+        actions.appendChild(debug);
+      }
+      const setup = el('button', 'pbtn', 'Return to setup');
+      setup.onclick = () => location.reload();
+      actions.appendChild(setup);
+      m.appendChild(actions);
       ov.appendChild(m);
       return ov;
     }
@@ -3931,9 +4048,9 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         stack = el('div', 'effectnoticestack');
         document.body.appendChild(stack);
       }
-      const item = el('div', 'effectnotice ' + (kind || 'effect'), esc(text));
+      const item = el('div', 'effectnotice activity ' + (kind || 'effect'), `<small>ACTIVITY</small><span>${esc(text)}</span>`);
       stack.appendChild(item);
-      while (stack.children.length > 5) stack.firstElementChild.remove();
+      while (stack.children.length > 2) stack.firstElementChild.remove();
       setTimeout(() => {
         item.classList.add('leaving');
         setTimeout(() => {
@@ -3986,7 +4103,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const previous = document.querySelector('.battlefieldarrival');
       if (previous) previous.remove();
       const commander = event.kind === 'commander';
-      const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reducedMotion = this.reducedMotion || window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const introURL = commander && !reducedMotion && MTG.COMMANDER_INTROS && MTG.COMMANDER_INTROS[card.name];
       const introLabel = MTG.COMMANDER_INTRO_LABELS && MTG.COMMANDER_INTRO_LABELS[card.name] || card.name;
       const splash = el('div', `battlefieldarrival ${commander ? 'commander' : 'powerhouse'}`);
@@ -4003,7 +4120,8 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
           <small>${commander ? `${U.icon('crown')} COMMANDER ENTERS` : `${U.icon('effects')} POWERHOUSE ENTERS`}</small>
           <b>${esc(introLabel)}</b>
           <span>${esc(event.player ? event.player.name : '')}${event.power !== null && event.power !== undefined ? ` · ${event.power}/${event.toughness}` : ''}</span>
-        </div>`;
+        </div>
+        <button type="button" class="arrivalskip">Skip</button>`;
       document.body.appendChild(splash);
       const video = splash.querySelector('.arrivalvideo');
       if (video) {
@@ -4020,11 +4138,16 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         const permanent = document.querySelector(`.mini[data-iid="${card.iid}"]`);
         if (permanent) permanent.classList.add('arrival-highlight');
       });
-      setTimeout(() => {
+      let dismissed = false;
+      const dismiss = () => {
+        if (dismissed) return;
+        dismissed = true;
         splash.classList.add('leaving');
         document.querySelector(`.mini[data-iid="${card.iid}"]`)?.classList.remove('arrival-highlight');
         setTimeout(() => splash.remove(), 320);
-      }, introURL ? 4300 : 3200);
+      };
+      splash.querySelector('.arrivalskip').onclick = dismiss;
+      setTimeout(dismiss, introURL ? 4300 : 3200);
     }
 
     showBanner(text, gold) {

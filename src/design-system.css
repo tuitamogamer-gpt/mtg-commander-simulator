@@ -1,0 +1,46 @@
+@layer commander.tokens, commander.primitives;
+
+@layer commander.tokens {
+  :root {
+    --ds-table: #070a0b;
+    --ds-panel: #0d1213;
+    --ds-panel-raised: #141b1c;
+    --ds-dialog: #111819;
+    --ds-line: #303a3b;
+    --ds-line-soft: #20292a;
+    --ds-text: #f5f1e8;
+    --ds-copy: #c4cdca;
+    --ds-muted: #96a19e;
+    --ds-brass: #d4a15f;
+    --ds-brass-bright: #f2c37e;
+    --ds-good: #86b596;
+    --ds-danger: #e59082;
+    --ds-focus: #f6d49f;
+    --ds-r-sm: 7px;
+    --ds-r-md: 10px;
+    --ds-r-lg: 14px;
+    --ds-touch: 44px;
+    --ds-shadow-dialog: 0 36px 110px rgba(0, 0, 0, .72);
+  }
+}
+
+@layer commander.primitives {
+  :where(button, a, input, select, summary, [role="button"]):focus-visible {
+    outline: 2px solid var(--ds-focus);
+    outline-offset: 2px;
+  }
+
+  .ui-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ds-copy);
+  }
+
+  .ui-status > .gameicon {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    color: var(--ds-brass);
+  }
+}
