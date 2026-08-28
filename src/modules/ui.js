@@ -505,7 +505,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       document.querySelectorAll([
         '.battlefieldarrival', '.turnbanner', '.monarchannouncement',
         '.diplomacyannouncement', '.effectnoticestack', '.spellcopynoticestack',
-        '.spotbar', '.toastmsg',
+        '.gamefxlayer', '.spotbar', '.toastmsg',
       ].join(',')).forEach(node => node.remove());
     }
 
@@ -1636,6 +1636,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const row = el('div', `opprow seat-${seatNo}` + (g.turnPlayer === p ? ' active' : '') +
           (isActiveAi ? ' activeai' : '') + (isMonarch ? ' monarch' : '') + (statusEffects.length ? ' has-effects' : ''));
         row.dataset.seat = String(seatNo).padStart(2, '0');
+        row.dataset.playerId = String(p.idx);
         if (isMonarch) row.title = `${p.name} is the Monarch`;
         row.style.setProperty('--seat-accent', COLHEX[(meta.colors || [])[0]] || '#778f63');
         if (isActiveAi) row.style.setProperty('--opp-scale', String(Math.min(2, this.oppScale * 1.2)));
@@ -2005,6 +2006,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         try { return source.def.playTop(g, source, libraryTop, me); } catch { return false; }
       }));
       const info = el('div', 'meinfo');
+      info.dataset.playerId = String(me.idx);
       if (g.monarch === me) info.classList.add('monarch');
       const statusEffects = this.playerStatusEffects(g, me);
       if (statusEffects.length) info.classList.add('has-effects');
@@ -2907,6 +2909,47 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return ov;
       }
       if (q.type === 'chooseOption') {
+        if (q.diplomacyCampaign) {
+          const campaign = q.diplomacyCampaign;
+          const source = campaign.source;
+          const stage = campaign.stage || 'choice';
+          const stageTitle = stage === 'choice' ? 'CHOOSE YOUR POSITION'
+            : stage === 'target' ? 'CHOOSE A VOTER'
+              : stage === 'promise' ? 'PUT A PROMISE ON THE TABLE'
+                : 'A PUBLIC VOTE BARGAIN';
+          m.classList.add('wide', 'votecampaignmodal', `stage-${stage}`);
+          m.dataset.testid = `vote-campaign-${stage}`;
+          m.appendChild(el('div', 'votecampaignkicker', `🕊 DIPLOMACY & POLITICS · ${stageTitle}`));
+          const hero = el('div', 'votecampaignhero');
+          if (source && source.name) {
+            hero.innerHTML = `<img src="${imgURL(source.name)}" onerror="MTG.imgFail(this)">` +
+              `<div><small>PUBLIC COUNCIL EFFECT</small><b>${esc(source.name)}</b><span>${esc(campaign.requestedOption && campaign.requestedOption.label || 'Every public vote remains visible to the table.')}</span></div>`;
+          } else hero.innerHTML = '<div><small>PUBLIC COUNCIL EFFECT</small><b>Vote bargain</b></div>';
+          m.appendChild(hero);
+          const detail = stage === 'choice'
+            ? 'Campaign for one result, or let the table vote freely. Your ballot plus one secured vote wins a tie, backed by one enforceable promise.'
+            : stage === 'target'
+              ? `Ask one player to join your ${esc(campaign.requestedOption && campaign.requestedOption.label || '')} vote. Their current public lean is shown; you can stop after any accepted deal.`
+              : stage === 'promise'
+                ? `Choose exactly what you will owe ${esc(campaign.voter && campaign.voter.name || 'that voter')}. The promise remains in Active Agreements until its deadline.`
+                : `<b>${esc(campaign.sponsor && campaign.sponsor.name || 'A player')}</b> asks for <b>${esc(campaign.requestedOption && campaign.requestedOption.label || 'your vote')}</b>.<br>${esc(campaign.promiseLabel || '')}`;
+          m.appendChild(el('div', 'votecampaigndetail', detail));
+          const list = el('div', 'votecampaignoptions');
+          for (const option of q.options) {
+            const decline = option.key === 'decline' || option.key === '__skip_campaign__' || option.key === '__cancel_promise__' || option.key === 'finish';
+            const accept = option.key === 'accept';
+            const button = btn(esc(option.label), () => this.resolvePending(option.key),
+              `wide votecampaignoption${accept ? ' accept' : ''}${decline ? ' decline' : ''}`);
+            button.dataset.choiceKey = String(option.key);
+            list.appendChild(button);
+          }
+          m.appendChild(list);
+          m.appendChild(el('div', 'votecampaignfoot',
+            stage === 'response'
+              ? 'Accepting locks this one public vote. The offered promise is enforced by the same Diplomacy rules as every other agreement.'
+              : 'No hidden cards or private information are used. Secret ballots never open this feature.'));
+          return ov;
+        }
         m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Choose')));
         const decisionCards = this.renderDecisionCards(q);
         if (decisionCards) {
@@ -4348,6 +4391,139 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const t = el('div', 'toastmsg', esc(msg));
       document.body.appendChild(t);
       setTimeout(() => t.remove(), 2500);
+    }
+
+    gameEffectLayer() {
+      let layer = document.querySelector('.gamefxlayer');
+      if (!layer) {
+        layer = el('div', 'gamefxlayer');
+        layer.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(layer);
+      }
+      return layer;
+    }
+
+    gameEffectPlayerAnchor(player) {
+      if (!player) return null;
+      const root = document.querySelector(`[data-player-id="${player.idx}"]`);
+      return root && (root.querySelector('.opplife,.melife') || root);
+    }
+
+    gameEffectCardAnchor(card) {
+      return card && document.querySelector(`.mini[data-iid="${card.iid}"]`);
+    }
+
+    gameEffectDestination(event) {
+      const owner = event.toPlayer || event.card && event.card.owner;
+      if (owner === this.me) {
+        if (event.toZone === 'hand') return document.querySelector('.handwrap,.handrow');
+        if (['graveyard', 'exile'].includes(event.toZone)) return document.querySelector(`.meinfo .zbtn[data-z="${event.toZone}"]`);
+        if (event.toZone === 'library') return document.querySelector('.meinfo .zbtn[data-z="library-top"]');
+        if (event.toZone === 'command') return document.querySelector('.cmdzone,.commanderzone,.meinfo');
+      }
+      return this.gameEffectPlayerAnchor(owner) || document.querySelector('#game');
+    }
+
+    showDamageEffect(event) {
+      const target = event.targetCard || event.targetPlayer || event.target;
+      const targetNode = event.targetKind === 'player'
+        ? this.gameEffectPlayerAnchor(target)
+        : this.gameEffectCardAnchor(target);
+      const rect = targetNode && targetNode.getBoundingClientRect();
+      const x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
+      const y = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
+      const layer = this.gameEffectLayer();
+      const impact = el('div', `gamefx-impact ${event.targetKind || 'permanent'}${event.combat ? ' combat' : ''}`,
+        `<i></i><i></i><i></i><span></span><strong>−${Math.max(0, Number(event.amount) || 0)}</strong><small>${event.combat ? 'COMBAT' : 'DAMAGE'}</small>`);
+      impact.style.left = `${x}px`;
+      impact.style.top = `${y}px`;
+      layer.appendChild(impact);
+      if (targetNode) {
+        targetNode.classList.remove('fx-damage-target');
+        void targetNode.offsetWidth;
+        targetNode.classList.add('fx-damage-target');
+        setTimeout(() => targetNode.classList.remove('fx-damage-target'), 620);
+      }
+      const sourceNode = this.gameEffectCardAnchor(event.source);
+      const sourceRect = sourceNode && sourceNode.getBoundingClientRect();
+      if (sourceRect) {
+        const sx = sourceRect.left + sourceRect.width / 2, sy = sourceRect.top + sourceRect.height / 2;
+        const dx = x - sx, dy = y - sy;
+        const line = el('div', 'gamefx-damageline');
+        line.style.left = `${sx}px`; line.style.top = `${sy}px`;
+        line.style.width = `${Math.max(12, Math.hypot(dx, dy))}px`;
+        line.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
+        layer.appendChild(line);
+        setTimeout(() => line.remove(), 520);
+      }
+      setTimeout(() => impact.remove(), 940);
+      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1020);
+    }
+
+    showZoneMoveEffect(event) {
+      const sourceNode = this.gameEffectCardAnchor(event.card);
+      const sourceRect = sourceNode && sourceNode.getBoundingClientRect();
+      if (!sourceRect) return;
+      const destination = this.gameEffectDestination(event);
+      const destRect = destination && destination.getBoundingClientRect();
+      const endX = destRect ? destRect.left + destRect.width / 2 : sourceRect.left + sourceRect.width / 2;
+      const endY = destRect ? destRect.top + destRect.height / 2 : -80;
+      const layer = this.gameEffectLayer();
+      const ghost = el('div', `gamefx-cardghost to-${event.toZone || 'away'}`);
+      const clone = sourceNode.cloneNode(true);
+      clone.removeAttribute('id');
+      ghost.appendChild(clone);
+      ghost.style.left = `${sourceRect.left}px`; ghost.style.top = `${sourceRect.top}px`;
+      ghost.style.width = `${sourceRect.width}px`; ghost.style.height = `${sourceRect.height}px`;
+      ghost.style.setProperty('--fx-x', `${endX - sourceRect.left - sourceRect.width / 2}px`);
+      ghost.style.setProperty('--fx-y', `${endY - sourceRect.top - sourceRect.height / 2}px`);
+      const zoneLabels = { hand: 'RETURN TO HAND', graveyard: 'GRAVEYARD', exile: 'EXILE', command: 'COMMAND ZONE', library: 'LIBRARY' };
+      const badge = el('div', `gamefx-zonebadge to-${event.toZone || 'away'}`, zoneLabels[event.toZone] || 'LEAVES PLAY');
+      badge.style.left = `${sourceRect.left + sourceRect.width / 2}px`;
+      badge.style.top = `${sourceRect.top + sourceRect.height / 2}px`;
+      layer.appendChild(ghost); layer.appendChild(badge);
+      sourceNode.classList.add('fx-zone-leaving');
+      setTimeout(() => sourceNode.classList.remove('fx-zone-leaving'), 500);
+      setTimeout(() => { ghost.remove(); badge.remove(); }, 1060);
+      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1140);
+    }
+
+    showBoardWipeEffect(event) {
+      const cards = (event.cards || []).filter(Boolean);
+      const layer = this.gameEffectLayer();
+      const mode = event.mode || 'destroy';
+      const storm = el('div', `gamefx-wipe mode-${mode}`,
+        `<div class="gamefx-wipecloud"></div><div class="gamefx-wiperune">${mode === 'exile' ? '◇' : mode === 'damage' ? '✹' : '✕'}</div>` +
+        `<div class="gamefx-wipetitle"><small>${mode === 'exile' ? 'VOID SWEEP' : mode === 'damage' ? 'DAMAGE STORM' : 'BOARD WIPE'}</small><b>${cards.length} PERMANENT${cards.length === 1 ? '' : 'S'}</b></div>`);
+      layer.appendChild(storm);
+      document.querySelector('#game')?.classList.add('fx-boardwipe');
+      cards.slice(0, 16).forEach((card, index) => {
+        const node = this.gameEffectCardAnchor(card);
+        const rect = node && node.getBoundingClientRect();
+        if (!rect) return;
+        const shard = el('div', `gamefx-wipecard mode-${mode}`);
+        shard.appendChild(node.cloneNode(true));
+        shard.style.left = `${rect.left}px`; shard.style.top = `${rect.top}px`;
+        shard.style.width = `${rect.width}px`; shard.style.height = `${rect.height}px`;
+        shard.style.setProperty('--wipe-delay', `${Math.min(360, index * 42)}ms`);
+        shard.style.setProperty('--wipe-spin', `${(index % 2 ? -1 : 1) * (9 + index * 2)}deg`);
+        layer.appendChild(shard);
+        node.classList.add('fx-zone-leaving');
+      });
+      setTimeout(() => document.querySelector('#game')?.classList.remove('fx-boardwipe'), 920);
+      setTimeout(() => {
+        storm.remove();
+        layer.querySelectorAll('.gamefx-wipecard').forEach(node => node.remove());
+        document.querySelectorAll('.fx-zone-leaving').forEach(node => node.classList.remove('fx-zone-leaving'));
+      }, 1380);
+      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1460);
+    }
+
+    showGameEffect(event) {
+      if (!event || this.game && this.game.gameOver) return;
+      if (event.kind === 'damage') this.showDamageEffect(event);
+      else if (event.kind === 'zoneMove') this.showZoneMoveEffect(event);
+      else if (event.kind === 'boardWipe') this.showBoardWipeEffect(event);
     }
 
     showEffectNotice(text, kind, event = {}) {

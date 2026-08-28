@@ -177,27 +177,60 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   E7.vote = async (g, you, src, options, aiPick) => {
     const votes = new Map();
     const order = g.apnapFrom(you);
+    // Diplomacy-enabled public councils get one bounded campaign before the
+    // first ballot. The source controller may make one concrete,
+    // rules-enforced promise; accepting a bargain locks only that voter's
+    // public choice. Secret ballots intentionally never enter this path.
+    const predicted = new Map();
+    for (const voter of order) {
+      const prediction = voter.isAI && typeof aiPick === 'function' ? aiPick(voter) : null;
+      predicted.set(voter.idx, options.some(option => option.key === prediction) ? prediction : null);
+    }
+    const bargains = g.diplomacyCampaignForPublicChoice
+      ? await g.diplomacyCampaignForPublicChoice(you, src, options, predicted)
+      : new Map();
     for (const q of order) {
       if (q.lost) continue;
-      const k = await q.controller.decide(g, {
-        type: 'chooseOption', prompt: `${src.name}: vote`, options,
-        aiHint: {
-          kind: 'vote', src, options, voter: q, forWhom: you, aiPick, secret: false,
-          // Will of the council je javno glasanje. Bot smije reagovati na već
-          // otkrivene glasove (i Erestora), ali ne dobija uvid u buduće izbore.
-          revealedVotes: order.slice(0, order.indexOf(q)).filter(p => !p.lost).map(p => ({
-            playerId: p.idx,
-            key: votes['_by_' + p.idx],
-          })),
-        },
-      });
+      const bargain = bargains.get(q.idx);
+      const picked = bargain ? bargain.key : await q.controller.decide(g, {
+          type: 'chooseOption', prompt: `${src.name}: vote`, options,
+          aiHint: {
+            kind: 'vote', src, options, voter: q, forWhom: you, aiPick, secret: false,
+            // Will of the council je javno glasanje. Bot smije reagovati na već
+            // otkrivene glasove (i Erestora), ali ne dobija uvid u buduće izbore.
+            revealedVotes: order.slice(0, order.indexOf(q)).filter(p => !p.lost).map(p => ({
+              playerId: p.idx,
+              key: votes['_by_' + p.idx],
+            })),
+          },
+        });
+      const k = options.some(option => option.key === picked) ? picked : options[0].key;
       votes.set(k, (votes.get(k) || 0) + 1);
       const opt = options.find(o => o.key === k);
-      g.lg(`${q.name} votes for: ${opt ? opt.label : k}.`);
+      const politicalSuffix = bargain && bargain.contractId ? ' (vote bargain fulfilled)'
+        : bargain && bargain.campaignPosition ? ' (public campaign position)' : '';
+      g.lg(`${q.name} votes for: ${opt ? opt.label : k}.${politicalSuffix}`);
       votes['_by_' + q.idx] = k;
+      if (bargain && bargain.contractId && g.diplomacyRecordPublicChoice) g.diplomacyRecordPublicChoice(bargain.contractId, q, k);
+    }
+    const campaignPosition = [...bargains.values()].find(entry => entry && entry.campaignPosition);
+    const securedVote = [...bargains.values()].find(entry => entry && entry.contractId &&
+      campaignPosition && entry.key === campaignPosition.key);
+    if (campaignPosition && securedVote) {
+      // Diplomacy package house rule: the controller's declared ballot plus
+      // one secured public vote wins a tied council result. Raw vote counts
+      // stay truthful (2–2 in a four-player pod); only the winner tie-break is
+      // political, visible and backed by an active agreement.
+      votes._diplomacyTieBreak = campaignPosition.key;
+      votes._diplomacyContractId = securedVote.contractId;
     }
     await g.emit('voteEnd', { src, by: you, votes, options });
     return votes;
+  };
+  E7.voteBeats = (votes, preferred, other) => {
+    const preferredN = votes.get(preferred) || 0;
+    const otherN = votes.get(other) || 0;
+    return preferredN > otherN || (preferredN === otherN && votes._diplomacyTieBreak === preferred);
   };
   // tajno glasanje — svi biraju bez uvida
   E7.secretVote = async (g, you, src, options) => {

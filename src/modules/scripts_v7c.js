@@ -888,7 +888,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           { key: 'dominion', label: '👑 Dominion (Ring + counter)' },
           { key: 'guidance', label: '📜 Guidance (karta)' },
         ], (voter) => voter === ctx.you ? 'dominion' : 'guidance');
-        if ((votes.get('dominion') || 0) > (votes.get('guidance') || 0)) {
+        if (E7.voteBeats(votes, 'dominion', 'guidance')) {
           const rb = await E7.ringTempts(ctx.g, ctx.you);
           if (rb) ctx.g.addCounters(rb, '+1/+1', 1);
         } else {
@@ -1388,7 +1388,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         { key: 'return', label: '↩️ Return (vrati 2 iz groblja)' },
         { key: 'embark', label: '🚢 Embark (nova ruka od 7)' },
       ], (voter) => voter.graveyard.length >= 3 ? 'return' : 'embark');
-      if ((votes.get('return') || 0) > (votes.get('embark') || 0)) {
+      if (E7.voteBeats(votes, 'return', 'embark')) {
         for (const q of ctx.g.alivePlayers()) {
           const pool = q.graveyard.slice();
           if (!pool.length) continue;
@@ -1520,7 +1520,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         { key: 'time', label: '⏰ Time (ekstra potez)' },
         { key: 'knowledge', label: '📚 Knowledge (3 karte)' },
       ], (voter) => voter === ctx.you ? 'time' : 'knowledge');
-      if ((votes.get('time') || 0) > (votes.get('knowledge') || 0)) {
+      if (E7.voteBeats(votes, 'time', 'knowledge')) {
         ctx.g.extraTurns = ctx.g.extraTurns || [];
         ctx.g.extraTurns.push(ctx.you);
         ctx.g.lg(`${ctx.you.name} gets an EXTRA TURN!`);

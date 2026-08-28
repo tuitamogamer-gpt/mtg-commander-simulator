@@ -166,12 +166,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const beneficiary = player(game, clause.beneficiaryId);
     const actorName = actor ? actor.name : 'A player';
     const beneficiaryName = beneficiary ? beneficiary.name : 'the other player';
-    if (clause.type === 'no_attack') return `${actorName} will not voluntarily attack ${beneficiaryName} during their next combat.`;
-    if (clause.type === 'no_target_player') return `${actorName} will not choose ${beneficiaryName} or their permanents as harmful targets through their next turn.`;
-    if (clause.type === 'protect_permanent') return `${actorName} will not choose ${clauseTargetName(game, clause)} as a harmful target through their next turn.`;
+    const actorPossessive = actorName === 'You' ? 'your' : `${actorName}’s`;
+    if (clause.type === 'no_attack') return `${actorName} will not voluntarily attack ${beneficiaryName} during ${actorPossessive} next combat.`;
+    if (clause.type === 'no_target_player') return `${actorName} will not choose ${beneficiaryName} or their permanents as harmful targets through ${actorPossessive} next turn.`;
+    if (clause.type === 'protect_permanent') return `${actorName} will not choose ${clauseTargetName(game, clause)} as a harmful target through ${actorPossessive} next turn.`;
     if (clause.type === 'let_resolve') return `${actorName} will not counter or harmfully target ${clauseTargetName(game, clause)} on the stack.`;
-    if (clause.type === 'pressure_player') return `${actorName} will make a tactically sound attack on ${clauseTargetName(game, clause)} during their next combat, if one remains available; a certain free block never counts as able.`;
-    if (clause.type === 'remove_permanent') return `${actorName} will cast ${clause.sourceName || 'the announced removal spell'} targeting ${clauseTargetName(game, clause)} by the end of their next turn.`;
+    if (clause.type === 'pressure_player') return `${actorName} will make a tactically sound attack on ${clauseTargetName(game, clause)} during ${actorPossessive} next combat, if one remains available; a certain free block never counts as able.`;
+    if (clause.type === 'remove_permanent') return `${actorName} will cast ${clause.sourceName || 'the announced removal spell'} targeting ${clauseTargetName(game, clause)} by the end of ${actorPossessive} next turn.`;
+    if (clause.type === 'choice_vote') {
+      const action = clause.state === 'fulfilled' ? 'voted' : 'will vote';
+      return `${actorName} ${action} for ${clause.choiceLabel || clause.choiceKey || 'the requested option'} on ${clause.sourceName || 'the public choice'}.`;
+    }
     return `${actorName} made a short-term commitment to ${beneficiaryName}.`;
   }
 
@@ -893,13 +898,224 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return candidates.sort((a, b) => b.score - a.score || a.to.idx - b.to.idx);
   }
 
+  function choicePromiseOptions(game, sponsor, voter) {
+    return clauseOptions(game, sponsor, voter)
+      .filter(option => ['no_attack', 'no_target_player', 'protect_permanent'].includes(option.type))
+      .map(option => ({ option, clause: buildClause(game, sponsor, voter, option.key) }))
+      .filter(entry => entry.clause && !promiseConflict(game, entry.clause));
+  }
+
+  function choicePromiseAccepted(game, proposal, voter, predictedChoice) {
+    if (!voter || !voter.isAI) return false;
+    const promise = proposal.offer;
+    const value = Math.max(0, clauseDelta(game, promise, voter, { publicOnly: true }));
+    const scope = Math.max(0, clauseScopeDelta(game, promise, voter));
+    const requestedAlready = predictedChoice === proposal.requestedChoiceKey;
+    const deviationCost = requestedAlready ? 0.1 : 0.7;
+    const rapport = rapportValue(game, voter, player(game, proposal.fromId));
+    const styleCaution = voter.aiStyle === 'control' ? 0.08 : voter.aiStyle === 'chaos' ? -0.08 : 0;
+    return value + scope * 0.12 + rapport * 0.08 >= deviationCost + styleCaution;
+  }
+
+  function choiceCampaignStillNeedsVotes(game, desiredKey, predicted, forced) {
+    let desired = 0, unknown = 0;
+    const other = new Map();
+    for (const voter of activePlayers(game)) {
+      const forcedEntry = forced.get(voter.idx);
+      const key = forcedEntry && typeof forcedEntry === 'object'
+        ? forcedEntry.key
+        : forcedEntry || predicted.get(voter.idx);
+      if (key === desiredKey) desired++;
+      else if (key === undefined || key === null) unknown++;
+      else other.set(key, (other.get(key) || 0) + 1);
+    }
+    const strongestOther = Math.max(0, ...other.values()) + unknown;
+    const securedTieBreak = [...forced.values()].some(entry => entry && entry.contractId);
+    return securedTieBreak ? desired < strongestOther : desired <= strongestOther;
+  }
+
+  function makeChoiceProposal(game, sponsor, voter, src, option, promise, campaignId) {
+    const d = state(game);
+    const requestedChoice = {
+      type: 'choice_vote', actorId: voter.idx, beneficiaryId: sponsor.idx, state: 'proposed',
+      sourceCardId: src && src.iid, sourceName: src && src.name || 'Public vote',
+      choiceKey: option.key, choiceLabel: option.label,
+    };
+    return {
+      id: d.nextProposalId++, kind: 'choice-bargain', title: `${src && src.name || 'Council'} · VOTE BARGAIN`,
+      campaignId, fromId: sponsor.idx, toId: voter.idx, participantIds: [sponsor.idx, voter.idx],
+      request: requestedChoice, offer: promise, requestedChoiceKey: option.key,
+      requestedChoiceLabel: option.label, sourceCardId: src && src.iid, sourceName: src && src.name || 'Public vote',
+      source: sponsor.isAI ? 'bot-choice-campaign' : 'human-choice-campaign',
+      status: 'created', createdTurn: game.turnNo, createdRound: completedRounds(game),
+    };
+  }
+
+  function activateChoiceProposal(game, proposal) {
+    const d = state(game), sponsor = player(game, proposal.fromId), voter = player(game, proposal.toId);
+    if (!d || !sponsor || !voter) return null;
+    const contract = {
+      id: d.nextContractId++, kind: 'choice-bargain', title: `${proposal.sourceName} · ${proposal.requestedChoiceLabel}`,
+      fromId: sponsor.idx, toId: voter.idx, pairKey: pairKey(sponsor, voter),
+      participantIds: [sponsor.idx, voter.idx], campaignId: proposal.campaignId,
+      createdTurn: game.turnNo, createdRound: completedRounds(game), status: 'active',
+      clauses: [proposal.request, proposal.offer].map(clause => Object.assign({}, clause, {
+        state: 'active', createdActorTurns: player(game, clause.actorId).turnsStarted,
+      })),
+    };
+    d.contracts.push(contract);
+    proposal.status = 'accepted'; proposal.contractId = contract.id;
+    d.history.push({
+      turn: game.turnNo, kind: 'choice-bargain', fromId: sponsor.idx, toId: voter.idx, contractId: contract.id,
+      text: `${voter.name} accepted ${sponsor.name}’s vote bargain for ${proposal.requestedChoiceLabel} on ${proposal.sourceName}.`,
+    });
+    const text = `${voter.name} will vote for ${proposal.requestedChoiceLabel}. ${clauseLabel(game, proposal.offer)}`;
+    game.lg(`🗳️ Agreement #${contract.id}: ${text}`, 'diplomacy');
+    game.note('diplomacy', { kind: 'agreement', title: `VOTE BARGAIN #${contract.id} ACTIVE`, text, proposal, contract });
+    return contract;
+  }
+
+  async function reviewChoiceCampaignResult(game, result) {
+    if (!game.reviewDiplomacyWithHuman) return;
+    await game.reviewDiplomacyWithHuman({
+      source: 'choice-campaign', status: result.status, proposal: result.proposal,
+      contract: result.contract || null, reason: result.reason || '',
+    });
+  }
+
+  async function chooseHumanCampaignTarget(game, sponsor, src, option, eligible, predicted, acceptedCount) {
+    const choice = await sponsor.controller.decide(game, {
+      type: 'chooseOption',
+      prompt: `${src.name}: ask one player to vote for ${option.label}`,
+      options: [
+        ...eligible.map(voter => ({
+          key: String(voter.idx),
+          label: `${voter.name} · currently leaning ${predicted.get(voter.idx) || 'unknown'}`,
+        })),
+        { key: 'finish', label: acceptedCount ? 'Finish campaigning' : 'Do not make a vote deal' },
+      ],
+      diplomacyCampaign: { stage: 'target', source: src, requestedOption: option, acceptedCount },
+    });
+    return choice === 'finish' ? null : eligible.find(voter => voter.idx === Number(choice)) || null;
+  }
+
+  async function runChoiceCampaign(game, sponsor, src, options, predicted) {
+    const d = state(game);
+    const forced = new Map();
+    if (!d || activePlayers(game).length <= 2 || !sponsor || sponsor.lost || !src || !options || options.length < 2) return forced;
+    const eligibleAtStart = activePlayers(game).filter(voter => voter !== sponsor && !hasPairContract(game, sponsor, voter) &&
+      choicePromiseOptions(game, sponsor, voter).length);
+    if (!eligibleAtStart.length) return forced;
+
+    let desiredKey = predicted.get(sponsor.idx);
+    if (!sponsor.isAI) {
+      desiredKey = await sponsor.controller.decide(game, {
+        type: 'chooseOption', prompt: `${src.name}: campaign for a public vote?`,
+        options: [...options, { key: '__skip_campaign__', label: 'No campaign · let everyone vote freely' }],
+        diplomacyCampaign: { stage: 'choice', source: src },
+      });
+      if (desiredKey === '__skip_campaign__') return forced;
+    }
+    const desired = options.find(option => option.key === desiredKey);
+    if (!desired) return forced;
+    if (sponsor.isAI && !choiceCampaignStillNeedsVotes(game, desired.key, predicted, forced)) return forced;
+    // Launching a campaign is also a public commitment by its sponsor: they
+    // cannot ask the table for one outcome and then cast the opposite ballot.
+    forced.set(sponsor.idx, { key: desired.key, contractId: null, campaignPosition: true });
+
+    const used = new Set();
+    const campaignId = d.nextChoiceCampaignId++;
+    let acceptedCount = 0, attempts = 0;
+    while (acceptedCount < 1 && attempts < activePlayers(game).length - 1) {
+      const eligible = activePlayers(game).filter(voter => voter !== sponsor && !used.has(voter.idx) &&
+        !hasPairContract(game, sponsor, voter) && choicePromiseOptions(game, sponsor, voter).length);
+      if (!eligible.length) break;
+      if (sponsor.isAI && !choiceCampaignStillNeedsVotes(game, desired.key, predicted, forced)) break;
+
+      let voter = null, promiseEntry = null;
+      if (!sponsor.isAI) {
+        voter = await chooseHumanCampaignTarget(game, sponsor, src, desired, eligible, predicted, acceptedCount);
+        if (!voter) break;
+        const promiseOptions = choicePromiseOptions(game, sponsor, voter);
+        const picked = await sponsor.controller.decide(game, {
+          type: 'chooseOption', prompt: `${src.name}: what will you promise ${voter.name}?`,
+          options: [
+            ...promiseOptions.map(entry => ({ key: entry.option.key, label: entry.option.label })),
+            { key: '__cancel_promise__', label: 'Cancel this offer' },
+          ],
+          diplomacyCampaign: { stage: 'promise', source: src, voter, requestedOption: desired },
+        });
+        promiseEntry = promiseOptions.find(entry => entry.option.key === picked) || null;
+        if (!promiseEntry) { used.add(voter.idx); attempts++; continue; }
+      } else {
+        const ranked = [];
+        for (const candidate of eligible) {
+          const natural = predicted.get(candidate.idx);
+          if (natural === desired.key) continue;
+          for (const entry of choicePromiseOptions(game, sponsor, candidate)) {
+            const draft = makeChoiceProposal(game, sponsor, candidate, src, desired, entry.clause, campaignId);
+            // Do not consume a public proposal id while ranking hypothetical terms.
+            d.nextProposalId--;
+            if (!choicePromiseAccepted(game, draft, candidate, natural) && candidate.isAI) continue;
+            const sponsorCost = Math.max(0, -clauseDelta(game, entry.clause, sponsor, { publicOnly: true })) +
+              Math.max(0, -clauseScopeDelta(game, entry.clause, sponsor)) * 0.12;
+            const swing = natural === undefined || natural === null ? 1.15 : 1.5;
+            const humanVisibility = candidate.isAI ? 0 : 0.08;
+            ranked.push({ voter: candidate, entry, score: swing + humanVisibility - sponsorCost });
+          }
+        }
+        ranked.sort((a, b) => b.score - a.score || a.voter.idx - b.voter.idx || a.entry.option.key.localeCompare(b.entry.option.key));
+        if (!ranked.length) break;
+        voter = ranked[0].voter; promiseEntry = ranked[0].entry;
+      }
+
+      used.add(voter.idx); attempts++;
+      const proposal = makeChoiceProposal(game, sponsor, voter, src, desired, promiseEntry.clause, campaignId);
+      d.proposals.push(proposal);
+      const offerText = `${sponsor.name} offers ${voter.name}: vote for ${desired.label}; in return, ${clauseLabel(game, proposal.offer)}`;
+      game.lg(`🕊️ ${offerText}`, 'diplomacy');
+      game.note('diplomacy', { kind: 'proposal', title: 'PUBLIC VOTE BARGAIN', text: offerText, proposal });
+
+      let accepted;
+      if (voter.isAI) accepted = choicePromiseAccepted(game, proposal, voter, predicted.get(voter.idx));
+      else {
+        const response = await voter.controller.decide(game, {
+          type: 'chooseOption', prompt: `${src.name}: ${sponsor.name} wants your vote`,
+          options: [
+            { key: 'accept', label: `Accept · vote for ${desired.label}` },
+            { key: 'decline', label: 'Decline · keep your vote free' },
+          ],
+          diplomacyCampaign: { stage: 'response', source: src, sponsor, requestedOption: desired, promiseLabel: clauseLabel(game, proposal.offer) },
+        });
+        accepted = response === 'accept';
+      }
+
+      if (accepted) {
+        const contract = activateChoiceProposal(game, proposal);
+        if (contract) {
+          forced.set(voter.idx, { key: desired.key, contractId: contract.id });
+          acceptedCount++;
+          await reviewChoiceCampaignResult(game, { status: 'accepted', proposal, contract });
+          continue;
+        }
+      }
+      proposal.status = 'declined';
+      proposal.reason = `${voter.name} kept their vote free.`;
+      d.history.push({ turn: game.turnNo, kind: 'choice-declined', fromId: sponsor.idx, toId: voter.idx,
+        text: `${voter.name} declined ${sponsor.name}’s vote bargain on ${src.name}.` });
+      game.lg(`🗳️ ${voter.name} declined the vote bargain and keeps their vote free.`, 'diplomacy');
+      await reviewChoiceCampaignResult(game, { status: 'declined', proposal, reason: proposal.reason });
+    }
+    return forced;
+  }
+
   U.initDiplomacy = function (game, enabled) {
     game.diplomacy = {
       enabled: !!enabled, unlockAfterRounds: UNLOCK_ROUNDS,
       contracts: [], proposals: [], history: [], rapport: {},
       proposalCounts: {}, pairProposalCounts: {}, rejectedPairs: {},
       botRoundCounts: {}, botPairRounds: {}, botHumanOfferRound: -99,
-      nextProposalId: 1, nextContractId: 1, nextStackId: 1,
+      nextProposalId: 1, nextContractId: 1, nextStackId: 1, nextChoiceCampaignId: 1,
     };
     return game.diplomacy;
   };
@@ -914,6 +1130,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.diplomacyRunawayThreat = function () { return runawayThreat(this); };
   G.diplomacyPressureAttackOpportunity = function (actor, target) { refresh(this); return pressureAttackOpportunity(this, actor, target); };
   G.diplomacyStackKey = function (item) { return stackKey(this, item); };
+  G.diplomacyCampaignForPublicChoice = function (sponsor, src, options, predicted) {
+    return runChoiceCampaign(this, sponsor, src, options, predicted || new Map());
+  };
+  G.diplomacyRecordPublicChoice = function (contractId, voter, key) {
+    const contract = activeContracts(this).find(item => item.id === Number(contractId) && item.kind === 'choice-bargain');
+    if (!contract) return false;
+    const clause = contract.clauses.find(item => item.type === 'choice_vote' && item.actorId === voter.idx && item.state === 'active');
+    if (!clause || clause.choiceKey !== key) return false;
+    setClauseState(this, contract, clause, 'fulfilled', `the promised public vote was cast for ${clause.choiceLabel || key}`);
+    return true;
+  };
 
   G.proposeDiplomacy = function (from, to, requestKey, offerKey) {
     refresh(this);
@@ -1066,7 +1293,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.diplomacyFilterTargets = function (candidates, spec, src, ctrl, opts = {}) {
     refresh(this);
-    if (!state(this) || !status(this).unlocked || opts.allowForced) return candidates;
+    // Contextual vote bargains may become active before the normal turn-three
+    // offer builder unlocks. Once accepted, their concrete promises must still
+    // be enforceable; only forced Magic choices may bypass them.
+    if (!state(this) || opts.allowForced) return candidates;
     let filtered = candidates.filter(target => !targetBlockingEntries(this, ctrl, target, src, spec).length);
     const removal = activeClauses(this, clause => clause.type === 'remove_permanent' && clause.actorId === ctrl.idx &&
       clause.sourceCardId === (src && src.iid))[0];

@@ -742,6 +742,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 : toZone === 'library' ? "goes to its owner's library"
                   : 'leaves the battlefield';
         this.lg(`${card.name} ${verb}.`);
+        const coveredByBoardWipeVisual = card.meta._boardWipeVisualTurn === this.turnNo;
+        if (!opts.suppressVisualEffect && !coveredByBoardWipeVisual) {
+          this.note('gameEffect', {
+            kind: 'zoneMove', card, cardId: card.iid, cardName: card.name,
+            fromZone, toZone, fromPlayer: snap.ctrl, toPlayer: card.owner,
+          });
+        }
+        // The marker belongs only to this simultaneous departure. A card that
+        // returns and leaves again in the same turn still deserves its own FX.
+        if (coveredByBoardWipeVisual) delete card.meta._boardWipeVisualTurn;
       }
 
       this.remove(card);
@@ -1593,6 +1603,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (src && src.kw && src.kw('lifelink')) await this.gainLife(src.ctrl, n, src);
       p.turnState.damageTaken = (p.turnState.damageTaken || 0) + n;
       await this.loseLife(p, n, 'damage');
+      this.note('gameEffect', {
+        kind: 'damage', targetKind: 'player', target: p, targetPlayer: p,
+        source: src || null, amount: n, combat: !!opts.combat,
+      });
       await this.emit('damageToPlayer', { src, player: p, n, combat: !!opts.combat });
       if (!opts.deferSBA) await this.checkSBA();
       return n;
@@ -1654,6 +1668,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.removeCounters(target, 'loyalty', n);
         this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete planeswalkeru ${target.name}.`, 'dmg');
         if (src && src.kw && src.kw('lifelink')) await this.gainLife(src.ctrl, n, src);
+        target.meta._lastDamageVisual = { turn: this.turnNo, sourceId: src && src.iid || 0 };
+        this.note('gameEffect', {
+          kind: 'damage', targetKind: 'permanent', target, targetCard: target,
+          source: src || null, amount: n, combat: !!opts.combat,
+        });
         await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
         if (!opts.deferSBA) await this.checkSBA();
         return n;
@@ -1677,6 +1696,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (src && src.kw && src.kw('lifelink')) await this.gainLife(src.ctrl, n, src);
         this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete (wither → -1/-1): ${target.name}.`, 'dmg');
         await this.addM1(target, n, src ? src.ctrl : null, opts.deferSBA);
+        target.meta._lastDamageVisual = { turn: this.turnNo, sourceId: src && src.iid || 0 };
+        this.note('gameEffect', {
+          kind: 'damage', targetKind: 'permanent', target, targetCard: target,
+          source: src || null, amount: n, combat: !!opts.combat, wither: true,
+        });
         await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
         if (!opts.deferSBA) await this.checkSBA();
         return n;
@@ -1685,6 +1709,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (src && src.kw && src.kw('deathtouch')) target.deathtouched = true;
       if (src && src.kw && src.kw('lifelink')) await this.gainLife(src.ctrl, n, src);
       this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete: ${target.name}.`, 'dmg');
+      target.meta._lastDamageVisual = { turn: this.turnNo, sourceId: src && src.iid || 0 };
+      this.note('gameEffect', {
+        kind: 'damage', targetKind: 'permanent', target, targetCard: target,
+        source: src || null, amount: n, combat: !!opts.combat,
+      });
       await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
       if (!opts.deferSBA) await this.checkSBA();
       return n;
@@ -1923,12 +1952,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         doomed.push(card);
       }
+      const visualBatch = doomed.length >= 3;
+      if (visualBatch) {
+        for (const card of doomed) card.meta._boardWipeVisualTurn = this.turnNo;
+        this.note('gameEffect', {
+          kind: 'boardWipe', mode: 'destroy', cards: doomed.slice(), count: doomed.length,
+          source: opts.source || null,
+        });
+      }
       const previous = this._simultaneousLeaveSources;
       const batch = doomed.map(card => ({ card, ctrl: card.ctrl }));
       this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
       try {
         await this.withGraveyardEntryBatch(async () => {
-          for (const card of doomed) if (card.zone === 'battlefield') await this.move(card, 'graveyard');
+          for (const card of doomed) if (card.zone === 'battlefield') await this.move(card, 'graveyard', { suppressVisualEffect: visualBatch });
         });
       } finally {
         this._simultaneousLeaveSources = previous;
@@ -1945,11 +1982,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // "Exile all" je, kao destroy-all, simultan događaj. Zaključavanje svih
       // izvora prije prvog move() čuva LTB/dies semantiku board wipea.
       const unique = [...new Set(cards)].filter(card => card && card.zone === 'battlefield');
+      const visualBatch = unique.length >= 3;
+      if (visualBatch) {
+        for (const card of unique) card.meta._boardWipeVisualTurn = this.turnNo;
+        this.note('gameEffect', {
+          kind: 'boardWipe', mode: 'exile', cards: unique.slice(), count: unique.length, source: null,
+        });
+      }
       const previous = this._simultaneousLeaveSources;
       const batch = unique.map(card => ({ card, ctrl: card.ctrl }));
       this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
       try {
-        for (const card of unique) if (card.zone === 'battlefield') await this.move(card, 'exile');
+        for (const card of unique) if (card.zone === 'battlefield') await this.move(card, 'exile', { suppressVisualEffect: visualBatch });
       } finally {
         this._simultaneousLeaveSources = previous;
       }
@@ -2683,6 +2727,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           this.recalc();
           // creatures die
+          // Damage-based sweepers resolve as a series of deferred damage
+          // events followed by one SBA pass. Detect a shared damage source so
+          // three or more simultaneous deaths receive one table-wide storm
+          // treatment instead of a noisy stack of unrelated card exits.
+          const lethalDamageGroups = new Map();
+          for (const card of this.bf()) {
+            if (!card.is('Creature') || !card.meta._lastDamageVisual || card.meta._lastDamageVisual.turn !== this.turnNo) continue;
+            const zeroToughness = card.cur.toughness <= 0;
+            const lethalMarked = card.damage >= card.cur.toughness || (card.deathtouched && card.damage > 0);
+            const actuallyDies = zeroToughness || (lethalMarked && !card.kw('indestructible') &&
+              (card.counters.shield || 0) <= 0 && card.regenShield <= 0);
+            if (!actuallyDies || card.meta._boardWipeVisualTurn === this.turnNo) continue;
+            const sourceId = card.meta._lastDamageVisual.sourceId || 0;
+            if (!lethalDamageGroups.has(sourceId)) lethalDamageGroups.set(sourceId, []);
+            lethalDamageGroups.get(sourceId).push(card);
+          }
+          for (const [sourceId, cards] of lethalDamageGroups) {
+            if (cards.length < 3) continue;
+            for (const card of cards) card.meta._boardWipeVisualTurn = this.turnNo;
+            this.note('gameEffect', {
+              kind: 'boardWipe', mode: 'damage', cards: cards.slice(), count: cards.length,
+              source: sourceId ? this.byIid(sourceId) : null,
+            });
+          }
           for (const c of this.bf()) {
             if (c.is('Creature')) {
               if (c.cur.toughness <= 0) {

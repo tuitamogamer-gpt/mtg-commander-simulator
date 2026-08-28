@@ -1243,6 +1243,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ YOUR TURN' : `Turn ${g.turnNo}: ${e.p.name}`, e.p === ui.me);
         if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
         if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind, e);
+        if (e.type === 'gameEffect') ui.showGameEffect(e);
         if (e.type === 'battlefieldArrival') ui.showBattlefieldArrival(e);
         if (e.type === 'monarchChanged') ui.showMonarchChange(e);
         if (e.type === 'diplomacy' && e.text) {
@@ -3197,13 +3198,49 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (smokeScenario === 'generalEffects') {
       void (async () => {
+        const mode = new URLSearchParams(window.location.search).get('smokeEffect') || 'damage';
         g.turnPlayer = ui.me; g.turnNo = 8; g.phase = 'main1'; g.step = 'main'; g.paced = true;
-        const commander = ui.me.commanders[0];
-        if (!commander) throw new Error('General effects scenario nema komandera');
-        await g.move(commander, 'battlefield', { ctrl: ui.me });
-        await g.damageOpponents(commander, ui.me, 2);
-        g.lg('General effects smoke: globalna šteta potvrđena i primijenjena.', 'effect');
+        const place = (player, name) => {
+          const card = new MTG.CardInst(MTG.DEFS[name], player);
+          card.ctrl = player; card.zone = 'battlefield'; card.sick = false; card.tapped = false;
+          g.battlefield.push(card);
+          return card;
+        };
+        if (mode === 'bounce') {
+          const card = place(ui.me, 'Inferno Titan');
+          g.recalc(); ui.render(); await g.pace(500);
+          await g.move(card, 'hand');
+          g.lg('General effects smoke: return-to-hand transfer completed.', 'effect');
+        } else if (mode === 'wipe') {
+          const names = ['Stormcatch Mentor', 'Academy Manufactor', 'Riders of Gavony', 'Whirler Rogue', 'Inferno Titan', 'Palace Jailer'];
+          names.forEach((name, index) => place(g.players[index % g.players.length], name));
+          g.recalc(); ui.render(); await g.pace(500);
+          await g.destroyMany(g.bf().filter(card => card.is('Creature')), { source: null });
+          g.lg('General effects smoke: board wipe completed.', 'effect');
+        } else {
+          const commander = ui.me.commanders[0];
+          if (!commander) throw new Error('General effects scenario nema komandera');
+          await g.move(commander, 'battlefield', { ctrl: ui.me });
+          await g.damageOpponents(commander, ui.me, 2);
+          g.lg('General effects smoke: global damage confirmed and applied.', 'effect');
+        }
         ui.render();
+      })().catch(error => { console.error(error); ui.toast(error.message); });
+      return;
+    }
+    if (smokeScenario === 'voteDiplomacy') {
+      void (async () => {
+        if (!g.diplomacy || !g.diplomacy.enabled) MTG.initDiplomacy(g, true);
+        g.turnPlayer = ui.me; g.turnNo = 5; g.phase = 'combat'; g.step = 'begin'; g.paced = false;
+        const source = new MTG.CardInst(MTG.DEFS['Galadriel, Elven-Queen'], ui.me);
+        source.ctrl = ui.me; source.zone = 'battlefield'; source.sick = false;
+        g.battlefield.push(source); g.recalc(); ui.render();
+        const votes = await MTG.E7.vote(g, ui.me, source, [
+          { key: 'dominion', label: '👑 Dominion (Ring + counter)' },
+          { key: 'guidance', label: '📜 Guidance (draw a card)' },
+        ], voter => voter === ui.me ? 'dominion' : 'guidance');
+        g.lg(`Vote bargain smoke: Dominion ${votes.get('dominion') || 0} · Guidance ${votes.get('guidance') || 0}.`, 'diplomacy');
+        ui.sidebarTab = 'diplomacy'; ui.utilityDrawerOpen = true; ui.render();
       })().catch(error => { console.error(error); ui.toast(error.message); });
       return;
     }
