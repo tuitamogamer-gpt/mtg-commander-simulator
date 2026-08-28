@@ -65,12 +65,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const so = ctx.targets[0], g = ctx.g;
       if (!so || !g.stack.includes(so)) return;
       const caster = so.ctrl;
-      if (MTG.isUncounterable(g, so)) { g.lg(`${so.card.name} ne može biti counterovan.`); return; }
-      g.stack.splice(g.stack.indexOf(so), 1);
-      if (!so.isCopy) await g.move(so.card, 'graveyard');
-      g.lg(`${so.name} COUNTEROVAN (Swan Song)!`, 'counter');
+      if (!await g.counterStackObject(so, { source: ctx.src, message: `${so.name} is countered by Swan Song.` })) return;
       await g.makeTokens('birdU', caster);
-      g.note('stack', {});
     },
   };
   SC['Thirst for Knowledge'] = {

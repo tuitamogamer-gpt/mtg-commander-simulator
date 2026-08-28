@@ -101,16 +101,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   async function counterExileAndMayCast(ctx, target) {
     if (!target || !ctx.g.stack.includes(target) || MTG.isUncounterable(ctx.g, target)) return false;
-    ctx.g.stack.splice(ctx.g.stack.indexOf(target), 1);
-    if (target.isCopy) {
-      ctx.g.lg(`${target.name} is countered and ceases to exist.`);
-      ctx.g.note('stack', {});
-      return true;
-    }
     const card = target.card;
-    if (card.zone !== 'stack') return false;
-    await ctx.g.move(card, 'exile');
-    ctx.g.note('stack', {});
+    if (!await ctx.g.counterStackObject(target, { source: ctx.src, toZone: 'exile' })) return false;
+    if (target.isCopy) return true;
     if (card.zone === 'exile') await mayCastFree(ctx.g, ctx.you, card, 'exile');
     return true;
   }

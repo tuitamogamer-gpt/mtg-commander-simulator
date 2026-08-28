@@ -3206,7 +3206,60 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           g.battlefield.push(card);
           return card;
         };
-        if (mode === 'bounce') {
+        if (mode === 'counter') {
+          const source = place(ui.me, 'Stormcatch Mentor');
+          const caster = g.players.find(player => player !== ui.me);
+          const spell = new MTG.CardInst(MTG.DEFS['Swords to Plowshares'], caster);
+          spell.ctrl = caster; spell.zone = 'stack';
+          const stackObject = { kind: 'spell', name: spell.name, card: spell, ctrl: caster, targets: [], targetSpecs: [] };
+          g.stack.push(stackObject); g.recalc(); ui.render();
+          const trigger = document.createElement('button');
+          trigger.id = 'smoke-trigger-fx'; trigger.className = 'pbtn primary smokefxtrigger'; trigger.textContent = 'Trigger counterspell FX';
+          trigger.onclick = async () => { trigger.remove(); await g.counterStackObject(stackObject, { source, message: 'General effects smoke: spell countered.' }); };
+          document.body.appendChild(trigger);
+          return;
+        } else if (mode === 'keywordFx') {
+          const requested = new URLSearchParams(window.location.search).get('smokeKeyword') || 'hexproof';
+          const keyword = MTG.KEYWORD_VISUALS[requested] ? requested : 'hexproof';
+          const card = place(ui.me, 'Academy Manufactor');
+          card.def = Object.assign({}, card.def, { kws: [...new Set([...(card.def.kws || []), keyword])] });
+          g.recalc(); ui.render();
+          const trigger = document.createElement('button');
+          trigger.id = 'smoke-trigger-fx'; trigger.className = 'pbtn primary smokefxtrigger'; trigger.textContent = `Trigger ${keyword} FX`;
+          trigger.onclick = () => { trigger.remove(); g.note('gameEffect', { kind: 'keyword', keyword, state: keyword === 'indestructible' ? 'prevented' : 'gained', card, target: card }); };
+          document.body.appendChild(trigger);
+          return;
+        } else if (mode === 'minusCounter') {
+          const card = place(ui.me, 'Academy Manufactor');
+          g.recalc(); ui.render();
+          const trigger = document.createElement('button');
+          trigger.id = 'smoke-trigger-fx'; trigger.className = 'pbtn primary smokefxtrigger'; trigger.textContent = 'Trigger −1/−1 FX';
+          trigger.onclick = async () => { trigger.remove(); await g.addM1(card, 2, ui.me); };
+          document.body.appendChild(trigger);
+          return;
+        } else if (mode === 'keywords') {
+          const cards = ['Stormcatch Mentor', 'Academy Manufactor', 'Riders of Gavony', 'Whirler Rogue', 'Palace Jailer']
+            .map(name => place(ui.me, name));
+          const keywords = ['indestructible', 'hexproof', 'shroud', 'first strike', 'double strike'];
+          g.untilEffects.push({ expires: 'eot', apply: () => cards.forEach((card, index) => card.cur.kw.add(keywords[index])) });
+          cards[1].counters['-1/-1'] = 2;
+          g.recalc(); ui.render();
+          g.lg('General effects smoke: keyword icon board prepared.', 'effect');
+        } else if (mode === 'strike' || mode === 'doubleStrike') {
+          const attacker = place(ui.me, 'Riders of Gavony');
+          const twin = place(ui.me, 'Inferno Titan');
+          attacker.def = Object.assign({}, attacker.def, { kws: [...new Set([...(attacker.def.kws || []), 'first strike'])] });
+          twin.def = Object.assign({}, twin.def, { kws: [...new Set([...(twin.def.kws || []), 'double strike'])] });
+          const defender = g.players.find(player => player !== ui.me);
+          for (const card of [attacker, twin]) { card.attacking = defender; card.blockedBy = []; card.wasBlocked = false; }
+          if (mode === 'doubleStrike') { attacker.meta._dealtFirstStrike = true; twin.meta._dealtFirstStrike = true; }
+          g.combat = { attackers: [attacker, twin] }; g.recalc(); ui.render();
+          const trigger = document.createElement('button');
+          trigger.id = 'smoke-trigger-fx'; trigger.className = 'pbtn primary smokefxtrigger'; trigger.textContent = `Trigger ${mode === 'doubleStrike' ? 'double strike' : 'first strike'} FX`;
+          trigger.onclick = async () => { trigger.remove(); await g.combatDamage(ui.me, mode === 'doubleStrike' ? 'normal' : 'first'); };
+          document.body.appendChild(trigger);
+          return;
+        } else if (mode === 'bounce') {
           const card = place(ui.me, 'Inferno Titan');
           g.recalc(); ui.render(); await g.pace(500);
           await g.move(card, 'hand');
@@ -3471,10 +3524,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (pending.type === 'bottomCards' || pending.type === 'chooseCards' || pending.type === 'chooseTargets') {
         const selected = ui && ui.pending ? (ui.pending.sel || []) : [];
+        const proliferate = pending.type === 'chooseTargets' && pending.spec && pending.spec.what === 'proliferate';
         const actions = selected.length >= (pending.min || 0)
-          ? [{ label: `Confirm (${selected.length})`, value: selected.map(target => target.name || target.card && target.card.name || 'stack object') }]
+          ? [{ label: proliferate
+            ? (selected.length ? `Confirm proliferate (${selected.length})` : 'Confirm proliferate with no selections')
+            : `Confirm (${selected.length})`, value: selected.map(target => target.name || target.card && target.card.name || 'stack object') }]
           : [];
-        if ((pending.type === 'chooseCards' || pending.type === 'chooseTargets') && pending.min === 0) {
+        if (!proliferate && (pending.type === 'chooseCards' || pending.type === 'chooseTargets') && pending.min === 0) {
           actions.push({ label: 'None', value: [] });
         }
         return actions;
@@ -3538,6 +3594,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         selectedTargets: pending.type === 'chooseTargets' && ui.pending
           ? (ui.pending.sel || []).map((target, index) => ({
             order: index + 1, name: target.name || target.card && target.card.name || 'stack object',
+            selectionKind: pending.spec && pending.spec.what === 'proliferate' ? 'proliferate choice' : 'target',
+            adds: pending.spec && pending.spec.what === 'proliferate'
+              ? (target instanceof MTG.Player
+                ? ((target.poison || 0) > 0 ? ['+1 poison'] : [])
+                : Object.entries(target.counters || {}).filter(([, amount]) => amount > 0).map(([kind]) => `+1 ${kind}`))
+              : undefined,
           })) : undefined,
         allocation: pending.type === 'chooseX' && pending.allocation ? {
           kind: pending.allocation.kind,

@@ -103,10 +103,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         async ctx => {
           const so = ctx.targets[0], gg = ctx.g;
           if (so && gg.stack.includes(so) && !MTG.isUncounterable(gg, so)) {
-            gg.stack.splice(gg.stack.indexOf(so), 1);
-            if (!so.isCopy) await gg.move(so.card, 'graveyard');
-            gg.lg(`${so.name} COUNTEROVAN!`, 'counter');
-            gg.note('stack', {});
+            await gg.counterStackObject(so, { source: ctx.src });
           }
         });
     }

@@ -75,8 +75,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         options: [{ key: 'yes', label: 'Plati' }, { key: 'no', label: 'Ne' }], aiHint: { kind: 'taxCounter', amount } });
       if (yes === 'yes' && await g.payMana(payer, cost)) return false;
     }
-    g.stack.splice(g.stack.indexOf(so), 1); if (!so.isCopy) await g.move(so.card, 'graveyard');
-    g.lg(`${so.name} COUNTEROVAN!`, 'counter'); g.note('stack', {}); return true;
+    return g.counterStackObject(so, { source: ctx.src });
   }
   function moveCounters(g, from, to, by) {
     let n = 0; if (!from || !to) return n;
@@ -244,7 +243,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ] },
   ] },
     resolve: async ctx => { let i = 0; for (const m of ctx.mode) { const t = ctx.targets[i++]; if (m === 0) { if (t?.zone === 'battlefield') await ctx.g.move(t, 'hand'); }
-      else if (m === 1) { if (t && ctx.g.stack.includes(t) && !MTG.isUncounterable(ctx.g, t)) { ctx.g.stack.splice(ctx.g.stack.indexOf(t), 1); if (!t.isCopy) await ctx.g.move(t.card, 'graveyard'); } }
+      else if (m === 1) { if (t && ctx.g.stack.includes(t)) await ctx.g.counterStackObject(t, { source: ctx.src }); }
       else if (m === 2) { if (t) ctx.g.addCounters(t, '+1/+1', 2, false, ctx.you); } else { const cards = flat(ctx.targets[i++]); shuffleGy(ctx.g, cards); } } } };
   SC['Stroke of Genius'] = { xCost: true, targets: [T.player({ prompt: 'Ko vuče?', aiHint: { goal: 'drawSelf' } })], resolve: async ctx => { if (ctx.targets[0]) await ctx.g.draw(ctx.targets[0], ctx.x || 0); } };
   SC['Eureka Moment'] = { resolve: async ctx => { await ctx.g.draw(ctx.you, 2); await putLand(ctx.g, ctx.you, false, 'Eureka Moment: land (opciono)'); } };

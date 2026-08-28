@@ -5,7 +5,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const ICONS = new Set([
     'crown', 'stack', 'log', 'deals', 'hold', 'mana', 'menu', 'attack',
     'shield', 'target', 'library', 'cards', 'graveyard', 'exile', 'effects', 'player',
-    'info', 'ring',
+    'info', 'ring', 'counterspell', 'indestructible', 'hexproof', 'shroud',
+    'first-strike', 'double-strike', 'minus-counter', 'proliferate',
   ]);
 
   MTG.icon = function icon(name, extraClass = '') {
@@ -13,6 +14,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const safeClass = String(extraClass || '').replace(/[^a-zA-Z0-9 _-]/g, '');
     return `<svg class="gameicon${safeClass ? ` ${safeClass}` : ''}" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-${safeName}"></use></svg>`;
   };
+
+  // One visual language shared by battlefield badges, notices and full-screen
+  // gameplay FX.  Labels stay explicit because similar shield-like keywords
+  // must never depend on colour alone.
+  MTG.KEYWORD_VISUALS = Object.freeze({
+    indestructible: Object.freeze({ icon: 'indestructible', label: 'Indestructible', tone: 'gold' }),
+    hexproof: Object.freeze({ icon: 'hexproof', label: 'Hexproof', tone: 'blue' }),
+    shroud: Object.freeze({ icon: 'shroud', label: 'Shroud', tone: 'violet' }),
+    'first strike': Object.freeze({ icon: 'first-strike', label: 'First strike', tone: 'red' }),
+    'double strike': Object.freeze({ icon: 'double-strike', label: 'Double strike', tone: 'orange' }),
+  });
 
   // Shared accessible-dialog enhancer for the setup and Arena. It does not
   // decide whether Escape is legal; each product surface keeps that rule.

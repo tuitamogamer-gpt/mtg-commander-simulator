@@ -38,7 +38,8 @@ test('Turtle Power default je Leonardo plus Michelangelo kao legalan partner duo
 
 test('lokalni UI icon sprite pokriva ključne arena kontrole', () => {
   const sprite = fs.readFileSync(path.join(root, 'assets/icons/game-ui.svg'), 'utf8');
-  for (const icon of ['crown', 'stack', 'log', 'deals', 'hold', 'mana', 'menu', 'attack', 'shield', 'library', 'cards', 'graveyard', 'exile', 'effects', 'player', 'info', 'ring']) {
+  for (const icon of ['crown', 'stack', 'log', 'deals', 'hold', 'mana', 'menu', 'attack', 'shield', 'library', 'cards', 'graveyard', 'exile', 'effects', 'player', 'info', 'ring',
+    'counterspell', 'indestructible', 'hexproof', 'shroud', 'first-strike', 'double-strike', 'minus-counter', 'proliferate']) {
     assert.match(sprite, new RegExp(`id="icon-${icon}"`), `nedostaje icon-${icon}`);
     assert.match(MTG.icon(icon), new RegExp(`#icon-${icon}`));
   }

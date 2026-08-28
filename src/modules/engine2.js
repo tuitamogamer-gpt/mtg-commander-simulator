@@ -2101,6 +2101,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   // Resolution
   // ============================================================
+  G.counterStackObject = async function (so, opts = {}) {
+    const index = this.stack.indexOf(so);
+    if (index < 0) return false;
+    if (so.kind === 'spell' && !opts.ignoreUncounterable && MTG.isUncounterable && MTG.isUncounterable(this, so)) {
+      this.lg(`${so.name} can't be countered.`);
+      return false;
+    }
+    this.stack.splice(index, 1);
+    const destination = opts.toZone || 'graveyard';
+    if (!so.isCopy && so.card && so.card.zone === 'stack') await this.move(so.card, destination);
+    this.lg(opts.message || `${so.name} is countered${so.isCopy ? ' and the copy ceases to exist' : ''}.`, 'counter');
+    this.note('gameEffect', {
+      kind: 'counterspell', stackObject: so, card: so.card || null,
+      source: opts.source || null, destination,
+    });
+    this.note('stack', {});
+    return true;
+  };
+
   G.resolveTop = async function () {
     const so = this.stack.pop();
     if (!so) return;
@@ -2139,6 +2158,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // spell
     const card = so.card, p = so.ctrl, d = card.def;
     if (so.countered) {
+      this.note('gameEffect', {
+        kind: 'counterspell', stackObject: so, card: so.card || null,
+        source: so.counterSource || null, destination: 'graveyard',
+      });
       if (!so.isCopy) await this.move(card, 'graveyard');
       return;
     }
@@ -4420,6 +4443,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const b of blockers) {
         const bAmt = this.dmgAmount(b, stepKind);
         if (bAmt > 0) { plan.push({ src: b, target: a, n: bAmt }); dealt.push(b); }
+      }
+    }
+    const striking = [...new Set(dealt)];
+    if (striking.length) {
+      if (stepKind === 'first') this.note('gameEffect', {
+        kind: 'combatStrike', mode: 'firstStrike', cards: striking,
+        doubleCards: striking.filter(card => card.kw('double strike')),
+      });
+      else {
+        const doubleCards = striking.filter(card => card.kw('double strike') && card.meta._dealtFirstStrike);
+        if (doubleCards.length) this.note('gameEffect', { kind: 'combatStrike', mode: 'doubleStrike', cards: doubleCards });
       }
     }
     // CR 510.2: nanosi se sve odjednom — SBA tek nakon cijelog koraka

@@ -29,6 +29,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         aiHint: { goal: 'proliferate' },
       });
       const chosen = Array.isArray(picked) ? [...new Set(picked)].filter(x => candidates.includes(x)) : [];
+      const additions = chosen.map(subject => ({
+        target: subject,
+        kinds: subject instanceof MTG.Player
+          ? ((subject.poison || 0) > 0 ? ['poison'] : [])
+          : Object.entries(subject.counters || {}).filter(([, n]) => n > 0).map(([kind]) => kind),
+      }));
       for (const subject of chosen) {
         if (subject instanceof MTG.Player) {
           if ((subject.poison || 0) > 0) {
@@ -45,6 +51,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       g.recalc();
       await g.checkSBA();
+      g.note('gameEffect', {
+        kind: 'proliferate', player: p, pass: pass + 1, repeats,
+        subjects: chosen.slice(), additions, count: chosen.length,
+      });
       g.lg(`${p.name} proliferira (${chosen.length} izabrano).`);
     }
   };

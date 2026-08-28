@@ -1368,9 +1368,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               });
               if (yes === 'yes' && await ctx.g.payMana(payer, U.parseCost('{3}'))) continue;
             }
-            ctx.g.stack.splice(ctx.g.stack.indexOf(so), 1);
-            if (!so.isCopy) await ctx.g.move(so.card, 'graveyard');
-            ctx.g.lg(`${so.name} COUNTEROVAN!`, 'counter');
+            await ctx.g.counterStackObject(so, { source: ctx.src });
           }
         } else if (mi === 1) {
           const t = ctx.targets[ti++];

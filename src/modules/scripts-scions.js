@@ -706,16 +706,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const t = Array.isArray(raw) ? raw[0] : raw;
         if (!t) continue;
         if (modes[i] === 0) {
-          const index = ctx.g.stack.indexOf(t);
-          if (index >= 0 && !MTG.isUncounterable(ctx.g, t)) {
-            ctx.g.stack.splice(index, 1);
-            if (!t.isCopy && t.card) await ctx.g.move(t.card, 'graveyard');
-            ctx.g.lg(`Sublime Epiphany kontrira ${t.name || 'spell'}.`);
-          }
+          await ctx.g.counterStackObject(t, { source: ctx.src, message: `Sublime Epiphany counters ${t.name || 'the spell'}.` });
         }
         else if (modes[i] === 1) {
-          const index = ctx.g.stack.indexOf(t);
-          if (index >= 0) ctx.g.stack.splice(index, 1);
+          await ctx.g.counterStackObject(t, { source: ctx.src, ignoreUncounterable: true, message: `Sublime Epiphany counters ${t.name || 'the ability'}.` });
         }
         else if (modes[i] === 2) { if (t.zone === 'battlefield') { await ctx.g.move(t, 'hand'); ctx.g.lg(`${t.name} vraćen u ruku.`); } }
         else if (modes[i] === 3) { if (t.zone === 'battlefield') await ctx.g.copyPermanentToken(t, ctx.you, {}); }
@@ -849,10 +843,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       resolve: async ctx => {
         const so = ctx.targets[0], g = ctx.g;
         if (!so || !g.stack.includes(so) || MTG.isUncounterable(g, so)) return;
-        g.stack.splice(g.stack.indexOf(so), 1);
-        if (!so.isCopy) await g.move(so.card, 'graveyard');
-        g.lg(`${so.name} COUNTEROVAN (Mesmeric Glare)!`, 'counter');
-        g.note('stack', {});
+        await g.counterStackObject(so, { source: ctx.src, message: `${so.name} is countered by Mesmeric Glare.` });
       },
     },
   };

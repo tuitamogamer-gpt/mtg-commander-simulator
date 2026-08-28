@@ -1200,10 +1200,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       const so = ctx.targets[0], g = ctx.g;
       if (so && g.stack.includes(so) && !MTG.isUncounterable(g, so)) {
-        g.stack.splice(g.stack.indexOf(so), 1);
-        if (!so.isCopy) await g.move(so.card, 'graveyard');
-        g.lg(`${so.name} COUNTEROVAN!`, 'counter');
-        g.note('stack', {});
+        await g.counterStackObject(so, { source: ctx.src, message: `${so.name} is countered by Confirm Suspicions.` });
       }
       await E.investigate(g, ctx.you, 3);
     },

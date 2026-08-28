@@ -453,7 +453,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Keyword loader
   // ============================================================
   const SIMPLE_KWS = ['flying', 'first strike', 'double strike', 'deathtouch', 'lifelink', 'trample',
-    'haste', 'vigilance', 'menace', 'reach', 'defender', 'indestructible', 'hexproof', 'flash', 'prowess', 'forestwalk', 'wither'];
+    'haste', 'vigilance', 'menace', 'reach', 'defender', 'indestructible', 'hexproof', 'shroud', 'flash', 'prowess', 'forestwalk', 'wither'];
 
   MTG.buildDefs = function (rawCards, scripts) {
     // Skup stvarnih tipova stvorenja iz baze — koristi ga CardInst.hasSub da

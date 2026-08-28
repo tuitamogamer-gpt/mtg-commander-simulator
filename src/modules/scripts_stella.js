@@ -221,11 +221,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const so = ctx.targets[0], g = ctx.g;
       if (!so || !g.stack.includes(so)) return;
       const caster = so.ctrl;
-      if (MTG.isUncounterable(g, so)) { g.lg(`${so.card.name} ne može biti counterovan.`); return; }
-      g.stack.splice(g.stack.indexOf(so), 1);
-      if (!so.isCopy) await g.move(so.card, 'graveyard');
-      g.lg(`${so.name} je COUNTEROVAN!`, 'counter');
-      g.note('stack', {});
+      if (!await g.counterStackObject(so, { source: ctx.src, message: `${so.name} is countered by Arcane Denial.` })) return;
       const you = ctx.you;
       g.delayed.push({
         on: 'upkeep', once: true, name: 'Arcane Denial: vučenje', ctrl: caster,

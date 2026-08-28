@@ -1411,6 +1411,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const counterText = `${card.name}: +${n} ${kind} ${U.plural(n, 'counter', 'countera')}.`;
       if (!silent) this.lg(counterText);
       this.notifyEffect(`◆ ${counterText}`, { kind: 'counter', card, counterKind: kind, n }, !!silent);
+      if (kind === '-1/-1') this.note('gameEffect', {
+        kind: 'counterChange', counterKind: kind, card, target: card, amount: n,
+      });
       this.recalc();
       this.emitSync('countersAdded', { card, kind, n });
       // `emit` queues triggers synchronously even though their resolution is
@@ -1903,7 +1906,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async destroy(card, opts = {}) {
       if (card.zone !== 'battlefield') return false;
       if (card.kw('indestructible') && !opts.ignoreIndestructible) {
-        this.lg(`${card.name} je indestructible — preživljava.`);
+        this.lg(`${card.name} is indestructible — destroy is prevented.`);
+        this.note('gameEffect', { kind: 'keyword', keyword: 'indestructible', state: 'prevented', card, target: card, source: opts.source || null });
         return false;
       }
       if ((card.counters['shield'] || 0) > 0 && !opts.ignoreIndestructible) {
@@ -1933,7 +1937,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const doomed = [];
       for (const card of unique) {
         if (card.kw('indestructible') && !opts.ignoreIndestructible) {
-          this.lg(`${card.name} je indestructible — preživljava.`);
+          this.lg(`${card.name} is indestructible — destroy is prevented.`);
+          this.note('gameEffect', { kind: 'keyword', keyword: 'indestructible', state: 'prevented', card, target: card, source: opts.source || null });
           continue;
         }
         if ((card.counters['shield'] || 0) > 0 && !opts.ignoreIndestructible) {
@@ -2164,7 +2169,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // only creatures.  Wakanda Forever! can put indestructible on an artifact
         // or land, and that counter must still stop destroy effects.
         for (const kwc of ['double strike', 'first strike', 'deathtouch', 'lifelink',
-          'trample', 'vigilance', 'menace', 'reach', 'hexproof', 'indestructible']) {
+          'trample', 'vigilance', 'menace', 'reach', 'hexproof', 'shroud', 'indestructible']) {
           if ((c.counters[kwc] || 0) > 0) c.cur.kw.add(kwc);
         }
       }
@@ -2175,6 +2180,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // pass 5: per-card temp flags
       for (const c of bf) {
         if (c.meta.tempHaste) c.cur.kw.add('haste');
+        // Older card scripts used fast boolean flags while the shared keyword
+        // path used `cur.kw`. Keep both representations coherent so legality,
+        // visible badges and gained-keyword FX always describe the same state.
+        if (c.cur.hexproof) c.cur.kw.add('hexproof');
+        if (c.cur.shroud) c.cur.kw.add('shroud');
         if (c.meta.suspected) { c.cur.kw.add('menace'); c.cur.cantBlock = true; }
         if (c.cur.kw.has('defender')) {
           // Weathered Sentinels: "can attack players who attacked you last turn
@@ -2206,6 +2216,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const feature of features) {
           if (!previous.has(feature)) {
             this.notifyEffect(`✨ ${c.name} dobija ${feature}.`, { kind: 'abilityGrant', card: c, feature });
+            if (feature.startsWith('keyword: ')) {
+              const keyword = feature.slice(9);
+              if (MTG.KEYWORD_VISUALS && MTG.KEYWORD_VISUALS[keyword]) {
+                this.note('gameEffect', { kind: 'keyword', keyword, state: 'gained', card: c, target: c });
+              }
+            }
           }
         }
         c.meta._grantedFeatureNotices = features;
@@ -2623,8 +2639,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             }
             const paid = await wardCtx.g.payWard(wardCtx.data.payer, wardCtx.data.target, wardCtx.data.ward);
             if (paid) return;
-            if (original.kind === 'spell') original.countered = true;
-            else wardCtx.g.stack.splice(wardCtx.g.stack.indexOf(original), 1);
+            if (original.kind === 'spell') {
+              original.countered = true;
+              original.counterSource = wardCtx.data.target;
+            } else {
+              await wardCtx.g.counterStackObject(original, {
+                source: wardCtx.data.target, ignoreUncounterable: true,
+                message: `${original.name}: Ward counters the ability.`,
+              });
+              return;
+            }
             wardCtx.g.lg(`${original.name}: Ward counters the ${original.kind === 'spell' ? 'spell' : 'ability'}.`);
             wardCtx.g.note('stack', {});
           },

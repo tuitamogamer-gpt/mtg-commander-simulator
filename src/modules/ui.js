@@ -1642,10 +1642,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (isActiveAi) row.style.setProperty('--opp-scale', String(Math.min(2, this.oppScale * 1.2)));
         const isCandidate = this.isCandidate(p);
         const isSelectedTarget = this.selectedTargetIndex(p) >= 0;
+        const proliferateChoice = !!(this.pending && this.pending.q && this.pending.q.spec && this.pending.q.spec.what === 'proliferate');
         const collapsed = this.collapsed.has(p.idx);
         // header
         const head = el('div', 'opphead' + (isCandidate ? ' targetable' : ''));
-        head.title = isCandidate ? `Choose ${p.name} as the target`
+        head.title = isCandidate ? `Choose ${p.name} ${proliferateChoice ? 'for proliferate' : 'as the target'}`
           : collapsed ? `Expand ${p.name}'s battlefield` : `Collapse ${p.name}'s battlefield`;
         const cmdList = (p.commanders && p.commanders.length) ? p.commanders : p.command;
         const cmdState = cmdList.map(c => c.zone === 'battlefield' ? 'battlefield' : c.zone === 'command' ? 'CZ' : '🪦')
@@ -2034,7 +2035,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // selected player target can be removed directly
       } else if (this.isCandidate(me)) {
         myLife.classList.add('targetable');
-        myLife.title = `Choose ${me.name} as the target`;
+        const proliferateChoice = !!(this.pending && this.pending.q && this.pending.q.spec && this.pending.q.spec.what === 'proliferate');
+        myLife.title = `Choose ${me.name} ${proliferateChoice ? 'for proliferate' : 'as the target'}`;
         myLife.onclick = () => this.pickCandidate(me);
       } else {
         myLife.onclick = () => { this.playerSheet = me; this.render(); };
@@ -2138,6 +2140,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return c.meta && c.meta.faceDownDef || c.def;
     }
 
+    keywordBadgesHTML(c) {
+      if (!c || c.faceDown || !MTG.KEYWORD_VISUALS) return '';
+      const badges = [];
+      for (const [keyword, visual] of Object.entries(MTG.KEYWORD_VISUALS)) {
+        if (!c.kw(keyword)) continue;
+        const counterN = c.counters && c.counters[keyword] || 0;
+        const title = `${visual.label}${counterN ? ` — ${counterN} ${keyword} counter${counterN === 1 ? '' : 's'}` : ''}`;
+        badges.push(`<span class="keywordbadge tone-${visual.tone}" data-keyword="${esc(keyword)}" title="${esc(title)}" aria-label="${esc(title)}">${U.icon(visual.icon)}${counterN > 1 ? `<b>${counterN}</b>` : ''}</span>`);
+      }
+      return badges.length ? `<div class="keywordrack" aria-label="Visible keyword abilities">${badges.join('')}</div>` : '';
+    }
+
     miniCard(g, c, opts = {}) {
       const threatened = this.threatTargets && this.threatTargets.has(c.iid);
       const shownFaceDownDef = this.visibleFaceDownDef(c);
@@ -2161,13 +2175,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (c.commander) d.classList.add('cmdr');
       const pt = c.is('Creature') ? `<div class="pt">${c.power}/${c.toughness}</div>` : (c.is('Planeswalker') ? `<div class="pt">◆${c.counters['loyalty'] || 0}</div>` : '');
       const cnt = (c.counters['+1/+1'] || 0) ? `<div class="cnt">+${c.counters['+1/+1']}</div>` : '';
+      const minusN = c.counters['-1/-1'] || 0;
+      const minusCounter = minusN
+        ? `<div class="m1counter" title="${minusN} minus one/minus one counter${minusN === 1 ? '' : 's'}">${U.icon('minus-counter')}<b>−1/−1</b><span>×${minusN}</span></div>` : '';
       // Ostali counteri (charge, soul, lore, stun…) su ranije bili nevidljivi —
       // nisi mogao vidjeti koliko charge-a ima Inspirit. Charge ide prvi jer je
       // vezan za win condition i station pragove.
       const CNT_ICON = { charge: '⚡', soul: '💀', page: '📖', hour: '⏳', stun: '💫',
         shield: '🛡️', vow: '💍', loot: '🎁', stash: '📦', quest: '❖', lore: '📜' };
       const other = Object.entries(c.counters)
-        .filter(([k, v]) => v > 0 && k !== '+1/+1' && k !== 'loyalty' && k !== 'flying' && k !== 'indestructible')
+        .filter(([k, v]) => v > 0 && k !== '+1/+1' && k !== '-1/-1' && k !== 'loyalty' && k !== 'flying' && !MTG.KEYWORD_VISUALS[k])
         .sort((a, b) => (a[0] === 'charge' ? -1 : b[0] === 'charge' ? 1 : b[1] - a[1]));
       const oc = other.length
         ? `<div class="cnt2" title="${esc(other.map(([k, v]) => v + ' ' + k).join(', '))}">${
@@ -2181,11 +2198,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const landCreatureTag = landCreature ? '<div class="landcreaturetag">LAND CREATURE</div>' : '';
       const fd = c.faceDown ? `<div class="facedowntag">${mayLookFaceDown ? 'FACE-DOWN · ' + esc(faceName.split(' // ')[0]) : 'FACE-DOWN'}</div>` : '';
       const stackN = opts.stackN && opts.stackN > 1 ? `<div class="stackn">×${opts.stackN}</div>` : '';
+      const keywordBadges = this.keywordBadgesHTML(c);
       if (opts.stackN > 1) d.classList.add('stacked');
       d.innerHTML = `
         <img loading="lazy" src="${c.faceDown && !mayLookFaceDown ? MTG.BLANK_PX : imgURL(faceName)}" onerror="MTG.imgFail(this)">
         <div class="mname">${esc(c.faceDown ? 'Face-down creature' : c.name.split(' // ')[0])}</div>
-        ${pt}${cnt}${oc}${crewed}${att}${tok}${landCreatureTag}${fd}${stackN}
+        ${pt}${cnt}${minusCounter}${oc}${crewed}${att}${tok}${landCreatureTag}${fd}${stackN}${keywordBadges}
         ${badges.length ? `<div class="badge">${badges.join('')}</div>` : ''}`;
       d.dataset.cname = mayLookFaceDown ? faceName : c.name;
       const accessibleName = c.faceDown && !mayLookFaceDown
@@ -2193,12 +2211,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         : `${faceName}${landCreature ? `. Land creature ${c.power}/${c.toughness}` : ''}`;
       // interactions
       if (this.markSelectedTarget(d, c)) {
-        return this.makeKeyboardButton(d, `${accessibleName}. Selected target. Remove this target.`);
+        const proliferate = pd && pd.q.spec && pd.q.spec.what === 'proliferate';
+        return this.makeKeyboardButton(d, `${accessibleName}. Selected ${proliferate ? 'for proliferate' : 'target'}. Remove this ${proliferate ? 'choice' : 'target'}.`);
       }
       if (this.isCandidate(c)) {
         d.classList.add('targetable');
         d.onclick = () => this.pickCandidate(c);
-        return this.makeKeyboardButton(d, `${accessibleName}. Select this card as a target.`);
+        const proliferate = pd && pd.q.spec && pd.q.spec.what === 'proliferate';
+        return this.makeKeyboardButton(d, `${accessibleName}. Select this card ${proliferate ? 'for proliferate' : 'as a target'}.`);
       }
       if (pd && pd.q.type === 'attackers' && c.ctrl === this.me) {
         const sel = pd.sel.find(s => s.card === c);
@@ -2586,38 +2606,52 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         case 'chooseTargets': {
           const min = q.min, max = q.max;
+          const proliferate = !!(q.spec && q.spec.what === 'proliferate');
           bar.classList.add('targetprompt');
+          if (proliferate) bar.classList.add('proliferateprompt');
           bar.dataset.testid = 'target-selection';
+          if (proliferate) bar.dataset.testid = 'proliferate-selection';
           const source = q.src || q.card;
           bar.appendChild(el('div', 'targetprompthead',
-            `<span>🎯 ${source && source.name ? esc(source.name) + ' · ' : ''}${esc(q.prompt || 'Choose a target')}</span>` +
+            `<span>${proliferate ? U.icon('proliferate') : '🎯'} ${source && source.name ? esc(source.name) + ' · ' : ''}${esc(proliferate ? 'PROLIFERATE · Choose any number' : q.prompt || 'Choose a target')}</span>` +
             `<strong>${pd.sel.length} / ${max}</strong>`));
           bar.appendChild(el('div', 'targetprompthint',
-            pd.sel.length < min
+            proliferate
+              ? 'This is a choice, not targeting — hexproof, shroud and ward do not apply. Every chosen player or permanent gets one additional counter of every kind already there.'
+              : pd.sel.length < min
               ? `Choose ${min - pd.sel.length} more target${min - pd.sel.length === 1 ? '' : 's'}. Glowing cards and players are legal.${q.cancelable ? ' No mana or other cost has been paid yet.' : ''}`
               : `Review the numbered targets, then confirm.${q.cancelable ? ' You can still abort with no mana spent.' : ''} Click a selected target or × to remove it.`));
           const picked = el('div', 'targetpickchips');
           pd.sel.forEach((target, index) => {
-            const chip = el('button', 'targetpickchip',
-              `<span>${index + 1}</span><b>${esc(target.name || target.card && target.card.name || 'Stack object')}</b><i>×</i>`);
+            const additions = proliferate
+              ? (target instanceof MTG.Player
+                ? ((target.poison || 0) > 0 ? '+1 poison' : 'no counters')
+                : Object.entries(target.counters || {}).filter(([, n]) => n > 0).map(([kind]) => `+1 ${kind}`).join(' · '))
+              : '';
+            const chip = el('button', `targetpickchip${proliferate ? ' proliferatechoice' : ''}`,
+              `<span>${index + 1}</span><b>${esc(target.name || target.card && target.card.name || 'Stack object')}</b>${additions ? `<small>${esc(additions)}</small>` : ''}<i>×</i>`);
             chip.type = 'button';
-            chip.title = `Remove target ${index + 1}`;
+            chip.title = `Remove ${proliferate ? 'proliferate choice' : 'target'} ${index + 1}`;
             chip.onclick = () => this.removeTargetCandidate(target);
             picked.appendChild(chip);
           });
-          if (!pd.sel.length) picked.appendChild(el('div', 'targetpickempty', 'No targets selected yet'));
+          if (!pd.sel.length) picked.appendChild(el('div', 'targetpickempty', proliferate
+            ? 'No players or permanents selected — proliferating zero is legal.'
+            : 'No targets selected yet'));
           bar.appendChild(picked);
           const actions = el('div', 'btnrow targetpromptactions');
           if (q.cancelable) actions.appendChild(btn('Abort cast ↩', () => {
             this.resolvePendingEntry(pd, { kind: 'cancel' });
           }, 'danger'));
           if (pd.sel.length >= min) actions.appendChild(btn(
-            pd.sel.length
+            proliferate
+              ? (pd.sel.length ? `Confirm proliferate (${pd.sel.length}) ✓` : 'Confirm proliferate with no selections ✓')
+              : pd.sel.length
               ? `${q.cancelable ? 'Lock & cast with' : 'Lock'} ${pd.sel.length} target${pd.sel.length === 1 ? '' : 's'} ✓`
               : (q.cancelable ? 'Cast with no targets ✓' : 'Choose no targets ✓'),
             () => this.resolvePending(pd.sel.slice()), 'primary'));
           if (pd.sel.length) actions.appendChild(btn('Clear', () => { pd.sel = []; this.render(); }));
-          if (min === 0 && !pd.sel.length) actions.appendChild(btn('Skip', () => this.resolvePending([])));
+          if (!proliferate && min === 0 && !pd.sel.length) actions.appendChild(btn('Skip', () => this.resolvePending([])));
           bar.appendChild(actions);
           break;
         }
@@ -2886,8 +2920,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (q.type === 'bottomCards') {
         m.appendChild(el('div', 'mtitle', `Put ${q.n} on the bottom of your library`));
         m.appendChild(this.cardGrid(g, q.player.hand, { min: q.n, max: q.n }));
+        m.appendChild(el('div', 'selectionreview', `<b>${pd.sel.length} / ${q.n} selected</b><span>${pd.sel.length ? pd.sel.map(card => esc(card.name)).join(' · ') : 'Select the exact cards, then confirm.'}</span>`));
         const row = el('div', 'btnrow');
-        const b = btn('Confirm ✓', () => { if (pd.sel.length === q.n) this.resolvePending(pd.sel.slice()); }, 'primary');
+        const b = btn(`Confirm bottom cards (${pd.sel.length}/${q.n}) ✓`, () => { if (pd.sel.length === q.n) this.resolvePending(pd.sel.slice()); }, 'primary');
+        b.disabled = pd.sel.length !== q.n;
         row.appendChild(b);
         m.appendChild(row);
         return ov;
@@ -2895,6 +2931,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (q.type === 'chooseCards') {
         m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Choose cards') + ` (${q.min}-${q.max})`));
         m.appendChild(this.cardGrid(g, q.from, { min: q.min, max: q.max }));
+        m.appendChild(el('div', 'selectionreview', `<b>${pd.sel.length} selected · ${pd.sel.length >= q.min ? 'ready to confirm' : `${q.min - pd.sel.length} more required`}</b><span>${pd.sel.length ? pd.sel.map(card => esc(card.name)).join(' · ') : 'No cards selected.'}</span>`));
         const row = el('div', 'btnrow');
         if (pd.sel.length >= q.min) row.appendChild(btn(`Confirm ✓ (${pd.sel.length})`, () => this.resolvePending(pd.sel.slice()), 'primary'));
         if (q.min === 0) row.appendChild(btn('None', () => this.resolvePending([])));
@@ -2982,7 +3019,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }, 'wide' + (n ? ' selected' : ''));
           m.appendChild(b);
         }
-        if (chosen.length >= (q.min ?? 1)) m.appendChild(btn('Confirm ✓', () => this.resolvePending(chosen.slice()), 'primary wide'));
+        const selectedLabels = chosen.map(key => q.options.find(option => option.key === key)?.label || key);
+        m.appendChild(el('div', 'selectionreview', `<b>${chosen.length} selected</b><span>${selectedLabels.length ? selectedLabels.map(esc).join(' · ') : 'No options selected.'}</span>`));
+        if (chosen.length >= (q.min ?? 1)) m.appendChild(btn(`Confirm (${chosen.length}) ✓`, () => this.resolvePending(chosen.slice()), 'primary wide'));
         return ov;
       }
       if (q.type === 'chooseX') {
@@ -3247,10 +3286,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     markSelectedTarget(node, target) {
       const index = this.selectedTargetIndex(target);
       if (index < 0) return false;
+      const proliferate = !!(this.pending && this.pending.q && this.pending.q.spec && this.pending.q.spec.what === 'proliferate');
       node.classList.add('target-selected');
+      if (proliferate) node.classList.add('nontarget-selected');
       node.dataset.targetNumber = String(index + 1);
-      node.setAttribute('aria-label', `Target ${index + 1}: ${target.name || 'selected target'}`);
-      node.appendChild(el('div', 'targetorderbadge', `<span>🎯</span><b>${index + 1}</b>`));
+      node.setAttribute('aria-label', `${proliferate ? 'Proliferate choice' : 'Target'} ${index + 1}: ${target.name || 'selected object'}`);
+      node.appendChild(el('div', 'targetorderbadge', `<span>${proliferate ? U.icon('proliferate') : '🎯'}</span><b>${index + 1}</b>`));
       node.onclick = () => this.removeTargetCandidate(target);
       return true;
     }
@@ -3735,12 +3776,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ? `<div class="suspendstate exile"><b>⏳ SUSPENDED · ${suspendCount} TIME COUNTER${suspendCount === 1 ? '' : 'S'}</b><span>At your upkeep remove one. When the last is removed, the game casts this card automatically for free if able — you do not cast it manually from exile.</span></div>`
           : '';
       const faceDownLabel = card.zone === 'battlefield' ? 'FACE-DOWN 2/2' : 'FACE-DOWN EXILE';
+      const sheetKeywords = useCurrentCharacteristics && MTG.KEYWORD_VISUALS
+        ? Object.entries(MTG.KEYWORD_VISUALS).filter(([keyword]) => card.kw(keyword)).map(([keyword, visual]) =>
+          `<span class="sheetkeyword tone-${visual.tone}">${U.icon(visual.icon)}<b>${esc(visual.label)}</b>${(card.counters[keyword] || 0) ? `<small>${card.counters[keyword]} counter${card.counters[keyword] === 1 ? '' : 's'}</small>` : ''}</span>`).join('')
+        : '';
       info.innerHTML = `${card.faceDown ? `<div class="facedownsheet">🃏 ${faceDownLabel}${mayLookFaceDown ? ' · only you can see its identity' : ''}</div>` : ''}` +
         `${landCreature ? '<div class="animatedpermanentstate">LAND CREATURE · ACTIVE ON THE BATTLEFIELD</div>' : ''}` +
         suspendState +
         `<div class="sname">${esc(shownName)} ${costHTML(shownDef.cost || '')}</div>
         <div class="stype">${esc(typeLine)}</div>
         ${card.is('Creature') && card.cur ? `<div class="spt">${card.power}/${card.toughness}${card.tapped ? ' · TAPPED' : ''}${Object.entries(card.counters).filter(([k, v]) => v > 0).map(([k, v]) => ` · ${v}×${k}`).join('')}</div>` : ''}
+        ${sheetKeywords ? `<div class="sheetkeywords">${sheetKeywords}</div>` : ''}
         <div class="soracle">${esc(shownDef.oracle || '').replace(/\n/g, '<br>')}</div>
         ${shownDef.simplified ? `<div class="simplified">⚠️ ${esc(shownDef.simplified)}</div>` : ''}`;
       m.appendChild(info);
@@ -4519,11 +4565,86 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1460);
     }
 
+    showCounterspellEffect(event) {
+      const card = event.card || event.stackObject && event.stackObject.card;
+      const stackLabel = event.stackObject && event.stackObject.kind !== 'spell' ? 'ABILITY COUNTERED' : 'SPELL COUNTERED';
+      const layer = this.gameEffectLayer();
+      const fx = el('div', 'gamefx-counterspell', `
+        <div class="counterspell-rings" aria-hidden="true"><i></i><i></i><i></i></div>
+        ${card && card.name ? `<img src="${imgURL(card.name, true)}" onerror="MTG.imgFail(this)">` : ''}
+        <div class="counterspell-seal">${U.icon('counterspell')}</div>
+        <div class="counterspell-copy"><small>STACK UPDATE</small><b>${stackLabel}</b><span>${esc(card && card.name || event.stackObject && event.stackObject.name || 'Stack object')}${event.source && event.source.name ? ` · by ${esc(event.source.name)}` : ''}</span></div>`);
+      layer.appendChild(fx);
+      setTimeout(() => fx.remove(), 1480);
+      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1540);
+    }
+
+    showKeywordGameEffect(event) {
+      const visual = MTG.KEYWORD_VISUALS && MTG.KEYWORD_VISUALS[event.keyword];
+      if (!visual) return;
+      const target = event.card || event.target;
+      const node = this.gameEffectCardAnchor(target);
+      const rect = node && node.getBoundingClientRect();
+      const layer = this.gameEffectLayer();
+      const fx = el('div', `gamefx-keyword tone-${visual.tone} state-${event.state || 'gained'}`,
+        `<i></i><span>${U.icon(visual.icon)}</span><div><small>${event.state === 'prevented' ? 'DESTROY PREVENTED' : 'KEYWORD GAINED'}</small><b>${esc(visual.label)}</b>${target && target.name ? `<em>${esc(target.name)}</em>` : ''}</div>`);
+      const anchorX = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
+      const anchorY = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
+      fx.style.left = `${Math.max(150, Math.min(window.innerWidth - 150, anchorX))}px`;
+      fx.style.top = `${Math.max(70, Math.min(window.innerHeight - 70, anchorY))}px`;
+      layer.appendChild(fx);
+      if (node) { node.classList.add(`fx-keyword-${visual.tone}`); setTimeout(() => node.classList.remove(`fx-keyword-${visual.tone}`), 900); }
+      setTimeout(() => fx.remove(), 1180);
+      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1240);
+    }
+
+    showCounterChangeEffect(event) {
+      const node = this.gameEffectCardAnchor(event.card || event.target);
+      const rect = node && node.getBoundingClientRect();
+      const layer = this.gameEffectLayer();
+      const fx = el('div', 'gamefx-minuscounter', `${U.icon('minus-counter')}<b>−1/−1</b><span>×${Math.max(1, Number(event.amount) || 1)}</span>`);
+      fx.style.left = `${rect ? rect.left + rect.width / 2 : window.innerWidth / 2}px`;
+      fx.style.top = `${rect ? rect.top + rect.height / 2 : window.innerHeight / 2}px`;
+      layer.appendChild(fx);
+      setTimeout(() => fx.remove(), 1050);
+      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1120);
+    }
+
+    showCombatStrikeEffect(event) {
+      const double = event.mode === 'doubleStrike';
+      const layer = this.gameEffectLayer();
+      const fx = el('div', `gamefx-strike ${double ? 'double' : 'first'}`,
+        `<div class="strike-slashes"><i></i>${double ? '<i></i>' : ''}</div><span>${U.icon(double ? 'double-strike' : 'first-strike')}</span><div><small>COMBAT DAMAGE STEP</small><b>${double ? 'DOUBLE STRIKE' : 'FIRST STRIKE'}</b><em>${(event.cards || []).slice(0, 3).map(card => esc(card.name)).join(' · ')}</em></div>`);
+      layer.appendChild(fx);
+      setTimeout(() => fx.remove(), 1040);
+      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1110);
+    }
+
+    showProliferateEffect(event) {
+      const layer = this.gameEffectLayer();
+      for (const subject of (event.subjects || []).slice(0, 12)) {
+        const node = subject instanceof MTG.Player ? this.gameEffectPlayerAnchor(subject) : this.gameEffectCardAnchor(subject);
+        const rect = node && node.getBoundingClientRect();
+        if (!rect) continue;
+        const pulse = el('div', 'gamefx-proliferatepulse', `${U.icon('proliferate')}<i></i><i></i>`);
+        pulse.style.left = `${rect.left + rect.width / 2}px`; pulse.style.top = `${rect.top + rect.height / 2}px`;
+        layer.appendChild(pulse); setTimeout(() => pulse.remove(), 1040);
+      }
+      const title = el('div', 'gamefx-proliferatetitle', `${U.icon('proliferate')}<span><small>COUNTERS EXPAND</small><b>PROLIFERATE · ${event.count || 0} CHOSEN</b></span>`);
+      layer.appendChild(title); setTimeout(() => title.remove(), 1160);
+      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1220);
+    }
+
     showGameEffect(event) {
       if (!event || this.game && this.game.gameOver) return;
       if (event.kind === 'damage') this.showDamageEffect(event);
       else if (event.kind === 'zoneMove') this.showZoneMoveEffect(event);
       else if (event.kind === 'boardWipe') this.showBoardWipeEffect(event);
+      else if (event.kind === 'counterspell') this.showCounterspellEffect(event);
+      else if (event.kind === 'keyword') this.showKeywordGameEffect(event);
+      else if (event.kind === 'counterChange') this.showCounterChangeEffect(event);
+      else if (event.kind === 'combatStrike') this.showCombatStrikeEffect(event);
+      else if (event.kind === 'proliferate') this.showProliferateEffect(event);
     }
 
     showEffectNotice(text, kind, event = {}) {
