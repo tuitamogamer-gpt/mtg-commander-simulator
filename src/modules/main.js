@@ -89,7 +89,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <p>Choose one of ${nDecks} complete decks and play a real four-player pod with visible priority, targets, stack, and combat decisions.</p>
           <div id="primary-actions" class="mainmenu-actions" tabindex="-1">
             <button type="button" class="mainmenu-primary" data-menu-action="solo">${U.icon('player')}<span><b>Start a solo table</b><small>You and three deterministic local opponents</small></span></button>
-            <button type="button" class="mainmenu-secondary" data-menu-action="live">${U.icon('deals')}<span><b>Create a Live table</b><small>Invite one friend; two local bots complete the pod</small></span></button>
+            <button type="button" class="mainmenu-secondary" data-menu-action="live">${U.icon('deals')}<span><b>Create a Live table</b><small>Choose 2-4 human seats; no bots required</small></span></button>
           </div>
           <ul class="mainmenu-trust" aria-label="What you need to play">
             <li><span aria-hidden="true">✓</span>No sign-up</li>
@@ -148,13 +148,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         </article>
         <article class="mainmenu-mode live">
           <span aria-hidden="true">02</span>
-          <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Open a private two-player room, then let two local AI seats complete the pod.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>No account or public lobby</li><li>Two human seats, two local bots</li></ul></div>
+          <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Open a private room for two, three, or four real players with no bot seats.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>No account or public lobby</li><li>Up to four human seats</li></ul></div>
           <button type="button" data-menu-action="live">Configure a Live table</button>
         </article>
       </section>
 
       <section class="mainmenu-final-cta" aria-labelledby="final-cta-title">
-        <div><span>YOUR NEXT POD</span><h2 id="final-cta-title">Pick a deck. We will set the table.</h2><p>Start solo now, or invite one friend to a private Live room.</p></div>
+        <div><span>YOUR NEXT POD</span><h2 id="final-cta-title">Pick a deck. We will set the table.</h2><p>Start solo now, or invite up to three friends to a private Live room.</p></div>
         <div class="mainmenu-final-actions"><button type="button" class="mainmenu-primary" data-menu-action="solo">Start solo</button><button type="button" class="mainmenu-secondary" data-menu-action="live">Create Live table</button></div>
       </section>
 
@@ -310,7 +310,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       localStorage.removeItem('mtgDeckFavorites');
     }
     const state = {
-      deck: null, ai: initialMode === 'online' ? 2 : 3, mode: initialMode, difficulty: 'normal', seed: '',
+      deck: null, ai: initialMode === 'online' ? 0 : 3, livePlayers: 2, mode: initialMode, difficulty: 'normal', seed: '',
       aiDecks: ['', '', ''],
       aiStyles: ['random', 'random', 'random'],
       commanders: [], aiRandomCommanders: false, sumPartnerDamage: false,
@@ -677,16 +677,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       <div class="matchtypecopy"><span>Match type</span><b>Choose how you enter the pod</b></div>
       <div class="matchtypechoices">
         <button type="button" class="matchtypebtn${state.mode === 'solo' ? ' selected' : ''}" data-mode="solo"><strong>Solo table</strong><small>You + 1-3 AI V2 bots</small></button>
-        <button type="button" class="matchtypebtn live${state.mode === 'online' ? ' selected' : ''}" data-mode="online"><strong><i></i> 2 players live</strong><small>Friend link + 2 AI V2 bots</small></button>
+        <button type="button" class="matchtypebtn live${state.mode === 'online' ? ' selected' : ''}" data-mode="online"><strong><i></i> Live players</strong><small>2–4 humans · no bots</small></button>
       </div>`;
     right.appendChild(matchType);
+    const livePlayerRow = el('div', 'liveplayercount');
+    livePlayerRow.innerHTML = '<span><b>Human seats</b><small>Choose before the private link is generated</small></span><div class="liveplayerchoices"></div>';
+    for (const count of [2, 3, 4]) {
+      const button = el('button', `pbtn choice${count === state.livePlayers ? ' selected' : ''}`, `${count} players`);
+      button.type = 'button';
+      button.dataset.livePlayers = String(count);
+      button.onclick = () => {
+        state.livePlayers = count;
+        livePlayerRow.querySelectorAll('[data-live-players]').forEach(item => item.classList.toggle('selected', item === button));
+        updateStartLabel();
+        opponentsLabel.innerHTML = `<i>Live pod</i> ${count} human seats <em>Players 2–${count} choose after joining</em>`;
+      };
+      livePlayerRow.querySelector('.liveplayerchoices').appendChild(button);
+    }
+    right.appendChild(livePlayerRow);
     right.appendChild(el('div', 'seclabel', '<i>Choice</i> Commander'));
     const cmdBox = el('div', 'cmdbox');
     right.appendChild(cmdBox);
     const updateStartLabel = () => {
       if (!state.deck) return;
       const c = state.commanders;
-      startBtn.textContent = state.mode === 'online' ? 'Create live room' : 'Start game';
+      startBtn.textContent = state.mode === 'online' ? `Create ${state.livePlayers}-player room` : 'Start game';
       startBtn.title = `${state.deck}: ${c.map(n => n.split(',')[0]).join(' + ')}`;
     };
     function renderCmdBox() {
@@ -847,12 +862,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       aiRow.appendChild(b);
     }
     right.appendChild(aiRow);
-    right.appendChild(el('div', 'seclabel', '<i>AI</i> Bot loadouts'));
+    const botLoadoutsLabel = el('div', 'seclabel', '<i>AI</i> Bot loadouts');
+    right.appendChild(botLoadoutsLabel);
     right.appendChild(botStyles);
     renderBotStyles();
 
     const advanced = el('details', 'advancedrules');
     advanced.appendChild(el('summary', '', '<span>Advanced rules</span><small>Commander options, politics and difficulty</small>'));
+    const advancedSummaryCopy = advanced.querySelector('summary small');
     const advancedBody = el('div', 'advancedbody');
     advanced.appendChild(advancedBody);
 
@@ -877,7 +894,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     advancedBody.appendChild(diplomacyRow);
 
-    advancedBody.appendChild(el('div', 'seclabel', '<i>AI</i> Difficulty'));
+    const difficultyLabel = el('div', 'seclabel', '<i>AI</i> Difficulty');
+    advancedBody.appendChild(difficultyLabel);
     const diffRow = el('div', 'btnrow center');
     for (const [k, label] of [['easy', 'Easy'], ['normal', 'Normal'], ['hard', 'Hard']]) {
       const b = el('button', 'pbtn choice' + (k === 'normal' ? ' selected' : ''), label);
@@ -913,17 +931,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const setMatchMode = mode => {
       state.mode = mode === 'online' ? 'online' : 'solo';
-      state.ai = state.mode === 'online' ? 2 : 3;
+      state.ai = state.mode === 'online' ? 0 : 3;
       matchType.querySelectorAll('.matchtypebtn').forEach(button => {
         const selected = button.dataset.mode === state.mode;
         button.classList.toggle('selected', selected);
         button.setAttribute('aria-pressed', selected ? 'true' : 'false');
       });
+      livePlayerRow.hidden = state.mode !== 'online';
       aiRow.hidden = state.mode === 'online';
+      botLoadoutsLabel.hidden = state.mode === 'online';
+      botStyles.hidden = state.mode === 'online';
+      randRow.hidden = state.mode === 'online';
+      difficultyLabel.hidden = state.mode === 'online';
+      diffRow.hidden = state.mode === 'online';
       opponentsLabel.innerHTML = state.mode === 'online'
-        ? '<i>Live pod</i> Two AI V2 seats <em>Player 2 chooses a deck after joining</em>'
+        ? `<i>Live pod</i> ${state.livePlayers} human seats <em>Players 2–${state.livePlayers} choose after joining</em>`
         : '<i>Pod</i> Opponents <em>Choose each AI deck</em>';
       diplomacyRow.hidden = state.mode === 'online';
+      advancedSummaryCopy.textContent = state.mode === 'online'
+        ? 'Commander damage options for this human table'
+        : 'Commander options, politics and difficulty';
       if (state.mode === 'online') {
         state.diplomacyEnabled = false;
         diplomacyRow.querySelector('input').checked = false;
@@ -950,12 +977,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const renderReviewStage = () => {
       const botNames = ['AI Dragon', 'AI Wolf', 'AI Raven'];
       const seats = state.mode === 'online'
-        ? [
-          ['01', 'You', state.deck || 'Choose a deck', null],
-          ['02', 'Friend', 'Chooses after joining', null],
-          ['03', botNames[0], state.aiDecks[0] || 'Random deck', state.aiStyles[0]],
-          ['04', botNames[1], state.aiDecks[1] || 'Random deck', state.aiStyles[1]],
-        ]
+        ? Array.from({ length: state.livePlayers }, (_, index) => [
+          String(index + 1).padStart(2, '0'), index === 0 ? 'You' : `Player ${index + 1}`,
+          index === 0 ? state.deck || 'Choose a deck' : 'Chooses after joining', null,
+        ])
         : [['01', 'You', state.deck || 'Choose a deck', null]].concat(Array.from({ length: state.ai }, (_, index) =>
           [String(index + 2).padStart(2, '0'), botNames[index], state.aiDecks[index] || 'Random deck', state.aiStyles[index]]));
       const seatMarkup = seats.map(([number, name, deck, styleKey]) => {
@@ -971,14 +996,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         </div>
         <div class="reviewseats">${seatMarkup}</div>
         <dl class="reviewrules">
-          <div><dt>Mode</dt><dd>${state.mode === 'online' ? '2 players live + 2 local AI V2' : `Solo + ${state.ai} local AI V2`}</dd></div>
-          <div><dt>Difficulty</dt><dd>${esc(state.difficulty)}</dd></div>
+          <div><dt>Mode</dt><dd>${state.mode === 'online' ? `${state.livePlayers} human players · no bots` : `Solo + ${state.ai} local AI V2`}</dd></div>
+          ${state.mode === 'solo' ? `<div><dt>Difficulty</dt><dd>${esc(state.difficulty)}</dd></div>` : ''}
           <div><dt>Politics</dt><dd>${state.diplomacyEnabled ? 'Enabled after round 3' : 'Off'}</dd></div>
           <div><dt>Commander damage</dt><dd>${state.sumPartnerDamage ? 'House rule: combined' : 'Official: tracked separately'}</dd></div>
         </dl>
         <div class="reviewactions">
           <button type="button" class="pbtn reviewback">← Back to pod</button>
-          <button type="button" class="pbtn primary reviewstart">${state.mode === 'online' ? 'Create live room' : 'Start game'}</button>
+          <button type="button" class="pbtn primary reviewstart">${state.mode === 'online' ? `Create ${state.livePlayers}-player room` : 'Start game'}</button>
         </div>`;
       reviewStage.querySelector('.reviewback').onclick = () => setSetupStage('pod');
       reviewStage.querySelector('.reviewstart').onclick = () => state.mode === 'online' ? openOnlineLobby(state) : startGame(state);
@@ -1171,13 +1196,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     root.innerHTML = '<main class="online-lobby loading"><div class="online-waiting-game"><i></i><h1>Opening your private table…</h1></div></main>';
     try {
-      const client = await MTG.createHiggsfieldRoomClient({ create: !roomCode, roomCode });
+      const client = await MTG.createHiggsfieldRoomClient({
+        create: !roomCode, roomCode, playerCount: state && state.livePlayers,
+      });
       return MTG.mountOnlineLobby({
         root,
         client,
         initialSelection: state ? {
           name: 'Host', deck: state.deck, commanders: state.commanders,
-          aiDecks: state.aiDecks.slice(0, 2), aiStyles: state.aiStyles.slice(0, 2),
+          playerCount: state.livePlayers,
+          sumPartnerDamage: state.sumPartnerDamage,
           seed: state.seed ? parseInt(state.seed, 10) : Math.floor(Math.random() * 1e9),
         } : null,
         onHostStart: (view, roomClient) => MTG.startOnlineHostGame(view, roomClient),
@@ -1198,9 +1226,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function startGame(state) {
     const seed = state.seed ? parseInt(state.seed, 10) : Math.floor(Math.random() * 1e9);
     const rnd = MTG.mulberry32(seed);
-    const aiDecks = state.remoteHuman
-      ? MTG.selectOnlineBotDecks([state.deck, state.remoteHuman.deck], state.aiDecks, rnd)
-      : MTG.selectAIDecks(state.deck, state.ai, state.aiDecks, rnd);
+    const remoteHumans = Array.isArray(state.remoteHumans)
+      ? state.remoteHumans
+      : state.remoteHuman ? [state.remoteHuman] : [];
+    const aiDecks = remoteHumans.length ? [] : MTG.selectAIDecks(state.deck, state.ai, state.aiDecks, rnd);
 
     const ui = new MTG.UI();
     let gameRef = null;
@@ -1225,7 +1254,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       aiDecks,
       aiStyles: state.aiStyles.slice(0, state.ai),
       humanCommanders: (state.commanders && state.commanders.length) ? state.commanders : undefined,
-      remoteHuman: state.remoteHuman,
+      remoteHumans,
       aiRandomCommanders: state.aiRandomCommanders,
       sumPartnerDamage: state.sumPartnerDamage,
       diplomacyEnabled: state.diplomacyEnabled,
@@ -1306,7 +1335,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ui.render();
     const cmdTxt = (state.commanders || []).map(n => n.split(',')[0]).join(' + ');
     const smokeScenario = new URLSearchParams(window.location.search).get('smokeScenario');
-    if (!smokeScenario) ui.toast(`Seed: ${seed} · 👑 ${cmdTxt} · Opponents: ${aiDecks.join(', ')}`);
+    if (!smokeScenario) ui.toast(remoteHumans.length
+      ? `Seed: ${seed} · 👑 ${cmdTxt} · ${remoteHumans.length + 1} live players`
+      : `Seed: ${seed} · 👑 ${cmdTxt} · Opponents: ${aiDecks.join(', ')}`);
     // Deterministički browser scenario za card-sheet interakcije koje bi kroz
     // nasumičnu biblioteku bilo teško pouzdano dovesti na ekran. Aktivira se
     // isključivo eksplicitnim smokeScenario query parametrom.
@@ -3378,33 +3409,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   // The generated Higgsfield client supplies a tiny roomClient adapter. The
-  // existing engine remains host-authoritative while every Player 2 decision
+  // existing engine remains host-authoritative while every remote human decision
   // is validated by the room contract before this controller hydrates it.
   MTG.startOnlineHostGame = function (roomView, roomClient) {
     if (!roomView || roomView.phase !== 'running' || roomView.you !== 0)
       throw new Error('Only the connected host can start the live Commander engine.');
     const seats = roomView.seats || [];
     const host = seats.find(seat => seat.seat === 0);
-    const guest = seats.find(seat => seat.seat === 1);
-    const bots = seats.filter(seat => seat.kind === 'bot').sort((a, b) => a.seat - b.seat);
-    if (!host || !guest || bots.length !== 2) throw new Error('Live Commander requires two humans and two bots.');
+    const humans = seats.filter(seat => seat.kind === 'human').sort((a, b) => a.seat - b.seat);
+    if (!host || humans.length < 2 || humans.length > 4 || humans.length !== seats.length)
+      throw new Error('Live Commander requires two to four human players and no bots.');
     const bridge = MTG.onlineHostBridge(roomClient);
     return startGame({
       deck: host.deckId,
       commanders: host.commanderNames,
-      remoteHuman: {
-        deck: guest.deckId,
-        name: guest.name || 'Player 2',
-        commanders: guest.commanderNames,
+      remoteHumans: humans.slice(1).map(human => ({
+        deck: human.deckId,
+        name: human.name || `Player ${human.seat + 1}`,
+        commanders: human.commanderNames,
         controller: player => MTG.remoteControllerFor(player, bridge),
-      },
-      ai: 2,
-      aiDecks: bots.map(bot => bot.deckId),
-      aiStyles: bots.map(bot => bot.aiStyle || 'balanced'),
+      })),
+      ai: 0,
+      aiDecks: [],
+      aiStyles: [],
       aiRandomCommanders: false,
       sumPartnerDamage: !!roomView.settings.sumPartnerDamage,
       diplomacyEnabled: false,
-      difficulty: roomView.settings.difficulty || 'normal',
+      difficulty: 'normal',
       seed: String(roomView.settings.seed),
       onlineBridge: bridge,
     });
@@ -3417,6 +3448,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const ui = window._ui;
     if (!g) {
       const setup = document.querySelector('#setup');
+      const online = setup && setup.querySelector('[data-online-view]');
+      if (online) {
+        return {
+          mode: online.dataset.onlineView,
+          phase: online.dataset.phase || 'lobby',
+          playerCount: Number(online.dataset.playerCount) || online.querySelectorAll('.onlineseat').length,
+          you: Number(online.dataset.you),
+          seats: [...online.querySelectorAll('.onlineseat')].map(seat => ({
+            number: seat.querySelector('.onlineseatnum')?.textContent?.trim() || '',
+            name: seat.querySelector('.onlineseatcopy b')?.textContent?.trim() || '',
+            deck: seat.querySelector('.onlineseatcopy span')?.textContent?.trim() || '',
+            connected: seat.classList.contains('connected'),
+            mine: seat.classList.contains('mine'),
+          })),
+          invite: online.querySelector('.online-invite b')?.textContent?.trim() || null,
+          status: online.querySelector('.online-lobby-actions b')?.textContent?.trim() || null,
+          pendingDecision: online.querySelector('.online-decision.active h2')?.textContent?.trim() || null,
+        };
+      }
       if (setup && setup.dataset.appView === 'home') {
         return {
           mode: 'menu',
@@ -3759,7 +3809,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     MTG.initData(MTG.RAW_DATA);
     const initialParams = new URLSearchParams(window.location.search);
     const onlineSmoke = initialParams.get('onlineSmoke');
-    if (onlineSmoke === 'host' || onlineSmoke === 'guest') {
+    if (['host', 'guest', 'guest2', 'guest3', 'guest4'].includes(onlineSmoke)) {
       MTG.createHiggsfieldRoomClient = async () => MTG.createOnlineSmokeRoomClient(onlineSmoke);
       void openOnlineLobby(null, 'smoke');
       return;

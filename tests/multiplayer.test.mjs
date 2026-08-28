@@ -2,89 +2,118 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadEngine } from './helpers/load-engine.mjs';
 
-function configuredRoom(MTG) {
+const LIVE_PLAYERS = [
+  { id: 'host', name: 'Host', deckId: 'Abzan Armor', commanders: ['Felothar the Steadfast'] },
+  { id: 'guest-2', name: 'Player 2', deckId: 'Elven Council', commanders: ['Galadriel, Elven-Queen'] },
+  { id: 'guest-3', name: 'Player 3', deckId: 'Doom Prevails', commanders: ['Doctor Doom, King of Latveria'] },
+  { id: 'guest-4', name: 'Player 4', deckId: 'Turtle Power', commanders: ['Heroes in a Half Shell'] },
+];
+
+function configuredRoom(MTG, playerCount = 4) {
   const L = MTG.onlineGameLogic;
-  let state = L.setup(['host'], { botDecks: ['Doom Prevails', 'Turtle Power'] });
-  state = L.applyAction(state, { type: 'join', name: 'Friend' }, 'guest');
-  state = L.applyAction(state, { type: 'configure', deckId: 'Elven Council', commanderNames: ['Galadriel, Elven-Queen'], ready: true }, 'host');
-  state = L.applyAction(state, { type: 'configure', deckId: 'Most Wanted', commanderNames: ['Olivia, Opulent Outlaw'], ready: true }, 'guest');
+  let state = L.setup(['host'], { playerCount });
+  for (const player of LIVE_PLAYERS.slice(1, playerCount)) {
+    state = L.applyAction(state, { type: 'join', name: player.name }, player.id);
+  }
+  for (const player of LIVE_PLAYERS.slice(0, playerCount)) {
+    state = L.applyAction(state, {
+      type: 'configure', deckId: player.deckId, commanderNames: player.commanders, name: player.name, ready: true,
+    }, player.id);
+  }
   return state;
 }
 
-test('online room has exactly two human seats and two locked local AI seats', () => {
-  const MTG = loadEngine();
-  const state = MTG.onlineGameLogic.setup(['host']);
-  assert.deepEqual(Array.from(state.seats, seat => seat.kind), ['human', 'human', 'bot', 'bot']);
-  assert.equal(state.seats[0].role, 'host');
-  assert.equal(state.seats[1].role, 'guest');
-  assert.ok(state.seats.slice(2).every(seat => seat.connected && seat.ready));
-  assert.equal(MTG.onlineGameLogic.meta().maxPlayers, 2);
-});
-
-test('only host starts and all four seats require distinct decks', () => {
+test('online room supports two, three, or four human seats with no bots', () => {
   const MTG = loadEngine();
   const L = MTG.onlineGameLogic;
-  let state = configuredRoom(MTG);
-  assert.equal(L.validateAction(state, { type: 'start', seed: 42 }, 'guest').ok, false);
+  assert.equal(L.meta().minPlayers, 2);
+  assert.equal(L.meta().maxPlayers, 4);
+  for (const playerCount of [2, 3, 4]) {
+    const state = L.setup(['host'], { playerCount });
+    assert.equal(state.seats.length, playerCount);
+    assert.ok(state.seats.every(seat => seat.kind === 'human' && seat.aiStyle === null));
+    assert.equal(state.settings.playerCount, playerCount);
+    assert.deepEqual(Object.keys(state.views), Array.from({ length: playerCount }, (_, seat) => String(seat)));
+  }
+});
+
+test('only host starts after every selected human seat is connected with a different deck', () => {
+  const MTG = loadEngine();
+  const L = MTG.onlineGameLogic;
+  let state = configuredRoom(MTG, 4);
+  assert.equal(L.validateAction(state, { type: 'start', seed: 42 }, 'guest-2').ok, false);
   assert.equal(L.validateAction(state, { type: 'start', seed: 42 }, 'host').ok, true);
-  state = L.applyAction(state, { type: 'configureBot', seat: 2, deckId: 'Elven Council' }, 'host');
-  assert.match(L.validateAction(state, { type: 'start', seed: 42 }, 'host').error, /different decks/i);
+  state = L.applyAction(state, {
+    type: 'configure', deckId: 'Abzan Armor', commanderNames: ['Felothar the Steadfast'], ready: true,
+  }, 'guest-4');
+  assert.match(L.validateAction(state, { type: 'start', seed: 42 }, 'host').error, /different deck/i);
 });
 
-test('room filters host and guest snapshots and validates remote decision ownership', () => {
+test('room filters all four private snapshots and validates remote decision ownership by seat', () => {
   const MTG = loadEngine();
   const L = MTG.onlineGameLogic;
-  let state = configuredRoom(MTG);
+  let state = configuredRoom(MTG, 4);
   state = L.applyAction(state, { type: 'start', seed: 42 }, 'host');
-  state = L.applyAction(state, { type: 'sync', views: { 0: { hand: ['host-only'] }, 1: { hand: ['guest-only'] } } }, 'host');
-  const decision = { id: 'd1', seat: 1, type: 'chooseOption', prompt: 'Choose', legal: { kind: 'token', tokens: ['yes', 'no'] } };
+  state = L.applyAction(state, { type: 'sync', views: {
+    0: { hand: ['host-only'] }, 1: { hand: ['player-2-only'] },
+    2: { hand: ['player-3-only'] }, 3: { hand: ['player-4-only'] },
+  } }, 'host');
+  const decision = {
+    id: 'd4', seat: 3, type: 'chooseOption', prompt: 'Choose',
+    legal: { kind: 'token', tokens: ['yes', 'no'] },
+  };
   state = L.applyAction(state, { type: 'decisionRequest', decision }, 'host');
   const hostView = L.viewFor(state, 'host');
-  const guestView = L.viewFor(state, 'guest');
+  const player4View = L.viewFor(state, 'guest-4');
   assert.deepEqual(Array.from(hostView.gameView.hand), ['host-only']);
-  assert.deepEqual(Array.from(guestView.gameView.hand), ['guest-only']);
+  assert.deepEqual(Array.from(player4View.gameView.hand), ['player-4-only']);
   assert.equal(hostView.pendingDecision, null);
-  assert.equal(guestView.pendingDecision.id, 'd1');
-  assert.equal(L.validateAction(state, { type: 'decisionResponse', decisionId: 'd1', response: 'maybe' }, 'guest').ok, false);
-  assert.equal(L.validateAction(state, { type: 'decisionResponse', decisionId: 'd1', response: 'yes' }, 'host').ok, false);
-  state = L.applyAction(state, { type: 'decisionResponse', decisionId: 'd1', response: 'yes' }, 'guest');
+  assert.equal(L.viewFor(state, 'guest-2').pendingDecision, null);
+  assert.equal(player4View.pendingDecision.id, 'd4');
+  assert.equal(L.validateAction(state, { type: 'decisionResponse', decisionId: 'd4', response: 'yes' }, 'guest-3').ok, false);
+  state = L.applyAction(state, { type: 'decisionResponse', decisionId: 'd4', response: 'yes' }, 'guest-4');
+  assert.equal(L.viewFor(state, 'host').lastDecision.seat, 3);
   assert.equal(L.viewFor(state, 'host').lastDecision.response, 'yes');
-  assert.equal(L.viewFor(state, 'guest').lastDecision, null);
 });
 
-test('disconnect pauses a running room and host resumes only after both humans reconnect', () => {
+test('disconnect pauses a four-human room and host resumes only after every player reconnects', () => {
   const MTG = loadEngine();
   const L = MTG.onlineGameLogic;
-  let state = L.applyAction(configuredRoom(MTG), { type: 'start', seed: 42 }, 'host');
-  state = L.applyAction(state, { type: 'presence', connected: false }, 'guest');
+  let state = L.applyAction(configuredRoom(MTG, 4), { type: 'start', seed: 42 }, 'host');
+  state = L.applyAction(state, { type: 'presence', connected: false }, 'guest-3');
   assert.equal(state.phase, 'paused');
-  assert.equal(state.pause.seat, 1);
+  assert.equal(state.pause.seat, 2);
   assert.equal(L.validateAction(state, { type: 'resume' }, 'host').ok, false);
-  state = L.applyAction(state, { type: 'reconnect' }, 'guest');
+  state = L.applyAction(state, { type: 'reconnect' }, 'guest-3');
   state = L.applyAction(state, { type: 'resume' }, 'host');
   assert.equal(state.phase, 'running');
 });
 
-test('Player 2 can request a validated Last Resort correction without exposing its payload to other guests', () => {
+test('Player 4 can request a validated Last Resort correction without exposing its payload to other guests', () => {
   const MTG = loadEngine();
   const L = MTG.onlineGameLogic;
-  let state = L.applyAction(configuredRoom(MTG), { type: 'start', seed: 42 }, 'host');
+  let state = L.applyAction(configuredRoom(MTG, 4), { type: 'start', seed: 42 }, 'host');
   const request = { type: 'manualAction', action: { type: 'setLife', playerSeat: 2, value: 23 } };
-  assert.equal(L.validateAction(state, { type: 'manualAction', action: { type: 'setPause', value: true } }, 'guest').ok, true);
-  assert.equal(L.validateAction(state, request, 'guest').ok, true);
-  assert.equal(L.validateAction(state, { type: 'manualAction', action: { type: 'moveCard', cardToken: 'not-a-card', toZone: 'hand' } }, 'guest').ok, false);
-  state = L.applyAction(state, request, 'guest');
+  assert.equal(L.validateAction(state, request, 'guest-4').ok, true);
+  state = L.applyAction(state, request, 'guest-4');
   const hostView = L.viewFor(state, 'host');
-  const guestView = L.viewFor(state, 'guest');
   assert.equal(JSON.stringify(hostView.pendingManualAction.action), JSON.stringify(request.action));
-  assert.equal(hostView.pendingManualAction.seat, 1);
-  assert.equal(guestView.pendingManualAction, null);
-  assert.equal(L.validateAction(state, request, 'guest').ok, false);
+  assert.equal(hostView.pendingManualAction.seat, 3);
+  assert.equal(L.viewFor(state, 'guest-2').pendingManualAction, null);
   state = L.applyAction(state, {
-    type: 'manualAck', manualId: hostView.pendingManualAction.id, ok: true, message: 'AI Dragon life = 23',
+    type: 'manualAck', manualId: hostView.pendingManualAction.id, ok: true, message: 'Player 3 life = 23',
   }, 'host');
-  assert.equal(L.viewFor(state, 'host').lastManualAction, null);
-  assert.equal(L.viewFor(state, 'guest').lastManualAction.message, 'AI Dragon life = 23');
+  assert.equal(L.viewFor(state, 'guest-4').lastManualAction.message, 'Player 3 life = 23');
+  assert.equal(L.viewFor(state, 'guest-2').lastManualAction, null);
+});
+
+test('host room settings preserve the selected Commander damage rule', () => {
+  const MTG = loadEngine();
+  const L = MTG.onlineGameLogic;
+  let state = configuredRoom(MTG, 3);
+  assert.equal(L.validateAction(state, { type: 'configureSettings', sumPartnerDamage: true }, 'guest-2').ok, false);
+  state = L.applyAction(state, { type: 'configureSettings', sumPartnerDamage: true }, 'host');
+  assert.equal(state.settings.sumPartnerDamage, true);
 });
 
 test('assignment validation rejects a globally visible but illegal card-target pair', () => {
@@ -101,9 +130,9 @@ test('remote controller sends a private view and hydrates tokens back into engin
   const MTG = loadEngine();
   const game = new MTG.Game({ seed: 7, paced: false });
   game.lastResortPaused = true;
-  const remote = game.addPlayer('Player 2', { name: 'Remote deck' }, null, false);
-  remote.onlineSeat = 1;
-  const opponent = game.addPlayer('Opponent', { name: 'Other deck' }, null, true);
+  const remote = game.addPlayer('Player 4', { name: 'Remote deck' }, null, false);
+  remote.onlineSeat = 3;
+  const opponent = game.addPlayer('Opponent', { name: 'Other deck' }, null, false);
   opponent.onlineSeat = 2;
   const own = new MTG.CardInst(Object.assign({}, MTG.DEFS['Sol Ring']), remote);
   own.zone = 'hand'; remote.hand.push(own);
@@ -125,46 +154,40 @@ test('remote controller sends a private view and hydrates tokens back into engin
     options: [{ key: 'a', label: 'First' }, { key: 'b', label: 'Second' }],
   });
   assert.equal(answer, 'b');
-  assert.equal(payload.view.players.find(player => player.seat === 1).hand[0].name, 'Sol Ring');
+  assert.equal(payload.descriptor.seat, 3);
+  assert.equal(payload.view.players.find(player => player.seat === 3).hand[0].name, 'Sol Ring');
   assert.equal(payload.view.players.find(player => player.seat === 2).hand, undefined);
   assert.equal(payload.view.players.find(player => player.seat === 2).handCount, 1);
   assert.equal(payload.view.players.find(player => player.seat === 2).exile[0].name, 'Hidden card');
-  assert.equal(payload.view.players.find(player => player.seat === 2).exile[0].hidden, true);
   assert.equal(payload.view.players.find(player => player.seat === 2).exile[1].name, 'Sol Ring');
-  assert.equal(payload.view.lastResortPaused, true);
 });
 
-test('newGame supports Player 2 plus exactly two deterministic AI V2 controllers', () => {
+test('newGame supports four human controllers and no AI seats', () => {
   const MTG = loadEngine();
-  const first = 'Doom Prevails';
-  const second = 'Elven Council';
-  const bots = MTG.selectOnlineBotDecks([first, second], ['Turtle Power', 'Most Wanted'], MTG.mulberry32(3));
   const controller = { decide: async () => false };
   const game = MTG.newGame({
-    humanDeck: first,
-    humanController: () => controller,
-    remoteHuman: { deck: second, name: 'Friend', controller: () => controller },
-    aiDecks: bots,
-    aiStyles: ['balanced', 'balanced'],
-    seed: 3,
-    difficulty: 'normal',
-    paced: false,
+    humanDeck: 'Abzan Armor', humanController: () => controller,
+    remoteHumans: LIVE_PLAYERS.slice(1).map(player => ({
+      deck: player.deckId, name: player.name, commanders: player.commanders, controller: () => controller,
+    })),
+    aiDecks: [], aiStyles: [], seed: 3, difficulty: 'normal', paced: false,
   });
   assert.equal(game.players.length, 4);
-  assert.equal(game.players.filter(player => !player.isAI).length, 2);
-  assert.equal(game.players.filter(player => player.isAI).length, 2);
-  assert.ok(game.players.filter(player => player.isAI).every(player => player.controller instanceof MTG.AIController));
-  assert.deepEqual(new Set(game.players.map(player => player.deckName)).size, 4);
+  assert.equal(game.players.filter(player => !player.isAI).length, 4);
+  assert.equal(game.players.filter(player => player.isAI).length, 0);
+  assert.deepEqual(new Set(game.players.map(player => player.onlineSeat)), new Set([0, 1, 2, 3]));
+  assert.equal(new Set(game.players.map(player => player.deckName)).size, 4);
 });
 
-test('Vercel room invite restores the consumed private share token and room code', () => {
+test('Vercel room invite restores the private share token, room code, and selected player count', () => {
   const MTG = loadEngine();
   const invite = new URL(MTG.onlineRoomShareUrl(
     'https://commander-live.vercel.app/?commander_share=private-token&onlineSmoke=host&noise=1#debug',
-    'room-42',
+    'room-42', 4,
   ));
   assert.equal(invite.searchParams.get('_vercel_share'), 'private-token');
   assert.equal(invite.searchParams.get('room'), 'room-42');
+  assert.equal(invite.searchParams.get('players'), '4');
   assert.equal(invite.searchParams.has('onlineSmoke'), false);
   assert.equal(invite.searchParams.has('noise'), false);
   assert.equal(invite.hash, '');

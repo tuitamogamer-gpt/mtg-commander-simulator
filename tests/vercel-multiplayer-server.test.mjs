@@ -55,7 +55,7 @@ function socketHarness(url, playerId) {
   };
 }
 
-test('Vercel room serves two private human seats and two local AI seats through real WebSockets', async t => {
+test('Vercel room serves four human seats, four private views, and Player 4 decisions through real WebSockets', async t => {
   const store = createMemoryRoomStore();
   const server = createCommanderLiveServer({ store });
   server.listen(0, '127.0.0.1');
@@ -63,57 +63,83 @@ test('Vercel room serves two private human seats and two local AI seats through 
   const address = server.address();
   const room = '0123456789abcdef0123456789abcdef';
   const base = `ws://127.0.0.1:${address.port}/api/ws?room=${room}`;
-  const host = socketHarness(`${base}&create=1`, 'p-host-00000001');
-  const guest = socketHarness(base, 'p-guest-0000001');
+  const clients = [
+    socketHarness(`${base}&create=1&players=4`, 'p-host-00000001'),
+    socketHarness(base, 'p-guest-0000002'),
+    socketHarness(base, 'p-guest-0000003'),
+    socketHarness(base, 'p-guest-0000004'),
+  ];
+  const [host, player2, player3, player4] = clients;
   t.after(async () => {
-    host.ws.terminate();
-    guest.ws.terminate();
+    clients.forEach(client => client.ws.terminate());
     await new Promise(resolve => server.close(resolve));
   });
 
-  const hostJoined = await host.join();
-  assert.equal(hostJoined.view.you, 0);
-  assert.deepEqual(hostJoined.view.seats.map(seat => seat.kind), ['human', 'human', 'bot', 'bot']);
-  assert.equal(hostJoined.view.seats[1].connected, false);
-  assert.equal('playerId' in hostJoined.view.seats[0], false);
+  for (let seat = 0; seat < clients.length; seat++) {
+    const joined = await clients[seat].join();
+    assert.equal(joined.view.you, seat);
+    assert.equal(joined.view.settings.playerCount, 4);
+    assert.deepEqual(joined.view.seats.map(item => item.kind), ['human', 'human', 'human', 'human']);
+    assert.equal('playerId' in joined.view.seats[seat], false);
+  }
 
-  const guestJoined = await guest.join();
-  assert.equal(guestJoined.view.you, 1);
-  assert.equal(guestJoined.view.seats[0].connected, true);
-  assert.equal(guestJoined.view.seats[1].connected, true);
-
-  await host.act({ type: 'configure', deckId: 'Abzan Armor', commanderNames: ['Felothar the Steadfast'], ready: true });
-  await guest.act({ type: 'configure', deckId: 'Elven Council', commanderNames: ['Galadriel, Elven-Queen'], ready: true });
-  await host.act({ type: 'configureBot', seat: 2, deckId: 'Doom Prevails', aiStyle: 'balanced' });
-  await host.act({ type: 'configureBot', seat: 3, deckId: 'Turtle Power', aiStyle: 'balanced' });
-  const started = await host.act({ type: 'start', seed: 240824 });
+  const configurations = [
+    ['Abzan Armor', ['Felothar the Steadfast']],
+    ['Elven Council', ['Galadriel, Elven-Queen']],
+    ['Doom Prevails', ['Doctor Doom, King of Latveria']],
+    ['Turtle Power', ['Heroes in a Half Shell']],
+  ];
+  for (let seat = 0; seat < clients.length; seat++) {
+    await clients[seat].act({
+      type: 'configure', deckId: configurations[seat][0], commanderNames: configurations[seat][1], ready: true,
+    });
+  }
+  await host.act({ type: 'configureSettings', sumPartnerDamage: true });
+  const started = await host.act({ type: 'start', seed: 240828 });
   assert.equal(started.view.phase, 'running');
-  assert.equal(started.view.settings.seed, 240824);
+  assert.equal(started.view.settings.seed, 240828);
+  assert.equal(started.view.settings.sumPartnerDamage, true);
 
   await host.act({ type: 'sync', views: {
     0: { hand: ['host-secret'], battlefield: [], players: [], stack: [] },
-    1: { hand: ['guest-secret'], battlefield: [], players: [], stack: [] },
+    1: { hand: ['player-2-secret'], battlefield: [], players: [], stack: [] },
+    2: { hand: ['player-3-secret'], battlefield: [], players: [], stack: [] },
+    3: { hand: ['player-4-secret'], battlefield: [], players: [], stack: [] },
   } });
-  const hostPrivate = await host.waitFor(message => message.type === 'state' && message.view.gameView?.hand?.[0] === 'host-secret');
-  const guestPrivate = await guest.waitFor(message => message.type === 'state' && message.view.gameView?.hand?.[0] === 'guest-secret');
-  assert.deepEqual(hostPrivate.view.gameView.hand, ['host-secret']);
-  assert.deepEqual(guestPrivate.view.gameView.hand, ['guest-secret']);
-  assert.doesNotMatch(JSON.stringify(guestPrivate.view), /host-secret/);
+  for (let seat = 0; seat < clients.length; seat++) {
+    const privateState = await clients[seat].waitFor(message => message.type === 'state' && message.view.gameView?.hand?.[0] === `${seat === 0 ? 'host' : `player-${seat + 1}`}-secret`);
+    assert.equal(privateState.view.gameView.hand.length, 1);
+    for (let other = 0; other < clients.length; other++) {
+      if (other === seat) continue;
+      assert.doesNotMatch(JSON.stringify(privateState.view), new RegExp(`${other === 0 ? 'host' : `player-${other + 1}`}-secret`));
+    }
+  }
 
-  await guest.act({ type: 'manualAction', action: { type: 'setLife', playerSeat: 2, value: 23 } });
+  await host.act({
+    type: 'decisionRequest',
+    decision: { id: 'player-4-choice', seat: 3, type: 'chooseOption', prompt: 'Choose', legal: { kind: 'token', tokens: ['yes', 'no'] } },
+  });
+  const player4Decision = await player4.waitFor(message => message.type === 'state' && message.view.pendingDecision?.id === 'player-4-choice');
+  assert.equal(player4Decision.view.pendingDecision.seat, 3);
+  assert.equal(player2.messages.at(-1).view.pendingDecision, null);
+  await player4.act({ type: 'decisionResponse', decisionId: 'player-4-choice', response: 'yes' });
+  const hostDecision = await host.waitFor(message => message.type === 'state' && message.view.lastDecision?.id === 'player-4-choice');
+  assert.equal(hostDecision.view.lastDecision.seat, 3);
+
+  await player3.act({ type: 'manualAction', action: { type: 'setLife', playerSeat: 2, value: 23 } });
   const hostManual = await host.waitFor(message => message.type === 'state' && message.view.pendingManualAction?.action?.value === 23);
-  assert.equal(hostManual.view.pendingManualAction.seat, 1);
-  assert.doesNotMatch(JSON.stringify(guest.messages.at(-1)?.view || {}), /pendingManualAction.*setLife/);
-  await host.act({ type: 'manualAck', manualId: hostManual.view.pendingManualAction.id, ok: true, message: 'AI Dragon life = 23' });
-  const guestManual = await guest.waitFor(message => message.type === 'state' && message.view.lastManualAction?.message === 'AI Dragon life = 23');
-  assert.equal(guestManual.view.lastManualAction.ok, true);
+  assert.equal(hostManual.view.pendingManualAction.seat, 2);
+  assert.doesNotMatch(JSON.stringify(player2.messages.at(-1)?.view || {}), /pendingManualAction.*setLife/);
+  await host.act({ type: 'manualAck', manualId: hostManual.view.pendingManualAction.id, ok: true, message: 'Player 3 life = 23' });
+  const player3Manual = await player3.waitFor(message => message.type === 'state' && message.view.lastManualAction?.message === 'Player 3 life = 23');
+  assert.equal(player3Manual.view.lastManualAction.ok, true);
 
-  guest.close();
+  player4.close();
   const paused = await host.waitFor(message => message.type === 'state' && message.view.phase === 'paused');
-  assert.equal(paused.view.pause.seat, 1);
+  assert.equal(paused.view.pause.seat, 3);
 });
 
-test('Vercel room rejects a third human and keeps online play optional beside solo mode', async t => {
+test('Vercel room enforces the host-selected count and the setup keeps solo play separate', async t => {
   const store = createMemoryRoomStore();
   const server = createCommanderLiveServer({ store });
   server.listen(0, '127.0.0.1');
@@ -121,27 +147,31 @@ test('Vercel room rejects a third human and keeps online play optional beside so
   const address = server.address();
   const room = 'fedcba9876543210fedcba9876543210';
   const base = `ws://127.0.0.1:${address.port}/api/ws?room=${room}`;
-  const host = socketHarness(`${base}&create=1`, 'p-host-00000002');
-  const guest = socketHarness(base, 'p-guest-0000002');
-  const intruder = socketHarness(base, 'p-third-0000002');
+  const host = socketHarness(`${base}&create=1&players=3`, 'p-host-00000002');
+  const player2 = socketHarness(base, 'p-guest-0000005');
+  const player3 = socketHarness(base, 'p-guest-0000006');
+  const intruder = socketHarness(base, 'p-fourth-0000007');
   t.after(async () => {
-    host.ws.terminate(); guest.ws.terminate(); intruder.ws.terminate();
+    host.ws.terminate(); player2.ws.terminate(); player3.ws.terminate(); intruder.ws.terminate();
     await new Promise(resolve => server.close(resolve));
   });
-  await host.join();
-  await guest.join();
+  const joined = await host.join();
+  assert.equal(joined.view.seats.length, 3);
+  await player2.join();
+  await player3.join();
   await intruder.opened();
-  intruder.ws.send(JSON.stringify({ type: 'join', playerId: 'p-third-0000002' }));
+  intruder.ws.send(JSON.stringify({ type: 'join', playerId: 'p-fourth-0000007' }));
   const rejected = await intruder.waitFor(message => message.type === 'error');
-  assert.match(rejected.error, /two human seats are full/i);
+  assert.match(rejected.error, /3-player room is full/i);
 
   const main = await readFile(new URL('../src/modules/main.js', import.meta.url), 'utf8');
   const multiplayer = await readFile(new URL('../src/modules/multiplayer.js', import.meta.url), 'utf8');
   const lobby = await readFile(new URL('../src/modules/multiplayer-ui.js', import.meta.url), 'utf8');
   assert.match(main, /Solo table<\/strong><small>You \+ 1-3 AI V2 bots/);
-  assert.match(main, /2 players live<\/strong><small>Friend link \+ 2 AI V2 bots/);
-  assert.match(main, /state\.ai = state\.mode === 'online' \? 2 : 3/);
-  assert.match(multiplayer, /vercel\\\.app/);
+  assert.match(main, /2–4 humans · no bots/);
+  assert.match(main, /livePlayers: 2/);
+  assert.match(multiplayer, /players=\$\{playerCount\}/);
   assert.match(multiplayer, /\/api\/ws\?room=/);
-  assert.match(lobby, /if \(!this\.client\.platformAutoJoin\)/);
+  assert.match(lobby, /All \$\{playerCount\} players ready/);
+  assert.doesNotMatch(lobby, /configureBot|LOCAL AI V2/);
 });

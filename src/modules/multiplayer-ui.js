@@ -57,10 +57,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           type: 'configure', deckId: this.initial.deck,
           commanderNames: this.initial.commanders || [], name: this.initial.name || 'Host', ready: true,
         });
-        const botDecks = MTG.selectOnlineBotDecks([this.initial.deck], this.initial.aiDecks || [], MTG.mulberry32(this.initial.seed || 1));
-        for (let index = 0; index < 2; index++) await this.perform({
-          type: 'configureBot', seat: index + 2, deckId: botDecks[index],
-          aiStyle: (this.initial.aiStyles || [])[index] || 'balanced',
+        await this.perform({
+          type: 'configureSettings', sumPartnerDamage: !!this.initial.sumPartnerDamage,
         });
       }
       this.render();
@@ -87,11 +85,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const deck = MTG.DECKS[seat.deckId];
       card.innerHTML = `
         <div class="onlineseatnum">0${seat.seat + 1}</div>
-        <div class="onlineseatstatus"><i></i>${seat.kind === 'bot' ? 'LOCAL AI V2' : seat.connected ? 'CONNECTED' : 'WAITING'}</div>
+        <div class="onlineseatstatus"><i></i>${seat.connected ? 'CONNECTED' : 'WAITING'}</div>
         ${deck ? `<img src="${artURL(deck.commander)}" alt="${esc(deck.commander)}" onerror="MTG.imgFail(this)">` : '<div class="onlineseatempty">+</div>'}
         <div class="onlineseatcopy"><small>${esc(seat.role)}</small><b>${esc(seat.name)}</b><span>${seat.deckId ? esc(seat.deckId) : 'No deck selected'}</span></div>`;
       const unavailable = new Set(view.seats.filter(item => item.seat !== seat.seat).map(item => item.deckId).filter(Boolean));
-      if ((seat.kind === 'human' && mine && view.phase === 'lobby') || (seat.kind === 'bot' && view.you === 0 && view.phase === 'lobby')) {
+      if (mine && view.phase === 'lobby') {
         const select = el('select', 'online-deck-select');
         select.setAttribute('aria-label', `${seat.name} deck`);
         select.innerHTML = `<option value="">Choose deck</option>${deckOptions(seat.deckId, unavailable)}`;
@@ -99,8 +97,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const deckId = select.value;
           if (!deckId) return;
           const commanders = MTG.defaultCommanders(MTG.DECKS[deckId], MTG.DEFS);
-          if (seat.kind === 'bot') this.perform({ type: 'configureBot', seat: seat.seat, deckId, aiStyle: seat.aiStyle || 'balanced', commanderNames: commanders });
-          else this.perform({ type: 'configure', deckId, commanderNames: commanders, name: seat.name, ready: true });
+          this.perform({ type: 'configure', deckId, commanderNames: commanders, name: seat.name, ready: true });
         };
         card.appendChild(select);
       }
@@ -110,16 +107,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderLobby(view) {
       const shell = el('main', 'online-lobby');
       const share = this.client.shareUrl || location.href;
+      const playerCount = view.settings && view.settings.playerCount || view.seats.length;
+      const readySeats = view.seats.filter(seat => seat.connected && seat.ready);
+      const waiting = view.seats.filter(seat => !seat.connected || !seat.ready).map(seat => seat.name);
+      const status = readySeats.length === playerCount
+        ? `All ${playerCount} players ready`
+        : `Waiting for ${waiting.join(', ')}`;
+      shell.dataset.onlineView = 'lobby';
+      shell.dataset.playerCount = String(playerCount);
+      shell.dataset.you = String(view.you);
+      shell.dataset.phase = view.phase;
       shell.innerHTML = `
         <header class="online-lobby-head">
           <button type="button" class="online-back">← Back</button>
-          <div><span>COMMANDER LIVE</span><h1>${view.you === 0 ? 'Your table is open.' : 'You joined the table.'}</h1><p>Two live players. Two deterministic AI V2 bots. One private Commander pod.</p></div>
+          <div><span>COMMANDER LIVE · ${playerCount} HUMAN SEATS</span><h1>${view.you === 0 ? 'Your table is open.' : 'You joined the table.'}</h1><p>${playerCount} live players. No bots. One private Commander table.</p></div>
           <div class="online-room-state"><i></i>${view.phase === 'paused' ? 'PAUSED' : 'ROOM ONLINE'}</div>
         </header>
-        ${view.you === 0 ? `<section class="online-invite"><div><small>PRIVATE INVITE LINK</small><b>${esc(share)}</b></div><button type="button" class="online-copy">Copy friend link</button></section>` : ''}
+        ${view.you === 0 ? `<section class="online-invite"><div><small>PRIVATE INVITE LINK · ${playerCount - 1} OPEN SEAT${playerCount === 2 ? '' : 'S'}</small><b>${esc(share)}</b></div><button type="button" class="online-copy">Copy invite link</button></section>` : ''}
         <section class="online-seats" aria-label="Commander seats"></section>
         <footer class="online-lobby-actions">
-          <div><small>TABLE STATUS</small><b>${view.seats.slice(0, 2).every(seat => seat.connected && seat.ready) ? 'Both players ready' : 'Waiting for Player 2'}</b><span>Every seat must use a different deck.</span></div>
+          <div><small>TABLE STATUS</small><b>${esc(status)}</b><span>Every human seat must use a different deck.</span></div>
         </footer>`;
       shell.querySelector('.online-back').onclick = () => this.onBack && this.onBack();
       const copy = shell.querySelector('.online-copy');
@@ -131,11 +138,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       view.seats.forEach(seat => seatsRoot.appendChild(this.seatCard(seat, view)));
       const actions = shell.querySelector('.online-lobby-actions');
       if (view.you === 0) {
-        const ready = view.seats.slice(0, 2).every(seat => seat.connected && seat.ready) &&
-          view.seats.every(seat => seat.deckId) && new Set(view.seats.map(seat => seat.deckId)).size === 4;
+        const ready = view.seats.every(seat => seat.connected && seat.ready && seat.deckId) &&
+          new Set(view.seats.map(seat => seat.deckId)).size === playerCount;
         if (view.phase === 'paused') {
           const resume = el('button', 'online-start', this.busy ? 'Working…' : 'Resume live game');
-          resume.disabled = this.busy || !view.seats.slice(0, 2).every(seat => seat.connected);
+          resume.disabled = this.busy || !view.seats.every(seat => seat.connected);
           resume.onclick = () => this.perform({ type: 'resume' });
           actions.appendChild(resume);
         } else {
@@ -145,7 +152,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           actions.appendChild(start);
         }
       } else {
-        actions.appendChild(el('div', 'online-guest-wait', '<i></i> Host starts when all four decks are ready'));
+        actions.appendChild(el('div', 'online-guest-wait', `<i></i> Host starts when all ${playerCount} players and decks are ready`));
       }
       return shell;
     }
@@ -153,25 +160,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderGame(view) {
       const game = view.gameView;
       const shell = el('main', 'online-remote-game');
+      shell.dataset.onlineView = 'remote-game';
+      shell.dataset.playerCount = String(view.settings && view.settings.playerCount || view.seats.length);
+      shell.dataset.you = String(view.you);
+      shell.dataset.phase = view.phase;
       if (!game) {
         shell.innerHTML = '<div class="online-waiting-game"><i></i><h1>Synchronizing the table…</h1><p>The host is preparing the Commander engine.</p></div>';
         return shell;
       }
       const active = game.players.find(player => player.seat === game.activeSeat);
+      const mine = game.players.find(player => player.seat === view.you);
       const recoveryOpen = this.lastResortOpen || !!game.lastResortPaused;
       shell.innerHTML = `
-        <header class="online-game-head"><div><span>COMMANDER LIVE · PLAYER 2</span><b>${esc(active ? active.name : 'Table')} ${game.phase ? `· ${esc(game.phase)}` : ''}</b></div><div class="online-game-tools"><button type="button" class="online-last-resort-toggle${recoveryOpen ? ' active' : ''}">🛠️ ${recoveryOpen ? 'FINISH RECOVERY' : 'LAST RESORT'}</button><div class="online-room-state"><i></i>${view.phase === 'paused' ? 'PAUSED — RECONNECTING' : recoveryOpen ? 'RECOVERY PAUSE' : 'LIVE'}</div></div></header>
+        <header class="online-game-head"><div><span>COMMANDER LIVE · PLAYER ${Number(view.you) + 1}</span><b>${esc(active ? active.name : 'Table')} ${game.phase ? `· ${esc(game.phase)}` : ''}</b></div><div class="online-game-tools"><button type="button" class="online-last-resort-toggle${recoveryOpen ? ' active' : ''}">🛠️ ${recoveryOpen ? 'FINISH RECOVERY' : 'LAST RESORT'}</button><div class="online-room-state"><i></i>${view.phase === 'paused' ? 'PAUSED — RECONNECTING' : recoveryOpen ? 'RECOVERY PAUSE' : 'LIVE'}</div></div></header>
         <section class="online-player-strip"></section>
         <section class="online-remote-board"><div class="online-battlefield"><div class="online-section-title">Battlefield <span>${game.battlefield.length} permanents</span></div><div class="online-card-row battlefield"></div></div><div class="online-stack"><div class="online-section-title">The Stack <span>${game.stack.length}</span></div><div class="online-stack-list"></div></div></section>
-        <section class="online-own-hand"><div class="online-section-title">Your hand <span>${(game.players.find(player => player.seat === 1)?.hand || []).length} cards</span></div><div class="online-card-row hand"></div></section>
+        <section class="online-own-hand"><div class="online-section-title">Your hand <span>${(mine && mine.hand || []).length} cards</span></div><div class="online-card-row hand"></div></section>
         <section class="online-decision-stage"></section>`;
       const strip = shell.querySelector('.online-player-strip');
-      game.players.forEach(player => strip.appendChild(el('article', `online-player ${player.seat === game.activeSeat ? 'active' : ''} ${player.lost ? 'lost' : ''}`, `<small>SEAT 0${player.seat + 1}${player.isAI ? ' · AI V2' : ''}</small><b>${esc(player.name)}</b><span>${esc(player.deckId || '')}</span><strong>${player.life} <em>LIFE</em></strong><i>${player.handCount} cards · ${player.libraryCount} library</i>`)));
+      game.players.forEach(player => strip.appendChild(el('article', `online-player ${player.seat === game.activeSeat ? 'active' : ''} ${player.lost ? 'lost' : ''}`, `<small>SEAT 0${player.seat + 1} · HUMAN</small><b>${esc(player.name)}</b><span>${esc(player.deckId || '')}</span><strong>${player.life} <em>LIFE</em></strong><i>${player.handCount} cards · ${player.libraryCount} library</i>`)));
       const battlefield = shell.querySelector('.online-card-row.battlefield');
       game.battlefield.forEach(card => battlefield.appendChild(this.remoteCard(card)));
-      const own = game.players.find(player => player.seat === 1);
       const hand = shell.querySelector('.online-card-row.hand');
-      (own && own.hand || []).forEach(card => hand.appendChild(this.remoteCard(card)));
+      (mine && mine.hand || []).forEach(card => hand.appendChild(this.remoteCard(card)));
       const stack = shell.querySelector('.online-stack-list');
       if (!game.stack.length) stack.appendChild(el('div', 'online-empty-stack', 'Stack is empty'));
       game.stack.slice().reverse().forEach(item => stack.appendChild(el('article', 'online-stack-item', `<small>${esc(item.kind)}</small><b>${esc(item.name)}</b><span>Seat 0${Number(item.controllerSeat) + 1}</span>`)));
@@ -258,7 +269,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderDecision(decision) {
       const stage = el('div', `online-decision ${decision ? 'active' : 'waiting'}`);
       if (!decision) {
-        stage.innerHTML = '<div><i></i><small>TABLE RUNNING</small><b>Waiting for your next decision</b><span>You can inspect the public board and your hand while the host or bots act.</span></div>';
+        stage.innerHTML = '<div><i></i><small>TABLE RUNNING</small><b>Waiting for your next decision</b><span>You can inspect the public board and your hand while another player acts.</span></div>';
         return stage;
       }
       if (!this.decisionState || this.decisionState.id !== decision.id) this.decisionState = { id: decision.id, selected: [], assignments: [], number: decision.min ?? 0 };
@@ -333,7 +344,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.root.appendChild(el('main', 'online-lobby loading', '<div class="online-waiting-game"><i></i><h1>Opening your private table…</h1></div>'));
         return;
       }
-      const content = this.view.phase === 'lobby' ? this.renderLobby(this.view) : this.view.you === 1 ? this.renderGame(this.view) : this.renderLobby(this.view);
+      const content = this.view.phase === 'lobby' ? this.renderLobby(this.view) : this.view.you !== 0 ? this.renderGame(this.view) : this.renderLobby(this.view);
       if (this.error) content.prepend(el('div', 'online-error', esc(this.error)));
       this.root.appendChild(content);
     }

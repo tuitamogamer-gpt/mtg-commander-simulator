@@ -23,6 +23,11 @@ function cleanPlayerId(value) {
   return /^[a-zA-Z0-9-]{12,80}$/.test(id) ? id : '';
 }
 
+function cleanPlayerCount(value) {
+  const count = Number(value);
+  return Number.isInteger(count) && count >= 2 && count <= 4 ? count : 2;
+}
+
 class MemoryRoomStore {
   constructor() {
     this.kind = 'memory';
@@ -150,15 +155,15 @@ function safeSend(ws, payload) {
 }
 
 function roomPlayerIds(state) {
-  return state.seats.slice(0, 2).map(seat => seat.playerId).filter(Boolean);
+  return state.seats.map(seat => seat.playerId).filter(Boolean);
 }
 
 function assignConnection(state, playerId, connectionId) {
-  let seat = state.seats.slice(0, 2).find(item => item.playerId === playerId);
+  let seat = state.seats.find(item => item.playerId === playerId);
   if (!seat) {
     if (state.phase !== 'lobby') throw new Error('The game already started.');
-    seat = state.seats.slice(0, 2).find(item => !item.playerId);
-    if (!seat) throw new Error('The two human seats are full.');
+    seat = state.seats.find(item => !item.playerId);
+    if (!seat) throw new Error(`This ${state.seats.length}-player room is full.`);
     seat.playerId = playerId;
   }
   seat.connected = true;
@@ -177,7 +182,7 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
     response.set('Cache-Control', 'no-store');
     try {
       await store.ping();
-      response.status(200).json({ ok: true, service: 'commander-live', storage: store.kind });
+      response.status(200).json({ ok: true, service: 'commander-live', storage: store.kind, minPlayers: 2, maxPlayers: 4 });
     } catch {
       response.status(503).json({ ok: false, service: 'commander-live', error: 'Live room storage is unavailable.' });
     }
@@ -242,6 +247,7 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
     const url = new URL(request.url || '/', 'http://commander.local');
     const room = cleanRoom(url.searchParams.get('room'));
     const mayCreate = url.searchParams.get('create') === '1';
+    const playerCount = cleanPlayerCount(url.searchParams.get('players'));
     if (!room) {
       safeSend(ws, { type: 'error', error: 'Invalid private room code.' });
       ws.close(1008, 'Invalid room');
@@ -261,7 +267,7 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
       return commit(room, state => {
         if (!state) {
           if (!client.mayCreate) throw new Error('This private room does not exist or expired.');
-          state = setup([playerId]);
+          state = setup([playerId], { playerCount });
         } else {
           state = clone(state);
         }
@@ -309,7 +315,7 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
       if (!client.playerId) return;
       void commit(room, state => {
         if (!state) return null;
-        const seat = state.seats.slice(0, 2).find(item => item.playerId === client.playerId);
+        const seat = state.seats.find(item => item.playerId === client.playerId);
         if (!seat || seat.connectionId !== client.connectionId || seat.connected === false) return null;
         const result = validateAction(state, client.playerId, { type: 'presence', connected: false });
         return result && result.ok ? applyAction(state, client.playerId, { type: 'presence', connected: false }) : null;

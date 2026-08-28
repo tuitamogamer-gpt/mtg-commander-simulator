@@ -5,15 +5,14 @@
 export const meta = {
   game: 'Commander Live',
   minPlayers: 2,
-  maxPlayers: 2,
+  maxPlayers: 4,
 };
 
-const PROTOCOL_VERSION = 1;
-const HUMAN_SEATS = 2;
-const BOT_SEATS = 2;
+const PROTOCOL_VERSION = 2;
+const MIN_HUMAN_SEATS = 2;
+const MAX_HUMAN_SEATS = 4;
 const MAX_SYNC_BYTES = 2_000_000;
-const HUMAN_NAMES = ['Host', 'Player 2'];
-const BOT_NAMES = ['AI Dragon', 'AI Wolf'];
+const HUMAN_NAMES = ['Host', 'Player 2', 'Player 3', 'Player 4'];
 
 const clone = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));
 const cleanText = (value, max = 80) => String(value || '').trim()
@@ -22,48 +21,49 @@ const isObject = value => !!value && typeof value === 'object' && !Array.isArray
 const byteSize = value => {
   try { return JSON.stringify(value).length; } catch { return Infinity; }
 };
+const cleanPlayerCount = value => {
+  const count = Number(value);
+  return Number.isInteger(count) && count >= MIN_HUMAN_SEATS && count <= MAX_HUMAN_SEATS
+    ? count : MIN_HUMAN_SEATS;
+};
 
-function seatRecord(seat, kind) {
-  const human = kind === 'human';
+function seatRecord(seat) {
   return {
     seat,
-    kind,
-    role: human ? (seat === 0 ? 'host' : 'guest') : 'bot',
+    kind: 'human',
+    role: seat === 0 ? 'host' : 'guest',
     playerId: null,
-    name: human ? HUMAN_NAMES[seat] : BOT_NAMES[seat - HUMAN_SEATS],
-    connected: !human,
-    ready: !human,
+    name: HUMAN_NAMES[seat],
+    connected: false,
+    ready: false,
     deckId: null,
     commanderNames: [],
-    aiStyle: human ? null : 'balanced',
+    aiStyle: null,
   };
 }
 
-export function setup(playerIds = []) {
-  const ids = Array.isArray(playerIds) ? playerIds.filter(Boolean).slice(0, HUMAN_SEATS) : [];
-  const seats = [
-    seatRecord(0, 'human'),
-    seatRecord(1, 'human'),
-    seatRecord(2, 'bot'),
-    seatRecord(3, 'bot'),
-  ];
+export function setup(playerIds = [], options = {}) {
+  const playerCount = cleanPlayerCount(options.playerCount);
+  const ids = Array.isArray(playerIds) ? playerIds.filter(Boolean).slice(0, playerCount) : [];
+  const seats = Array.from({ length: playerCount }, (_, seat) => seatRecord(seat));
   ids.forEach((playerId, index) => {
     seats[index].playerId = String(playerId);
     seats[index].connected = true;
     seats[index].name = HUMAN_NAMES[index];
   });
+  const views = Object.fromEntries(seats.map(seat => [seat.seat, null]));
   return {
     protocolVersion: PROTOCOL_VERSION,
     phase: 'lobby',
     revision: 0,
     seats,
     settings: {
-      difficulty: 'normal',
+      playerCount,
       seed: null,
       diplomacyEnabled: false,
       sumPartnerDamage: false,
     },
-    views: { 0: null, 1: null },
+    views,
     pendingDecision: null,
     lastDecision: null,
     pendingManualAction: null,
@@ -82,7 +82,7 @@ function seatFor(state, playerId) {
 
 function uniqueDecksReady(state) {
   const ids = state.seats.map(seat => seat.deckId).filter(Boolean);
-  return ids.length === 4 && new Set(ids).size === 4;
+  return ids.length === state.seats.length && new Set(ids).size === state.seats.length;
 }
 
 function validateLegalResponse(legal, response) {
@@ -180,7 +180,7 @@ function validateRoomAction(state, action, playerId) {
 
   if (type === 'join') {
     if (state.phase !== 'lobby') return { ok: false, error: 'The game already started.' };
-    return seat ? { ok: true } : { ok: false, error: 'The two human seats are full.' };
+    return seat ? { ok: true } : { ok: false, error: `This ${state.seats.length}-player room is full.` };
   }
   if (type === 'reconnect') {
     if (!seat || seat.kind !== 'human') return { ok: false, error: 'Seat not found.' };
@@ -198,23 +198,19 @@ function validateRoomAction(state, action, playerId) {
     }
     return { ok: true };
   }
-  if (type === 'configureBot') {
-    if (state.phase !== 'lobby' || seat.seat !== 0) {
-      return { ok: false, error: 'Only the host configures bots.' };
-    }
-    if (![2, 3].includes(action.seat) || !cleanText(action.deckId, 120)) {
-      return { ok: false, error: 'Invalid bot configuration.' };
-    }
+  if (type === 'configureSettings') {
+    if (state.phase !== 'lobby' || seat.seat !== 0) return { ok: false, error: 'Only the host configures room rules.' };
+    if (typeof action.sumPartnerDamage !== 'boolean') return { ok: false, error: 'Invalid Commander damage setting.' };
     return { ok: true };
   }
   if (type === 'start') {
     if (state.phase !== 'lobby' || seat.seat !== 0) {
       return { ok: false, error: 'Only the host starts the game.' };
     }
-    if (!state.seats.slice(0, 2).every(item => item.playerId && item.connected && item.ready)) {
-      return { ok: false, error: 'Both human players must be connected and ready.' };
+    if (!state.seats.every(item => item.playerId && item.connected && item.ready)) {
+      return { ok: false, error: `All ${state.seats.length} human players must be connected and ready.` };
     }
-    if (!uniqueDecksReady(state)) return { ok: false, error: 'All four seats need different decks.' };
+    if (!uniqueDecksReady(state)) return { ok: false, error: 'Every human seat needs a different deck.' };
     if (!Number.isSafeInteger(action.seed) || action.seed < 0) {
       return { ok: false, error: 'Invalid deterministic seed.' };
     }
@@ -231,8 +227,8 @@ function validateRoomAction(state, action, playerId) {
     if (!isObject(action.views) || byteSize(action.views) > MAX_SYNC_BYTES) {
       return { ok: false, error: 'Invalid or oversized game views.' };
     }
-    if (!('0' in action.views) || !('1' in action.views)) {
-      return { ok: false, error: 'Both human views are required.' };
+    if (!state.seats.every(item => String(item.seat) in action.views)) {
+      return { ok: false, error: 'Every human view is required.' };
     }
     return { ok: true };
   }
@@ -243,8 +239,9 @@ function validateRoomAction(state, action, playerId) {
     if (state.pendingDecision || !isObject(action.decision) || !cleanText(action.decision.id, 100)) {
       return { ok: false, error: 'Invalid or overlapping decision.' };
     }
-    if (action.decision.seat !== 1 || !isObject(action.decision.legal)) {
-      return { ok: false, error: 'Decision must target Player 2.' };
+    const targetSeat = state.seats[action.decision.seat];
+    if (!targetSeat || targetSeat.seat === 0 || !targetSeat.connected || !isObject(action.decision.legal)) {
+      return { ok: false, error: 'Decision must target a connected remote human seat.' };
     }
     if (byteSize(action.decision) > 500_000) {
       return { ok: false, error: 'Decision payload is too large.' };
@@ -252,7 +249,7 @@ function validateRoomAction(state, action, playerId) {
     return { ok: true };
   }
   if (type === 'decisionResponse') {
-    if (seat.seat !== 1 || !state.pendingDecision) {
+    if (!state.pendingDecision || seat.seat !== state.pendingDecision.seat) {
       return { ok: false, error: 'No decision is waiting for this seat.' };
     }
     if (String(action.decisionId) !== state.pendingDecision.id) {
@@ -294,8 +291,8 @@ function validateRoomAction(state, action, playerId) {
   }
   if (type === 'resume') {
     if (seat.seat !== 0 || state.phase !== 'paused' ||
-      !state.seats.slice(0, 2).every(item => item.connected)) {
-      return { ok: false, error: 'Both players must reconnect before the host resumes.' };
+      !state.seats.every(item => item.connected)) {
+      return { ok: false, error: 'Every player must reconnect before the host resumes.' };
     }
     return { ok: true };
   }
@@ -303,7 +300,7 @@ function validateRoomAction(state, action, playerId) {
     if (seat.seat !== 0 || !['running', 'paused'].includes(state.phase)) {
       return { ok: false, error: 'Only the host can finish the game.' };
     }
-    if (action.winnerSeat !== null && ![0, 1, 2, 3].includes(action.winnerSeat)) {
+    if (action.winnerSeat !== null && !state.seats.some(item => item.seat === action.winnerSeat)) {
       return { ok: false, error: 'Invalid winner.' };
     }
     return { ok: true };
@@ -329,12 +326,8 @@ export function applyAction(state, playerId, action) {
       .map(name => cleanText(name, 160)).filter(Boolean).slice(0, 2);
     seat.name = cleanText(action.name || seat.name, 32);
     seat.ready = action.ready !== false;
-  } else if (type === 'configureBot') {
-    const bot = next.seats[action.seat];
-    bot.deckId = cleanText(action.deckId, 120);
-    bot.aiStyle = cleanText(action.aiStyle || bot.aiStyle, 32) || 'balanced';
-    bot.commanderNames = (action.commanderNames || [])
-      .map(name => cleanText(name, 160)).filter(Boolean).slice(0, 2);
+  } else if (type === 'configureSettings') {
+    next.settings.sumPartnerDamage = action.sumPartnerDamage;
   } else if (type === 'start') {
     next.phase = 'running';
     next.settings.seed = action.seed;
@@ -346,15 +339,14 @@ export function applyAction(state, playerId, action) {
       next.pause = { reason: 'player-disconnected', seat: seat.seat };
     }
   } else if (type === 'sync') {
-    next.views = {
-      0: clone(action.views[0] ?? action.views['0']),
-      1: clone(action.views[1] ?? action.views['1']),
-    };
+    next.views = Object.fromEntries(next.seats.map(item => [
+      item.seat, clone(action.views[item.seat] ?? action.views[String(item.seat)]),
+    ]));
   } else if (type === 'decisionRequest') {
     next.pendingDecision = clone(action.decision);
     next.lastDecision = null;
   } else if (type === 'decisionResponse') {
-    next.lastDecision = { id: next.pendingDecision.id, response: clone(action.response), seat: 1 };
+    next.lastDecision = { id: next.pendingDecision.id, response: clone(action.response), seat: seat.seat };
     next.pendingDecision = null;
   } else if (type === 'decisionAck') {
     next.lastDecision = null;
@@ -418,8 +410,8 @@ export function viewFor(state, playerId) {
       aiStyle: item.aiStyle,
     })),
     settings: clone(state.settings),
-    gameView: seatIndex === 0 || seatIndex === 1 ? clone(state.views[seatIndex]) : null,
-    pendingDecision: seatIndex === 1 ? clone(state.pendingDecision) : null,
+    gameView: seatIndex !== null ? clone(state.views[seatIndex]) : null,
+    pendingDecision: state.pendingDecision && state.pendingDecision.seat === seatIndex ? clone(state.pendingDecision) : null,
     lastDecision: seatIndex === 0 ? clone(state.lastDecision) : null,
     pendingManualAction: seatIndex === 0 ? clone(state.pendingManualAction) : null,
     lastManualAction: state.lastManualAction && state.lastManualAction.seat === seatIndex ? clone(state.lastManualAction) : null,

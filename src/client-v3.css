@@ -341,6 +341,11 @@ body.game-active #game { display: grid !important; }
 }
 
 #setup .deckentry[hidden] { display: none !important; }
+#setup .liveplayercount[hidden],
+#setup .btnrow[hidden],
+#setup .seclabel[hidden],
+#setup .botstyles[hidden],
+#setup .cmdcheck[hidden] { display: none !important; }
 
 #setup .decklist.noresults::after {
   content: 'No decks match these filters.';
@@ -1672,6 +1677,23 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
   background: #67bd82;
   box-shadow: 0 0 12px rgba(103, 189, 130, .8);
 }
+#setup .liveplayercount {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 11px 12px;
+  border: 1px solid rgba(103, 189, 130, .24);
+  border-radius: 8px;
+  background: rgba(27, 66, 44, .12);
+}
+#setup .liveplayercount > span { display: grid; gap: 2px; }
+#setup .liveplayercount b { color: #e7ddca; font-size: 11px; }
+#setup .liveplayercount small { color: #8d978f; font-size: 9px; }
+#setup .liveplayerchoices { display: flex; gap: 6px; }
+#setup .liveplayerchoices .pbtn { min-width: 76px; margin: 0; padding: 8px 10px; }
+#setup .liveplayerchoices .pbtn.selected { border-color: #67bd82; background: rgba(103, 189, 130, .14); }
 
 .online-lobby,
 .online-remote-game {
@@ -1745,7 +1767,7 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
 .online-invite b { overflow: hidden; color: #f1dfbf; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
 .online-seats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 14px;
   max-width: 1500px;
   margin: 0 auto;
@@ -1838,7 +1860,7 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
 .online-game-tools { display: flex; align-items: center; justify-content: flex-end; gap: 9px; }
 .online-last-resort-toggle { min-height: 40px; padding: 9px 12px; color: #e8b29f; border: 1px solid rgba(221,82,48,.5); border-radius: 6px; background: rgba(111,30,18,.38); font: 800 9px/1 Barlow,sans-serif; letter-spacing: .08em; cursor: pointer; }
 .online-last-resort-toggle.active { color: #ffe0d5; border-color: #ef704e; background: #762817; box-shadow: 0 0 20px rgba(222,72,38,.18); }
-.online-player-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
+.online-player-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-bottom: 10px; }
 .online-player { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 12px; border: 1px solid rgba(255, 255, 255, .09); background: rgba(8, 13, 13, .9); }
 .online-player.active { border-color: rgba(211, 151, 76, .58); }
 .online-player.lost { opacity: .4; }
@@ -1905,6 +1927,8 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
 }
 
 @media (max-width: 620px) {
+  #setup .liveplayercount { grid-template-columns: 1fr; }
+  #setup .liveplayerchoices .pbtn { flex: 1; min-width: 0; }
   .online-game-tools,.online-last-resort-head { align-items: stretch; flex-direction: column; }
   .online-last-resort-controls { grid-template-columns: 1fr; }
 }

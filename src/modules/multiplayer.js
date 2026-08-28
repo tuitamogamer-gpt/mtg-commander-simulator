@@ -5,12 +5,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 // copied into the generated Higgsfield `app/src/logic.js` without carrying DOM
 // state, controllers, or hidden cards across the network boundary.
 (function () {
-  const PROTOCOL_VERSION = 1;
-  const HUMAN_SEATS = 2;
-  const BOT_SEATS = 2;
+  const PROTOCOL_VERSION = 2;
+  const MIN_HUMAN_SEATS = 2;
+  const MAX_HUMAN_SEATS = 4;
   const MAX_SYNC_BYTES = 2_000_000;
-  const HUMAN_NAMES = ['Host', 'Player 2'];
-  const BOT_NAMES = ['AI Dragon', 'AI Wolf'];
+  const HUMAN_NAMES = ['Host', 'Player 2', 'Player 3', 'Player 4'];
 
   const clone = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));
   const cleanText = (value, max = 80) => String(value || '').trim().replace(/[\u0000-\u001f\u007f]/g, '').slice(0, max);
@@ -18,60 +17,60 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const byteSize = value => {
     try { return JSON.stringify(value).length; } catch { return Infinity; }
   };
+  const cleanPlayerCount = value => {
+    const count = Number(value);
+    return Number.isInteger(count) && count >= MIN_HUMAN_SEATS && count <= MAX_HUMAN_SEATS
+      ? count : MIN_HUMAN_SEATS;
+  };
 
   function meta() {
     return {
       id: 'commander-live',
       name: 'Commander Live',
-      minPlayers: HUMAN_SEATS,
-      maxPlayers: HUMAN_SEATS,
-      totalSeats: HUMAN_SEATS + BOT_SEATS,
+      minPlayers: MIN_HUMAN_SEATS,
+      maxPlayers: MAX_HUMAN_SEATS,
+      totalSeats: MAX_HUMAN_SEATS,
       protocolVersion: PROTOCOL_VERSION,
     };
   }
 
-  function seatRecord(seat, kind) {
-    const human = kind === 'human';
+  function seatRecord(seat) {
     return {
       seat,
-      kind,
-      role: human ? (seat === 0 ? 'host' : 'guest') : 'bot',
+      kind: 'human',
+      role: seat === 0 ? 'host' : 'guest',
       playerId: null,
-      name: human ? HUMAN_NAMES[seat] : BOT_NAMES[seat - HUMAN_SEATS],
-      connected: !human,
-      ready: !human,
+      name: HUMAN_NAMES[seat],
+      connected: false,
+      ready: false,
       deckId: null,
       commanderNames: [],
-      aiStyle: human ? null : 'balanced',
+      aiStyle: null,
     };
   }
 
   function setup(playerIds = [], options = {}) {
-    const ids = Array.isArray(playerIds) ? playerIds.filter(Boolean).slice(0, HUMAN_SEATS) : [];
-    const seats = [seatRecord(0, 'human'), seatRecord(1, 'human'), seatRecord(2, 'bot'), seatRecord(3, 'bot')];
+    const playerCount = cleanPlayerCount(options.playerCount);
+    const ids = Array.isArray(playerIds) ? playerIds.filter(Boolean).slice(0, playerCount) : [];
+    const seats = Array.from({ length: playerCount }, (_, seat) => seatRecord(seat));
     ids.forEach((playerId, index) => {
       seats[index].playerId = String(playerId);
       seats[index].connected = true;
       seats[index].name = cleanText((options.playerNames || [])[index] || HUMAN_NAMES[index], 32);
     });
-    (options.botDecks || []).slice(0, BOT_SEATS).forEach((deckId, index) => {
-      seats[index + HUMAN_SEATS].deckId = cleanText(deckId, 120);
-    });
-    (options.botStyles || []).slice(0, BOT_SEATS).forEach((style, index) => {
-      seats[index + HUMAN_SEATS].aiStyle = cleanText(style, 32) || 'balanced';
-    });
+    const views = Object.fromEntries(seats.map(seat => [seat.seat, null]));
     return {
       protocolVersion: PROTOCOL_VERSION,
       phase: 'lobby',
       revision: 0,
       seats,
       settings: {
-        difficulty: ['easy', 'normal', 'hard'].includes(options.difficulty) ? options.difficulty : 'normal',
+        playerCount,
         seed: null,
         diplomacyEnabled: false,
         sumPartnerDamage: !!options.sumPartnerDamage,
       },
-      views: { 0: null, 1: null },
+      views,
       pendingDecision: null,
       lastDecision: null,
       pendingManualAction: null,
@@ -90,7 +89,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function uniqueDecksReady(state) {
     const ids = state.seats.map(seat => seat.deckId).filter(Boolean);
-    return ids.length === 4 && new Set(ids).size === 4;
+    return ids.length === state.seats.length && new Set(ids).size === state.seats.length;
   }
 
   function validateLegalResponse(legal, response) {
@@ -161,13 +160,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!isObject(action) || !cleanText(action.type, 40)) return { ok: false, error: 'Invalid action.' };
     const type = action.type;
     const seat = seatFor(state, playerId);
-    const host = state.seats[0];
-
     if (type === 'join') {
       if (state.phase !== 'lobby') return { ok: false, error: 'The game already started.' };
       if (seat) return { ok: true };
-      if (!state.seats.slice(0, HUMAN_SEATS).some(item => !item.playerId))
-        return { ok: false, error: 'The two human seats are full.' };
+      if (!state.seats.some(item => !item.playerId))
+        return { ok: false, error: `This ${state.seats.length}-player room is full.` };
       return { ok: true };
     }
     if (type === 'reconnect') {
@@ -182,16 +179,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return { ok: false, error: 'Choose one commander or a legal partner pair.' };
       return { ok: true };
     }
-    if (type === 'configureBot') {
-      if (state.phase !== 'lobby' || seat.seat !== 0) return { ok: false, error: 'Only the host configures bots.' };
-      if (![2, 3].includes(action.seat) || !cleanText(action.deckId, 120)) return { ok: false, error: 'Invalid bot configuration.' };
+    if (type === 'configureSettings') {
+      if (state.phase !== 'lobby' || seat.seat !== 0) return { ok: false, error: 'Only the host configures room rules.' };
+      if (typeof action.sumPartnerDamage !== 'boolean') return { ok: false, error: 'Invalid Commander damage setting.' };
       return { ok: true };
     }
     if (type === 'start') {
       if (state.phase !== 'lobby' || seat.seat !== 0) return { ok: false, error: 'Only the host starts the game.' };
-      if (!state.seats.slice(0, 2).every(item => item.playerId && item.connected && item.ready))
-        return { ok: false, error: 'Both human players must be connected and ready.' };
-      if (!uniqueDecksReady(state)) return { ok: false, error: 'All four seats need different decks.' };
+      if (!state.seats.every(item => item.playerId && item.connected && item.ready))
+        return { ok: false, error: `All ${state.seats.length} human players must be connected and ready.` };
+      if (!uniqueDecksReady(state)) return { ok: false, error: 'Every human seat needs a different deck.' };
       if (!Number.isSafeInteger(action.seed) || action.seed < 0) return { ok: false, error: 'Invalid deterministic seed.' };
       return { ok: true };
     }
@@ -202,19 +199,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (type === 'sync') {
       if (seat.seat !== 0 || !['running', 'paused'].includes(state.phase)) return { ok: false, error: 'Only the host can synchronize the game.' };
       if (!isObject(action.views) || byteSize(action.views) > MAX_SYNC_BYTES) return { ok: false, error: 'Invalid or oversized game views.' };
-      if (!('0' in action.views) || !('1' in action.views)) return { ok: false, error: 'Both human views are required.' };
+      if (!state.seats.every(item => String(item.seat) in action.views)) return { ok: false, error: 'Every human view is required.' };
       return { ok: true };
     }
     if (type === 'decisionRequest') {
       if (seat.seat !== 0 || state.phase !== 'running') return { ok: false, error: 'Only the active host can request a decision.' };
       if (state.pendingDecision || !isObject(action.decision) || cleanText(action.decision.id, 100) === '')
         return { ok: false, error: 'Invalid or overlapping decision.' };
-      if (action.decision.seat !== 1 || !isObject(action.decision.legal)) return { ok: false, error: 'Decision must target Player 2.' };
+      const targetSeat = state.seats[action.decision.seat];
+      if (!targetSeat || targetSeat.seat === 0 || !targetSeat.connected || !isObject(action.decision.legal))
+        return { ok: false, error: 'Decision must target a connected remote human seat.' };
       if (byteSize(action.decision) > 500_000) return { ok: false, error: 'Decision payload is too large.' };
       return { ok: true };
     }
     if (type === 'decisionResponse') {
-      if (seat.seat !== 1 || !state.pendingDecision) return { ok: false, error: 'No decision is waiting for this seat.' };
+      if (!state.pendingDecision || seat.seat !== state.pendingDecision.seat) return { ok: false, error: 'No decision is waiting for this seat.' };
       if (String(action.decisionId) !== state.pendingDecision.id) return { ok: false, error: 'Stale decision response.' };
       return validateLegalResponse(state.pendingDecision.legal, action.response);
     }
@@ -246,13 +245,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return { ok: true };
     }
     if (type === 'resume') {
-      if (seat.seat !== 0 || state.phase !== 'paused' || !state.seats.slice(0, 2).every(item => item.connected))
-        return { ok: false, error: 'Both players must reconnect before the host resumes.' };
+      if (seat.seat !== 0 || state.phase !== 'paused' || !state.seats.every(item => item.connected))
+        return { ok: false, error: 'Every player must reconnect before the host resumes.' };
       return { ok: true };
     }
     if (type === 'finish') {
       if (seat.seat !== 0 || !['running', 'paused'].includes(state.phase)) return { ok: false, error: 'Only the host can finish the game.' };
-      if (action.winnerSeat !== null && ![0, 1, 2, 3].includes(action.winnerSeat)) return { ok: false, error: 'Invalid winner.' };
+      if (action.winnerSeat !== null && !state.seats.some(item => item.seat === action.winnerSeat)) return { ok: false, error: 'Invalid winner.' };
       return { ok: true };
     }
     return { ok: false, error: `Unsupported action: ${cleanText(type, 40)}` };
@@ -266,10 +265,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let seat = seatFor(next, playerId);
     if (type === 'join') {
       if (!seat) {
-        seat = next.seats.slice(0, HUMAN_SEATS).find(item => !item.playerId);
+        seat = next.seats.find(item => !item.playerId);
         seat.playerId = String(playerId);
         seat.connected = true;
-        seat.name = cleanText(action.name || HUMAN_NAMES[1], 32);
+        seat.name = cleanText(action.name || HUMAN_NAMES[seat.seat], 32);
       }
     } else if (type === 'reconnect') {
       seat.connected = true;
@@ -278,11 +277,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       seat.commanderNames = (action.commanderNames || []).map(name => cleanText(name, 160)).filter(Boolean).slice(0, 2);
       seat.name = cleanText(action.name || seat.name, 32);
       seat.ready = action.ready !== false;
-    } else if (type === 'configureBot') {
-      const bot = next.seats[action.seat];
-      bot.deckId = cleanText(action.deckId, 120);
-      bot.aiStyle = cleanText(action.aiStyle || bot.aiStyle, 32) || 'balanced';
-      bot.commanderNames = (action.commanderNames || []).map(name => cleanText(name, 160)).filter(Boolean).slice(0, 2);
+    } else if (type === 'configureSettings') {
+      next.settings.sumPartnerDamage = action.sumPartnerDamage;
     } else if (type === 'start') {
       next.phase = 'running';
       next.settings.seed = action.seed;
@@ -294,12 +290,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         next.pause = { reason: 'player-disconnected', seat: seat.seat };
       }
     } else if (type === 'sync') {
-      next.views = { 0: clone(action.views[0] ?? action.views['0']), 1: clone(action.views[1] ?? action.views['1']) };
+      next.views = Object.fromEntries(next.seats.map(item => [item.seat, clone(action.views[item.seat] ?? action.views[String(item.seat)])]));
     } else if (type === 'decisionRequest') {
       next.pendingDecision = clone(action.decision);
       next.lastDecision = null;
     } else if (type === 'decisionResponse') {
-      next.lastDecision = { id: next.pendingDecision.id, response: clone(action.response), seat: 1 };
+      next.lastDecision = { id: next.pendingDecision.id, response: clone(action.response), seat: seat.seat };
       next.pendingDecision = null;
     } else if (type === 'decisionAck') {
       next.lastDecision = null;
@@ -351,8 +347,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         commanderNames: item.commanderNames, aiStyle: item.aiStyle,
       })),
       settings: clone(state.settings),
-      gameView: seatIndex === 0 || seatIndex === 1 ? clone(state.views[seatIndex]) : null,
-      pendingDecision: seatIndex === 1 ? clone(state.pendingDecision) : null,
+      gameView: seatIndex !== null ? clone(state.views[seatIndex]) : null,
+      pendingDecision: state.pendingDecision && state.pendingDecision.seat === seatIndex ? clone(state.pendingDecision) : null,
       lastDecision: seatIndex === 0 ? clone(state.lastDecision) : null,
       pendingManualAction: seatIndex === 0 ? clone(state.pendingManualAction) : null,
       lastManualAction: state.lastManualAction && state.lastManualAction.seat === seatIndex ? clone(state.lastManualAction) : null,
@@ -615,10 +611,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         processManualAction(latest);
       },
       async syncGame(game) {
-        const host = game.players.find(player => player.onlineSeat === 0);
-        const guest = game.players.find(player => player.onlineSeat === 1);
-        if (!host || !guest) throw new Error('Online game must contain Host and Player 2.');
-        await roomClient.dispatch({ type: 'sync', views: { 0: gameViewFor(game, host), 1: gameViewFor(game, guest) } });
+        const humans = game.players.filter(player => !player.isAI).sort((a, b) => a.onlineSeat - b.onlineSeat);
+        if (humans.length < MIN_HUMAN_SEATS || humans.length > MAX_HUMAN_SEATS || humans[0]?.onlineSeat !== 0)
+          throw new Error('Online game must contain two to four human seats led by the Host.');
+        const views = Object.fromEntries(humans.map(player => [player.onlineSeat, gameViewFor(game, player)]));
+        await roomClient.dispatch({ type: 'sync', views });
       },
       async requestDecision(payload) {
         if (payload.game) await bridge.syncGame(payload.game);
@@ -638,64 +635,57 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return bridge;
   }
 
-  function selectOnlineBotDecks(humanDecks, selections, rnd) {
-    const humans = (humanDecks || []).filter(Boolean);
-    const chosen = Array.from({ length: BOT_SEATS }, (_, index) => {
-      const name = (selections || [])[index];
-      return name && MTG.DECKS && MTG.DECKS[name] && !MTG.DECKS[name].custom ? name : '';
-    });
-    const seen = new Set(humans);
-    for (let index = 0; index < chosen.length; index++) {
-      if (!chosen[index] || seen.has(chosen[index])) chosen[index] = '';
-      else seen.add(chosen[index]);
-    }
-    const pool = Object.keys(MTG.DECKS || {}).filter(name => !seen.has(name) && !MTG.DECKS[name].custom);
-    if (MTG.shuffle) MTG.shuffle(pool, rnd || Math.random);
-    return chosen.map(name => name || pool.shift()).filter(Boolean);
-  }
-
-  // Explicit browser canary only (`?onlineSmoke=host|guest`). It exercises the
+  // Explicit browser canary only (`?onlineSmoke=host|guest|guest3|guest4`). It exercises the
   // real lobby/remote-decision DOM without a network and is never selected by
   // ordinary players or by the deployed room adapter.
   function createOnlineSmokeRoomClient(mode = 'host') {
-    const guestMode = mode === 'guest';
-    let state = setup(['host'], { botDecks: ['Doom Prevails', 'Turtle Power'], botStyles: ['balanced', 'opportunist'] });
+    const smokePlayers = ['host', 'guest', 'guest-3', 'guest-4'];
+    const requestedSeat = mode === 'guest4' ? 3 : mode === 'guest3' ? 2 : mode === 'guest' || mode === 'guest2' ? 1 : 0;
+    const guestMode = requestedSeat > 0;
+    let state = setup(['host'], { playerCount: 4 });
     state = applyAction(state, { type: 'join', name: 'Player 2' }, 'guest');
+    state = applyAction(state, { type: 'join', name: 'Player 3' }, 'guest-3');
+    state = applyAction(state, { type: 'join', name: 'Player 4' }, 'guest-4');
     state = applyAction(state, { type: 'configure', deckId: 'Abzan Armor', commanderNames: ['Felothar the Steadfast'], ready: true }, 'host');
     state = applyAction(state, { type: 'configure', deckId: 'Elven Council', commanderNames: ['Galadriel, Elven-Queen'], ready: true }, 'guest');
+    state = applyAction(state, { type: 'configure', deckId: 'Doom Prevails', commanderNames: ['Doctor Doom, King of Latveria'], ready: true }, 'guest-3');
+    state = applyAction(state, { type: 'configure', deckId: 'Turtle Power', commanderNames: ['Heroes in a Half Shell'], ready: true }, 'guest-4');
     if (guestMode) {
       state = applyAction(state, { type: 'start', seed: 11081 }, 'host');
       const basePlayers = [
         { seat: 0, name: 'Host', deckId: 'Abzan Armor', isAI: false, life: 40, poison: 0, lost: false, handCount: 7, libraryCount: 92 },
-        { seat: 1, name: 'Player 2', deckId: 'Elven Council', isAI: false, life: 40, poison: 0, lost: false, handCount: 2, libraryCount: 91, hand: [
-          { token: 'c:11', name: 'Sol Ring', zone: 'hand', ownerSeat: 1, controllerSeat: 1, hidden: false, cost: '{1}', types: ['Artifact'] },
-          { token: 'c:12', name: 'Forest', zone: 'hand', ownerSeat: 1, controllerSeat: 1, hidden: false, cost: '', types: ['Land'] },
-        ] },
-        { seat: 2, name: 'AI Dragon', deckId: 'Doom Prevails', isAI: true, life: 38, poison: 0, lost: false, handCount: 6, libraryCount: 89 },
-        { seat: 3, name: 'AI Wolf', deckId: 'Turtle Power', isAI: true, life: 40, poison: 0, lost: false, handCount: 5, libraryCount: 90 },
+        { seat: 1, name: 'Player 2', deckId: 'Elven Council', isAI: false, life: 40, poison: 0, lost: false, handCount: 2, libraryCount: 91 },
+        { seat: 2, name: 'Player 3', deckId: 'Doom Prevails', isAI: false, life: 38, poison: 0, lost: false, handCount: 6, libraryCount: 89 },
+        { seat: 3, name: 'Player 4', deckId: 'Turtle Power', isAI: false, life: 40, poison: 0, lost: false, handCount: 5, libraryCount: 90 },
       ];
-      const gameView = {
-        turn: 4, phase: 'main1', step: 'main', activeSeat: 1, prioritySeat: 1, gameOver: false, winnerSeat: null,
-        players: basePlayers,
+      const gameViewFor = viewerSeat => ({
+        turn: 4, phase: 'main1', step: 'main', activeSeat: requestedSeat, prioritySeat: requestedSeat, gameOver: false, winnerSeat: null,
+        players: basePlayers.map(player => player.seat === viewerSeat ? { ...player, hand: [
+          { token: `c:${viewerSeat}1`, name: 'Sol Ring', zone: 'hand', ownerSeat: viewerSeat, controllerSeat: viewerSeat, hidden: false, cost: '{1}', types: ['Artifact'] },
+          { token: `c:${viewerSeat}2`, name: 'Forest', zone: 'hand', ownerSeat: viewerSeat, controllerSeat: viewerSeat, hidden: false, cost: '', types: ['Land'] },
+        ] } : { ...player }),
         battlefield: [
-          { token: 'c:21', name: 'Galadriel, Elven-Queen', zone: 'battlefield', ownerSeat: 1, controllerSeat: 1, hidden: false, tapped: false, power: 4, toughness: 5, commander: true, counters: {}, types: ['Creature'] },
+          { token: 'c:21', name: 'Heroes in a Half Shell', zone: 'battlefield', ownerSeat: requestedSeat, controllerSeat: requestedSeat, hidden: false, tapped: false, power: 4, toughness: 5, commander: true, counters: {}, types: ['Creature'] },
           { token: 'c:22', name: 'Sol Ring', zone: 'battlefield', ownerSeat: 0, controllerSeat: 0, hidden: false, tapped: true, counters: {}, types: ['Artifact'] },
         ],
         stack: [],
-      };
-      state = applyAction(state, { type: 'sync', views: { 0: clone(gameView), 1: clone(gameView) } }, 'host');
+      });
+      state = applyAction(state, { type: 'sync', views: {
+        0: gameViewFor(0), 1: gameViewFor(1), 2: gameViewFor(2), 3: gameViewFor(3),
+      } }, 'host');
       state = applyAction(state, { type: 'decisionRequest', decision: {
-        id: 'smoke-decision', seat: 1, type: 'chooseOption', prompt: 'Choose the Fellowship vote',
+        id: 'smoke-decision', seat: requestedSeat, type: 'chooseOption', prompt: 'Choose the Fellowship vote',
         options: [{ token: 'fellowship', label: 'Fellowship' }, { token: 'mordor', label: 'Mordor' }],
         legal: { kind: 'token', tokens: ['fellowship', 'mordor'] },
       } }, 'host');
     }
-    const playerId = guestMode ? 'guest' : 'host';
+    const playerId = smokePlayers[requestedSeat];
     const listeners = new Set();
     const current = () => viewFor(state, playerId);
     return {
       isHost: !guestMode,
-      shareUrl: `${location.origin}${location.pathname}?onlineSmoke=guest`,
+      platformAutoJoin: true,
+      shareUrl: `${location.origin}${location.pathname}?onlineSmoke=guest&players=4`,
       current,
       subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); },
       async dispatch(action) {
@@ -710,7 +700,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Adapter shared by the Higgsfield room kernel and the Vercel WebSocket room
   // service. Both expose the same join/action/state protocol to the Commander
   // lobby and host bridge.
-  function onlineRoomShareUrl(currentUrl, room) {
+  function onlineRoomShareUrl(currentUrl, room, playerCount = null) {
     const share = new URL(currentUrl);
     // Vercel consumes `_vercel_share` before the app loads. The private entry
     // URL therefore carries the same short-lived token as `commander_share`
@@ -719,6 +709,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     share.search = '';
     if (vercelShare) share.searchParams.set('_vercel_share', vercelShare);
     share.searchParams.set('room', room);
+    const requestedPlayers = Number(playerCount);
+    if (Number.isInteger(requestedPlayers) && requestedPlayers >= MIN_HUMAN_SEATS && requestedPlayers <= MAX_HUMAN_SEATS)
+      share.searchParams.set('players', String(requestedPlayers));
     share.hash = '';
     return share.toString();
   }
@@ -728,6 +721,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       throw new Error('Higgsfield rooms require a browser WebSocket runtime.');
     }
     const params = new URLSearchParams(location.search);
+    const playerCount = cleanPlayerCount(options.playerCount || params.get('players'));
     let room = cleanText(options.roomCode || params.get('room'), 64);
     if (!room) {
       const bytes = new Uint8Array(16);
@@ -735,6 +729,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       room = Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('');
     }
     params.set('room', room);
+    params.set('players', String(playerCount));
     if (params.get('onlineSmoke')) params.delete('onlineSmoke');
     const nextUrl = `${location.pathname}?${params.toString()}`;
     if (location.search !== `?${params.toString()}`) history.replaceState(null, '', nextUrl);
@@ -744,12 +739,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       playerId = `p-${crypto.randomUUID()}`;
       sessionStorage.setItem('commander-live-player-id', playerId);
     }
-    const shareUrl = onlineRoomShareUrl(location.href, room);
+    const shareUrl = onlineRoomShareUrl(location.href, room, playerCount);
     const base = location.pathname.replace(/\/+$/, '');
     const websocketOrigin = `${location.protocol === 'https:' ? 'wss://' : 'ws://'}${location.host}`;
     const isVercel = /(^|\.)vercel\.app$/i.test(location.hostname);
     const socketUrl = isVercel
-      ? `${websocketOrigin}/api/ws?room=${encodeURIComponent(room)}${options.create ? '&create=1' : ''}`
+      ? `${websocketOrigin}/api/ws?room=${encodeURIComponent(room)}${options.create ? `&create=1&players=${playerCount}` : ''}`
       : `${websocketOrigin}${base}/ws/${encodeURIComponent(room)}`;
     const listeners = new Set();
     const queue = [];
@@ -770,13 +765,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         phase: 'lobby',
         revision: -1,
         you: you >= 0 ? you : null,
-        seats: [
-          { seat: 0, kind: 'human', role: 'host', name: 'Host', connected: ids.length > 0, ready: false, deckId: null, commanderNames: [], aiStyle: null },
-          { seat: 1, kind: 'human', role: 'guest', name: 'Player 2', connected: ids.length > 1, ready: false, deckId: null, commanderNames: [], aiStyle: null },
-          { seat: 2, kind: 'bot', role: 'bot', name: BOT_NAMES[0], connected: true, ready: true, deckId: null, commanderNames: [], aiStyle: 'balanced' },
-          { seat: 3, kind: 'bot', role: 'bot', name: BOT_NAMES[1], connected: true, ready: true, deckId: null, commanderNames: [], aiStyle: 'balanced' },
-        ],
-        settings: { difficulty: 'normal', seed: null, diplomacyEnabled: false, sumPartnerDamage: false },
+        seats: Array.from({ length: playerCount }, (_, seat) => ({
+          seat, kind: 'human', role: seat === 0 ? 'host' : 'guest', name: HUMAN_NAMES[seat],
+          connected: ids.length > seat, ready: false, deckId: null, commanderNames: [], aiStyle: null,
+        })),
+        settings: { playerCount, seed: null, diplomacyEnabled: false, sumPartnerDamage: false },
         gameView: null,
         pendingDecision: null,
         lastDecision: null,
@@ -861,6 +854,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return {
       platformAutoJoin: true,
       get isHost() { return latest ? latest.you === 0 : !!options.create; },
+      playerCount,
       shareUrl,
       current: () => latest,
       subscribe(listener) {
@@ -891,7 +885,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.onlineGameViewFor = gameViewFor;
   MTG.remoteControllerFor = remoteControllerFor;
   MTG.onlineHostBridge = onlineHostBridge;
-  MTG.selectOnlineBotDecks = selectOnlineBotDecks;
   MTG.createOnlineSmokeRoomClient = createOnlineSmokeRoomClient;
   MTG.onlineRoomShareUrl = onlineRoomShareUrl;
   if (typeof location !== 'undefined' && /(^|\.)(?:higgsfield\.(?:ai|app)|vercel\.app)$/i.test(location.hostname)) {
