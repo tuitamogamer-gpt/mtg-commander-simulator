@@ -1,0 +1,8 @@
+.DS_Store
+.env*
+.gstack/
+.vercel/
+node_modules/
+output/
+dist/commander-simulator-public.zip
+*.log
