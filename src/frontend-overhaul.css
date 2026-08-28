@@ -187,6 +187,195 @@
 #setup .reviewactions { display: grid; grid-template-columns: 1fr 1.35fr; gap: 7px; }
 #setup .reviewactions .pbtn { min-height: 48px; }
 
+/* Deck Spotlight ------------------------------------------------------- */
+body.deck-spotlight-open { overflow: hidden; }
+#setup .deckspotlightoverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  padding: 24px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 72% 16%, rgba(212, 161, 95, .12), transparent 34%),
+    rgba(2, 5, 6, .88);
+  backdrop-filter: blur(16px) saturate(.8);
+}
+#setup .deckspotlight {
+  position: relative;
+  width: min(1180px, 100%);
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  color: var(--ds-copy);
+  background: #090d0e;
+  border: 1px solid rgba(212, 161, 95, .32);
+  border-radius: 18px;
+  box-shadow: 0 36px 100px rgba(0, 0, 0, .72), 0 0 0 1px rgba(255, 255, 255, .025) inset;
+}
+#setup .deckspotlightclose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 8;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: #e1e6e3;
+  background: rgba(5, 8, 9, .76);
+  border: 1px solid rgba(226, 232, 228, .22);
+  border-radius: 50%;
+  font: 300 25px/1 'Barlow', sans-serif;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+#setup .deckspotlightclose:hover { color: #18130c; background: var(--ds-brass-bright); border-color: var(--ds-brass-bright); }
+#setup .deckspotlightclose:focus-visible { outline: 2px solid var(--ds-brass-bright); outline-offset: 3px; }
+#setup .deckspotlighthero {
+  min-height: 378px;
+  display: grid;
+  grid-template-columns: minmax(390px, .9fr) minmax(0, 1.1fr);
+  background: linear-gradient(135deg, #111819, #090d0e 72%);
+  border-bottom: 1px solid var(--ds-line-soft);
+}
+#setup .deckspotlightvisual { position: relative; min-height: 378px; overflow: hidden; background: #111819; }
+#setup .deckspotlightbackdrop,
+#setup .deckspotlightvideo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%; }
+#setup .deckspotlightbackdrop { filter: saturate(.9) contrast(1.05); transform: scale(1.04); }
+#setup .deckspotlightvideo { z-index: 1; }
+#setup .deckspotlightshade {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(90deg, rgba(4, 7, 8, .12), rgba(4, 7, 8, .02) 48%, rgba(9, 13, 14, .92) 100%),
+    linear-gradient(0deg, rgba(3, 6, 7, .94), transparent 48%);
+}
+#setup .deckspotlightcard {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  z-index: 3;
+  width: 152px;
+  aspect-ratio: 5 / 7;
+  object-fit: cover;
+  border: 1px solid rgba(242, 195, 126, .52);
+  border-radius: 9px;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, .68), 0 0 0 1px rgba(255, 255, 255, .08) inset;
+}
+#setup .deckspotlightpicked {
+  position: absolute;
+  left: 192px;
+  bottom: 28px;
+  z-index: 4;
+  padding: 7px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #19130b;
+  background: linear-gradient(180deg, #f1c684, #ca9050);
+  border: 1px solid #f2cc91;
+  border-radius: 999px;
+  font: 800 8px/1 'Barlow Semi Condensed', sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .38);
+}
+#setup .deckspotlightintro { min-width: 0; padding: 42px 44px 34px; display: flex; flex-direction: column; justify-content: center; }
+#setup .deckspotlightkicker { display: flex; align-items: center; gap: 10px; color: var(--ds-brass); font: 800 8px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .18em; }
+#setup .deckspotlightkicker span { padding-right: 10px; border-right: 1px solid rgba(212, 161, 95, .3); }
+#setup .deckspotlightkicker b { color: var(--ds-muted); font-weight: 700; }
+#setup .deckspotlightmana { min-height: 22px; margin-top: 25px; display: flex; align-items: center; gap: 5px; }
+#setup .deckspotlightmana img { width: 21px; height: 21px; filter: drop-shadow(0 3px 8px rgba(0, 0, 0, .42)); }
+#setup .deckspotlightintro h2 { margin: 13px 52px 0 0; color: #f0f3f1; font: 400 clamp(38px, 4.8vw, 62px)/.94 'Marcellus', serif; letter-spacing: -.025em; }
+#setup .deckspotlightcommander { margin: 12px 0 0; color: #c9d1ce; font: 600 11px/1.35 'Barlow', sans-serif; }
+#setup .deckspotlightcommander span { margin-right: 8px; color: var(--ds-brass); font: 800 7px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .14em; }
+#setup .deckspotlighttheme { max-width: 620px; margin: 22px 0 0; color: #9fa9a6; font: 500 14px/1.55 'Barlow', sans-serif; }
+#setup .deckspotlightbadges { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 6px; }
+#setup .deckspotlightbadges span { padding: 6px 8px; color: #b9c2bf; background: rgba(255, 255, 255, .035); border: 1px solid #293334; border-radius: 999px; font: 700 7px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+#setup .deckspotlightbadges span:first-child { color: #e1c89e; border-color: rgba(212, 161, 95, .3); }
+#setup .deckspotlightstats { margin-top: 22px; padding-top: 17px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; border-top: 1px solid rgba(255, 255, 255, .065); }
+#setup .deckspotlightstats span { color: #6f7a77; font: 600 8px/1.3 'Barlow Semi Condensed', sans-serif; text-transform: uppercase; letter-spacing: .06em; }
+#setup .deckspotlightstats b { display: block; margin-bottom: 3px; color: #d9dfdc; font: 400 21px/1 'Marcellus', serif; }
+#setup .deckspotlightbody { padding: 34px 40px; display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(280px, .72fr); gap: 34px; border-bottom: 1px solid var(--ds-line-soft); }
+#setup .deckspotlighteyebrow { color: var(--ds-brass); font: 800 8px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .17em; }
+#setup .deckspotlightplan h3,
+#setup .deckspotlightsignatures h3 { margin: 8px 0 0; color: var(--ds-text); font: 400 25px/1.05 'Marcellus', serif; }
+#setup .deckspotlightlead { max-width: 710px; margin: 13px 0 0; color: #9da7a4; font: 500 12px/1.62 'Barlow', sans-serif; }
+#setup .deckspotlightrhythm { margin: 25px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; list-style: none; }
+#setup .deckspotlightrhythm li { min-width: 0; padding: 15px; display: grid; grid-template-columns: 25px minmax(0, 1fr); gap: 9px; background: #0d1314; border: 1px solid var(--ds-line-soft); border-radius: var(--ds-r-sm); }
+#setup .deckspotlightrhythm li > span { color: rgba(212, 161, 95, .56); font: 400 16px/1 'Marcellus', serif; }
+#setup .deckspotlightrhythm li div { min-width: 0; display: grid; align-content: start; gap: 5px; }
+#setup .deckspotlightrhythm small { color: #687370; font: 800 6px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .11em; text-transform: uppercase; }
+#setup .deckspotlightrhythm b { color: #d5dbd8; font: 700 10px/1.2 'Barlow', sans-serif; }
+#setup .deckspotlightrhythm p { margin: 0; color: #747f7c; font: 500 9px/1.45 'Barlow', sans-serif; }
+#setup .deckspotlightfieldguide { display: grid; gap: 8px; align-content: stretch; }
+#setup .deckspotlightfieldguide > div { position: relative; min-height: 0; padding: 18px 17px 17px; overflow: hidden; background: linear-gradient(145deg, rgba(212, 161, 95, .075), rgba(255, 255, 255, .018)); border: 1px solid rgba(212, 161, 95, .18); border-radius: var(--ds-r-sm); }
+#setup .deckspotlightfieldguide > div > span { position: absolute; top: 14px; right: 14px; color: rgba(212, 161, 95, .4); }
+#setup .deckspotlightfieldguide .gameicon { width: 24px; height: 24px; }
+#setup .deckspotlightfieldguide small { display: block; color: var(--ds-brass); font: 800 7px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .14em; }
+#setup .deckspotlightfieldguide b { display: block; margin-top: 8px; color: #dce2df; font: 600 12px/1.2 'Barlow', sans-serif; }
+#setup .deckspotlightfieldguide p { margin: 8px 30px 0 0; color: #84908c; font: 500 10px/1.52 'Barlow', sans-serif; }
+#setup .deckspotlightsignatures { padding: 28px 40px; display: grid; grid-template-columns: 250px minmax(0, 1fr); align-items: center; gap: 28px; background: #070b0c; border-bottom: 1px solid var(--ds-line-soft); }
+#setup .deckspotlightsignatures h3 { font-size: 20px; }
+#setup .deckspotlightkeys { min-width: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+#setup .deckspotlightkey { min-width: 0; min-height: 106px; margin: 0; display: grid; grid-template-columns: 74px minmax(0, 1fr); align-items: center; overflow: hidden; background: #101617; border: 1px solid var(--ds-line-soft); border-radius: 8px; }
+#setup .deckspotlightkey > img { width: 74px; height: 106px; object-fit: cover; object-position: 50% 18%; }
+#setup .deckspotlightkey figcaption { min-width: 0; padding: 11px; display: grid; gap: 6px; }
+#setup .deckspotlightkey small { color: #7f6d4e; font: 800 6px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .13em; }
+#setup .deckspotlightkey b { color: #d5dbd8; font: 600 10px/1.3 'Barlow', sans-serif; }
+#setup .deckspotlightactions { position: sticky; bottom: 0; z-index: 7; min-height: 78px; padding: 14px 18px 14px 40px; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 9px; background: rgba(10, 14, 15, .96); border-top: 1px solid rgba(255, 255, 255, .035); backdrop-filter: blur(14px); }
+#setup .deckspotlightactions > div { min-width: 0; display: grid; gap: 4px; }
+#setup .deckspotlightactions > div b { overflow: hidden; color: #dbe1de; font: 600 11px/1.2 'Barlow', sans-serif; text-overflow: ellipsis; white-space: nowrap; }
+#setup .deckspotlightactions > div span { color: #707b78; font-size: 9px; }
+#setup .deckspotlightactions .pbtn { width: auto !important; min-height: 48px; margin: 0 !important; padding-inline: 20px !important; }
+
+@media (max-width: 900px) {
+  #setup .deckspotlightoverlay { padding: 12px; }
+  #setup .deckspotlight { max-height: calc(100dvh - 24px); }
+  #setup .deckspotlighthero { grid-template-columns: minmax(300px, .8fr) minmax(0, 1.2fr); }
+  #setup .deckspotlightintro { padding: 38px 28px 28px; }
+  #setup .deckspotlightintro h2 { font-size: clamp(34px, 5vw, 48px); }
+  #setup .deckspotlightstats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #setup .deckspotlightbody { grid-template-columns: minmax(0, 1fr); }
+  #setup .deckspotlightfieldguide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #setup .deckspotlightsignatures { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
+
+@media (max-width: 640px) {
+  #setup .deckspotlightoverlay { padding: 0; place-items: stretch; }
+  #setup .deckspotlight { width: 100%; max-height: 100dvh; border: 0; border-radius: 0; }
+  #setup .deckspotlightclose { position: fixed; top: max(12px, env(safe-area-inset-top)); right: 12px; }
+  #setup .deckspotlighthero { min-height: 0; grid-template-columns: minmax(0, 1fr); }
+  #setup .deckspotlightvisual { min-height: 248px; }
+  #setup .deckspotlightshade { background: linear-gradient(0deg, #0d1314 0%, rgba(4, 7, 8, .05) 62%); }
+  #setup .deckspotlightcard { left: 14px; bottom: 14px; width: 98px; border-radius: 6px; }
+  #setup .deckspotlightpicked { left: 124px; bottom: 17px; max-width: calc(100% - 140px); font-size: 7px; }
+  #setup .deckspotlightintro { padding: 26px 16px 25px; }
+  #setup .deckspotlightmana { margin-top: 19px; }
+  #setup .deckspotlightintro h2 { margin-right: 0; font-size: clamp(34px, 11vw, 48px); }
+  #setup .deckspotlighttheme { margin-top: 17px; font-size: 12px; }
+  #setup .deckspotlightbadges span:last-child { flex-basis: 100%; width: max-content; }
+  #setup .deckspotlightstats { margin-top: 18px; }
+  #setup .deckspotlightbody { padding: 26px 16px; gap: 22px; }
+  #setup .deckspotlightrhythm { grid-template-columns: minmax(0, 1fr); }
+  #setup .deckspotlightrhythm li { min-height: 104px; }
+  #setup .deckspotlightfieldguide { grid-template-columns: minmax(0, 1fr); }
+  #setup .deckspotlightfieldguide > div { min-height: 138px; }
+  #setup .deckspotlightsignatures { padding: 25px 16px; }
+  #setup .deckspotlightkeys { grid-template-columns: minmax(0, 1fr); }
+  #setup .deckspotlightkey { min-height: 116px; grid-template-columns: 82px minmax(0, 1fr); }
+  #setup .deckspotlightkey > img { width: 82px; height: 116px; }
+  #setup .deckspotlightactions { padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); grid-template-columns: 1fr 1.2fr; }
+  #setup .deckspotlightactions > div { display: none; }
+  #setup .deckspotlightactions .pbtn { padding-inline: 11px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #setup .deckspotlightvideo { display: none; }
+}
+
 @media (max-width: 900px) {
   #setup .playstylechoices { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   #setup .playstylerecs:not(:empty) { grid-template-columns: repeat(3, minmax(0, 1fr)); }

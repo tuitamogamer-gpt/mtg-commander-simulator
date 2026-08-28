@@ -36,6 +36,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const root = $('#setup');
     root.innerHTML = '';
     document.body.classList.remove('game-active');
+    document.body.classList.remove('deck-spotlight-open');
     const nDecks = Object.keys(MTG.DECKS).filter(d => !MTG.DECKS[d].custom).length;
     // Setup V3: zadatak je podijeljen u tri jasna koraka, bez gubitka naprednih opcija.
     const head = el('div', 'menuhead');
@@ -89,6 +90,117 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const right = el('aside', 'setupright podbuilder');
     right.id = 'pod-builder';
     grid.appendChild(left); grid.appendChild(right);
+
+    const deckBreakdown = deck => {
+      const counts = { lands: 0, creatures: 0, spells: 0, engines: 0 };
+      for (const row of deck.cards || []) {
+        const def = MTG.DEFS[row.name] || {};
+        const types = def.types || [];
+        if (types.includes('Land')) counts.lands += row.n;
+        else if (types.includes('Creature')) counts.creatures += row.n;
+        else if (types.includes('Instant') || types.includes('Sorcery')) counts.spells += row.n;
+        else if (types.includes('Artifact') || types.includes('Enchantment')) counts.engines += row.n;
+      }
+      return counts;
+    };
+
+    const openDeckSpotlight = (name, returnFocus) => {
+      root.querySelector('.deckspotlightoverlay')?.remove();
+      const deck = MTG.DECKS[name];
+      const meta = MTG.DECK_META[name] || {};
+      const guide = MTG.DECK_GUIDES[name];
+      const route = guide && MTG.DECK_GUIDE_ROUTES[guide.route];
+      if (!deck || !guide || !route) return;
+      const commanders = state.commanders.length ? state.commanders : [deck.commander];
+      const leadCommander = commanders[0];
+      const intro = MTG.COMMANDER_INTROS && (MTG.COMMANDER_INTROS[leadCommander] || MTG.COMMANDER_INTROS[deck.commander]);
+      const counts = deckBreakdown(deck);
+      const activeDecks = Object.keys(MTG.DECKS).filter(deckName => !MTG.DECKS[deckName].custom);
+      const deckNumber = activeDecks.indexOf(name) + 1;
+      const overlay = el('div', 'deckspotlightoverlay');
+      const dialog = el('article', 'deckspotlight');
+      dialog.dataset.deck = name;
+      const mana = (meta.colors || []).map(color =>
+        `<img src="./assets/mana/${color}.svg" alt="{${color}}" title="{${color}}">`).join('');
+      const phases = route.map((phase, index) => `
+        <li><span>0${index + 1}</span><div><small>${esc(phase.label)}</small><b>${esc(phase.title)}</b><p>${esc(phase.text)}</p></div></li>`).join('');
+      const keyCards = guide.keys.map(cardName => `
+        <figure class="deckspotlightkey">
+          <img loading="eager" decoding="async" src="${cardImg(cardName)}" alt="${esc(cardName)}" onerror="MTG.imgFail(this)">
+          <figcaption><small>KEY CARD</small><b>${esc(cardName)}</b></figcaption>
+        </figure>`).join('');
+      dialog.innerHTML = `
+        <button type="button" class="deckspotlightclose" aria-label="Close deck spotlight">×</button>
+        <header class="deckspotlighthero">
+          <div class="deckspotlightvisual">
+            <img class="deckspotlightbackdrop" src="${artURL(leadCommander)}" alt="" onerror="MTG.imgFail(this)">
+            ${intro ? `<video class="deckspotlightvideo" muted autoplay loop playsinline preload="metadata" poster="${artURL(leadCommander)}" aria-hidden="true"><source src="${intro}" type="video/mp4"></video>` : ''}
+            <div class="deckspotlightshade"></div>
+            <img class="deckspotlightcard" src="${cardImg(leadCommander)}" alt="${esc(leadCommander)}" onerror="MTG.imgFail(this)">
+            <span class="deckspotlightpicked"><b>✓</b> Selected for your seat</span>
+          </div>
+          <div class="deckspotlightintro">
+            <div class="deckspotlightkicker"><span>DECK SPOTLIGHT</span><b>${String(deckNumber).padStart(2, '0')} / ${String(activeDecks.length).padStart(2, '0')}</b></div>
+            <div class="deckspotlightmana" aria-label="Color identity">${mana}</div>
+            <h2 data-dialog-title>${esc(name)}</h2>
+            <p class="deckspotlightcommander"><span>COMMANDER</span>${esc(commanders.join(' + '))}</p>
+            <p class="deckspotlighttheme">${esc(guide.theme)}</p>
+            <div class="deckspotlightbadges"><span>${esc(guide.pace)}</span><span>${esc(guide.complexity)}</span><span>${esc(meta.set || '')}</span></div>
+            <div class="deckspotlightstats" aria-label="Deck breakdown">
+              <span><b>${counts.lands}</b> lands</span><span><b>${counts.creatures}</b> creatures</span><span><b>${counts.spells}</b> instants + sorceries</span><span><b>${counts.engines}</b> artifacts + enchantments</span>
+            </div>
+          </div>
+        </header>
+        <div class="deckspotlightbody">
+          <section class="deckspotlightplan" aria-labelledby="deckspotlight-plan-title">
+            <span class="deckspotlighteyebrow">HOW IT PLAYS</span>
+            <h3 id="deckspotlight-plan-title">Your route through the game</h3>
+            <p class="deckspotlightlead">${esc(guide.plan)}</p>
+            <ol class="deckspotlightrhythm">${phases}</ol>
+          </section>
+          <aside class="deckspotlightfieldguide" aria-label="Pilot field guide">
+            <div><span>${U.icon('cards')}</span><small>OPENING HAND</small><b>What to keep</b><p>${esc(guide.mulligan)}</p></div>
+            <div><span>${U.icon('info')}</span><small>PILOT NOTE</small><b>One thing to remember</b><p>${esc(guide.tip)}</p></div>
+          </aside>
+        </div>
+        <section class="deckspotlightsignatures" aria-labelledby="deckspotlight-signatures-title">
+          <div><span class="deckspotlighteyebrow">SIGNATURE PIECES</span><h3 id="deckspotlight-signatures-title">Cards that reveal the deck</h3></div>
+          <div class="deckspotlightkeys">${keyCards}</div>
+        </section>
+        <footer class="deckspotlightactions">
+          <div><b>${esc(name)} is selected.</b><span>You can keep browsing or build the rest of the pod.</span></div>
+          <button type="button" class="pbtn deckspotlightbrowse">Keep browsing</button>
+          <button type="button" class="pbtn primary deckspotlightcontinue">Build this pod →</button>
+        </footer>`;
+      overlay.appendChild(dialog);
+      root.appendChild(overlay);
+      document.body.classList.add('deck-spotlight-open');
+      const close = nextStage => {
+        const video = dialog.querySelector('video');
+        if (video) video.pause();
+        overlay.remove();
+        document.body.classList.remove('deck-spotlight-open');
+        if (nextStage === 'pod') {
+          setSetupStage('pod');
+          requestAnimationFrame(() => right.querySelector('select, button:not(:disabled)')?.focus({ preventScroll: true }));
+        } else if (returnFocus && returnFocus.isConnected) returnFocus.focus({ preventScroll: true });
+      };
+      dialog.querySelector('.deckspotlightclose').onclick = () => close('deck');
+      dialog.querySelector('.deckspotlightbrowse').onclick = () => close('deck');
+      dialog.querySelector('.deckspotlightcontinue').onclick = () => close('pod');
+      overlay.onclick = event => { if (event.target === overlay) close('deck'); };
+      dialog.addEventListener('keydown', event => {
+        if (event.key !== 'Escape') return;
+        event.preventDefault();
+        close('deck');
+      });
+      U.enhanceDialog(overlay, dialog, {
+        label: `${name} deck spotlight`,
+        initialFocus: dialog.querySelector('.deckspotlightcontinue'),
+        returnFocus: document.body,
+      });
+      requestAnimationFrame(() => { dialog.scrollTop = 0; });
+    };
 
     const explorerHead = el('div', 'deckexplorerhead', `
       <div><span class="eyebrow">Deck explorer</span><h2>Find your playstyle</h2></div>
@@ -183,6 +295,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           step.removeAttribute('title');
         });
         setSetupStage('deck');
+        if (!state.applyingReplay) openDeckSpotlight(name, card);
       };
       entry.appendChild(card);
       entry.appendChild(favorite);
@@ -2954,7 +3067,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.renderGameState = function () {
     const g = window._game;
     const ui = window._ui;
-    if (!g) return { mode: 'setup', deckCount: MTG.DECKS ? Object.keys(MTG.DECKS).length : 0 };
+    if (!g) {
+      const setup = document.querySelector('#setup');
+      const selected = setup && setup.querySelector('.deckcard.selected');
+      const spotlight = setup && setup.querySelector('.deckspotlight');
+      return {
+        mode: 'setup',
+        deckCount: MTG.DECKS ? Object.keys(MTG.DECKS).length : 0,
+        stage: setup && setup.dataset.setupStage || 'deck',
+        selectedDeck: selected && selected.closest('.deckentry')?.dataset.deck || null,
+        spotlight: spotlight ? {
+          deck: spotlight.dataset.deck,
+          actions: [...spotlight.querySelectorAll('button')].map(button => button.textContent.trim() || button.getAttribute('aria-label')),
+        } : null,
+      };
+    }
     const card = c => ({
       id: c.iid, name: c.name, zone: c.zone, tapped: !!c.tapped,
       types: c.cur && c.cur.types ? [...c.cur.types] : [...(c.def.types || [])],

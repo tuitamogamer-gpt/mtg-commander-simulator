@@ -1,6 +1,7 @@
 import './modules/util.js';
 import './card-images.js';
 import './modules/visuals.js';
+import './modules/deck-guides.js';
 import './modules/engine.js';
 import './modules/engine2.js';
 import './modules/diplomacy.js';
