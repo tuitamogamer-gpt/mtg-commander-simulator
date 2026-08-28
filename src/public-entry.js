@@ -9,41 +9,47 @@ if (!root || !page) throw new Error('Commander Simulator entry shell is missing.
 
 const detailsMarkup = `
   <section class="mainmenu-proof" aria-label="Product details">
-    <div><b>27</b><span>tested preconstructed decks</span></div>
-    <div><b>4</b><span>real Commander seats</span></div>
-    <div><b>Local</b><span>deterministic AI, no model API</span></div>
-    <div class="mainmenu-livecheck" data-live-state="checking"><i></i><span><b>Checking Live rooms</b><small>Solo play is always available</small></span></div>
+    <div class="mainmenu-proof-stat"><strong>27</strong><span><b>Complete decks</b><small>Curated commanders and strategies</small></span></div>
+    <div class="mainmenu-proof-stat"><strong>4</strong><span><b>Real seats</b><small>A full multiplayer pod</small></span></div>
+    <div class="mainmenu-proof-stat"><strong>Local</strong><span><b>Deterministic AI</b><small>No model API or account</small></span></div>
+    <div class="mainmenu-livecheck" data-live-state="checking" role="status" aria-live="polite"><i aria-hidden="true"></i><span><b>Checking Live rooms</b><small>Solo play is always available</small></span></div>
   </section>
 
-  <section class="mainmenu-path" aria-labelledby="first-pod-title">
+  <section id="how-it-works" class="mainmenu-path" aria-labelledby="first-pod-title">
     <div class="mainmenu-path-copy">
-      <span>YOUR FIRST POD</span>
+      <span>THE FULL GAME, MADE READABLE</span>
       <h2 id="first-pod-title">From deck choice to opening hand.</h2>
-      <p>The client keeps the table readable while preserving the decisions that make Commander interesting.</p>
+      <p>Commander Simulator clears away table clutter while keeping the decisions that make the format interesting.</p>
+      <ul class="mainmenu-decision-tags" aria-label="Visible game decisions"><li>Priority</li><li>Stack</li><li>Targets</li><li>Combat</li></ul>
       <button type="button" data-menu-action="tour">See the first-game guide</button>
     </div>
     <ol class="mainmenu-path-steps">
-      <li><span aria-hidden="true">01</span><div><b>Pick a deck</b><p>Filter by color or playstyle, then open its guide and signature cards.</p></div></li>
-      <li><span aria-hidden="true">02</span><div><b>Build the pod</b><p>Choose bot decks, personalities, difficulty, and optional Politics.</p></div></li>
-      <li><span aria-hidden="true">03</span><div><b>Play the decisions</b><p>Proceed prompts, priority windows, targets, and combat stay visible.</p></div></li>
+      <li><span aria-hidden="true"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-cards"></use></svg></span><div><b>Pick a deck</b><p>Filter by color or playstyle, then open its guide and signature cards.</p></div></li>
+      <li><span aria-hidden="true"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-player"></use></svg></span><div><b>Build the pod</b><p>Choose bot decks, personalities, difficulty, and optional Politics.</p></div></li>
+      <li><span aria-hidden="true"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-stack"></use></svg></span><div><b>Play the decisions</b><p>Proceed prompts, priority windows, targets, and combat stay visible.</p></div></li>
     </ol>
   </section>
 
-  <section class="mainmenu-modes" aria-label="Ways to play">
+  <section id="ways-to-play" class="mainmenu-modes" aria-label="Ways to play">
     <article class="mainmenu-mode solo">
       <span aria-hidden="true">01</span>
-      <div><small>PLAY AT YOUR PACE</small><h2>Solo Commander</h2><p>Seeded games, adjustable stops, five bot personalities, optional public deals, and a share-safe debug snapshot.</p></div>
+      <div><small>PLAY AT YOUR PACE</small><h2>Solo Commander</h2><p>Build a complete four-player table around the deck you want to learn.</p><ul class="mainmenu-mode-points"><li>Three local AI opponents</li><li>Adjustable stops and personalities</li><li>Seeded games you can replay</li></ul></div>
       <button type="button" data-menu-action="solo">Choose a solo deck</button>
     </article>
     <article class="mainmenu-mode live">
       <span aria-hidden="true">02</span>
-      <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Host a two-player room, send one private link, and let two local AI seats complete the four-player pod.</p></div>
+      <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Open a private two-player room, then let two local AI seats complete the pod.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>No account or public lobby</li><li>Two human seats, two local bots</li></ul></div>
       <button type="button" data-menu-action="live">Configure a Live table</button>
     </article>
   </section>
 
+  <section class="mainmenu-final-cta" aria-labelledby="final-cta-title">
+    <div><span>YOUR NEXT POD</span><h2 id="final-cta-title">Pick a deck. We will set the table.</h2><p>Start solo now, or invite one friend to a private Live room.</p></div>
+    <div class="mainmenu-final-actions"><button type="button" class="mainmenu-primary" data-menu-action="solo">Start solo</button><button type="button" class="mainmenu-secondary" data-menu-action="live">Create Live table</button></div>
+  </section>
+
   <footer class="mainmenu-footer">
-    <div><b>COMMANDER SIMULATOR</b><span>Free, browser-based fan project. Card data and images are provided through Scryfall.</span></div>
+    <div><b>COMMANDER SIMULATOR</b><span>Free, browser-based fan project. Card data and images are provided through Scryfall.</span><a href="#landing-top">Back to top</a></div>
     <p>Commander Simulator is unofficial Fan Content permitted under the <a href="https://company.wizards.com/en/legal/fancontentpolicy" target="_blank" rel="noreferrer">Fan Content Policy</a>. Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC.</p>
   </footer>`;
 
@@ -63,13 +69,14 @@ function rememberOnboarding() {
 let gameLoad = null;
 
 function showLoading(mode) {
-  page.querySelector('.mainmenu-loadveil')?.remove();
+  root.querySelector('.mainmenu-loadveil')?.remove();
   const veil = document.createElement('div');
   veil.className = 'mainmenu-loadveil';
   veil.setAttribute('role', 'status');
   veil.setAttribute('aria-live', 'polite');
   veil.innerHTML = `<div><i aria-hidden="true"></i><span>OPENING THE TABLE</span><h2>${mode === 'online' ? 'Preparing Commander Live.' : 'Loading all 27 decks.'}</h2><p>The complete rules engine stays in this browser. This first load can take a moment.</p></div>`;
-  page.appendChild(veil);
+  root.appendChild(veil);
+  page.inert = true;
   root.setAttribute('aria-busy', 'true');
   page.querySelectorAll('[data-menu-action]').forEach(button => { button.disabled = true; });
   return veil;
@@ -110,6 +117,7 @@ async function loadGame(mode = null) {
 
 function openGuide(continueMode = null) {
   page.querySelector('.mainmenu-onboarding')?.remove();
+  document.body.classList.add('mainmenu-dialog-open');
   const overlay = document.createElement('div');
   overlay.className = 'mainmenu-onboarding';
   const dialog = document.createElement('article');
@@ -117,6 +125,7 @@ function openGuide(continueMode = null) {
   dialog.setAttribute('role', 'dialog');
   dialog.setAttribute('aria-modal', 'true');
   dialog.setAttribute('aria-labelledby', 'public-guide-title');
+  dialog.setAttribute('tabindex', '-1');
   dialog.innerHTML = `
     <button type="button" class="mainmenu-onboarding-close" aria-label="Close first-game guide">×</button>
     <header><span>FIRST GAME GUIDE</span><h2 id="public-guide-title">Four things before you sit down.</h2><p>You can reopen this guide from the main menu at any time.</p></header>
@@ -131,16 +140,19 @@ function openGuide(continueMode = null) {
   page.appendChild(overlay);
 
   const priorFocus = document.activeElement;
+  const closeButton = dialog.querySelector('.mainmenu-onboarding-close');
   const close = () => {
     overlay.remove();
-    if (priorFocus instanceof HTMLElement) priorFocus.focus();
+    document.body.classList.remove('mainmenu-dialog-open');
+    if (priorFocus instanceof HTMLElement) priorFocus.focus({ preventScroll: true });
   };
   const start = dialog.querySelector('.mainmenu-onboarding-start');
-  dialog.querySelector('.mainmenu-onboarding-close').onclick = close;
+  closeButton.onclick = close;
   dialog.querySelector('.mainmenu-onboarding-later').onclick = close;
   start.onclick = () => {
     rememberOnboarding();
     overlay.remove();
+    document.body.classList.remove('mainmenu-dialog-open');
     void loadGame(continueMode || 'solo');
   };
   overlay.onclick = event => { if (event.target === overlay) close(); };
@@ -162,7 +174,8 @@ function openGuide(continueMode = null) {
       first.focus();
     }
   };
-  start.focus();
+  dialog.scrollTop = 0;
+  closeButton.focus({ preventScroll: true });
 }
 
 page.querySelectorAll('[data-menu-action="tour"]').forEach(button => { button.onclick = () => openGuide(); });
@@ -203,7 +216,7 @@ if (localStaticHost) {
 window.render_game_to_text = () => JSON.stringify({
   mode: 'menu',
   deckCount: 27,
-  actions: ['Play solo', 'Play with a friend', 'How to play'],
+  actions: ['Start a solo table', 'Create a Live table', 'Guide'],
   onboardingOpen: !!page.querySelector('.mainmenu-onboarding'),
 });
 window.advanceTime = async () => JSON.parse(window.render_game_to_text());

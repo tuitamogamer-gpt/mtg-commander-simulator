@@ -14,7 +14,7 @@ The production URL for approved, verified releases is:
 
 For unreleased local changes, share the verified ZIP or complete the release checks before presenting that URL as the current build.
 
-New players can open **How to play** for the first-game guide. Solo mode requires no account. Commander Live creates one private friend link for a two-human, two-bot table.
+New players can open **Guide** for the first-game walkthrough. Solo mode requires no account. Commander Live creates one private friend link for a two-human, two-bot table.
 
 The fuller handoff and release checklist is in [`PUBLIC_RELEASE.md`](PUBLIC_RELEASE.md).
 

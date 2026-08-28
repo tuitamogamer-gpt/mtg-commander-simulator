@@ -18,7 +18,14 @@ test('public home is the default entry and exposes clear Solo, Live, guide, and 
   assert.match(index, /class="mainmenu mainmenu-boot"/);
   assert.match(index, /class="mainmenu-primary" data-menu-action="solo"/);
   assert.match(index, /assets\/menu\/invisible-woman\.webp/);
-  assert.match(index, /width="300" height="418" fetchpriority="low"/);
+  assert.match(index, /width="300" height="418" decoding="async"/);
+  assert.match(index, /class="mainmenu-skip" href="#primary-actions"/);
+  assert.match(index, /class="mainmenu mainmenu-boot"[^>]*>[\s\S]*?class="mainmenu-skip"/);
+  assert.match(main, /if \(!bootPage\) page\.innerHTML = `[\s\S]*?class="mainmenu-skip"/);
+  assert.match(index, /class="mainmenu-navlinks" aria-label="Explore Commander Simulator"/);
+  assert.match(publicEntry, /id="how-it-works"/);
+  assert.match(index, /viewport-fit=cover/);
+  assert.doesNotMatch(index, /id="desktop-only"/);
   assert.match(index, /type="module" src="\.\/src\/public-entry\.js"/);
   assert.doesNotMatch(index, /type="module" src="\.\/src\/(?:app|data)\.js"/);
   assert.match(index, /rel="preload" as="image" href="\.\/assets\/backgrounds\/commander-war-room\.webp" type="image\/webp" fetchpriority="high"/);
@@ -34,7 +41,7 @@ test('public home is the default entry and exposes clear Solo, Live, guide, and 
   assert.match(main, /document\.readyState === 'loading'/);
   assert.match(main, /renderSetup\(\{ mode: continueMode \|\| 'solo' \}\)/);
   assert.match(main, /renderSetup\(\{ mode: 'online' \}\)/);
-  assert.match(main, /head\.querySelector\('\.setuphome'\)\.onclick = renderMainMenu/);
+  assert.match(main, /head\.querySelector\('\.setuphome'\)\.onclick = \(\) => \{[\s\S]*?renderMainMenu\(\)/);
   assert.match(main, /mode: 'menu'/);
 });
 
@@ -50,6 +57,12 @@ test('first-game onboarding explains the complete user decision model without ex
   assert.match(publicEntry, /Your deck is complete/);
   assert.match(publicEntry, /HOLD opens priority/);
   assert.match(publicEntry, /dialog\.setAttribute\('role', 'dialog'\)/);
+  assert.match(publicEntry, /closeButton\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(publicEntry, /dialog\.scrollTop = 0/);
+  assert.match(publicEntry, /document\.body\.classList\.add\('mainmenu-dialog-open'\)/);
+  assert.match(main, /initialFocus: dialog\.querySelector\('\.mainmenu-onboarding-close'\)/);
+  assert.match(main, /setupTitle\.tabIndex = -1/);
+  assert.match(main, /setupTitle\.focus\(\{ preventScroll: true \}\)/);
 });
 
 test('heavy rules and deck modules wait for a real setup or deep-link request', () => {
@@ -58,6 +71,8 @@ test('heavy rules and deck modules wait for a real setup or deep-link request', 
   assert.match(publicEntry, /window\.__mtgPendingSetupMode = mode/);
   assert.match(publicEntry, /new URLSearchParams\(window\.location\.search\)/);
   assert.match(publicEntry, /room.*onlineSmoke.*smokeDeck/s);
+  assert.match(publicEntry, /root\.appendChild\(veil\)/);
+  assert.match(publicEntry, /page\.inert = true/);
 });
 
 test('public menu is responsive, motion-safe, and uses real game artwork', () => {
@@ -65,11 +80,34 @@ test('public menu is responsive, motion-safe, and uses real game artwork', () =>
   assert.match(index, /\.\/src\/frontend-overhaul\.css" media="print" onload="this\.media='all'"/);
   assert.match(css, /#setup\[data-app-view="home"\]/);
   assert.match(css, /commander-war-room\.webp/);
-  assert.match(css, /@media \(max-width: 860px\)/);
+  assert.match(css, /@media \(max-width: 900px\)/);
   assert.match(css, /@media \(max-width: 600px\)/);
+  assert.match(css, /@media \(max-width: 900px\) and \(max-height: 650px\)/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(css, /min-height: 100dvh/);
+  assert.match(css, /\.mainmenu-card img \{[\s\S]*?height: auto/);
+  assert.match(css, /\.mainmenu-proof \{ grid-template-columns: repeat\(2, minmax\(0, 1fr\)\); \}/);
+  assert.match(css, /:is\(a, button\):focus-visible/);
+  assert.match(css, /env\(safe-area-inset-top\)/);
+  assert.match(css, /translateY\(calc\(-100% - max\(10px, env\(safe-area-inset-top\)\)\)\)/);
   assert.doesNotMatch(css, /addEventListener\(['"]scroll/);
+});
+
+test('cold and warm landing menus keep the same public content and accessibility contract', () => {
+  for (const source of [publicEntry, main]) {
+    assert.match(source, /THE FULL GAME, MADE READABLE/);
+    assert.match(source, /Three local AI opponents/);
+    assert.match(source, /No account or public lobby/);
+    assert.match(source, /Pick a deck\. We will set the table\./);
+    assert.match(source, /class="mainmenu-livecheck"[^>]*role="status" aria-live="polite"/);
+    assert.match(source, /id="ways-to-play"/);
+    assert.match(source, /data-menu-action="solo"/);
+    assert.match(source, /data-menu-action="live"/);
+  }
+  assert.match(index, /Four seats\. One browser\. No account\./);
+  assert.match(main, /Four seats\. One browser\. No account\./);
+  assert.match(index, /class="mainmenu-trust"/);
+  assert.match(main, /class="mainmenu-trust"/);
 });
 
 test('share previews and the official fan-project notice are present', () => {

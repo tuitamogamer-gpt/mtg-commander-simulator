@@ -17,8 +17,8 @@ Do not tell players that new local changes are live until the deployed revision 
 
 ## What to tell new players
 
-1. Press **Play solo** for the simplest first game.
-2. Use **How to play** if HOLD, priority, the stack, or Proceed are unfamiliar.
+1. Press **Start a solo table** for the simplest first game.
+2. Open **Guide** if HOLD, priority, the stack, or Proceed are unfamiliar.
 3. Pick a deck by playstyle. Its spotlight explains the game plan, opening hand, and signature cards.
 4. Build the pod, review all public settings, and start.
 5. Important spells, targets, triggers, and combat reviews wait for the player to continue.

@@ -49,41 +49,55 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     root.dataset.setupStage = 'home';
     root.removeAttribute('aria-busy');
     $('#game').style.display = 'none';
-    document.body.classList.remove('game-active', 'deck-spotlight-open');
+    document.body.classList.remove('game-active', 'deck-spotlight-open', 'mainmenu-dialog-open');
     delete window._game;
     delete window._ui;
 
     const featuredCards = featuredNames.map((name, index) => {
       const deck = MTG.DECKS[name];
       return `<figure class="mainmenu-card card-${index + 1}">
-        <img src="${featuredMenuArt[name] || cardImg(deck.commander)}" width="300" height="418" fetchpriority="low" alt="${esc(name)} led by ${esc(deck.commander)}" onerror="MTG.imgFail(this)">
+        <img src="${featuredMenuArt[name] || cardImg(deck.commander)}" width="300" height="418" decoding="async" alt="${esc(name)} led by ${esc(deck.commander)}" onerror="MTG.imgFail(this)">
       </figure>`;
     }).join('');
 
     const page = bootPage || el('main', 'mainmenu');
+    page.id = 'landing-top';
+    page.tabIndex = -1;
     if (!bootPage) page.innerHTML = `
+      <a class="mainmenu-skip" href="#primary-actions">Skip to play options</a>
       <header class="mainmenu-nav">
-        <div class="mainmenu-brand" aria-label="Commander Simulator home">
+        <a class="mainmenu-brand" href="#landing-top" aria-label="Commander Simulator home">
           <span class="menumark" aria-hidden="true"></span>
           <span><b>COMMANDER</b><small>SIMULATOR</small></span>
+        </a>
+        <nav class="mainmenu-navlinks" aria-label="Explore Commander Simulator">
+          <a href="#how-it-works">How it works</a>
+          <a href="#ways-to-play">Ways to play</a>
+        </nav>
+        <div class="mainmenu-navtools">
+          <div class="mainmenu-mana" role="img" aria-label="White, blue, black, red, green, and colorless mana">
+            ${['W', 'U', 'B', 'R', 'G', 'C'].map(color => `<img src="./assets/mana/${color}.svg" alt="">`).join('')}
+          </div>
+          <button type="button" class="mainmenu-guide" data-menu-action="tour" aria-label="Open first-game guide">${U.icon('info')}<span>Guide</span></button>
         </div>
-        <div class="mainmenu-mana" aria-label="White, blue, black, red, green, and colorless mana">
-          ${['W', 'U', 'B', 'R', 'G', 'C'].map(color => `<img src="./assets/mana/${color}.svg" alt="{${color}}">`).join('')}
-        </div>
-        <button type="button" class="mainmenu-guide" data-menu-action="tour" aria-label="How to play">${U.icon('info')}<span>How to play</span></button>
       </header>
 
       <section class="mainmenu-hero" aria-labelledby="mainmenu-title">
         <div class="mainmenu-hero-copy">
-          <span class="mainmenu-kicker">A complete four-player table</span>
+          <span class="mainmenu-kicker">Four seats. One browser. No account.</span>
           <h1 id="mainmenu-title">Your Commander table is ready.</h1>
-          <p>Choose a tested deck, meet three local opponents, and play every decision through a visible rules-first interface.</p>
-          <div class="mainmenu-actions">
-            <button type="button" class="mainmenu-primary" data-menu-action="solo">${U.icon('player')}<span><b>Play solo</b><small>You and 1-3 local AI V2 opponents</small></span></button>
-            <button type="button" class="mainmenu-secondary" data-menu-action="live">${U.icon('deals')}<span><b>Play with a friend</b><small>Private link, two people, two local bots</small></span></button>
+          <p>Choose one of ${nDecks} complete decks and play a real four-player pod with visible priority, targets, stack, and combat decisions.</p>
+          <div id="primary-actions" class="mainmenu-actions" tabindex="-1">
+            <button type="button" class="mainmenu-primary" data-menu-action="solo">${U.icon('player')}<span><b>Start a solo table</b><small>You and three deterministic local opponents</small></span></button>
+            <button type="button" class="mainmenu-secondary" data-menu-action="live">${U.icon('deals')}<span><b>Create a Live table</b><small>Invite one friend; two local bots complete the pod</small></span></button>
           </div>
+          <ul class="mainmenu-trust" aria-label="What you need to play">
+            <li><span aria-hidden="true">✓</span>No sign-up</li>
+            <li><span aria-hidden="true">✓</span>Runs in your browser</li>
+            <li><span aria-hidden="true">✓</span>Local rules and AI</li>
+          </ul>
         </div>
-        <div class="mainmenu-visual" aria-label="Featured Commander decks">
+        <div class="mainmenu-visual" role="group" aria-label="Featured Commander decks">
           <div class="mainmenu-warroom" aria-hidden="true"></div>
           <div class="mainmenu-cardfan">${featuredCards}</div>
           <div class="mainmenu-table-note"><span>${U.icon('stack')}</span><div><small>VISIBLE RULES FLOW</small><b>Priority, stack, combat, choices</b></div></div>
@@ -105,17 +119,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!page.querySelector('.mainmenu-proof')) page.insertAdjacentHTML('beforeend', `
 
       <section class="mainmenu-proof" aria-label="Product details">
-        <div><b>${nDecks}</b><span>tested preconstructed decks</span></div>
-        <div><b>4</b><span>real Commander seats</span></div>
-        <div><b>Local</b><span>deterministic AI, no model API</span></div>
-        <div class="mainmenu-livecheck" data-live-state="checking"><i></i><span><b>Checking Live rooms</b><small>Solo play is always available</small></span></div>
+        <div class="mainmenu-proof-stat"><strong>${nDecks}</strong><span><b>Complete decks</b><small>Curated commanders and strategies</small></span></div>
+        <div class="mainmenu-proof-stat"><strong>4</strong><span><b>Real seats</b><small>A full multiplayer pod</small></span></div>
+        <div class="mainmenu-proof-stat"><strong>Local</strong><span><b>Deterministic AI</b><small>No model API or account</small></span></div>
+        <div class="mainmenu-livecheck" data-live-state="checking" role="status" aria-live="polite"><i aria-hidden="true"></i><span><b>Checking Live rooms</b><small>Solo play is always available</small></span></div>
       </section>
 
-      <section class="mainmenu-path" aria-labelledby="first-pod-title">
+      <section id="how-it-works" class="mainmenu-path" aria-labelledby="first-pod-title">
         <div class="mainmenu-path-copy">
-          <span>YOUR FIRST POD</span>
+          <span>THE FULL GAME, MADE READABLE</span>
           <h2 id="first-pod-title">From deck choice to opening hand.</h2>
-          <p>The client keeps the table readable while preserving the decisions that make Commander interesting.</p>
+          <p>Commander Simulator clears away table clutter while keeping the decisions that make the format interesting.</p>
+          <ul class="mainmenu-decision-tags" aria-label="Visible game decisions"><li>Priority</li><li>Stack</li><li>Targets</li><li>Combat</li></ul>
           <button type="button" data-menu-action="tour">See the first-game guide</button>
         </div>
         <ol class="mainmenu-path-steps">
@@ -125,29 +140,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         </ol>
       </section>
 
-      <section class="mainmenu-modes" aria-label="Ways to play">
+      <section id="ways-to-play" class="mainmenu-modes" aria-label="Ways to play">
         <article class="mainmenu-mode solo">
-          <span>${U.icon('crown')}</span>
-          <div><small>PLAY AT YOUR PACE</small><h2>Solo Commander</h2><p>Seeded games, adjustable stops, five bot personalities, optional public deals, and a share-safe debug snapshot.</p></div>
+          <span aria-hidden="true">01</span>
+          <div><small>PLAY AT YOUR PACE</small><h2>Solo Commander</h2><p>Build a complete four-player table around the deck you want to learn.</p><ul class="mainmenu-mode-points"><li>Three local AI opponents</li><li>Adjustable stops and personalities</li><li>Seeded games you can replay</li></ul></div>
           <button type="button" data-menu-action="solo">Choose a solo deck</button>
         </article>
         <article class="mainmenu-mode live">
-          <span>${U.icon('deals')}</span>
-          <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Host a two-player room, send one private link, and let two local AI seats complete the four-player pod.</p></div>
+          <span aria-hidden="true">02</span>
+          <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Open a private two-player room, then let two local AI seats complete the pod.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>No account or public lobby</li><li>Two human seats, two local bots</li></ul></div>
           <button type="button" data-menu-action="live">Configure a Live table</button>
         </article>
       </section>
 
+      <section class="mainmenu-final-cta" aria-labelledby="final-cta-title">
+        <div><span>YOUR NEXT POD</span><h2 id="final-cta-title">Pick a deck. We will set the table.</h2><p>Start solo now, or invite one friend to a private Live room.</p></div>
+        <div class="mainmenu-final-actions"><button type="button" class="mainmenu-primary" data-menu-action="solo">Start solo</button><button type="button" class="mainmenu-secondary" data-menu-action="live">Create Live table</button></div>
+      </section>
+
       <footer class="mainmenu-footer">
-        <div><b>COMMANDER SIMULATOR</b><span>Free, browser-based fan project. Card data and images are provided through Scryfall.</span></div>
+        <div><b>COMMANDER SIMULATOR</b><span>Free, browser-based fan project. Card data and images are provided through Scryfall.</span><a href="#landing-top">Back to top</a></div>
         <p>Commander Simulator is unofficial Fan Content permitted under the <a href="https://company.wizards.com/en/legal/fancontentpolicy" target="_blank" rel="noreferrer">Fan Content Policy</a>. Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC.</p>
       </footer>`);
     if (!bootPage) root.appendChild(page);
 
     const openGuide = (continueMode = null) => {
       root.querySelector('.mainmenu-onboarding')?.remove();
+      document.body.classList.add('mainmenu-dialog-open');
       const overlay = el('div', 'mainmenu-onboarding');
       const dialog = el('article', 'mainmenu-onboarding-panel');
+      dialog.tabIndex = -1;
       dialog.innerHTML = `
         <button type="button" class="mainmenu-onboarding-close" aria-label="Close first-game guide">×</button>
         <header><span>FIRST GAME GUIDE</span><h2 data-dialog-title>Four things before you sit down.</h2><p>You can reopen this guide from the main menu at any time.</p></header>
@@ -160,12 +182,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <footer><button type="button" class="mainmenu-onboarding-later">Close guide</button><button type="button" class="mainmenu-onboarding-start">${continueMode === 'online' ? 'Build a Live table' : 'Choose my first deck'}</button></footer>`;
       overlay.appendChild(dialog);
       root.appendChild(overlay);
-      const close = () => overlay.remove();
+      const close = () => {
+        overlay.remove();
+        document.body.classList.remove('mainmenu-dialog-open');
+      };
       dialog.querySelector('.mainmenu-onboarding-close').onclick = close;
       dialog.querySelector('.mainmenu-onboarding-later').onclick = close;
       dialog.querySelector('.mainmenu-onboarding-start').onclick = () => {
         localStorage.setItem('mtgOnboardingComplete', '1');
         overlay.remove();
+        document.body.classList.remove('mainmenu-dialog-open');
         renderSetup({ mode: continueMode || 'solo' });
       };
       overlay.onclick = event => { if (event.target === overlay) close(); };
@@ -176,8 +202,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       U.enhanceDialog(overlay, dialog, {
         label: 'First game guide',
-        initialFocus: dialog.querySelector('.mainmenu-onboarding-start'),
+        initialFocus: dialog.querySelector('.mainmenu-onboarding-close'),
       });
+      dialog.scrollTop = 0;
     };
 
     page.querySelectorAll('[data-menu-action="tour"]').forEach(button => { button.onclick = () => openGuide(); });
@@ -265,7 +292,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <p class="subtitle">Browse ${nDecks} tested preconstructed decks, then configure a four-player pod.</p>
       </div>`;
     root.appendChild(head);
-    head.querySelector('.setuphome').onclick = renderMainMenu;
+    const setupTitle = head.querySelector('.title');
+    setupTitle.tabIndex = -1;
+    requestAnimationFrame(() => {
+      if (root.dataset.appView === 'setup' && setupTitle.isConnected) setupTitle.focus({ preventScroll: true });
+    });
+    head.querySelector('.setuphome').onclick = () => {
+      renderMainMenu();
+      requestAnimationFrame(() => $('#landing-top')?.focus({ preventScroll: true }));
+    };
 
     let savedFavorites = [];
     try {

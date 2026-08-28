@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#050708">
 <meta name="color-scheme" content="dark">
 <meta name="description" content="Play four-player Commander in your browser with 27 tested decks, visible priority and stack decisions, local AI opponents, and private Live rooms.">
@@ -41,48 +41,54 @@
 </noscript>
 </head>
 <body>
-<div id="desktop-only">
-  <div class="desktop-only-card">
-    <span>DESKTOP COMMANDER</span>
-    <h1>A wider screen is required</h1>
-    <p>This simulator is designed for desktop displays at least 1280 px wide.</p>
-  </div>
-</div>
 <div id="setup" data-app-view="home" aria-busy="true">
-  <main class="mainmenu mainmenu-boot" aria-label="Commander Simulator">
+  <main id="landing-top" class="mainmenu mainmenu-boot" aria-label="Commander Simulator" tabindex="-1">
+    <a class="mainmenu-skip" href="#primary-actions">Skip to play options</a>
     <header class="mainmenu-nav">
-      <div class="mainmenu-brand" aria-label="Commander Simulator home">
+      <a class="mainmenu-brand" href="#landing-top" aria-label="Commander Simulator home">
         <span class="menumark" aria-hidden="true"></span>
         <span><b>COMMANDER</b><small>SIMULATOR</small></span>
+      </a>
+      <nav class="mainmenu-navlinks" aria-label="Explore Commander Simulator">
+        <a href="#how-it-works">How it works</a>
+        <a href="#ways-to-play">Ways to play</a>
+      </nav>
+      <div class="mainmenu-navtools">
+        <div class="mainmenu-mana" role="img" aria-label="White, blue, black, red, green, and colorless mana">
+          <img src="./assets/mana/W.svg" alt=""><img src="./assets/mana/U.svg" alt=""><img src="./assets/mana/B.svg" alt=""><img src="./assets/mana/R.svg" alt=""><img src="./assets/mana/G.svg" alt=""><img src="./assets/mana/C.svg" alt="">
+        </div>
+        <button type="button" class="mainmenu-guide" data-menu-action="tour" aria-label="Open first-game guide"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-info"></use></svg><span>Guide</span></button>
       </div>
-      <div class="mainmenu-mana" aria-label="White, blue, black, red, green, and colorless mana">
-        <img src="./assets/mana/W.svg" alt="{W}"><img src="./assets/mana/U.svg" alt="{U}"><img src="./assets/mana/B.svg" alt="{B}"><img src="./assets/mana/R.svg" alt="{R}"><img src="./assets/mana/G.svg" alt="{G}"><img src="./assets/mana/C.svg" alt="{C}">
-      </div>
-      <button type="button" class="mainmenu-guide" data-menu-action="tour" aria-label="How to play"><svg class="gameicon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 10.5v6M12 7.5h.01" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>How to play</span></button>
     </header>
     <section class="mainmenu-hero" aria-labelledby="boot-title">
       <div class="mainmenu-hero-copy">
-        <span class="mainmenu-kicker">A complete four-player table</span>
+        <span class="mainmenu-kicker">Four seats. One browser. No account.</span>
         <h1 id="boot-title">Your Commander table is ready.</h1>
-        <p>Choose a tested deck, meet three local opponents, and play every decision through a visible rules-first interface.</p>
-        <div class="mainmenu-actions">
-          <button type="button" class="mainmenu-primary" data-menu-action="solo"><span><b>Play solo</b><small>You and 1-3 local AI V2 opponents</small></span></button>
-          <button type="button" class="mainmenu-secondary" data-menu-action="live"><span><b>Play with a friend</b><small>Private link, two people, two local bots</small></span></button>
+        <p>Choose one of 27 complete decks and play a real four-player pod with visible priority, targets, stack, and combat decisions.</p>
+        <div id="primary-actions" class="mainmenu-actions" tabindex="-1">
+          <button type="button" class="mainmenu-primary" data-menu-action="solo"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-player"></use></svg><span><b>Start a solo table</b><small>You and three deterministic local opponents</small></span></button>
+          <button type="button" class="mainmenu-secondary" data-menu-action="live"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-deals"></use></svg><span><b>Create a Live table</b><small>Invite one friend; two local bots complete the pod</small></span></button>
         </div>
+        <ul class="mainmenu-trust" aria-label="What you need to play">
+          <li><span aria-hidden="true">✓</span>No sign-up</li>
+          <li><span aria-hidden="true">✓</span>Runs in your browser</li>
+          <li><span aria-hidden="true">✓</span>Local rules and AI</li>
+        </ul>
       </div>
-      <div class="mainmenu-visual" aria-label="Featured Commander decks">
+      <div class="mainmenu-visual" role="group" aria-label="Featured Commander decks">
         <div class="mainmenu-warroom" aria-hidden="true"></div>
         <div class="mainmenu-cardfan">
-          <figure class="mainmenu-card card-1"><img src="./assets/menu/invisible-woman.webp" width="300" height="418" fetchpriority="low" alt="The Fantastic Four led by Invisible Woman"></figure>
-          <figure class="mainmenu-card card-2"><img src="./assets/menu/galadriel-elven-queen.webp" width="300" height="418" fetchpriority="low" alt="Elven Council led by Galadriel, Elven-Queen"></figure>
-          <figure class="mainmenu-card card-3"><img src="./assets/menu/zimone-infinite-analyst.webp" width="300" height="418" fetchpriority="low" alt="Quandrix Unlimited led by Zimone, Infinite Analyst"></figure>
+          <figure class="mainmenu-card card-1"><img src="./assets/menu/invisible-woman.webp" width="300" height="418" decoding="async" alt="The Fantastic Four led by Invisible Woman"></figure>
+          <figure class="mainmenu-card card-2"><img src="./assets/menu/galadriel-elven-queen.webp" width="300" height="418" decoding="async" alt="Elven Council led by Galadriel, Elven-Queen"></figure>
+          <figure class="mainmenu-card card-3"><img src="./assets/menu/zimone-infinite-analyst.webp" width="300" height="418" decoding="async" alt="Quandrix Unlimited led by Zimone, Infinite Analyst"></figure>
         </div>
-        <div class="mainmenu-table-note"><span aria-hidden="true"><svg class="gameicon" viewBox="0 0 24 24"><path d="m4 7 8-4 8 4-8 4-8-4Zm0 5 8 4 8-4M4 17l8 4 8-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><small>VISIBLE RULES FLOW</small><b>Priority, stack, combat, choices</b></div></div>
+        <div class="mainmenu-table-note"><span aria-hidden="true"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-stack"></use></svg></span><div><small>VISIBLE RULES FLOW</small><b>Priority, stack, combat, choices</b></div></div>
       </div>
     </section>
   </main>
 </div>
 <div id="game"></div>
+<noscript><div class="mainmenu-noscript" role="note"><b>JavaScript is required to open the table.</b><span>Enable JavaScript, then reload Commander Simulator.</span></div></noscript>
 <script type="module" src="./src/public-entry.js"></script>
 </body>
 </html>
