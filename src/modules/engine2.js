@@ -4457,9 +4457,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     // CR 510.2: nanosi se sve odjednom — SBA tek nakon cijelog koraka
-    for (const d of plan) {
+    for (const [combatIndex, d] of plan.entries()) {
+      const damageOpts = { combat: true, deferSBA: true, combatStep: stepKind, combatIndex };
       if (d.toPlayer) {
-        const dealtN = await this.damagePlayer(d.src, d.target, d.n, { combat: true, deferSBA: true });
+        const dealtN = await this.damagePlayer(d.src, d.target, d.n, damageOpts);
         if (dealtN > 0) {
           await this.emit('combatDamageToPlayer', { card: d.src, player: d.target, n: dealtN, step: stepKind });
           const hits = playerHits.get(d.target) || [];
@@ -4467,7 +4468,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           playerHits.set(d.target, hits);
         }
       } else {
-        await this.damageCreature(d.src, d.target, d.n, { combat: true, deferSBA: true });
+        await this.damageCreature(d.src, d.target, d.n, damageOpts);
       }
     }
     for (const [player, hits] of playerHits) {

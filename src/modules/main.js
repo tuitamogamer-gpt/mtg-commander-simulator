@@ -3238,13 +3238,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           document.body.appendChild(trigger);
           return;
         } else if (mode === 'keywords') {
-          const cards = ['Stormcatch Mentor', 'Academy Manufactor', 'Riders of Gavony', 'Whirler Rogue', 'Palace Jailer']
+          const cards = ['Zetalpa, Primal Dawn', 'Weathered Sentinels', 'Nighthawk Scavenger',
+            'Quicksilver, Speedster', 'Adrix and Nev, Twincasters', 'Kulrath Knight',
+            'Chatterfang, Squirrel General', 'Goldlust Triad', 'Ingenious Prodigy', 'Academy Manufactor']
             .map(name => place(ui.me, name));
-          const keywords = ['indestructible', 'hexproof', 'shroud', 'first strike', 'double strike'];
-          g.untilEffects.push({ expires: 'eot', apply: () => cards.forEach((card, index) => card.cur.kw.add(keywords[index])) });
-          cards[1].counters['-1/-1'] = 2;
+          g.untilEffects.push({ expires: 'eot', apply: () => cards[9].cur.kw.add('shroud') });
+          cards[9].counters['-1/-1'] = 2;
           g.recalc(); ui.render();
-          g.lg('General effects smoke: keyword icon board prepared.', 'effect');
+          g.lg('General effects smoke: complete ability icon board prepared.', 'effect');
         } else if (mode === 'strike' || mode === 'doubleStrike') {
           const attacker = place(ui.me, 'Riders of Gavony');
           const twin = place(ui.me, 'Inferno Titan');
@@ -3257,6 +3258,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const trigger = document.createElement('button');
           trigger.id = 'smoke-trigger-fx'; trigger.className = 'pbtn primary smokefxtrigger'; trigger.textContent = `Trigger ${mode === 'doubleStrike' ? 'double strike' : 'first strike'} FX`;
           trigger.onclick = async () => { trigger.remove(); await g.combatDamage(ui.me, mode === 'doubleStrike' ? 'normal' : 'first'); };
+          document.body.appendChild(trigger);
+          return;
+        } else if (mode === 'combatDamage') {
+          const attacker = place(ui.me, 'Inferno Titan');
+          const defender = g.players.find(player => player !== ui.me);
+          attacker.attacking = defender; attacker.blockedBy = []; attacker.wasBlocked = false;
+          g.combat = { attackers: [attacker] }; g.phase = 'combat'; g.step = 'damage';
+          g.recalc(); ui.render();
+          const trigger = document.createElement('button');
+          trigger.id = 'smoke-trigger-fx'; trigger.className = 'pbtn primary smokefxtrigger'; trigger.textContent = 'Trigger combat damage FX';
+          trigger.onclick = async () => { trigger.remove(); await g.combatDamage(ui.me, 'normal'); };
           document.body.appendChild(trigger);
           return;
         } else if (mode === 'bounce') {

@@ -1609,6 +1609,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.note('gameEffect', {
         kind: 'damage', targetKind: 'player', target: p, targetPlayer: p,
         source: src || null, amount: n, combat: !!opts.combat,
+        combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
       });
       await this.emit('damageToPlayer', { src, player: p, n, combat: !!opts.combat });
       if (!opts.deferSBA) await this.checkSBA();
@@ -1675,6 +1676,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.note('gameEffect', {
           kind: 'damage', targetKind: 'permanent', target, targetCard: target,
           source: src || null, amount: n, combat: !!opts.combat,
+          combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
         });
         await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
         if (!opts.deferSBA) await this.checkSBA();
@@ -1703,6 +1705,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.note('gameEffect', {
           kind: 'damage', targetKind: 'permanent', target, targetCard: target,
           source: src || null, amount: n, combat: !!opts.combat, wither: true,
+          combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
         });
         await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
         if (!opts.deferSBA) await this.checkSBA();
@@ -1716,6 +1719,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.note('gameEffect', {
         kind: 'damage', targetKind: 'permanent', target, targetCard: target,
         source: src || null, amount: n, combat: !!opts.combat,
+        combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
       });
       await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
       if (!opts.deferSBA) await this.checkSBA();

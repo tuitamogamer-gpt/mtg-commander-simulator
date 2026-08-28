@@ -2141,15 +2141,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     keywordBadgesHTML(c) {
-      if (!c || c.faceDown || !MTG.KEYWORD_VISUALS) return '';
+      if (!c || !MTG.KEYWORD_VISUALS) return '';
       const badges = [];
       for (const [keyword, visual] of Object.entries(MTG.KEYWORD_VISUALS)) {
-        if (!c.kw(keyword)) continue;
+        // A face-down object's identity stays hidden, but cloak/disguise Ward
+        // is public rules information and must remain visible to opponents.
+        if (c.faceDown && visual.derived !== 'ward') continue;
+        if (!MTG.cardHasVisualAbility(c, keyword, visual)) continue;
         const counterN = c.counters && c.counters[keyword] || 0;
-        const title = `${visual.label}${counterN ? ` — ${counterN} ${keyword} counter${counterN === 1 ? '' : 's'}` : ''}`;
+        const ward = visual.derived === 'ward' && c.cur && c.cur.wardCost;
+        const wardDetail = ward && (ward.mana || (ward.life ? `pay ${ward.life} life` : ward.blight ? `Blight ${ward.blight}` : ''));
+        const title = `${visual.label}${wardDetail ? ` — ${wardDetail}` : ''}${counterN ? ` — ${counterN} ${keyword} counter${counterN === 1 ? '' : 's'}` : ''}`;
         badges.push(`<span class="keywordbadge tone-${visual.tone}" data-keyword="${esc(keyword)}" title="${esc(title)}" aria-label="${esc(title)}">${U.icon(visual.icon)}${counterN > 1 ? `<b>${counterN}</b>` : ''}</span>`);
       }
-      return badges.length ? `<div class="keywordrack" aria-label="Visible keyword abilities">${badges.join('')}</div>` : '';
+      return badges.length ? `<div class="keywordrack${badges.length > 3 ? ' dense' : ''}" data-ability-count="${badges.length}" aria-label="Visible keyword abilities">${badges.join('')}</div>` : '';
     }
 
     miniCard(g, c, opts = {}) {
@@ -3777,7 +3782,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           : '';
       const faceDownLabel = card.zone === 'battlefield' ? 'FACE-DOWN 2/2' : 'FACE-DOWN EXILE';
       const sheetKeywords = useCurrentCharacteristics && MTG.KEYWORD_VISUALS
-        ? Object.entries(MTG.KEYWORD_VISUALS).filter(([keyword]) => card.kw(keyword)).map(([keyword, visual]) =>
+        ? Object.entries(MTG.KEYWORD_VISUALS).filter(([keyword, visual]) => MTG.cardHasVisualAbility(card, keyword, visual)).map(([keyword, visual]) =>
           `<span class="sheetkeyword tone-${visual.tone}">${U.icon(visual.icon)}<b>${esc(visual.label)}</b>${(card.counters[keyword] || 0) ? `<small>${card.counters[keyword]} counter${card.counters[keyword] === 1 ? '' : 's'}</small>` : ''}</span>`).join('')
         : '';
       info.innerHTML = `${card.faceDown ? `<div class="facedownsheet">🃏 ${faceDownLabel}${mayLookFaceDown ? ' · only you can see its identity' : ''}</div>` : ''}` +
@@ -4479,10 +4484,12 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
       const y = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
       const layer = this.gameEffectLayer();
+      const combatStep = event.combatStep === 'first' ? 'FIRST STRIKE' : 'COMBAT';
       const impact = el('div', `gamefx-impact ${event.targetKind || 'permanent'}${event.combat ? ' combat' : ''}`,
-        `<i></i><i></i><i></i><span></span><strong>−${Math.max(0, Number(event.amount) || 0)}</strong><small>${event.combat ? 'COMBAT' : 'DAMAGE'}</small>`);
+        `<i></i><i></i><i></i><span></span><strong>−${Math.max(0, Number(event.amount) || 0)}</strong><small>${event.combat ? combatStep : 'DAMAGE'}</small>`);
       impact.style.left = `${x}px`;
       impact.style.top = `${y}px`;
+      impact.style.setProperty('--combat-delay', `${Math.min(180, Math.max(0, Number(event.combatIndex) || 0) * 28)}ms`);
       layer.appendChild(impact);
       if (targetNode) {
         targetNode.classList.remove('fx-damage-target');
@@ -4495,12 +4502,29 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       if (sourceRect) {
         const sx = sourceRect.left + sourceRect.width / 2, sy = sourceRect.top + sourceRect.height / 2;
         const dx = x - sx, dy = y - sy;
-        const line = el('div', 'gamefx-damageline');
+        const line = el('div', event.combat ? `gamefx-combattrail step-${event.combatStep || 'normal'}` : 'gamefx-damageline');
         line.style.left = `${sx}px`; line.style.top = `${sy}px`;
         line.style.width = `${Math.max(12, Math.hypot(dx, dy))}px`;
         line.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
         layer.appendChild(line);
-        setTimeout(() => line.remove(), 520);
+        if (event.combat) {
+          const ghost = el('div', `gamefx-combatghost step-${event.combatStep || 'normal'}`);
+          ghost.appendChild(sourceNode.cloneNode(true));
+          ghost.style.left = `${sourceRect.left}px`; ghost.style.top = `${sourceRect.top}px`;
+          ghost.style.width = `${sourceRect.width}px`; ghost.style.height = `${sourceRect.height}px`;
+          ghost.style.setProperty('--combat-x', `${dx * .2}px`);
+          ghost.style.setProperty('--combat-y', `${dy * .2}px`);
+          layer.appendChild(ghost);
+          sourceNode.classList.remove('fx-combat-source');
+          void sourceNode.offsetWidth;
+          sourceNode.classList.add('fx-combat-source');
+          document.querySelector('#game')?.classList.remove('fx-combat-camera');
+          void document.querySelector('#game')?.offsetWidth;
+          document.querySelector('#game')?.classList.add('fx-combat-camera');
+          setTimeout(() => { ghost.remove(); sourceNode.classList.remove('fx-combat-source'); }, 620);
+          setTimeout(() => document.querySelector('#game')?.classList.remove('fx-combat-camera'), 430);
+        }
+        setTimeout(() => line.remove(), event.combat ? 640 : 520);
       }
       setTimeout(() => impact.remove(), 940);
       setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1020);

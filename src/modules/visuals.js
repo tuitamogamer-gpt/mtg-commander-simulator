@@ -7,6 +7,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'shield', 'target', 'library', 'cards', 'graveyard', 'exile', 'effects', 'player',
     'info', 'ring', 'counterspell', 'indestructible', 'hexproof', 'shroud',
     'first-strike', 'double-strike', 'minus-counter', 'proliferate',
+    'flying', 'deathtouch', 'lifelink', 'trample', 'haste', 'vigilance',
+    'menace', 'reach', 'defender', 'flash', 'prowess', 'ward', 'wither',
+    'forestwalk', 'myriad', 'skulk',
   ]);
 
   MTG.icon = function icon(name, extraClass = '') {
@@ -19,12 +22,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // gameplay FX.  Labels stay explicit because similar shield-like keywords
   // must never depend on colour alone.
   MTG.KEYWORD_VISUALS = Object.freeze({
+    flying: Object.freeze({ icon: 'flying', label: 'Flying', tone: 'sky' }),
+    deathtouch: Object.freeze({ icon: 'deathtouch', label: 'Deathtouch', tone: 'acid' }),
+    lifelink: Object.freeze({ icon: 'lifelink', label: 'Lifelink', tone: 'rose' }),
+    trample: Object.freeze({ icon: 'trample', label: 'Trample', tone: 'green' }),
+    haste: Object.freeze({ icon: 'haste', label: 'Haste', tone: 'red' }),
+    vigilance: Object.freeze({ icon: 'vigilance', label: 'Vigilance', tone: 'white' }),
+    menace: Object.freeze({ icon: 'menace', label: 'Menace', tone: 'crimson' }),
+    reach: Object.freeze({ icon: 'reach', label: 'Reach', tone: 'green' }),
+    defender: Object.freeze({ icon: 'defender', label: 'Defender', tone: 'silver' }),
+    flash: Object.freeze({ icon: 'flash', label: 'Flash', tone: 'violet' }),
+    prowess: Object.freeze({ icon: 'prowess', label: 'Prowess', tone: 'cyan' }),
+    ward: Object.freeze({ icon: 'ward', label: 'Ward', tone: 'blue', derived: 'ward' }),
     indestructible: Object.freeze({ icon: 'indestructible', label: 'Indestructible', tone: 'gold' }),
     hexproof: Object.freeze({ icon: 'hexproof', label: 'Hexproof', tone: 'blue' }),
     shroud: Object.freeze({ icon: 'shroud', label: 'Shroud', tone: 'violet' }),
     'first strike': Object.freeze({ icon: 'first-strike', label: 'First strike', tone: 'red' }),
     'double strike': Object.freeze({ icon: 'double-strike', label: 'Double strike', tone: 'orange' }),
+    wither: Object.freeze({ icon: 'wither', label: 'Wither', tone: 'acid' }),
+    forestwalk: Object.freeze({ icon: 'forestwalk', label: 'Forestwalk', tone: 'green' }),
+    myriad: Object.freeze({ icon: 'myriad', label: 'Myriad', tone: 'cyan' }),
+    skulk: Object.freeze({ icon: 'skulk', label: 'Skulk', tone: 'silver' }),
   });
+
+  // Ward lives in cur.wardCost rather than cur.kw.  Keeping this lookup next
+  // to the visual registry makes battlefield badges and the card sheet agree.
+  MTG.cardHasVisualAbility = function cardHasVisualAbility(card, keyword, visual) {
+    if (!card || !card.cur) return false;
+    if (visual && visual.derived === 'ward') return !!card.cur.wardCost;
+    if (keyword === 'hexproof' && card.cur.hexproof) return true;
+    if (keyword === 'shroud' && card.cur.shroud) return true;
+    return card.kw(keyword);
+  };
 
   // Shared accessible-dialog enhancer for the setup and Arena. It does not
   // decide whether Escape is legal; each product surface keeps that rule.

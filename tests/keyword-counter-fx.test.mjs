@@ -29,8 +29,22 @@ function permanent(game, player, name) {
 
 test('requested keyword visual map keeps every effect distinct', () => {
   assert.deepEqual(Object.keys(MTG.KEYWORD_VISUALS).sort(),
-    ['double strike', 'first strike', 'hexproof', 'indestructible', 'shroud']);
-  assert.equal(new Set(Object.values(MTG.KEYWORD_VISUALS).map(entry => entry.icon)).size, 5);
+    ['deathtouch', 'defender', 'double strike', 'first strike', 'flash', 'flying', 'forestwalk',
+      'haste', 'hexproof', 'indestructible', 'lifelink', 'menace', 'myriad', 'prowess', 'reach',
+      'shroud', 'skulk', 'trample', 'vigilance', 'ward', 'wither']);
+  assert.equal(new Set(Object.values(MTG.KEYWORD_VISUALS).map(entry => entry.icon)).size, 21);
+  const sprite = fs.readFileSync(path.join(root, 'assets/icons/game-ui.svg'), 'utf8');
+  for (const visual of Object.values(MTG.KEYWORD_VISUALS)) {
+    assert.match(sprite, new RegExp(`id="icon-${visual.icon}"`));
+  }
+});
+
+test('visual ability lookup includes derived ward state', () => {
+  const { game, players: [first] } = pod();
+  const warded = permanent(game, first, 'Adrix and Nev, Twincasters');
+  const ordinary = permanent(game, first, 'Academy Manufactor');
+  assert.equal(MTG.cardHasVisualAbility(warded, 'ward', MTG.KEYWORD_VISUALS.ward), true);
+  assert.equal(MTG.cardHasVisualAbility(ordinary, 'ward', MTG.KEYWORD_VISUALS.ward), false);
 });
 
 test('central counter helper moves a real spell and emits the counterspell visual event', async () => {
@@ -92,6 +106,10 @@ test('first and double strike FX come from their actual combat-damage steps', as
   assert.equal(second.life, 34, 'first strike deals once and double strike deals in both steps');
   assert.ok(events.some(event => event.type === 'gameEffect' && event.kind === 'combatStrike' && event.mode === 'firstStrike'));
   assert.ok(events.some(event => event.type === 'gameEffect' && event.kind === 'combatStrike' && event.mode === 'doubleStrike'));
+  const damageFX = events.filter(event => event.type === 'gameEffect' && event.kind === 'damage' && event.combat);
+  assert.ok(damageFX.some(event => event.combatStep === 'first'));
+  assert.ok(damageFX.some(event => event.combatStep === 'normal'));
+  assert.ok(damageFX.every(event => Number.isInteger(event.combatIndex)));
 });
 
 test('proliferate event lists each chosen object and every counter kind it expands', async () => {
@@ -113,6 +131,9 @@ test('UI copy distinguishes proliferate choice from targeting and reviews multi-
   assert.match(ui, /Confirm proliferate with no selections/);
   assert.match(ui, /class="m1counter"/);
   assert.match(ui, /el\('div', 'selectionreview'/);
+  assert.match(ui, /cloak\/disguise Ward/);
+  assert.match(ui, /gamefx-combattrail/);
+  assert.match(ui, /gamefx-combatghost/);
   for (const kind of ['counterspell', 'keyword', 'counterChange', 'combatStrike', 'proliferate']) {
     assert.match(ui, new RegExp(`event\\.kind === '${kind}'`));
   }

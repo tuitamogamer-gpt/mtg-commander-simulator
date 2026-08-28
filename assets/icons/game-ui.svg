@@ -89,5 +89,53 @@
     <symbol id="icon-proliferate" viewBox="0 0 24 24">
       <circle cx="12" cy="12" r="3"/><circle cx="5" cy="7" r="2"/><circle cx="19" cy="7" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="m7 8 3 2m4 0 3-2M7 17l3-3m4 0 3 3"/>
     </symbol>
+    <symbol id="icon-flying" viewBox="0 0 24 24">
+      <path d="M3 14c5-1 7-4 9-9 1 4 4 6 9 7-4 1-7 3-9 7-1-3-4-5-9-5Z"/><path d="M6 14c3 0 5 1 6 5M12 5c0 5 0 9-1 14"/>
+    </symbol>
+    <symbol id="icon-deathtouch" viewBox="0 0 24 24">
+      <path d="M7 13a5 5 0 1 1 10 0v3l-2 3H9l-2-3v-3Z"/><circle cx="10" cy="12" r="1"/><circle cx="14" cy="12" r="1"/><path d="m10 16 2-2 2 2M9 19v2m3-2v2m3-2v2"/>
+    </symbol>
+    <symbol id="icon-lifelink" viewBox="0 0 24 24">
+      <path d="M12 20S4 15.5 4 9.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8 2.5c0 6-8 10.5-8 10.5Z"/><path d="M8 12h3l1-3 2 6 1-3h2"/>
+    </symbol>
+    <symbol id="icon-trample" viewBox="0 0 24 24">
+      <path d="m5 4 6 3-2 5 4-2 6 4-2 6H8l-4-5 4-2-3-9Z"/><path d="m4 20 5-3m5 3 5-3"/>
+    </symbol>
+    <symbol id="icon-haste" viewBox="0 0 24 24">
+      <path d="M13 3 5 14h6l-1 7 9-12h-6V3Z"/><path d="M3 7h5M2 11h5M3 15h3"/>
+    </symbol>
+    <symbol id="icon-vigilance" viewBox="0 0 24 24">
+      <path d="M2.5 12S6 6.5 12 6.5 21.5 12 21.5 12 18 17.5 12 17.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4 4l2 2m12-2-2 2"/>
+    </symbol>
+    <symbol id="icon-menace" viewBox="0 0 24 24">
+      <path d="M4 5h6l2 5 2-5h6l-2 14H6L4 5Z"/><path d="m7 10 3 2-3 2m10-4-3 2 3 2M9 17h6"/>
+    </symbol>
+    <symbol id="icon-reach" viewBox="0 0 24 24">
+      <path d="M6 21c8-4 11-10 12-18M5 4c7 2 12 7 15 15M8 6l8 8M5 10l9 9M12 4l8 8"/>
+    </symbol>
+    <symbol id="icon-defender" viewBox="0 0 24 24">
+      <path d="M4 21V8l4-4 4 4 4-4 4 4v13H4Z"/><path d="M8 21v-6h8v6M4 11h16"/>
+    </symbol>
+    <symbol id="icon-flash" viewBox="0 0 24 24">
+      <path d="M13 2 5 13h6l-1 9 9-13h-6V2Z"/><path d="M4 5 2 3m18 2 2-2M4 19l-2 2m18-2 2 2"/>
+    </symbol>
+    <symbol id="icon-prowess" viewBox="0 0 24 24">
+      <path d="m12 2 2 7 7 3-7 3-2 7-2-7-7-3 7-3 2-7Z"/><circle cx="12" cy="12" r="3"/>
+    </symbol>
+    <symbol id="icon-ward" viewBox="0 0 24 24">
+      <path d="M12 3 20 7v6c0 4.5-3 7-8 9-5-2-8-4.5-8-9V7l8-4Z"/><path d="m8 14 2-5 2 5 2-5 2 5"/>
+    </symbol>
+    <symbol id="icon-wither" viewBox="0 0 24 24">
+      <path d="M12 3c6 4 7 10 3 15-3 4-8 2-9-2-1-5 2-9 6-13Z"/><path d="M7 18c3-3 6-6 10-8M10 13l-1-4m4 1 3 3"/>
+    </symbol>
+    <symbol id="icon-forestwalk" viewBox="0 0 24 24">
+      <path d="m7 3 4 6H8l4 6H3l4-6H4l3-6Zm10 4 4 6h-3l3 5h-8l3-5h-3l4-6Z"/><path d="M7 15v6m10-3v3M3 21h18"/>
+    </symbol>
+    <symbol id="icon-myriad" viewBox="0 0 24 24">
+      <circle cx="12" cy="7" r="3"/><circle cx="6" cy="16" r="3"/><circle cx="18" cy="16" r="3"/><path d="M10 10 7 13m7-3 3 3M9 16h6"/>
+    </symbol>
+    <symbol id="icon-skulk" viewBox="0 0 24 24">
+      <path d="M5 20c1-7 4-13 11-16-2 4-1 7 3 9-2 5-7 7-14 7Z"/><path d="m7 17 4-1-2-3 4-1-1-3 4-2"/>
+    </symbol>
   </defs>
 </svg>
