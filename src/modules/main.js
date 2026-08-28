@@ -32,16 +32,225 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return `${(def.super || []).join(' ')} ${(def.types || []).join(' ')}${(def.subtypes || []).length ? ' - ' + def.subtypes.join(' ') : ''}`.trim();
   }
 
-  function renderSetup() {
+  function renderMainMenu() {
+    const root = $('#setup');
+    const bootPage = root.querySelector('.mainmenu-boot');
+    const nDecks = Object.keys(MTG.DECKS).filter(name => !MTG.DECKS[name].custom).length;
+    const featuredNames = ['The Fantastic Four', 'Elven Council', 'Quandrix Unlimited']
+      .filter(name => MTG.DECKS[name]);
+    const featuredMenuArt = {
+      'The Fantastic Four': './assets/menu/invisible-woman.webp',
+      'Elven Council': './assets/menu/galadriel-elven-queen.webp',
+      'Quandrix Unlimited': './assets/menu/zimone-infinite-analyst.webp',
+    };
+    if (!bootPage) root.innerHTML = '';
+    root.style.display = 'block';
+    root.dataset.appView = 'home';
+    root.dataset.setupStage = 'home';
+    root.removeAttribute('aria-busy');
+    $('#game').style.display = 'none';
+    document.body.classList.remove('game-active', 'deck-spotlight-open');
+    delete window._game;
+    delete window._ui;
+
+    const featuredCards = featuredNames.map((name, index) => {
+      const deck = MTG.DECKS[name];
+      return `<figure class="mainmenu-card card-${index + 1}">
+        <img src="${featuredMenuArt[name] || cardImg(deck.commander)}" width="300" height="418" fetchpriority="low" alt="${esc(name)} led by ${esc(deck.commander)}" onerror="MTG.imgFail(this)">
+      </figure>`;
+    }).join('');
+
+    const page = bootPage || el('main', 'mainmenu');
+    if (!bootPage) page.innerHTML = `
+      <header class="mainmenu-nav">
+        <div class="mainmenu-brand" aria-label="Commander Simulator home">
+          <span class="menumark" aria-hidden="true"></span>
+          <span><b>COMMANDER</b><small>SIMULATOR</small></span>
+        </div>
+        <div class="mainmenu-mana" aria-label="White, blue, black, red, green, and colorless mana">
+          ${['W', 'U', 'B', 'R', 'G', 'C'].map(color => `<img src="./assets/mana/${color}.svg" alt="{${color}}">`).join('')}
+        </div>
+        <button type="button" class="mainmenu-guide" data-menu-action="tour" aria-label="How to play">${U.icon('info')}<span>How to play</span></button>
+      </header>
+
+      <section class="mainmenu-hero" aria-labelledby="mainmenu-title">
+        <div class="mainmenu-hero-copy">
+          <span class="mainmenu-kicker">A complete four-player table</span>
+          <h1 id="mainmenu-title">Your Commander table is ready.</h1>
+          <p>Choose a tested deck, meet three local opponents, and play every decision through a visible rules-first interface.</p>
+          <div class="mainmenu-actions">
+            <button type="button" class="mainmenu-primary" data-menu-action="solo">${U.icon('player')}<span><b>Play solo</b><small>You and 1-3 local AI V2 opponents</small></span></button>
+            <button type="button" class="mainmenu-secondary" data-menu-action="live">${U.icon('deals')}<span><b>Play with a friend</b><small>Private link, two people, two local bots</small></span></button>
+          </div>
+        </div>
+        <div class="mainmenu-visual" aria-label="Featured Commander decks">
+          <div class="mainmenu-warroom" aria-hidden="true"></div>
+          <div class="mainmenu-cardfan">${featuredCards}</div>
+          <div class="mainmenu-table-note"><span>${U.icon('stack')}</span><div><small>VISIBLE RULES FLOW</small><b>Priority, stack, combat, choices</b></div></div>
+        </div>
+      </section>
+
+      `;
+    if (bootPage) {
+      page.classList.remove('mainmenu-boot');
+      const guide = page.querySelector('.mainmenu-guide');
+      if (guide && !guide.querySelector('.gameicon')) guide.insertAdjacentHTML('afterbegin', U.icon('info'));
+      const solo = page.querySelector('.mainmenu-primary');
+      if (solo && !solo.querySelector('.gameicon')) solo.insertAdjacentHTML('afterbegin', U.icon('player'));
+      const live = page.querySelector('.mainmenu-secondary');
+      if (live && !live.querySelector('.gameicon')) live.insertAdjacentHTML('afterbegin', U.icon('deals'));
+      const tableNote = page.querySelector('.mainmenu-table-note > span');
+      if (tableNote && !tableNote.querySelector('.gameicon')) tableNote.innerHTML = U.icon('stack');
+    }
+    if (!page.querySelector('.mainmenu-proof')) page.insertAdjacentHTML('beforeend', `
+
+      <section class="mainmenu-proof" aria-label="Product details">
+        <div><b>${nDecks}</b><span>tested preconstructed decks</span></div>
+        <div><b>4</b><span>real Commander seats</span></div>
+        <div><b>Local</b><span>deterministic AI, no model API</span></div>
+        <div class="mainmenu-livecheck" data-live-state="checking"><i></i><span><b>Checking Live rooms</b><small>Solo play is always available</small></span></div>
+      </section>
+
+      <section class="mainmenu-path" aria-labelledby="first-pod-title">
+        <div class="mainmenu-path-copy">
+          <span>YOUR FIRST POD</span>
+          <h2 id="first-pod-title">From deck choice to opening hand.</h2>
+          <p>The client keeps the table readable while preserving the decisions that make Commander interesting.</p>
+          <button type="button" data-menu-action="tour">See the first-game guide</button>
+        </div>
+        <ol class="mainmenu-path-steps">
+          <li><span>${U.icon('cards')}</span><div><b>Pick a deck</b><p>Filter by color or playstyle, then open its guide and signature cards.</p></div></li>
+          <li><span>${U.icon('player')}</span><div><b>Build the pod</b><p>Choose bot decks, personalities, difficulty, and optional Politics.</p></div></li>
+          <li><span>${U.icon('stack')}</span><div><b>Play the decisions</b><p>Proceed prompts, priority windows, targets, and combat stay visible.</p></div></li>
+        </ol>
+      </section>
+
+      <section class="mainmenu-modes" aria-label="Ways to play">
+        <article class="mainmenu-mode solo">
+          <span>${U.icon('crown')}</span>
+          <div><small>PLAY AT YOUR PACE</small><h2>Solo Commander</h2><p>Seeded games, adjustable stops, five bot personalities, optional public deals, and a share-safe debug snapshot.</p></div>
+          <button type="button" data-menu-action="solo">Choose a solo deck</button>
+        </article>
+        <article class="mainmenu-mode live">
+          <span>${U.icon('deals')}</span>
+          <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Host a two-player room, send one private link, and let two local AI seats complete the four-player pod.</p></div>
+          <button type="button" data-menu-action="live">Configure a Live table</button>
+        </article>
+      </section>
+
+      <footer class="mainmenu-footer">
+        <div><b>COMMANDER SIMULATOR</b><span>Free, browser-based fan project. Card data and images are provided through Scryfall.</span></div>
+        <p>Commander Simulator is unofficial Fan Content permitted under the <a href="https://company.wizards.com/en/legal/fancontentpolicy" target="_blank" rel="noreferrer">Fan Content Policy</a>. Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC.</p>
+      </footer>`);
+    if (!bootPage) root.appendChild(page);
+
+    const openGuide = (continueMode = null) => {
+      root.querySelector('.mainmenu-onboarding')?.remove();
+      const overlay = el('div', 'mainmenu-onboarding');
+      const dialog = el('article', 'mainmenu-onboarding-panel');
+      dialog.innerHTML = `
+        <button type="button" class="mainmenu-onboarding-close" aria-label="Close first-game guide">×</button>
+        <header><span>FIRST GAME GUIDE</span><h2 data-dialog-title>Four things before you sit down.</h2><p>You can reopen this guide from the main menu at any time.</p></header>
+        <div class="mainmenu-onboarding-grid">
+          <section><i>${U.icon('cards')}</i><div><b>Your deck is complete</b><p>Every listed option is a fixed 100-card deck. Pick by feel first; the deck spotlight explains the plan.</p></div></section>
+          <section><i>${U.icon('player')}</i><div><b>You control one seat</b><p>The other seats never expose hidden cards. Local AI makes decisions without an external model or account.</p></div></section>
+          <section><i>${U.icon('hold')}</i><div><b>HOLD opens priority</b><p>Arm HOLD when you want to respond. The game also stops automatically at the priority windows you choose.</p></div></section>
+          <section><i>${U.icon('stack')}</i><div><b>Proceed protects clarity</b><p>Important spells, triggers, targets, and combat reviews wait until the table state is clear.</p></div></section>
+        </div>
+        <footer><button type="button" class="mainmenu-onboarding-later">Close guide</button><button type="button" class="mainmenu-onboarding-start">${continueMode === 'online' ? 'Build a Live table' : 'Choose my first deck'}</button></footer>`;
+      overlay.appendChild(dialog);
+      root.appendChild(overlay);
+      const close = () => overlay.remove();
+      dialog.querySelector('.mainmenu-onboarding-close').onclick = close;
+      dialog.querySelector('.mainmenu-onboarding-later').onclick = close;
+      dialog.querySelector('.mainmenu-onboarding-start').onclick = () => {
+        localStorage.setItem('mtgOnboardingComplete', '1');
+        overlay.remove();
+        renderSetup({ mode: continueMode || 'solo' });
+      };
+      overlay.onclick = event => { if (event.target === overlay) close(); };
+      dialog.addEventListener('keydown', event => {
+        if (event.key !== 'Escape') return;
+        event.preventDefault();
+        close();
+      });
+      U.enhanceDialog(overlay, dialog, {
+        label: 'First game guide',
+        initialFocus: dialog.querySelector('.mainmenu-onboarding-start'),
+      });
+    };
+
+    page.querySelectorAll('[data-menu-action="tour"]').forEach(button => { button.onclick = () => openGuide(); });
+    page.querySelectorAll('[data-menu-action="solo"]').forEach(button => {
+      button.onclick = () => {
+        if (localStorage.getItem('mtgOnboardingComplete') === '1') renderSetup({ mode: 'solo' });
+        else openGuide('solo');
+      };
+    });
+    page.querySelectorAll('[data-menu-action="live"]').forEach(button => {
+      button.onclick = () => renderSetup({ mode: 'online' });
+    });
+
+    const liveStatus = page.querySelector('.mainmenu-livecheck');
+    const localStaticHost = location.protocol === 'file:' || ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
+    if (localStaticHost) {
+      liveStatus.dataset.liveState = 'hosted';
+      liveStatus.querySelector('b').textContent = 'Solo mode ready';
+      liveStatus.querySelector('small').textContent = 'Live rooms require the hosted build';
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      return;
+    }
+    const vercelHost = /(^|\.)vercel\.app$/i.test(location.hostname);
+    if (!vercelHost) {
+      liveStatus.dataset.liveState = 'hosted';
+      liveStatus.querySelector('b').textContent = 'Solo mode ready';
+      liveStatus.querySelector('small').textContent = 'Live support is checked when a room opens';
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      return;
+    }
+    const liveController = new AbortController();
+    const liveTimeout = setTimeout(() => liveController.abort(), 3500);
+    fetch('./api/ws', { cache: 'no-store', signal: liveController.signal })
+      .then(async response => ({ response, payload: response.ok ? await response.json() : null }))
+      .then(({ response, payload }) => {
+        if (!response.ok || !payload || payload.ok !== true) throw new Error('Live rooms unavailable');
+        liveStatus.dataset.liveState = 'online';
+        liveStatus.querySelector('b').textContent = 'Live rooms online';
+        liveStatus.querySelector('small').textContent = 'Private room service is ready';
+      })
+      .catch(() => {
+        liveStatus.dataset.liveState = 'hosted';
+        liveStatus.querySelector('b').textContent = 'Solo mode ready';
+        liveStatus.querySelector('small').textContent = 'Live rooms require the hosted build';
+      })
+      .finally(() => clearTimeout(liveTimeout));
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  MTG.showMainMenu = renderMainMenu;
+  MTG.exitToMainMenu = () => {
+    if (window._game) {
+      location.replace(location.pathname);
+      return;
+    }
+    renderMainMenu();
+  };
+  MTG.showSetup = renderSetup;
+
+  function renderSetup(options = {}) {
     const root = $('#setup');
     root.innerHTML = '';
+    root.removeAttribute('aria-busy');
+    root.style.display = 'block';
+    root.dataset.appView = 'setup';
     document.body.classList.remove('game-active');
     document.body.classList.remove('deck-spotlight-open');
     const nDecks = Object.keys(MTG.DECKS).filter(d => !MTG.DECKS[d].custom).length;
+    const initialMode = options.mode === 'online' ? 'online' : 'solo';
     // Setup V3: zadatak je podijeljen u tri jasna koraka, bez gubitka naprednih opcija.
     const head = el('div', 'menuhead');
     head.innerHTML = `
-      <div class="setupbrand"><span class="menumark" aria-hidden="true"></span><b>COMMANDER</b><small>SIMULATOR</small></div>
+      <button type="button" class="setupbrand setuphome" aria-label="Back to main menu"><span class="menumark" aria-hidden="true"></span><b>COMMANDER</b><small>SIMULATOR</small></button>
       <nav class="setupsteps" aria-label="Game setup progress">
         <button type="button" class="setupstep on" data-step="deck"><span>1</span><b>Deck</b></button>
         <button type="button" class="setupstep" data-step="pod"><span>2</span><b>Pod</b></button>
@@ -56,6 +265,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <p class="subtitle">Browse ${nDecks} tested preconstructed decks, then configure a four-player pod.</p>
       </div>`;
     root.appendChild(head);
+    head.querySelector('.setuphome').onclick = renderMainMenu;
 
     let savedFavorites = [];
     try {
@@ -65,7 +275,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       localStorage.removeItem('mtgDeckFavorites');
     }
     const state = {
-      deck: null, ai: 3, mode: 'solo', difficulty: 'normal', seed: '',
+      deck: null, ai: initialMode === 'online' ? 2 : 3, mode: initialMode, difficulty: 'normal', seed: '',
       aiDecks: ['', '', ''],
       aiStyles: ['random', 'random', 'random'],
       commanders: [], aiRandomCommanders: false, sumPartnerDamage: false,
@@ -431,8 +641,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     matchType.innerHTML = `
       <div class="matchtypecopy"><span>Match type</span><b>Choose how you enter the pod</b></div>
       <div class="matchtypechoices">
-        <button type="button" class="matchtypebtn selected" data-mode="solo"><strong>Solo table</strong><small>You + 1–3 AI V2 bots</small></button>
-        <button type="button" class="matchtypebtn live" data-mode="online"><strong><i></i> 2 players live</strong><small>Friend link + 2 AI V2 bots</small></button>
+        <button type="button" class="matchtypebtn${state.mode === 'solo' ? ' selected' : ''}" data-mode="solo"><strong>Solo table</strong><small>You + 1-3 AI V2 bots</small></button>
+        <button type="button" class="matchtypebtn live${state.mode === 'online' ? ' selected' : ''}" data-mode="online"><strong><i></i> 2 players live</strong><small>Friend link + 2 AI V2 bots</small></button>
       </div>`;
     right.appendChild(matchType);
     right.appendChild(el('div', 'seclabel', '<i>Choice</i> Commander'));
@@ -596,7 +806,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     };
     for (const n of [1, 2, 3]) {
-      const b = el('button', 'pbtn choice' + (n === 3 ? ' selected' : ''), n === 1 ? '1 AI duel' : n === 3 ? '3 AI pod' : '2 AI players');
+      const b = el('button', 'pbtn choice' + (n === state.ai ? ' selected' : ''), n === 1 ? '1 AI duel' : n === 3 ? '3 AI pod' : '2 AI players');
       b.dataset.aiCount = String(n);
       b.onclick = () => { state.ai = n; aiRow.querySelectorAll('.pbtn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); renderBotStyles(); };
       aiRow.appendChild(b);
@@ -690,6 +900,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       button.setAttribute('aria-pressed', button.dataset.mode === state.mode ? 'true' : 'false');
       button.onclick = () => setMatchMode(button.dataset.mode);
     });
+    setMatchMode(state.mode);
 
     right.appendChild(el('div', 'credits',
       'All cards and images: <b>Scryfall</b>. The fixed set of official WotC precons passes separate card-by-card certification.'));
@@ -3069,6 +3280,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const ui = window._ui;
     if (!g) {
       const setup = document.querySelector('#setup');
+      if (setup && setup.dataset.appView === 'home') {
+        return {
+          mode: 'menu',
+          deckCount: MTG.DECKS ? Object.keys(MTG.DECKS).filter(name => !MTG.DECKS[name].custom).length : 0,
+          actions: [...setup.querySelectorAll('[data-menu-action]')].map(button => button.dataset.menuAction),
+          onboardingOpen: !!setup.querySelector('.mainmenu-onboarding'),
+        };
+      }
       const selected = setup && setup.querySelector('.deckcard.selected');
       const spotlight = setup && setup.querySelector('.deckspotlight');
       return {
@@ -3387,7 +3606,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return MTG.renderGameState();
   };
 
-  window.addEventListener('DOMContentLoaded', () => {
+  let entryInitialized = false;
+  const initializeEntry = () => {
+    if (entryInitialized) return;
+    entryInitialized = true;
     MTG.initData(MTG.RAW_DATA);
     const initialParams = new URLSearchParams(window.location.search);
     const onlineSmoke = initialParams.get('onlineSmoke');
@@ -3401,7 +3623,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       void openOnlineLobby(null, liveRoom);
       return;
     }
-    renderSetup();
+    const pendingSetupMode = window.__mtgPendingSetupMode;
+    if (pendingSetupMode === 'solo' || pendingSetupMode === 'online') {
+      delete window.__mtgPendingSetupMode;
+      renderSetup({ mode: pendingSetupMode });
+      return;
+    }
+    renderMainMenu();
     // Reproducibilan desktop smoke ulaz. Ne mijenja normalan UX; test otvara
     // stvarnu partiju i zaustavlja se na prvoj ljudskoj odluci (mulligan).
     const smoke = initialParams;
@@ -3423,5 +3651,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         seed: smoke.get('seed') || '11081',
       });
     }
-  });
+  };
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', initializeEntry, { once: true });
+  } else {
+    initializeEntry();
+  }
 })();

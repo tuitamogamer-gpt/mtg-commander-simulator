@@ -58,7 +58,7 @@ test('Main Page V3 keeps discovery and mobile pod controls functional', () => {
 });
 
 test('Main Page V3 contains its war-room artwork inside the hero', () => {
-  assert.match(index, /commander-war-room\.jpg" media="\(min-width: 701px\)"/);
+  assert.match(index, /commander-war-room\.webp" type="image\/webp" fetchpriority="high"/);
   assert.match(css, /body:has\(#setup\)::before,[\s\S]*?#setup::before \{[\s\S]*?content: none !important;[\s\S]*?display: none !important;/);
   assert.match(css, /#setup \{[\s\S]*?background: var\(--v3-bg\) !important;/);
   assert.match(css, /@media \(min-width: 1280px\) \{[\s\S]*?url\('\.\.\/assets\/backgrounds\/commander-war-room\.jpg'\) center 18% \/ cover no-repeat !important;/);

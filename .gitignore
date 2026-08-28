@@ -6,3 +6,4 @@ output/
 .claude/
 .gstack/
 .env*
+dist/commander-simulator-public.zip

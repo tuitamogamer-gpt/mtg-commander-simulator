@@ -138,7 +138,7 @@ test('Vercel room rejects a third human and keeps online play optional beside so
   const main = await readFile(new URL('../src/modules/main.js', import.meta.url), 'utf8');
   const multiplayer = await readFile(new URL('../src/modules/multiplayer.js', import.meta.url), 'utf8');
   const lobby = await readFile(new URL('../src/modules/multiplayer-ui.js', import.meta.url), 'utf8');
-  assert.match(main, /Solo table<\/strong><small>You \+ 1–3 AI V2 bots/);
+  assert.match(main, /Solo table<\/strong><small>You \+ 1-3 AI V2 bots/);
   assert.match(main, /2 players live<\/strong><small>Friend link \+ 2 AI V2 bots/);
   assert.match(main, /state\.ai = state\.mode === 'online' \? 2 : 3/);
   assert.match(multiplayer, /vercel\\\.app/);

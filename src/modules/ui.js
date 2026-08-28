@@ -1546,8 +1546,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.lastResortActive) lastResort.classList.add('active');
       if (g.diplomacy && g.diplomacy.enabled) action('Diplomacy & Politics', 'Deals and proposals', () => this.openUtility('diplomacy'));
       action('Help & shortcuts', 'Rules and controls', () => { this.quickMenuOpen = false; this.showHelp = true; this.render(); });
-      action('New game', 'Return to setup', () => {
-        if (confirm('Start a new game? The current game will be lost.')) location.reload();
+      action('Main menu', 'Leave the current game', () => {
+        if (!confirm('Leave this game? The current game will be lost.')) return;
+        if (typeof MTG.exitToMainMenu === 'function') MTG.exitToMainMenu();
+        else if (typeof MTG.showMainMenu === 'function') MTG.showMainMenu();
+        else location.reload();
       });
       panel.appendChild(list);
       overlay.appendChild(panel);
@@ -4308,8 +4311,8 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         rematch.onclick = () => MTG.rematchLastGame();
         actions.appendChild(rematch);
       }
-      const setup = el('button', 'pbtn', 'New setup');
-      setup.onclick = () => location.reload();
+      const setup = el('button', 'pbtn', 'Main menu');
+      setup.onclick = () => typeof MTG.exitToMainMenu === 'function' ? MTG.exitToMainMenu() : location.reload();
       actions.appendChild(setup);
       const log = el('button', 'pbtn', 'View full log');
       log.onclick = () => { this.showLog = true; ov.remove(); this.render(); };
@@ -4333,8 +4336,8 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         debug.onclick = () => this.downloadDebugSnapshot(g);
         actions.appendChild(debug);
       }
-      const setup = el('button', 'pbtn', 'Return to setup');
-      setup.onclick = () => location.reload();
+      const setup = el('button', 'pbtn', 'Main menu');
+      setup.onclick = () => typeof MTG.exitToMainMenu === 'function' ? MTG.exitToMainMenu() : location.reload();
       actions.appendChild(setup);
       m.appendChild(actions);
       ov.appendChild(m);

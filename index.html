@@ -4,16 +4,41 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#050708">
-<title>MTG Commander Simulator</title>
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Play four-player Commander in your browser with 27 tested decks, visible priority and stack decisions, local AI opponents, and private Live rooms.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://mtg-commander-simulator.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Commander Simulator">
+<meta property="og:title" content="Commander Simulator | Your table is ready">
+<meta property="og:description" content="Choose a tested deck and play a full four-player Commander table with local AI or a friend.">
+<meta property="og:url" content="https://mtg-commander-simulator.vercel.app/">
+<meta property="og:image" content="https://mtg-commander-simulator.vercel.app/assets/backgrounds/commander-war-room.jpg">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:image:alt" content="A Commander table in a dark war room">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Commander Simulator | Your table is ready">
+<meta name="twitter:description" content="Four-player Commander with tested decks, local AI, visible rules decisions, and private Live rooms.">
+<meta name="twitter:image" content="https://mtg-commander-simulator.vercel.app/assets/backgrounds/commander-war-room.jpg">
+<title>Commander Simulator | Your table is ready</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='32' fill='%230a0b09'/%3E%3Ccircle cx='32' cy='32' r='24' fill='none' stroke='%23d3974c'/%3E%3Cpath d='M32 16 48 32 32 48 16 32Z' fill='none' stroke='%23d3974c'/%3E%3Cpath d='M32 24 40 32 32 40 24 32Z' fill='%23f0bd76'/%3E%3C/svg%3E">
-<link rel="preload" as="image" href="./assets/backgrounds/commander-war-room.jpg" media="(min-width: 701px)" fetchpriority="high">
+<link rel="preload" as="image" href="./assets/backgrounds/commander-war-room.webp" type="image/webp" fetchpriority="high">
+<link rel="stylesheet" href="./src/public-menu.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./src/styles.css">
-<link rel="stylesheet" href="./src/client-v3.css">
-<link rel="stylesheet" href="./src/design-system.css">
-<link rel="stylesheet" href="./src/frontend-overhaul.css">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="./src/styles.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="./src/client-v3.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="./src/design-system.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="./src/frontend-overhaul.css" media="print" onload="this.media='all'">
+<noscript>
+  <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/styles.css">
+  <link rel="stylesheet" href="./src/client-v3.css">
+  <link rel="stylesheet" href="./src/design-system.css">
+  <link rel="stylesheet" href="./src/frontend-overhaul.css">
+</noscript>
 </head>
 <body>
 <div id="desktop-only">
@@ -23,9 +48,41 @@
     <p>This simulator is designed for desktop displays at least 1280 px wide.</p>
   </div>
 </div>
-<div id="setup"></div>
+<div id="setup" data-app-view="home" aria-busy="true">
+  <main class="mainmenu mainmenu-boot" aria-label="Commander Simulator">
+    <header class="mainmenu-nav">
+      <div class="mainmenu-brand" aria-label="Commander Simulator home">
+        <span class="menumark" aria-hidden="true"></span>
+        <span><b>COMMANDER</b><small>SIMULATOR</small></span>
+      </div>
+      <div class="mainmenu-mana" aria-label="White, blue, black, red, green, and colorless mana">
+        <img src="./assets/mana/W.svg" alt="{W}"><img src="./assets/mana/U.svg" alt="{U}"><img src="./assets/mana/B.svg" alt="{B}"><img src="./assets/mana/R.svg" alt="{R}"><img src="./assets/mana/G.svg" alt="{G}"><img src="./assets/mana/C.svg" alt="{C}">
+      </div>
+      <button type="button" class="mainmenu-guide" data-menu-action="tour" aria-label="How to play"><svg class="gameicon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 10.5v6M12 7.5h.01" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>How to play</span></button>
+    </header>
+    <section class="mainmenu-hero" aria-labelledby="boot-title">
+      <div class="mainmenu-hero-copy">
+        <span class="mainmenu-kicker">A complete four-player table</span>
+        <h1 id="boot-title">Your Commander table is ready.</h1>
+        <p>Choose a tested deck, meet three local opponents, and play every decision through a visible rules-first interface.</p>
+        <div class="mainmenu-actions">
+          <button type="button" class="mainmenu-primary" data-menu-action="solo"><span><b>Play solo</b><small>You and 1-3 local AI V2 opponents</small></span></button>
+          <button type="button" class="mainmenu-secondary" data-menu-action="live"><span><b>Play with a friend</b><small>Private link, two people, two local bots</small></span></button>
+        </div>
+      </div>
+      <div class="mainmenu-visual" aria-label="Featured Commander decks">
+        <div class="mainmenu-warroom" aria-hidden="true"></div>
+        <div class="mainmenu-cardfan">
+          <figure class="mainmenu-card card-1"><img src="./assets/menu/invisible-woman.webp" width="300" height="418" fetchpriority="low" alt="The Fantastic Four led by Invisible Woman"></figure>
+          <figure class="mainmenu-card card-2"><img src="./assets/menu/galadriel-elven-queen.webp" width="300" height="418" fetchpriority="low" alt="Elven Council led by Galadriel, Elven-Queen"></figure>
+          <figure class="mainmenu-card card-3"><img src="./assets/menu/zimone-infinite-analyst.webp" width="300" height="418" fetchpriority="low" alt="Quandrix Unlimited led by Zimone, Infinite Analyst"></figure>
+        </div>
+        <div class="mainmenu-table-note"><span aria-hidden="true"><svg class="gameicon" viewBox="0 0 24 24"><path d="m4 7 8-4 8 4-8 4-8-4Zm0 5 8 4 8-4M4 17l8 4 8-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><small>VISIBLE RULES FLOW</small><b>Priority, stack, combat, choices</b></div></div>
+      </div>
+    </section>
+  </main>
+</div>
 <div id="game"></div>
-<script type="module" src="./src/app.js"></script>
-<script type="module" src="./src/data.js"></script>
+<script type="module" src="./src/public-entry.js"></script>
 </body>
 </html>

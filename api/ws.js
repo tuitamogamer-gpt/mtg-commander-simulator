@@ -174,11 +174,12 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
   const clients = new Set();
 
   app.get('/api/ws', async (_request, response) => {
+    response.set('Cache-Control', 'no-store');
     try {
       await store.ping();
       response.status(200).json({ ok: true, service: 'commander-live', storage: store.kind });
-    } catch (error) {
-      response.status(503).json({ ok: false, service: 'commander-live', error: error.message });
+    } catch {
+      response.status(503).json({ ok: false, service: 'commander-live', error: 'Live room storage is unavailable.' });
     }
   });
 
