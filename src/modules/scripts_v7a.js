@@ -359,7 +359,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       g.lg(`💍 The Ring — level ${em.level} (you have no creature for the Ring-bearer).`);
     }
     g.recalc();
-    return E7.ringBearer(g, p);
+    const bearer = E7.ringBearer(g, p);
+    await g.emit('ringTempted', { player: p, bearer, level: em.level });
+    return bearer;
   };
 
   // ============================================================

@@ -44,6 +44,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       'Quandrix Unlimited': './assets/menu/zimone-infinite-analyst.webp',
     };
     if (!bootPage) root.innerHTML = '';
+    root.querySelector('.mainmenu-loadveil')?.remove();
     root.style.display = 'block';
     root.dataset.appView = 'home';
     root.dataset.setupStage = 'home';
@@ -63,6 +64,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const page = bootPage || el('main', 'mainmenu');
     page.id = 'landing-top';
     page.tabIndex = -1;
+    page.inert = false;
     if (!bootPage) page.innerHTML = `
       <a class="mainmenu-skip" href="#primary-actions">Skip to play options</a>
       <header class="mainmenu-nav">
@@ -90,6 +92,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <div id="primary-actions" class="mainmenu-actions" tabindex="-1">
             <button type="button" class="mainmenu-primary" data-menu-action="solo">${U.icon('player')}<span><b>Start a solo table</b><small>You and three deterministic local opponents</small></span></button>
             <button type="button" class="mainmenu-secondary" data-menu-action="live">${U.icon('deals')}<span><b>Create a Live table</b><small>Choose 2-4 human seats; no bots required</small></span></button>
+            <button type="button" class="mainmenu-import-action" data-menu-action="import">${U.icon('cards')}<span><b>Import your decklist here</b><small>Paste a complete Commander list and play it in Solo</small></span></button>
           </div>
           <ul class="mainmenu-trust" aria-label="What you need to play">
             <li><span aria-hidden="true">✓</span>Account optional</li>
@@ -113,6 +116,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (solo && !solo.querySelector('.gameicon')) solo.insertAdjacentHTML('afterbegin', U.icon('player'));
       const live = page.querySelector('.mainmenu-secondary');
       if (live && !live.querySelector('.gameicon')) live.insertAdjacentHTML('afterbegin', U.icon('deals'));
+      const importDeck = page.querySelector('.mainmenu-import-action');
+      if (importDeck && !importDeck.querySelector('.gameicon')) importDeck.insertAdjacentHTML('afterbegin', U.icon('cards'));
       const tableNote = page.querySelector('.mainmenu-table-note > span');
       if (tableNote && !tableNote.querySelector('.gameicon')) tableNote.innerHTML = U.icon('stack');
     }
@@ -207,6 +212,144 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       dialog.scrollTop = 0;
     };
 
+    const openDeckImport = () => {
+      root.querySelector('.mainmenu-deckimport')?.remove();
+      document.body.classList.add('mainmenu-dialog-open');
+      const overlay = el('div', 'mainmenu-deckimport');
+      overlay.dataset.importState = 'idle';
+      const dialog = el('article', 'mainmenu-deckimport-panel');
+      dialog.tabIndex = -1;
+      dialog.innerHTML = `
+        <button type="button" class="mainmenu-deckimport-close" aria-label="Close decklist import">×</button>
+        <header>
+          <span>BRING YOUR OWN DECK</span>
+          <h2 id="deckimport-title">Import your decklist here</h2>
+          <p>Paste a complete 100-card Commander export. The game checks the commander, color identity, card count, singleton rules, and engine support before it can start.</p>
+        </header>
+        <div class="mainmenu-deckimport-grid">
+          <form class="mainmenu-deckimport-form" novalidate>
+            <label><span>Deck name <small>optional</small></span><input class="mainmenu-deckimport-name" maxlength="80" autocomplete="off" placeholder="My Commander deck"></label>
+            <label><span>Commander decklist</span><textarea class="mainmenu-deckimport-text" spellcheck="false" autocapitalize="off" placeholder="Commander&#10;1 Your Commander *CMDR*&#10;&#10;Deck&#10;1 Sol Ring&#10;1 Command Tower&#10;..."></textarea></label>
+            <div class="mainmenu-deckimport-result" role="status" aria-live="polite" tabindex="-1" data-state="idle"><p>Nothing is imported until the complete list passes every check.</p></div>
+            <div class="mainmenu-deckimport-actions">
+              <button type="submit" class="mainmenu-deckimport-check">Check decklist</button>
+              <button type="button" class="mainmenu-deckimport-start" disabled>Start Solo table</button>
+            </div>
+          </form>
+          <aside>
+            <span>BUILD ELSEWHERE</span>
+            <h3>Need a decklist?</h3>
+            <p>Build and tune it on Moxfield, export it as text, then paste that list here. Commander Simulator is the play table, not the deck builder.</p>
+            <a href="https://moxfield.com/" target="_blank" rel="noopener noreferrer">Build your deck on Moxfield <b aria-hidden="true">↗</b></a>
+            <ul>
+              <li>Put one or two commanders under a Commander heading, or mark them with <code>*CMDR*</code>.</li>
+              <li>The total must be exactly 100 cards including the commander.</li>
+              <li>Cards not yet certified for this engine are listed before the game starts.</li>
+            </ul>
+          </aside>
+        </div>`;
+      dialog.setAttribute('role', 'dialog');
+      dialog.setAttribute('aria-modal', 'true');
+      dialog.setAttribute('aria-labelledby', 'deckimport-title');
+      overlay.appendChild(dialog);
+      root.appendChild(overlay);
+
+      const form = dialog.querySelector('.mainmenu-deckimport-form');
+      const nameInput = dialog.querySelector('.mainmenu-deckimport-name');
+      const textInput = dialog.querySelector('.mainmenu-deckimport-text');
+      const resultBox = dialog.querySelector('.mainmenu-deckimport-result');
+      const startButton = dialog.querySelector('.mainmenu-deckimport-start');
+      let validatedText = '';
+      let validatedName = '';
+
+      const close = () => {
+        overlay.remove();
+        document.body.classList.remove('mainmenu-dialog-open');
+      };
+      const setDirty = () => {
+        validatedText = '';
+        validatedName = '';
+        startButton.disabled = true;
+        overlay.dataset.importState = 'idle';
+        delete overlay.dataset.inputCards;
+        delete overlay.dataset.commanders;
+        resultBox.dataset.state = 'idle';
+        resultBox.innerHTML = '<p>Nothing is imported until the complete list passes every check.</p>';
+      };
+      const showValidation = validation => {
+        if (!validation.ok) {
+          overlay.dataset.importState = 'error';
+          overlay.dataset.inputCards = String(validation.summary.inputCards);
+          overlay.dataset.commanders = validation.commanders.join(' + ');
+          resultBox.dataset.state = 'error';
+          const shown = validation.errors.slice(0, 8);
+          resultBox.innerHTML = `<strong>Decklist needs attention</strong><ul>${shown.map(error => `<li>${esc(error.message)}</li>`).join('')}</ul>${validation.errors.length > shown.length ? `<p>And ${validation.errors.length - shown.length} more issue${validation.errors.length - shown.length === 1 ? '' : 's'}.</p>` : ''}`;
+          startButton.disabled = true;
+          return;
+        }
+        validatedText = textInput.value;
+        validatedName = nameInput.value.trim();
+        overlay.dataset.importState = 'ready';
+        overlay.dataset.inputCards = String(validation.summary.inputCards);
+        overlay.dataset.commanders = validation.commanders.join(' + ');
+        resultBox.dataset.state = 'ready';
+        resultBox.innerHTML = `<strong>Ready to play</strong><p>${validation.summary.inputCards} cards · ${validation.summary.uniqueCards} unique · ${validation.summary.engineCertified} engine-certified · ${validation.interactions.contracts.length} interaction contracts</p><small>Commander: ${esc(validation.commanders.join(' + '))}</small>`;
+        startButton.disabled = false;
+      };
+
+      dialog.querySelector('.mainmenu-deckimport-close').onclick = close;
+      overlay.onclick = event => { if (event.target === overlay) close(); };
+      dialog.addEventListener('keydown', event => {
+        if (event.key !== 'Escape') return;
+        event.preventDefault();
+        close();
+      });
+      textInput.addEventListener('input', setDirty);
+      nameInput.addEventListener('input', setDirty);
+      form.onsubmit = event => {
+        event.preventDefault();
+        const validation = U.importCommanderDeck(textInput.value, {
+          name: nameInput.value.trim() || undefined,
+          register: false,
+        });
+        showValidation(validation);
+        resultBox.focus();
+      };
+      startButton.onclick = () => {
+        if (textInput.value !== validatedText || nameInput.value.trim() !== validatedName) {
+          setDirty();
+          return;
+        }
+        startButton.disabled = true;
+        startButton.textContent = 'Starting table…';
+        try {
+          const started = U.startImportedCommanderDeck(textInput.value, {
+            name: validatedName || undefined,
+            replace: true,
+          });
+          if (!started.imported.ok) {
+            startButton.textContent = 'Start Solo table';
+            showValidation(started.imported);
+            return;
+          }
+          document.body.classList.remove('mainmenu-dialog-open');
+        } catch (error) {
+          overlay.dataset.importState = 'error';
+          resultBox.dataset.state = 'error';
+          resultBox.innerHTML = `<strong>Deck could not start</strong><p>${esc(error && error.message || 'Unknown import error.')}</p>`;
+          startButton.textContent = 'Start Solo table';
+          startButton.disabled = false;
+        }
+      };
+      U.enhanceDialog(overlay, dialog, {
+        label: 'Import Commander decklist',
+        initialFocus: textInput,
+      });
+      dialog.scrollTop = 0;
+    };
+
+    MTG.showDeckImport = openDeckImport;
+
     page.querySelectorAll('[data-menu-action="tour"]').forEach(button => { button.onclick = () => openGuide(); });
     page.querySelectorAll('[data-menu-action="solo"]').forEach(button => {
       button.onclick = () => {
@@ -216,6 +359,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
     page.querySelectorAll('[data-menu-action="live"]').forEach(button => {
       button.onclick = () => renderSetup({ mode: 'online' });
+    });
+    page.querySelectorAll('[data-menu-action="import"]').forEach(button => {
+      button.onclick = openDeckImport;
     });
     globalThis.MTGAccount?.render();
 
@@ -3571,6 +3717,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return g;
   }
 
+  // Main-menu paste UI koristi isti startGame tok kao fabrički deckovi.
+  // Funkcija namjerno ne renderuje svoj paralelni game mode: prvo registruje
+  // samo potpuno validiran deck, pa ga predaje normalnom UI/engineu.
+  MTG.startImportedCommanderDeck = function (text, options = {}) {
+    const imported = MTG.importCommanderDeck(text, {
+      name: options.name,
+      commanders: options.commanders,
+      register: true,
+      replace: !!options.replace,
+    });
+    if (!imported.ok) return { imported, game: null };
+    const game = startGame({
+      deck: imported.deck.name,
+      commanders: imported.commanders,
+      ai: 3,
+      aiDecks: options.aiDecks || [],
+      aiStyles: options.aiStyles || ['balanced', 'balanced', 'balanced'],
+      aiRandomCommanders: false,
+      sumPartnerDamage: !!options.sumPartnerDamage,
+      diplomacyEnabled: !!options.diplomacyEnabled,
+      difficulty: options.difficulty || 'normal',
+      seed: String(options.seed || '829300'),
+    });
+    return { imported, game };
+  };
+
   MTG.resumeAccountSave = function (save) {
     const checkpoint = MTG.validateAccountSave(save);
     document.querySelector('.account-overlay')?.remove();
@@ -3643,11 +3815,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
       }
       if (setup && setup.dataset.appView === 'home') {
+        const deckImport = setup.querySelector('.mainmenu-deckimport');
         return {
           mode: 'menu',
           deckCount: MTG.DECKS ? Object.keys(MTG.DECKS).filter(name => !MTG.DECKS[name].custom).length : 0,
           actions: [...setup.querySelectorAll('[data-menu-action]')].map(button => button.dataset.menuAction),
           onboardingOpen: !!setup.querySelector('.mainmenu-onboarding'),
+          deckImport: deckImport ? {
+            open: true,
+            state: deckImport.dataset.importState || 'idle',
+            inputCards: Number(deckImport.dataset.inputCards) || 0,
+            commanders: deckImport.dataset.commanders || '',
+            canStart: !deckImport.querySelector('.mainmenu-deckimport-start')?.disabled,
+          } : { open: false },
           account: globalThis.MTGAccount?.user ? {
             signedIn: true,
             displayName: globalThis.MTGAccount.user.displayName,

@@ -735,6 +735,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Odlazak sa bojnog polja mora biti vidljiv u logu (destroy, exile,
       // combat/SBA smrti, bounce) — do sada je bio potpuno nijem.
       if (wasBattlefield && toZone !== 'battlefield') {
+        if (toZone === 'graveyard' && !card.isToken) card.meta._fromBattlefieldTurn = this.turnNo;
         const verb = toZone === 'graveyard' ? (snap.types.includes('Creature') ? 'dies' : 'is put into the graveyard')
           : toZone === 'exile' ? 'is exiled'
             : toZone === 'command' ? 'returns to the command zone'
@@ -1277,6 +1278,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const m of made) names[m.name] = (names[m.name] || 0) + 1;
         this.lg(`${U.playerVerb(ctrl, 'create', 'creates')} ${Object.entries(names).map(([k, v]) => v > 1 ? `${v}× ${k}` : k).join(', ')}.`, 'token');
         await this.emit('tokensCreated', { ctrl, tokens: made });
+        // "Whenever you create a token" triggers once for each token, even
+        // when one instruction creates a batch. Keep the existing batch event
+        // for effects that say "one or more" and expose a per-token event for
+        // Mirkwood Bats-style triggers.
+        for (const token of made) await this.emit('tokenCreated', { ctrl, token, tokens: made });
         // tokeni ne prolaze kroz stack — pokaži ih na sredini i sačekaj Proceed
         await this.revealToHuman({ cards: made, ctrl, kind: 'tokens' });
       }
@@ -1759,6 +1765,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let drawn = 0;
       for (let i = 0; i < total; i++) {
         if (p.lost) break;
+        // Phial of Galadriel replaces each individual draw while its
+        // controller has no cards in hand. The extra draw is inserted into
+        // this same instruction; after the first card arrives the condition
+        // normally becomes false for the remaining draws.
+        if (!p.hand.length && this.bf().some(card => card.ctrl === p && card.def.drawWhileEmptyExtra)) {
+          total += 1;
+          this.lg('Phial of Galadriel replaces the draw with two cards.');
+        }
         // Dredge is a replacement effect for an individual draw. Offer every
         // eligible card before checking an empty library: dredging can still
         // replace that draw as long as the required number of cards can be
@@ -1837,12 +1851,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return milled;
     }
 
-    async discard(p, cards) {
+    async discard(p, cards, opts = {}) {
       let landsN = 0;
       await this.withGraveyardEntryBatch(async () => {
         for (const c of cards) {
           const wasLand = c.is('Land');
-          await this.move(c, 'graveyard');
+          let destination = 'graveyard';
+          const library = !opts.noReplacement && this.bf().find(source =>
+            source.ctrl === p && source.def.discardToLibraryTop);
+          if (library) {
+            const choice = await p.controller.decide(this, {
+              type: 'chooseOption',
+              prompt: `${library.name}: put ${c.name} on top of your library instead of into your graveyard?`,
+              options: [{ key: 'top', label: 'Put on top' }, { key: 'graveyard', label: 'Put in graveyard' }],
+              aiHint: { kind: 'discardReplacement', card: c, source: library },
+            });
+            if (choice === 'top') destination = 'library';
+          }
+          await this.move(c, destination);
           c.meta._discardedTurn = this.turnNo; // za mayhem
           p.turnState.discardedN = (p.turnState.discardedN || 0) + 1;
           if (wasLand) landsN++;
@@ -2113,6 +2139,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // mora prije statics passa da anthemi/pumpe vide stvorenje.
         if (c.meta.crewedTurn === this.turnNo && c.hasSub('Vehicle') && !c.cur.types.includes('Creature')) {
           c.cur.types.push('Creature');
+        }
+        // Amass permanently adds the named race to the chosen Army. Preserve
+        // that on the game object instead of mutating its shared printed def.
+        for (const subtype of c.meta.addedSubtypes || []) {
+          if (!c.cur.subtypes.includes(subtype)) c.cur.subtypes.push(subtype);
         }
       }
       // pass 1: type-changing + CDA + statics (timestamp order)
@@ -2502,6 +2533,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           for (const b of this.bf()) {
             if (b.def.playerHexproof && b.ctrl === p && ctrl !== p) return false;
           }
+          if (ctrl !== p && this.untilEffects.some(effect => effect.kind === 'playerHexproof' && effect.who === p)) return false;
           return true;
         }
         if (zone === 'battlefield' && c.zone === 'battlefield' && c.ctrl !== ctrl) {
@@ -2632,7 +2664,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.queueTrigger({
           src: target,
           ctrl: target.ctrl,
-          name: w.blight ? `Ward—Blight ${w.blight}` : `Ward ${w.life ? `${w.life} life` : w.mana}`,
+          name: w.sacLegendary ? 'Ward—Sacrifice a legendary artifact or creature'
+            : w.blight ? `Ward—Blight ${w.blight}` : `Ward ${w.life ? `${w.life} life` : w.mana}`,
           data: { stackObject, payer: stackObject.ctrl, target, ward: w },
           run: async wardCtx => {
             const original = wardCtx.data.stackObject;
@@ -2662,6 +2695,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async payWard(ctrl, target, wardOverride) {
       const w = wardOverride || target.cur.wardCost;
+      if (w.sacLegendary) {
+        const pool = this.bf().filter(card => card.ctrl === ctrl && this.canSacrifice(card) &&
+          (card.cur.super || []).includes('Legendary') && (card.is('Artifact') || card.is('Creature')));
+        if (!pool.length) {
+          this.lg(`${ctrl.name} cannot pay Ward—sacrifice a legendary artifact or creature.`);
+          return false;
+        }
+        const picked = await ctrl.controller.decide(this, {
+          type: 'chooseCards', from: pool, min: 0, max: 1,
+          prompt: `Ward — sacrifice a legendary artifact or creature to target ${target.name}?`,
+          aiHint: { kind: 'ward', target, payment: 'sacrificeLegendary', cards: pool },
+        });
+        if (!picked.length) return false;
+        return this.sacrifice(ctrl, picked[0]);
+      }
       if (w.blight) {
         const pool = this.creatures(ctrl);
         if (!pool.length) { this.lg(`${ctrl.name} cannot pay Ward—Blight (no creatures).`); return false; }

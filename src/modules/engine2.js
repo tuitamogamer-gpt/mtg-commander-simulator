@@ -1710,7 +1710,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (harmonizeCreature && harmonizeCreature.zone === 'battlefield' && harmonizeCreature.ctrl === p && !harmonizeCreature.tapped) {
       this.tap(harmonizeCreature);
     }
-    for (const c of paidAddl.discarded) await this.discard(p, [c]);
+    for (const c of paidAddl.discarded) await this.discard(p, [c], { noReplacement: true });
     if (paidAddl.life) await this.loseLife(p, paidAddl.life, card.name);
     if (paidAddl.blightCard) await this.addM1(paidAddl.blightCard, paidAddl.blightN, p);
     so.additionalLifePaid = paidAddl.life;
@@ -2779,7 +2779,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       if (!ok || c.zone !== 'hand') return false;
       this.markAbilityActivated(p, c, false, { targets: ctx.targets });
-      await this.discard(p, [c]);
+      await this.discard(p, [c], { noReplacement: true });
       const so = {
         kind: 'ability', name: `${c.name} — ${a.label || 'from hand'}`, ctrl: p,
         ctx, run: a.run, targets: ctx.targets, srcCard: c, targetSpecs,
@@ -2807,7 +2807,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const ok = await this.payMana(p, cost);
       if (!ok) return false;
-      await this.discard(p, [c]);
+      await this.discard(p, [c], { noReplacement: true });
       this.lg(`${U.playerVerb(p, 'cycle', 'cycles')} ${c.name}.`);
       if (d.effect) {
         const ctx = { g: this, src: c, you: p, targets: [], cycleX };
@@ -3264,7 +3264,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         type: 'chooseCards', from: discardPool, min: discardN, max: discardN, prompt: 'Odbaci:', aiHint: { kind: 'addlDiscard' },
       });
       if (!Array.isArray(picked) || picked.length !== discardN || picked.some(card => !discardPool.includes(card))) return false;
-      await this.discard(p, picked);
+      await this.discard(p, picked, { noReplacement: true });
     }
     if (cost.discardX) {
       ctx.x = await p.controller.decide(this, {
@@ -3278,7 +3278,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           prompt: `Odbaci ${ctx.x}:`, aiHint: { kind: 'addlDiscard' },
         });
         if (picked.length < ctx.x) return false;
-        await this.discard(p, picked);
+        await this.discard(p, picked, { noReplacement: true });
       }
     }
     if (cost.exileFromGY) {
@@ -3497,7 +3497,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.stack.length || this.turnPlayer !== p || (this.phase !== 'main1' && this.phase !== 'main2')) {
         const isInstantSpeed = e.card.is('Instant') || e.card.kw('flash') ||
           (e.alt && e.alt.adventure && e.card.def.adventure.types === 'Instant') ||
-          (e.alt && e.alt.flash);
+          (e.alt && e.alt.flash) || this.bf().some(source => source.ctrl === p && source.def.grantsFlash &&
+            source.def.grantsFlash(this, source, e.card, p));
         return isInstantSpeed && this.canCastTiming(p, e.card, e.alt);
       }
       return true;
@@ -3799,7 +3800,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         type: 'chooseCards', from: p.hand, min: n, max: n, prompt: `Discard down to ${maxHand} cards in hand (${n})`,
         aiHint: { kind: 'cleanupDiscard' },
       });
-      await this.discard(p, picked);
+      await this.discard(p, picked, { noReplacement: true });
     }
     // damage clears, until-EOT expire
     for (const c of this.bf()) {
@@ -4207,7 +4208,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     for (const a of this.combat.attackers) {
-      for (const b of a.blockedBy) await this.emit('blocks', { blocker: b, attacker: a });
+      for (const b of a.blockedBy) {
+        await this.emit('blocks', { blocker: b, attacker: a });
+        await this.emit('becomesBlockedByCreature', { attacker: a, blocker: b, blockers: a.blockedBy });
+      }
       if (a.blockedBy.length) await this.emit('becomesBlocked', { attacker: a, blockers: a.blockedBy });
     }
     await this.emit('blockersDeclared', { player: p, attackers: this.combat.attackers });

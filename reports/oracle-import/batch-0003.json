@@ -1,0 +1,5276 @@
+{
+  "schemaVersion": 1,
+  "id": "oracle-0003",
+  "sequence": 3,
+  "generatedAt": "2026-08-29T19:23:06.560Z",
+  "source": {
+    "provider": "Scryfall",
+    "endpoint": "https://api.scryfall.com/bulk-data",
+    "bulkType": "oracle_cards",
+    "bulkId": "27bf3214-1271-490b-bdfe-c0be6c23d02e",
+    "bulkUpdatedAt": "2026-08-29T09:01:53.042+00:00",
+    "bulkDescription": "A JSON file containing one Scryfall card object for each Oracle ID on Scryfall. The chosen sets for the cards are an attempt to return the most up-to-date recognizable version of the card."
+  },
+  "selectionPolicy": {
+    "games": [
+      "paper"
+    ],
+    "commanderLegality": "legal",
+    "sort": "English card name, then Oracle ID",
+    "semanticClasses": [
+      "vanilla",
+      "keyword-only"
+    ],
+    "note": "Only cards whose complete non-reminder Oracle text is implemented by existing central keyword rules are certified in this batch."
+  },
+  "catalogSummary": {
+    "oracleRows": 38627,
+    "paperCards": 36495,
+    "commanderLegalCards": 30784,
+    "legacyEngineCards": 1626,
+    "readyForThisCompiler": 668,
+    "selected": 100,
+    "deferredByReason": {
+      "already-imported-batch": 200,
+      "already-in-legacy-engine": 1593,
+      "complex-layout": 1141,
+      "dynamic-power-toughness": 193,
+      "noncreature-needs-explicit-semantics": 12272,
+      "not-commander-legal": 5711,
+      "not-paper": 2132,
+      "oracle-needs-explicit-semantics": 14715,
+      "reminder-only-oracle": 2
+    },
+    "deferredExamples": {
+      "already-imported-batch": [
+        "Dakmor Scorpion",
+        "Boros Recruit",
+        "Dross Crocodile",
+        "Broodhunter Wurm",
+        "Borderland Minotaur",
+        "Barbtooth Wurm",
+        "Coral Commando",
+        "Charging Badger"
+      ],
+      "already-in-legacy-engine": [
+        "Pteramander",
+        "Lattice Library",
+        "Escape Tunnel",
+        "Behemoth Sledge",
+        "Kindred Discovery",
+        "Sodden Verdure",
+        "Hot Pursuit",
+        "Solemn Simulacrum"
+      ],
+      "complex-layout": [
+        "Stormchaser's Talent",
+        "Long List of the Ents",
+        "Adventurous Eater // Have a Bite",
+        "Phyrexian Dragon Engine",
+        "Goring Warplow",
+        "Ulvenwald Captive // Ulvenwald Abomination",
+        "Gollum, Silent Slinker // Meager Meal",
+        "Azusa's Many Journeys // Likeness of the Seeker"
+      ],
+      "dynamic-power-toughness": [
+        "Snow Villiers",
+        "Eluge, the Shoreless Sea",
+        "Nethergoyf",
+        "Flora Colossus",
+        "Revenant",
+        "Rubblehulk",
+        "Towering Gibbon",
+        "Kolaghan Forerunners"
+      ],
+      "noncreature-needs-explicit-semantics": [
+        "Static Orb",
+        "Sensory Deprivation",
+        "Road of Return",
+        "Ravnica at War",
+        "Torrent of Fire",
+        "Waterknot",
+        "Veil of Summer",
+        "Aura Graft"
+      ],
+      "not-commander-legal": [
+        "Munitions Enthusiast",
+        "Brightglass Gearhulk // Brightglass Gearhulk",
+        "Phyrexian Broodstar",
+        "Wall of Fortune",
+        "Gigantosaurus // Gigantosaurus",
+        "Tyranid",
+        "Gleeful Demolition // Gleeful Demolition",
+        "Demon"
+      ],
+      "not-paper": [
+        "Mine Security",
+        "Kavaron Consumed",
+        "Snarlfang Vermin",
+        "Wyluli Wolf",
+        "Palinchron",
+        "Wei Strike Force",
+        "Weakstone",
+        "Providence of Night"
+      ],
+      "oracle-needs-explicit-semantics": [
+        "Nissa, Worldsoul Speaker",
+        "Walking Sponge",
+        "Greta, Sweettooth Scourge",
+        "Nantuko Elder",
+        "Vedalken Heretic",
+        "Ruthless Knave",
+        "Hua Tuo, Honored Physician",
+        "Disposal Mummy"
+      ],
+      "reminder-only-oracle": [
+        "Icehide Golem",
+        "Dryad Arbor"
+      ]
+    },
+    "nextReadyNames": [
+      "Grizzled Leotau",
+      "Grizzled Outrider",
+      "Grizzly Bears",
+      "Guardian Lions",
+      "Guardians of Meletis",
+      "Gurmag Swiftwing",
+      "Gutter Skulk",
+      "Halberdier",
+      "Hand of Silumgar",
+      "Happy Hogan, Dauntless Driver",
+      "Harrier Naga",
+      "Harvest Gwyllion"
+    ]
+  },
+  "cards": [
+    {
+      "position": 1,
+      "oracleId": "534ce8e2-53a1-407c-9881-d3b5347d43c3",
+      "scryfallId": "0e8411c9-4f6f-4301-ac36-386016a32852",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "first strike"
+      ],
+      "rulesCore": "First strike",
+      "raw": {
+        "name": "Elvish Archers",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Archer"
+        ],
+        "oracle": "First strike",
+        "power": "2",
+        "toughness": "1",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "534ce8e2-53a1-407c-9881-d3b5347d43c3",
+        "_scryfallId": "0e8411c9-4f6f-4301-ac36-386016a32852",
+        "_layout": "normal",
+        "_set": "7ed",
+        "_collectorNumber": "239",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elf Archer",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "First strike"
+        ],
+        "commanderLegality": "legal",
+        "set": "7ed",
+        "setName": "Seventh Edition",
+        "collectorNumber": "239",
+        "rarity": "rare",
+        "releasedAt": "2001-04-11",
+        "scryfallUri": "https://scryfall.com/card/7ed/239/elvish-archers?utm_source=api"
+      }
+    },
+    {
+      "position": 2,
+      "oracleId": "9e9aea99-1eee-4bb6-9043-a1ac2884d071",
+      "scryfallId": "d9a8a0e2-311a-4627-8a48-43df045c3112",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "shroud"
+      ],
+      "rulesCore": "Shroud",
+      "raw": {
+        "name": "Elvish Lookout",
+        "cost": "{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf"
+        ],
+        "oracle": "Shroud (This creature can't be the target of spells or abilities.)",
+        "power": "1",
+        "toughness": "1",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "9e9aea99-1eee-4bb6-9043-a1ac2884d071",
+        "_scryfallId": "d9a8a0e2-311a-4627-8a48-43df045c3112",
+        "_layout": "normal",
+        "_set": "uds",
+        "_collectorNumber": "103",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elf",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Shroud"
+        ],
+        "commanderLegality": "legal",
+        "set": "uds",
+        "setName": "Urza's Destiny",
+        "collectorNumber": "103",
+        "rarity": "common",
+        "releasedAt": "1999-06-07",
+        "scryfallUri": "https://scryfall.com/card/uds/103/elvish-lookout?utm_source=api"
+      }
+    },
+    {
+      "position": 3,
+      "oracleId": "da587161-da7e-48ae-8af6-7f02ee71afd8",
+      "scryfallId": "c3d0485a-209d-4040-94ab-856bdee83b81",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Elvish Warrior",
+        "cost": "{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Warrior"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "3",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "da587161-da7e-48ae-8af6-7f02ee71afd8",
+        "_scryfallId": "c3d0485a-209d-4040-94ab-856bdee83b81",
+        "_layout": "normal",
+        "_set": "evg",
+        "_collectorNumber": "5",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elf Warrior",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "evg",
+        "setName": "Duel Decks Anthology: Elves vs. Goblins",
+        "collectorNumber": "5",
+        "rarity": "common",
+        "releasedAt": "2014-12-05",
+        "scryfallUri": "https://scryfall.com/card/evg/5/elvish-warrior?utm_source=api"
+      }
+    },
+    {
+      "position": 4,
+      "oracleId": "4c26c796-26ec-41f7-b9ca-58f4eb935c47",
+      "scryfallId": "10bf14b5-31d0-42e3-a319-2622b489f7c4",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "forestwalk"
+      ],
+      "rulesCore": "Forestwalk",
+      "raw": {
+        "name": "Emerald Oryx",
+        "cost": "{3}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Antelope"
+        ],
+        "oracle": "Forestwalk (This creature can't be blocked as long as defending player controls a Forest.)",
+        "power": "2",
+        "toughness": "3",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "4c26c796-26ec-41f7-b9ca-58f4eb935c47",
+        "_scryfallId": "10bf14b5-31d0-42e3-a319-2622b489f7c4",
+        "_layout": "normal",
+        "_set": "m10",
+        "_collectorNumber": "179",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Antelope",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Landwalk",
+          "Forestwalk"
+        ],
+        "commanderLegality": "legal",
+        "set": "m10",
+        "setName": "Magic 2010",
+        "collectorNumber": "179",
+        "rarity": "common",
+        "releasedAt": "2009-07-17",
+        "scryfallUri": "https://scryfall.com/card/m10/179/emerald-oryx?utm_source=api"
+      }
+    },
+    {
+      "position": 5,
+      "oracleId": "4e1f4211-5865-492d-b850-0d36ac12e857",
+      "scryfallId": "2cfce961-be01-42d6-b309-15ca17225be6",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "rulesCore": "Flying",
+      "raw": {
+        "name": "Enforcer Griffin",
+        "cost": "{4}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Griffin"
+        ],
+        "oracle": "Flying",
+        "power": "3",
+        "toughness": "4",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "4e1f4211-5865-492d-b850-0d36ac12e857",
+        "_scryfallId": "2cfce961-be01-42d6-b309-15ca17225be6",
+        "_layout": "normal",
+        "_set": "clu",
+        "_collectorNumber": "60",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Griffin",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "clu",
+        "setName": "Ravnica: Clue Edition",
+        "collectorNumber": "60",
+        "rarity": "common",
+        "releasedAt": "2024-02-23",
+        "scryfallUri": "https://scryfall.com/card/clu/60/enforcer-griffin?utm_source=api"
+      }
+    },
+    {
+      "position": 6,
+      "oracleId": "6189cd17-61aa-420a-ba53-5ddaf2bbc2ba",
+      "scryfallId": "54069e65-eef4-4fb8-bb0d-932a4c9889b3",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Enormous Baloth",
+        "cost": "{6}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "oracle": "",
+        "power": "7",
+        "toughness": "7",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "6189cd17-61aa-420a-ba53-5ddaf2bbc2ba",
+        "_scryfallId": "54069e65-eef4-4fb8-bb0d-932a4c9889b3",
+        "_layout": "normal",
+        "_set": "m10",
+        "_collectorNumber": "180",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Creature — Beast",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "m10",
+        "setName": "Magic 2010",
+        "collectorNumber": "180",
+        "rarity": "uncommon",
+        "releasedAt": "2009-07-17",
+        "scryfallUri": "https://scryfall.com/card/m10/180/enormous-baloth?utm_source=api"
+      }
+    },
+    {
+      "position": 7,
+      "oracleId": "aeb6cb00-e8bd-4610-aa39-29663d9c9160",
+      "scryfallId": "2c5068ed-8477-4d8d-9e37-c72474208e2d",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "rulesCore": "Flying",
+      "raw": {
+        "name": "Esper Cormorants",
+        "cost": "{2}{W}{U}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Bird"
+        ],
+        "oracle": "Flying",
+        "power": "3",
+        "toughness": "3",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "_oracleId": "aeb6cb00-e8bd-4610-aa39-29663d9c9160",
+        "_scryfallId": "2c5068ed-8477-4d8d-9e37-c72474208e2d",
+        "_layout": "normal",
+        "_set": "con",
+        "_collectorNumber": "105",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Artifact Creature — Bird",
+        "colorIdentity": [
+          "U",
+          "W"
+        ],
+        "colors": [
+          "U",
+          "W"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "con",
+        "setName": "Conflux",
+        "collectorNumber": "105",
+        "rarity": "common",
+        "releasedAt": "2009-02-06",
+        "scryfallUri": "https://scryfall.com/card/con/105/esper-cormorants?utm_source=api"
+      }
+    },
+    {
+      "position": 8,
+      "oracleId": "8bc7c769-33e0-4482-95fc-b344b772e174",
+      "scryfallId": "41193ef1-1619-4448-9905-26b05079c79a",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Expedition Envoy",
+        "cost": "{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Scout",
+          "Ally"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "1",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "8bc7c769-33e0-4482-95fc-b344b772e174",
+        "_scryfallId": "41193ef1-1619-4448-9905-26b05079c79a",
+        "_layout": "normal",
+        "_set": "bfz",
+        "_collectorNumber": "24",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Scout Ally",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "bfz",
+        "setName": "Battle for Zendikar",
+        "collectorNumber": "24",
+        "rarity": "uncommon",
+        "releasedAt": "2015-10-02",
+        "scryfallUri": "https://scryfall.com/card/bfz/24/expedition-envoy?utm_source=api"
+      }
+    },
+    {
+      "position": 9,
+      "oracleId": "d7ebd4a7-c542-469f-8a1c-d48b92fa540a",
+      "scryfallId": "fffe7b2b-22c3-4e6a-9b1b-c6d7b29b9f86",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "rulesCore": "Flying",
+      "raw": {
+        "name": "Exultant Skymarcher",
+        "cost": "{1}{W}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire",
+          "Soldier"
+        ],
+        "oracle": "Flying",
+        "power": "2",
+        "toughness": "3",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "d7ebd4a7-c542-469f-8a1c-d48b92fa540a",
+        "_scryfallId": "fffe7b2b-22c3-4e6a-9b1b-c6d7b29b9f86",
+        "_layout": "normal",
+        "_set": "rix",
+        "_collectorNumber": "7",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Vampire Soldier",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "rix",
+        "setName": "Rivals of Ixalan",
+        "collectorNumber": "7",
+        "rarity": "common",
+        "releasedAt": "2018-01-19",
+        "scryfallUri": "https://scryfall.com/card/rix/7/exultant-skymarcher?utm_source=api"
+      }
+    },
+    {
+      "position": 10,
+      "oracleId": "df7580fb-4c37-4c09-8785-e320cb124621",
+      "scryfallId": "5546fbd6-908d-46be-8d17-9470842f78a7",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flash",
+        "flying"
+      ],
+      "rulesCore": "Flash\nFlying",
+      "raw": {
+        "name": "Faerie Invaders",
+        "cost": "{4}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Faerie",
+          "Rogue"
+        ],
+        "oracle": "Flash (You may cast this spell any time you could cast an instant.)\nFlying",
+        "power": "3",
+        "toughness": "3",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "df7580fb-4c37-4c09-8785-e320cb124621",
+        "_scryfallId": "5546fbd6-908d-46be-8d17-9470842f78a7",
+        "_layout": "normal",
+        "_set": "ddn",
+        "_collectorNumber": "57",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Faerie Rogue",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Flying",
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "ddn",
+        "setName": "Duel Decks: Speed vs. Cunning",
+        "collectorNumber": "57",
+        "rarity": "common",
+        "releasedAt": "2014-09-05",
+        "scryfallUri": "https://scryfall.com/card/ddn/57/faerie-invaders?utm_source=api"
+      }
+    },
+    {
+      "position": 11,
+      "oracleId": "725dc451-cae4-4345-9741-6c58e5a1a1dc",
+      "scryfallId": "af15a774-b97f-4bc0-913d-4d2a047fed8a",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "lifelink"
+      ],
+      "rulesCore": "Lifelink",
+      "raw": {
+        "name": "Faithbearer Paladin",
+        "cost": "{4}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Knight"
+        ],
+        "oracle": "Lifelink (Damage dealt by this creature also causes you to gain that much life.)",
+        "power": "3",
+        "toughness": "4",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "725dc451-cae4-4345-9741-6c58e5a1a1dc",
+        "_scryfallId": "af15a774-b97f-4bc0-913d-4d2a047fed8a",
+        "_layout": "normal",
+        "_set": "emn",
+        "_collectorNumber": "25",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Knight",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Lifelink"
+        ],
+        "commanderLegality": "legal",
+        "set": "emn",
+        "setName": "Eldritch Moon",
+        "collectorNumber": "25",
+        "rarity": "common",
+        "releasedAt": "2016-07-22",
+        "scryfallUri": "https://scryfall.com/card/emn/25/faithbearer-paladin?utm_source=api"
+      }
+    },
+    {
+      "position": 12,
+      "oracleId": "6cfd9d88-f450-4408-bbe2-94a2d295b24a",
+      "scryfallId": "d7b5913e-a103-4e4a-9281-8b88c1fb746e",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Falkenrath Reaver",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "6cfd9d88-f450-4408-bbe2-94a2d295b24a",
+        "_scryfallId": "d7b5913e-a103-4e4a-9281-8b88c1fb746e",
+        "_layout": "normal",
+        "_set": "w17",
+        "_collectorNumber": "21",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Vampire",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "w17",
+        "setName": "Welcome Deck 2017",
+        "collectorNumber": "21",
+        "rarity": "common",
+        "releasedAt": "2017-04-15",
+        "scryfallUri": "https://scryfall.com/card/w17/21/falkenrath-reaver?utm_source=api"
+      }
+    },
+    {
+      "position": 13,
+      "oracleId": "9e187d43-ae75-4589-81fc-476ae95ba5b9",
+      "scryfallId": "2dd0fef1-209f-4de5-a736-8f9bca2faa0a",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "deathtouch"
+      ],
+      "rulesCore": "Deathtouch",
+      "raw": {
+        "name": "Fang of Shigeki",
+        "cost": "{G}",
+        "super": [],
+        "types": [
+          "Enchantment",
+          "Creature"
+        ],
+        "subtypes": [
+          "Snake",
+          "Ninja"
+        ],
+        "oracle": "Deathtouch",
+        "power": "1",
+        "toughness": "1",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "9e187d43-ae75-4589-81fc-476ae95ba5b9",
+        "_scryfallId": "2dd0fef1-209f-4de5-a736-8f9bca2faa0a",
+        "_layout": "normal",
+        "_set": "neo",
+        "_collectorNumber": "183",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment Creature — Snake Ninja",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Deathtouch"
+        ],
+        "commanderLegality": "legal",
+        "set": "neo",
+        "setName": "Kamigawa: Neon Dynasty",
+        "collectorNumber": "183",
+        "rarity": "common",
+        "releasedAt": "2022-02-18",
+        "scryfallUri": "https://scryfall.com/card/neo/183/fang-of-shigeki?utm_source=api"
+      }
+    },
+    {
+      "position": 14,
+      "oracleId": "c5dc5546-e9e5-4b5b-b812-5716d4bdee0e",
+      "scryfallId": "2dbc8eef-f032-490a-b487-da1af71b7ff2",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "trample"
+      ],
+      "rulesCore": "Trample",
+      "raw": {
+        "name": "Fangren Hunter",
+        "cost": "{3}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "oracle": "Trample",
+        "power": "4",
+        "toughness": "4",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "c5dc5546-e9e5-4b5b-b812-5716d4bdee0e",
+        "_scryfallId": "2dbc8eef-f032-490a-b487-da1af71b7ff2",
+        "_layout": "normal",
+        "_set": "mrd",
+        "_collectorNumber": "119",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Beast",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "commanderLegality": "legal",
+        "set": "mrd",
+        "setName": "Mirrodin",
+        "collectorNumber": "119",
+        "rarity": "common",
+        "releasedAt": "2003-10-02",
+        "scryfallUri": "https://scryfall.com/card/mrd/119/fangren-hunter?utm_source=api"
+      }
+    },
+    {
+      "position": 15,
+      "oracleId": "2ef2f417-2061-4796-974a-92f800ef05e4",
+      "scryfallId": "89f08297-f477-4330-a99e-3f0847c31364",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Fearless Halberdier",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Warrior"
+        ],
+        "oracle": "",
+        "power": "3",
+        "toughness": "2",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "2ef2f417-2061-4796-974a-92f800ef05e4",
+        "_scryfallId": "89f08297-f477-4330-a99e-3f0847c31364",
+        "_layout": "normal",
+        "_set": "m20",
+        "_collectorNumber": "329",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Warrior",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "m20",
+        "setName": "Core Set 2020",
+        "collectorNumber": "329",
+        "rarity": "common",
+        "releasedAt": "2019-07-12",
+        "scryfallUri": "https://scryfall.com/card/m20/329/fearless-halberdier?utm_source=api"
+      }
+    },
+    {
+      "position": 16,
+      "oracleId": "77b69977-200e-44c2-bfde-228e6501b03a",
+      "scryfallId": "0410420a-c093-4540-8867-28d0f2d86b56",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "reach"
+      ],
+      "rulesCore": "Reach",
+      "raw": {
+        "name": "Feiyi Snake",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Snake"
+        ],
+        "oracle": "Reach (This creature can block creatures with flying.)",
+        "power": "2",
+        "toughness": "1",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "77b69977-200e-44c2-bfde-228e6501b03a",
+        "_scryfallId": "0410420a-c093-4540-8867-28d0f2d86b56",
+        "_layout": "normal",
+        "_set": "gs1",
+        "_collectorNumber": "24",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Snake",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Reach"
+        ],
+        "commanderLegality": "legal",
+        "set": "gs1",
+        "setName": "Global Series Jiang Yanggu & Mu Yanling",
+        "collectorNumber": "24",
+        "rarity": "common",
+        "releasedAt": "2018-06-22",
+        "scryfallUri": "https://scryfall.com/card/gs1/24/feiyi-snake?utm_source=api"
+      }
+    },
+    {
+      "position": 17,
+      "oracleId": "10871545-1c44-4e31-a49a-5b16c3b5cac5",
+      "scryfallId": "b4e424de-81be-4f90-a7a2-4102c8ba8989",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Felhide Minotaur",
+        "cost": "{2}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Minotaur"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "3",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "10871545-1c44-4e31-a49a-5b16c3b5cac5",
+        "_scryfallId": "b4e424de-81be-4f90-a7a2-4102c8ba8989",
+        "_layout": "normal",
+        "_set": "ths",
+        "_collectorNumber": "87",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Minotaur",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "ths",
+        "setName": "Theros",
+        "collectorNumber": "87",
+        "rarity": "common",
+        "releasedAt": "2013-09-27",
+        "scryfallUri": "https://scryfall.com/card/ths/87/felhide-minotaur?utm_source=api"
+      }
+    },
+    {
+      "position": 18,
+      "oracleId": "18710b5e-5403-48cd-9541-8154ba0a0b30",
+      "scryfallId": "60192ded-689b-4cc5-9293-bff52924089b",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Femeref Scouts",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Scout"
+        ],
+        "oracle": "",
+        "power": "1",
+        "toughness": "4",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "18710b5e-5403-48cd-9541-8154ba0a0b30",
+        "_scryfallId": "60192ded-689b-4cc5-9293-bff52924089b",
+        "_layout": "normal",
+        "_set": "mir",
+        "_collectorNumber": "19",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Scout",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "mir",
+        "setName": "Mirage",
+        "collectorNumber": "19",
+        "rarity": "common",
+        "releasedAt": "1996-10-08",
+        "scryfallUri": "https://scryfall.com/card/mir/19/femeref-scouts?utm_source=api"
+      }
+    },
+    {
+      "position": 19,
+      "oracleId": "2f810936-2ba6-4c2b-84a0-ff4c1deb026b",
+      "scryfallId": "994094f8-e175-4e2e-aa39-c096f0ed9e6a",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "double strike"
+      ],
+      "rulesCore": "Double strike",
+      "raw": {
+        "name": "Fencing Ace",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "oracle": "Double strike (This creature deals both first-strike and regular combat damage.)",
+        "power": "1",
+        "toughness": "1",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "2f810936-2ba6-4c2b-84a0-ff4c1deb026b",
+        "_scryfallId": "994094f8-e175-4e2e-aa39-c096f0ed9e6a",
+        "_layout": "normal",
+        "_set": "cmm",
+        "_collectorNumber": "23",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Soldier",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Double strike"
+        ],
+        "commanderLegality": "legal",
+        "set": "cmm",
+        "setName": "Commander Masters",
+        "collectorNumber": "23",
+        "rarity": "uncommon",
+        "releasedAt": "2023-08-04",
+        "scryfallUri": "https://scryfall.com/card/cmm/23/fencing-ace?utm_source=api"
+      }
+    },
+    {
+      "position": 20,
+      "oracleId": "1bf06342-0d76-433b-9912-8af03b7e3bc3",
+      "scryfallId": "b2890cb5-7899-42f4-9686-a8b5ac796c23",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "deathtouch"
+      ],
+      "rulesCore": "Deathtouch",
+      "raw": {
+        "name": "Feral Abomination",
+        "cost": "{5}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Thrull"
+        ],
+        "oracle": "Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.)",
+        "power": "5",
+        "toughness": "5",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "1bf06342-0d76-433b-9912-8af03b7e3bc3",
+        "_scryfallId": "b2890cb5-7899-42f4-9686-a8b5ac796c23",
+        "_layout": "normal",
+        "_set": "m20",
+        "_collectorNumber": "101",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Thrull",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Deathtouch"
+        ],
+        "commanderLegality": "legal",
+        "set": "m20",
+        "setName": "Core Set 2020",
+        "collectorNumber": "101",
+        "rarity": "common",
+        "releasedAt": "2019-07-12",
+        "scryfallUri": "https://scryfall.com/card/m20/101/feral-abomination?utm_source=api"
+      }
+    },
+    {
+      "position": 21,
+      "oracleId": "8c42883d-8b70-4691-a1e7-4659e7954b88",
+      "scryfallId": "5041996b-c265-4c4f-a52c-dfe29b2e282d",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Feral Krushok",
+        "cost": "{4}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "oracle": "",
+        "power": "5",
+        "toughness": "4",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "8c42883d-8b70-4691-a1e7-4659e7954b88",
+        "_scryfallId": "5041996b-c265-4c4f-a52c-dfe29b2e282d",
+        "_layout": "normal",
+        "_set": "frf",
+        "_collectorNumber": "128",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Beast",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "frf",
+        "setName": "Fate Reforged",
+        "collectorNumber": "128",
+        "rarity": "common",
+        "releasedAt": "2015-01-23",
+        "scryfallUri": "https://scryfall.com/card/frf/128/feral-krushok?utm_source=api"
+      }
+    },
+    {
+      "position": 22,
+      "oracleId": "d4556b82-f96e-4f88-a885-3e84afdb98a1",
+      "scryfallId": "3c969aa0-b0e5-42cd-abba-0a3c7266142c",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Feral Maaka",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Cat"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "d4556b82-f96e-4f88-a885-3e84afdb98a1",
+        "_scryfallId": "3c969aa0-b0e5-42cd-abba-0a3c7266142c",
+        "_layout": "normal",
+        "_set": "rna",
+        "_collectorNumber": "100",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Cat",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "rna",
+        "setName": "Ravnica Allegiance",
+        "collectorNumber": "100",
+        "rarity": "common",
+        "releasedAt": "2019-01-25",
+        "scryfallUri": "https://scryfall.com/card/rna/100/feral-maaka?utm_source=api"
+      }
+    },
+    {
+      "position": 23,
+      "oracleId": "cf26dcb4-e181-4ba5-bc03-b56f57032b85",
+      "scryfallId": "3fea3941-ece4-4219-8ad9-cf6a97533aeb",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "rulesCore": "Flying",
+      "raw": {
+        "name": "Feral Shadow",
+        "cost": "{2}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Nightstalker"
+        ],
+        "oracle": "Flying",
+        "power": "2",
+        "toughness": "1",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "cf26dcb4-e181-4ba5-bc03-b56f57032b85",
+        "_scryfallId": "3fea3941-ece4-4219-8ad9-cf6a97533aeb",
+        "_layout": "normal",
+        "_set": "s99",
+        "_collectorNumber": "77",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Nightstalker",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "s99",
+        "setName": "Starter 1999",
+        "collectorNumber": "77",
+        "rarity": "common",
+        "releasedAt": "1999-07-01",
+        "scryfallUri": "https://scryfall.com/card/s99/77/feral-shadow?utm_source=api"
+      }
+    },
+    {
+      "position": 24,
+      "oracleId": "a45e0854-28c7-41f5-a9fe-5b76a8070c5b",
+      "scryfallId": "7a6d1184-15e0-4b41-ba2d-4f68e91c61d4",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Ferocious Zheng",
+        "cost": "{2}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Cat",
+          "Beast"
+        ],
+        "oracle": "",
+        "power": "4",
+        "toughness": "4",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "a45e0854-28c7-41f5-a9fe-5b76a8070c5b",
+        "_scryfallId": "7a6d1184-15e0-4b41-ba2d-4f68e91c61d4",
+        "_layout": "normal",
+        "_set": "gs1",
+        "_collectorNumber": "28",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Cat Beast",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "gs1",
+        "setName": "Global Series Jiang Yanggu & Mu Yanling",
+        "collectorNumber": "28",
+        "rarity": "common",
+        "releasedAt": "2018-06-22",
+        "scryfallUri": "https://scryfall.com/card/gs1/28/ferocious-zheng?utm_source=api"
+      }
+    },
+    {
+      "position": 25,
+      "oracleId": "e6584e39-099c-437f-9239-fa718cac85af",
+      "scryfallId": "e148c1bf-84a2-48cd-882e-ad0fd74b8f0f",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Field Creeper",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Scarecrow"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "1",
+        "_ci": [],
+        "_oracleId": "e6584e39-099c-437f-9239-fa718cac85af",
+        "_scryfallId": "e148c1bf-84a2-48cd-882e-ad0fd74b8f0f",
+        "_layout": "normal",
+        "_set": "m19",
+        "_collectorNumber": "234",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Artifact Creature — Scarecrow",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "m19",
+        "setName": "Core Set 2019",
+        "collectorNumber": "234",
+        "rarity": "common",
+        "releasedAt": "2018-07-13",
+        "scryfallUri": "https://scryfall.com/card/m19/234/field-creeper?utm_source=api"
+      }
+    },
+    {
+      "position": 26,
+      "oracleId": "3912d21e-1ebc-4a81-9dc9-f404248d564a",
+      "scryfallId": "dc506f58-048d-49cc-ad8c-2eb851b08bb6",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Fire Elemental",
+        "cost": "{3}{R}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elemental"
+        ],
+        "oracle": "",
+        "power": "5",
+        "toughness": "4",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "3912d21e-1ebc-4a81-9dc9-f404248d564a",
+        "_scryfallId": "dc506f58-048d-49cc-ad8c-2eb851b08bb6",
+        "_layout": "normal",
+        "_set": "fdn",
+        "_collectorNumber": "538",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elemental",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "fdn",
+        "setName": "Foundations",
+        "collectorNumber": "538",
+        "rarity": "common",
+        "releasedAt": "2024-11-15",
+        "scryfallUri": "https://scryfall.com/card/fdn/538/fire-elemental?utm_source=api"
+      }
+    },
+    {
+      "position": 27,
+      "oracleId": "8ed27504-f86b-4ce5-9395-7029825176ab",
+      "scryfallId": "a20aaa6c-7032-43c1-9e7c-57cf8c8ecfd4",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flash"
+      ],
+      "rulesCore": "Flash",
+      "raw": {
+        "name": "Fire Nation Ambushers",
+        "cost": "{2}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "oracle": "Flash (You may cast this spell any time you could cast an instant.)",
+        "power": "3",
+        "toughness": "2",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "8ed27504-f86b-4ce5-9395-7029825176ab",
+        "_scryfallId": "a20aaa6c-7032-43c1-9e7c-57cf8c8ecfd4",
+        "_layout": "normal",
+        "_set": "tle",
+        "_collectorNumber": "229",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Soldier",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "tle",
+        "setName": "Avatar: The Last Airbender Eternal",
+        "collectorNumber": "229",
+        "rarity": "common",
+        "releasedAt": "2025-11-21",
+        "scryfallUri": "https://scryfall.com/card/tle/229/fire-nation-ambushers?utm_source=api"
+      }
+    },
+    {
+      "position": 28,
+      "oracleId": "6a15fad7-8171-4bce-bb39-fe3a8175f8fa",
+      "scryfallId": "58e59eba-3cf5-4ebe-8bc1-28568921650b",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "haste"
+      ],
+      "rulesCore": "Haste",
+      "raw": {
+        "name": "Fire Nation Soldier",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "oracle": "Haste (This creature can attack and {T} as soon as it comes under your control.)",
+        "power": "3",
+        "toughness": "2",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "6a15fad7-8171-4bce-bb39-fe3a8175f8fa",
+        "_scryfallId": "58e59eba-3cf5-4ebe-8bc1-28568921650b",
+        "_layout": "normal",
+        "_set": "tle",
+        "_collectorNumber": "238",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Soldier",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Haste"
+        ],
+        "commanderLegality": "legal",
+        "set": "tle",
+        "setName": "Avatar: The Last Airbender Eternal",
+        "collectorNumber": "238",
+        "rarity": "common",
+        "releasedAt": "2025-11-21",
+        "scryfallUri": "https://scryfall.com/card/tle/238/fire-nation-soldier?utm_source=api"
+      }
+    },
+    {
+      "position": 29,
+      "oracleId": "3fd2651d-89fb-4bd1-af4a-f7eae7ef9fd2",
+      "scryfallId": "9601ea62-a609-4bc5-a2f0-f7615b4dd5fa",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Flameborn Viron",
+        "cost": "{4}{R}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Phyrexian",
+          "Insect"
+        ],
+        "oracle": "",
+        "power": "6",
+        "toughness": "4",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "3fd2651d-89fb-4bd1-af4a-f7eae7ef9fd2",
+        "_scryfallId": "9601ea62-a609-4bc5-a2f0-f7615b4dd5fa",
+        "_layout": "normal",
+        "_set": "nph",
+        "_collectorNumber": "83",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Phyrexian Insect",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "nph",
+        "setName": "New Phyrexia",
+        "collectorNumber": "83",
+        "rarity": "common",
+        "releasedAt": "2011-05-13",
+        "scryfallUri": "https://scryfall.com/card/nph/83/flameborn-viron?utm_source=api"
+      }
+    },
+    {
+      "position": 30,
+      "oracleId": "8f606acf-db16-42cd-8907-dad88c4a1d54",
+      "scryfallId": "2473d738-fe15-402a-ad24-0d6e5c4dfda3",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "trample",
+        "lifelink",
+        "haste"
+      ],
+      "rulesCore": "Trample, lifelink, haste",
+      "raw": {
+        "name": "Fleetfoot Dancer",
+        "cost": "{1}{R}{G}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Druid"
+        ],
+        "oracle": "Trample, lifelink, haste",
+        "power": "4",
+        "toughness": "4",
+        "_ci": [
+          "G",
+          "R",
+          "W"
+        ],
+        "_oracleId": "8f606acf-db16-42cd-8907-dad88c4a1d54",
+        "_scryfallId": "2473d738-fe15-402a-ad24-0d6e5c4dfda3",
+        "_layout": "normal",
+        "_set": "snc",
+        "_collectorNumber": "188",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elf Druid",
+        "colorIdentity": [
+          "G",
+          "R",
+          "W"
+        ],
+        "colors": [
+          "G",
+          "R",
+          "W"
+        ],
+        "keywords": [
+          "Lifelink",
+          "Haste",
+          "Trample"
+        ],
+        "commanderLegality": "legal",
+        "set": "snc",
+        "setName": "Streets of New Capenna",
+        "collectorNumber": "188",
+        "rarity": "rare",
+        "releasedAt": "2022-04-29",
+        "scryfallUri": "https://scryfall.com/card/snc/188/fleetfoot-dancer?utm_source=api"
+      }
+    },
+    {
+      "position": 31,
+      "oracleId": "59fa8323-bba9-4c51-833d-2ab966599b62",
+      "scryfallId": "ccb61a51-cff6-4f88-ac17-f10852a27d06",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "rulesCore": "Flying",
+      "raw": {
+        "name": "Flying Dolphin-Fish",
+        "cost": "{1}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Whale",
+          "Fish"
+        ],
+        "oracle": "Flying (This creature can't be blocked except by creatures with flying or reach.)",
+        "power": "1",
+        "toughness": "3",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "59fa8323-bba9-4c51-833d-2ab966599b62",
+        "_scryfallId": "ccb61a51-cff6-4f88-ac17-f10852a27d06",
+        "_layout": "normal",
+        "_set": "tle",
+        "_collectorNumber": "223",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Whale Fish",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "tle",
+        "setName": "Avatar: The Last Airbender Eternal",
+        "collectorNumber": "223",
+        "rarity": "common",
+        "releasedAt": "2025-11-21",
+        "scryfallUri": "https://scryfall.com/card/tle/223/flying-dolphin-fish?utm_source=api"
+      }
+    },
+    {
+      "position": 32,
+      "oracleId": "b5666c68-059d-4e32-9b04-548b3058430d",
+      "scryfallId": "0656ed76-4c8e-4094-8edd-9b49780cadf7",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "rulesCore": "Flying",
+      "raw": {
+        "name": "Flying Men",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human"
+        ],
+        "oracle": "Flying",
+        "power": "1",
+        "toughness": "1",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "b5666c68-059d-4e32-9b04-548b3058430d",
+        "_scryfallId": "0656ed76-4c8e-4094-8edd-9b49780cadf7",
+        "_layout": "normal",
+        "_set": "tsb",
+        "_collectorNumber": "20",
+        "_rarity": "special"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "tsb",
+        "setName": "Time Spiral Timeshifted",
+        "collectorNumber": "20",
+        "rarity": "special",
+        "releasedAt": "2006-10-06",
+        "scryfallUri": "https://scryfall.com/card/tsb/20/flying-men?utm_source=api"
+      }
+    },
+    {
+      "position": 33,
+      "oracleId": "bfcaa0a4-2fc5-4e27-8b79-802e365c71f2",
+      "scryfallId": "cfd3eadb-74bb-423b-923f-a6fc2259e0d7",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Fomori Nomad",
+        "cost": "{4}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Nomad",
+          "Giant"
+        ],
+        "oracle": "",
+        "power": "4",
+        "toughness": "4",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "bfcaa0a4-2fc5-4e27-8b79-802e365c71f2",
+        "_scryfallId": "cfd3eadb-74bb-423b-923f-a6fc2259e0d7",
+        "_layout": "normal",
+        "_set": "plst",
+        "_collectorNumber": "FUT-114",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Nomad Giant",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "plst",
+        "setName": "The List",
+        "collectorNumber": "FUT-114",
+        "rarity": "common",
+        "releasedAt": "2020-09-01",
+        "scryfallUri": "https://scryfall.com/card/plst/FUT-114/fomori-nomad?utm_source=api"
+      }
+    },
+    {
+      "position": 34,
+      "oracleId": "a768ba13-4d1c-4dce-a4a6-86a39c069c3f",
+      "scryfallId": "baff03f3-a8ca-4c35-ae71-43b5d237b519",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Foot Soldiers",
+        "cost": "{3}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "4",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "a768ba13-4d1c-4dce-a4a6-86a39c069c3f",
+        "_scryfallId": "baff03f3-a8ca-4c35-ae71-43b5d237b519",
+        "_layout": "normal",
+        "_set": "9ed",
+        "_collectorNumber": "14",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Soldier",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "9ed",
+        "setName": "Ninth Edition",
+        "collectorNumber": "14",
+        "rarity": "common",
+        "releasedAt": "2005-07-29",
+        "scryfallUri": "https://scryfall.com/card/9ed/14/foot-soldiers?utm_source=api"
+      }
+    },
+    {
+      "position": 35,
+      "oracleId": "26fbfab5-f479-49f2-b36b-a3ebf964741f",
+      "scryfallId": "b344511d-631e-4f1d-9d7d-d7c89a473d1b",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "trample"
+      ],
+      "rulesCore": "Trample",
+      "raw": {
+        "name": "Force of Savagery",
+        "cost": "{2}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elemental"
+        ],
+        "oracle": "Trample",
+        "power": "8",
+        "toughness": "0",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "26fbfab5-f479-49f2-b36b-a3ebf964741f",
+        "_scryfallId": "b344511d-631e-4f1d-9d7d-d7c89a473d1b",
+        "_layout": "normal",
+        "_set": "fut",
+        "_collectorNumber": "126",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elemental",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "commanderLegality": "legal",
+        "set": "fut",
+        "setName": "Future Sight",
+        "collectorNumber": "126",
+        "rarity": "rare",
+        "releasedAt": "2007-05-04",
+        "scryfallUri": "https://scryfall.com/card/fut/126/force-of-savagery?utm_source=api"
+      }
+    },
+    {
+      "position": 36,
+      "oracleId": "0994d596-0b15-4156-8e94-5b566dcad6cd",
+      "scryfallId": "fae9abc7-ecd3-4042-a5b0-5f2b24491fa6",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Forest Bear",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bear"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "0994d596-0b15-4156-8e94-5b566dcad6cd",
+        "_scryfallId": "fae9abc7-ecd3-4042-a5b0-5f2b24491fa6",
+        "_layout": "normal",
+        "_set": "ptk",
+        "_collectorNumber": "135",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Bear",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "ptk",
+        "setName": "Portal Three Kingdoms",
+        "collectorNumber": "135",
+        "rarity": "common",
+        "releasedAt": "1999-05-01",
+        "scryfallUri": "https://scryfall.com/card/ptk/135/forest-bear?utm_source=api"
+      }
+    },
+    {
+      "position": 37,
+      "oracleId": "a55202a9-bddb-40df-b93f-06678ae1e0ea",
+      "scryfallId": "5095e2ab-a7f5-45bc-8b2f-31198ea27bba",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "defender"
+      ],
+      "rulesCore": "Defender",
+      "raw": {
+        "name": "Fortified Rampart",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Wall"
+        ],
+        "oracle": "Defender",
+        "power": "0",
+        "toughness": "6",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "a55202a9-bddb-40df-b93f-06678ae1e0ea",
+        "_scryfallId": "5095e2ab-a7f5-45bc-8b2f-31198ea27bba",
+        "_layout": "normal",
+        "_set": "bfz",
+        "_collectorNumber": "27",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Wall",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Defender"
+        ],
+        "commanderLegality": "legal",
+        "set": "bfz",
+        "setName": "Battle for Zendikar",
+        "collectorNumber": "27",
+        "rarity": "common",
+        "releasedAt": "2015-10-02",
+        "scryfallUri": "https://scryfall.com/card/bfz/27/fortified-rampart?utm_source=api"
+      }
+    },
+    {
+      "position": 38,
+      "oracleId": "075fd933-689c-4199-85bd-e7994d936145",
+      "scryfallId": "324681da-a28e-47ec-9810-5678de53e494",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Fortress Crab",
+        "cost": "{3}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Crab"
+        ],
+        "oracle": "",
+        "power": "1",
+        "toughness": "6",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "075fd933-689c-4199-85bd-e7994d936145",
+        "_scryfallId": "324681da-a28e-47ec-9810-5678de53e494",
+        "_layout": "normal",
+        "_set": "m20",
+        "_collectorNumber": "60",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Crab",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "m20",
+        "setName": "Core Set 2020",
+        "collectorNumber": "60",
+        "rarity": "common",
+        "releasedAt": "2019-07-12",
+        "scryfallUri": "https://scryfall.com/card/m20/60/fortress-crab?utm_source=api"
+      }
+    },
+    {
+      "position": 39,
+      "oracleId": "655c59d5-8666-476c-b494-411fa2e243a7",
+      "scryfallId": "5fb22ac0-3863-4165-8c93-f2ec1775474f",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Frenzied Raptor",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dinosaur"
+        ],
+        "oracle": "",
+        "power": "4",
+        "toughness": "2",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "655c59d5-8666-476c-b494-411fa2e243a7",
+        "_scryfallId": "5fb22ac0-3863-4165-8c93-f2ec1775474f",
+        "_layout": "normal",
+        "_set": "iko",
+        "_collectorNumber": "120",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Dinosaur",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "iko",
+        "setName": "Ikoria: Lair of Behemoths",
+        "collectorNumber": "120",
+        "rarity": "common",
+        "releasedAt": "2020-04-24",
+        "scryfallUri": "https://scryfall.com/card/iko/120/frenzied-raptor?utm_source=api"
+      }
+    },
+    {
+      "position": 40,
+      "oracleId": "bd0031c3-ff88-4bc5-82a0-2187c60a7d33",
+      "scryfallId": "e070ea4a-c417-405f-b788-78fb7ca2eaa5",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Fresh Volunteers",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Rebel"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "bd0031c3-ff88-4bc5-82a0-2187c60a7d33",
+        "_scryfallId": "e070ea4a-c417-405f-b788-78fb7ca2eaa5",
+        "_layout": "normal",
+        "_set": "mmq",
+        "_collectorNumber": "20",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Rebel",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "mmq",
+        "setName": "Mercadian Masques",
+        "collectorNumber": "20",
+        "rarity": "common",
+        "releasedAt": "1999-10-04",
+        "scryfallUri": "https://scryfall.com/card/mmq/20/fresh-volunteers?utm_source=api"
+      }
+    },
+    {
+      "position": 41,
+      "oracleId": "b8563788-debc-4f97-adf4-b186bf3960e2",
+      "scryfallId": "73f4c4b7-5c05-48a5-adb2-ca850df8cd03",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "reach"
+      ],
+      "rulesCore": "Reach",
+      "raw": {
+        "name": "Frog-Squirrels",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Frog",
+          "Squirrel"
+        ],
+        "oracle": "Reach (This creature can block creatures with flying.)",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "b8563788-debc-4f97-adf4-b186bf3960e2",
+        "_scryfallId": "73f4c4b7-5c05-48a5-adb2-ca850df8cd03",
+        "_layout": "normal",
+        "_set": "tle",
+        "_collectorNumber": "251",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Frog Squirrel",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Reach"
+        ],
+        "commanderLegality": "legal",
+        "set": "tle",
+        "setName": "Avatar: The Last Airbender Eternal",
+        "collectorNumber": "251",
+        "rarity": "common",
+        "releasedAt": "2025-11-21",
+        "scryfallUri": "https://scryfall.com/card/tle/251/frog-squirrels?utm_source=api"
+      }
+    },
+    {
+      "position": 42,
+      "oracleId": "b039997c-2115-4f6d-9f7b-0ad35a4796a6",
+      "scryfallId": "1a91e5f1-9179-4763-b7c9-b7ad5451f6d0",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Frost Ogre",
+        "cost": "{3}{R}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Ogre",
+          "Warrior"
+        ],
+        "oracle": "",
+        "power": "5",
+        "toughness": "3",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "b039997c-2115-4f6d-9f7b-0ad35a4796a6",
+        "_scryfallId": "1a91e5f1-9179-4763-b7c9-b7ad5451f6d0",
+        "_layout": "normal",
+        "_set": "bok",
+        "_collectorNumber": "102",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Ogre Warrior",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "bok",
+        "setName": "Betrayers of Kamigawa",
+        "collectorNumber": "102",
+        "rarity": "common",
+        "releasedAt": "2005-02-04",
+        "scryfallUri": "https://scryfall.com/card/bok/102/frost-ogre?utm_source=api"
+      }
+    },
+    {
+      "position": 43,
+      "oracleId": "381fa2a9-69fc-4558-a0ac-fb99c6f8d77f",
+      "scryfallId": "520ad9d0-5f41-4183-a04e-58a61ad7202b",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Fugitive Wizard",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Wizard"
+        ],
+        "oracle": "",
+        "power": "1",
+        "toughness": "1",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "381fa2a9-69fc-4558-a0ac-fb99c6f8d77f",
+        "_scryfallId": "520ad9d0-5f41-4183-a04e-58a61ad7202b",
+        "_layout": "normal",
+        "_set": "m15",
+        "_collectorNumber": "56",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Wizard",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "m15",
+        "setName": "Magic 2015",
+        "collectorNumber": "56",
+        "rarity": "common",
+        "releasedAt": "2014-07-18",
+        "scryfallUri": "https://scryfall.com/card/m15/56/fugitive-wizard?utm_source=api"
+      }
+    },
+    {
+      "position": 44,
+      "oracleId": "a152674f-be29-40ab-8dd9-376fd4eb3bb8",
+      "scryfallId": "c8ab1550-0cd3-4dc9-82c2-121615f2ceee",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Fusion Elemental",
+        "cost": "{W}{U}{B}{R}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elemental"
+        ],
+        "oracle": "",
+        "power": "8",
+        "toughness": "8",
+        "_ci": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ],
+        "_oracleId": "a152674f-be29-40ab-8dd9-376fd4eb3bb8",
+        "_scryfallId": "c8ab1550-0cd3-4dc9-82c2-121615f2ceee",
+        "_layout": "normal",
+        "_set": "dmc",
+        "_collectorNumber": "150",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elemental",
+        "colorIdentity": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ],
+        "colors": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "dmc",
+        "setName": "Dominaria United Commander",
+        "collectorNumber": "150",
+        "rarity": "uncommon",
+        "releasedAt": "2022-09-09",
+        "scryfallUri": "https://scryfall.com/card/dmc/150/fusion-elemental?utm_source=api"
+      }
+    },
+    {
+      "position": 45,
+      "oracleId": "dd0da475-55d0-462e-bfac-6eeb5d39a099",
+      "scryfallId": "8a564432-c2b3-4cf6-b4bc-2e2600b92911",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "rulesCore": "Flying",
+      "raw": {
+        "name": "Gaea's Skyfolk",
+        "cost": "{G}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Merfolk"
+        ],
+        "oracle": "Flying",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "G",
+          "U"
+        ],
+        "_oracleId": "dd0da475-55d0-462e-bfac-6eeb5d39a099",
+        "_scryfallId": "8a564432-c2b3-4cf6-b4bc-2e2600b92911",
+        "_layout": "normal",
+        "_set": "apc",
+        "_collectorNumber": "101",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elf Merfolk",
+        "colorIdentity": [
+          "G",
+          "U"
+        ],
+        "colors": [
+          "G",
+          "U"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "apc",
+        "setName": "Apocalypse",
+        "collectorNumber": "101",
+        "rarity": "common",
+        "releasedAt": "2001-06-04",
+        "scryfallUri": "https://scryfall.com/card/apc/101/gaeas-skyfolk?utm_source=api"
+      }
+    },
+    {
+      "position": 46,
+      "oracleId": "b0747a4f-d041-4750-aef5-a5d101696f65",
+      "scryfallId": "58706bd8-558a-43b9-9f1e-c1ff0044203b",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flash",
+        "reach",
+        "vigilance",
+        "trample"
+      ],
+      "rulesCore": "Flash\nReach, vigilance, trample",
+      "raw": {
+        "name": "Galewind Moose",
+        "cost": "{4}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elemental",
+          "Elk"
+        ],
+        "oracle": "Flash\nReach, vigilance, trample",
+        "power": "6",
+        "toughness": "6",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "b0747a4f-d041-4750-aef5-a5d101696f65",
+        "_scryfallId": "58706bd8-558a-43b9-9f1e-c1ff0044203b",
+        "_layout": "normal",
+        "_set": "blb",
+        "_collectorNumber": "173",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elemental Elk",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Reach",
+          "Vigilance",
+          "Trample",
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "blb",
+        "setName": "Bloomburrow",
+        "collectorNumber": "173",
+        "rarity": "uncommon",
+        "releasedAt": "2024-08-02",
+        "scryfallUri": "https://scryfall.com/card/blb/173/galewind-moose?utm_source=api"
+      }
+    },
+    {
+      "position": 47,
+      "oracleId": "32fc8fa7-7e0a-4d4e-85cf-2f98b3fc6ecf",
+      "scryfallId": "b8d8806c-43c5-4c6c-9420-6210a17ec2b0",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "trample"
+      ],
+      "rulesCore": "Trample",
+      "raw": {
+        "name": "Garruk's Companion",
+        "cost": "{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "oracle": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)",
+        "power": "3",
+        "toughness": "2",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "32fc8fa7-7e0a-4d4e-85cf-2f98b3fc6ecf",
+        "_scryfallId": "b8d8806c-43c5-4c6c-9420-6210a17ec2b0",
+        "_layout": "normal",
+        "_set": "m12",
+        "_collectorNumber": "175",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Beast",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "commanderLegality": "legal",
+        "set": "m12",
+        "setName": "Magic 2012",
+        "collectorNumber": "175",
+        "rarity": "common",
+        "releasedAt": "2011-07-15",
+        "scryfallUri": "https://scryfall.com/card/m12/175/garruks-companion?utm_source=api"
+      }
+    },
+    {
+      "position": 48,
+      "oracleId": "c8384392-1914-4423-9f49-92f5643d15dc",
+      "scryfallId": "3928bbce-87b7-4b28-9af4-20362935c909",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Garruk's Gorehorn",
+        "cost": "{4}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "oracle": "",
+        "power": "7",
+        "toughness": "3",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "c8384392-1914-4423-9f49-92f5643d15dc",
+        "_scryfallId": "3928bbce-87b7-4b28-9af4-20362935c909",
+        "_layout": "normal",
+        "_set": "m21",
+        "_collectorNumber": "184",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Beast",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "m21",
+        "setName": "Core Set 2021",
+        "collectorNumber": "184",
+        "rarity": "common",
+        "releasedAt": "2020-07-03",
+        "scryfallUri": "https://scryfall.com/card/m21/184/garruks-gorehorn?utm_source=api"
+      }
+    },
+    {
+      "position": 49,
+      "oracleId": "5c9d814b-4257-47bc-a1df-c3480bc038ba",
+      "scryfallId": "6fd246d1-a7cb-45a0-b735-53509ba2d5ca",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "rulesCore": "Flying",
+      "raw": {
+        "name": "Geist of the Moors",
+        "cost": "{1}{W}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spirit"
+        ],
+        "oracle": "Flying",
+        "power": "3",
+        "toughness": "1",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "5c9d814b-4257-47bc-a1df-c3480bc038ba",
+        "_scryfallId": "6fd246d1-a7cb-45a0-b735-53509ba2d5ca",
+        "_layout": "normal",
+        "_set": "a25",
+        "_collectorNumber": "15",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Spirit",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "a25",
+        "setName": "Masters 25",
+        "collectorNumber": "15",
+        "rarity": "common",
+        "releasedAt": "2018-03-16",
+        "scryfallUri": "https://scryfall.com/card/a25/15/geist-of-the-moors?utm_source=api"
+      }
+    },
+    {
+      "position": 50,
+      "oracleId": "595cbe23-4969-4fc2-8386-e5f3e6adfd5f",
+      "scryfallId": "8a88f507-3d78-4f7f-a91f-8489ad9250f2",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "trample",
+        "haste"
+      ],
+      "rulesCore": "Trample, haste",
+      "raw": {
+        "name": "Gerrard's Irregulars",
+        "cost": "{4}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "oracle": "Trample, haste",
+        "power": "4",
+        "toughness": "2",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "595cbe23-4969-4fc2-8386-e5f3e6adfd5f",
+        "_scryfallId": "8a88f507-3d78-4f7f-a91f-8489ad9250f2",
+        "_layout": "normal",
+        "_set": "mmq",
+        "_collectorNumber": "192",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Soldier",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Haste",
+          "Trample"
+        ],
+        "commanderLegality": "legal",
+        "set": "mmq",
+        "setName": "Mercadian Masques",
+        "collectorNumber": "192",
+        "rarity": "common",
+        "releasedAt": "1999-10-04",
+        "scryfallUri": "https://scryfall.com/card/mmq/192/gerrards-irregulars?utm_source=api"
+      }
+    },
+    {
+      "position": 51,
+      "oracleId": "b4de9edd-4a5b-4858-8454-38381df8b9a2",
+      "scryfallId": "2186f382-2d68-4191-b490-a072f49eaabf",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "rulesCore": "Flying",
+      "raw": {
+        "name": "Ghirapur Osprey",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bird"
+        ],
+        "oracle": "Flying",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "b4de9edd-4a5b-4858-8454-38381df8b9a2",
+        "_scryfallId": "2186f382-2d68-4191-b490-a072f49eaabf",
+        "_layout": "normal",
+        "_set": "aer",
+        "_collectorNumber": "20",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Bird",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "aer",
+        "setName": "Aether Revolt",
+        "collectorNumber": "20",
+        "rarity": "common",
+        "releasedAt": "2017-01-20",
+        "scryfallUri": "https://scryfall.com/card/aer/20/ghirapur-osprey?utm_source=api"
+      }
+    },
+    {
+      "position": 52,
+      "oracleId": "a16f4b53-c8cf-45b0-89e7-507acd094a64",
+      "scryfallId": "de867066-df5c-4412-9d51-56626b6d0220",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying",
+        "vigilance"
+      ],
+      "rulesCore": "Flying, vigilance",
+      "raw": {
+        "name": "Ghostly Sentinel",
+        "cost": "{4}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Kor",
+          "Spirit"
+        ],
+        "oracle": "Flying, vigilance",
+        "power": "3",
+        "toughness": "3",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "a16f4b53-c8cf-45b0-89e7-507acd094a64",
+        "_scryfallId": "de867066-df5c-4412-9d51-56626b6d0220",
+        "_layout": "normal",
+        "_set": "bfz",
+        "_collectorNumber": "28",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Kor Spirit",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flying",
+          "Vigilance"
+        ],
+        "commanderLegality": "legal",
+        "set": "bfz",
+        "setName": "Battle for Zendikar",
+        "collectorNumber": "28",
+        "rarity": "common",
+        "releasedAt": "2015-10-02",
+        "scryfallUri": "https://scryfall.com/card/bfz/28/ghostly-sentinel?utm_source=api"
+      }
+    },
+    {
+      "position": 53,
+      "oracleId": "c8b49b28-d364-4cf0-a2a5-56f6f7dc1b22",
+      "scryfallId": "25ca0c01-2e9f-4f1c-9078-f7a68559296d",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Giant Cockroach",
+        "cost": "{3}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Insect"
+        ],
+        "oracle": "",
+        "power": "4",
+        "toughness": "2",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "c8b49b28-d364-4cf0-a2a5-56f6f7dc1b22",
+        "_scryfallId": "25ca0c01-2e9f-4f1c-9078-f7a68559296d",
+        "_layout": "normal",
+        "_set": "9ed",
+        "_collectorNumber": "133",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Insect",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "9ed",
+        "setName": "Ninth Edition",
+        "collectorNumber": "133",
+        "rarity": "common",
+        "releasedAt": "2005-07-29",
+        "scryfallUri": "https://scryfall.com/card/9ed/133/giant-cockroach?utm_source=api"
+      }
+    },
+    {
+      "position": 54,
+      "oracleId": "481ede6a-3ac3-45bc-85aa-311b3dbefc40",
+      "scryfallId": "98518e4a-d1d0-4e41-bae7-242c779f06a1",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "reach"
+      ],
+      "rulesCore": "Reach",
+      "raw": {
+        "name": "Giant Mantis",
+        "cost": "{3}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Insect"
+        ],
+        "oracle": "Reach (This creature can block creatures with flying.)",
+        "power": "2",
+        "toughness": "4",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "481ede6a-3ac3-45bc-85aa-311b3dbefc40",
+        "_scryfallId": "98518e4a-d1d0-4e41-bae7-242c779f06a1",
+        "_layout": "normal",
+        "_set": "bfz",
+        "_collectorNumber": "173",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Insect",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Reach"
+        ],
+        "commanderLegality": "legal",
+        "set": "bfz",
+        "setName": "Battle for Zendikar",
+        "collectorNumber": "173",
+        "rarity": "common",
+        "releasedAt": "2015-10-02",
+        "scryfallUri": "https://scryfall.com/card/bfz/173/giant-mantis?utm_source=api"
+      }
+    },
+    {
+      "position": 55,
+      "oracleId": "c181d2a4-5959-4409-9bd3-ecedf8ec9516",
+      "scryfallId": "a391d681-3530-4f6a-b421-12025e7c3b89",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Giant Octopus",
+        "cost": "{3}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Octopus"
+        ],
+        "oracle": "",
+        "power": "3",
+        "toughness": "3",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "c181d2a4-5959-4409-9bd3-ecedf8ec9516",
+        "_scryfallId": "a391d681-3530-4f6a-b421-12025e7c3b89",
+        "_layout": "normal",
+        "_set": "9ed",
+        "_collectorNumber": "S4",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Octopus",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "9ed",
+        "setName": "Ninth Edition",
+        "collectorNumber": "S4",
+        "rarity": "common",
+        "releasedAt": "2005-07-29",
+        "scryfallUri": "https://scryfall.com/card/9ed/S4/giant-octopus?utm_source=api"
+      }
+    },
+    {
+      "position": 56,
+      "oracleId": "557485d9-7537-4297-a589-c29d0f1ecd98",
+      "scryfallId": "047bb416-1fe7-4965-907f-8e2a5fb4a925",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "deathtouch"
+      ],
+      "rulesCore": "Deathtouch",
+      "raw": {
+        "name": "Giant Scorpion",
+        "cost": "{2}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Scorpion"
+        ],
+        "oracle": "Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.)",
+        "power": "1",
+        "toughness": "3",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "557485d9-7537-4297-a589-c29d0f1ecd98",
+        "_scryfallId": "047bb416-1fe7-4965-907f-8e2a5fb4a925",
+        "_layout": "normal",
+        "_set": "ddr",
+        "_collectorNumber": "50",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Scorpion",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Deathtouch"
+        ],
+        "commanderLegality": "legal",
+        "set": "ddr",
+        "setName": "Duel Decks: Nissa vs. Ob Nixilis",
+        "collectorNumber": "50",
+        "rarity": "common",
+        "releasedAt": "2016-09-02",
+        "scryfallUri": "https://scryfall.com/card/ddr/50/giant-scorpion?utm_source=api"
+      }
+    },
+    {
+      "position": 57,
+      "oracleId": "c590c1bd-430c-4515-9343-ba818c02bc5f",
+      "scryfallId": "d4bb6038-e2e9-4de2-a94e-0798c80a94c6",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "trample",
+        "haste",
+        "shroud"
+      ],
+      "rulesCore": "Trample; haste; shroud",
+      "raw": {
+        "name": "Giant Solifuge",
+        "cost": "{2}{R/G}{R/G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Insect"
+        ],
+        "oracle": "({R/G} can be paid with either {R} or {G}.)\nTrample; haste; shroud (This creature can't be the target of spells or abilities.)",
+        "power": "4",
+        "toughness": "1",
+        "_ci": [
+          "G",
+          "R"
+        ],
+        "_oracleId": "c590c1bd-430c-4515-9343-ba818c02bc5f",
+        "_scryfallId": "d4bb6038-e2e9-4de2-a94e-0798c80a94c6",
+        "_layout": "normal",
+        "_set": "ema",
+        "_collectorNumber": "216",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Creature — Insect",
+        "colorIdentity": [
+          "G",
+          "R"
+        ],
+        "colors": [
+          "G",
+          "R"
+        ],
+        "keywords": [
+          "Shroud",
+          "Haste",
+          "Trample"
+        ],
+        "commanderLegality": "legal",
+        "set": "ema",
+        "setName": "Eternal Masters",
+        "collectorNumber": "216",
+        "rarity": "rare",
+        "releasedAt": "2016-06-10",
+        "scryfallUri": "https://scryfall.com/card/ema/216/giant-solifuge?utm_source=api"
+      }
+    },
+    {
+      "position": 58,
+      "oracleId": "e740ce2f-2134-473c-afa1-1b6d2d1e38ef",
+      "scryfallId": "213c9202-b6f4-43ab-b57f-b97a1da5e263",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "reach"
+      ],
+      "rulesCore": "Reach",
+      "raw": {
+        "name": "Giant Spider",
+        "cost": "{3}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spider"
+        ],
+        "oracle": "Reach (This creature can block creatures with flying.)",
+        "power": "2",
+        "toughness": "4",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "e740ce2f-2134-473c-afa1-1b6d2d1e38ef",
+        "_scryfallId": "213c9202-b6f4-43ab-b57f-b97a1da5e263",
+        "_layout": "normal",
+        "_set": "dmr",
+        "_collectorNumber": "163",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Spider",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Reach"
+        ],
+        "commanderLegality": "legal",
+        "set": "dmr",
+        "setName": "Dominaria Remastered",
+        "collectorNumber": "163",
+        "rarity": "common",
+        "releasedAt": "2023-01-13",
+        "scryfallUri": "https://scryfall.com/card/dmr/163/giant-spider?utm_source=api"
+      }
+    },
+    {
+      "position": 59,
+      "oracleId": "0eb41c36-5910-41fd-97fc-1cae2332e5c5",
+      "scryfallId": "c402ef0e-51e7-4da6-a434-b99c5d435698",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "trample"
+      ],
+      "rulesCore": "Trample",
+      "raw": {
+        "name": "Giant Warthog",
+        "cost": "{5}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Boar",
+          "Beast"
+        ],
+        "oracle": "Trample",
+        "power": "5",
+        "toughness": "5",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "0eb41c36-5910-41fd-97fc-1cae2332e5c5",
+        "_scryfallId": "c402ef0e-51e7-4da6-a434-b99c5d435698",
+        "_layout": "normal",
+        "_set": "jud",
+        "_collectorNumber": "118",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Boar Beast",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "commanderLegality": "legal",
+        "set": "jud",
+        "setName": "Judgment",
+        "collectorNumber": "118",
+        "rarity": "common",
+        "releasedAt": "2002-05-27",
+        "scryfallUri": "https://scryfall.com/card/jud/118/giant-warthog?utm_source=api"
+      }
+    },
+    {
+      "position": 60,
+      "oracleId": "0c6a6587-2b3f-40d1-a5f2-06128da0d52e",
+      "scryfallId": "8644d4d1-8499-40a8-a01f-68172c82bf58",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "deathtouch",
+        "lifelink"
+      ],
+      "rulesCore": "Deathtouch, lifelink",
+      "raw": {
+        "name": "Gifted Aetherborn",
+        "cost": "{B}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Aetherborn",
+          "Vampire"
+        ],
+        "oracle": "Deathtouch, lifelink",
+        "power": "2",
+        "toughness": "3",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "0c6a6587-2b3f-40d1-a5f2-06128da0d52e",
+        "_scryfallId": "8644d4d1-8499-40a8-a01f-68172c82bf58",
+        "_layout": "normal",
+        "_set": "jmp",
+        "_collectorNumber": "239",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Creature — Aetherborn Vampire",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Lifelink",
+          "Deathtouch"
+        ],
+        "commanderLegality": "legal",
+        "set": "jmp",
+        "setName": "Jumpstart",
+        "collectorNumber": "239",
+        "rarity": "uncommon",
+        "releasedAt": "2020-07-17",
+        "scryfallUri": "https://scryfall.com/card/jmp/239/gifted-aetherborn?utm_source=api"
+      }
+    },
+    {
+      "position": 61,
+      "oracleId": "e666bae7-dd51-4921-8b89-7e8d423caba0",
+      "scryfallId": "c1db84d8-d426-4c0d-b44e-5be7b0f5f5bf",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Gigantosaurus",
+        "cost": "{G}{G}{G}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dinosaur"
+        ],
+        "oracle": "",
+        "power": "10",
+        "toughness": "10",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "e666bae7-dd51-4921-8b89-7e8d423caba0",
+        "_scryfallId": "c1db84d8-d426-4c0d-b44e-5be7b0f5f5bf",
+        "_layout": "normal",
+        "_set": "m19",
+        "_collectorNumber": "185",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Creature — Dinosaur",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "m19",
+        "setName": "Core Set 2019",
+        "collectorNumber": "185",
+        "rarity": "rare",
+        "releasedAt": "2018-07-13",
+        "scryfallUri": "https://scryfall.com/card/m19/185/gigantosaurus?utm_source=api"
+      }
+    },
+    {
+      "position": 62,
+      "oracleId": "1551cd95-1e68-404f-be1d-cc9c7f447210",
+      "scryfallId": "b7f90eef-2393-4e44-9895-00489d3eaa92",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "deathtouch"
+      ],
+      "rulesCore": "Deathtouch",
+      "raw": {
+        "name": "Gilacorn",
+        "cost": "{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Lizard"
+        ],
+        "oracle": "Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.)",
+        "power": "1",
+        "toughness": "1",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "1551cd95-1e68-404f-be1d-cc9c7f447210",
+        "_scryfallId": "b7f90eef-2393-4e44-9895-00489d3eaa92",
+        "_layout": "normal",
+        "_set": "tle",
+        "_collectorNumber": "231",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Lizard",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Deathtouch"
+        ],
+        "commanderLegality": "legal",
+        "set": "tle",
+        "setName": "Avatar: The Last Airbender Eternal",
+        "collectorNumber": "231",
+        "rarity": "common",
+        "releasedAt": "2025-11-21",
+        "scryfallUri": "https://scryfall.com/card/tle/231/gilacorn?utm_source=api"
+      }
+    },
+    {
+      "position": 63,
+      "oracleId": "a382165d-d715-4836-b1ce-9e5d8dc56fb4",
+      "scryfallId": "01cc1a59-76bf-4721-b4a7-ef746f3d3990",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Gilded Sentinel",
+        "cost": "{4}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Golem"
+        ],
+        "oracle": "",
+        "power": "3",
+        "toughness": "3",
+        "_ci": [],
+        "_oracleId": "a382165d-d715-4836-b1ce-9e5d8dc56fb4",
+        "_scryfallId": "01cc1a59-76bf-4721-b4a7-ef746f3d3990",
+        "_layout": "normal",
+        "_set": "xln",
+        "_collectorNumber": "239",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Artifact Creature — Golem",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "xln",
+        "setName": "Ixalan",
+        "collectorNumber": "239",
+        "rarity": "common",
+        "releasedAt": "2017-09-29",
+        "scryfallUri": "https://scryfall.com/card/xln/239/gilded-sentinel?utm_source=api"
+      }
+    },
+    {
+      "position": 64,
+      "oracleId": "7fcf8faa-2c93-4dc8-aa56-6fc40340e212",
+      "scryfallId": "c059330e-1aef-4d22-b3c2-cd84cab5fe38",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "defender"
+      ],
+      "rulesCore": "Defender",
+      "raw": {
+        "name": "Glacial Wall",
+        "cost": "{2}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Wall"
+        ],
+        "oracle": "Defender (This creature can't attack.)",
+        "power": "0",
+        "toughness": "7",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "7fcf8faa-2c93-4dc8-aa56-6fc40340e212",
+        "_scryfallId": "c059330e-1aef-4d22-b3c2-cd84cab5fe38",
+        "_layout": "normal",
+        "_set": "ema",
+        "_collectorNumber": "53",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Wall",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Defender"
+        ],
+        "commanderLegality": "legal",
+        "set": "ema",
+        "setName": "Eternal Masters",
+        "collectorNumber": "53",
+        "rarity": "common",
+        "releasedAt": "2016-06-10",
+        "scryfallUri": "https://scryfall.com/card/ema/53/glacial-wall?utm_source=api"
+      }
+    },
+    {
+      "position": 65,
+      "oracleId": "385c1208-bfea-44e2-b236-4f38bc90db9f",
+      "scryfallId": "e112d77d-f019-4709-b31a-b02952df0e35",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "hexproof"
+      ],
+      "rulesCore": "Hexproof",
+      "raw": {
+        "name": "Gladecover Scout",
+        "cost": "{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Scout"
+        ],
+        "oracle": "Hexproof (This creature can't be the target of spells or abilities your opponents control.)",
+        "power": "1",
+        "toughness": "1",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "385c1208-bfea-44e2-b236-4f38bc90db9f",
+        "_scryfallId": "e112d77d-f019-4709-b31a-b02952df0e35",
+        "_layout": "normal",
+        "_set": "m14",
+        "_collectorNumber": "176",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elf Scout",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Hexproof"
+        ],
+        "commanderLegality": "legal",
+        "set": "m14",
+        "setName": "Magic 2014",
+        "collectorNumber": "176",
+        "rarity": "common",
+        "releasedAt": "2013-07-19",
+        "scryfallUri": "https://scryfall.com/card/m14/176/gladecover-scout?utm_source=api"
+      }
+    },
+    {
+      "position": 66,
+      "oracleId": "9f2e03fb-45c0-442d-a716-a472373c72d0",
+      "scryfallId": "b87066d0-6206-4ea3-87dc-04e4f06d013b",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "menace"
+      ],
+      "rulesCore": "Menace",
+      "raw": {
+        "name": "Glamorous Grapplers",
+        "cost": "{3}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Performer",
+          "Villain"
+        ],
+        "oracle": "Menace (This creature can't be blocked except by two or more creatures.)",
+        "power": "3",
+        "toughness": "3",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "9f2e03fb-45c0-442d-a716-a472373c72d0",
+        "_scryfallId": "b87066d0-6206-4ea3-87dc-04e4f06d013b",
+        "_layout": "normal",
+        "_set": "msc",
+        "_collectorNumber": "536",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Performer Villain",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Menace"
+        ],
+        "commanderLegality": "legal",
+        "set": "msc",
+        "setName": "Marvel Super Heroes Commander",
+        "collectorNumber": "536",
+        "rarity": "common",
+        "releasedAt": "2026-06-26",
+        "scryfallUri": "https://scryfall.com/card/msc/536/glamorous-grapplers?utm_source=api"
+      }
+    },
+    {
+      "position": 67,
+      "oracleId": "24e48968-bfeb-4965-9e06-8b04397fcb53",
+      "scryfallId": "1b87dc27-3cea-4101-aec5-ca0b96978476",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Glass Golem",
+        "cost": "{5}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Golem"
+        ],
+        "oracle": "",
+        "power": "6",
+        "toughness": "2",
+        "_ci": [],
+        "_oracleId": "24e48968-bfeb-4965-9e06-8b04397fcb53",
+        "_scryfallId": "1b87dc27-3cea-4101-aec5-ca0b96978476",
+        "_layout": "normal",
+        "_set": "rav",
+        "_collectorNumber": "261",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Artifact Creature — Golem",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "rav",
+        "setName": "Ravnica: City of Guilds",
+        "collectorNumber": "261",
+        "rarity": "uncommon",
+        "releasedAt": "2005-10-07",
+        "scryfallUri": "https://scryfall.com/card/rav/261/glass-golem?utm_source=api"
+      }
+    },
+    {
+      "position": 68,
+      "oracleId": "bcbdeccc-2baa-4158-bf87-8b88e7a19248",
+      "scryfallId": "3f135dd7-2a4f-4c83-9a90-76bcab3cc33d",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Gloom Pangolin",
+        "cost": "{2}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Nightmare",
+          "Pangolin"
+        ],
+        "oracle": "",
+        "power": "1",
+        "toughness": "5",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "bcbdeccc-2baa-4158-bf87-8b88e7a19248",
+        "_scryfallId": "3f135dd7-2a4f-4c83-9a90-76bcab3cc33d",
+        "_layout": "normal",
+        "_set": "iko",
+        "_collectorNumber": "89",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Nightmare Pangolin",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "iko",
+        "setName": "Ikoria: Lair of Behemoths",
+        "collectorNumber": "89",
+        "rarity": "common",
+        "releasedAt": "2020-04-24",
+        "scryfallUri": "https://scryfall.com/card/iko/89/gloom-pangolin?utm_source=api"
+      }
+    },
+    {
+      "position": 69,
+      "oracleId": "637b1a19-2925-422e-b867-f87537803071",
+      "scryfallId": "98db4317-9850-44c1-884b-d8d3abe1afeb",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "rulesCore": "Flying",
+      "raw": {
+        "name": "Gloomhunter",
+        "cost": "{2}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bat"
+        ],
+        "oracle": "Flying",
+        "power": "2",
+        "toughness": "1",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "637b1a19-2925-422e-b867-f87537803071",
+        "_scryfallId": "98db4317-9850-44c1-884b-d8d3abe1afeb",
+        "_layout": "normal",
+        "_set": "roe",
+        "_collectorNumber": "111",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Bat",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "roe",
+        "setName": "Rise of the Eldrazi",
+        "collectorNumber": "111",
+        "rarity": "common",
+        "releasedAt": "2010-04-23",
+        "scryfallUri": "https://scryfall.com/card/roe/111/gloomhunter?utm_source=api"
+      }
+    },
+    {
+      "position": 70,
+      "oracleId": "55c60b29-52c5-428c-9229-11ed0e26bd71",
+      "scryfallId": "2bd51dd3-ce49-41cf-85ef-a5a1428bc71b",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Glory Seeker",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "55c60b29-52c5-428c-9229-11ed0e26bd71",
+        "_scryfallId": "2bd51dd3-ce49-41cf-85ef-a5a1428bc71b",
+        "_layout": "normal",
+        "_set": "w17",
+        "_collectorNumber": "2",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Soldier",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "w17",
+        "setName": "Welcome Deck 2017",
+        "collectorNumber": "2",
+        "rarity": "common",
+        "releasedAt": "2017-04-15",
+        "scryfallUri": "https://scryfall.com/card/w17/2/glory-seeker?utm_source=api"
+      }
+    },
+    {
+      "position": 71,
+      "oracleId": "18202185-f9d4-446a-b34e-fae9800240f9",
+      "scryfallId": "5c28728d-4839-4cdf-91d4-b9fb4b5d0449",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Gnarled Mass",
+        "cost": "{1}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spirit"
+        ],
+        "oracle": "",
+        "power": "3",
+        "toughness": "3",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "18202185-f9d4-446a-b34e-fae9800240f9",
+        "_scryfallId": "5c28728d-4839-4cdf-91d4-b9fb4b5d0449",
+        "_layout": "normal",
+        "_set": "bok",
+        "_collectorNumber": "127",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Spirit",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "bok",
+        "setName": "Betrayers of Kamigawa",
+        "collectorNumber": "127",
+        "rarity": "common",
+        "releasedAt": "2005-02-04",
+        "scryfallUri": "https://scryfall.com/card/bok/127/gnarled-mass?utm_source=api"
+      }
+    },
+    {
+      "position": 72,
+      "oracleId": "e7e65cc5-9ceb-43b6-acde-ae492b71daf6",
+      "scryfallId": "af46c8c8-5dfa-4ebb-b0b9-cd25d01dd432",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "reach"
+      ],
+      "rulesCore": "Reach",
+      "raw": {
+        "name": "Gnottvold Recluse",
+        "cost": "{2}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spider"
+        ],
+        "oracle": "Reach",
+        "power": "4",
+        "toughness": "2",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "e7e65cc5-9ceb-43b6-acde-ae492b71daf6",
+        "_scryfallId": "af46c8c8-5dfa-4ebb-b0b9-cd25d01dd432",
+        "_layout": "normal",
+        "_set": "khm",
+        "_collectorNumber": "172",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Spider",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Reach"
+        ],
+        "commanderLegality": "legal",
+        "set": "khm",
+        "setName": "Kaldheim",
+        "collectorNumber": "172",
+        "rarity": "common",
+        "releasedAt": "2021-02-05",
+        "scryfallUri": "https://scryfall.com/card/khm/172/gnottvold-recluse?utm_source=api"
+      }
+    },
+    {
+      "position": 73,
+      "oracleId": "bc654150-b051-40bd-81f8-621abbb17e91",
+      "scryfallId": "8cfefb65-b6e4-44a1-baa9-d3c00ee8ba96",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Goblin Assailant",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Warrior"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "bc654150-b051-40bd-81f8-621abbb17e91",
+        "_scryfallId": "8cfefb65-b6e4-44a1-baa9-d3c00ee8ba96",
+        "_layout": "normal",
+        "_set": "m20",
+        "_collectorNumber": "330",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Goblin Warrior",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "m20",
+        "setName": "Core Set 2020",
+        "collectorNumber": "330",
+        "rarity": "common",
+        "releasedAt": "2019-07-12",
+        "scryfallUri": "https://scryfall.com/card/m20/330/goblin-assailant?utm_source=api"
+      }
+    },
+    {
+      "position": 74,
+      "oracleId": "5f71f205-9551-416a-bba6-55bc65d11c85",
+      "scryfallId": "a3c7635d-98b2-4505-9153-d7e9e53ea16d",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "first strike",
+        "haste"
+      ],
+      "rulesCore": "First strike, haste",
+      "raw": {
+        "name": "Goblin Berserker",
+        "cost": "{3}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Berserker"
+        ],
+        "oracle": "First strike, haste",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "5f71f205-9551-416a-bba6-55bc65d11c85",
+        "_scryfallId": "a3c7635d-98b2-4505-9153-d7e9e53ea16d",
+        "_layout": "normal",
+        "_set": "uds",
+        "_collectorNumber": "82",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Creature — Goblin Berserker",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "First strike",
+          "Haste"
+        ],
+        "commanderLegality": "legal",
+        "set": "uds",
+        "setName": "Urza's Destiny",
+        "collectorNumber": "82",
+        "rarity": "uncommon",
+        "releasedAt": "1999-06-07",
+        "scryfallUri": "https://scryfall.com/card/uds/82/goblin-berserker?utm_source=api"
+      }
+    },
+    {
+      "position": 75,
+      "oracleId": "6ef0dd51-31df-4fd3-8153-49a427a7fdcf",
+      "scryfallId": "136a15cb-9591-4521-a142-af766dd7eeef",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "haste"
+      ],
+      "rulesCore": "Haste",
+      "raw": {
+        "name": "Goblin Chariot",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Warrior"
+        ],
+        "oracle": "Haste (This creature can attack and {T} as soon as it comes under your control.)",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "6ef0dd51-31df-4fd3-8153-49a427a7fdcf",
+        "_scryfallId": "136a15cb-9591-4521-a142-af766dd7eeef",
+        "_layout": "normal",
+        "_set": "9ed",
+        "_collectorNumber": "191",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Goblin Warrior",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Haste"
+        ],
+        "commanderLegality": "legal",
+        "set": "9ed",
+        "setName": "Ninth Edition",
+        "collectorNumber": "191",
+        "rarity": "common",
+        "releasedAt": "2005-07-29",
+        "scryfallUri": "https://scryfall.com/card/9ed/191/goblin-chariot?utm_source=api"
+      }
+    },
+    {
+      "position": 76,
+      "oracleId": "d5142292-446a-413b-85a0-be8a59cec1f8",
+      "scryfallId": "0c0b85d3-ce46-4f12-8315-4cbf338eb8f0",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "trample"
+      ],
+      "rulesCore": "Trample",
+      "raw": {
+        "name": "Goblin Deathraiders",
+        "cost": "{B}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Warrior"
+        ],
+        "oracle": "Trample",
+        "power": "3",
+        "toughness": "1",
+        "_ci": [
+          "B",
+          "R"
+        ],
+        "_oracleId": "d5142292-446a-413b-85a0-be8a59cec1f8",
+        "_scryfallId": "0c0b85d3-ce46-4f12-8315-4cbf338eb8f0",
+        "_layout": "normal",
+        "_set": "ddn",
+        "_collectorNumber": "6",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Goblin Warrior",
+        "colorIdentity": [
+          "B",
+          "R"
+        ],
+        "colors": [
+          "B",
+          "R"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "commanderLegality": "legal",
+        "set": "ddn",
+        "setName": "Duel Decks: Speed vs. Cunning",
+        "collectorNumber": "6",
+        "rarity": "common",
+        "releasedAt": "2014-09-05",
+        "scryfallUri": "https://scryfall.com/card/ddn/6/goblin-deathraiders?utm_source=api"
+      }
+    },
+    {
+      "position": 77,
+      "oracleId": "ee969637-a20e-4163-97c0-9fd5cb17b741",
+      "scryfallId": "c3ed9cd3-5e6a-4e86-b120-ff27b744311d",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Goblin Hero",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "ee969637-a20e-4163-97c0-9fd5cb17b741",
+        "_scryfallId": "c3ed9cd3-5e6a-4e86-b120-ff27b744311d",
+        "_layout": "normal",
+        "_set": "s99",
+        "_collectorNumber": "103",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Goblin",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "s99",
+        "setName": "Starter 1999",
+        "collectorNumber": "103",
+        "rarity": "common",
+        "releasedAt": "1999-07-01",
+        "scryfallUri": "https://scryfall.com/card/s99/103/goblin-hero?utm_source=api"
+      }
+    },
+    {
+      "position": 78,
+      "oracleId": "50608184-90d3-43d2-a221-deb186c78323",
+      "scryfallId": "083ec3e7-950c-4e9d-aba5-02ed13d723f0",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Goblin Piker",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Warrior"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "1",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "50608184-90d3-43d2-a221-deb186c78323",
+        "_scryfallId": "083ec3e7-950c-4e9d-aba5-02ed13d723f0",
+        "_layout": "normal",
+        "_set": "m12",
+        "_collectorNumber": "141",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Goblin Warrior",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "m12",
+        "setName": "Magic 2012",
+        "collectorNumber": "141",
+        "rarity": "common",
+        "releasedAt": "2011-07-15",
+        "scryfallUri": "https://scryfall.com/card/m12/141/goblin-piker?utm_source=api"
+      }
+    },
+    {
+      "position": 79,
+      "oracleId": "a920d37e-e172-41f7-bfbf-c18821dcbed7",
+      "scryfallId": "9097ec4a-6c0e-4c27-8910-29ac47612031",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Goblin Roughrider",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Knight"
+        ],
+        "oracle": "",
+        "power": "3",
+        "toughness": "2",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "a920d37e-e172-41f7-bfbf-c18821dcbed7",
+        "_scryfallId": "9097ec4a-6c0e-4c27-8910-29ac47612031",
+        "_layout": "normal",
+        "_set": "m15",
+        "_collectorNumber": "146",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Goblin Knight",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "m15",
+        "setName": "Magic 2015",
+        "collectorNumber": "146",
+        "rarity": "common",
+        "releasedAt": "2014-07-18",
+        "scryfallUri": "https://scryfall.com/card/m15/146/goblin-roughrider?utm_source=api"
+      }
+    },
+    {
+      "position": 80,
+      "oracleId": "9e0ebf3b-9295-43a9-9b5c-4ffac6a6b630",
+      "scryfallId": "ebbd596b-56c2-475c-93e4-c72f9f29281b",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "rulesCore": "Flying",
+      "raw": {
+        "name": "Goblin Sky Raider",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Warrior"
+        ],
+        "oracle": "Flying (This creature can't be blocked except by creatures with flying or reach.)",
+        "power": "1",
+        "toughness": "2",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "9e0ebf3b-9295-43a9-9b5c-4ffac6a6b630",
+        "_scryfallId": "ebbd596b-56c2-475c-93e4-c72f9f29281b",
+        "_layout": "normal",
+        "_set": "10e",
+        "_collectorNumber": "210",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Goblin Warrior",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "10e",
+        "setName": "Tenth Edition",
+        "collectorNumber": "210",
+        "rarity": "common",
+        "releasedAt": "2007-07-13",
+        "scryfallUri": "https://scryfall.com/card/10e/210/goblin-sky-raider?utm_source=api"
+      }
+    },
+    {
+      "position": 81,
+      "oracleId": "c991d1b8-3adb-4854-9fd3-83f06aeb3941",
+      "scryfallId": "f7654d8a-7013-4311-b29e-b55aaa1bf502",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "first strike",
+        "haste"
+      ],
+      "rulesCore": "First strike, haste",
+      "raw": {
+        "name": "Goblin Striker",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Berserker"
+        ],
+        "oracle": "First strike, haste",
+        "power": "1",
+        "toughness": "1",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "c991d1b8-3adb-4854-9fd3-83f06aeb3941",
+        "_scryfallId": "f7654d8a-7013-4311-b29e-b55aaa1bf502",
+        "_layout": "normal",
+        "_set": "mrd",
+        "_collectorNumber": "94",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Goblin Berserker",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "First strike",
+          "Haste"
+        ],
+        "commanderLegality": "legal",
+        "set": "mrd",
+        "setName": "Mirrodin",
+        "collectorNumber": "94",
+        "rarity": "common",
+        "releasedAt": "2003-10-02",
+        "scryfallUri": "https://scryfall.com/card/mrd/94/goblin-striker?utm_source=api"
+      }
+    },
+    {
+      "position": 82,
+      "oracleId": "38f66ef9-6afc-478b-a1d4-a9d42c31dfc9",
+      "scryfallId": "ca382425-2454-4300-b903-fdefd31582d3",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "menace"
+      ],
+      "rulesCore": "Menace",
+      "raw": {
+        "name": "Goblin Trailblazer",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Pirate"
+        ],
+        "oracle": "Menace (This creature can't be blocked except by two or more creatures.)",
+        "power": "2",
+        "toughness": "1",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "38f66ef9-6afc-478b-a1d4-a9d42c31dfc9",
+        "_scryfallId": "ca382425-2454-4300-b903-fdefd31582d3",
+        "_layout": "normal",
+        "_set": "cmr",
+        "_collectorNumber": "182",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Goblin Pirate",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Menace"
+        ],
+        "commanderLegality": "legal",
+        "set": "cmr",
+        "setName": "Commander Legends",
+        "collectorNumber": "182",
+        "rarity": "common",
+        "releasedAt": "2020-11-20",
+        "scryfallUri": "https://scryfall.com/card/cmr/182/goblin-trailblazer?utm_source=api"
+      }
+    },
+    {
+      "position": 83,
+      "oracleId": "c338fb29-2dd2-4f76-ba3d-fa6770adcce8",
+      "scryfallId": "ca1bcaee-52bf-4000-8ffa-ee5e04703de6",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "rulesCore": "Flying",
+      "raw": {
+        "name": "Gold-Forged Sentinel",
+        "cost": "{6}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Chimera"
+        ],
+        "oracle": "Flying",
+        "power": "4",
+        "toughness": "4",
+        "_ci": [],
+        "_oracleId": "c338fb29-2dd2-4f76-ba3d-fa6770adcce8",
+        "_scryfallId": "ca1bcaee-52bf-4000-8ffa-ee5e04703de6",
+        "_layout": "normal",
+        "_set": "bbd",
+        "_collectorNumber": "236",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Artifact Creature — Chimera",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "bbd",
+        "setName": "Battlebond",
+        "collectorNumber": "236",
+        "rarity": "uncommon",
+        "releasedAt": "2018-06-08",
+        "scryfallUri": "https://scryfall.com/card/bbd/236/gold-forged-sentinel?utm_source=api"
+      }
+    },
+    {
+      "position": 84,
+      "oracleId": "6ba7ab42-918e-472a-b364-06073cc354d2",
+      "scryfallId": "d7dfc789-7ea0-4eb8-8c3b-2c50fd52cbab",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Golden Bear",
+        "cost": "{3}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bear"
+        ],
+        "oracle": "",
+        "power": "4",
+        "toughness": "3",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "6ba7ab42-918e-472a-b364-06073cc354d2",
+        "_scryfallId": "d7dfc789-7ea0-4eb8-8c3b-2c50fd52cbab",
+        "_layout": "normal",
+        "_set": "p02",
+        "_collectorNumber": "127",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Bear",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "p02",
+        "setName": "Portal Second Age",
+        "collectorNumber": "127",
+        "rarity": "common",
+        "releasedAt": "1998-06-24",
+        "scryfallUri": "https://scryfall.com/card/p02/127/golden-bear?utm_source=api"
+      }
+    },
+    {
+      "position": 85,
+      "oracleId": "316f7091-0c75-4510-a89a-6b58bb7f0627",
+      "scryfallId": "d631e7da-bd71-424a-a349-9bce0fd16b1f",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "lifelink"
+      ],
+      "rulesCore": "Lifelink",
+      "raw": {
+        "name": "Golden-Tail Disciple",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Enchantment",
+          "Creature"
+        ],
+        "subtypes": [
+          "Fox",
+          "Monk"
+        ],
+        "oracle": "Lifelink (Damage dealt by this creature also causes you to gain that much life.)",
+        "power": "2",
+        "toughness": "3",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "316f7091-0c75-4510-a89a-6b58bb7f0627",
+        "_scryfallId": "d631e7da-bd71-424a-a349-9bce0fd16b1f",
+        "_layout": "normal",
+        "_set": "neo",
+        "_collectorNumber": "15",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment Creature — Fox Monk",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Lifelink"
+        ],
+        "commanderLegality": "legal",
+        "set": "neo",
+        "setName": "Kamigawa: Neon Dynasty",
+        "collectorNumber": "15",
+        "rarity": "common",
+        "releasedAt": "2022-02-18",
+        "scryfallUri": "https://scryfall.com/card/neo/15/golden-tail-disciple?utm_source=api"
+      }
+    },
+    {
+      "position": 86,
+      "oracleId": "f1534fbf-eab6-4f12-8037-e71d6861b636",
+      "scryfallId": "d44058ba-3419-4777-8d59-05dea5e864e1",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Golgari Longlegs",
+        "cost": "{3}{B/G}{B/G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Insect"
+        ],
+        "oracle": "",
+        "power": "5",
+        "toughness": "4",
+        "_ci": [
+          "B",
+          "G"
+        ],
+        "_oracleId": "f1534fbf-eab6-4f12-8037-e71d6861b636",
+        "_scryfallId": "d44058ba-3419-4777-8d59-05dea5e864e1",
+        "_layout": "normal",
+        "_set": "rtr",
+        "_collectorNumber": "216",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Insect",
+        "colorIdentity": [
+          "B",
+          "G"
+        ],
+        "colors": [
+          "B",
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "rtr",
+        "setName": "Return to Ravnica",
+        "collectorNumber": "216",
+        "rarity": "common",
+        "releasedAt": "2012-10-05",
+        "scryfallUri": "https://scryfall.com/card/rtr/216/golgari-longlegs?utm_source=api"
+      }
+    },
+    {
+      "position": 87,
+      "oracleId": "86ab4400-fbdd-4c18-a893-441286a9d7d0",
+      "scryfallId": "f83d8765-f654-4837-9b06-739610188415",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "trample"
+      ],
+      "rulesCore": "Trample",
+      "raw": {
+        "name": "Goliath Beetle",
+        "cost": "{2}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Insect"
+        ],
+        "oracle": "Trample",
+        "power": "3",
+        "toughness": "1",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "86ab4400-fbdd-4c18-a893-441286a9d7d0",
+        "_scryfallId": "f83d8765-f654-4837-9b06-739610188415",
+        "_layout": "normal",
+        "_set": "uds",
+        "_collectorNumber": "107",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Insect",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "commanderLegality": "legal",
+        "set": "uds",
+        "setName": "Urza's Destiny",
+        "collectorNumber": "107",
+        "rarity": "common",
+        "releasedAt": "1999-06-07",
+        "scryfallUri": "https://scryfall.com/card/uds/107/goliath-beetle?utm_source=api"
+      }
+    },
+    {
+      "position": 88,
+      "oracleId": "73115500-4468-43b3-9151-13e3da9050c5",
+      "scryfallId": "374cddb8-b360-4c7b-8911-a6a1b401ffdd",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "rulesCore": "Flying",
+      "raw": {
+        "name": "Goliath Sphinx",
+        "cost": "{5}{U}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Sphinx"
+        ],
+        "oracle": "Flying",
+        "power": "8",
+        "toughness": "7",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "73115500-4468-43b3-9151-13e3da9050c5",
+        "_scryfallId": "374cddb8-b360-4c7b-8911-a6a1b401ffdd",
+        "_layout": "normal",
+        "_set": "cmm",
+        "_collectorNumber": "99",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Sphinx",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "cmm",
+        "setName": "Commander Masters",
+        "collectorNumber": "99",
+        "rarity": "common",
+        "releasedAt": "2023-08-04",
+        "scryfallUri": "https://scryfall.com/card/cmm/99/goliath-sphinx?utm_source=api"
+      }
+    },
+    {
+      "position": 89,
+      "oracleId": "17415789-159e-43cf-93f8-9926405ee8f1",
+      "scryfallId": "cecc53b1-942e-4b44-bf93-dd2d8cc92d6d",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "reach"
+      ],
+      "rulesCore": "Reach",
+      "raw": {
+        "name": "Goliath Spider",
+        "cost": "{6}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spider"
+        ],
+        "oracle": "Reach (This creature can block creatures with flying.)",
+        "power": "7",
+        "toughness": "6",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "17415789-159e-43cf-93f8-9926405ee8f1",
+        "_scryfallId": "cecc53b1-942e-4b44-bf93-dd2d8cc92d6d",
+        "_layout": "normal",
+        "_set": "rav",
+        "_collectorNumber": "168",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Creature — Spider",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Reach"
+        ],
+        "commanderLegality": "legal",
+        "set": "rav",
+        "setName": "Ravnica: City of Guilds",
+        "collectorNumber": "168",
+        "rarity": "uncommon",
+        "releasedAt": "2005-10-07",
+        "scryfallUri": "https://scryfall.com/card/rav/168/goliath-spider?utm_source=api"
+      }
+    },
+    {
+      "position": 90,
+      "oracleId": "af4b5853-ae60-48c9-9be1-bf121fa2e03d",
+      "scryfallId": "31c36d53-1173-4a55-8fb8-63a624fde7de",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Gore Swine",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Boar"
+        ],
+        "oracle": "",
+        "power": "4",
+        "toughness": "1",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "af4b5853-ae60-48c9-9be1-bf121fa2e03d",
+        "_scryfallId": "31c36d53-1173-4a55-8fb8-63a624fde7de",
+        "_layout": "normal",
+        "_set": "frf",
+        "_collectorNumber": "103",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Boar",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "frf",
+        "setName": "Fate Reforged",
+        "collectorNumber": "103",
+        "rarity": "common",
+        "releasedAt": "2015-01-23",
+        "scryfallUri": "https://scryfall.com/card/frf/103/gore-swine?utm_source=api"
+      }
+    },
+    {
+      "position": 91,
+      "oracleId": "c0e6ae0f-6cf7-48ca-acb8-73d4c38b9005",
+      "scryfallId": "d6997a75-42c9-4706-ac34-69fa34011eca",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Gorilla Warrior",
+        "cost": "{2}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Ape",
+          "Warrior"
+        ],
+        "oracle": "",
+        "power": "3",
+        "toughness": "2",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "c0e6ae0f-6cf7-48ca-acb8-73d4c38b9005",
+        "_scryfallId": "d6997a75-42c9-4706-ac34-69fa34011eca",
+        "_layout": "normal",
+        "_set": "s99",
+        "_collectorNumber": "128",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Ape Warrior",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "s99",
+        "setName": "Starter 1999",
+        "collectorNumber": "128",
+        "rarity": "common",
+        "releasedAt": "1999-07-01",
+        "scryfallUri": "https://scryfall.com/card/s99/128/gorilla-warrior?utm_source=api"
+      }
+    },
+    {
+      "position": 92,
+      "oracleId": "0ae0c880-a508-471f-a90b-029c417f6b3b",
+      "scryfallId": "e2324d0b-ac63-45e5-ba27-a643c61538c7",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "reach"
+      ],
+      "rulesCore": "Reach",
+      "raw": {
+        "name": "Grappler Spider",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spider"
+        ],
+        "oracle": "Reach (This creature can block creatures with flying.)",
+        "power": "2",
+        "toughness": "1",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "0ae0c880-a508-471f-a90b-029c417f6b3b",
+        "_scryfallId": "e2324d0b-ac63-45e5-ba27-a643c61538c7",
+        "_layout": "normal",
+        "_set": "wwk",
+        "_collectorNumber": "102",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Spider",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Reach"
+        ],
+        "commanderLegality": "legal",
+        "set": "wwk",
+        "setName": "Worldwake",
+        "collectorNumber": "102",
+        "rarity": "common",
+        "releasedAt": "2010-02-05",
+        "scryfallUri": "https://scryfall.com/card/wwk/102/grappler-spider?utm_source=api"
+      }
+    },
+    {
+      "position": 93,
+      "oracleId": "83c8a3a6-2e1a-4e26-8847-6d066f42d906",
+      "scryfallId": "11bf2cc0-799f-4eb8-b338-ed7543f469e7",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Gray Ogre",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Ogre"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "83c8a3a6-2e1a-4e26-8847-6d066f42d906",
+        "_scryfallId": "11bf2cc0-799f-4eb8-b338-ed7543f469e7",
+        "_layout": "normal",
+        "_set": "4ed",
+        "_collectorNumber": "200",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Ogre",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "4ed",
+        "setName": "Fourth Edition",
+        "collectorNumber": "200",
+        "rarity": "common",
+        "releasedAt": "1995-04-01",
+        "scryfallUri": "https://scryfall.com/card/4ed/200/gray-ogre?utm_source=api"
+      }
+    },
+    {
+      "position": 94,
+      "oracleId": "94399b1f-e66a-422e-ae41-6013fe741e8c",
+      "scryfallId": "b7e16e48-25f0-4099-9892-09586561ebc3",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "reach"
+      ],
+      "rulesCore": "Reach",
+      "raw": {
+        "name": "Grazing Whiptail",
+        "cost": "{2}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dinosaur"
+        ],
+        "oracle": "Reach",
+        "power": "3",
+        "toughness": "4",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "94399b1f-e66a-422e-ae41-6013fe741e8c",
+        "_scryfallId": "b7e16e48-25f0-4099-9892-09586561ebc3",
+        "_layout": "normal",
+        "_set": "gn2",
+        "_collectorNumber": "48",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Dinosaur",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Reach"
+        ],
+        "commanderLegality": "legal",
+        "set": "gn2",
+        "setName": "Game Night 2019",
+        "collectorNumber": "48",
+        "rarity": "common",
+        "releasedAt": "2019-11-15",
+        "scryfallUri": "https://scryfall.com/card/gn2/48/grazing-whiptail?utm_source=api"
+      }
+    },
+    {
+      "position": 95,
+      "oracleId": "694afc0a-bb32-4f24-9347-66665117ac9f",
+      "scryfallId": "70cd7d2b-e9c4-4900-89a0-f6eb0c6cb22b",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Great Hart",
+        "cost": "{3}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elk"
+        ],
+        "oracle": "",
+        "power": "2",
+        "toughness": "4",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "694afc0a-bb32-4f24-9347-66665117ac9f",
+        "_scryfallId": "70cd7d2b-e9c4-4900-89a0-f6eb0c6cb22b",
+        "_layout": "normal",
+        "_set": "bng",
+        "_collectorNumber": "15",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elk",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "bng",
+        "setName": "Born of the Gods",
+        "collectorNumber": "15",
+        "rarity": "common",
+        "releasedAt": "2014-02-07",
+        "scryfallUri": "https://scryfall.com/card/bng/15/great-hart?utm_source=api"
+      }
+    },
+    {
+      "position": 96,
+      "oracleId": "b193a6df-da22-4e3c-a086-5b02c604089e",
+      "scryfallId": "122e08cb-407b-4b3d-8af0-077ff96bf160",
+      "semanticClass": "vanilla",
+      "implementedKeywords": [],
+      "rulesCore": "",
+      "raw": {
+        "name": "Great-Horn Krushok",
+        "cost": "{4}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "oracle": "",
+        "power": "3",
+        "toughness": "5",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "b193a6df-da22-4e3c-a086-5b02c604089e",
+        "_scryfallId": "122e08cb-407b-4b3d-8af0-077ff96bf160",
+        "_layout": "normal",
+        "_set": "frf",
+        "_collectorNumber": "13",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Beast",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "frf",
+        "setName": "Fate Reforged",
+        "collectorNumber": "13",
+        "rarity": "common",
+        "releasedAt": "2015-01-23",
+        "scryfallUri": "https://scryfall.com/card/frf/13/great-horn-krushok?utm_source=api"
+      }
+    },
+    {
+      "position": 97,
+      "oracleId": "6e42e7dc-acd9-4125-a90d-75fd8da204b3",
+      "scryfallId": "886e40d7-5677-493d-9ea4-205f50d2aefe",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "deathtouch"
+      ],
+      "rulesCore": "Deathtouch",
+      "raw": {
+        "name": "Greater Basilisk",
+        "cost": "{3}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Basilisk"
+        ],
+        "oracle": "Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.)",
+        "power": "3",
+        "toughness": "5",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "6e42e7dc-acd9-4125-a90d-75fd8da204b3",
+        "_scryfallId": "886e40d7-5677-493d-9ea4-205f50d2aefe",
+        "_layout": "normal",
+        "_set": "ima",
+        "_collectorNumber": "165",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Basilisk",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Deathtouch"
+        ],
+        "commanderLegality": "legal",
+        "set": "ima",
+        "setName": "Iconic Masters",
+        "collectorNumber": "165",
+        "rarity": "common",
+        "releasedAt": "2017-11-17",
+        "scryfallUri": "https://scryfall.com/card/ima/165/greater-basilisk?utm_source=api"
+      }
+    },
+    {
+      "position": 98,
+      "oracleId": "8178c546-84f8-4563-a804-6489ec016660",
+      "scryfallId": "e9a1a70d-c146-453e-84c4-71cae4e0afaa",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "vigilance"
+      ],
+      "rulesCore": "Vigilance",
+      "raw": {
+        "name": "Greenwood Sentinel",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Scout"
+        ],
+        "oracle": "Vigilance (Attacking doesn't cause this creature to tap.)",
+        "power": "2",
+        "toughness": "2",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "8178c546-84f8-4563-a804-6489ec016660",
+        "_scryfallId": "e9a1a70d-c146-453e-84c4-71cae4e0afaa",
+        "_layout": "normal",
+        "_set": "m20",
+        "_collectorNumber": "174",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elf Scout",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Vigilance"
+        ],
+        "commanderLegality": "legal",
+        "set": "m20",
+        "setName": "Core Set 2020",
+        "collectorNumber": "174",
+        "rarity": "common",
+        "releasedAt": "2019-07-12",
+        "scryfallUri": "https://scryfall.com/card/m20/174/greenwood-sentinel?utm_source=api"
+      }
+    },
+    {
+      "position": 99,
+      "oracleId": "a93f0735-9854-487d-b646-d55e2bee00c0",
+      "scryfallId": "5fa7a8dc-67b3-4f96-af6e-98bb0a052d92",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying",
+        "deathtouch"
+      ],
+      "rulesCore": "Flying\nDeathtouch",
+      "raw": {
+        "name": "Grendel, Spawn of Knull",
+        "cost": "{3}{B}",
+        "super": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Symbiote",
+          "Dragon",
+          "Villain"
+        ],
+        "oracle": "Flying (This creature can't be blocked except by creatures with flying or reach.)\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)",
+        "power": "3",
+        "toughness": "3",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "a93f0735-9854-487d-b646-d55e2bee00c0",
+        "_scryfallId": "5fa7a8dc-67b3-4f96-af6e-98bb0a052d92",
+        "_layout": "normal",
+        "_set": "spe",
+        "_collectorNumber": "9",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Legendary Creature — Symbiote Dragon Villain",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Deathtouch",
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "spe",
+        "setName": "Marvel's Spider-Man Eternal",
+        "collectorNumber": "9",
+        "rarity": "uncommon",
+        "releasedAt": "2025-09-26",
+        "scryfallUri": "https://scryfall.com/card/spe/9/grendel-spawn-of-knull?utm_source=api"
+      }
+    },
+    {
+      "position": 100,
+      "oracleId": "72df0b70-5c9f-44f3-96d5-81c95abc0065",
+      "scryfallId": "cb13aaa4-d40a-4fb2-9fd6-62bf76db6a13",
+      "semanticClass": "keyword-only",
+      "implementedKeywords": [
+        "flying",
+        "vigilance"
+      ],
+      "rulesCore": "Flying\nVigilance",
+      "raw": {
+        "name": "Griffin Sentinel",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Griffin"
+        ],
+        "oracle": "Flying\nVigilance (Attacking doesn't cause this creature to tap.)",
+        "power": "1",
+        "toughness": "3",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "72df0b70-5c9f-44f3-96d5-81c95abc0065",
+        "_scryfallId": "cb13aaa4-d40a-4fb2-9fd6-62bf76db6a13",
+        "_layout": "normal",
+        "_set": "m20",
+        "_collectorNumber": "21",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Creature — Griffin",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flying",
+          "Vigilance"
+        ],
+        "commanderLegality": "legal",
+        "set": "m20",
+        "setName": "Core Set 2020",
+        "collectorNumber": "21",
+        "rarity": "common",
+        "releasedAt": "2019-07-12",
+        "scryfallUri": "https://scryfall.com/card/m20/21/griffin-sentinel?utm_source=api"
+      }
+    }
+  ]
+}

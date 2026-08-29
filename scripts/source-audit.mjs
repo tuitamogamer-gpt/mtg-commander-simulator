@@ -6,7 +6,18 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const indexPath = path.join(root, 'index.html');
 const appPath = path.join(root, 'src', 'app.js');
 const dataPath = path.join(root, 'src', 'data.js');
+const oracleImportDir = path.join(root, 'reports', 'oracle-import');
 export const EXCLUDED_DECKS = new Set(['Blame Game']);
+
+function readOracleBatchReports() {
+  if (!fs.existsSync(oracleImportDir)) return [];
+  return fs.readdirSync(oracleImportDir)
+    .filter(name => name.endsWith('.json'))
+    .sort()
+    .map(name => JSON.parse(fs.readFileSync(path.join(oracleImportDir, name), 'utf8')))
+    .map(report => report && report.batch && Array.isArray(report.batch.cards) ? report.batch : report)
+    .filter(batch => batch && batch.id && Array.isArray(batch.cards));
+}
 
 function readAppModules() {
   if (!fs.existsSync(appPath)) return null;
@@ -46,9 +57,18 @@ function scriptAssignments(source) {
 
 export function auditSource(source = readSource()) {
   const raw = extractRawData(source);
+  const oracleBatches = readOracleBatchReports();
   const assignments = scriptAssignments(source);
   const counts = new Map();
   for (const assignment of assignments) counts.set(assignment.name, (counts.get(assignment.name) || 0) + 1);
+  for (const batch of oracleBatches) {
+    for (const entry of batch.cards || []) {
+      const name = entry.raw && entry.raw.name;
+      if (!name) continue;
+      counts.set(name, (counts.get(name) || 0) + 1);
+      if (!raw.cards[name]) raw.cards[name] = entry.raw;
+    }
+  }
 
   const simplified = new Set();
   for (let i = 0; i < assignments.length; i++) {
@@ -72,6 +92,12 @@ export function auditSource(source = readSource()) {
     sourceBytes: Buffer.byteLength(source),
     sourceLines: source.split('\n').length,
     rawCardCount: Object.keys(raw.cards).length,
+    oracleBatches: oracleBatches.map(batch => ({
+      id: batch.id,
+      sequence: batch.sequence,
+      count: (batch.cards || []).length,
+      sourceUpdatedAt: batch.source && batch.source.bulkUpdatedAt,
+    })),
     deckRows, excludedDeckRows: allDeckRows.filter(deck => EXCLUDED_DECKS.has(deck.name)),
     duplicateScripts: [...counts].filter(([, count]) => count > 1).map(([name, count]) => ({ name, count })),
     simplifiedCards: allSimplifiedCards.filter(name => activeNames.has(name)),

@@ -8,6 +8,7 @@
     "certify": "node scripts/certify-cards.mjs",
     "certify:strict": "node scripts/certify-cards.mjs --strict",
     "check": "node scripts/check-syntax.mjs",
+    "import:oracle-batch": "node scripts/import-oracle-batch.mjs",
     "sync:card-images": "node scripts/sync-card-images.mjs",
     "test:ai": "node --test tests/ai-v2.test.mjs tests/headless-smoke.test.mjs",
     "benchmark:ai": "node scripts/benchmark-ai.mjs",

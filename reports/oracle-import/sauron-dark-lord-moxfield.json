@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "deck": {
+    "name": "Sauron, the dark lord (ready to play)",
+    "author": "Gustavo82",
+    "format": "commander",
+    "publicId": "8Xcac_CNTUiWNEOG4B5UQw",
+    "url": "https://moxfield.com/decks/8Xcac_CNTUiWNEOG4B5UQw",
+    "mainboardCount": 100,
+    "sideboardCount": 0,
+    "lastUpdatedLabel": "8 months ago"
+  },
+  "provenance": {
+    "capturedAt": "2026-08-29T20:10:00.000Z",
+    "method": "Rendered public Moxfield deck page in Chromium after anonymous startup",
+    "verification": "The rendered page reported 100 main deck / 0 sideboard and exposed every section, quantity, and card name. The v3 deck endpoint returned HTTP 200 inside the same browser session."
+  },
+  "sections": {
+    "Commander": [
+      { "quantity": 1, "name": "Sauron, the Dark Lord" }
+    ],
+    "Creatures": [
+      { "quantity": 1, "name": "Disciple of Bolas" },
+      { "quantity": 1, "name": "Elrond, Lord of Rivendell" },
+      { "quantity": 1, "name": "Gandalf, Friend of the Shire" },
+      { "quantity": 1, "name": "Gorbag of Minas Morgul" },
+      { "quantity": 1, "name": "Grishnákh, Brash Instigator" },
+      { "quantity": 1, "name": "Herald of Secret Streams" },
+      { "quantity": 1, "name": "Lobelia Sackville-Baggins" },
+      { "quantity": 1, "name": "Lord of the Nazgûl" },
+      { "quantity": 1, "name": "Mauhúr, Uruk-hai Captain" },
+      { "quantity": 1, "name": "Mirkwood Bats" },
+      { "quantity": 1, "name": "Nightscape Familiar" },
+      { "quantity": 1, "name": "Orcish Siegemaster" },
+      { "quantity": 1, "name": "Pitiless Plunderer" },
+      { "quantity": 1, "name": "Saruman, the White Hand" },
+      { "quantity": 1, "name": "Sauron, Lord of the Rings" },
+      { "quantity": 1, "name": "Sauron, the Necromancer" },
+      { "quantity": 1, "name": "Taurean Mauler" },
+      { "quantity": 1, "name": "The Mouth of Sauron" },
+      { "quantity": 1, "name": "Thryx, the Sudden Storm" },
+      { "quantity": 1, "name": "Wonder" }
+    ],
+    "Sorceries": [
+      { "quantity": 1, "name": "Callous Dismissal" },
+      { "quantity": 1, "name": "Decree of Pain" },
+      { "quantity": 1, "name": "Enter the God-Eternals" },
+      { "quantity": 1, "name": "Flood of Recollection" },
+      { "quantity": 1, "name": "Foray of Orcs" },
+      { "quantity": 1, "name": "Honor the God-Pharaoh" },
+      { "quantity": 1, "name": "Invade the City" },
+      { "quantity": 1, "name": "Life's Finale" },
+      { "quantity": 1, "name": "Mystic Retrieval" },
+      { "quantity": 1, "name": "Ringsight" },
+      { "quantity": 1, "name": "Taigam's Scheming" },
+      { "quantity": 1, "name": "Treason of Isengard" },
+      { "quantity": 1, "name": "Widespread Brutality" }
+    ],
+    "Instants": [
+      { "quantity": 1, "name": "Altar's Reap" },
+      { "quantity": 1, "name": "Bedevil" },
+      { "quantity": 1, "name": "Cast Down" },
+      { "quantity": 1, "name": "Commence the Endgame" },
+      { "quantity": 1, "name": "Corrupted Conviction" },
+      { "quantity": 1, "name": "Dark Ritual" },
+      { "quantity": 1, "name": "Filter Out" },
+      { "quantity": 1, "name": "Lazotep Plating" },
+      { "quantity": 1, "name": "Murder" },
+      { "quantity": 1, "name": "Nasty End" },
+      { "quantity": 1, "name": "Orcish Medicine" },
+      { "quantity": 1, "name": "Sauron's Ransom" },
+      { "quantity": 1, "name": "Turn Aside" },
+      { "quantity": 1, "name": "Ultimate Price" },
+      { "quantity": 1, "name": "Unlicensed Disintegration" }
+    ],
+    "Artifacts": [
+      { "quantity": 1, "name": "Dimir Signet" },
+      { "quantity": 1, "name": "Infiltration Lens" },
+      { "quantity": 1, "name": "Library of Leng" },
+      { "quantity": 1, "name": "Phial of Galadriel" },
+      { "quantity": 1, "name": "Rakdos Signet" },
+      { "quantity": 1, "name": "Seer's Lantern" },
+      { "quantity": 1, "name": "Sol Ring" },
+      { "quantity": 1, "name": "Spinning Wheel" },
+      { "quantity": 1, "name": "Talisman of Creativity" },
+      { "quantity": 1, "name": "Talisman of Indulgence" }
+    ],
+    "Enchantments": [
+      { "quantity": 1, "name": "Book of Mazarbul" },
+      { "quantity": 1, "name": "Call of the Ring" },
+      { "quantity": 1, "name": "Dreadhorde Invasion" },
+      { "quantity": 1, "name": "March from the Black Gate" },
+      { "quantity": 1, "name": "One Ring to Rule Them All" }
+    ],
+    "Lands": [
+      { "quantity": 1, "name": "Blackcleave Cliffs" },
+      { "quantity": 1, "name": "Bloodfell Caves" },
+      { "quantity": 1, "name": "Command Tower" },
+      { "quantity": 1, "name": "Dismal Backwater" },
+      { "quantity": 8, "name": "Island" },
+      { "quantity": 1, "name": "Izzet Boilerworks" },
+      { "quantity": 1, "name": "Izzet Guildgate" },
+      { "quantity": 8, "name": "Mountain" },
+      { "quantity": 1, "name": "Prismari Campus" },
+      { "quantity": 1, "name": "Rakdos Carnarium" },
+      { "quantity": 1, "name": "Shivan Reef" },
+      { "quantity": 8, "name": "Swamp" },
+      { "quantity": 1, "name": "Temple of Deceit" },
+      { "quantity": 1, "name": "Temple of Epiphany" },
+      { "quantity": 1, "name": "Terramorphic Expanse" }
+    ]
+  }
+}

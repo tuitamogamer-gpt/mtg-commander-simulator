@@ -1736,8 +1736,14 @@ MTG.CARD_IMAGE_MISSING = Object.freeze([
 MTG.CARD_IMAGE_PLACEHOLDER = './assets/cards/card-back.webp';
 
 MTG.CARD_IMAGE_API_BASE = 'https://api.scryfall.com/cards/named';
+MTG.CARD_IMAGE_ID_API_BASE = 'https://api.scryfall.com/cards/';
+MTG.CARD_IMAGE_REMOTE_BASES = Object.freeze([MTG.CARD_IMAGE_API_BASE, MTG.CARD_IMAGE_ID_API_BASE]);
 MTG.cardImageAPIURL = function (name) {
   return MTG.CARD_IMAGE_API_BASE + '?format=image&version=normal&fuzzy=' + encodeURIComponent(String(name || ''));
+};
+MTG.cardImageAPIURLById = function (id, variant) {
+  const version = variant === 'art' ? 'art_crop' : 'normal';
+  return MTG.CARD_IMAGE_ID_API_BASE + encodeURIComponent(String(id || '')) + '?format=image&version=' + version;
 };
 
 MTG.cardImageURL = function (name, variant) {
@@ -1748,5 +1754,10 @@ MTG.cardImageURL = function (name, variant) {
   if (local === MTG.CARD_IMAGE_PLACEHOLDER && MTG.CARD_IMAGE_MISSING.includes(face)) {
     return MTG.cardImageAPIURL(face);
   }
-  return local || MTG.CARD_IMAGE_PLACEHOLDER;
+  if (local) return local;
+  const catalog = MTG.CARD_CATALOG && MTG.CARD_CATALOG[face];
+  if (catalog && catalog.engineBatch && catalog.scryfallId) {
+    return MTG.cardImageAPIURLById(catalog.scryfallId, variant);
+  }
+  return MTG.CARD_IMAGE_PLACEHOLDER;
 };

@@ -689,7 +689,8 @@ MTG.symFail = function (img, col, fg, code) {
 MTG.imgFail = function (img, cls) {
   if (!img || img._failed) return;
   const requested = String(img.getAttribute && img.getAttribute('src') || img.src || '');
-  if (!img._apiFallback && MTG.CARD_IMAGE_API_BASE && requested.startsWith(MTG.CARD_IMAGE_API_BASE)) {
+  const remoteImageBases = MTG.CARD_IMAGE_REMOTE_BASES || [MTG.CARD_IMAGE_API_BASE].filter(Boolean);
+  if (!img._apiFallback && remoteImageBases.some(base => requested.startsWith(base))) {
     img._apiFallback = true;
     img.removeAttribute('srcset');
     img.src = MTG.CARD_IMAGE_PLACEHOLDER;

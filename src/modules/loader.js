@@ -11,6 +11,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.EXCLUDED_DECKS = new Set(['Blame Game']);
 
   MTG.initData = function (rawDB) {
+    if (MTG.applyOracleBatches) MTG.applyOracleBatches(rawDB);
     MTG.DB = rawDB;
     MTG.DEFS = MTG.buildDefs(rawDB.cards, MTG.SCRIPTS);
     // token defs: merge script-ish fields already inline
@@ -51,6 +52,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       'Sultai Arisen': { icon: '🪦', colors: ['U', 'B', 'G'], style: 'Graveyard and reanimation', blurb: 'Teval mills and recycles a deep graveyard, turning every fallen card into another source of value.', set: 'Tarkir: Dragonstorm Commander (2025)' },
       'Jeskai Striker': { icon: '🥋', colors: ['W', 'U', 'R'], style: 'Spellslinger and copies', blurb: 'Shiko and Narset reward the second spell each turn with precise copies, fresh cards, and explosive prowess turns.', set: 'Tarkir: Dragonstorm Commander (2025)' },
     };
+    if (MTG.buildCardCatalog) MTG.buildCardCatalog(rawDB, MTG.DEFS);
     if (MTG.buildDeckAIProfiles) MTG.buildDeckAIProfiles();
   };
 
@@ -110,8 +112,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   MTG.canBeCommander = function (def, deckData) {
     if (!def) return false;
-    // face commander deka je uvijek legalan (planeswalkeri, legendarni Spacecraft…)
-    if (deckData && deckData.commander === def.name) return true;
+    // Fiksni fabrički deckovi imaju auditiran face-commander izuzetak
+    // (planeswalkeri, legendarni Spacecraft…). Pasted/custom liste ne smiju
+    // tim izuzetkom proglasiti proizvoljnu kartu commanderom.
+    if (deckData && deckData.commander === def.name && deckData.trustedFaceCommander !== false) return true;
     const sup = def.super || [], o = def.oracle || '';
     if (def.canBeCommanderExtra) return true;
     if (/can be your commander/i.test(o)) return true;

@@ -421,7 +421,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (so.card.def.uncounterable) return true;
     if (so.card.is('Creature') && so.ctrl.turnState && so.ctrl.turnState.uncounterableCreatureSpells) return true;
     return g.bf().some(c => c.def.uncounterableSpells === 'all' ||
-      c.def.uncounterableSpells === true && c.ctrl === so.ctrl);
+      c.def.uncounterableSpells === true && c.ctrl === so.ctrl ||
+      typeof c.def.uncounterableSpells === 'function' && c.def.uncounterableSpells(g, c, so));
   };
   const T = MTG.T = {
     creature: (o) => Object.assign({ what: 'creature', filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') }, o),
@@ -481,7 +482,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const line of lines.slice(0, 3)) {
         const clean = line.replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
         if (!clean) continue;
-        const parts = clean.split(/,\s*/);
+        // Oracle keyword linije koriste i zarez i tačka-zarez (npr.
+        // "Trample; haste; shroud"). Import certifikacija i runtime loader
+        // moraju segmentirati isti kompletan rules core.
+        const parts = clean.split(/\s*[,;]\s*/);
         if (parts.every(part => SIMPLE_KWS.includes(part.trim()) || /^ward/.test(part) || part === 'shroud' || part === 'skulk' || /^myriad/.test(part) || /^flanking/.test(part) || /^ascend/.test(part))) {
           for (const part of parts) {
             const t = part.trim();

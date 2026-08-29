@@ -121,6 +121,7 @@ const inactiveCards = rawCards.filter(card => !card.active);
 const report = {
   generatedAt: new Date().toISOString(),
   policy: 'Svaki deck i svaka jedinstvena karta se navode zasebno. Aggregate smoke nije zamjena za ovaj izvještaj.',
+  oracleBatches: sourceAudit.oracleBatches,
   excludedDecks: [{ name: 'Blame Game', reason: 'Izbačen iz proizvoda zbog necertifikovane političke/goad i damage-redirection jezgre.' }],
   totals: {
     decks: decks.length,
@@ -136,6 +137,7 @@ const report = {
     inactiveRawCards: inactiveCards.length,
     inactiveRawPassed: inactiveCards.filter(card => card.status === 'PASS').length,
     inactiveRawFailed: inactiveCards.filter(card => card.status === 'FAIL').length,
+    oracleBatchCards: sourceAudit.oracleBatches.reduce((sum, batch) => sum + batch.count, 0),
   },
   decks,
   inactiveCards,
@@ -153,9 +155,9 @@ md.push(`Aktivni deckovi: **${report.totals.decks}** · stvarno jedinstvenih kar
 md.push('');
 md.push(`Jedinstvene karte — PASS: **${report.totals.uniquePassed}** · FAIL: **${report.totals.uniqueFailed}** · card/deck pojave — PASS: **${report.totals.passedCardDeckChecks}** · FAIL: **${report.totals.failedCardDeckChecks}**`);
 md.push('');
-md.push(`Cijela raw baza — PASS: **${report.totals.rawPassed}/${report.totals.rawCards}** · FAIL: **${report.totals.rawFailed}**. Od toga je **${report.totals.inactiveRawCards}** karata samo u izbačenom \`Blame Game\` decku.`);
+md.push(`Cijela raw baza — PASS: **${report.totals.rawPassed}/${report.totals.rawCards}** · FAIL: **${report.totals.rawFailed}**. Izvan aktivnih fiksnih deckova je **${report.totals.inactiveRawCards}** karata, uključujući **${report.totals.oracleBatchCards}** certifikovanih Oracle batch karata.`);
 md.push('');
-md.push('`Blame Game` je namjerno izbačen iz proizvoda; njegove jedinstvene raw karte provjerene su strukturno ispod, ali cijeli deck nije dio aktivnog gameplay/release gatea.');
+md.push('`Blame Game` je namjerno izbačen iz proizvoda. Oracle batch karte su dostupne engine-u i budućem katalogu, ali još nisu dio nekog ugrađenog 100-card decka.');
 for (const deck of decks) {
   md.push('');
   md.push(`## ${deck.name}`);
@@ -170,7 +172,7 @@ for (const deck of decks) {
   }
 }
 md.push('');
-md.push('## Raw karte izvan aktivnog proizvoda');
+md.push('## Raw karte izvan aktivnih fiksnih deckova');
 md.push('');
 md.push('| Status | Karta | Nalaz |');
 md.push('|---|---|---|');

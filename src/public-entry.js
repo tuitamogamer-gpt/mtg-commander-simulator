@@ -75,7 +75,7 @@ function showLoading(mode) {
   veil.className = 'mainmenu-loadveil';
   veil.setAttribute('role', 'status');
   veil.setAttribute('aria-live', 'polite');
-  veil.innerHTML = `<div><i aria-hidden="true"></i><span>OPENING THE TABLE</span><h2>${mode === 'online' ? 'Preparing Commander Live.' : 'Loading all 27 decks.'}</h2><p>The complete rules engine stays in this browser. This first load can take a moment.</p></div>`;
+  veil.innerHTML = `<div><i aria-hidden="true"></i><span>OPENING THE TABLE</span><h2>${mode === 'online' ? 'Preparing Commander Live.' : mode === 'import' ? 'Loading the decklist importer.' : 'Loading all 27 decks.'}</h2><p>The complete rules engine stays in this browser. This first load can take a moment.</p></div>`;
   root.appendChild(veil);
   page.inert = true;
   root.setAttribute('aria-busy', 'true');
@@ -190,6 +190,12 @@ page.querySelectorAll('[data-menu-action="solo"]').forEach(button => {
   button.onclick = () => onboardingComplete() ? void loadGame('solo') : openGuide('solo');
 });
 page.querySelectorAll('[data-menu-action="live"]').forEach(button => { button.onclick = () => void loadGame('online'); });
+page.querySelectorAll('[data-menu-action="import"]').forEach(button => {
+  button.onclick = async () => {
+    await loadGame('import');
+    globalThis.MTG?.showDeckImport?.();
+  };
+});
 
 const liveStatus = page.querySelector('.mainmenu-livecheck');
 const localStaticHost = location.protocol === 'file:' || ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
@@ -223,7 +229,7 @@ if (localStaticHost) {
 window.render_game_to_text = () => JSON.stringify({
   mode: 'menu',
   deckCount: 27,
-  actions: ['Start a solo table', 'Create a Live table', 'Guide'],
+  actions: ['Start a solo table', 'Create a Live table', 'Import your decklist here', 'Guide'],
   onboardingOpen: !!page.querySelector('.mainmenu-onboarding'),
   account: globalThis.MTGAccount?.user ? {
     signedIn: true,

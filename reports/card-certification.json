@@ -1,6 +1,31 @@
 {
-  "generatedAt": "2026-08-24T22:13:28.200Z",
+  "generatedAt": "2026-08-29T21:09:17.519Z",
   "policy": "Svaki deck i svaka jedinstvena karta se navode zasebno. Aggregate smoke nije zamjena za ovaj izvještaj.",
+  "oracleBatches": [
+    {
+      "id": "oracle-0001",
+      "sequence": 1,
+      "count": 100,
+      "sourceUpdatedAt": "2026-08-29T09:01:53.042+00:00"
+    },
+    {
+      "id": "oracle-0002",
+      "sequence": 2,
+      "count": 100,
+      "sourceUpdatedAt": "2026-08-29T09:01:53.042+00:00"
+    },
+    {
+      "id": "oracle-0003",
+      "sequence": 3,
+      "count": 100,
+      "sourceUpdatedAt": "2026-08-29T09:01:53.042+00:00"
+    },
+    {
+      "id": "moxfield-sauron-dark-lord",
+      "sequence": "deck-001",
+      "count": 58
+    }
+  ],
   "excludedDecks": [
     {
       "name": "Blame Game",
@@ -15,12 +40,13 @@
     "uniqueCards": 1580,
     "uniquePassed": 1580,
     "uniqueFailed": 0,
-    "rawCards": 1626,
-    "rawPassed": 1626,
+    "rawCards": 1984,
+    "rawPassed": 1984,
     "rawFailed": 0,
-    "inactiveRawCards": 46,
-    "inactiveRawPassed": 46,
-    "inactiveRawFailed": 0
+    "inactiveRawCards": 404,
+    "inactiveRawPassed": 404,
+    "inactiveRawFailed": 0,
+    "oracleBatchCards": 358
   },
   "decks": [
     {
@@ -14378,7 +14404,175 @@
   ],
   "inactiveCards": [
     {
+      "name": "A.I.M. Bot",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Aardvark Sloth",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Abbey Griffin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Adult Gold Dragon",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Aegis Turtle",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Aerial Responder",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Affa Protector",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ageless Guardian",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Agent of Atlas",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Agitator Ant",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Air Elemental",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ajani's Sunstriker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Alabaster Host Sanctifier",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Alabaster Kirin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Alaborn Grenadier",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Alert Shu Infantry",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Alley Strangler",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Alpha Myr",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Alpha Tyrranax",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Alpine Grizzly",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Alpine Watchdog",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Altar's Reap",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ambush Viper",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Amphin Cutthroat",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Anaba Bodyguard",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ancient Brontodon",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ancient Carp",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ancient Crab",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ancient Spider",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14390,13 +14584,397 @@
       "issues": []
     },
     {
+      "name": "Angel of Retribution",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Angelic Wall",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ankle Biter",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Anvilwrought Raptor",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Anya, Merciless Angel",
       "active": false,
       "status": "PASS",
       "issues": []
     },
     {
+      "name": "Arachnoid",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Archangel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Archers of Qarsi",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Archweaver",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ardent Militia",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Argothian Swine",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Armored Cancrix",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Armored Griffin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Armored Warhorse",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Armored Whirl Turtle",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Armored Wolf-Rider",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Arrogant Vampire",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ascended Lawmage",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ashcoat Bear",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Assault Griffin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Assault Zeppelid",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Aven Envoy",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Aven Fleetwing",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Aven Reedstalker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Aven Sentry",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Aven Skirmisher",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Axebane Beast",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Axebane Stag",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Axegrinder Giant",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Azure Drake",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Balduvian Barbarians",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Balduvian Bears",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bane Alley Blackguard",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Banehound",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Barbarian Horde",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Barbary Apes",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Barbtooth Wurm",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Barony Vampire",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bartizan Bats",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bassara Tower Archer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bastion Enforcer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Battle Hurda",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Battlefield Raptor",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bay Falcon",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bear Cub",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Benalish Knight",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Benthic Giant",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bishop's Soldier",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bitterbow Sharpshooters",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Black Widow, Natasha Romanoff",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Blade of the Sixth Pride",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Blanchwood Treefolk",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Blind Phantasm",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Blistering Barrier",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Blood Glutton",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bloodfire Expert",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Bloodthirsty Blade",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bog Imp",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Boggart Brute",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Boggart Ram-Gang",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bogstomper",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bonebreaker Giant",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Book of Mazarbul",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Border Guard",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Border Patrol",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Borderland Minotaur",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14414,7 +14992,433 @@
       "issues": []
     },
     {
+      "name": "Boros Recruit",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Boros Swiftblade",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bounding Wolf",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Brambleweft Behemoth",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Brazen Scourge",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Breakneck Berserker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Brightblade Stoat",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bronze Sable",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Broodhunter Wurm",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Brushstrider",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Bull Cerodon",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cabal Evangel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Caelorna, Coral Tyrant",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Call of the Ring",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Callous Dismissal",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Canal Monitor",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Canopy Gorger",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Canopy Spider",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Canyon Minotaur",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Capital Guard",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Caravan Hurda",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Carrion Screecher",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cast Down",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cat Warriors",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Catacomb Crocodile",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Catacomb Slug",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Centaur Courser",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cerodon Yearling",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Champion of Arashin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Chapel Geist",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Chardalyn Dragon",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Charging Badger",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Charging Monstrosaur",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Charity Extractor",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Child of Night",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cliffhaven Sell-Sword",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cloaked Siren",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cloud Crusader",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cloud Manta",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cloudcrown Oak",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cobblebrute",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cold-Water Snapper",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Colorful Feiyi Sparrow",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Colossadactyl",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Colossal Dreadmaw",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Colossapede",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Colossodon Yearling",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Comeuppance",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Commence the Endgame",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Concordia Pegasus",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Conifer Strider",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Consulate Skygate",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Copper Host Crusher",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Coral Commando",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Coral Eel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Coral Merfolk",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Corrupted Conviction",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Courier Hawk",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cowl Prowler",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Crash of Rhinos",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Craw Wurm",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Crazed Skirge",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Crystacean",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Curio Vendor",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cursed Minotaur",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cyclops of One-Eyed Pass",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Cylian Elf",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Daggerback Basilisk",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Daggerdrome Imp",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dakmor Bat",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dakmor Scorpion",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dancing Scimitar",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14426,7 +15430,121 @@
       "issues": []
     },
     {
+      "name": "Dark Ritual",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Darksteel Myr",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dawn Gryff",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dawn's Light Archer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dawnstrike Paladin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Daybreak Chaplain",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Deadly Insect",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Deadly Recluse",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Deathgaze Cockatrice",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Deer-Dog",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Defiant Elf",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Defiant Khenra",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Deflecting Palm",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Deft Duelist",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Deranged Whelp",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Desert Drake",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Devilthorn Fox",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Devoted Hero",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dimir Signet",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dismal Backwater",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14438,7 +15556,283 @@
       "issues": []
     },
     {
+      "name": "Diving Griffin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Djinn of the Lamp",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Douser of Lights",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dragon Bell Monk",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dragon Moose",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dragon Sniper",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dragon's Eye Sentry",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dragon-Style Twins",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Drakewing Krasis",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dreadhorde Invasion",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dreg Reaver",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dromoka Warrior",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dross Crocodile",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Duelist's Heritage",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dune Beetle",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Durkwood Boars",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dusk Imp",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Duskdale Wurm",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dutiful Servants",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Dwarven Trader",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Eager Cadet",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Eagle of the Watch",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Earth Elemental",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Earthshaking Si",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ekundu Griffin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Eldrazi Devastator",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Elementalist Adept",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Elephant-Rat",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Elfhame Wurm",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Elite Vanguard",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Elrond, Lord of Rivendell",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Elvish Archers",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Elvish Lookout",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Elvish Warrior",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Emerald Oryx",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Enforcer Griffin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Enormous Baloth",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Enter the God-Eternals",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Esper Cormorants",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Expedition Envoy",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Exultant Skymarcher",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Faerie Invaders",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Faithbearer Paladin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Falkenrath Reaver",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fang of Shigeki",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fangren Hunter",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fearless Halberdier",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14450,7 +15844,181 @@
       "issues": []
     },
     {
+      "name": "Feiyi Snake",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Felhide Minotaur",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Femeref Scouts",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fencing Ace",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Feral Abomination",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Feral Krushok",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Feral Maaka",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Feral Shadow",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ferocious Zheng",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Field Creeper",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Fiendish Duo",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Filter Out",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fire Elemental",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fire Nation Ambushers",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fire Nation Soldier",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Flameborn Viron",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fleetfoot Dancer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Flood of Recollection",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Flying Dolphin-Fish",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Flying Men",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fomori Nomad",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Foot Soldiers",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Foray of Orcs",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Force of Savagery",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Forest Bear",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fortified Rampart",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fortress Crab",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Frenzied Raptor",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fresh Volunteers",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Frog-Squirrels",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14462,7 +16030,145 @@
       "issues": []
     },
     {
+      "name": "Frost Ogre",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fugitive Wizard",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Fusion Elemental",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gaea's Skyfolk",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Galewind Moose",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gandalf, Friend of the Shire",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Garruk's Companion",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Garruk's Gorehorn",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Geist of the Moors",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gerrard's Irregulars",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ghirapur Osprey",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ghostly Sentinel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Giant Cockroach",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Giant Mantis",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Giant Octopus",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Giant Scorpion",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Giant Solifuge",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Giant Spider",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Giant Warthog",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Gideon's Sacrifice",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gifted Aetherborn",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gigantosaurus",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gilacorn",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gilded Sentinel",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14474,7 +16180,253 @@
       "issues": []
     },
     {
+      "name": "Glacial Wall",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gladecover Scout",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Glamorous Grapplers",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Glass Golem",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gloom Pangolin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gloomhunter",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Glory Seeker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gnarled Mass",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gnottvold Recluse",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goblin Assailant",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goblin Berserker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goblin Chariot",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goblin Deathraiders",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goblin Hero",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goblin Piker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goblin Roughrider",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goblin Sky Raider",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goblin Striker",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goblin Trailblazer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gold-Forged Sentinel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Golden Bear",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Golden-Tail Disciple",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Golgari Longlegs",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goliath Beetle",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goliath Sphinx",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Goliath Spider",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gorbag of Minas Morgul",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gore Swine",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gorilla Warrior",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Grappler Spider",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Gray Ogre",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Grazing Whiptail",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Great Hart",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Great-Horn Krushok",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Greater Basilisk",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Greenwood Sentinel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Grendel, Spawn of Knull",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Griffin Sentinel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Grishnákh, Brash Instigator",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Havoc Eater",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Herald of Secret Streams",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Honor the God-Pharaoh",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14487,6 +16439,24 @@
     },
     {
       "name": "Immortal Obligation",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Infiltration Lens",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Invade the City",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Izzet Guildgate",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14516,7 +16486,43 @@
       "issues": []
     },
     {
+      "name": "Lazotep Plating",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Library of Leng",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Life's Finale",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Lobelia Sackville-Baggins",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Loran of the Third Path",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Lord of the Nazgûl",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "March from the Black Gate",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14528,7 +16534,37 @@
       "issues": []
     },
     {
+      "name": "Mauhúr, Uruk-hai Captain",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Mirkwood Bats",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Mob Verdict",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Murder",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Mystic Retrieval",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Nasty End",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14546,7 +16582,43 @@
       "issues": []
     },
     {
+      "name": "Nightscape Familiar",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "One Ring to Rule Them All",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Orcish Medicine",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Orcish Siegemaster",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Otherworldly Escort",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Phial of Galadriel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Pitiless Plunderer",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14564,13 +16636,55 @@
       "issues": []
     },
     {
+      "name": "Ringsight",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Rite of the Raging Storm",
       "active": false,
       "status": "PASS",
       "issues": []
     },
     {
+      "name": "Saruman, the White Hand",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Sauron's Ransom",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Sauron, Lord of the Rings",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Sauron, the Dark Lord",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Sauron, the Necromancer",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Seal of Cleansing",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Seer's Lantern",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14606,7 +16720,19 @@
       "issues": []
     },
     {
+      "name": "Spinning Wheel",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Stalking Leonin",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Taigam's Scheming",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14618,7 +16744,49 @@
       "issues": []
     },
     {
+      "name": "Temple of Deceit",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "The Mouth of Sauron",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Thryx, the Sudden Storm",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Treason of Isengard",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
       "name": "Trouble in Pairs",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Turn Aside",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Ultimate Price",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Unlicensed Disintegration",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -14637,6 +16805,12 @@
     },
     {
       "name": "War Room",
+      "active": false,
+      "status": "PASS",
+      "issues": []
+    },
+    {
+      "name": "Widespread Brutality",
       "active": false,
       "status": "PASS",
       "issues": []

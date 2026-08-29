@@ -165,8 +165,14 @@ function manifestSource(cardPaths, artPaths, missing) {
     `MTG.CARD_IMAGE_MISSING = Object.freeze(${unavailable});\n` +
     `MTG.CARD_IMAGE_PLACEHOLDER = './assets/cards/card-back.webp';\n\n` +
     `MTG.CARD_IMAGE_API_BASE = 'https://api.scryfall.com/cards/named';\n` +
+    `MTG.CARD_IMAGE_ID_API_BASE = 'https://api.scryfall.com/cards/';\n` +
+    `MTG.CARD_IMAGE_REMOTE_BASES = Object.freeze([MTG.CARD_IMAGE_API_BASE, MTG.CARD_IMAGE_ID_API_BASE]);\n` +
     `MTG.cardImageAPIURL = function (name) {\n` +
     `  return MTG.CARD_IMAGE_API_BASE + '?format=image&version=normal&fuzzy=' + encodeURIComponent(String(name || ''));\n` +
+    `};\n\n` +
+    `MTG.cardImageAPIURLById = function (id, variant) {\n` +
+    `  const version = variant === 'art' ? 'art_crop' : 'normal';\n` +
+    `  return MTG.CARD_IMAGE_ID_API_BASE + encodeURIComponent(String(id || '')) + '?format=image&version=' + version;\n` +
     `};\n\n` +
     `MTG.cardImageURL = function (name, variant) {\n` +
     `  const face = String(name || '').split(' // ')[0];\n` +
@@ -176,7 +182,12 @@ function manifestSource(cardPaths, artPaths, missing) {
     `  if (local === MTG.CARD_IMAGE_PLACEHOLDER && MTG.CARD_IMAGE_MISSING.includes(face)) {\n` +
     `    return MTG.cardImageAPIURL(face);\n` +
     `  }\n` +
-    `  return local || MTG.CARD_IMAGE_PLACEHOLDER;\n` +
+    `  if (local) return local;\n` +
+    `  const catalog = MTG.CARD_CATALOG && MTG.CARD_CATALOG[face];\n` +
+    `  if (catalog && catalog.engineBatch && catalog.scryfallId) {\n` +
+    `    return MTG.cardImageAPIURLById(catalog.scryfallId, variant);\n` +
+    `  }\n` +
+    `  return MTG.CARD_IMAGE_PLACEHOLDER;\n` +
     `};\n`;
 }
 

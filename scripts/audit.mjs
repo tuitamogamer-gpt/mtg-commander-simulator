@@ -3,6 +3,7 @@ import { auditSource } from './source-audit.mjs';
 const report = auditSource();
 console.log(`Source: ${report.sourceLines} linija · ${report.sourceBytes} bytes`);
 console.log(`Raw definicije: ${report.rawCardCount} · Deckovi: ${report.deckRows.length}`);
+if (report.oracleBatches.length) console.log(`Oracle batchovi: ${report.oracleBatches.map(batch => `${batch.id} (${batch.count})`).join(', ')}`);
 if (report.excludedDeckRows.length) console.log(`Izbačeni deckovi: ${report.excludedDeckRows.map(deck => deck.name).join(', ')}`);
 for (const deck of report.deckRows) {
   const flags = [];

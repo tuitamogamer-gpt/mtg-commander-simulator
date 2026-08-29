@@ -52,6 +52,10 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
     assert.equal(url.searchParams.get('fuzzy'), name);
   }
   assert.match(MTG.cardImageURL('Sol Ring'), /^\.\/assets\/cards\/.+\.webp$/);
+  const oracleImage = new URL(MTG.cardImageURL('A.I.M. Bot'));
+  assert.equal(oracleImage.origin + oracleImage.pathname, `${MTG.CARD_IMAGE_ID_API_BASE}${MTG.CARD_CATALOG['A.I.M. Bot'].scryfallId}`);
+  assert.equal(oracleImage.searchParams.get('format'), 'image');
+  assert.equal(oracleImage.searchParams.get('version'), 'normal');
 
   const failedAPIImage = {
     src: MTG.cardImageURL(MTG.CARD_IMAGE_MISSING[0]),
@@ -63,6 +67,16 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
   assert.equal(failedAPIImage.src, MTG.CARD_IMAGE_PLACEHOLDER);
   assert.equal(failedAPIImage._apiFallback, true);
   assert.equal(failedAPIImage._failed, undefined);
+
+  const failedOracleImage = {
+    src: MTG.cardImageURL('A.I.M. Bot'),
+    getAttribute(name) { return name === 'src' ? this.src : null; },
+    removeAttribute() {},
+    classList: { add() {} },
+  };
+  MTG.imgFail(failedOracleImage);
+  assert.equal(failedOracleImage.src, MTG.CARD_IMAGE_PLACEHOLDER);
+  assert.equal(failedOracleImage._apiFallback, true);
 });
 
 test('browser renderers contain no ad hoc Scryfall image URL', () => {

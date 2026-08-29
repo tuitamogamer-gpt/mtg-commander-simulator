@@ -13,10 +13,11 @@ const vercel = JSON.parse(read('../vercel.json'));
 const packageScript = read('../scripts/package-public.mjs');
 const publicGuide = read('../PUBLIC_RELEASE.md');
 
-test('public home is the default entry and exposes clear Solo, Live, guide, and setup routes', () => {
+test('public home is the default entry and exposes clear Solo, Live, import, guide, and setup routes', () => {
   assert.match(index, /id="setup" data-app-view="home" aria-busy="true"/);
   assert.match(index, /class="mainmenu mainmenu-boot"/);
   assert.match(index, /class="mainmenu-primary" data-menu-action="solo"/);
+  assert.match(index, /class="mainmenu-import-action" data-menu-action="import"/);
   assert.match(index, /assets\/menu\/invisible-woman\.webp/);
   assert.match(index, /width="300" height="418" decoding="async"/);
   assert.match(index, /class="mainmenu-skip" href="#primary-actions"/);
@@ -33,6 +34,7 @@ test('public home is the default entry and exposes clear Solo, Live, guide, and 
   assert.match(main, /renderMainMenu\(\);[\s\S]*const smoke = initialParams/);
   assert.match(main, /data-menu-action="solo"/);
   assert.match(main, /data-menu-action="live"/);
+  assert.match(main, /data-menu-action="import"/);
   assert.match(main, /data-menu-action="tour"/);
   assert.match(main, /mtgOnboardingComplete/);
   assert.match(main, /root\.removeAttribute\('aria-busy'\)/);
@@ -43,6 +45,24 @@ test('public home is the default entry and exposes clear Solo, Live, guide, and 
   assert.match(main, /renderSetup\(\{ mode: 'online' \}\)/);
   assert.match(main, /head\.querySelector\('\.setuphome'\)\.onclick = \(\) => \{[\s\S]*?renderMainMenu\(\)/);
   assert.match(main, /mode: 'menu'/);
+});
+
+test('main menu decklist import is a strict play gateway with an external Moxfield builder link', () => {
+  assert.match(index, /Import your decklist here/);
+  assert.match(main, /<h2 id="deckimport-title">Import your decklist here<\/h2>/);
+  assert.match(main, /class="mainmenu-deckimport-text"/);
+  assert.match(main, /class="mainmenu-deckimport-check">Check decklist/);
+  assert.match(main, /class="mainmenu-deckimport-start" disabled>Start Solo table/);
+  assert.match(main, /U\.importCommanderDeck\(textInput\.value/);
+  assert.match(main, /U\.startImportedCommanderDeck\(textInput\.value/);
+  assert.match(main, /https:\/\/moxfield\.com\//);
+  assert.match(main, /Commander Simulator is the play table, not the deck builder/);
+  assert.match(main, /Cards not yet certified for this engine are listed before the game starts/);
+  assert.match(publicEntry, /loadGame\('import'\)/);
+  assert.match(publicEntry, /globalThis\.MTG\?\.showDeckImport\?\.\(\)/);
+  assert.match(css, /\.mainmenu-deckimport-panel/);
+  assert.match(css, /\.mainmenu-deckimport-result\[data-state="error"\]/);
+  assert.match(css, /\.mainmenu-deckimport-start:disabled/);
 });
 
 test('first-game onboarding explains the complete user decision model without external AI claims', () => {
