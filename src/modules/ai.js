@@ -79,6 +79,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     jimmy: {
       label: 'Jimmy — Aggressive Pressure', icon: '🔥', archetype: 'Aggressive', skill: 'jimmy-aggro-pressure',
       signature: true, name: 'Jimmy Wong', portrait: './assets/ai-personas/jimmy-wong.webp',
+      signatureComments: {
+        counter: ['Clear the way. We are ending this.', 'That was the only thing slowing us down.'],
+        bigHit: ['No brakes. Keep the damage coming.', 'That is the opening—push through it.'],
+        wipe: ['Reset done. Now we rebuild faster.', 'New board, same pressure. Let us go.'],
+        monarch: ['The crown belongs at the front.', 'Cards and pressure? I will take both.'],
+        copy: ['Twice the spell, twice the show.', 'If one is good, two close the game.'],
+        engine: ['The engine is online. Time to attack.', 'Commander down. Pressure starts now.'],
+      },
       // Public-game-inspired fallback weights. AI V2 applies commander-first
       // development, combat pressure, win protection and alpha/race modes.
       atkThr: -0.8, atkRnd: 0.5,
@@ -90,6 +98,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     rachel: {
       label: 'Rachel — Balanced Tablecraft', icon: '🧭', archetype: 'Balanced', skill: 'rachel-balanced-tablecraft',
       signature: true, name: 'Rachel Weeks', portrait: './assets/ai-personas/rachel-weeks.webp',
+      signatureComments: {
+        counter: ['That was the problem. Not anymore.', 'Clean answer. The table can breathe again.'],
+        bigHit: ['Clean opening. Take the value.', 'Good combat—pressure without overcommitting.'],
+        wipe: ['The table needed a reset.', 'That puts everyone back in the game.'],
+        monarch: ['I will take the cards—and the attention.', 'The crown is worth defending for one more draw.'],
+        copy: ['One good spell deserves a second look.', 'Flexible value is still value.'],
+        engine: ['Engine online. Now let us read the table.', 'Good setup. Stay flexible and watch the leader.'],
+      },
       // Public-game-inspired fallback weights. AI V2 balances development,
       // table-aware pressure, defensive interaction and a decisive finish.
       atkThr: 0.65, atkRnd: 0.18,
@@ -115,6 +131,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     post: {
       label: 'Post Malone — Opportunist Showstopper', icon: '🎤', archetype: 'Opportunist', skill: 'post-opportunist-showstopper',
       signature: true, name: 'Post Malone', portrait: './assets/ai-personas/post-malone.webp',
+      signatureComments: {
+        counter: ['Not tonight. Kill the track.', 'Cut that one before the chorus.'],
+        bigHit: ['That one had a little extra on it.', 'Right place, right time—make it loud.'],
+        wipe: ['Big finish. Empty stage.', 'Lights out. We start the next set.'],
+        monarch: ['Put the crown under the spotlight.', 'Now that is a headline.'],
+        copy: ['Run it back—louder.', 'Same spell, bigger encore.'],
+        engine: ['Now this is getting interesting.', 'The headliner just reached the stage.'],
+      },
       // Public-game-inspired fallback weights. AI V2 adds low-profile setup,
       // borrowed-power lines, calculated gambles and a decisive showtime.
       atkThr: 0.05, atkRnd: 0.32,
@@ -126,6 +150,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     olivia: {
       label: 'Olivia — Saboteur Instigator', icon: '🃏', archetype: 'Saboteur', skill: 'olivia-saboteur-instigator',
       signature: true, name: 'Olivia Gobert-Hicks', portrait: './assets/ai-personas/olivia-gobert-hicks.webp',
+      signatureComments: {
+        counter: ['No, no—your plan was funnier unfinished.', 'I liked that spell much better in the graveyard.'],
+        bigHit: ['A little chaos keeps the table honest.', 'See? One tiny opening, one enormous problem.'],
+        wipe: ['I did not start the panic. I just aimed it.', 'Everyone wanted a new board. Probably.'],
+        monarch: ['The crown makes such a useful target.', 'Perfect. Now everyone has to look over here.'],
+        copy: ['Why cause one problem when two will do?', 'One complication felt a little too fair.'],
+        engine: ['Perfect. Now everyone has a problem.', 'The setup is done. Let the misdirection begin.'],
+      },
       // Public-game-inspired fallback weights. AI V2 adds safe probes,
       // threat-aware misdirection, targeted disruption and ambush finishes.
       atkThr: 0.25, atkRnd: 0.22,
@@ -147,6 +179,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     josh: {
       label: 'Josh — Defensive Value', icon: '🧠', archetype: 'Defensive', skill: 'josh-value-engine',
       signature: true, name: 'Josh Lee Kwai', portrait: './assets/ai-personas/josh-lee-kwai.webp',
+      signatureComments: {
+        counter: ['Right threat, right answer, right time.', 'Hold the interaction until it actually matters.'],
+        bigHit: ['That is the window. Take the clean hit.', 'Value first, pressure when the shields are down.'],
+        wipe: ['Resources reset. We rebuild with cards in hand.', 'That exchange gets better the longer this game goes.'],
+        monarch: ['One card a turn wins very quiet games.', 'The crown is a value engine if you can protect it.'],
+        copy: ['Two-for-one? I will take that exchange.', 'That is exactly the kind of value we bank.'],
+        engine: ['Value engine online. Now we play the long game.', 'Setup complete. Keep mana open and let it compound.'],
+      },
       // Public-game-inspired fallback weights. AI V2 applies the full skill:
       // engine/card advantage, interaction reserve, end-step value and modes.
       atkThr: 2.8, atkRnd: 0.02,
@@ -174,6 +214,115 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   MTG.AI_STYLES = PERSONAS;
+
+  const SIGNATURE_MOMENT_LABELS = {
+    counter: 'CLUTCH ANSWER',
+    bigHit: 'MOMENTUM SWING',
+    wipe: 'TABLE SWING',
+    monarch: 'CROWN CLAIMED',
+    copy: 'VALUE DOUBLED',
+    engine: 'ENGINE ONLINE',
+  };
+  const SIGNATURE_MOMENT_DELAYS = {
+    counter: 1050,
+    bigHit: 650,
+    wipe: 1380,
+    monarch: 500,
+    copy: 650,
+    engine: 3300,
+  };
+
+  function stableSignatureIndex(text, length) {
+    let hash = 2166136261;
+    for (const char of String(text)) {
+      hash ^= char.charCodeAt(0);
+      hash = Math.imul(hash, 16777619);
+    }
+    return length ? (hash >>> 0) % length : 0;
+  }
+
+  // Presentation-only classifier for completed, publicly observable game
+  // outcomes. It never consumes the seeded gameplay RNG and never reacts to
+  // hidden information or an AI's intention before the result actually lands.
+  MTG.signatureReactionForEvent = function signatureReactionForEvent(game, event) {
+    if (!game || !event || game.gameOver) return null;
+    let actor = null;
+    let moment = null;
+    let detail = '';
+
+    if (event.type === 'gameEffect' && event.kind === 'counterspell') {
+      actor = event.source && event.source.ctrl;
+      if (!actor || !event.stackObject || event.stackObject.ctrl === actor) return null;
+      moment = 'counter';
+      detail = event.stackObject.name || event.card && event.card.name || 'Stack object';
+    } else if (event.type === 'gameEffect' && event.kind === 'damage' && event.targetKind === 'player') {
+      actor = event.source && event.source.ctrl;
+      const target = event.targetPlayer || event.target;
+      const amount = Math.max(0, Number(event.amount) || 0);
+      const commanderHit = !!(event.combat && event.source && event.source.commander && amount >= 4);
+      if (!actor || !target || target === actor || (amount < 6 && !commanderHit)) return null;
+      moment = 'bigHit';
+      detail = `${amount} damage to ${target.name}`;
+    } else if (event.type === 'gameEffect' && event.kind === 'boardWipe') {
+      actor = event.source && event.source.ctrl;
+      if (!actor) return null;
+      const cards = (event.cards || []).filter(Boolean);
+      const own = cards.filter(card => card.ctrl === actor).length;
+      const opponents = cards.filter(card => card.ctrl && card.ctrl !== actor).length;
+      if (opponents < 3 || opponents <= own) return null;
+      moment = 'wipe';
+      detail = `${opponents} opposing permanents cleared`;
+    } else if (event.type === 'monarchChanged') {
+      actor = event.player;
+      if (!actor) return null;
+      moment = 'monarch';
+      detail = event.previous ? `Took the crown from ${event.previous.name}` : 'Became the Monarch';
+    } else if (event.type === 'effectNotice' && (event.kind === 'spellCopy' || event.kind === 'abilityCopy')) {
+      actor = event.player;
+      if (!actor) return null;
+      moment = 'copy';
+      detail = event.spell && event.spell.name || event.ability && event.ability.name || 'Stack object copied';
+    } else if (event.type === 'battlefieldArrival' && (event.kind === 'commander' || event.kind === 'powerhouse')) {
+      actor = event.player;
+      if (!actor) return null;
+      moment = 'engine';
+      detail = event.card && event.card.name || 'Signature permanent';
+    }
+
+    const styleKey = actor && actor.isAI && actor.aiStyle;
+    const style = styleKey && PERSONAS[styleKey];
+    const variants = style && style.signature && style.signatureComments && style.signatureComments[moment];
+    if (!style || !variants || !variants.length || actor.lost) return null;
+
+    const turn = Number.isFinite(game.turnNo) ? game.turnNo : 0;
+    const seen = game._signatureReactionSeen || (game._signatureReactionSeen = new Set());
+    const seenKey = `${turn}:${actor.idx}:${moment}`;
+    if (seen.has(seenKey)) return null;
+    seen.add(seenKey);
+    if (seen.size > 80) {
+      const keep = [...seen].slice(-40);
+      seen.clear();
+      keep.forEach(key => seen.add(key));
+    }
+
+    const sourceName = event.source && event.source.name || event.card && event.card.name || detail;
+    const comment = variants[stableSignatureIndex(`${turn}:${actor.idx}:${moment}:${sourceName}`, variants.length)];
+    return {
+      player: actor,
+      playerId: actor.idx,
+      tableName: actor.name,
+      style: styleKey,
+      personaName: style.name,
+      archetype: style.archetype,
+      portrait: style.portrait,
+      moment,
+      label: SIGNATURE_MOMENT_LABELS[moment],
+      comment,
+      detail,
+      delay: SIGNATURE_MOMENT_DELAYS[moment] || 500,
+      duration: Math.max(1600, Number(game._signatureReactionDuration) || 3200),
+    };
+  };
 
   class AIController {
     constructor(player, opts = {}) {

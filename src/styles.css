@@ -2413,6 +2413,53 @@ body:has(#setup) { background: #08090d; }
 .gamefx-proliferatepulse { position:absolute; display:grid; place-items:center; width:42px; height:42px; color:#8af0b9; transform:translate(-50%,-50%); background:#153a2de8; border:1px solid currentColor; border-radius:50%; box-shadow:0 0 25px #59d895; animation:fxProliferatePulse 1s ease both; }.gamefx-proliferatepulse .gameicon { width:24px; height:24px; }.gamefx-proliferatepulse i { position:absolute; inset:-3px; border:1px solid currentColor; border-radius:50%; animation:fxProliferateRing .92s ease-out both; }.gamefx-proliferatepulse i:nth-child(3) { animation-delay:.18s; }
 .gamefx-proliferatetitle { position:absolute; left:50%; top:44%; display:flex; align-items:center; gap:12px; padding:11px 18px; color:#9ff0c4; transform:translate(-50%,-50%); background:#0c211bf2; border:1px solid #65d59b; border-radius:999px; box-shadow:0 18px 44px #000c,0 0 35px #42bd80; animation:fxProliferateTitle 1.12s ease both; }.gamefx-proliferatetitle > .gameicon { width:38px; height:38px; }.gamefx-proliferatetitle small,.gamefx-proliferatetitle b { display:block; white-space:nowrap; }.gamefx-proliferatetitle small { color:#77a990; font:800 7px/1 var(--tbl-cond,inherit); letter-spacing:.22em; }.gamefx-proliferatetitle b { margin-top:4px; color:#e5fff1; font:850 15px/1 var(--tbl-cond,inherit); letter-spacing:.08em; }
 
+/* Command Zone signature AI comments: one queued, non-blocking center-stage
+   reaction after a completed public game outcome. */
+.personareaction {
+  --persona-accent:#e4bf74;
+  position:fixed;
+  left:50%; top:50%; z-index:185;
+  width:min(720px,calc(100vw - 40px)); min-height:184px;
+  display:grid; grid-template-columns:146px minmax(0,1fr); align-items:stretch;
+  overflow:hidden; pointer-events:none; isolation:isolate;
+  color:#f8f3e8; transform:translate(-50%,-50%);
+  background:linear-gradient(112deg,rgba(5,8,10,.99),rgba(18,25,27,.98) 54%,rgba(7,10,12,.99));
+  border:1px solid color-mix(in srgb,var(--persona-accent) 78%,#fff 8%);
+  box-shadow:0 35px 110px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.05),0 0 58px color-mix(in srgb,var(--persona-accent) 26%,transparent);
+  animation:personaReactionIn .46s cubic-bezier(.16,.82,.2,1) both;
+}
+.personareaction.style-jimmy { --persona-accent:#ff8b4d; }
+.personareaction.style-rachel { --persona-accent:#62d6c8; }
+.personareaction.style-post { --persona-accent:#b98cff; }
+.personareaction.style-olivia { --persona-accent:#ff709c; }
+.personareaction.style-josh { --persona-accent:#75bfff; }
+.personareaction::before { content:''; position:absolute; inset:0; z-index:-1; background:radial-gradient(circle at 19% 42%,color-mix(in srgb,var(--persona-accent) 24%,transparent),transparent 34%),linear-gradient(90deg,color-mix(in srgb,var(--persona-accent) 9%,transparent),transparent 58%); }
+.personareactionportrait { position:relative; min-height:184px; overflow:hidden; border-right:1px solid color-mix(in srgb,var(--persona-accent) 48%,transparent); background:#0a0d0f; }
+.personareactionportrait::after { content:''; position:absolute; inset:0; box-shadow:inset -24px 0 34px rgba(4,7,9,.65),inset 0 -34px 30px rgba(3,5,6,.72); }
+.personareactionportrait img { width:100%; height:100%; min-height:184px; display:block; object-fit:cover; object-position:center 24%; filter:saturate(.94) contrast(1.05); }
+.personareactionportrait span { position:absolute; left:10px; right:10px; bottom:9px; z-index:2; padding:5px 7px; overflow:hidden; color:#f7f4ec; background:rgba(5,8,9,.82); border:1px solid color-mix(in srgb,var(--persona-accent) 55%,transparent); font:800 8px/1 var(--tbl-cond,inherit); letter-spacing:.2em; text-align:center; text-overflow:ellipsis; text-transform:uppercase; white-space:nowrap; }
+.personareactioncopy { align-self:center; min-width:0; padding:25px 30px 24px; text-shadow:0 3px 18px rgba(0,0,0,.9); }
+.personareactioncopy small,.personareactioncopy b,.personareactioncopy p,.personareactioncopy em { display:block; }
+.personareactioncopy small { color:var(--persona-accent); font:850 9px/1 var(--tbl-cond,inherit); letter-spacing:.27em; }
+.personareactioncopy b { margin:8px 0 9px; color:#fffaf0; font:700 24px/1 var(--tbl-serif,serif); letter-spacing:.02em; }
+.personareactioncopy p { max-width:510px; margin:0; color:#fff; font:600 clamp(20px,2.35vw,29px)/1.16 var(--tbl-serif,serif); text-wrap:balance; }
+.personareactioncopy em { margin-top:12px; overflow:hidden; color:#aeb6b7; font:700 9px/1 var(--tbl-cond,inherit); letter-spacing:.12em; text-overflow:ellipsis; text-transform:uppercase; white-space:nowrap; }
+.personareactionflare { position:absolute; inset:-70% -20%; z-index:-1; background:linear-gradient(108deg,transparent 36%,color-mix(in srgb,var(--persona-accent) 17%,transparent) 49%,transparent 62%); transform:translateX(-70%); animation:personaReactionFlare 1.4s .12s ease-out both; }
+.personareaction.leaving { opacity:0; transform:translate(-50%,-54%) scale(.97); filter:blur(3px); transition:.28s ease; }
+@keyframes personaReactionIn { from { opacity:0; transform:translate(-50%,-44%) scale(.9); filter:blur(8px); } to { opacity:1; transform:translate(-50%,-50%); filter:none; } }
+@keyframes personaReactionFlare { to { transform:translateX(70%); } }
+
+@media (max-width:767px) {
+  .personareaction { width:calc(100vw - 20px); min-height:144px; grid-template-columns:106px minmax(0,1fr); }
+  .personareactionportrait,.personareactionportrait img { min-height:144px; }
+  .personareactioncopy { padding:17px 14px 16px; }
+  .personareactioncopy small { font-size:7px; letter-spacing:.18em; }
+  .personareactioncopy b { margin:6px 0 7px; font-size:17px; }
+  .personareactioncopy p { font-size:17px; line-height:1.14; }
+  .personareactioncopy em { margin-top:9px; font-size:7px; letter-spacing:.08em; }
+  .personareactionportrait span { left:6px; right:6px; bottom:6px; font-size:6px; letter-spacing:.12em; }
+}
+
 @keyframes gamefxImpactRing { 0% { opacity:0; transform:scale(.18); } 22% { opacity:1; } 100% { opacity:0; transform:scale(1.75); } }
 @keyframes gamefxImpactShard { 0% { opacity:0; scale:.25; } 25% { opacity:1; } 100% { opacity:0; scale:1.45; } }
 @keyframes gamefxDamageNumber { 0% { opacity:0; transform:translate(-50%,18px) scale(.65); } 22% { opacity:1; transform:translate(-50%,-6px) scale(1.16); } 100% { opacity:0; transform:translate(-50%,-55px) scale(.92); } }
@@ -2462,12 +2509,17 @@ body:has(#setup) { background: #08090d; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .personareaction,.personareactionflare { animation:none !important; }
+  .personareaction.leaving { filter:none; transition:opacity .15s linear; }
   .gamefx-damageline,.gamefx-combattrail,.gamefx-combatghost,.gamefx-cardghost,.gamefx-wipecard,.gamefx-wipecloud,.counterspell-rings,.strike-slashes { display:none !important; }
   .gamefx-impact > span,.gamefx-impact > i,.gamefx-impact > strong,.gamefx-impact > small,
   .gamefx-zonebadge,.gamefx-wipe,.gamefx-wiperune,.gamefx-wipetitle,.gamefx-counterspell,.counterspell-seal,.counterspell-copy,.gamefx-keyword,.gamefx-minuscounter,.gamefx-strike,.gamefx-proliferatepulse,.gamefx-proliferatetitle { animation-duration:.55s !important; animation-iteration-count:1 !important; }
   #game.fx-boardwipe { filter:none; }
   #game.fx-combat-camera,.fx-combat-source { animation:none !important; }
 }
+
+body.reduced-motion .personareaction,body.reduced-motion .personareactionflare { animation:none !important; }
+body.reduced-motion .personareaction.leaving { filter:none; transition:opacity .15s linear; }
 
 /* ============================================================
    DESKTOP ARENA CONCEPT — 4 SEATS / LOCAL MANA SYSTEM

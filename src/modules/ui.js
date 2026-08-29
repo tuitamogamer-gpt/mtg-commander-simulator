@@ -106,6 +106,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.showStops = false;
       this.renderQueued = false;
       this.imgCache = {};
+      this.personaReactionQueue = [];
+      this.activePersonaReaction = null;
+      this.personaReactionDelayTimer = null;
+      this.personaReactionTimer = null;
+      this.personaReactionNode = null;
     }
 
     lastResortSeat(player) { return player ? (player.onlineSeat ?? player.idx) : null; }
@@ -502,10 +507,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     clearGameOverTransients() {
+      this.clearPersonaReactions();
       document.querySelectorAll([
         '.battlefieldarrival', '.turnbanner', '.monarchannouncement',
         '.diplomacyannouncement', '.effectnoticestack', '.spellcopynoticestack',
-        '.gamefxlayer', '.spotbar', '.toastmsg',
+        '.gamefxlayer', '.personareaction', '.spotbar', '.toastmsg',
       ].join(',')).forEach(node => node.remove());
     }
 
@@ -4442,6 +4448,74 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const t = el('div', 'toastmsg', esc(msg));
       document.body.appendChild(t);
       setTimeout(() => t.remove(), 2500);
+    }
+
+    clearPersonaReactions() {
+      clearTimeout(this.personaReactionDelayTimer);
+      clearTimeout(this.personaReactionTimer);
+      this.personaReactionDelayTimer = null;
+      this.personaReactionTimer = null;
+      this.personaReactionQueue = [];
+      this.activePersonaReaction = null;
+      this.personaReactionNode = null;
+      document.querySelectorAll('.personareaction').forEach(node => node.remove());
+    }
+
+    showPersonaReaction(reaction) {
+      if (!reaction || !reaction.comment || !reaction.portrait || this.game && this.game.gameOver) return;
+      this.personaReactionQueue.push(reaction);
+      this.playNextPersonaReaction();
+    }
+
+    playNextPersonaReaction() {
+      if (this.activePersonaReaction || this.personaReactionDelayTimer || !this.personaReactionQueue.length) return;
+      const reaction = this.personaReactionQueue.shift();
+      this.personaReactionDelayTimer = setTimeout(() => {
+        this.personaReactionDelayTimer = null;
+        if (this.game && this.game.gameOver) {
+          this.personaReactionQueue = [];
+          return;
+        }
+        document.querySelectorAll('.personareaction').forEach(node => node.remove());
+        const notice = el('div', `personareaction style-${reaction.style}`);
+        notice.dataset.style = reaction.style;
+        notice.dataset.moment = reaction.moment;
+        notice.dataset.playerId = String(reaction.playerId);
+        notice.setAttribute('role', 'status');
+        notice.setAttribute('aria-live', 'polite');
+        notice.setAttribute('aria-label', `${reaction.personaName}: ${reaction.comment}`);
+
+        const portrait = el('div', 'personareactionportrait');
+        const image = document.createElement('img');
+        image.src = reaction.portrait;
+        image.alt = `${reaction.personaName} portrait`;
+        image.onerror = () => MTG.imgFail(image);
+        portrait.appendChild(image);
+        portrait.appendChild(el('span', '', esc(reaction.archetype || 'Signature AI')));
+
+        const copy = el('div', 'personareactioncopy');
+        copy.appendChild(el('small', '', `SIGNATURE AI · ${esc(reaction.label || 'PLAY')}`));
+        copy.appendChild(el('b', '', esc(reaction.personaName)));
+        copy.appendChild(el('p', '', `“${esc(reaction.comment)}”`));
+        copy.appendChild(el('em', '', `${esc(reaction.tableName || '')}${reaction.detail ? ` · ${esc(reaction.detail)}` : ''}`));
+        notice.appendChild(portrait);
+        notice.appendChild(copy);
+        notice.appendChild(el('i', 'personareactionflare'));
+        document.body.appendChild(notice);
+        this.activePersonaReaction = reaction;
+        this.personaReactionNode = notice;
+
+        this.personaReactionTimer = setTimeout(() => {
+          this.personaReactionTimer = null;
+          notice.classList.add('leaving');
+          setTimeout(() => {
+            if (notice.isConnected) notice.remove();
+            if (this.personaReactionNode === notice) this.personaReactionNode = null;
+            if (this.activePersonaReaction === reaction) this.activePersonaReaction = null;
+            setTimeout(() => this.playNextPersonaReaction(), 140);
+          }, 280);
+        }, Math.max(1600, Number(reaction.duration) || 3200));
+      }, Math.max(0, Number(reaction.delay) || 0));
     }
 
     gameEffectLayer() {

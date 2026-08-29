@@ -1282,6 +1282,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             ui.utilityDrawerOpen = true;
           }
         }
+        const signatureReaction = gameRef && MTG.signatureReactionForEvent && MTG.signatureReactionForEvent(gameRef, e);
+        if (signatureReaction) ui.showPersonaReaction(signatureReaction);
         ui.queueRender();
         queueOnlineSync();
       },
@@ -3227,6 +3229,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ui.render();
       return;
     }
+    if (smokeScenario === 'personaReaction') {
+      const bot = g.players.find(player => player.isAI && MTG.AI_STYLES[player.aiStyle]?.signature);
+      if (!bot) throw new Error('personaReaction scenario requires a signature smokeAIStyle.');
+      const source = new MTG.CardInst(MTG.DEFS['Inferno Titan'], bot);
+      source.ctrl = bot; source.zone = 'battlefield'; source.sick = false; source.tapped = false;
+      g.battlefield.push(source);
+      g.turnPlayer = bot; g.turnNo = 7; g.phase = 'combat'; g.step = 'damage'; g.paced = false;
+      const autoPersonaReaction = new URLSearchParams(window.location.search).get('autoPersonaReaction') === '1';
+      // The generic web-game client performs a deliberately expensive full
+      // DOM render before capture. Keep this explicit smoke-only reaction up
+      // long enough for its screenshot; normal games use the 3.2 s duration.
+      if (autoPersonaReaction) g._signatureReactionDuration = 15000;
+      g.recalc(); ui.render();
+      const trigger = document.createElement('button');
+      trigger.id = 'smoke-trigger-persona';
+      trigger.className = 'pbtn primary smokefxtrigger';
+      trigger.textContent = `Trigger ${MTG.AI_STYLES[bot.aiStyle].name} signature comment`;
+      trigger.onclick = async () => {
+        trigger.remove();
+        await g.damagePlayer(source, ui.me, 8, { combat: true });
+        ui.render();
+      };
+      document.body.appendChild(trigger);
+      if (autoPersonaReaction) setTimeout(() => trigger.click(), 250);
+      return;
+    }
     if (smokeScenario === 'generalEffects') {
       void (async () => {
         const mode = new URLSearchParams(window.location.search).get('smokeEffect') || 'damage';
@@ -3607,6 +3635,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     })();
     return {
       mode: g.gameOver ? 'gameover' : 'game',
+      signatureReaction: ui && ui.activePersonaReaction ? {
+        style: ui.activePersonaReaction.style,
+        persona: ui.activePersonaReaction.personaName,
+        moment: ui.activePersonaReaction.moment,
+        label: ui.activePersonaReaction.label,
+        comment: ui.activePersonaReaction.comment,
+        detail: ui.activePersonaReaction.detail,
+      } : null,
       manaMode: ui ? ui.manaMode : 'auto',
       lastResort: ui ? {
         active: !!ui.lastResortActive,
