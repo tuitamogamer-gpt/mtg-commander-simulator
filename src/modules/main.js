@@ -84,7 +84,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
       <section class="mainmenu-hero" aria-labelledby="mainmenu-title">
         <div class="mainmenu-hero-copy">
-          <span class="mainmenu-kicker">Four seats. One browser. No account.</span>
+          <span class="mainmenu-kicker">Play instantly. Save when you sign in.</span>
           <h1 id="mainmenu-title">Your Commander table is ready.</h1>
           <p>Choose one of ${nDecks} complete decks and play a real four-player pod with visible priority, targets, stack, and combat decisions.</p>
           <div id="primary-actions" class="mainmenu-actions" tabindex="-1">
@@ -92,7 +92,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             <button type="button" class="mainmenu-secondary" data-menu-action="live">${U.icon('deals')}<span><b>Create a Live table</b><small>Choose 2-4 human seats; no bots required</small></span></button>
           </div>
           <ul class="mainmenu-trust" aria-label="What you need to play">
-            <li><span aria-hidden="true">✓</span>No sign-up</li>
+            <li><span aria-hidden="true">✓</span>Account optional</li>
             <li><span aria-hidden="true">✓</span>Runs in your browser</li>
             <li><span aria-hidden="true">✓</span>Local rules and AI</li>
           </ul>
@@ -121,7 +121,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       <section class="mainmenu-proof" aria-label="Product details">
         <div class="mainmenu-proof-stat"><strong>${nDecks}</strong><span><b>Complete decks</b><small>Curated commanders and strategies</small></span></div>
         <div class="mainmenu-proof-stat"><strong>4</strong><span><b>Real seats</b><small>A full multiplayer pod</small></span></div>
-        <div class="mainmenu-proof-stat"><strong>Local</strong><span><b>Deterministic AI</b><small>No model API or account</small></span></div>
+        <div class="mainmenu-proof-stat"><strong>Local</strong><span><b>Deterministic AI</b><small>No external model API</small></span></div>
         <div class="mainmenu-livecheck" data-live-state="checking" role="status" aria-live="polite"><i aria-hidden="true"></i><span><b>Checking Live rooms</b><small>Solo play is always available</small></span></div>
       </section>
 
@@ -148,7 +148,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         </article>
         <article class="mainmenu-mode live">
           <span aria-hidden="true">02</span>
-          <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Open a private room for two, three, or four real players with no bot seats.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>No account or public lobby</li><li>Up to four human seats</li></ul></div>
+          <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Open a private room for two, three, or four real players with no bot seats.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>Account optional; no public lobby</li><li>Up to four human seats</li></ul></div>
           <button type="button" data-menu-action="live">Configure a Live table</button>
         </article>
       </section>
@@ -175,7 +175,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <header><span>FIRST GAME GUIDE</span><h2 data-dialog-title>Four things before you sit down.</h2><p>You can reopen this guide from the main menu at any time.</p></header>
         <div class="mainmenu-onboarding-grid">
           <section><i>${U.icon('cards')}</i><div><b>Your deck is complete</b><p>Every listed option is a fixed 100-card deck. Pick by feel first; the deck spotlight explains the plan.</p></div></section>
-          <section><i>${U.icon('player')}</i><div><b>You control one seat</b><p>The other seats never expose hidden cards. Local AI makes decisions without an external model or account.</p></div></section>
+          <section><i>${U.icon('player')}</i><div><b>You control one seat</b><p>The other seats never expose hidden cards. Local AI makes decisions without an external model API.</p></div></section>
           <section><i>${U.icon('hold')}</i><div><b>HOLD opens priority</b><p>Arm HOLD when you want to respond. The game also stops automatically at the priority windows you choose.</p></div></section>
           <section><i>${U.icon('stack')}</i><div><b>Proceed protects clarity</b><p>Important spells, triggers, targets, and combat reviews wait until the table state is clear.</p></div></section>
         </div>
@@ -217,6 +217,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     page.querySelectorAll('[data-menu-action="live"]').forEach(button => {
       button.onclick = () => renderSetup({ mode: 'online' });
     });
+    globalThis.MTGAccount?.render();
 
     const liveStatus = page.querySelector('.mainmenu-livecheck');
     const localStaticHost = location.protocol === 'file:' || ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
@@ -511,6 +512,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         favorite.setAttribute('aria-pressed', state.favorites.has(name) ? 'true' : 'false');
         favorite.title = state.favorites.has(name) ? `Remove ${name} from favorites` : `Add ${name} to favorites`;
         favorite.setAttribute('aria-label', favorite.title);
+        void globalThis.MTGAccount?.syncLocalFavorites?.();
         filterDecks();
       };
       card.onclick = () => {
@@ -1189,7 +1191,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       root.innerHTML = `
         <main class="online-lobby unavailable">
           <header class="online-lobby-head"><button type="button" class="online-back">← Back</button><div><span>COMMANDER LIVE</span><h1>Live rooms open on the deployed game.</h1><p>The local build includes the complete multiplayer engine and UI. Open the Vercel preview or Higgsfield Games link to create or join an internet room.</p></div></header>
-          <section class="online-unavailable-card"><i></i><div><small>LOCAL PREVIEW</small><b>The online room service is not active on this origin</b><span>No account, token, or external AI service is required by the game itself.</span></div></section>
+          <section class="online-unavailable-card"><i></i><div><small>LOCAL PREVIEW</small><b>The online room service is not active on this origin</b><span>No account or external model service is required for guest play.</span></div></section>
         </main>`;
       root.querySelector('.online-back').onclick = renderSetup;
       return null;
@@ -1224,6 +1226,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.openOnlineLobby = openOnlineLobby;
 
   function startGame(state) {
+    const resumeSave = state.resumeSave ? MTG.validateAccountSave(state.resumeSave) : null;
+    const savedTimeline = resumeSave ? resumeSave.decisions.slice() : [];
+    const recordedTimeline = resumeSave ? resumeSave.decisions.slice() : [];
+    let replayCursor = 0;
+    let replayingSave = !!resumeSave;
+    const matchId = resumeSave?.matchId || (globalThis.crypto?.randomUUID
+      ? globalThis.crypto.randomUUID() : `match-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    const matchCreatedAt = resumeSave?.createdAt || new Date().toISOString();
     const seed = state.seed ? parseInt(state.seed, 10) : Math.floor(Math.random() * 1e9);
     const rnd = MTG.mulberry32(seed);
     const remoteHumans = Array.isArray(state.remoteHumans)
@@ -1232,7 +1242,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const aiDecks = remoteHumans.length ? [] : MTG.selectAIDecks(state.deck, state.ai, state.aiDecks, rnd);
 
     const ui = new MTG.UI();
+    if (resumeSave?.setup.manaMode === 'manual' || resumeSave?.setup.manaMode === 'auto') ui.manaMode = resumeSave.setup.manaMode;
+    if (resumeSave?.setup.prioMode) ui.prioMode = resumeSave.setup.prioMode;
     let gameRef = null;
+    let saveSetup = null;
+    let saveTimer = null;
+    let queueAccountSave = () => {};
+    let completeAccountMatch = () => {};
     let onlineSyncQueued = false;
     const queueOnlineSync = () => {
       if (!state.onlineBridge || !gameRef || onlineSyncQueued) return;
@@ -1262,11 +1278,40 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       difficulty: state.difficulty,
       humanName: 'You',
       maxTurns: 200,
-      paced: true,
+      paced: !resumeSave,
       humanController: (p) => {
         ui.me = p;
         p.manualMana = ui.manaMode === 'manual';
-        return ui.controllerFor(p);
+        const human = ui.controllerFor(p);
+        return {
+          async decide(game, request) {
+            while (replayCursor < savedTimeline.length && savedTimeline[replayCursor]?.kind === 'side') {
+              const side = savedTimeline[replayCursor];
+              replayCursor += 1;
+              ui.accountReplay = { current: replayCursor, total: savedTimeline.length };
+              await MTG.replayAccountSideAction(game, p, side.action);
+            }
+            if (replayCursor < savedTimeline.length) {
+              const recorded = savedTimeline[replayCursor];
+              if (recorded?.kind && recorded.kind !== 'decision') throw new Error(`Saved game: timeline entry ${replayCursor + 1} is invalid.`);
+              const result = MTG.restoreSaveDecision(request, p, recorded);
+              replayCursor += 1;
+              ui.accountReplay = { current: replayCursor, total: savedTimeline.length };
+              return result;
+            }
+            if (replayingSave) {
+              replayingSave = false;
+              game.paced = true;
+              ui.accountReplay = null;
+              ui.toast(`Saved game restored · turn ${game.turnNo} · ${recordedTimeline.length} recorded actions.`);
+              queueAccountSave({ immediate: true });
+            }
+            const result = await human.decide(game, request);
+            recordedTimeline.push({ kind: 'decision', ...MTG.recordSaveDecision(request, p, result) });
+            queueAccountSave();
+            return result;
+          },
+        };
       },
       onEvent: (e) => {
         if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ YOUR TURN' : `Turn ${g.turnNo}: ${e.p.name}`, e.p === ui.me);
@@ -1284,11 +1329,96 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         const signatureReaction = gameRef && MTG.signatureReactionForEvent && MTG.signatureReactionForEvent(gameRef, e);
         if (signatureReaction) ui.showPersonaReaction(signatureReaction);
+        if (e.type === 'gameover') completeAccountMatch();
         ui.queueRender();
         queueOnlineSync();
       },
     });
     gameRef = g;
+    const actualAIPlayers = g.players.filter(player => player.isAI)
+      .sort((a, b) => (a.onlineSeat ?? a.idx) - (b.onlineSeat ?? b.idx));
+    saveSetup = remoteHumans.length ? null : {
+      deck: state.deck,
+      commanders: ui.me.commanders.map(card => card.name),
+      ai: aiDecks.length,
+      aiDecks: aiDecks.slice(),
+      aiStyles: actualAIPlayers.map(player => player.requestedAIStyle || player.aiStyle || 'balanced'),
+      aiRandomCommanders: !!state.aiRandomCommanders,
+      sumPartnerDamage: !!state.sumPartnerDamage,
+      diplomacyEnabled: !!state.diplomacyEnabled,
+      difficulty: state.difficulty || 'normal',
+      manaMode: ui.manaMode,
+      prioMode: ui.prioMode,
+      seed: String(seed),
+      createdAt: matchCreatedAt,
+    };
+    const writeAccountSave = async ({ notify = false } = {}) => {
+      if (!saveSetup || g.gameOver || !globalThis.MTGAccount?.user) return false;
+      clearTimeout(saveTimer);
+      ui.accountSaveStatus = { state: 'saving', text: 'Saving…' };
+      ui.queueRender();
+      try {
+        await globalThis.MTGAccount.saveGame(MTG.buildAccountSave(g, saveSetup, recordedTimeline, matchId));
+        ui.accountSaveStatus = { state: 'saved', text: `Saved · turn ${g.turnNo}` };
+        if (notify) ui.toast('Solo game saved to your profile.');
+        ui.queueRender();
+        return true;
+      } catch (error) {
+        ui.accountSaveStatus = { state: 'error', text: 'Save failed' };
+        ui.toast(`Save failed: ${error.message}`);
+        ui.queueRender();
+        return false;
+      }
+    };
+    queueAccountSave = ({ immediate = false, notify = false } = {}) => {
+      if (!saveSetup || g.gameOver || !globalThis.MTGAccount?.user) return;
+      clearTimeout(saveTimer);
+      if (immediate) void writeAccountSave({ notify });
+      else saveTimer = setTimeout(() => void writeAccountSave(), 450);
+    };
+    let matchRecorded = false;
+    completeAccountMatch = () => {
+      if (matchRecorded || !saveSetup || !globalThis.MTGAccount?.user) return;
+      matchRecorded = true;
+      clearTimeout(saveTimer);
+      void globalThis.MTGAccount.completeMatch({
+        matchId,
+        deck: saveSetup.deck,
+        commanders: saveSetup.commanders,
+        won: g.winner === ui.me,
+        turns: g.turnNo,
+      }).then(() => {
+        ui.accountSaveStatus = { state: 'complete', text: 'Stats updated' };
+        ui.queueRender();
+      }).catch(error => {
+        matchRecorded = false;
+        ui.accountSaveStatus = { state: 'error', text: 'Stats pending' };
+        console.error('Commander profile stats update failed:', error);
+      });
+    };
+    if (window._accountGameCleanup) window._accountGameCleanup();
+    let accountSignedIn = !!globalThis.MTGAccount?.user;
+    const accountChange = event => {
+      const signedIn = !!event.detail?.user;
+      if (signedIn && !accountSignedIn && !g.gameOver) queueAccountSave({ immediate: true });
+      else if (!signedIn && accountSignedIn) { ui.accountSaveStatus = null; ui.queueRender(); }
+      accountSignedIn = signedIn;
+    };
+    MTG.flushAccountSave = options => writeAccountSave(options);
+    const captureAccountSideAction = entry => {
+      if (!saveSetup || g.gameOver || !entry) return false;
+      recordedTimeline.push({ kind: 'side', action: MTG.portableAccountSideAction(g, ui.me, entry) });
+      queueAccountSave({ immediate: true });
+      return true;
+    };
+    MTG.captureAccountSideAction = captureAccountSideAction;
+    window.addEventListener('mtg:account-change', accountChange);
+    window._accountGameCleanup = () => {
+      clearTimeout(saveTimer);
+      window.removeEventListener('mtg:account-change', accountChange);
+      if (MTG.captureAccountSideAction === captureAccountSideAction) delete MTG.captureAccountSideAction;
+    };
+    MTG.activeAccountMatch = { matchId, setup: saveSetup, decisions: recordedTimeline };
     if (state.onlineBridge && state.onlineBridge.setManualActionHandler) {
       state.onlineBridge.setManualActionHandler(async request => {
         const actor = g.players.find(player => (player.onlineSeat ?? player.idx) === request.seat && !player.isAI);
@@ -1335,6 +1465,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     window._game = g;
     window._ui = ui;
     ui.render();
+    if (saveSetup && !resumeSave && globalThis.MTGAccount?.user) queueAccountSave({ immediate: true });
+    if (resumeSave) {
+      ui.accountReplay = { current: 0, total: savedTimeline.length };
+      ui.toast(`Restoring ${savedTimeline.length} saved actions…`);
+    }
     const cmdTxt = (state.commanders || []).map(n => n.split(',')[0]).join(' + ');
     const smokeScenario = new URLSearchParams(window.location.search).get('smokeScenario');
     if (!smokeScenario) ui.toast(remoteHumans.length
@@ -3436,6 +3571,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return g;
   }
 
+  MTG.resumeAccountSave = function (save) {
+    const checkpoint = MTG.validateAccountSave(save);
+    document.querySelector('.account-overlay')?.remove();
+    document.body.classList.remove('account-dialog-open');
+    return startGame({
+      ...checkpoint.setup,
+      mode: 'solo',
+      ai: checkpoint.setup.aiDecks.length,
+      resumeSave: checkpoint,
+    });
+  };
+
   // The generated Higgsfield client supplies a tiny roomClient adapter. The
   // existing engine remains host-authoritative while every remote human decision
   // is validated by the room contract before this controller hydrates it.
@@ -3501,6 +3648,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           deckCount: MTG.DECKS ? Object.keys(MTG.DECKS).filter(name => !MTG.DECKS[name].custom).length : 0,
           actions: [...setup.querySelectorAll('[data-menu-action]')].map(button => button.dataset.menuAction),
           onboardingOpen: !!setup.querySelector('.mainmenu-onboarding'),
+          account: globalThis.MTGAccount?.user ? {
+            signedIn: true,
+            displayName: globalThis.MTGAccount.user.displayName,
+            hasSave: !!globalThis.MTGAccount.save,
+          } : { signedIn: false, hasSave: false },
         };
       }
       const selected = setup && setup.querySelector('.deckcard.selected');
@@ -3635,6 +3787,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     })();
     return {
       mode: g.gameOver ? 'gameover' : 'game',
+      account: {
+        signedIn: !!globalThis.MTGAccount?.user,
+        saveStatus: ui?.accountSaveStatus?.state || null,
+        saveLabel: ui?.accountSaveStatus?.text || null,
+        replay: ui?.accountReplay || null,
+        decisionCount: MTG.activeAccountMatch?.decisions?.length || 0,
+      },
       signatureReaction: ui && ui.activePersonaReaction ? {
         style: ui.activePersonaReaction.style,
         persona: ui.activePersonaReaction.personaName,

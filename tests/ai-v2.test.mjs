@@ -401,10 +401,13 @@ test('AI ne floata beskorisnu manu iz utility landa', async () => {
   assert.equal(tunnel.tapped, false);
 });
 
-test('AI V2 nema mrežne/model/auth zavisnosti', () => {
+test('AI V2 nema mrežne/model/auth zavisnosti; account paketi ostaju izvan AI modula', () => {
   const source = fs.readFileSync(new URL('../src/modules/ai-v2.js', import.meta.url), 'utf8');
   assert.doesNotMatch(source, /\bfetch\s*\(/);
   assert.doesNotMatch(source, /WebSocket|XMLHttpRequest|navigator\.gpu|onnx|embedding|api[_-]?key|authorization\s*:/i);
+  assert.doesNotMatch(source, /@upstash|redis|ratelimit/i);
   const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-  assert.deepEqual(Object.keys(pkg.dependencies || {}).sort(), ['express', 'ioredis', 'ws']);
+  const dependencies = Object.keys(pkg.dependencies || {}).sort();
+  assert.deepEqual(dependencies, ['@upstash/ratelimit', '@upstash/redis', 'express', 'ioredis', 'ws']);
+  assert.deepEqual(dependencies.filter(name => /openai|anthropic|gemini|ollama|onnx|transformers/i.test(name)), []);
 });

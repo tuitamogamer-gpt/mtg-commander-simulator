@@ -118,6 +118,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     runLastResort(action, opts = {}) {
       try {
         const result = this.game.applyLastResortAction(this.me, action);
+        MTG.captureAccountSideAction?.({ type: 'lastResort', action });
         const returnToToolbox = !!(opts.closeSheet && this.sheet && this.sheet.lastResort && this.lastResortActive);
         if (opts.closeSheet) this.sheet = null;
         if (opts.closeZone) this.zoneBrowse = null;
@@ -1054,11 +1055,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const accept = el('button', 'pbtn primary', proposal.isCounteroffer ? 'Accept counteroffer' : 'Accept offer');
           accept.onclick = () => {
             const result = g.respondToDiplomacyProposal(proposal.id, true, this.me);
+            MTG.captureAccountSideAction?.({ type: 'diplomacyResponse', proposalId: proposal.id, accept: true });
             this.toast(result.status === 'accepted' ? '🤝 Agreement accepted and active.' : result.reason || 'The proposal expired.');
             this.render();
           };
           const decline = el('button', 'pbtn', 'Decline');
-          decline.onclick = () => { g.respondToDiplomacyProposal(proposal.id, false, this.me); this.toast('Proposal declined.'); this.render(); };
+          decline.onclick = () => {
+            g.respondToDiplomacyProposal(proposal.id, false, this.me);
+            MTG.captureAccountSideAction?.({ type: 'diplomacyResponse', proposalId: proposal.id, accept: false });
+            this.toast('Proposal declined.');
+            this.render();
+          };
           row.appendChild(accept); row.appendChild(decline); card.appendChild(row); panel.appendChild(card);
         }
       }
@@ -1141,6 +1148,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         send.onclick = async () => {
           send.disabled = true;
           const result = g.proposeGroupRemovalDiplomacy(this.me, composer.optionKey);
+          MTG.captureAccountSideAction?.({ type: 'groupDiplomacy', optionKey: composer.optionKey });
           this.diplomacyComposer = null;
           this.toast(result.status === 'accepted' ? `🤝 Table Deal #${result.contract.id} is active.` : result.reason || 'No table deal was reached.');
           this.sidebarTab = 'diplomacy'; this.render();
@@ -1198,6 +1206,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       send.onclick = async () => {
         send.disabled = true;
         const result = g.proposeDiplomacy(this.me, to, composer.requestKey, composer.offerKey);
+        MTG.captureAccountSideAction?.({
+          type: 'diplomacyOffer',
+          toSeat: this.lastResortSeat(to),
+          requestKey: composer.requestKey,
+          offerKey: composer.offerKey,
+        });
         this.diplomacyComposer = null;
         if (result.status === 'accepted') this.toast(`🤝 ${to.name} accepted. Agreement #${result.contract.id} is active.`);
         else if (result.status === 'countered') this.toast(`↩ Your offer was not accepted. ${to.name} sent a counteroffer for you to review.`);
@@ -1541,6 +1555,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       action('Table information', 'Stack, damage and threat', () => this.openUtility('table'));
       action('Game log', `${g.log.length} events`, () => this.openUtility('log'));
+      const account = globalThis.MTGAccount;
+      const soloSaveAvailable = !!MTG.activeAccountMatch?.setup;
+      if (soloSaveAvailable && account?.user) {
+        action('Save & exit', this.accountSaveStatus?.text || 'Autosave this Solo table to your profile', async () => {
+          this.quickMenuOpen = false;
+          this.accountSaveStatus = { state: 'saving', text: 'Saving…' };
+          this.render();
+          const saved = await MTG.flushAccountSave?.({ notify: false });
+          if (saved && typeof MTG.exitToMainMenu === 'function') MTG.exitToMainMenu();
+        });
+      } else if (soloSaveAvailable && account) {
+        action('Sign in to save', 'Cloud checkpoint and lifetime stats', () => {
+          this.quickMenuOpen = false;
+          this.render();
+          account.open('login');
+        });
+      }
+      if (account?.user) action('Profile & stats', `${account.profile?.lifetimeScore || 0} lifetime points`, () => {
+        this.quickMenuOpen = false;
+        this.render();
+        account.open('profile');
+      });
       action('Support & diagnostics', 'Download share-safe debug snapshot', () => this.downloadDebugSnapshot(g));
       const lastResort = action('Last Resort', this.lastResortActive ? 'ACTIVE \u00B7 paused recovery' : 'Emergency public-board recovery', () => {
         this.quickMenuOpen = false;
@@ -1552,8 +1588,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.lastResortActive) lastResort.classList.add('active');
       if (g.diplomacy && g.diplomacy.enabled) action('Diplomacy & Politics', 'Deals and proposals', () => this.openUtility('diplomacy'));
       action('Help & shortcuts', 'Rules and controls', () => { this.quickMenuOpen = false; this.showHelp = true; this.render(); });
-      action('Main menu', 'Leave the current game', () => {
-        if (!confirm('Leave this game? The current game will be lost.')) return;
+      action('Main menu', soloSaveAvailable && account?.user ? 'Leave after the latest autosave' : 'Leave the current game', async () => {
+        const warning = soloSaveAvailable && account?.user
+          ? 'Leave this game? Your latest recorded action will be saved to your profile first.'
+          : 'Leave this game? The current game will be lost.';
+        if (!confirm(warning)) return;
+        if (soloSaveAvailable && account?.user) {
+          this.quickMenuOpen = false;
+          this.accountSaveStatus = { state: 'saving', text: 'Saving…' };
+          this.render();
+          if (!await MTG.flushAccountSave?.({ notify: false })) return;
+        }
         if (typeof MTG.exitToMainMenu === 'function') MTG.exitToMainMenu();
         else if (typeof MTG.showMainMenu === 'function') MTG.showMainMenu();
         else location.reload();
@@ -3543,6 +3588,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         accept.dataset.testid = 'accept-diplomacy-offer';
         accept.onclick = () => {
           const result = g.respondToDiplomacyProposal(proposal.id, true, this.me);
+          MTG.captureAccountSideAction?.({ type: 'diplomacyResponse', proposalId: proposal.id, accept: true });
           this.toast(result.status === 'accepted' ? '🤝 Agreement accepted and active.' : result.reason || 'The proposal expired.');
           this.resolvePendingEntry(pd, result);
         };
@@ -3550,6 +3596,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         decline.dataset.testid = 'decline-diplomacy-offer';
         decline.onclick = () => {
           const result = g.respondToDiplomacyProposal(proposal.id, false, this.me);
+          MTG.captureAccountSideAction?.({ type: 'diplomacyResponse', proposalId: proposal.id, accept: false });
           this.toast('Proposal declined.');
           this.resolvePendingEntry(pd, result);
         };
@@ -4417,6 +4464,11 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const log = el('button', 'pbtn', 'View full log');
       log.onclick = () => { this.showLog = true; ov.remove(); this.render(); };
       actions.appendChild(log);
+      if (globalThis.MTGAccount?.user) {
+        const profile = el('button', 'pbtn', 'Profile & stats');
+        profile.onclick = () => globalThis.MTGAccount.open('profile');
+        actions.appendChild(profile);
+      }
       m.appendChild(actions);
       ov.appendChild(m);
       return ov;

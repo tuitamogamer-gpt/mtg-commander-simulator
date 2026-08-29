@@ -11,7 +11,7 @@ Do not tell players that new local changes are live until the deployed revision 
 ## What a player needs
 
 - A current desktop, tablet, or mobile browser.
-- No account for Solo mode.
+- Accounts are optional for play; signing in enables a private Solo save, lifetime stats, scores, and synced favorites.
 - One private invite link from the host for Commander Live.
 - No external AI or model service. All bot decisions run inside the Commander client.
 
@@ -40,7 +40,7 @@ npm install
 npm run serve
 ```
 
-Then open <http://127.0.0.1:8000>. Solo mode works from the static server. Commander Live needs a hosted WebSocket deployment and Redis-compatible `REDIS_URL`, `KV_URL`, or `UPSTASH_REDIS_URL` storage.
+Then open <http://127.0.0.1:8000>. Guest Solo mode works from the static server. Commander Live needs a hosted WebSocket deployment and Redis-compatible `REDIS_URL`, `KV_URL`, or `UPSTASH_REDIS_URL` storage. Login, profile stats, and cloud saves need the hosted account endpoint plus `KV_REST_API_URL` / `KV_REST_API_TOKEN` (or matching Upstash REST aliases).
 
 ## Before publishing a new version
 
@@ -55,7 +55,7 @@ npm run test:ai
 npm run benchmark:ai
 ```
 
-Confirm that the deployed URL returns HTTP 200, `/api/ws` reports a ready room service, private invite links open the correct room, and the deployed browser has no new console or page errors.
+Confirm that the deployed URL returns HTTP 200, `/api/ws` reports a ready room service, `/api/account?action=session` returns a no-store session response, private invite links open the correct room, register/login/logout work with an HttpOnly cookie, a Solo action can be saved and continued, and the deployed browser has no new console or page errors.
 
 ## Fan project notice
 

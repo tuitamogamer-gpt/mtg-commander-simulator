@@ -51,7 +51,7 @@ test('first-game onboarding explains the complete user decision model without ex
   assert.match(home, /You control one seat/);
   assert.match(home, /HOLD opens priority/);
   assert.match(home, /Proceed protects clarity/);
-  assert.match(home, /without an external model or account/);
+  assert.match(home, /without an external model API/);
   assert.doesNotMatch(home, /[—–]/);
   assert.match(home, /U\.enhanceDialog\(overlay, dialog/);
   assert.match(publicEntry, /Your deck is complete/);
@@ -97,15 +97,15 @@ test('cold and warm landing menus keep the same public content and accessibility
   for (const source of [publicEntry, main]) {
     assert.match(source, /THE FULL GAME, MADE READABLE/);
     assert.match(source, /Three local AI opponents/);
-    assert.match(source, /No account or public lobby/);
+    assert.match(source, /Account optional; no public lobby/);
     assert.match(source, /Pick a deck\. We will set the table\./);
     assert.match(source, /class="mainmenu-livecheck"[^>]*role="status" aria-live="polite"/);
     assert.match(source, /id="ways-to-play"/);
     assert.match(source, /data-menu-action="solo"/);
     assert.match(source, /data-menu-action="live"/);
   }
-  assert.match(index, /Four seats\. One browser\. No account\./);
-  assert.match(main, /Four seats\. One browser\. No account\./);
+  assert.match(index, /Play instantly\. Save when you sign in\./);
+  assert.match(main, /Play instantly\. Save when you sign in\./);
   assert.match(index, /class="mainmenu-trust"/);
   assert.match(main, /class="mainmenu-trust"/);
 });
@@ -121,7 +121,7 @@ test('share previews and the official fan-project notice are present', () => {
 });
 
 test('Arena exits return to the new main menu instead of bypassing it', () => {
-  assert.match(ui, /action\('Main menu', 'Leave the current game'/);
+  assert.match(ui, /action\('Main menu', soloSaveAvailable/);
   assert.match(ui, /typeof MTG\.exitToMainMenu === 'function'/);
   assert.match(ui, /const setup = el\('button', 'pbtn', 'Main menu'\)/);
   assert.match(main, /MTG\.exitToMainMenu = \(\) => \{[\s\S]*?location\.replace\(location\.pathname\)/);

@@ -21,6 +21,8 @@
     "node": ">=22"
   },
   "dependencies": {
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.3",
     "express": "^5.2.1",
     "ioredis": "^6.0.0",
     "ws": "^8.21.3"

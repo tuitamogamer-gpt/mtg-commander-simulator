@@ -14,7 +14,7 @@ The production URL for approved, verified releases is:
 
 For unreleased local changes, share the verified ZIP or complete the release checks before presenting that URL as the current build.
 
-New players can open **Guide** for the first-game walkthrough. Solo mode requires no account. Commander Live creates one private friend link for a two-human, two-bot table.
+New players can open **Guide** for the first-game walkthrough. An account is optional for immediate play and enables a private Solo checkpoint, lifetime stats, score, most-played commanders, recent matches, and synced deck favorites. Commander Live creates one private link for a human-only table of two to four players.
 
 The fuller handoff and release checklist is in [`PUBLIC_RELEASE.md`](PUBLIC_RELEASE.md).
 
@@ -43,6 +43,12 @@ During a solo game, open **Game Menu → Download debug snapshot** to save a sha
 
 Use **Import debug snapshot** on the Main Page to validate the file and restore its deck, commanders, AI decks/styles, difficulty, Politics, house rule, and seed. The imported configuration starts deterministically from turn 1; the public checkpoint is reference evidence rather than a mid-game save. Online-room snapshots are reported but are not currently accepted by the solo replay importer.
 
+## Accounts and Save & Continue
+
+The hosted build exposes `api/account.js`. Passwords use a per-account scrypt salt and hash; the browser receives only an HttpOnly, SameSite session cookie. Login and registration are rate-limited. One private Solo save is retained per account and updated after each completed human decision or direct Last Resort/Politics action. Continue reconstructs the same hidden and public game state by replaying the deterministic seed and portable action history, then stops at the first new decision.
+
+Completed Solo matches award 100 lifetime points for a win or 25 for a completed loss. Match IDs are recorded idempotently so a retry cannot count a result twice. Commander Live continues to use its room reconnect/sync path rather than the Solo save format.
+
 ## Verification
 
 ```bash
@@ -60,11 +66,11 @@ The generated per-deck/per-card results are in `reports/card-certification.md` a
 
 Card art and mana symbols are bundled locally. The 17 flavor-name prints that cannot be resolved by Scryfall's collection endpoint use its named image API at runtime, with the local card back as an error fallback. `npm run sync:card-images` is the explicit maintenance command that resolves the fixed deck/token inventory through Scryfall, converts it to WebP, and regenerates the hardcoded manifest in `src/card-images.js`.
 
-Deck data is also bundled. Arbitrary/Moxfield deck import is intentionally not part of this product. No API keys or credentials are required or stored.
+Deck data is also bundled. Arbitrary/Moxfield deck import is intentionally not part of this product. Redis credentials are server-only environment variables and are never shipped to the browser.
 
 ## Deployment
 
-The browser client is deployed as static files on Vercel. `index.html` loads the ES modules under `src/`; there is no production build step. Commander Live uses `api/ws.js` with Redis-compatible room storage and private room codes.
+The browser client is deployed as static files on Vercel. `index.html` loads the ES modules under `src/`; there is no production build step. Commander Live uses `api/ws.js` with `REDIS_URL`-compatible room storage and private room codes. Accounts use `api/account.js` with `KV_REST_API_URL` and `KV_REST_API_TOKEN` (or the `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` aliases).
 
 ## Fan project notice
 

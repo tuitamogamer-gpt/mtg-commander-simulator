@@ -1,6 +1,7 @@
 // Lightweight public entry. The rules engine and 27 complete deck lists load
 // only after a player asks to enter setup or opens a shared game URL.
 'use strict';
+import './account.js';
 
 const root = document.querySelector('#setup');
 const page = root && root.querySelector('.mainmenu');
@@ -11,7 +12,7 @@ const detailsMarkup = `
   <section class="mainmenu-proof" aria-label="Product details">
     <div class="mainmenu-proof-stat"><strong>27</strong><span><b>Complete decks</b><small>Curated commanders and strategies</small></span></div>
     <div class="mainmenu-proof-stat"><strong>4</strong><span><b>Real seats</b><small>A full multiplayer pod</small></span></div>
-    <div class="mainmenu-proof-stat"><strong>Local</strong><span><b>Deterministic AI</b><small>No model API or account</small></span></div>
+    <div class="mainmenu-proof-stat"><strong>Local</strong><span><b>Deterministic AI</b><small>No external model API</small></span></div>
     <div class="mainmenu-livecheck" data-live-state="checking" role="status" aria-live="polite"><i aria-hidden="true"></i><span><b>Checking Live rooms</b><small>Solo play is always available</small></span></div>
   </section>
 
@@ -38,13 +39,13 @@ const detailsMarkup = `
     </article>
     <article class="mainmenu-mode live">
       <span aria-hidden="true">02</span>
-      <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Open a private two-player room, then let two local AI seats complete the pod.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>No account or public lobby</li><li>Two human seats, two local bots</li></ul></div>
+      <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Open a private room for two, three, or four real players with no bot seats.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>Account optional; no public lobby</li><li>Up to four human seats</li></ul></div>
       <button type="button" data-menu-action="live">Configure a Live table</button>
     </article>
   </section>
 
   <section class="mainmenu-final-cta" aria-labelledby="final-cta-title">
-    <div><span>YOUR NEXT POD</span><h2 id="final-cta-title">Pick a deck. We will set the table.</h2><p>Start solo now, or invite one friend to a private Live room.</p></div>
+    <div><span>YOUR NEXT POD</span><h2 id="final-cta-title">Pick a deck. We will set the table.</h2><p>Start solo now, or invite up to three friends to a private Live room.</p></div>
     <div class="mainmenu-final-actions"><button type="button" class="mainmenu-primary" data-menu-action="solo">Start solo</button><button type="button" class="mainmenu-secondary" data-menu-action="live">Create Live table</button></div>
   </section>
 
@@ -115,6 +116,12 @@ async function loadGame(mode = null) {
   }
 }
 
+globalThis.MTGAccount?.setGameLoader(async save => {
+  await loadGame(null);
+  if (!globalThis.MTG?.resumeAccountSave) throw new Error('The saved-game module did not finish loading.');
+  return globalThis.MTG.resumeAccountSave(save);
+});
+
 function openGuide(continueMode = null) {
   page.querySelector('.mainmenu-onboarding')?.remove();
   document.body.classList.add('mainmenu-dialog-open');
@@ -131,7 +138,7 @@ function openGuide(continueMode = null) {
     <header><span>FIRST GAME GUIDE</span><h2 id="public-guide-title">Four things before you sit down.</h2><p>You can reopen this guide from the main menu at any time.</p></header>
     <div class="mainmenu-onboarding-grid">
       <section><i aria-hidden="true">01</i><div><b>Your deck is complete</b><p>Every listed option is a fixed 100-card deck. Pick by feel first; the deck spotlight explains the plan.</p></div></section>
-      <section><i aria-hidden="true">02</i><div><b>You control one seat</b><p>The other seats never expose hidden cards. Local AI makes decisions without an external model or account.</p></div></section>
+      <section><i aria-hidden="true">02</i><div><b>You control one seat</b><p>The other seats never expose hidden cards. Local AI makes decisions without an external model API.</p></div></section>
       <section><i aria-hidden="true">03</i><div><b>HOLD opens priority</b><p>Arm HOLD when you want to respond. The game also stops automatically at the priority windows you choose.</p></div></section>
       <section><i aria-hidden="true">04</i><div><b>Proceed protects clarity</b><p>Important spells, triggers, targets, and combat reviews wait until the table state is clear.</p></div></section>
     </div>
@@ -218,6 +225,11 @@ window.render_game_to_text = () => JSON.stringify({
   deckCount: 27,
   actions: ['Start a solo table', 'Create a Live table', 'Guide'],
   onboardingOpen: !!page.querySelector('.mainmenu-onboarding'),
+  account: globalThis.MTGAccount?.user ? {
+    signedIn: true,
+    displayName: globalThis.MTGAccount.user.displayName,
+    hasSave: !!globalThis.MTGAccount.save,
+  } : { signedIn: false, hasSave: false },
 });
 window.advanceTime = async () => JSON.parse(window.render_game_to_text());
 
