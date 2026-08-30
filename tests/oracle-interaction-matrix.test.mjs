@@ -15,6 +15,13 @@ function namedFor(MTG, keyword) {
   return entry.raw.name;
 }
 
+function castingContract(entry) {
+  if (entry.raw.types.includes('Land')) return 'land-play';
+  if (entry.raw.types.some(type => type === 'Instant' || type === 'Sorcery')) return 'spell-casting';
+  if (entry.raw.types.includes('Creature')) return 'creature-casting';
+  return null;
+}
+
 function permanent(MTG, game, player, name) {
   const card = new MTG.CardInst(MTG.DEFS[name], player);
   card.ctrl = player;
@@ -24,16 +31,22 @@ function permanent(MTG, game, player, name) {
   return card;
 }
 
-test('svih 300 batch karata mapira kompletan Oracle rules core na poznate interakcijske ugovore', () => {
+test('svaka generička Oracle batch karta mapira kompletan rules core na poznate interakcijske ugovore', () => {
   const MTG = loadEngine();
   const entries = allEntries(MTG);
-  assert.equal(entries.length, 300);
+  assert.ok(entries.length >= 1300, `expected the initial 300 plus 1,000 new cards, found ${entries.length}`);
   for (const entry of entries) {
     const catalog = MTG.CARD_CATALOG[entry.raw.name];
     const deck = { cards: [{ n: 1, name: entry.raw.name }] };
     const audit = MTG.auditImportedDeckInteractions(deck, MTG.DEFS);
     assert.equal(audit.ready, true, `${entry.raw.name}: ${JSON.stringify(audit.unsupported)}`);
-    assert.ok(audit.contracts.some(contract => contract.id === 'creature-casting'), `${entry.raw.name}: creature casting`);
+    const base = castingContract(entry);
+    assert.ok(base, `${entry.raw.name}: supported runtime type`);
+    assert.ok(audit.contracts.some(contract => contract.id === base), `${entry.raw.name}: ${base}`);
+    for (const operation of entry.implementation || []) {
+      assert.ok(MTG.ORACLE_INTERACTION_CONTRACTS[operation.contract], `${entry.raw.name}: known ${operation.contract}`);
+      assert.ok(audit.contracts.some(contract => contract.id === operation.contract), `${entry.raw.name}: ${operation.contract}`);
+    }
     for (const keyword of entry.implementedKeywords) {
       const mechanic = keyword.startsWith('ward ') ? 'ward' : keyword;
       const contract = MTG.ORACLE_KEYWORD_CONTRACTS[mechanic];

@@ -15,6 +15,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     flying: 'flying-evasion',
     reach: 'reach-blocking',
     forestwalk: 'landwalk-evasion',
+    plainswalk: 'landwalk-evasion',
+    islandwalk: 'landwalk-evasion',
+    swampwalk: 'landwalk-evasion',
+    mountainwalk: 'landwalk-evasion',
+    fear: 'fear-evasion',
+    intimidate: 'intimidate-evasion',
+    skulk: 'skulk-evasion',
+    shadow: 'shadow-blocking',
+    horsemanship: 'horsemanship-evasion',
     menace: 'menace-blocking',
     'first strike': 'first-strike-step',
     'double strike': 'double-strike-steps',
@@ -35,10 +44,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   MTG.ORACLE_INTERACTION_CONTRACTS = Object.freeze({
     'creature-casting': { mechanics: ['creature'], path: 'cast spell → stack → permanent' },
+    'spell-casting': { mechanics: ['instant', 'sorcery'], path: 'cast spell → target lock → Stack → resolution → graveyard' },
+    'land-play': { mechanics: ['land'], path: 'land-play timing → battlefield entry → mana/ETB path' },
     'vanilla-permanent': { mechanics: [], path: 'base P/T → continuous effects → combat/SBA' },
     'flying-evasion': { mechanics: ['flying'], path: 'combat blocker legality' },
     'reach-blocking': { mechanics: ['reach'], path: 'combat blocker legality against flying' },
-    'landwalk-evasion': { mechanics: ['forestwalk'], path: 'defender land subtype → blocker legality' },
+    'landwalk-evasion': { mechanics: ['landwalk'], path: 'matching defender land subtype → blocker legality' },
+    'fear-evasion': { mechanics: ['fear'], path: 'artifact/black blocker legality' },
+    'intimidate-evasion': { mechanics: ['intimidate'], path: 'artifact/shared-color blocker legality' },
+    'skulk-evasion': { mechanics: ['skulk'], path: 'greater-power blocker restriction' },
+    'shadow-blocking': { mechanics: ['shadow'], path: 'shadow parity blocker restriction' },
+    'horsemanship-evasion': { mechanics: ['horsemanship'], path: 'horsemanship blocker restriction' },
     'menace-blocking': { mechanics: ['menace'], path: 'minimum two legal blockers' },
     'first-strike-step': { mechanics: ['first strike'], path: 'first-strike combat damage step' },
     'double-strike-steps': { mechanics: ['double strike'], path: 'first and normal combat damage steps' },
@@ -60,6 +76,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'target-lock-revalidation': { mechanics: ['target'], path: 'legal target lock → ward/protection → resolution revalidation' },
     'activated-ability-cost': { mechanics: ['activated ability'], path: 'availability → target lock → cost payment → Stack' },
     'mana-source': { mechanics: ['mana'], path: 'mana ability → source selection → restricted pool/payment tracking' },
+    'land-enters-tapped': { mechanics: ['land'], path: 'battlefield entry replacement → tapped state' },
+    'cant-block-static': { mechanics: ['combat'], path: 'continuous restriction → blocker eligibility' },
+    'must-attack-static': { mechanics: ['combat'], path: 'attacker requirement → legal declaration' },
+    'etb-draw': { mechanics: ['trigger', 'draw'], path: 'self ETB event → trigger Stack → draw' },
+    'etb-life-gain': { mechanics: ['trigger', 'life'], path: 'self ETB event → trigger Stack → life gain' },
+    'dies-draw': { mechanics: ['trigger', 'draw'], path: 'self dies/LKI event → trigger Stack → draw' },
+    'etb-library-selection': { mechanics: ['trigger', 'scry', 'surveil'], path: 'self ETB event → trigger Stack → ordered library choice' },
+    'etb-token-creation': { mechanics: ['trigger', 'token'], path: 'self ETB event → trigger Stack → exact token characteristics' },
+    'spell-draw': { mechanics: ['spell', 'draw'], path: 'Stack resolution → exact card draw' },
+    'spell-counter': { mechanics: ['spell', 'counter'], path: 'stack target lock → uncounterable check → counter' },
+    'spell-destroy': { mechanics: ['spell', 'destroy'], path: 'permanent target lock → resolution revalidation → destroy/SBA' },
+    'spell-exile': { mechanics: ['spell', 'exile'], path: 'permanent target lock → resolution revalidation → exile' },
+    'spell-damage': { mechanics: ['spell', 'damage'], path: 'target lock or each-opponent set → damage event/SBA' },
+    'spell-pump': { mechanics: ['spell', 'continuous effect'], path: 'creature target lock → EOT P/T/keyword layer → SBA' },
+    'spell-team-pump': { mechanics: ['spell', 'continuous effect'], path: 'controller battlefield set → EOT P/T/keyword layer → SBA' },
+    'spell-life-gain': { mechanics: ['spell', 'life'], path: 'Stack resolution → life gain event' },
+    'spell-bounce': { mechanics: ['spell', 'zone change'], path: 'permanent target lock → hand zone change/LKI' },
+    'spell-discard': { mechanics: ['spell', 'discard'], path: 'player target lock → controller card choice → discard events' },
+    'spell-mill': { mechanics: ['spell', 'mill'], path: 'player target lock → ordered library-to-graveyard moves' },
     'continuous-layer': { mechanics: ['continuous effect'], path: 'recalc layers → current types/keywords/P/T' },
     'saga-chapter-stack': { mechanics: ['saga'], path: 'lore counter → chapter trigger → priority → sacrifice SBA' },
     'amass-army': { mechanics: ['amass'], path: 'choose/create Army → add subtype → counter replacement/events' },
@@ -193,16 +228,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (isBatch) {
         batchCards += entry.n;
         if ((def.types || []).includes('Creature')) addContract('creature-casting', entry.name);
+        if ((def.types || []).includes('Land')) addContract('land-play', entry.name);
+        if ((def.types || []).some(type => type === 'Instant' || type === 'Sorcery')) addContract('spell-casting', entry.name);
         if (catalog.semanticClass === 'vanilla') addContract('vanilla-permanent', entry.name);
         if (!script || script.oracleImplemented !== true || script.oracleId !== catalog.oracleId) {
           unsupported.push({ card: entry.name, reason: 'missing-oracle-implementation-marker' });
         }
-        if (catalog.semanticClass === 'manual-deck-semantic') {
-          const manualContracts = script && Array.isArray(script.oracleContracts) ? script.oracleContracts : [];
-          if (!manualContracts.length) unsupported.push({ card: entry.name, reason: 'missing-manual-interaction-contracts' });
-          for (const contract of manualContracts) {
-            if (!MTG.ORACLE_INTERACTION_CONTRACTS[contract]) unsupported.push({ card: entry.name, reason: `unknown-manual-contract:${contract}` });
-            else addContract(contract, entry.name);
+        const oracleContracts = script && Array.isArray(script.oracleContracts) ? script.oracleContracts : [];
+        const implementationKinds = catalog.implementationKinds || [];
+        if (catalog.semanticClass === 'manual-deck-semantic' && !oracleContracts.length) {
+          unsupported.push({ card: entry.name, reason: 'missing-manual-interaction-contracts' });
+        }
+        if (implementationKinds.length && !oracleContracts.length) {
+          unsupported.push({ card: entry.name, reason: 'missing-template-interaction-contracts' });
+        }
+        const compiledKinds = script && Array.isArray(script.oracleImplementation)
+          ? script.oracleImplementation.map(operation => operation.kind)
+          : [];
+        if (implementationKinds.length && (compiledKinds.length !== implementationKinds.length ||
+            implementationKinds.some((kind, index) => compiledKinds[index] !== kind))) {
+          unsupported.push({ card: entry.name, reason: 'compiled-template-mismatch' });
+        }
+        for (const contract of oracleContracts) {
+          if (!MTG.ORACLE_INTERACTION_CONTRACTS[contract]) {
+            const prefix = catalog.semanticClass === 'manual-deck-semantic'
+              ? 'unknown-manual-contract:' : 'unknown-template-contract:';
+            unsupported.push({ card: entry.name, reason: prefix + contract });
+          } else {
+            addContract(contract, entry.name);
           }
         }
       }

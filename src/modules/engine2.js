@@ -279,6 +279,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Compute total castable check: can p pay cost (greedy+backtrack over sources)?
   G.manaSolve = function (p, cost, forSpell, opts = {}) {
     // cost: parsed {generic, x, pips} with x already multiplied in via opts.xVal
+    // A two-brid symbol ({2/W}, etc.) is paid either as one colored pip or as
+    // two generic mana. Expand the small choice set up front, then let the
+    // regular solver prove an exact payment plan for each legal alternative.
+    if (!opts._twoBridgeExpanded && cost.pips.some(pip => pip.includes('TWO'))) {
+      const positions = cost.pips.reduce((out, pip, index) => {
+        if (pip.includes('TWO')) out.push(index);
+        return out;
+      }, []);
+      const choices = 2 ** positions.length;
+      for (let mask = 0; mask < choices; mask++) {
+        let generic = cost.generic;
+        let choiceIndex = 0;
+        const pips = [];
+        for (const pip of cost.pips) {
+          if (!pip.includes('TWO')) {
+            pips.push(pip.slice());
+            continue;
+          }
+          const payGeneric = !!(mask & (1 << choiceIndex++));
+          if (payGeneric) generic += 2;
+          else pips.push(pip.filter(symbol => symbol !== 'TWO'));
+        }
+        const effectiveCost = Object.assign({}, cost, { generic, pips });
+        const solved = this.manaSolve(p, effectiveCost, forSpell,
+          Object.assign({}, opts, { _twoBridgeExpanded: true }));
+        if (solved) {
+          solved.effectiveCost = effectiveCost;
+          return solved;
+        }
+      }
+      return null;
+    }
     const pips = cost.pips.slice();
     const initialGeneric = Math.max(0, cost.generic + (opts.xVal || 0) * (cost.x || 0) - (cost.xReduction || 0));
     let generic = initialGeneric;
@@ -359,14 +391,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const artifactDiscount = this.artifactAbilityDiscountAmount(p);
     const initiallyUsedArtifactAbility = !!opts.artifactAbilityAlreadyUsed || artifactDiscount === 0;
+    const planLifeCost = steps => steps.reduce((total, step) => {
+      if (step.phyrexianLife) return total + step.phyrexianLife;
+      if (step.src && step.src.virtual === 'channel') return total + Math.max(0, Number(step.chosen && step.chosen.C) || 0);
+      return total + Math.max(0, Number(step.src && step.src.extraCost && step.src.extraCost.life) || 0);
+    }, 0);
     const tryCover = (idx, needPips, needGen, planAcc, artifactAbilityUsed = initiallyUsedArtifactAbility) => {
       if (++nodes > 6000) return null;
-      if (!needPips.length && needGen <= 0) return planAcc;
+      if (!needPips.length && needGen <= 0) return planLifeCost(planAcc) <= p.life ? planAcc : null;
       if (idx >= sources.length) {
         // phyrexian fallback: pay 2 life per PHY pip
         const allPhy = needPips.every(pp => pp[1] === 'PHY');
-        if (allPhy && needGen <= 0) {
-          return planAcc.concat(needPips.map(pp => ({ phyrexianLife: 2 })));
+        const phyrexianSteps = needPips.map(() => ({ phyrexianLife: 2 }));
+        if (allPhy && needGen <= 0 && planLifeCost(planAcc.concat(phyrexianSteps)) <= p.life) {
+          return planAcc.concat(phyrexianSteps);
         }
         return null;
       }
@@ -513,11 +551,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         sol = manual;
       }
     }
+    const paidCost = sol.effectiveCost || cost;
     // activate sources: plain producers first, converters (which consume mana) last.
     // Sva produkcija ulazi u pool; na kraju se CIJELA cijena skida iz poola.
     const steps = sol.plan.slice().sort((a, b) => (a.consume ? 1 : 0) - (b.consume ? 1 : 0));
-    const genTotal0 = Math.max(0, cost.generic + (opts.xVal || 0) * (cost.x || 0) - (cost.xReduction || 0));
-    const needColors = cost.pips.map(pp => pp.find(c => COLORS.includes(c))).filter(Boolean);
+    const requiredLife = steps.reduce((total, step) => {
+      if (step.phyrexianLife) return total + step.phyrexianLife;
+      if (step.src && step.src.virtual === 'channel') return total + Math.max(0, Number(step.chosen && step.chosen.C) || 0);
+      return total + Math.max(0, Number(step.src && step.src.extraCost && step.src.extraCost.life) || 0);
+    }, 0);
+    if (requiredLife > p.life) return false;
+    const genTotal0 = Math.max(0, paidCost.generic + (opts.xVal || 0) * (paidCost.x || 0) - (paidCost.xReduction || 0));
+    const needColors = paidCost.pips.map(pp => pp.find(c => COLORS.includes(c))).filter(Boolean);
     let phyPaidWithLife = 0;
     for (const step of steps) {
       if (step.phyrexianLife) { await this.loseLife(p, step.phyrexianLife, 'phyrexian'); phyPaidWithLife++; continue; }
@@ -526,8 +571,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deduct the full cost from pool (pre-existing pool + fresh production)
     const genTotal = genTotal0;
-    const normalPips = cost.pips.filter(pp => pp[1] !== 'PHY');
-    const phyPips = cost.pips.filter(pp => pp[1] === 'PHY');
+    const normalPips = paidCost.pips.filter(pp => pp[1] !== 'PHY');
+    const phyPips = paidCost.pips.filter(pp => pp[1] === 'PHY');
     const payPips = normalPips.concat(phyPips.slice(phyPaidWithLife));
     this._payColors = new Set(); // sunburst/converge praćenje boja
     this.deductPool(p, { generic: genTotal, pips: payPips }, forSpell);
@@ -538,7 +583,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // spending mana.  Effects such as Kurbis and expend care about the mana
     // actually spent, not the spell's final total cost.
     const convoked = forSpell && forSpell.convokedCards ? forSpell.convokedCards.length : 0;
-    const total = Math.max(0, genTotal + cost.pips.length - phyPaidWithLife - convoked);
+    const total = Math.max(0, genTotal + paidCost.pips.length - phyPaidWithLife - convoked);
     if (forSpell) forSpell.manaSpent = total;
     if (opts.isSpell) await this.trackSpentOnSpell(p, total);
     this.note('mana', { p });

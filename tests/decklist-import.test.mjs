@@ -70,7 +70,7 @@ test('pasted Commander deck prolazi tek nakon size, singleton, commander, color 
   for (const name of extras) assert.ok(player.library.some(card => card.name === name), `${name}: built into library`);
 });
 
-test('svaka od 300 generičkih Oracle batch karata može ući u legalan 100-card custom deck i CardInst', () => {
+test('svaka generička Oracle batch karta može ući u legalan 100-card custom deck i CardInst', () => {
   const MTG = loadEngine();
   for (const name of batchNames(MTG)) {
     const imported = MTG.importCommanderDeck(deckText('Ashling, the Limitless', [name]), { name: `Probe — ${name}` });

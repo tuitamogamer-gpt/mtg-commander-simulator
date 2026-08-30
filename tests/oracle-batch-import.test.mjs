@@ -22,7 +22,7 @@ function battlefield(MTG, game, player, name) {
   return card;
 }
 
-test('Oracle batchovi 0001–0003 registruju 300 pojedinačno certifikovanih karata', () => {
+test('početni Oracle batchovi ostaju stabilni dok katalog prihvata naredne batchove', () => {
   const MTG = loadEngine();
   const expected = [
     ['oracle-0001', 'A.I.M. Bot', 'Brushstrider'],
@@ -95,9 +95,11 @@ test('Oracle batch keywordi koriste stvarne centralne combat i targeting putanje
 
 test('CARD_CATALOG pokriva sve engine definicije i odvaja legacy od batch statusa', () => {
   const MTG = loadEngine();
+  const batchEntries = MTG.ORACLE_BATCHES.flatMap(batch => batch.cards);
+  const manualEntries = batchEntries.filter(entry => entry.semanticClass === 'manual-deck-semantic');
   assert.equal(Object.keys(MTG.CARD_CATALOG).length, Object.keys(MTG.DEFS).length);
-  assert.equal(Object.values(MTG.CARD_CATALOG).filter(card => card.engineBatch).length, 358);
-  assert.equal(Object.values(MTG.CARD_CATALOG).filter(card => card.semanticClass === 'manual-deck-semantic').length, 58);
+  assert.equal(Object.values(MTG.CARD_CATALOG).filter(card => card.engineBatch).length, batchEntries.length);
+  assert.equal(Object.values(MTG.CARD_CATALOG).filter(card => card.semanticClass === 'manual-deck-semantic').length, manualEntries.length);
   assert.equal(MTG.CARD_CATALOG['A.I.M. Bot'].engineStatus, 'certified');
   assert.equal(MTG.CARD_CATALOG['Sol Ring'].engineStatus, 'certified-legacy');
   assert.deepEqual(Array.from(MTG.CARD_CATALOG['A.I.M. Bot'].colorIdentity), ['U']);

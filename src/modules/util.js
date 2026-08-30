@@ -437,7 +437,8 @@ MTG.parseCost = function (str) {
 
 MTG.mv = function (str, xVal) {
   const c = MTG.parseCost(str);
-  return c.generic + c.pips.length + (xVal || 0) * c.x;
+  return c.generic + c.pips.reduce((total, pip) => total + (pip.includes('TWO') ? 2 : 1), 0) +
+    (xVal || 0) * c.x;
 };
 
 MTG.costStr = function (cost, xVal) {
@@ -447,6 +448,7 @@ MTG.costStr = function (cost, xVal) {
   if (cost.generic) parts.push('{' + cost.generic + '}');
   for (const p of cost.pips) {
     if (p[1] === 'PHY') parts.push('{' + p[0] + '/P}');
+    else if (p.includes('TWO')) parts.push('{2/' + p.find(symbol => COLORS.includes(symbol)) + '}');
     else parts.push('{' + p.join('/') + '}');
   }
   if (!parts.length) return '{0}';

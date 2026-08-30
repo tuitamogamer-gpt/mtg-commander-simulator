@@ -1150,6 +1150,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           kind: 'counter', card, counterKind: 'loyalty', n: card.counters['loyalty'],
         });
       }
+      if (d.defense && card.is('Battle')) {
+        card.counters.defense = parseInt(d.defense, 10);
+        this.notifyEffect(`◆ ${card.name} enters with ${card.counters.defense} defense counters.`, {
+          kind: 'counter', card, counterKind: 'defense', n: card.counters.defense,
+        });
+      }
       // additional +1/+1 counters replacements (Grumgully)
       if (card.is('Creature')) {
         for (const r of this.replacers('etbCounters')) {
@@ -1673,6 +1679,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await this.emit('damagePrevented', { src, target, n, combat: !!opts.combat });
         await this.emit('shieldRemoved', { card: target });
         return 0;
+      }
+      if (target.is('Battle')) {
+        this.removeCounters(target, 'defense', Math.min(n, target.counters.defense || 0));
+        this.lg(`${src ? src.name : 'Source'} deals ${n} damage to battle ${target.name}.`, 'dmg');
+        target.meta._lastDamageVisual = { turn: this.turnNo, sourceId: src && src.iid || 0 };
+        this.note('gameEffect', {
+          kind: 'damage', targetKind: 'permanent', target, targetCard: target,
+          source: src || null, amount: n, combat: !!opts.combat,
+          combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
+        });
+        await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
+        if (!opts.deferSBA) await this.checkSBA();
+        return n;
       }
       if (target.is('Planeswalker')) {
         this.removeCounters(target, 'loyalty', n);
@@ -2297,7 +2316,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // dying/leaving card's own leave-triggers
       if ((name === 'dies' || name === 'lto') && data.card) {
         const dc = data.card;
-        if (!this.bf().includes(dc)) consider(dc, z => z === 'battlefield' || z === 'self');
+        if (!this.bf().includes(dc)) {
+          // The physical card has already reset to its owner outside the
+          // battlefield. Its own leave/dies trigger is controlled by the
+          // player who controlled the permanent immediately before it left.
+          consider(dc, z => z === 'battlefield' || z === 'self', data.snap && data.snap.ctrl);
+        }
       }
       // graveyard/exile/command zone triggers
       for (const p of this.players) {
@@ -2552,13 +2576,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         return finish();
       }
-      if (spec.what === 'any') { // creature, player, planeswalker
+      if (spec.what === 'any') { // creature, player, planeswalker, battle
         for (const p of this.alivePlayers()) {
           if (spec.filter && !spec.filter(this, p, ctrl, src)) continue;
           if (checkProt(p)) out.push(p);
         }
         for (const c of this.bf()) {
-          if (!(c.is('Creature') || c.is('Planeswalker'))) continue;
+          if (!(c.is('Creature') || c.is('Planeswalker') || c.is('Battle'))) continue;
           if (spec.filter && !spec.filter(this, c, ctrl, src)) continue;
           if (!checkProt(c)) continue;
           out.push(c);

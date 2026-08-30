@@ -454,7 +454,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Keyword loader
   // ============================================================
   const SIMPLE_KWS = ['flying', 'first strike', 'double strike', 'deathtouch', 'lifelink', 'trample',
-    'haste', 'vigilance', 'menace', 'reach', 'defender', 'indestructible', 'hexproof', 'shroud', 'flash', 'prowess', 'forestwalk', 'wither'];
+    'haste', 'vigilance', 'menace', 'reach', 'defender', 'indestructible', 'hexproof', 'shroud', 'flash', 'prowess',
+    'forestwalk', 'plainswalk', 'islandwalk', 'swampwalk', 'mountainwalk', 'wither', 'fear', 'intimidate', 'skulk',
+    'shadow', 'horsemanship'];
 
   MTG.buildDefs = function (rawCards, scripts) {
     // Skup stvarnih tipova stvorenja iz baze — koristi ga CardInst.hasSub da
@@ -477,6 +479,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const d = Object.assign({}, raw);
       d.kws = d.kws || [];
       const oracle = (d.oracle || '');
+      let oracleProwessInstances = 0;
       // keyword lines: check first 2 lines for comma-separated keywords
       const lines = oracle.split('\n');
       for (const line of lines.slice(0, 3)) {
@@ -489,7 +492,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (parts.every(part => SIMPLE_KWS.includes(part.trim()) || /^ward/.test(part) || part === 'shroud' || part === 'skulk' || /^myriad/.test(part) || /^flanking/.test(part) || /^ascend/.test(part))) {
           for (const part of parts) {
             const t = part.trim();
-            if (SIMPLE_KWS.includes(t)) d.kws.push(t);
+            if (SIMPLE_KWS.includes(t)) {
+              d.kws.push(t);
+              if (t === 'prowess') oracleProwessInstances++;
+            }
             else if (t.startsWith('ward')) {
               const m = /ward\s*\{(\d+)\}/.exec(t);
               if (m) d.ward = { mana: '{' + m[1] + '}' };
@@ -519,11 +525,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       d.kws = [...new Set(d.kws)];
       // prowess as trigger
       if (d.kws.includes('prowess')) {
-        d.triggers = (d.triggers || []).concat([{
+        const prowessTriggers = Array.from({ length: Math.max(1, oracleProwessInstances) }, () => ({
           on: 'castNonCreature', desc: 'Prowess',
           filter: (g, self, data) => data.player === self.ctrl,
           run: async ctx => { E.pumpUntilEOT(ctx.g, ctx.src, 1, 1); },
-        }]);
+        }));
+        d.triggers = (d.triggers || []).concat(prowessTriggers);
       }
       defs[name] = d;
     }

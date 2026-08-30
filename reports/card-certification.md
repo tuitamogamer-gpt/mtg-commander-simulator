@@ -1,12 +1,12 @@
 # Card-by-card certifikacija
 
-Generisano: 2026-08-29T21:09:17.519Z
+Generisano: 2026-08-30T06:22:22.572Z
 
 Aktivni deckovi: **27** · stvarno jedinstvenih karata: **1580** · card/deck provjere: **2347**
 
 Jedinstvene karte — PASS: **1580** · FAIL: **0** · card/deck pojave — PASS: **2347** · FAIL: **0**
 
-Cijela raw baza — PASS: **1984/1984** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **404** karata, uključujući **358** certifikovanih Oracle batch karata.
+Cijela raw baza — PASS: **2984/2984** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **1404** karata, uključujući **1358** certifikovanih Oracle batch karata.
 
 `Blame Game` je namjerno izbačen iz proizvoda. Oracle batch karte su dostupne engine-u i budućem katalogu, ali još nisu dio nekog ugrađenog 100-card decka.
 
@@ -2551,46 +2551,68 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | Status | Karta | Nalaz |
 |---|---|---|
 | PASS | A.I.M. Bot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | A.I.M. Labs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | A.I.M. Synthoids | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aardvark Sloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abbey Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Accursed Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Adult Gold Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aegis Turtle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aegis of the Heavens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aerial Responder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aesthir Glider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Affa Protector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ageless Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Agent of Atlas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Agitator Ant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Air Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ajani's Sunstriker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Akoum Refuge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alabaster Host Sanctifier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alabaster Kirin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alaborn Grenadier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alert Shu Infantry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alley Strangler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Alloy Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alpha Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alpha Tyrranax | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alpine Grizzly | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Alpine Meadow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alpine Watchdog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Altar's Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Altar's Reap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Amateur Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ambassador Oak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ambush Viper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Amphin Cutthroat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anaba Bodyguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Anaconda | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancient Brontodon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancient Carp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancient Crab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancient Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancient Stone Idol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Angel of Mercy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angel of Retribution | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Angel's Mercy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angelic Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ankle Biter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Antagonize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Anurid Murkdiver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anvilwrought Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anya, Merciless Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arachnoid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arashin Cleric | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arborback Stomper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archangel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archers of Qarsi | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Archive Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archweaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arctic Flats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arctic Treeline | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ardent Militia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Argothian Swine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Armada Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Armored Cancrix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Armored Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Armored Warhorse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -2598,55 +2620,93 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Armored Wolf-Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arrogant Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ascended Lawmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Asgardian Citadel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashcoat Bear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ashen Monstrosity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ashenmoor Gouger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aspiring Aeronaut | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Assault Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Assault Zeppelid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Attended Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Auger Spree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Augury Owl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Automatic Librarian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aven Battle Priest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aven Envoy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aven Fleetwing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aven Reedstalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aven Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aven Skirmisher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aven of Enduring Hope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Avengers Hangar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aviation Pioneer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Axebane Beast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Axebane Stag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Axegrinder Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Azorius Guildgate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Azure Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Balduvian Barbarians | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Balduvian Bears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bane Alley Blackguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Banehound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Banners Raised | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bar the Door | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Barbarian General | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barbarian Horde | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barbary Apes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barbtooth Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Baron, Airship Kingdom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barony Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Barrier of Bones | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bartizan Bats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bassara Tower Archer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bastion Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bathe in Dragonfire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Battle Hurda | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Battlefield Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bay Falcon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bayou Dragonfly | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bear Cub | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bear's Companion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Benalish Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Benthic Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Benthic Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Berserkers of Blood Ridge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bilbo's Deadly Slice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Birnin Zana Plaza | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bishop's Soldier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bitterbow Sharpshooters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Black Widow, Natasha Romanoff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blade of the Sixth Pride | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bladetusk Boar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blanchwood Treefolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blaze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blind Phantasm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blistering Barrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Glutton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bloodfire Expert | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bloodrock Cyclops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bloodthirsty Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blossoming Sands | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bog Imp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bog Raiders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bog Smugglers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bog Tatters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bog Wraith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boggart Brute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boggart Ram-Gang | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bogstomper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Boltwave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bombard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bonebreaker Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Book of Mazarbul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Border Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Border Patrol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Borderland Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Boreal Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Boreal Shelf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boros Garrison | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Boros Guildgate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boros Reckoner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boros Recruit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boros Swiftblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -2654,16 +2714,28 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Brambleweft Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brazen Scourge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breakneck Berserker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Breath of Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Breath of Malfegor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brightblade Stoat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Brilliant Plan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bronze Sable | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bronze Walrus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Broodhunter Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Broodmate Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brushstrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Brute Force | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bull Cerodon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bull Hippo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bull Rush | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bulwark Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Burn Bright | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Buzz Bots | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cabal Evangel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Caelorna, Coral Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Call of the Ring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Callous Dismissal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Canal Monitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cancel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Canopy Gorger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Canopy Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Canyon Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -2674,20 +2746,36 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Cat Warriors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Catacomb Crocodile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Catacomb Slug | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cathedral Sanctifier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Caustic Rain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Centaur Courser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Centaur Healer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Centaur Nurturer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cerodon Yearling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Champion of Arashin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chapel Geist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chaplain's Blessing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chardalyn Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Charge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Charging Badger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Charging Monstrosaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Charity Extractor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Child of Night | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chimney Rabble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chorus of Woe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chrome Cat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cinder Barrens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cinder Storm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Clarion Cathars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cleansing Screech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cliff Threader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cliffhaven Sell-Sword | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cloaked Siren | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cloud Crusader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cloud Manta | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cloudcrown Oak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cloudkin Seer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cloudreader Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cobblebrute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cold-Water Snapper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Colorful Feiyi Sparrow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -2696,144 +2784,243 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Colossapede | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Colossodon Yearling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Comeuppance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Command the Storm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Commence the Endgame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Concentrate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Concentrated Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Concordia Pegasus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Conifer Strider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Consulate Skygate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Copper Host Crusher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Copper Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Coral Barrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coral Commando | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coral Eel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coral Merfolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Corrupted Conviction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Council of Advisors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Counsel of the Soratami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Counterspell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Courier Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Courier Hawk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cowl Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crash of Rhinos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Craterize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Craven Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Craw Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Crazed Goblin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crazed Skirge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Crested Herdcaller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystacean | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Curio Vendor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cursed Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cyclops of One-Eyed Pass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cylian Elf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Daggerback Basilisk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Daggerclaw Imp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Daggerdrome Imp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dakmor Bat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dakmor Scorpion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dancing Scimitar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darien, King of Kjeldor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dark Deed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dark Remedy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Ritual | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Darkslick Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darksteel Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawn Gryff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawn's Light Archer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dawnhart Rejuvenator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dawning Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawnstrike Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Daybreak Chaplain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Daysquad Marshal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deadly Insect | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deadly Recluse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Deathbloom Gardener | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathgaze Cockatrice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Deception | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deer-Dog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defiant Elf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defiant Khenra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deflecting Palm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deft Duelist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Demon's Grasp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Demystify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deranged Whelp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Desert Twister | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devilthorn Fox | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Devoted Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Devouring Deep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Devout Monk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dimension X | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dimir Guildgate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dimir Informant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dimir Signet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Disenchant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Disfigure | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dismal Backwater | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dismember | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Disorient | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Disperse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Disrupt Decorum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Divination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Diving Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Djinn of the Lamp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Douser of Lights | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon Bell Monk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon Moose | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon Sniper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dragon Trainer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon's Eye Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dragon-Style Twins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dragoon's Wyvern | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drakewing Krasis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dreadbore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dreadhorde Invasion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dreg Reaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dromoka Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dross Crocodile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dross Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Drown in Shapelessness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Druid of the Cowl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Duelist's Heritage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dune Beetle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Durkwood Boars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dusk Imp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Duskdale Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dutiful Servants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dwarven Grunt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dwarven Trader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eager Cadet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Eager Glyphmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eagle of the Watch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earth Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earthshaking Si | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ekundu Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elder Auntie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elderleaf Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eldrazi Devastator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Electrify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elementalist Adept | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elephant-Rat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elfhame Palace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elfhame Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elite Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elrond, Lord of Rivendell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elturgard Ranger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Archers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Lookout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Emerald Oryx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enforcer Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Engulfing Eruption | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Enlightened Maniac | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enormous Baloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enter the God-Eternals | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Erase | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Esper Cormorants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ethereal Guidance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Eviscerate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Expedition Envoy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Experimental Aviator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Explosive Impact | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Explosive Shot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Exultant Cultist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Exultant Skymarcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Eye of Nowhere | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Eyes of the Beholder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fade into Antiquity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Faerie Invaders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Faerie Seer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Faithbearer Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Falkenrath Reaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fang of Shigeki | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fangren Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Farbog Explorer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Farbog Revenant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fatal Fumes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fate Forgotten | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fearless Halberdier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feather, Radiant Arbiter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Feed the Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feiyi Snake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Felhide Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Femeref Scouts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fencing Ace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feral Abomination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Feral Ferocity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feral Krushok | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feral Maaka | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Feral Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feral Shadow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ferocious Pup | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ferocious Zheng | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Field Creeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiendish Duo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fiery Finish | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Filigree Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Filter Out | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Final Death | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Final Reward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Finishing Blow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire Nation Ambushers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire Nation Soldier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fisk Tower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fists of the Anvil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flame Javelin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flame Lash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flame Slash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flameborn Hellion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flameborn Viron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flatten | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fleetfoot Dancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flesh to Dust | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flood of Recollection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flowstone Infusion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flying Dolphin-Fish | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flying Men | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fomori Nomad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Foot Headquarters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foot Soldiers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foray of Orcs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Force of Savagery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forest Bear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Forsaken Sanctuary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fortified Rampart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fortress Crab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Foul Orchard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Frenzied Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fresh Volunteers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Frog-Squirrels | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Frontier Warmonger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Frontline Rebel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Frost Marsh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Frost Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fugitive Wizard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Furtive Homunculus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fusion Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fyndhorn Elder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fyndhorn Elves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gaea's Skyfolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Galadhrim Guide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Galewind Moose | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gallant Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gallant Citizen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gandalf, Friend of the Shire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Garruk's Companion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Garruk's Gorehorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Geist of the Moors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Generous Stray | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gerrard's Irregulars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ghirapur Gearcrafter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ghirapur Osprey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ghostly Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Giant Cockroach | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Giant Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Giant Mantis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Giant Octopus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Giant Scorpion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -2846,108 +3033,921 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Gilacorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gilded Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gisela, Blade of Goldnight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Glacial Floodplain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glacial Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gladecover Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glamorous Grapplers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glass Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Glider Kids | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Glimpse the Unthinkable | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Glissa's Courier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gloom Pangolin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gloomhunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Glorious Charge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glory Seeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gluttonous Zombie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gnarled Mass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gnottvold Recluse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Assailant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Berserker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goblin Brigand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Chariot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Deathraiders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goblin Gang Leader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goblin Glider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goblin Instigator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goblin Mountaineer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Piker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goblin Raider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Roughrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Sky Raider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goblin Spelunkers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Striker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Trailblazer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gohn, Town of Ruin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gold Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gold-Forged Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Golden Bear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Golden Hind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Golden-Tail Disciple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Golgari Guildgate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Golgari Longlegs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goliath Beetle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goliath Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goliath Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gongaga, Reactor Town | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goobbue Gardener | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gorbag of Minas Morgul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gore Swine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gorilla Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grappler Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grasp of Darkness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gray Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Graypelt Refuge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grayscaled Gharial | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grazing Whiptail | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Great Forest Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Great Hart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Great-Horn Krushok | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Greater Basilisk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Greenweaver Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Greenwood Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grendel, Spawn of Knull | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grey Havens Navigator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Griffin Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grishnákh, Brash Instigator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grizzled Leotau | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grizzled Outrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grizzly Bears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gruul Guildgate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gryff Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Guadosalam, Farplane Gateway | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Guarded Heir | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Guardian Lions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Guardians of Meletis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gurmag Swiftwing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gut Shot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gutter Skulk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gyre Engineer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Halberdier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hand of Silumgar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Happy Hogan, Dauntless Driver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Harrier Naga | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Harvest Gwyllion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Haunted Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Havenwood Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Havoc Devils | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Havoc Eater | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hawkeater Moth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hawkeye, Clint Barton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Head of the Homestead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Headless Horseman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Headwater Sentries | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Healer of the Glade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Healer's Flock | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Healer's Hawk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hearthfire Hobgoblin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Heartwood Treefolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Heat Ray | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hedron Crawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hell's Kitchen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Helpful Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herald of Secret Streams | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hero's Downfall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hexplate Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Highborn Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Highborn Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Highland Forest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Highland Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Highland Lake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Highland Weald | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Highspire Mantis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hill Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hill Giant Herdgorger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hillcomber Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hippo-Cows | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hired Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hired Poisoner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hitchclaw Recluse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hobgoblin Dragoon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hollowhenge Beast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Honey Mammoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Honor the God-Pharaoh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Horizon Scholar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hornet Cobra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hornet Sting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hostile Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hot Pursuit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hover Barrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hovermyr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Howling Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Howling Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Huatli's Snubhorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hulk, Bruce Banner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hulking Bugbear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hulking Cyclops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hulking Devil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hulking Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hullcarver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Humble Budoka | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Humongulus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hussar Patrol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hydrosurge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hyena Pack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ice Tunnel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Iguana Parrot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Illegitimate Business | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Immortal Obligation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Impale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Imperial Outrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Imperious Inkmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Impetuous Sunchaser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Incurable Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Independent Troops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Infiltration Lens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Infuriate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Inkwell Leviathan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Insatiable Harpy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Insomnia, Crown City | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Inspired Charge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Inspiring Cleric | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Invade the City | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Invasion Reinforcements | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Iroas's Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Iron Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Iron Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Iron Tusk Elephant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Iron-Barb Hellion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ironclad Krovod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ironroot Treefolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ironwright's Cleansing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Isamaru, Hound of Konda | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ithilien Kingfisher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Izzet Guildgate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jace's Ingenuity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jagwasp Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jasmine Boreal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jedit's Dragoons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jeskai Brushmaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jeskai Sage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jeskai Student | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jeskai Windscout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jhessian Lookout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jhovall Queen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jhovall Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jibbirik Omnivore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Joraga Visionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jukai Messenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jungle Barrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jungleborn Pioneer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Juvenile Gloomwidow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jwar Isle Refuge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jwari Scuttler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kalakscion, Hunger Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kalonian Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kalonian Tusker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kami of Old Stone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kasimir the Lone Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kavu Climber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kazandu Refuge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kazuul, Tyrant of the Cliffs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kederekt Creeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Keen-Eyed Archers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Keeper of the Accord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Keepers of the Faith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kelinore Bat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kemba's Skyguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kessig Recluse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kher Keep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kindercatch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kindly Customer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | King Cheetah | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kingfisher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kitesail Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kithkin Billyrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Knight Errant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Knight of Meadowgrain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Knight of New Benalia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Knight of the Keep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Knight of the New Coalition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Knight of the Tusk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Koala-Sheep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kodama of the North Tree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Komodo Rhino | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Koth's Courier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kozilek's Channeler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kraken Hatchling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kraul Raider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kraul Stinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kree Commandos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Krenko's Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Krovikan Scoundrel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kyoshi Warrior Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kyoshi Warriors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kyren Glider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Labyrinth of Skophos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lady Zhurong, Warrior Queen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lagac Lizard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Land Leeches | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lantern Kami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Large Bear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lash of Malice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lash of the Whip | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Last Gasp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lathnu Sailback | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lava Axe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lava Spike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lazotep Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lazotep Plating | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Leaden Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Leaf Dancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Leaf Gilder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Leatherback Baloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Leonin Skyhunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Leopard-Spotted Jiao | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Leyline Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Library of Leng | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Life's Finale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lifespring Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lightning Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lightning Bolt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lightning Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lightning Hounds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lightning Stormkin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lightning Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lightning Visionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lightshell Duo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Living Tempest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lizard Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Llanowar Dead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Llanowar Elves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Llanowar Tribe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Llanowar Visionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Loamdragger Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lobelia Sackville-Baggins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lone Missionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Longbow Archer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Looming Altisaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loran of the Third Path | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lord of the Nazgûl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Los Diablos Missile Base | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lost Legion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lost Soul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lotus Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lotus Path Djinn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Loxodon Convert | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Loxodon Line Breaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Loxodon Wayfarer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lucent Liminid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lumengrid Gargoyle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lumengrid Warden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lynx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mage-Ring Bully | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Magnigoth Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mahamoti Djinn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Makindi Aeronaut | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Makindi Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Malcator's Watcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mammoth Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Manakin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mandroid Squadron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Maned Serval | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mantis Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Maraleaf Pixie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | March from the Black Gate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Marisi's Twinclaws | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Maritime Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Markov Patrician | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Marsh Boa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Marsh Goblins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Marsh Threader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Martial Impetus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mass of Ghouls | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mauhúr, Uruk-hai Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Meandering River | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mechanized Ninja Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Merchant of Secrets | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Merfolk of the Depths | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Merfolk of the Pearl Trident | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mesa Cavalier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mesa Unicorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Messenger Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Messenger Falcons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Midnight Assassin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Might of Oaks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Millennial Gargoyle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mind Rot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Minotaur Abomination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Minotaur Aggressor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Minotaur Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirkwood Bats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Misshapen Fiend | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mist Leopard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mistral Charger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mistral Singer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moaning Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moat Piranhas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mob Verdict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moldering Karok | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Monastery Swiftspear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Monoist Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mons's Goblin Raiders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Monster Mashup | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Monstrous Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moon Heron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moon Sprite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moonglove Winnower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moor Fiend | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moorish Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moriok Reaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moss Kami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moss Monster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moss Viper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mossbeard Ancient | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mosscoat Goriak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mountain Bandit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mountain Goat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Muck Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Murasa Brute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Murmuring Phantasm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Muse Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mutagenic Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mutant Town | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mystic Retrieval | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Naga Eternal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Naga Oracle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nantuko Elder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nasty End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Naturalize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nature's Chant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Needle Spires | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Needlepeak Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Needleshot Gourna | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Needlethorn Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nelly Borca, Impulsive Accuser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nema Siltlurker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nephalia Seakite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nessian Courser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nest Robber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nether Horror | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nettle Swine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | New Benalia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | News Helicopter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nezumi Cutthroat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Niblis of Dusk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nightguard Patrol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nightscape Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nightshade Dryad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nightshade Stinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nightveil Predator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nimble Birdsticker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nimble Innovator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nimble Thopterist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nimble-Blade Khenra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nimbus of the Isles | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nip Gwyllion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Norwood Archers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Norwood Ranger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nourish | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Noxious Groodion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Noxious Newt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nyxborn Brute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nyxborn Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nyxborn Courser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nyxborn Marauder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nyxborn Seaguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oakgnarl Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oasis Gardener | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Obsidian Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Octoprophet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ogre Berserker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ogre Resister | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ogre Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ogre Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oko's Accomplices | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Old Ghastbark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oltec Cloud Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Omega Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Omenspeaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Onakke Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | One Ring to Rule Them All | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oona's Gatewarden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Opaline Unicorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Open Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Orazca Frillback | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Orazca Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orcish Medicine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orcish Siegemaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Order of the Sacred Bell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ordinary Bear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oreskos Swiftclaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ornithopter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Orochi Sustainer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Orzhov Guildgate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Otherworldly Escort | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Outlaw Medic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Overkill | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oxidize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Palace Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Paladin of the Bloodstained | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pale Bears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Palladium Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Panther Warriors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pardic Wanderer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Path of Anger's Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Peace Strider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pearled Unicorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pegasus Charger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pelakka Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pensive Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Peregrine Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Phantom Monster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pharika's Chosen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pheres-Band Centaurs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phial of Galadriel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Phyrexian Walker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Phytoburst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pilgrim of the Fires | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pillarfield Ox | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pincher Beetles | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pitiless Gorgon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pitiless Plunderer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Plague Beetle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Plated Crusher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Plated Seastrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Plated Slagwurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Plated Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Plated Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Plover Knights | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Plumeveil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pond Prophet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Porcelain Legionnaire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pouncing Cheetah | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prakhata Club Security | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Precision Bolt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Preening Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prickly Boggart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prideful Parent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Primal Huntbeast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Primordial Pachyderm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Primordial Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prisoner's Dilemma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prized Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prizefighter Construct | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prophet of the Peak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Protector of Gondor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prowling Caracal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pull Under | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Punk Frogs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Purple-Crystal Crab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pygmy Allosaurus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pygmy Razorback | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pym Technologies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pyromantic Pilgrim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Python | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Qilin's Blessing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Quakestrider Ceratops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Quaketusk Boar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Queen's Bay Soldier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Quick Study | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Quicksilver, Pietro Maximoff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Quiet Purity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Quilled Slagwurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rabanastre, Royal City | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ragefire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Raging Bull | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Raging Cougar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Raging Kavu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Raging Poltergeist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Raging Redcap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Raiding Nightstalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rain of Tears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rakdos Guildgate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rakdos Ragemutt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rakdos Shred-Freak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rancid Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Raptor Companion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ravenous Lindwurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Razorfield Thresher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Razorfoot Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Razortooth Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Reach Through Mists | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rearing Embermare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Reckless Brute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Redemption Arc | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Redwood Treefolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Regal Unicorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Regathan Firecat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Regress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Relic Sloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Renegade Demon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Renegade Troops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Repulsor Rays | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Resistance Skywarden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Resolute Reinforcements | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Revoke Existence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rhox Brute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rhox Oracle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rhox War Monk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rib Cage Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ridgetop Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Righteous Charge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rimeshield Frost Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rimewood Falls | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ringsight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ringwarden Owl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Riot Devils | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Riot Piker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rip-Clan Crasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ripscale Predator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Riptide Crab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Riptide Turtle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Risen Sanctuary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rite of the Raging Storm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | River Bear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | River Kaijin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Riverwheel Aerialists | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Roc Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rock Badger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rootwater Commando | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rorix Bladewing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rotted Hulk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rotted Hystrix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rotting Fensnake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rotting Mastodon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Roving Harper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rowan Treefolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Royal Falcon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rubble Slinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rubbleback Rhino | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rubblebelt Recluse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rugged Highlands | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ruination Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rumbling Baloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rumbling Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Runeclaw Bear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Runewing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rushwood Dryad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Russet Wolves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rustrazor Butcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rustwing Falcon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | S.H.I.E.L.D. Deployment Drone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sabretooth Tiger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sacred Nectar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sacred Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sage's Row Savant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Salt Marsh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sanguinary Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sanitation Automaton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sarkhan's Catharsis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saruman, the White Hand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Satyr Rambler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sauron's Ransom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sauron, Lord of the Rings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sauron, the Dark Lord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sauron, the Necromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Savai Sabertooth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Savannah Lions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Savannah Sage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scaled Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scaled Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scare Tactics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scarlet Witch, Wanda Maximoff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scarwood Goblins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scathe Zombies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scavenging Scarab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scion of Ugin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scorching Shot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scorching Spear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scoria Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scorpion's Sting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scour from Existence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scoured Barrens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scrounger of Souls | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scuzzback Scrapper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sea Eagle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Seacoast Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Seagraf Skaab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Seal of Cleansing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Searchlight Companion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Searing Spear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Searing Wind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sedge Scorpion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Seer's Lantern | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Segovian Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Segovian Leviathan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sejiri Refuge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Selesnya Guildgate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Selfless Squire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Seller of Songbirds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Senate Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sentinel Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sentinels of Glen Elendra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Seraph of Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Seraph of the Suns | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Serra Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Serra Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Serra Zealot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Severed Legion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sevinne's Reclamation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sewn-Eye Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shadow Glider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shaman of Spring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shanodin Dryads | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sharlayan, Nation of Scholars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shatter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shattering Blow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shatterskull Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shatterskull Recruit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shepherd of the Lost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shield Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shining Aerosaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shivan Oasis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shock | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shore Lurker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shorecomber Crab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Show of Valor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shrike Force | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shu Elite Infantry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shu Foot Soldiers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shu Grain Caravan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sickle Ripper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Siege Mastodon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Silent Artisan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Silent Observer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Silver Erne | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Silver Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Silver Raven | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Silverback Ape | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Silverback Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Silverbeak Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Silverclaw Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Silvercoat Lion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Simic Guildgate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Simic Sky Swallower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sinkhole | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sisters of the Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sizzle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skeletal Crocodile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skeletal Snake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sky Ruin Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sky Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sky Terror | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyblade of the Legion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyhunter Patrol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyhunter Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyhunter Skirmisher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyknight Legionnaire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyline Predator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyraker Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyscanner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyshroud Falcon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyshroud Troopers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skysnare Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyspear Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyswirl Harrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Slash Panther | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Slinking Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Slippery Bogle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sliver Construct | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Smelt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Smoldering Butcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Smuggler's Share | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Snapping Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Snare Thopter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Snow-Covered Forest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Snow-Covered Island | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Snow-Covered Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Snow-Covered Plains | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Snow-Covered Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Snow-Covered Wastes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Snowfield Sinkhole | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Soaring Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sokenzan Bruiser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sokka, Wolf Cove's Protector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Solidarity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Soltari Foot Soldier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Somberwald Dryad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Snare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Soul of the Rapids | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Soulbound Guardians | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spatial Contortion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spectacular Showdown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spectral Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spider-Rex, Daring Dino | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spike Jester | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spiked Baloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spined Karok | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spined Thopter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spineless Thug | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spinning Wheel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spire Monitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spore Crawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sporecap Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spring of Eternal Peace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Springmane Cervin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Squire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Squirming Mass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Squirrelanoids | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stalker Hag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stalking Leonin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stampeding Rhino | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Standing Troops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stark Industries | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Starlit Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Staunch Shieldmate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Steadfast Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Steadfast Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Steadfastness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Steeple Roc | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sterling Hound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Steward of Valeron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stomper Cub | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stone Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stone Quarry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stone Rain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stonework Puma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Storm Crow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stormchaser Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stormcloud Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stormfront Pegasus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stormrider Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Story Seeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Strangle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Strangling Spores | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Straw Soldiers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Streetbreaker Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Striped Bears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Submerged Boneyard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Subterranean Cavern | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sulfurous Mire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Summit Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Summit Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sun Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sunblade Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sundial, Dawn Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sungrace Pegasus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sunspire Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Suntail Hawk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Swab Goblin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Swift Spinner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Swiftblade Vindicator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Swiftwater Cliffs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Swooping Lookout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Swordwise Centaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sworn Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sylvan Brushstrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | TCRI Building | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Taigam's Scheming | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tajuru Blightblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tajuru Pathwarden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tajuru Snarecaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Take the Bait | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Talas Air Ship | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Talas Merchant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Talas Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Talon Trooper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Talruum Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tangle Mantis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tangle Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Taoist Hermit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tar Snare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tarfire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tasseled Dromedary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tattermunge Maniac | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tempest Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Temple of Deceit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tenement Crasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Terrain Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Terrian, World Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Territorial Roc | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Terror of the Fairgrounds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thalakos Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thaumaturge's Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Fabulous Frog-Man | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Mouth of Sauron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Terror of Serpent's Pass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Whizzer, Classic Speedster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thor Odinson | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thornhide Wolves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thornweald Archer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Those Who Serve | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thraben Purebloods | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thraben Valiant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Three Tragedies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Three Tree Rootweaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Throttle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thryx, the Sudden Storm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thundering Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thundering Rebuke | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thundering Tanadon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tidehollow Strix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tidings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Timber Gorge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tireless Missionaries | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Titanic Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tolarian Scholar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tomakul Honor Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tome Raider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tome Scour | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tor Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tormented Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Touch of Brilliance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tower Gargoyle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Towering Indrik | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Trained Caracal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Trained Jackal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Trained Orgg | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tranquil Cove | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tranquil Expanse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Traveling Philosopher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Treason of Isengard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tree Monkey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tree of Tales | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Treetop Freedom Fighters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Treno, Dark City | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tresserhorn Sinks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Triton Shorethief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Trokin High Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Trouble in Pairs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tundra Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tundra Wolves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tunnel Surveyor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Turn Aside | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Turntimber Ascetic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Turtle-Seals | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tusked Colossodon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Twin-Silk Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Twinscroll Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Two-Headed Cerberus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Two-Headed Zombie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Typhoid Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tyrox, Saurid Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ukud Cobra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ultimate Price | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Umara Entangler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Undead Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Underdark Basilisk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Unfriendly Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Unlicensed Disintegration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Unmake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Unsummon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Unyaro Bee Sting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Updraft Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Urbis Protector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Urborg Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Urborg Volcano | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Utopia Tree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Utter End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Utvara Scalper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Valiant Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Valkyrior Skyrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Valley Dasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Valorous Steed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vampire Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vampire Cutthroat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vampire Interloper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vampire Nighthawk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vampire Noble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vampire Revenant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vampire of the Dire Moon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vassal Soul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vastwood Gorger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vault Skirge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vault of Whispers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vector, Imperial Capital | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vedalken Blademaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Venerable Lammasu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Venerable Monk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Venomthrope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Venser's Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vernadi Shieldmate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Veteran Cavalier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Vexing Gull | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vow of Duty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vow of Lightning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | War Room | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
