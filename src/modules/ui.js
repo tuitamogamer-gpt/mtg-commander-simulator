@@ -13,7 +13,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const el = (tag, cls, html) => {
     const e = document.createElement(tag);
     if (cls) e.className = cls;
-    if (html !== undefined) e.innerHTML = U.uiText(html);
+    if (html !== undefined) { e.innerHTML = html; U.localizeTree(e); }
     return e;
   };
   const esc = (s) => U.uiText(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
