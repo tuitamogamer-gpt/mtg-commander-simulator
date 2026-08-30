@@ -483,7 +483,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       josh: -0.06,
       teaser: 0.34,
       balanced: 0.32,
-    }[bot.aiStyle || 'balanced'] ?? 0.32;
+    }[MTG.getAIBaseStyle(bot.aiStyle) || 'balanced'] ?? 0.32;
     const fingerprint = [completedRounds(game), bot.idx, proposal.fromId,
       clauseFingerprint(proposal.request), clauseFingerprint(proposal.offer), negotiationStateFingerprint(game)].join('|');
     // Seedovana sklonost pregovaranju daje personama karakter, ali je potpuno
@@ -869,22 +869,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (to.isAI && evaluateProposal(game, proposal, to).status !== 'accepted') continue;
           const sharedBonus = shared ? Math.min(0.7, shared.gap * 0.04) : 0;
           const variety = stableFraction(`${from.idx}|${to.idx}|${completedRounds(game)}|${clauseFingerprint(request)}|${clauseFingerprint(offer)}`) * 0.12;
-          const joshPolitics = from.aiStyle === 'josh'
+          const joshPolitics = MTG.getAIBaseStyle(from.aiStyle) === 'josh'
             ? 0.35 + (pressuresLeader ? 0.2 : 0) + ([request.type, offer.type].includes('no_attack') ? 0.12 : 0)
             : 0;
-          const jimmyPolitics = from.aiStyle === 'jimmy'
+          const jimmyPolitics = MTG.getAIBaseStyle(from.aiStyle) === 'jimmy'
             ? 0.24 + (pressuresLeader ? 0.42 : 0) +
               (pressuresLeader && [request.type, offer.type].includes('no_attack') ? 0.18 : 0)
             : 0;
-          const rachelPolitics = from.aiStyle === 'rachel'
+          const rachelPolitics = MTG.getAIBaseStyle(from.aiStyle) === 'rachel'
             ? 0.28 + (shared ? 0.22 : 0) + (pressuresLeader ? 0.38 : 0) +
               ([request.type, offer.type].includes('no_attack') ? 0.08 : 0)
             : 0;
-          const postPolitics = from.aiStyle === 'post'
+          const postPolitics = MTG.getAIBaseStyle(from.aiStyle) === 'post'
             ? 0.3 + (shared ? 0.2 : 0) + (pressuresLeader ? 0.3 : 0) +
               ([request.type, offer.type].includes('no_attack') ? 0.22 : 0)
             : 0;
-          const oliviaPolitics = from.aiStyle === 'olivia'
+          const oliviaPolitics = MTG.getAIBaseStyle(from.aiStyle) === 'olivia'
             ? 0.36 + (shared ? 0.28 : 0) + (pressuresLeader ? 0.46 : 0) +
               ([request.type, offer.type].includes('no_attack') ? 0.16 : 0)
             : 0;

@@ -17,6 +17,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return e;
   };
   const esc = (s) => U.uiText(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const escAttr = s => esc(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
   function imgURL(name) {
     return MTG.cardImageURL(name);
@@ -996,7 +997,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const grudgeMe = this.me && t.p.isAI && ((t.p.grudges || {})[this.me.idx] || 0) >= 2;
         row.innerHTML = `
           <span class="trank">${['🥇', '🥈', '🥉', '4.'][i] || (i + 1) + '.'}</span>
-          <span class="tname">${esc(t.p.name)}${styleMeta ? ` <span class="persona" title="${esc(styleMeta.label)}">${styleMeta.icon}</span>` : ''}${grudgeMe ? ' <span class="persona" title="Remembers your attacks and holds a grudge!">💢</span>' : ''}</span>
+          <span class="tname">${esc(t.p.name)}${styleMeta ? ` <span class="persona" title="${escAttr(styleMeta.label)}">${styleMeta.icon}</span>` : ''}${grudgeMe ? ' <span class="persona" title="Remembers your attacks and holds a grudge!">💢</span>' : ''}</span>
           <span class="tbarwrap"><span class="tbar" style="width:${pct}%"></span></span>
           <span class="tscore">${t.score}</span>`;
         row.onclick = () => { this.playerSheet = t.p; this.render(); };
@@ -1732,7 +1733,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span class="seatindex">${String(seatNo).padStart(2, '0')}</span>
           <span class="oppname">${isMonarch ? `<i class="seatcrown" aria-label="Monarch">${U.icon('crown')}</i> ` : ''}${U.icon('player', 'oppidentityicon')} ${esc(p.name)}</span>
           ${isActiveAi ? '<span class="activeaitag">ACTIVE TURN</span>' : ''}
-          ${styleMeta ? `<span class="personachip${styleMeta.portrait ? ' hasportrait' : ''}" title="Style: ${esc(styleMeta.label)}">${styleMeta.portrait ? `<img src="${styleMeta.portrait}" alt="" onerror="MTG.imgFail(this)">` : styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
+          ${styleMeta ? `<span class="personachip${styleMeta.portrait ? ' hasportrait' : ''}" title="Style: ${escAttr(styleMeta.label)}">${styleMeta.portrait ? `<img src="${styleMeta.portrait}" alt="" onerror="MTG.imgFail(this)">` : styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
           <span class="playerlifetotals"><span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${p.life}❤</span>${this.poisonBadge(p)}</span>
           <span class="oppmeta">${U.icon('cards')}${p.hand.length} ${U.icon('library')}${p.library.length}${statusEffects.length ? ` <button type="button" class="playereffectsbadge" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}</span>
           <span class="oppcmd" title="${esc(cmdTitle)}">${U.icon('crown')}${esc(cmdState)}</span>

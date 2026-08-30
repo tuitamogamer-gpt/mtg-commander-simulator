@@ -223,6 +223,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ai: setup.ai,
         aiDecks: (setup.aiDecks || []).slice(0, 3),
         aiStyles: (setup.aiStyles || []).slice(0, 3),
+        aiCustomSkills: MTG.snapshotAISkills(setup.aiStyles),
         aiRandomCommanders: !!setup.aiRandomCommanders,
         sumPartnerDamage: !!setup.sumPartnerDamage,
         diplomacyEnabled: !!setup.diplomacyEnabled,
@@ -249,6 +250,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     assert(save.setup.aiDecks.every(name => MTG.DECKS?.[name] && !MTG.DECKS[name].custom), 'a saved AI deck is unavailable.');
     assert(new Set([save.setup.deck, ...save.setup.aiDecks]).size === save.setup.aiDecks.length + 1, 'saved decks must remain unique.');
     assert(Array.isArray(save.decisions) && save.decisions.length <= 5000, 'decision history is invalid.');
+    MTG.validateAISkillSetup(save.setup.aiStyles || [], save.setup.aiCustomSkills || []);
     return save;
   };
 })();

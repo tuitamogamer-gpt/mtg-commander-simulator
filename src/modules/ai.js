@@ -761,8 +761,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (P.chaos && this.r(g) < 0.5) return oppPlayers[Math.floor(this.r(g) * oppPlayers.length)];
       const leader = oppPlayers.slice().sort((a, b) => this.playerThreat(g, b) - this.playerThreat(g, a))[0];
       const lowest = oppPlayers.slice().sort((a, b) => a.life - b.life)[0];
-      if (this.style === 'aggressive' || this.style === 'opportunist') return lowest; // dokrajči ranjene
-      if (this.style === 'passive') return leader;                // gađa prijetnju
+      if (MTG.getAIBaseStyle(this.style) === 'aggressive' || MTG.getAIBaseStyle(this.style) === 'opportunist') return lowest; // dokrajči ranjene
+      if (MTG.getAIBaseStyle(this.style) === 'passive') return leader;                // gađa prijetnju
       return this.r(g) < 0.6 ? leader : lowest;
     }
 

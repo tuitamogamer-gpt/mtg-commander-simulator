@@ -376,8 +376,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       (U.DECKS && U.DECKS[deckId] ? buildDeckProfile(deckId, U.DECKS[deckId]) : null);
   };
 
+  MTG.getAIBaseStyle = style => MTG.AI_STYLES?.[style]?.baseStyle || style;
+  MTG.getAIStyleSkill = style => MTG.AI_STYLES?.[style]?.runtimeSkill || AI_STYLE_SKILLS[style] || null;
   function styleSkillFor(player) {
-    return player && AI_STYLE_SKILLS[player.aiStyle] || null;
+    return player ? MTG.getAIStyleSkill(player.aiStyle) : null;
   }
 
   function profileForStyle(profile, player) {
@@ -397,7 +399,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     byStyle.set(player.aiStyle, styled);
     return styled;
   }
-  MTG.getAIStyleSkill = style => AI_STYLE_SKILLS[style] || null;
   MTG.getBotEvaluationProfile = player => {
     const deckId = player && (player.deckName || player.deck && player.deck.name);
     return profileForStyle(MTG.getDeckAIProfile(deckId), player);
@@ -1707,7 +1708,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (hint === 'bottomOrder') return -value;
     if (/discard|sacCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) {
       let discardScore = -value;
-      if (player.aiStyle === 'josh') {
+      if (MTG.getAIBaseStyle(player.aiStyle) === 'josh') {
         const sem = inferCardSemantics(card.def);
         const lands = game.lands(player).length;
         if (sem.roles.includes('land') && lands >= 6) discardScore += 6;
@@ -1715,7 +1716,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (sem.roles.some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role))) discardScore -= 4;
         if (sem.roles.includes('engine') || sem.roles.includes('card-draw')) discardScore -= 3;
       }
-      if (player.aiStyle === 'jimmy') {
+      if (MTG.getAIBaseStyle(player.aiStyle) === 'jimmy') {
         const sem = inferCardSemantics(card.def);
         const lands = game.lands(player).length;
         if (sem.roles.includes('land') && lands >= 5) discardScore += 4;
@@ -1723,7 +1724,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (sem.roles.includes('counterspell') && !sem.roles.includes('protection')) discardScore += 3;
         if (card.commander || sem.roles.some(role => ['creature', 'finisher', 'anthem', 'combat-trick', 'protection'].includes(role))) discardScore -= 3;
       }
-      if (player.aiStyle === 'rachel') {
+      if (MTG.getAIBaseStyle(player.aiStyle) === 'rachel') {
         const sem = inferCardSemantics(card.def);
         const lands = game.lands(player).length;
         const flexibleRoles = sem.roles.filter(role => ['ramp', 'mana-rock', 'card-draw', 'card-selection',
@@ -1733,7 +1734,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (flexibleRoles.length >= 2) discardScore -= 4;
         if (sem.roles.some(role => ['engine', 'card-draw', 'protection', 'finisher'].includes(role))) discardScore -= 2.5;
       }
-      if (player.aiStyle === 'post') {
+      if (MTG.getAIBaseStyle(player.aiStyle) === 'post') {
         const sem = inferCardSemantics(card.def);
         const oracle = textOf(card.def);
         const lands = game.lands(player).length;
@@ -1743,7 +1744,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (sem.roles.includes('board-wipe') && postOpportunistMode(game, player) !== 'GAMBLE') discardScore += 2.5;
         if (sem.roles.some(role => ['engine', 'card-draw', 'combo-piece', 'finisher', 'reanimation'].includes(role)) || borrowsPower) discardScore -= 4;
       }
-      if (player.aiStyle === 'olivia') {
+      if (MTG.getAIBaseStyle(player.aiStyle) === 'olivia') {
         const sem = inferCardSemantics(card.def);
         const lands = game.lands(player).length;
         const sabotage = saboteurCard(card.def);
@@ -1798,7 +1799,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function jimmyAggroMode(game, player, view, profile) {
-    if (!player || player.aiStyle !== 'jimmy') return null;
+    if (!player || MTG.getAIBaseStyle(player.aiStyle) !== 'jimmy') return null;
     const publicView = view || MTG.createBotPlayerView(game, player.idx);
     const styledProfile = profileForStyle(profile || MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name), player);
     const me = getPlayerRow(publicView, player.idx);
@@ -1829,7 +1830,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.jimmyAggroMode = jimmyAggroMode;
 
   function joshValueEngineMode(game, player, view, profile) {
-    if (!player || player.aiStyle !== 'josh') return null;
+    if (!player || MTG.getAIBaseStyle(player.aiStyle) !== 'josh') return null;
     const publicView = view || MTG.createBotPlayerView(game, player.idx);
     const styledProfile = profileForStyle(profile || MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name), player);
     const me = getPlayerRow(publicView, player.idx);
@@ -1853,7 +1854,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.joshValueEngineMode = joshValueEngineMode;
 
   function rachelBalancedMode(game, player, view, profile) {
-    if (!player || player.aiStyle !== 'rachel') return null;
+    if (!player || MTG.getAIBaseStyle(player.aiStyle) !== 'rachel') return null;
     const publicView = view || MTG.createBotPlayerView(game, player.idx);
     const styledProfile = profileForStyle(profile || MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name), player);
     const me = getPlayerRow(publicView, player.idx);
@@ -1890,7 +1891,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.rachelBalancedMode = rachelBalancedMode;
 
   function postOpportunistMode(game, player, view, profile) {
-    if (!player || player.aiStyle !== 'post') return null;
+    if (!player || MTG.getAIBaseStyle(player.aiStyle) !== 'post') return null;
     const publicView = view || MTG.createBotPlayerView(game, player.idx);
     const styledProfile = profileForStyle(profile || MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name), player);
     const me = getPlayerRow(publicView, player.idx);
@@ -1923,7 +1924,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.postOpportunistMode = postOpportunistMode;
 
   function oliviaSaboteurMode(game, player, view, profile) {
-    if (!player || player.aiStyle !== 'olivia') return null;
+    if (!player || MTG.getAIBaseStyle(player.aiStyle) !== 'olivia') return null;
     const publicView = view || MTG.createBotPlayerView(game, player.idx);
     const styledProfile = profileForStyle(profile || MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name), player);
     const me = getPlayerRow(publicView, player.idx);
@@ -1962,11 +1963,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.oliviaSaboteurMode = oliviaSaboteurMode;
 
   function styleSkillMode(game, player, view, profile) {
-    if (player && player.aiStyle === 'jimmy') return jimmyAggroMode(game, player, view, profile);
-    if (player && player.aiStyle === 'josh') return joshValueEngineMode(game, player, view, profile);
-    if (player && player.aiStyle === 'rachel') return rachelBalancedMode(game, player, view, profile);
-    if (player && player.aiStyle === 'post') return postOpportunistMode(game, player, view, profile);
-    if (player && player.aiStyle === 'olivia') return oliviaSaboteurMode(game, player, view, profile);
+    if (player && MTG.getAIBaseStyle(player.aiStyle) === 'jimmy') return jimmyAggroMode(game, player, view, profile);
+    if (player && MTG.getAIBaseStyle(player.aiStyle) === 'josh') return joshValueEngineMode(game, player, view, profile);
+    if (player && MTG.getAIBaseStyle(player.aiStyle) === 'rachel') return rachelBalancedMode(game, player, view, profile);
+    if (player && MTG.getAIBaseStyle(player.aiStyle) === 'post') return postOpportunistMode(game, player, view, profile);
+    if (player && MTG.getAIBaseStyle(player.aiStyle) === 'olivia') return oliviaSaboteurMode(game, player, view, profile);
     return null;
   }
   MTG.getAIStyleMode = styleSkillMode;
@@ -2381,23 +2382,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const privateData = PRIVATE_VIEWS.get(view);
     const game = privateData.game, player = privateData.player;
     const skill = styleSkillFor(player);
-    if (skill && skill.id === 'jimmy-aggro-pressure') {
+    if (MTG.AI_STYLES?.[player.aiStyle]?.custom && action.kind === 'cast') {
+      const roles = inferCardSemantics(action.card.def).roles;
+      breakdown.customSkill = roles.reduce((sum, role) => sum + (skill.roleBonuses[role] || 0), 0);
+      // Josh already applies its reserve in the inherited value-engine policy.
+      if (skill.baseStyle !== 'josh' && skill.reserveMana > 0 && game.turnPlayer === player && game.phase === 'main1') {
+        const heldInteraction = player.hand.some(card => card !== action.card && inferCardSemantics(card.def).roles
+          .some(role => ['counterspell', 'single-target-removal', 'protection'].includes(role)));
+        const cost = game.spellCost(player, action.card, Object.assign({}, action.alt || {}, { from: action.from }));
+        const spend = (cost.generic || 0) + (cost.pips || []).length;
+        if (heldInteraction && availableManaEstimate(game, player) - spend < skill.reserveMana) breakdown.customSkill -= 5.5;
+      }
+    }
+    if (skill && MTG.getAIBaseStyle(player.aiStyle) === 'jimmy') {
       applyJimmyAggroScore(view, action, profile, q, breakdown);
       return;
     }
-    if (skill && skill.id === 'rachel-balanced-tablecraft') {
+    if (skill && MTG.getAIBaseStyle(player.aiStyle) === 'rachel') {
       applyRachelBalancedScore(view, action, profile, q, breakdown);
       return;
     }
-    if (skill && skill.id === 'post-opportunist-showstopper') {
+    if (skill && MTG.getAIBaseStyle(player.aiStyle) === 'post') {
       applyPostOpportunistScore(view, action, profile, q, breakdown);
       return;
     }
-    if (skill && skill.id === 'olivia-saboteur-instigator') {
+    if (skill && MTG.getAIBaseStyle(player.aiStyle) === 'olivia') {
       applyOliviaSaboteurScore(view, action, profile, q, breakdown);
       return;
     }
-    if (!skill || skill.id !== 'josh-value-engine') return;
+    if (!skill || MTG.getAIBaseStyle(player.aiStyle) !== 'josh') return;
     const mode = joshValueEngineMode(game, player, view, profile);
     breakdown.valueEngine = 0;
     if (action.kind === 'cast') {

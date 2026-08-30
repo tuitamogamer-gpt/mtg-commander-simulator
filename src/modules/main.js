@@ -1114,10 +1114,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     right.appendChild(opponentsLabel);
     const aiRow = el('div', 'btnrow center');
     const botStyles = el('div', 'botstyles');
-    const styleGroups = [
-      ['Core archetypes', Object.entries(MTG.AI_STYLES).filter(([, style]) => !style.signature)],
-      ['Command Zone signatures', Object.entries(MTG.AI_STYLES).filter(([, style]) => style.signature)],
-    ];
+    const getStyleGroups = () => {
+      const customKeys = MTG.readAISkillLibrary().records.map(MTG.aiSkillKey);
+      const styleGroups = [
+        ['Core archetypes', Object.entries(MTG.AI_STYLES).filter(([, style]) => !style.signature && !style.custom)],
+        ['Command Zone signatures', Object.entries(MTG.AI_STYLES).filter(([, style]) => style.signature)],
+        ['Your custom skills', Object.entries(MTG.AI_STYLES).filter(([key, style]) => style.custom && (customKeys.includes(key) || state.aiStyles.includes(key)))],
+      ];
+      return styleGroups;
+    };
     const STYLE_DESC = {
       aggressive: 'Attacks relentlessly, hunts wounded players, and dislikes blocking.',
       jimmy: 'Jimmy-inspired Aggressive pressure: builds around the commander, attacks open lanes, protects its win, then commits to an alpha strike.',
@@ -1156,9 +1161,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             badge.classList.add('hasportrait');
           } else {
             badge.textContent = ['aggressive', 'opportunist', 'passive', 'teaser'].includes(badgeStyle)
-              ? (style && style.icon || '') : (k === 'random' ? '?' : '=');
+              ? (style && style.icon || '') : (k === 'random' ? '?' : style?.icon || '=');
           }
-          badge.title = STYLE_DESC[k] || '';
+          badge.title = style?.description || STYLE_DESC[k] || '';
         };
         const identity = el('div', 'botidentity', `<span class="botname">${esc(botNames[i])}</span><small>Seat 0${i + 1}</small>`);
         const fields = el('div', 'botfields');
@@ -1189,11 +1194,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         randomOption.value = 'random';
         randomOption.selected = state.aiStyles[i] === 'random';
         sel.appendChild(randomOption);
-        for (const [groupLabel, styles] of styleGroups) {
+        for (const [groupLabel, styles] of getStyleGroups()) {
           const group = document.createElement('optgroup');
           group.label = groupLabel;
           for (const [k, style] of styles) {
-            const o = el('option', '', `${style.icon} ${style.label}`);
+            const o = el('option');
+            o.textContent = `${style.icon} ${style.label}`;
             o.value = k;
             if (state.aiStyles[i] === k) o.selected = true;
             group.appendChild(o);
@@ -1208,7 +1214,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const style = MTG.AI_STYLES[k];
           config.dataset.aiStyle = k;
           config.classList.toggle('signaturestyle', !!(style && style.signature));
-          desc.innerHTML = `<span>${style && style.signature ? `${esc(style.name)} · ${esc(style.archetype)} signature` : style ? 'Core archetype' : 'Random assignment'}</span><p>${esc(STYLE_DESC[k] || '')}</p>`;
+          desc.innerHTML = `<span>${style && style.signature ? `${esc(style.name)} · ${esc(style.archetype)} signature` : style?.custom ? `Custom skill · based on ${esc(MTG.AI_STYLES[style.baseStyle].label)}` : style ? 'Core archetype' : 'Random assignment'}</span><p>${esc(style?.description || STYLE_DESC[k] || '')}</p>`;
           setBadge(k);
         };
         updateStylePresentation(state.aiStyles[i]);
@@ -1232,6 +1238,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const botLoadoutsLabel = el('div', 'seclabel', '<i>AI</i> Bot loadouts');
     right.appendChild(botLoadoutsLabel);
     right.appendChild(botStyles);
+    const customSkillsButton = el('button', 'pbtn wide customskillsbutton', 'Upload / manage custom AI skills');
+    customSkillsButton.type = 'button';
+    customSkillsButton.onclick = () => MTG.openAISkillLibrary(change => {
+      if (change.removedKeys) state.aiStyles = state.aiStyles.map(key => change.removedKeys.includes(key) ? 'random' : key);
+      if (change.previousKey) state.aiStyles = state.aiStyles.map(key => key === change.previousKey ? change.key : key);
+      renderBotStyles();
+    });
+    right.appendChild(customSkillsButton);
     renderBotStyles();
 
     const advanced = el('details', 'advancedrules');
@@ -1308,6 +1322,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       aiRow.hidden = state.mode === 'online';
       botLoadoutsLabel.hidden = state.mode === 'online';
       botStyles.hidden = state.mode === 'online';
+      customSkillsButton.hidden = state.mode === 'online';
       randRow.hidden = state.mode === 'online';
       difficultyLabel.hidden = state.mode === 'online';
       diffRow.hidden = state.mode === 'online';
@@ -1353,7 +1368,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const seatMarkup = seats.map(([number, name, deck, styleKey]) => {
         const style = styleKey && MTG.AI_STYLES[styleKey];
         const styleName = style ? style.label : styleKey === 'random' ? 'Random style' : '';
-        return `<div><i>${number}</i><span><b>${esc(name)}</b><small>${esc(deck)}</small></span>${styleName ? `<em class="reviewstyle" title="${esc(STYLE_DESC[styleKey] || styleName)}">${style && style.portrait ? `<img src="${style.portrait}" alt="" onerror="MTG.imgFail(this)">` : `<strong aria-hidden="true">${style ? style.icon : '🎲'}</strong>`}<b>${esc(styleName)}</b></em>` : ''}</div>`;
+        return `<div><i>${number}</i><span><b>${esc(name)}</b><small>${esc(deck)}</small></span>${styleName ? `<em class="reviewstyle" title="${escAttr(style?.description || STYLE_DESC[styleKey] || styleName)}">${style && style.portrait ? `<img src="${style.portrait}" alt="" onerror="MTG.imgFail(this)">` : `<strong aria-hidden="true">${style ? style.icon : '🎲'}</strong>`}<b>${esc(styleName)}</b></em>` : ''}</div>`;
       }).join('');
       reviewStage.innerHTML = `
         <div class="reviewhead"><span>Step 3 of 3</span><h2 id="setup-review-title">Review your table</h2><p>Everything below is public at the start of the game. You can go back without losing your choices.</p></div>
@@ -1419,6 +1434,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const applyDebugReplay = replay => {
       const selectedEntry = [...deckList.querySelectorAll('.deckentry')].find(entry => entry.dataset.deck === replay.deck);
       if (!selectedEntry) throw new Error('Debug snapshot: the selected deck is not visible in this build.');
+      (replay.aiCustomSkills || []).forEach(MTG.registerAISkill);
       state.applyingReplay = true;
       selectedEntry.querySelector('.deckcard').click();
       state.applyingReplay = false;
@@ -1634,6 +1650,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       humanDeck: state.deck,
       aiDecks,
       aiStyles: state.aiStyles.slice(0, state.ai),
+      aiCustomSkills: resumeSave?.setup.aiCustomSkills || MTG.snapshotAISkills(state.aiStyles.slice(0, state.ai)),
       humanCommanders: (state.commanders && state.commanders.length) ? state.commanders : undefined,
       remoteHumans,
       aiRandomCommanders: state.aiRandomCommanders,

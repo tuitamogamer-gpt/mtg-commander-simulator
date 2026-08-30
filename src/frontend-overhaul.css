@@ -593,3 +593,48 @@ body.reduced-motion *::after {
 @media (max-width: 767px) and (max-height: 700px) {
   #game.empty-hand:has(.promptbar .btnrow .pbtn) { grid-template-rows: 76px 48px 96px minmax(112px, 1fr) 96px 54px !important; }
 }
+
+/* Local AI skill workshop; native dialog supplies focus trapping and Escape. */
+#setup .customskillsbutton { margin: 12px 0 4px; white-space: normal; }
+.aiskilldialog { margin: auto; color: #e4e9ed; background: #121a20; border: 1px solid #526067; border-radius: 14px; padding: 0; width: min(1080px, calc(100vw - 32px)); max-width: none; max-height: calc(100dvh - 32px); overflow: auto; box-shadow: 0 30px 100px #000a; font: 14px/1.5 var(--tbl-sans, sans-serif); }
+.aiskilldialog::backdrop { background: #03090dd9; backdrop-filter: blur(5px); }
+.aiskilldialog *, .aiskilldialog *::before, .aiskilldialog *::after { box-sizing: border-box; }
+.aiskillhead { display: flex; justify-content: space-between; align-items: start; gap: 20px; padding: 26px 28px 20px; border-bottom: 1px solid #33424a; }
+.aiskillhead small, .aiskillpreview > small { color: #d5b57a; font-size: 10px; letter-spacing: .14em; font-weight: 700; }
+.aiskillhead h2 { margin: 5px 0; font: 32px/1.15 var(--tbl-serif, Georgia, serif); color: #fff2d7; }
+.aiskillhead p, .aiskilllibrary > p { color: #b0bfc6; margin: 6px 0 0; }
+.aiskillbody { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(245px, 1fr); gap: 28px; padding: 24px 28px; }
+.aiskillbody > * { min-width: 0; }
+.aiskillsteps { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 8px 12px; font-size: 12px; margin-bottom: 20px; }
+.aiskillsteps b { color: #f2d497; }.aiskillsteps span { color: #bbc8cd; }
+.aiskillguide { background: #1b262e; border: 1px solid #3b4f5c; border-radius: 8px; padding: 12px 14px; margin-bottom: 18px; }
+.aiskillguide summary { cursor: pointer; color: #f2d497; font-weight: 700; }
+.aiskillguide p { color: #c4cdd1; font-size: 12px; }
+.aiskilldialog label { display: block; margin: 12px 0 6px; font-size: 12px; color: #dce6eb; font-weight: 600; }
+.aiskilldialog textarea, .aiskilldialog select { width: 100%; max-width: 100%; border: 1px solid #526876; border-radius: 6px; background: #0a131a; color: #e7edf0; padding: 10px; font: 12px/1.5 ui-monospace, monospace; }
+.aiskilldialog textarea { resize: vertical; min-height: 100px; }
+.aiskilldialog :focus-visible { outline: 2px solid #eed097; outline-offset: 3px; }
+.aiskilldrop { display: grid; gap: 5px; padding: 18px; border: 1px dashed #66878e; border-radius: 8px; background: #15252b; }
+.aiskilldrop b { color: #e4f0ed; }.aiskilldrop span { color: #b1c7c7; font-size: 12px; }
+.aiskilldrop input { display: block; width: 100%; min-width: 0; margin-top: 8px; font: inherit; font-size: 12px; }
+.aiskilldrop.dragover { border-color: #efc676; background: #263537; }
+.aiskillpreview { margin-top: 16px; padding: 16px; border: 1px solid #567d68; background: #152a24; border-radius: 8px; overflow-wrap: anywhere; }
+.aiskillpreview h3 { margin: 5px 0; color: #eff8ee; }.aiskillpreview p { margin: 6px 0; font-size: 12px; }
+.aiskillpreview dl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; font-size: 12px; margin-bottom: 0; }.aiskillpreview dd { margin: 0; color: #b4e1bd; }
+.aiskilllibrary { border-left: 1px solid #33424a; padding-left: 24px; }
+.aiskilllibrary h3 { font-size: 16px; margin: 0; }.aiskillcount { font: 11px ui-monospace, monospace; color: #a7bcc7; margin-left: 5px; }
+.aiskilllibrary > p { font-size: 12px; }.aiskilllist article { padding: 16px 0; border-bottom: 1px solid #33424a; overflow-wrap: anywhere; }
+.aiskilllist h4 { margin: 0 0 3px; font-size: 16px; }.aiskilllist small { color: #d7bd8d; }.aiskilllist p { color: #bac7cd; font-size: 12px; }
+.aiskillempty { padding: 20px 0; }.aiskilltools { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.aiskilldialog .pbtn { font-size: 12px; padding: 9px 12px; min-height: 38px; white-space: normal; }
+.aiskilldialog .pbtn:disabled { opacity: .4; cursor: not-allowed; }
+.aiskillfooter { position: sticky; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 28px; border-top: 1px solid #40515a; background: #121a20; }
+.aiskillfooter > div { display: flex; gap: 8px; flex-shrink: 0; }.aiskillstatus { margin: 0; font-size: 12px; color: #aacfbd; overflow-wrap: anywhere; }.aiskilldialog .error { color: #ffb2a7; }
+@media (max-width: 700px) {
+  .aiskilldialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+  .aiskillhead { padding: 18px 16px; gap: 10px; }.aiskillhead h2 { font-size: 26px; }
+  .aiskillbody { grid-template-columns: minmax(0, 1fr); padding: 18px 16px; gap: 22px; }
+  .aiskilllibrary { border-left: 0; border-top: 1px solid #33424a; padding: 18px 0 0; }
+  .aiskillfooter { flex-direction: column; align-items: stretch; gap: 10px; padding: 12px 16px; }
+  .aiskillfooter > div > button { flex: 1; }.aiskillsteps { grid-template-columns: 80px minmax(0, 1fr); }
+}

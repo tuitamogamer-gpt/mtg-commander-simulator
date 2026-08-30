@@ -6,6 +6,8 @@ Every opponent nonland spell is shown on a central action stage and waits for **
 
 Bots use the local heuristic/simulation-based **Commander AI Engine V2**. It has hidden-information-safe player views, per-deck profiles, multiplayer threat evaluation, seedable beam search and a structured decision log; it uses no AI/model/API service. See [`docs/COMMANDER_AI_ENGINE.md`](docs/COMMANDER_AI_ENGINE.md).
 
+Players can upload their own local opponent skills through **Solo → Pod → Upload / manage custom AI skills**. The workshop includes a JSON template, a copyable creation prompt, validation and a reusable browser library. See [Custom opponent skills](docs/custom-ai-skills.md).
+
 ## Share with players
 
 The production URL for approved, verified releases is:

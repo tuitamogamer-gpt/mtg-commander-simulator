@@ -325,6 +325,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // opts: {humanDeck, aiDecks:[names], aiStyles:[keys], seed, onEvent, humanController, difficulty, maxTurns,
     //        humanCommanders:[names], remoteHumans?:[{deck,name,commanders,controller}], aiRandomCommanders:bool,
     //        diplomacyEnabled:bool}. Online Commander supplies one to three remote humans and no AI decks.
+    const customSkills = MTG.validateAISkillSetup(opts.aiStyles || [], opts.aiCustomSkills || MTG.snapshotAISkills(opts.aiStyles));
+    customSkills.forEach(MTG.registerAISkill);
     const g = new MTG.Game({
       seed: opts.seed, onEvent: opts.onEvent, maxTurns: opts.maxTurns, paced: opts.paced,
       difficulty: opts.difficulty || 'normal', humanDeck: opts.humanDeck,
@@ -352,7 +354,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       players.push(player);
       return player;
     });
-    const styleKeys = Object.keys(MTG.AI_STYLES || {}).filter(k => k !== 'balanced');
+    const styleKeys = Object.keys(MTG.AI_STYLES || {}).filter(k => k !== 'balanced' && !MTG.AI_STYLES[k].custom);
     const styles = [];
     for (let botIndex = 0; botIndex < opts.aiDecks.length; botIndex++) {
       const dk = opts.aiDecks[botIndex];

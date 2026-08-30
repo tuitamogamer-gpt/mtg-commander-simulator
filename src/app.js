@@ -82,6 +82,8 @@ import './modules/autoscript.js';
 import './modules/deck-import.js';
 import './modules/ai-v2.js';
 import './modules/ai.js';
+import './modules/ai-custom-styles.js';
+import './modules/ai-skill-ui.js';
 import './modules/multiplayer.js';
 import './modules/multiplayer-ui.js';
 import './modules/save-game.js';

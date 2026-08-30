@@ -1392,6 +1392,7 @@ MTG.buildDebugBundle = function (game, state, createdAt) {
       humanDeck: opts.humanDeck || human?.deckName || null,
       humanCommanders: (human?.commanders || []).map(card => card.name),
       aiRandomCommanders: !!opts.aiRandomCommanders,
+      aiCustomSkills: MTG.snapshotAISkills(bots.map(player => player.aiStyle)),
       bots: bots.map(player => ({
         seat: player.name,
         deck: player.deckName,
@@ -1450,7 +1451,8 @@ MTG.parseDebugBundle = function (input) {
 
   const bots = reproduction.bots;
   if (!Array.isArray(bots) || bots.length < 1 || bots.length > 3) fail('a solo replay requires one to three AI seats.');
-  const validStyles = new Set(['random', 'balanced', ...Object.keys(MTG.AI_STYLES || {})]);
+  const aiCustomSkills = MTG.validateAISkillSetup(bots.map(bot => bot && (bot.requestedStyle || bot.style || 'balanced')), reproduction.aiCustomSkills || []);
+  const validStyles = new Set(['random', ...MTG.AI_SKILL_FORMAT.bases, ...aiCustomSkills.map(MTG.aiSkillKey)]);
   const seenDecks = new Set([humanDeck]);
   const seenSeats = new Set();
   const normalizedBots = bots.map((bot, index) => {
@@ -1492,6 +1494,7 @@ MTG.parseDebugBundle = function (input) {
     ai: normalizedBots.length,
     aiDecks: normalizedBots.map(bot => bot.deck),
     aiStyles: normalizedBots.map(bot => bot.style),
+    aiCustomSkills,
     aiRandomCommanders: !!reproduction.aiRandomCommanders,
     difficulty,
     seed,

@@ -1,0 +1,18 @@
+{
+  "schema": "commander-ai-skill/v1",
+  "id": "patient-engine",
+  "name": "Patient Engine",
+  "description": "Develop mana and repeatable card draw, keep interaction ready, then finish from a strong board.",
+  "baseStyle": "josh",
+  "profileMultipliers": {
+    "cardAdvantage": 1.3,
+    "manaDevelopment": 1.15,
+    "lifeSafety": 1.1
+  },
+  "roleBonuses": {
+    "engine": 3,
+    "card-draw": 2,
+    "board-wipe": -1
+  },
+  "reserveMana": 2
+}
