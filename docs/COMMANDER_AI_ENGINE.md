@@ -149,3 +149,13 @@ npm run certify:strict
 - Search ne pokušava dokazivati beskonačne kombo petlje; node/depth/priority guardovi uvijek daju legalan fallback.
 - Card-role inference je namjerno konzervativan. Neuobičajene engine/kombo karte trebaju centralni override i ciljani test.
 - Max-N je aproksimacija utility-vector pretrage u trenutnom action windowu, ne iscrpna simulacija cijelog preostalog kruga od četiri igrača.
+
+## Late-game survival
+
+All styles and difficulties share a public-board survival score for combat. Attack plans account for the remaining untapped blockers, vigilance survivors, flying/reach and other engine block restrictions, and each surviving opponent's next turn before our next untap. Currently tapped opposing creatures normally become threats again on that turn. Eliminating one player is useful progress; only eliminating the last remaining opponents receives the terminal win bonus.
+
+Block plans score the combined outcome rather than adding isolated block bonuses. The bounded forecast covers first/double strike, trample, deathtouch, lifelink, indestructible, shield/regeneration, and life/commander-damage/poison defeat. An emergency greedy plan considers menace pairs together and lets any persona sacrifice an engine to avoid visible lethal damage. Cheap reserve estimates prune partial attack declarations; the more expensive combat forecast runs on the final candidates. Concentrated finish attempts remain available even when their partial declarations expose the bot.
+
+This is a tactical estimate, not a replacement rules engine or an exhaustive solution of the game. It cannot predict hidden tricks, future draws, arbitrary death/attack triggers, or every replacement effect. Live combat still resolves those through the existing engine. No external AI, network request, or opponent hidden-hand access is added. Large mandatory card selections also prune impossible subsets so long games with large cleanup discards remain responsive.
+
+Regression coverage: `tests/ai-lategame-survival.test.mjs` runs all ten styles at all three difficulties, actual combat damage through the engine, third-player/cumulative crackback, commander lethal, evasive blockers, forced attacks, concentrated wins, deterministic/immutable decisions, and large cleanup selections.
