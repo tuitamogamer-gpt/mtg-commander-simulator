@@ -6,7 +6,8 @@ const MTG = loadEngine();
 const COLORS = ['W', 'U', 'B', 'R', 'G', 'C'];
 
 function oracleRows() {
-  return MTG.ORACLE_BATCHES.flatMap(batch => batch.cards
+  // Frozen v4 regression cohort; v5 has its own complete operation drivers.
+  return MTG.ORACLE_BATCHES.filter(batch => batch.sequence <= 46).flatMap(batch => batch.cards
     .filter(entry => entry.semanticClass !== 'manual-deck-semantic')
     .map(entry => ({ batch, entry })));
 }

@@ -239,6 +239,12 @@ test('Josh completes a deterministic four-player game without fallback or a stal
     aiStyles: ['josh', 'passive', 'balanced'],
     difficulty: 'normal', seed: 82711, maxTurns: 200, paced: false,
   });
+  const decisions = [];
+  const note = game.note;
+  game.note = function (kind, data) {
+    if (kind === 'aiDecision' && data.player.deckName === 'The Fantastic Four') decisions.push(data.decision);
+    return note.call(this, kind, data);
+  };
   await game.start();
   assert.equal(game.gameOver, true);
   assert.ok(game.winner);
@@ -246,7 +252,6 @@ test('Josh completes a deterministic four-player game without fallback or a stal
   assert.equal(game.pendingTriggers.length, 0);
   const josh = game.players.find(player => player.deckName === 'The Fantastic Four');
   assert.equal(josh.aiStyle, 'josh');
-  const decisions = (game.aiDecisionLog || []).filter(entry => entry.playerName === josh.name);
   assert.ok(decisions.length > 0);
   assert.equal(decisions.some(entry => entry.fallback), false);
   assert.ok(decisions.every(entry => entry.skill === 'josh-value-engine'));

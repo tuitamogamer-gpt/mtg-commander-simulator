@@ -6,7 +6,8 @@ const MTG = loadEngine();
 const COLORS = ['W', 'U', 'B', 'R', 'G', 'C'];
 
 function keywordRows() {
-  return MTG.ORACLE_BATCHES.flatMap(batch => batch.cards
+  // Frozen v4 cohort; new declarations are exercised by the v5 bulk matrix.
+  return MTG.ORACLE_BATCHES.filter(batch => batch.sequence <= 46).flatMap(batch => batch.cards
     .filter(entry => entry.semanticClass !== 'manual-deck-semantic' &&
       (entry.implementedKeywords || []).length > 0)
     .map(entry => ({ batch, entry })));

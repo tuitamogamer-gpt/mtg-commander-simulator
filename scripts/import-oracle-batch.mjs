@@ -7,6 +7,13 @@ import { createGunzip } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { extractRawData } from './source-audit.mjs';
 import { parseOracleSpellV4 } from './oracle-spell-v4.mjs';
+import { extensionEffect as v5Effect, extensionLine as v5Line, characteristicOperation } from './oracle-extensions-v5.mjs';
+
+// Parsing is synchronous. Preserve existing v4 descriptors verbatim before
+// trying the additive grammar, so an extension cannot rewrite old manifests.
+let extensionsActive = false;
+const extensionEffect = (...args) => extensionsActive ? v5Effect(...args) : null;
+const extensionLine = (...args) => extensionsActive ? v5Line(...args) : null;
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourceDir = path.join(root, 'src', 'oracle-batches');
@@ -14,7 +21,7 @@ const reportDir = path.join(root, 'reports', 'oracle-import');
 const statePath = path.join(reportDir, 'state.json');
 const BULK_INDEX_URL = 'https://api.scryfall.com/bulk-data';
 const DEFAULT_LIMIT = 100;
-const SEMANTIC_COMPILER_VERSION = 4;
+const SEMANTIC_COMPILER_VERSION = 5;
 const USER_AGENT = 'MTGcodexOracleImporter/0.1 (local development)';
 
 const SUPERTYPES = new Set(['Legendary', 'Basic', 'Snow', 'World', 'Ongoing']);
@@ -126,7 +133,15 @@ function numberWord(value) {
 
 function parseManaLine(line) {
   const match = new RegExp(`^(?:(${MANA_SEQUENCE}), )?\\{T\\}: Add (.+)\\.$`, 'i').exec(line);
-  if (!match) return null;
+  if (!match) {
+    if (!extensionsActive) return null;
+    const extended = /^(.+): Add (.+)\.$/.exec(line);
+    if (!extended) return null;
+    const cost = genericActivatedCost(extended[1]);
+    if (!cost || !cost.tap || Object.keys(cost).some(key => !['tap','mana','life','sacSelf'].includes(key))) return null;
+    const base = parseManaLine('{T}: Add ' + extended[2] + '.');
+    return base ? Object.assign(base, { activationCost: cost }) : null;
+  }
   const activationMana = match[1] || null;
   if (activationMana && !validManaSequence(activationMana)) return null;
   if (/^one mana of any color$/i.test(match[2])) {
@@ -161,7 +176,7 @@ function tokenOperation(card, line) {
   const subtypes = descriptor.filter(word =>
     !COLOR_WORDS[word.toLowerCase()] &&
     !['and', 'colorless', 'artifact', 'enchantment'].includes(word.toLowerCase()));
-  if (!subtypes.length) return null;
+  if (!subtypes.length || !subtypes.every(word=>/^[A-Z][A-Za-z-]*$/.test(word))) return null;
   const keywords = match[5]
     ? match[5].split(/\s*(?:,| and )\s*/i).map(value => value.trim().toLowerCase()).filter(Boolean)
     : [];
@@ -190,6 +205,9 @@ function cyclingOperation(line) {
 }
 
 function spellModifierOperation(card, line) {
+  if(extensionsActive&&line==='Retrace')return {kind:'mechanic-retrace',cost:card.mana_cost,contract:'mechanic-retrace'};
+  const foretell=extensionsActive&&/^Foretell ((?:\{(?:\d+|[WUBRGC])\})+)$/.exec(line);
+  if(foretell)return {kind:'mechanic-foretell',cost:foretell[1],contract:'mechanic-foretell'};
   const cycling = cyclingOperation(line);
   if (cycling) return cycling;
 
@@ -598,7 +616,7 @@ function closedGenericEffect(card, value) {
       targets: [], optional,
     };
   }
-  return null;
+  return extensionEffect(card, value, { keywordList, effect: closedGenericEffectSequence });
 }
 
 function closedGenericEffectSequence(card, value) {
@@ -608,7 +626,12 @@ function closedGenericEffectSequence(card, value) {
   if (clauses.length < 2) return null;
   const merged = { effects: [], targets: [], optional: false };
   for (const rawClause of clauses) {
-    const clause = rawClause.endsWith('.') ? rawClause : rawClause + '.';
+    const previousTarget=merged.effects.at(-1)?.target;
+    const refersToTarget=extensionsActive&&typeof previousTarget==='number'&&merged.targets[previousTarget]?.max!==0&&
+      /\b(?:it|that creature|that permanent)\b/i.test(rawClause)&&
+      !/\bthis (?:creature|artifact|land|enchantment|permanent)\b/i.test(rawClause);
+    const normalizedClause=refersToTarget?rawClause.replace(/\bthat (?:creature|permanent)\b/gi,'it'):rawClause;
+    const clause = normalizedClause.endsWith('.') ? normalizedClause : normalizedClause + '.';
     const parsed = closedGenericEffect(card, clause);
     if (!parsed || parsed.optional) return null;
     const previousEffect = merged.effects.at(-1);
@@ -623,10 +646,11 @@ function closedGenericEffectSequence(card, value) {
     const offset = merged.targets.length;
     for (const effect of parsed.effects) {
       const adjusted = { ...effect };
+      if(refersToTarget && adjusted.target==='self') adjusted.target=previousTarget;
       if (tokenCounterReference && adjusted.action === 'counter' && adjusted.target === 'self') {
         adjusted.target = 'created-tokens';
       }
-      if (typeof adjusted.target === 'number') adjusted.target += offset;
+      if (typeof adjusted.target === 'number' && !(refersToTarget && effect.target==='self')) adjusted.target += offset;
       if (typeof adjusted.who === 'number') adjusted.who += offset;
       merged.effects.push(adjusted);
     }
@@ -834,17 +858,19 @@ function expandedCreatureLine(card, line) {
     let effect = match[2];
     if (cost) {
       const onceEachTurn = / Activate only once each turn\.$/i.test(effect);
-      const sorceryOnly = / Activate only as a sorcery\.$/i.test(effect) ||
-        / Activate only during your turn, before attackers are declared\.$/i.test(effect);
-      effect = effect.replace(/ Activate only once each turn\.$/i, '.')
-        .replace(/ Activate only as a sorcery\.$/i, '.')
-        .replace(/ Activate only during your turn, before attackers are declared\.$/i, '.');
+      const sorceryOnly = / Activate only as a sorcery\.$/i.test(effect);
+      const beforeAttackersOnly = / Activate only during your turn, before attackers are declared\.$/i.test(effect);
+      if (beforeAttackersOnly && !extensionsActive) return null;
+      effect = effect.replace(/ Activate only once each turn\.$/i, '')
+        .replace(/ Activate only as a sorcery\.$/i, '')
+        .replace(/ Activate only during your turn, before attackers are declared\.$/i, '');
       const genericEffect = closedGenericEffectSequence(card, effect);
       if (genericEffect) {
         return genericAbility(cost, genericEffect.effects, {
           targets: genericEffect.targets,
           sorceryOnly,
           onceEachTurn,
+          ...(beforeAttackersOnly ? { beforeAttackersOnly: true } : {}),
         });
       }
       let result = new RegExp('^' + subject + ' gets ([+-]\\d+)\\/([+-]\\d+) until end of turn\\.(?: Activate only once each turn\\.)?$', 'i').exec(effect);
@@ -925,7 +951,9 @@ function expandedCreatureLine(card, line) {
     const keywords = keywordList(match[1]);
     if (keywords) return genericStatic('self', { keywords, yourTurnOnly: true });
   }
-  return null;
+  return extensionLine(card, line, {
+    keywordList, cost: genericActivatedCost, effect: closedGenericEffectSequence,
+  });
 }
 
 function expandedPermanentLine(card, line) {
@@ -936,9 +964,25 @@ function expandedPermanentLine(card, line) {
   return expandedCreatureLine(card, normalized);
 }
 
+function permanentLines(rulesCore) {
+  const lines=rulesCore?rulesCore.split('\n'):[];
+  if(!extensionsActive)return lines;
+  const result=[];
+  for(const line of lines) {
+    if(line.startsWith('• ')&&result.length&&/choose one —/i.test(result.at(-1))) result[result.length-1]+='\n'+line;
+    else result.push(line);
+  }
+  return result;
+}
+
 function creatureSemantics(card, rulesCore) {
   if (!/^-?\d+$/.test(String(card.power)) || !/^-?\d+$/.test(String(card.toughness))) {
-    return { reason: 'dynamic-power-toughness' };
+    if(!extensionsActive)return {reason:'dynamic-power-toughness'};
+    const characteristics=rulesCore.split('\n').map(line=>characteristicOperation(card,line)).filter(Boolean);
+    for(const stat of ['power','toughness']) {
+      if(/^-?\d+$/.test(String(card[stat])))continue;
+      if(!/^(?:\*|\d+\+\*|\*\+\d+)$/.test(String(card[stat]))||!characteristics.some(op=>op[stat]))return {reason:'dynamic-power-toughness'};
+    }
   }
   if (!String(card.oracle_text || '').trim()) {
     return { semanticClass: 'vanilla', implementedKeywords: [], implementation: [], oracleContracts: [], rulesCore: '' };
@@ -948,7 +992,7 @@ function creatureSemantics(card, rulesCore) {
   const implementedKeywords = [];
   const implementation = [];
   const subject = selfSubject(card, 'creature');
-  for (const line of rulesCore.split('\n')) {
+  for (const line of permanentLines(rulesCore)) {
     const composite = compositeCreatureLine(line);
     if (composite) {
       implementedKeywords.push(...composite.keywords);
@@ -1104,7 +1148,12 @@ function creatureSemantics(card, rulesCore) {
 function landSemantics(card, rulesCore) {
   const implementation = [];
   const subject = selfSubject(card, 'land');
-  for (const line of rulesCore ? rulesCore.split('\n') : []) {
+  for (const line of rulesCore ? permanentLines(rulesCore) : []) {
+    const keywords = keywordLine(line);
+    if (extensionsActive && keywords && keywords.every(keyword => keyword === 'indestructible' || keyword === 'hexproof' || keyword === 'shroud')) {
+      implementation.push(genericStatic('self', { keywords }));
+      continue;
+    }
     const mana = parseManaLine(line);
     if (mana) {
       implementation.push(mana);
@@ -1263,7 +1312,7 @@ function equipmentSemantics(card, rulesCore) {
   if (!rulesCore) return { reason: 'reminder-only-oracle' };
   const implementedKeywords = [];
   const implementation = [];
-  for (const line of rulesCore.split('\n')) {
+  for (const line of permanentLines(rulesCore)) {
     const keywords = keywordLine(line);
     if (keywords) {
       implementedKeywords.push(...keywords);
@@ -1304,7 +1353,7 @@ function auraSemantics(card, rulesCore) {
   if (!rulesCore) return { reason: 'noncreature-needs-explicit-semantics' };
   const implementedKeywords = [];
   const implementation = [];
-  for (const line of rulesCore.split('\n')) {
+  for (const line of permanentLines(rulesCore)) {
     const keywords = keywordLine(line);
     if (keywords) {
       implementedKeywords.push(...keywords);
@@ -1359,7 +1408,7 @@ function artifactSemantics(card, parsed, rulesCore) {
   if (!rulesCore) return { reason: 'reminder-only-oracle' };
   const implementedKeywords = [];
   const implementation = [];
-  for (const line of rulesCore.split('\n')) {
+  for (const line of permanentLines(rulesCore)) {
     const keywords = keywordLine(line);
     if (keywords) {
       implementedKeywords.push(...keywords);
@@ -1408,7 +1457,7 @@ function enchantmentSemantics(card, parsed, rulesCore) {
   if (!rulesCore) return { reason: 'reminder-only-oracle' };
   const implementedKeywords = [];
   const implementation = [];
-  for (const line of rulesCore.split('\n')) {
+  for (const line of permanentLines(rulesCore)) {
     const keywords = keywordLine(line);
     if (keywords) {
       implementedKeywords.push(...keywords);
@@ -1688,6 +1737,7 @@ function spellLineOperation(card, line) {
 }
 
 function spellOperationNeedsTarget(operation) {
+  if (operation.kind === 'spell-generic') return operation.targets.length > 0;
   return ['spell-counter', 'spell-destroy', 'spell-exile', 'spell-damage', 'spell-pump',
     'spell-bounce', 'spell-discard', 'spell-mill', 'spell-graveyard-return',
     'spell-counter-on-creature', 'spell-tap', 'spell-untap'].includes(operation.kind) &&
@@ -1706,7 +1756,12 @@ function spellSemantics(card, rulesCore) {
     }
     if (!bodyLines.length) return { reason: 'spell-needs-explicit-semantics' };
     const parsed = parseOracleSpellV4(card, bodyLines.join('\n'));
-    if (!parsed.ok) return { reason: 'spell-needs-explicit-semantics' };
+    if (!parsed.ok) {
+      if(!extensionsActive)return {reason:'spell-needs-explicit-semantics'};
+      const generic=closedGenericEffectSequence(card,bodyLines.join(' '));
+      if(!generic||generic.optional||generic.effects.some(effect=>effect.target==='self')) return { reason: 'spell-needs-explicit-semantics' };
+      return {semanticClass:'spell-template',implementedKeywords:[],implementation:[...modifiers,{kind:'spell-generic',...generic,contract:'spell-generic-effect'}],oracleContracts:[...new Set([...modifiers.map(operation=>operation.contract),'spell-generic-effect'])],rulesCore};
+    }
     return {
       semanticClass: 'spell-v4-template',
       implementedKeywords: [],
@@ -1752,17 +1807,50 @@ export function validateManaCost(manaCost) {
     /^[WUBRG]{2}$/.test(symbol) || /^2\/[WUBRG]$/.test(symbol));
 }
 
-export function semanticClass(card) {
+function semanticClassCore(card) {
   if (!validateManaCost(card.mana_cost)) return { reason: 'unsupported-mana-cost' };
   if (card.layout !== 'normal') return { reason: 'complex-layout' };
   const parsed = parseTypeLine(card.type_line);
   const rulesCore = stripReminderText(card.oracle_text || '');
+  // Most current Oracle text uses "this creature" rather than its printed
+  // name. Keep those identical grammars reusable by the RegExp compiler,
+  // without changing the source card or any normalized report fields.
+  if (card.name!=='Clowning Around' && !rulesCore.toLowerCase().includes(card.name.split(',')[0].toLowerCase())) card = { ...card, name: '__OracleSelf__' };
   if (parsed.types.includes('Creature')) return creatureSemantics(card, rulesCore);
   if (parsed.types.includes('Land')) return landSemantics(card, rulesCore);
   if (parsed.types.includes('Instant') || parsed.types.includes('Sorcery')) return spellSemantics(card, rulesCore);
   if (parsed.types.includes('Artifact')) return artifactSemantics(card, parsed, rulesCore);
   if (parsed.types.includes('Enchantment')) return enchantmentSemantics(card, parsed, rulesCore);
   return { reason: 'noncreature-needs-explicit-semantics' };
+}
+
+export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSION } = {}) {
+  if(![4,5].includes(compilerVersion))throw new Error('Unsupported semantic compiler version: '+compilerVersion);
+  const previous = extensionsActive;
+  try {
+    extensionsActive = false;
+    const existing = semanticClassCore(card);
+    if (existing.semanticClass || compilerVersion===4) return existing;
+    extensionsActive = true;
+    const result=semanticClassCore(card);
+    const operations=result.implementation||[];
+    // In creature arrival/death triggers, "its power/toughness" refers to
+    // that event's creature, which need not be the ability's source.
+    for (const operation of operations) {
+      if (operation.kind !== 'generic-trigger' || !['etb', 'dies'].includes(operation.event) ||
+          !(['any-creature', 'another-creature', 'your-creature', 'another-your-creature'].includes(operation.eventFilter) ||
+            operation.eventFilter?.kind === 'your-subtype')) continue;
+      for (const effect of operation.effects || []) {
+        if (effect.action === 'gain-life' && effect.n?.kind === 'source-stat') effect.n.kind = 'event-card-stat';
+      }
+    }
+    if(operations.filter(op=>['mechanic-unearth','mechanic-embalm','mechanic-grave-return-self'].includes(op.kind)).length>1)return {reason:'conflicting-graveyard-abilities'};
+    // Event amounts only exist on damage events. Never accept an inert
+    // "that much life" outside the closed antecedent that defines it.
+    if(operations.some(op=>JSON.stringify(op).includes('"kind":"event-amount"')&&
+      (op.kind!=='generic-trigger'||![op.event].flat().every(event=>['damageToPlayer','dealtDamage','combatDamageToPlayer'].includes(event)))))return {reason:'unbound-event-amount'};
+    return result;
+  } finally { extensionsActive = previous; }
 }
 
 function rawCard(card) {
@@ -1925,6 +2013,7 @@ export function createImportPlan({
   acceptNewSnapshot = false,
   expectedSnapshot = '',
   generatedAt = new Date().toISOString(),
+  compilerVersion = SEMANTIC_COMPILER_VERSION,
 }) {
   const selectedLimit = validateLimit(limit);
   const currentState = state || {
@@ -1995,7 +2084,7 @@ export function createImportPlan({
       addReason(deferredByReason, deferredExamples, 'already-imported-batch', card);
       continue;
     }
-    const semantics = semanticClass(card);
+    const semantics = semanticClass(card, {compilerVersion});
     if (!semantics.semanticClass) {
       addReason(deferredByReason, deferredExamples, semantics.reason, card);
       continue;
@@ -2035,7 +2124,7 @@ export function createImportPlan({
         'aura-template', 'vehicle-template',
       ],
       note: 'Every non-reminder Oracle line must exactly match a central keyword or a closed executable template. Prefix/partial autoscripting is never certification.',
-      compilerVersion: SEMANTIC_COMPILER_VERSION,
+      compilerVersion,
     },
     catalogSummary: {
       oracleRows: (cards || []).length,
@@ -2072,7 +2161,7 @@ export function createImportPlan({
     batchSize: selectedLimit,
     updatedAt: generatedAt,
     source: report.source,
-    compilerVersion: SEMANTIC_COMPILER_VERSION,
+    compilerVersion,
     batches: [...(currentState.batches || []), {
       id,
       sequence: selectedSequence,

@@ -1,0 +1,702 @@
+{
+  "schemaVersion": 1,
+  "name": "Maja — Oracle 6600 Test",
+  "format": "commander",
+  "commander": "Maja, Bretagard Protector",
+  "totalCards": 100,
+  "lands": 37,
+  "sourceSnapshot": "2026-08-30T09:01:56.964+00:00",
+  "sourceSha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+  "newCohortCards": 23,
+  "moxfieldUrl": null,
+  "moxfieldStatus": "awaiting-user-sign-in",
+  "cards": [
+    {
+      "n": 1,
+      "name": "Maja, Bretagard Protector",
+      "oracleId": "0a2075b5-9609-433d-bcd2-e0a637456cf8",
+      "colorIdentity": [
+        "G",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0056"
+    },
+    {
+      "n": 1,
+      "name": "Sol Ring",
+      "oracleId": "6ad8011d-3471-4369-9d68-b264cc027487",
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Arcane Signet",
+      "oracleId": "0bc7f093-bef0-4f1a-852c-4b75ebf54838",
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Selesnya Signet",
+      "oracleId": "1436dd81-496e-42a5-b210-fb5b9cdf073f",
+      "colorIdentity": [
+        "G",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Llanowar Elves",
+      "oracleId": "68954295-54e3-4303-a6bc-fc4547a4e3a3",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0008"
+    },
+    {
+      "n": 1,
+      "name": "Elvish Mystic",
+      "oracleId": "3f3b2c10-21f8-4e13-be83-4ef3fa36e123",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Fyndhorn Elves",
+      "oracleId": "df317532-7d36-40fd-938f-e972749c8792",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0005"
+    },
+    {
+      "n": 1,
+      "name": "Avacyn's Pilgrim",
+      "oracleId": "069f6530-e65c-4d52-85f3-e0a2acd148c5",
+      "colorIdentity": [
+        "G",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Sakura-Tribe Elder",
+      "oracleId": "e3afc704-220f-498f-9eaa-0821b17dc24c",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Rampant Growth",
+      "oracleId": "8539f295-5d58-4436-a73a-b9277c4c7795",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Nature's Lore",
+      "oracleId": "78826359-fe63-44ad-adc4-a17ffcd710e4",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Cultivate",
+      "oracleId": "8b755881-a72d-4e21-a369-d2924eb4585a",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Kodama's Reach",
+      "oracleId": "1593ea18-2f2f-4ab4-83fb-6ccc0bec8a90",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Borderland Ranger",
+      "oracleId": "ffe25048-0bd4-49b5-aecb-2b1b57fb8d8b",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0049"
+    },
+    {
+      "n": 1,
+      "name": "Sylvan Ranger",
+      "oracleId": "29a90fda-541e-4923-b3ed-e2b35d02c74b",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0063"
+    },
+    {
+      "n": 1,
+      "name": "Viridian Emissary",
+      "oracleId": "c93bce5a-48cc-4dc5-930b-1e084c2bae7d",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0065"
+    },
+    {
+      "n": 1,
+      "name": "Wild Wanderer",
+      "oracleId": "ff16f889-9203-4874-919b-42e540cadcbc",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0066"
+    },
+    {
+      "n": 1,
+      "name": "Beast Whisperer",
+      "oracleId": "5da7eea8-bb9e-47ce-a554-8a1ee058bd7a",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0048"
+    },
+    {
+      "n": 1,
+      "name": "Harmonize",
+      "oracleId": "7eff84f1-f772-497a-b350-bbc93d0230f7",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Shamanic Revelation",
+      "oracleId": "d1d171de-1c6d-4fb9-817a-9c689c709f3d",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Inspiring Call",
+      "oracleId": "9b9a10ff-5a5d-4df8-88aa-18d84ff9117c",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Return of the Wildspeaker",
+      "oracleId": "2b76f9e9-cd28-4eaf-8674-215c34263f96",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Raise the Alarm",
+      "oracleId": "5b2364d7-a811-4595-a1b4-224c70555ffa",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0021"
+    },
+    {
+      "n": 1,
+      "name": "Call the Cavalry",
+      "oracleId": "855b168b-e514-4a43-8bbe-7f1df40031ae",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0015"
+    },
+    {
+      "n": 1,
+      "name": "Jade Mage",
+      "oracleId": "6daf3c59-7636-4d44-872b-67722b4868cb",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0036"
+    },
+    {
+      "n": 1,
+      "name": "Ant Queen",
+      "oracleId": "50de88d4-0beb-45e5-9664-d4f0e280e652",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0027"
+    },
+    {
+      "n": 1,
+      "name": "Lys Alana Huntmaster",
+      "oracleId": "3f3439e1-75ce-482d-881f-836492dca6e9",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0056"
+    },
+    {
+      "n": 1,
+      "name": "Verdant Force",
+      "oracleId": "7a21ea22-3cd7-4c11-8895-5943c0d93a0d",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0065"
+    },
+    {
+      "n": 1,
+      "name": "Wolverine Riders",
+      "oracleId": "09070db6-01f6-4a8a-b167-a7825e6959f4",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0066"
+    },
+    {
+      "n": 1,
+      "name": "Visionary Augmenter",
+      "oracleId": "1782bfd7-7d8f-4ed2-9d45-ba9adb41e996",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0065"
+    },
+    {
+      "n": 1,
+      "name": "Selesnya Guildmage",
+      "oracleId": "8fbdca3a-7aa3-4b5a-98d7-9168856045ac",
+      "colorIdentity": [
+        "G",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0042"
+    },
+    {
+      "n": 1,
+      "name": "Return to Nature",
+      "oracleId": "777b8ec4-a783-4297-96b7-4f200d0eb734",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0041"
+    },
+    {
+      "n": 1,
+      "name": "Generous Gift",
+      "oracleId": "fae37e28-e137-4177-b973-fa8b4dd8f409",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Swords to Plowshares",
+      "oracleId": "b1544f21-7e98-461b-aed5-e748b0168c52",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Path to Exile",
+      "oracleId": "d683d985-9888-4d21-8b5f-69e69ce4a03b",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Beast Within",
+      "oracleId": "7735eeba-693b-47e2-bd51-414379cf1016",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Reclamation Sage",
+      "oracleId": "032ec6e2-6cc3-4a97-9cc7-3233f5e11904",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Qasali Pridemage",
+      "oracleId": "10821e37-8a83-4d8e-a12f-249a10933a22",
+      "colorIdentity": [
+        "G",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0040"
+    },
+    {
+      "n": 1,
+      "name": "Overrun",
+      "oracleId": "204f9afe-c20b-4933-b5cd-aa572784762a",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0020"
+    },
+    {
+      "n": 1,
+      "name": "Overwhelming Stampede",
+      "oracleId": "e1e96802-fd0c-41f1-aa21-3287d75a0e88",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Fortify",
+      "oracleId": "52ea24d4-d33d-40fc-8ffc-09ae625b908f",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0033"
+    },
+    {
+      "n": 1,
+      "name": "Cathars' Crusade",
+      "oracleId": "cc65ac73-5bef-4ecb-ad8e-39199084c027",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0049"
+    },
+    {
+      "n": 1,
+      "name": "Ajani's Welcome",
+      "oracleId": "4a782bf9-4051-4613-8852-33b0d85a0edd",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0047"
+    },
+    {
+      "n": 1,
+      "name": "Soul Warden",
+      "oracleId": "f3fad295-1af2-4ecc-8546-b121ad6be27b",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0062"
+    },
+    {
+      "n": 1,
+      "name": "Essence Warden",
+      "oracleId": "6ca2a89e-7032-4864-b4e9-66f3178f90ab",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0052"
+    },
+    {
+      "n": 1,
+      "name": "Soul's Attendant",
+      "oracleId": "045a9d3d-c20d-427f-a77b-0bffc6f55526",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0062"
+    },
+    {
+      "n": 1,
+      "name": "Heroic Intervention",
+      "oracleId": "24882fa2-3fe9-4c1b-aa3d-0e6488b9db27",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Unbreakable Formation",
+      "oracleId": "97435e03-2fff-4fe0-8fa9-69ab0a046a33",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Selfless Spirit",
+      "oracleId": "71d785a9-ddc8-472e-a778-a551b444a4bd",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Archangel of Thune",
+      "oracleId": "4f2d4538-dc1d-4c09-964b-b0d7c240fb7d",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0047"
+    },
+    {
+      "n": 1,
+      "name": "Elesh Norn, Grand Cenobite",
+      "oracleId": "958d71ff-c9f7-46f0-96ca-79e7f4d65a16",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0052"
+    },
+    {
+      "n": 1,
+      "name": "Canyon Jerboa",
+      "oracleId": "254d4918-de40-4ac4-b542-f5c67a5e21eb",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0049"
+    },
+    {
+      "n": 1,
+      "name": "Sunshower Druid",
+      "oracleId": "7a70faf5-cc04-402b-92e3-67746788f510",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0063"
+    },
+    {
+      "n": 1,
+      "name": "Ulvenwald Hydra",
+      "oracleId": "40b85f70-78b6-427a-9fb9-c3a72b8528ed",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0064"
+    },
+    {
+      "n": 1,
+      "name": "Spirited Companion",
+      "oracleId": "9c5f0d91-9d86-4e66-94fd-4af93ad01838",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Priest of Ancient Lore",
+      "oracleId": "a89b0fd5-84b2-487c-8b03-e78d97276fd3",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0059"
+    },
+    {
+      "n": 1,
+      "name": "Wall of Omens",
+      "oracleId": "5f601f48-d24b-4883-9fde-b3f620e7c9ea",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Elvish Visionary",
+      "oracleId": "c6a3a882-a127-4590-93d7-679ef4313efe",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Llanowar Visionary",
+      "oracleId": "f75ed312-3a23-4624-80c5-03980aa22d0b",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0008"
+    },
+    {
+      "n": 1,
+      "name": "Aura Shards",
+      "oracleId": "8d03d050-391c-4311-8c42-4ee632d40fdc",
+      "colorIdentity": [
+        "G",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0048"
+    },
+    {
+      "n": 1,
+      "name": "Angelic Chorus",
+      "oracleId": "e66b12ff-45da-46dc-9148-bd8ea9b7fde0",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0047"
+    },
+    {
+      "n": 1,
+      "name": "Inspiring Overseer",
+      "oracleId": "d646e42b-5635-4798-b633-29c093b66a55",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Spectral Procession",
+      "oracleId": "376271a6-80f0-47a6-990a-5ec5517aae42",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "oracle-0023"
+    },
+    {
+      "n": 20,
+      "name": "Forest",
+      "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+      "colorIdentity": [
+        "G"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 13,
+      "name": "Plains",
+      "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+      "colorIdentity": [
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Command Tower",
+      "oracleId": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Evolving Wilds",
+      "oracleId": "a75445d3-1303-4bb5-89ad-26ea93fecd48",
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Terramorphic Expanse",
+      "oracleId": "1bd3e453-aa21-4ee6-95c2-d6d920ee8e7a",
+      "colorIdentity": [],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    },
+    {
+      "n": 1,
+      "name": "Selesnya Sanctuary",
+      "oracleId": "00ef1c55-dea1-4564-bd57-66de86cba4df",
+      "colorIdentity": [
+        "G",
+        "W"
+      ],
+      "commanderLegality": "legal",
+      "engineBatch": "legacy"
+    }
+  ]
+}

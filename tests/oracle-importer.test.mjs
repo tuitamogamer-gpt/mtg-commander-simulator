@@ -171,7 +171,7 @@ test('flat i wrapped reservations blokiraju i ime i Oracle ID uz legacy/state ko
 test('semantic gate odbija djelimične, kompleksne i dinamičke Oracle tekstove', () => {
   const cases = [
     [oracleCard('Partial Creature', 'partial', {
-      oracle_text: 'Flying\nWhenever this creature attacks, if you control an artifact, draw a card.',
+      oracle_text: 'Flying\nWhenever this creature attacks, if you control a blue artifact, draw a card.',
     }), 'oracle-needs-explicit-semantics'],
     [oracleCard('Complex Layout', 'complex', { layout: 'transform' }), 'complex-layout'],
     [oracleCard('Dynamic Body', 'dynamic', { power: '*', toughness: '*' }), 'dynamic-power-toughness'],

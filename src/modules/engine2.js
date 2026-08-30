@@ -4042,6 +4042,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (entry.gyAbility) {
       const a = entry.gyAbilityOverride || c.def.gyAbility;
+      if(c.zone!=='graveyard'||c.owner!==p||!p.graveyard.includes(c))return false;
+      if(a.sorcery&&(this.turnPlayer!==p||this.stack.length||!['main1','main2'].includes(this.phase)))return false;
       const mc = this.abilityManaCost(p, c, typeof a.cost === 'function' ? a.cost(this, c) : a.cost);
       let pickedArtifacts = [];
       let pickedSacrifices = [];
@@ -4107,7 +4109,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.markAbilityActivated(p, c);
       if (a.exileSelf !== false) await this.move(c, 'exile');
       this.lg(`${p.name}: ${c.name} — ${a.label || 'iz groblja'}.`, 'activate');
-      const gctx = { g: this, src: c, you: p, targets: [] };
+      const gctx = { g: this, src: c, you: p, targets: [], sourceZoneVersion:c.zoneVersion, isActivatedAbility:true };
       this.stack.push({ kind: 'ability', name: `${c.name} — ${a.label || 'GY'}`, ctrl: p, ctx: gctx, run: a.run, targets: [] });
       await this.emit('abilityActivated', { player: p, card: c, isMana: false });
       this.note('stack', {});
@@ -4148,6 +4150,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
     const a = entry.ability;
+    // A queued UI/AI action can outlive the window in which it was offered.
+    // Recheck restrictions before selecting targets or paying any costs.
+    if (!a || (a.sorcery && (this.turnPlayer !== p || this.stack.length ||
+        !['main1', 'main2'].includes(this.phase))) ||
+        (a.cond && !a.cond(this, c, p)) ||
+        (a.oncePerTurn && c.meta['_ab_' + entry.idx] === this.turnNo)) return false;
     const cost = a.cost || {};
     const ctx = {
       g: this, src: c, you: p, targets: [], isActivatedAbility: true, ability: a,
@@ -4319,7 +4327,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } else {
         if (pool.length < nsac) return false;
         sacPicked = await p.controller.decide(this, {
-          type: 'chooseCards', from: pool, min: nsac, max: nsac, prompt: `Žrtvuj:`, aiHint: { kind: 'sacCost', src: c },
+          type: 'chooseCards', from: pool, min: nsac, max: nsac, prompt: `Žrtvuj:`, aiHint: { kind: 'sacCost', src: c, keepTargets: ctx.targets.flat().filter(Boolean) },
         });
         if (sacPicked.length < nsac || sacPicked.some(x => !pool.includes(x))) return false;
       }
@@ -4762,8 +4770,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.untilEffects = this.untilEffects.filter(e => !(e.expires === 'untilTurnOf' && e.whoTurn === p));
     if (!p.skipUntapOnce) {
       for (const c of this.bf()) {
+        if(c.ctrl===p&&c.meta.noUntapOnce){c.meta.noUntapOnce=false;continue;}
         if (c.ctrl === p && !c.def.doesntUntap && !(c.cur && c.cur.cantUntap)) {
-          if (c.meta.noUntapOnce) { c.meta.noUntapOnce = false; continue; }
           if (c.tapped && (c.counters['stun'] || 0) > 0) {
             this.removeCounters(c, 'stun', 1);
             this.lg(`${c.name}: stun counter — ostaje tapovan.`);
@@ -5072,6 +5080,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const elig = this.creatures(p).filter(c =>
       !c.tapped && (!c.sick || c.kw('haste')) && !c.cur.cantAttack && this.canAttackAtAll(c));
     const oppList = p.opponents(this);
+    // CR 506.7: this deadline applies even with no eligible attackers and
+    // remains passed during any extra combat phases later in this turn.
+    p.turnState.reachedDeclareAttackers = true;
     if (!elig.length || !oppList.length) {
       // CR 506.1/511.1: end of combat korak se dešava i kad niko ne napada —
       // "at end of combat" odgođeni efekti moraju dobiti priliku.

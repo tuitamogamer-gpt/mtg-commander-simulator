@@ -5,6 +5,7 @@ import { semanticClass } from './import-oracle-batch.mjs';
 import { extractRawData } from './source-audit.mjs';
 
 const sourcePath = process.argv[2];
+const capacityOnly = process.argv.includes('--capacity-only');
 if (!sourcePath) {
   throw new Error('Usage: node scripts/audit-oracle-capacity.mjs <oracle.jsonl.gz>');
 }
@@ -70,6 +71,7 @@ for await (const line of lines) {
     continue;
   }
   reasonCounts.set(semantics.reason, (reasonCounts.get(semantics.reason) || 0) + 1);
+  if (capacityOnly) continue;
   if (![
     'oracle-needs-explicit-semantics',
     'spell-needs-explicit-semantics',

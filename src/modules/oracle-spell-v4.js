@@ -744,7 +744,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (top.kind === 'sequence') {
       const targetIds = targetIdsForEffects(top.effectIds, effectMap, targetsInOrder);
       fragment.targets = (game, card, castOpts, caster) =>
-        materializeTargetSpecs(game, card, caster || card.owner, targetIds, targetMap, effects);
+        materializeTargetSpecs(game, card, caster || card?.owner, targetIds, targetMap, effects);
       fragment.resolve = async ctx => {
         const references = snapshotResolutionTargets(ctx.targets || []);
         const chosenTargets = targetMapForResolution(targetIds, references);

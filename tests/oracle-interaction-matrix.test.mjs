@@ -45,7 +45,7 @@ function assertExecutableOperation(MTG, entry, definition, operation) {
   if (operation.kind === 'generic-trigger') {
     assert.ok((definition.triggers || []).some(trigger => trigger.desc === 'Oracle effect'),
       `${entry.raw.name}: generic trigger compiled to an engine trigger`);
-    assert.ok(Array.isArray(operation.effects) && operation.effects.length,
+    assert.ok(operation.v4Body || (Array.isArray(operation.effects) && operation.effects.length),
       `${entry.raw.name}: generic trigger has executable effects`);
     assert.ok(Array.isArray(operation.targets), `${entry.raw.name}: generic trigger has a closed target list`);
     return;
@@ -53,7 +53,7 @@ function assertExecutableOperation(MTG, entry, definition, operation) {
   if (operation.kind === 'generic-ability') {
     assert.ok((definition.abilities || []).some(ability => ability.label === 'Oracle ability'),
       `${entry.raw.name}: generic ability compiled to an engine action`);
-    assert.ok(Array.isArray(operation.effects) && operation.effects.length,
+    assert.ok(operation.v4Body || (Array.isArray(operation.effects) && operation.effects.length),
       `${entry.raw.name}: generic ability has executable effects`);
     assert.ok(operation.cost && typeof operation.cost === 'object',
       `${entry.raw.name}: generic ability has an explicit cost object`);
@@ -108,9 +108,9 @@ test('svaka generička Oracle batch karta mapira kompletan rules core na poznate
   const MTG = loadEngine();
   const entries = allEntries(MTG);
   const batches = MTG.ORACLE_BATCHES.filter(batch => batch.id !== 'moxfield-sauron-dark-lord');
-  assert.equal(batches.length, 46, 'frozen generic Oracle cohort has exactly 46 batches');
+  assert.equal(batches.length, 66, 'generic Oracle catalog has exactly 66 batches');
   assert.ok(batches.every(batch => batch.cards.length === 100), 'every generic Oracle batch contains exactly 100 cards');
-  assert.equal(entries.length, 4600, `expected all 46 generic Oracle batches (4,600 cards), found ${entries.length}`);
+  assert.equal(entries.length, 6600, `expected all 66 generic Oracle batches (6,600 cards), found ${entries.length}`);
   for (const entry of entries) {
     const catalog = MTG.CARD_CATALOG[entry.raw.name];
     const deck = { cards: [{ n: 1, name: entry.raw.name }] };

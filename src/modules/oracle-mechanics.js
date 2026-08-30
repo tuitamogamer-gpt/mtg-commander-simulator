@@ -84,6 +84,91 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ? operation.kind.slice('mechanic-'.length)
       : operation.kind;
 
+    if(kind==='offspring') {script.offspring=operation.cost;return true;}
+    if(kind==='foretell') {script.foretell=operation.cost;return true;}
+    if(kind==='retrace') {script.retrace={altCostStr:operation.cost};return true;}
+    if(kind==='ninjutsu') {script.ninjutsu=operation.cost;return true;}
+    if(kind==='eternalize') {script.eternalize=operation.cost;return true;}
+    if(kind==='embalm') {
+      if(script.gyAbility)throw new Error('Multiple graveyard abilities require explicit composition');
+      script.gyAbility={label:'Embalm '+operation.cost,cost:operation.cost,sorcery:true,run:async ctx=>{
+        const base=ctx.src.def;
+        const token={...base,cost:'',colorsOverride:['W'],subtypes:[...new Set([...base.subtypes,'Zombie'])]};
+        await ctx.g.makeTokens(token,ctx.you,{copyOf:token});
+      }};return true;
+    }
+    if(kind==='unearth'||kind==='grave-return-self') {
+      if(script.gyAbility)throw new Error('Multiple graveyard abilities require explicit composition');
+      script.gyAbility={label:kind==='unearth'?'Unearth '+operation.cost:'Return to hand',cost:operation.cost,sorcery:kind==='unearth',exileSelf:false,run:async ctx=>{
+        const card=ctx.src;
+        if(card.zone!=='graveyard'||card.zoneVersion!==ctx.sourceZoneVersion)return;
+        if(kind==='grave-return-self'){await ctx.g.move(card,'hand');return;}
+        await ctx.g.move(card,'battlefield',{ctrl:ctx.you});
+        if(card.zone!=='battlefield')return;
+        card.meta.tempHaste=true;card.meta.unearth=true;
+        const identity=objectIdentity(card);
+        ctx.g.delayed.push({on:'endStep',once:true,name:'Unearth exile',src:card,ctrl:ctx.you,run:async next=>{
+          if(sameBattlefieldObject(next.g,card,identity))await next.g.move(card,'exile');
+        }});ctx.g.recalc();
+      }};return true;
+    }
+    if(kind==='soulshift') {
+      push(script,'triggers',{
+        on:'dies',desc:'Soulshift '+number(operation),
+        filter:(game,self,data)=>data.card===self,
+        targets:[{zone:'graveyard',what:'card',filter:(game,card,you)=>card.owner===you&&card.hasSub('Spirit')&&card.mv<=number(operation),aiHint:{goal:'recur'}}],
+        run:async ctx=>{
+          const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Soulshift: return the target?',options:[{key:'yes',label:'Yes'},{key:'no',label:'No'}],aiHint:{kind:'optTrigger',src:ctx.src}});
+          if(answer==='yes'&&ctx.targets[0]) await ctx.g.move(ctx.targets[0],'hand');
+        },
+      });return true;
+    }
+    if(kind==='modular') {
+      if(!addEtbPlusCounters(script,number(operation))) return false;
+      push(script,'triggers',{
+        on:'dies',desc:'Modular',filter:(game,self,data)=>data.card===self,
+        targets:[{what:'creature',filter:(game,card)=>card.is('Artifact'),aiHint:{goal:'buff'}}],
+        run:async ctx=>{
+          const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Modular: put counters on the target?',options:[{key:'yes',label:'Yes'},{key:'no',label:'No'}],aiHint:{kind:'optTrigger',src:ctx.src}});
+          if(answer==='yes'&&ctx.targets[0]) plusCounter(ctx.g,ctx.targets[0],ctx.data.snap.plus1||0,ctx.you);
+        },
+      });return true;
+    }
+    if(kind==='fabricate') {
+      push(script,'triggers',captureTriggerObjects({
+        on:'etb',desc:'Fabricate '+number(operation),filter:(game,self,data)=>data.card===self,
+        run:async(ctx,capture)=>{
+          let choice='t';
+          if(sameBattlefieldObject(ctx.g,ctx.src,capture.source)) choice=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Fabricate '+number(operation),options:[{key:'c',label:'+1/+1 counters'},{key:'t',label:'Servo tokens'}],aiHint:{kind:'fabricate',source:ctx.src}});
+          if(choice==='c'&&sameBattlefieldObject(ctx.g,ctx.src,capture.source)) plusCounter(ctx.g,ctx.src,number(operation),ctx.you);
+          else await ctx.g.makeTokens('servo',ctx.you,{n:number(operation)});
+        },
+      },()=>({})));return true;
+    }
+    if(kind==='living-weapon'||kind==='for-mirrodin') {
+      push(script,'triggers',captureTriggerObjects({
+        on:'etb',desc:kind==='living-weapon'?'Living weapon':'For Mirrodin!',filter:(game,self,data)=>data.card===self,
+        run:async(ctx,capture)=>{
+          const living=kind==='living-weapon';
+          const token={name:living?'Phyrexian Germ':'Rebel',cost:null,super:[],types:['Creature'],subtypes:living?['Phyrexian','Germ']:['Rebel'],power:living?'0':'2',toughness:living?'0':'2',colorsOverride:[living?'B':'R'],oracle:'',kws:[],isTokenDef:true};
+          const made=await ctx.g.makeTokens(token,ctx.you,{n:1});
+          if(made.length&&sameBattlefieldObject(ctx.g,ctx.src,capture.source)) await ctx.g.attach(ctx.src,made[0]);
+        },
+      },()=>({})));return true;
+    }
+    if(kind==='afflict') {
+      push(script,'triggers',captureTriggerObjects({
+        on:'becomesBlocked',desc:'Afflict '+number(operation),filter:(game,self,data)=>data.attacker===self,
+        run:async(ctx,capture)=>{if(capture.objects.defender) await ctx.g.loseLife(capture.objects.defender,number(operation),'Afflict');},
+      },(game,self)=>({defender:self.attacking instanceof MTG.Player?self.attacking:self.attacking?.ctrl})));return true;
+    }
+    if(kind==='ingest') {
+      push(script,'triggers',{
+        on:'combatDamageToPlayer',desc:'Ingest',filter:(game,self,data)=>data.card===self,
+        run:async ctx=>{const card=ctx.data.player.library.at(-1);if(card) await ctx.g.move(card,'exile');},
+      });return true;
+    }
+
     if (kind === 'myriad' || kind === 'infect') {
       keyword(script, kind);
       return true;

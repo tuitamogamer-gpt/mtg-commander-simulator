@@ -87,8 +87,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         : (this.def.kws || []).includes(k);
     }
     get name() { return this.def.name; }
-    get power() { return this.cur ? this.cur.power : 0; }
-    get toughness() { return this.cur ? this.cur.toughness : 0; }
+    get power() {
+      if(this.zone!=='battlefield'&&this.def.oracleCharacteristicPT)return this.def.cdaPower?this.def.cdaPower(this.owner.game,this):Number(this.def.power)||0;
+      return this.cur ? this.cur.power : 0;
+    }
+    get toughness() {
+      if(this.zone!=='battlefield'&&this.def.oracleCharacteristicPT)return this.def.cdaToughness?this.def.cdaToughness(this.owner.game,this):Number(this.def.toughness)||0;
+      return this.cur ? this.cur.toughness : 0;
+    }
     get mv() {
       if (this.zone === 'battlefield' && this.isToken && !this.isCopyOf) return 0;
       // CR 202.3e: X has the chosen value only while the spell is on the
@@ -685,6 +691,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return {
         iid: card.iid, timestamp: card.timestamp, name: card.name, def: card.def, ctrl: card.ctrl, owner: card.owner,
         isToken: card.isToken, power: card.power, toughness: card.toughness,
+        tapped: !!card.tapped, blocking: card.blocking,
+        enchanted: card.attachments.some(id => this.byIid(id)?.hasSub('Aura')),
+        equipped: card.attachments.some(id => this.byIid(id)?.hasSub('Equipment')),
         commander: card.commander, attacking: card.attacking, plus1: card.plus1(),
         minus1: card.counters['-1/-1'] || 0,
         counters: Object.assign({}, card.counters),
@@ -783,6 +792,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.battlefieldLKI.set(card.zoneVersion, {
           iid: card.iid, zoneVersion: card.zoneVersion, timestamp: snap.timestamp,
           power: snap.power, toughness: snap.toughness,
+          tapped: snap.tapped, attacking: !!snap.attacking,
+          blocking: snap.blocking !== null && snap.blocking !== undefined && snap.blocking !== false,
+          enchanted: snap.enchanted, equipped: snap.equipped,
         });
       }
       if (fromZone !== toZone) card.zoneVersion = (card.zoneVersion || 0) + 1;
@@ -1868,6 +1880,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (r.prevent && this.bf().some(card => card.def.damageCantBePrevented)) continue;
         n = r.run(this, { src, target, n, combat: !!opts.combat, noncombat: !opts.combat }, r.src);
       }
+      if (!this.bf().some(card => card.def.damageCantBePrevented)) {
+        for (const shield of this.untilEffects) {
+          if (shield.kind !== 'oraclePreventNextAmount' || shield.target !== target ||
+              shield.zoneVersion !== target.zoneVersion || n <= 0 || shield.remaining <= 0) continue;
+          const prevented = Math.min(n, shield.remaining);
+          n -= prevented;
+          shield.remaining -= prevented;
+          this.note('gameEffect', { kind: 'damagePrevented', target, amount: prevented, source: src });
+        }
+      }
       return n;
     }
 
@@ -2290,6 +2312,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // CDA power (Haughty Djinn etc.)
       for (const c of bf) {
+        if(c.def.oracleCharacteristicPT&&c.cur.abilitiesDisabled)continue;
         if (c.def.cdaPower) c.cur.basePower = c.def.cdaPower(this, c);
         if (c.def.cdaToughness) c.cur.baseToughness = c.def.cdaToughness(this, c);
       }

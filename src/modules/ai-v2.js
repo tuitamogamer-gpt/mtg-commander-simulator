@@ -1564,14 +1564,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const rawAmount = q.aiHint && q.aiHint.amount;
         const damage = rawAmount === 'X' ? Number(q.aiHint && q.aiHint.x || 0) : Number(rawAmount || 0);
         if (damage > 0) {
-          if (!hostile) return -value * 1.8;
+          if (!hostile) return -1000-value * 1.8;
           const remaining = target.is('Planeswalker')
             ? Math.max(1, Number(target.counters && target.counters.loyalty) || 0)
             : Math.max(1, Number(target.toughness || 0) - Number(target.damage || 0));
           if (damage >= remaining && damageProtectionSaves(target)) {
             return -10 - value * 0.12;
           }
-          return damage >= remaining ? 14 + value * 1.5 - (damage - remaining) * 0.35 : value * 0.18 - (remaining - damage);
+          return damage >= remaining ? 14 + value * 1.5 - (damage - remaining) * 0.35 : Math.max(-25,value * 0.18 - (remaining - damage));
         }
       }
       if (hint === 'tap') {
@@ -1707,6 +1707,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (hint === 'stationTap') return Math.max(0, card.power) * 4 - value * 0.1;
     if (hint === 'bottomOrder') return -value;
     if (/discard|sacCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) {
+      if(hint==='sacCost'&&(q.aiHint.keepTargets||[]).includes(card))return -10000-value;
       let discardScore = -value;
       if (MTG.getAIBaseStyle(player.aiStyle) === 'josh') {
         const sem = inferCardSemantics(card.def);
@@ -2499,6 +2500,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let specs;
     try { specs = game.spellTargetSpecs ? game.spellTargetSpecs(card, alt || {}) : (typeof card.def.targets === 'function' ? card.def.targets(game, card, alt || {}) : card.def.targets); }
     catch (error) { return null; }
+    if ((!specs || !specs.length) && !card.is('Instant') && !card.is('Sorcery')) {
+      // A permanent chooses its ETB targets after resolving, not while being
+      // cast. Its spell target list is therefore correctly empty, but that
+      // must not hide a useful removal trigger from the local cast evaluator.
+      specs = (card.def.triggers || []).filter(trigger => trigger.on === 'etb')
+        .flatMap(trigger => typeof trigger.targets === 'function'
+          ? trigger.targets(game, card, { card }) : trigger.targets || [])
+        .filter(spec => ['removal', 'damage', 'bounce', 'debuff'].includes(spec.aiHint?.goal));
+    }
     if (!specs || !specs.length) return null;
     const candidates = game.legalTargets(specs[0], card, player).filter(target => target instanceof U.CardInst && target.ctrl !== player);
     if (!candidates.length) return null;
@@ -2852,7 +2862,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const specs = game.spellTargetSpecs(card, action.alt || {}, player) || [];
         const canBurnOpponent = sem.roles.includes('direct-damage') && specs.some(spec =>
           game.legalTargets(spec, card, player).some(target => target instanceof U.Player && target !== player));
-        if (best && best.score >= 3.4) breakdown.threat += best.score * 0.85;
+        const removalThreshold = card.is('Instant') || card.is('Sorcery') ? 3.4 : 0;
+        if (best && best.score > removalThreshold) breakdown.threat += best.score * 0.85;
         else if (canBurnOpponent) breakdown.threat += 1.2;
         else breakdown.timing -= 10;
         const promised = game.diplomacyRequiredRemovalTarget && game.diplomacyRequiredRemovalTarget(player, card);
