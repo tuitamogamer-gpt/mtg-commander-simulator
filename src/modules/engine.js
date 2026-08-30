@@ -221,7 +221,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // pauza da igrač VIDI svaku AI akciju zasebno — poštuje redoslijed i sekvence
     async pace(ms) {
       await this.waitForLastResort();
-      if (!this.paced || this.gameOver || !ms) return;
+      if (!this.paced || this.gameOver || !ms || !(this.speedFactor > 0)) return;
       await new Promise(r => setTimeout(r, Math.round(ms * this.speedFactor)));
       await this.waitForLastResort();
     }

@@ -1643,7 +1643,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       difficulty: state.difficulty,
       humanName: 'You',
       maxTurns: 200,
-      paced: !resumeSave,
+      // Save replay must preserve the exact interactive decision graph: paced
+      // mode also controls reveal/Proceed checkpoints and full local-AI search,
+      // not only animation delays. A resumed game therefore stays paced while
+      // speedFactor=0 below removes waits until the recorded timeline catches up.
+      paced: true,
       humanController: (p) => {
         ui.me = p;
         p.manualMana = ui.manaMode === 'manual';
@@ -1667,6 +1671,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (replayingSave) {
               replayingSave = false;
               game.paced = true;
+              ui.applySpeed();
               ui.accountReplay = null;
               ui.toast(`Saved game restored · turn ${game.turnNo} · ${recordedTimeline.length} recorded actions.`);
               queueAccountSave({ immediate: true });
@@ -1859,6 +1864,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     ui.game = g;
     ui.applySpeed();
+    if (resumeSave) g.speedFactor = 0;
     window._game = g;
     window._ui = ui;
     ui.render();

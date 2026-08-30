@@ -143,6 +143,29 @@ test('promjena nepoznate protivničke karte ne mijenja odluku', async () => {
   assert.equal(first.score, second.score);
 });
 
+test('veliki obavezni cleanup discard ne obilazi eksponencijalno nemoguće kombinacije', async () => {
+  const { game, players: [bot] } = gameFixture(830013);
+  const from = [];
+  for (let index = 0; index < 37; index++) {
+    from.push(addCard(game, bot, syntheticDef(`Cleanup ${index}`, { cost: `{${index % 8}}` }), 'hand'));
+  }
+  const q = {
+    type: 'chooseCards', player: bot, from, min: 30, max: 30,
+    prompt: 'Discard down to 7 cards in hand (30)',
+    aiHint: { kind: 'cleanupDiscard' },
+  };
+
+  const started = performance.now();
+  const decision = await MTG.chooseBotAction({ gameState: game, botPlayerId: bot.idx, seed: 830013, actionWindow: q });
+  const elapsed = performance.now() - started;
+  const picked = MTG.unwrapBotDecisionAction(decision.action);
+
+  assert.equal(picked.length, 30);
+  assert.equal(new Set(picked).size, 30);
+  assert.ok(picked.every(card => from.includes(card)));
+  assert.ok(elapsed < 250, `cleanup izbor je trajao ${Math.round(elapsed)} ms`);
+});
+
 test('revealovana karta postaje poznata, a redoslijed protivničke biblioteke ostaje nevidljiv', () => {
   const { game, players: [bot, human] } = gameFixture();
   const revealed = addCard(game, human, syntheticDef('Revealovana prijetnja'));

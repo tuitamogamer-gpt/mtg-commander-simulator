@@ -45,6 +45,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return contexts.length ? contexts : [{ ability, targets: [] }];
   }
 
+  function manaCostKey(cost) {
+    return `${Math.max(0, Number(cost && cost.generic) || 0)}|${Math.max(0, Number(cost && cost.x) || 0)}|` +
+      (cost && cost.pips || []).map(pip => pip.join('/')).join(',');
+  }
+
   function canMatchPermanentCostGroups(game, player, source, groups, used = new Set(), index = 0) {
     if (index >= groups.length) return true;
     const group = groups[index];
@@ -3516,9 +3521,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (cost.tapArtifacts && this.bf().filter(x => x.ctrl === p && x.is('Artifact') && !x.tapped && x !== c).length < cost.tapArtifacts) return;
         if (cost.mana) {
           const rawMana = typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana;
-          const payable = abilityCostContexts(this, p, c, a).some(context => this.canPayMana(p,
-            this.abilityManaCost(p, c, rawMana, context), null,
-            { excludeCards: cost.tap ? [c] : [], artifactAbilityAlreadyUsed: c.is('Artifact') }));
+          const checkedCosts = new Set();
+          const payable = abilityCostContexts(this, p, c, a).some(context => {
+            const manaCost = this.abilityManaCost(p, c, rawMana, context);
+            const key = manaCostKey(manaCost);
+            if (checkedCosts.has(key)) return false;
+            checkedCosts.add(key);
+            return this.canPayMana(p, manaCost, null,
+              { excludeCards: cost.tap ? [c] : [], artifactAbilityAlreadyUsed: c.is('Artifact') });
+          });
           if (!payable) return;
         }
         if (cost.manaFromTarget && a.targets) {

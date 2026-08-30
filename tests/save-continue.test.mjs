@@ -83,6 +83,26 @@ test('manual table corrections use stable card references and replay without sav
   assert.equal(restoredGame.battlefield.includes(restoredCard), false);
 });
 
+test('zero-speed save replay zadržava interaktivne Proceed checkpointove bez animacijskog čekanja', async () => {
+  const MTG = loadEngine();
+  const seen = [];
+  const game = new MTG.Game({ seed: 33, paced: true });
+  const you = game.addPlayer('You', MTG.DECKS['Quandrix Unlimited'], {
+    decide: async (current, request) => { seen.push(request.type); return null; },
+  }, false);
+  const opponent = game.addPlayer('Opponent', MTG.DECKS['Elven Council'], { decide: async () => null }, true);
+  const revealed = new MTG.CardInst(MTG.DEFS['Arcane Signet'], opponent);
+  game.speedFactor = 0;
+
+  const started = Date.now();
+  await game.pace(5_000);
+  await game.revealToHuman({ ctrl: opponent, cards: [revealed] });
+
+  assert.ok(Date.now() - started < 100, 'restore ne čeka animacijske pauze');
+  assert.deepEqual(seen, ['cardReveal'], 'paced pravila i Proceed odluke ostaju aktivni tokom replaya');
+  assert.equal(game.human(), you);
+});
+
 test('account save schema keeps deterministic setup, private decisions, and profile UX wired end to end', () => {
   const MTG = loadEngine();
   const game = new MTG.Game({ seed: 31, paced: false });
@@ -101,6 +121,10 @@ test('account save schema keeps deterministic setup, private decisions, and prof
   assert.match(mainSource, /MTG\.restoreSaveDecision\(request, p, recorded\)/);
   assert.match(mainSource, /MTG\.replayAccountSideAction\(game, p, side\.action\)/);
   assert.match(mainSource, /MTG\.buildAccountSave\(g, saveSetup, recordedTimeline, matchId\)/);
+  assert.match(mainSource, /paced:\s*true/);
+  assert.doesNotMatch(mainSource, /paced:\s*!resumeSave/);
+  assert.match(mainSource, /if \(resumeSave\) g\.speedFactor = 0/);
+  assert.match(mainSource, /if \(replayingSave\)[\s\S]*ui\.applySpeed\(\)/);
   assert.match(mainSource, /e\.type === 'gameover'.*completeAccountMatch/s);
   assert.match(mainSource, /MTG\.resumeAccountSave = function/);
   assert.match(uiSource, /action\('Save & exit'/);

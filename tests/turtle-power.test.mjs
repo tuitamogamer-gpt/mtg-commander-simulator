@@ -360,6 +360,34 @@ test('Everything Pizza poštuje sva tri targeta i svaki protivnik bira svoj disc
   assert.equal(buffTarget.counters['+1/+1'], 3);
 });
 
+test('Everything Pizza na širokoj counter tabli računa isti mana trošak samo jednom po priority prozoru', () => {
+  const { game, players: [tmnt, opponent] } = rulesGame({}, 2);
+  permanent(game, tmnt, 'Everything Pizza');
+  for (const name of ['Forest', 'Island', 'Forest', 'Plains', 'Sodden Verdure', 'Forest', 'Hinterland Harbor']) {
+    permanent(game, tmnt, name);
+  }
+  const leonardo = permanent(game, tmnt, 'Leonardo, the Balance');
+  leonardo.counters['+1/+1'] = 12;
+  for (let index = 0; index < 24; index++) {
+    const target = permanent(game, opponent, 'Ignoble Hierarch');
+    target.counters[index % 3 ? '+1/+1' : '-1/-1'] = index + 1;
+  }
+  game.recalc();
+
+  const originalCanPayMana = game.canPayMana.bind(game);
+  let pizzaCostChecks = 0;
+  game.canPayMana = (player, cost, forSpell, options) => {
+    if (cost.generic === 2 && JSON.stringify(cost.pips) === JSON.stringify([['W'], ['U'], ['B'], ['R'], ['G']])) {
+      pizzaCostChecks += 1;
+    }
+    return originalCanPayMana(player, cost, forSpell, options);
+  };
+
+  const actions = game.activatableList(tmnt, true);
+  assert.equal(actions.some(entry => entry.card.name === 'Everything Pizza'), false, 'neplativa sposobnost ostaje skrivena');
+  assert.equal(pizzaCostChecks, 1, 'isti neplativi plan ne smije se ponavljati za svaku legalnu metu');
+});
+
 test('Foot Chopper trigger kontroliše kontrolor equipped creaturea i vuče samo poslije uspješne žrtve', async () => {
   const { game, players: [tmnt, opponent] } = rulesGame({}, 2);
   const chopper = permanent(game, tmnt, 'Foot Chopper');
