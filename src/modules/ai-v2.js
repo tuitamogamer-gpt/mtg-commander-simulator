@@ -625,8 +625,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const myCreatures = board.filter(card => card.roles.includes('creature'));
     const myAttack = myCreatures.filter(card => !card.keywords.includes('infect')).reduce((sum, card) => sum + Math.max(0, card.power || 0), 0);
     const myPoison = publicPoisonPressure(myCreatures);
-    const immediateWinPotential = view.winnerId === perspectivePlayerId ? 1000 : opponents.some(opponent =>
-      myAttack >= opponent.life || myPoison > 0 && (opponent.poison || 0) + myPoison >= 10) ? 55 : clamp(comboProgress * 1.4, 0, 50);
+    // Eliminating one vulnerable player in a pod is progress, not victory.
+    const immediateWinPotential = view.winnerId === perspectivePlayerId ? 1000 : opponents.length === 1 &&
+      (myAttack >= opponents[0].life || myPoison > 0 && (opponents[0].poison || 0) + myPoison >= 10) ? 55 : clamp(comboProgress * 1.4, 0, 50);
     const survival = lifeSafety + commanderDamageSafety - poisonDanger - immediateLossRisk;
     const w = Object.assign({ lifeSafety: 1, boardPresence: 1, cardAdvantage: 1, manaDevelopment: 1, interaction: 1, commanderProgress: 1, synergyProgress: 1, graveyardValue: 1, comboProgress: 1, recoveryPotential: 1 }, profile.weights || {});
     let totalScore = survival * w.lifeSafety + boardValue * w.boardPresence + cardAdvantage * w.cardAdvantage +
@@ -713,6 +714,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const take = [];
     function walk(index) {
       if (out.length >= limit) return;
+      // Late games can require discarding most of a very large hand. Avoid
+      // traversing subsets that can no longer reach the mandatory minimum.
+      if (take.length + items.length - index < min) return;
       if (take.length >= min && take.length <= max) out.push(take.slice());
       if (take.length === max) return;
       for (let i = index; i < items.length && out.length < limit; i++) {
@@ -891,9 +895,205 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // the combat AI can already see that a defender will eat the attacker for free.
   MTG.assessAttackAssignment = attackAssignmentAssessment;
 
+  // Bounded, public-board combat forecast. Never resolves scripts or reads an
+  // opponent's hand. It ranks declarations; the rules engine still executes
+  // all damage, triggers, replacements and legality in the actual game.
+  function forecastCombat(game, defender, attackers, assignments, initial = {}) {
+    const cards = [...new Set([...attackers, ...assignments.map(item => item.blocker)])];
+    const state = new Map(cards.map(card => [card, {
+      damage: initial.freshTurn ? 0 : Number(card.damage || 0),
+      toughness: Math.max(0, card.toughness), dead: false,
+      // The live power/toughness already includes existing counters. Track
+      // only new forecast counters so a clone never applies them twice.
+      counterReduction: 0,
+      shield: Number(card.counters && card.counters.shield || 0),
+      regen: Number(card.regenShield || 0), removed: false,
+    }]));
+    const result = { life: initial.life ?? defender.life, poison: initial.poison ?? (defender.poison || 0),
+      commanderDamage: Object.assign({}, initial.commanderDamage || defender.commanderDamage),
+      dead: new Set(), removed: new Set(), lifeGain: new Map(), damage: 0, lethal: false };
+    const active = card => !state.get(card).dead && !state.get(card).removed;
+    for (const step of ['first', 'normal']) {
+      const hits = [];
+      const amount = card => {
+        const first = card.kw('first strike'), double = card.kw('double strike');
+        if (step === 'first' ? !(first || double) : first && !double) return 0;
+        return Math.max(0, (game.dmgAmount(card, 'first') || game.dmgAmount(card, 'normal')) - state.get(card).counterReduction);
+      };
+      for (const attacker of attackers.filter(active)) {
+        const assigned = assignments.filter(item => item.attacker === attacker).map(item => item.blocker);
+        const legalBlock = assigned.length >= (attacker.kw('menace') ? 2 : 1);
+        const blockers = legalBlock ? assigned.filter(active).sort((a, b) =>
+          state.get(a).toughness - state.get(a).damage - state.get(b).toughness + state.get(b).damage || a.iid - b.iid) : [];
+        let remaining = amount(attacker);
+        for (let index = 0; index < blockers.length; index++) {
+          const blocker = blockers[index];
+          const lethal = attacker.kw('deathtouch') ? 1 : Math.max(1, state.get(blocker).toughness - state.get(blocker).damage);
+          const dealt = index === blockers.length - 1 && !attacker.kw('trample') ? remaining : Math.min(remaining, lethal);
+          if (dealt > 0) hits.push({ source: attacker, target: blocker, n: dealt });
+          remaining -= dealt;
+          if (amount(blocker) > 0) hits.push({ source: blocker, target: attacker, n: amount(blocker) });
+        }
+        if (remaining > 0 && (!legalBlock || attacker.kw('trample'))) hits.push({ source: attacker, target: defender, n: remaining });
+      }
+      for (const { source, target, n } of hits) {
+        if (target !== defender && game.isProtectedFrom(target, source)) continue;
+        const targetState = state.get(target);
+        if (targetState && targetState.shield > 0) { targetState.shield--; continue; }
+        if (source.kw('lifelink')) result.lifeGain.set(source.ctrl, (result.lifeGain.get(source.ctrl) || 0) + n);
+        if (target === defender) {
+          result.damage += n;
+          const projected = projectedPlayerDamage(source, n, 1);
+          result.poison += projected.poison;
+          result.life -= projected.life;
+          if (source.commander) result.commanderDamage[source.iid] = (result.commanderDamage[source.iid] || 0) + n;
+        } else {
+          if (source.kw('infect') || source.kw('wither')) {
+            targetState.toughness -= n;
+            targetState.counterReduction += n;
+          }
+          else targetState.damage += n;
+          if (source.kw('deathtouch')) targetState.deathtouched = true;
+        }
+      }
+      for (const card of cards.filter(active)) {
+        const row = state.get(card);
+        const destroy = row.damage >= row.toughness || row.deathtouched;
+        if (row.toughness <= 0 || (destroy && !card.kw('indestructible') && !row.regen)) {
+          row.dead = true; result.dead.add(card);
+        } else if (destroy && !card.kw('indestructible') && row.regen) {
+          row.regen--; row.removed = true; result.removed.add(card);
+        }
+      }
+      // Lifelink in this damage step is simultaneous with damage, but a later
+      // normal-damage lifelink hit cannot rescue first-strike lethal.
+      const lifeNow = result.life + (result.lifeGain.get(defender) || 0);
+      if (lifeNow <= 0 || result.poison >= 10 || Object.values(result.commanderDamage).some(n => n >= 21)) result.lethal = true;
+    }
+    result.life += result.lifeGain.get(defender) || 0;
+    return result;
+  }
+
+  function combatDanger(result) {
+    const commander = Math.max(0, ...Object.values(result.commanderDamage));
+    return (result.lethal ? 50000 : 0) + Math.max(0, 12 - result.life) * 3 +
+      Math.max(0, commander - 15) * 4 + Math.max(0, result.poison - 5) * 8;
+  }
+
+  function defenseScore(game, player, outcome, initialLife = player.life) {
+    let score = -combatDanger(outcome) - Math.max(0, initialLife - outcome.life) * (initialLife <= 12 ? 2.5 : 0.45);
+    for (const card of outcome.dead) score += permanentGameValue(game, card, player) * (card.ctrl === player ? -0.8 : 0.85);
+    return score;
+  }
+
+  // Greedy emergency defense supplements the declaration beam. Menace pairs
+  // are added atomically so pruning never loses the only legal saving block.
+  function survivalBlocks(game, player, attackers, potential, initial = {}) {
+    let assignments = [];
+    let outcome = forecastCombat(game, player, attackers, assignments, initial);
+    let score = defenseScore(game, player, outcome, initial.life ?? player.life);
+    const available = potential.slice();
+    while (available.length) {
+      let best = null;
+      for (const attacker of attackers) {
+        const legal = available.filter(card => game.canBlock(card, attacker));
+        const needsPair = attacker.kw('menace') && !assignments.some(item => item.attacker === attacker);
+        for (let i = 0; i < legal.length; i++) {
+          const pairs = needsPair ? legal.slice(i + 1) : [null];
+          for (const partner of pairs) {
+            const picks = partner ? [legal[i], partner] : [legal[i]];
+            const next = assignments.concat(picks.map(blocker => ({ blocker, attacker })));
+            const result = forecastCombat(game, player, attackers, next, initial);
+            const value = defenseScore(game, player, result, initial.life ?? player.life);
+            if (value > score + 0.01 && (!best || value > best.score)) best = { assignments: next, outcome: result, score: value, picks };
+          }
+        }
+      }
+      if (!best) break;
+      ({ assignments, outcome, score } = best);
+      for (const card of best.picks) available.splice(available.indexOf(card), 1);
+    }
+    return { assignments, outcome, score };
+  }
+
+  function attackPlanSurvival(game, player, assignments) {
+    const opponents = player.opponents(game);
+    const dead = new Set(), removed = new Set(), eliminated = new Set();
+    let life = player.life;
+    for (const target of new Set(assignments.map(item => item.target))) {
+      const defender = target instanceof U.Player ? target : target.ctrl;
+      const attackers = assignments.filter(item => item.target === target).map(item => item.card);
+      const potential = game.creatures(defender).filter(card => !card.tapped && !dead.has(card));
+      const defense = survivalBlocks(game, defender, attackers, potential);
+      for (const card of defense.outcome.dead) dead.add(card);
+      for (const card of defense.outcome.removed) removed.add(card);
+      life += defense.outcome.lifeGain.get(player) || 0;
+      // A planeswalker kill is never a player elimination.
+      if (target instanceof U.Player && defense.outcome.lethal) eliminated.add(defender);
+    }
+    if (opponents.length && eliminated.size === opponents.length && life > 0) return 1000000;
+    let blockers = game.creatures(player).filter(card => !card.tapped && !card.cur.cantBlock && !dead.has(card) && !removed.has(card) &&
+      !assignments.some(item => item.card === card && !card.kw('vigilance')));
+    let position = { life, poison: player.poison || 0, commanderDamage: Object.assign({}, player.commanderDamage), freshTurn: true };
+    let danger = 0;
+    // Every surviving rival gets a turn before our next untap. Currently
+    // tapped/summoning-sick enemy creatures will normally be ready by then.
+    const seat = game.players.indexOf(player);
+    const ordered = game.players.slice(seat + 1).concat(game.players.slice(0, seat));
+    for (const opponent of ordered.filter(row => opponents.includes(row) && !eliminated.has(row))) {
+      const attackers = game.creatures(opponent).filter(card => !dead.has(card) && !card.cur.cantAttack &&
+        game.canAttackAtAll(card) && game.canAttackTarget(card, player) &&
+        !(card.tapped && (Number(card.counters.stun || 0) > 0 || card.def.doesntUntap || card.cur.cantUntap)));
+      const defense = survivalBlocks(game, player, attackers, blockers, position);
+      position = { life: defense.outcome.life, poison: defense.outcome.poison,
+        commanderDamage: defense.outcome.commanderDamage, freshTurn: true };
+      danger = Math.max(danger, combatDanger(defense.outcome));
+      blockers = blockers.filter(card => !defense.outcome.dead.has(card) && !defense.outcome.removed.has(card));
+      if (defense.outcome.lethal) break;
+    }
+    const exposure = Math.max(0, player.life - position.life);
+    return eliminated.size * 120 - danger - exposure * (player.life <= 12 ? 2.5 : player.life <= 20 ? 1 : 0.25);
+  }
+
   function generateAttackPlans(game, player, q, config) {
     const eligible = (q.eligible || []).slice().sort((a, b) => a.iid - b.iid);
     const forced = new Set(q.forced || []);
+    const safetyCache = new Map();
+    const reserveCache = new Map();
+    // Beam pruning uses a cheap shield estimate. Running a complete defensive
+    // search for every partial declaration multiplied the cost on wide boards.
+    // Full first/normal damage forecasts are reserved for the final candidates.
+    const reserve = assignments => {
+      const key = assignments.filter(item => !item.card.kw('vigilance')).map(item => item.card.iid).join(',');
+      if (reserveCache.has(key)) return reserveCache.get(key);
+      const shields = game.creatures(player).filter(card => !card.tapped && !card.cur.cantBlock &&
+        !assignments.some(item => item.card === card && !card.kw('vigilance')));
+      let incoming = 0;
+      for (const rival of player.opponents(game)) {
+        const available = shields.slice();
+        const threats = game.creatures(rival).filter(card => !card.cur.cantAttack && game.canAttackAtAll(card) && game.canAttackTarget(card, player))
+          .sort((a, b) => b.power - a.power || a.iid - b.iid);
+        for (const threat of threats) {
+          const hit = Math.max(0, game.dmgAmount(threat, 'first') || game.dmgAmount(threat, 'normal')) * (threat.kw('double strike') ? 2 : 1);
+          const legal = available.filter(card => game.canBlock(card, threat)).sort((a, b) => b.toughness - a.toughness || a.iid - b.iid);
+          const need = threat.kw('menace') ? 2 : 1;
+          if (legal.length < need) incoming += hit;
+          else {
+            const chosen = legal.slice(0, need);
+            if (threat.kw('trample')) incoming += Math.max(0, hit - chosen.reduce((sum, card) => sum + (threat.kw('deathtouch') ? 1 : card.toughness), 0));
+            for (const card of chosen) available.splice(available.indexOf(card), 1);
+          }
+        }
+      }
+      const score = -incoming * (player.life <= 12 ? 8 : 0.35);
+      reserveCache.set(key, score);
+      return score;
+    };
+    const safety = assignments => {
+      const key = actionKey({ kind: 'declareAttackers', assignments });
+      if (!safetyCache.has(key)) safetyCache.set(key, attackPlanSurvival(game, player, assignments));
+      return safetyCache.get(key);
+    };
     let beam = [{ assignments: [], score: 0 }];
     for (const attacker of eligible) {
       const magicTargets = game.legalDeclarationAttackTargets
@@ -918,12 +1118,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           });
         }
       }
-      beam = next.sort((a, b) => b.score - a.score || actionKey({ kind: 'declareAttackers', assignments: a.assignments }).localeCompare(actionKey({ kind: 'declareAttackers', assignments: b.assignments })))
+      beam = next.sort((a, b) => (b.score + reserve(b.assignments)) - (a.score + reserve(a.assignments)) || actionKey({ kind: 'declareAttackers', assignments: a.assignments }).localeCompare(actionKey({ kind: 'declareAttackers', assignments: b.assignments })))
         .slice(0, config.beamWidth);
     }
     if (!beam.length) beam = [{ assignments: [], score: 0 }];
     if (!beam.some(plan => plan.assignments.length === 0) && !forced.size) beam.push({ assignments: [], score: 0 });
-    let plans = beam.map(plan => ({ kind: 'declareAttackers', assignments: plan.assignments, _combatScore: plan.score }));
+    // Keep concentrated finish attempts even if their nonlethal prefixes were
+    // pruned for exposing defense. A safe partial attack must not hide a win.
+    for (const target of player.opponents(game)) {
+      const assignments = [];
+      let score = 0, legal = true;
+      for (const card of eligible) {
+        const magicTargets = game.legalDeclarationAttackTargets(card);
+        const targets = game.diplomacyAttackTargetsFor ? game.diplomacyAttackTargetsFor(card, magicTargets, forced.has(card)) : magicTargets;
+        if (targets.includes(target)) {
+          score += attackAssignmentScore(game, player, card, target, assignments.length);
+          assignments.push({ card, target });
+        } else if (forced.has(card) && targets.length) { legal = false; break; }
+      }
+      if (legal && assignments.length) beam.push({ assignments, score });
+    }
+    let plans = beam.map(plan => ({ kind: 'declareAttackers', assignments: plan.assignments,
+      _combatScore: plan.score, _survivalScore: safety(plan.assignments) }));
     const promisedTarget = game.diplomacyRequiredAttackTarget && game.diplomacyRequiredAttackTarget(player);
     if (promisedTarget) {
       const canFulfill = eligible.some(attacker => game.canAttackTarget(attacker, promisedTarget) &&
@@ -937,39 +1153,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return plans;
   }
 
-  function blockAssignmentScore(game, blocker, attacker, defender) {
-    const incoming = Math.max(0, game.dmgAmount ? game.dmgAmount(attacker, 'normal') : attacker.power || 0);
-    const blockerHit = Math.max(0, game.dmgAmount ? game.dmgAmount(blocker, 'normal') : blocker.power || 0);
-    const strikes = attacker.kw('double strike') ? 2 : 1;
-    const projected = projectedPlayerDamage(attacker, incoming * strikes, strikes);
-    const savesLethal = projected.life > 0 && projected.life >= defender.life ||
-      projected.poison > 0 && (defender.poison || 0) + projected.poison >= 10 ? 90 : 0;
-    const killsAttacker = blockerHit >= attacker.toughness || blocker.kw('deathtouch');
-    const blockerDies = incoming >= blocker.toughness || attacker.kw('deathtouch');
-    const enginePenalty = inferCardSemantics(blocker.def).roles.includes('engine') ? 6 : 0;
-    const deathBenefit = inferCardSemantics(blocker.def).roles.includes('death-payoff') ? 2 : 0;
-    const commanderShield = attacker.commander ? incoming * 0.8 : 0;
-    return savesLethal + incoming * 0.65 + commanderShield + (killsAttacker ? permanentGameValue(game, attacker, defender) * 0.75 : 0) -
-      (blockerDies ? permanentGameValue(game, blocker, defender) * 0.7 + enginePenalty : 0) + deathBenefit;
-  }
-
   function generateBlockPlans(game, player, q, config) {
     const potential = (q.potential || []).slice().sort((a, b) => a.iid - b.iid);
     const attackers = (q.attackers || []).slice();
+    const score = assignments => defenseScore(game, player, forecastCombat(game, player, attackers, assignments));
     let beam = [{ assignments: [], score: 0 }];
     for (const blocker of potential) {
       const next = [];
       for (const node of beam) {
-        next.push({ assignments: node.assignments.slice(), score: node.score });
+        next.push({ assignments: node.assignments.slice(), score: score(node.assignments) });
         for (const attacker of attackers) {
           if (!game.canBlock(blocker, attacker)) continue;
-          next.push({ assignments: node.assignments.concat({ blocker, attacker }), score: node.score + blockAssignmentScore(game, blocker, attacker, player) });
+          const assignments = node.assignments.concat({ blocker, attacker });
+          next.push({ assignments, score: score(assignments) });
         }
       }
       beam = next.sort((a, b) => b.score - a.score || actionKey({ kind: 'declareBlockers', assignments: a.assignments }).localeCompare(actionKey({ kind: 'declareBlockers', assignments: b.assignments })))
         .slice(0, config.beamWidth);
     }
     beam = beam.filter(plan => attackers.every(attacker => !attacker.kw('menace') || plan.assignments.filter(item => item.attacker === attacker).length !== 1));
+    beam.push(survivalBlocks(game, player, attackers, potential));
     if (!beam.length) beam = [{ assignments: [], score: 0 }];
     return beam.map(plan => ({ kind: 'declareBlockers', assignments: plan.assignments, _combatScore: plan.score }));
   }
@@ -2849,6 +3052,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (q && q.type === 'priority' && !game.stack.length && game.turnPlayer === player && phase !== 'combat') breakdown.timing += 25;
     } else if (action.kind === 'declareAttackers' || action.kind === 'declareBlockers') {
       breakdown.combat = action._combatScore || 0;
+      breakdown.safety = action._survivalScore || 0;
     } else if (action.kind === 'chooseTargets') {
       breakdown.choice = action.picks.reduce((sum, target) => sum + targetValue(game, player, target, q || {}), 0);
     } else if (action.kind === 'chooseCards' || action.kind === 'bottomCards') {

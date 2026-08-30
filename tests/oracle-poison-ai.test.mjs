@@ -155,7 +155,8 @@ test('actual local AI sacrifices a valuable blocker to stop poison lethal', asyn
 });
 
 test('public threat and win estimates distinguish infect, toxic, and ordinary life damage', async () => {
-  const { game, players: [bot, opponent] } = setup();
+  const { game, players: [bot, opponent, third] } = setup();
+  third.lost = true;
   const attacker = await castActual(game, bot, 'Plague Stinger');
   opponent.life = 1;
   let view = MTG.createBotPlayerView(game, bot.idx);
@@ -171,6 +172,20 @@ test('public threat and win estimates distinguish infect, toxic, and ordinary li
   view = MTG.createBotPlayerView(game, bot.idx);
   assert.equal(MTG.assessPlayerThreat(view, opponent.idx, bot.idx).immediateLethal, 1, 'ordinary damage really is life lethal');
   assert.equal(MTG.evaluateState(view, bot.idx).immediateWinPotential, 55, 'keyword-only change invalidates the cached poison projection');
+});
+
+test('poison lethal against one player in a pod is not a table win', async () => {
+  const { game, players: [bot, opponent, third] } = setup();
+  await castActual(game, bot, 'Plague Stinger');
+  opponent.poison = 9;
+  let view = MTG.createBotPlayerView(game, bot.idx);
+  assert.equal(MTG.assessPlayerThreat(view, opponent.idx, bot.idx).immediateLethal, 1);
+  assert.ok(MTG.evaluateState(view, bot.idx).immediateWinPotential < 55,
+    'the other surviving opponent prevents a terminal win bonus');
+  third.lost = true;
+  view = MTG.createBotPlayerView(game, bot.idx);
+  assert.equal(MTG.evaluateState(view, bot.idx).immediateWinPotential, 55,
+    'the same poison damage can finish the last opponent');
 });
 
 test('toxic public value disappears with ability removal and remains hidden for unknown face-down cards', async () => {
