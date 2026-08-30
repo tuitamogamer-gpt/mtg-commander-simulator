@@ -10,6 +10,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
   const ACCEPTED_ENGINE_STATUSES = new Set(['certified', 'certified-legacy']);
   const BASIC_NAMES = new Set(['Plains', 'Island', 'Swamp', 'Mountain', 'Forest', 'Wastes']);
+  const IMPORTED_DECK_SCHEMA = 'commander-deck/v1';
+  const IMPORTED_LIBRARY_SCHEMA = 'commander-deck-library/v1';
+  const IMPORTED_LIBRARY_KEY = 'mtg-custom-deck-library/v1';
+  const IMPORTED_LIBRARY_LIMIT = 40;
+  const IMPORTED_DECK_ID = /^deck-[a-z0-9-]{8,80}$/;
 
   const KEYWORD_CONTRACTS = MTG.ORACLE_KEYWORD_CONTRACTS = Object.freeze({
     flying: 'flying-evasion',
@@ -319,7 +324,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const catalog = MTG.CARD_CATALOG && MTG.CARD_CATALOG[entry.name];
       const max = allowedCopies(def);
       if (entry.n > max) errors.push(issue('singleton', `${entry.name} allows ${max} cop${max === 1 ? 'y' : 'ies'}, but the list contains ${entry.n}.`, entry.name));
-      if (!catalog || !ACCEPTED_ENGINE_STATUSES.has(catalog.engineStatus)) {
+      if (!catalog || !ACCEPTED_ENGINE_STATUSES.has(catalog.engineStatus) || catalog.deckImportEligible !== true) {
         errors.push(issue('engine-unsupported', `${entry.name} is not semantically certified for gameplay.`, entry.name));
       }
       if (catalog && catalog.commanderLegality && catalog.commanderLegality !== 'legal') {
@@ -382,7 +387,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         unresolvedCards: unresolved.length,
         colorIdentity: requestedCommanders.flatMap(name => MTG.cardColorIdentity(MTG.DEFS && MTG.DEFS[name]))
           .filter((color, index, all) => COLORS.includes(color) && all.indexOf(color) === index),
-        engineCertified: cards.filter(entry => ACCEPTED_ENGINE_STATUSES.has(MTG.CARD_CATALOG && MTG.CARD_CATALOG[entry.name] && MTG.CARD_CATALOG[entry.name].engineStatus)).length,
+        engineCertified: cards.filter(entry => {
+          const catalog = MTG.CARD_CATALOG && MTG.CARD_CATALOG[entry.name];
+          return !!catalog && ACCEPTED_ENGINE_STATUSES.has(catalog.engineStatus) && catalog.deckImportEligible === true;
+        }).length,
       },
       interactions,
       errors,
@@ -407,7 +415,314 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       set: 'Pasted Commander deck',
       custom: true,
     };
+    if (MTG.invalidateDeckAIProfile) MTG.invalidateDeckAIProfile(deck.name);
     return deck;
+  };
+
+  function deckIdPart(value) {
+    let hash = 2166136261;
+    const input = String(value || '');
+    for (let index = 0; index < input.length; index += 1) {
+      hash ^= input.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(36).padStart(7, '0');
+  }
+
+  function freshDeckId(validation) {
+    if (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function') {
+      return `deck-${globalThis.crypto.randomUUID().toLowerCase()}`;
+    }
+    const seed = `${validation.deck.name}|${validation.commanders.join('|')}|${Date.now()}|${Math.random()}`;
+    return `deck-${deckIdPart(seed)}-${deckIdPart(seed.split('').reverse().join(''))}`;
+  }
+
+  function copyRecord(record) {
+    record = record && typeof record === 'object' && !Array.isArray(record) ? record : {};
+    return {
+      schema: IMPORTED_DECK_SCHEMA,
+      id: record.id,
+      name: record.name,
+      commanders: Array.isArray(record.commanders) ? record.commanders.slice() : [],
+      cards: Array.isArray(record.cards)
+        ? record.cards.map(entry => ({ name: entry && entry.name, n: entry && entry.n, section: entry && entry.section }))
+        : [],
+      ...(Number.isSafeInteger(record.revision) ? { revision: record.revision } : {}),
+      ...(record.createdAt ? { createdAt: record.createdAt } : {}),
+      ...(record.updatedAt ? { updatedAt: record.updatedAt } : {}),
+    };
+  }
+
+  function validRecordText(value, max) {
+    return typeof value === 'string' && value === value.trim() && value.length > 0 && value.length <= max &&
+      !/[\u0000-\u001f\u007f]/.test(value);
+  }
+
+  function guestRecordId(record) {
+    return record && typeof record === 'object' && !Array.isArray(record) && typeof record.id === 'string'
+      ? record.id
+      : '';
+  }
+
+  function recordShapeErrors(record) {
+    const errors = [];
+    if (!record || typeof record !== 'object' || Array.isArray(record)) {
+      return [issue('library-record', 'Saved deck record is not an object.')];
+    }
+    if (record.schema !== IMPORTED_DECK_SCHEMA) errors.push(issue('library-schema', 'Saved deck uses an unsupported library format.'));
+    if (!validRecordText(record.id, 85) || !IMPORTED_DECK_ID.test(record.id)) {
+      errors.push(issue('library-id', 'Saved deck has an invalid identifier.'));
+    }
+    if (!validRecordText(record.name, 80)) {
+      errors.push(issue('library-name', 'Saved deck name must contain 1–80 trimmed, control-free characters.'));
+    }
+    const commandersValid = Array.isArray(record.commanders) && record.commanders.length >= 1 && record.commanders.length <= 2 &&
+      record.commanders.every(value => validRecordText(value, 160));
+    const commanderKeys = commandersValid ? record.commanders.map(nameKey) : [];
+    const commandersUnique = commandersValid && new Set(commanderKeys).size === commanderKeys.length;
+    if (!commandersValid || !commandersUnique) {
+      errors.push(issue('library-commanders', 'Saved deck must name one or two commanders.'));
+    }
+    if (!Array.isArray(record.cards) || record.cards.length < 1 || record.cards.length > 100) {
+      errors.push(issue('library-cards', 'Saved deck must contain canonical card rows.'));
+      return errors;
+    }
+    const seen = new Set();
+    const validRows = [];
+    let total = 0;
+    for (const row of record.cards) {
+      const rowName = row && typeof row.name === 'string' ? row.name : '';
+      if (!row || typeof row !== 'object' || Array.isArray(row) || !validRecordText(rowName, 160) ||
+          !Number.isSafeInteger(row.n) || row.n < 1 || row.n > 100 ||
+          !['Commander', 'Main'].includes(row && row.section)) {
+        errors.push(issue('library-card-row', 'Saved deck contains a malformed card row.', validRecordText(rowName, 160) ? rowName : undefined));
+        continue;
+      }
+      const key = nameKey(rowName);
+      if (seen.has(key)) errors.push(issue('library-card-duplicate', `${rowName} appears in more than one saved row.`, rowName));
+      seen.add(key);
+      total += row.n;
+      validRows.push(row);
+    }
+    if (total !== 100) errors.push(issue('deck-size', `Commander deck needs exactly 100 cards including commanders; found ${total}.`));
+    if (commandersValid && commandersUnique) {
+      const rowsByName = new Map(validRows.map(row => [row.name, row]));
+      const commanderNames = new Set(record.commanders);
+      for (const commander of record.commanders) {
+        const row = rowsByName.get(commander);
+        if (!row || row.n !== 1 || row.section !== 'Commander') {
+          errors.push(issue('library-commander-row', `${commander} must appear exactly once in the Commander section.`, commander));
+        }
+      }
+      const unexpectedCommander = validRows.find(row => row.section === 'Commander' && !commanderNames.has(row.name));
+      if (unexpectedCommander) {
+        errors.push(issue('library-unexpected-commander', `${unexpectedCommander.name} is not listed as a commander.`, unexpectedCommander.name));
+      }
+    }
+    return errors;
+  }
+
+  MTG.IMPORTED_DECK_SCHEMA = IMPORTED_DECK_SCHEMA;
+  MTG.IMPORTED_LIBRARY_SCHEMA = IMPORTED_LIBRARY_SCHEMA;
+  MTG.IMPORTED_LIBRARY_KEY = IMPORTED_LIBRARY_KEY;
+  MTG.IMPORTED_LIBRARY_LIMIT = IMPORTED_LIBRARY_LIMIT;
+
+  MTG.createImportedDeckRecord = function (validation, options) {
+    options = options || {};
+    if (!validation || !validation.ok || !validation.deck) throw new Error('Only a validated imported deck can be saved.');
+    const now = options.now || new Date().toISOString();
+    return {
+      schema: IMPORTED_DECK_SCHEMA,
+      id: options.id || freshDeckId(validation),
+      name: validation.deck.name,
+      commanders: validation.commanders.slice(),
+      cards: validation.deck.cards.map(entry => ({
+        name: entry.name,
+        n: entry.n,
+        section: validation.commanders.includes(entry.name) ? 'Commander' : 'Main',
+      })),
+      ...(Number.isSafeInteger(options.revision) ? { revision: options.revision } : {}),
+      createdAt: options.createdAt || now,
+      updatedAt: now,
+    };
+  };
+
+  MTG.validateImportedDeckRecord = function (record) {
+    const structuralErrors = recordShapeErrors(record);
+    const safeRecord = record && typeof record === 'object' ? record : {};
+    const parsed = {
+      cards: Array.isArray(safeRecord.cards) ? safeRecord.cards.map(entry => ({
+        name: entry && entry.name,
+        n: entry && entry.n,
+        section: entry && entry.section,
+      })) : [],
+      commanders: Array.isArray(safeRecord.commanders) ? safeRecord.commanders.slice() : [],
+      ignored: [],
+    };
+    const validation = MTG.validateImportedDeck(parsed, {
+      name: typeof safeRecord.name === 'string' ? safeRecord.name.trim() : '',
+      commanders: parsed.commanders,
+    });
+    if (!structuralErrors.length) return Object.assign({ record: copyRecord(safeRecord) }, validation);
+    return Object.assign({}, validation, {
+      ok: false,
+      deck: null,
+      record: null,
+      errors: structuralErrors.concat(validation.errors || []),
+    });
+  };
+
+  let registeredLibraryNames = new Set();
+  let importedLibrary = { source: 'guest', error: null, entries: [] };
+
+  MTG.clearImportedDeckLibraryRegistrations = function () {
+    for (const name of registeredLibraryNames) {
+      if (MTG.DECKS && MTG.DECKS[name] && MTG.DECKS[name].custom) delete MTG.DECKS[name];
+      if (MTG.DECK_META && MTG.DECK_META[name] && MTG.DECK_META[name].custom) delete MTG.DECK_META[name];
+      if (MTG.invalidateDeckAIProfile) MTG.invalidateDeckAIProfile(name);
+    }
+    registeredLibraryNames = new Set();
+  };
+
+  function publicLibrary() {
+    return {
+      source: importedLibrary.source,
+      error: importedLibrary.error,
+      entries: importedLibrary.entries.map(entry => ({
+        record: entry.record ? copyRecord(entry.record) : null,
+        id: entry.id,
+        name: entry.name,
+        commanders: entry.commanders.slice(),
+        ready: entry.ready,
+        issues: entry.issues.map(problem => ({ code: problem.code, message: problem.message, ...(problem.card ? { card: problem.card } : {}) })),
+      })),
+    };
+  }
+
+  MTG.getImportedDeckLibrary = publicLibrary;
+  MTG.hideImportedDeckLibrary = function (options) {
+    options = options || {};
+    importedLibrary = { source: options.source || 'loading', error: options.error || null, entries: [] };
+    return publicLibrary();
+  };
+  MTG.getImportedDeckLibraryEntry = function (id) {
+    return importedLibrary.entries.find(entry => entry.id === id) || null;
+  };
+
+  MTG.hydrateImportedDeckLibrary = function (records, options) {
+    options = options || {};
+    MTG.clearImportedDeckLibraryRegistrations();
+    const entries = [];
+    const seenIds = new Set();
+    const seenNames = new Set();
+    const input = Array.isArray(records) ? records.slice(0, IMPORTED_LIBRARY_LIMIT) : [];
+    for (const candidate of input) {
+      const record = candidate && typeof candidate === 'object' ? candidate : {};
+      const validation = MTG.validateImportedDeckRecord(record);
+      const id = String(record.id || '');
+      const name = String(record.name || '').trim();
+      const issues = (validation.errors || []).slice();
+      const normalizedName = nameKey(name);
+      if (seenIds.has(id)) issues.push(issue('library-duplicate-id', 'Another saved deck uses this identifier.'));
+      if (seenNames.has(normalizedName)) issues.push(issue('library-duplicate-name', `Another saved deck is also named ${name}.`));
+      const existing = MTG.DECKS && MTG.DECKS[name];
+      if (existing && !existing.custom) issues.push(issue('deck-name-collision', `A built-in deck is already named ${name}.`));
+      const ready = validation.ok && issues.length === 0;
+      if (ready) {
+        try {
+          MTG.registerImportedDeck(validation, { replace: true });
+          registeredLibraryNames.add(name);
+        } catch (error) {
+          issues.push(issue('library-registration', error && error.message || 'Saved deck could not be registered.'));
+        }
+      }
+      seenIds.add(id);
+      seenNames.add(normalizedName);
+      entries.push({
+        record: validation.record || (record && typeof record === 'object' ? record : null),
+        validation,
+        id,
+        name,
+        commanders: Array.isArray(record.commanders) ? record.commanders.slice(0, 2) : [],
+        ready: ready && issues.length === 0,
+        issues,
+      });
+    }
+    importedLibrary = { source: options.source || 'guest', error: options.error || null, entries };
+    return publicLibrary();
+  };
+
+  MTG.readGuestImportedDeckRecords = function (storage) {
+    storage = storage || globalThis.localStorage;
+    if (!storage || typeof storage.getItem !== 'function') return { ok: true, records: [] };
+    try {
+      const text = storage.getItem(IMPORTED_LIBRARY_KEY);
+      if (!text) return { ok: true, records: [] };
+      const value = JSON.parse(text);
+      if (!value || value.schema !== IMPORTED_LIBRARY_SCHEMA || !Array.isArray(value.records)) {
+        return { ok: false, records: [], error: 'Saved deck library uses an unsupported format.' };
+      }
+      if (value.records.length > IMPORTED_LIBRARY_LIMIT) {
+        return { ok: false, records: [], error: `Saved deck library exceeds the ${IMPORTED_LIBRARY_LIMIT}-deck limit.` };
+      }
+      return { ok: true, records: value.records };
+    } catch (error) {
+      return { ok: false, records: [], error: `Saved deck library could not be read: ${error && error.message || 'invalid data'}.` };
+    }
+  };
+
+  MTG.loadGuestImportedDeckLibrary = function (options) {
+    options = options || {};
+    const loaded = MTG.readGuestImportedDeckRecords(options.storage);
+    return MTG.hydrateImportedDeckLibrary(loaded.records, { source: 'guest', error: loaded.ok ? null : loaded.error });
+  };
+
+  MTG.upsertGuestImportedDeck = function (record, options) {
+    options = options || {};
+    const storage = options.storage || globalThis.localStorage;
+    if (!storage || typeof storage.setItem !== 'function') throw new Error('Browser storage is unavailable. Sign in to save this deck across devices.');
+    const validation = MTG.validateImportedDeckRecord(record);
+    if (!validation.ok) {
+      const error = new Error(validation.errors[0] && validation.errors[0].message || 'Deck is not engine-certified.');
+      error.validation = validation;
+      throw error;
+    }
+    const loaded = MTG.readGuestImportedDeckRecords(storage);
+    if (!loaded.ok) throw new Error(loaded.error);
+    const records = loaded.records.map(copyRecord);
+    const sameId = records.findIndex(saved => saved.id === record.id);
+    const sameName = records.findIndex(saved => nameKey(saved.name) === nameKey(record.name) && saved.id !== record.id);
+    if (sameName >= 0) throw new Error(`A saved deck is already named ${record.name}. Remove it or choose another name.`);
+    const existingBuiltIn = MTG.DECKS && MTG.DECKS[record.name];
+    if (existingBuiltIn && !existingBuiltIn.custom) throw new Error(`A built-in deck is already named ${record.name}.`);
+    const canonical = copyRecord(validation.record);
+    if (sameId >= 0) records[sameId] = canonical;
+    else {
+      if (records.length >= IMPORTED_LIBRARY_LIMIT) throw new Error(`Your library can contain up to ${IMPORTED_LIBRARY_LIMIT} imported decks.`);
+      records.push(canonical);
+    }
+    const payload = JSON.stringify({ schema: IMPORTED_LIBRARY_SCHEMA, records });
+    storage.setItem(IMPORTED_LIBRARY_KEY, payload);
+    MTG.hydrateImportedDeckLibrary(records, { source: 'guest' });
+    return copyRecord(canonical);
+  };
+
+  MTG.removeGuestImportedDeck = function (id, options) {
+    options = options || {};
+    const storage = options.storage || globalThis.localStorage;
+    if (!storage || typeof storage.setItem !== 'function') throw new Error('Browser storage is unavailable.');
+    const loaded = MTG.readGuestImportedDeckRecords(storage);
+    if (!loaded.ok) {
+      storage.setItem(IMPORTED_LIBRARY_KEY, JSON.stringify({ schema: IMPORTED_LIBRARY_SCHEMA, records: [] }));
+      MTG.hydrateImportedDeckLibrary([], { source: 'guest' });
+      return true;
+    }
+    const targetId = typeof id === 'string' ? id : '';
+    const records = loaded.records.filter(record => guestRecordId(record) !== targetId).map(copyRecord);
+    if (records.length === loaded.records.length) return false;
+    storage.setItem(IMPORTED_LIBRARY_KEY, JSON.stringify({ schema: IMPORTED_LIBRARY_SCHEMA, records }));
+    MTG.hydrateImportedDeckLibrary(records, { source: 'guest' });
+    return true;
   };
 
   MTG.importCommanderDeck = function (text, options) {

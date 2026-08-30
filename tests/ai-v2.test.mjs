@@ -68,6 +68,48 @@ test('svih 27 aktivnih precona ima popunjen stvarni AI profil', () => {
   }
 });
 
+test('zamjena custom decka istog imena invalidira i ponovo gradi AI profil', () => {
+  const deckId = 'Custom Cache Regression';
+  try {
+    MTG.DECKS[deckId] = {
+      name: deckId,
+      commander: 'Blood Artist',
+      cards: [
+        { name: 'Blood Artist', n: 1 },
+        { name: 'Sol Ring', n: 4 },
+        { name: 'Cultivate', n: 4 },
+      ],
+    };
+    MTG.buildDeckAIProfiles();
+    const first = MTG.getDeckAIProfile(deckId);
+    assert.equal(first.roleCounts.ramp, 8);
+    assert.equal(first.roleCounts['single-target-removal'], 0);
+    assert.equal(MTG.DECK_AI_PROFILES[deckId], first, 'javni profil je popunjen prije zamjene');
+
+    MTG.DECKS[deckId] = {
+      name: deckId,
+      commander: 'Blood Artist',
+      cards: [
+        { name: 'Blood Artist', n: 1 },
+        { name: 'Harmonize', n: 4 },
+        { name: 'Swords to Plowshares', n: 4 },
+      ],
+    };
+    assert.equal(MTG.invalidateDeckAIProfile(deckId), true);
+    assert.equal(Object.prototype.hasOwnProperty.call(MTG.DECK_AI_PROFILES, deckId), false);
+
+    const rebuilt = MTG.getDeckAIProfile(deckId);
+    assert.notEqual(rebuilt, first);
+    assert.equal(rebuilt.roleCounts.ramp, 0);
+    assert.equal(rebuilt.roleCounts['card-draw'], 4);
+    assert.equal(rebuilt.roleCounts['single-target-removal'], 4);
+  } finally {
+    delete MTG.DECKS[deckId];
+    MTG.invalidateDeckAIProfile(deckId);
+    MTG.buildDeckAIProfiles();
+  }
+});
+
 test('BotPlayerView skriva protivničku ruku, biblioteku i face-down identitet', () => {
   const { game, players: [bot, human] } = gameFixture();
   addCard(game, bot, syntheticDef('Moja karta'), 'hand');

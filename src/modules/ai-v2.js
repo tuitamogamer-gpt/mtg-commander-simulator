@@ -333,6 +333,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     MTG.DECK_AI_PROFILES = Object.freeze(profiles);
     return MTG.DECK_AI_PROFILES;
   };
+  MTG.invalidateDeckAIProfile = function (deckId) {
+    if (typeof deckId !== 'string' || !deckId) return false;
+
+    const publicProfiles = MTG.DECK_AI_PROFILES;
+    const hasPublicProfile = !!publicProfiles && Object.prototype.hasOwnProperty.call(publicProfiles, deckId);
+    const publicProfile = hasPublicProfile ? publicProfiles[deckId] : null;
+    const cachedProfile = PROFILE_CACHE.get(deckId);
+    let removed = PROFILE_CACHE.delete(deckId);
+
+    // Style-specific profiles use the base profile object as their WeakMap key.
+    // Dropping those entries keeps a same-name replacement from inheriting the
+    // previous deck's style-weighted evaluation.
+    for (const profile of [cachedProfile, publicProfile]) {
+      if (profile && (typeof profile === 'object' || typeof profile === 'function')) {
+        removed = STYLE_PROFILE_CACHE.delete(profile) || removed;
+      }
+    }
+
+    if (hasPublicProfile) {
+      MTG.DECK_AI_PROFILES = Object.freeze(Object.fromEntries(
+        Object.entries(publicProfiles).filter(([id]) => id !== deckId),
+      ));
+      removed = true;
+    }
+    return removed;
+  };
   MTG.getDeckAIProfile = function (deckId) {
     return (MTG.DECK_AI_PROFILES && MTG.DECK_AI_PROFILES[deckId]) ||
       (U.DECKS && U.DECKS[deckId] ? buildDeckProfile(deckId, U.DECKS[deckId]) : null);

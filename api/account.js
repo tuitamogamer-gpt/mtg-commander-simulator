@@ -8,6 +8,8 @@ const SESSION_COOKIE = 'commander_session';
 const SESSION_TTL_SECONDS = 30 * 24 * 60 * 60;
 const MAX_BODY_BYTES = 1_900_000;
 const MAX_SAVE_BYTES = 1_750_000;
+const MAX_DECK_BYTES = 64_000;
+const MAX_IMPORTED_DECKS = 40;
 const ACCOUNT_PREFIX = 'commander-account:v1';
 
 const userKey = id => `${ACCOUNT_PREFIX}:user:${id}`;
@@ -19,6 +21,8 @@ const favoritesKey = id => `${ACCOUNT_PREFIX}:favorites:${id}`;
 const recentKey = id => `${ACCOUNT_PREFIX}:recent:${id}`;
 const completedKey = id => `${ACCOUNT_PREFIX}:completed:${id}`;
 const saveKey = id => `${ACCOUNT_PREFIX}:save:${id}`;
+const deckLibraryKey = id => `${ACCOUNT_PREFIX}:decks:${id}`;
+const deckLibraryNamesKey = id => `${ACCOUNT_PREFIX}:deck-names:${id}`;
 
 const sha256 = value => createHash('sha256').update(String(value)).digest('hex');
 const clone = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));
@@ -64,6 +68,7 @@ export class MemoryAccountStore {
     this.recent = new Map();
     this.completed = new Map();
     this.saves = new Map();
+    this.decks = new Map();
   }
 
   async ping() { return 'PONG'; }
@@ -85,6 +90,23 @@ export class MemoryAccountStore {
   async saveGame(id, save) { this.saves.set(id, clone(save)); }
   async getSave(id) { return clone(this.saves.get(id)) || null; }
   async deleteSave(id) { this.saves.delete(id); }
+  async getDecks(id) {
+    return [...(this.decks.get(id) || new Map()).values()]
+      .map(clone)
+      .sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)) || a.name.localeCompare(b.name));
+  }
+  async upsertDeck(id, deck) {
+    const decks = this.decks.get(id) || new Map();
+    const existing = decks.get(deck.id) || null;
+    assertImportedDeckLibraryInvariants(decks.values(), deck, existing);
+    const stored = storedImportedDeck(deck, existing);
+    decks.set(deck.id, clone(stored));
+    this.decks.set(id, decks);
+    return { deck: clone(stored), created: !existing };
+  }
+  async deleteDeck(id, deckId) {
+    return this.decks.get(id)?.delete(deckId) || false;
+  }
   async setFavoriteDecks(id, names) { this.favorites.set(id, new Set(names)); }
   async completeMatch(id, match) {
     const done = this.completed.get(id) || new Set();
@@ -117,7 +139,7 @@ export class MemoryAccountStore {
   }
 }
 
-class UpstashAccountStore {
+export class UpstashAccountStore {
   constructor(redis) {
     this.kind = 'upstash-redis';
     this.redis = redis;
@@ -150,6 +172,102 @@ class UpstashAccountStore {
   async saveGame(id, save) { await this.redis.set(saveKey(id), save); }
   async getSave(id) { return this.redis.get(saveKey(id)); }
   async deleteSave(id) { await this.redis.del(saveKey(id)); }
+  async getDecks(id) {
+    const rows = await this.redis.hgetall(deckLibraryKey(id));
+    return Object.values(rows || {}).map(row => {
+      if (row && typeof row === 'object') return row;
+      try { return JSON.parse(row); } catch { return null; }
+    }).filter(Boolean).map(publicStoredDeck)
+      .sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)) || String(a.name).localeCompare(String(b.name)));
+  }
+  async upsertDeck(id, deck) {
+    const nameKey = importedDeckNameKey(deck.name);
+    const storageDeck = { ...deck, _libraryNameKey: nameKey };
+    const script = `
+      local libraryKey = KEYS[1]
+      local namesKey = KEYS[2]
+      local deckId = ARGV[1]
+      local nameKey = ARGV[2]
+      local candidate = cjson.decode(ARGV[3])
+      local now = ARGV[4]
+      local maxDecks = tonumber(ARGV[5])
+      local existingRaw = redis.call('HGET', libraryKey, deckId)
+      local created = 0
+
+      if not existingRaw then
+        if redis.call('HLEN', libraryKey) >= maxDecks then return {-1, 'capacity'} end
+        created = 1
+      end
+
+      local claimedId = redis.call('HGET', namesKey, nameKey)
+      if claimedId and claimedId ~= deckId then
+        if redis.call('HEXISTS', libraryKey, claimedId) == 1 then return {-2, 'duplicate'} end
+        redis.call('HDEL', namesKey, nameKey)
+      end
+
+      local rows = redis.call('HGETALL', libraryKey)
+      for index = 1, #rows, 2 do
+        local savedId = rows[index]
+        if savedId ~= deckId then
+          local ok, saved = pcall(cjson.decode, rows[index + 1])
+          if ok and saved then
+            local savedNameKey = saved._libraryNameKey
+            if savedNameKey and savedNameKey == nameKey then return {-2, 'duplicate'} end
+            if (not savedNameKey) and saved.name and string.lower(saved.name) == nameKey then return {-2, 'duplicate'} end
+          end
+        end
+      end
+
+      local existing = nil
+      if existingRaw then
+        local ok, decoded = pcall(cjson.decode, existingRaw)
+        if ok then existing = decoded end
+      end
+      if existing and existing._libraryNameKey and existing._libraryNameKey ~= nameKey then
+        if redis.call('HGET', namesKey, existing._libraryNameKey) == deckId then
+          redis.call('HDEL', namesKey, existing._libraryNameKey)
+        end
+      end
+
+      candidate.revision = existing and math.max(0, tonumber(existing.revision) or 0) + 1 or 1
+      candidate.createdAt = existing and existing.createdAt or now
+      candidate.updatedAt = now
+      local encoded = cjson.encode(candidate)
+      redis.call('HSET', libraryKey, deckId, encoded)
+      redis.call('HSET', namesKey, nameKey, deckId)
+      return {created, encoded}`;
+    const result = await this.redis.eval(script,
+      [deckLibraryKey(id), deckLibraryNamesKey(id)],
+      [deck.id, nameKey, JSON.stringify(storageDeck), new Date().toISOString(), String(MAX_IMPORTED_DECKS)]);
+    const code = Number(result?.[0]);
+    if (code === -1) throw importedDeckError(`Your imported deck library can contain up to ${MAX_IMPORTED_DECKS} decks.`, 409);
+    if (code === -2) throw importedDeckError('An imported deck with that name is already in your library.', 409);
+    const row = result?.[1];
+    const stored = row && typeof row === 'object' ? row : JSON.parse(String(row || 'null'));
+    if (!stored) throw new Error('Redis did not return the stored imported deck.');
+    return { deck: publicStoredDeck(stored), created: code === 1 };
+  }
+  async deleteDeck(id, deckId) {
+    const script = `
+      local libraryKey = KEYS[1]
+      local namesKey = KEYS[2]
+      local deckId = ARGV[1]
+      local existingRaw = redis.call('HGET', libraryKey, deckId)
+      if not existingRaw then return 0 end
+      local ok, existing = pcall(cjson.decode, existingRaw)
+      if ok and existing and existing._libraryNameKey then
+        if redis.call('HGET', namesKey, existing._libraryNameKey) == deckId then
+          redis.call('HDEL', namesKey, existing._libraryNameKey)
+        end
+      end
+      local names = redis.call('HGETALL', namesKey)
+      for index = 1, #names, 2 do
+        if names[index + 1] == deckId then redis.call('HDEL', namesKey, names[index]) end
+      end
+      return redis.call('HDEL', libraryKey, deckId)`;
+    return Number(await this.redis.eval(script,
+      [deckLibraryKey(id), deckLibraryNamesKey(id)], [deckId])) > 0;
+  }
   async setFavoriteDecks(id, names) {
     const key = favoritesKey(id);
     const transaction = this.redis.multi();
@@ -291,6 +409,97 @@ function cleanSave(value) {
   return save;
 }
 
+function importedDeckError(message, status = 400) {
+  return Object.assign(new Error(message), { status });
+}
+
+function requiredDeckText(value, label, max) {
+  if (typeof value !== 'string') throw importedDeckError(`${label} must be text.`);
+  const text = value.trim();
+  if (!text || text.length > max || /[\u0000-\u001f\u007f]/.test(text))
+    throw importedDeckError(`${label} is invalid.`);
+  return text;
+}
+
+function importedDeckNameKey(value) {
+  return String(value || '').toLowerCase();
+}
+
+function publicStoredDeck(value) {
+  const deck = clone(value);
+  if (deck && typeof deck === 'object') delete deck._libraryNameKey;
+  return deck;
+}
+
+function storedImportedDeck(deck, existing = null, now = new Date().toISOString()) {
+  const existingCreatedAt = existing && Number.isFinite(new Date(existing.createdAt).getTime()) ? existing.createdAt : null;
+  return {
+    ...clone(deck),
+    revision: existing ? Math.max(0, Number(existing.revision) || 0) + 1 : 1,
+    createdAt: existingCreatedAt || now,
+    updatedAt: now,
+  };
+}
+
+function assertImportedDeckLibraryInvariants(savedDecks, deck, existing = null) {
+  const rows = [...savedDecks];
+  if (!existing && rows.length >= MAX_IMPORTED_DECKS)
+    throw importedDeckError(`Your imported deck library can contain up to ${MAX_IMPORTED_DECKS} decks.`, 409);
+  const nameKey = importedDeckNameKey(deck.name);
+  if (rows.some(saved => saved.id !== deck.id && importedDeckNameKey(saved.name) === nameKey))
+    throw importedDeckError('An imported deck with that name is already in your library.', 409);
+}
+
+function cleanImportedDeck(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value) || value.schema !== 'commander-deck/v1')
+    throw importedDeckError('Unsupported imported-deck format.');
+  if (byteSize(value) > MAX_DECK_BYTES) throw importedDeckError('Imported deck is too large.', 413);
+
+  const id = requiredDeckText(value.id, 'Deck identity', 85);
+  if (!/^deck-[a-z0-9-]{8,80}$/.test(id)) throw importedDeckError('Deck identity is invalid.');
+  const name = requiredDeckText(value.name, 'Deck name', 80);
+
+  if (!Array.isArray(value.commanders) || value.commanders.length < 1 || value.commanders.length > 2)
+    throw importedDeckError('Imported deck must have one or two commanders.');
+  const commanders = value.commanders.map((commander, index) => requiredDeckText(commander, `Commander ${index + 1}`, 160));
+  if (new Set(commanders).size !== commanders.length) throw importedDeckError('Commander names must be unique.');
+
+  if (!Array.isArray(value.cards) || value.cards.length < 1 || value.cards.length > 100)
+    throw importedDeckError('Imported deck must contain normalized card rows.');
+  const seen = new Set();
+  let total = 0;
+  const cards = value.cards.map((row, index) => {
+    if (!row || typeof row !== 'object' || Array.isArray(row)) throw importedDeckError(`Card row ${index + 1} is invalid.`);
+    const cardName = requiredDeckText(row.name, `Card row ${index + 1} name`, 160);
+    if (seen.has(cardName)) throw importedDeckError(`Card row ${index + 1} duplicates ${cardName}.`);
+    seen.add(cardName);
+    if (!Number.isSafeInteger(row.n) || row.n < 1 || row.n > 100)
+      throw importedDeckError(`Card row ${index + 1} has an invalid count.`);
+    if (row.section !== 'Commander' && row.section !== 'Main')
+      throw importedDeckError(`Card row ${index + 1} has an invalid section.`);
+    total += row.n;
+    return { name: cardName, n: row.n, section: row.section };
+  });
+  if (total !== 100) throw importedDeckError(`Imported deck must contain exactly 100 cards; found ${total}.`);
+
+  const rowsByName = new Map(cards.map(row => [row.name, row]));
+  for (const commander of commanders) {
+    const row = rowsByName.get(commander);
+    if (!row || row.n !== 1 || row.section !== 'Commander')
+      throw importedDeckError(`Commander ${commander} must appear exactly once in the Commander section.`);
+  }
+  const unexpectedCommander = cards.find(row => row.section === 'Commander' && !commanders.includes(row.name));
+  if (unexpectedCommander) throw importedDeckError(`${unexpectedCommander.name} is not listed as a commander.`);
+
+  return {
+    schema: 'commander-deck/v1',
+    id,
+    name,
+    commanders,
+    cards,
+  };
+}
+
 function cleanMatch(body) {
   const matchId = cleanText(body.matchId, 80);
   if (!/^[a-zA-Z0-9-]{16,80}$/.test(matchId)) throw Object.assign(new Error('Invalid match identity.'), { status: 400 });
@@ -331,14 +540,31 @@ export function createAccountHandler({ store = createAccountStoreFromEnv(), limi
     : limiter;
 
   return async function accountHandler(request, response) {
+    let ownerBoundRequest = false;
+    let responseOwnerId = null;
     try {
       if (!sameOrigin(request)) return send(response, 403, { ok: false, error: 'Request origin is not allowed.' });
-      await store.ping();
       const url = new URL(request.url || '/api/account', `http://${request.headers.host || 'commander.local'}`);
       const body = request.method === 'POST' ? await readBody(request) : {};
       const action = cleanText(body.action || url.searchParams.get('action') || 'session', 40);
+      const deckLibraryRequest = ['decks', 'upsertDeck', 'deleteDeck'].includes(action);
+      ownerBoundRequest = ['save', 'clearSave', 'completeMatch', 'decks', 'upsertDeck', 'deleteDeck'].includes(action);
       const cookies = parseCookies(request.headers.cookie);
       const rawSession = cookies[SESSION_COOKIE] || '';
+
+      if (request.method === 'POST' && action === 'logout') {
+        try {
+          await store.ping();
+          if (rawSession) await store.deleteSession(sha256(rawSession));
+        } catch (error) {
+          console.error('Commander account logout failed:', error);
+          return send(response, 503, { ok: false, code: 'LOCAL_SESSION_CLEARED', error: 'Your local session was cleared, but the server session could not be closed.' },
+            { 'Set-Cookie': sessionCookie('', request, 0) });
+        }
+        return send(response, 200, { ok: true }, { 'Set-Cookie': sessionCookie('', request, 0) });
+      }
+
+      await store.ping();
       const session = rawSession ? await store.getSession(sha256(rawSession)) : null;
       const user = session ? await store.getUser(session.userId) : null;
       const sessionHeaders = user && rawSession ? { 'Set-Cookie': sessionCookie(rawSession, request) } : {};
@@ -346,6 +572,13 @@ export function createAccountHandler({ store = createAccountStoreFromEnv(), limi
       if (request.method === 'GET' && ['session', 'profile'].includes(action)) {
         if (!user) return send(response, 200, { ok: true, user: null, profile: null, save: null }, rawSession ? { 'Set-Cookie': sessionCookie('', request, 0) } : {});
         return send(response, 200, { ok: true, ...(await accountSnapshot(store, user)) }, sessionHeaders);
+      }
+      if (request.method === 'GET' && action === 'decks') {
+        responseOwnerId = user?.id || null;
+        if (!user) return send(response, 401, { ok: false, error: 'Sign in to use your imported deck library.', ownerId: null });
+        if (url.searchParams.get('expectedOwnerId') !== user.id)
+          return send(response, 409, { ok: false, code: 'ACCOUNT_OWNER_MISMATCH', error: 'Your signed-in account changed. Reload the deck library and try again.', ownerId: user.id }, sessionHeaders);
+        return send(response, 200, { ok: true, ownerId: user.id, decks: await store.getDecks(user.id) }, sessionHeaders);
       }
       if (request.method !== 'POST') return send(response, 405, { ok: false, error: 'Method not allowed.' }, { Allow: 'GET, POST' });
 
@@ -372,27 +605,50 @@ export function createAccountHandler({ store = createAccountStoreFromEnv(), limi
         return send(response, action === 'register' ? 201 : 200, { ok: true, ...(await accountSnapshot(store, account)) }, { 'Set-Cookie': sessionCookie(token, request) });
       }
 
-      if (action === 'logout') {
-        if (rawSession) await store.deleteSession(sha256(rawSession));
-        return send(response, 200, { ok: true }, { 'Set-Cookie': sessionCookie('', request, 0) });
-      }
-      if (!user) return send(response, 401, { ok: false, error: 'Sign in to use profile saves and stats.' });
+      if (!user) return send(response, 401, ownerBoundRequest
+        ? { ok: false, error: deckLibraryRequest ? 'Sign in to use your imported deck library.' : 'Sign in to save games and record stats.', ownerId: null }
+        : { ok: false, error: 'Sign in to use profile saves and stats.' });
 
       if (action === 'save') {
+        responseOwnerId = user.id;
+        if (body.expectedOwnerId !== user.id)
+          return send(response, 409, { ok: false, code: 'ACCOUNT_OWNER_MISMATCH', error: 'Your signed-in account changed. Reload your profile and try again.', ownerId: user.id }, sessionHeaders);
         const save = cleanSave(body.save);
         await store.saveGame(user.id, save);
-        return send(response, 200, { ok: true, save }, sessionHeaders);
+        return send(response, 200, { ok: true, ownerId: user.id, save }, sessionHeaders);
       }
       if (action === 'clearSave') {
+        responseOwnerId = user.id;
+        if (body.expectedOwnerId !== user.id)
+          return send(response, 409, { ok: false, code: 'ACCOUNT_OWNER_MISMATCH', error: 'Your signed-in account changed. Reload your profile and try again.', ownerId: user.id }, sessionHeaders);
         await store.deleteSave(user.id);
-        return send(response, 200, { ok: true, save: null }, sessionHeaders);
+        return send(response, 200, { ok: true, ownerId: user.id, save: null }, sessionHeaders);
+      }
+      if (action === 'upsertDeck') {
+        responseOwnerId = user.id;
+        if (body.expectedOwnerId !== user.id)
+          return send(response, 409, { ok: false, code: 'ACCOUNT_OWNER_MISMATCH', error: 'Your signed-in account changed. Reload the deck library and try again.', ownerId: user.id }, sessionHeaders);
+        const result = await store.upsertDeck(user.id, cleanImportedDeck(body.deck));
+        return send(response, result.created ? 201 : 200, { ok: true, ownerId: user.id, deck: result.deck }, sessionHeaders);
+      }
+      if (action === 'deleteDeck') {
+        responseOwnerId = user.id;
+        if (body.expectedOwnerId !== user.id)
+          return send(response, 409, { ok: false, code: 'ACCOUNT_OWNER_MISMATCH', error: 'Your signed-in account changed. Reload the deck library and try again.', ownerId: user.id }, sessionHeaders);
+        const deckId = requiredDeckText(body.deckId, 'Deck identity', 85);
+        if (!/^deck-[a-z0-9-]{8,80}$/.test(deckId)) throw importedDeckError('Deck identity is invalid.');
+        const deleted = await store.deleteDeck(user.id, deckId);
+        return send(response, 200, { ok: true, ownerId: user.id, deleted, deckId }, sessionHeaders);
       }
       if (action === 'completeMatch') {
+        responseOwnerId = user.id;
+        if (body.expectedOwnerId !== user.id)
+          return send(response, 409, { ok: false, code: 'ACCOUNT_OWNER_MISMATCH', error: 'Your signed-in account changed. Reload your profile and try again.', ownerId: user.id }, sessionHeaders);
         const match = cleanMatch(body);
         const recorded = await store.completeMatch(user.id, match);
         const activeSave = await store.getSave(user.id);
         if (activeSave && activeSave.matchId === match.matchId) await store.deleteSave(user.id);
-        return send(response, 200, { ok: true, recorded, ...(await accountSnapshot(store, user)) }, sessionHeaders);
+        return send(response, 200, { ok: true, ownerId: user.id, recorded, ...(await accountSnapshot(store, user)) }, sessionHeaders);
       }
       if (action === 'favorites') {
         const names = Array.isArray(body.decks)
@@ -403,7 +659,11 @@ export function createAccountHandler({ store = createAccountStoreFromEnv(), limi
       return send(response, 400, { ok: false, error: 'Unknown account action.' }, sessionHeaders);
     } catch (error) {
       if (!error.status || error.status >= 500) console.error('Commander account request failed:', error);
-      return send(response, error.status || 500, { ok: false, error: error.status ? error.message : 'Account service is temporarily unavailable.' });
+      return send(response, error.status || 500, {
+        ok: false,
+        error: error.status ? error.message : 'Account service is temporarily unavailable.',
+        ...(ownerBoundRequest ? { ownerId: responseOwnerId } : {}),
+      });
     }
   };
 }

@@ -47,14 +47,18 @@ test('public home is the default entry and exposes clear Solo, Live, import, gui
   assert.match(main, /mode: 'menu'/);
 });
 
-test('main menu decklist import is a strict play gateway with an external Moxfield builder link', () => {
+test('main menu decklist import is a persistent fail-closed library gateway with an external Moxfield builder link', () => {
   assert.match(index, /Import your decklist here/);
   assert.match(main, /<h2 id="deckimport-title">Import your decklist here<\/h2>/);
   assert.match(main, /class="mainmenu-deckimport-text"/);
   assert.match(main, /class="mainmenu-deckimport-check">Check decklist/);
-  assert.match(main, /class="mainmenu-deckimport-start" disabled>Start Solo table/);
+  assert.match(main, /class="mainmenu-deckimport-start" disabled>Save to My Library/);
+  assert.match(main, /class="mainmenu-decklibrary"/);
   assert.match(main, /U\.importCommanderDeck\(textInput\.value/);
-  assert.match(main, /U\.startImportedCommanderDeck\(textInput\.value/);
+  assert.match(main, /saveImportedDeckToLibrary\(currentValidation\)/);
+  assert.match(main, /U\.startSavedImportedCommanderDeck\(card\.dataset\.deckId\)/);
+  assert.match(main, /U\.validateImportedDeckRecord\(record\)/);
+  assert.match(main, /U\.loadGuestImportedDeckLibrary\(\)/);
   assert.match(main, /https:\/\/moxfield\.com\//);
   assert.match(main, /Commander Simulator is the play table, not the deck builder/);
   assert.match(main, /Cards not yet certified for this engine are listed before the game starts/);
@@ -63,6 +67,7 @@ test('main menu decklist import is a strict play gateway with an external Moxfie
   assert.match(css, /\.mainmenu-deckimport-panel/);
   assert.match(css, /\.mainmenu-deckimport-result\[data-state="error"\]/);
   assert.match(css, /\.mainmenu-deckimport-start:disabled/);
+  assert.match(css, /\.mainmenu-decklibrary-card\.is-unavailable/);
 });
 
 test('first-game onboarding explains the complete user decision model without external AI claims', () => {

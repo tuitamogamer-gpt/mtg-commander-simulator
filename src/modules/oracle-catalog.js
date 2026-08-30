@@ -312,6 +312,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const batch of batches) {
       for (const entry of batch.cards) imported.set(entry.raw.name, { batch, entry });
     }
+    // Legacy raw data also contains cards from decks that are deliberately not
+    // exposed by the current client. Those definitions are useful to active
+    // deck scripts, but their mere presence is not proof that an arbitrary
+    // imported deck can safely use them. Only cards exercised by an active
+    // built-in deck, or cards from a certified Oracle batch, are importable.
+    const activeDeckCards = new Set();
+    for (const deck of Object.values(MTG.DECKS || {})) {
+      for (const row of deck && deck.cards || []) {
+        if (row && row.name) activeDeckCards.add(row.name);
+      }
+    }
 
     const catalog = {};
     for (const [name, raw] of Object.entries(rawDB.cards || {})) {
@@ -334,6 +345,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         rarity: metadata.rarity || null,
         releasedAt: metadata.releasedAt || null,
         engineStatus: found ? 'certified' : 'certified-legacy',
+        deckImportEligible: !!found || activeDeckCards.has(name),
         engineBatch: found ? found.batch.id : null,
         semanticClass: found ? found.entry.semanticClass : 'manual',
         implementedKeywords: found ? (found.entry.implementedKeywords || []).slice() : [],
