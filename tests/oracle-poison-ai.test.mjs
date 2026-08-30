@@ -223,3 +223,68 @@ test('toxic forecast requires positive damage and counts both actual double-stri
   assert.equal(forecast.expectedDamage, 0);
   assert.equal(forecast.poisonLethal, false, 'zero damage cannot apply toxic');
 });
+
+for (const name of ['Plague Stinger', 'Bilious Skulldweller']) {
+  for (const mode of ['grant', 'remove']) {
+    test(`${name}: ${mode} double strike invalidates cached poison lethal`, async () => {
+      const { game, players: [bot, opponent, third] } = setup();
+      third.lost = true;
+      const attacker = await castActual(game, bot, name);
+      opponent.poison = 8;
+      let grantedEffect;
+      if (mode === 'remove') {
+        MTG.E.pumpUntilEOT(game, attacker, 0, 0, ['double strike']);
+        grantedEffect = game.untilEffects.at(-1);
+      }
+      // Give each regression its own cache namespace without changing weights.
+      const profile = { deckId: `${name}-${mode}-cache-probe`, weights: {},
+        primarySynergies: [], importantEngines: [], finishers: [], commanderImportance: 1 };
+      const before = MTG.createBotPlayerView(game, bot.idx);
+      const beforeHash = MTG.hashBotPlayerView(before);
+      const beforeWin = MTG.evaluateState(before, bot.idx, profile);
+      const beforeLoss = MTG.evaluateState(before, opponent.idx, profile);
+      assert.equal(beforeWin.immediateWinPotential, mode === 'remove' ? 55 : 0);
+
+      if (mode === 'grant') MTG.E.pumpUntilEOT(game, attacker, 0, 0, ['double strike']);
+      else {
+        // Expire only the keyword effect. Keeping the phase unchanged proves
+        // that the keyword itself, not a turn transition, invalidates the key.
+        const effectIndex = game.untilEffects.indexOf(grantedEffect);
+        assert.ok(effectIndex >= 0);
+        game.untilEffects.splice(effectIndex, 1);
+        game.recalc();
+      }
+      const after = MTG.createBotPlayerView(game, bot.idx);
+      const beforeCard = before.battlefield.find(card => card.id === attacker.iid);
+      const afterCard = after.battlefield.find(card => card.id === attacker.iid);
+      for (const key of ['power', 'toughness', 'damage', 'tapped', 'toxic']) {
+        assert.equal(afterCard[key], beforeCard[key], `${key} did not change`);
+      }
+      assert.deepEqual(afterCard.counters, beforeCard.counters);
+      assert.equal(beforeCard.keywords.includes('double strike'), mode === 'remove');
+      assert.equal(afterCard.keywords.includes('double strike'), mode === 'grant');
+      assert.notEqual(MTG.hashBotPlayerView(after), beforeHash, 'only the poison hit count changed');
+
+      const afterWin = MTG.evaluateState(after, bot.idx, profile);
+      const afterLoss = MTG.evaluateState(after, opponent.idx, profile);
+      assert.notEqual(afterWin, beforeWin, 'do not reuse the opposite lethal result');
+      assert.notEqual(afterLoss, beforeLoss, 'the defender also gets a fresh survival result');
+      const freshProfile = { ...profile, styleKey: 'uncached-control' };
+      assert.deepEqual(afterWin, MTG.evaluateState(after, bot.idx, freshProfile));
+      assert.deepEqual(afterLoss, MTG.evaluateState(after, opponent.idx, freshProfile));
+      assert.equal(afterWin.immediateWinPotential, mode === 'grant' ? 55 : 0);
+      assert.equal(MTG.assessPlayerThreat(after, opponent.idx, bot.idx).immediateLethal, mode === 'grant' ? 1 : 0);
+      assert.ok(mode === 'grant'
+        ? afterLoss.immediateLossRisk > beforeLoss.immediateLossRisk
+        : afterLoss.immediateLossRisk < beforeLoss.immediateLossRisk);
+      assert.equal(MTG.evaluateState(before, bot.idx, profile), beforeWin, 'earlier snapshot remains valid');
+
+      await game.combatPhase(bot);
+      const hits = mode === 'grant' ? 2 : 1;
+      assert.equal(opponent.poison, 8 + hits, 'actual engine combat agrees with the refreshed cache');
+      assert.equal(opponent.life, name === 'Plague Stinger' ? 40 : 40 - hits);
+      assert.equal(opponent.lost, mode === 'grant');
+      assertBotWitness(game, bot, `${name} ${mode} double strike`);
+    });
+  }
+}

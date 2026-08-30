@@ -654,7 +654,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         .concat(player.poison > 0 ? [['poison', player.poison]] : [])),
       battlefield: view.battlefield.map(card => [card.id, card.name, card.controllerId, card.tapped, card.power, card.toughness, card.damage, Object.entries(card.counters || {}).sort()]
         .concat(card.keywords.includes('infect') || card.toxic > 0
-          ? [['poison', card.keywords.includes('infect'), card.toxic || 0]] : [])).sort((a, b) => a[0] - b[0]),
+          ? [['poison', card.keywords.includes('infect'), card.toxic || 0]
+            .concat(card.keywords.includes('double strike') ? ['double strike'] : [])] : [])).sort((a, b) => a[0] - b[0]),
       stack: view.stack.map(item => [item.kind, item.name, item.controllerId, item.targetIds]),
     };
     const str = JSON.stringify(payload);
