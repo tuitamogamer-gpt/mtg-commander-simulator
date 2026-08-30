@@ -23,6 +23,7 @@ test('portable Solo decisions restore by legal-list position instead of unstable
   assert.equal(recorded.response.values.join(','), '1');
 
   const restoredPlayer = new MTG.Player('You', 0);
+  new MTG.CardInst(MTG.DEFS.Forest, restoredPlayer);
   const differentIdFirst = new MTG.CardInst(MTG.DEFS.Cultivate, restoredPlayer);
   const differentIdSecond = new MTG.CardInst(MTG.DEFS['Arcane Signet'], restoredPlayer);
   restoredPlayer.hand = [differentIdFirst, differentIdSecond];
@@ -71,6 +72,7 @@ test('manual table corrections use stable card references and replay without sav
 
   const restoredGame = new MTG.Game({ seed: 32, paced: false });
   const restoredYou = restoredGame.addPlayer('You', MTG.DECKS['Quandrix Unlimited'], null, false);
+  new MTG.CardInst(MTG.DEFS.Forest, restoredYou);
   const restoredCard = new MTG.CardInst(MTG.DEFS.Cultivate, restoredYou);
   restoredCard.zone = 'battlefield'; restoredCard.ctrl = restoredYou;
   restoredGame.battlefield.push(restoredCard);

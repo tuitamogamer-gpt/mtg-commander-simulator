@@ -120,8 +120,13 @@ function tracingFs(calls) {
 
 test('snapshot drift je odbijen bez opt-in-a, a prihvaćen snapshot ulazi u plan bez mreže', () => {
   assert.throws(() => plan({ bulk: bulk(SNAPSHOT_B) }), /snapshot changed/);
+  assert.throws(() => plan({
+    bulk: bulk(SNAPSHOT_B),
+    acceptNewSnapshot: true,
+    expectedSnapshot: SNAPSHOT_A,
+  }), new RegExp(`expected exactly ${SNAPSHOT_A.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
 
-  const unchanged = plan();
+  const unchanged = plan({ expectedSnapshot: SNAPSHOT_A });
   assert.equal(unchanged.report.source.bulkUpdatedAt, SNAPSHOT_A);
   assert.equal(unchanged.nextState.source.bulkUpdatedAt, SNAPSHOT_A);
 
@@ -160,15 +165,11 @@ test('flat i wrapped reservations blokiraju i ime i Oracle ID uz legacy/state ko
   assert.equal(result.report.catalogSummary.deferredByReason['already-imported-batch'], 6);
 });
 
-test('semantic gate odbija djelimične, kompleksne, dinamičke i višelinijske Oracle tekstove', () => {
+test('semantic gate odbija djelimične, kompleksne i dinamičke Oracle tekstove', () => {
   const cases = [
     [oracleCard('Partial Creature', 'partial', { oracle_text: 'Flying\nWhenever this creature attacks, draw a card.' }), 'oracle-needs-explicit-semantics'],
     [oracleCard('Complex Layout', 'complex', { layout: 'transform' }), 'complex-layout'],
     [oracleCard('Dynamic Body', 'dynamic', { power: '*', toughness: '*' }), 'dynamic-power-toughness'],
-    [oracleCard('Multiline Spell', 'multi', {
-      type_line: 'Sorcery', power: undefined, toughness: undefined,
-      oracle_text: 'Draw two cards.\nYou gain 2 life.', mana_cost: '{2}{U}',
-    }), 'spell-needs-explicit-semantics'],
     [oracleCard('Unknown Permanent', 'walker', {
       type_line: 'Planeswalker', power: undefined, toughness: undefined, loyalty: '3', oracle_text: '',
     }), 'noncreature-needs-explicit-semantics'],
@@ -177,6 +178,293 @@ test('semantic gate odbija djelimične, kompleksne, dinamičke i višelinijske O
   for (const [card, reason] of cases) {
     assert.deepEqual(semanticClass(card), { reason }, card.name);
   }
+});
+
+test('spell parser prihvata samo potpuno prepoznat multiline tekst i najviše jednu ciljanu operaciju', () => {
+  const accepted = semanticClass(oracleCard('Multiline Spell', 'multi', {
+    type_line: 'Sorcery', power: undefined, toughness: undefined,
+    oracle_text: 'Draw two cards.\nYou gain 2 life.', mana_cost: '{2}{U}',
+  }));
+  assert.equal(accepted.semanticClass, 'spell-template');
+  assert.deepEqual(accepted.implementation, [
+    { kind: 'spell-draw', n: 2, contract: 'spell-draw' },
+    { kind: 'spell-life-gain', n: 2, contract: 'spell-life-gain' },
+  ]);
+
+  const rejected = [
+    oracleCard('Conditional Spell', 'conditional-multi', {
+      type_line: 'Sorcery', power: undefined, toughness: undefined,
+      oracle_text: 'Draw two cards.\nIf you control a creature, you gain 2 life.', mana_cost: '{2}{U}',
+    }),
+    oracleCard('Partial Spell', 'partial-multi', {
+      type_line: 'Sorcery', power: undefined, toughness: undefined,
+      oracle_text: 'Draw two cards.\nCreate a token.', mana_cost: '{2}{U}',
+    }),
+    oracleCard('Two Target Spell', 'two-target-multi', {
+      type_line: 'Instant', power: undefined, toughness: undefined,
+      oracle_text: 'Destroy target creature.\nTap target creature.', mana_cost: '{2}{U}',
+    }),
+  ];
+  for (const card of rejected) {
+    assert.deepEqual(semanticClass(card), { reason: 'spell-needs-explicit-semantics' }, card.name);
+  }
+});
+
+test('spell-pump parser razlikuje +X i -X, čuva signed descriptor i fail-closed odbija malformed X', () => {
+  const plus = semanticClass(oracleCard('Positive X Pump', 'positive-x-pump', {
+    type_line: 'Instant', power: undefined, toughness: undefined,
+    oracle_text: 'Target creature gets +X/+0 until end of turn.', mana_cost: '{X}{R}',
+  }));
+  assert.equal(plus.semanticClass, 'spell-template');
+  assert.deepEqual(plus.implementation, [{
+    kind: 'spell-pump', power: 'X', toughness: 0, keywords: [], controller: 'any',
+    attacking: false, contract: 'spell-pump',
+  }]);
+
+  const negativeCard = oracleCard('Negative X Pump', 'negative-x-pump', {
+    type_line: 'Instant', power: undefined, toughness: undefined,
+    oracle_text: 'Target creature gets -X/-0 until end of turn.', mana_cost: '{X}{B}',
+  });
+  const minus = semanticClass(negativeCard);
+  assert.equal(minus.semanticClass, 'spell-template');
+  assert.equal(minus.implementation[0].power, '-X', 'negative X is never normalized into a positive X');
+  assert.equal(Object.is(minus.implementation[0].toughness, -0), true, 'parser preserves the printed negative-zero token');
+  assert.deepEqual(Object.assign({}, minus.implementation[0], { toughness: 0 }), {
+    kind: 'spell-pump', power: '-X', toughness: 0, keywords: [], controller: 'any',
+    attacking: false, contract: 'spell-pump',
+  });
+
+  const generated = plan({ cards: [negativeCard] });
+  assert.equal(generated.report.cards[0].implementation[0].power, '-X');
+  assert.match(moduleSource(generated.report), /"power": "-X"/,
+    'generated runtime descriptor retains the signed X instead of silently changing its meaning');
+
+  for (const [index, text] of [
+    'Target creature gets X/+0 until end of turn.',
+    'Target creature gets +Y/+0 until end of turn.',
+    'Target creature gets +-X/+0 until end of turn.',
+    'Target creature gets --X/-0 until end of turn.',
+    'Target creature gets -X/X until end of turn.',
+    'Target creature gets -X/-X until end of turn.',
+  ].entries()) {
+    const malformed = semanticClass(oracleCard(`Malformed X Pump ${index}`, `malformed-x-pump-${index}`, {
+      type_line: 'Instant', power: undefined, toughness: undefined,
+      oracle_text: text, mana_cost: '{X}{B}',
+    }));
+    assert.deepEqual(malformed, { reason: 'spell-needs-explicit-semantics' }, text);
+  }
+});
+
+test('spell modifier parser je fail-closed za flashback, rebound, suspend, convoke, cascade, storm i cycling', () => {
+  const cases = [
+    {
+      name: 'Flashback Spell', line: 'Flashback {2}{U}',
+      operation: { kind: 'mechanic-flashback', cost: '{2}{U}', speed: 'sorcery', contract: 'mechanic-flashback' },
+      malformed: 'Flashback {S}',
+    },
+    {
+      name: 'Rebound Spell', line: 'Rebound',
+      operation: { kind: 'mechanic-rebound', contract: 'mechanic-rebound' },
+      malformed: 'Rebound.',
+    },
+    {
+      name: 'Suspend Spell', line: 'Suspend 3—{1}{U}',
+      operation: { kind: 'mechanic-suspend', n: 3, cost: '{1}{U}', contract: 'mechanic-suspend' },
+      malformed: 'Suspend 0—{1}{U}',
+    },
+    {
+      name: 'Convoke Spell', line: 'Convoke',
+      operation: { kind: 'mechanic-convoke', contract: 'mechanic-convoke' },
+      malformed: 'Convoke.',
+    },
+    {
+      name: 'Cascade Spell', line: 'Cascade',
+      operation: { kind: 'mechanic-cascade', contract: 'mechanic-cascade' },
+      malformed: 'Cascade 2',
+    },
+    {
+      name: 'Storm Spell', line: 'Storm',
+      operation: { kind: 'mechanic-storm', contract: 'mechanic-storm' },
+      malformed: 'Storm.',
+    },
+    {
+      name: 'Cycling Spell', line: 'Cycling {2}',
+      operation: { kind: 'cycling', cost: '{2}', contract: 'cycling-ability' },
+      malformed: 'Cycling {S}',
+    },
+  ];
+
+  for (const [index, entry] of cases.entries()) {
+    const exact = semanticClass(oracleCard(entry.name, `modifier-${index}`, {
+      type_line: 'Sorcery', power: undefined, toughness: undefined,
+      oracle_text: `Draw a card.\n${entry.line}`, mana_cost: '{2}{U}',
+    }));
+    assert.equal(exact.semanticClass, 'spell-template', entry.name);
+    assert.deepEqual(exact.implementation, [
+      { kind: 'spell-draw', n: 1, contract: 'spell-draw' },
+      entry.operation,
+    ], entry.name);
+
+    const malformed = semanticClass(oracleCard(`${entry.name} Malformed`, `modifier-bad-${index}`, {
+      type_line: 'Sorcery', power: undefined, toughness: undefined,
+      oracle_text: `Draw a card.\n${entry.malformed}`, mana_cost: '{2}{U}',
+    }));
+    assert.deepEqual(malformed, { reason: 'spell-needs-explicit-semantics' }, `${entry.name} malformed`);
+  }
+});
+
+test('morph, disguise i composite keyword/protection parser prihvataju samo tačnu gramatiku', () => {
+  const cases = [
+    {
+      card: oracleCard('Morph Adept', 'morph', { oracle_text: 'Morph {2}{U}' }),
+      keywords: [],
+      operation: { kind: 'mechanic-morph', cost: '{2}{U}', contract: 'mechanic-morph' },
+    },
+    {
+      card: oracleCard('Disguise Adept', 'disguise', { oracle_text: 'Disguise {2}{U}' }),
+      keywords: [],
+      operation: { kind: 'mechanic-disguise', cost: '{2}{U}', contract: 'mechanic-disguise' },
+    },
+    {
+      card: oracleCard('Protected Adept', 'composite-protection', {
+        oracle_text: 'Flying, protection from white',
+      }),
+      keywords: ['flying'],
+      operation: { kind: 'protection-from', from: 'white', contract: 'protection-static' },
+    },
+  ];
+  for (const entry of cases) {
+    const result = semanticClass(entry.card);
+    assert.equal(result.semanticClass, 'creature-template', entry.card.name);
+    assert.deepEqual(result.implementedKeywords, entry.keywords, entry.card.name);
+    assert.deepEqual(result.implementation, [entry.operation], entry.card.name);
+  }
+
+  const rejected = [
+    oracleCard('Bad Morph', 'bad-morph', { oracle_text: 'Morph {S}' }),
+    oracleCard('Bad Disguise', 'bad-disguise', { oracle_text: 'Disguise 2{U}' }),
+    oracleCard('Bad Protection', 'bad-protection', { oracle_text: 'Flying, protection from creatures' }),
+    oracleCard('Partial Composite', 'partial-composite', {
+      oracle_text: 'Flying, protection from white, whenever this creature attacks, draw a card.',
+    }),
+  ];
+  for (const card of rejected) {
+    assert.deepEqual(semanticClass(card), { reason: 'oracle-needs-explicit-semantics' }, card.name);
+  }
+});
+
+test('devoid i uncounterable parser su tačni i odbijaju parafraze', () => {
+  const exact = semanticClass(oracleCard('Void Formula', 'void-formula', {
+    type_line: 'Instant', power: undefined, toughness: undefined,
+    oracle_text: "Devoid\nThis spell can't be countered.\nDraw a card.", mana_cost: '{2}{U}',
+  }));
+  assert.equal(exact.semanticClass, 'spell-template');
+  assert.deepEqual(exact.implementation, [
+    { kind: 'mechanic-devoid', contract: 'mechanic-devoid' },
+    { kind: 'mechanic-uncounterable', contract: 'mechanic-uncounterable' },
+    { kind: 'spell-draw', n: 1, contract: 'spell-draw' },
+  ]);
+
+  for (const [name, line] of [
+    ['Devoid Punctuation', 'Devoid.'],
+    ['Uncounterable Paraphrase', 'This spell cannot be countered.'],
+  ]) {
+    assert.deepEqual(semanticClass(oracleCard(name, name.toLowerCase().replaceAll(' ', '-'), {
+      type_line: 'Instant', power: undefined, toughness: undefined,
+      oracle_text: `${line}\nDraw a card.`, mana_cost: '{2}{U}',
+    })), { reason: 'spell-needs-explicit-semantics' }, name);
+  }
+});
+
+test('novi creature trigger parser mapira oba loot reda, optional, Treasure, discard, dies-life i noncreature counter', () => {
+  const cases = [
+    {
+      name: 'Discard First', text: 'When Discard First enters, discard a card. If you do, draw a card.',
+      operation: { kind: 'etb-loot', order: 'discard-draw', optional: false, contract: 'etb-loot' },
+    },
+    {
+      name: 'Optional Discard', text: 'When Optional Discard enters, you may discard a card. If you do, draw a card.',
+      operation: { kind: 'etb-loot', order: 'discard-draw', optional: true, contract: 'etb-loot' },
+    },
+    {
+      name: 'Draw First', text: 'When Draw First enters, draw a card, then discard a card.',
+      operation: { kind: 'etb-loot', order: 'draw-discard', optional: false, contract: 'etb-loot' },
+    },
+    {
+      name: 'Treasure Maker', text: 'When Treasure Maker enters, create a Treasure token.',
+      operation: { kind: 'etb-treasure', n: 1, contract: 'etb-treasure' },
+    },
+    {
+      name: 'Table Discarder', text: 'When Table Discarder enters, each opponent discards a card.',
+      operation: { kind: 'etb-each-opponent-discard', n: 1, contract: 'etb-each-opponent-discard' },
+    },
+    {
+      name: 'Death Healer', text: 'When Death Healer dies, you gain 3 life.',
+      operation: { kind: 'dies-life-gain', n: 3, contract: 'dies-life-gain' },
+    },
+    {
+      name: 'Spell Grower',
+      text: 'Whenever you cast a noncreature spell, put a +1/+1 counter on Spell Grower.',
+      operation: {
+        kind: 'noncreature-cast-counter-self', counter: '+1/+1', n: 1,
+        contract: 'noncreature-cast-counter-self',
+      },
+    },
+  ];
+
+  for (const [index, entry] of cases.entries()) {
+    const result = semanticClass(oracleCard(entry.name, `creature-trigger-${index}`, { oracle_text: entry.text }));
+    assert.equal(result.semanticClass, 'creature-template', entry.name);
+    assert.deepEqual(result.implementation, [entry.operation], entry.name);
+    assert.deepEqual(result.oracleContracts, [entry.operation.contract], entry.name);
+  }
+
+  const rejected = [
+    oracleCard('Loose Loot', 'loose-loot', {
+      oracle_text: 'When Loose Loot enters, you may discard a card, then draw a card.',
+    }),
+    oracleCard('Two Treasures', 'two-treasures', {
+      oracle_text: 'When Two Treasures enters, create two Treasure tokens.',
+    }),
+    oracleCard('Everyone Discards', 'everyone-discards', {
+      oracle_text: 'When Everyone Discards enters, each player discards a card.',
+    }),
+    oracleCard('Conditional Death', 'conditional-death', {
+      oracle_text: 'When Conditional Death dies, if it was attacking, you gain 3 life.',
+    }),
+    oracleCard('Broad Grower', 'broad-grower', {
+      oracle_text: 'Whenever you cast a spell, put a +1/+1 counter on Broad Grower.',
+    }),
+  ];
+  for (const card of rejected) {
+    assert.deepEqual(semanticClass(card), { reason: 'oracle-needs-explicit-semantics' }, card.name);
+  }
+});
+
+test('isti source feed odbija duplikat imena i Oracle ID-a prije izbora batcha', () => {
+  const result = plan({
+    limit: 3,
+    cards: [
+      oracleCard('Duplicate Name', 'name-original'),
+      oracleCard('Duplicate Name', 'name-alias'),
+      oracleCard('Oracle Original', 'shared-oracle-id'),
+      oracleCard('Oracle Alias', 'shared-oracle-id'),
+      oracleCard('Unique Card', 'unique-id'),
+    ],
+  });
+
+  assert.equal(result.report.catalogSummary.deferredByReason['duplicate-in-source-feed'], 2);
+  assert.deepEqual(result.report.catalogSummary.deferredExamples['duplicate-in-source-feed'], [
+    'Duplicate Name',
+    'Oracle Alias',
+  ]);
+  assert.deepEqual(result.report.cards.map(entry => entry.raw.name), [
+    'Duplicate Name',
+    'Oracle Original',
+    'Unique Card',
+  ]);
+  assert.equal(new Set(result.report.cards.map(entry => entry.raw.name)).size, 3);
+  assert.equal(new Set(result.report.cards.map(entry => entry.oracleId)).size, 3);
 });
 
 test('limit i sequence validacija odbijaju nevalidan input i duplikat prije planiranja', () => {
@@ -229,6 +517,13 @@ test('runOracleImport povezuje dry-run/write argumente i sve injected dependency
       /snapshot changed/,
       'wrapper forwards missing snapshot opt-in to the plan gate');
 
+    await assert.rejects(
+      runOracleImport([
+        '--limit=1', '--batch=14', '--accept-new-snapshot', `--expected-snapshot=${SNAPSHOT_A}`,
+      ], dependencies),
+      /expected exactly/,
+      'wrapper forwards an exact snapshot pin to the plan gate');
+
     const dryRun = await runOracleImport([
       '--limit=1', '--batch=14', '--accept-new-snapshot',
     ], dependencies);
@@ -261,7 +556,7 @@ test('runOracleImport povezuje dry-run/write argumente i sve injected dependency
     ], 'beforeWriteStep is forwarded through every atomic writer stage');
     assert.equal(logs.filter(message => message.startsWith('Wrote ')).length, 3,
       'injected logger receives all write destinations');
-    assert.equal(fetchCalls, 3, 'one rejected plan, one dry-run and one write each use injected fetch');
+    assert.equal(fetchCalls, 4, 'two rejected plans, one dry-run and one write each use injected fetch');
   } finally {
     fs.rmSync(directory, { recursive: true, force: true });
   }

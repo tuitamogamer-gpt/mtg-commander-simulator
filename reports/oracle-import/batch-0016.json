@@ -1,0 +1,6600 @@
+{
+  "schemaVersion": 1,
+  "id": "oracle-0016",
+  "sequence": 16,
+  "generatedAt": "2026-08-30T15:09:41.385Z",
+  "source": {
+    "provider": "Scryfall",
+    "endpoint": "https://api.scryfall.com/bulk-data",
+    "bulkType": "oracle_cards",
+    "bulkId": "27bf3214-1271-490b-bdfe-c0be6c23d02e",
+    "bulkUpdatedAt": "2026-08-30T09:01:56.964+00:00",
+    "bulkDescription": "A JSON file containing one Scryfall card object for each Oracle ID on Scryfall. The chosen sets for the cards are an attempt to return the most up-to-date recognizable version of the card."
+  },
+  "selectionPolicy": {
+    "games": [
+      "paper"
+    ],
+    "commanderLegality": "legal",
+    "sort": "English card name, then Oracle ID",
+    "semanticClasses": [
+      "vanilla",
+      "keyword-only",
+      "creature-template",
+      "land-mana-template",
+      "spell-template",
+      "permanent-template",
+      "artifact-template",
+      "enchantment-template",
+      "equipment-template",
+      "aura-template",
+      "vehicle-template"
+    ],
+    "note": "Every non-reminder Oracle line must exactly match a central keyword or a closed executable template. Prefix/partial autoscripting is never certification.",
+    "compilerVersion": 3
+  },
+  "catalogSummary": {
+    "oracleRows": 38627,
+    "paperCards": 36495,
+    "commanderLegalCards": 30784,
+    "legacyEngineCards": 1626,
+    "readyForThisCompiler": 1117,
+    "selected": 100,
+    "selectedBySemanticClass": {
+      "artifact-template": 3,
+      "aura-template": 7,
+      "creature-template": 37,
+      "enchantment-template": 1,
+      "equipment-template": 3,
+      "land-mana-template": 8,
+      "spell-template": 36,
+      "vehicle-template": 5
+    },
+    "deferredByReason": {
+      "already-imported-batch": 1557,
+      "already-in-legacy-engine": 1593,
+      "complex-layout": 825,
+      "dynamic-power-toughness": 193,
+      "land-needs-explicit-semantics": 675,
+      "noncreature-needs-explicit-semantics": 4896,
+      "not-commander-legal": 5711,
+      "not-paper": 2132,
+      "oracle-needs-explicit-semantics": 13854,
+      "reminder-only-oracle": 1,
+      "spell-needs-explicit-semantics": 5752,
+      "unsupported-mana-cost": 321
+    },
+    "deferredExamples": {
+      "already-imported-batch": [
+        "Storm Crow",
+        "Nantuko Elder",
+        "Leopard-Spotted Jiao",
+        "Dakmor Scorpion",
+        "Scaled Wurm",
+        "Boros Recruit",
+        "Timber Gorge",
+        "Bladed Sentinel"
+      ],
+      "already-in-legacy-engine": [
+        "Pteramander",
+        "Lattice Library",
+        "Escape Tunnel",
+        "Behemoth Sledge",
+        "Kindred Discovery",
+        "Sodden Verdure",
+        "Hot Pursuit",
+        "Solemn Simulacrum"
+      ],
+      "complex-layout": [
+        "Stormchaser's Talent",
+        "Long List of the Ents",
+        "Phyrexian Dragon Engine",
+        "Goring Warplow",
+        "Ulvenwald Captive // Ulvenwald Abomination",
+        "Azusa's Many Journeys // Likeness of the Seeker",
+        "Summon: Primal Odin",
+        "Witch Enchanter // Witch-Blessed Meadow"
+      ],
+      "dynamic-power-toughness": [
+        "Snow Villiers",
+        "Eluge, the Shoreless Sea",
+        "Nethergoyf",
+        "Flora Colossus",
+        "Revenant",
+        "Rubblehulk",
+        "Towering Gibbon",
+        "Kolaghan Forerunners"
+      ],
+      "land-needs-explicit-semantics": [
+        "Shizo, Death's Storehouse",
+        "Airship Engine Room",
+        "Lotus Vale",
+        "Saltcrusted Steppe",
+        "Tainted Isle",
+        "Fiery Islet",
+        "Prismatic Vista",
+        "Miren, the Moaning Well"
+      ],
+      "noncreature-needs-explicit-semantics": [
+        "Static Orb",
+        "Food Fight",
+        "Strength of Unity",
+        "One with the Kami",
+        "Dungeon Delver",
+        "Coalition Relic",
+        "Mindlink Mech",
+        "Demonic Vigor"
+      ],
+      "not-commander-legal": [
+        "Munitions Enthusiast",
+        "Brightglass Gearhulk // Brightglass Gearhulk",
+        "Phyrexian Broodstar",
+        "Wall of Fortune",
+        "Gigantosaurus // Gigantosaurus",
+        "Tyranid",
+        "Gleeful Demolition // Gleeful Demolition",
+        "Demon"
+      ],
+      "not-paper": [
+        "Mine Security",
+        "Kavaron Consumed",
+        "Snarlfang Vermin",
+        "Wyluli Wolf",
+        "Palinchron",
+        "Wei Strike Force",
+        "Weakstone",
+        "Providence of Night"
+      ],
+      "oracle-needs-explicit-semantics": [
+        "Nissa, Worldsoul Speaker",
+        "Walking Sponge",
+        "Greta, Sweettooth Scourge",
+        "Vedalken Heretic",
+        "Ruthless Knave",
+        "Hua Tuo, Honored Physician",
+        "Disposal Mummy",
+        "Wasp, Shrinking Savior"
+      ],
+      "reminder-only-oracle": [
+        "Dryad Arbor"
+      ],
+      "spell-needs-explicit-semantics": [
+        "Road of Return",
+        "Ravnica at War",
+        "Torrent of Fire",
+        "Veil of Summer",
+        "Aura Graft",
+        "Saheeli's Artistry",
+        "Safewright Quest",
+        "Instill Infection"
+      ],
+      "unsupported-mana-cost": [
+        "Adventurous Eater // Have a Bite",
+        "Tamiyo, Compleated Sage",
+        "Gollum, Silent Slinker // Meager Meal",
+        "Maelstrom Artisan // Rocket Volley",
+        "Heaven // Earth",
+        "Breaking // Entering",
+        "Twice Upon a Time // Unlikely Meeting",
+        "Faerie Guidemother // Gift of the Fae"
+      ]
+    },
+    "nextReadyNames": [
+      "Earth Rift",
+      "Ebony Treefolk",
+      "Eject",
+      "Elderfang Disciple",
+      "Elemental Summoning",
+      "Elephant Ambush",
+      "Elite Instructor",
+      "Ember Shot",
+      "Ember-Eye Wolf",
+      "Emerald Dragonfly",
+      "Empty the Warrens",
+      "Enatu Golem"
+    ]
+  },
+  "cards": [
+    {
+      "position": 1,
+      "oracleId": "9e34ab18-5d39-49d9-9d3d-e1d4a3611b87",
+      "scryfallId": "1a110be3-93ec-40ef-94a6-e4c43f1ce211",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": -3,
+          "toughness": 0,
+          "keywords": [],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{2}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump",
+        "cycling-ability"
+      ],
+      "rulesCore": "Target creature gets -3/-0 until end of turn.\nCycling {2}",
+      "raw": {
+        "name": "Constricting Tendrils",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gets -3/-0 until end of turn.\nCycling {2} ({2}, Discard this card: Draw a card.)",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "9e34ab18-5d39-49d9-9d3d-e1d4a3611b87",
+        "_scryfallId": "1a110be3-93ec-40ef-94a6-e4c43f1ce211",
+        "_layout": "normal",
+        "_set": "con",
+        "_collectorNumber": "22",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "con",
+        "setName": "Conflux",
+        "collectorNumber": "22",
+        "rarity": "common",
+        "releasedAt": "2009-02-06",
+        "scryfallUri": "https://scryfall.com/card/con/22/constricting-tendrils?utm_source=api"
+      }
+    },
+    {
+      "position": 2,
+      "oracleId": "bc822c9a-633f-4830-9cb3-9af6a80622e4",
+      "scryfallId": "11eff338-1940-4684-94c7-ef90e56dea99",
+      "semanticClass": "vehicle-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "crew",
+          "n": 6,
+          "contract": "crew-ability"
+        }
+      ],
+      "oracleContracts": [
+        "crew-ability"
+      ],
+      "rulesCore": "Crew 6",
+      "raw": {
+        "name": "Consulate Dreadnought",
+        "cost": "{1}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Vehicle"
+        ],
+        "oracle": "Crew 6 (Tap any number of creatures you control with total power 6 or more: This Vehicle becomes an artifact creature until end of turn.)",
+        "_ci": [],
+        "_oracleId": "bc822c9a-633f-4830-9cb3-9af6a80622e4",
+        "_scryfallId": "11eff338-1940-4684-94c7-ef90e56dea99",
+        "_layout": "normal",
+        "_set": "aer",
+        "_collectorNumber": "146",
+        "_rarity": "uncommon",
+        "power": "7",
+        "toughness": "11"
+      },
+      "catalog": {
+        "typeLine": "Artifact — Vehicle",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Crew"
+        ],
+        "commanderLegality": "legal",
+        "set": "aer",
+        "setName": "Aether Revolt",
+        "collectorNumber": "146",
+        "rarity": "uncommon",
+        "releasedAt": "2017-01-20",
+        "scryfallUri": "https://scryfall.com/card/aer/146/consulate-dreadnought?utm_source=api"
+      }
+    },
+    {
+      "position": 3,
+      "oracleId": "d33c7ea2-4d17-4cdb-aa58-c25c57836297",
+      "scryfallId": "5a92ec45-3eb5-4212-bdbd-073cbd0299d7",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "aura-etb-tap",
+          "contract": "aura-etb-tap"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [],
+          "skipUntap": true,
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "aura-etb-tap",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nWhen this Aura enters, tap enchanted creature.\nEnchanted creature doesn't untap during its controller's untap step.",
+      "raw": {
+        "name": "Containment Protocol",
+        "cost": "{2}{U}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature\nWhen this Aura enters, tap enchanted creature.\nEnchanted creature doesn't untap during its controller's untap step.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "d33c7ea2-4d17-4cdb-aa58-c25c57836297",
+        "_scryfallId": "5a92ec45-3eb5-4212-bdbd-073cbd0299d7",
+        "_layout": "normal",
+        "_set": "tmc",
+        "_collectorNumber": "108",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "tmc",
+        "setName": "Teenage Mutant Ninja Turtles Eternal",
+        "collectorNumber": "108",
+        "rarity": "common",
+        "releasedAt": "2026-03-06",
+        "scryfallUri": "https://scryfall.com/card/tmc/108/containment-protocol?utm_source=api"
+      }
+    },
+    {
+      "position": 4,
+      "oracleId": "a48f259a-99a0-49c7-a11b-6e796f8a12f4",
+      "scryfallId": "a0b3d4ff-09d1-4d9f-8c83-cdfbd7bb1079",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-counter",
+          "spellType": "spell",
+          "contract": "spell-counter"
+        },
+        {
+          "kind": "spell-draw",
+          "n": 1,
+          "contract": "spell-draw"
+        }
+      ],
+      "oracleContracts": [
+        "spell-counter",
+        "spell-draw"
+      ],
+      "rulesCore": "Counter target spell.\nDraw a card.",
+      "raw": {
+        "name": "Contradict",
+        "cost": "{3}{U}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Counter target spell.\nDraw a card.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "a48f259a-99a0-49c7-a11b-6e796f8a12f4",
+        "_scryfallId": "a0b3d4ff-09d1-4d9f-8c83-cdfbd7bb1079",
+        "_layout": "normal",
+        "_set": "dtk",
+        "_collectorNumber": "49",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "dtk",
+        "setName": "Dragons of Tarkir",
+        "collectorNumber": "49",
+        "rarity": "common",
+        "releasedAt": "2015-03-27",
+        "scryfallUri": "https://scryfall.com/card/dtk/49/contradict?utm_source=api"
+      }
+    },
+    {
+      "position": 5,
+      "oracleId": "688a0b7d-bf00-45ab-ab3f-9d19f52f019a",
+      "scryfallId": "129c404b-2c1e-4f0b-bb4e-7e8e627a69a8",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-team-pump",
+          "attackingOnly": false,
+          "controller": "you",
+          "power": 2,
+          "toughness": 1,
+          "keywords": [],
+          "contract": "spell-team-pump"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{2}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "spell-team-pump",
+        "cycling-ability"
+      ],
+      "rulesCore": "Creatures you control get +2/+1 until end of turn.\nCycling {2}",
+      "raw": {
+        "name": "Coordinated Charge",
+        "cost": "{4}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Creatures you control get +2/+1 until end of turn.\nCycling {2} ({2}, Discard this card: Draw a card.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "688a0b7d-bf00-45ab-ab3f-9d19f52f019a",
+        "_scryfallId": "129c404b-2c1e-4f0b-bb4e-7e8e627a69a8",
+        "_layout": "normal",
+        "_set": "iko",
+        "_collectorNumber": "6",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "iko",
+        "setName": "Ikoria: Lair of Behemoths",
+        "collectorNumber": "6",
+        "rarity": "common",
+        "releasedAt": "2020-04-24",
+        "scryfallUri": "https://scryfall.com/card/iko/6/coordinated-charge?utm_source=api"
+      }
+    },
+    {
+      "position": 6,
+      "oracleId": "c1f33eac-0f85-4f0f-8562-1737b5f6b23a",
+      "scryfallId": "dbda6799-3b55-4714-8305-713e1e198a15",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "unblockable",
+          "contract": "unblockable-static"
+        }
+      ],
+      "oracleContracts": [
+        "unblockable-static"
+      ],
+      "rulesCore": "This creature can't be blocked.",
+      "raw": {
+        "name": "Covert Operative",
+        "cost": "{4}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Wizard"
+        ],
+        "oracle": "This creature can't be blocked.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "c1f33eac-0f85-4f0f-8562-1737b5f6b23a",
+        "_scryfallId": "dbda6799-3b55-4714-8305-713e1e198a15",
+        "_layout": "normal",
+        "_set": "lgn",
+        "_collectorNumber": "33",
+        "_rarity": "common",
+        "power": "3",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Wizard",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "lgn",
+        "setName": "Legions",
+        "collectorNumber": "33",
+        "rarity": "common",
+        "releasedAt": "2003-02-03",
+        "scryfallUri": "https://scryfall.com/card/lgn/33/covert-operative?utm_source=api"
+      }
+    },
+    {
+      "position": 7,
+      "oracleId": "8832b76b-58b7-41b2-b2f6-842563b55b36",
+      "scryfallId": "20b52d17-7efb-4c6e-9e6a-4763d1ef1daa",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": 3,
+          "toughness": 3,
+          "keywords": [
+            "trample"
+          ],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump"
+      ],
+      "rulesCore": "Target creature gets +3/+3 and gains trample until end of turn.",
+      "raw": {
+        "name": "Crash the Ramparts",
+        "cost": "{2}{G}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gets +3/+3 and gains trample until end of turn.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "8832b76b-58b7-41b2-b2f6-842563b55b36",
+        "_scryfallId": "20b52d17-7efb-4c6e-9e6a-4763d1ef1daa",
+        "_layout": "normal",
+        "_set": "xln",
+        "_collectorNumber": "182",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "xln",
+        "setName": "Ixalan",
+        "collectorNumber": "182",
+        "rarity": "common",
+        "releasedAt": "2017-09-29",
+        "scryfallUri": "https://scryfall.com/card/xln/182/crash-the-ramparts?utm_source=api"
+      }
+    },
+    {
+      "position": 8,
+      "oracleId": "2b166d97-c2c1-4642-b151-9bb1ad32e362",
+      "scryfallId": "a8cca2a2-69e3-4136-936c-7a2774c19351",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mechanic-suspend",
+          "n": 4,
+          "cost": "{G}",
+          "contract": "mechanic-suspend"
+        },
+        {
+          "kind": "spell-token",
+          "n": 2,
+          "token": {
+            "name": "Rhino",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Rhino"
+            ],
+            "power": "4",
+            "toughness": "4",
+            "colors": [
+              "G"
+            ],
+            "keywords": [
+              "trample"
+            ]
+          },
+          "contract": "spell-token-creation"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-suspend",
+        "spell-token-creation"
+      ],
+      "rulesCore": "Suspend 4—{G}\nCreate two 4/4 green Rhino creature tokens with trample.",
+      "raw": {
+        "name": "Crashing Footfalls",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Suspend 4—{G} (Rather than cast this card from your hand, pay {G} and exile it with four time counters on it. At the beginning of your upkeep, remove a time counter. When the last is removed, you may cast it without paying its mana cost.)\nCreate two 4/4 green Rhino creature tokens with trample.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "2b166d97-c2c1-4642-b151-9bb1ad32e362",
+        "_scryfallId": "a8cca2a2-69e3-4136-936c-7a2774c19351",
+        "_layout": "normal",
+        "_set": "mh1",
+        "_collectorNumber": "160",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Suspend"
+        ],
+        "commanderLegality": "legal",
+        "set": "mh1",
+        "setName": "Modern Horizons",
+        "collectorNumber": "160",
+        "rarity": "rare",
+        "releasedAt": "2019-06-14",
+        "scryfallUri": "https://scryfall.com/card/mh1/160/crashing-footfalls?utm_source=api"
+      }
+    },
+    {
+      "position": 9,
+      "oracleId": "33eefb22-51a6-4630-9bd2-0895997f6f33",
+      "scryfallId": "05d5a7b3-18b6-4b1d-85cc-2253e605390c",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-destroy-all",
+          "what": "artifacts",
+          "noRegen": false,
+          "contract": "spell-board-wipe"
+        }
+      ],
+      "oracleContracts": [
+        "spell-board-wipe"
+      ],
+      "rulesCore": "Destroy all artifacts.",
+      "raw": {
+        "name": "Creeping Corrosion",
+        "cost": "{2}{G}{G}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Destroy all artifacts.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "33eefb22-51a6-4630-9bd2-0895997f6f33",
+        "_scryfallId": "05d5a7b3-18b6-4b1d-85cc-2253e605390c",
+        "_layout": "normal",
+        "_set": "mbs",
+        "_collectorNumber": "78",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "mbs",
+        "setName": "Mirrodin Besieged",
+        "collectorNumber": "78",
+        "rarity": "rare",
+        "releasedAt": "2011-02-04",
+        "scryfallUri": "https://scryfall.com/card/mbs/78/creeping-corrosion?utm_source=api"
+      }
+    },
+    {
+      "position": 10,
+      "oracleId": "9c39bc53-52d3-4610-920e-5607a625b01f",
+      "scryfallId": "723d6f60-3e8a-4c58-8b3c-9ba59a01c867",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "enters-tapped",
+          "contract": "permanent-enters-tapped"
+        }
+      ],
+      "oracleContracts": [
+        "permanent-enters-tapped"
+      ],
+      "rulesCore": "This creature enters tapped.",
+      "raw": {
+        "name": "Crooked Custodian",
+        "cost": "{1}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Ogre",
+          "Rogue"
+        ],
+        "oracle": "This creature enters tapped.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "9c39bc53-52d3-4610-920e-5607a625b01f",
+        "_scryfallId": "723d6f60-3e8a-4c58-8b3c-9ba59a01c867",
+        "_layout": "normal",
+        "_set": "snc",
+        "_collectorNumber": "71",
+        "_rarity": "common",
+        "power": "3",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Ogre Rogue",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "snc",
+        "setName": "Streets of New Capenna",
+        "collectorNumber": "71",
+        "rarity": "common",
+        "releasedAt": "2022-04-29",
+        "scryfallUri": "https://scryfall.com/card/snc/71/crooked-custodian?utm_source=api"
+      }
+    },
+    {
+      "position": 11,
+      "oracleId": "7a23915f-8bce-4aad-8395-0c736450a62d",
+      "scryfallId": "536b8104-9d8d-444b-8535-62bcbe279de2",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mechanic-convoke",
+          "contract": "mechanic-convoke"
+        },
+        {
+          "kind": "spell-pump",
+          "power": 1,
+          "toughness": 0,
+          "keywords": [
+            "first strike"
+          ],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-convoke",
+        "spell-pump"
+      ],
+      "rulesCore": "Convoke\nTarget creature gets +1/+0 and gains first strike until end of turn.",
+      "raw": {
+        "name": "Crowd's Favor",
+        "cost": "{R}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Convoke (Your creatures can help cast this spell. Each creature you tap while casting this spell pays for {1} or one mana of that creature's color.)\nTarget creature gets +1/+0 and gains first strike until end of turn. (It deals combat damage before creatures without first strike.)",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "7a23915f-8bce-4aad-8395-0c736450a62d",
+        "_scryfallId": "536b8104-9d8d-444b-8535-62bcbe279de2",
+        "_layout": "normal",
+        "_set": "m15",
+        "_collectorNumber": "138",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Convoke"
+        ],
+        "commanderLegality": "legal",
+        "set": "m15",
+        "setName": "Magic 2015",
+        "collectorNumber": "138",
+        "rarity": "common",
+        "releasedAt": "2014-07-18",
+        "scryfallUri": "https://scryfall.com/card/m15/138/crowds-favor?utm_source=api"
+      }
+    },
+    {
+      "position": 12,
+      "oracleId": "c9823e5f-d0f8-4d28-8b3b-55f94ea9d76f",
+      "scryfallId": "af5d1be2-d6ae-4820-aa01-62f261b0f110",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "defender"
+      ],
+      "implementation": [
+        {
+          "kind": "mechanic-morph",
+          "cost": "{4}{W}",
+          "contract": "mechanic-morph"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-morph"
+      ],
+      "rulesCore": "Defender\nMorph {4}{W}",
+      "raw": {
+        "name": "Crude Rampart",
+        "cost": "{3}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Wall"
+        ],
+        "oracle": "Defender (This creature can't attack.)\nMorph {4}{W} (You may cast this card face down as a 2/2 creature for {3}. Turn it face up any time for its morph cost.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "c9823e5f-d0f8-4d28-8b3b-55f94ea9d76f",
+        "_scryfallId": "af5d1be2-d6ae-4820-aa01-62f261b0f110",
+        "_layout": "normal",
+        "_set": "ons",
+        "_collectorNumber": "17",
+        "_rarity": "uncommon",
+        "power": "4",
+        "toughness": "5"
+      },
+      "catalog": {
+        "typeLine": "Creature — Wall",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Morph",
+          "Defender"
+        ],
+        "commanderLegality": "legal",
+        "set": "ons",
+        "setName": "Onslaught",
+        "collectorNumber": "17",
+        "rarity": "uncommon",
+        "releasedAt": "2002-10-07",
+        "scryfallUri": "https://scryfall.com/card/ons/17/crude-rampart?utm_source=api"
+      }
+    },
+    {
+      "position": 13,
+      "oracleId": "6c12cd05-b673-453c-9f6b-f3aa022467c1",
+      "scryfallId": "32a924b3-3bd6-43ad-acbd-1303dd670db4",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-token",
+          "n": 3,
+          "token": {
+            "name": "Wurm",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Wurm"
+            ],
+            "power": "6",
+            "toughness": "6",
+            "colors": [
+              "G"
+            ],
+            "keywords": []
+          },
+          "contract": "spell-token-creation"
+        },
+        {
+          "kind": "mechanic-flashback",
+          "cost": "{9}{G}{G}{G}",
+          "speed": "sorcery",
+          "contract": "mechanic-flashback"
+        }
+      ],
+      "oracleContracts": [
+        "spell-token-creation",
+        "mechanic-flashback"
+      ],
+      "rulesCore": "Create three 6/6 green Wurm creature tokens.\nFlashback {9}{G}{G}{G}",
+      "raw": {
+        "name": "Crush of Wurms",
+        "cost": "{6}{G}{G}{G}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Create three 6/6 green Wurm creature tokens.\nFlashback {9}{G}{G}{G} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "6c12cd05-b673-453c-9f6b-f3aa022467c1",
+        "_scryfallId": "32a924b3-3bd6-43ad-acbd-1303dd670db4",
+        "_layout": "normal",
+        "_set": "jud",
+        "_collectorNumber": "110",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Flashback"
+        ],
+        "commanderLegality": "legal",
+        "set": "jud",
+        "setName": "Judgment",
+        "collectorNumber": "110",
+        "rarity": "rare",
+        "releasedAt": "2002-05-27",
+        "scryfallUri": "https://scryfall.com/card/jud/110/crush-of-wurms?utm_source=api"
+      }
+    },
+    {
+      "position": 14,
+      "oracleId": "18bcf4c5-7abc-4ca5-b805-4bbebf4e433c",
+      "scryfallId": "9920e91d-58c1-4c1a-a177-43423db96842",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "haste"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{B}",
+          "power": 1,
+          "toughness": 1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Haste\n{B}: This creature gets +1/+1 until end of turn.",
+      "raw": {
+        "name": "Crypt Ripper",
+        "cost": "{2}{B}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Shade"
+        ],
+        "oracle": "Haste\n{B}: This creature gets +1/+1 until end of turn.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "18bcf4c5-7abc-4ca5-b805-4bbebf4e433c",
+        "_scryfallId": "9920e91d-58c1-4c1a-a177-43423db96842",
+        "_layout": "normal",
+        "_set": "zen",
+        "_collectorNumber": "85",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Shade",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Haste"
+        ],
+        "commanderLegality": "legal",
+        "set": "zen",
+        "setName": "Zendikar",
+        "collectorNumber": "85",
+        "rarity": "common",
+        "releasedAt": "2009-10-02",
+        "scryfallUri": "https://scryfall.com/card/zen/85/crypt-ripper?utm_source=api"
+      }
+    },
+    {
+      "position": 15,
+      "oracleId": "f15fb0cc-8e96-4f03-94d0-b51410415afd",
+      "scryfallId": "6f6f9d3d-600d-43f3-a915-612e5d53aaa1",
+      "semanticClass": "land-mana-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "etb-scry",
+          "n": 1,
+          "contract": "etb-library-selection"
+        },
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "C": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        },
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "ANY": true,
+              "n": 1
+            }
+          ],
+          "activationMana": "{1}",
+          "contract": "mana-source"
+        }
+      ],
+      "oracleContracts": [
+        "etb-library-selection",
+        "mana-source"
+      ],
+      "rulesCore": "When this land enters, scry 1.\n{T}: Add {C}.\n{1}, {T}: Add one mana of any color.",
+      "raw": {
+        "name": "Crystal Grotto",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "When this land enters, scry 1.\n{T}: Add {C}.\n{1}, {T}: Add one mana of any color.",
+        "_ci": [],
+        "_oracleId": "f15fb0cc-8e96-4f03-94d0-b51410415afd",
+        "_scryfallId": "6f6f9d3d-600d-43f3-a915-612e5d53aaa1",
+        "_layout": "normal",
+        "_set": "woe",
+        "_collectorNumber": "254",
+        "_rarity": "common",
+        "_produced": [
+          "B",
+          "C",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Land",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Scry"
+        ],
+        "commanderLegality": "legal",
+        "set": "woe",
+        "setName": "Wilds of Eldraine",
+        "collectorNumber": "254",
+        "rarity": "common",
+        "releasedAt": "2023-09-08",
+        "scryfallUri": "https://scryfall.com/card/woe/254/crystal-grotto?utm_source=api"
+      }
+    },
+    {
+      "position": 16,
+      "oracleId": "ca68648f-fe3a-4770-9842-a3dc2310f099",
+      "scryfallId": "55999d8e-50f8-4c8b-a0c3-f3256af62491",
+      "semanticClass": "land-mana-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "C": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        },
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "W": 1,
+              "U": 1,
+              "B": 1,
+              "R": 1,
+              "G": 1
+            }
+          ],
+          "activationMana": "{5}",
+          "contract": "mana-source"
+        }
+      ],
+      "oracleContracts": [
+        "mana-source"
+      ],
+      "rulesCore": "{T}: Add {C}.\n{5}, {T}: Add {W}{U}{B}{R}{G}.",
+      "raw": {
+        "name": "Crystal Quarry",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {C}.\n{5}, {T}: Add {W}{U}{B}{R}{G}.",
+        "_ci": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ],
+        "_oracleId": "ca68648f-fe3a-4770-9842-a3dc2310f099",
+        "_scryfallId": "55999d8e-50f8-4c8b-a0c3-f3256af62491",
+        "_layout": "normal",
+        "_set": "dmc",
+        "_collectorNumber": "206",
+        "_rarity": "rare",
+        "_produced": [
+          "B",
+          "C",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Land",
+        "colorIdentity": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ],
+        "colors": [],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "dmc",
+        "setName": "Dominaria United Commander",
+        "collectorNumber": "206",
+        "rarity": "rare",
+        "releasedAt": "2022-09-09",
+        "scryfallUri": "https://scryfall.com/card/dmc/206/crystal-quarry?utm_source=api"
+      }
+    },
+    {
+      "position": 17,
+      "oracleId": "8c2d2888-38be-41f9-aaf2-8337e87d2aed",
+      "scryfallId": "9f738ca6-5254-4dbc-9f59-854e81c8dac2",
+      "semanticClass": "equipment-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "attachment-grant",
+          "power": 1,
+          "toughness": 0,
+          "keywords": [
+            "haste"
+          ],
+          "contract": "attachment-continuous-effect"
+        },
+        {
+          "kind": "equipment-equip",
+          "cost": "{1}",
+          "contract": "equipment-attach-ability"
+        }
+      ],
+      "oracleContracts": [
+        "attachment-continuous-effect",
+        "equipment-attach-ability"
+      ],
+      "rulesCore": "Equipped creature gets +1/+0 and has haste.\nEquip {1}",
+      "raw": {
+        "name": "Crystal Slipper",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Equipment"
+        ],
+        "oracle": "Equipped creature gets +1/+0 and has haste.\nEquip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "8c2d2888-38be-41f9-aaf2-8337e87d2aed",
+        "_scryfallId": "9f738ca6-5254-4dbc-9f59-854e81c8dac2",
+        "_layout": "normal",
+        "_set": "eld",
+        "_collectorNumber": "119",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Artifact — Equipment",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Equip"
+        ],
+        "commanderLegality": "legal",
+        "set": "eld",
+        "setName": "Throne of Eldraine",
+        "collectorNumber": "119",
+        "rarity": "common",
+        "releasedAt": "2019-10-04",
+        "scryfallUri": "https://scryfall.com/card/eld/119/crystal-slipper?utm_source=api"
+      }
+    },
+    {
+      "position": 18,
+      "oracleId": "c2f86723-4765-4dac-a9f6-9cfa543613b2",
+      "scryfallId": "e156b8d8-5309-494e-9709-44f98826a69f",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-regenerate-ability",
+          "cost": "{G}",
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{G}: Regenerate this creature.",
+      "raw": {
+        "name": "Cudgel Troll",
+        "cost": "{2}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Troll"
+        ],
+        "oracle": "{G}: Regenerate this creature. (The next time this creature would be destroyed this turn, instead tap it, remove it from combat, and heal all damage on it.)",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "c2f86723-4765-4dac-a9f6-9cfa543613b2",
+        "_scryfallId": "e156b8d8-5309-494e-9709-44f98826a69f",
+        "_layout": "normal",
+        "_set": "m12",
+        "_collectorNumber": "169",
+        "_rarity": "uncommon",
+        "power": "4",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Creature — Troll",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Heal",
+          "Regenerate"
+        ],
+        "commanderLegality": "legal",
+        "set": "m12",
+        "setName": "Magic 2012",
+        "collectorNumber": "169",
+        "rarity": "uncommon",
+        "releasedAt": "2011-07-15",
+        "scryfallUri": "https://scryfall.com/card/m12/169/cudgel-troll?utm_source=api"
+      }
+    },
+    {
+      "position": 19,
+      "oracleId": "3e211792-2656-4bee-80ac-60eac0c45c2d",
+      "scryfallId": "8da8c523-44e8-43e7-8431-28dbed1015ac",
+      "semanticClass": "equipment-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "attachment-grant",
+          "power": 2,
+          "toughness": 2,
+          "keywords": [],
+          "contract": "attachment-continuous-effect"
+        },
+        {
+          "kind": "equipment-equip",
+          "cost": "{3}",
+          "contract": "equipment-attach-ability"
+        }
+      ],
+      "oracleContracts": [
+        "attachment-continuous-effect",
+        "equipment-attach-ability"
+      ],
+      "rulesCore": "Equipped creature gets +2/+2.\nEquip {3}",
+      "raw": {
+        "name": "Cultist's Staff",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Equipment"
+        ],
+        "oracle": "Equipped creature gets +2/+2.\nEquip {3} ({3}: Attach to target creature you control. Equip only as a sorcery.)",
+        "_ci": [],
+        "_oracleId": "3e211792-2656-4bee-80ac-60eac0c45c2d",
+        "_scryfallId": "8da8c523-44e8-43e7-8431-28dbed1015ac",
+        "_layout": "normal",
+        "_set": "emn",
+        "_collectorNumber": "194",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Artifact — Equipment",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Equip"
+        ],
+        "commanderLegality": "legal",
+        "set": "emn",
+        "setName": "Eldritch Moon",
+        "collectorNumber": "194",
+        "rarity": "common",
+        "releasedAt": "2016-07-22",
+        "scryfallUri": "https://scryfall.com/card/emn/194/cultists-staff?utm_source=api"
+      }
+    },
+    {
+      "position": 20,
+      "oracleId": "c1eb530c-dd36-40ae-8617-6bb6969565e1",
+      "scryfallId": "249aa94c-85ab-4606-aa2c-c902bd83ac21",
+      "semanticClass": "vehicle-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "ANY": true,
+              "n": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        },
+        {
+          "kind": "crew",
+          "n": 3,
+          "contract": "crew-ability"
+        }
+      ],
+      "oracleContracts": [
+        "mana-source",
+        "crew-ability"
+      ],
+      "rulesCore": "{T}: Add one mana of any color.\nCrew 3",
+      "raw": {
+        "name": "Cultivator's Caravan",
+        "cost": "{3}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Vehicle"
+        ],
+        "oracle": "{T}: Add one mana of any color.\nCrew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)",
+        "_ci": [],
+        "_oracleId": "c1eb530c-dd36-40ae-8617-6bb6969565e1",
+        "_scryfallId": "249aa94c-85ab-4606-aa2c-c902bd83ac21",
+        "_layout": "normal",
+        "_set": "fdn",
+        "_collectorNumber": "670",
+        "_rarity": "rare",
+        "power": "5",
+        "toughness": "5",
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Artifact — Vehicle",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Crew"
+        ],
+        "commanderLegality": "legal",
+        "set": "fdn",
+        "setName": "Foundations",
+        "collectorNumber": "670",
+        "rarity": "rare",
+        "releasedAt": "2024-11-15",
+        "scryfallUri": "https://scryfall.com/card/fdn/670/cultivators-caravan?utm_source=api"
+      }
+    },
+    {
+      "position": 21,
+      "oracleId": "96335212-ec57-4beb-bab1-11c8eaa62119",
+      "scryfallId": "0ff7c993-ba29-43b0-9639-7c4bc0292fa2",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": 3,
+          "toughness": 1,
+          "keywords": [],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        },
+        {
+          "kind": "spell-token",
+          "n": 1,
+          "tokenKey": "clue",
+          "contract": "spell-token-creation"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump",
+        "spell-token-creation"
+      ],
+      "rulesCore": "Target creature gets +3/+1 until end of turn.\nCreate a Clue token.",
+      "raw": {
+        "name": "Cunning Maneuver",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gets +3/+1 until end of turn.\nCreate a Clue token. (It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "96335212-ec57-4beb-bab1-11c8eaa62119",
+        "_scryfallId": "0ff7c993-ba29-43b0-9639-7c4bc0292fa2",
+        "_layout": "normal",
+        "_set": "tla",
+        "_collectorNumber": "130",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "tla",
+        "setName": "Avatar: The Last Airbender",
+        "collectorNumber": "130",
+        "rarity": "common",
+        "releasedAt": "2025-11-21",
+        "scryfallUri": "https://scryfall.com/card/tla/130/cunning-maneuver?utm_source=api"
+      }
+    },
+    {
+      "position": 22,
+      "oracleId": "75e8907d-f726-4a63-ba8b-c0fd4936734e",
+      "scryfallId": "78cd258b-431e-42f7-a938-76ebc80d528d",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-surveil",
+          "n": 2,
+          "contract": "spell-library-selection"
+        },
+        {
+          "kind": "spell-draw",
+          "n": 1,
+          "contract": "spell-draw"
+        }
+      ],
+      "oracleContracts": [
+        "spell-library-selection",
+        "spell-draw"
+      ],
+      "rulesCore": "Surveil 2.\nDraw a card.",
+      "raw": {
+        "name": "Curate",
+        "cost": "{1}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Surveil 2. (Look at the top two cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.)\nDraw a card.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "75e8907d-f726-4a63-ba8b-c0fd4936734e",
+        "_scryfallId": "78cd258b-431e-42f7-a938-76ebc80d528d",
+        "_layout": "normal",
+        "_set": "mkc",
+        "_collectorNumber": "99",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Surveil"
+        ],
+        "commanderLegality": "legal",
+        "set": "mkc",
+        "setName": "Murders at Karlov Manor Commander",
+        "collectorNumber": "99",
+        "rarity": "common",
+        "releasedAt": "2024-02-09",
+        "scryfallUri": "https://scryfall.com/card/mkc/99/curate?utm_source=api"
+      }
+    },
+    {
+      "position": 23,
+      "oracleId": "0d060d19-9c8b-4831-a9be-aa2c98b6858a",
+      "scryfallId": "eb14f061-9506-40fb-b10d-4bada38ca0f7",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "defender"
+      ],
+      "implementation": [
+        {
+          "kind": "enters-tapped",
+          "contract": "permanent-enters-tapped"
+        }
+      ],
+      "oracleContracts": [
+        "permanent-enters-tapped"
+      ],
+      "rulesCore": "Defender\nThis creature enters tapped.",
+      "raw": {
+        "name": "Custodian of the Trove",
+        "cost": "{3}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Golem"
+        ],
+        "oracle": "Defender\nThis creature enters tapped.",
+        "_ci": [],
+        "_oracleId": "0d060d19-9c8b-4831-a9be-aa2c98b6858a",
+        "_scryfallId": "eb14f061-9506-40fb-b10d-4bada38ca0f7",
+        "_layout": "normal",
+        "_set": "dtk",
+        "_collectorNumber": "236",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "5"
+      },
+      "catalog": {
+        "typeLine": "Artifact Creature — Golem",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Defender"
+        ],
+        "commanderLegality": "legal",
+        "set": "dtk",
+        "setName": "Dragons of Tarkir",
+        "collectorNumber": "236",
+        "rarity": "common",
+        "releasedAt": "2015-03-27",
+        "scryfallUri": "https://scryfall.com/card/dtk/236/custodian-of-the-trove?utm_source=api"
+      }
+    },
+    {
+      "position": 24,
+      "oracleId": "d57a8f0b-7989-4db5-8756-6f2690097252",
+      "scryfallId": "d3c0aac5-b9f1-4446-bfea-3e1dd1cf1f2f",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-destroy-all",
+          "what": "creatures",
+          "noRegen": true,
+          "contract": "spell-board-wipe"
+        }
+      ],
+      "oracleContracts": [
+        "spell-board-wipe"
+      ],
+      "rulesCore": "Destroy all creatures. They can't be regenerated.",
+      "raw": {
+        "name": "Damnation",
+        "cost": "{2}{B}{B}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Destroy all creatures. They can't be regenerated.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "d57a8f0b-7989-4db5-8756-6f2690097252",
+        "_scryfallId": "d3c0aac5-b9f1-4446-bfea-3e1dd1cf1f2f",
+        "_layout": "normal",
+        "_set": "2x2",
+        "_collectorNumber": "73",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "2x2",
+        "setName": "Double Masters 2022",
+        "collectorNumber": "73",
+        "rarity": "rare",
+        "releasedAt": "2022-07-08",
+        "scryfallUri": "https://scryfall.com/card/2x2/73/damnation?utm_source=api"
+      }
+    },
+    {
+      "position": 25,
+      "oracleId": "10bc00f7-d501-46e3-9f23-af1ddc3f6c4c",
+      "scryfallId": "37ec6c4b-2de0-4759-a25d-007706cb18cc",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": 1,
+          "toughness": 1,
+          "keywords": [
+            "flying",
+            "first strike"
+          ],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump"
+      ],
+      "rulesCore": "Target creature gets +1/+1 and gains flying and first strike until end of turn.",
+      "raw": {
+        "name": "Daring Leap",
+        "cost": "{1}{W}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gets +1/+1 and gains flying and first strike until end of turn.",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "_oracleId": "10bc00f7-d501-46e3-9f23-af1ddc3f6c4c",
+        "_scryfallId": "37ec6c4b-2de0-4759-a25d-007706cb18cc",
+        "_layout": "normal",
+        "_set": "pls",
+        "_collectorNumber": "101",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U",
+          "W"
+        ],
+        "colors": [
+          "U",
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "pls",
+        "setName": "Planeshift",
+        "collectorNumber": "101",
+        "rarity": "common",
+        "releasedAt": "2001-02-05",
+        "scryfallUri": "https://scryfall.com/card/pls/101/daring-leap?utm_source=api"
+      }
+    },
+    {
+      "position": 26,
+      "oracleId": "0f5401c2-0189-4a07-8e7b-a765ccd7c954",
+      "scryfallId": "b41a2bf7-248c-4f8b-92ec-3010d276cb59",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flash"
+      ],
+      "implementation": [
+        {
+          "kind": "enters-tapped",
+          "contract": "permanent-enters-tapped"
+        }
+      ],
+      "oracleContracts": [
+        "permanent-enters-tapped"
+      ],
+      "rulesCore": "Flash\nThis creature enters tapped.",
+      "raw": {
+        "name": "Daring Thunder-Thief",
+        "cost": "{3}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Turtle",
+          "Rogue"
+        ],
+        "oracle": "Flash\nThis creature enters tapped.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "0f5401c2-0189-4a07-8e7b-a765ccd7c954",
+        "_scryfallId": "b41a2bf7-248c-4f8b-92ec-3010d276cb59",
+        "_layout": "normal",
+        "_set": "otj",
+        "_collectorNumber": "41",
+        "_rarity": "common",
+        "power": "4",
+        "toughness": "4"
+      },
+      "catalog": {
+        "typeLine": "Creature — Turtle Rogue",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "otj",
+        "setName": "Outlaws of Thunder Junction",
+        "collectorNumber": "41",
+        "rarity": "common",
+        "releasedAt": "2024-04-19",
+        "scryfallUri": "https://scryfall.com/card/otj/41/daring-thunder-thief?utm_source=api"
+      }
+    },
+    {
+      "position": 27,
+      "oracleId": "0103b2f2-05dd-40af-954d-303c144edb04",
+      "scryfallId": "4eb883b7-da6a-45c3-9dde-61334a0ddcae",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-regenerate-ability",
+          "cost": "{B}",
+          "contract": "activated-ability-cost"
+        },
+        {
+          "kind": "self-pump-ability",
+          "cost": "{B}",
+          "power": 1,
+          "toughness": 1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{B}: Regenerate this creature.\n{B}: This creature gets +1/+1 until end of turn.",
+      "raw": {
+        "name": "Darkling Stalker",
+        "cost": "{3}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Shade",
+          "Spirit"
+        ],
+        "oracle": "{B}: Regenerate this creature.\n{B}: This creature gets +1/+1 until end of turn.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "0103b2f2-05dd-40af-954d-303c144edb04",
+        "_scryfallId": "4eb883b7-da6a-45c3-9dde-61334a0ddcae",
+        "_layout": "normal",
+        "_set": "tmp",
+        "_collectorNumber": "119",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Shade Spirit",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Regenerate"
+        ],
+        "commanderLegality": "legal",
+        "set": "tmp",
+        "setName": "Tempest",
+        "collectorNumber": "119",
+        "rarity": "common",
+        "releasedAt": "1997-10-14",
+        "scryfallUri": "https://scryfall.com/card/tmp/119/darkling-stalker?utm_source=api"
+      }
+    },
+    {
+      "position": 28,
+      "oracleId": "e48d9efa-c169-4587-86fc-0021f265d69b",
+      "scryfallId": "1e7162e5-8c56-457e-91eb-b8ae4d1b6adb",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{B}",
+          "power": 2,
+          "toughness": -1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Flying\n{B}: This creature gets +2/-1 until end of turn.",
+      "raw": {
+        "name": "Darklit Gargoyle",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Gargoyle"
+        ],
+        "oracle": "Flying\n{B}: This creature gets +2/-1 until end of turn.",
+        "_ci": [
+          "B",
+          "W"
+        ],
+        "_oracleId": "e48d9efa-c169-4587-86fc-0021f265d69b",
+        "_scryfallId": "1e7162e5-8c56-457e-91eb-b8ae4d1b6adb",
+        "_layout": "normal",
+        "_set": "con",
+        "_collectorNumber": "7",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Artifact Creature — Gargoyle",
+        "colorIdentity": [
+          "B",
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "con",
+        "setName": "Conflux",
+        "collectorNumber": "7",
+        "rarity": "common",
+        "releasedAt": "2009-02-06",
+        "scryfallUri": "https://scryfall.com/card/con/7/darklit-gargoyle?utm_source=api"
+      }
+    },
+    {
+      "position": 29,
+      "oracleId": "932708ae-9d5c-4561-aa8b-0d2222d37fdc",
+      "scryfallId": "584834fb-b7b6-40eb-9fec-8df17172ce5f",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-fog",
+          "playersOnly": false,
+          "contract": "spell-damage-prevention"
+        }
+      ],
+      "oracleContracts": [
+        "spell-damage-prevention"
+      ],
+      "rulesCore": "Prevent all combat damage that would be dealt this turn.",
+      "raw": {
+        "name": "Darkness",
+        "cost": "{B}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Prevent all combat damage that would be dealt this turn.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "932708ae-9d5c-4561-aa8b-0d2222d37fdc",
+        "_scryfallId": "584834fb-b7b6-40eb-9fec-8df17172ce5f",
+        "_layout": "normal",
+        "_set": "tsb",
+        "_collectorNumber": "40",
+        "_rarity": "special"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "tsb",
+        "setName": "Time Spiral Timeshifted",
+        "collectorNumber": "40",
+        "rarity": "special",
+        "releasedAt": "2006-10-06",
+        "scryfallUri": "https://scryfall.com/card/tsb/40/darkness?utm_source=api"
+      }
+    },
+    {
+      "position": 30,
+      "oracleId": "3b7ea3ac-ac0a-40aa-b743-d153e1c47d8c",
+      "scryfallId": "4d6bfe57-872d-4f69-bff5-a3f2584d6e0a",
+      "semanticClass": "equipment-template",
+      "implementedKeywords": [
+        "indestructible"
+      ],
+      "implementation": [
+        {
+          "kind": "attachment-grant",
+          "power": 2,
+          "toughness": 0,
+          "keywords": [],
+          "contract": "attachment-continuous-effect"
+        },
+        {
+          "kind": "equipment-equip",
+          "cost": "{2}",
+          "contract": "equipment-attach-ability"
+        }
+      ],
+      "oracleContracts": [
+        "attachment-continuous-effect",
+        "equipment-attach-ability"
+      ],
+      "rulesCore": "Indestructible\nEquipped creature gets +2/+0.\nEquip {2}",
+      "raw": {
+        "name": "Darksteel Axe",
+        "cost": "{1}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Equipment"
+        ],
+        "oracle": "Indestructible (Effects that say \"destroy\" don't destroy this Equipment.)\nEquipped creature gets +2/+0.\nEquip {2}",
+        "_ci": [],
+        "_oracleId": "3b7ea3ac-ac0a-40aa-b743-d153e1c47d8c",
+        "_scryfallId": "4d6bfe57-872d-4f69-bff5-a3f2584d6e0a",
+        "_layout": "normal",
+        "_set": "2xm",
+        "_collectorNumber": "247",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Artifact — Equipment",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Indestructible",
+          "Equip"
+        ],
+        "commanderLegality": "legal",
+        "set": "2xm",
+        "setName": "Double Masters",
+        "collectorNumber": "247",
+        "rarity": "common",
+        "releasedAt": "2020-08-07",
+        "scryfallUri": "https://scryfall.com/card/2xm/247/darksteel-axe?utm_source=api"
+      }
+    },
+    {
+      "position": 31,
+      "oracleId": "a2529491-7389-4cfa-92d2-145eda779603",
+      "scryfallId": "f279fcf1-e4f5-4873-9d73-8d62e0343b81",
+      "semanticClass": "artifact-template",
+      "implementedKeywords": [
+        "indestructible"
+      ],
+      "implementation": [
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "ANY": true,
+              "n": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        }
+      ],
+      "oracleContracts": [
+        "mana-source"
+      ],
+      "rulesCore": "Indestructible\n{T}: Add one mana of any color.",
+      "raw": {
+        "name": "Darksteel Ingot",
+        "cost": "{3}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "Indestructible (Effects that say \"destroy\" don't destroy this artifact.)\n{T}: Add one mana of any color.",
+        "_ci": [],
+        "_oracleId": "a2529491-7389-4cfa-92d2-145eda779603",
+        "_scryfallId": "f279fcf1-e4f5-4873-9d73-8d62e0343b81",
+        "_layout": "normal",
+        "_set": "otc",
+        "_collectorNumber": "256",
+        "_rarity": "uncommon",
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Artifact",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Indestructible"
+        ],
+        "commanderLegality": "legal",
+        "set": "otc",
+        "setName": "Outlaws of Thunder Junction Commander",
+        "collectorNumber": "256",
+        "rarity": "uncommon",
+        "releasedAt": "2024-04-19",
+        "scryfallUri": "https://scryfall.com/card/otc/256/darksteel-ingot?utm_source=api"
+      }
+    },
+    {
+      "position": 32,
+      "oracleId": "2bda1fb1-528c-4e66-89f1-bb1a85e9181e",
+      "scryfallId": "0fd8c918-62d9-41be-a3e1-32ddac71b7e7",
+      "semanticClass": "artifact-template",
+      "implementedKeywords": [
+        "indestructible"
+      ],
+      "implementation": [],
+      "oracleContracts": [],
+      "rulesCore": "Indestructible",
+      "raw": {
+        "name": "Darksteel Relic",
+        "cost": "{0}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "Indestructible (Effects that say \"destroy\" don't destroy this artifact.)",
+        "_ci": [],
+        "_oracleId": "2bda1fb1-528c-4e66-89f1-bb1a85e9181e",
+        "_scryfallId": "0fd8c918-62d9-41be-a3e1-32ddac71b7e7",
+        "_layout": "normal",
+        "_set": "nph",
+        "_collectorNumber": "134",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Artifact",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Indestructible"
+        ],
+        "commanderLegality": "legal",
+        "set": "nph",
+        "setName": "New Phyrexia",
+        "collectorNumber": "134",
+        "rarity": "uncommon",
+        "releasedAt": "2011-05-13",
+        "scryfallUri": "https://scryfall.com/card/nph/134/darksteel-relic?utm_source=api"
+      }
+    },
+    {
+      "position": 33,
+      "oracleId": "55ad9924-f217-4844-8a82-48746186bc53",
+      "scryfallId": "212a807f-d5d0-4787-b390-3351783a1ae4",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "protection-from",
+          "from": "black",
+          "contract": "protection-static"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{2}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "protection-static",
+        "cycling-ability"
+      ],
+      "rulesCore": "Protection from black\nCycling {2}",
+      "raw": {
+        "name": "Darkwatch Elves",
+        "cost": "{2}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf"
+        ],
+        "oracle": "Protection from black\nCycling {2} ({2}, Discard this card: Draw a card.)",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "55ad9924-f217-4844-8a82-48746186bc53",
+        "_scryfallId": "212a807f-d5d0-4787-b390-3351783a1ae4",
+        "_layout": "normal",
+        "_set": "ulg",
+        "_collectorNumber": "99",
+        "_rarity": "uncommon",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elf",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Protection",
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "ulg",
+        "setName": "Urza's Legacy",
+        "collectorNumber": "99",
+        "rarity": "uncommon",
+        "releasedAt": "1999-02-15",
+        "scryfallUri": "https://scryfall.com/card/ulg/99/darkwatch-elves?utm_source=api"
+      }
+    },
+    {
+      "position": 34,
+      "oracleId": "21edfe1a-2c53-44b3-b0d1-3dba8fb3346d",
+      "scryfallId": "cd888ca8-0ebe-46f0-9317-3b193ccc43fb",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "first strike"
+      ],
+      "implementation": [
+        {
+          "kind": "mechanic-morph",
+          "cost": "{2}{W}{W}",
+          "contract": "mechanic-morph"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-morph"
+      ],
+      "rulesCore": "First strike\nMorph {2}{W}{W}",
+      "raw": {
+        "name": "Daru Lancer",
+        "cost": "{4}{W}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "oracle": "First strike\nMorph {2}{W}{W} (You may cast this card face down as a 2/2 creature for {3}. Turn it face up any time for its morph cost.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "21edfe1a-2c53-44b3-b0d1-3dba8fb3346d",
+        "_scryfallId": "cd888ca8-0ebe-46f0-9317-3b193ccc43fb",
+        "_layout": "normal",
+        "_set": "ons",
+        "_collectorNumber": "20",
+        "_rarity": "common",
+        "power": "3",
+        "toughness": "4"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Soldier",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Morph",
+          "First strike"
+        ],
+        "commanderLegality": "legal",
+        "set": "ons",
+        "setName": "Onslaught",
+        "collectorNumber": "20",
+        "rarity": "common",
+        "releasedAt": "2002-10-07",
+        "scryfallUri": "https://scryfall.com/card/ons/20/daru-lancer?utm_source=api"
+      }
+    },
+    {
+      "position": 35,
+      "oracleId": "d057289d-5e28-43d5-8ff3-4a1bc723477d",
+      "scryfallId": "96e84bdc-8a9a-4c58-ba8b-9f052fd60069",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-destroy-all",
+          "what": "creatures",
+          "noRegen": false,
+          "contract": "spell-board-wipe"
+        }
+      ],
+      "oracleContracts": [
+        "spell-board-wipe"
+      ],
+      "rulesCore": "Destroy all creatures.",
+      "raw": {
+        "name": "Day of Judgment",
+        "cost": "{2}{W}{W}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Destroy all creatures.",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "d057289d-5e28-43d5-8ff3-4a1bc723477d",
+        "_scryfallId": "96e84bdc-8a9a-4c58-ba8b-9f052fd60069",
+        "_layout": "normal",
+        "_set": "fdn",
+        "_collectorNumber": "140",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "fdn",
+        "setName": "Foundations",
+        "collectorNumber": "140",
+        "rarity": "rare",
+        "releasedAt": "2024-11-15",
+        "scryfallUri": "https://scryfall.com/card/fdn/140/day-of-judgment?utm_source=api"
+      }
+    },
+    {
+      "position": 36,
+      "oracleId": "394709f0-2d29-4a2d-be05-7b22fec57763",
+      "scryfallId": "a9d4639a-b634-469e-a848-35e3a3dfd47e",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": -3,
+          "toughness": 0,
+          "keywords": [],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        },
+        {
+          "kind": "spell-surveil",
+          "n": 2,
+          "contract": "spell-library-selection"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump",
+        "spell-library-selection"
+      ],
+      "rulesCore": "Target creature gets -3/-0 until end of turn.\nSurveil 2.",
+      "raw": {
+        "name": "Dazzling Lights",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gets -3/-0 until end of turn.\nSurveil 2. (Look at the top two cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.)",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "394709f0-2d29-4a2d-be05-7b22fec57763",
+        "_scryfallId": "a9d4639a-b634-469e-a848-35e3a3dfd47e",
+        "_layout": "normal",
+        "_set": "grn",
+        "_collectorNumber": "34",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Surveil"
+        ],
+        "commanderLegality": "legal",
+        "set": "grn",
+        "setName": "Guilds of Ravnica",
+        "collectorNumber": "34",
+        "rarity": "common",
+        "releasedAt": "2018-10-05",
+        "scryfallUri": "https://scryfall.com/card/grn/34/dazzling-lights?utm_source=api"
+      }
+    },
+    {
+      "position": 37,
+      "oracleId": "b1804304-fac1-4b19-a48d-6ade9407972a",
+      "scryfallId": "82e6b971-3f5b-47e7-8209-98d72ee781fc",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": -2,
+          "toughness": -2,
+          "keywords": [],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nEnchanted creature gets -2/-2.",
+      "raw": {
+        "name": "Dead Weight",
+        "cost": "{B}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature\nEnchanted creature gets -2/-2.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "b1804304-fac1-4b19-a48d-6ade9407972a",
+        "_scryfallId": "82e6b971-3f5b-47e7-8209-98d72ee781fc",
+        "_layout": "normal",
+        "_set": "lci",
+        "_collectorNumber": "99",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "lci",
+        "setName": "The Lost Caverns of Ixalan",
+        "collectorNumber": "99",
+        "rarity": "common",
+        "releasedAt": "2023-11-17",
+        "scryfallUri": "https://scryfall.com/card/lci/99/dead-weight?utm_source=api"
+      }
+    },
+    {
+      "position": 38,
+      "oracleId": "04a3bb42-0464-4638-a6ac-d5f412c222cc",
+      "scryfallId": "462fe190-5264-42d8-bd27-23c5aa0c641f",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-destroy",
+          "noRegen": false,
+          "contract": "spell-destroy",
+          "what": "creature"
+        },
+        {
+          "kind": "spell-surveil",
+          "n": 2,
+          "contract": "spell-library-selection"
+        }
+      ],
+      "oracleContracts": [
+        "spell-destroy",
+        "spell-library-selection"
+      ],
+      "rulesCore": "Destroy target creature.\nSurveil 2.",
+      "raw": {
+        "name": "Deadly Visit",
+        "cost": "{3}{B}{B}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Destroy target creature.\nSurveil 2. (Look at the top two cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.)",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "04a3bb42-0464-4638-a6ac-d5f412c222cc",
+        "_scryfallId": "462fe190-5264-42d8-bd27-23c5aa0c641f",
+        "_layout": "normal",
+        "_set": "grn",
+        "_collectorNumber": "68",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Surveil"
+        ],
+        "commanderLegality": "legal",
+        "set": "grn",
+        "setName": "Guilds of Ravnica",
+        "collectorNumber": "68",
+        "rarity": "common",
+        "releasedAt": "2018-10-05",
+        "scryfallUri": "https://scryfall.com/card/grn/68/deadly-visit?utm_source=api"
+      }
+    },
+    {
+      "position": 39,
+      "oracleId": "747dfffd-880c-48fe-9380-eb56071f5910",
+      "scryfallId": "def88ab5-1b82-46f5-a136-ee1addff4214",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-keyword-ability",
+          "cost": "{1}{G}",
+          "keyword": "reach",
+          "contract": "activated-ability-cost"
+        },
+        {
+          "kind": "self-keyword-ability",
+          "cost": "{1}{G}",
+          "keyword": "deathtouch",
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{1}{G}: This creature gains reach until end of turn.\n{1}{G}: This creature gains deathtouch until end of turn.",
+      "raw": {
+        "name": "Death-Hood Cobra",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Phyrexian",
+          "Snake"
+        ],
+        "oracle": "{1}{G}: This creature gains reach until end of turn.\n{1}{G}: This creature gains deathtouch until end of turn.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "747dfffd-880c-48fe-9380-eb56071f5910",
+        "_scryfallId": "def88ab5-1b82-46f5-a136-ee1addff4214",
+        "_layout": "normal",
+        "_set": "2xm",
+        "_collectorNumber": "163",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Phyrexian Snake",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "2xm",
+        "setName": "Double Masters",
+        "collectorNumber": "163",
+        "rarity": "common",
+        "releasedAt": "2020-08-07",
+        "scryfallUri": "https://scryfall.com/card/2xm/163/death-hood-cobra?utm_source=api"
+      }
+    },
+    {
+      "position": 40,
+      "oracleId": "3b14e7ea-e01c-421d-acd2-0b70436ca6aa",
+      "scryfallId": "b29fc64e-297e-4e10-8f4e-289dc1c3ebfd",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "must-attack",
+          "contract": "must-attack-static"
+        },
+        {
+          "kind": "self-regenerate-ability",
+          "cost": "{2}{B}",
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "must-attack-static",
+        "activated-ability-cost"
+      ],
+      "rulesCore": "This creature attacks each combat if able.\n{2}{B}: Regenerate this creature.",
+      "raw": {
+        "name": "Deathbellow Raider",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Minotaur",
+          "Berserker"
+        ],
+        "oracle": "This creature attacks each combat if able.\n{2}{B}: Regenerate this creature.",
+        "_ci": [
+          "B",
+          "R"
+        ],
+        "_oracleId": "3b14e7ea-e01c-421d-acd2-0b70436ca6aa",
+        "_scryfallId": "b29fc64e-297e-4e10-8f4e-289dc1c3ebfd",
+        "_layout": "normal",
+        "_set": "ths",
+        "_collectorNumber": "117",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Creature — Minotaur Berserker",
+        "colorIdentity": [
+          "B",
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Regenerate"
+        ],
+        "commanderLegality": "legal",
+        "set": "ths",
+        "setName": "Theros",
+        "collectorNumber": "117",
+        "rarity": "common",
+        "releasedAt": "2013-09-27",
+        "scryfallUri": "https://scryfall.com/card/ths/117/deathbellow-raider?utm_source=api"
+      }
+    },
+    {
+      "position": 41,
+      "oracleId": "52eab77d-9a07-4e14-8872-72681d3b3d0e",
+      "scryfallId": "09b2b263-34db-4961-bf41-1eaaba3701da",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": -2,
+          "toughness": -2,
+          "keywords": [],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nEnchanted creature gets -2/-2.",
+      "raw": {
+        "name": "Debilitating Injury",
+        "cost": "{1}{B}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature\nEnchanted creature gets -2/-2.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "52eab77d-9a07-4e14-8872-72681d3b3d0e",
+        "_scryfallId": "09b2b263-34db-4961-bf41-1eaaba3701da",
+        "_layout": "normal",
+        "_set": "ktk",
+        "_collectorNumber": "68",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "ktk",
+        "setName": "Khans of Tarkir",
+        "collectorNumber": "68",
+        "rarity": "common",
+        "releasedAt": "2014-09-26",
+        "scryfallUri": "https://scryfall.com/card/ktk/68/debilitating-injury?utm_source=api"
+      }
+    },
+    {
+      "position": 42,
+      "oracleId": "507c2921-7070-482d-8754-dc667e3315bd",
+      "scryfallId": "ea1e7fed-e6f3-4445-8d01-dca3971f726f",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "noncreature-cast-counter-self",
+          "counter": "+1/+1",
+          "n": 1,
+          "contract": "noncreature-cast-counter-self"
+        }
+      ],
+      "oracleContracts": [
+        "noncreature-cast-counter-self"
+      ],
+      "rulesCore": "Whenever you cast a noncreature spell, put a +1/+1 counter on this creature.",
+      "raw": {
+        "name": "Deeproot Champion",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Merfolk",
+          "Shaman"
+        ],
+        "oracle": "Whenever you cast a noncreature spell, put a +1/+1 counter on this creature.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "507c2921-7070-482d-8754-dc667e3315bd",
+        "_scryfallId": "ea1e7fed-e6f3-4445-8d01-dca3971f726f",
+        "_layout": "normal",
+        "_set": "xln",
+        "_collectorNumber": "185",
+        "_rarity": "rare",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Merfolk Shaman",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "xln",
+        "setName": "Ixalan",
+        "collectorNumber": "185",
+        "rarity": "rare",
+        "releasedAt": "2017-09-29",
+        "scryfallUri": "https://scryfall.com/card/xln/185/deeproot-champion?utm_source=api"
+      }
+    },
+    {
+      "position": 43,
+      "oracleId": "21645448-ecbd-4036-b9ed-47cd903079e4",
+      "scryfallId": "60473300-0bdc-4e89-87d9-28c8d7b4d83d",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-destroy",
+          "noRegen": false,
+          "contract": "spell-destroy",
+          "what": "creature",
+          "stat": "power",
+          "threshold": 2,
+          "comparison": "less"
+        }
+      ],
+      "oracleContracts": [
+        "spell-destroy"
+      ],
+      "rulesCore": "Destroy target creature with power 2 or less.",
+      "raw": {
+        "name": "Defeat",
+        "cost": "{1}{B}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Destroy target creature with power 2 or less.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "21645448-ecbd-4036-b9ed-47cd903079e4",
+        "_scryfallId": "60473300-0bdc-4e89-87d9-28c8d7b4d83d",
+        "_layout": "normal",
+        "_set": "dtk",
+        "_collectorNumber": "97",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "dtk",
+        "setName": "Dragons of Tarkir",
+        "collectorNumber": "97",
+        "rarity": "common",
+        "releasedAt": "2015-03-27",
+        "scryfallUri": "https://scryfall.com/card/dtk/97/defeat?utm_source=api"
+      }
+    },
+    {
+      "position": 44,
+      "oracleId": "1dd64972-5713-4c25-b7a5-a35a56886ef4",
+      "scryfallId": "c3e4c4c3-db3c-49d4-8080-1c93470f8b4d",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-fog",
+          "playersOnly": true,
+          "contract": "spell-damage-prevention"
+        }
+      ],
+      "oracleContracts": [
+        "spell-damage-prevention"
+      ],
+      "rulesCore": "Prevent all combat damage that would be dealt to players this turn.",
+      "raw": {
+        "name": "Defend the Hearth",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Prevent all combat damage that would be dealt to players this turn.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "1dd64972-5713-4c25-b7a5-a35a56886ef4",
+        "_scryfallId": "c3e4c4c3-db3c-49d4-8080-1c93470f8b4d",
+        "_layout": "normal",
+        "_set": "ths",
+        "_collectorNumber": "156",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "ths",
+        "setName": "Theros",
+        "collectorNumber": "156",
+        "rarity": "common",
+        "releasedAt": "2013-09-27",
+        "scryfallUri": "https://scryfall.com/card/ths/156/defend-the-hearth?utm_source=api"
+      }
+    },
+    {
+      "position": 45,
+      "oracleId": "e5f04e8a-e9ae-4f00-8ada-f63b3454ed30",
+      "scryfallId": "717ae26a-e5a0-4478-9995-00ea6bd84c03",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flash"
+      ],
+      "implementation": [
+        {
+          "kind": "protection-from",
+          "from": "white",
+          "contract": "protection-static"
+        }
+      ],
+      "oracleContracts": [
+        "protection-static"
+      ],
+      "rulesCore": "Flash\nProtection from white",
+      "raw": {
+        "name": "Defender of Chaos",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Knight"
+        ],
+        "oracle": "Flash\nProtection from white",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "e5f04e8a-e9ae-4f00-8ada-f63b3454ed30",
+        "_scryfallId": "717ae26a-e5a0-4478-9995-00ea6bd84c03",
+        "_layout": "normal",
+        "_set": "ulg",
+        "_collectorNumber": "75",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Knight",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Protection",
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "ulg",
+        "setName": "Urza's Legacy",
+        "collectorNumber": "75",
+        "rarity": "common",
+        "releasedAt": "1999-02-15",
+        "scryfallUri": "https://scryfall.com/card/ulg/75/defender-of-chaos?utm_source=api"
+      }
+    },
+    {
+      "position": 46,
+      "oracleId": "656513cf-1bf0-431e-8d3a-2d1ec79d0bec",
+      "scryfallId": "9c8e8719-8c33-429d-8b95-b7f813888850",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flash"
+      ],
+      "implementation": [
+        {
+          "kind": "protection-from",
+          "from": "red",
+          "contract": "protection-static"
+        }
+      ],
+      "oracleContracts": [
+        "protection-static"
+      ],
+      "rulesCore": "Flash\nProtection from red",
+      "raw": {
+        "name": "Defender of Law",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Knight"
+        ],
+        "oracle": "Flash\nProtection from red",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "656513cf-1bf0-431e-8d3a-2d1ec79d0bec",
+        "_scryfallId": "9c8e8719-8c33-429d-8b95-b7f813888850",
+        "_layout": "normal",
+        "_set": "ulg",
+        "_collectorNumber": "5",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Knight",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Protection",
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "ulg",
+        "setName": "Urza's Legacy",
+        "collectorNumber": "5",
+        "rarity": "common",
+        "releasedAt": "1999-02-15",
+        "scryfallUri": "https://scryfall.com/card/ulg/5/defender-of-law?utm_source=api"
+      }
+    },
+    {
+      "position": 47,
+      "oracleId": "e73addfa-d18a-46f7-882e-7bc2f292230b",
+      "scryfallId": "8b284304-c3bf-4413-9fd3-b44eb4eb642a",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "mechanic-disguise",
+          "cost": "{4}{W}",
+          "contract": "mechanic-disguise"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-disguise"
+      ],
+      "rulesCore": "Flying\nDisguise {4}{W}",
+      "raw": {
+        "name": "Defenestrated Phantom",
+        "cost": "{4}{W}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spirit"
+        ],
+        "oracle": "Flying\nDisguise {4}{W} (You may cast this card face down for {3} as a 2/2 creature with ward {2}. Turn it face up any time for its disguise cost.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "e73addfa-d18a-46f7-882e-7bc2f292230b",
+        "_scryfallId": "8b284304-c3bf-4413-9fd3-b44eb4eb642a",
+        "_layout": "normal",
+        "_set": "mkm",
+        "_collectorNumber": "11",
+        "_rarity": "common",
+        "power": "4",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Creature — Spirit",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flying",
+          "Disguise"
+        ],
+        "commanderLegality": "legal",
+        "set": "mkm",
+        "setName": "Murders at Karlov Manor",
+        "collectorNumber": "11",
+        "rarity": "common",
+        "releasedAt": "2024-02-09",
+        "scryfallUri": "https://scryfall.com/card/mkm/11/defenestrated-phantom?utm_source=api"
+      }
+    },
+    {
+      "position": 48,
+      "oracleId": "19959b6d-eb8f-4273-94c8-65210e1998ab",
+      "scryfallId": "d0670653-d4fe-4fac-b769-d19ca4698c97",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": -1,
+          "toughness": 1,
+          "keywords": [],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nEnchanted creature gets -1/+1.",
+      "raw": {
+        "name": "Defensive Stance",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature\nEnchanted creature gets -1/+1.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "19959b6d-eb8f-4273-94c8-65210e1998ab",
+        "_scryfallId": "d0670653-d4fe-4fac-b769-d19ca4698c97",
+        "_layout": "normal",
+        "_set": "nph",
+        "_collectorNumber": "34",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "nph",
+        "setName": "New Phyrexia",
+        "collectorNumber": "34",
+        "rarity": "common",
+        "releasedAt": "2011-05-13",
+        "scryfallUri": "https://scryfall.com/card/nph/34/defensive-stance?utm_source=api"
+      }
+    },
+    {
+      "position": 49,
+      "oracleId": "f8c2d9c5-6fe6-4698-9972-83cdd625d94b",
+      "scryfallId": "5c23869b-c99a-49dd-9e29-fcc0eb63fad1",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": 1,
+          "toughness": 0,
+          "keywords": [],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        },
+        {
+          "kind": "spell-draw",
+          "n": 1,
+          "contract": "spell-draw"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump",
+        "spell-draw"
+      ],
+      "rulesCore": "Target creature gets +1/+0 until end of turn.\nDraw a card.",
+      "raw": {
+        "name": "Defiant Strike",
+        "cost": "{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gets +1/+0 until end of turn.\nDraw a card.",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "f8c2d9c5-6fe6-4698-9972-83cdd625d94b",
+        "_scryfallId": "5c23869b-c99a-49dd-9e29-fcc0eb63fad1",
+        "_layout": "normal",
+        "_set": "m21",
+        "_collectorNumber": "15",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "m21",
+        "setName": "Core Set 2021",
+        "collectorNumber": "15",
+        "rarity": "common",
+        "releasedAt": "2020-07-03",
+        "scryfallUri": "https://scryfall.com/card/m21/15/defiant-strike?utm_source=api"
+      }
+    },
+    {
+      "position": 50,
+      "oracleId": "5a295dc1-7f60-4581-b0f9-61e8b14339bf",
+      "scryfallId": "c31e6c69-e5c4-47b0-b226-4e1d84fabfa7",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [
+            "flying"
+          ],
+          "controller": "any",
+          "contract": "spell-pump"
+        },
+        {
+          "kind": "mechanic-flashback",
+          "cost": "{U}",
+          "speed": "instant",
+          "contract": "mechanic-flashback"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump",
+        "mechanic-flashback"
+      ],
+      "rulesCore": "Target creature gains flying until end of turn.\nFlashback {U}",
+      "raw": {
+        "name": "Defy Gravity",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gains flying until end of turn.\nFlashback {U} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "5a295dc1-7f60-4581-b0f9-61e8b14339bf",
+        "_scryfallId": "c31e6c69-e5c4-47b0-b226-4e1d84fabfa7",
+        "_layout": "normal",
+        "_set": "uma",
+        "_collectorNumber": "48",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Flashback"
+        ],
+        "commanderLegality": "legal",
+        "set": "uma",
+        "setName": "Ultimate Masters",
+        "collectorNumber": "48",
+        "rarity": "common",
+        "releasedAt": "2018-12-07",
+        "scryfallUri": "https://scryfall.com/card/uma/48/defy-gravity?utm_source=api"
+      }
+    },
+    {
+      "position": 51,
+      "oracleId": "db27c686-e202-4b60-9a10-0a0fef25576c",
+      "scryfallId": "4414ad73-146e-47a6-926a-ec148194bb50",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [],
+          "skipUntap": true,
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nEnchanted creature doesn't untap during its controller's untap step.",
+      "raw": {
+        "name": "Dehydration",
+        "cost": "{3}{U}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature (Target a creature as you cast this. This card enters attached to that creature.)\nEnchanted creature doesn't untap during its controller's untap step.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "db27c686-e202-4b60-9a10-0a0fef25576c",
+        "_scryfallId": "4414ad73-146e-47a6-926a-ec148194bb50",
+        "_layout": "normal",
+        "_set": "10e",
+        "_collectorNumber": "78",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "10e",
+        "setName": "Tenth Edition",
+        "collectorNumber": "78",
+        "rarity": "common",
+        "releasedAt": "2007-07-13",
+        "scryfallUri": "https://scryfall.com/card/10e/78/dehydration?utm_source=api"
+      }
+    },
+    {
+      "position": 52,
+      "oracleId": "d2fbad7d-d05a-4321-9aff-a93bd102a3f4",
+      "scryfallId": "04217c17-7c29-4b02-b9b6-bfa1df50d4bc",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-bounce",
+          "what": "permanent",
+          "contract": "spell-bounce"
+        },
+        {
+          "kind": "mechanic-flashback",
+          "cost": "{5}{U}{U}",
+          "speed": "sorcery",
+          "contract": "mechanic-flashback"
+        }
+      ],
+      "oracleContracts": [
+        "spell-bounce",
+        "mechanic-flashback"
+      ],
+      "rulesCore": "Return target permanent to its owner's hand.\nFlashback {5}{U}{U}",
+      "raw": {
+        "name": "Dematerialize",
+        "cost": "{3}{U}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Return target permanent to its owner's hand.\nFlashback {5}{U}{U} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "d2fbad7d-d05a-4321-9aff-a93bd102a3f4",
+        "_scryfallId": "04217c17-7c29-4b02-b9b6-bfa1df50d4bc",
+        "_layout": "normal",
+        "_set": "ody",
+        "_collectorNumber": "81",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Flashback"
+        ],
+        "commanderLegality": "legal",
+        "set": "ody",
+        "setName": "Odyssey",
+        "collectorNumber": "81",
+        "rarity": "common",
+        "releasedAt": "2001-10-01",
+        "scryfallUri": "https://scryfall.com/card/ody/81/dematerialize?utm_source=api"
+      }
+    },
+    {
+      "position": 53,
+      "oracleId": "f9e31993-bfe1-46fb-8a32-418e97f9cfe1",
+      "scryfallId": "f9baa387-5855-4e13-b99f-7ce0af9895bc",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mechanic-cascade",
+          "contract": "mechanic-cascade"
+        },
+        {
+          "kind": "spell-bounce",
+          "what": "permanent",
+          "contract": "spell-bounce"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-cascade",
+        "spell-bounce"
+      ],
+      "rulesCore": "Cascade\nReturn target permanent to its owner's hand.",
+      "raw": {
+        "name": "Deny Reality",
+        "cost": "{3}{U}{B}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Cascade (When you cast this spell, exile cards from the top of your library until you exile a nonland card that costs less. You may cast it without paying its mana cost. Put the exiled cards on the bottom in a random order.)\nReturn target permanent to its owner's hand.",
+        "_ci": [
+          "B",
+          "U"
+        ],
+        "_oracleId": "f9e31993-bfe1-46fb-8a32-418e97f9cfe1",
+        "_scryfallId": "f9baa387-5855-4e13-b99f-7ce0af9895bc",
+        "_layout": "normal",
+        "_set": "pca",
+        "_collectorNumber": "85",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "B",
+          "U"
+        ],
+        "colors": [
+          "B",
+          "U"
+        ],
+        "keywords": [
+          "Cascade"
+        ],
+        "commanderLegality": "legal",
+        "set": "pca",
+        "setName": "Planechase Anthology",
+        "collectorNumber": "85",
+        "rarity": "common",
+        "releasedAt": "2016-11-25",
+        "scryfallUri": "https://scryfall.com/card/pca/85/deny-reality?utm_source=api"
+      }
+    },
+    {
+      "position": 54,
+      "oracleId": "60105eb8-bdca-44b9-a970-68a7615526e8",
+      "scryfallId": "c035c625-4de5-4c3b-9d07-aa1df8fc7b78",
+      "semanticClass": "vehicle-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "ANY": true,
+              "n": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        },
+        {
+          "kind": "crew",
+          "n": 4,
+          "contract": "crew-ability"
+        }
+      ],
+      "oracleContracts": [
+        "mana-source",
+        "crew-ability"
+      ],
+      "rulesCore": "Flying\n{T}: Add one mana of any color.\nCrew 4",
+      "raw": {
+        "name": "Dependable Quinjet",
+        "cost": "{3}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Vehicle"
+        ],
+        "oracle": "Flying\n{T}: Add one mana of any color.\nCrew 4 (Tap any number of creatures you control with total power 4 or more: This Vehicle becomes an artifact creature until end of turn.)",
+        "_ci": [],
+        "_oracleId": "60105eb8-bdca-44b9-a970-68a7615526e8",
+        "_scryfallId": "c035c625-4de5-4c3b-9d07-aa1df8fc7b78",
+        "_layout": "normal",
+        "_set": "msh",
+        "_collectorNumber": "246",
+        "_rarity": "common",
+        "power": "3",
+        "toughness": "3",
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Artifact — Vehicle",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Flying",
+          "Crew"
+        ],
+        "commanderLegality": "legal",
+        "set": "msh",
+        "setName": "Marvel Super Heroes",
+        "collectorNumber": "246",
+        "rarity": "common",
+        "releasedAt": "2026-06-26",
+        "scryfallUri": "https://scryfall.com/card/msh/246/dependable-quinjet?utm_source=api"
+      }
+    },
+    {
+      "position": 55,
+      "oracleId": "6ad18589-ece4-4809-80f6-6764d2822372",
+      "scryfallId": "2047c2e5-8b3b-4c6b-91cf-3484f21e52f0",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "cycling",
+          "cost": "{R}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "cycling-ability"
+      ],
+      "rulesCore": "Cycling {R}",
+      "raw": {
+        "name": "Desert Cerodon",
+        "cost": "{5}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "oracle": "Cycling {R} ({R}, Discard this card: Draw a card.)",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "6ad18589-ece4-4809-80f6-6764d2822372",
+        "_scryfallId": "2047c2e5-8b3b-4c6b-91cf-3484f21e52f0",
+        "_layout": "normal",
+        "_set": "akh",
+        "_collectorNumber": "128",
+        "_rarity": "common",
+        "power": "6",
+        "toughness": "4"
+      },
+      "catalog": {
+        "typeLine": "Creature — Beast",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "akh",
+        "setName": "Amonkhet",
+        "collectorNumber": "128",
+        "rarity": "common",
+        "releasedAt": "2017-04-28",
+        "scryfallUri": "https://scryfall.com/card/akh/128/desert-cerodon?utm_source=api"
+      }
+    },
+    {
+      "position": 56,
+      "oracleId": "311f38a6-f68f-4d30-bc4e-62339f1e0d88",
+      "scryfallId": "f3766140-b755-4e4b-9d98-0cc0b889f15a",
+      "semanticClass": "land-mana-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "enters-tapped",
+          "contract": "land-enters-tapped"
+        },
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "R": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{1}{R}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "land-enters-tapped",
+        "mana-source",
+        "cycling-ability"
+      ],
+      "rulesCore": "This land enters tapped.\n{T}: Add {R}.\nCycling {1}{R}",
+      "raw": {
+        "name": "Desert of the Fervent",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Desert"
+        ],
+        "oracle": "This land enters tapped.\n{T}: Add {R}.\nCycling {1}{R} ({1}{R}, Discard this card: Draw a card.)",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "311f38a6-f68f-4d30-bc4e-62339f1e0d88",
+        "_scryfallId": "f3766140-b755-4e4b-9d98-0cc0b889f15a",
+        "_layout": "normal",
+        "_set": "otc",
+        "_collectorNumber": "284",
+        "_rarity": "common",
+        "_produced": [
+          "R"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Land — Desert",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "otc",
+        "setName": "Outlaws of Thunder Junction Commander",
+        "collectorNumber": "284",
+        "rarity": "common",
+        "releasedAt": "2024-04-19",
+        "scryfallUri": "https://scryfall.com/card/otc/284/desert-of-the-fervent?utm_source=api"
+      }
+    },
+    {
+      "position": 57,
+      "oracleId": "190e664b-9875-4335-af46-353886ed18ff",
+      "scryfallId": "04a19aea-209d-4354-8c59-d08244185eb8",
+      "semanticClass": "land-mana-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "enters-tapped",
+          "contract": "land-enters-tapped"
+        },
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "B": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{1}{B}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "land-enters-tapped",
+        "mana-source",
+        "cycling-ability"
+      ],
+      "rulesCore": "This land enters tapped.\n{T}: Add {B}.\nCycling {1}{B}",
+      "raw": {
+        "name": "Desert of the Glorified",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Desert"
+        ],
+        "oracle": "This land enters tapped.\n{T}: Add {B}.\nCycling {1}{B} ({1}{B}, Discard this card: Draw a card.)",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "190e664b-9875-4335-af46-353886ed18ff",
+        "_scryfallId": "04a19aea-209d-4354-8c59-d08244185eb8",
+        "_layout": "normal",
+        "_set": "hou",
+        "_collectorNumber": "171",
+        "_rarity": "common",
+        "_produced": [
+          "B"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Land — Desert",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "hou",
+        "setName": "Hour of Devastation",
+        "collectorNumber": "171",
+        "rarity": "common",
+        "releasedAt": "2017-07-14",
+        "scryfallUri": "https://scryfall.com/card/hou/171/desert-of-the-glorified?utm_source=api"
+      }
+    },
+    {
+      "position": 58,
+      "oracleId": "852d4dc3-404d-4565-99e9-1eac8f6eca5e",
+      "scryfallId": "5728f3ec-62bc-4c56-9242-bc2a5fa175ee",
+      "semanticClass": "land-mana-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "enters-tapped",
+          "contract": "land-enters-tapped"
+        },
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "G": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{1}{G}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "land-enters-tapped",
+        "mana-source",
+        "cycling-ability"
+      ],
+      "rulesCore": "This land enters tapped.\n{T}: Add {G}.\nCycling {1}{G}",
+      "raw": {
+        "name": "Desert of the Indomitable",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Desert"
+        ],
+        "oracle": "This land enters tapped.\n{T}: Add {G}.\nCycling {1}{G} ({1}{G}, Discard this card: Draw a card.)",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "852d4dc3-404d-4565-99e9-1eac8f6eca5e",
+        "_scryfallId": "5728f3ec-62bc-4c56-9242-bc2a5fa175ee",
+        "_layout": "normal",
+        "_set": "otc",
+        "_collectorNumber": "285",
+        "_rarity": "common",
+        "_produced": [
+          "G"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Land — Desert",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "otc",
+        "setName": "Outlaws of Thunder Junction Commander",
+        "collectorNumber": "285",
+        "rarity": "common",
+        "releasedAt": "2024-04-19",
+        "scryfallUri": "https://scryfall.com/card/otc/285/desert-of-the-indomitable?utm_source=api"
+      }
+    },
+    {
+      "position": 59,
+      "oracleId": "508f9e7e-2ff7-4593-b0a9-0612d7b5d646",
+      "scryfallId": "517f71a7-ec5b-46a6-b5ff-8c06abf0a630",
+      "semanticClass": "land-mana-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "enters-tapped",
+          "contract": "land-enters-tapped"
+        },
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "U": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{1}{U}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "land-enters-tapped",
+        "mana-source",
+        "cycling-ability"
+      ],
+      "rulesCore": "This land enters tapped.\n{T}: Add {U}.\nCycling {1}{U}",
+      "raw": {
+        "name": "Desert of the Mindful",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Desert"
+        ],
+        "oracle": "This land enters tapped.\n{T}: Add {U}.\nCycling {1}{U} ({1}{U}, Discard this card: Draw a card.)",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "508f9e7e-2ff7-4593-b0a9-0612d7b5d646",
+        "_scryfallId": "517f71a7-ec5b-46a6-b5ff-8c06abf0a630",
+        "_layout": "normal",
+        "_set": "c21",
+        "_collectorNumber": "287",
+        "_rarity": "common",
+        "_produced": [
+          "U"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Land — Desert",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "c21",
+        "setName": "Commander 2021",
+        "collectorNumber": "287",
+        "rarity": "common",
+        "releasedAt": "2021-04-23",
+        "scryfallUri": "https://scryfall.com/card/c21/287/desert-of-the-mindful?utm_source=api"
+      }
+    },
+    {
+      "position": 60,
+      "oracleId": "2672e0ca-8d5c-449f-8483-35d0e697fbb2",
+      "scryfallId": "8d8c5284-7f56-46e5-8226-1e5cedf2aeb9",
+      "semanticClass": "land-mana-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "enters-tapped",
+          "contract": "land-enters-tapped"
+        },
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "W": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{1}{W}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "land-enters-tapped",
+        "mana-source",
+        "cycling-ability"
+      ],
+      "rulesCore": "This land enters tapped.\n{T}: Add {W}.\nCycling {1}{W}",
+      "raw": {
+        "name": "Desert of the True",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Desert"
+        ],
+        "oracle": "This land enters tapped.\n{T}: Add {W}.\nCycling {1}{W} ({1}{W}, Discard this card: Draw a card.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "2672e0ca-8d5c-449f-8483-35d0e697fbb2",
+        "_scryfallId": "8d8c5284-7f56-46e5-8226-1e5cedf2aeb9",
+        "_layout": "normal",
+        "_set": "otc",
+        "_collectorNumber": "286",
+        "_rarity": "common",
+        "_produced": [
+          "W"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Land — Desert",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "otc",
+        "setName": "Outlaws of Thunder Junction Commander",
+        "collectorNumber": "286",
+        "rarity": "common",
+        "releasedAt": "2024-04-19",
+        "scryfallUri": "https://scryfall.com/card/otc/286/desert-of-the-true?utm_source=api"
+      }
+    },
+    {
+      "position": 61,
+      "oracleId": "d59488b5-1118-4276-b862-11e860c7c32a",
+      "scryfallId": "fe06e87f-8915-4fc2-81fd-168a371dc407",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [],
+          "cantAttack": true,
+          "cantBlock": true,
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nEnchanted creature can't attack or block.",
+      "raw": {
+        "name": "Detained by Legionnaires",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature\nEnchanted creature can't attack or block.",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "d59488b5-1118-4276-b862-11e860c7c32a",
+        "_scryfallId": "fe06e87f-8915-4fc2-81fd-168a371dc407",
+        "_layout": "normal",
+        "_set": "acr",
+        "_collectorNumber": "277",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "acr",
+        "setName": "Assassin's Creed",
+        "collectorNumber": "277",
+        "rarity": "common",
+        "releasedAt": "2024-07-05",
+        "scryfallUri": "https://scryfall.com/card/acr/277/detained-by-legionnaires?utm_source=api"
+      }
+    },
+    {
+      "position": 62,
+      "oracleId": "ee9f0b29-8a54-4cb8-8e2c-7bd67c2184ba",
+      "scryfallId": "d46473a7-69f5-492b-845d-c8862a1fec85",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-damage",
+          "n": "X",
+          "what": "any target",
+          "contract": "spell-damage"
+        },
+        {
+          "kind": "mechanic-flashback",
+          "cost": "{X}{R}{R}{R}",
+          "speed": "sorcery",
+          "contract": "mechanic-flashback"
+        }
+      ],
+      "oracleContracts": [
+        "spell-damage",
+        "mechanic-flashback"
+      ],
+      "rulesCore": "Devil's Play deals X damage to any target.\nFlashback {X}{R}{R}{R}",
+      "raw": {
+        "name": "Devil's Play",
+        "cost": "{X}{R}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Devil's Play deals X damage to any target.\nFlashback {X}{R}{R}{R} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "ee9f0b29-8a54-4cb8-8e2c-7bd67c2184ba",
+        "_scryfallId": "d46473a7-69f5-492b-845d-c8862a1fec85",
+        "_layout": "normal",
+        "_set": "c19",
+        "_collectorNumber": "138",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Flashback"
+        ],
+        "commanderLegality": "legal",
+        "set": "c19",
+        "setName": "Commander 2019",
+        "collectorNumber": "138",
+        "rarity": "rare",
+        "releasedAt": "2019-08-23",
+        "scryfallUri": "https://scryfall.com/card/c19/138/devils-play?utm_source=api"
+      }
+    },
+    {
+      "position": 63,
+      "oracleId": "a671fedf-3766-4fda-abeb-6f63e2fdd20b",
+      "scryfallId": "490cd287-5f09-442f-9150-4a6ac2cf3e2e",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{4}{G}",
+          "power": 2,
+          "toughness": 2,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{4}{G}: This creature gets +2/+2 until end of turn.",
+      "raw": {
+        "name": "Devkarin Dissident",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Warrior"
+        ],
+        "oracle": "{4}{G}: This creature gets +2/+2 until end of turn.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "a671fedf-3766-4fda-abeb-6f63e2fdd20b",
+        "_scryfallId": "490cd287-5f09-442f-9150-4a6ac2cf3e2e",
+        "_layout": "normal",
+        "_set": "grn",
+        "_collectorNumber": "127",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elf Warrior",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "grn",
+        "setName": "Guilds of Ravnica",
+        "collectorNumber": "127",
+        "rarity": "common",
+        "releasedAt": "2018-10-05",
+        "scryfallUri": "https://scryfall.com/card/grn/127/devkarin-dissident?utm_source=api"
+      }
+    },
+    {
+      "position": 64,
+      "oracleId": "5334dc24-040e-4094-80f4-8d1b9de01230",
+      "scryfallId": "84c8189c-972e-4768-baf0-b767bfad723b",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mechanic-convoke",
+          "contract": "mechanic-convoke"
+        },
+        {
+          "kind": "spell-exile",
+          "noRegen": false,
+          "contract": "spell-exile",
+          "what": "creature",
+          "attackingOrBlocking": true
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-convoke",
+        "spell-exile"
+      ],
+      "rulesCore": "Convoke\nExile target attacking or blocking creature.",
+      "raw": {
+        "name": "Devouring Light",
+        "cost": "{1}{W}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Convoke (Your creatures can help cast this spell. Each creature you tap while casting this spell pays for {1} or one mana of that creature's color.)\nExile target attacking or blocking creature.",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "5334dc24-040e-4094-80f4-8d1b9de01230",
+        "_scryfallId": "84c8189c-972e-4768-baf0-b767bfad723b",
+        "_layout": "normal",
+        "_set": "plst",
+        "_collectorNumber": "RVR-15",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Convoke"
+        ],
+        "commanderLegality": "legal",
+        "set": "plst",
+        "setName": "The List",
+        "collectorNumber": "RVR-15",
+        "rarity": "uncommon",
+        "releasedAt": "2026-11-09",
+        "scryfallUri": "https://scryfall.com/card/plst/RVR-15/devouring-light?utm_source=api"
+      }
+    },
+    {
+      "position": 65,
+      "oracleId": "b989279c-665d-4f15-afc1-adf3872a4851",
+      "scryfallId": "f964c561-96ac-4558-b46e-ba2c472d5807",
+      "semanticClass": "enchantment-template",
+      "implementedKeywords": [
+        "flash"
+      ],
+      "implementation": [
+        {
+          "kind": "controlled-creature-pump-static",
+          "power": 2,
+          "toughness": 2,
+          "contract": "continuous-layer"
+        }
+      ],
+      "oracleContracts": [
+        "continuous-layer"
+      ],
+      "rulesCore": "Flash\nCreatures you control get +2/+2.",
+      "raw": {
+        "name": "Dictate of Heliod",
+        "cost": "{3}{W}{W}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "Flash\nCreatures you control get +2/+2.",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "b989279c-665d-4f15-afc1-adf3872a4851",
+        "_scryfallId": "f964c561-96ac-4558-b46e-ba2c472d5807",
+        "_layout": "normal",
+        "_set": "c15",
+        "_collectorNumber": "68",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Enchantment",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "c15",
+        "setName": "Commander 2015",
+        "collectorNumber": "68",
+        "rarity": "rare",
+        "releasedAt": "2015-11-13",
+        "scryfallUri": "https://scryfall.com/card/c15/68/dictate-of-heliod?utm_source=api"
+      }
+    },
+    {
+      "position": 66,
+      "oracleId": "f1a3153c-0200-4ff2-b7d5-48d23920bb3c",
+      "scryfallId": "fb1e610e-a4a2-460b-8e4c-13674badbce3",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [
+        "shroud"
+      ],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [
+            "shroud"
+          ],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nShroud\nEnchanted creature has shroud.",
+      "raw": {
+        "name": "Diplomatic Immunity",
+        "cost": "{1}{U}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature\nShroud (A permanent with shroud can't be the target of spells or abilities.)\nEnchanted creature has shroud.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "f1a3153c-0200-4ff2-b7d5-48d23920bb3c",
+        "_scryfallId": "fb1e610e-a4a2-460b-8e4c-13674badbce3",
+        "_layout": "normal",
+        "_set": "mmq",
+        "_collectorNumber": "75",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Shroud",
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "mmq",
+        "setName": "Mercadian Masques",
+        "collectorNumber": "75",
+        "rarity": "common",
+        "releasedAt": "1999-10-04",
+        "scryfallUri": "https://scryfall.com/card/mmq/75/diplomatic-immunity?utm_source=api"
+      }
+    },
+    {
+      "position": 67,
+      "oracleId": "6048fc70-0dcc-4b54-977d-16e240225f82",
+      "scryfallId": "4682012c-d7e0-4257-b538-3de497507464",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "enters-tapped",
+          "contract": "permanent-enters-tapped"
+        }
+      ],
+      "oracleContracts": [
+        "permanent-enters-tapped"
+      ],
+      "rulesCore": "This creature enters tapped.",
+      "raw": {
+        "name": "Diregraf Ghoul",
+        "cost": "{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie"
+        ],
+        "oracle": "This creature enters tapped.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "6048fc70-0dcc-4b54-977d-16e240225f82",
+        "_scryfallId": "4682012c-d7e0-4257-b538-3de497507464",
+        "_layout": "normal",
+        "_set": "fdn",
+        "_collectorNumber": "171",
+        "_rarity": "uncommon",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Zombie",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "fdn",
+        "setName": "Foundations",
+        "collectorNumber": "171",
+        "rarity": "uncommon",
+        "releasedAt": "2024-11-15",
+        "scryfallUri": "https://scryfall.com/card/fdn/171/diregraf-ghoul?utm_source=api"
+      }
+    },
+    {
+      "position": 68,
+      "oracleId": "0126f620-1dbf-405c-b5cf-f48b7ef02d32",
+      "scryfallId": "fcc3fa22-a4c4-423d-969b-98c65b23e782",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "swampwalk"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{B}",
+          "power": 1,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Swampwalk\n{B}: This creature gets +1/+0 until end of turn.",
+      "raw": {
+        "name": "Dirtwater Wraith",
+        "cost": "{3}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Wraith"
+        ],
+        "oracle": "Swampwalk (This creature can't be blocked as long as defending player controls a Swamp.)\n{B}: This creature gets +1/+0 until end of turn.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "0126f620-1dbf-405c-b5cf-f48b7ef02d32",
+        "_scryfallId": "fcc3fa22-a4c4-423d-969b-98c65b23e782",
+        "_layout": "normal",
+        "_set": "mir",
+        "_collectorNumber": "117",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Creature — Wraith",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Landwalk",
+          "Swampwalk"
+        ],
+        "commanderLegality": "legal",
+        "set": "mir",
+        "setName": "Mirage",
+        "collectorNumber": "117",
+        "rarity": "common",
+        "releasedAt": "1996-10-08",
+        "scryfallUri": "https://scryfall.com/card/mir/117/dirtwater-wraith?utm_source=api"
+      }
+    },
+    {
+      "position": 69,
+      "oracleId": "a6584af7-583d-4d89-9b46-d61be8236413",
+      "scryfallId": "73b359bf-afd8-439d-a4d2-985db1ad368c",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "etb-loot",
+          "order": "discard-draw",
+          "optional": true,
+          "contract": "etb-loot"
+        }
+      ],
+      "oracleContracts": [
+        "etb-loot"
+      ],
+      "rulesCore": "When this creature enters, you may discard a card. If you do, draw a card.",
+      "raw": {
+        "name": "Discerning Peddler",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Rogue"
+        ],
+        "oracle": "When this creature enters, you may discard a card. If you do, draw a card.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "a6584af7-583d-4d89-9b46-d61be8236413",
+        "_scryfallId": "73b359bf-afd8-439d-a4d2-985db1ad368c",
+        "_layout": "normal",
+        "_set": "otj",
+        "_collectorNumber": "121",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Rogue",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "otj",
+        "setName": "Outlaws of Thunder Junction",
+        "collectorNumber": "121",
+        "rarity": "common",
+        "releasedAt": "2024-04-19",
+        "scryfallUri": "https://scryfall.com/card/otj/121/discerning-peddler?utm_source=api"
+      }
+    },
+    {
+      "position": 70,
+      "oracleId": "7f4ceca9-0f55-4fa6-8e64-befbc4303d4e",
+      "scryfallId": "1d1790cb-34e4-4f23-8a13-1906fd9a956f",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "protection-from",
+          "from": "black",
+          "contract": "protection-static"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{2}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "protection-static",
+        "cycling-ability"
+      ],
+      "rulesCore": "Protection from black\nCycling {2}",
+      "raw": {
+        "name": "Disciple of Grace",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Cleric"
+        ],
+        "oracle": "Protection from black\nCycling {2} ({2}, Discard this card: Draw a card.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "7f4ceca9-0f55-4fa6-8e64-befbc4303d4e",
+        "_scryfallId": "1d1790cb-34e4-4f23-8a13-1906fd9a956f",
+        "_layout": "normal",
+        "_set": "ons",
+        "_collectorNumber": "25",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Cleric",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Protection",
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "ons",
+        "setName": "Onslaught",
+        "collectorNumber": "25",
+        "rarity": "common",
+        "releasedAt": "2002-10-07",
+        "scryfallUri": "https://scryfall.com/card/ons/25/disciple-of-grace?utm_source=api"
+      }
+    },
+    {
+      "position": 71,
+      "oracleId": "a4689767-46c3-42ab-af27-5877e226bc05",
+      "scryfallId": "7a5c8701-a294-4474-9747-129f972cfb18",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "protection-from",
+          "from": "red",
+          "contract": "protection-static"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{2}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "protection-static",
+        "cycling-ability"
+      ],
+      "rulesCore": "Protection from red\nCycling {2}",
+      "raw": {
+        "name": "Disciple of Law",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Cleric"
+        ],
+        "oracle": "Protection from red\nCycling {2} ({2}, Discard this card: Draw a card.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "a4689767-46c3-42ab-af27-5877e226bc05",
+        "_scryfallId": "7a5c8701-a294-4474-9747-129f972cfb18",
+        "_layout": "normal",
+        "_set": "usg",
+        "_collectorNumber": "11",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Cleric",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Protection",
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "usg",
+        "setName": "Urza's Saga",
+        "collectorNumber": "11",
+        "rarity": "common",
+        "releasedAt": "1998-10-12",
+        "scryfallUri": "https://scryfall.com/card/usg/11/disciple-of-law?utm_source=api"
+      }
+    },
+    {
+      "position": 72,
+      "oracleId": "63d92baf-0007-4519-a5bc-d189448ea126",
+      "scryfallId": "74cc7ab0-a5db-4ae9-af9a-89fd5aaaab57",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "protection-from",
+          "from": "white",
+          "contract": "protection-static"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{2}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "protection-static",
+        "cycling-ability"
+      ],
+      "rulesCore": "Protection from white\nCycling {2}",
+      "raw": {
+        "name": "Disciple of Malice",
+        "cost": "{1}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Cleric"
+        ],
+        "oracle": "Protection from white\nCycling {2} ({2}, Discard this card: Draw a card.)",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "63d92baf-0007-4519-a5bc-d189448ea126",
+        "_scryfallId": "74cc7ab0-a5db-4ae9-af9a-89fd5aaaab57",
+        "_layout": "normal",
+        "_set": "ons",
+        "_collectorNumber": "139",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Cleric",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Protection",
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "ons",
+        "setName": "Onslaught",
+        "collectorNumber": "139",
+        "rarity": "common",
+        "releasedAt": "2002-10-07",
+        "scryfallUri": "https://scryfall.com/card/ons/139/disciple-of-malice?utm_source=api"
+      }
+    },
+    {
+      "position": 73,
+      "oracleId": "d19d69c5-9f11-4ac1-9fc7-1636689f23a0",
+      "scryfallId": "3c62b3ee-db2b-45c3-87d5-5d917ea4baeb",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-keyword-ability",
+          "cost": "{R}",
+          "keyword": "first strike",
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{R}: This creature gains first strike until end of turn.",
+      "raw": {
+        "name": "Disciple of the Old Ways",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Warrior"
+        ],
+        "oracle": "{R}: This creature gains first strike until end of turn.",
+        "_ci": [
+          "G",
+          "R"
+        ],
+        "_oracleId": "d19d69c5-9f11-4ac1-9fc7-1636689f23a0",
+        "_scryfallId": "3c62b3ee-db2b-45c3-87d5-5d917ea4baeb",
+        "_layout": "normal",
+        "_set": "gtc",
+        "_collectorNumber": "118",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Warrior",
+        "colorIdentity": [
+          "G",
+          "R"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "gtc",
+        "setName": "Gatecrash",
+        "collectorNumber": "118",
+        "rarity": "common",
+        "releasedAt": "2013-02-01",
+        "scryfallUri": "https://scryfall.com/card/gtc/118/disciple-of-the-old-ways?utm_source=api"
+      }
+    },
+    {
+      "position": 74,
+      "oracleId": "e4ab986d-662c-4879-b6f1-6887a2ec4d7c",
+      "scryfallId": "7debd8f7-2f34-4fdd-8eb6-fa8f9d2a60e8",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-graveyard-return",
+          "what": "creature",
+          "contract": "graveyard-zone-change"
+        }
+      ],
+      "oracleContracts": [
+        "graveyard-zone-change"
+      ],
+      "rulesCore": "Return target creature card from your graveyard to your hand.",
+      "raw": {
+        "name": "Disentomb",
+        "cost": "{B}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Return target creature card from your graveyard to your hand.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "e4ab986d-662c-4879-b6f1-6887a2ec4d7c",
+        "_scryfallId": "7debd8f7-2f34-4fdd-8eb6-fa8f9d2a60e8",
+        "_layout": "normal",
+        "_set": "m20",
+        "_collectorNumber": "322",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "m20",
+        "setName": "Core Set 2020",
+        "collectorNumber": "322",
+        "rarity": "common",
+        "releasedAt": "2019-07-12",
+        "scryfallUri": "https://scryfall.com/card/m20/322/disentomb?utm_source=api"
+      }
+    },
+    {
+      "position": 75,
+      "oracleId": "5c828a5e-10ae-4f63-86fd-2f160af43cc3",
+      "scryfallId": "95b57eec-ecb3-408c-b938-7d3a34602cc5",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-counter",
+          "spellType": "spell",
+          "contract": "spell-counter"
+        },
+        {
+          "kind": "spell-draw",
+          "n": 1,
+          "contract": "spell-draw"
+        }
+      ],
+      "oracleContracts": [
+        "spell-counter",
+        "spell-draw"
+      ],
+      "rulesCore": "Counter target spell.\nDraw a card.",
+      "raw": {
+        "name": "Dismiss",
+        "cost": "{2}{U}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Counter target spell.\nDraw a card.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "5c828a5e-10ae-4f63-86fd-2f160af43cc3",
+        "_scryfallId": "95b57eec-ecb3-408c-b938-7d3a34602cc5",
+        "_layout": "normal",
+        "_set": "cn2",
+        "_collectorNumber": "108",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "cn2",
+        "setName": "Conspiracy: Take the Crown",
+        "collectorNumber": "108",
+        "rarity": "uncommon",
+        "releasedAt": "2016-08-26",
+        "scryfallUri": "https://scryfall.com/card/cn2/108/dismiss?utm_source=api"
+      }
+    },
+    {
+      "position": 76,
+      "oracleId": "6d7be242-a072-40ce-b540-95880506cccd",
+      "scryfallId": "bceab6b3-6b64-4964-a501-ce806a6c13ad",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-counter",
+          "spellType": "instant spell",
+          "contract": "spell-counter"
+        }
+      ],
+      "oracleContracts": [
+        "spell-counter"
+      ],
+      "rulesCore": "Counter target instant spell.",
+      "raw": {
+        "name": "Dispel",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Counter target instant spell.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "6d7be242-a072-40ce-b540-95880506cccd",
+        "_scryfallId": "bceab6b3-6b64-4964-a501-ce806a6c13ad",
+        "_layout": "normal",
+        "_set": "bfz",
+        "_collectorNumber": "76",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "bfz",
+        "setName": "Battle for Zendikar",
+        "collectorNumber": "76",
+        "rarity": "common",
+        "releasedAt": "2015-10-02",
+        "scryfallUri": "https://scryfall.com/card/bfz/76/dispel?utm_source=api"
+      }
+    },
+    {
+      "position": 77,
+      "oracleId": "1b73639b-2b07-4e82-b990-ca7721074e43",
+      "scryfallId": "543eb854-bac7-468f-b3b0-d9987cfac318",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-destroy",
+          "noRegen": false,
+          "contract": "spell-destroy",
+          "what": "artifact"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{G}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "spell-destroy",
+        "cycling-ability"
+      ],
+      "rulesCore": "Destroy target artifact.\nCycling {G}",
+      "raw": {
+        "name": "Dissenter's Deliverance",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Destroy target artifact.\nCycling {G} ({G}, Discard this card: Draw a card.)",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "1b73639b-2b07-4e82-b990-ca7721074e43",
+        "_scryfallId": "543eb854-bac7-468f-b3b0-d9987cfac318",
+        "_layout": "normal",
+        "_set": "akh",
+        "_collectorNumber": "164",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "akh",
+        "setName": "Amonkhet",
+        "collectorNumber": "164",
+        "rarity": "common",
+        "releasedAt": "2017-04-28",
+        "scryfallUri": "https://scryfall.com/card/akh/164/dissenters-deliverance?utm_source=api"
+      }
+    },
+    {
+      "position": 78,
+      "oracleId": "2f990b54-fbf3-4949-85bb-9ba39710e72a",
+      "scryfallId": "65d5cff9-a3ec-432d-9ce5-68949e524279",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": 0,
+          "toughness": 3,
+          "keywords": [
+            "hexproof"
+          ],
+          "controller": "you",
+          "attacking": false,
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump"
+      ],
+      "rulesCore": "Target creature you control gets +0/+3 and gains hexproof until end of turn.",
+      "raw": {
+        "name": "Dive Down",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature you control gets +0/+3 and gains hexproof until end of turn. (It can't be the target of spells or abilities your opponents control.)",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "2f990b54-fbf3-4949-85bb-9ba39710e72a",
+        "_scryfallId": "65d5cff9-a3ec-432d-9ce5-68949e524279",
+        "_layout": "normal",
+        "_set": "fdn",
+        "_collectorNumber": "588",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "fdn",
+        "setName": "Foundations",
+        "collectorNumber": "588",
+        "rarity": "common",
+        "releasedAt": "2024-11-15",
+        "scryfallUri": "https://scryfall.com/card/fdn/588/dive-down?utm_source=api"
+      }
+    },
+    {
+      "position": 79,
+      "oracleId": "3070f997-24f2-471d-af96-a2f3b588198e",
+      "scryfallId": "ed07b708-7232-4b87-b5d9-edaa20a69293",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-destroy",
+          "noRegen": false,
+          "contract": "spell-destroy",
+          "what": "creature",
+          "attackingOrBlocking": true
+        }
+      ],
+      "oracleContracts": [
+        "spell-destroy"
+      ],
+      "rulesCore": "Destroy target attacking or blocking creature.",
+      "raw": {
+        "name": "Divine Verdict",
+        "cost": "{3}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Destroy target attacking or blocking creature.",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "3070f997-24f2-471d-af96-a2f3b588198e",
+        "_scryfallId": "ed07b708-7232-4b87-b5d9-edaa20a69293",
+        "_layout": "normal",
+        "_set": "rix",
+        "_collectorNumber": "5",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "rix",
+        "setName": "Rivals of Ixalan",
+        "collectorNumber": "5",
+        "rarity": "common",
+        "releasedAt": "2018-01-19",
+        "scryfallUri": "https://scryfall.com/card/rix/5/divine-verdict?utm_source=api"
+      }
+    },
+    {
+      "position": 80,
+      "oracleId": "11b21086-0779-4d16-8a56-252c6bee9bed",
+      "scryfallId": "03f005de-7971-4f22-ad1f-5d0667f68113",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-tap",
+          "what": "up to two target creatures",
+          "count": 2,
+          "upTo": true,
+          "contract": "spell-tap-untap"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{W}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "spell-tap-untap",
+        "cycling-ability"
+      ],
+      "rulesCore": "Tap up to two target creatures.\nCycling {W}",
+      "raw": {
+        "name": "Djeru's Renunciation",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Tap up to two target creatures.\nCycling {W} ({W}, Discard this card: Draw a card.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "11b21086-0779-4d16-8a56-252c6bee9bed",
+        "_scryfallId": "03f005de-7971-4f22-ad1f-5d0667f68113",
+        "_layout": "normal",
+        "_set": "hou",
+        "_collectorNumber": "11",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "hou",
+        "setName": "Hour of Devastation",
+        "collectorNumber": "11",
+        "rarity": "common",
+        "releasedAt": "2017-07-14",
+        "scryfallUri": "https://scryfall.com/card/hou/11/djerus-renunciation?utm_source=api"
+      }
+    },
+    {
+      "position": 81,
+      "oracleId": "59aeeb18-d263-426f-aebc-0f687b09801b",
+      "scryfallId": "b525f824-fcce-48cc-887d-98d4058b1d31",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-life-gain",
+          "n": 6,
+          "contract": "spell-life-gain"
+        },
+        {
+          "kind": "spell-draw",
+          "n": 1,
+          "contract": "spell-draw"
+        }
+      ],
+      "oracleContracts": [
+        "spell-life-gain",
+        "spell-draw"
+      ],
+      "rulesCore": "You gain 6 life.\nDraw a card.",
+      "raw": {
+        "name": "Dosan's Oldest Chant",
+        "cost": "{4}{G}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "You gain 6 life.\nDraw a card.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "59aeeb18-d263-426f-aebc-0f687b09801b",
+        "_scryfallId": "b525f824-fcce-48cc-887d-98d4058b1d31",
+        "_layout": "normal",
+        "_set": "sok",
+        "_collectorNumber": "127",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "sok",
+        "setName": "Saviors of Kamigawa",
+        "collectorNumber": "127",
+        "rarity": "common",
+        "releasedAt": "2005-06-03",
+        "scryfallUri": "https://scryfall.com/card/sok/127/dosans-oldest-chant?utm_source=api"
+      }
+    },
+    {
+      "position": 82,
+      "oracleId": "d86f3d5e-838c-4787-9417-85a6997c3bde",
+      "scryfallId": "82505754-a22f-4ae9-8efd-75eff17cbed6",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [
+            "double strike"
+          ],
+          "controller": "any",
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump"
+      ],
+      "rulesCore": "Target creature gains double strike until end of turn.",
+      "raw": {
+        "name": "Double Cleave",
+        "cost": "{1}{R/W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gains double strike until end of turn. (It deals both first-strike and regular combat damage.)",
+        "_ci": [
+          "R",
+          "W"
+        ],
+        "_oracleId": "d86f3d5e-838c-4787-9417-85a6997c3bde",
+        "_scryfallId": "82505754-a22f-4ae9-8efd-75eff17cbed6",
+        "_layout": "normal",
+        "_set": "uma",
+        "_collectorNumber": "214",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "R",
+          "W"
+        ],
+        "colors": [
+          "R",
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "uma",
+        "setName": "Ultimate Masters",
+        "collectorNumber": "214",
+        "rarity": "common",
+        "releasedAt": "2018-12-07",
+        "scryfallUri": "https://scryfall.com/card/uma/214/double-cleave?utm_source=api"
+      }
+    },
+    {
+      "position": 83,
+      "oracleId": "021d8596-782a-4cfd-8b70-ac5bb8a5aff1",
+      "scryfallId": "75eacac3-cba4-4c30-b1df-19fcc5f96076",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-bounce",
+          "what": "creature",
+          "contract": "spell-bounce"
+        },
+        {
+          "kind": "spell-draw",
+          "n": 1,
+          "contract": "spell-draw"
+        }
+      ],
+      "oracleContracts": [
+        "spell-bounce",
+        "spell-draw"
+      ],
+      "rulesCore": "Return target creature to its owner's hand.\nDraw a card.",
+      "raw": {
+        "name": "Drag Under",
+        "cost": "{2}{U}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Return target creature to its owner's hand.\nDraw a card.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "021d8596-782a-4cfd-8b70-ac5bb8a5aff1",
+        "_scryfallId": "75eacac3-cba4-4c30-b1df-19fcc5f96076",
+        "_layout": "normal",
+        "_set": "w17",
+        "_collectorNumber": "9",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "w17",
+        "setName": "Welcome Deck 2017",
+        "collectorNumber": "9",
+        "rarity": "common",
+        "releasedAt": "2017-04-15",
+        "scryfallUri": "https://scryfall.com/card/w17/9/drag-under?utm_source=api"
+      }
+    },
+    {
+      "position": 84,
+      "oracleId": "727a6474-d5b5-42ab-ace3-352d28f499eb",
+      "scryfallId": "045f373e-510f-4552-9859-884f6ce4cc59",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{2}",
+          "power": 1,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{2}: This creature gets +1/+0 until end of turn.",
+      "raw": {
+        "name": "Dragon Engine",
+        "cost": "{3}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Construct"
+        ],
+        "oracle": "{2}: This creature gets +1/+0 until end of turn.",
+        "_ci": [],
+        "_oracleId": "727a6474-d5b5-42ab-ace3-352d28f499eb",
+        "_scryfallId": "045f373e-510f-4552-9859-884f6ce4cc59",
+        "_layout": "normal",
+        "_set": "dmr",
+        "_collectorNumber": "222",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Artifact Creature — Construct",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "dmr",
+        "setName": "Dominaria Remastered",
+        "collectorNumber": "222",
+        "rarity": "common",
+        "releasedAt": "2023-01-13",
+        "scryfallUri": "https://scryfall.com/card/dmr/222/dragon-engine?utm_source=api"
+      }
+    },
+    {
+      "position": 85,
+      "oracleId": "d0d2c45b-b6e3-4999-bdab-976e8f0d6617",
+      "scryfallId": "f9abe517-f601-4784-8d62-2350bd755146",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-token",
+          "n": 2,
+          "token": {
+            "name": "Goblin",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Goblin"
+            ],
+            "power": "1",
+            "toughness": "1",
+            "colors": [
+              "R"
+            ],
+            "keywords": []
+          },
+          "contract": "spell-token-creation"
+        }
+      ],
+      "oracleContracts": [
+        "spell-token-creation"
+      ],
+      "rulesCore": "Create two 1/1 red Goblin creature tokens.",
+      "raw": {
+        "name": "Dragon Fodder",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Create two 1/1 red Goblin creature tokens.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "d0d2c45b-b6e3-4999-bdab-976e8f0d6617",
+        "_scryfallId": "f9abe517-f601-4784-8d62-2350bd755146",
+        "_layout": "normal",
+        "_set": "fdn",
+        "_collectorNumber": "535",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "fdn",
+        "setName": "Foundations",
+        "collectorNumber": "535",
+        "rarity": "common",
+        "releasedAt": "2024-11-15",
+        "scryfallUri": "https://scryfall.com/card/fdn/535/dragon-fodder?utm_source=api"
+      }
+    },
+    {
+      "position": 86,
+      "oracleId": "3f48f6a7-906d-4287-8440-06bfabc93b89",
+      "scryfallId": "c5d3a18c-d030-494d-b7b1-4d1d1e27fbbf",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R}",
+          "power": 1,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Flying\n{R}: This creature gets +1/+0 until end of turn.",
+      "raw": {
+        "name": "Dragon Hatchling",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "oracle": "Flying\n{R}: This creature gets +1/+0 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "3f48f6a7-906d-4287-8440-06bfabc93b89",
+        "_scryfallId": "c5d3a18c-d030-494d-b7b1-4d1d1e27fbbf",
+        "_layout": "normal",
+        "_set": "jmp",
+        "_collectorNumber": "310",
+        "_rarity": "common",
+        "power": "0",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Dragon",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "jmp",
+        "setName": "Jumpstart",
+        "collectorNumber": "310",
+        "rarity": "common",
+        "releasedAt": "2020-07-17",
+        "scryfallUri": "https://scryfall.com/card/jmp/310/dragon-hatchling?utm_source=api"
+      }
+    },
+    {
+      "position": 87,
+      "oracleId": "f242d66c-011c-4b5b-a7d6-5e0bce257f73",
+      "scryfallId": "4900862f-90f4-450b-a775-219da4ce67ef",
+      "semanticClass": "vehicle-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "crew",
+          "n": 1,
+          "contract": "crew-ability"
+        }
+      ],
+      "oracleContracts": [
+        "crew-ability"
+      ],
+      "rulesCore": "Flying\nCrew 1",
+      "raw": {
+        "name": "Dragonfly Suit",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Vehicle"
+        ],
+        "oracle": "Flying\nCrew 1 (Tap any number of creatures you control with total power 1 or more: This Vehicle becomes an artifact creature until end of turn.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "f242d66c-011c-4b5b-a7d6-5e0bce257f73",
+        "_scryfallId": "4900862f-90f4-450b-a775-219da4ce67ef",
+        "_layout": "normal",
+        "_set": "neo",
+        "_collectorNumber": "9",
+        "_rarity": "common",
+        "power": "3",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Artifact — Vehicle",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flying",
+          "Crew"
+        ],
+        "commanderLegality": "legal",
+        "set": "neo",
+        "setName": "Kamigawa: Neon Dynasty",
+        "collectorNumber": "9",
+        "rarity": "common",
+        "releasedAt": "2022-02-18",
+        "scryfallUri": "https://scryfall.com/card/neo/9/dragonfly-suit?utm_source=api"
+      }
+    },
+    {
+      "position": 88,
+      "oracleId": "8fbdec25-4222-4b96-aeea-82a4b5b8b80e",
+      "scryfallId": "4a3ce135-9c2f-45bd-b2db-c0e00c50c964",
+      "semanticClass": "artifact-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "U": 1
+            },
+            {
+              "B": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        }
+      ],
+      "oracleContracts": [
+        "mana-source"
+      ],
+      "rulesCore": "{T}: Add {U} or {B}.",
+      "raw": {
+        "name": "Drake-Skull Cameo",
+        "cost": "{3}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "{T}: Add {U} or {B}.",
+        "_ci": [
+          "B",
+          "U"
+        ],
+        "_oracleId": "8fbdec25-4222-4b96-aeea-82a4b5b8b80e",
+        "_scryfallId": "4a3ce135-9c2f-45bd-b2db-c0e00c50c964",
+        "_layout": "normal",
+        "_set": "inv",
+        "_collectorNumber": "302",
+        "_rarity": "uncommon",
+        "_produced": [
+          "B",
+          "U"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Artifact",
+        "colorIdentity": [
+          "B",
+          "U"
+        ],
+        "colors": [],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "inv",
+        "setName": "Invasion",
+        "collectorNumber": "302",
+        "rarity": "uncommon",
+        "releasedAt": "2000-10-02",
+        "scryfallUri": "https://scryfall.com/card/inv/302/drake-skull-cameo?utm_source=api"
+      }
+    },
+    {
+      "position": 89,
+      "oracleId": "9b90c7d1-38c6-4210-bc76-68c5fcb91202",
+      "scryfallId": "46b8b1d7-9d2b-4943-bb3b-238a6333ce93",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{B}",
+          "power": 1,
+          "toughness": 1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{B}: This creature gets +1/+1 until end of turn.",
+      "raw": {
+        "name": "Dread Shade",
+        "cost": "{B}{B}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Shade"
+        ],
+        "oracle": "{B}: This creature gets +1/+1 until end of turn.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "9b90c7d1-38c6-4210-bc76-68c5fcb91202",
+        "_scryfallId": "46b8b1d7-9d2b-4943-bb3b-238a6333ce93",
+        "_layout": "normal",
+        "_set": "dom",
+        "_collectorNumber": "88",
+        "_rarity": "rare",
+        "power": "3",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Creature — Shade",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "dom",
+        "setName": "Dominaria",
+        "collectorNumber": "88",
+        "rarity": "rare",
+        "releasedAt": "2018-04-27",
+        "scryfallUri": "https://scryfall.com/card/dom/88/dread-shade?utm_source=api"
+      }
+    },
+    {
+      "position": 90,
+      "oracleId": "d569d969-ce39-4314-b5f0-76b45f5c4c7f",
+      "scryfallId": "a9fa20df-b8d5-4de7-a2fa-6ced4bfcf979",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-mill",
+          "n": 3,
+          "contract": "spell-mill"
+        },
+        {
+          "kind": "mechanic-flashback",
+          "cost": "{1}{U}",
+          "speed": "instant",
+          "contract": "mechanic-flashback"
+        }
+      ],
+      "oracleContracts": [
+        "spell-mill",
+        "mechanic-flashback"
+      ],
+      "rulesCore": "Target player mills three cards.\nFlashback {1}{U}",
+      "raw": {
+        "name": "Dream Twist",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target player mills three cards.\nFlashback {1}{U} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "d569d969-ce39-4314-b5f0-76b45f5c4c7f",
+        "_scryfallId": "a9fa20df-b8d5-4de7-a2fa-6ced4bfcf979",
+        "_layout": "normal",
+        "_set": "ema",
+        "_collectorNumber": "47",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Flashback",
+          "Mill"
+        ],
+        "commanderLegality": "legal",
+        "set": "ema",
+        "setName": "Eternal Masters",
+        "collectorNumber": "47",
+        "rarity": "common",
+        "releasedAt": "2016-06-10",
+        "scryfallUri": "https://scryfall.com/card/ema/47/dream-twist?utm_source=api"
+      }
+    },
+    {
+      "position": 91,
+      "oracleId": "c6eb2814-0021-4308-ad44-6c8cc59b0d1c",
+      "scryfallId": "8cb024fa-2df1-4414-b0d7-6f700d152c51",
+      "semanticClass": "land-mana-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "enters-tapped",
+          "contract": "land-enters-tapped"
+        },
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "W": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{2}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "land-enters-tapped",
+        "mana-source",
+        "cycling-ability"
+      ],
+      "rulesCore": "This land enters tapped.\n{T}: Add {W}.\nCycling {2}",
+      "raw": {
+        "name": "Drifting Meadow",
+        "cost": null,
+        "super": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "oracle": "This land enters tapped.\n{T}: Add {W}.\nCycling {2} ({2}, Discard this card: Draw a card.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "c6eb2814-0021-4308-ad44-6c8cc59b0d1c",
+        "_scryfallId": "8cb024fa-2df1-4414-b0d7-6f700d152c51",
+        "_layout": "normal",
+        "_set": "dmr",
+        "_collectorNumber": "245",
+        "_rarity": "common",
+        "_produced": [
+          "W"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Land",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "dmr",
+        "setName": "Dominaria Remastered",
+        "collectorNumber": "245",
+        "rarity": "common",
+        "releasedAt": "2023-01-13",
+        "scryfallUri": "https://scryfall.com/card/dmr/245/drifting-meadow?utm_source=api"
+      }
+    },
+    {
+      "position": 92,
+      "oracleId": "fa3883c7-4fb4-48b9-847b-9a94d1988dd7",
+      "scryfallId": "00dcb25e-764b-47d6-bec4-225aaace77b0",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{B}",
+          "power": 1,
+          "toughness": 1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Flying\n{B}: This creature gets +1/+1 until end of turn.",
+      "raw": {
+        "name": "Drifting Shade",
+        "cost": "{3}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Shade"
+        ],
+        "oracle": "Flying\n{B}: This creature gets +1/+1 until end of turn.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "fa3883c7-4fb4-48b9-847b-9a94d1988dd7",
+        "_scryfallId": "00dcb25e-764b-47d6-bec4-225aaace77b0",
+        "_layout": "normal",
+        "_set": "m12",
+        "_collectorNumber": "96",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Shade",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "m12",
+        "setName": "Magic 2012",
+        "collectorNumber": "96",
+        "rarity": "common",
+        "releasedAt": "2011-07-15",
+        "scryfallUri": "https://scryfall.com/card/m12/96/drifting-shade?utm_source=api"
+      }
+    },
+    {
+      "position": 93,
+      "oracleId": "bf3b7489-e9d6-4b3c-9fb8-3bb727584db9",
+      "scryfallId": "55d54f08-53f0-41b2-8b86-8244515224eb",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{2}{B}",
+          "power": 1,
+          "toughness": 1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{2}{B}: This creature gets +1/+1 until end of turn.",
+      "raw": {
+        "name": "Dross Ripper",
+        "cost": "{4}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Phyrexian",
+          "Dog"
+        ],
+        "oracle": "{2}{B}: This creature gets +1/+1 until end of turn.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "bf3b7489-e9d6-4b3c-9fb8-3bb727584db9",
+        "_scryfallId": "55d54f08-53f0-41b2-8b86-8244515224eb",
+        "_layout": "normal",
+        "_set": "mbs",
+        "_collectorNumber": "106",
+        "_rarity": "common",
+        "power": "3",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Artifact Creature — Phyrexian Dog",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "mbs",
+        "setName": "Mirrodin Besieged",
+        "collectorNumber": "106",
+        "rarity": "common",
+        "releasedAt": "2011-02-04",
+        "scryfallUri": "https://scryfall.com/card/mbs/106/dross-ripper?utm_source=api"
+      }
+    },
+    {
+      "position": 94,
+      "oracleId": "3edc147f-a385-413a-99b6-27d2cf8cf930",
+      "scryfallId": "03c07d9a-afed-4028-9fa1-ec439b60f08f",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flash"
+      ],
+      "implementation": [
+        {
+          "kind": "self-regenerate-ability",
+          "cost": "{B}",
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Flash\n{B}: Regenerate this creature.",
+      "raw": {
+        "name": "Drudge Reavers",
+        "cost": "{3}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Skeleton"
+        ],
+        "oracle": "Flash (You may cast this spell any time you could cast an instant.)\n{B}: Regenerate this creature.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "3edc147f-a385-413a-99b6-27d2cf8cf930",
+        "_scryfallId": "03c07d9a-afed-4028-9fa1-ec439b60f08f",
+        "_layout": "normal",
+        "_set": "tsp",
+        "_collectorNumber": "105",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Skeleton",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Regenerate",
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "tsp",
+        "setName": "Time Spiral",
+        "collectorNumber": "105",
+        "rarity": "common",
+        "releasedAt": "2006-10-06",
+        "scryfallUri": "https://scryfall.com/card/tsp/105/drudge-reavers?utm_source=api"
+      }
+    },
+    {
+      "position": 95,
+      "oracleId": "c180ed02-07f4-4538-9bea-8c249234a8e2",
+      "scryfallId": "bd6f73bc-3181-40fa-9156-b73e4280e747",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-regenerate-ability",
+          "cost": "{B}",
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{B}: Regenerate this creature.",
+      "raw": {
+        "name": "Drudge Skeletons",
+        "cost": "{1}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Skeleton"
+        ],
+        "oracle": "{B}: Regenerate this creature. (The next time this creature would be destroyed this turn, instead tap it, remove it from combat, and heal all damage on it.)",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "c180ed02-07f4-4538-9bea-8c249234a8e2",
+        "_scryfallId": "bd6f73bc-3181-40fa-9156-b73e4280e747",
+        "_layout": "normal",
+        "_set": "gvl",
+        "_collectorNumber": "36",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Skeleton",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Heal",
+          "Regenerate"
+        ],
+        "commanderLegality": "legal",
+        "set": "gvl",
+        "setName": "Duel Decks Anthology: Garruk vs. Liliana",
+        "collectorNumber": "36",
+        "rarity": "common",
+        "releasedAt": "2014-12-05",
+        "scryfallUri": "https://scryfall.com/card/gvl/36/drudge-skeletons?utm_source=api"
+      }
+    },
+    {
+      "position": 96,
+      "oracleId": "79d7950b-92c1-4431-a69e-26544eb0c7f0",
+      "scryfallId": "f48fda3d-5e6f-4f32-8fca-030521f6df98",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "wither"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R/W}",
+          "power": 1,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Wither\n{R/W}: This creature gets +1/+0 until end of turn.",
+      "raw": {
+        "name": "Duergar Cave-Guard",
+        "cost": "{3}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dwarf",
+          "Warrior"
+        ],
+        "oracle": "Wither (This deals damage to creatures in the form of -1/-1 counters.)\n{R/W}: This creature gets +1/+0 until end of turn.",
+        "_ci": [
+          "R",
+          "W"
+        ],
+        "_oracleId": "79d7950b-92c1-4431-a69e-26544eb0c7f0",
+        "_scryfallId": "f48fda3d-5e6f-4f32-8fca-030521f6df98",
+        "_layout": "normal",
+        "_set": "eve",
+        "_collectorNumber": "51",
+        "_rarity": "uncommon",
+        "power": "1",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Creature — Dwarf Warrior",
+        "colorIdentity": [
+          "R",
+          "W"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Wither"
+        ],
+        "commanderLegality": "legal",
+        "set": "eve",
+        "setName": "Eventide",
+        "collectorNumber": "51",
+        "rarity": "uncommon",
+        "releasedAt": "2008-07-25",
+        "scryfallUri": "https://scryfall.com/card/eve/51/duergar-cave-guard?utm_source=api"
+      }
+    },
+    {
+      "position": 97,
+      "oracleId": "abc5ac3e-f196-49df-8a9d-16df3114ffad",
+      "scryfallId": "e5c54795-d555-4972-b72d-b2d2374bed9b",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-keyword-ability",
+          "cost": "{U}",
+          "keyword": "flying",
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{U}: This creature gains flying until end of turn.",
+      "raw": {
+        "name": "Dukhara Peafowl",
+        "cost": "{4}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Bird"
+        ],
+        "oracle": "{U}: This creature gains flying until end of turn.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "abc5ac3e-f196-49df-8a9d-16df3114ffad",
+        "_scryfallId": "e5c54795-d555-4972-b72d-b2d2374bed9b",
+        "_layout": "normal",
+        "_set": "kld",
+        "_collectorNumber": "207",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "4"
+      },
+      "catalog": {
+        "typeLine": "Artifact Creature — Bird",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "kld",
+        "setName": "Kaladesh",
+        "collectorNumber": "207",
+        "rarity": "common",
+        "releasedAt": "2016-09-30",
+        "scryfallUri": "https://scryfall.com/card/kld/207/dukhara-peafowl?utm_source=api"
+      }
+    },
+    {
+      "position": 98,
+      "oracleId": "7278f382-8249-4981-9d87-47cef7dc13dd",
+      "scryfallId": "aec26144-9acf-43b7-8614-1a2952df613d",
+      "semanticClass": "vehicle-template",
+      "implementedKeywords": [
+        "vigilance"
+      ],
+      "implementation": [
+        {
+          "kind": "crew",
+          "n": 2,
+          "contract": "crew-ability"
+        }
+      ],
+      "oracleContracts": [
+        "crew-ability"
+      ],
+      "rulesCore": "Vigilance\nCrew 2",
+      "raw": {
+        "name": "Dusk Legion Dreadnought",
+        "cost": "{5}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Vehicle"
+        ],
+        "oracle": "Vigilance\nCrew 2 (Tap any number of creatures you control with total power 2 or more: This Vehicle becomes an artifact creature until end of turn.)",
+        "_ci": [],
+        "_oracleId": "7278f382-8249-4981-9d87-47cef7dc13dd",
+        "_scryfallId": "aec26144-9acf-43b7-8614-1a2952df613d",
+        "_layout": "normal",
+        "_set": "xln",
+        "_collectorNumber": "236",
+        "_rarity": "uncommon",
+        "power": "4",
+        "toughness": "6"
+      },
+      "catalog": {
+        "typeLine": "Artifact — Vehicle",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Vigilance",
+          "Crew"
+        ],
+        "commanderLegality": "legal",
+        "set": "xln",
+        "setName": "Ixalan",
+        "collectorNumber": "236",
+        "rarity": "uncommon",
+        "releasedAt": "2017-09-29",
+        "scryfallUri": "https://scryfall.com/card/xln/236/dusk-legion-dreadnought?utm_source=api"
+      }
+    },
+    {
+      "position": 99,
+      "oracleId": "d87ab916-5d49-4840-8d5b-805af800a83c",
+      "scryfallId": "bee3a23a-6ecf-439c-8637-e096fa8c1a80",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "protection-from",
+          "from": "black",
+          "contract": "protection-static"
+        }
+      ],
+      "oracleContracts": [
+        "protection-static"
+      ],
+      "rulesCore": "Flying, protection from black",
+      "raw": {
+        "name": "Duskrider Falcon",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bird"
+        ],
+        "oracle": "Flying, protection from black",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "d87ab916-5d49-4840-8d5b-805af800a83c",
+        "_scryfallId": "bee3a23a-6ecf-439c-8637-e096fa8c1a80",
+        "_layout": "normal",
+        "_set": "wth",
+        "_collectorNumber": "12",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Bird",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flying",
+          "Protection"
+        ],
+        "commanderLegality": "legal",
+        "set": "wth",
+        "setName": "Weatherlight",
+        "collectorNumber": "12",
+        "rarity": "common",
+        "releasedAt": "1997-06-09",
+        "scryfallUri": "https://scryfall.com/card/wth/12/duskrider-falcon?utm_source=api"
+      }
+    },
+    {
+      "position": 100,
+      "oracleId": "744fcf77-b597-48a0-92ec-f3a617c03df1",
+      "scryfallId": "8d586143-fac0-463f-96ec-c6b9fd582194",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-regenerate-ability",
+          "cost": "{B}",
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{B}: Regenerate this creature.",
+      "raw": {
+        "name": "Dutiful Thrull",
+        "cost": "{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Thrull"
+        ],
+        "oracle": "{B}: Regenerate this creature.",
+        "_ci": [
+          "B",
+          "W"
+        ],
+        "_oracleId": "744fcf77-b597-48a0-92ec-f3a617c03df1",
+        "_scryfallId": "8d586143-fac0-463f-96ec-c6b9fd582194",
+        "_layout": "normal",
+        "_set": "gtc",
+        "_collectorNumber": "11",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Thrull",
+        "colorIdentity": [
+          "B",
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Regenerate"
+        ],
+        "commanderLegality": "legal",
+        "set": "gtc",
+        "setName": "Gatecrash",
+        "collectorNumber": "11",
+        "rarity": "common",
+        "releasedAt": "2013-02-01",
+        "scryfallUri": "https://scryfall.com/card/gtc/11/dutiful-thrull?utm_source=api"
+      }
+    }
+  ]
+}

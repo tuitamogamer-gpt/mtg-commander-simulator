@@ -34,11 +34,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Archfiend of Ifnir'] = {
     cycling: { cost: '{2}' },
     triggers: [{
-      on: 'cycled', desc: '-1/-1 svima protivnika', filter: (g, self, d) => d.player === self.ctrl,
-      run: async ctx => {
-        await E7.addM1Batch(ctx.g, ctx.g.bf().filter(c => c.is('Creature') && c.ctrl !== ctx.you), 1, ctx.you);
-      },
-    }, {
+      // Cycling always discards the cycled card as part of its activation
+      // cost. Listening to both `cycled` and `discarded` made the single
+      // "cycle or discard" event trigger twice for one card.
       on: 'discarded', desc: '-1/-1 svima protivnika', filter: (g, self, d) => d.player === self.ctrl,
       run: async ctx => {
         await E7.addM1Batch(ctx.g, ctx.g.bf().filter(c => c.is('Creature') && c.ctrl !== ctx.you), 1, ctx.you);

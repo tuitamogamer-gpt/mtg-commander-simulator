@@ -15,7 +15,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Simulirani snapshot koristi negativne lokalne ID-jeve za novonastale
       // tokene/kopije. Tako AI analiza ne pomjera live IID allocator.
       this.iid = owner && owner.game && owner.game._simulation
-        ? owner.game._nextSimulationIid-- : IID++;
+        ? owner.game._nextSimulationIid--
+        : owner && owner.game
+          ? owner.game._nextCardIid++
+          : IID++;
       this.def = def;               // merged def+script (immutable)
       this.owner = owner;           // player
       this.ctrl = owner;            // controller
@@ -46,18 +49,43 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.castMeta = null;         // how it was cast (for blitz etc.)
       this.phasedOut = false;       // ostaje fizički na battlefieldu, ali ne postoji u igri
     }
-    is(type) { return this.cur ? this.cur.types.includes(type) : this.def.types.includes(type); }
+    is(type) {
+      // `cur` describes only the current battlefield object. Reusing it after
+      // a zone change leaks temporary type changes (Crew, animation, copy,
+      // Lignify) into the graveyard, hand, exile, and normal spell faces.
+      return this.zone === 'battlefield' && this.cur
+        ? this.cur.types.includes(type)
+        : this.def.types.includes(type);
+    }
     hasSub(s) {
-      const subs = this.cur ? this.cur.subtypes : this.def.subtypes;
+      // Derived characteristics belong to the battlefield object. Once the
+      // card changes zones, printed characteristics (including characteristic-
+      // defining abilities such as Changeling) apply again even if `cur` still
+      // contains last-known battlefield information until the next recalc.
+      const battlefieldDerived = this.zone === 'battlefield' && this.cur;
+      const subs = battlefieldDerived ? this.cur.subtypes : this.def.subtypes;
       if (subs.includes(s)) return true;
       // changeling / Maskwood Nexus: "svaki tip stvorenja" vrijedi SAMO za prave
       // tipove stvorenja. Ranije je vraćalo true i za 'Aura'/'Equipment', pa je
       // SBA slao cijelu tvoju tablu u groblje čim Maskwood Nexus uđe.
-      if (this.cur && this.cur.allCreatureTypes && this.is('Creature') &&
+      // Printed Changeling is a CDA and applies in every zone. Battlefield-only
+      // grants (Maskwood Nexus and similar effects) still require a creature.
+      const allCreatureTypes = battlefieldDerived
+        ? this.cur.types.includes('Creature') && (
+          (this.def.changeling && !this.cur.abilitiesDisabled && !this.cur.suppressPrintedChangeling) ||
+          this.cur.allCreatureTypesFromOtherEffects ||
+          (!this.def.changeling && this.cur.allCreatureTypes)
+        )
+        : !!this.def.changeling;
+      if (allCreatureTypes &&
         MTG.CREATURE_SUBTYPES && MTG.CREATURE_SUBTYPES.has(s)) return true;
       return false;
     }
-    kw(k) { return this.cur && this.cur.kw.has(k); }
+    kw(k) {
+      return this.zone === 'battlefield' && this.cur
+        ? this.cur.kw.has(k)
+        : (this.def.kws || []).includes(k);
+    }
     get name() { return this.def.name; }
     get power() { return this.cur ? this.cur.power : 0; }
     get toughness() { return this.cur ? this.cur.toughness : 0; }
@@ -72,7 +100,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return U.mv(this.def.cost || '', x);
     }
     get colors() {
-      if (this.cur && this.cur.colors) return this.cur.colors;
+      if (this.zone === 'battlefield' && this.cur && this.cur.colors) return this.cur.colors;
+      if (this.zone === 'stack' && this.castMeta && Array.isArray(this.castMeta.spellColors)) {
+        return this.castMeta.spellColors;
+      }
       if (this.def.colorsOverride) return this.def.colorsOverride;
       return U.colorsOfCost(this.def.cost || '');
     }
@@ -142,6 +173,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   class Game {
     constructor(opts) {
       this.opts = opts;
+      // Card IDs identify objects only inside one game. A process-global
+      // allocator made otherwise identical seeded games depend on every game
+      // that happened to run before them, because deterministic AI tie-breaks
+      // include iid. Keep the fallback global allocator only for ownerless
+      // standalone test/card instances.
+      this._nextCardIid = 1;
       this.rnd = U.mulberry32(opts.seed ?? 42);
       this.players = [];
       this.battlefield = [];
@@ -434,7 +471,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const hu = this.human();
       if (!this.paced || !hu || !hu.controller || this.gameOver) return null;
       if (payload.ctrl === hu) return null;          // vlastite poteze ne prekidamo
-      const cards = (payload.cards || []).filter(c => c && !c.is('Land'));
+      const cards = (payload.cards || []).filter(c => c && (payload.includeLands || !c.is('Land')));
       if (!cards.length) return null;
       return hu.controller.decide(this, Object.assign({}, payload, { type: 'cardReveal', player: hu, cards }));
     }
@@ -658,6 +695,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // letenjem → beskonačna petlja sa Selfless Spiritom.
         kw: card.cur ? [...card.cur.kw] : [],
         flying: !!(card.cur && card.cur.kw.has('flying')),
+        abilitiesDisabled: !!(card.cur && card.cur.abilitiesDisabled),
       };
     }
 
@@ -728,6 +766,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (keep === 'cz') toZone = 'command';
       }
 
+      // Suspend is status of the particular card object in exile, not a
+      // perpetual property of the physical CardInst. Once that object leaves
+      // exile, a later return is a new object and is no longer suspended.
+      if (fromZone === 'exile' && toZone !== 'exile' && card.meta &&
+          Object.prototype.hasOwnProperty.call(card.meta, 'suspended')) {
+        delete card.meta.suspended;
+      }
+
       if (fromZone !== toZone) card.zoneVersion = (card.zoneVersion || 0) + 1;
 
       // persist / undying (death replacements to return later — handled post-dies for simplicity)
@@ -783,7 +829,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.damage = 0; card.deathtouched = false; card.regenShield = 0;
       card.attacking = null; card.blocking = null; card.blockedBy = [];
       card.faceDown = false;
-      if (wasBattlefield && card.meta.faceDownDef) {
+      if (toZone !== 'battlefield' && card.meta.faceDownDef) {
         card.def = card.meta.faceDownDef;
         delete card.meta.faceDownDef;
         delete card.meta.faceDownKind;
@@ -1032,26 +1078,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // groblju dok protivnici dobiju priority; vraća se tek na rezoluciji.
         const d = card.def;
         if (snap.types.includes('Creature') && card.zone === 'graveyard') {
-          if (d.undying && !snap.plus1) {
+          // CardInst se namjerno ponovo koristi kroz zone, ali svaka promjena
+          // zone predstavlja novi Magic objekat. Persist/Undying smiju vratiti
+          // samo objekat koji je ovim dies događajem stigao u groblje, ne istu
+          // fizičku kartu nakon graveyard -> druga zona -> graveyard putanje.
+          const graveyardZoneVersion = card.zoneVersion;
+          const deathData = { card, snap, graveyardZoneVersion };
+          const isOriginalGraveyardObject = (source, data) => source === data.card &&
+            source.zone === 'graveyard' && source.zoneVersion === data.graveyardZoneVersion;
+          if (d.undying && !snap.abilitiesDisabled && !snap.plus1) {
             this.queueTrigger({
-              src: card, ctrl: snap.ctrl, name: 'Undying', data: { card, snap },
-              onlyIf: () => card.zone === 'graveyard',
+              src: card, ctrl: snap.ctrl, name: 'Undying', data: deathData,
+              onlyIf: (g, source, data) => isOriginalGraveyardObject(source, data),
               run: async ctx => {
-                if (card.zone !== 'graveyard') return;
-                ctx.g.lg(`${card.name} se vraća (undying).`);
-                await ctx.g.move(card, 'battlefield', {
+                if (!isOriginalGraveyardObject(ctx.src, ctx.data)) return;
+                ctx.g.lg(`${ctx.src.name} se vraća (undying).`);
+                await ctx.g.move(ctx.src, 'battlefield', {
                   ctrl: snap.owner, additionalCounters: { '+1/+1': 1 }, additionalCounterBy: snap.owner,
                 });
               },
             });
-          } else if (d.persist && !(snap.minus1 > 0)) {
+          } else if (d.persist && !snap.abilitiesDisabled && !(snap.minus1 > 0)) {
             this.queueTrigger({
-              src: card, ctrl: snap.ctrl, name: 'Persist', data: { card, snap },
-              onlyIf: () => card.zone === 'graveyard',
+              src: card, ctrl: snap.ctrl, name: 'Persist', data: deathData,
+              onlyIf: (g, source, data) => isOriginalGraveyardObject(source, data),
               run: async ctx => {
-                if (card.zone !== 'graveyard') return;
-                ctx.g.lg(`${card.name} se vraća (persist).`);
-                await ctx.g.move(card, 'battlefield', {
+                if (!isOriginalGraveyardObject(ctx.src, ctx.data)) return;
+                ctx.g.lg(`${ctx.src.name} se vraća (persist).`);
+                await ctx.g.move(ctx.src, 'battlefield', {
                   ctrl: snap.owner,
                   additionalCounters: { '-1/-1': 1 },
                   additionalCounterBy: snap.owner,
@@ -1297,7 +1351,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     faceDownCreatureDef(kind) {
-      const cloaked = kind === 'cloak';
+      const cloaked = kind === 'cloak' || kind === 'disguise';
       return {
         name: 'Face-down creature', cost: null, super: [], types: ['Creature'], subtypes: [],
         power: '2', toughness: '2', colorsOverride: [], kws: [],
@@ -1357,9 +1411,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     faceUpCosts(card) {
       const original = card && card.meta && card.meta.faceDownDef;
       if (!original || !(original.types || []).includes('Creature')) return [];
-      const costs = [{ kind: 'mana cost', cost: original.cost || '{0}' }];
-      if (original.morph) costs.push({ kind: 'morph', cost: original.morph });
-      if (original.disguise) costs.push({ kind: 'disguise', cost: original.disguise });
+      const faceDownKind = card.meta.faceDownKind || 'manifest';
+      const intrinsicAbilitiesAvailable = !(card.cur && card.cur.abilitiesDisabled);
+      const costs = [];
+      // A spell cast face down with Morph or Disguise may be turned face up
+      // only through the special action supplied by the method used to cast it.
+      // Manifest and cloak instead grant the printed-mana-cost action while
+      // still leaving any intrinsic Morph/Disguise special action available.
+      if (faceDownKind === 'morph') {
+        if (intrinsicAbilitiesAvailable && original.morph) costs.push({ kind: 'morph', cost: original.morph });
+      } else if (faceDownKind === 'disguise') {
+        if (intrinsicAbilitiesAvailable && original.disguise) costs.push({ kind: 'disguise', cost: original.disguise });
+      } else {
+        // A missing mana cost is unpayable, not an implicit {0} cost.
+        if (original.cost) costs.push({ kind: 'mana cost', cost: original.cost });
+        if (intrinsicAbilitiesAvailable && original.morph) costs.push({ kind: 'morph', cost: original.morph });
+        if (intrinsicAbilitiesAvailable && original.disguise) costs.push({ kind: 'disguise', cost: original.disguise });
+      }
       return costs.filter((entry, index, all) => all.findIndex(other => other.cost === entry.cost) === index);
     }
 
@@ -1370,9 +1438,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async turnFaceUp(player, card, chosenCost) {
       if (!card || card.zone !== 'battlefield' || card.ctrl !== player || !card.faceDown) return false;
-      const original = card.meta.faceDownDef;
+      const original = card.meta && card.meta.faceDownDef;
       const legalCosts = this.faceUpCosts(card);
-      const selected = legalCosts.find(entry => entry.cost === chosenCost) || legalCosts[0];
+      const selected = chosenCost === undefined || chosenCost === null
+        ? legalCosts[0]
+        : legalCosts.find(entry => entry.cost === chosenCost);
       if (!original || !selected) return false;
       const costStr = selected.cost;
       if (!await this.payMana(player, U.parseCost(costStr), { card, isAbility: true })) return false;
@@ -1555,6 +1625,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await this.emit('damagePrevented', { src, target: p, player: p, n, combat: true });
         return 0;
       }
+      if (preventionAllowed && opts.combat && this.untilEffects.some(e => e.kind === 'preventAllCombat')) {
+        this.lg(`Combat damage to ${p.name} was prevented.`);
+        await this.emit('damagePrevented', { src, target: p, player: p, n, combat: true });
+        return 0;
+      }
       // prevencije i preusmjerenja (Selfless Squire, Comeuppance, Deflecting Palm, Gideon's Sacrifice, Take the Bait)
       for (const e of this.untilEffects.slice()) {
         if (e.who !== p) continue;
@@ -1634,6 +1709,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (preventionAllowed && opts.combat && src && src.is && src.is('Creature') && !src.hasSub('Elf') &&
         this.untilEffects.some(e => e.kind === 'preventNonElfCombat')) {
         this.lg(`Galadhrim Ambush prevents combat damage from ${src.name}.`);
+        await this.emit('damagePrevented', { src, target, n, combat: true });
+        return 0;
+      }
+      if (preventionAllowed && opts.combat && this.untilEffects.some(e => e.kind === 'preventAllCombat')) {
+        this.lg(`Combat damage to ${target.name} was prevented.`);
         await this.emit('damagePrevented', { src, target, n, combat: true });
         return 0;
       }
@@ -2074,6 +2154,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
 
+    untap(card) {
+      if (!card || card.zone !== 'battlefield' || !card.tapped) return false;
+      card.tapped = false;
+      void this.emit('becameUntapped', { card, player: card.ctrl });
+      return true;
+    }
+
     phaseOut(card, phaseInFor) {
       if (!card || card.zone !== 'battlefield' || card.phasedOut) return false;
       const all = [card];
@@ -2135,8 +2222,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           colors: d.colorsOverride ? d.colorsOverride.slice() : U.colorsOfCost(d.cost || ''),
           kw: new Set(d.kws || []),
           power: 0, toughness: 0, basePower: 0, baseToughness: 0,
-          cantAttack: false, cantBlock: false, cantSacrifice: false, mustAttack: false,
+          cantAttack: false, cantBlock: false, cantUntap: false, blockOnlyFlying: false,
+          cantSacrifice: false, mustAttack: false,
           assignByToughness: false, allCreatureTypes: !!d.changeling,
+          allCreatureTypesFromOtherEffects: false, suppressPrintedChangeling: false,
           extraAbilities: [], wardCost: d.ward || null, extraMana: [],
           hexproof: false, shroud: false, cantBeBlockedBy: null, unblockable: false,
           protectionFrom: [],
@@ -2441,6 +2530,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // to re-check an intervening-if condition at resolution must also be
         // able to distinguish a permanent that left and later returned.
         sourceZoneVersion: tr.src instanceof CardInst ? tr.src.zoneVersion : null,
+        // Attachment-triggered abilities may need last known information if
+        // their Aura is removed in response. Snapshot the exact enchanted
+        // battlefield object while the trigger is put on the Stack; reading
+        // `src.attachedTo` later could instead observe a new object after a
+        // leave-and-return sequence.
+        sourceAttachedTo: tr.src instanceof CardInst ? tr.src.attachedTo : null,
+        sourceAttachedToZoneVersion: tr.src instanceof CardInst && tr.src.attachedTo
+          ? this.byIid(tr.src.attachedTo)?.zoneVersion ?? null
+          : null,
         // Obavezni trigger ne smije izgubiti Magic metu zbog društvenog
         // ugovora. Ako je jedina moguća meta zaštićena dogovorom, Magic pravilo
         // pobjeđuje, a diplomatija bilježi izuzetak bez krivice.
@@ -2504,6 +2602,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const prepared = await prepareTargets(ctx);
         if (prepared === false) return;
       }
+      ctx.targetIdentities = this.captureTargetIdentities(ctx.targets);
       // Crime se počini čim trigger cilja protivnika, njegov permanent, spell
       // ili kartu u njegovom groblju — ne tek na rezoluciji. Spellovi i
       // aktivirane sposobnosti imaju isti obračun u svojim cast/activate
@@ -2526,6 +2625,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const so = {
         kind: 'trigger', name: (tr.src ? tr.src.name + ': ' : '') + (tr.name || 'trigger'),
         ctrl, ctx, run: tr.run, targets: ctx.targets, srcCard: tr.src, targetSpecs: targetSpecs || null, mode,
+        targetIdentities: ctx.targetIdentities,
         damageDivision: ctx.damageDivision
           ? ctx.damageDivision.map(entry => Object.assign({}, entry)) : null,
       };
@@ -2607,6 +2707,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       return finish();
+    }
+
+    captureTargetIdentity(target) {
+      if (Array.isArray(target)) return target.map(item => this.captureTargetIdentity(item));
+      if (target instanceof CardInst) {
+        return { kind: 'card', iid: target.iid, zoneVersion: target.zoneVersion };
+      }
+      // Players retain identity for the game, while stack objects are already
+      // validated by membership in `game.stack`; neither needs a zone stamp.
+      return null;
+    }
+
+    captureTargetIdentities(targets) {
+      return (targets || []).map(target => this.captureTargetIdentity(target));
+    }
+
+    cloneTargetIdentities(identities) {
+      return (identities || []).map(identity => Array.isArray(identity)
+        ? this.cloneTargetIdentities(identity)
+        : identity ? Object.assign({}, identity) : null);
     }
 
     async pickTargets(ctx, specs, src, ctrl) {
@@ -2886,12 +3006,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 if (vic.lost) { await this.move(c, 'graveyard'); any = true; continue; }
               } else {
                 const host = c.attachedTo ? this.byIid(c.attachedTo) : null;
-                if (!host || host.zone !== 'battlefield') { await this.move(c, 'graveyard'); any = true; continue; }
+                const auraSpec = c.def.auraTarget && c.def.auraTarget[0];
+                const enchantLegal = host && host.zone === 'battlefield' &&
+                  (!auraSpec || !auraSpec.filter || auraSpec.filter(this, host, c.ctrl, c)) &&
+                  !this.isProtectedFrom(host, c);
+                if (!enchantLegal) { await this.move(c, 'graveyard'); any = true; continue; }
               }
             }
             if (subs.includes('Equipment') && c.attachedTo) {
               const host = this.byIid(c.attachedTo);
-              if (c.is('Creature') || !host || host.zone !== 'battlefield' || !host.is('Creature')) {
+              if (c.is('Creature') || !host || host.zone !== 'battlefield' || !host.is('Creature') ||
+                this.isProtectedFrom(host, c)) {
                 const h2 = host;
                 if (h2) h2.attachments = h2.attachments.filter(i => i !== c.iid);
                 c.attachedTo = null;

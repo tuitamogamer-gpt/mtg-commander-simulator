@@ -86,6 +86,10 @@ function humanCastController(card, state) {
   return {
     decide: async (game, query) => {
       state.trace.push(query.type);
+      if (query.type === 'chooseTargets' && state.preferredTargets?.length) {
+        const legal = state.preferredTargets.filter(target => query.candidates.includes(target));
+        if (legal.length >= (query.min || 0)) return legal.slice(0, query.max || legal.length);
+      }
       if (query.type === 'main' && !state.submitted) {
         const cast = query.casts.find(candidate => candidate.card === card);
         if (cast) {
@@ -106,7 +110,7 @@ function humanCastController(card, state) {
 }
 
 async function castThroughController(entry, role) {
-  const state = { submitted: false, trace: [] };
+  const state = { submitted: false, trace: [], preferredTargets: [] };
   const game = new MTG.Game({
     seed: seedFor(entry.raw.name, role), paced: false, maxTurns: 4, difficulty: 'hard',
   });
@@ -128,6 +132,25 @@ async function castThroughController(entry, role) {
   fillLibrary(opponent);
   for (const color of COLORS) player.pool[color] = 20;
   const card = zoneCard(player, entry.raw.name, 'hand');
+  if (entry.raw.subtypes.includes('Aura')) {
+    // Flash Auras need an actual legal host before priority can expose them.
+    // Keep both attachment directions available so the real AI can choose the
+    // beneficial own or harmful opposing target from the card semantics.
+    const friendlyAuraHost = permanent(game, player, fixtureDefinition(`${entry.raw.name} friendly Aura host`));
+    const hostileAuraHost = permanent(game, opponent, fixtureDefinition(`${entry.raw.name} hostile Aura host`, ['Creature'], {
+      power: '6', toughness: '100',
+    }));
+    hostileAuraHost.tapped = true;
+    const grants = (entry.implementation || []).filter(operation => operation.kind === 'attachment-grant');
+    const harmful = grants.some(grant => grant.skipUntap || grant.cantAttack || grant.cantBlock ||
+      Number(grant.power || 0) < 0 || Number(grant.toughness || 0) < 0);
+    state.preferredTargets = [harmful ? hostileAuraHost : friendlyAuraHost];
+  }
+  if ((entry.implementation || []).some(operation => operation.kind === 'controlled-creature-pump-static')) {
+    permanent(game, player, fixtureDefinition(`${entry.raw.name} robust anthem beneficiary`, ['Creature'], {
+      cost: '{6}', power: '6', toughness: '100', oracle: '',
+    }));
+  }
   player.controller = role === 'ai'
     ? new MTG.AIController(player, { difficulty: 'hard', style: 'balanced' })
     : humanCastController(card, state);
@@ -256,9 +279,12 @@ function compatibleBlocker(context, label, opts = {}) {
   if (source.kw('shadow') && !opts.omitShadowAnswer) keywords.push('shadow');
   if (source.kw('horsemanship') && !opts.omitHorsemanshipAnswer) keywords.push('horsemanship');
   for (const keyword of opts.keywords || []) if (!keywords.includes(keyword)) keywords.push(keyword);
-  const shared = source.colors.length ? source.colors[0] : 'B';
-  const colorsOverride = opts.colorsOverride || [shared, 'B'];
-  const types = opts.artifact === false ? ['Creature'] : ['Artifact', 'Creature'];
+  // Default to a colorless, nonartifact creature so a probe for Flying,
+  // Menace, Skulk, etc. is not accidentally answered by the source card's
+  // independent protection ability. Fear/Intimidate request the relevant
+  // colors and artifact type explicitly below.
+  const colorsOverride = opts.colorsOverride || [];
+  const types = opts.artifact === true ? ['Artifact', 'Creature'] : ['Creature'];
   return permanent(game, opponent, fixtureDefinition(label, types, {
     colorsOverride,
     kws: keywords,
@@ -310,13 +336,31 @@ async function proveKeywordBehavior(entry, declared, role, runtimeOccurrences) {
   const keyword = mechanic(declared);
   const context = behaviorGame(entry, role);
   const { game, player, opponent, source } = context;
+
+  // Printed combat keywords on Vehicles are only operational after the
+  // Vehicle becomes a creature. Exercise the actual Crew activated ability
+  // (including its cost and Stack resolution) before probing those keywords.
+  if (source.hasSub('Vehicle')) {
+    const crewPower = Math.max(1, Number(source.def.crew) || 1);
+    const crewMember = permanent(game, player, fixtureDefinition(`${source.name} keyword crew`, ['Creature'], {
+      power: String(crewPower), toughness: String(crewPower),
+    }));
+    const crewAction = game.activatableList(player).find(action => action.card === source && action.crew);
+    assert.ok(crewAction, `${source.name}/${role}: printed Crew action is available for keyword proof`);
+    assert.equal(await game.activateAbility(player, crewAction), true,
+      `${source.name}/${role}: Crew cost is paid through the real activation path`);
+    await settle(game);
+    assert.equal(crewMember.tapped, true, `${source.name}/${role}: Crew taps the selected creature`);
+    assert.equal(source.is('Creature'), true, `${source.name}/${role}: Crew resolution animates the Vehicle`);
+  }
+
   if (keyword === 'ward') assert.ok(source.cur.wardCost, `${source.name}/${role}: active Ward cost`);
   else assert.equal(source.kw(keyword), true, `${source.name}/${role}: active ${declared}`);
 
   switch (keyword) {
     case 'flying': {
       const ground = compatibleBlocker(context, `${source.name} ground blocker`, {
-        artifact: true, omitFlyingAnswer: true,
+        omitFlyingAnswer: true,
       });
       const reach = compatibleBlocker(context, `${source.name} reach blocker`, { keywords: ['reach'] });
       assert.equal(game.canBlock(ground, source), false, `${source.name}/${role}: Flying evades a ground blocker`);
@@ -355,7 +399,7 @@ async function proveKeywordBehavior(entry, declared, role, runtimeOccurrences) {
       const black = compatibleBlocker(context, `${source.name} black blocker`, {
         artifact: false, colorsOverride: ['B'],
       });
-      const artifact = compatibleBlocker(context, `${source.name} artifact blocker`);
+      const artifact = compatibleBlocker(context, `${source.name} artifact blocker`, { artifact: true });
       assert.equal(game.canBlock(nonblack, source), false, `${source.name}/${role}: Fear excludes nonblack nonartifact`);
       assert.equal(game.canBlock(black, source), true, `${source.name}/${role}: black creature blocks Fear`);
       assert.equal(game.canBlock(artifact, source), true, `${source.name}/${role}: artifact creature blocks Fear`);
@@ -366,7 +410,7 @@ async function proveKeywordBehavior(entry, declared, role, runtimeOccurrences) {
       const nonshared = compatibleBlocker(context, `${source.name} nonshared-color blocker`, {
         artifact: false, colorsOverride: [otherColor],
       });
-      const artifact = compatibleBlocker(context, `${source.name} artifact blocker`);
+      const artifact = compatibleBlocker(context, `${source.name} artifact blocker`, { artifact: true });
       assert.equal(game.canBlock(nonshared, source), false,
         `${source.name}/${role}: Intimidate excludes a nonartifact without a shared color`);
       assert.equal(game.canBlock(artifact, source), true, `${source.name}/${role}: artifact blocks Intimidate`);
@@ -407,6 +451,7 @@ async function proveKeywordBehavior(entry, declared, role, runtimeOccurrences) {
       await proveAttackKeyword(context, keyword, role);
       break;
     case 'first strike': {
+      if (source.power < 1) game.addCounters(source, '+1/+1', 1 - source.power, false, player);
       assert.ok(game.dmgAmount(source, 'first') > 0, `${source.name}/${role}: First strike deals in the first step`);
       source.meta._dealtFirstStrike = true;
       if (!source.kw('double strike')) {
@@ -416,6 +461,7 @@ async function proveKeywordBehavior(entry, declared, role, runtimeOccurrences) {
       break;
     }
     case 'double strike': {
+      if (source.power < 1) game.addCounters(source, '+1/+1', 1 - source.power, false, player);
       assert.ok(game.dmgAmount(source, 'first') > 0, `${source.name}/${role}: Double strike deals in first step`);
       source.meta._dealtFirstStrike = true;
       assert.ok(game.dmgAmount(source, 'normal') > 0, `${source.name}/${role}: Double strike also deals in normal step`);
@@ -512,6 +558,10 @@ async function proveKeywordBehavior(entry, declared, role, runtimeOccurrences) {
     }
     case 'flash': {
       const card = zoneCard(player, entry.raw.name, 'hand');
+      if (entry.raw.subtypes.includes('Aura')) {
+        permanent(game, player, fixtureDefinition(`${source.name} Flash timing host`));
+        permanent(game, opponent, fixtureDefinition(`${source.name} hostile Flash timing host`));
+      }
       game.turnPlayer = opponent;
       game.phase = 'end';
       game.step = 'end';
@@ -540,7 +590,7 @@ async function proveKeywordBehavior(entry, declared, role, runtimeOccurrences) {
   return runtimeOccurrences;
 }
 
-test('svih 653 keyword karata prolazi human/AI cast, a svaka sposobnost rules probe u oba konteksta', async t => {
+test('svih 1.008 keyword karata prolazi human/AI cast, a svaka sposobnost rules probe u oba konteksta', async t => {
   const rows = keywordRows();
   const singleKeywordRows = rows.filter(({ entry }) => entry.implementedKeywords.length === 1);
   const multiKeywordRows = rows.filter(({ entry }) => entry.implementedKeywords.length > 1);
@@ -553,8 +603,8 @@ test('svih 653 keyword karata prolazi human/AI cast, a svaka sposobnost rules pr
 
   assert.deepEqual(
     { cards: rows.length, single: singleKeywordRows.length, multi: multiKeywordRows.length, declarations, runtimeInstances },
-    { cards: 653, single: 470, multi: 183, declarations: 866, runtimeInstances: 867 },
-    'frozen 1,300-card keyword cohort',
+    { cards: 1008, single: 789, multi: 219, declarations: 1261, runtimeInstances: 1262 },
+    'frozen 2,600-card keyword cohort',
   );
 
   let controllerCasts = 0;

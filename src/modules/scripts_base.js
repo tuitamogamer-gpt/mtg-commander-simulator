@@ -282,14 +282,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await g.emit('scry', { player: p, n: top.length, cards: top.slice() });
   };
 
-  E.surveil = async function (g, p, n) {
+  E.surveil = async function (g, p, n, opts = {}) {
     if (!p.library.length || n <= 0) return;
     const top = p.library.slice(-n).reverse();
     const keep = await p.controller.decide(g, {
       type: 'scry', cards: top, prompt: `Surveil ${n}`, player: p, surveil: true,
+      drawReserve: Math.max(0, Number(opts.drawReserve) || 0),
     });
     for (const c of top) p.library.splice(p.library.indexOf(c), 1);
-    for (const c of keep.bottom) { await g.move(c, 'graveyard'); }
+    // Surveil moves every selected card as one instruction. Keep the
+    // per-card movement events, but emit a single cardsToGraveyard batch so
+    // "one or more" triggers fire once for the whole surveil action.
+    await g.withGraveyardEntryBatch(async () => {
+      for (const c of keep.bottom) await g.move(c, 'graveyard');
+    });
     for (const c of keep.top.slice().reverse()) { c.zone = 'library'; p.library.push(c); }
   };
 
@@ -464,6 +470,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'forestwalk', 'plainswalk', 'islandwalk', 'swampwalk', 'mountainwalk', 'wither', 'fear', 'intimidate', 'skulk',
     'shadow', 'horsemanship'];
 
+  async function resolveProwess(ctx) {
+    // Prowess belongs to the exact battlefield object that triggered. A
+    // blinked/reanimated CardInst is reused by the engine but is a new object
+    // under the rules, so the old trigger must not pump it.
+    if (ctx.src.zone !== 'battlefield' ||
+        ctx.src.zoneVersion !== ctx.sourceZoneVersion ||
+        !ctx.g.bf().includes(ctx.src)) return;
+    E.pumpUntilEOT(ctx.g, ctx.src, 1, 1);
+  }
+
   MTG.buildDefs = function (rawCards, scripts) {
     // Skup stvarnih tipova stvorenja iz baze — koristi ga CardInst.hasSub da
     // "svaki tip stvorenja" (changeling, Maskwood Nexus) ne obuhvati i
@@ -488,7 +504,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let oracleProwessInstances = 0;
       // keyword lines: check first 2 lines for comma-separated keywords
       const lines = oracle.split('\n');
-      for (const line of lines.slice(0, 3)) {
+      for (const line of lines) {
         const clean = line.replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
         if (!clean) continue;
         // Oracle keyword linije koriste i zarez i tačka-zarez (npr.
@@ -534,7 +550,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const prowessTriggers = Array.from({ length: Math.max(1, oracleProwessInstances) }, () => ({
           on: 'castNonCreature', desc: 'Prowess',
           filter: (g, self, data) => data.player === self.ctrl,
-          run: async ctx => { E.pumpUntilEOT(ctx.g, ctx.src, 1, 1); },
+          run: resolveProwess,
         }));
         d.triggers = (d.triggers || []).concat(prowessTriggers);
       }
@@ -548,7 +564,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         t.triggers = (t.triggers || []).concat([{
           on: 'castNonCreature', desc: 'Prowess',
           filter: (g, self, data) => data.player === self.ctrl,
-          run: async ctx => { E.pumpUntilEOT(ctx.g, ctx.src, 1, 1); },
+          run: resolveProwess,
         }]);
       }
     }

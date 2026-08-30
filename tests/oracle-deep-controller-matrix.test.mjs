@@ -121,7 +121,7 @@ function humanController(card, state) {
 
 function targetDefinition(what) {
   if (what === 'land') return fixtureDefinition('Deep hostile land', ['Land', 'Creature']);
-  if (what === 'artifact' || what === 'artifact or enchantment') {
+  if (what === 'artifact' || what === 'artifact or enchantment' || what === 'artifact or creature') {
     return fixtureDefinition('Deep hostile artifact', ['Artifact', 'Creature']);
   }
   if (what === 'enchantment') return fixtureDefinition('Deep hostile enchantment', ['Enchantment', 'Creature']);
@@ -132,8 +132,27 @@ function spellOperation(entry) {
   return (entry.implementation || []).find(operation => operation.kind.startsWith('spell-')) || null;
 }
 
+function attachmentIntent(entry) {
+  const aura = (entry.implementation || []).find(operation => operation.kind === 'aura-target');
+  const grants = (entry.implementation || []).filter(operation => operation.kind === 'attachment-grant');
+  const restricts = grants.some(grant => grant.skipUntap || grant.cantAttack || grant.cantBlock);
+  const negative = grants.some(grant => Number(grant.power || 0) < 0 || Number(grant.toughness || 0) < 0);
+  const positive = grants.some(grant => Number(grant.power || 0) > 0 || Number(grant.toughness || 0) > 0 || (grant.keywords || []).length);
+  return { aura, grants, harmful: restricts || negative, mixed: !restricts && negative && positive };
+}
+
+function fundPrintedCost(game, player, card, xValue = 3) {
+  for (const color of COLORS) player.pool[color] = 0;
+  const cost = game.spellCost(player, card, { from: 'hand' });
+  player.pool.C = Number(cost.generic || 0) + (cost.x ? xValue : 0);
+  for (const pip of cost.pips || []) {
+    const color = pip.find(option => COLORS.includes(option));
+    if (color) player.pool[color] = (player.pool[color] || 0) + 1;
+  }
+}
+
 function stageScenario(entry, role) {
-  const humanState = { submitted: false, trace: [], preferredTargets: [], librarySelections: [] };
+  const humanState = { submitted: false, aiSubmitted: false, trace: [], preferredTargets: [], librarySelections: [] };
   const game = new MTG.Game({ seed: 830300 + entry.raw.name.length + (role === 'ai' ? 10000 : 0), paced: false, maxTurns: 4, difficulty: 'hard' });
   const player = game.addPlayer(
     role === 'ai' ? 'Deep Oracle bot' : 'Deep Oracle human',
@@ -163,16 +182,36 @@ function stageScenario(entry, role) {
       cost: '{12}', power: '0', toughness: '1', oracle: '',
     }), 'library');
   }
-  for (const color of COLORS) player.pool[color] = 20;
-
   const card = zoneCard(player, entry.raw.name, 'hand');
+  fundPrintedCost(game, player, card);
   const operation = spellOperation(entry);
-  const staged = { target: null, decoy: null, ownCreature: null, bait: null };
+  const attachment = attachmentIntent(entry);
+  const staged = { target: null, targets: [], decoy: null, ownCreature: null, bait: null };
+
+  if ((entry.implementation || []).some(candidate => candidate.kind === 'controlled-creature-pump-static')) {
+    staged.ownCreature = permanent(game, player, fixtureDefinition('Deep robust anthem beneficiary', ['Creature'], {
+      cost: '{6}', power: '6', toughness: '100', oracle: '',
+    }));
+  }
+
+  if (attachment.aura) {
+    const targetController = attachment.harmful ? opponent : player;
+    const targetDefinitionValue = targetDefinition(attachment.aura.what);
+    if (attachment.mixed) {
+      const toughnessPenalty = Math.abs(Math.min(0, ...attachment.grants.map(grant => Number(grant.toughness || 0))));
+      if (toughnessPenalty) targetDefinitionValue.toughness = String(toughnessPenalty);
+    }
+    staged.target = permanent(game, targetController, targetDefinitionValue);
+    if (targetController === player) staged.ownCreature = staged.target;
+  } else if ((entry.implementation || []).some(candidate => candidate.kind === 'equipment-equip')) {
+    staged.ownCreature = permanent(game, player, fixtureDefinition('Deep friendly Equipment host'));
+  }
 
   if (operation) {
     if (operation.kind === 'spell-pump') {
-      const beneficial = operation.power >= 0 && operation.toughness >= 0;
-      const mixed = operation.power > 0 && operation.toughness < 0;
+      const staticPower = operation.power === 'X' ? 0 : Number(operation.power || 0);
+      const beneficial = staticPower >= 0 && operation.toughness >= 0;
+      const mixed = staticPower > 0 && operation.toughness < 0;
       const controller = beneficial ? player : opponent;
       staged.target = permanent(game, controller, beneficial
         ? fixtureDefinition('Deep friendly creature')
@@ -183,10 +222,22 @@ function stageScenario(entry, role) {
         ? fixtureDefinition('Deep hostile pump decoy')
         : fixtureDefinition('Deep friendly removal decoy'));
     } else if (operation.kind === 'spell-team-pump') {
-      staged.ownCreature = permanent(game, player, fixtureDefinition('Deep friendly team creature'));
+      const hostileAttackerDebuff = operation.attackingOnly && (operation.controller || 'any') === 'any' &&
+        (Number(operation.power || 0) < 0 || Number(operation.toughness || 0) < 0);
+      if (hostileAttackerDebuff) {
+        staged.target = permanent(game, opponent, fixtureDefinition('Deep hostile team-pump attacker'));
+      } else {
+        staged.ownCreature = permanent(game, player, fixtureDefinition('Deep friendly team creature'));
+      }
     } else if (['spell-destroy', 'spell-exile', 'spell-bounce'].includes(operation.kind)) {
       const definition = targetDefinition(operation.what);
+      if (operation.stat && operation.threshold !== undefined) {
+        definition[operation.stat] = String(operation.threshold);
+      }
       staged.target = permanent(game, opponent, definition);
+      if (operation.tapped) staged.target.tapped = true;
+      if (operation.attacking || operation.attackingOrBlocking) staged.target.attacking = player;
+      if (operation.blocking || operation.attackingOrBlocking) staged.target.blocking = 'deep-blocked-attacker';
       staged.decoy = permanent(game, player, Object.assign({}, definition, { name: `${definition.name} friendly decoy` }));
     } else if (operation.kind === 'spell-damage' && operation.what !== 'each opponent' &&
       !['any target', 'target player', 'target opponent', 'target player or planeswalker'].includes(operation.what)) {
@@ -194,19 +245,60 @@ function stageScenario(entry, role) {
       staged.target = permanent(game, opponent, definition);
       staged.decoy = permanent(game, player, Object.assign({}, definition, { name: `${definition.name} friendly decoy` }));
     } else if (operation.kind === 'spell-counter') {
-      staged.bait = zoneCard(opponent, 'Brilliant Plan', 'hand');
+      const baitName = operation.spellType === 'creature spell' ? 'Elite Vanguard'
+        : operation.spellType === 'instant spell' ? 'Darkness' : 'Brilliant Plan';
+      staged.bait = zoneCard(opponent, baitName, 'hand');
+    } else if (operation.kind === 'spell-counter-on-creature') {
+      staged.target = permanent(game, player, fixtureDefinition('Deep friendly counter recipient'));
+      staged.decoy = permanent(game, opponent, fixtureDefinition('Deep hostile counter decoy'));
+    } else if (operation.kind === 'spell-destroy-all') {
+      const singular = operation.what.replace(/s$/, '');
+      staged.target = permanent(game, opponent, targetDefinition(singular));
+    } else if (operation.kind === 'spell-global-pump') {
+      if (Number(operation.power || 0) >= 0 && Number(operation.toughness || 0) >= 0) {
+        staged.ownCreature = permanent(game, player, fixtureDefinition('Deep friendly global-pump attacker'));
+      } else {
+        staged.target = permanent(game, opponent, fixtureDefinition('Deep hostile global-pump victim', ['Creature'], {
+          power: '8', toughness: String(Math.max(1, Math.abs(Number(operation.toughness || 0)))),
+        }));
+      }
+    } else if (operation.kind === 'spell-graveyard-return') {
+      const types = operation.what === 'instant or sorcery' ? ['Instant']
+        : operation.what === 'permanent' ? ['Artifact']
+          : [operation.what.charAt(0).toUpperCase() + operation.what.slice(1)];
+      staged.target = zoneCard(player, fixtureDefinition('Deep graveyard return target', types), 'graveyard');
+    } else if (operation.kind === 'spell-tap' || operation.kind === 'spell-untap') {
+      const controller = operation.kind === 'spell-tap' ? opponent : player;
+      for (let index = 0; index < Number(operation.count || 1); index++) {
+        const target = permanent(game, controller, targetDefinition(operation.what));
+        target.tapped = operation.kind === 'spell-untap';
+        staged.targets.push(target);
+      }
+      staged.target = staged.targets[0] || null;
     }
     if (operation.kind === 'spell-discard') {
       for (let index = 0; index < operation.n + 4; index++) zoneCard(opponent, 'Forest', 'hand');
     }
+    if (operation.kind === 'spell-add-mana') {
+      const producedMana = Object.entries(operation.produce || {}).reduce((total, [symbol, amount]) =>
+        total + (symbol === 'ANY' ? Number(amount?.n || amount || 0) : Number(amount || 0)), 0);
+      zoneCard(player, fixtureDefinition(`Deep ${entry.raw.name} enabled payoff`, ['Instant'], {
+        cost: `{${producedMana}}`, oracle: '',
+      }), 'hand');
+    }
   }
 
-  humanState.preferredTargets = [staged.target, staged.bait, opponent].filter(Boolean);
+  humanState.preferredTargets = [...staged.targets, staged.target, staged.bait, opponent].filter(Boolean);
   if (role === 'ai') {
     const controller = new MTG.AIController(player, { difficulty: 'hard', style: 'balanced' });
     const decide = controller.decide.bind(controller);
     controller.decide = async (currentGame, query) => {
+      if (humanState.aiSubmitted && query.type === 'main') return { kind: 'done' };
+      if (humanState.aiSubmitted && query.type === 'priority') return { kind: 'pass' };
       const result = await decide(currentGame, query);
+      if ((query.type === 'main' || query.type === 'priority') && result && result.kind === 'cast' && result.card === card) {
+        humanState.aiSubmitted = true;
+      }
       if (query.type === 'scry') {
         humanState.librarySelections.push({ cards: query.cards.slice(), surveil: !!query.surveil, result });
       }
@@ -225,9 +317,17 @@ function stageScenario(entry, role) {
   return { game, player, opponent, card, operation, staged, humanState };
 }
 
+function isHasteOnlyPump(operation) {
+  const keywords = (operation && operation.keywords || []).map(keyword => String(keyword).toLowerCase());
+  return operation?.kind === 'spell-pump' && Number(operation.power || 0) === 0 &&
+    Number(operation.toughness || 0) === 0 && keywords.length > 0 &&
+    keywords.every(keyword => keyword === 'haste');
+}
+
 function isCombatInstant(entry, operation) {
   return entry.raw.types.includes('Instant') && operation &&
-    (operation.kind === 'spell-pump' || operation.kind === 'spell-team-pump');
+    (!isHasteOnlyPump(operation) && operation.kind === 'spell-pump' || operation.kind === 'spell-team-pump' || operation.kind === 'spell-fog' ||
+      operation.kind === 'spell-global-pump' && Number(operation.power || 0) >= 0 && Number(operation.toughness || 0) >= 0);
 }
 
 function hasFlash(entry) {
@@ -236,6 +336,32 @@ function hasFlash(entry) {
 
 function stageCombatWindow(context) {
   const { game, player, opponent, operation, staged } = context;
+  if (operation && operation.kind === 'spell-fog') {
+    const attacker = permanent(game, opponent, fixtureDefinition('Deep hostile fog attacker'));
+    attacker.sick = false;
+    attacker.attacking = player;
+    game.combat = { attackers: [attacker], defenders: new Map([[player.idx, [attacker]]]) };
+    game.recalc();
+    return { attacker, blocker: null, operation };
+  }
+  if (operation && operation.kind === 'spell-global-pump') {
+    const attacker = staged.ownCreature || permanent(game, player, fixtureDefinition('Deep global-pump attacker'));
+    attacker.sick = false;
+    attacker.attacking = opponent;
+    game.combat = { attackers: [attacker], defenders: new Map([[opponent.idx, [attacker]]]) };
+    game.recalc();
+    return { attacker, blocker: null, operation };
+  }
+  if (operation && operation.kind === 'spell-team-pump' && operation.attackingOnly &&
+    (operation.controller || 'any') === 'any' &&
+    (Number(operation.power || 0) < 0 || Number(operation.toughness || 0) < 0)) {
+    const attacker = staged.target || permanent(game, opponent, fixtureDefinition('Deep hostile team-pump attacker'));
+    attacker.sick = false;
+    attacker.attacking = player;
+    game.combat = { attackers: [attacker], defenders: new Map([[player.idx, [attacker]]]) };
+    game.recalc();
+    return { attacker, blocker: null, operation };
+  }
   let attacker = staged.ownCreature || (staged.target && staged.target.ctrl === player ? staged.target : null) ||
     (staged.decoy && staged.decoy.ctrl === player ? staged.decoy : null);
   if (!attacker) attacker = permanent(game, player, fixtureDefinition('Deep combat attacker'));
@@ -264,6 +390,14 @@ async function executeScenario(context, entry) {
     assert.equal(staged.bait.zone, 'stack');
     game.priorityRound = realPriorityRound;
     await realPriorityRound(opponent);
+    return;
+  }
+  if (isHasteOnlyPump(operation)) {
+    if (staged.target && staged.target.ctrl === player) staged.target.sick = true;
+    game.turnPlayer = player;
+    game.phase = 'main1';
+    game.step = 'main';
+    await game.mainPhase(player);
     return;
   }
   if (isCombatInstant(entry, operation)) {
@@ -398,15 +532,26 @@ function verifySpellOperation(context, entry, before) {
   } else if (operation.kind === 'spell-mill') {
     assert.equal(opponent.library.length, before.opponentLibrary - operation.n, `${entry.raw.name}: controller mills the opponent`);
   } else if (operation.kind === 'spell-pump') {
+    const power = operation.power === 'X' ? context.card.castMeta.x : operation.power;
     if (operation.power > 0 && operation.toughness < 0) {
       assert.equal(staged.target.zone, 'graveyard', `${entry.raw.name}: mixed +power/-toughness spell kills a legal hostile target`);
     } else {
-      assert.equal(staged.target.power, before.targetPower + operation.power, `${entry.raw.name}: controller chooses the strategically correct pump target`);
+      assert.equal(staged.target.power, before.targetPower + power,
+        `${entry.raw.name}: controller chooses the strategically correct pump target ` +
+        JSON.stringify({ x: context.card.castMeta.x, target: staged.target.name,
+          decisions: (context.game.aiDecisionLog || []).map(decision => decision.chosen) }));
       assert.equal(staged.target.toughness, before.targetToughness + operation.toughness, `${entry.raw.name}: controller applies exact toughness modifier`);
     }
   } else if (operation.kind === 'spell-team-pump') {
-    assert.equal(staged.ownCreature.power, before.ownPower + operation.power, `${entry.raw.name}: controller pumps its own team`);
-    assert.equal(staged.ownCreature.toughness, before.ownToughness + operation.toughness, `${entry.raw.name}: controller applies team toughness`);
+    const hostileAttackerDebuff = operation.attackingOnly && (operation.controller || 'any') === 'any' &&
+      (Number(operation.power || 0) < 0 || Number(operation.toughness || 0) < 0);
+    const affected = hostileAttackerDebuff ? staged.target : staged.ownCreature;
+    const powerBefore = hostileAttackerDebuff ? before.targetPower : before.ownPower;
+    const toughnessBefore = hostileAttackerDebuff ? before.targetToughness : before.ownToughness;
+    assert.equal(affected.power, powerBefore + operation.power,
+      `${entry.raw.name}: controller applies the team power modifier to the strategically correct attackers`);
+    assert.equal(affected.toughness, toughnessBefore + operation.toughness,
+      `${entry.raw.name}: controller applies the team toughness modifier to the strategically correct attackers`);
   } else if (operation.kind === 'spell-damage') {
     const amount = operation.n === 'X' ? context.card.castMeta.x : operation.n;
     if (staged.target) assert.equal(staged.target.damage, amount, `${entry.raw.name}: controller damages the hostile permanent`);
@@ -417,6 +562,10 @@ function verifySpellOperation(context, entry, before) {
 async function runCard(entry, role) {
   const context = stageScenario(entry, role);
   const { game, player, opponent, card, operation, staged, humanState } = context;
+  if ((entry.implementation || []).some(candidate =>
+    /^self-(?:pump|keyword|regenerate)-ability$/.test(candidate.kind) && /\/P\}/.test(candidate.cost || ''))) {
+    player.life = 1;
+  }
   const before = {
     playerLife: player.life,
     opponentLife: opponent.life,
@@ -437,14 +586,22 @@ async function runCard(entry, role) {
   } else {
     assert.ok(player.controller instanceof MTG.AIController, `${entry.raw.name}: genuine local AIController`);
     const decisions = (game.aiDecisionLog || []).filter(decision => decision.playerId === player.idx);
-    assert.ok(decisions.some(decision => String(decision.chosen).includes(entry.raw.name)),
-      `${entry.raw.name}: local AI chose this exact card (${decisions.map(decision => decision.chosen).join(' | ')}) ` +
-      JSON.stringify(decisions.map(decision => ({
+    const faceDownCast = !!card.castMeta?.alt?.faceDownCast;
+    const choseExpectedAction = faceDownCast
+      ? decisions.some(decision => /face-down creature spell/i.test(String(decision.chosen)))
+      : decisions.some(decision => String(decision.chosen).includes(entry.raw.name));
+    assert.ok(choseExpectedAction,
+      `${entry.raw.name}: local AI chose this exact ${faceDownCast ? 'identity-safe face-down action' : 'card'} ` +
+      `(${decisions.map(decision => decision.chosen).join(' | ')}) ` + JSON.stringify(decisions.map(decision => ({
         chosen: decision.chosen,
         score: decision.score,
         scoreBreakdown: decision.scoreBreakdown,
         alternatives: decision.alternatives,
       }))));
+    if (faceDownCast) {
+      assert.equal(decisions.some(decision => JSON.stringify(decision).includes(entry.raw.name)), false,
+        `${entry.raw.name}: AI public decision evidence does not leak a face-down card identity`);
+    }
     assert.equal(decisions.some(decision => decision.fallback), false, `${entry.raw.name}: no AI V2 fallback`);
     assert.equal(game.log.some(item => /AI V2 fallback/i.test(item.msg)), false, `${entry.raw.name}: no legacy fallback log`);
   }
@@ -458,15 +615,22 @@ async function runCard(entry, role) {
     assert.equal(game.log.some(item => item.msg.includes(entry.raw.name) && /\(free\)/.test(item.msg)), false,
       `${entry.raw.name}: normal controller proof has no free-cast log`);
     if (entry.raw.types.includes('Instant') || entry.raw.types.includes('Sorcery')) {
-      assert.equal(card.zone, 'graveyard', `${entry.raw.name}: instant/sorcery resolves to graveyard`);
+      const rebounds = (entry.implementation || []).some(candidate => candidate.kind === 'mechanic-rebound');
+      assert.equal(card.zone, rebounds ? 'exile' : 'graveyard',
+        `${entry.raw.name}: instant/sorcery reaches its rules-correct post-resolution zone`);
       verifySpellOperation(context, entry, before);
     } else {
-      const expected = Number(entry.raw.toughness) <= 0 ? 'graveyard' : 'battlefield';
+      const auraLostWithHost = entry.raw.subtypes.includes('Aura') && staged.target && staged.target.zone !== 'battlefield';
+      const expected = Number(entry.raw.toughness) <= 0 || auraLostWithHost ? 'graveyard' : 'battlefield';
       assert.equal(card.zone, expected, `${entry.raw.name}: permanent resolves and SBA completes`);
       if (card.zone === 'battlefield') {
         if (entry.raw.types.includes('Creature')) {
-          assert.equal(card.power, Number(entry.raw.power), `${entry.raw.name}: controller path preserves printed power`);
-          assert.equal(card.toughness, Number(entry.raw.toughness), `${entry.raw.name}: controller path preserves printed toughness`);
+          const expectedPower = card.faceDown ? 2 : Number(entry.raw.power);
+          const expectedToughness = card.faceDown ? 2 : Number(entry.raw.toughness);
+          assert.equal(card.power, expectedPower,
+            `${entry.raw.name}: controller path preserves ${card.faceDown ? 'face-down' : 'printed'} power`);
+          assert.equal(card.toughness, expectedToughness,
+            `${entry.raw.name}: controller path preserves ${card.faceDown ? 'face-down' : 'printed'} toughness`);
         }
         await verifyPermanentOperations(context, entry, before);
       }
@@ -479,12 +643,13 @@ async function runCard(entry, role) {
   return {
     action: entry.raw.types.includes('Land') ? 'land' : 'cast',
     window: operation && operation.kind === 'spell-counter' ? 'counter-priority'
-      : isCombatInstant(entry, operation) ? 'combat-priority'
+      : isHasteOnlyPump(operation) ? 'main'
+        : isCombatInstant(entry, operation) ? 'combat-priority'
         : (entry.raw.types.includes('Instant') || hasFlash(entry)) ? 'end-step-priority' : 'main',
   };
 }
 
-test('svih 1.300 Oracle karata prolazi stvarni human i lokal-AI controller tok', async t => {
+test('svih 2.600 Oracle karata prolazi stvarni human i lokal-AI controller tok', async t => {
   const requestedBatch = process.env.ORACLE_DEEP_BATCH || '';
   const requestedCard = process.env.ORACLE_DEEP_CARD || '';
   const requestedLimit = Number(process.env.ORACLE_DEEP_LIMIT || 0);
@@ -520,44 +685,48 @@ test('svih 1.300 Oracle karata prolazi stvarni human i lokal-AI controller tok',
   assert.equal(failures.length, 0, failures.slice(0, 80).map(failure =>
     `${failure.batch}/${failure.card}/${failure.role}: ${failure.error}`).join('\n'));
   if (!requestedBatch && !requestedCard && !requestedLimit) {
-    assert.equal(rows.length, 1300);
-    assert.equal(totals.human, 1300);
-    assert.equal(totals.ai, 1300);
+    assert.equal(rows.length, 2600);
+    assert.equal(totals.human, 2600);
+    assert.equal(totals.ai, 2600);
   }
 });
 
 test('svaki Oracle team-pump zaključava postojeća stvorenja pri rezoluciji', async () => {
   const rows = oracleRows().filter(({ entry }) =>
     (entry.implementation || []).some(operation => operation.kind === 'spell-team-pump'));
-  assert.equal(rows.length, 14, 'current Oracle cohort has fourteen team-pump spells');
+  assert.equal(rows.length, 37, 'current Oracle cohort has thirty-seven team-pump spells');
 
   for (const { entry } of rows) {
     const context = stageScenario(entry, 'human');
     const operation = spellOperation(entry);
-    const original = context.staged.ownCreature;
+    const hostileAttackerDebuff = operation.attackingOnly && (operation.controller || 'any') === 'any' &&
+      (Number(operation.power || 0) < 0 || Number(operation.toughness || 0) < 0);
+    const original = hostileAttackerDebuff ? context.staged.target : context.staged.ownCreature;
+    const originalController = original.ctrl;
     const originalPower = original.power;
     const originalToughness = original.toughness;
     await executeScenario(context, entry);
     assert.equal(original.power, originalPower + operation.power, `${entry.raw.name}: original creature receives power`);
     assert.equal(original.toughness, originalToughness + operation.toughness, `${entry.raw.name}: original creature receives toughness`);
 
-    const late = permanent(context.game, context.player,
+    const late = permanent(context.game, originalController,
       fixtureDefinition(`Late creature after ${entry.raw.name}`, ['Creature'], { power: '7', toughness: '7' }));
+    if (operation.attackingOnly) late.attacking = originalController === context.player ? context.opponent : context.player;
     context.game.recalc();
     assert.equal(late.power, 7, `${entry.raw.name}: later creature is outside the locked set`);
     assert.equal(late.toughness, 7, `${entry.raw.name}: later creature gets no toughness bonus`);
 
-    original.ctrl = context.opponent;
+    original.ctrl = originalController === context.player ? context.opponent : context.player;
     context.game.recalc();
     assert.equal(original.power, originalPower + operation.power, `${entry.raw.name}: locked object keeps power after control changes`);
     assert.equal(original.toughness, originalToughness + operation.toughness, `${entry.raw.name}: locked object keeps toughness after control changes`);
   }
 });
 
-test('svih 24 novih legalnih commander kandidata prolazi command zone, tax, povratak i combat za igrača i bota', async t => {
+test('svih 27 novih legalnih commander kandidata prolazi command zone, tax, povratak i combat za igrača i bota', async t => {
   const rows = oracleRows().filter(({ entry }) =>
     (entry.raw.super || []).includes('Legendary') && entry.raw.types.includes('Creature'));
-  assert.equal(rows.length, 24, 'current Oracle cohort has twenty-four new commander candidates');
+  assert.equal(rows.length, 27, 'current Oracle cohort has twenty-seven new commander candidates');
 
   const failures = [];
   let casts = 0;
@@ -602,6 +771,7 @@ test('svih 24 novih legalnih commander kandidata prolazi command zone, tax, povr
 
         for (const color of COLORS) player.pool[color] = 20;
         humanState.submitted = false;
+        humanState.aiSubmitted = false;
         await game.mainPhase(player);
         assert.equal(card.zone, 'battlefield', `${entry.raw.name}/${role}: recasts from command zone`);
         assert.equal(card.cmdCasts, 2, `${entry.raw.name}/${role}: second commander cast is tracked`);
@@ -632,10 +802,10 @@ test('svih 24 novih legalnih commander kandidata prolazi command zone, tax, povr
     `${failure.batch}/${failure.card}/${failure.role}: ${failure.error}`).join('\n'));
 });
 
-test('bot koristi sva četiri +power/-toughness trika kontekstualno, a ne kao slijepu removal kartu', async () => {
+test('bot koristi svih pet +power/-toughness trikova kontekstualno, a ne kao slijepu removal kartu', async () => {
   const rows = oracleRows().filter(({ entry }) => (entry.implementation || []).some(operation =>
     operation.kind === 'spell-pump' && operation.power > 0 && operation.toughness < 0));
-  assert.equal(rows.length, 4, 'current Oracle cohort has four mixed pump spells');
+  assert.equal(rows.length, 5, 'current Oracle cohort has five mixed pump spells');
 
   for (const { entry } of rows) {
     const context = stageScenario(entry, 'ai');
@@ -745,7 +915,7 @@ test('stvarni basic landovi plaćaju visoki generic plus colored trošak bez zav
 test('lokalni AI nikad ne plaća posljednji život za Phyrexian pip, ali koristi sigurne life i colored rute', async () => {
   const rows = oracleRows().filter(({ entry }) => MTG.parseCost(MTG.DEFS[entry.raw.name].cost || '')
     .pips.some(pip => pip.includes('PHY')));
-  assert.equal(rows.length, 8);
+  assert.equal(rows.length, 9);
 
   for (const { entry } of rows) {
     const cost = MTG.parseCost(MTG.DEFS[entry.raw.name].cost || '');
@@ -879,7 +1049,7 @@ async function castWithExactPool(entry, role, configurePool) {
   return context;
 }
 
-test('svaki alternativni mana simbol u 1.300 radi kroz stvarnog igrača i bota', async t => {
+test('svaki alternativni mana simbol u 2.600 radi kroz stvarnog igrača i bota', async t => {
   const rows = oracleRows();
   const hybrid = rows.filter(({ entry }) => MTG.parseCost(entry.raw.manaCost || entry.raw.cost || MTG.DEFS[entry.raw.name].cost || '')
     .pips.some(pip => pip.length === 2 && pip.every(symbol => ['W', 'U', 'B', 'R', 'G'].includes(symbol))));
@@ -889,7 +1059,7 @@ test('svaki alternativni mana simbol u 1.300 radi kroz stvarnog igrača i bota',
     .pips.some(pip => pip.includes('TWO')));
   const trueColorless = rows.filter(({ entry }) => (entry.raw.manaCost || entry.raw.cost || MTG.DEFS[entry.raw.name].cost || '').includes('{C}'));
   const xSpells = rows.filter(({ entry }) => MTG.parseCost(entry.raw.manaCost || entry.raw.cost || MTG.DEFS[entry.raw.name].cost || '').x > 0);
-  assert.deepEqual([hybrid.length, phyrexian.length, twoBrid.length, trueColorless.length, xSpells.length], [36, 8, 1, 1, 2]);
+  assert.deepEqual([hybrid.length, phyrexian.length, twoBrid.length, trueColorless.length, xSpells.length], [68, 9, 3, 1, 10]);
 
   const failures = [];
   const totals = { hybrid: 0, phyrexian: 0, twoBrid: 0, trueColorlessAccept: 0, trueColorlessReject: 0, x: 0 };
@@ -941,17 +1111,17 @@ test('svaki alternativni mana simbol u 1.300 radi kroz stvarnog igrača i bota',
   }
 
   for (const { entry } of twoBrid) {
-    const scenarios = [
-      { red: 3, generic: 0, spent: 3 },
-      { red: 1, generic: 4, spent: 5 },
-      { red: 0, generic: 6, spent: 6 },
-    ];
+    const scenarios = [{ colored: 3 }, { colored: 1 }, { colored: 0 }];
+    const cost = MTG.parseCost(MTG.DEFS[entry.raw.name].cost || '');
+    const twoPips = cost.pips.filter(pip => pip.includes('TWO'));
     for (const scenario of scenarios) for (const role of ['human', 'ai']) {
       await capture('twoBrid', entry, role, async () => {
         await castWithExactPool(entry, role, ({ player }) => {
-          player.pool.R = scenario.red;
-          player.pool.C = scenario.generic;
-          return { manaSpent: scenario.spent };
+          const colored = Math.min(scenario.colored, twoPips.length);
+          for (let index = 0; index < colored; index++) player.pool[twoPips[index][0]]++;
+          player.pool.C = cost.generic + (twoPips.length - colored) * 2;
+          for (const pip of cost.pips.filter(candidate => !candidate.includes('TWO'))) player.pool[pip[0]]++;
+          return { manaSpent: cost.generic + cost.pips.length + (twoPips.length - colored) };
         });
       });
     }
@@ -979,22 +1149,26 @@ test('svaki alternativni mana simbol u 1.300 radi kroz stvarnog igrača i bota',
     await capture('x', entry, role, async () => {
       const context = await castWithExactPool(entry, role, current => {
         const { player } = current;
+        const cost = MTG.parseCost(MTG.DEFS[entry.raw.name].cost || '');
         if (entry.raw.name === 'Heat Ray' && current.staged.target) {
           current.staged.target.damage = Math.max(0, current.staged.target.toughness - 2);
         }
-        player.pool.R = 1;
+        for (const pip of cost.pips) player.pool[pip[0]]++;
         player.pool.C = 4;
         return {};
       });
+      const cost = MTG.parseCost(MTG.DEFS[entry.raw.name].cost || '');
       assert.ok(context.card.castMeta.x > 0, `${entry.raw.name}/${role}: controller chooses positive X`);
-      assert.equal(context.card.castMeta.manaSpent, context.card.castMeta.x + 1,
+      assert.equal(context.card.castMeta.manaSpent, context.card.castMeta.x + cost.generic + cost.pips.length,
         `${entry.raw.name}/${role}: X payment matches chosen value`);
     });
   }
 
-  t.diagnostic(`ORACLE_ALT_MANA_DEEP hybrid=${totals.hybrid}/144 phyrexian=${totals.phyrexian}/32 ` +
-    `twoBrid=${totals.twoBrid}/6 trueColorlessAccept=${totals.trueColorlessAccept}/2 ` +
-    `trueColorlessReject=${totals.trueColorlessReject}/2 x=${totals.x}/4 failures=${failures.length}`);
+  t.diagnostic(`ORACLE_ALT_MANA_DEEP hybrid=${totals.hybrid}/${hybrid.length * 4} ` +
+    `phyrexian=${totals.phyrexian}/${phyrexian.length * 4} twoBrid=${totals.twoBrid}/${twoBrid.length * 6} ` +
+    `trueColorlessAccept=${totals.trueColorlessAccept}/${trueColorless.length * 2} ` +
+    `trueColorlessReject=${totals.trueColorlessReject}/${trueColorless.length * 2} ` +
+    `x=${totals.x}/${xSpells.length * 2} failures=${failures.length}`);
   assert.equal(failures.length, 0, failures.map(failure =>
     `${failure.label}/${failure.card}/${failure.role}: ${failure.error}`).join('\n'));
 });
@@ -1030,7 +1204,7 @@ async function castTypeProbe(targetEntry, spellName, expectedZone) {
 
   const targetSpec = spell.def.targets[0];
   const legal = game.legalTargets(targetSpec, spell, opponent);
-  const protectedTarget = target.kw('shroud') || target.kw('hexproof');
+  const protectedTarget = target.kw('shroud') || target.kw('hexproof') || game.isProtectedFrom(target, spell);
   assert.equal(legal.includes(target), !protectedTarget,
     `${target.name}: ${spellName} legal-target check respects every type plus protection`);
 
@@ -1069,7 +1243,7 @@ test('svaka compound-type Oracle karta radi kao svaki od svojih tipova kroz stva
     entry.raw.types.includes('Enchantment') && entry.raw.types.includes('Creature'));
   const artifactLands = oracleRows().filter(({ entry }) =>
     entry.raw.types.includes('Artifact') && entry.raw.types.includes('Land'));
-  assert.deepEqual([artifactCreatures.length, enchantmentCreatures.length, artifactLands.length], [77, 8, 2]);
+  assert.deepEqual([artifactCreatures.length, enchantmentCreatures.length, artifactLands.length], [131, 9, 2]);
 
   for (const { entry } of artifactCreatures) {
     await castTypeProbe(entry, 'Shatter', 'graveyard');
@@ -1090,7 +1264,7 @@ test('svaka compound-type Oracle karta radi kao svaki od svojih tipova kroz stva
 
 test('Snow i Kindred zadržavaju stvarni rules identitet kroz import, cast, Stack i rezoluciju', async () => {
   const snowRows = oracleRows().filter(({ entry }) => (entry.raw.super || []).includes('Snow'));
-  assert.equal(snowRows.length, 20);
+  assert.equal(snowRows.length, 22);
   for (const { entry } of snowRows) for (const role of ['human', 'ai']) {
     const context = stageScenario(entry, role);
     await executeScenario(context, entry);
@@ -1132,13 +1306,21 @@ test('Snow i Kindred zadržavaju stvarni rules identitet kroz import, cast, Stac
   assert.equal(context.opponent.life, lifeBefore - 2, 'Tarfire resolves its real damage after the type checks');
 });
 
-test('svih 183 multi-keyword karata drži sve sposobnosti zajedno kroz human i AI rezoluciju', async t => {
+test('svih 219 multi-keyword karata drži sve sposobnosti zajedno kroz human i AI rezoluciju', async t => {
   const rows = oracleRows().filter(({ entry }) => (entry.implementedKeywords || []).length >= 2);
-  assert.equal(rows.length, 183);
+  assert.equal(rows.length, 219);
   let checks = 0;
   for (const { entry } of rows) for (const role of ['human', 'ai']) {
     const context = stageScenario(entry, role);
     await executeScenario(context, entry);
+    if (context.card.faceDown) {
+      for (const color of COLORS) context.player.pool[color] = 20;
+      const turnUp = context.game.activatableList(context.player)
+        .find(action => action.card === context.card && action.turnFaceUp);
+      assert.ok(turnUp, `${entry.raw.name}/${role}: face-down choice exposes its real turn-up action`);
+      assert.equal(await context.game.activateAbility(context.player, turnUp), true,
+        `${entry.raw.name}/${role}: turns face up through the special-action path`);
+    }
     assert.equal(context.card.zone, 'battlefield', `${entry.raw.name}/${role}: multi-keyword permanent resolves`);
     for (const declared of entry.implementedKeywords) {
       const keyword = keywordMechanic(declared);
@@ -1365,12 +1547,12 @@ function assertRealControllerCast(context, entry, role) {
   assert.equal(context.game.pendingTriggers.length, 0, `${entry.raw.name}/${role}: lethal triggers settle`);
 }
 
-test('svih 21 -toughness i 36 creature-damage spellova izvršava exact-lethal SBA za igrača i bota', async t => {
+test('svih 26 -toughness i 57 creature-damage spellova izvršava exact-lethal SBA za igrača i bota', async t => {
   const negativeRows = oracleRows().filter(({ entry }) => (entry.implementation || []).some(operation =>
     operation.kind === 'spell-pump' && Number(operation.toughness) < 0));
   const damageRows = oracleRows().filter(({ entry }) => (entry.implementation || []).some(operation =>
     operation.kind === 'spell-damage' && ['target creature', 'target creature or planeswalker', 'any target'].includes(operation.what)));
-  assert.deepEqual([negativeRows.length, damageRows.length], [21, 36]);
+  assert.deepEqual([negativeRows.length, damageRows.length], [26, 57]);
 
   let negativeChecks = 0;
   let damageChecks = 0;
@@ -1397,12 +1579,15 @@ test('svih 21 -toughness i 36 creature-damage spellova izvršava exact-lethal SB
     assert.equal(target.zone, 'graveyard', `${entry.raw.name}/${role}: exact damage executes real SBA death`);
     if (operation.n === 'X') {
       assert.equal(context.card.castMeta.x, amount, `${entry.raw.name}/${role}: exact creature-lethal X`);
-      assert.equal(context.card.castMeta.manaSpent, amount + 1, `${entry.raw.name}/${role}: exact creature-lethal mana spend`);
+      const cost = MTG.parseCost(MTG.DEFS[entry.raw.name].cost || '');
+      assert.equal(context.card.castMeta.manaSpent, amount + cost.generic + cost.pips.length,
+        `${entry.raw.name}/${role}: exact creature-lethal mana spend`);
     }
     damageChecks++;
   }
 
-  t.diagnostic(`ORACLE_LETHAL_SBA_DEEP negative=${negativeChecks}/42 creatureDamage=${damageChecks}/72 failures=0`);
+  t.diagnostic(`ORACLE_LETHAL_SBA_DEEP negative=${negativeChecks}/${negativeRows.length * 2} ` +
+    `creatureDamage=${damageChecks}/${damageRows.length * 2} failures=0`);
 });
 
 test('-toughness ubija indestructible, dok lokalni AI ne rasipa fixed ili X damage na njega', async () => {

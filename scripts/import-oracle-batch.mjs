@@ -12,6 +12,7 @@ const reportDir = path.join(root, 'reports', 'oracle-import');
 const statePath = path.join(reportDir, 'state.json');
 const BULK_INDEX_URL = 'https://api.scryfall.com/bulk-data';
 const DEFAULT_LIMIT = 100;
+const SEMANTIC_COMPILER_VERSION = 3;
 const USER_AGENT = 'MTGcodexOracleImporter/0.1 (local development)';
 
 const SUPERTYPES = new Set(['Legendary', 'Basic', 'Snow', 'World', 'Ongoing']);
@@ -25,6 +26,12 @@ const IMPLEMENTED_KEYWORDS = new Set([
 ]);
 const TOKEN_KEYWORDS = new Set([...IMPLEMENTED_KEYWORDS].filter(keyword => keyword !== 'prowess'));
 const COLOR_WORDS = Object.freeze({ white: 'W', blue: 'U', black: 'B', red: 'R', green: 'G' });
+const GRANTABLE_KEYWORDS = new Set([
+  'flying', 'first strike', 'double strike', 'deathtouch', 'lifelink', 'trample',
+  'haste', 'vigilance', 'menace', 'reach', 'indestructible', 'hexproof', 'shroud',
+  'wither',
+]);
+const MANA_SEQUENCE = '(?:\\{(?:\\d+|X|[WUBRGC]|[WUBRG]\\/P|[WUBRG]\\/[WUBRG]|2\\/[WUBRG])\\})+';
 
 function argValue(args, name, fallback) {
   const prefix = `--${name}=`;
@@ -97,25 +104,46 @@ function keywordLine(line) {
   return parts;
 }
 
+function keywordList(value, allowed = GRANTABLE_KEYWORDS) {
+  const normalized = String(value || '').trim().toLowerCase()
+    .replace(/,?\s+and\s+/g, ',')
+    .split(/\s*,\s*/)
+    .map(part => part.trim())
+    .filter(Boolean);
+  return normalized.length && normalized.every(keyword => allowed.has(keyword)) ? normalized : null;
+}
+
+function validManaSequence(value) {
+  const source = String(value || '');
+  return new RegExp(`^${MANA_SEQUENCE}$`).test(source) && validateManaCost(source);
+}
+
 function numberWord(value) {
   return ({ a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7 }[String(value).toLowerCase()] || Number(value) || 0);
 }
 
 function parseManaLine(line) {
-  const match = /^\{T\}: Add (.+)\.$/i.exec(line);
+  const match = new RegExp(`^(?:(${MANA_SEQUENCE}), )?\\{T\\}: Add (.+)\\.$`, 'i').exec(line);
   if (!match) return null;
-  if (/^one mana of any color$/i.test(match[1])) {
-    return { kind: 'mana-source', produce: [{ ANY: true, n: 1 }], contract: 'mana-source' };
+  const activationMana = match[1] || null;
+  if (activationMana && !validManaSequence(activationMana)) return null;
+  if (/^one mana of any color$/i.test(match[2])) {
+    return {
+      kind: 'mana-source',
+      produce: [{ ANY: true, n: 1 }],
+      activationMana,
+      contract: 'mana-source',
+    };
   }
   const produce = [];
-  for (const choice of match[1].split(/\s+or\s+/i)) {
+  for (const choice of match[2].split(/\s+or\s+/i)) {
     const symbols = [...choice.matchAll(/\{([WUBRGC])\}/g)].map(entry => entry[1]);
     if (!symbols.length || choice.replace(/\{[WUBRGC]\}/g, '').trim()) return null;
     const option = {};
     for (const symbol of symbols) option[symbol] = (option[symbol] || 0) + 1;
     produce.push(option);
   }
-  return produce.length ? { kind: 'mana-source', produce, contract: 'mana-source' } : null;
+  return produce.length ? { kind: 'mana-source', produce, activationMana, contract: 'mana-source' } : null;
 }
 
 function tokenOperation(card, line) {
@@ -152,6 +180,115 @@ function tokenOperation(card, line) {
   };
 }
 
+function cyclingOperation(line) {
+  const match = new RegExp(`^Cycling (${MANA_SEQUENCE})$`, 'i').exec(line);
+  if (!match || !validManaSequence(match[1])) return null;
+  return { kind: 'cycling', cost: match[1], contract: 'cycling-ability' };
+}
+
+function spellModifierOperation(card, line) {
+  const cycling = cyclingOperation(line);
+  if (cycling) return cycling;
+
+  let match = new RegExp(`^Flashback (${MANA_SEQUENCE})$`, 'i').exec(line);
+  if (match && validManaSequence(match[1])) {
+    return {
+      kind: 'mechanic-flashback',
+      cost: match[1],
+      speed: String(card.type_line || '').includes('Instant') ? 'instant' : 'sorcery',
+      contract: 'mechanic-flashback',
+    };
+  }
+  match = new RegExp(`^Suspend (\\d+)[—-](${MANA_SEQUENCE})$`, 'i').exec(line);
+  if (match && Number(match[1]) > 0 && validManaSequence(match[2])) {
+    return {
+      kind: 'mechanic-suspend', n: Number(match[1]), cost: match[2],
+      contract: 'mechanic-suspend',
+    };
+  }
+  if (/^Rebound$/i.test(line)) return { kind: 'mechanic-rebound', contract: 'mechanic-rebound' };
+  if (/^Devoid$/i.test(line)) return { kind: 'mechanic-devoid', contract: 'mechanic-devoid' };
+  if (/^This spell can't be countered\.$/i.test(line)) {
+    return { kind: 'mechanic-uncounterable', contract: 'mechanic-uncounterable' };
+  }
+  if (/^(Convoke|Cascade|Storm)$/i.test(line)) {
+    const mechanic = line.toLowerCase();
+    return { kind: 'mechanic-' + mechanic, contract: 'mechanic-' + mechanic };
+  }
+  return null;
+}
+
+function protectionOperation(line) {
+  const match = /^(?:This creature has )?Protection from (white|blue|black|red|green|artifacts)$/i.exec(line);
+  if (!match) return null;
+  return { kind: 'protection-from', from: match[1].toLowerCase(), contract: 'protection-static' };
+}
+
+function faceDownOperation(line) {
+  const match = new RegExp(`^(Morph|Disguise) (${MANA_SEQUENCE})$`, 'i').exec(line);
+  if (!match || !validManaSequence(match[2])) return null;
+  const mechanic = match[1].toLowerCase();
+  return {
+    kind: 'mechanic-' + mechanic,
+    cost: match[2],
+    contract: 'mechanic-' + mechanic,
+  };
+}
+
+function compositeCreatureLine(line) {
+  const parts = String(line || '').split(/\s*[,;]\s*/).map(part => part.trim()).filter(Boolean);
+  if (parts.length < 2) return null;
+  const keywords = [];
+  const operations = [];
+  for (const part of parts) {
+    const normalized = part.toLowerCase();
+    if (IMPLEMENTED_KEYWORDS.has(normalized) || /^ward \{\d+\}$/.test(normalized)) {
+      keywords.push(normalized);
+      continue;
+    }
+    const protection = protectionOperation(part);
+    if (protection) {
+      operations.push(protection);
+      continue;
+    }
+    const faceDown = faceDownOperation(part);
+    if (faceDown) {
+      operations.push(faceDown);
+      continue;
+    }
+    return null;
+  }
+  return { keywords, operations };
+}
+
+function creatureActivatedOperation(card, line) {
+  const subject = selfSubject(card, 'creature');
+  let match = new RegExp(`^(${MANA_SEQUENCE}): ${subject} gets ([+-]\\d+)\\/([+-]\\d+) until end of turn\\.$`, 'i').exec(line);
+  if (match && validManaSequence(match[1])) {
+    return {
+      kind: 'self-pump-ability',
+      cost: match[1],
+      power: Number(match[2]),
+      toughness: Number(match[3]),
+      contract: 'activated-ability-cost',
+    };
+  }
+  match = new RegExp(`^(${MANA_SEQUENCE}): Regenerate ${subject}\\.$`, 'i').exec(line);
+  if (match && validManaSequence(match[1])) {
+    return { kind: 'self-regenerate-ability', cost: match[1], contract: 'activated-ability-cost' };
+  }
+  match = new RegExp(`^(${MANA_SEQUENCE}): ${subject} gains? (${[...GRANTABLE_KEYWORDS].map(escapeRegExp).join('|')}) until end of turn\\.$`, 'i').exec(line);
+  if (match && validManaSequence(match[1])) {
+    return {
+      kind: 'self-keyword-ability',
+      cost: match[1],
+      keyword: match[2].toLowerCase(),
+      contract: 'activated-ability-cost',
+    };
+  }
+  return null;
+}
+
 function creatureSemantics(card, rulesCore) {
   if (!/^-?\d+$/.test(String(card.power)) || !/^-?\d+$/.test(String(card.toughness))) {
     return { reason: 'dynamic-power-toughness' };
@@ -165,6 +302,12 @@ function creatureSemantics(card, rulesCore) {
   const implementation = [];
   const subject = selfSubject(card, 'creature');
   for (const line of rulesCore.split('\n')) {
+    const composite = compositeCreatureLine(line);
+    if (composite) {
+      implementedKeywords.push(...composite.keywords);
+      implementation.push(...composite.operations);
+      continue;
+    }
     const keywords = keywordLine(line);
     if (keywords) {
       implementedKeywords.push(...keywords);
@@ -175,8 +318,45 @@ function creatureSemantics(card, rulesCore) {
       implementation.push(mana);
       continue;
     }
+    const cycling = cyclingOperation(line);
+    if (cycling) {
+      implementation.push(cycling);
+      continue;
+    }
+    const protection = protectionOperation(line);
+    if (protection) {
+      implementation.push(protection);
+      continue;
+    }
+    const faceDown = faceDownOperation(line);
+    if (faceDown) {
+      implementation.push(faceDown);
+      continue;
+    }
+    const activated = creatureActivatedOperation(card, line);
+    if (activated) {
+      implementation.push(activated);
+      continue;
+    }
     if (new RegExp('^' + subject + " can't block\\.$", 'i').test(line)) {
       implementation.push({ kind: 'cant-block', contract: 'cant-block-static' });
+      continue;
+    }
+    if (new RegExp('^' + subject + ' enters tapped\\.$', 'i').test(line)) {
+      implementation.push({ kind: 'enters-tapped', contract: 'permanent-enters-tapped' });
+      continue;
+    }
+    if (new RegExp('^' + subject + " can't be blocked\\.$", 'i').test(line)) {
+      implementation.push({ kind: 'unblockable', contract: 'unblockable-static' });
+      continue;
+    }
+    if (new RegExp('^' + subject + ' can block only creatures with flying\\.$', 'i').test(line)) {
+      implementation.push({ kind: 'flying-blocker-only', contract: 'flying-blocker-only-static' });
+      continue;
+    }
+    if (/^(Persist|Undying|Changeling|Convoke|Cascade|Storm)$/i.test(line)) {
+      const mechanic = line.toLowerCase();
+      implementation.push({ kind: 'mechanic-' + mechanic, contract: 'mechanic-' + mechanic });
       continue;
     }
     if (new RegExp('^' + subject + ' attacks each combat if able\\.$', 'i').test(line)) {
@@ -203,6 +383,56 @@ function creatureSemantics(card, rulesCore) {
       implementation.push({ kind: 'etb-' + match[1].toLowerCase(), n: Number(match[2]), contract: 'etb-library-selection' });
       continue;
     }
+    match = new RegExp('^When ' + subject + ' enters, put a \\+1\\/\\+1 counter on (?:it|' + escapeRegExp(card.name) + ')\\.$', 'i').exec(line);
+    if (match) {
+      implementation.push({ kind: 'etb-counter-self', counter: '+1/+1', n: 1, contract: 'etb-counter-self' });
+      continue;
+    }
+    match = new RegExp('^Whenever ' + subject + ' attacks, (?:it|' + escapeRegExp(card.name) + ') gets ([+-]\\d+)\\/([+-]\\d+) until end of turn\\.$', 'i').exec(line);
+    if (match) {
+      implementation.push({
+        kind: 'attack-self-pump',
+        power: Number(match[1]),
+        toughness: Number(match[2]),
+        contract: 'combat-trigger',
+      });
+      continue;
+    }
+    if (new RegExp('^Whenever ' + subject + ' deals combat damage to a player, draw a card\\.$', 'i').test(line)) {
+      implementation.push({ kind: 'combat-damage-draw', n: 1, contract: 'combat-trigger' });
+      continue;
+    }
+    match = new RegExp('^When ' + subject + ' enters, (you may )?discard a card\\. If you do, draw a card\\.$', 'i').exec(line);
+    if (match) {
+      implementation.push({
+        kind: 'etb-loot', order: 'discard-draw', optional: !!match[1], contract: 'etb-loot',
+      });
+      continue;
+    }
+    if (new RegExp('^When ' + subject + ' enters, draw a card, then discard a card\\.$', 'i').test(line)) {
+      implementation.push({ kind: 'etb-loot', order: 'draw-discard', optional: false, contract: 'etb-loot' });
+      continue;
+    }
+    if (new RegExp('^When ' + subject + ' enters, create a Treasure token\\.$', 'i').test(line)) {
+      implementation.push({ kind: 'etb-treasure', n: 1, contract: 'etb-treasure' });
+      continue;
+    }
+    if (new RegExp('^When ' + subject + ' enters, each opponent discards a card\\.$', 'i').test(line)) {
+      implementation.push({ kind: 'etb-each-opponent-discard', n: 1, contract: 'etb-each-opponent-discard' });
+      continue;
+    }
+    match = new RegExp('^When ' + subject + ' dies, you gain (\\d+) life\\.$', 'i').exec(line);
+    if (match) {
+      implementation.push({ kind: 'dies-life-gain', n: Number(match[1]), contract: 'dies-life-gain' });
+      continue;
+    }
+    if (new RegExp('^Whenever you cast a noncreature spell, put a \\+1\\/\\+1 counter on ' + subject + '\\.$', 'i').test(line)) {
+      implementation.push({
+        kind: 'noncreature-cast-counter-self', counter: '+1/+1', n: 1,
+        contract: 'noncreature-cast-counter-self',
+      });
+      continue;
+    }
     const token = tokenOperation(card, line);
     if (token) {
       implementation.push(token);
@@ -226,6 +456,11 @@ function landSemantics(card, rulesCore) {
     const mana = parseManaLine(line);
     if (mana) {
       implementation.push(mana);
+      continue;
+    }
+    const cycling = cyclingOperation(line);
+    if (cycling) {
+      implementation.push(cycling);
       continue;
     }
     if (new RegExp('^' + subject + ' enters(?: the battlefield)? tapped\\.$', 'i').test(line)) {
@@ -267,97 +502,496 @@ function landSemantics(card, rulesCore) {
   };
 }
 
-function spellSemantics(card, rulesCore) {
-  if (!rulesCore || rulesCore.includes('\n')) return { reason: 'spell-needs-explicit-semantics' };
+function attachmentGrantOperation(line, prefix) {
+  const subject = prefix === 'equipped' ? 'Equipped creature' : 'Enchanted (?:creature|permanent)';
+  let match = new RegExp(`^${subject} gets ([+-]\\d+)\\/([+-]\\d+)(?: and has (.+))?\\.$`, 'i').exec(line);
+  if (match) {
+    const keywords = match[3] ? keywordList(match[3]) : [];
+    if (match[3] && !keywords) return null;
+    return {
+      kind: 'attachment-grant',
+      power: Number(match[1]),
+      toughness: Number(match[2]),
+      keywords,
+      contract: 'attachment-continuous-effect',
+    };
+  }
+  match = new RegExp(`^${subject} has (.+)\\.$`, 'i').exec(line);
+  if (match) {
+    const keywords = keywordList(match[1]);
+    if (!keywords) return null;
+    return {
+      kind: 'attachment-grant',
+      power: 0,
+      toughness: 0,
+      keywords,
+      contract: 'attachment-continuous-effect',
+    };
+  }
+  if (prefix === 'enchanted' && /^Enchanted creature can't attack or block\.$/i.test(line)) {
+    return {
+      kind: 'attachment-grant',
+      power: 0,
+      toughness: 0,
+      keywords: [],
+      cantAttack: true,
+      cantBlock: true,
+      contract: 'attachment-continuous-effect',
+    };
+  }
+  if (prefix === 'enchanted' && /^Enchanted (?:creature|permanent) doesn't untap during its controller's untap step\.$/i.test(line)) {
+    return {
+      kind: 'attachment-grant',
+      power: 0,
+      toughness: 0,
+      keywords: [],
+      skipUntap: true,
+      contract: 'attachment-continuous-effect',
+    };
+  }
+  return null;
+}
+
+function auraTargetOperation(line) {
+  const match = /^Enchant (creature you control|artifact or creature|creature|land|permanent|artifact|enchantment)$/i.exec(line);
+  if (!match) return null;
+  return { kind: 'aura-target', what: match[1].toLowerCase(), contract: 'aura-targeting' };
+}
+
+function equipmentSemantics(card, rulesCore) {
+  if (!String(card.oracle_text || '').trim()) {
+    return { semanticClass: 'permanent-template', implementedKeywords: [], implementation: [], oracleContracts: [], rulesCore: '' };
+  }
+  if (!rulesCore) return { reason: 'reminder-only-oracle' };
+  const implementedKeywords = [];
+  const implementation = [];
+  for (const line of rulesCore.split('\n')) {
+    const keywords = keywordLine(line);
+    if (keywords) {
+      implementedKeywords.push(...keywords);
+      continue;
+    }
+    const grant = attachmentGrantOperation(line, 'equipped');
+    if (grant) {
+      implementation.push(grant);
+      continue;
+    }
+    const equip = new RegExp(`^Equip (${MANA_SEQUENCE})$`, 'i').exec(line);
+    if (equip && validManaSequence(equip[1])) {
+      implementation.push({ kind: 'equipment-equip', cost: equip[1], contract: 'equipment-attach-ability' });
+      continue;
+    }
+    const crew = /^Crew (\d+)$/i.exec(line);
+    if (crew) {
+      implementation.push({ kind: 'crew', n: Number(crew[1]), contract: 'crew-ability' });
+      continue;
+    }
+    return { reason: 'noncreature-needs-explicit-semantics' };
+  }
+  return {
+    semanticClass: 'equipment-template',
+    implementedKeywords: [...new Set(implementedKeywords)],
+    implementation,
+    oracleContracts: [...new Set(implementation.map(operation => operation.contract))],
+    rulesCore,
+  };
+}
+
+function auraSemantics(card, rulesCore) {
+  if (!rulesCore) return { reason: 'noncreature-needs-explicit-semantics' };
+  const implementedKeywords = [];
+  const implementation = [];
+  for (const line of rulesCore.split('\n')) {
+    const keywords = keywordLine(line);
+    if (keywords) {
+      implementedKeywords.push(...keywords);
+      continue;
+    }
+    if (/^Convoke$/i.test(line)) {
+      implementation.push({ kind: 'mechanic-convoke', contract: 'mechanic-convoke' });
+      continue;
+    }
+    const target = auraTargetOperation(line);
+    if (target) {
+      implementation.push(target);
+      continue;
+    }
+    const grant = attachmentGrantOperation(line, 'enchanted');
+    if (grant) {
+      implementation.push(grant);
+      continue;
+    }
+    if (/^When this Aura enters, draw a card\.$/i.test(line)) {
+      implementation.push({ kind: 'etb-draw', n: 1, contract: 'etb-draw' });
+      continue;
+    }
+    if (/^When this Aura enters, tap enchanted creature\.$/i.test(line)) {
+      implementation.push({ kind: 'aura-etb-tap', contract: 'aura-etb-tap' });
+      continue;
+    }
+    return { reason: 'noncreature-needs-explicit-semantics' };
+  }
+  if (!implementation.some(operation => operation.kind === 'aura-target')) {
+    return { reason: 'noncreature-needs-explicit-semantics' };
+  }
+  return {
+    semanticClass: 'aura-template',
+    implementedKeywords: [...new Set(implementedKeywords)],
+    implementation,
+    oracleContracts: [...new Set(implementation.map(operation => operation.contract))],
+    rulesCore,
+  };
+}
+
+function artifactSemantics(card, parsed, rulesCore) {
+  if (parsed.subtypes.includes('Equipment')) return equipmentSemantics(card, rulesCore);
+  if (!String(card.oracle_text || '').trim()) {
+    return { semanticClass: 'permanent-template', implementedKeywords: [], implementation: [], oracleContracts: [], rulesCore: '' };
+  }
+  if (!rulesCore) return { reason: 'reminder-only-oracle' };
+  const implementedKeywords = [];
+  const implementation = [];
+  for (const line of rulesCore.split('\n')) {
+    const keywords = keywordLine(line);
+    if (keywords) {
+      implementedKeywords.push(...keywords);
+      continue;
+    }
+    const mana = parseManaLine(line);
+    if (mana) {
+      implementation.push(mana);
+      continue;
+    }
+    const cycling = cyclingOperation(line);
+    if (cycling) {
+      implementation.push(cycling);
+      continue;
+    }
+    if (/^This (?:artifact|Vehicle) enters tapped\.$/i.test(line)) {
+      implementation.push({ kind: 'enters-tapped', contract: 'permanent-enters-tapped' });
+      continue;
+    }
+    const crew = /^Crew (\d+)$/i.exec(line);
+    if (crew && /^-?\d+$/.test(String(card.power)) && /^-?\d+$/.test(String(card.toughness))) {
+      implementation.push({ kind: 'crew', n: Number(crew[1]), contract: 'crew-ability' });
+      continue;
+    }
+    return { reason: 'noncreature-needs-explicit-semantics' };
+  }
+  return {
+    semanticClass: parsed.subtypes.includes('Vehicle') ? 'vehicle-template' : 'artifact-template',
+    implementedKeywords: [...new Set(implementedKeywords)],
+    implementation,
+    oracleContracts: [...new Set(implementation.map(operation => operation.contract))],
+    rulesCore,
+  };
+}
+
+function enchantmentSemantics(card, parsed, rulesCore) {
+  if (parsed.subtypes.includes('Aura')) return auraSemantics(card, rulesCore);
+  if (!String(card.oracle_text || '').trim()) {
+    return { semanticClass: 'permanent-template', implementedKeywords: [], implementation: [], oracleContracts: [], rulesCore: '' };
+  }
+  if (!rulesCore) return { reason: 'reminder-only-oracle' };
+  const implementedKeywords = [];
+  const implementation = [];
+  for (const line of rulesCore.split('\n')) {
+    const keywords = keywordLine(line);
+    if (keywords) {
+      implementedKeywords.push(...keywords);
+      continue;
+    }
+    let match = /^Creatures you control get ([+-]\d+)\/([+-]\d+)\.$/i.exec(line);
+    if (match) {
+      implementation.push({
+        kind: 'controlled-creature-pump-static',
+        power: Number(match[1]),
+        toughness: Number(match[2]),
+        contract: 'continuous-layer',
+      });
+      continue;
+    }
+    match = /^Attacking creatures you control get ([+-]\d+)\/([+-]\d+)\.$/i.exec(line);
+    if (match) {
+      implementation.push({
+        kind: 'attacking-creature-pump-static',
+        power: Number(match[1]),
+        toughness: Number(match[2]),
+        contract: 'continuous-layer',
+      });
+      continue;
+    }
+    if (/^All creatures have haste\.$/i.test(line)) {
+      implementation.push({ kind: 'global-creature-keyword-static', keyword: 'haste', contract: 'continuous-layer' });
+      continue;
+    }
+    return { reason: 'noncreature-needs-explicit-semantics' };
+  }
+  return {
+    semanticClass: 'enchantment-template',
+    implementedKeywords: [...new Set(implementedKeywords)],
+    implementation,
+    oracleContracts: [...new Set(implementation.map(operation => operation.contract))],
+    rulesCore,
+  };
+}
+
+function spellTokenOperation(line) {
+  let match = /^Create (a|an|one|two|three|four|five|six|seven|\d+) (Treasure|Food|Clue|Blood) tokens?\.$/i.exec(line);
+  if (match) {
+    return {
+      kind: 'spell-token',
+      n: numberWord(match[1]),
+      tokenKey: match[2].toLowerCase(),
+      contract: 'spell-token-creation',
+    };
+  }
+  match = /^Create (a|an|one|two|three|four|five|six|seven|\d+) (\d+)\/(\d+) (.+?) creature tokens?(?: with (.+))?\.$/i.exec(line);
+  if (!match) return null;
+  const descriptor = match[4].trim().split(/\s+/);
+  const colors = descriptor.filter(word => COLOR_WORDS[word.toLowerCase()]).map(word => COLOR_WORDS[word.toLowerCase()]);
+  const artifact = descriptor.some(word => word.toLowerCase() === 'artifact');
+  const enchantment = descriptor.some(word => word.toLowerCase() === 'enchantment');
+  const subtypes = descriptor.filter(word =>
+    !COLOR_WORDS[word.toLowerCase()] &&
+    !['and', 'colorless', 'artifact', 'enchantment'].includes(word.toLowerCase()));
+  if (!subtypes.length) return null;
+  const keywords = match[5] ? keywordList(match[5], TOKEN_KEYWORDS) : [];
+  if (match[5] && !keywords) return null;
+  return {
+    kind: 'spell-token',
+    n: numberWord(match[1]),
+    token: {
+      name: subtypes.join(' '),
+      super: [],
+      types: [...(artifact ? ['Artifact'] : []), ...(enchantment ? ['Enchantment'] : []), 'Creature'],
+      subtypes,
+      power: match[2],
+      toughness: match[3],
+      colors,
+      keywords,
+    },
+    contract: 'spell-token-creation',
+  };
+}
+
+function removalDescriptor(value) {
+  const normalized = String(value || '').toLowerCase();
+  const direct = new Set([
+    'creature or planeswalker', 'artifact or enchantment', 'nonland permanent',
+    'permanent', 'creature', 'artifact', 'enchantment', 'planeswalker', 'land',
+  ]);
+  if (direct.has(normalized)) return { what: normalized };
+  if (normalized === 'attacking creature') return { what: 'creature', attacking: true };
+  if (normalized === 'blocking creature') return { what: 'creature', blocking: true };
+  if (normalized === 'attacking or blocking creature') return { what: 'creature', attackingOrBlocking: true };
+  if (normalized === 'tapped creature') return { what: 'creature', tapped: true };
+  let match = /^creature with (power|toughness) (\d+) or (less|greater)$/.exec(normalized);
+  if (match) {
+    return {
+      what: 'creature',
+      stat: match[1],
+      threshold: Number(match[2]),
+      comparison: match[3],
+    };
+  }
+  return null;
+}
+
+function spellLineOperation(card, line) {
   const source = selfSubject(card, 'spell');
-  let match = /^(?:You )?Draw (a|one|two|three|four|five|six|seven) cards?\.$/i.exec(rulesCore);
-  let operation = match && { kind: 'spell-draw', n: numberWord(match[1]), contract: 'spell-draw' };
-  if (!operation && /^Counter target spell\.$/i.test(rulesCore)) {
-    operation = { kind: 'spell-counter', contract: 'spell-counter' };
+  if (card.name === 'Clowning Around' && line ===
+      'Create two 1/1 white Clown Robot artifact creature tokens, then roll a six-sided die. ' +
+      'If the result is equal to or less than the number of Robots you control, create a 1/1 white Clown Robot artifact creature token.') {
+    return {
+      kind: 'spell-token-roll-threshold',
+      n: 2,
+      bonusN: 1,
+      dieSides: 6,
+      compareSubtype: 'Robot',
+      token: {
+        name: 'Clown Robot',
+        super: [],
+        types: ['Artifact', 'Creature'],
+        subtypes: ['Clown', 'Robot'],
+        power: '1',
+        toughness: '1',
+        colors: ['W'],
+        keywords: [],
+      },
+      contract: 'spell-token-roll-threshold',
+    };
   }
-  if (!operation) {
-    match = /^(Destroy|Exile) target (creature or planeswalker|artifact or enchantment|nonland permanent|permanent|creature|artifact|enchantment|planeswalker|land)\.(?: It can't be regenerated\.)?$/i.exec(rulesCore);
-    if (match) {
-      operation = {
+  let match = /^(?:You )?Draw (a|one|two|three|four|five|six|seven) cards?\.$/i.exec(line);
+  if (match) return { kind: 'spell-draw', n: numberWord(match[1]), contract: 'spell-draw' };
+  match = /^Draw (two|three|four|five|six|seven) cards, then discard (a|one|two|three) cards?\.$/i.exec(line);
+  if (match) {
+    return {
+      kind: 'spell-draw-discard',
+      draw: numberWord(match[1]),
+      discard: numberWord(match[2]),
+      contract: 'spell-draw-discard',
+    };
+  }
+  match = /^Counter target (spell|creature spell|instant spell|sorcery spell)\.$/i.exec(line);
+  if (match) {
+    return { kind: 'spell-counter', spellType: match[1].toLowerCase(), contract: 'spell-counter' };
+  }
+  match = /^(Destroy|Exile) target (creature with (?:power|toughness) \d+ or (?:less|greater)|attacking or blocking creature|attacking creature|blocking creature|tapped creature|creature or planeswalker|artifact or enchantment|nonland permanent|permanent|creature|artifact|enchantment|planeswalker|land)\.(?: It can't be regenerated\.)?$/i.exec(line);
+  if (match) {
+    const descriptor = removalDescriptor(match[2]);
+    if (descriptor) {
+      return Object.assign({
         kind: 'spell-' + match[1].toLowerCase(),
-        what: match[2].toLowerCase(),
-        noRegen: /can't be regenerated/i.test(rulesCore),
+        noRegen: /can't be regenerated/i.test(line),
         contract: 'spell-' + match[1].toLowerCase(),
+      }, descriptor);
+    }
+  }
+  match = new RegExp('^' + source +
+    ' deals (\\d+|X) damage to (any target|target creature or planeswalker|target creature|target player or planeswalker|target opponent|target player|each opponent)\\.$', 'i').exec(line);
+  if (match) {
+    return {
+      kind: 'spell-damage',
+      n: match[1] === 'X' ? 'X' : Number(match[1]),
+      what: match[2].toLowerCase(),
+      contract: 'spell-damage',
+    };
+  }
+  match = /^Target (attacking )?creature( you control| an opponent controls)? gets ([+-](?:\d+|X))\/([+-]\d+)(?: and gains? (.+))? until end of turn\.$/i.exec(line);
+  if (match) {
+    const keywords = match[5] ? keywordList(match[5]) : [];
+    if (match[5] && !keywords) return null;
+    const printedPower = match[3].toUpperCase();
+    return {
+      kind: 'spell-pump',
+      power: printedPower === '+X' ? 'X' : printedPower === '-X' ? '-X' : Number(match[3]),
+      toughness: Number(match[4]),
+      keywords,
+      controller: match[2] ? (match[2].toLowerCase().includes('you') ? 'you' : 'opponent') : 'any',
+      attacking: !!match[1],
+      contract: 'spell-pump',
+    };
+  }
+  match = /^Target creature( you control)? gains? (.+) until end of turn\.$/i.exec(line);
+  if (match) {
+    const keywords = keywordList(match[2]);
+    if (keywords) {
+      return {
+        kind: 'spell-pump', power: 0, toughness: 0, keywords,
+        controller: match[1] ? 'you' : 'any', contract: 'spell-pump',
       };
     }
   }
-  if (!operation) {
-    match = new RegExp('^' + source +
-      ' deals (\\d+|X) damage to (any target|target creature or planeswalker|target creature|target player or planeswalker|target opponent|target player|each opponent)\\.$', 'i').exec(rulesCore);
-    if (match) {
-      operation = {
-        kind: 'spell-damage',
-        n: match[1] === 'X' ? 'X' : Number(match[1]),
-        what: match[2].toLowerCase(),
-        contract: 'spell-damage',
-      };
-    }
+  match = /^(Creatures you control|Attacking creatures) get ([+-]\d+)\/([+-]\d+)(?: and gain (.+))? until end of turn\.$/i.exec(line);
+  if (match) {
+    const keywords = match[4] ? keywordList(match[4]) : [];
+    if (match[4] && !keywords) return null;
+    return {
+      kind: 'spell-team-pump',
+      attackingOnly: /^Attacking/i.test(match[1]),
+      controller: /^Creatures you control/i.test(match[1]) ? 'you' : 'any',
+      power: Number(match[2]),
+      toughness: Number(match[3]),
+      keywords,
+      contract: 'spell-team-pump',
+    };
   }
-  if (!operation) {
-    match = /^Target creature gets ([+-]\d+)\/([+-]\d+) until end of turn(?: and gains? (flying|trample|deathtouch|lifelink|haste|vigilance|menace|reach|first strike|double strike) until end of turn)?\.$/i.exec(rulesCore);
-    if (match) {
-      operation = {
-        kind: 'spell-pump',
-        power: Number(match[1]),
-        toughness: Number(match[2]),
-        keywords: match[3] ? [match[3].toLowerCase()] : [],
-        contract: 'spell-pump',
-      };
-    }
+  match = /^All creatures get ([+-]\d+)\/([+-]\d+) until end of turn\.$/i.exec(line);
+  if (match) {
+    return {
+      kind: 'spell-global-pump', power: Number(match[1]), toughness: Number(match[2]),
+      contract: 'spell-global-pump',
+    };
   }
-  if (!operation) {
-    match = /^Creatures you control get ([+-]\d+)\/([+-]\d+) until end of turn(?: and gain (flying|trample|deathtouch|lifelink|haste|vigilance|menace|reach|first strike|double strike) until end of turn)?\.$/i.exec(rulesCore);
-    if (match) {
-      operation = {
-        kind: 'spell-team-pump',
-        power: Number(match[1]),
-        toughness: Number(match[2]),
-        keywords: match[3] ? [match[3].toLowerCase()] : [],
-        contract: 'spell-team-pump',
-      };
-    }
+  match = /^You gain (\d+) life\.$/i.exec(line);
+  if (match) return { kind: 'spell-life-gain', n: Number(match[1]), contract: 'spell-life-gain' };
+  match = /^Return target (creature|nonland permanent|permanent) to its owner's hand\.$/i.exec(line);
+  if (match) return { kind: 'spell-bounce', what: match[1].toLowerCase(), contract: 'spell-bounce' };
+  match = /^Return target (creature|permanent|instant or sorcery|land) card from your graveyard to your hand\.$/i.exec(line);
+  if (match) {
+    return { kind: 'spell-graveyard-return', what: match[1].toLowerCase(), contract: 'graveyard-zone-change' };
   }
-  if (!operation) {
-    match = /^You gain (\d+) life\.$/i.exec(rulesCore);
-    if (match) operation = { kind: 'spell-life-gain', n: Number(match[1]), contract: 'spell-life-gain' };
+  match = /^Target (opponent|player) discards? (a|one|two|three) cards?\.$/i.exec(line);
+  if (match) {
+    return {
+      kind: 'spell-discard', what: match[1].toLowerCase(), n: numberWord(match[2]), contract: 'spell-discard',
+    };
   }
-  if (!operation) {
-    match = /^Return target (creature|nonland permanent|permanent) to its owner's hand\.$/i.exec(rulesCore);
-    if (match) operation = { kind: 'spell-bounce', what: match[1].toLowerCase(), contract: 'spell-bounce' };
-  }
-  if (!operation) {
-    match = /^Target (opponent|player) discards? (a|one|two|three) cards?\.$/i.exec(rulesCore);
-    if (match) {
-      operation = {
-        kind: 'spell-discard',
-        what: match[1].toLowerCase(),
-        n: numberWord(match[2]),
-        contract: 'spell-discard',
-      };
-    }
-  }
-  if (!operation) {
-    match = /^Target player mills (one|two|three|four|five|six|seven|eight|nine|ten|\d+) cards?\.$/i.exec(rulesCore);
+  match = /^Target player mills (one|two|three|four|five|six|seven|eight|nine|ten|\d+) cards?\.$/i.exec(line);
+  if (match) {
     const words = { eight: 8, nine: 9, ten: 10 };
-    if (match) {
-      operation = {
-        kind: 'spell-mill',
-        n: words[match[1].toLowerCase()] || numberWord(match[1]),
-        contract: 'spell-mill',
-      };
-    }
+    return {
+      kind: 'spell-mill', n: words[match[1].toLowerCase()] || numberWord(match[1]), contract: 'spell-mill',
+    };
   }
-  if (!operation) return { reason: 'spell-needs-explicit-semantics' };
+  const token = spellTokenOperation(line);
+  if (token) return token;
+  match = /^Put (a|one|two|three|four|five|six|seven|\d+) \+1\/\+1 counters? on target creature( you control)?\.$/i.exec(line);
+  if (match) {
+    return {
+      kind: 'spell-counter-on-creature', counter: '+1/+1', n: numberWord(match[1]),
+      controller: match[2] ? 'you' : 'any', contract: 'spell-counter-on-permanent',
+    };
+  }
+  if (/^Prevent all combat damage that would be dealt (?:this turn|to players this turn)\.$/i.test(line)) {
+    return { kind: 'spell-fog', playersOnly: /to players/i.test(line), contract: 'spell-damage-prevention' };
+  }
+  match = /^(Tap|Untap) (target creature|target permanent|target land|up to two target creatures)\.$/i.exec(line);
+  if (match) {
+    return {
+      kind: 'spell-' + match[1].toLowerCase(),
+      what: match[2].toLowerCase(),
+      count: /^up to two/i.test(match[2]) ? 2 : 1,
+      upTo: /^up to/i.test(match[2]),
+      contract: 'spell-tap-untap',
+    };
+  }
+  match = /^(Scry|Surveil) ([1-3])\.$/i.exec(line);
+  if (match) {
+    return { kind: 'spell-' + match[1].toLowerCase(), n: Number(match[2]), contract: 'spell-library-selection' };
+  }
+  match = /^Add (one mana of any color|(?:\{[WUBRGC]\})+)\.$/i.exec(line);
+  if (match) {
+    if (/one mana/i.test(match[1])) return { kind: 'spell-add-mana', produce: { ANY: true, n: 1 }, contract: 'spell-add-mana' };
+    const symbols = [...match[1].matchAll(/\{([WUBRGC])\}/g)].map(entry => entry[1]);
+    const produce = {};
+    for (const symbol of symbols) produce[symbol] = (produce[symbol] || 0) + 1;
+    return { kind: 'spell-add-mana', produce, contract: 'spell-add-mana' };
+  }
+  match = /^Destroy all (creatures|artifacts|enchantments)\.(?: They can't be regenerated\.)?$/i.exec(line);
+  if (match) {
+    return {
+      kind: 'spell-destroy-all', what: match[1].toLowerCase(),
+      noRegen: /can't be regenerated/i.test(line), contract: 'spell-board-wipe',
+    };
+  }
+  return null;
+}
+
+function spellOperationNeedsTarget(operation) {
+  return ['spell-counter', 'spell-destroy', 'spell-exile', 'spell-damage', 'spell-pump',
+    'spell-bounce', 'spell-discard', 'spell-mill', 'spell-graveyard-return',
+    'spell-counter-on-creature', 'spell-tap', 'spell-untap'].includes(operation.kind) &&
+    !(operation.kind === 'spell-damage' && operation.what === 'each opponent');
+}
+
+function spellSemantics(card, rulesCore) {
+  if (!rulesCore) return { reason: 'spell-needs-explicit-semantics' };
+  const implementation = [];
+  for (const line of rulesCore.split('\n')) {
+    const operation = spellLineOperation(card, line) || spellModifierOperation(card, line);
+    if (!operation) return { reason: 'spell-needs-explicit-semantics' };
+    implementation.push(operation);
+  }
+  if (implementation.filter(spellOperationNeedsTarget).length > 1) {
+    return { reason: 'spell-needs-explicit-semantics' };
+  }
   return {
     semanticClass: 'spell-template',
     implementedKeywords: [],
-    implementation: [operation],
-    oracleContracts: [operation.contract],
+    implementation,
+    oracleContracts: [...new Set(implementation.map(operation => operation.contract))],
     rulesCore,
   };
 }
@@ -381,6 +1015,8 @@ export function semanticClass(card) {
   if (parsed.types.includes('Creature')) return creatureSemantics(card, rulesCore);
   if (parsed.types.includes('Land')) return landSemantics(card, rulesCore);
   if (parsed.types.includes('Instant') || parsed.types.includes('Sorcery')) return spellSemantics(card, rulesCore);
+  if (parsed.types.includes('Artifact')) return artifactSemantics(card, parsed, rulesCore);
+  if (parsed.types.includes('Enchantment')) return enchantmentSemantics(card, parsed, rulesCore);
   return { reason: 'noncreature-needs-explicit-semantics' };
 }
 
@@ -514,6 +1150,7 @@ export function createImportPlan({
   limit = DEFAULT_LIMIT,
   sequence,
   acceptNewSnapshot = false,
+  expectedSnapshot = '',
   generatedAt = new Date().toISOString(),
 }) {
   const selectedLimit = validateLimit(limit);
@@ -534,6 +1171,11 @@ export function createImportPlan({
   }
 
   const previousSnapshot = currentState.source && currentState.source.bulkUpdatedAt;
+  if (expectedSnapshot && expectedSnapshot !== bulk.updated_at) {
+    throw new Error(
+      'Scryfall Oracle snapshot is ' + bulk.updated_at + ', expected exactly ' + expectedSnapshot + '.'
+    );
+  }
   if (previousSnapshot && previousSnapshot !== bulk.updated_at && !acceptNewSnapshot) {
     throw new Error(
       'Scryfall Oracle snapshot changed from ' + previousSnapshot + ' to ' + bulk.updated_at +
@@ -550,6 +1192,8 @@ export function createImportPlan({
   const deferredByReason = {};
   const deferredExamples = {};
   const supported = [];
+  const sourceNames = new Set();
+  const sourceOracleIds = new Set();
   let paperCards = 0;
   let commanderLegalCards = 0;
 
@@ -564,6 +1208,12 @@ export function createImportPlan({
       continue;
     }
     commanderLegalCards += 1;
+    if (sourceNames.has(card.name) || sourceOracleIds.has(card.oracle_id)) {
+      addReason(deferredByReason, deferredExamples, 'duplicate-in-source-feed', card);
+      continue;
+    }
+    sourceNames.add(card.name);
+    sourceOracleIds.add(card.oracle_id);
     if (legacyNames.has(card.name)) {
       addReason(deferredByReason, deferredExamples, 'already-in-legacy-engine', card);
       continue;
@@ -604,8 +1254,13 @@ export function createImportPlan({
       games: ['paper'],
       commanderLegality: 'legal',
       sort: 'English card name, then Oracle ID',
-      semanticClasses: ['vanilla', 'keyword-only', 'creature-template', 'land-mana-template', 'spell-template'],
+      semanticClasses: [
+        'vanilla', 'keyword-only', 'creature-template', 'land-mana-template', 'spell-template',
+        'permanent-template', 'artifact-template', 'enchantment-template', 'equipment-template',
+        'aura-template', 'vehicle-template',
+      ],
       note: 'Every non-reminder Oracle line must exactly match a central keyword or a closed executable template. Prefix/partial autoscripting is never certification.',
+      compilerVersion: SEMANTIC_COMPILER_VERSION,
     },
     catalogSummary: {
       oracleRows: (cards || []).length,
@@ -642,6 +1297,7 @@ export function createImportPlan({
     batchSize: selectedLimit,
     updatedAt: generatedAt,
     source: report.source,
+    compilerVersion: SEMANTIC_COMPILER_VERSION,
     batches: [...(currentState.batches || []), {
       id,
       sequence: selectedSequence,
@@ -739,6 +1395,7 @@ export async function runOracleImport(args = process.argv.slice(2), dependencies
     limit: selectedLimit,
     sequence,
     acceptNewSnapshot: args.includes('--accept-new-snapshot'),
+    expectedSnapshot: argValue(args, 'expected-snapshot', ''),
     generatedAt,
   });
   const logger = dependencies.console || console;

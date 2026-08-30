@@ -2,6 +2,20 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadEngine } from './helpers/load-engine.mjs';
 
+test('seeded games allocate card identities locally instead of inheriting process history', () => {
+  const MTG = loadEngine();
+  const first = new MTG.Game({ seed: 1, paced: false, maxTurns: 1 });
+  const firstPlayer = first.addPlayer('First', { name: 'First' }, null, false);
+  const firstCard = new MTG.CardInst(MTG.DEFS.Forest, firstPlayer);
+  for (let index = 0; index < 250; index++) new MTG.CardInst(MTG.DEFS.Forest, firstPlayer);
+
+  const second = new MTG.Game({ seed: 1, paced: false, maxTurns: 1 });
+  const secondPlayer = second.addPlayer('Second', { name: 'Second' }, null, false);
+  const secondCard = new MTG.CardInst(MTG.DEFS.Forest, secondPlayer);
+  assert.equal(firstCard.iid, 1);
+  assert.equal(secondCard.iid, 1, 'a prior game cannot perturb deterministic AI tie-break identities');
+});
+
 test('svaki deck može završiti jednu determinističku četveroigračku smoke partiju', { timeout: 60_000 }, async () => {
   const MTG = loadEngine();
   const decks = Object.keys(MTG.DECKS);

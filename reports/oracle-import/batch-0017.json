@@ -1,0 +1,6550 @@
+{
+  "schemaVersion": 1,
+  "id": "oracle-0017",
+  "sequence": 17,
+  "generatedAt": "2026-08-30T15:09:52.780Z",
+  "source": {
+    "provider": "Scryfall",
+    "endpoint": "https://api.scryfall.com/bulk-data",
+    "bulkType": "oracle_cards",
+    "bulkId": "27bf3214-1271-490b-bdfe-c0be6c23d02e",
+    "bulkUpdatedAt": "2026-08-30T09:01:56.964+00:00",
+    "bulkDescription": "A JSON file containing one Scryfall card object for each Oracle ID on Scryfall. The chosen sets for the cards are an attempt to return the most up-to-date recognizable version of the card."
+  },
+  "selectionPolicy": {
+    "games": [
+      "paper"
+    ],
+    "commanderLegality": "legal",
+    "sort": "English card name, then Oracle ID",
+    "semanticClasses": [
+      "vanilla",
+      "keyword-only",
+      "creature-template",
+      "land-mana-template",
+      "spell-template",
+      "permanent-template",
+      "artifact-template",
+      "enchantment-template",
+      "equipment-template",
+      "aura-template",
+      "vehicle-template"
+    ],
+    "note": "Every non-reminder Oracle line must exactly match a central keyword or a closed executable template. Prefix/partial autoscripting is never certification.",
+    "compilerVersion": 3
+  },
+  "catalogSummary": {
+    "oracleRows": 38627,
+    "paperCards": 36495,
+    "commanderLegalCards": 30784,
+    "legacyEngineCards": 1626,
+    "readyForThisCompiler": 1017,
+    "selected": 100,
+    "selectedBySemanticClass": {
+      "artifact-template": 1,
+      "aura-template": 14,
+      "creature-template": 39,
+      "enchantment-template": 3,
+      "equipment-template": 3,
+      "spell-template": 38,
+      "vehicle-template": 2
+    },
+    "deferredByReason": {
+      "already-imported-batch": 1657,
+      "already-in-legacy-engine": 1593,
+      "complex-layout": 825,
+      "dynamic-power-toughness": 193,
+      "land-needs-explicit-semantics": 675,
+      "noncreature-needs-explicit-semantics": 4896,
+      "not-commander-legal": 5711,
+      "not-paper": 2132,
+      "oracle-needs-explicit-semantics": 13854,
+      "reminder-only-oracle": 1,
+      "spell-needs-explicit-semantics": 5752,
+      "unsupported-mana-cost": 321
+    },
+    "deferredExamples": {
+      "already-imported-batch": [
+        "Storm Crow",
+        "Nantuko Elder",
+        "Leopard-Spotted Jiao",
+        "Dakmor Scorpion",
+        "Scaled Wurm",
+        "Boros Recruit",
+        "Timber Gorge",
+        "Bladed Sentinel"
+      ],
+      "already-in-legacy-engine": [
+        "Pteramander",
+        "Lattice Library",
+        "Escape Tunnel",
+        "Behemoth Sledge",
+        "Kindred Discovery",
+        "Sodden Verdure",
+        "Hot Pursuit",
+        "Solemn Simulacrum"
+      ],
+      "complex-layout": [
+        "Stormchaser's Talent",
+        "Long List of the Ents",
+        "Phyrexian Dragon Engine",
+        "Goring Warplow",
+        "Ulvenwald Captive // Ulvenwald Abomination",
+        "Azusa's Many Journeys // Likeness of the Seeker",
+        "Summon: Primal Odin",
+        "Witch Enchanter // Witch-Blessed Meadow"
+      ],
+      "dynamic-power-toughness": [
+        "Snow Villiers",
+        "Eluge, the Shoreless Sea",
+        "Nethergoyf",
+        "Flora Colossus",
+        "Revenant",
+        "Rubblehulk",
+        "Towering Gibbon",
+        "Kolaghan Forerunners"
+      ],
+      "land-needs-explicit-semantics": [
+        "Shizo, Death's Storehouse",
+        "Airship Engine Room",
+        "Lotus Vale",
+        "Saltcrusted Steppe",
+        "Tainted Isle",
+        "Fiery Islet",
+        "Prismatic Vista",
+        "Miren, the Moaning Well"
+      ],
+      "noncreature-needs-explicit-semantics": [
+        "Static Orb",
+        "Food Fight",
+        "Strength of Unity",
+        "One with the Kami",
+        "Dungeon Delver",
+        "Coalition Relic",
+        "Mindlink Mech",
+        "Demonic Vigor"
+      ],
+      "not-commander-legal": [
+        "Munitions Enthusiast",
+        "Brightglass Gearhulk // Brightglass Gearhulk",
+        "Phyrexian Broodstar",
+        "Wall of Fortune",
+        "Gigantosaurus // Gigantosaurus",
+        "Tyranid",
+        "Gleeful Demolition // Gleeful Demolition",
+        "Demon"
+      ],
+      "not-paper": [
+        "Mine Security",
+        "Kavaron Consumed",
+        "Snarlfang Vermin",
+        "Wyluli Wolf",
+        "Palinchron",
+        "Wei Strike Force",
+        "Weakstone",
+        "Providence of Night"
+      ],
+      "oracle-needs-explicit-semantics": [
+        "Nissa, Worldsoul Speaker",
+        "Walking Sponge",
+        "Greta, Sweettooth Scourge",
+        "Vedalken Heretic",
+        "Ruthless Knave",
+        "Hua Tuo, Honored Physician",
+        "Disposal Mummy",
+        "Wasp, Shrinking Savior"
+      ],
+      "reminder-only-oracle": [
+        "Dryad Arbor"
+      ],
+      "spell-needs-explicit-semantics": [
+        "Road of Return",
+        "Ravnica at War",
+        "Torrent of Fire",
+        "Veil of Summer",
+        "Aura Graft",
+        "Saheeli's Artistry",
+        "Safewright Quest",
+        "Instill Infection"
+      ],
+      "unsupported-mana-cost": [
+        "Adventurous Eater // Have a Bite",
+        "Tamiyo, Compleated Sage",
+        "Gollum, Silent Slinker // Meager Meal",
+        "Maelstrom Artisan // Rocket Volley",
+        "Heaven // Earth",
+        "Breaking // Entering",
+        "Twice Upon a Time // Unlikely Meeting",
+        "Faerie Guidemother // Gift of the Fae"
+      ]
+    },
+    "nextReadyNames": [
+      "Ghost Ship",
+      "Ghostly Changeling",
+      "Giant Crab",
+      "Giant Spectacle",
+      "Gift of Granite",
+      "Gift of Orzhova",
+      "Gift of Strength",
+      "Give In to Violence",
+      "Glacial Stalker",
+      "Glimmering Angel",
+      "Glint",
+      "Gloomwidow"
+    ]
+  },
+  "cards": [
+    {
+      "position": 1,
+      "oracleId": "888a5071-24b1-48ce-a97b-39f108976c6d",
+      "scryfallId": "e2e10742-77c9-4f91-81b2-37b2ac910f09",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-destroy",
+          "noRegen": false,
+          "contract": "spell-destroy",
+          "what": "land"
+        },
+        {
+          "kind": "mechanic-flashback",
+          "cost": "{5}{R}{R}",
+          "speed": "sorcery",
+          "contract": "mechanic-flashback"
+        }
+      ],
+      "oracleContracts": [
+        "spell-destroy",
+        "mechanic-flashback"
+      ],
+      "rulesCore": "Destroy target land.\nFlashback {5}{R}{R}",
+      "raw": {
+        "name": "Earth Rift",
+        "cost": "{3}{R}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Destroy target land.\nFlashback {5}{R}{R} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "888a5071-24b1-48ce-a97b-39f108976c6d",
+        "_scryfallId": "e2e10742-77c9-4f91-81b2-37b2ac910f09",
+        "_layout": "normal",
+        "_set": "ody",
+        "_collectorNumber": "189",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Flashback"
+        ],
+        "commanderLegality": "legal",
+        "set": "ody",
+        "setName": "Odyssey",
+        "collectorNumber": "189",
+        "rarity": "common",
+        "releasedAt": "2001-10-01",
+        "scryfallUri": "https://scryfall.com/card/ody/189/earth-rift?utm_source=api"
+      }
+    },
+    {
+      "position": 2,
+      "oracleId": "04683bd7-b100-4fc8-8165-316c5508c255",
+      "scryfallId": "2b85dadb-351f-4975-a2c3-febf5e80bc85",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{B}{G}",
+          "power": 1,
+          "toughness": 1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{B}{G}: This creature gets +1/+1 until end of turn.",
+      "raw": {
+        "name": "Ebony Treefolk",
+        "cost": "{1}{B}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Treefolk"
+        ],
+        "oracle": "{B}{G}: This creature gets +1/+1 until end of turn.",
+        "_ci": [
+          "B",
+          "G"
+        ],
+        "_oracleId": "04683bd7-b100-4fc8-8165-316c5508c255",
+        "_scryfallId": "2b85dadb-351f-4975-a2c3-febf5e80bc85",
+        "_layout": "normal",
+        "_set": "apc",
+        "_collectorNumber": "97",
+        "_rarity": "uncommon",
+        "power": "3",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Creature — Treefolk",
+        "colorIdentity": [
+          "B",
+          "G"
+        ],
+        "colors": [
+          "B",
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "apc",
+        "setName": "Apocalypse",
+        "collectorNumber": "97",
+        "rarity": "uncommon",
+        "releasedAt": "2001-06-04",
+        "scryfallUri": "https://scryfall.com/card/apc/97/ebony-treefolk?utm_source=api"
+      }
+    },
+    {
+      "position": 3,
+      "oracleId": "9a18fb98-796a-43b1-8157-e3afca53a1c0",
+      "scryfallId": "aec83c9a-8ec4-4a5a-b27f-0e74a2b3d21e",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mechanic-uncounterable",
+          "contract": "mechanic-uncounterable"
+        },
+        {
+          "kind": "spell-bounce",
+          "what": "nonland permanent",
+          "contract": "spell-bounce"
+        },
+        {
+          "kind": "spell-draw",
+          "n": 1,
+          "contract": "spell-draw"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-uncounterable",
+        "spell-bounce",
+        "spell-draw"
+      ],
+      "rulesCore": "This spell can't be countered.\nReturn target nonland permanent to its owner's hand.\nDraw a card.",
+      "raw": {
+        "name": "Eject",
+        "cost": "{3}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "This spell can't be countered.\nReturn target nonland permanent to its owner's hand.\nDraw a card.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "9a18fb98-796a-43b1-8157-e3afca53a1c0",
+        "_scryfallId": "aec83c9a-8ec4-4a5a-b27f-0e74a2b3d21e",
+        "_layout": "normal",
+        "_set": "fin",
+        "_collectorNumber": "52",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "fin",
+        "setName": "Final Fantasy",
+        "collectorNumber": "52",
+        "rarity": "uncommon",
+        "releasedAt": "2025-06-13",
+        "scryfallUri": "https://scryfall.com/card/fin/52/eject?utm_source=api"
+      }
+    },
+    {
+      "position": 4,
+      "oracleId": "8db63f1a-0d63-4b11-966d-818d83a082f9",
+      "scryfallId": "7f3a6148-d005-49c1-a7fc-867c4e8251cd",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "etb-each-opponent-discard",
+          "n": 1,
+          "contract": "etb-each-opponent-discard"
+        }
+      ],
+      "oracleContracts": [
+        "etb-each-opponent-discard"
+      ],
+      "rulesCore": "When this creature enters, each opponent discards a card.",
+      "raw": {
+        "name": "Elderfang Disciple",
+        "cost": "{1}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Cleric"
+        ],
+        "oracle": "When this creature enters, each opponent discards a card.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "8db63f1a-0d63-4b11-966d-818d83a082f9",
+        "_scryfallId": "7f3a6148-d005-49c1-a7fc-867c4e8251cd",
+        "_layout": "normal",
+        "_set": "khm",
+        "_collectorNumber": "93",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elf Cleric",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "khm",
+        "setName": "Kaldheim",
+        "collectorNumber": "93",
+        "rarity": "common",
+        "releasedAt": "2021-02-05",
+        "scryfallUri": "https://scryfall.com/card/khm/93/elderfang-disciple?utm_source=api"
+      }
+    },
+    {
+      "position": 5,
+      "oracleId": "f9e668f9-21af-4fd8-9a37-6505ab2234e3",
+      "scryfallId": "ea51991c-1589-4c62-965b-5ae8d233520b",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-token",
+          "n": 1,
+          "token": {
+            "name": "Elemental",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Elemental"
+            ],
+            "power": "4",
+            "toughness": "4",
+            "colors": [
+              "U",
+              "R"
+            ],
+            "keywords": []
+          },
+          "contract": "spell-token-creation"
+        }
+      ],
+      "oracleContracts": [
+        "spell-token-creation"
+      ],
+      "rulesCore": "Create a 4/4 blue and red Elemental creature token.",
+      "raw": {
+        "name": "Elemental Summoning",
+        "cost": "{3}{U/R}{U/R}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [
+          "Lesson"
+        ],
+        "oracle": "Create a 4/4 blue and red Elemental creature token.",
+        "_ci": [
+          "R",
+          "U"
+        ],
+        "_oracleId": "f9e668f9-21af-4fd8-9a37-6505ab2234e3",
+        "_scryfallId": "ea51991c-1589-4c62-965b-5ae8d233520b",
+        "_layout": "normal",
+        "_set": "stx",
+        "_collectorNumber": "183",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery — Lesson",
+        "colorIdentity": [
+          "R",
+          "U"
+        ],
+        "colors": [
+          "R",
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "stx",
+        "setName": "Strixhaven: School of Mages",
+        "collectorNumber": "183",
+        "rarity": "common",
+        "releasedAt": "2021-04-23",
+        "scryfallUri": "https://scryfall.com/card/stx/183/elemental-summoning?utm_source=api"
+      }
+    },
+    {
+      "position": 6,
+      "oracleId": "09386931-59bd-481f-bccc-32e8a8abc0f9",
+      "scryfallId": "b4abdf1c-a0a9-4e1d-b448-58742830f767",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-token",
+          "n": 1,
+          "token": {
+            "name": "Elephant",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Elephant"
+            ],
+            "power": "3",
+            "toughness": "3",
+            "colors": [
+              "G"
+            ],
+            "keywords": []
+          },
+          "contract": "spell-token-creation"
+        },
+        {
+          "kind": "mechanic-flashback",
+          "cost": "{6}{G}{G}",
+          "speed": "instant",
+          "contract": "mechanic-flashback"
+        }
+      ],
+      "oracleContracts": [
+        "spell-token-creation",
+        "mechanic-flashback"
+      ],
+      "rulesCore": "Create a 3/3 green Elephant creature token.\nFlashback {6}{G}{G}",
+      "raw": {
+        "name": "Elephant Ambush",
+        "cost": "{2}{G}{G}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Create a 3/3 green Elephant creature token.\nFlashback {6}{G}{G} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "09386931-59bd-481f-bccc-32e8a8abc0f9",
+        "_scryfallId": "b4abdf1c-a0a9-4e1d-b448-58742830f767",
+        "_layout": "normal",
+        "_set": "ody",
+        "_collectorNumber": "240",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Flashback"
+        ],
+        "commanderLegality": "legal",
+        "set": "ody",
+        "setName": "Odyssey",
+        "collectorNumber": "240",
+        "rarity": "common",
+        "releasedAt": "2001-10-01",
+        "scryfallUri": "https://scryfall.com/card/ody/240/elephant-ambush?utm_source=api"
+      }
+    },
+    {
+      "position": 7,
+      "oracleId": "6536f72e-ff4e-4cda-bc7d-909145adf829",
+      "scryfallId": "821cd2dd-aa03-4c55-b9e4-98e0284889d3",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "etb-loot",
+          "order": "draw-discard",
+          "optional": false,
+          "contract": "etb-loot"
+        }
+      ],
+      "oracleContracts": [
+        "etb-loot"
+      ],
+      "rulesCore": "When this creature enters, draw a card, then discard a card.",
+      "raw": {
+        "name": "Elite Instructor",
+        "cost": "{2}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Wizard"
+        ],
+        "oracle": "When this creature enters, draw a card, then discard a card.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "6536f72e-ff4e-4cda-bc7d-909145adf829",
+        "_scryfallId": "821cd2dd-aa03-4c55-b9e4-98e0284889d3",
+        "_layout": "normal",
+        "_set": "thb",
+        "_collectorNumber": "49",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Wizard",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "thb",
+        "setName": "Theros Beyond Death",
+        "collectorNumber": "49",
+        "rarity": "common",
+        "releasedAt": "2020-01-24",
+        "scryfallUri": "https://scryfall.com/card/thb/49/elite-instructor?utm_source=api"
+      }
+    },
+    {
+      "position": 8,
+      "oracleId": "1f300320-ad98-4812-b34b-54885a86aee9",
+      "scryfallId": "6a9eb72b-9ae2-4b64-bbb9-187446b5fd2f",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-damage",
+          "n": 3,
+          "what": "any target",
+          "contract": "spell-damage"
+        },
+        {
+          "kind": "spell-draw",
+          "n": 1,
+          "contract": "spell-draw"
+        }
+      ],
+      "oracleContracts": [
+        "spell-damage",
+        "spell-draw"
+      ],
+      "rulesCore": "Ember Shot deals 3 damage to any target.\nDraw a card.",
+      "raw": {
+        "name": "Ember Shot",
+        "cost": "{6}{R}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Ember Shot deals 3 damage to any target.\nDraw a card.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "1f300320-ad98-4812-b34b-54885a86aee9",
+        "_scryfallId": "6a9eb72b-9ae2-4b64-bbb9-187446b5fd2f",
+        "_layout": "normal",
+        "_set": "jud",
+        "_collectorNumber": "87",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "jud",
+        "setName": "Judgment",
+        "collectorNumber": "87",
+        "rarity": "common",
+        "releasedAt": "2002-05-27",
+        "scryfallUri": "https://scryfall.com/card/jud/87/ember-shot?utm_source=api"
+      }
+    },
+    {
+      "position": 9,
+      "oracleId": "0b21ab85-2405-4410-9624-fb3c7d11ba56",
+      "scryfallId": "98fe1e1e-b14a-4efe-894b-b9da635f007f",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "haste"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{1}{R}",
+          "power": 2,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Haste\n{1}{R}: This creature gets +2/+0 until end of turn.",
+      "raw": {
+        "name": "Ember-Eye Wolf",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Wolf"
+        ],
+        "oracle": "Haste\n{1}{R}: This creature gets +2/+0 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "0b21ab85-2405-4410-9624-fb3c7d11ba56",
+        "_scryfallId": "98fe1e1e-b14a-4efe-894b-b9da635f007f",
+        "_layout": "normal",
+        "_set": "soi",
+        "_collectorNumber": "154",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Wolf",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Haste"
+        ],
+        "commanderLegality": "legal",
+        "set": "soi",
+        "setName": "Shadows over Innistrad",
+        "collectorNumber": "154",
+        "rarity": "common",
+        "releasedAt": "2016-04-08",
+        "scryfallUri": "https://scryfall.com/card/soi/154/ember-eye-wolf?utm_source=api"
+      }
+    },
+    {
+      "position": 10,
+      "oracleId": "b067aa04-5977-4371-85d1-78d2884df03f",
+      "scryfallId": "931f2093-4d43-449e-82e8-beb97d25a0e8",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "self-keyword-ability",
+          "cost": "{G}{G}",
+          "keyword": "first strike",
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Flying\n{G}{G}: This creature gains first strike until end of turn.",
+      "raw": {
+        "name": "Emerald Dragonfly",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Insect"
+        ],
+        "oracle": "Flying\n{G}{G}: This creature gains first strike until end of turn.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "b067aa04-5977-4371-85d1-78d2884df03f",
+        "_scryfallId": "931f2093-4d43-449e-82e8-beb97d25a0e8",
+        "_layout": "normal",
+        "_set": "chr",
+        "_collectorNumber": "63",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Insect",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "chr",
+        "setName": "Chronicles",
+        "collectorNumber": "63",
+        "rarity": "common",
+        "releasedAt": "1995-07-01",
+        "scryfallUri": "https://scryfall.com/card/chr/63/emerald-dragonfly?utm_source=api"
+      }
+    },
+    {
+      "position": 11,
+      "oracleId": "3a59c882-8bb8-49ba-862f-125020dd5bec",
+      "scryfallId": "e9116aa0-1993-4f4a-9a1d-0561d0fbcba9",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-token",
+          "n": 2,
+          "token": {
+            "name": "Goblin",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Goblin"
+            ],
+            "power": "1",
+            "toughness": "1",
+            "colors": [
+              "R"
+            ],
+            "keywords": []
+          },
+          "contract": "spell-token-creation"
+        },
+        {
+          "kind": "mechanic-storm",
+          "contract": "mechanic-storm"
+        }
+      ],
+      "oracleContracts": [
+        "spell-token-creation",
+        "mechanic-storm"
+      ],
+      "rulesCore": "Create two 1/1 red Goblin creature tokens.\nStorm",
+      "raw": {
+        "name": "Empty the Warrens",
+        "cost": "{3}{R}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Create two 1/1 red Goblin creature tokens.\nStorm (When you cast this spell, copy it for each spell cast before it this turn.)",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "3a59c882-8bb8-49ba-862f-125020dd5bec",
+        "_scryfallId": "e9116aa0-1993-4f4a-9a1d-0561d0fbcba9",
+        "_layout": "normal",
+        "_set": "plst",
+        "_collectorNumber": "DMR-118",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Storm"
+        ],
+        "commanderLegality": "legal",
+        "set": "plst",
+        "setName": "The List",
+        "collectorNumber": "DMR-118",
+        "rarity": "common",
+        "releasedAt": "2026-11-09",
+        "scryfallUri": "https://scryfall.com/card/plst/DMR-118/empty-the-warrens?utm_source=api"
+      }
+    },
+    {
+      "position": 12,
+      "oracleId": "1cb3f27c-2670-43b8-9305-8adf2e7bd3ae",
+      "scryfallId": "74b2e63d-61c6-46e4-9a6f-56653c49b2ea",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "dies-life-gain",
+          "n": 4,
+          "contract": "dies-life-gain"
+        }
+      ],
+      "oracleContracts": [
+        "dies-life-gain"
+      ],
+      "rulesCore": "When this creature dies, you gain 4 life.",
+      "raw": {
+        "name": "Enatu Golem",
+        "cost": "{6}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Golem"
+        ],
+        "oracle": "When this creature dies, you gain 4 life.",
+        "_ci": [],
+        "_oracleId": "1cb3f27c-2670-43b8-9305-8adf2e7bd3ae",
+        "_scryfallId": "74b2e63d-61c6-46e4-9a6f-56653c49b2ea",
+        "_layout": "normal",
+        "_set": "roe",
+        "_collectorNumber": "217",
+        "_rarity": "uncommon",
+        "power": "3",
+        "toughness": "5"
+      },
+      "catalog": {
+        "typeLine": "Artifact Creature — Golem",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "roe",
+        "setName": "Rise of the Eldrazi",
+        "collectorNumber": "217",
+        "rarity": "uncommon",
+        "releasedAt": "2010-04-23",
+        "scryfallUri": "https://scryfall.com/card/roe/217/enatu-golem?utm_source=api"
+      }
+    },
+    {
+      "position": 13,
+      "oracleId": "42b2db4c-4a1d-436f-9eeb-53a04db46c58",
+      "scryfallId": "4adaf0bf-b26d-4166-8809-431283690de7",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": -2,
+          "toughness": -2,
+          "keywords": [],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nEnchanted creature gets -2/-2.",
+      "raw": {
+        "name": "Enfeeblement",
+        "cost": "{B}{B}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature (Target a creature as you cast this. This card enters attached to that creature.)\nEnchanted creature gets -2/-2.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "42b2db4c-4a1d-436f-9eeb-53a04db46c58",
+        "_scryfallId": "4adaf0bf-b26d-4166-8809-431283690de7",
+        "_layout": "normal",
+        "_set": "9ed",
+        "_collectorNumber": "127",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "9ed",
+        "setName": "Ninth Edition",
+        "collectorNumber": "127",
+        "rarity": "common",
+        "releasedAt": "2005-07-29",
+        "scryfallUri": "https://scryfall.com/card/9ed/127/enfeeblement?utm_source=api"
+      }
+    },
+    {
+      "position": 14,
+      "oracleId": "397964db-465a-407d-9dc7-d0a4944473ac",
+      "scryfallId": "21df7db7-c23b-4dca-b9c8-c785d7007285",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-draw-discard",
+          "draw": 3,
+          "discard": 1,
+          "contract": "spell-draw-discard"
+        }
+      ],
+      "oracleContracts": [
+        "spell-draw-discard"
+      ],
+      "rulesCore": "Draw three cards, then discard a card.",
+      "raw": {
+        "name": "Enhanced Awareness",
+        "cost": "{4}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Draw three cards, then discard a card.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "397964db-465a-407d-9dc7-d0a4944473ac",
+        "_scryfallId": "21df7db7-c23b-4dca-b9c8-c785d7007285",
+        "_layout": "normal",
+        "_set": "frf",
+        "_collectorNumber": "33",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "frf",
+        "setName": "Fate Reforged",
+        "collectorNumber": "33",
+        "rarity": "common",
+        "releasedAt": "2015-01-23",
+        "scryfallUri": "https://scryfall.com/card/frf/33/enhanced-awareness?utm_source=api"
+      }
+    },
+    {
+      "position": 15,
+      "oracleId": "69191459-36ca-4e71-b4bb-0270c4cdaee9",
+      "scryfallId": "1af3eae1-daf0-482f-80ce-db185d16fb88",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mechanic-cascade",
+          "contract": "mechanic-cascade"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-cascade"
+      ],
+      "rulesCore": "Cascade",
+      "raw": {
+        "name": "Enlisted Wurm",
+        "cost": "{4}{G}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Wurm"
+        ],
+        "oracle": "Cascade (When you cast this spell, exile cards from the top of your library until you exile a nonland card that costs less. You may cast it without paying its mana cost. Put the exiled cards on the bottom in a random order.)",
+        "_ci": [
+          "G",
+          "W"
+        ],
+        "_oracleId": "69191459-36ca-4e71-b4bb-0270c4cdaee9",
+        "_scryfallId": "1af3eae1-daf0-482f-80ce-db185d16fb88",
+        "_layout": "normal",
+        "_set": "pca",
+        "_collectorNumber": "90",
+        "_rarity": "uncommon",
+        "power": "5",
+        "toughness": "5"
+      },
+      "catalog": {
+        "typeLine": "Creature — Wurm",
+        "colorIdentity": [
+          "G",
+          "W"
+        ],
+        "colors": [
+          "G",
+          "W"
+        ],
+        "keywords": [
+          "Cascade"
+        ],
+        "commanderLegality": "legal",
+        "set": "pca",
+        "setName": "Planechase Anthology",
+        "collectorNumber": "90",
+        "rarity": "uncommon",
+        "releasedAt": "2016-11-25",
+        "scryfallUri": "https://scryfall.com/card/pca/90/enlisted-wurm?utm_source=api"
+      }
+    },
+    {
+      "position": 16,
+      "oracleId": "0f6e66d5-4f27-485b-999d-ee55c1e218b9",
+      "scryfallId": "2f10e9f0-32c6-40cc-b16d-5590662cdb33",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": "X",
+          "toughness": 0,
+          "keywords": [],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump"
+      ],
+      "rulesCore": "Target creature gets +X/+0 until end of turn.",
+      "raw": {
+        "name": "Enrage",
+        "cost": "{X}{R}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gets +X/+0 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "0f6e66d5-4f27-485b-999d-ee55c1e218b9",
+        "_scryfallId": "2f10e9f0-32c6-40cc-b16d-5590662cdb33",
+        "_layout": "normal",
+        "_set": "9ed",
+        "_collectorNumber": "180",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "9ed",
+        "setName": "Ninth Edition",
+        "collectorNumber": "180",
+        "rarity": "uncommon",
+        "releasedAt": "2005-07-29",
+        "scryfallUri": "https://scryfall.com/card/9ed/180/enrage?utm_source=api"
+      }
+    },
+    {
+      "position": 17,
+      "oracleId": "30062dd0-c049-4872-8011-8b4810a3fa26",
+      "scryfallId": "e7ed250e-12d0-4ebc-9410-5711e71c6d1f",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-counter",
+          "spellType": "sorcery spell",
+          "contract": "spell-counter"
+        }
+      ],
+      "oracleContracts": [
+        "spell-counter"
+      ],
+      "rulesCore": "Counter target sorcery spell.",
+      "raw": {
+        "name": "Envelop",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Counter target sorcery spell.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "30062dd0-c049-4872-8011-8b4810a3fa26",
+        "_scryfallId": "e7ed250e-12d0-4ebc-9410-5711e71c6d1f",
+        "_layout": "normal",
+        "_set": "jud",
+        "_collectorNumber": "39",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "jud",
+        "setName": "Judgment",
+        "collectorNumber": "39",
+        "rarity": "common",
+        "releasedAt": "2002-05-27",
+        "scryfallUri": "https://scryfall.com/card/jud/39/envelop?utm_source=api"
+      }
+    },
+    {
+      "position": 18,
+      "oracleId": "e1a89535-7126-48e0-b335-b732a677b157",
+      "scryfallId": "60fcd11e-9bc3-4a27-966c-42767bac3223",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mechanic-convoke",
+          "contract": "mechanic-convoke"
+        },
+        {
+          "kind": "spell-pump",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [
+            "indestructible"
+          ],
+          "controller": "any",
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-convoke",
+        "spell-pump"
+      ],
+      "rulesCore": "Convoke\nTarget creature gains indestructible until end of turn.",
+      "raw": {
+        "name": "Ephemeral Shields",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Convoke (Your creatures can help cast this spell. Each creature you tap while casting this spell pays for {1} or one mana of that creature's color.)\nTarget creature gains indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy it.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "e1a89535-7126-48e0-b335-b732a677b157",
+        "_scryfallId": "60fcd11e-9bc3-4a27-966c-42767bac3223",
+        "_layout": "normal",
+        "_set": "moc",
+        "_collectorNumber": "184",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Convoke"
+        ],
+        "commanderLegality": "legal",
+        "set": "moc",
+        "setName": "March of the Machine Commander",
+        "collectorNumber": "184",
+        "rarity": "common",
+        "releasedAt": "2023-04-21",
+        "scryfallUri": "https://scryfall.com/card/moc/184/ephemeral-shields?utm_source=api"
+      }
+    },
+    {
+      "position": 19,
+      "oracleId": "ad8edfdf-6915-4fc2-9226-3aae95951935",
+      "scryfallId": "7412373a-da0f-4bec-866c-5e1087f49914",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [
+        "flash"
+      ],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 5,
+          "toughness": 5,
+          "keywords": [
+            "trample"
+          ],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Flash\nEnchant creature\nEnchanted creature gets +5/+5 and has trample.",
+      "raw": {
+        "name": "Epic Proportions",
+        "cost": "{4}{G}{G}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Flash\nEnchant creature\nEnchanted creature gets +5/+5 and has trample.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "ad8edfdf-6915-4fc2-9226-3aae95951935",
+        "_scryfallId": "7412373a-da0f-4bec-866c-5e1087f49914",
+        "_layout": "normal",
+        "_set": "c18",
+        "_collectorNumber": "142",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Enchant",
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "c18",
+        "setName": "Commander 2018",
+        "collectorNumber": "142",
+        "rarity": "rare",
+        "releasedAt": "2018-08-10",
+        "scryfallUri": "https://scryfall.com/card/c18/142/epic-proportions?utm_source=api"
+      }
+    },
+    {
+      "position": 20,
+      "oracleId": "46665089-aa3d-44c3-964d-6638dfbb5782",
+      "scryfallId": "32840097-0531-4c43-b6a8-e76c17420b04",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-counter",
+          "spellType": "creature spell",
+          "contract": "spell-counter"
+        }
+      ],
+      "oracleContracts": [
+        "spell-counter"
+      ],
+      "rulesCore": "Counter target creature spell.",
+      "raw": {
+        "name": "Essence Scatter",
+        "cost": "{1}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Counter target creature spell.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "46665089-aa3d-44c3-964d-6638dfbb5782",
+        "_scryfallId": "32840097-0531-4c43-b6a8-e76c17420b04",
+        "_layout": "normal",
+        "_set": "sos",
+        "_collectorNumber": "47",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "sos",
+        "setName": "Secrets of Strixhaven",
+        "collectorNumber": "47",
+        "rarity": "common",
+        "releasedAt": "2026-04-24",
+        "scryfallUri": "https://scryfall.com/card/sos/47/essence-scatter?utm_source=api"
+      }
+    },
+    {
+      "position": 21,
+      "oracleId": "dab28bc6-3b2a-444f-b596-0a8d95d6d28c",
+      "scryfallId": "2a1a36ca-2467-4c23-ba03-744c76b0be51",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [
+            "vigilance"
+          ],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nEnchanted creature has vigilance.",
+      "raw": {
+        "name": "Eternal Warrior",
+        "cost": "{R}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature\nEnchanted creature has vigilance.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "dab28bc6-3b2a-444f-b596-0a8d95d6d28c",
+        "_scryfallId": "2a1a36ca-2467-4c23-ba03-744c76b0be51",
+        "_layout": "normal",
+        "_set": "5ed",
+        "_collectorNumber": "225",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "5ed",
+        "setName": "Fifth Edition",
+        "collectorNumber": "225",
+        "rarity": "common",
+        "releasedAt": "1997-03-24",
+        "scryfallUri": "https://scryfall.com/card/5ed/225/eternal-warrior?utm_source=api"
+      }
+    },
+    {
+      "position": 22,
+      "oracleId": "b9bd1833-d4f9-46c0-bb94-331c456193fc",
+      "scryfallId": "fa167147-68ca-49af-98d3-538474ea1158",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "etb-draw",
+          "n": 1,
+          "contract": "etb-draw"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [],
+          "skipUntap": true,
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "etb-draw",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nWhen this Aura enters, draw a card.\nEnchanted creature doesn't untap during its controller's untap step.",
+      "raw": {
+        "name": "Eternity Snare",
+        "cost": "{5}{U}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature\nWhen this Aura enters, draw a card.\nEnchanted creature doesn't untap during its controller's untap step.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "b9bd1833-d4f9-46c0-bb94-331c456193fc",
+        "_scryfallId": "fa167147-68ca-49af-98d3-538474ea1158",
+        "_layout": "normal",
+        "_set": "bng",
+        "_collectorNumber": "37",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "bng",
+        "setName": "Born of the Gods",
+        "collectorNumber": "37",
+        "rarity": "uncommon",
+        "releasedAt": "2014-02-07",
+        "scryfallUri": "https://scryfall.com/card/bng/37/eternity-snare?utm_source=api"
+      }
+    },
+    {
+      "position": 23,
+      "oracleId": "9af1b6c4-295f-41d2-b3a0-0863798330d4",
+      "scryfallId": "96ab331f-41eb-40af-b02d-1df0c5760e85",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{B}",
+          "power": 1,
+          "toughness": 1,
+          "contract": "activated-ability-cost"
+        },
+        {
+          "kind": "mechanic-undying",
+          "contract": "mechanic-undying"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost",
+        "mechanic-undying"
+      ],
+      "rulesCore": "{B}: This creature gets +1/+1 until end of turn.\nUndying",
+      "raw": {
+        "name": "Evernight Shade",
+        "cost": "{3}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Shade"
+        ],
+        "oracle": "{B}: This creature gets +1/+1 until end of turn.\nUndying (When this creature dies, if it had no +1/+1 counters on it, return it to the battlefield under its owner's control with a +1/+1 counter on it.)",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "9af1b6c4-295f-41d2-b3a0-0863798330d4",
+        "_scryfallId": "96ab331f-41eb-40af-b02d-1df0c5760e85",
+        "_layout": "normal",
+        "_set": "c14",
+        "_collectorNumber": "144",
+        "_rarity": "uncommon",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Shade",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Undying"
+        ],
+        "commanderLegality": "legal",
+        "set": "c14",
+        "setName": "Commander 2014",
+        "collectorNumber": "144",
+        "rarity": "uncommon",
+        "releasedAt": "2014-11-07",
+        "scryfallUri": "https://scryfall.com/card/c14/144/evernight-shade?utm_source=api"
+      }
+    },
+    {
+      "position": 24,
+      "oracleId": "a8c9f91a-b1e7-451d-b6db-ae865e2b853c",
+      "scryfallId": "014bc5a5-4483-42e9-9c14-1ad229b28eb7",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-counter",
+          "spellType": "creature spell",
+          "contract": "spell-counter"
+        },
+        {
+          "kind": "spell-draw",
+          "n": 1,
+          "contract": "spell-draw"
+        }
+      ],
+      "oracleContracts": [
+        "spell-counter",
+        "spell-draw"
+      ],
+      "rulesCore": "Counter target creature spell.\nDraw a card.",
+      "raw": {
+        "name": "Exclude",
+        "cost": "{2}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Counter target creature spell.\nDraw a card.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "a8c9f91a-b1e7-451d-b6db-ae865e2b853c",
+        "_scryfallId": "014bc5a5-4483-42e9-9c14-1ad229b28eb7",
+        "_layout": "normal",
+        "_set": "cmm",
+        "_collectorNumber": "90",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "cmm",
+        "setName": "Commander Masters",
+        "collectorNumber": "90",
+        "rarity": "common",
+        "releasedAt": "2023-08-04",
+        "scryfallUri": "https://scryfall.com/card/cmm/90/exclude?utm_source=api"
+      }
+    },
+    {
+      "position": 25,
+      "oracleId": "a9aedd96-1aee-480d-87fe-3ed94bd64599",
+      "scryfallId": "ba8db734-1923-40e9-821b-17b534ba5995",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-exile",
+          "noRegen": false,
+          "contract": "spell-exile",
+          "what": "creature",
+          "tapped": true
+        }
+      ],
+      "oracleContracts": [
+        "spell-exile"
+      ],
+      "rulesCore": "Exile target tapped creature.",
+      "raw": {
+        "name": "Excoriate",
+        "cost": "{3}{W}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Exile target tapped creature.",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "a9aedd96-1aee-480d-87fe-3ed94bd64599",
+        "_scryfallId": "ba8db734-1923-40e9-821b-17b534ba5995",
+        "_layout": "normal",
+        "_set": "e01",
+        "_collectorNumber": "5",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "e01",
+        "setName": "Archenemy: Nicol Bolas",
+        "collectorNumber": "5",
+        "rarity": "common",
+        "releasedAt": "2017-06-16",
+        "scryfallUri": "https://scryfall.com/card/e01/5/excoriate?utm_source=api"
+      }
+    },
+    {
+      "position": 26,
+      "oracleId": "3501a839-eef5-44e4-8637-b5754780454e",
+      "scryfallId": "b86c0628-0b61-44f2-91cc-1c3c309631ce",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [
+            "haste"
+          ],
+          "controller": "any",
+          "contract": "spell-pump"
+        },
+        {
+          "kind": "spell-draw",
+          "n": 1,
+          "contract": "spell-draw"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump",
+        "spell-draw"
+      ],
+      "rulesCore": "Target creature gains haste until end of turn.\nDraw a card.",
+      "raw": {
+        "name": "Expedite",
+        "cost": "{R}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gains haste until end of turn.\nDraw a card.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "3501a839-eef5-44e4-8637-b5754780454e",
+        "_scryfallId": "b86c0628-0b61-44f2-91cc-1c3c309631ce",
+        "_layout": "normal",
+        "_set": "cmr",
+        "_collectorNumber": "413",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "cmr",
+        "setName": "Commander Legends",
+        "collectorNumber": "413",
+        "rarity": "common",
+        "releasedAt": "2020-11-20",
+        "scryfallUri": "https://scryfall.com/card/cmr/413/expedite?utm_source=api"
+      }
+    },
+    {
+      "position": 27,
+      "oracleId": "58776b25-794e-4a87-bc71-a77c025b9b03",
+      "scryfallId": "be517a58-b7ee-4213-98a5-8c19e1b2def6",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-exile",
+          "noRegen": false,
+          "contract": "spell-exile",
+          "what": "creature",
+          "tapped": true
+        }
+      ],
+      "oracleContracts": [
+        "spell-exile"
+      ],
+      "rulesCore": "Exile target tapped creature.",
+      "raw": {
+        "name": "Expel",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Exile target tapped creature.",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "58776b25-794e-4a87-bc71-a77c025b9b03",
+        "_scryfallId": "be517a58-b7ee-4213-98a5-8c19e1b2def6",
+        "_layout": "normal",
+        "_set": "stx",
+        "_collectorNumber": "18",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "stx",
+        "setName": "Strixhaven: School of Mages",
+        "collectorNumber": "18",
+        "rarity": "common",
+        "releasedAt": "2021-04-23",
+        "scryfallUri": "https://scryfall.com/card/stx/18/expel?utm_source=api"
+      }
+    },
+    {
+      "position": 28,
+      "oracleId": "f7ed3cd6-d138-4c12-93bb-91629492a5fa",
+      "scryfallId": "6cca2a1d-8319-4217-a5b1-7988d41e8c04",
+      "semanticClass": "equipment-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "attachment-grant",
+          "power": 1,
+          "toughness": 1,
+          "keywords": [
+            "flying",
+            "haste"
+          ],
+          "contract": "attachment-continuous-effect"
+        },
+        {
+          "kind": "equipment-equip",
+          "cost": "{2}",
+          "contract": "equipment-attach-ability"
+        }
+      ],
+      "oracleContracts": [
+        "attachment-continuous-effect",
+        "equipment-attach-ability"
+      ],
+      "rulesCore": "Equipped creature gets +1/+1 and has flying and haste.\nEquip {2}",
+      "raw": {
+        "name": "Experimental Armor",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Equipment"
+        ],
+        "oracle": "Equipped creature gets +1/+1 and has flying and haste. (It can't be blocked except by creatures with flying or reach. It can attack and {T} as soon as it comes under your control.)\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "f7ed3cd6-d138-4c12-93bb-91629492a5fa",
+        "_scryfallId": "6cca2a1d-8319-4217-a5b1-7988d41e8c04",
+        "_layout": "normal",
+        "_set": "msc",
+        "_collectorNumber": "543",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Artifact — Equipment",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Equip"
+        ],
+        "commanderLegality": "legal",
+        "set": "msc",
+        "setName": "Marvel Super Heroes Commander",
+        "collectorNumber": "543",
+        "rarity": "uncommon",
+        "releasedAt": "2026-06-26",
+        "scryfallUri": "https://scryfall.com/card/msc/543/experimental-armor?utm_source=api"
+      }
+    },
+    {
+      "position": 29,
+      "oracleId": "b2c9f074-57ca-4709-976d-f432f632483f",
+      "scryfallId": "8194b7c8-74d1-488a-9d8e-8d9421a63bae",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-counter",
+          "spellType": "sorcery spell",
+          "contract": "spell-counter"
+        }
+      ],
+      "oracleContracts": [
+        "spell-counter"
+      ],
+      "rulesCore": "Counter target sorcery spell.",
+      "raw": {
+        "name": "Extinguish",
+        "cost": "{1}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Counter target sorcery spell.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "b2c9f074-57ca-4709-976d-f432f632483f",
+        "_scryfallId": "8194b7c8-74d1-488a-9d8e-8d9421a63bae",
+        "_layout": "normal",
+        "_set": "s99",
+        "_collectorNumber": "37",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "s99",
+        "setName": "Starter 1999",
+        "collectorNumber": "37",
+        "rarity": "common",
+        "releasedAt": "1999-07-01",
+        "scryfallUri": "https://scryfall.com/card/s99/37/extinguish?utm_source=api"
+      }
+    },
+    {
+      "position": 30,
+      "oracleId": "cb690399-0fb8-4bd8-a73d-5e0e594ff2ae",
+      "scryfallId": "4dc2da75-160d-47f9-b978-e153262ec1fc",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-keyword-ability",
+          "cost": "{2}",
+          "keyword": "double strike",
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{2}: This creature gains double strike until end of turn.",
+      "raw": {
+        "name": "Fallaji Chaindancer",
+        "cost": "{3}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "oracle": "{2}: This creature gains double strike until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "cb690399-0fb8-4bd8-a73d-5e0e594ff2ae",
+        "_scryfallId": "4dc2da75-160d-47f9-b978-e153262ec1fc",
+        "_layout": "normal",
+        "_set": "bro",
+        "_collectorNumber": "134",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "4"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Soldier",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "bro",
+        "setName": "The Brothers' War",
+        "collectorNumber": "134",
+        "rarity": "common",
+        "releasedAt": "2022-11-18",
+        "scryfallUri": "https://scryfall.com/card/bro/134/fallaji-chaindancer?utm_source=api"
+      }
+    },
+    {
+      "position": 31,
+      "oracleId": "f1231def-96fb-4408-a0c9-25d6932d7ead",
+      "scryfallId": "2abba7f1-5d07-4137-88a2-5967396a3e42",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": 3,
+          "toughness": 0,
+          "keywords": [
+            "trample"
+          ],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump"
+      ],
+      "rulesCore": "Target creature gets +3/+0 and gains trample until end of turn.",
+      "raw": {
+        "name": "Fanatical Fever",
+        "cost": "{2}{G}{G}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gets +3/+0 and gains trample until end of turn.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "f1231def-96fb-4408-a0c9-25d6932d7ead",
+        "_scryfallId": "2abba7f1-5d07-4137-88a2-5967396a3e42",
+        "_layout": "normal",
+        "_set": "ice",
+        "_collectorNumber": "234",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "ice",
+        "setName": "Ice Age",
+        "collectorNumber": "234",
+        "rarity": "uncommon",
+        "releasedAt": "1995-06-03",
+        "scryfallUri": "https://scryfall.com/card/ice/234/fanatical-fever?utm_source=api"
+      }
+    },
+    {
+      "position": 32,
+      "oracleId": "b92e97f5-a307-471f-be06-afa4fcdab757",
+      "scryfallId": "4941fa74-c7b9-4468-8080-de8057d3d27b",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": 3,
+          "toughness": 3,
+          "keywords": [
+            "trample"
+          ],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump"
+      ],
+      "rulesCore": "Target creature gets +3/+3 and gains trample until end of turn.",
+      "raw": {
+        "name": "Fanatical Strength",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gets +3/+3 and gains trample until end of turn.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "b92e97f5-a307-471f-be06-afa4fcdab757",
+        "_scryfallId": "4941fa74-c7b9-4468-8080-de8057d3d27b",
+        "_layout": "normal",
+        "_set": "mkm",
+        "_collectorNumber": "159",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "mkm",
+        "setName": "Murders at Karlov Manor",
+        "collectorNumber": "159",
+        "rarity": "common",
+        "releasedAt": "2024-02-09",
+        "scryfallUri": "https://scryfall.com/card/mkm/159/fanatical-strength?utm_source=api"
+      }
+    },
+    {
+      "position": 33,
+      "oracleId": "a297f9a2-3461-4138-8a3e-75027cbdbe12",
+      "scryfallId": "52280963-ba5b-4735-b5cb-67866f8624c9",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{1}{R}",
+          "power": 1,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{1}{R}: This creature gets +1/+0 until end of turn.",
+      "raw": {
+        "name": "Fathom Fleet Firebrand",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Pirate"
+        ],
+        "oracle": "{1}{R}: This creature gets +1/+0 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "a297f9a2-3461-4138-8a3e-75027cbdbe12",
+        "_scryfallId": "52280963-ba5b-4735-b5cb-67866f8624c9",
+        "_layout": "normal",
+        "_set": "xln",
+        "_collectorNumber": "142",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Pirate",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "xln",
+        "setName": "Ixalan",
+        "collectorNumber": "142",
+        "rarity": "common",
+        "releasedAt": "2017-09-29",
+        "scryfallUri": "https://scryfall.com/card/xln/142/fathom-fleet-firebrand?utm_source=api"
+      }
+    },
+    {
+      "position": 34,
+      "oracleId": "274d89b8-1e59-4992-9299-dc793b7f6752",
+      "scryfallId": "693a5a97-d81e-4f4d-ab8f-5a9cabd4c685",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 4,
+          "toughness": 0,
+          "keywords": [],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nEnchanted creature gets +4/+0.",
+      "raw": {
+        "name": "Feast of the Unicorn",
+        "cost": "{3}{B}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature\nEnchanted creature gets +4/+0.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "274d89b8-1e59-4992-9299-dc793b7f6752",
+        "_scryfallId": "693a5a97-d81e-4f4d-ab8f-5a9cabd4c685",
+        "_layout": "normal",
+        "_set": "6ed",
+        "_collectorNumber": "130",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "6ed",
+        "setName": "Classic Sixth Edition",
+        "collectorNumber": "130",
+        "rarity": "common",
+        "releasedAt": "1999-04-21",
+        "scryfallUri": "https://scryfall.com/card/6ed/130/feast-of-the-unicorn?utm_source=api"
+      }
+    },
+    {
+      "position": 35,
+      "oracleId": "c61b05b8-00f1-4371-9856-c65852b4ca02",
+      "scryfallId": "9fb41503-8632-4bf1-9bfe-6d9b9993c337",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [
+        "flash"
+      ],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "etb-draw",
+          "n": 1,
+          "contract": "etb-draw"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 1,
+          "toughness": 0,
+          "keywords": [
+            "flying"
+          ],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "etb-draw",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Flash\nEnchant creature\nWhen this Aura enters, draw a card.\nEnchanted creature gets +1/+0 and has flying.",
+      "raw": {
+        "name": "Feather of Flight",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Flash\nEnchant creature\nWhen this Aura enters, draw a card.\nEnchanted creature gets +1/+0 and has flying.",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "c61b05b8-00f1-4371-9856-c65852b4ca02",
+        "_scryfallId": "9fb41503-8632-4bf1-9bfe-6d9b9993c337",
+        "_layout": "normal",
+        "_set": "blb",
+        "_collectorNumber": "13",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Enchant",
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "blb",
+        "setName": "Bloomburrow",
+        "collectorNumber": "13",
+        "rarity": "uncommon",
+        "releasedAt": "2024-08-02",
+        "scryfallUri": "https://scryfall.com/card/blb/13/feather-of-flight?utm_source=api"
+      }
+    },
+    {
+      "position": 36,
+      "oracleId": "a1a7757f-7e9b-4b5b-b9df-e98d8918caac",
+      "scryfallId": "265960a9-bea6-4111-b9a7-b6a37194b1c5",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [
+        "flash"
+      ],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": -2,
+          "toughness": -1,
+          "keywords": [],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Flash\nEnchant creature\nEnchanted creature gets -2/-1.",
+      "raw": {
+        "name": "Feebleness",
+        "cost": "{1}{B}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Flash\nEnchant creature\nEnchanted creature gets -2/-1.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "a1a7757f-7e9b-4b5b-b9df-e98d8918caac",
+        "_scryfallId": "265960a9-bea6-4111-b9a7-b6a37194b1c5",
+        "_layout": "normal",
+        "_set": "tsr",
+        "_collectorNumber": "116",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Enchant",
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "tsr",
+        "setName": "Time Spiral Remastered",
+        "collectorNumber": "116",
+        "rarity": "common",
+        "releasedAt": "2021-03-19",
+        "scryfallUri": "https://scryfall.com/card/tsr/116/feebleness?utm_source=api"
+      }
+    },
+    {
+      "position": 37,
+      "oracleId": "269208e1-353c-4334-941a-2177f6665fba",
+      "scryfallId": "846a2f9e-ad4f-4666-b152-fdeab7559d86",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-tap",
+          "what": "up to two target creatures",
+          "count": 2,
+          "upTo": true,
+          "contract": "spell-tap-untap"
+        },
+        {
+          "kind": "mechanic-flashback",
+          "cost": "{1}{U}",
+          "speed": "instant",
+          "contract": "mechanic-flashback"
+        }
+      ],
+      "oracleContracts": [
+        "spell-tap-untap",
+        "mechanic-flashback"
+      ],
+      "rulesCore": "Tap up to two target creatures.\nFlashback {1}{U}",
+      "raw": {
+        "name": "Feeling of Dread",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Tap up to two target creatures.\nFlashback {1}{U} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "_oracleId": "269208e1-353c-4334-941a-2177f6665fba",
+        "_scryfallId": "846a2f9e-ad4f-4666-b152-fdeab7559d86",
+        "_layout": "normal",
+        "_set": "isd",
+        "_collectorNumber": "14",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U",
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flashback"
+        ],
+        "commanderLegality": "legal",
+        "set": "isd",
+        "setName": "Innistrad",
+        "collectorNumber": "14",
+        "rarity": "common",
+        "releasedAt": "2011-09-30",
+        "scryfallUri": "https://scryfall.com/card/isd/14/feeling-of-dread?utm_source=api"
+      }
+    },
+    {
+      "position": 38,
+      "oracleId": "31fefd48-6fff-41bf-a559-35a1699357ca",
+      "scryfallId": "d8c0c7e7-81f5-4e75-8120-95488fd6ff60",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mechanic-convoke",
+          "contract": "mechanic-convoke"
+        },
+        {
+          "kind": "spell-token",
+          "n": 3,
+          "token": {
+            "name": "Beast",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Beast"
+            ],
+            "power": "3",
+            "toughness": "3",
+            "colors": [
+              "G"
+            ],
+            "keywords": []
+          },
+          "contract": "spell-token-creation"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-convoke",
+        "spell-token-creation"
+      ],
+      "rulesCore": "Convoke\nCreate three 3/3 green Beast creature tokens.",
+      "raw": {
+        "name": "Feral Incarnation",
+        "cost": "{8}{G}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Convoke (Your creatures can help cast this spell. Each creature you tap while casting this spell pays for {1} or one mana of that creature's color.)\nCreate three 3/3 green Beast creature tokens.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "31fefd48-6fff-41bf-a559-35a1699357ca",
+        "_scryfallId": "d8c0c7e7-81f5-4e75-8120-95488fd6ff60",
+        "_layout": "normal",
+        "_set": "m15",
+        "_collectorNumber": "174",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Convoke"
+        ],
+        "commanderLegality": "legal",
+        "set": "m15",
+        "setName": "Magic 2015",
+        "collectorNumber": "174",
+        "rarity": "uncommon",
+        "releasedAt": "2014-07-18",
+        "scryfallUri": "https://scryfall.com/card/m15/174/feral-incarnation?utm_source=api"
+      }
+    },
+    {
+      "position": 39,
+      "oracleId": "5b3c069b-5bed-4b70-b04c-b7143a4a6e96",
+      "scryfallId": "190ad379-1a0f-4598-b5b1-453955846597",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [
+        "flash"
+      ],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 2,
+          "toughness": 2,
+          "keywords": [],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Flash\nEnchant creature\nEnchanted creature gets +2/+2.",
+      "raw": {
+        "name": "Feral Invocation",
+        "cost": "{2}{G}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Flash (You may cast this spell any time you could cast an instant.)\nEnchant creature\nEnchanted creature gets +2/+2.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "5b3c069b-5bed-4b70-b04c-b7143a4a6e96",
+        "_scryfallId": "190ad379-1a0f-4598-b5b1-453955846597",
+        "_layout": "normal",
+        "_set": "jmp",
+        "_collectorNumber": "396",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Enchant",
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "jmp",
+        "setName": "Jumpstart",
+        "collectorNumber": "396",
+        "rarity": "common",
+        "releasedAt": "2020-07-17",
+        "scryfallUri": "https://scryfall.com/card/jmp/396/feral-invocation?utm_source=api"
+      }
+    },
+    {
+      "position": 40,
+      "oracleId": "3a799843-1304-4abf-b8d7-db616628ee3f",
+      "scryfallId": "78c66cc0-cb0f-4daf-8141-0923ad46a834",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "trample"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{1}{R}",
+          "power": 2,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Trample\n{1}{R}: This creature gets +2/+0 until end of turn.",
+      "raw": {
+        "name": "Feral Ridgewolf",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Wolf"
+        ],
+        "oracle": "Trample\n{1}{R}: This creature gets +2/+0 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "3a799843-1304-4abf-b8d7-db616628ee3f",
+        "_scryfallId": "78c66cc0-cb0f-4daf-8141-0923ad46a834",
+        "_layout": "normal",
+        "_set": "isd",
+        "_collectorNumber": "142",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Wolf",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "commanderLegality": "legal",
+        "set": "isd",
+        "setName": "Innistrad",
+        "collectorNumber": "142",
+        "rarity": "common",
+        "releasedAt": "2011-09-30",
+        "scryfallUri": "https://scryfall.com/card/isd/142/feral-ridgewolf?utm_source=api"
+      }
+    },
+    {
+      "position": 41,
+      "oracleId": "2e56bc34-1e35-4b95-9525-cb58ac8ba060",
+      "scryfallId": "7b15428e-946e-490d-93bb-9888bfd3a1df",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-counter",
+          "spellType": "spell",
+          "contract": "spell-counter"
+        },
+        {
+          "kind": "mechanic-flashback",
+          "cost": "{5}{U}{U}",
+          "speed": "instant",
+          "contract": "mechanic-flashback"
+        }
+      ],
+      "oracleContracts": [
+        "spell-counter",
+        "mechanic-flashback"
+      ],
+      "rulesCore": "Counter target spell.\nFlashback {5}{U}{U}",
+      "raw": {
+        "name": "Fervent Denial",
+        "cost": "{3}{U}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Counter target spell.\nFlashback {5}{U}{U} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "2e56bc34-1e35-4b95-9525-cb58ac8ba060",
+        "_scryfallId": "7b15428e-946e-490d-93bb-9888bfd3a1df",
+        "_layout": "normal",
+        "_set": "c19",
+        "_collectorNumber": "86",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Flashback"
+        ],
+        "commanderLegality": "legal",
+        "set": "c19",
+        "setName": "Commander 2019",
+        "collectorNumber": "86",
+        "rarity": "uncommon",
+        "releasedAt": "2019-08-23",
+        "scryfallUri": "https://scryfall.com/card/c19/86/fervent-denial?utm_source=api"
+      }
+    },
+    {
+      "position": 42,
+      "oracleId": "35efb1e6-6be2-4a38-969a-199524d48e02",
+      "scryfallId": "e4f76e51-a726-4a5f-ae2b-2e826e89f5f7",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": 1,
+          "toughness": 0,
+          "keywords": [
+            "first strike",
+            "haste"
+          ],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump"
+      ],
+      "rulesCore": "Target creature gets +1/+0 and gains first strike and haste until end of turn.",
+      "raw": {
+        "name": "Fervent Strike",
+        "cost": "{R}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gets +1/+0 and gains first strike and haste until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "35efb1e6-6be2-4a38-969a-199524d48e02",
+        "_scryfallId": "e4f76e51-a726-4a5f-ae2b-2e826e89f5f7",
+        "_layout": "normal",
+        "_set": "dom",
+        "_collectorNumber": "117",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "dom",
+        "setName": "Dominaria",
+        "collectorNumber": "117",
+        "rarity": "common",
+        "releasedAt": "2018-04-27",
+        "scryfallUri": "https://scryfall.com/card/dom/117/fervent-strike?utm_source=api"
+      }
+    },
+    {
+      "position": 43,
+      "oracleId": "4863e1cf-3ef2-4c2d-a0ea-b73ca60c660d",
+      "scryfallId": "4be39d50-1e36-4dac-a923-81fc9f229b8d",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{B}",
+          "power": 1,
+          "toughness": 1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{B}: This creature gets +1/+1 until end of turn.",
+      "raw": {
+        "name": "Fetid Horror",
+        "cost": "{3}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Shade",
+          "Horror"
+        ],
+        "oracle": "{B}: This creature gets +1/+1 until end of turn.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "4863e1cf-3ef2-4c2d-a0ea-b73ca60c660d",
+        "_scryfallId": "4be39d50-1e36-4dac-a923-81fc9f229b8d",
+        "_layout": "normal",
+        "_set": "mir",
+        "_collectorNumber": "123",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Shade Horror",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "mir",
+        "setName": "Mirage",
+        "collectorNumber": "123",
+        "rarity": "common",
+        "releasedAt": "1996-10-08",
+        "scryfallUri": "https://scryfall.com/card/mir/123/fetid-horror?utm_source=api"
+      }
+    },
+    {
+      "position": 44,
+      "oracleId": "cdb68656-633d-436e-ad56-0fdb4814bd19",
+      "scryfallId": "56a95546-c45a-4da5-b1e8-d5658b5b7d53",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "self-keyword-ability",
+          "cost": "{B}",
+          "keyword": "deathtouch",
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Flying\n{B}: This creature gains deathtouch until end of turn.",
+      "raw": {
+        "name": "Fetid Imp",
+        "cost": "{1}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Imp"
+        ],
+        "oracle": "Flying\n{B}: This creature gains deathtouch until end of turn. (Any amount of damage it deals to a creature is enough to destroy it.)",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "cdb68656-633d-436e-ad56-0fdb4814bd19",
+        "_scryfallId": "56a95546-c45a-4da5-b1e8-d5658b5b7d53",
+        "_layout": "normal",
+        "_set": "m21",
+        "_collectorNumber": "98",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Imp",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "m21",
+        "setName": "Core Set 2021",
+        "collectorNumber": "98",
+        "rarity": "common",
+        "releasedAt": "2020-07-03",
+        "scryfallUri": "https://scryfall.com/card/m21/98/fetid-imp?utm_source=api"
+      }
+    },
+    {
+      "position": 45,
+      "oracleId": "ab71c8ba-c7ac-4ad2-a6db-29d903bbca78",
+      "scryfallId": "8980efa5-bd21-4980-91a7-5e66528b1011",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R}",
+          "power": 1,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{R}: This creature gets +1/+0 until end of turn.",
+      "raw": {
+        "name": "Fiery Hellhound",
+        "cost": "{1}{R}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elemental",
+          "Dog"
+        ],
+        "oracle": "{R}: This creature gets +1/+0 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "ab71c8ba-c7ac-4ad2-a6db-29d903bbca78",
+        "_scryfallId": "8980efa5-bd21-4980-91a7-5e66528b1011",
+        "_layout": "normal",
+        "_set": "ori",
+        "_collectorNumber": "284",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elemental Dog",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "ori",
+        "setName": "Magic Origins",
+        "collectorNumber": "284",
+        "rarity": "common",
+        "releasedAt": "2015-07-17",
+        "scryfallUri": "https://scryfall.com/card/ori/284/fiery-hellhound?utm_source=api"
+      }
+    },
+    {
+      "position": 46,
+      "oracleId": "97b477d8-2e05-475e-8ed6-7d680cb21cd9",
+      "scryfallId": "5a561484-438b-4ce9-911e-97078ac5b0fa",
+      "semanticClass": "artifact-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "enters-tapped",
+          "contract": "permanent-enters-tapped"
+        },
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "R": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        }
+      ],
+      "oracleContracts": [
+        "permanent-enters-tapped",
+        "mana-source"
+      ],
+      "rulesCore": "This artifact enters tapped.\n{T}: Add {R}.",
+      "raw": {
+        "name": "Fire Diamond",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "oracle": "This artifact enters tapped.\n{T}: Add {R}.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "97b477d8-2e05-475e-8ed6-7d680cb21cd9",
+        "_scryfallId": "5a561484-438b-4ce9-911e-97078ac5b0fa",
+        "_layout": "normal",
+        "_set": "clb",
+        "_collectorNumber": "313",
+        "_rarity": "common",
+        "_produced": [
+          "R"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Artifact",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "clb",
+        "setName": "Commander Legends: Battle for Baldur's Gate",
+        "collectorNumber": "313",
+        "rarity": "common",
+        "releasedAt": "2022-06-10",
+        "scryfallUri": "https://scryfall.com/card/clb/313/fire-diamond?utm_source=api"
+      }
+    },
+    {
+      "position": 47,
+      "oracleId": "8893af49-2f90-4aed-bcaf-905bb9e8ed8f",
+      "scryfallId": "b6fcdc4c-547a-4df4-93c8-911fd400c837",
+      "semanticClass": "enchantment-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "controlled-creature-pump-static",
+          "power": 1,
+          "toughness": 0,
+          "contract": "continuous-layer"
+        }
+      ],
+      "oracleContracts": [
+        "continuous-layer"
+      ],
+      "rulesCore": "Creatures you control get +1/+0.",
+      "raw": {
+        "name": "Fire Nation's Conquest",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "Creatures you control get +1/+0.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "8893af49-2f90-4aed-bcaf-905bb9e8ed8f",
+        "_scryfallId": "b6fcdc4c-547a-4df4-93c8-911fd400c837",
+        "_layout": "normal",
+        "_set": "tle",
+        "_collectorNumber": "239",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Enchantment",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "tle",
+        "setName": "Avatar: The Last Airbender Eternal",
+        "collectorNumber": "239",
+        "rarity": "uncommon",
+        "releasedAt": "2025-11-21",
+        "scryfallUri": "https://scryfall.com/card/tle/239/fire-nations-conquest?utm_source=api"
+      }
+    },
+    {
+      "position": 48,
+      "oracleId": "7aa31280-12c3-479d-a6dd-f1c669043083",
+      "scryfallId": "882b8f98-ee51-4c94-a3eb-c79eb2b50d78",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-damage",
+          "n": 2,
+          "what": "any target",
+          "contract": "spell-damage"
+        },
+        {
+          "kind": "mechanic-flashback",
+          "cost": "{4}{R}",
+          "speed": "sorcery",
+          "contract": "mechanic-flashback"
+        }
+      ],
+      "oracleContracts": [
+        "spell-damage",
+        "mechanic-flashback"
+      ],
+      "rulesCore": "Firebolt deals 2 damage to any target.\nFlashback {4}{R}",
+      "raw": {
+        "name": "Firebolt",
+        "cost": "{R}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Firebolt deals 2 damage to any target.\nFlashback {4}{R} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "7aa31280-12c3-479d-a6dd-f1c669043083",
+        "_scryfallId": "882b8f98-ee51-4c94-a3eb-c79eb2b50d78",
+        "_layout": "normal",
+        "_set": "mh1",
+        "_collectorNumber": "122",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Flashback"
+        ],
+        "commanderLegality": "legal",
+        "set": "mh1",
+        "setName": "Modern Horizons",
+        "collectorNumber": "122",
+        "rarity": "uncommon",
+        "releasedAt": "2019-06-14",
+        "scryfallUri": "https://scryfall.com/card/mh1/122/firebolt?utm_source=api"
+      }
+    },
+    {
+      "position": 49,
+      "oracleId": "b77695da-86fb-4675-b2d3-51732ad0325f",
+      "scryfallId": "6716f46c-806d-4b3e-8a1c-fd6dcedacf8e",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "double strike"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R/W}{R/W}{R/W}{R/W}",
+          "power": 1,
+          "toughness": 1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Double strike\n{R/W}{R/W}{R/W}{R/W}: This creature gets +1/+1 until end of turn.",
+      "raw": {
+        "name": "Fireborn Knight",
+        "cost": "{R/W}{R/W}{R/W}{R/W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Knight"
+        ],
+        "oracle": "Double strike\n{R/W}{R/W}{R/W}{R/W}: This creature gets +1/+1 until end of turn.",
+        "_ci": [
+          "R",
+          "W"
+        ],
+        "_oracleId": "b77695da-86fb-4675-b2d3-51732ad0325f",
+        "_scryfallId": "6716f46c-806d-4b3e-8a1c-fd6dcedacf8e",
+        "_layout": "normal",
+        "_set": "eld",
+        "_collectorNumber": "210",
+        "_rarity": "uncommon",
+        "power": "2",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Knight",
+        "colorIdentity": [
+          "R",
+          "W"
+        ],
+        "colors": [
+          "R",
+          "W"
+        ],
+        "keywords": [
+          "Double strike"
+        ],
+        "commanderLegality": "legal",
+        "set": "eld",
+        "setName": "Throne of Eldraine",
+        "collectorNumber": "210",
+        "rarity": "uncommon",
+        "releasedAt": "2019-10-04",
+        "scryfallUri": "https://scryfall.com/card/eld/210/fireborn-knight?utm_source=api"
+      }
+    },
+    {
+      "position": 50,
+      "oracleId": "6b151418-092f-4a43-8b21-3de64ea80cab",
+      "scryfallId": "a312f0cf-225a-4f3d-b9a7-c47dd03b25c3",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R}",
+          "power": 1,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Flying\n{R}: This creature gets +1/+0 until end of turn.",
+      "raw": {
+        "name": "Firefly",
+        "cost": "{3}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Insect"
+        ],
+        "oracle": "Flying\n{R}: This creature gets +1/+0 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "6b151418-092f-4a43-8b21-3de64ea80cab",
+        "_scryfallId": "a312f0cf-225a-4f3d-b9a7-c47dd03b25c3",
+        "_layout": "normal",
+        "_set": "tmp",
+        "_collectorNumber": "172",
+        "_rarity": "uncommon",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Insect",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "tmp",
+        "setName": "Tempest",
+        "collectorNumber": "172",
+        "rarity": "uncommon",
+        "releasedAt": "1997-10-14",
+        "scryfallUri": "https://scryfall.com/card/tmp/172/firefly?utm_source=api"
+      }
+    },
+    {
+      "position": 51,
+      "oracleId": "205bcab6-8b6b-4d09-9890-0b7391d59788",
+      "scryfallId": "6d94aaa4-c2fd-4714-9198-8415158b9c4d",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-damage",
+          "n": 2,
+          "what": "any target",
+          "contract": "spell-damage"
+        },
+        {
+          "kind": "mechanic-flashback",
+          "cost": "{5}{B}",
+          "speed": "instant",
+          "contract": "mechanic-flashback"
+        }
+      ],
+      "oracleContracts": [
+        "spell-damage",
+        "mechanic-flashback"
+      ],
+      "rulesCore": "Fires of Undeath deals 2 damage to any target.\nFlashback {5}{B}",
+      "raw": {
+        "name": "Fires of Undeath",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Fires of Undeath deals 2 damage to any target.\nFlashback {5}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+        "_ci": [
+          "B",
+          "R"
+        ],
+        "_oracleId": "205bcab6-8b6b-4d09-9890-0b7391d59788",
+        "_scryfallId": "6d94aaa4-c2fd-4714-9198-8415158b9c4d",
+        "_layout": "normal",
+        "_set": "dka",
+        "_collectorNumber": "88",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "B",
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Flashback"
+        ],
+        "commanderLegality": "legal",
+        "set": "dka",
+        "setName": "Dark Ascension",
+        "collectorNumber": "88",
+        "rarity": "common",
+        "releasedAt": "2012-02-03",
+        "scryfallUri": "https://scryfall.com/card/dka/88/fires-of-undeath?utm_source=api"
+      }
+    },
+    {
+      "position": 52,
+      "oracleId": "b86c0c23-bb29-4af0-bbd4-50b3ae634375",
+      "scryfallId": "155a2213-bf6e-4a54-924b-e450b7d06f26",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R}",
+          "power": 1,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{R}: This creature gets +1/+0 until end of turn.",
+      "raw": {
+        "name": "Firescreamer",
+        "cost": "{3}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Kavu"
+        ],
+        "oracle": "{R}: This creature gets +1/+0 until end of turn.",
+        "_ci": [
+          "B",
+          "R"
+        ],
+        "_oracleId": "b86c0c23-bb29-4af0-bbd4-50b3ae634375",
+        "_scryfallId": "155a2213-bf6e-4a54-924b-e450b7d06f26",
+        "_layout": "normal",
+        "_set": "inv",
+        "_collectorNumber": "106",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Kavu",
+        "colorIdentity": [
+          "B",
+          "R"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "inv",
+        "setName": "Invasion",
+        "collectorNumber": "106",
+        "rarity": "common",
+        "releasedAt": "2000-10-02",
+        "scryfallUri": "https://scryfall.com/card/inv/106/firescreamer?utm_source=api"
+      }
+    },
+    {
+      "position": 53,
+      "oracleId": "a02e1ca7-23c5-41e3-a744-72fc9e9dd8ba",
+      "scryfallId": "484fbce6-71bd-40eb-a71b-86958a094708",
+      "semanticClass": "equipment-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "attachment-grant",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [
+            "double strike"
+          ],
+          "contract": "attachment-continuous-effect"
+        },
+        {
+          "kind": "equipment-equip",
+          "cost": "{2}",
+          "contract": "equipment-attach-ability"
+        }
+      ],
+      "oracleContracts": [
+        "attachment-continuous-effect",
+        "equipment-attach-ability"
+      ],
+      "rulesCore": "Equipped creature has double strike.\nEquip {2}",
+      "raw": {
+        "name": "Fireshrieker",
+        "cost": "{3}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Equipment"
+        ],
+        "oracle": "Equipped creature has double strike. (It deals both first-strike and regular combat damage.)\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)",
+        "_ci": [],
+        "_oracleId": "a02e1ca7-23c5-41e3-a744-72fc9e9dd8ba",
+        "_scryfallId": "484fbce6-71bd-40eb-a71b-86958a094708",
+        "_layout": "normal",
+        "_set": "fdn",
+        "_collectorNumber": "674",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Artifact — Equipment",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Equip"
+        ],
+        "commanderLegality": "legal",
+        "set": "fdn",
+        "setName": "Foundations",
+        "collectorNumber": "674",
+        "rarity": "uncommon",
+        "releasedAt": "2024-11-15",
+        "scryfallUri": "https://scryfall.com/card/fdn/674/fireshrieker?utm_source=api"
+      }
+    },
+    {
+      "position": 54,
+      "oracleId": "e3474632-6d81-43a8-9329-4c7e0c631755",
+      "scryfallId": "9fa10a18-5059-46ab-9983-0ea78b507331",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "etb-loot",
+          "order": "discard-draw",
+          "optional": true,
+          "contract": "etb-loot"
+        }
+      ],
+      "oracleContracts": [
+        "etb-loot"
+      ],
+      "rulesCore": "When this creature enters, you may discard a card. If you do, draw a card.",
+      "raw": {
+        "name": "Fissure Wizard",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Wizard"
+        ],
+        "oracle": "When this creature enters, you may discard a card. If you do, draw a card.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "e3474632-6d81-43a8-9329-4c7e0c631755",
+        "_scryfallId": "9fa10a18-5059-46ab-9983-0ea78b507331",
+        "_layout": "normal",
+        "_set": "znr",
+        "_collectorNumber": "140",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Goblin Wizard",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "znr",
+        "setName": "Zendikar Rising",
+        "collectorNumber": "140",
+        "rarity": "common",
+        "releasedAt": "2020-09-25",
+        "scryfallUri": "https://scryfall.com/card/znr/140/fissure-wizard?utm_source=api"
+      }
+    },
+    {
+      "position": 55,
+      "oracleId": "69d08521-74e1-4215-9ed4-3f12137332a4",
+      "scryfallId": "b79c17d2-dcf1-4464-ae58-5ea5117ae531",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": 3,
+          "toughness": 3,
+          "keywords": [
+            "first strike"
+          ],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump"
+      ],
+      "rulesCore": "Target creature gets +3/+3 and gains first strike until end of turn.",
+      "raw": {
+        "name": "Fit of Rage",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gets +3/+3 and gains first strike until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "69d08521-74e1-4215-9ed4-3f12137332a4",
+        "_scryfallId": "b79c17d2-dcf1-4464-ae58-5ea5117ae531",
+        "_layout": "normal",
+        "_set": "6ed",
+        "_collectorNumber": "178",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "6ed",
+        "setName": "Classic Sixth Edition",
+        "collectorNumber": "178",
+        "rarity": "common",
+        "releasedAt": "1999-04-21",
+        "scryfallUri": "https://scryfall.com/card/6ed/178/fit-of-rage?utm_source=api"
+      }
+    },
+    {
+      "position": 56,
+      "oracleId": "8a9d6a30-e2c2-4da5-ad3b-d64fb2b5543c",
+      "scryfallId": "a511f9df-b53b-4fea-87cd-9f18f6833f92",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-damage",
+          "n": 3,
+          "what": "target player or planeswalker",
+          "contract": "spell-damage"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{2}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "spell-damage",
+        "cycling-ability"
+      ],
+      "rulesCore": "Flame Jet deals 3 damage to target player or planeswalker.\nCycling {2}",
+      "raw": {
+        "name": "Flame Jet",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Flame Jet deals 3 damage to target player or planeswalker.\nCycling {2} ({2}, Discard this card: Draw a card.)",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "8a9d6a30-e2c2-4da5-ad3b-d64fb2b5543c",
+        "_scryfallId": "a511f9df-b53b-4fea-87cd-9f18f6833f92",
+        "_layout": "normal",
+        "_set": "uds",
+        "_collectorNumber": "81",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "uds",
+        "setName": "Urza's Destiny",
+        "collectorNumber": "81",
+        "rarity": "common",
+        "releasedAt": "1999-06-07",
+        "scryfallUri": "https://scryfall.com/card/uds/81/flame-jet?utm_source=api"
+      }
+    },
+    {
+      "position": 57,
+      "oracleId": "9e3dd85c-ba19-4d22-9f90-252676f3cffa",
+      "scryfallId": "42da4ec7-9d30-4c4e-9220-db0f4172bf9c",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R}",
+          "power": 1,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{R}: This creature gets +1/+0 until end of turn.",
+      "raw": {
+        "name": "Flamekin Brawler",
+        "cost": "{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elemental",
+          "Warrior"
+        ],
+        "oracle": "{R}: This creature gets +1/+0 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "9e3dd85c-ba19-4d22-9f90-252676f3cffa",
+        "_scryfallId": "42da4ec7-9d30-4c4e-9220-db0f4172bf9c",
+        "_layout": "normal",
+        "_set": "jvc",
+        "_collectorNumber": "35",
+        "_rarity": "common",
+        "power": "0",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Elemental Warrior",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "jvc",
+        "setName": "Duel Decks Anthology: Jace vs. Chandra",
+        "collectorNumber": "35",
+        "rarity": "common",
+        "releasedAt": "2014-12-05",
+        "scryfallUri": "https://scryfall.com/card/jvc/35/flamekin-brawler?utm_source=api"
+      }
+    },
+    {
+      "position": 58,
+      "oracleId": "bc8427fb-e5ee-4b44-9a4f-6d9f01b4b896",
+      "scryfallId": "b1628ece-a028-49d4-9065-ee997838c20a",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "trample"
+      ],
+      "implementation": [
+        {
+          "kind": "etb-treasure",
+          "n": 1,
+          "contract": "etb-treasure"
+        }
+      ],
+      "oracleContracts": [
+        "etb-treasure"
+      ],
+      "rulesCore": "Trample\nWhen this creature enters, create a Treasure token.",
+      "raw": {
+        "name": "Flamekin Gildweaver",
+        "cost": "{3}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elemental",
+          "Sorcerer"
+        ],
+        "oracle": "Trample\nWhen this creature enters, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "bc8427fb-e5ee-4b44-9a4f-6d9f01b4b896",
+        "_scryfallId": "b1628ece-a028-49d4-9065-ee997838c20a",
+        "_layout": "normal",
+        "_set": "ecl",
+        "_collectorNumber": "140",
+        "_rarity": "common",
+        "power": "4",
+        "toughness": "3",
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Creature — Elemental Sorcerer",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Treasure",
+          "Trample"
+        ],
+        "commanderLegality": "legal",
+        "set": "ecl",
+        "setName": "Lorwyn Eclipsed",
+        "collectorNumber": "140",
+        "rarity": "common",
+        "releasedAt": "2026-01-23",
+        "scryfallUri": "https://scryfall.com/card/ecl/140/flamekin-gildweaver?utm_source=api"
+      }
+    },
+    {
+      "position": 59,
+      "oracleId": "05c62f91-2a5b-4cba-8e66-78fb370ea409",
+      "scryfallId": "17ecd9ff-8c30-4e17-8cff-dd40d653c4af",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [
+        "flash"
+      ],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 1,
+          "toughness": 0,
+          "keywords": [
+            "first strike"
+          ],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Flash\nEnchant creature\nEnchanted creature gets +1/+0 and has first strike.",
+      "raw": {
+        "name": "Flaming Sword",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Flash\nEnchant creature\nEnchanted creature gets +1/+0 and has first strike.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "05c62f91-2a5b-4cba-8e66-78fb370ea409",
+        "_scryfallId": "17ecd9ff-8c30-4e17-8cff-dd40d653c4af",
+        "_layout": "normal",
+        "_set": "mmq",
+        "_collectorNumber": "190",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Enchant",
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "mmq",
+        "setName": "Mercadian Masques",
+        "collectorNumber": "190",
+        "rarity": "common",
+        "releasedAt": "1999-10-04",
+        "scryfallUri": "https://scryfall.com/card/mmq/190/flaming-sword?utm_source=api"
+      }
+    },
+    {
+      "position": 60,
+      "oracleId": "75b2dd64-a2f5-4032-a19f-5b485dc44b16",
+      "scryfallId": "dc14e61f-481a-4bfa-aca0-fb63dc952be6",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-counter",
+          "spellType": "instant spell",
+          "contract": "spell-counter"
+        }
+      ],
+      "oracleContracts": [
+        "spell-counter"
+      ],
+      "rulesCore": "Counter target instant spell.",
+      "raw": {
+        "name": "Flash Counter",
+        "cost": "{1}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Counter target instant spell.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "75b2dd64-a2f5-4032-a19f-5b485dc44b16",
+        "_scryfallId": "dc14e61f-481a-4bfa-aca0-fb63dc952be6",
+        "_layout": "normal",
+        "_set": "8ed",
+        "_collectorNumber": "78",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "8ed",
+        "setName": "Eighth Edition",
+        "collectorNumber": "78",
+        "rarity": "common",
+        "releasedAt": "2003-07-28",
+        "scryfallUri": "https://scryfall.com/card/8ed/78/flash-counter?utm_source=api"
+      }
+    },
+    {
+      "position": 61,
+      "oracleId": "9811d1fa-1398-49a2-bcbe-0e40d9779ef1",
+      "scryfallId": "2222f499-09f9-45a6-8255-9de79df76f1c",
+      "semanticClass": "equipment-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "attachment-grant",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [
+            "flying",
+            "haste"
+          ],
+          "contract": "attachment-continuous-effect"
+        },
+        {
+          "kind": "equipment-equip",
+          "cost": "{2}",
+          "contract": "equipment-attach-ability"
+        }
+      ],
+      "oracleContracts": [
+        "attachment-continuous-effect",
+        "equipment-attach-ability"
+      ],
+      "rulesCore": "Equipped creature has flying and haste.\nEquip {2}",
+      "raw": {
+        "name": "Fleetfeather Sandals",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Equipment"
+        ],
+        "oracle": "Equipped creature has flying and haste.\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)",
+        "_ci": [],
+        "_oracleId": "9811d1fa-1398-49a2-bcbe-0e40d9779ef1",
+        "_scryfallId": "2222f499-09f9-45a6-8255-9de79df76f1c",
+        "_layout": "normal",
+        "_set": "ths",
+        "_collectorNumber": "216",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Artifact — Equipment",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Equip"
+        ],
+        "commanderLegality": "legal",
+        "set": "ths",
+        "setName": "Theros",
+        "collectorNumber": "216",
+        "rarity": "common",
+        "releasedAt": "2013-09-27",
+        "scryfallUri": "https://scryfall.com/card/ths/216/fleetfeather-sandals?utm_source=api"
+      }
+    },
+    {
+      "position": 62,
+      "oracleId": "b36271cb-cda2-434a-a580-6050dc460409",
+      "scryfallId": "c0b86a7b-4912-43a7-ab89-c3432385baa1",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": -1,
+          "toughness": 0,
+          "keywords": [],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        },
+        {
+          "kind": "spell-draw",
+          "n": 1,
+          "contract": "spell-draw"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump",
+        "spell-draw"
+      ],
+      "rulesCore": "Target creature gets -1/-0 until end of turn.\nDraw a card.",
+      "raw": {
+        "name": "Fleeting Distraction",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gets -1/-0 until end of turn.\nDraw a card.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "b36271cb-cda2-434a-a580-6050dc460409",
+        "_scryfallId": "c0b86a7b-4912-43a7-ab89-c3432385baa1",
+        "_layout": "normal",
+        "_set": "fdn",
+        "_collectorNumber": "155",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "fdn",
+        "setName": "Foundations",
+        "collectorNumber": "155",
+        "rarity": "common",
+        "releasedAt": "2024-11-15",
+        "scryfallUri": "https://scryfall.com/card/fdn/155/fleeting-distraction?utm_source=api"
+      }
+    },
+    {
+      "position": 63,
+      "oracleId": "6a4068b0-fb4f-429c-a94e-47849f3eb7ef",
+      "scryfallId": "15316953-dcb2-4428-b90a-c90d3d4c45f3",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [
+            "flying"
+          ],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nEnchanted creature has flying.",
+      "raw": {
+        "name": "Flight",
+        "cost": "{U}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature\nEnchanted creature has flying.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "6a4068b0-fb4f-429c-a94e-47849f3eb7ef",
+        "_scryfallId": "15316953-dcb2-4428-b90a-c90d3d4c45f3",
+        "_layout": "normal",
+        "_set": "m12",
+        "_collectorNumber": "53",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "m12",
+        "setName": "Magic 2012",
+        "collectorNumber": "53",
+        "rarity": "common",
+        "releasedAt": "2011-07-15",
+        "scryfallUri": "https://scryfall.com/card/m12/53/flight?utm_source=api"
+      }
+    },
+    {
+      "position": 64,
+      "oracleId": "5212e707-b487-46b6-aa51-cea3be8cbe00",
+      "scryfallId": "d8b8aaf0-909e-49b7-9360-a99b68a0f414",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "mechanic-convoke",
+          "contract": "mechanic-convoke"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-convoke"
+      ],
+      "rulesCore": "Convoke\nFlying",
+      "raw": {
+        "name": "Flight of Equenauts",
+        "cost": "{7}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Knight"
+        ],
+        "oracle": "Convoke (Your creatures can help cast this spell. Each creature you tap while casting this spell pays for {1} or one mana of that creature's color.)\nFlying",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "5212e707-b487-46b6-aa51-cea3be8cbe00",
+        "_scryfallId": "d8b8aaf0-909e-49b7-9360-a99b68a0f414",
+        "_layout": "normal",
+        "_set": "moc",
+        "_collectorNumber": "186",
+        "_rarity": "uncommon",
+        "power": "4",
+        "toughness": "5"
+      },
+      "catalog": {
+        "typeLine": "Creature — Human Knight",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flying",
+          "Convoke"
+        ],
+        "commanderLegality": "legal",
+        "set": "moc",
+        "setName": "March of the Machine Commander",
+        "collectorNumber": "186",
+        "rarity": "uncommon",
+        "releasedAt": "2023-04-21",
+        "scryfallUri": "https://scryfall.com/card/moc/186/flight-of-equenauts?utm_source=api"
+      }
+    },
+    {
+      "position": 65,
+      "oracleId": "a19e0a7f-d356-4d2c-8414-70a40ce18674",
+      "scryfallId": "c57abdab-d99c-418c-818d-b06a8722d733",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "attack-self-pump",
+          "power": 3,
+          "toughness": -3,
+          "contract": "combat-trigger"
+        }
+      ],
+      "oracleContracts": [
+        "combat-trigger"
+      ],
+      "rulesCore": "Whenever this creature attacks, it gets +3/-3 until end of turn.",
+      "raw": {
+        "name": "Flowstone Charger",
+        "cost": "{2}{R}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "oracle": "Whenever this creature attacks, it gets +3/-3 until end of turn.",
+        "_ci": [
+          "R",
+          "W"
+        ],
+        "_oracleId": "a19e0a7f-d356-4d2c-8414-70a40ce18674",
+        "_scryfallId": "c57abdab-d99c-418c-818d-b06a8722d733",
+        "_layout": "normal",
+        "_set": "apc",
+        "_collectorNumber": "99",
+        "_rarity": "uncommon",
+        "power": "2",
+        "toughness": "5"
+      },
+      "catalog": {
+        "typeLine": "Creature — Beast",
+        "colorIdentity": [
+          "R",
+          "W"
+        ],
+        "colors": [
+          "R",
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "apc",
+        "setName": "Apocalypse",
+        "collectorNumber": "99",
+        "rarity": "uncommon",
+        "releasedAt": "2001-06-04",
+        "scryfallUri": "https://scryfall.com/card/apc/99/flowstone-charger?utm_source=api"
+      }
+    },
+    {
+      "position": 66,
+      "oracleId": "cc18fcfc-bfe8-41d8-9037-5ff05b2a9c44",
+      "scryfallId": "fd861b1c-8d91-4595-9fcd-b324234f2264",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R}",
+          "power": 1,
+          "toughness": -1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{R}: This creature gets +1/-1 until end of turn.",
+      "raw": {
+        "name": "Flowstone Crusher",
+        "cost": "{3}{R}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "oracle": "{R}: This creature gets +1/-1 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "cc18fcfc-bfe8-41d8-9037-5ff05b2a9c44",
+        "_scryfallId": "fd861b1c-8d91-4595-9fcd-b324234f2264",
+        "_layout": "normal",
+        "_set": "9ed",
+        "_collectorNumber": "184",
+        "_rarity": "uncommon",
+        "power": "4",
+        "toughness": "4"
+      },
+      "catalog": {
+        "typeLine": "Creature — Beast",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "9ed",
+        "setName": "Ninth Edition",
+        "collectorNumber": "184",
+        "rarity": "uncommon",
+        "releasedAt": "2005-07-29",
+        "scryfallUri": "https://scryfall.com/card/9ed/184/flowstone-crusher?utm_source=api"
+      }
+    },
+    {
+      "position": 67,
+      "oracleId": "f9558fa5-2513-47e0-9af9-85db5cae4146",
+      "scryfallId": "46e8240a-d882-4f60-8960-1856284e04a0",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R}",
+          "power": 2,
+          "toughness": -2,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{R}: This creature gets +2/-2 until end of turn.",
+      "raw": {
+        "name": "Flowstone Giant",
+        "cost": "{2}{R}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Giant"
+        ],
+        "oracle": "{R}: This creature gets +2/-2 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "f9558fa5-2513-47e0-9af9-85db5cae4146",
+        "_scryfallId": "46e8240a-d882-4f60-8960-1856284e04a0",
+        "_layout": "normal",
+        "_set": "tmp",
+        "_collectorNumber": "174",
+        "_rarity": "common",
+        "power": "3",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Creature — Giant",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "tmp",
+        "setName": "Tempest",
+        "collectorNumber": "174",
+        "rarity": "common",
+        "releasedAt": "1997-10-14",
+        "scryfallUri": "https://scryfall.com/card/tmp/174/flowstone-giant?utm_source=api"
+      }
+    },
+    {
+      "position": 68,
+      "oracleId": "49475268-be95-4670-a5ca-2f2b6c5cf005",
+      "scryfallId": "73e40916-3502-448a-a509-f6a6ff3cd73d",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "menace"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R}",
+          "power": 1,
+          "toughness": -1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Menace\n{R}: This creature gets +1/-1 until end of turn.",
+      "raw": {
+        "name": "Flowstone Kavu",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Kavu"
+        ],
+        "oracle": "Menace (This creature can't be blocked except by two or more creatures.)\n{R}: This creature gets +1/-1 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "49475268-be95-4670-a5ca-2f2b6c5cf005",
+        "_scryfallId": "73e40916-3502-448a-a509-f6a6ff3cd73d",
+        "_layout": "normal",
+        "_set": "dmu",
+        "_collectorNumber": "125",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Creature — Kavu",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Menace"
+        ],
+        "commanderLegality": "legal",
+        "set": "dmu",
+        "setName": "Dominaria United",
+        "collectorNumber": "125",
+        "rarity": "common",
+        "releasedAt": "2022-09-09",
+        "scryfallUri": "https://scryfall.com/card/dmu/125/flowstone-kavu?utm_source=api"
+      }
+    },
+    {
+      "position": 69,
+      "oracleId": "e72ae9ab-7405-4ea7-b075-42d0ddc352db",
+      "scryfallId": "65669460-54e6-4358-83de-d7a576f9eea3",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R}",
+          "power": 1,
+          "toughness": -1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{R}: This creature gets +1/-1 until end of turn.",
+      "raw": {
+        "name": "Flowstone Shambler",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "oracle": "{R}: This creature gets +1/-1 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "e72ae9ab-7405-4ea7-b075-42d0ddc352db",
+        "_scryfallId": "65669460-54e6-4358-83de-d7a576f9eea3",
+        "_layout": "normal",
+        "_set": "9ed",
+        "_collectorNumber": "185",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Beast",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "9ed",
+        "setName": "Ninth Edition",
+        "collectorNumber": "185",
+        "rarity": "common",
+        "releasedAt": "2005-07-29",
+        "scryfallUri": "https://scryfall.com/card/9ed/185/flowstone-shambler?utm_source=api"
+      }
+    },
+    {
+      "position": 70,
+      "oracleId": "d67048eb-eaf1-4b5b-a8e3-a004bab438f3",
+      "scryfallId": "a1203053-0829-4f46-a361-62cb9cd17280",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": 1,
+          "toughness": -1,
+          "keywords": [
+            "haste"
+          ],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump"
+      ],
+      "rulesCore": "Target creature gets +1/-1 and gains haste until end of turn.",
+      "raw": {
+        "name": "Flowstone Strike",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature gets +1/-1 and gains haste until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "d67048eb-eaf1-4b5b-a8e3-a004bab438f3",
+        "_scryfallId": "a1203053-0829-4f46-a361-62cb9cd17280",
+        "_layout": "normal",
+        "_set": "nem",
+        "_collectorNumber": "84",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "nem",
+        "setName": "Nemesis",
+        "collectorNumber": "84",
+        "rarity": "common",
+        "releasedAt": "2000-02-14",
+        "scryfallUri": "https://scryfall.com/card/nem/84/flowstone-strike?utm_source=api"
+      }
+    },
+    {
+      "position": 71,
+      "oracleId": "fb1755a0-3334-419b-8cb5-5a3ac7fa5b13",
+      "scryfallId": "bc450922-0bbf-46c4-9955-79f4d41ee488",
+      "semanticClass": "enchantment-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "controlled-creature-pump-static",
+          "power": 1,
+          "toughness": -1,
+          "contract": "continuous-layer"
+        }
+      ],
+      "oracleContracts": [
+        "continuous-layer"
+      ],
+      "rulesCore": "Creatures you control get +1/-1.",
+      "raw": {
+        "name": "Flowstone Surge",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "Creatures you control get +1/-1.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "fb1755a0-3334-419b-8cb5-5a3ac7fa5b13",
+        "_scryfallId": "bc450922-0bbf-46c4-9955-79f4d41ee488",
+        "_layout": "normal",
+        "_set": "nem",
+        "_collectorNumber": "85",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Enchantment",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "nem",
+        "setName": "Nemesis",
+        "collectorNumber": "85",
+        "rarity": "uncommon",
+        "releasedAt": "2000-02-14",
+        "scryfallUri": "https://scryfall.com/card/nem/85/flowstone-surge?utm_source=api"
+      }
+    },
+    {
+      "position": 72,
+      "oracleId": "5fa86b45-1d5b-42df-8811-6a10903f3039",
+      "scryfallId": "89844c2f-f0a4-41c6-ad8c-d559fcaec85c",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "defender"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R}",
+          "power": 1,
+          "toughness": -1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Defender\n{R}: This creature gets +1/-1 until end of turn.",
+      "raw": {
+        "name": "Flowstone Wall",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Wall"
+        ],
+        "oracle": "Defender (This creature can't attack.)\n{R}: This creature gets +1/-1 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "5fa86b45-1d5b-42df-8811-6a10903f3039",
+        "_scryfallId": "89844c2f-f0a4-41c6-ad8c-d559fcaec85c",
+        "_layout": "normal",
+        "_set": "nem",
+        "_collectorNumber": "86",
+        "_rarity": "common",
+        "power": "0",
+        "toughness": "6"
+      },
+      "catalog": {
+        "typeLine": "Creature — Wall",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Defender"
+        ],
+        "commanderLegality": "legal",
+        "set": "nem",
+        "setName": "Nemesis",
+        "collectorNumber": "86",
+        "rarity": "common",
+        "releasedAt": "2000-02-14",
+        "scryfallUri": "https://scryfall.com/card/nem/86/flowstone-wall?utm_source=api"
+      }
+    },
+    {
+      "position": 73,
+      "oracleId": "0c8ab7bf-7b6a-4a34-b988-9f3f4d84a9ea",
+      "scryfallId": "be522ae8-9cf4-4c63-9a1c-0010d482c00a",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-token",
+          "n": 2,
+          "token": {
+            "name": "Minotaur",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Minotaur"
+            ],
+            "power": "2",
+            "toughness": "3",
+            "colors": [
+              "R"
+            ],
+            "keywords": [
+              "haste"
+            ]
+          },
+          "contract": "spell-token-creation"
+        }
+      ],
+      "oracleContracts": [
+        "spell-token-creation"
+      ],
+      "rulesCore": "Create two 2/3 red Minotaur creature tokens with haste.",
+      "raw": {
+        "name": "Flurry of Horns",
+        "cost": "{4}{R}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Create two 2/3 red Minotaur creature tokens with haste.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "0c8ab7bf-7b6a-4a34-b988-9f3f4d84a9ea",
+        "_scryfallId": "be522ae8-9cf4-4c63-9a1c-0010d482c00a",
+        "_layout": "normal",
+        "_set": "jmp",
+        "_collectorNumber": "321",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "jmp",
+        "setName": "Jumpstart",
+        "collectorNumber": "321",
+        "rarity": "common",
+        "releasedAt": "2020-07-17",
+        "scryfallUri": "https://scryfall.com/card/jmp/321/flurry-of-horns?utm_source=api"
+      }
+    },
+    {
+      "position": 74,
+      "oracleId": "27e9db49-7af7-4bef-ad4c-bf5dfb92030d",
+      "scryfallId": "bbc3152e-7b3b-4ac6-8b33-abfebde216aa",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-fog",
+          "playersOnly": false,
+          "contract": "spell-damage-prevention"
+        }
+      ],
+      "oracleContracts": [
+        "spell-damage-prevention"
+      ],
+      "rulesCore": "Prevent all combat damage that would be dealt this turn.",
+      "raw": {
+        "name": "Fog",
+        "cost": "{G}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Prevent all combat damage that would be dealt this turn.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "27e9db49-7af7-4bef-ad4c-bf5dfb92030d",
+        "_scryfallId": "bbc3152e-7b3b-4ac6-8b33-abfebde216aa",
+        "_layout": "normal",
+        "_set": "ema",
+        "_collectorNumber": "167",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "ema",
+        "setName": "Eternal Masters",
+        "collectorNumber": "167",
+        "rarity": "common",
+        "releasedAt": "2016-06-10",
+        "scryfallUri": "https://scryfall.com/card/ema/167/fog?utm_source=api"
+      }
+    },
+    {
+      "position": 75,
+      "oracleId": "41f58e06-5ce0-4b2d-a280-5bb3b6c56dfe",
+      "scryfallId": "3f1e9c54-134b-41da-8c3d-ec699d96778a",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "self-regenerate-ability",
+          "cost": "{B}",
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Flying\n{B}: Regenerate this creature.",
+      "raw": {
+        "name": "Fog of Gnats",
+        "cost": "{B}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Insect"
+        ],
+        "oracle": "Flying\n{B}: Regenerate this creature.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "41f58e06-5ce0-4b2d-a280-5bb3b6c56dfe",
+        "_scryfallId": "3f1e9c54-134b-41da-8c3d-ec699d96778a",
+        "_layout": "normal",
+        "_set": "ulg",
+        "_collectorNumber": "53",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Insect",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [
+          "Flying",
+          "Regenerate"
+        ],
+        "commanderLegality": "legal",
+        "set": "ulg",
+        "setName": "Urza's Legacy",
+        "collectorNumber": "53",
+        "rarity": "common",
+        "releasedAt": "1999-02-15",
+        "scryfallUri": "https://scryfall.com/card/ulg/53/fog-of-gnats?utm_source=api"
+      }
+    },
+    {
+      "position": 76,
+      "oracleId": "61dd58e0-9879-4e13-b12d-e7401d4cc42e",
+      "scryfallId": "3c3e9950-b0b9-425c-8b14-f6450882bd57",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-team-pump",
+          "attackingOnly": false,
+          "controller": "you",
+          "power": 2,
+          "toughness": 2,
+          "keywords": [
+            "vigilance",
+            "lifelink"
+          ],
+          "contract": "spell-team-pump"
+        }
+      ],
+      "oracleContracts": [
+        "spell-team-pump"
+      ],
+      "rulesCore": "Creatures you control get +2/+2 and gain vigilance and lifelink until end of turn.",
+      "raw": {
+        "name": "For the Emperor!",
+        "cost": "{3}{W}",
+        "super": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "oracle": "Creatures you control get +2/+2 and gain vigilance and lifelink until end of turn.",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "61dd58e0-9879-4e13-b12d-e7401d4cc42e",
+        "_scryfallId": "3c3e9950-b0b9-425c-8b14-f6450882bd57",
+        "_layout": "normal",
+        "_set": "40k",
+        "_collectorNumber": "12",
+        "_rarity": "rare"
+      },
+      "catalog": {
+        "typeLine": "Sorcery",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "40k",
+        "setName": "Warhammer 40,000 Commander",
+        "collectorNumber": "12",
+        "rarity": "rare",
+        "releasedAt": "2022-10-07",
+        "scryfallUri": "https://scryfall.com/card/40k/12/for-the-emperor!?utm_source=api"
+      }
+    },
+    {
+      "position": 77,
+      "oracleId": "21d3db6b-58cc-435c-bfd6-8320f6efcbbe",
+      "scryfallId": "27c75157-2670-4804-8853-a6867c83c40a",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mechanic-cascade",
+          "contract": "mechanic-cascade"
+        },
+        {
+          "kind": "spell-counter",
+          "spellType": "spell",
+          "contract": "spell-counter"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-cascade",
+        "spell-counter"
+      ],
+      "rulesCore": "Cascade\nCounter target spell.",
+      "raw": {
+        "name": "Forceful Denial",
+        "cost": "{3}{U}{U}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Cascade (When you cast this spell, exile cards from the top of your library until you exile a nonland card that costs less. You may cast it without paying its mana cost. Put the exiled cards on the bottom in a random order.)\nCounter target spell.",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "21d3db6b-58cc-435c-bfd6-8320f6efcbbe",
+        "_scryfallId": "27c75157-2670-4804-8853-a6867c83c40a",
+        "_layout": "normal",
+        "_set": "cmr",
+        "_collectorNumber": "69",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Cascade"
+        ],
+        "commanderLegality": "legal",
+        "set": "cmr",
+        "setName": "Commander Legends",
+        "collectorNumber": "69",
+        "rarity": "common",
+        "releasedAt": "2020-11-20",
+        "scryfallUri": "https://scryfall.com/card/cmr/69/forceful-denial?utm_source=api"
+      }
+    },
+    {
+      "position": 78,
+      "oracleId": "9bd4a0bd-d10c-434a-8254-89f38740aafd",
+      "scryfallId": "3bd39a06-c53a-42c2-b2df-028358f03406",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "enters-tapped",
+          "contract": "permanent-enters-tapped"
+        }
+      ],
+      "oracleContracts": [
+        "permanent-enters-tapped"
+      ],
+      "rulesCore": "This creature enters tapped.",
+      "raw": {
+        "name": "Forgotten Sentinel",
+        "cost": "{4}",
+        "super": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Golem"
+        ],
+        "oracle": "This creature enters tapped.",
+        "_ci": [],
+        "_oracleId": "9bd4a0bd-d10c-434a-8254-89f38740aafd",
+        "_scryfallId": "3bd39a06-c53a-42c2-b2df-028358f03406",
+        "_layout": "normal",
+        "_set": "m21",
+        "_collectorNumber": "231",
+        "_rarity": "common",
+        "power": "4",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Artifact Creature — Golem",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "m21",
+        "setName": "Core Set 2021",
+        "collectorNumber": "231",
+        "rarity": "common",
+        "releasedAt": "2020-07-03",
+        "scryfallUri": "https://scryfall.com/card/m21/231/forgotten-sentinel?utm_source=api"
+      }
+    },
+    {
+      "position": 79,
+      "oracleId": "f60fb81a-969a-476c-a227-5231bbed4ad4",
+      "scryfallId": "cca4e95e-f14e-4cfa-918a-cfb15f912293",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-exile",
+          "noRegen": false,
+          "contract": "spell-exile",
+          "what": "artifact or enchantment"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{2}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "spell-exile",
+        "cycling-ability"
+      ],
+      "rulesCore": "Exile target artifact or enchantment.\nCycling {2}",
+      "raw": {
+        "name": "Forsake the Worldly",
+        "cost": "{2}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Exile target artifact or enchantment.\nCycling {2} ({2}, Discard this card: Draw a card.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "f60fb81a-969a-476c-a227-5231bbed4ad4",
+        "_scryfallId": "cca4e95e-f14e-4cfa-918a-cfb15f912293",
+        "_layout": "normal",
+        "_set": "akh",
+        "_collectorNumber": "13",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "akh",
+        "setName": "Amonkhet",
+        "collectorNumber": "13",
+        "rarity": "common",
+        "releasedAt": "2017-04-28",
+        "scryfallUri": "https://scryfall.com/card/akh/13/forsake-the-worldly?utm_source=api"
+      }
+    },
+    {
+      "position": 80,
+      "oracleId": "925775c6-b6d2-4793-a363-bd5aca871aa8",
+      "scryfallId": "46e23eae-7630-40db-b265-2fa00715878e",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R/G}{R/G}{R/G}",
+          "power": 3,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{R/G}{R/G}{R/G}: This creature gets +3/+0 until end of turn.",
+      "raw": {
+        "name": "Foxfire Oak",
+        "cost": "{5}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Treefolk",
+          "Shaman"
+        ],
+        "oracle": "{R/G}{R/G}{R/G}: This creature gets +3/+0 until end of turn.",
+        "_ci": [
+          "G",
+          "R"
+        ],
+        "_oracleId": "925775c6-b6d2-4793-a363-bd5aca871aa8",
+        "_scryfallId": "46e23eae-7630-40db-b265-2fa00715878e",
+        "_layout": "normal",
+        "_set": "shm",
+        "_collectorNumber": "115",
+        "_rarity": "common",
+        "power": "3",
+        "toughness": "6"
+      },
+      "catalog": {
+        "typeLine": "Creature — Treefolk Shaman",
+        "colorIdentity": [
+          "G",
+          "R"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "shm",
+        "setName": "Shadowmoor",
+        "collectorNumber": "115",
+        "rarity": "common",
+        "releasedAt": "2008-05-02",
+        "scryfallUri": "https://scryfall.com/card/shm/115/foxfire-oak?utm_source=api"
+      }
+    },
+    {
+      "position": 81,
+      "oracleId": "a866cc05-69b0-45f2-8829-b6ef08193ed1",
+      "scryfallId": "725bc6de-140e-4b28-a781-daf17c465a53",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-pump",
+          "power": "X",
+          "toughness": 0,
+          "keywords": [
+            "first strike",
+            "trample"
+          ],
+          "controller": "you",
+          "attacking": false,
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "spell-pump"
+      ],
+      "rulesCore": "Target creature you control gets +X/+0 and gains first strike and trample until end of turn.",
+      "raw": {
+        "name": "Frantic Confrontation",
+        "cost": "{X}{R}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Target creature you control gets +X/+0 and gains first strike and trample until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "a866cc05-69b0-45f2-8829-b6ef08193ed1",
+        "_scryfallId": "725bc6de-140e-4b28-a781-daf17c465a53",
+        "_layout": "normal",
+        "_set": "tle",
+        "_collectorNumber": "117",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "tle",
+        "setName": "Avatar: The Last Airbender Eternal",
+        "collectorNumber": "117",
+        "rarity": "uncommon",
+        "releasedAt": "2025-11-21",
+        "scryfallUri": "https://scryfall.com/card/tle/117/frantic-confrontation?utm_source=api"
+      }
+    },
+    {
+      "position": 82,
+      "oracleId": "5dbe4648-f4c9-4d26-98f5-58a7e53b149d",
+      "scryfallId": "bbd9d35d-7fd0-4193-9f7e-b8a59fae4ac5",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [
+        "flash"
+      ],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 2,
+          "toughness": 2,
+          "keywords": [
+            "trample"
+          ],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Flash\nEnchant creature\nEnchanted creature gets +2/+2 and has trample.",
+      "raw": {
+        "name": "Frantic Strength",
+        "cost": "{2}{G}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Flash\nEnchant creature\nEnchanted creature gets +2/+2 and has trample.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "5dbe4648-f4c9-4d26-98f5-58a7e53b149d",
+        "_scryfallId": "bbd9d35d-7fd0-4193-9f7e-b8a59fae4ac5",
+        "_layout": "normal",
+        "_set": "dsk",
+        "_collectorNumber": "179",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Enchant",
+          "Flash"
+        ],
+        "commanderLegality": "legal",
+        "set": "dsk",
+        "setName": "Duskmourn: House of Horror",
+        "collectorNumber": "179",
+        "rarity": "common",
+        "releasedAt": "2024-09-27",
+        "scryfallUri": "https://scryfall.com/card/dsk/179/frantic-strength?utm_source=api"
+      }
+    },
+    {
+      "position": 83,
+      "oracleId": "8cdda36f-5e82-4c2f-8eaa-75b9bbc93a02",
+      "scryfallId": "33dc0244-319c-4e15-9083-8d21ad0364d8",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "protection-from",
+          "from": "red",
+          "contract": "protection-static"
+        }
+      ],
+      "oracleContracts": [
+        "protection-static"
+      ],
+      "rulesCore": "Flying, protection from red",
+      "raw": {
+        "name": "Freewind Falcon",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bird"
+        ],
+        "oracle": "Flying, protection from red",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "8cdda36f-5e82-4c2f-8eaa-75b9bbc93a02",
+        "_scryfallId": "33dc0244-319c-4e15-9083-8d21ad0364d8",
+        "_layout": "normal",
+        "_set": "vis",
+        "_collectorNumber": "5",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Bird",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Flying",
+          "Protection"
+        ],
+        "commanderLegality": "legal",
+        "set": "vis",
+        "setName": "Visions",
+        "collectorNumber": "5",
+        "rarity": "common",
+        "releasedAt": "1997-02-03",
+        "scryfallUri": "https://scryfall.com/card/vis/5/freewind-falcon?utm_source=api"
+      }
+    },
+    {
+      "position": 84,
+      "oracleId": "1a04c31c-f5e4-43ff-a5b5-207426b8dca6",
+      "scryfallId": "f9ca9c16-5720-4531-88ea-48b48d189479",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 2,
+          "toughness": 1,
+          "keywords": [
+            "menace"
+          ],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nEnchanted creature gets +2/+1 and has menace.",
+      "raw": {
+        "name": "Frenzied Rage",
+        "cost": "{1}{R}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature\nEnchanted creature gets +2/+1 and has menace. (It can't be blocked except by two or more creatures.)",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "1a04c31c-f5e4-43ff-a5b5-207426b8dca6",
+        "_scryfallId": "f9ca9c16-5720-4531-88ea-48b48d189479",
+        "_layout": "normal",
+        "_set": "dom",
+        "_collectorNumber": "124",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "dom",
+        "setName": "Dominaria",
+        "collectorNumber": "124",
+        "rarity": "common",
+        "releasedAt": "2018-04-27",
+        "scryfallUri": "https://scryfall.com/card/dom/124/frenzied-rage?utm_source=api"
+      }
+    },
+    {
+      "position": 85,
+      "oracleId": "5b865275-4114-44d0-9832-ae5d3b4efba4",
+      "scryfallId": "d1a72d09-9cfc-463a-a9ec-3359003d54da",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "deathtouch"
+      ],
+      "implementation": [
+        {
+          "kind": "mana-source",
+          "produce": [
+            {
+              "ANY": true,
+              "n": 1
+            }
+          ],
+          "activationMana": null,
+          "contract": "mana-source"
+        },
+        {
+          "kind": "self-keyword-ability",
+          "cost": "{2}",
+          "keyword": "reach",
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "mana-source",
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Deathtouch\n{T}: Add one mana of any color.\n{2}: This creature gains reach until end of turn.",
+      "raw": {
+        "name": "Frog Butler",
+        "cost": "{1}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Frog",
+          "Spirit"
+        ],
+        "oracle": "Deathtouch\n{T}: Add one mana of any color.\n{2}: This creature gains reach until end of turn.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "5b865275-4114-44d0-9832-ae5d3b4efba4",
+        "_scryfallId": "d1a72d09-9cfc-463a-a9ec-3359003d54da",
+        "_layout": "normal",
+        "_set": "tmt",
+        "_collectorNumber": "114",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1",
+        "_produced": [
+          "B",
+          "G",
+          "R",
+          "U",
+          "W"
+        ]
+      },
+      "catalog": {
+        "typeLine": "Creature — Frog Spirit",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Deathtouch"
+        ],
+        "commanderLegality": "legal",
+        "set": "tmt",
+        "setName": "Teenage Mutant Ninja Turtles",
+        "collectorNumber": "114",
+        "rarity": "common",
+        "releasedAt": "2026-03-06",
+        "scryfallUri": "https://scryfall.com/card/tmt/114/frog-butler?utm_source=api"
+      }
+    },
+    {
+      "position": 86,
+      "oracleId": "861c5374-a8e7-4684-9a1b-e6ce3b98e4a2",
+      "scryfallId": "3941e799-a254-423e-90bb-091dbe56ca6a",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "etb-draw",
+          "n": 1,
+          "contract": "etb-draw"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 0,
+          "toughness": 0,
+          "keywords": [
+            "reach"
+          ],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "etb-draw",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nWhen this Aura enters, draw a card.\nEnchanted creature has reach.",
+      "raw": {
+        "name": "Frog Tongue",
+        "cost": "{G}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature\nWhen this Aura enters, draw a card.\nEnchanted creature has reach. (It can block creatures with flying.)",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "861c5374-a8e7-4684-9a1b-e6ce3b98e4a2",
+        "_scryfallId": "3941e799-a254-423e-90bb-091dbe56ca6a",
+        "_layout": "normal",
+        "_set": "tmp",
+        "_collectorNumber": "228",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "tmp",
+        "setName": "Tempest",
+        "collectorNumber": "228",
+        "rarity": "common",
+        "releasedAt": "1997-10-14",
+        "scryfallUri": "https://scryfall.com/card/tmp/228/frog-tongue?utm_source=api"
+      }
+    },
+    {
+      "position": 87,
+      "oracleId": "f667b4b6-c97f-47fa-9146-c5c1f3f47e92",
+      "scryfallId": "32b03336-76f2-4086-b737-7cd6e30014e6",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{U/R}",
+          "power": 1,
+          "toughness": -1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{U/R}: This creature gets +1/-1 until end of turn.",
+      "raw": {
+        "name": "Frostburn Weird",
+        "cost": "{U/R}{U/R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Weird"
+        ],
+        "oracle": "{U/R}: This creature gets +1/-1 until end of turn.",
+        "_ci": [
+          "R",
+          "U"
+        ],
+        "_oracleId": "f667b4b6-c97f-47fa-9146-c5c1f3f47e92",
+        "_scryfallId": "32b03336-76f2-4086-b737-7cd6e30014e6",
+        "_layout": "normal",
+        "_set": "clu",
+        "_collectorNumber": "193",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "4"
+      },
+      "catalog": {
+        "typeLine": "Creature — Weird",
+        "colorIdentity": [
+          "R",
+          "U"
+        ],
+        "colors": [
+          "R",
+          "U"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "clu",
+        "setName": "Ravnica: Clue Edition",
+        "collectorNumber": "193",
+        "rarity": "common",
+        "releasedAt": "2024-02-23",
+        "scryfallUri": "https://scryfall.com/card/clu/193/frostburn-weird?utm_source=api"
+      }
+    },
+    {
+      "position": 88,
+      "oracleId": "f75f9006-217d-4ec8-9c35-ceefe1c5ae4e",
+      "scryfallId": "cbd0b4ff-f49f-4079-991a-f66d1220235d",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{B}",
+          "power": 1,
+          "toughness": 1,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "{B}: This creature gets +1/+1 until end of turn.",
+      "raw": {
+        "name": "Frozen Shade",
+        "cost": "{2}{B}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Shade"
+        ],
+        "oracle": "{B}: This creature gets +1/+1 until end of turn.",
+        "_ci": [
+          "B"
+        ],
+        "_oracleId": "f75f9006-217d-4ec8-9c35-ceefe1c5ae4e",
+        "_scryfallId": "cbd0b4ff-f49f-4079-991a-f66d1220235d",
+        "_layout": "normal",
+        "_set": "5ed",
+        "_collectorNumber": "163",
+        "_rarity": "common",
+        "power": "0",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Shade",
+        "colorIdentity": [
+          "B"
+        ],
+        "colors": [
+          "B"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "5ed",
+        "setName": "Fifth Edition",
+        "collectorNumber": "163",
+        "rarity": "common",
+        "releasedAt": "1997-03-24",
+        "scryfallUri": "https://scryfall.com/card/5ed/163/frozen-shade?utm_source=api"
+      }
+    },
+    {
+      "position": 89,
+      "oracleId": "a994de7b-0128-4f03-922f-c8cd80cb5852",
+      "scryfallId": "45c48042-178f-432e-9eee-10bfa1e0795f",
+      "semanticClass": "vehicle-template",
+      "implementedKeywords": [
+        "vigilance"
+      ],
+      "implementation": [
+        {
+          "kind": "crew",
+          "n": 1,
+          "contract": "crew-ability"
+        }
+      ],
+      "oracleContracts": [
+        "crew-ability"
+      ],
+      "rulesCore": "Vigilance\nCrew 1",
+      "raw": {
+        "name": "Funeral Longboat",
+        "cost": "{2}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Vehicle"
+        ],
+        "oracle": "Vigilance\nCrew 1 (Tap any number of creatures you control with total power 1 or more: This Vehicle becomes an artifact creature until end of turn.)",
+        "_ci": [],
+        "_oracleId": "a994de7b-0128-4f03-922f-c8cd80cb5852",
+        "_scryfallId": "45c48042-178f-432e-9eee-10bfa1e0795f",
+        "_layout": "normal",
+        "_set": "khm",
+        "_collectorNumber": "238",
+        "_rarity": "common",
+        "power": "3",
+        "toughness": "3"
+      },
+      "catalog": {
+        "typeLine": "Artifact — Vehicle",
+        "colorIdentity": [],
+        "colors": [],
+        "keywords": [
+          "Vigilance",
+          "Crew"
+        ],
+        "commanderLegality": "legal",
+        "set": "khm",
+        "setName": "Kaldheim",
+        "collectorNumber": "238",
+        "rarity": "common",
+        "releasedAt": "2021-02-05",
+        "scryfallUri": "https://scryfall.com/card/khm/238/funeral-longboat?utm_source=api"
+      }
+    },
+    {
+      "position": 90,
+      "oracleId": "efefb339-bb7c-4b26-abed-8434f955122b",
+      "scryfallId": "8abeabbd-215b-4f25-908d-5650862835be",
+      "semanticClass": "aura-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "aura-target",
+          "what": "creature",
+          "contract": "aura-targeting"
+        },
+        {
+          "kind": "attachment-grant",
+          "power": 2,
+          "toughness": 2,
+          "keywords": [
+            "menace"
+          ],
+          "contract": "attachment-continuous-effect"
+        }
+      ],
+      "oracleContracts": [
+        "aura-targeting",
+        "attachment-continuous-effect"
+      ],
+      "rulesCore": "Enchant creature\nEnchanted creature gets +2/+2 and has menace.",
+      "raw": {
+        "name": "Furious Strength",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "oracle": "Enchant creature\nEnchanted creature gets +2/+2 and has menace. (It can't be blocked except by two or more creatures.)",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "efefb339-bb7c-4b26-abed-8434f955122b",
+        "_scryfallId": "8abeabbd-215b-4f25-908d-5650862835be",
+        "_layout": "normal",
+        "_set": "msc",
+        "_collectorNumber": "544",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Enchantment — Aura",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "commanderLegality": "legal",
+        "set": "msc",
+        "setName": "Marvel Super Heroes Commander",
+        "collectorNumber": "544",
+        "rarity": "common",
+        "releasedAt": "2026-06-26",
+        "scryfallUri": "https://scryfall.com/card/msc/544/furious-strength?utm_source=api"
+      }
+    },
+    {
+      "position": 91,
+      "oracleId": "86b33d25-6123-439c-9026-a4e835b48562",
+      "scryfallId": "b6a79dc7-ce46-41f7-9375-8d12afe6355a",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "haste"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R}",
+          "power": 1,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Haste\n{R}: This creature gets +1/+0 until end of turn.",
+      "raw": {
+        "name": "Furnace Spirit",
+        "cost": "{2}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spirit"
+        ],
+        "oracle": "Haste\n{R}: This creature gets +1/+0 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "86b33d25-6123-439c-9026-a4e835b48562",
+        "_scryfallId": "b6a79dc7-ce46-41f7-9375-8d12afe6355a",
+        "_layout": "normal",
+        "_set": "sth",
+        "_collectorNumber": "87",
+        "_rarity": "common",
+        "power": "1",
+        "toughness": "1"
+      },
+      "catalog": {
+        "typeLine": "Creature — Spirit",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Haste"
+        ],
+        "commanderLegality": "legal",
+        "set": "sth",
+        "setName": "Stronghold",
+        "collectorNumber": "87",
+        "rarity": "common",
+        "releasedAt": "1998-03-02",
+        "scryfallUri": "https://scryfall.com/card/sth/87/furnace-spirit?utm_source=api"
+      }
+    },
+    {
+      "position": 92,
+      "oracleId": "8422f1e0-00ca-4ffb-a6b2-e2c9f96d7f23",
+      "scryfallId": "2ce76e86-39f3-4ebf-b550-88ea7f23a91f",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "flying"
+      ],
+      "implementation": [
+        {
+          "kind": "self-pump-ability",
+          "cost": "{R}",
+          "power": 1,
+          "toughness": 0,
+          "contract": "activated-ability-cost"
+        }
+      ],
+      "oracleContracts": [
+        "activated-ability-cost"
+      ],
+      "rulesCore": "Flying\n{R}: This creature gets +1/+0 until end of turn.",
+      "raw": {
+        "name": "Furnace Whelp",
+        "cost": "{2}{R}{R}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "oracle": "Flying\n{R}: This creature gets +1/+0 until end of turn.",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "8422f1e0-00ca-4ffb-a6b2-e2c9f96d7f23",
+        "_scryfallId": "2ce76e86-39f3-4ebf-b550-88ea7f23a91f",
+        "_layout": "normal",
+        "_set": "jmp",
+        "_collectorNumber": "323",
+        "_rarity": "uncommon",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Dragon",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "commanderLegality": "legal",
+        "set": "jmp",
+        "setName": "Jumpstart",
+        "collectorNumber": "323",
+        "rarity": "uncommon",
+        "releasedAt": "2020-07-17",
+        "scryfallUri": "https://scryfall.com/card/jmp/323/furnace-whelp?utm_source=api"
+      }
+    },
+    {
+      "position": 93,
+      "oracleId": "78d9faff-2ad9-4cf9-a239-27c50435d007",
+      "scryfallId": "8672f626-3e46-447b-841f-6a04cd380653",
+      "semanticClass": "vehicle-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "crew",
+          "n": 3,
+          "contract": "crew-ability"
+        }
+      ],
+      "oracleContracts": [
+        "crew-ability"
+      ],
+      "rulesCore": "Crew 3",
+      "raw": {
+        "name": "Futurist Sentinel",
+        "cost": "{3}{U}",
+        "super": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Vehicle"
+        ],
+        "oracle": "Crew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)",
+        "_ci": [
+          "U"
+        ],
+        "_oracleId": "78d9faff-2ad9-4cf9-a239-27c50435d007",
+        "_scryfallId": "8672f626-3e46-447b-841f-6a04cd380653",
+        "_layout": "normal",
+        "_set": "neo",
+        "_collectorNumber": "54",
+        "_rarity": "common",
+        "power": "6",
+        "toughness": "6"
+      },
+      "catalog": {
+        "typeLine": "Artifact — Vehicle",
+        "colorIdentity": [
+          "U"
+        ],
+        "colors": [
+          "U"
+        ],
+        "keywords": [
+          "Crew"
+        ],
+        "commanderLegality": "legal",
+        "set": "neo",
+        "setName": "Kamigawa: Neon Dynasty",
+        "collectorNumber": "54",
+        "rarity": "common",
+        "releasedAt": "2022-02-18",
+        "scryfallUri": "https://scryfall.com/card/neo/54/futurist-sentinel?utm_source=api"
+      }
+    },
+    {
+      "position": 94,
+      "oracleId": "3754dce0-3e97-406f-8807-a4942a222c41",
+      "scryfallId": "43febc63-597d-4392-b8ea-a00841148c45",
+      "semanticClass": "enchantment-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "controlled-creature-pump-static",
+          "power": 1,
+          "toughness": 1,
+          "contract": "continuous-layer"
+        }
+      ],
+      "oracleContracts": [
+        "continuous-layer"
+      ],
+      "rulesCore": "Creatures you control get +1/+1.",
+      "raw": {
+        "name": "Gaea's Anthem",
+        "cost": "{1}{G}{G}",
+        "super": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "oracle": "Creatures you control get +1/+1.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "3754dce0-3e97-406f-8807-a4942a222c41",
+        "_scryfallId": "43febc63-597d-4392-b8ea-a00841148c45",
+        "_layout": "normal",
+        "_set": "tsr",
+        "_collectorNumber": "204",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Enchantment",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [],
+        "commanderLegality": "legal",
+        "set": "tsr",
+        "setName": "Time Spiral Remastered",
+        "collectorNumber": "204",
+        "rarity": "uncommon",
+        "releasedAt": "2021-03-19",
+        "scryfallUri": "https://scryfall.com/card/tsr/204/gaeas-anthem?utm_source=api"
+      }
+    },
+    {
+      "position": 95,
+      "oracleId": "9a484eb3-ae4a-465b-9dbc-f7a42a036e07",
+      "scryfallId": "11b492d6-5e28-4f4b-942c-080d03cb0e92",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "protection-from",
+          "from": "red",
+          "contract": "protection-static"
+        }
+      ],
+      "oracleContracts": [
+        "protection-static"
+      ],
+      "rulesCore": "Protection from red",
+      "raw": {
+        "name": "Galina's Knight",
+        "cost": "{W}{U}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Merfolk",
+          "Knight"
+        ],
+        "oracle": "Protection from red",
+        "_ci": [
+          "U",
+          "W"
+        ],
+        "_oracleId": "9a484eb3-ae4a-465b-9dbc-f7a42a036e07",
+        "_scryfallId": "11b492d6-5e28-4f4b-942c-080d03cb0e92",
+        "_layout": "normal",
+        "_set": "inv",
+        "_collectorNumber": "248",
+        "_rarity": "common",
+        "power": "2",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Merfolk Knight",
+        "colorIdentity": [
+          "U",
+          "W"
+        ],
+        "colors": [
+          "U",
+          "W"
+        ],
+        "keywords": [
+          "Protection"
+        ],
+        "commanderLegality": "legal",
+        "set": "inv",
+        "setName": "Invasion",
+        "collectorNumber": "248",
+        "rarity": "common",
+        "releasedAt": "2000-10-02",
+        "scryfallUri": "https://scryfall.com/card/inv/248/galinas-knight?utm_source=api"
+      }
+    },
+    {
+      "position": 96,
+      "oracleId": "04dcda3b-3401-4523-8b97-b700a14feb36",
+      "scryfallId": "9bdb58b7-e1ef-496b-b8dd-d1fabf3d2e7a",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-destroy",
+          "noRegen": false,
+          "contract": "spell-destroy",
+          "what": "creature",
+          "stat": "toughness",
+          "threshold": 4,
+          "comparison": "greater"
+        },
+        {
+          "kind": "cycling",
+          "cost": "{2}",
+          "contract": "cycling-ability"
+        }
+      ],
+      "oracleContracts": [
+        "spell-destroy",
+        "cycling-ability"
+      ],
+      "rulesCore": "Destroy target creature with toughness 4 or greater.\nCycling {2}",
+      "raw": {
+        "name": "Gallant Strike",
+        "cost": "{1}{W}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Destroy target creature with toughness 4 or greater.\nCycling {2} ({2}, Discard this card: Draw a card.)",
+        "_ci": [
+          "W"
+        ],
+        "_oracleId": "04dcda3b-3401-4523-8b97-b700a14feb36",
+        "_scryfallId": "9bdb58b7-e1ef-496b-b8dd-d1fabf3d2e7a",
+        "_layout": "normal",
+        "_set": "dft",
+        "_collectorNumber": "13",
+        "_rarity": "uncommon"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "W"
+        ],
+        "keywords": [
+          "Cycling"
+        ],
+        "commanderLegality": "legal",
+        "set": "dft",
+        "setName": "Aetherdrift",
+        "collectorNumber": "13",
+        "rarity": "uncommon",
+        "releasedAt": "2025-02-14",
+        "scryfallUri": "https://scryfall.com/card/dft/13/gallant-strike?utm_source=api"
+      }
+    },
+    {
+      "position": 97,
+      "oracleId": "384611fb-aca2-4e2d-9125-44ea034de08b",
+      "scryfallId": "7bc76a7f-516f-4d0b-b024-39d5c8096a9f",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "trample"
+      ],
+      "implementation": [
+        {
+          "kind": "mechanic-changeling",
+          "contract": "mechanic-changeling"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-changeling"
+      ],
+      "rulesCore": "Changeling\nTrample",
+      "raw": {
+        "name": "Game-Trail Changeling",
+        "cost": "{3}{G}{G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Shapeshifter"
+        ],
+        "oracle": "Changeling (This card is every creature type.)\nTrample",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "384611fb-aca2-4e2d-9125-44ea034de08b",
+        "_scryfallId": "7bc76a7f-516f-4d0b-b024-39d5c8096a9f",
+        "_layout": "normal",
+        "_set": "mor",
+        "_collectorNumber": "123",
+        "_rarity": "common",
+        "power": "4",
+        "toughness": "4"
+      },
+      "catalog": {
+        "typeLine": "Creature — Shapeshifter",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Trample",
+          "Changeling"
+        ],
+        "commanderLegality": "legal",
+        "set": "mor",
+        "setName": "Morningtide",
+        "collectorNumber": "123",
+        "rarity": "common",
+        "releasedAt": "2008-02-01",
+        "scryfallUri": "https://scryfall.com/card/mor/123/game-trail-changeling?utm_source=api"
+      }
+    },
+    {
+      "position": 98,
+      "oracleId": "60206d4e-4301-4d7a-a68e-46a2ad9fc407",
+      "scryfallId": "502000a7-a3c1-4259-aea5-ff01724396a1",
+      "semanticClass": "creature-template",
+      "implementedKeywords": [
+        "trample"
+      ],
+      "implementation": [
+        {
+          "kind": "mechanic-changeling",
+          "contract": "mechanic-changeling"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-changeling"
+      ],
+      "rulesCore": "Changeling\nTrample",
+      "raw": {
+        "name": "Gangly Stompling",
+        "cost": "{2}{R/G}",
+        "super": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Shapeshifter"
+        ],
+        "oracle": "Changeling (This card is every creature type.)\nTrample",
+        "_ci": [
+          "G",
+          "R"
+        ],
+        "_oracleId": "60206d4e-4301-4d7a-a68e-46a2ad9fc407",
+        "_scryfallId": "502000a7-a3c1-4259-aea5-ff01724396a1",
+        "_layout": "normal",
+        "_set": "ecl",
+        "_collectorNumber": "226",
+        "_rarity": "common",
+        "power": "4",
+        "toughness": "2"
+      },
+      "catalog": {
+        "typeLine": "Creature — Shapeshifter",
+        "colorIdentity": [
+          "G",
+          "R"
+        ],
+        "colors": [
+          "G",
+          "R"
+        ],
+        "keywords": [
+          "Trample",
+          "Changeling"
+        ],
+        "commanderLegality": "legal",
+        "set": "ecl",
+        "setName": "Lorwyn Eclipsed",
+        "collectorNumber": "226",
+        "rarity": "common",
+        "releasedAt": "2026-01-23",
+        "scryfallUri": "https://scryfall.com/card/ecl/226/gangly-stompling?utm_source=api"
+      }
+    },
+    {
+      "position": 99,
+      "oracleId": "ae033eb6-47ec-4b9e-9cdb-6d023aca07d1",
+      "scryfallId": "bf059c8d-6e61-41ca-ac79-3bf82fa2d4b3",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "mechanic-convoke",
+          "contract": "mechanic-convoke"
+        },
+        {
+          "kind": "spell-pump",
+          "power": 2,
+          "toughness": 2,
+          "keywords": [],
+          "controller": "any",
+          "attacking": false,
+          "contract": "spell-pump"
+        }
+      ],
+      "oracleContracts": [
+        "mechanic-convoke",
+        "spell-pump"
+      ],
+      "rulesCore": "Convoke\nTarget creature gets +2/+2 until end of turn.",
+      "raw": {
+        "name": "Gather Courage",
+        "cost": "{G}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Convoke (Your creatures can help cast this spell. Each creature you tap while casting this spell pays for {1} or one mana of that creature's color.)\nTarget creature gets +2/+2 until end of turn.",
+        "_ci": [
+          "G"
+        ],
+        "_oracleId": "ae033eb6-47ec-4b9e-9cdb-6d023aca07d1",
+        "_scryfallId": "bf059c8d-6e61-41ca-ac79-3bf82fa2d4b3",
+        "_layout": "normal",
+        "_set": "rvr",
+        "_collectorNumber": "143",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "G"
+        ],
+        "colors": [
+          "G"
+        ],
+        "keywords": [
+          "Convoke"
+        ],
+        "commanderLegality": "legal",
+        "set": "rvr",
+        "setName": "Ravnica Remastered",
+        "collectorNumber": "143",
+        "rarity": "common",
+        "releasedAt": "2024-01-12",
+        "scryfallUri": "https://scryfall.com/card/rvr/143/gather-courage?utm_source=api"
+      }
+    },
+    {
+      "position": 100,
+      "oracleId": "2f01c3d9-e0fc-4cdf-b4db-daeb8bb24bc3",
+      "scryfallId": "c671b096-17a4-4cdb-b954-7b04981e7aef",
+      "semanticClass": "spell-template",
+      "implementedKeywords": [],
+      "implementation": [
+        {
+          "kind": "spell-damage",
+          "n": 1,
+          "what": "any target",
+          "contract": "spell-damage"
+        },
+        {
+          "kind": "mechanic-flashback",
+          "cost": "{3}{R}",
+          "speed": "instant",
+          "contract": "mechanic-flashback"
+        }
+      ],
+      "oracleContracts": [
+        "spell-damage",
+        "mechanic-flashback"
+      ],
+      "rulesCore": "Geistflame deals 1 damage to any target.\nFlashback {3}{R}",
+      "raw": {
+        "name": "Geistflame",
+        "cost": "{R}",
+        "super": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "oracle": "Geistflame deals 1 damage to any target.\nFlashback {3}{R} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+        "_ci": [
+          "R"
+        ],
+        "_oracleId": "2f01c3d9-e0fc-4cdf-b4db-daeb8bb24bc3",
+        "_scryfallId": "c671b096-17a4-4cdb-b954-7b04981e7aef",
+        "_layout": "normal",
+        "_set": "ddk",
+        "_collectorNumber": "61",
+        "_rarity": "common"
+      },
+      "catalog": {
+        "typeLine": "Instant",
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "R"
+        ],
+        "keywords": [
+          "Flashback"
+        ],
+        "commanderLegality": "legal",
+        "set": "ddk",
+        "setName": "Duel Decks: Sorin vs. Tibalt",
+        "collectorNumber": "61",
+        "rarity": "common",
+        "releasedAt": "2013-03-15",
+        "scryfallUri": "https://scryfall.com/card/ddk/61/geistflame?utm_source=api"
+      }
+    }
+  ]
+}

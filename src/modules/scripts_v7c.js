@@ -373,6 +373,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 x.cur.power += powerDelta;
                 x.cur.toughness += toughnessDelta;
                 x.cur.allCreatureTypes = true;
+                x.cur.allCreatureTypesFromOtherEffects = true;
               }
             },
           });
@@ -1666,6 +1667,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         host.cur.basePower = 0; host.cur.baseToughness = 4;
         host.cur.kw.clear();
         host.cur.subtypes = ['Treefolk'];
+        host.cur.allCreatureTypes = false;
+        host.cur.allCreatureTypesFromOtherEffects = false;
+        host.cur.suppressPrintedChangeling = true;
         host.cur.extraAbilities = [];
         host.cur.abilitiesDisabled = true;
       },

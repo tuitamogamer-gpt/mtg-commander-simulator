@@ -102,6 +102,11 @@ test('numeric cascade executes once per printed cascade instance', async () => {
   let cascades = 0;
   game.doCascade = async () => { cascades++; };
   assert.equal(await game.castSpell(player, spell), true);
+  assert.equal(cascades, 0, 'Cascade does not execute inline during casting');
+  await game.flushTriggers();
+  assert.equal(game.stack.filter(item => item.kind === 'trigger' && item.name.includes('Cascade')).length, 2);
+  await game.resolveTop();
+  await game.resolveTop();
   assert.equal(cascades, 2);
 });
 
@@ -143,7 +148,10 @@ test('Storm copies of Aura permanent spells resolve as attached Aura tokens', as
     targets: [{ what: 'creature', filter: (g, target) => target.zone === 'battlefield' && target.ctrl === player }],
   }), 'hand');
   assert.equal(await game.castSpell(player, setup), true);
+  await game.resolveTop();
   assert.equal(await game.castSpell(player, aura), true);
+  assert.equal(game.stack.at(-1)?.kind, 'trigger', 'Storm is a separately respondable cast trigger');
+  await game.resolveTop();
   assert.equal(game.stack.filter(item => item.card === aura).length, 2);
   await game.resolveTop();
   await game.resolveTop();

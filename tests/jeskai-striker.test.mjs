@@ -235,6 +235,8 @@ test('Tempest Technique creates attached Aura-token storm copies and each Aura c
   assert.equal(await game.castSpell(jeskai, setup, { from: 'hand' }), true);
   await resolveAll(game);
   assert.equal(await game.castSpell(jeskai, aura, { from: 'hand' }), true);
+  assert.equal(game.stack.at(-1)?.kind, 'trigger', 'Storm is a separately respondable cast trigger');
+  await game.resolveTop();
   assert.equal(game.stack.filter(item => item.card === aura).length, 2);
   await resolveAll(game);
   const attached = game.bf().filter(card => card.name === 'Tempest Technique' && card.attachedTo === host.iid);
@@ -302,7 +304,7 @@ test('Ancestral Vision cannot be normally cast, suspends for four, then free-cas
   assert.equal(vision.zone, 'exile');
   assert.equal(vision.meta.suspended, 4);
 
-  for (const expected of [3, 2, 1, 0]) {
+  for (const expected of [3, 2, 1, undefined]) {
     game.turnPlayer = jeskai;
     await game.runTurn();
     assert.equal(vision.meta.suspended, expected);

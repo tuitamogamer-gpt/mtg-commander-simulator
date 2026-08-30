@@ -615,6 +615,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const c = e.card;
         const o = (c.def.oracle || '').toLowerCase();
         if (/counter target spell/.test(o) && stackTop && stackTop.kind === 'spell' && stackTop.ctrl !== p) {
+          if (MTG.isUncounterable && MTG.isUncounterable(g, stackTop)) continue;
           const casterThreat = this.playerThreat(g, stackTop.ctrl);
           const isLeader = MTG.threatTable(g, p)[0] && MTG.threatTable(g, p)[0].p === stackTop.ctrl;
           const threat = U.mv(stackTop.card.def.cost || '') + (stackTop.card.commander ? 2 : 0) + (isLeader ? 1 : 0) + this.persona.counterBias;
@@ -779,6 +780,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     chooseTargets(g, q) {
       const goal = q.aiHint && q.aiHint.goal || (q.spec && q.spec.aiHint && q.spec.aiHint.goal) || 'generic';
       let cands = q.candidates.slice();
+      const avoidedCopyTargets = q.aiHint && q.aiHint.copyTargetPolicy === 'spread'
+        ? new Set(q.aiHint.copyUsedTargetIids || []) : null;
+      if (avoidedCopyTargets && avoidedCopyTargets.size) {
+        const unused = cands.filter(target =>
+          !(target instanceof MTG.CardInst) || !avoidedCopyTargets.has(target.iid));
+        const min = q.min !== undefined ? q.min : 1;
+        if (unused.length >= min) cands = unused;
+      }
       if (q.spec && q.spec.distinctCtrl) {
         // najviše jedna meta po kontroloru — zadrži najprijeteću po svakom
         const seenCtrl = new Set();
@@ -838,7 +847,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return pick(cands);
         }
         case 'tap': {
-          return pick(enemyPerms.length ? enemyPerms : byThreatDesc);
+          const untappedEnemies = enemyPerms.filter(card => !card.tapped);
+          if (untappedEnemies.length) return pick(untappedEnemies);
+          if (min === 0) return [];
+          const untapped = byThreatDesc.filter(card => !card.tapped);
+          return pick(untapped.length ? untapped : byThreatDesc);
+        }
+        case 'untap': {
+          const tappedMine = myPerms.filter(card => card.tapped);
+          if (tappedMine.length) return pick(tappedMine);
+          if (min === 0) return [];
+          const tapped = byThreatDesc.filter(card => card.tapped);
+          return pick(tapped.length ? tapped : byThreatDesc);
         }
         case 'magmaOpusDamage': {
           const chosen = [];
@@ -900,6 +920,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const me = cands.find(x => x === p);
           if (me) return [me];
           return pick(cands);
+        }
+        case 'discard': {
+          const opponentsWithCards = oppPlayers.filter(player => player.hand.length > 0)
+            .sort((a, b) => b.hand.length - a.hand.length || this.playerThreat(g, b) - this.playerThreat(g, a));
+          if (opponentsWithCards.length) return [opponentsWithCards[0]];
+          return pick(oppPlayers.length ? oppPlayers : cands);
         }
         case 'gift': {
           const me = cands.find(x => x === p);
@@ -1340,6 +1366,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'offspring': return 'yes';
         case 'newTargets': {
           const so = q.aiHint && q.aiHint.so;
+          if (q.aiHint && q.aiHint.copyTargetPolicy === 'spread' &&
+              q.aiHint.hasUnusedTarget && keys.includes('yes')) return 'yes';
           if (so) {
             const specs = so.targetSpecs || g.spellTargetSpecs(so.card, so.castOpts || {}, this.p);
             if (!g.targetsStillOk(so.targets || [], specs, so.card, this.p) && keys.includes('yes')) return 'yes';
@@ -1491,6 +1519,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (c.is('Land') && lands >= 6) bottom.push(c);
         else if (this.cardValue(g, c) < 2.2 && !c.is('Land')) bottom.push(c);
         else top.push(c);
+      }
+      const reserve = Math.max(0, Number(q.drawReserve) || 0);
+      while (reserve && this.p.library.length - bottom.length < reserve && bottom.length) {
+        bottom.sort((a, b) => this.cardValue(g, b) - this.cardValue(g, a));
+        top.push(bottom.shift());
       }
       if (q.surveil) return { top, bottom };
       return { top, bottom };

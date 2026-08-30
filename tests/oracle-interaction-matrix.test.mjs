@@ -19,6 +19,7 @@ function castingContract(entry) {
   if (entry.raw.types.includes('Land')) return 'land-play';
   if (entry.raw.types.some(type => type === 'Instant' || type === 'Sorcery')) return 'spell-casting';
   if (entry.raw.types.includes('Creature')) return 'creature-casting';
+  if (entry.raw.types.some(type => type === 'Artifact' || type === 'Enchantment')) return 'permanent-casting';
   return null;
 }
 
@@ -34,7 +35,7 @@ function permanent(MTG, game, player, name) {
 test('svaka generička Oracle batch karta mapira kompletan rules core na poznate interakcijske ugovore', () => {
   const MTG = loadEngine();
   const entries = allEntries(MTG);
-  assert.ok(entries.length >= 1300, `expected the initial 300 plus 1,000 new cards, found ${entries.length}`);
+  assert.ok(entries.length >= 2600, `expected all 26 generic Oracle batches (2,600 cards), found ${entries.length}`);
   for (const entry of entries) {
     const catalog = MTG.CARD_CATALOG[entry.raw.name];
     const deck = { cards: [{ n: 1, name: entry.raw.name }] };

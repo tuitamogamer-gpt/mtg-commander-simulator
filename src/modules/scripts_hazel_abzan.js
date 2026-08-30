@@ -747,7 +747,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     statics: [{
       phase: 1,
       apply: (g, self, bf) => {
-        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature')) c.cur.allCreatureTypes = true;
+        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature')) {
+          c.cur.allCreatureTypes = true;
+          c.cur.allCreatureTypesFromOtherEffects = true;
+        }
       },
     }],
     abilities: [{
@@ -926,7 +929,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         produce: (g, c, p) => {
           const x = Math.max(0, ...g.creatures(p).filter(y => y !== c).map(y => y.toughness), 0);
           if (!x) return [];
-          return [{ ANY: true, n: x }];
+          // Oracle says "X mana of any one color", not an arbitrary mix.
+          // Each option therefore fixes one color for the entire output.
+          return COLORS.map(color => ({ [color]: x }));
         },
       },
     ],

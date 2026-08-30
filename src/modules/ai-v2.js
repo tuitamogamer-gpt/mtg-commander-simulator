@@ -200,6 +200,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const types = def.types || [];
     const subtypes = def.subtypes || [];
     const oracleImplementation = def.oracleImplementation || [];
+    const attachmentOperations = oracleImplementation.filter(operation => operation.kind === 'attachment-grant');
+    const harmfulAttachment = attachmentOperations.some(operation =>
+      Number(operation.power || 0) < 0 || Number(operation.toughness || 0) < 0 ||
+      operation.skipUntap || operation.cantAttack || operation.cantBlock);
     const is = type => types.includes(type);
     const mv = U.mv ? U.mv(def.cost || '') : 0;
 
@@ -216,13 +220,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // must still value an exact-lethal hostile target outside combat.
     addIf(roles, oracleImplementation.some(operation =>
       operation.kind === 'spell-pump' && Number(operation.toughness) < 0), 'single-target-removal');
+    addIf(roles, subtypes.includes('Aura') && harmfulAttachment, 'single-target-removal');
     addIf(roles, /destroy target artifact|exile target artifact/.test(oracle), 'artifact-removal');
     addIf(roles, /destroy target enchantment|exile target enchantment/.test(oracle), 'enchantment-removal');
     addIf(roles, /exile .* graveyard|cards? in graveyards? can'?t|player'?s graveyard/.test(oracle), 'graveyard-hate');
     addIf(roles, /counter target spell|counter target activated|counter target triggered/.test(oracle), 'counterspell');
     addIf(roles, /hexproof|indestructible|protection from|regenerate|phase out|prevent .* damage/.test(oracle), 'protection');
-    addIf(roles, is('Instant') && /gets? [+-]\d|double strike|first strike|deathtouch|trample|lifelink/.test(oracle), 'combat-trick');
-    addIf(roles, /destroy all|exile all|each creature gets -|damage to each creature|all creatures/.test(oracle), 'board-wipe');
+    addIf(roles, is('Instant') && /gets? [+-](?:\d+|x)\b|double strike|first strike|deathtouch|trample|lifelink|indestructible|hexproof|protection from|vigilance|flying|reach|menace/.test(oracle), 'combat-trick');
+    addIf(roles, /destroy all|exile all|each creature gets -|all creatures get -|damage to each creature/.test(oracle), 'board-wipe');
     addIf(roles, /create .* token|populate|offspring/.test(oracle), 'token-maker');
     addIf(roles, /creatures you control get|other .* you control get|tokens you control get/.test(oracle), 'anthem');
     addIf(roles, /whenever|at the beginning|the first time|once each turn/.test(oracle), 'engine');
@@ -643,7 +648,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function actionLabel(action) {
     if (!action) return 'Nema akcije';
-    if (action.kind === 'cast') return `Cast ${action.card.name}${action.alt && action.alt.label ? ` (${action.alt.label})` : ''}`;
+    if (action.kind === 'cast') {
+      if (action.alt && action.alt.faceDownCast) return 'Cast a face-down creature spell';
+      return `Cast ${action.card.name}${action.alt && action.alt.label ? ` (${action.alt.label})` : ''}`;
+    }
     if (action.kind === 'land') return `Play land ${action.card.name}`;
     if (action.kind === 'activate') return `Activate ${action.entry.card.name}${action.entry.label || action.entry.ability && action.entry.ability.label ? ` — ${action.entry.label || action.entry.ability.label}` : ''}`;
     if (action.kind === 'pass') return 'Pass priority';
@@ -709,6 +717,47 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     walk(0);
     return out;
+  }
+
+  // Bounded generic subset enumeration is intentionally approximate and can
+  // fill its beam with DFS prefixes before it ever reaches a later singleton.
+  // Crew needs one guaranteed resource-minimal payment candidate: zero-power
+  // creatures must never be added merely because the useful pilot appears
+  // late in stable order. Dynamic programming keeps the best tap-cost row for
+  // each exact power total and stops extending a row once Crew is satisfied.
+  function minimalCrewPayment(game, player, cards, need) {
+    const required = Math.max(0, Number(need) || 0);
+    if (required === 0) return [];
+    let states = new Map([[0, { power: 0, cost: 0, picks: [] }]]);
+    for (const card of cards) {
+      const contribution = Math.max(0, Number(card.power) || 0);
+      if (contribution <= 0) continue;
+      const tapCost = permanentGameValue(game, card, player) + 0.4;
+      const next = new Map(states);
+      for (const state of states.values()) {
+        if (state.power >= required) continue;
+        const power = state.power + contribution;
+        const candidate = {
+          power,
+          cost: state.cost + tapCost,
+          picks: state.picks.concat(card),
+        };
+        const current = next.get(power);
+        const candidateKey = candidate.picks.map(pick => pick.iid).join(',');
+        const currentKey = current ? current.picks.map(pick => pick.iid).join(',') : '';
+        if (!current || candidate.cost < current.cost ||
+          (candidate.cost === current.cost && candidateKey.localeCompare(currentKey) < 0)) {
+          next.set(power, candidate);
+        }
+      }
+      states = next;
+    }
+    const viable = [...states.values()].filter(state => state.power >= required);
+    viable.sort((a, b) =>
+      (a.cost + (a.power - required) * 1.5) - (b.cost + (b.power - required) * 1.5) ||
+      a.picks.length - b.picks.length ||
+      a.picks.map(card => card.iid).join(',').localeCompare(b.picks.map(card => card.iid).join(',')));
+    return viable[0] ? viable[0].picks : null;
   }
 
   function playerThreatForGame(game, observer, target) {
@@ -902,7 +951,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // isti izvor automatski kad stvarno nešto plaća. Njihovo rangiranje kao
         // obične utility aktivacije samo je tapovalo land i otkrivalo da nema
         // instant, iako proizvedena mana nije imala legalnu potrošnju.
-        if (!entry.manaAbility) actions.push({ kind: 'activate', entry });
+        if (entry.manaAbility) continue;
+        // Crew ostaje legalno ponovljiv rules-engineu (bitno za priority,
+        // trigger i ljudske izbore), ali lokalni AI nema taktičku korist od
+        // ponovnog crewovanja već animiranog Vehiclea. Bez ovog AI-only filtera
+        // bi svaki novi untapped creature plaćao isti Crew još jednom.
+        if (entry.crew && (entry.card.is('Creature') || entry.card.meta.crewedTurn === game.turnNo)) continue;
+        actions.push({ kind: 'activate', entry });
       }
       if (q.type === 'main') {
         for (const card of q.lands || []) actions.push({ kind: 'land', card });
@@ -936,6 +991,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           game.bf().some(existing => existing.ctrl === player && existing.name === card.name)));
         actions.push({ kind: 'chooseCards', picks });
       }
+      if (q.aiHint && q.aiHint.kind === 'crew') {
+        const picks = minimalCrewPayment(game, player, ranked, q.aiHint.need);
+        if (picks) actions.push({ kind: 'chooseCards', picks });
+      }
       for (const picks of combinations(ranked, q.min || 0, q.max || 1, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseCards', picks });
     } else if (q.type === 'chooseOption') {
       for (const option of q.options || []) actions.push({ kind: 'chooseOption', value: option.key, option });
@@ -961,6 +1020,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             inferredThresholds.push(Math.max(1, Number(target.counters && target.counters.loyalty) || 0));
           } else if (target instanceof U.Player && target !== player) inferredThresholds.push(target.life);
         }
+      } else if (q.aiHint && q.aiHint.kind === 'oracleXDebuff' && q.aiHint.card) {
+        const specs = game.spellTargetSpecs(q.aiHint.card, { xVal: max }, player);
+        const candidates = specs && specs[0] ? game.legalTargets(specs[0], q.aiHint.card, player) : [];
+        for (const target of candidates) {
+          if (target instanceof U.CardInst && target.ctrl !== player && target.is('Creature')) {
+            inferredThresholds.push(Math.max(1, Number(target.power) || 0));
+          }
+        }
       }
       const strategic = legalValues || [...new Set([min, max, Math.min(max, min + 1), Math.min(max, 3), Math.min(max, 5),
         ...((q.thresholds || []).map(Number)), ...inferredThresholds])]
@@ -974,6 +1041,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const cards = q.cards || [];
       const keep = cards.filter(card => choiceCardValue(game, player, card, q) >= 2.2);
       actions.push({ kind: 'scry', value: { top: keep, bottom: cards.filter(card => !keep.includes(card)) } });
+      const reserveFromSelection = Math.max(0, Number(q.drawReserve || 0) -
+        Math.max(0, player.library.length - cards.length));
+      if (reserveFromSelection > 0 && reserveFromSelection < cards.length) {
+        const reserve = cards.slice().sort((a, b) =>
+          choiceCardValue(game, player, b, q) - choiceCardValue(game, player, a, q) || a.iid - b.iid)
+          .slice(0, reserveFromSelection);
+        actions.push({ kind: 'scry', value: { top: reserve, bottom: cards.filter(card => !reserve.includes(card)) } });
+      }
       actions.push({ kind: 'scry', value: { top: cards.slice(), bottom: [] } });
     } else if (q.type === 'orderTriggers') {
       actions.push({ kind: 'orderTriggers', value: (q.triggers || []).slice().sort((a, b) => triggerValue(b) - triggerValue(a)) });
@@ -1023,6 +1098,43 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return value;
   }
 
+  function mandatoryCastTriggerDraws(game, player, card) {
+    const isInstantSorcery = card.is('Instant') || card.is('Sorcery');
+    const data = {
+      player, card, mv: card.mv,
+      isInstantSorcery,
+      isCreature: card.is('Creature'),
+    };
+    const battlefield = game.bf();
+    let draws = 0;
+    for (const source of battlefield.filter(permanent => permanent.ctrl === player)) {
+      const rules = source.def.mandatoryCastDraw
+        ? (Array.isArray(source.def.mandatoryCastDraw)
+          ? source.def.mandatoryCastDraw : [source.def.mandatoryCastDraw])
+        : [];
+      for (const rule of rules) {
+        const event = rule.event || 'cast';
+        if (event === 'castIS' && !isInstantSorcery) continue;
+        if (rule.filter && !rule.filter(game, source, data)) continue;
+        const nativeDraws = Math.max(0, Number(rule.n) || 0);
+        if (!nativeDraws) continue;
+        let times = 1;
+        const castOrCopyIS = isInstantSorcery &&
+          (event === 'cast' || event === 'castIS' || event.startsWith('cast'));
+        if (castOrCopyIS) {
+          times += battlefield.filter(doubler =>
+            doubler.ctrl === source.ctrl && doubler.def.doublesMagecraft).length;
+        }
+        for (const doubler of battlefield) {
+          if (doubler.ctrl === source.ctrl && doubler.def.doubleTriggerFilter &&
+            doubler.def.doubleTriggerFilter(game, doubler, source, event, data)) times++;
+        }
+        draws += nativeDraws * times;
+      }
+    }
+    return draws;
+  }
+
   function counterRemovalValue(card, player, kind, amount = 1) {
     const harmful = new Set(['-1/-1', '-0/-1', 'stun', 'finality', 'doom', 'bounty']);
     const goodForController = !harmful.has(kind);
@@ -1045,11 +1157,65 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return card.is('Creature') && (card.kw('indestructible') || Number(card.regenShield || 0) > 0);
   }
 
+  function diesAfterGlobalPump(card, toughness) {
+    if (toughness <= 0) return true;
+    const lethalMarked = Number(card.damage || 0) >= toughness ||
+      (card.deathtouched && Number(card.damage || 0) > 0);
+    return lethalMarked && !damageProtectionSaves(card);
+  }
+
+  function globalPumpNetEffect(game, player, operation) {
+    const power = Number(operation.power || 0);
+    const toughness = Number(operation.toughness || 0);
+    let board = 0, combat = 0;
+    for (const creature of game.bf().filter(card => card.is('Creature'))) {
+      const side = creature.ctrl === player ? 1 : -1;
+      const currentToughness = Number(creature.toughness || 0);
+      const beforeDies = diesAfterGlobalPump(creature, currentToughness);
+      const afterDies = diesAfterGlobalPump(creature, currentToughness + toughness);
+      const deathValue = 6 + permanentGameValue(game, creature, player);
+
+      // A toughness reduction can kill through indestructible at zero, while
+      // marked damage uses the normal destroy protections. Score the exact
+      // controller-relative board swing instead of treating every global
+      // negative modifier as a one-sided wipe.
+      if (beforeDies !== afterDies) {
+        const beforeValue = beforeDies ? 0 : deathValue;
+        const afterValue = afterDies ? 0 : deathValue;
+        board += side * (afterValue - beforeValue);
+      } else if (!afterDies) {
+        board += side * (power * 0.45 + toughness * 0.3);
+      }
+      if (afterDies || !game.combat) continue;
+
+      // In a live combat the same symmetric modifier can help the wrong side:
+      // power matters most for attackers, while both stats matter to blockers.
+      if (creature.attacking) combat += side * (power * 1.35 + toughness * 0.55);
+      if (creature.blocking !== null && creature.blocking !== undefined && creature.blocking !== false) {
+        combat += side * (power * 0.9 + toughness * 0.85);
+      }
+    }
+    return { board, combat, total: board + combat };
+  }
+
+  function indestructibleStopsDestroy(card) {
+    return card instanceof U.CardInst && card.zone === 'battlefield' && card.kw('indestructible');
+  }
+
   function targetValue(game, player, target, q) {
+    const avoidedCopyTargets = q && q.aiHint && q.aiHint.copyTargetPolicy === 'spread'
+      ? q.aiHint.copyUsedTargetIids || [] : [];
+    if (target instanceof U.CardInst && avoidedCopyTargets.includes(target.iid)) return -1000;
     const hint = q.aiHint && q.aiHint.goal || '';
     if (target instanceof U.Player) {
       if (hint === 'proliferate') return target === player ? -100 : 8 + (target.poison || 0) * 2;
       if (hint === 'drawSelf') return target === player ? 100 : -100;
+      if (hint === 'discard') {
+        if (target === player) return -1000;
+        const amount = Math.max(1, Number(q.aiHint && q.aiHint.amount || 1));
+        const effective = Math.min(amount, target.hand.length);
+        return effective ? 8 * effective + playerThreatForGame(game, player, target) * 0.2 : -1000;
+      }
       if (hint === 'marduTokenCount') return game.creatures(target).length * 12 - target.idx * 0.001;
       if (hint === 'lifeSwap') {
         // Tree of Perdition: razmjena život ↔ žilavost. Ima smisla SAMO kad
@@ -1080,6 +1246,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (target instanceof U.CardInst) {
       const value = permanentGameValue(game, target, player);
       const hostile = target.ctrl !== player;
+      if (q.aiHint && q.aiHint.kind === 'equipTarget') {
+        if (hostile) return -1000;
+        const equipment = q.aiHint.card;
+        const grants = equipment && equipment.def && equipment.def.oracleImplementation || [];
+        const attachment = grants.filter(operation => operation.kind === 'attachment-grant');
+        const power = attachment.reduce((sum, operation) => sum + Number(operation.power || 0), 0);
+        const toughness = attachment.reduce((sum, operation) => sum + Number(operation.toughness || 0), 0);
+        if (Number(target.toughness || 0) - Number(target.damage || 0) + toughness <= 0) return -1000;
+        return value + Math.max(0, power) * 1.2 + toughness * 0.8 +
+          attachment.reduce((sum, operation) => sum + (operation.keywords || []).length * 1.5, 0);
+      }
       if (hint === 'forceAttack') {
         const victim = q.aiHint && q.aiHint.victim;
         if (!victim || target.ctrl === victim) return -100;
@@ -1126,6 +1303,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const inCombat = !!target.attacking || !!target.blocking;
         return 5 + Math.max(0, powerDelta) * 1.8 + (inCombat ? 8 : 0) + value * 0.08;
       }
+      if (hint === 'debuff') {
+        if (!hostile) return -100;
+        const inCombat = !!target.attacking || !!target.blocking;
+        return value + Math.max(0, Number(target.power) || 0) * 1.4 + (inCombat ? 12 : 0);
+      }
       if (hint === 'damage') {
         const rawAmount = q.aiHint && q.aiHint.amount;
         const damage = rawAmount === 'X' ? Number(q.aiHint && q.aiHint.x || 0) : Number(rawAmount || 0);
@@ -1139,6 +1321,46 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           return damage >= remaining ? 14 + value * 1.5 - (damage - remaining) * 0.35 : value * 0.18 - (remaining - damage);
         }
+      }
+      if (hint === 'tap') {
+        // Tapped permanents remain rules-legal targets, but tapping one again
+        // does not change game state. Keep that legality for humans while the
+        // local bot prefers an actually usable opposing permanent.
+        if (target.tapped) return -1000;
+        return hostile ? value : -value * 1.8;
+      }
+      if (hint === 'untap') {
+        if (!target.tapped) return -1000;
+        return hostile ? -value : value;
+      }
+      if (hint === 'buff' && q.aiHint && q.aiHint.untilEOT) {
+        if (hostile) return -100;
+        const power = Number(q.aiHint.power || 0);
+        const toughness = Number(q.aiHint.toughness || 0);
+        const keywords = (q.aiHint.keywords || []).map(keyword => String(keyword).toLowerCase());
+        const addsKeyword = keywords.some(keyword => !target.kw(keyword));
+        const hasteMatters = keywords.includes('haste') && target.sick && !target.tapped &&
+          game.turnPlayer === player && game.phase === 'main1';
+        const statChange = power !== 0 || toughness !== 0;
+        const inCombat = !!target.attacking || target.blocking !== null &&
+          target.blocking !== undefined && target.blocking !== false;
+        const canAttackNow = game.turnPlayer === player && game.phase === 'main1' && !target.tapped &&
+          (!target.sick || target.kw('haste') || hasteMatters) && !target.cur.cantAttack;
+        const top = game.stack[game.stack.length - 1];
+        const respondingToHostileTarget = top && top.ctrl !== player &&
+          (top.targets || []).flat().includes(target);
+        if (!statChange && !addsKeyword) return -1000;
+        if (!inCombat && !canAttackNow && !respondingToHostileTarget) return -100;
+        if (!statChange && keywords.length && !hasteMatters &&
+          !keywords.some(keyword => ['indestructible', 'hexproof', 'shroud'].includes(keyword))) return -100;
+        return value + Math.max(0, power) * 1.5 + Math.max(0, toughness) + (addsKeyword ? 2 : 0);
+      }
+      if (hint === 'removal' && q.aiHint && q.aiHint.removalKind === 'destroy' &&
+        hostile && indestructibleStopsDestroy(target)) {
+        // The target remains rules-legal for human players. For the AI this is
+        // a dead effect, so it must lose to any effective target and normally
+        // to keeping the destroy spell in hand.
+        return -100 - value;
       }
       // Tapovanje je za Magma Opus obavezna, neprijateljska interakcija. Bez
       // eksplicitnog svrstavanja u hostile ciljeve evaluator je mogao dati
@@ -1159,6 +1381,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!(card instanceof U.CardInst)) return 0;
     const hint = q.aiHint && q.aiHint.kind || '';
     const value = cardDefinitionValue(card.def) + (card.commander ? 8 : 0);
+    if (hint === 'crew') return -permanentGameValue(game, card, player);
     if (hint === 'wakandaBattlefield') {
       const duplicateLegend = (card.def.super || []).includes('Legendary') &&
         game.bf().some(existing => existing.ctrl === player && existing.name === card.name);
@@ -1278,6 +1501,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function cardDefinitionValue(def) {
     const sem = inferCardSemantics(def);
     let value = U.mv(def && def.cost || '') * 0.65 + (sem.roles.includes('creature') ? 1 : 0);
+    if (def && (def.types || []).some(type => ['Artifact', 'Enchantment', 'Planeswalker', 'Battle'].includes(type))) {
+      value += 0.8;
+    }
+    value += Math.min(1.5, (def && def.kws || []).length * 0.3);
+    const attachmentValue = (def && def.oracleImplementation || [])
+      .filter(operation => operation.kind === 'attachment-grant')
+      .reduce((sum, operation) => sum +
+        Math.min(3, Math.abs(Number(operation.power || 0)) * 0.28) +
+        Math.min(3, Math.abs(Number(operation.toughness || 0)) * 0.28) +
+        (operation.keywords || []).length * 0.75 +
+        (operation.skipUntap ? 1.6 : 0) +
+        (operation.cantAttack ? 1.4 : 0) +
+        (operation.cantBlock ? 1.1 : 0), 0);
+    if (sem.synergyTags.includes('equipment') || sem.synergyTags.includes('auras')) {
+      value += Math.max(1.4, Math.min(6, attachmentValue));
+    }
     if (sem.roles.includes('card-draw')) value += 2.3;
     if (sem.roles.includes('single-target-removal')) value += 2.4;
     if (sem.roles.includes('board-wipe')) value += 3.5;
@@ -1992,8 +2231,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!candidates.length) return null;
     const compiledDamage = (card.def.oracleImplementation || []).find(operation =>
       operation.kind === 'spell-damage' && operation.what !== 'each opponent');
-    return candidates.map(target => {
+    const compiledDestroy = specs[0].aiHint && specs[0].aiHint.removalKind === 'destroy';
+    const best = candidates.map(target => {
       let score = permanentGameValue(game, target, player);
+      if (compiledDestroy && indestructibleStopsDestroy(target)) score = Number.NEGATIVE_INFINITY;
       if (compiledDamage && target.is('Creature') && damageProtectionSaves(target)) {
         // A damage spell cannot claim a lethal-removal bonus against a shield,
         // regeneration shield or indestructible creature. Keep a tiny chip
@@ -2004,6 +2245,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return { target, score };
     })
       .sort((a, b) => b.score - a.score || a.target.iid - b.target.iid)[0];
+    return best && Number.isFinite(best.score) ? best : null;
   }
 
   function publicVoteCount(q, key) {
@@ -2147,6 +2389,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (action.kind === 'cast') {
       const card = action.card;
       const sem = inferCardSemantics(card.def);
+      const oracleOperations = card.def.oracleImplementation || [];
+      const resolvingOperations = oracleOperations.filter(operation =>
+        operation && operation.kind !== 'cycling' && !String(operation.kind || '').startsWith('mechanic-'));
       const cost = game.spellCost(player, card, Object.assign({}, action.alt || {}, { from: action.from }));
       const spend = (cost.generic || 0) + (cost.pips || []).length;
       breakdown.base = cardDefinitionValue(card.def) + Math.min(5, spend * 0.35);
@@ -2171,14 +2416,96 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (sem.roles.includes('ramp') && game.turnNo <= 16) breakdown.resources += 3;
       if (sem.roles.includes('card-draw') || sem.roles.includes('card-selection')) breakdown.resources += Math.max(0, 4 - player.hand.length) * 0.7;
+      if (resolvingOperations.length && resolvingOperations.every(operation =>
+        operation.kind === 'spell-tap' || operation.kind === 'spell-untap')) {
+        const targetSpecs = game.spellTargetSpecs(card, action.alt || {}, player) || [];
+        const changesState = targetSpecs.some(spec => game.legalTargets(spec, card, player).some(target =>
+          target instanceof U.CardInst && (spec.aiHint && spec.aiHint.goal === 'tap' ? !target.tapped : !!target.tapped)));
+        if (!changesState) breakdown.timing -= 100;
+      }
+      if (resolvingOperations.length && resolvingOperations.every(operation => operation.kind === 'spell-discard')) {
+        const targetSpecs = game.spellTargetSpecs(card, action.alt || {}, player) || [];
+        const canDiscard = targetSpecs.some(spec => game.legalTargets(spec, card, player).some(target =>
+          target instanceof U.Player && target !== player && target.hand.length > 0));
+        if (!canDiscard) breakdown.timing -= 100;
+      }
+      if (resolvingOperations.length && resolvingOperations.every(operation =>
+        operation.kind === 'spell-pump' && Number(operation.power || 0) >= 0 && Number(operation.toughness || 0) >= 0)) {
+        const targetSpecs = game.spellTargetSpecs(card, action.alt || {}, player) || [];
+        const hasRelevantTarget = targetSpecs.some(spec => game.legalTargets(spec, card, player).some(target => {
+          if (!(target instanceof U.CardInst) || target.ctrl !== player) return false;
+          const operation = resolvingOperations[0];
+          const keywords = (operation.keywords || []).map(keyword => String(keyword).toLowerCase());
+          const hasteMatters = keywords.includes('haste') && target.sick && !target.tapped &&
+            game.turnPlayer === player && phase === 'main1';
+          const addsUsefulKeyword = hasteMatters || keywords.some(keyword =>
+            keyword !== 'haste' && !target.kw(keyword));
+          const statChange = Number(operation.power || 0) !== 0 || Number(operation.toughness || 0) !== 0;
+          const inCombat = !!target.attacking || target.blocking !== null &&
+            target.blocking !== undefined && target.blocking !== false;
+          const canAttackNow = game.turnPlayer === player && phase === 'main1' && !target.tapped &&
+            (!target.sick || target.kw('haste') || hasteMatters) && !target.cur.cantAttack;
+          return (statChange || addsUsefulKeyword) && (inCombat || canAttackNow);
+        }));
+        const top = game.stack[game.stack.length - 1];
+        const threatened = top && top.ctrl !== player ? (top.targets || []).flat().filter(target =>
+          target instanceof U.CardInst && target.ctrl === player) : [];
+        const reactiveEffect = resolvingOperations.some(operation =>
+          Number(operation.power || 0) !== 0 || Number(operation.toughness || 0) > 0 ||
+          (operation.keywords || []).some(keyword =>
+            ['hexproof', 'indestructible', 'shroud'].includes(String(keyword).toLowerCase())));
+        const reactive = reactiveEffect && threatened.length && targetSpecs.some(spec => {
+          const legal = game.legalTargets(spec, card, player);
+          return threatened.some(target => legal.includes(target));
+        });
+        if (!hasRelevantTarget && !reactive) breakdown.timing -= 100;
+      }
+      if (resolvingOperations.length && resolvingOperations.every(operation => operation.kind === 'spell-add-mana')) {
+        const savedPool = Object.assign({}, player.pool);
+        let usableFollowUp = false;
+        try {
+          for (const operation of resolvingOperations) {
+            for (const [color, amount] of Object.entries(operation.produce || {})) {
+              if (color === 'ANY') continue;
+              player.pool[color] = (player.pool[color] || 0) + Math.max(0, Number(amount) || 0);
+            }
+          }
+          usableFollowUp = game.castableList(player).some(entry => entry.card !== card) ||
+            game.activatableList(player).some(entry => !entry.manaAbility && entry.card !== card &&
+              (!entry.ability || !entry.ability.aiScore || entry.ability.aiScore(game, entry.card, player) > 0.2));
+        } finally {
+          for (const color of Object.keys(player.pool)) player.pool[color] = savedPool[color] || 0;
+        }
+        if (!usableFollowUp) breakdown.resources -= 100;
+      }
+      const immediateDraws = resolvingOperations.reduce((sum, operation) => {
+        if (operation.kind === 'spell-draw') return sum + Math.max(0, Number(operation.n) || 0);
+        if (operation.kind === 'spell-draw-discard') return sum + Math.max(0, Number(operation.draw) || 0);
+        if (operation.kind === 'etb-draw') return sum + Math.max(0, Number(operation.n) || 0);
+        if (operation.kind === 'etb-loot' && operation.order === 'draw-discard') return sum + 1;
+        return sum;
+      }, mandatoryCastTriggerDraws(game, player, card));
+      if (immediateDraws > player.library.length) {
+        const emptyLibraryWin = game.bf().some(source => source.ctrl === player &&
+          /(?:draw a card while your library has no cards|draw from an empty library).*(?:win|instead)/i.test(
+            String(source.def && source.def.oracle || '')));
+        if (!emptyLibraryWin) breakdown.safety -= 1000000;
+      }
       // Tempiranje instanata: reaktivne karte (trick/protection/counter) se
       // drže za tuđe akcije, a value instanti se radije bacaju na kraju tuđeg
       // poteza nego u vlastitoj main fazi sa praznim stackom.
       const instantSpeed = card.is('Instant') || card.kw('flash');
+      const relevantHasteNow = resolvingOperations.some(operation =>
+        operation.kind === 'spell-pump' &&
+        (operation.keywords || []).some(keyword => String(keyword).toLowerCase() === 'haste')) &&
+        game.turnPlayer === player && phase === 'main1' &&
+        (game.spellTargetSpecs(card, action.alt || {}, player) || []).some(spec =>
+          game.legalTargets(spec, card, player).some(target => target instanceof U.CardInst &&
+            target.ctrl === player && target.sick && !target.tapped && !target.cur.cantAttack));
       if (instantSpeed && !game.stack.length && game.turnPlayer === player && (phase === 'main1' || phase === 'main2')) {
         if (sem.roles.includes('combat-trick') || sem.roles.includes('protection')) breakdown.timing -= 10;
         else if (sem.roles.includes('single-target-removal')) breakdown.timing -= 2.2;
-        else if (!sem.roles.includes('ramp') && !sem.roles.includes('mana-rock')) breakdown.timing -= 3;
+        else if (!sem.roles.includes('ramp') && !sem.roles.includes('mana-rock') && !relevantHasteNow) breakdown.timing -= 3;
       }
       if (instantSpeed && phase === 'end' && game.turnPlayer !== player && !game.stack.length &&
         (sem.roles.includes('card-draw') || sem.roles.includes('card-selection') || sem.roles.includes('token-maker'))) {
@@ -2190,7 +2517,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // otherwise-supported Oracle pump cards.  Only reward a live combatant
       // that is legal for the semantic target direction supplied by the card
       // script (friendly buff versus hostile removal/damage).
-      if (phase === 'combat' && sem.roles.includes('combat-trick') && game.combat) {
+      const attackingAnyTeamPumps = (card.def.oracleImplementation || []).filter(operation =>
+        operation.kind === 'spell-team-pump' && operation.attackingOnly &&
+        (operation.controller || 'any') === 'any');
+      const compiledGlobalPumps = (card.def.oracleImplementation || []).filter(operation =>
+        operation.kind === 'spell-global-pump');
+      const controlledStaticPumps = (card.def.oracleImplementation || []).filter(operation =>
+        operation.kind === 'controlled-creature-pump-static');
+      if (phase === 'combat' && sem.roles.includes('combat-trick') && game.combat &&
+        !attackingAnyTeamPumps.length && !compiledGlobalPumps.length) {
         const attackers = game.combat.attackers || [];
         const blockers = game.bf().filter(candidate => candidate.blocking);
         const combatants = [...new Set([...attackers, ...blockers])];
@@ -2202,17 +2537,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const legal = game.legalTargets(spec, card, player);
           relevant = combatants.filter(candidate => legal.includes(candidate) &&
             (/buff|pump|protect/.test(goal) ? candidate.ctrl === player
-              : /removal|damage|destroy|exile|bounce/.test(goal) ? candidate.ctrl !== player
+              : /removal|damage|destroy|exile|bounce|debuff/.test(goal) ? candidate.ctrl !== player
                 : true));
         } else {
           relevant = combatants.filter(candidate => candidate.ctrl === player);
         }
         if (relevant.length) breakdown.combat += 2.4 + Math.min(2.4, relevant.length * 0.6);
       }
+      for (const operation of attackingAnyTeamPumps) {
+        const affected = game.bf().filter(candidate => candidate.is('Creature') && !!candidate.attacking);
+        const own = affected.filter(candidate => candidate.ctrl === player).length;
+        const hostile = affected.length - own;
+        // These effects modify every attacker, regardless of controller. Score
+        // the printed change from our perspective: a positive pump is useful
+        // on our attackers and harmful on hostile ones; a negative pump is the
+        // inverse. This also keeps Hydrolash's draw as a rider on a useful
+        // hostile debuff instead of treating all team pumps as friendly buffs.
+        const perAttacker = Number(operation.power || 0) * 4 +
+          Number(operation.toughness || 0) * 2.5 + (operation.keywords || []).length * 3;
+        const netEffect = (own - hostile) * perAttacker;
+        breakdown.combat += netEffect;
+        if (!affected.length || netEffect <= 0) breakdown.timing -= 12;
+      }
       if (sem.roles.includes('counterspell')) {
         const top = game.stack[game.stack.length - 1];
         if (!top || top.ctrl === player) breakdown.timing -= 25;
-        else {
+        else if (top.kind === 'spell' && MTG.isUncounterable && MTG.isUncounterable(game, top)) {
+          // The spell remains a legal target, but a counter-only response has
+          // no tactical effect. Incidental riders such as Dismiss's draw do
+          // not justify spending the card and mana while the threat resolves.
+          breakdown.timing -= 100;
+        } else {
           const spell = top.card || top.srcCard;
           const spellValue = spell ? cardDefinitionValue(spell.def) : 3;
           breakdown.threat += spellValue * 1.6 + playerThreatForGame(game, player, top.ctrl) * 0.12;
@@ -2252,23 +2607,75 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         if (lethalPlayers.length) breakdown.threat += 35;
       }
-      if (sem.roles.includes('board-wipe')) {
-        // Wipe se procjenjuje po STVARNOM učinku na stvorenja, ne po ukupnoj
-        // vrijednosti table: Blasphemous Act ubija i vlastita stvorenja, ali
-        // preskače indestructible i (kod damage wipeova) preveliku žilavost.
+      const compiledFog = (card.def.oracleImplementation || []).find(operation => operation.kind === 'spell-fog');
+      if (compiledFog && game.combat) {
+        const incoming = (game.combat.attackers || []).filter(attacker => attacker.ctrl !== player &&
+          (attacker.attacking === player || attacker.attacking && attacker.attacking.ctrl === player));
+        const prevented = incoming.reduce((sum, attacker) => sum + Math.max(0, attacker.power || 0), 0);
+        if (incoming.length) breakdown.safety += 7 + Math.min(28, prevented * 0.7);
+        else breakdown.timing -= 10;
+      }
+      if (compiledGlobalPumps.length) {
+        const projected = compiledGlobalPumps.reduce((sum, operation) => {
+          const effect = globalPumpNetEffect(game, player, operation);
+          sum.board += effect.board;
+          sum.combat += effect.combat;
+          return sum;
+        }, { board: 0, combat: 0 });
+        const net = projected.board + projected.combat;
+        breakdown.threat += projected.board;
+        breakdown.combat += projected.combat;
+        if (net <= 0) breakdown.timing -= 6 + Math.min(18, Math.abs(net) * 0.45);
+      }
+      if (controlledStaticPumps.length) {
+        const creatures = game.creatures(player).slice();
+        if (card.is('Creature')) creatures.push(card);
+        let persistentNet = 0;
+        for (const operation of controlledStaticPumps) {
+          const power = Number(operation.power || 0);
+          const toughness = Number(operation.toughness || 0);
+          for (const creature of creatures) {
+            const currentToughness = Number(creature.toughness || creature.def && creature.def.toughness || 0);
+            const beforeDies = diesAfterGlobalPump(creature, currentToughness);
+            const afterDies = diesAfterGlobalPump(creature, currentToughness + toughness);
+            if (beforeDies !== afterDies) {
+              const permanentValue = 6 + permanentGameValue(game, creature, player);
+              persistentNet += (afterDies ? -permanentValue : permanentValue);
+            } else if (!afterDies) {
+              persistentNet += power * 0.6 + toughness * 0.45;
+            }
+          }
+        }
+        breakdown.threat += persistentNet;
+        if (persistentNet <= 0) breakdown.timing -= 8 + Math.min(24, Math.abs(persistentNet) * 0.6);
+      }
+      if (sem.roles.includes('board-wipe') && !compiledGlobalPumps.length) {
+        // Wipe se procjenjuje po STVARNOM skupu koji pogađa. Generički Oracle
+        // destroy-all može čistiti artefakte ili enchantmente, dok stariji
+        // damage wipeovi i dalje pogađaju stvorenja.
         const oracle = textOf(card.def);
         const damageMatch = /(\d+)\s+damage\s+to\s+each\s+creature/.exec(oracle);
         const wipeDamage = damageMatch ? Number(damageMatch[1]) : null;
-        const wouldDie = creature => {
-          if (creature.kw('indestructible') || (creature.counters && (creature.counters.shield || 0) > 0)) return false;
-          if (wipeDamage !== null) return (creature.toughness || 0) - (creature.damage || 0) <= wipeDamage;
+        const destroyAll = resolvingOperations.find(operation => operation.kind === 'spell-destroy-all');
+        const affectedType = destroyAll && destroyAll.what
+          ? destroyAll.what.charAt(0).toUpperCase() + destroyAll.what.slice(1).replace(/s$/, '')
+          : 'Creature';
+        const affected = game.bf().filter(permanent => permanent.is(affectedType));
+        const wouldDie = permanent => {
+          if (permanent.kw('indestructible') ||
+            (permanent.counters && (permanent.counters.shield || 0) > 0)) return false;
+          if (Number(permanent.regenShield || 0) > 0 && !(destroyAll && destroyAll.noRegen)) return false;
+          if (wipeDamage !== null) {
+            return permanent.is('Creature') &&
+              (permanent.toughness || 0) - (permanent.damage || 0) <= wipeDamage;
+          }
           return true;
         };
         let mineLoss = 0, theirsLoss = 0;
-        for (const creature of game.bf().filter(item => item.is('Creature'))) {
-          if (!wouldDie(creature)) continue;
-          const value = permanentGameValue(game, creature, player);
-          if (creature.ctrl === player) mineLoss += value; else theirsLoss += value;
+        for (const permanent of affected) {
+          if (!wouldDie(permanent)) continue;
+          const value = permanentGameValue(game, permanent, player);
+          if (permanent.ctrl === player) mineLoss += value; else theirsLoss += value;
         }
         breakdown.threat += (theirsLoss - mineLoss) * 0.45;
         if (theirsLoss < mineLoss + 3) breakdown.timing -= 20;   // gubim više nego protivnici
@@ -2317,8 +2724,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const card = entry.card;
       const ability = entry.ability;
       breakdown.base = ability && ability.aiScore ? clamp(ability.aiScore(game, card, player), -30, 30) : 2.4;
+      const selfStatLabel = /^([+-]\d+)\/([+-]\d+)$/.exec(String(
+        entry.label || ability && ability.label || '',
+      ).trim());
+      if (selfStatLabel) {
+        const toughnessDelta = Number(selfStatLabel[2]);
+        const toughnessLeft = Number(card.toughness || 0) - Number(card.damage || 0);
+        // Repeatable firebreathing-style abilities may trade toughness for
+        // power. Never let the bot choose an activation whose own resolution
+        // would put the source at zero toughness and immediately kill it.
+        if (toughnessDelta < 0 && toughnessLeft + toughnessDelta <= 0) {
+          breakdown.safety -= 100;
+        }
+      }
       if (entry.equip) {
         breakdown.synergy += profile.primarySynergies.includes('equipment') || profile.primarySynergies.includes('voltron') ? 3 : 1;
+        const attachment = (card.def.oracleImplementation || [])
+          .filter(operation => operation.kind === 'attachment-grant');
+        if (attachment.length) {
+          const toughness = attachment.reduce((sum, operation) => sum + Number(operation.toughness || 0), 0);
+          const viable = game.creatures(player).filter(host => host.iid !== card.attachedTo &&
+            Number(host.toughness || 0) - Number(host.damage || 0) + toughness > 0);
+          if (!viable.length) breakdown.safety -= 100;
+        }
         // Premještanje već prikačene opreme između dva jednako dobra
         // hosta ne smije pojesti cijelu main fazu.
         if (card.attachedTo) breakdown.timing -= 9;
@@ -2368,7 +2796,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (action.kind === 'chooseTargets') {
       breakdown.choice = action.picks.reduce((sum, target) => sum + targetValue(game, player, target, q || {}), 0);
     } else if (action.kind === 'chooseCards' || action.kind === 'bottomCards') {
-      breakdown.choice = action.picks.reduce((sum, card) => sum + choiceCardValue(game, player, card, q || {}), 0);
+      if (action.kind === 'chooseCards' && q && q.aiHint && q.aiHint.kind === 'crew') {
+        const need = Math.max(0, Number(q.aiHint.need) || 0);
+        const power = action.picks.reduce((sum, card) => sum + Math.max(0, Number(card.power) || 0), 0);
+        if (power < need) breakdown.choice = -1000;
+        else {
+          const tapCost = action.picks.reduce((sum, card) => sum + permanentGameValue(game, card, player), 0);
+          breakdown.choice = 20 - tapCost - Math.max(0, power - need) * 1.5 - action.picks.length * 0.4;
+        }
+      } else {
+        breakdown.choice = action.picks.reduce((sum, card) => sum + choiceCardValue(game, player, card, q || {}), 0);
+      }
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
       if (hintKind === 'chooseType') {
@@ -2706,6 +3144,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }).sort((a, b) => b - a)[0];
           breakdown.choice = Number.isFinite(best) ? best : -20;
         }
+      } else if (hintKind === 'newTargets') {
+        const stackObject = q.aiHint && q.aiHint.so;
+        const source = stackObject && (stackObject.card || stackObject.srcCard);
+        const currentTargets = stackObject && (stackObject.targets || stackObject.ctx && stackObject.ctx.targets) || [];
+        const targetSpecs = stackObject && (stackObject.targetSpecs ||
+          stackObject.card && game.spellTargetSpecs(stackObject.card, stackObject.castOpts || {}, player));
+        const currentTargetsLegal = !stackObject || !targetSpecs || game.targetsStillOk(
+          currentTargets, targetSpecs, source, player,
+          stackObject.targetIdentities || stackObject.ctx && stackObject.ctx.targetIdentities || null);
+        const spread = q.aiHint.copyTargetPolicy === 'spread';
+        if (!currentTargetsLegal) {
+          breakdown.choice = action.value === 'yes' ? 100 : -100;
+        } else if (action.value === 'yes') breakdown.choice = spread
+          ? (q.aiHint.hasUnusedTarget ? 20 : -8)
+          : 0;
+        else breakdown.choice = spread && q.aiHint.hasUnusedTarget ? -8 : 4;
       } else if (hintKind === 'freeCast') {
         const freeCard = q.aiHint.card;
         if (action.value === 'yes' && freeCard) {
@@ -2854,6 +3308,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // smallest legal X and, through the cast score, normally be held.
           breakdown.choice = -8 - x * 0.2;
         }
+      } else if (q && q.aiHint && q.aiHint.kind === 'oracleXDebuff') {
+        const x = Number(action.value) || 0;
+        const card = q.aiHint.card;
+        const specs = card ? game.spellTargetSpecs(card, { xVal: x }, player) : null;
+        const candidates = specs && specs[0] ? game.legalTargets(specs[0], card, player) : [];
+        const hostileCreatures = candidates.filter(target => target instanceof U.CardInst &&
+          target.ctrl !== player && target.is('Creature'));
+        if (!hostileCreatures.length) {
+          breakdown.choice = -8 - x * 0.25;
+        } else {
+          breakdown.choice = Math.max(...hostileCreatures.map(target => {
+            const power = Math.max(0, Number(target.power) || 0);
+            const useful = Math.min(x, power);
+            const overpayment = Math.max(0, x - power);
+            const combatWeight = target.attacking ? 3.2 : target.blocking ? 2 : 0.7;
+            return useful * combatWeight + permanentGameValue(game, target, player) * 0.22 -
+              overpayment * 3 - x * 0.08;
+          }));
+        }
       } else if (q && q.aiHint && q.aiHint.kind === 'toxicDeluge') {
         const x = Number(action.value) || 0;
         for (const creature of game.bf().filter(card => card.is('Creature') && card.toughness <= x)) {
@@ -2908,7 +3381,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       breakdown.choice = action.value ? (keepable ? -10 : 8) : (keepable ? 8 : -8);
       if (player.hand.length <= 5 && action.value) breakdown.choice -= 8;
     } else if (action.kind === 'scry') {
-      breakdown.choice = action.value.top.reduce((sum, card) => sum + cardDefinitionValue(card.def), 0) - action.value.bottom.reduce((sum, card) => sum + Math.max(0, 2.5 - cardDefinitionValue(card.def)), 0);
+      const selectionValue = action.value.top.reduce((sum, card) => sum + cardDefinitionValue(card.def), 0);
+      const replacementValue = action.value.bottom.reduce((sum, card) =>
+        sum + Math.max(0, 2.5 - cardDefinitionValue(card.def)), 0);
+      const graveyardPayoff = q && q.surveil && action.value.bottom.length && game.bf().some(source =>
+        source.ctrl === player && /put into your graveyard|cards? (?:are|is) put into your graveyard/i.test(source.def.oracle || ''))
+        ? 3 : 0;
+      breakdown.choice = selectionValue + replacementValue + graveyardPayoff;
+      if (q && q.drawReserve && player.library.length - action.value.bottom.length < q.drawReserve) {
+        breakdown.safety -= 1000000;
+      }
     } else if (action.kind === 'orderTriggers') {
       breakdown.choice = action.value.reduce((sum, trigger, index) => sum + triggerValue(trigger) * (index + 1), 0);
     } else if (action.kind === 'chooseManaSources') {

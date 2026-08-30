@@ -716,6 +716,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           c.cur.basePower = 3; c.cur.baseToughness = 3;
           c.cur.subtypes = [];
           c.cur.allCreatureTypes = false;
+          c.cur.allCreatureTypesFromOtherEffects = false;
+          c.cur.suppressPrintedChangeling = true;
         }
       },
     }],

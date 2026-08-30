@@ -1844,6 +1844,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Whirlwind of Thought'] = {
+    mandatoryCastDraw: {
+      event: 'cast', n: 1,
+      filter: (g, self, d) => d.player === self.ctrl && !d.card.is('Creature') && !d.card.is('Land'),
+    },
     triggers: [{
       on: 'cast', desc: 'Vuci', filter: (g, self, d) => d.player === self.ctrl && !d.card.is('Creature') && !d.card.is('Land'),
       run: async ctx => { await ctx.g.draw(ctx.you, 1); },

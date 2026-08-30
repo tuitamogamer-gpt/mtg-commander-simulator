@@ -955,9 +955,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         anyColors: [], excess: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, used: false,
       }];
       const key = state => `${state.pips.map(pip => pip.join('/')).join(',')}|${state.generic}|` +
-        `${state.anyColors.join(',')}|${COLORS.concat('C').map(color => state.excess[color] || 0).join(',')}|` +
+        // Units from an "any combination of colors" source are fungible.
+        // Canonicalize their multiset so W,U and U,W are one solver state;
+        // otherwise an X-mana source grows factorially and can exhaust the
+        // heap during a single AI affordability probe.
+        `${state.anyColors.slice().sort().join(',')}|${COLORS.concat('C').map(color => state.excess[color] || 0).join(',')}|` +
         `${state.used ? 1 : 0}`;
-      for (const fixedColor of units) {
+      for (let unitIndex = 0; unitIndex < units.length; unitIndex++) {
+        const fixedColor = units[unitIndex];
         const next = new Map();
         for (const state of states) {
           const candidates = [];
@@ -999,8 +1004,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // A multi-mana source may legally produce an unused extra unit. A
           // one-mana source normally uses the cheaper source-skip branch, but
           // it must be bankable when a later converter needs activation mana.
-          if (units.length > 1 || allowUnused) {
-            const unusedColors = any ? COLORS : [fixedColor];
+          const unitsLeft = units.length - unitIndex - 1;
+          const directUnitsStillNeeded = directAllowed
+            ? state.pips.length + (!coloredOnly ? state.generic : 0)
+            : 0;
+          if ((units.length > 1 || allowUnused) &&
+              (allowUnused || unitsLeft >= directUnitsStillNeeded)) {
+            // When no converter remains, the exact color of surplus mana is
+            // irrelevant to this payment. Keep one deterministic surplus
+            // branch instead of enumerating every color distribution. If a
+            // converter remains, retain all colors because its activation may
+            // require a particular one.
+            const unusedColors = any ? (allowUnused ? COLORS : [COLORS[0]]) : [fixedColor];
             for (const color of unusedColors) {
               const unused = {
                 pips: state.pips.map(pip => pip.slice()),
@@ -1620,6 +1635,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Petty Theft is being cast/on the stack, where it is an Instant spell.
   G.castHasType = function (card, castOpts = {}, type) {
     if (!card) return false;
+    if (castOpts && castOpts.faceDownCast) return type === 'Creature';
     if (castOpts && castOpts.adventure) {
       const adventure = card.def && card.def.adventure;
       const rawTypes = castOpts.types !== undefined ? castOpts.types : adventure && adventure.types;
@@ -1644,6 +1660,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.stackSpellManaValue = function (so) {
     if (!so || !so.card) return 0;
     const castOpts = so.castOpts || {};
+    if (castOpts.faceDownCast) return 0;
     let manaCost = so.card.def && so.card.def.cost || '';
     if (castOpts.adventure && so.card.def && so.card.def.adventure) {
       manaCost = castOpts.altCostStr !== undefined
@@ -1808,7 +1825,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // additional cost feasibility (sac/discard)
       const ac = card.def.addlCost;
-      if (ac && !(alt && alt.adventure)) {
+      if (ac && !(alt && (alt.adventure || alt.faceDownCast))) {
         if (ac.sacCreature && !this.creatures(p).some(c =>
           (!ac.sacCreatureFilter || ac.sacCreatureFilter(this, c, p, card)) && this.canSacrifice(c))) return;
         if (ac.sacArtifactOrCreature && !this.bf().some(c => c.ctrl === p &&
@@ -1867,6 +1884,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       }
       const d = card.def;
+      if (d.morph) consider(card, 'hand', {
+        faceDownCast: 'morph', altCostStr: '{3}', speed: 'sorcery', types: ['Creature'],
+        label: 'Cast face down as a 2/2 creature for {3}',
+      });
+      if (d.disguise) consider(card, 'hand', {
+        faceDownCast: 'disguise', altCostStr: '{3}', speed: 'sorcery', types: ['Creature'],
+        label: 'Cast face down as a 2/2 creature with ward {2} for {3}',
+      });
       if (d.adventure) consider(card, 'hand', Object.assign({ adventure: true }, d.adventure));
       if (d.roomHalves) {
         for (const half of d.roomHalves) consider(card, 'hand', { room: half });
@@ -2030,6 +2055,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.spellTargetSpecs = function (card, castOpts, caster = card.owner) {
     const d = card.def;
+    if (castOpts && castOpts.faceDownCast) return null;
     if (castOpts && castOpts.splitHalf && d.splitHalves && d.splitHalves[castOpts.splitHalf]) {
       return d.splitHalves[castOpts.splitHalf].targets || null;
     }
@@ -2128,6 +2154,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (opts[key] !== undefined && castOpts[key] === undefined) castOpts[key] = opts[key];
     }
     const d = card.def;
+    const faceDownCast = !!castOpts.faceDownCast;
     const cost = this.spellCost(p, card, castOpts);
     let muldrothaType = null;
     if (castOpts.muldrotha) {
@@ -2173,11 +2200,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const maxChoice = legalValues ? legalValues[legalValues.length - 1] : maxX;
       const oracleXDamage = (d.oracleImplementation || []).find(operation =>
         operation.kind === 'spell-damage' && operation.n === 'X');
+      const oracleXDebuff = (d.oracleImplementation || []).find(operation =>
+        operation.kind === 'spell-pump' && operation.power === '-X');
       xVal = opts.xVal !== undefined ? Number(opts.xVal) : await p.controller.decide(this, {
         type: 'chooseX', min: minX, max: maxChoice, values: legalValues || undefined,
         card, prompt: `X for ${card.name}?`,
         aiHint: oracleXDamage
           ? { kind: 'oracleXDamage', card, operation: oracleXDamage }
+          : oracleXDebuff
+            ? { kind: 'oracleXDebuff', card, operation: oracleXDebuff }
           : { kind: 'chooseX', card },
       });
       xVal = Number(xVal);
@@ -2198,7 +2229,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let kicked = false;
     // Casting without paying the mana cost replaces only that mana cost. The
     // player may still choose and must actually pay optional additional costs.
-    if (d.kicker) {
+    if (d.kicker && !faceDownCast) {
       const kCost = U.parseCost(d.kicker.cost);
       const combined = { generic: cost.generic + kCost.generic, x: cost.x, xReduction: cost.xReduction || 0, pips: cost.pips.concat(kCost.pips) };
       if (this.canPayMana(p, combined, { card }, { xVal })) {
@@ -2212,7 +2243,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // squad / multikicker: plati N puta dodatnu cijenu
     let paidTimes = 0;
-    const repCostStr = d.squad || d.multikicker;
+    const repCostStr = faceDownCast ? null : (d.squad || d.multikicker);
     if (repCostStr) {
       const rCost = U.parseCost(repCostStr);
       let maxN = 0;
@@ -2236,12 +2267,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // offspring (vlastiti ili od Zinnie)
     let offspring = false;
     let offspringCost = d.offspring;
-    if (!offspringCost && card.is('Creature') && !castOpts.adventure) {
+    if (!faceDownCast && !offspringCost && card.is('Creature') && !castOpts.adventure) {
       for (const c of this.bf()) {
         if (c.ctrl === p && c.def.grantsOffspring) { offspringCost = c.def.grantsOffspring; break; }
       }
     }
-    if (offspringCost) {
+    if (offspringCost && !faceDownCast) {
       const oCost = U.parseCost(offspringCost);
       const combined = { generic: cost.generic + oCost.generic, x: cost.x, xReduction: cost.xReduction || 0, pips: cost.pips.concat(oCost.pips) };
       if (this.canPayMana(p, combined, { card }, { xVal })) {
@@ -2256,7 +2287,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // modes
     let mode = null;
-    if (d.modes && !(castOpts.overloaded)) {
+    if (d.modes && !faceDownCast && !(castOpts.overloaded)) {
       const pickN = modePickFor(this, p, card, Object.assign({}, castOpts, { _kicked: kicked }));
       const opts2 = d.modes.list.map((m, i) => ({ mode: m, index: i }))
         .filter(({ mode: candidateMode }) => {
@@ -2309,7 +2340,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // build stack object early for target ctx
     const so = {
       kind: 'spell', card, ctrl: p,
-      name: (castOpts.adventure || castOpts.splitHalf || castOpts.splitFuse) && castOpts.name ? castOpts.name : card.name,
+      name: faceDownCast
+        ? 'Face-down creature spell'
+        : (castOpts.adventure || castOpts.splitHalf || castOpts.splitFuse) && castOpts.name ? castOpts.name : card.name,
       targets: [], x: xVal, mode,
       castOpts, kicked, offspring, from: opts.from || card.zone, copyOf: null,
     };
@@ -2325,7 +2358,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Target selection is still part of proposing the spell. No mana or
       // additional cost has been paid and the card has not moved yet, so the
       // human may safely abort here without rewinding game information.
-      const ctx = { g: this, src: card, you: p, so, cancelable: true };
+      const ctx = { g: this, src: card, you: p, so, cancelable: !castOpts.suspend };
       const ok = await this.pickTargets(ctx, specs, card, p);
       if (!ok) {
         this.lg(ctx.cancelled ? `${card.name}: casting cancelled.` : `${card.name}: nema legalnih meta.`);
@@ -2338,7 +2371,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const mi of mode) specs2.push(...modeTargetsFor(this, d.modes.list[mi], card, castOpts));
       if (specs2.length) {
         so.targetSpecs = specs2;
-        const ctx = { g: this, src: card, you: p, so, cancelable: true };
+        const ctx = { g: this, src: card, you: p, so, cancelable: !castOpts.suspend };
         const ok = await this.pickTargets(ctx, specs2, card, p);
         if (!ok) {
           this.lg(ctx.cancelled ? `${card.name}: casting cancelled.` : `${card.name}: nema legalnih meta.`);
@@ -2348,11 +2381,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         so.wardTargets = ctx.wardTargets;
       }
     }
+    // A physical CardInst is reused after zone changes. Lock the identity of
+    // each target at proposal time so blink/leave-and-return cannot turn the
+    // newly created object into the original spell's target.
+    so.targetIdentities = this.captureTargetIdentities(so.targets);
 
     // Some spells lock in a division or another target-dependent choice while
     // they are being cast (for example Biogenic Upgrade).  Keep that choice on
     // the stack object so responses cannot retroactively change it.
-    const prepareTargets = castOpts.adventure && d.adventure && d.adventure.prepareTargets || d.prepareTargets;
+    const prepareTargets = faceDownCast ? null
+      : (castOpts.adventure && d.adventure && d.adventure.prepareTargets || d.prepareTargets);
     const preparedChoiceKeys = [];
     if (typeof prepareTargets === 'function') {
       const keysBeforePrepare = new Set(Object.keys(so));
@@ -2375,7 +2413,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     // additional costs
-    const ac = castOpts.adventure ? null : d.addlCost;
+    const ac = castOpts.adventure || faceDownCast ? null : d.addlCost;
     const paidAddl = { sacd: [], tapped: [], discarded: [], life: 0, blightCard: null, blightN: 0, choice: null };
     if (ac) {
       if (ac.sacCreature || ac.sacArtifactOrCreature || ac.sacAnyCreatures || ac.sacCreaturesEqualTargets || ac.sacLand) {
@@ -2596,8 +2634,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         delete card.meta[key];
       }
     }
-    card.faceDown = false;
-    if (card.meta) delete card.meta.revealedTo;
+    if (faceDownCast) {
+      const originalDef = card.def;
+      card.def = this.faceDownCreatureDef(castOpts.faceDownCast);
+      card.meta = card.meta || {};
+      card.meta.faceDownDef = originalDef;
+      card.meta.faceDownKind = castOpts.faceDownCast;
+      card.faceDown = true;
+    } else {
+      card.faceDown = false;
+      if (card.meta) delete card.meta.revealedTo;
+    }
+    if (fromZone === 'exile' && card.meta &&
+        Object.prototype.hasOwnProperty.call(card.meta, 'suspended')) {
+      delete card.meta.suspended;
+    }
     card.zone = 'stack';
     if (fromZone === 'graveyard') {
       await this.emit('cardLeftGraveyard', { card, to: 'stack' });
@@ -2610,6 +2661,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     card.castMeta = {
       x: xVal, alt: castOpts, from: so.from, kicked, offspring,
+      spellColors: faceDownCast
+        ? []
+        : castOpts.adventure && d.adventure
+          ? U.colorsOfCost(castOpts.cost !== undefined ? castOpts.cost : d.adventure.cost || '')
+          : (castOpts.splitHalf || castOpts.splitFuse) && castOpts.altCostStr !== undefined
+            ? U.colorsOfCost(castOpts.altCostStr)
+            : d.colorsOverride ? d.colorsOverride.slice() : U.colorsOfCost(d.cost || ''),
       paidTimes, squadN: paidTimes,
       manaSpent: so.manaSpent,
       castPhase: this.phase,
@@ -2686,14 +2744,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     // storm
-    let hasStorm = !!d.storm;
+    let hasStorm = !faceDownCast && !!d.storm;
     if (p.stormNext && castData.isInstantSorcery) { hasStorm = true; p.stormNext = false; }
     if (hasStorm) {
       const stormN = this.totalSpellsThisTurn() - 1;
-      if (stormN > 0) {
-        this.lg(`Storm ×${stormN}!`, 'cast');
-        for (let i = 0; i < stormN; i++) await this.copySpell(so, p, { mayNewTargets: true });
-      }
+      this.lg(`Storm ×${stormN}!`, 'cast');
+      // Storm is a cast trigger even when this was the first spell and it will
+      // make zero copies. The original spell must be visible on the Stack by
+      // itself while cast events finish, and opponents must be able to respond
+      // to (or counter) Storm before any copies exist.
+      this.queueTrigger({
+        src: card, ctrl: p, name: 'Storm', data: { so, count: stormN },
+        run: async triggerCtx => {
+          const original = triggerCtx.data.so;
+          for (let i = 0; i < triggerCtx.data.count; i++) {
+            await triggerCtx.g.copySpell(original, triggerCtx.you, { mayNewTargets: true });
+          }
+        },
+      });
     }
     // "Copy this spell for each creature sacrificed this way" (Plumb the Forbidden)
     if (d.copyPerSacrifice && so.sacdN) {
@@ -2710,7 +2778,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // Demonstrate je stvarni cast trigger: ide na stack i kopira original tek
     // kada se rezolvira, pa protivnici mogu odgovoriti prije nastanka kopija.
-    if (d.demonstrate && !so.isCopy) {
+    if (!faceDownCast && d.demonstrate && !so.isCopy) {
       this.queueTrigger({
         src: card, ctrl: p, name: 'Demonstrate', data: { so },
         run: async triggerCtx => {
@@ -2723,7 +2791,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // cascade (own keyword, granted next-spell effects, battlefield grants like Wildsear/Rain of Riches)
     let cascades = 0;
-    if (d.cascade) cascades += d.cascade === true ? 1 : Math.max(0, Number(d.cascade) || 0);
+    if (!faceDownCast && d.cascade) cascades += d.cascade === true ? 1 : Math.max(0, Number(d.cascade) || 0);
     if (p.nextCascade && p.nextCascade.length) {
       const idx = p.nextCascade.findIndex(f => f(this, card, castData));
       if (idx >= 0) { cascades++; p.nextCascade.splice(idx, 1); }
@@ -2731,7 +2799,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const c of this.bf()) {
       if (c.def.grantsCascade && c.ctrl === p && c.def.grantsCascade(this, c, card, castData, so)) cascades++;
     }
-    for (let i = 0; i < cascades; i++) await this.doCascade(p, card);
+    // Cascade is a cast trigger, not an inline continuation of casting the
+    // outer spell. Put every instance on the Stack so the cast events finish
+    // while the original spell is still present and the table can respond
+    // before cards are exiled or the hit is cast.
+    for (let i = 0; i < cascades; i++) {
+      this.queueTrigger({
+        src: card, ctrl: p,
+        name: cascades > 1 ? `Cascade ${i + 1}` : 'Cascade',
+        data: { fromCard: card },
+        run: async triggerCtx => {
+          await triggerCtx.g.doCascade(triggerCtx.you, triggerCtx.data.fromCard);
+        },
+      });
+    }
 
     await this.emit('cast', castData);
     if (castData.isInstantSorcery) await this.emit('castIS', castData);
@@ -2795,11 +2876,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const exiled = [];
     let hit = null;
     while (p.library.length) {
-      const c = p.library.pop();
-      c.zone = 'exile-temp'; exiled.push(c);
+      const c = p.library[p.library.length - 1];
+      await this.move(c, 'exile');
+      exiled.push(c);
       if (!c.is('Land') && U.mv(c.def.cost || '') < mv) { hit = c; break; }
     }
-    this.lg(`Cascade (${fromCard.name}): otkriva ${exiled.length} karata${hit ? `, pogodak: ${hit.name}` : ''}.`);
+    this.lg(`Cascade (${fromCard.name}): otkriva ${exiled.map(card => card.name).join(', ') || 'no cards'}` +
+      `${hit ? `; pogodak: ${hit.name}` : ''}.`);
+    if (exiled.length) {
+      await this.revealToHuman({ cards: exiled.slice(), ctrl: p, kind: 'reveal', includeLands: true });
+    }
     if (hit) {
       const yes = await p.controller.decide(this, {
         type: 'chooseOption', prompt: `Cascade: cast ${hit.name} for free?`,
@@ -2807,15 +2893,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         aiHint: { kind: 'freeCast', card: hit },
       });
       if (yes === 'yes') {
-        hit.zone = 'hand-temp';
-        p.hand.push(hit); hit.zone = 'hand';
-        exiled.splice(exiled.indexOf(hit), 1);
-        await this.castSpell(p, hit, { alt: { free: true }, from: 'hand' });
+        // Cascade casts the revealed card from exile. Keeping the true source
+        // zone prevents false from-hand triggers and lets non-hand payoffs see
+        // the cast. A failed proposal (for example, no legal target) leaves it
+        // in the public exiled group so it is bottomed with the other cards.
+        const cast = await this.castSpell(p, hit, { alt: { free: true }, from: 'exile' });
+        if (cast) exiled.splice(exiled.indexOf(hit), 1);
       }
     }
     // rest to bottom random
     U.shuffle(exiled, this.rnd);
-    for (const c of exiled) { c.zone = 'library'; p.library.unshift(c); }
+    for (const c of exiled) {
+      this.remove(c);
+      c.zone = 'library';
+      p.library.unshift(c);
+    }
   };
 
   G.copySpell = async function (so, ctrl, opts = {}) {
@@ -2830,6 +2922,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       copyRoot, copyIndex: copyRoot._copySerial, copySource: opts.copySource || null,
       targetMode: opts.forceTarget ? 'forced' : 'same',
       targetSpecs: so.targetSpecs || null,
+      targetIdentities: this.cloneTargetIdentities(
+        so.targetIdentities || this.captureTargetIdentities(so.targets)),
       counterDistribution: so.counterDistribution ? so.counterDistribution.map(entry => Object.assign({}, entry)) : null,
       damageDivision: so.damageDivision ? so.damageDivision.map(entry => Object.assign({}, entry)) : null,
     };
@@ -2837,6 +2931,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // forceTarget: kopija ide na tačno određenu metu (Mirrorwing Dragon)
     if (opts.forceTarget) {
       copy.targets = so.targets.map(t => (Array.isArray(t) ? [opts.forceTarget] : opts.forceTarget));
+      copy.targetIdentities = this.captureTargetIdentities(copy.targets);
       opts = Object.assign({}, opts, { mayNewTargets: false });
     }
     let wardTargets = (copy.targets || []).flat().filter(target =>
@@ -2847,10 +2942,47 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (opts.mayNewTargets && so.targets.length) {
       const specs = so.targetSpecs || this.spellTargetSpecs(so.card, so.castOpts || {}, ctrl);
       if (specs) {
+        const spreadKinds = new Set([
+          'spell-bounce', 'spell-destroy', 'spell-exile', 'spell-graveyard-return',
+          'spell-tap', 'spell-untap',
+        ]);
+        const operations = so.card && so.card.def && so.card.def.oracleImplementation || [];
+        const relatedObjects = [copyRoot, ...this.stack.filter(item => item && item.copyRoot === copyRoot)];
+        const allUsedTargetIids = [...new Set(relatedObjects
+          .flatMap(item => item && item.targets ? item.targets.flat().filter(Boolean) : [])
+          .filter(target => target instanceof MTG.CardInst)
+          .map(target => target.iid))];
+        const damageOperation = operations.find(operation => operation.kind === 'spell-damage' &&
+          operation.n !== 'X' && Number(operation.n) > 0 && operation.what !== 'each opponent');
+        let copyTargetPolicy = operations.some(operation => spreadKinds.has(operation.kind))
+          ? 'spread' : 'focus';
+        let copyUsedTargetIids = allUsedTargetIids;
+        if (damageOperation) {
+          const amount = Number(damageOperation.n);
+          const assigned = new Map();
+          for (const target of relatedObjects.flatMap(item => item && item.targets ? item.targets.flat().filter(Boolean) : [])) {
+            if (!(target instanceof MTG.CardInst)) continue;
+            assigned.set(target.iid, (assigned.get(target.iid) || 0) + amount);
+          }
+          copyUsedTargetIids = [...assigned].filter(([iid, assignedDamage]) => {
+            const target = this.byIid(iid);
+            if (!target || target.zone !== 'battlefield') return true;
+            const remaining = target.is('Planeswalker')
+              ? Math.max(1, Number(target.counters && target.counters.loyalty) || 0)
+              : target.is('Creature')
+                ? Math.max(1, Number(target.toughness || 0) - Number(target.damage || 0))
+                : Infinity;
+            return assignedDamage >= remaining;
+          }).map(([iid]) => iid);
+          copyTargetPolicy = copyUsedTargetIids.length ? 'spread' : 'focus';
+        }
+        const hasUnusedTarget = copyTargetPolicy === 'spread' && specs.some(spec =>
+          this.legalTargets(spec, so.card, ctrl).some(target =>
+            target instanceof MTG.CardInst && !copyUsedTargetIids.includes(target.iid)));
         const redo = await ctrl.controller.decide(this, {
           type: 'chooseOption', prompt: `Kopija ${so.name}: nove mete?`,
           options: [{ key: 'no', label: 'Iste mete' }, { key: 'yes', label: 'Nove mete' }],
-          aiHint: { kind: 'newTargets', so },
+          aiHint: { kind: 'newTargets', so, copyTargetPolicy, copyUsedTargetIids, hasUnusedTarget },
         });
         if (redo === 'yes') {
           // Kopija zadržava broj targeta iz originalnog spella. "May choose new
@@ -2858,12 +2990,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const copyTargetSpecs = specs.map((spec, index) => {
             const current = so.targets[index];
             const count = Array.isArray(current) ? current.filter(Boolean).length : (current ? 1 : 0);
-            return Object.assign({}, spec, { count, min: count, upTo: false });
+            const aiHint = copyTargetPolicy === 'spread'
+              ? Object.assign({}, spec.aiHint || {}, { copyTargetPolicy, copyUsedTargetIids })
+              : spec.aiHint;
+            return Object.assign({}, spec, { count, min: count, upTo: false, aiHint });
           });
           const ctx = { g: this, src: so.card, you: ctrl, so: copy };
           const ok = await this.pickTargets(ctx, copyTargetSpecs, so.card, ctrl);
           if (ok) {
             copy.targets = ctx.targets;
+            copy.targetIdentities = this.captureTargetIdentities(copy.targets);
             copy.wardTargets = ctx.wardTargets;
             copy.targetMode = 'new';
             copy.retargeted = true;
@@ -2920,6 +3056,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!so || (so.kind !== 'trigger' && so.kind !== 'ability')) return null;
     const copyCtx = Object.assign({}, so.ctx, {
       targets: (so.ctx.targets || []).slice(), you: ctrl,
+      targetIdentities: this.cloneTargetIdentities(
+        so.targetIdentities || so.ctx.targetIdentities || this.captureTargetIdentities(so.ctx.targets)),
       counterDistribution: so.ctx.counterDistribution
         ? so.ctx.counterDistribution.map(entry => Object.assign({}, entry)) : null,
       damageDivision: so.ctx.damageDivision
@@ -2928,6 +3066,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const copy = {
       kind: so.kind, name: `${so.name} (kopija)`, ctrl, ctx: copyCtx, run: so.run,
       targets: copyCtx.targets, srcCard: so.srcCard, targetSpecs: so.targetSpecs || null,
+      targetIdentities: copyCtx.targetIdentities,
       damageDivision: copyCtx.damageDivision,
     };
     let wardTargets = (copy.targets || []).flat().filter(target =>
@@ -2941,7 +3080,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       if (choice === 'yes') {
         const ok = await this.pickTargets(copyCtx, copy.targetSpecs, so.srcCard, ctrl);
-        if (ok) { copy.targets = copyCtx.targets; wardTargets = copyCtx.wardTargets; }
+        if (ok) {
+          copy.targets = copyCtx.targets;
+          copyCtx.targetIdentities = this.captureTargetIdentities(copy.targets);
+          copy.targetIdentities = copyCtx.targetIdentities;
+          wardTargets = copyCtx.wardTargets;
+        }
       }
     }
     if (copyCtx.damageDivision) {
@@ -2980,7 +3124,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return false;
     }
     this.stack.splice(index, 1);
-    const destination = opts.toZone || 'graveyard';
+    const leavesStackExiled = so.kind === 'spell' && so.castOpts &&
+      (so.castOpts.flashback || so.castOpts.jumpstart);
+    const destination = leavesStackExiled ? 'exile' : (opts.toZone || 'graveyard');
     if (!so.isCopy && so.card && so.card.zone === 'stack') await this.move(so.card, destination);
     this.lg(opts.message || `${so.name} is countered${so.isCopy ? ' and the copy ceases to exist' : ''}.`, 'counter');
     this.note('gameEffect', {
@@ -2999,7 +3145,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.lg(`Rezolvira se: ${so.name}.`, 'resolve');
       await this.pace(so.ctrl && so.ctrl.isAI ? 620 : 150);
       // re-check targets
-      const checked = this.revalidateTargets(so.ctx.targets || [], so.targetSpecs, so.srcCard, so.ctrl);
+      const checked = this.revalidateTargets(so.ctx.targets || [], so.targetSpecs, so.srcCard, so.ctrl,
+        so.targetIdentities || so.ctx.targetIdentities);
       so.ctx.targets = checked.targets;
       so.targets = checked.targets;
       if (checked.anyChosen && !checked.anyLegal) {
@@ -3014,7 +3161,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (so.kind === 'ability') {
       this.lg(`Rezolvira se: ${so.name}.`, 'resolve');
       await this.pace(so.ctrl && so.ctrl.isAI ? 620 : 150);
-      const checked = this.revalidateTargets(so.targets || [], so.targetSpecs, so.srcCard, so.ctrl);
+      const checked = this.revalidateTargets(so.targets || [], so.targetSpecs, so.srcCard, so.ctrl,
+        so.targetIdentities || so.ctx && so.ctx.targetIdentities);
       so.targets = checked.targets;
       if (so.ctx) so.ctx.targets = checked.targets;
       if (checked.anyChosen && !checked.anyLegal) {
@@ -3029,18 +3177,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // spell
     const card = so.card, p = so.ctrl, d = card.def;
     if (so.countered) {
+      const destination = so.castOpts && (so.castOpts.flashback || so.castOpts.jumpstart)
+        ? 'exile' : 'graveyard';
       this.note('gameEffect', {
         kind: 'counterspell', stackObject: so, card: so.card || null,
-        source: so.counterSource || null, destination: 'graveyard',
+        source: so.counterSource || null, destination,
       });
-      if (!so.isCopy) await this.move(card, 'graveyard');
+      if (!so.isCopy) await this.move(card, destination);
       return;
     }
-    const checked = this.revalidateTargets(so.targets || [], so.targetSpecs, card, p);
+    const checked = this.revalidateTargets(so.targets || [], so.targetSpecs, card, p, so.targetIdentities);
     so.targets = checked.targets;
     if (checked.anyChosen && !checked.anyLegal) {
       this.lg(`${card.name}: all targets are illegal — spell fizzles.`, 'resolve');
-      if (!so.isCopy) await this.move(card, 'graveyard');
+      const destination = so.castOpts && (so.castOpts.flashback || so.castOpts.jumpstart)
+        ? 'exile' : 'graveyard';
+      if (!so.isCopy) await this.move(card, destination);
       return;
     }
     this.lg(`Rezolvira se: ${so.name}.`, 'resolve');
@@ -3122,20 +3274,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (card.isCopySpell) {
           card.zone = 'ceased';
         } else if (card.zone === 'stack') {
-          if (d.rebound && so.from === 'hand' && !co.flashback && !co.mayhem && !co.free) {
+          if (d.rebound && so.from === 'hand' && !co.flashback && !co.mayhem) {
             // rebound: egzil + sljedeći upkeep besplatno
             await this.move(card, 'exile');
+            const reboundZoneVersion = card.zoneVersion;
             this.lg(`${card.name}: rebound — vraća se sljedećeg upkeepa.`);
             const owner = p;
             this.delayed.push({
               on: 'upkeep', name: `Rebound: ${card.name}`, ctrl: owner,
+              sourceZoneVersion: reboundZoneVersion,
               filter: (g2, dd) => dd.player === owner,
               run: async c2 => {
-                if (card.zone !== 'exile') return;
+                // Rebound may cast only the exact card object exiled by this
+                // resolution. A later exile object with the same CardInst is
+                // unrelated after any intervening zone change (CR 400.7).
+                if (card.zone !== 'exile' || card.zoneVersion !== reboundZoneVersion) return;
                 const yes = await owner.controller.decide(c2.g, {
                   type: 'chooseOption', prompt: `Rebound: cast ${card.name} for free?`,
                   options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
-                  aiHint: { kind: 'freeCast' },
+                  aiHint: { kind: 'freeCast', card },
                 });
                 if (yes !== 'yes') return;
                 owner.exile.splice(owner.exile.indexOf(card), 1);
@@ -3203,6 +3360,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await this.checkSBA(); await this.flushTriggers();
       return;
     }
+    const faceDownOriginalDef = co.faceDownCast && card.meta && card.meta.faceDownDef;
     const enterOpts = {
       ctrl: p,
       // `move` establishes a fresh battlefield object and resets script
@@ -3210,6 +3368,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // the permanent's own ETB keyword sees it; derived tokens get no count.
       entryMeta: so.squadN ? { paidTimes: so.squadN } : null,
     };
+    if (faceDownOriginalDef) {
+      enterOpts.faceDownDef = faceDownOriginalDef;
+      enterOpts.faceDownKind = co.faceDownCast;
+    }
     if (d.subtypes && d.subtypes.includes('Aura')) {
       const host = so.targets[0];
       // The resolved target is authoritative. Requiring every individual
@@ -3245,8 +3407,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await this.checkSBA(); await this.flushTriggers();
   };
 
-  G.targetStillOk = function (target, spec, src, ctrl, previousTargets = []) {
+  G.targetStillOk = function (target, spec, src, ctrl, previousTargets = [], identity = null) {
     if (!target) return false;
+    if (identity && identity.kind === 'card' &&
+        (!(target instanceof MTG.CardInst) || target.iid !== identity.iid ||
+          target.zoneVersion !== identity.zoneVersion)) return false;
     // Sa sačuvanim target-specom ponavljamo kompletnu legality provjeru na
     // rezoluciji: zona/filter, protection, shroud i protivnički hexproof.
     if (spec) {
@@ -3265,23 +3430,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return false;
   };
 
-  G.revalidateTargets = function (targets, specs, src, ctrl) {
+  G.revalidateTargets = function (targets, specs, src, ctrl, targetIdentities = null) {
     let chosen = 0;
     let legal = 0;
     const checked = (targets || []).map((target, index) => {
       const spec = specs && specs[index] || null;
+      const identity = targetIdentities && targetIdentities[index] || null;
       const previousTargets = (targets || []).slice(0, index);
       if (Array.isArray(target)) {
-        return target.filter(item => {
+        return target.filter((item, itemIndex) => {
           chosen++;
-          if (!this.targetStillOk(item, spec, src, ctrl, previousTargets)) return false;
+          const itemIdentity = Array.isArray(identity) ? identity[itemIndex] : null;
+          if (!this.targetStillOk(item, spec, src, ctrl, previousTargets, itemIdentity)) return false;
           legal++;
           return true;
         });
       }
       if (target === null || target === undefined) return target;
       chosen++;
-      if (this.targetStillOk(target, spec, src, ctrl, previousTargets)) {
+      if (this.targetStillOk(target, spec, src, ctrl, previousTargets, identity)) {
         legal++;
         return target;
       }
@@ -3290,8 +3457,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return { targets: checked, anyChosen: chosen > 0, anyLegal: legal > 0 };
   };
 
-  G.targetsStillOk = function (targets, specs, src, ctrl) {
-    const checked = this.revalidateTargets(targets, specs, src, ctrl);
+  G.targetsStillOk = function (targets, specs, src, ctrl, targetIdentities = null) {
+    const checked = this.revalidateTargets(targets, specs, src, ctrl, targetIdentities);
     return !checked.anyChosen || checked.anyLegal;
   };
 
@@ -3302,7 +3469,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const out = [];
     for (const c of this.bf()) {
       if (c.ctrl !== p) continue;
-      if (c.cur && c.cur.abilitiesDisabled) continue;
       if (c.faceDown && c.meta && c.meta.faceDownDef &&
         (c.meta.faceDownDef.types || []).includes('Creature')) {
         for (const faceUp of this.faceUpCosts(c)) {
@@ -3313,6 +3479,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           });
         }
       }
+      if (c.cur && c.cur.abilitiesDisabled) continue;
       if (c.cur && c.cur.activationDisabled) continue;
       // NE preskačemo karte bez `abilities` — equip i crew blokovi ispod
       // vrijede i za Equipmente/Vehicle koji nemaju nijednu aktiviranu sposobnost.
@@ -3421,8 +3588,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       // crew
-      if (c.hasSub('Vehicle') && c.def.crew !== undefined && !c.is('Creature')) {
-        const crewPow = this.creatures(p).filter(x => !x.tapped).reduce((s, x) => s + Math.max(0, x.power), 0);
+      if (c.hasSub('Vehicle') && c.def.crew !== undefined) {
+        const crewPow = this.creatures(p).filter(x => x !== c && !x.tapped)
+          .reduce((s, x) => s + Math.max(0, x.power), 0);
         if (crewPow >= c.def.crew) out.push({ card: c, crew: true });
       }
     }
@@ -3644,6 +3812,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (uiTargets) ctx.targets = uiTargets;
         else if (!await this.pickTargets(ctx, targetSpecs, c, p)) return false;
       }
+      ctx.targetIdentities = this.captureTargetIdentities(ctx.targets);
       const ok = await this.payMana(p, mc, { card: c, isAbility: true }, {
         xVal: handX,
         artifactAbilityAlreadyUsed: c.is('Artifact'),
@@ -3654,6 +3823,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const so = {
         kind: 'ability', name: `${c.name} — ${a.label || 'from hand'}`, ctrl: p,
         ctx, run: a.run, targets: ctx.targets, srcCard: c, targetSpecs,
+        targetIdentities: ctx.targetIdentities,
       };
       this.stack.push(so);
       this.lg(`${U.playerVerb(p, 'activate', 'activates')}: ${c.name} — ${a.label || 'from hand'}.`, 'activate');
@@ -3676,18 +3846,53 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         cost.generic += cycleX;
       }
+      const cycleCtx = { g: this, src: c, you: p, targets: [], cycleX };
+      const cycleTargetSpecs = d.noDraw
+        ? (typeof d.targets === 'function' ? (d.targets(this, c, { cycleX, player: p }) || []) : (d.targets || []))
+        : [];
+      // Typecycling and similar no-draw variants put their search/effect in
+      // the activated ability itself, so their targets (when present) are
+      // chosen before costs are committed.
+      if (cycleTargetSpecs.length && !await this.pickTargets(cycleCtx, cycleTargetSpecs, c, p)) return false;
+      cycleCtx.targetIdentities = this.captureTargetIdentities(cycleCtx.targets);
       const ok = await this.payMana(p, cost);
       if (!ok) return false;
       await this.discard(p, [c], { noReplacement: true });
       this.lg(`${U.playerVerb(p, 'cycle', 'cycles')} ${c.name}.`);
-      if (d.effect) {
-        const ctx = { g: this, src: c, you: p, targets: [], cycleX };
-        if (d.targets) { const ok2 = await this.pickTargets(ctx, d.targets, c, p); if (!ok2) { await this.draw(p, 1); return true; } }
-        this.stack.push({ kind: 'trigger', name: `${c.name} — cycle`, ctrl: p, ctx, run: d.effect });
-        await this.priorityRound(p);
+
+      const cycleAbility = {
+        kind: 'ability', name: `${c.name} — Cycling`, ctrl: p,
+        ctx: cycleCtx, targets: cycleCtx.targets, srcCard: c,
+        targetSpecs: cycleTargetSpecs.length ? cycleTargetSpecs : null,
+        targetIdentities: cycleCtx.targetIdentities,
+        run: d.noDraw
+          ? async abilityCtx => { if (d.effect) await d.effect(abilityCtx); }
+          : async abilityCtx => { await abilityCtx.g.draw(abilityCtx.you, 1, abilityCtx.src); },
+      };
+      this.stack.push(cycleAbility);
+      this.note('stack', {});
+      this.markAbilityActivated(p, c, false, { targets: cycleCtx.targets });
+      await this.emit('abilityActivated', {
+        player: p, card: c, isMana: false, ability: d,
+        targets: cycleCtx.targets, stackObject: cycleAbility,
+      });
+
+      // Scripted effects on ordinary Cycling cards model "when you cycle"
+      // triggers (Shark Typhoon, Decree of Pain, and similar cards). They sit
+      // above the draw ability and resolve independently. Typecycling instead
+      // uses d.noDraw and executes its search as the base activated ability.
+      if (d.effect && !d.noDraw) {
+        this.queueTrigger({
+          src: c, ctrl: p, name: 'cycle', data: { cycleX }, targets: d.targets,
+          run: async triggerCtx => {
+            triggerCtx.cycleX = triggerCtx.data.cycleX;
+            await d.effect(triggerCtx);
+          },
+        });
       }
-      if (!d.noDraw) await this.draw(p, 1);
       await this.emit('cycled', { player: p, card: c });
+      await this.flushTriggers();
+      await this.priorityRound(p);
       return true;
     }
     if (entry.plot) {
@@ -3795,13 +4000,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!ok) return false;
       }
       this.markAbilityActivated(p, c, false, { targets: [tgt] });
-      const ctx = { g: this, src: c, you: p, targets: [tgt] };
+      const ctx = {
+        g: this, src: c, you: p, targets: [tgt],
+        sourceZoneVersion: c.zoneVersion,
+        targetIdentities: this.captureTargetIdentities([tgt]),
+      };
       const so = {
         kind: 'ability', name: `${c.name} — Equip`, ctrl: p, ctx,
         targets: ctx.targets, srcCard: c, targetSpecs: [spec],
+        targetIdentities: ctx.targetIdentities,
         run: async equipCtx => {
           const host = equipCtx.targets[0];
-          if (!host || c.zone !== 'battlefield') return;
+          if (!host || c.zone !== 'battlefield' || c.zoneVersion !== equipCtx.sourceZoneVersion) return;
           if (await equipCtx.g.attach(c, host)) equipCtx.g.lg(`${c.name} → ${host.name}.`);
         },
       };
@@ -3896,23 +4106,42 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (entry.crew) {
       const need = c.def.crew;
-      const cands = this.creatures(p).filter(x => !x.tapped);
+      const cands = this.creatures(p).filter(x => x !== c && !x.tapped);
       const picked = await p.controller.decide(this, {
         type: 'chooseCards', from: cands, min: 1, max: cands.length, prompt: `Crew ${c.name} (${need}): tapuj stvorenja`,
         aiHint: { kind: 'crew', card: c, need },
       });
-      const pow = picked.reduce((s, x) => s + Math.max(0, x.power), 0);
+      const chosen = Array.isArray(picked) ? [...new Set(picked)].filter(x => cands.includes(x)) : [];
+      const pow = chosen.reduce((s, x) => s + Math.max(0, x.power), 0);
       if (pow < need) return false;
-      for (const x of picked) this.tap(x);
+      for (const x of chosen) this.tap(x);
       this.markAbilityActivated(p, c);
-      c.meta.crewedTurn = this.turnNo;
-      this.recalc();
-      this.lg(`${c.name} je crewovan.`);
+      const ctx = {
+        g: this, src: c, you: p, targets: [], isActivatedAbility: true,
+        sourceZoneVersion: c.zoneVersion,
+      };
+      this.stack.push({
+        kind: 'ability', name: `${c.name} — Crew ${need}`, ctrl: p, ctx, targets: [], srcCard: c,
+        run: async crewCtx => {
+          if (crewCtx.src.zone !== 'battlefield' ||
+              crewCtx.src.zoneVersion !== crewCtx.sourceZoneVersion) return;
+          crewCtx.src.meta.crewedTurn = crewCtx.g.turnNo;
+          crewCtx.g.recalc();
+          crewCtx.g.lg(`${crewCtx.src.name} je crewovan.`);
+        },
+      });
+      await this.emit('abilityActivated', { player: p, card: c, isMana: false });
+      this.note('stack', {});
+      await this.flushTriggers();
+      await this.priorityRound(p);
       return true;
     }
     const a = entry.ability;
     const cost = a.cost || {};
-    const ctx = { g: this, src: c, you: p, targets: [], isActivatedAbility: true, ability: a };
+    const ctx = {
+      g: this, src: c, you: p, targets: [], isActivatedAbility: true, ability: a,
+      sourceZoneVersion: c.zoneVersion,
+    };
     // targets first
     if (a.targets) {
       if (uiTargets) ctx.targets = uiTargets;
@@ -3921,6 +4150,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!ok) return false;
       }
     }
+    ctx.targetIdentities = this.captureTargetIdentities(ctx.targets);
     // Some activated costs choose X independently of mana (Necropolis Fiend:
     // "Exile X cards from your graveyard"). Choose it before paying any
     // irreversible costs, and retain the value on the stack context.
@@ -4180,6 +4410,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const so = {
       kind: 'ability', name: `${c.name}${a.label ? ' — ' + a.label : ''}`, ctrl: p,
       ctx, run: a.run, targets: ctx.targets, srcCard: c, targetSpecs: a.targets || null,
+      targetIdentities: ctx.targetIdentities,
     };
     this.lg(`${U.playerVerb(p, 'activate', 'activates')}: ${c.name}${a.label ? ' — ' + a.label : ''}.`, 'activate');
     await this.pace(p.isAI ? 800 : 0);
@@ -4520,7 +4751,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.untilEffects = this.untilEffects.filter(e => !(e.expires === 'untilTurnOf' && e.whoTurn === p));
     if (!p.skipUntapOnce) {
       for (const c of this.bf()) {
-        if (c.ctrl === p && !c.def.doesntUntap) {
+        if (c.ctrl === p && !c.def.doesntUntap && !(c.cur && c.cur.cantUntap)) {
           if (c.meta.noUntapOnce) { c.meta.noUntapOnce = false; continue; }
           if (c.tapped && (c.counters['stun'] || 0) > 0) {
             this.removeCounters(c, 'stun', 1);
@@ -4550,14 +4781,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // counter then creates a second trigger, so players receive priority both
     // before the counter removal and before the mandatory free-cast attempt.
     for (const c of p.exile.slice()) {
-      if (!c.meta || c.meta.suspended <= 0) continue;
+      if (!c.meta || !(Number(c.meta.suspended) > 0)) continue;
+      const suspendedZoneVersion = c.zoneVersion;
       this.queueTrigger({
         src: c,
         ctrl: p,
         name: `${c.name} — Suspend: remove a time counter`,
-        onlyIf: () => c.zone === 'exile' && c.meta && c.meta.suspended > 0,
+        onlyIf: () => c.zone === 'exile' && c.zoneVersion === suspendedZoneVersion &&
+          c.meta && c.meta.suspended > 0,
         run: async removeCtx => {
-          if (c.zone !== 'exile' || !c.meta || c.meta.suspended <= 0) return;
+          if (c.zone !== 'exile' || c.zoneVersion !== suspendedZoneVersion ||
+              !c.meta || c.meta.suspended <= 0) return;
           c.meta.suspended--;
           removeCtx.g.lg(`${c.name}: suspend ${c.meta.suspended} remaining.`);
           if (c.meta.suspended !== 0) return;
@@ -4568,9 +4802,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             // Adding a new time counter in response does not undo the fact
             // that the last counter was removed; the cast trigger only cares
             // that this card is still in exile when it resolves.
-            onlyIf: () => c.zone === 'exile',
+            onlyIf: () => c.zone === 'exile' && c.zoneVersion === suspendedZoneVersion,
             run: async castCtx => {
-              if (c.zone !== 'exile') return;
+              if (c.zone !== 'exile' || c.zoneVersion !== suspendedZoneVersion) return;
               // Suspend ignores normal timing, but it does not bypass effects
               // that prohibit this player from casting spells. castSpell then
               // remains authoritative for targets, modes and other legal
@@ -4837,7 +5071,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.note('phase', {});
     await this.pace(p.isAI ? 330 : 0);
     // forced attackers
-    const forced = elig.filter(c => c.cur.mustAttack || c.def.mustAttack || this.isForcedToAttack(c));
+    const forced = elig.filter(c => this.isForcedToAttack(c));
     const attackTargets = oppList.concat(this.bf().filter(card => card.is('Planeswalker') && card.ctrl !== p));
     const declared = await p.controller.decide(this, {
       type: 'attackers', eligible: elig, opponents: oppList, attackTargets, forced,
@@ -5199,7 +5433,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.isForcedToAttack = function (c) {
     if (c.cur && c.cur.mustAttack) return true;
-    if (c.def.mustAttack) return true;
+    if (c.def.mustAttack && !(c.cur && c.cur.abilitiesDisabled)) return true;
     if (c.meta && c.meta.mustAttackTurn === this.turnNo) return true;
     if (c.meta && c.meta.mustAttackPlayer && this.canAttackTarget(c, c.meta.mustAttackPlayer)) return true;
     if (this.goadersOf(c).length) return true;
@@ -5238,6 +5472,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.canBlock = function (blocker, attacker) {
     if (blocker.tapped || blocker.cur.cantBlock) return false;
+    if (blocker.cur.blockOnlyFlying && !attacker.kw('flying')) return false;
     if (this.isProtectedFrom(attacker, blocker)) return false;
     if (attacker.kw('flying') && !(blocker.kw('flying') || blocker.kw('reach'))) return false;
     if (attacker.kw('shadow') !== blocker.kw('shadow')) return false;

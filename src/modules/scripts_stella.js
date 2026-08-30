@@ -27,6 +27,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Archmage Emeritus'] = {
+    mandatoryCastDraw: { event: 'castIS', n: 1, filter: myCastIS },
     triggers: [
       { on: 'castIS', desc: 'Magecraft: vuci', filter: myCastIS, run: async ctx => { await ctx.g.draw(ctx.you, 1); } },
       { on: 'spellCopied', desc: 'Magecraft: vuci', filter: (g, self, d) => d.ctrl === self.ctrl && d.isInstantSorcery, run: async ctx => { await ctx.g.draw(ctx.you, 1); } },
@@ -145,6 +146,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Niv-Mizzet, Parun'] = {
     uncounterable: true,
+    mandatoryCastDraw: { event: 'castIS', n: 1, filter: () => true },
     triggers: [
       {
         on: 'draw', desc: '1 šteta', filter: (g, self, d) => d.player === self.ctrl,
