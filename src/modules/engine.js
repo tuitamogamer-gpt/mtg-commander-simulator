@@ -2633,7 +2633,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (max === 0) { ctx.targets.push([]); continue; }
         const decision = await ctrl.controller.decide(this, {
           type: 'chooseTargets', spec, candidates: cands, min: Math.min(min, cands.length), max,
-          src, prompt: spec.prompt || 'Izaberi metu', aiHint: spec.aiHint,
+          src, prompt: spec.prompt || 'Izaberi metu',
+          aiHint: ctx.so && ctx.so.x !== undefined
+            ? Object.assign({}, spec.aiHint || {}, { x: ctx.so.x })
+            : spec.aiHint,
           cancelable: !!ctx.cancelable,
         });
         if (ctx.cancelable && decision && decision.kind === 'cancel') {

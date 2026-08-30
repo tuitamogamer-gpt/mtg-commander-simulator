@@ -317,19 +317,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filter = (g2, c) => c.ctrl === owner;
     }
     if (!filter) filter = () => true;
+    // CR 611.2c: resolving spell/ability that changes characteristics locks
+    // the affected object set when the effect begins.  A later creature must
+    // not inherit the bonus, while an already affected creature keeps it
+    // after a control change.  iid + zone timestamp also prevents a card that
+    // leaves and returns from being mistaken for the original object.
+    const affected = g.bf().filter(c => c.is('Creature') && filter(g, c));
+    const affectedObjects = new Map(affected.map(card => [card.iid, card.timestamp]));
     g.untilEffects.push({
       expires: 'eot', kind: 'pumpAll',
       apply: (g2, bf) => {
         for (const c of bf) {
           if (!c.is('Creature')) continue;
-          if (!filter(g2, c)) continue;
+          if (affectedObjects.get(c.iid) !== c.timestamp) continue;
           c.cur.power += dp; c.cur.toughness += dt;
           if (kws) for (const k of kws) c.cur.kw.add(k);
         }
       },
     });
     g.recalc();
-    const affected = g.bf().filter(c => c.is('Creature') && filter(g, c));
     const stat = `${dp >= 0 ? '+' : ''}${dp}/${dt >= 0 ? '+' : ''}${dt}`;
     const extra = kws && kws.length ? ` i ${kws.join(', ')}` : '';
     if (affected.length) g.notifyEffect(`✨ ${affected.length} stvorenja dobijaju ${stat}${extra} do kraja poteza.`, {

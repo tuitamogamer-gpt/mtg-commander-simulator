@@ -117,23 +117,239 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
   }
 
+  // A mana plan may contain several individually legal sources whose activation
+  // costs compete for the same game object (two Millikins and one library card,
+  // two Geese and one Food, or two abilities removing the same counter). Keep
+  // those resources distinct while solving so canPayMana and payMana agree.
+  function orderManaActivationSteps(game, player, steps, assignments) {
+    const indexOf = new Map(steps.map((step, index) => [step, index]));
+    const edges = new Map(steps.map(step => [step, new Set()]));
+    const indegree = new Map(steps.map(step => [step, 0]));
+    const addEdge = (before, after) => {
+      if (!before || !after || before === after || edges.get(before).has(after)) return;
+      edges.get(before).add(after);
+      indegree.set(after, indegree.get(after) + 1);
+    };
+    const plain = steps.filter(step => step.src && !step.consume);
+    const converters = steps.filter(step => step.src && step.consume);
+    // Only producers that precede a converter in the solved plan must run
+    // before it. Moving a later Sol Ring ahead of a zero-cost Signet can spend
+    // Tezzeret's first-artifact-ability discount on the wrong activation.
+    for (const converter of converters) {
+      for (const producer of plain) {
+        if (indexOf.get(producer) < indexOf.get(converter)) addEdge(producer, converter);
+      }
+    }
+    // The solver's converter order records which converter output funds the
+    // next one; preserve it during execution.
+    for (let index = 1; index < converters.length; index++) addEdge(converters[index - 1], converters[index]);
+    if (game.artifactAbilityDiscountAmount(player) > 0) {
+      const artifactSteps = steps.filter(step => step.src && step.src.card &&
+        step.src.card.is && step.src.card.is('Artifact') && !(step.src.m && step.src.m.viaConvoke));
+      for (let index = 1; index < artifactSteps.length; index++) {
+        addEdge(artifactSteps[index - 1], artifactSteps[index]);
+      }
+    }
+
+    const sourceSteps = new Map();
+    for (const step of steps) {
+      const card = step.src && step.src.card;
+      if (!card) continue;
+      const list = sourceSteps.get(card) || [];
+      list.push(step);
+      sourceSteps.set(card, list);
+    }
+    for (const [sacrificingStep, targets] of assignments) {
+      for (const target of targets) {
+        for (const producingStep of sourceSteps.get(target) || []) addEdge(producingStep, sacrificingStep);
+      }
+    }
+
+    const ready = steps.filter(step => indegree.get(step) === 0)
+      .sort((left, right) => indexOf.get(left) - indexOf.get(right));
+    const ordered = [];
+    while (ready.length) {
+      const step = ready.shift();
+      ordered.push(step);
+      for (const next of edges.get(step)) {
+        indegree.set(next, indegree.get(next) - 1);
+        if (indegree.get(next) === 0) {
+          ready.push(next);
+          ready.sort((left, right) => indexOf.get(left) - indexOf.get(right));
+        }
+      }
+    }
+    return ordered.length === steps.length ? ordered : null;
+  }
+
+  function manaActivationResourcePlan(game, player, steps, fixedAssignments) {
+    const reserved = new Set();
+    const tapped = new Set();
+    const oncePerTurn = new Set();
+    const removedCounters = new Map();
+    const sacrificeGroups = [];
+    let milled = 0;
+
+    for (const step of steps) {
+      const source = step.src;
+      if (!source || source.virtual) continue;
+      const card = source.card;
+      const cost = source.extraCost || {};
+      if (cost.tap) {
+        if (tapped.has(card)) return null;
+        tapped.add(card);
+      }
+      if (cost.sacSelf) {
+        if (reserved.has(card) || !game.canSacrifice(card)) return null;
+        reserved.add(card);
+      }
+      if (cost.mill) {
+        milled += Math.max(0, Number(cost.mill) || 0);
+        if (milled > player.library.length) return null;
+      }
+      if (cost.rmCounter) {
+        const kind = cost.rmCounter.kind || cost.rmCounter;
+        const amount = Math.max(1, Number(cost.rmCounter.n) || 1);
+        let byKind = removedCounters.get(card);
+        if (!byKind) {
+          byKind = new Map();
+          removedCounters.set(card, byKind);
+        }
+        const total = (byKind.get(kind) || 0) + amount;
+        if (total > (card.counters[kind] || 0)) return null;
+        byKind.set(kind, total);
+      }
+      if (source.m && source.m.oncePerTurn) {
+        const key = `${card.iid}:${source.m.key || 0}`;
+        if (oncePerTurn.has(key)) return null;
+        oncePerTurn.add(key);
+      }
+      if (cost.sacType) {
+        sacrificeGroups.push({
+          step,
+          filter: candidate => candidate !== card && candidate.hasSub(cost.sacType),
+        });
+      }
+      if (cost.sac) {
+        const amount = Math.max(1, Number(cost.sacN) || 1);
+        for (let index = 0; index < amount; index++) {
+          sacrificeGroups.push({
+            step,
+            filter: candidate => candidate !== card && cost.sac(game, candidate, card, player),
+          });
+        }
+      }
+    }
+
+    if (fixedAssignments) {
+      for (const step of steps) {
+        const cost = step.src && step.src.extraCost || {};
+        const expected = (cost.sac ? Math.max(1, Number(cost.sacN) || 1) : 0) + (cost.sacType ? 1 : 0);
+        const selected = fixedAssignments.get(step) || [];
+        if (selected.length !== expected || new Set(selected).size !== selected.length) return null;
+      }
+    }
+
+    const groups = sacrificeGroups.map(group => ({
+      ...group,
+      candidates: game.bf().filter(candidate => candidate.ctrl === player && !reserved.has(candidate) &&
+        game.canSacrifice(candidate) && group.filter(candidate) &&
+        (!fixedAssignments || (fixedAssignments.get(group.step) || []).includes(candidate))),
+    })).sort((left, right) => left.candidates.length - right.candidates.length);
+    if (groups.some(group => !group.candidates.length)) return null;
+
+    const assignments = new Map();
+    let orderedSteps = null;
+    const match = index => {
+      if (index >= groups.length) {
+        orderedSteps = orderManaActivationSteps(game, player, steps, assignments);
+        return !!orderedSteps;
+      }
+      const group = groups[index];
+      for (const candidate of group.candidates) {
+        if (reserved.has(candidate)) continue;
+        reserved.add(candidate);
+        const list = assignments.get(group.step) || [];
+        list.push(candidate);
+        assignments.set(group.step, list);
+        if (match(index + 1)) return true;
+        list.pop();
+        if (!list.length) assignments.delete(group.step);
+        reserved.delete(candidate);
+      }
+      return false;
+    };
+    return match(0) ? { assignments, orderedSteps } : null;
+  }
+
+  async function chooseManaActivationResources(game, player, steps, suggestedPlan) {
+    const assignments = new Map();
+    const reserved = new Set(steps.filter(step => step.src && step.src.extraCost && step.src.extraCost.sacSelf)
+      .map(step => step.src.card));
+    const choose = async (step, amount, filter, label) => {
+      if (!amount) return true;
+      const source = step.src.card;
+      const pool = game.bf().filter(candidate => candidate.ctrl === player && candidate !== source &&
+        !reserved.has(candidate) && game.canSacrifice(candidate) && filter(candidate));
+      if (pool.length < amount) return false;
+      const suggested = (suggestedPlan.assignments.get(step) || []).filter(card => pool.includes(card)).slice(0, amount);
+      let selected = suggested.length === amount ? suggested : pool.slice(0, amount);
+      if (player.controller) {
+        const answer = await player.controller.decide(game, {
+          type: 'chooseCards', from: pool, min: amount, max: amount,
+          prompt: `${source.name}: sacrifice ${amount} ${label} for mana`,
+          aiHint: { kind: 'sacCost', src: source },
+        });
+        selected = Array.isArray(answer) ? answer : [];
+      }
+      if (selected.length !== amount || new Set(selected).size !== selected.length ||
+        selected.some(card => !pool.includes(card))) return false;
+      const current = assignments.get(step) || [];
+      current.push(...selected);
+      assignments.set(step, current);
+      for (const card of selected) reserved.add(card);
+      return true;
+    };
+
+    for (const step of steps) {
+      if (!step.src || step.src.virtual) continue;
+      const cost = step.src.extraCost || {};
+      if (cost.sac && !await choose(step, Math.max(1, Number(cost.sacN) || 1),
+        candidate => cost.sac(game, candidate, step.src.card, player), 'permanent')) return null;
+      if (cost.sacType && !await choose(step, 1,
+        candidate => candidate.hasSub(cost.sacType), cost.sacType)) return null;
+    }
+    return manaActivationResourcePlan(game, player, steps, assignments);
+  }
+
   function manaRestrictionAllows(game, entry, forSpell) {
-    return !entry.restrict || !!entry.restrict(game, forSpell, entry.source);
+    if (!entry.restrict) return true;
+    // A restriction such as Somberwald Sage's applies to casting spells only:
+    // its mana cannot pay an activated ability merely because that ability's
+    // source also happens to be a creature. Ability-aware restrictions opt in
+    // explicitly so their predicate can inspect the activated ability.
+    if (forSpell && forSpell.isAbility && !entry.restrictAbilities) return false;
+    return !!entry.restrict(game, forSpell, entry.source);
   }
 
   function restrictedPoolSnapshot(game, player, forSpell) {
     const pool = Object.assign({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, player.pool || {});
     const coloredOnlyPool = Object.assign(
       { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, player.coloredOnlyPool || {});
+    const meta = [];
     for (const entry of player.poolMeta || []) {
       const n = Math.max(0, Number(entry.n) || 0);
-      if (!n || manaRestrictionAllows(game, entry, forSpell)) continue;
-      pool[entry.color] = Math.max(0, (pool[entry.color] || 0) - n);
-      if (entry.coloredOnly) {
-        coloredOnlyPool[entry.color] = Math.max(0, (coloredOnlyPool[entry.color] || 0) - n);
+      if (!n) continue;
+      if (manaRestrictionAllows(game, entry, forSpell)) {
+        meta.push(Object.assign({}, entry, { n }));
+      } else {
+        pool[entry.color] = Math.max(0, (pool[entry.color] || 0) - n);
+        if (entry.coloredOnly) {
+          coloredOnlyPool[entry.color] = Math.max(0, (coloredOnlyPool[entry.color] || 0) - n);
+        }
       }
     }
-    return { pool, coloredOnlyPool };
+    return { pool, coloredOnlyPool, meta };
   }
 
   function spendPoolUnit(game, player, color, forSpell, generic) {
@@ -141,8 +357,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       entry.color === color && (Number(entry.n) || 0) > 0);
     // Ograničenu manu troši prije neograničene kad je legalna za ovu cijenu;
     // tako Troyanova G/U ne ostaje u poolu dok se nepotrebno troši obična mana.
-    const tracked = entries.find(entry => manaRestrictionAllows(game, entry, forSpell) &&
-      (!generic || !entry.coloredOnly));
+    const tracked = entries.filter(entry => manaRestrictionAllows(game, entry, forSpell) &&
+      (!generic || !entry.coloredOnly))
+      .sort((a, b) => generic ? 0 : Number(!!b.coloredOnly) - Number(!!a.coloredOnly))[0];
     if (tracked) {
       tracked.n--;
       player.pool[color]--;
@@ -163,11 +380,42 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return true;
   }
 
+  function spendTracedPoolUnit(game, player, unit, forSpell) {
+    const color = unit.color;
+    const generic = !!unit.generic;
+    const entries = (player.poolMeta || []).filter(entry =>
+      entry.color === color && (Number(entry.n) || 0) > 0);
+    if (unit.tracked) {
+      const tracked = entries.find(entry => entry.source === unit.source &&
+        entry.restrict === unit.restrict && !!entry.coloredOnly === !!unit.coloredOnly &&
+        !!entry.restrictAbilities === !!unit.restrictAbilities &&
+        manaRestrictionAllows(game, entry, forSpell) && (!generic || !entry.coloredOnly));
+      if (!tracked) return false;
+      tracked.n--;
+      player.pool[color]--;
+      if (tracked.coloredOnly && player.coloredOnlyPool) player.coloredOnlyPool[color]--;
+      player.poolMeta = player.poolMeta.filter(entry => (Number(entry.n) || 0) > 0);
+      return true;
+    }
+
+    const trackedTotal = entries.reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
+    const trackedColoredOnly = entries.filter(entry => entry.coloredOnly)
+      .reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
+    const untracked = Math.max(0, (player.pool[color] || 0) - trackedTotal);
+    const untrackedColoredOnly = Math.min(untracked, Math.max(0,
+      (player.coloredOnlyPool && player.coloredOnlyPool[color] || 0) - trackedColoredOnly));
+    const required = unit.coloredOnly ? untrackedColoredOnly : untracked - untrackedColoredOnly;
+    if (required <= 0 || generic && unit.coloredOnly) return false;
+    player.pool[color]--;
+    if (unit.coloredOnly && player.coloredOnlyPool) player.coloredOnlyPool[color]--;
+    return true;
+  }
+
   // ============================================================
   // Mana sources & payment
   // ============================================================
   // A mana source descriptor: {card, options:[{W:1},{G:1}], cost:{tap,sac,mana,life}, restrict, multi:{C:2}}
-  G.manaSources = function (p, forSpell) {
+  G.manaSources = function (p, forSpell, opts = {}) {
     const out = [];
     for (const c of this.bf()) {
       if (c.ctrl !== p) continue;
@@ -200,8 +448,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // Kod plaćanja SPOSOBNOSTI primjenjuju se samo restrikcije koje se
         // izričito prijave (restrictAbilities), da postojeće spell-only
         // restrikcije ostanu netaknute.
-        if (m.restrict && forSpell && (!forSpell.isAbility || m.restrictAbilities)
-          && !m.restrict(this, forSpell, c)) continue;
+        if (!opts.includeRestricted && forSpell && !manaRestrictionAllows(this, {
+          restrict: m.restrict,
+          restrictAbilities: !!m.restrictAbilities,
+          source: c,
+        }, forSpell)) continue;
         let produce = m.produce;
         if (typeof produce === 'function') produce = produce(this, c, p);
         if (!produce || !produce.length) continue;
@@ -221,7 +472,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const granter of this.bf()) {
       const gm = granter.def.grantMana;
       if (!gm || granter.ctrl !== p) continue;
-      if (gm.restrict && forSpell && !gm.restrict(this, forSpell, granter)) continue;
+      if (!opts.includeRestricted && forSpell && !manaRestrictionAllows(this, {
+        restrict: gm.restrict,
+        restrictAbilities: !!gm.restrictAbilities,
+        source: granter,
+      }, forSpell)) continue;
       const gcost = gm.cost || { tap: true };
       for (const x of this.bf()) {
         if (x.ctrl !== p) continue;
@@ -230,7 +485,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (gcost.tap && x.is('Creature') && x.sick && !x.kw('haste') && !gm.ignoreSickness) continue;
         out.push({
           card: x,
-          m: { cost: gcost, restrict: gm.restrict, ignoreSickness: !!gm.ignoreSickness },
+          m: {
+            cost: gcost,
+            restrict: gm.restrict,
+            restrictAbilities: !!gm.restrictAbilities,
+            ignoreSickness: !!gm.ignoreSickness,
+          },
           produce: gm.produce,
           extraCost: gcost,
           grantedBy: granter,
@@ -279,6 +539,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Compute total castable check: can p pay cost (greedy+backtrack over sources)?
   G.manaSolve = function (p, cost, forSpell, opts = {}) {
     // cost: parsed {generic, x, pips} with x already multiplied in via opts.xVal
+    // A human may explicitly announce the side of each hybrid symbol and the
+    // mana-vs-life mode of each Phyrexian symbol. Constrain those pips before
+    // solving so a later greedy deduction cannot silently change the choice.
+    if (!opts._pipChoicesApplied &&
+      ((opts.hybridChoices && opts.hybridChoices.length) || (opts.phyrexianChoices && opts.phyrexianChoices.length))) {
+      let hybridIndex = 0;
+      let phyrexianIndex = 0;
+      let changed = false;
+      const selectedPips = cost.pips.map(pip => {
+        if (pip.includes('PHY')) {
+          const choice = opts.phyrexianChoices && opts.phyrexianChoices[phyrexianIndex++];
+          if (choice === 'life') { changed = true; return ['PHY']; }
+          if (COLORS.includes(choice) && pip.includes(choice)) { changed = true; return [choice]; }
+          return pip.slice();
+        }
+        if (pip.length > 1 && pip.every(symbol => COLORS.includes(symbol))) {
+          const choice = opts.hybridChoices && opts.hybridChoices[hybridIndex++];
+          if (COLORS.includes(choice) && pip.includes(choice)) { changed = true; return [choice]; }
+        }
+        return pip.slice();
+      });
+      if (changed) {
+        const effectiveCost = Object.assign({}, cost, { pips: selectedPips });
+        const solved = this.manaSolve(p, effectiveCost, forSpell,
+          Object.assign({}, opts, { _pipChoicesApplied: true }));
+        if (solved && !solved.effectiveCost) solved.effectiveCost = effectiveCost;
+        return solved;
+      }
+    }
     // A two-brid symbol ({2/W}, etc.) is paid either as one colored pip or as
     // two generic mana. Expand the small choice set up front, then let the
     // regular solver prove an exact payment plan for each legal alternative.
@@ -292,15 +581,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         let generic = cost.generic;
         let choiceIndex = 0;
         const pips = [];
+        let allowed = true;
         for (const pip of cost.pips) {
           if (!pip.includes('TWO')) {
             pips.push(pip.slice());
             continue;
           }
           const payGeneric = !!(mask & (1 << choiceIndex++));
+          const requested = opts.twoBridgeChoices && opts.twoBridgeChoices[choiceIndex - 1];
+          if ((requested === 'generic' && !payGeneric) || (requested === 'color' && payGeneric)) allowed = false;
           if (payGeneric) generic += 2;
           else pips.push(pip.filter(symbol => symbol !== 'TWO'));
         }
+        if (!allowed) continue;
         const effectiveCost = Object.assign({}, cost, { generic, pips });
         const solved = this.manaSolve(p, effectiveCost, forSpell,
           Object.assign({}, opts, { _twoBridgeExpanded: true }));
@@ -311,66 +604,231 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       return null;
     }
-    const pips = cost.pips.slice();
+    const pips = cost.pips.map(pip => pip.slice());
     const initialGeneric = Math.max(0, cost.generic + (opts.xVal || 0) * (cost.x || 0) - (cost.xReduction || 0));
-    let generic = initialGeneric;
-    // first: use floating pool
-    const legalFloating = restrictedPoolSnapshot(this, p, forSpell);
-    const pool = Object.assign({}, legalFloating.pool);
-    const coloredOnlyPool = Object.assign({}, legalFloating.coloredOnlyPool);
-    const usedPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
-    const remainingPips = [];
-    for (const pip of pips) {
-      let done = false;
-      for (const optc of pip) {
-        if (COLORS.includes(optc) || optc === 'C') {
-          if (pool[optc] > 0) {
-            pool[optc]--; usedPool[optc]++;
-            if (coloredOnlyPool[optc] > 0) coloredOnlyPool[optc]--;
-            done = true; break;
+    // First use floating mana, but keep every materially different pip
+    // allocation. A greedy first-match pass rejects legal costs such as
+    // {W/U}{W} with U+W floating (it spends W on the hybrid symbol) and
+    // {B/P}{B} with B floating (it spends B before considering two life).
+    // The state set is deduplicated after each pip, so normal costs remain a
+    // tiny fast path while overlapping hybrid/Phyrexian choices backtrack.
+    // Keep every floating unit plus its restriction provenance. Mana that
+    // cannot pay the spell directly may still legally activate a converter,
+    // whose output can then pay the spell.
+    const legalFloating = {
+      pool: Object.assign({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, p.pool || {}),
+      coloredOnlyPool: Object.assign(
+        { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, p.coloredOnlyPool || {}),
+      meta: (p.poolMeta || []).filter(entry => (Number(entry.n) || 0) > 0)
+        .map(entry => Object.assign({}, entry, { n: Math.max(0, Number(entry.n) || 0) })),
+    };
+    const emptyUsed = () => ({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 });
+    const cloneMeta = meta => (meta || []).map(entry => Object.assign({}, entry));
+    const objectIds = new WeakMap();
+    let nextObjectId = 1;
+    const objectId = value => {
+      if (!value || typeof value !== 'object' && typeof value !== 'function') return 0;
+      if (!objectIds.has(value)) objectIds.set(value, nextObjectId++);
+      return objectIds.get(value);
+    };
+    const metaKey = meta => (meta || []).map(entry =>
+      `${objectId(entry.source)}:${objectId(entry.restrict)}:${entry.color}:` +
+      `${entry.restrictAbilities ? 1 : 0}:${entry.coloredOnly ? 1 : 0}:` +
+      `${Math.max(0, Number(entry.n) || 0)}`
+    ).sort().join(';');
+    const stateKey = state => [state.remaining.map(pip => pip.join('/')).join(','),
+      ['W', 'U', 'B', 'R', 'G', 'C'].map(color => state.pool[color] || 0).join(','),
+      ['W', 'U', 'B', 'R', 'G', 'C'].map(color => state.coloredOnly[color] || 0).join(','),
+      ['W', 'U', 'B', 'R', 'G', 'C'].map(color => state.used[color] || 0).join(','),
+      metaKey(state.meta)].join('|');
+    const clonePoolState = (state, overrides = {}) => Object.assign({
+      pool: Object.assign({}, state.pool),
+      coloredOnly: Object.assign({}, state.coloredOnly),
+      used: Object.assign({}, state.used),
+      remaining: (state.remaining || []).map(pip => pip.slice()),
+      meta: cloneMeta(state.meta),
+      spendTrace: state.spendTrace ? state.spendTrace.slice() : undefined,
+    }, overrides);
+    const spendStateUnitBranches = (state, color, context, generic) => {
+      const entries = (state.meta || []).filter(entry =>
+        entry.color === color && (Number(entry.n) || 0) > 0);
+      const branches = [];
+      for (let index = 0; index < (state.meta || []).length; index++) {
+        const entry = state.meta[index];
+        if (entry.color !== color || (Number(entry.n) || 0) <= 0 ||
+          !manaRestrictionAllows(this, entry, context) || generic && entry.coloredOnly) continue;
+        const branch = clonePoolState(state);
+        const tracked = branch.meta[index];
+        tracked.n--;
+        branch.pool[color]--;
+        branch.used[color]++;
+        if (tracked.coloredOnly) branch.coloredOnly[color]--;
+        branch.meta = branch.meta.filter(candidate => (Number(candidate.n) || 0) > 0);
+        if (branch.spendTrace) branch.spendTrace.push({
+          color, generic: !!generic, tracked: true,
+          source: tracked.source || null, restrict: tracked.restrict || null,
+          restrictAbilities: !!tracked.restrictAbilities,
+          coloredOnly: !!tracked.coloredOnly,
+        });
+        branches.push(branch);
+      }
+      const trackedTotal = entries.reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
+      const trackedColoredOnly = entries.filter(entry => entry.coloredOnly)
+        .reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
+      const untracked = Math.max(0, (state.pool[color] || 0) - trackedTotal);
+      const untrackedColoredOnly = Math.min(untracked,
+        Math.max(0, (state.coloredOnly[color] || 0) - trackedColoredOnly));
+      const addUntracked = coloredOnly => {
+        const branch = clonePoolState(state);
+        branch.pool[color]--;
+        branch.used[color]++;
+        if (coloredOnly) branch.coloredOnly[color]--;
+        if (branch.spendTrace) branch.spendTrace.push({
+          color, generic: !!generic, tracked: false, coloredOnly,
+        });
+        branches.push(branch);
+      };
+      if (!generic && untrackedColoredOnly > 0) addUntracked(true);
+      if (untracked - untrackedColoredOnly > 0) addUntracked(false);
+      const unique = new Map();
+      for (const branch of branches) {
+        const key = stateKey(branch);
+        if (!unique.has(key)) unique.set(key, branch);
+      }
+      return [...unique.values()];
+    };
+    const pipBranches = (start, requirements, context = forSpell) => {
+      let states = [start];
+      for (const pip of requirements) {
+        const next = new Map();
+        for (const state of states) {
+          const matching = [...new Set(pip.filter(color => COLORS.includes(color) || color === 'C'))];
+          for (const color of matching) {
+            for (const branch of spendStateUnitBranches(state, color, context, false)) {
+              next.set(stateKey(branch), branch);
+            }
+          }
+          const skipped = clonePoolState(state, { remaining: state.remaining.concat([pip]) });
+          next.set(stateKey(skipped), skipped);
+        }
+        states = [...next.values()];
+        if (states.length > 512) {
+          states.sort((a, b) => a.remaining.length - b.remaining.length || stateKey(a).localeCompare(stateKey(b)));
+          states = states.slice(0, 512);
+        }
+      }
+      return states;
+    };
+    const capStates = states => {
+      const unique = new Map();
+      for (const state of states) {
+        const key = `${stateKey(state)}|${state.generic}`;
+        if (!unique.has(key)) unique.set(key, state);
+      }
+      const out = [...unique.values()];
+      if (out.length > 512) {
+        out.sort((left, right) => (left.generic || 0) - (right.generic || 0) ||
+          stateKey(left).localeCompare(stateKey(right)));
+        return out.slice(0, 512);
+      }
+      return out;
+    };
+    const spendGeneric = (state, amount, context = forSpell) => {
+      let states = [clonePoolState(state, { generic: amount })];
+      for (const color of ['C', 'W', 'U', 'B', 'R', 'G']) {
+        let active = states;
+        const done = [];
+        while (active.length) {
+          const next = [];
+          for (const current of active) {
+            if (current.generic <= 0) {
+              done.push(current);
+              continue;
+            }
+            const branches = spendStateUnitBranches(current, color, context, true);
+            if (!branches.length) {
+              done.push(current);
+              continue;
+            }
+            for (const branch of branches) {
+              branch.generic = current.generic - 1;
+              next.push(branch);
+            }
+          }
+          active = capStates(next);
+        }
+        states = capStates(done);
+      }
+      return states;
+    };
+    const spendGenericReserveBranches = (state, amount) => {
+      let states = [clonePoolState(state, { generic: amount })];
+      const colors = ['C', 'W', 'U', 'B', 'R', 'G'];
+      for (const color of colors) {
+        const next = [];
+        for (const current of states) {
+          const entries = (current.meta || []).filter(entry => entry.color === color &&
+            (Number(entry.n) || 0) > 0);
+          const tracked = entries.filter(entry => manaRestrictionAllows(this, entry, forSpell) && !entry.coloredOnly)
+            .reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
+          const trackedTotal = entries.reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
+          const trackedColoredOnly = entries.filter(entry => entry.coloredOnly)
+            .reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
+          const untracked = Math.max(0, (current.pool[color] || 0) - trackedTotal);
+          const untrackedColoredOnly = Math.min(untracked,
+            Math.max(0, (current.coloredOnly[color] || 0) - trackedColoredOnly));
+          const usable = tracked + Math.max(0, untracked - untrackedColoredOnly);
+          const maxSpend = Math.min(usable, current.generic);
+          for (let spend = 0; spend <= maxSpend; spend++) {
+            let branches = [clonePoolState(current)];
+            for (let count = 0; count < spend; count++) {
+              branches = capStates(branches.flatMap(branch =>
+                spendStateUnitBranches(branch, color, forSpell, true)));
+            }
+            for (const branch of branches) {
+              branch.generic = current.generic - spend;
+              next.push(branch);
+            }
           }
         }
+        states = capStates(next);
       }
-      if (!done) {
-        if (pip[1] === 'PHY') { remainingPips.push(pip); }
-        else remainingPips.push(pip);
-      }
-    }
-    for (const col of ['C', 'W', 'U', 'B', 'R', 'G']) {
-      while (generic > 0 && pool[col] - (coloredOnlyPool[col] || 0) > 0) { pool[col]--; usedPool[col]++; generic--; }
-    }
-    // A pip-first allocation is normally best, but it is not the only legal
-    // one when an unrestricted mana of that same color is already floating
-    // and a later source can produce mana that may pay only colored costs.
-    // Preserve a generic-first pool state as a second solver branch.
-    const alternatePool = Object.assign({}, legalFloating.pool);
-    const alternateColoredOnlyPool = Object.assign({}, legalFloating.coloredOnlyPool);
-    const alternateUsedPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
-    let alternateGeneric = initialGeneric;
-    for (const col of ['C', 'W', 'U', 'B', 'R', 'G']) {
-      while (alternateGeneric > 0 && alternatePool[col] - (alternateColoredOnlyPool[col] || 0) > 0) {
-        alternatePool[col]--; alternateUsedPool[col]++; alternateGeneric--;
-      }
-    }
-    const alternateRemainingPips = [];
-    for (const pip of pips) {
-      let done = false;
-      for (const optc of pip) {
-        if ((COLORS.includes(optc) || optc === 'C') && alternatePool[optc] > 0) {
-          alternatePool[optc]--; alternateUsedPool[optc]++;
-          if (alternateColoredOnlyPool[optc] > 0) alternateColoredOnlyPool[optc]--;
-          done = true; break;
-        }
-      }
-      if (!done) alternateRemainingPips.push(pip);
+      // Keep the fully reserved branch too. A converter chain may need one
+      // floating unit to start even when the spell's still-unpaid generic
+      // amount is larger than the sum of converter activation costs.
+      return states;
+    };
+    const initialState = {
+      pool: Object.assign({}, legalFloating.pool),
+      coloredOnly: Object.assign({}, legalFloating.coloredOnlyPool),
+      used: emptyUsed(),
+      remaining: [],
+      meta: cloneMeta(legalFloating.meta),
+    };
+    const poolBranches = pipBranches(initialState, pips)
+      .flatMap(state => spendGeneric(state, initialGeneric));
+    // Preserve the generic-first family for restricted colored sources: an
+    // unrestricted floating color may need to cover generic while a later
+    // source is allowed to pay only a colored pip.
+    const genericFirst = spendGeneric(initialState, initialGeneric);
+    const genericFirstBranches = genericFirst.flatMap(genericState =>
+      pipBranches(clonePoolState(genericState, { generic: undefined }), pips)
+        .map(state => Object.assign(state, { generic: genericState.generic })));
+    const uniquePoolBranches = new Map();
+    for (const branch of poolBranches.concat(genericFirstBranches)) {
+      const key = `${stateKey(branch)}|${branch.generic}`;
+      if (!uniquePoolBranches.has(key)) uniquePoolBranches.set(key, branch);
     }
     // then sources
     const onlyCards = opts.onlyCards ? new Set(opts.onlyCards) : null;
-    const sources = this.manaSources(p, forSpell).filter(s =>
+    const sources = this.manaSources(p, forSpell, { includeRestricted: true }).filter(s =>
       (!opts.excludeCards || !opts.excludeCards.includes(s.card)) &&
       (!onlyCards || onlyCards.has(s.card)));
-    // converters (sources that consume mana, e.g. signets) must come FIRST so their
-    // consumption is appended to the need and covered by plain sources explored later.
+    // Converter-first orders are efficient when their activation can use
+    // mana that was already floating. Ordinary-first orders are also required:
+    // a Plains may fund an Azorius Signet during the same payment, and the
+    // exact produced mana must exist in the simulated pool before the solver
+    // records what the Signet consumes.
     const flex = s => {
       let f = s.produce.length * 10;
       if (s.rawConsume) f -= 1000;
@@ -384,129 +842,360 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const cm = s.extraCost && s.extraCost.mana ? U.parseCost(typeof s.extraCost.mana === 'function' ? s.extraCost.mana(this, s.card) : s.extraCost.mana) : null;
       if (cm && (cm.generic || cm.pips.length)) s.rawConsume = cm;
     }
-    sources.sort((a, b) => flex(a) - flex(b));
-    const plan = [];
-    const need = { pips: remainingPips.slice(), generic };
-    let nodes = 0; // hard budget — sprječava eksponencijalnu eksploziju backtrackinga
-
     const artifactDiscount = this.artifactAbilityDiscountAmount(p);
+    // Reject an impossible total before entering source-subset backtracking.
+    // This is deliberately an optimistic bound: restricted/colored-only mana
+    // and converter activation costs are all counted as usable, so it can only
+    // prove impossibility, never reject a legal payment. Multiple {T} abilities
+    // on one permanent share the best output because that card can tap once.
+    const minimumManaNeeded = initialGeneric + pips.filter(pip => !pip.includes('PHY')).length;
+    const floatingManaUpperBound = COLORS.concat('C')
+      .reduce((total, color) => total + Math.max(0, Number(legalFloating.pool[color]) || 0), 0);
+    const tappedCardOutput = new Map();
+    let independentSourceOutput = 0;
+    for (const source of sources) {
+      const maximumOutput = source.produce.reduce((best, option) => {
+        const amount = option.ANY
+          ? Math.max(1, Number(option.n) || 1)
+          : COLORS.concat('C').reduce((sum, color) =>
+            sum + Math.max(0, Number(option[color]) || 0), 0);
+        return Math.max(best, amount);
+      }, 0);
+      const rawActivationMana = source.rawConsume
+        ? Math.max(0, source.rawConsume.generic) +
+          source.rawConsume.pips.filter(pip => !pip.includes('PHY')).length
+        : 0;
+      const canUseArtifactDiscount = !opts.artifactAbilityAlreadyUsed && source.card &&
+        source.card.is && source.card.is('Artifact') && !(source.m && source.m.viaConvoke);
+      const activationMana = Math.max(0, rawActivationMana -
+        (canUseArtifactDiscount ? artifactDiscount : 0));
+      const optimisticNetOutput = Math.max(0, maximumOutput - activationMana);
+      if (source.card && source.extraCost && source.extraCost.tap) {
+        tappedCardOutput.set(source.card,
+          Math.max(tappedCardOutput.get(source.card) || 0, optimisticNetOutput));
+      } else {
+        independentSourceOutput += optimisticNetOutput;
+      }
+    }
+    const sourceManaUpperBound = independentSourceOutput +
+      [...tappedCardOutput.values()].reduce((total, amount) => total + amount, 0);
+    if (floatingManaUpperBound + sourceManaUpperBound < minimumManaNeeded) return null;
+    sources.sort((a, b) => flex(a) - flex(b));
+    const converterReserveBudget = sources.reduce((total, source) => total + (source.rawConsume
+      ? Math.max(0, source.rawConsume.generic) + source.rawConsume.pips.length : 0), 0);
+    if (converterReserveBudget > 0 && initialGeneric > 0) {
+      const addPoolBranch = branch => {
+        const key = `${stateKey(branch)}|${branch.generic}`;
+        if (!uniquePoolBranches.has(key)) uniquePoolBranches.set(key, branch);
+      };
+      for (const pipState of pipBranches(initialState, pips)) {
+        for (const branch of spendGenericReserveBranches(pipState, initialGeneric)) {
+          addPoolBranch(branch);
+        }
+      }
+      for (const genericState of spendGenericReserveBranches(initialState, initialGeneric)) {
+        const afterPips = pipBranches(clonePoolState(genericState, { generic: undefined }), pips);
+        for (const branch of afterPips) {
+          branch.generic = genericState.generic;
+          addPoolBranch(branch);
+        }
+      }
+    }
+    const converterSources = sources.filter(source => source.rawConsume);
+    const ordinarySources = sources.filter(source => !source.rawConsume);
+    const fullConverterMask = converterSources.length
+      ? (1n << BigInt(converterSources.length)) - 1n : 0n;
+    let nodes = 0;
+    let totalNodes = 0;
+    // The per-order guard protects ordinary backtracking. Converter order
+    // variants share a second budget so several individually bounded misses
+    // cannot add up to a multi-second main-thread stall.
+    const totalNodeBudget = converterSources.length ? 24000 : Infinity;
+
     const initiallyUsedArtifactAbility = !!opts.artifactAbilityAlreadyUsed || artifactDiscount === 0;
     const planLifeCost = steps => steps.reduce((total, step) => {
       if (step.phyrexianLife) return total + step.phyrexianLife;
       if (step.src && step.src.virtual === 'channel') return total + Math.max(0, Number(step.chosen && step.chosen.C) || 0);
       return total + Math.max(0, Number(step.src && step.src.extraCost && step.src.extraCost.life) || 0);
     }, 0);
-    const tryCover = (idx, needPips, needGen, planAcc, artifactAbilityUsed = initiallyUsedArtifactAbility) => {
-      if (++nodes > 6000) return null;
-      if (!needPips.length && needGen <= 0) return planLifeCost(planAcc) <= p.life ? planAcc : null;
-      if (idx >= sources.length) {
-        // phyrexian fallback: pay 2 life per PHY pip
-        const allPhy = needPips.every(pp => pp[1] === 'PHY');
-        const phyrexianSteps = needPips.map(() => ({ phyrexianLife: 2 }));
+    const planResourceScore = steps => {
+      const tappedCards = new Set();
+      let destructive = 0;
+      for (const step of steps) {
+        const source = step.src;
+        const cost = source && source.extraCost || {};
+        if (cost.tap && source.card) tappedCards.add(source.card);
+        if (cost.sacSelf) destructive++;
+        if (cost.sac) destructive += Math.max(1, Number(cost.sacN) || 1);
+        if (cost.sacType) destructive++;
+        if (cost.mill) destructive += Math.max(0, Number(cost.mill) || 0);
+        if (cost.rmCounter) destructive += Math.max(1, Number(cost.rmCounter.n) || 1);
+      }
+      const life = planLifeCost(steps);
+      return { life, destructive, tapped: tappedCards.size, scarce: life > 0 || destructive > 0 };
+    };
+    const preferCheaperResult = (left, right) => {
+      if (!left) return right;
+      if (!right) return left;
+      const a = planResourceScore(left.plan);
+      const b = planResourceScore(right.plan);
+      for (const key of ['life', 'destructive', 'tapped']) {
+        if (a[key] !== b[key]) return a[key] < b[key] ? left : right;
+      }
+      return left.plan.length <= right.plan.length ? left : right;
+    };
+    const sourcePaymentBranches = (needPips, needGen, option, coloredOnly, allowUnused, directAllowed) => {
+      const any = !!option.ANY;
+      const units = any
+        ? Array(Math.max(1, Number(option.n) || 1)).fill(null)
+        : Object.entries(option).filter(([color]) => COLORS.includes(color) || color === 'C')
+          .flatMap(([color, amount]) => Array(Math.max(0, Number(amount) || 0)).fill(color));
+      let states = [{
+        pips: needPips.map(pip => pip.slice()), generic: needGen,
+        anyColors: [], excess: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, used: false,
+      }];
+      const key = state => `${state.pips.map(pip => pip.join('/')).join(',')}|${state.generic}|` +
+        `${state.anyColors.join(',')}|${COLORS.concat('C').map(color => state.excess[color] || 0).join(',')}|` +
+        `${state.used ? 1 : 0}`;
+      for (const fixedColor of units) {
+        const next = new Map();
+        for (const state of states) {
+          const candidates = [];
+          for (let index = 0; directAllowed && index < state.pips.length; index++) {
+            const colors = any
+              ? state.pips[index].filter(color => COLORS.includes(color))
+              : state.pips[index].includes(fixedColor) ? [fixedColor] : [];
+            for (const color of [...new Set(colors)]) candidates.push({ index, color });
+          }
+          // Preserve scarce sources for fixed pips before spending them on a
+          // hybrid/Phyrexian alternative. The remaining branches still prove
+          // every other legal allocation when the constrained route fails.
+          candidates.sort((a, b) => state.pips[a.index].length - state.pips[b.index].length || a.index - b.index);
+          for (const candidate of candidates) {
+            const pips = state.pips.map(pip => pip.slice());
+            pips.splice(candidate.index, 1);
+            const branch = {
+              pips,
+              generic: state.generic,
+              anyColors: any ? state.anyColors.concat([candidate.color]) : state.anyColors.slice(),
+              excess: Object.assign({}, state.excess),
+              used: true,
+            };
+            next.set(key(branch), branch);
+          }
+          if (directAllowed && !coloredOnly && state.generic > 0) {
+            const color = any
+              ? COLORS.find(candidate => !state.pips.some(pip => pip.includes(candidate))) || COLORS[0]
+              : fixedColor;
+            const branch = {
+              pips: state.pips.map(pip => pip.slice()),
+              generic: state.generic - 1,
+              anyColors: any ? state.anyColors.concat([color]) : state.anyColors.slice(),
+              excess: Object.assign({}, state.excess),
+              used: true,
+            };
+            next.set(key(branch), branch);
+          }
+          // A multi-mana source may legally produce an unused extra unit. A
+          // one-mana source normally uses the cheaper source-skip branch, but
+          // it must be bankable when a later converter needs activation mana.
+          if (units.length > 1 || allowUnused) {
+            const unusedColors = any ? COLORS : [fixedColor];
+            for (const color of unusedColors) {
+              const unused = {
+                pips: state.pips.map(pip => pip.slice()),
+                generic: state.generic,
+                anyColors: any ? state.anyColors.concat([color]) : state.anyColors.slice(),
+                excess: Object.assign({}, state.excess),
+                used: true,
+              };
+              unused.excess[color] = (unused.excess[color] || 0) + 1;
+              next.set(key(unused), unused);
+            }
+          }
+        }
+        states = [...next.values()];
+      }
+      const usedStates = states.filter(state => state.used);
+      if (allowUnused && units.length === 1) {
+        usedStates.sort((left, right) => {
+          const leftBanked = COLORS.concat('C').reduce((sum, color) => sum + (left.excess[color] || 0), 0);
+          const rightBanked = COLORS.concat('C').reduce((sum, color) => sum + (right.excess[color] || 0), 0);
+          return rightBanked - leftBanked;
+        });
+      }
+      return usedStates;
+    };
+    const poolCostBranches = (available, addedPips, addedGeneric, context) => {
+      if (!addedPips.length && addedGeneric <= 0) {
+        return [clonePoolState(available, { remaining: [], generic: 0 })];
+      }
+      const start = clonePoolState(available, { remaining: [], spendTrace: [] });
+      const pipFirst = pipBranches(start, addedPips, context)
+        .flatMap(state => spendGeneric(state, addedGeneric, context));
+      const genericFirstStart = spendGeneric(start, addedGeneric, context);
+      const genericFirst = genericFirstStart.flatMap(genericState =>
+        pipBranches(clonePoolState(genericState, { generic: undefined }), addedPips, context)
+          .map(state => Object.assign(state, { generic: genericState.generic })));
+      const unique = new Map();
+      for (const branch of pipFirst.concat(genericFirst)) {
+        const branchKey = `${stateKey(branch)}|${branch.generic}`;
+        if (!unique.has(branchKey)) unique.set(branchKey, branch);
+      }
+      return [...unique.values()];
+    };
+    let seen = new Map();
+    const hasResourceSensitiveSources = sources.some(source => {
+      const extra = source.extraCost || {};
+      return extra.mill || extra.sacType || extra.sac || extra.sacSelf || extra.rmCounter ||
+        source.m && source.m.oncePerTurn;
+    });
+    const useMemo = !hasResourceSensitiveSources && (pips.some(pip => pip.length > 1) || sources.some(source =>
+      source.rawConsume || source.produce.some(option => option.ANY) || source.m.coloredOnly ||
+      source.produce.some(option => Object.entries(option).filter(([color]) => COLORS.includes(color) || color === 'C')
+        .reduce((sum, [, amount]) => sum + Math.max(0, Number(amount) || 0), 0) > 1)));
+    const tryCover = (ordinaryIdx, converterMask, needPips, needGen, planAcc,
+      artifactAbilityUsed = initiallyUsedArtifactAbility, availablePool = initialState) => {
+      const lifeCost = planLifeCost(planAcc);
+      if (useMemo) {
+        const usedTapCards = planAcc.filter(step => step.src && step.src.extraCost && step.src.extraCost.tap)
+          .map(step => step.src.card && step.src.card.iid || 0).sort((a, b) => a - b).join(',');
+        const memoKey = [ordinaryIdx, converterMask.toString(36), needGen,
+          needPips.map(pip => pip.join('/')).sort().join(','),
+          artifactAbilityUsed ? 1 : 0, usedTapCards,
+          ['W', 'U', 'B', 'R', 'G', 'C'].map(color => availablePool.pool[color] || 0).join(','),
+          ['W', 'U', 'B', 'R', 'G', 'C'].map(color => availablePool.coloredOnly[color] || 0).join(','),
+          metaKey(availablePool.meta)].join('|');
+        const priorLife = seen.get(memoKey);
+        if (priorLife !== undefined && priorLife <= lifeCost) return null;
+        seen.set(memoKey, lifeCost);
+      }
+      if (++nodes > 6000 || ++totalNodes > totalNodeBudget) return null;
+      if (!needPips.length && needGen <= 0) {
+        return lifeCost <= p.life ? { plan: planAcc, pool: availablePool } : null;
+      }
+      const attemptSource = (s, nextOrdinaryIdx, nextConverterMask) => {
+        // Jedna karta = jedno tapanje. Pain i filter landovi imaju po dvije
+        // {T} sposobnosti kao zasebne unose, ali karta se smije tapnuti jednom.
+        if (s.extraCost && s.extraCost.tap &&
+          planAcc.some(step => step.src && step.src.card === s.card &&
+            step.src.extraCost && step.src.extraCost.tap)) return null;
+        for (const optn of s.produce) {
+          const isArtifactAbility = s.card && s.card.is && s.card.is('Artifact') && !(s.m && s.m.viaConvoke);
+          const consume = s.rawConsume ? {
+            generic: Math.max(0, s.rawConsume.generic -
+              (isArtifactAbility && !artifactAbilityUsed ? artifactDiscount : 0)),
+            x: s.rawConsume.x || 0,
+            pips: s.rawConsume.pips.map(pip => pip.slice()),
+          } : null;
+          const usedAfter = artifactAbilityUsed || isArtifactAbility;
+          const consPips = consume ? consume.pips.map(pip => pip.slice()) : [];
+          const consGen = consume ? consume.generic : 0;
+          const hasLaterConverter = nextConverterMask !== 0n;
+          const directAllowed = manaRestrictionAllows(this,
+            {
+              restrict: s.m.restrict,
+              restrictAbilities: !!s.m.restrictAbilities,
+              source: s.card,
+            }, forSpell);
+          const allocations = sourcePaymentBranches(
+            needPips, needGen, optn, !!s.m.coloredOnly, hasLaterConverter, directAllowed);
+          for (const allocation of allocations) {
+            const baseStep = { src: s, chosen: optn, consume };
+            if (optn.ANY) baseStep.anyColors = allocation.anyColors;
+            const consumeContext = { card: s.card, isAbility: true };
+            const paymentBranches = poolCostBranches(availablePool, consPips, consGen, consumeContext);
+            for (const payment of paymentBranches) {
+              if (payment.remaining.length || payment.generic > 0) continue;
+              const step = Object.assign({}, baseStep, { consumePayment: payment.spendTrace || [] });
+              const nextPlan = planAcc.concat([step]);
+              if (hasResourceSensitiveSources && !manaActivationResourcePlan(this, p, nextPlan)) continue;
+              const nextPool = clonePoolState(payment);
+              for (const color of COLORS.concat('C')) {
+                const excess = allocation.excess[color] || 0;
+                nextPool.pool[color] = (nextPool.pool[color] || 0) + excess;
+                if (s.m.coloredOnly && excess) {
+                  nextPool.coloredOnly[color] = (nextPool.coloredOnly[color] || 0) + excess;
+                }
+                if (s.m.restrict && excess) {
+                  nextPool.meta.push({
+                    color, n: excess, restrict: s.m.restrict, source: s.card,
+                    restrictAbilities: !!s.m.restrictAbilities,
+                    coloredOnly: !!s.m.coloredOnly,
+                  });
+                }
+              }
+              const result = tryCover(nextOrdinaryIdx, nextConverterMask,
+                allocation.pips, allocation.generic, nextPlan, usedAfter, nextPool);
+              if (result) return result;
+            }
+          }
+        }
+        return null;
+      };
+
+      // Converter sources are selected dynamically from the currently payable
+      // set. The remaining-mask memo explores arbitrary dependency orders in
+      // O(2^n) states without materializing n! source permutations.
+      for (let index = 0; index < converterSources.length; index++) {
+        const bit = 1n << BigInt(index);
+        if (!(converterMask & bit)) continue;
+        const result = attemptSource(converterSources[index], ordinaryIdx, converterMask & ~bit);
+        if (result) return result;
+      }
+
+      if (ordinaryIdx >= ordinarySources.length) {
+        const allPhy = needPips.every(pip => pip.includes('PHY'));
+        const phyrexianSteps = needPips.map(pip => ({ phyrexianLife: 2, phyrexianPip: pip.slice() }));
         if (allPhy && needGen <= 0 && planLifeCost(planAcc.concat(phyrexianSteps)) <= p.life) {
-          return planAcc.concat(phyrexianSteps);
+          return { plan: planAcc.concat(phyrexianSteps), pool: availablePool };
         }
         return null;
       }
-      const s = sources[idx];
-      // Jedna karta = jedno tapanje. Pain i filter landovi imaju po dvije
-      // {T} mana sposobnosti kao zasebne unose, pa je solver znao tapnuti istu
-      // zemlju dvaput i tako naduvati dostupnu manu.
-      if (s.extraCost && s.extraCost.tap &&
-        planAcc.some(st => st.src && st.src.card === s.card && st.src.extraCost && st.src.extraCost.tap)) {
-        return tryCover(idx + 1, needPips, needGen, planAcc, artifactAbilityUsed);
-      }
-      // Try the least-flexible/least-costly sources first (the source list is
-      // already ordered that way). The old skip-first DFS explored 2^N
-      // subsets before discovering that a large X spell needed most lands,
-      // hitting the 6000-node guard around X=10 even with 25 Forests.
-      for (const optn of s.produce) {
-        const isArtifactAbility = s.card && s.card.is && s.card.is('Artifact') && !(s.m && s.m.viaConvoke);
-        const consume = s.rawConsume ? {
-          generic: Math.max(0, s.rawConsume.generic - (isArtifactAbility && !artifactAbilityUsed ? artifactDiscount : 0)),
-          x: s.rawConsume.x || 0,
-          pips: s.rawConsume.pips.map(x => x.slice()),
-        } : null;
-        const usedAfter = artifactAbilityUsed || isArtifactAbility;
-        // consumption (converters like signets): appended to the need
-        const consPips = consume ? consume.pips.map(x => x.slice()) : [];
-        const consGen = consume ? consume.generic : 0;
-        if (optn.ANY) {
-          const n = optn.n || 1;
-          if (!s.m.coloredOnly && needGen > 0) {
-            const np = needPips.slice(); let ng = needGen; let units = n;
-            while (units > 0 && ng > 0) { ng--; units--; }
-            for (let i = 0; i < np.length && units > 0;) {
-              if (np[i].some(o => COLORS.includes(o))) { np.splice(i, 1); units--; }
-              else i++;
-            }
-            if (np.length < needPips.length || ng < needGen) {
-              const r = tryCover(idx + 1, np.concat(consPips), ng + consGen,
-                planAcc.concat([{ src: s, chosen: optn, consume }]), usedAfter);
-              if (r) return r;
-            }
-          }
-          const np = needPips.slice(); let ng = needGen; let units = n;
-          for (let i = 0; i < np.length && units > 0;) {
-            const pp = np[i];
-            if (pp.some(o => COLORS.includes(o))) { np.splice(i, 1); units--; }
-            else i++;
-          }
-          if (!s.m.coloredOnly) while (units > 0 && ng > 0) { ng--; units--; }
-          if (np.length < needPips.length || ng < needGen) {
-            const r = tryCover(idx + 1, np.concat(consPips), ng + consGen,
-              planAcc.concat([{ src: s, chosen: optn, consume }]), usedAfter);
-            if (r) return r;
-          }
-        } else {
-          if (!s.m.coloredOnly && needGen > 0) {
-            const np = needPips.slice(); let ng = needGen; let usedAnything = false;
-            const gives = Object.assign({}, optn);
-            // Spend colors that cannot satisfy a remaining pip first. If all
-            // produced colors match, this branch intentionally explores using
-            // one of them for generic before the normal pip-first branch.
-            const colors = Object.keys(gives).filter(col => col !== 'n').sort((a, b) =>
-              Number(np.some(pip => pip.includes(a))) - Number(np.some(pip => pip.includes(b))));
-            for (const col of colors) {
-              let cnt = gives[col];
-              while (cnt > 0 && ng > 0) { ng--; cnt--; usedAnything = true; }
-              for (let i = 0; i < np.length && cnt > 0;) {
-                if (np[i].includes(col)) { np.splice(i, 1); cnt--; usedAnything = true; }
-                else i++;
-              }
-            }
-            if (usedAnything) {
-              const r = tryCover(idx + 1, np.concat(consPips), ng + consGen,
-                planAcc.concat([{ src: s, chosen: optn, consume }]), usedAfter);
-              if (r) return r;
-            }
-          }
-          const np = needPips.slice(); let ng = needGen; let usedAnything = false;
-          const gives = Object.assign({}, optn);
-          for (const col of Object.keys(gives)) {
-            let cnt = gives[col];
-            for (let i = 0; i < np.length && cnt > 0;) {
-              if (np[i].includes(col)) { np.splice(i, 1); cnt--; usedAnything = true; }
-              else i++;
-            }
-            if (!s.m.coloredOnly) while (cnt > 0 && ng > 0) { ng--; cnt--; usedAnything = true; }
-          }
-          if (usedAnything) {
-            const r = tryCover(idx + 1, np.concat(consPips), ng + consGen,
-              planAcc.concat([{ src: s, chosen: optn, consume }]), usedAfter);
-            if (r) return r;
-          }
+
+      // Ordinary sources remain use-first for large-X performance. When a
+      // converter remains, one-mana banking branches are ordered first, so a
+      // Signet uses one land and preserves other legal direct sources.
+      const ordinaryResult = attemptSource(
+        ordinarySources[ordinaryIdx], ordinaryIdx + 1, converterMask);
+      if (ordinaryResult) return ordinaryResult;
+      return tryCover(ordinaryIdx + 1, converterMask, needPips, needGen,
+        planAcc, artifactAbilityUsed, availablePool);
+    };
+    let bestScarceResult = null;
+    for (const branch of uniquePoolBranches.values()) {
+      // Most real turns can pay without activating a filter source. Prove that
+      // cheap path first so a dormant Signet/filter land does not force every
+      // AI affordability probe through converter-mask branching. The complete
+      // converter search remains the fallback for payments that actually need
+      // one or a converter chain. Exact manual selections must explore their
+      // converter too, and a life/sacrifice/mill/counter route is only a
+      // fallback until it has been compared with the full converter plan.
+      let ordinaryOnly = null;
+      if (converterSources.length && !onlyCards) {
+        nodes = 0;
+        totalNodes = 0;
+        seen = new Map();
+        ordinaryOnly = tryCover(0, 0n, branch.remaining, branch.generic,
+          [], initiallyUsedArtifactAbility, branch);
+        if (ordinaryOnly && !planResourceScore(ordinaryOnly.plan).scarce) {
+          return { plan: ordinaryOnly.plan, usedPool: ordinaryOnly.pool.used };
         }
       }
-      // option: preserve/skip this source
-      return tryCover(idx + 1, needPips, needGen, planAcc, artifactAbilityUsed);
-    };
-    let res = tryCover(0, need.pips, need.generic, []);
-    if (res) return { plan: res, usedPool };
-    nodes = 0;
-    res = tryCover(0, alternateRemainingPips, alternateGeneric, []);
-    if (!res) return null;
-    return { plan: res, usedPool: alternateUsedPool };
+      nodes = 0;
+      totalNodes = 0;
+      seen = new Map();
+      const res = tryCover(0, fullConverterMask, branch.remaining, branch.generic,
+        [], initiallyUsedArtifactAbility, branch);
+      const preferred = preferCheaperResult(res, ordinaryOnly);
+      if (!preferred) continue;
+      if (!planResourceScore(preferred.plan).scarce) {
+        return { plan: preferred.plan, usedPool: preferred.pool.used };
+      }
+      bestScarceResult = preferCheaperResult(bestScarceResult, preferred);
+    }
+    if (bestScarceResult) return { plan: bestScarceResult.plan, usedPool: bestScarceResult.pool.used };
+    return null;
   };
 
   G.canPayMana = function (p, cost, forSpell, opts) {
@@ -515,7 +1204,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.manualManaSelectionSolution = function (p, cost, forSpell, cards, opts = {}) {
     const selected = [...new Set((cards || []).filter(Boolean))];
-    const available = new Set(this.manaSources(p, forSpell)
+    const available = new Set(this.manaSources(p, forSpell, { includeRestricted: true })
       .filter(source => !opts.excludeCards || !opts.excludeCards.includes(source.card))
       .map(source => source.card));
     if (selected.some(card => !available.has(card))) return null;
@@ -527,12 +1216,76 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   G.payMana = async function (p, cost, forSpell, opts = {}) {
-    let sol = this.manaSolve(p, cost, forSpell, opts);
+    const solveOpts = Object.assign({}, opts);
+    const announced = { hybrid: [], phyrexian: [], twoBridge: [] };
+    if (opts.isSpell && !p.isAI && p.controller && cost && cost.pips && cost.pips.length) {
+      let hybridIndex = 0;
+      let phyrexianIndex = 0;
+      let twoBridgeIndex = 0;
+      const decideMode = async (kind, index, pip, candidates, labels) => {
+        const legal = candidates.filter(candidate => {
+          const trial = Object.assign({}, solveOpts, {
+            hybridChoices: announced.hybrid.slice(),
+            phyrexianChoices: announced.phyrexian.slice(),
+            twoBridgeChoices: announced.twoBridge.slice(),
+          });
+          if (kind === 'hybrid') trial.hybridChoices[index] = candidate;
+          else if (kind === 'phyrexian') trial.phyrexianChoices[index] = candidate;
+          else trial.twoBridgeChoices[index] = candidate;
+          return !!this.manaSolve(p, cost, forSpell, trial);
+        });
+        if (!legal.length) return null;
+        if (legal.length === 1) return legal[0];
+        const color = pip.find(part => COLORS.includes(part));
+        const symbol = kind === 'phyrexian'
+          ? `{${color}/P}`
+          : kind === 'twoBridge'
+            ? `{2/${color}}`
+            : `{${pip.join('/')}}`;
+        const selected = await p.controller.decide(this, {
+          type: 'chooseOption',
+          player: p,
+          prompt: `${forSpell && forSpell.card ? forSpell.card.name : 'Spell'}: choose how to pay ${symbol}`,
+          options: legal.map(candidate => ({
+            key: candidate,
+            label: labels[candidate] || candidate,
+          })),
+          aiHint: { kind: 'alternativeManaPayment', symbol, paymentKind: kind },
+        });
+        return legal.includes(selected) ? selected : legal[0];
+      };
+      for (const pip of cost.pips) {
+        if (pip.includes('TWO')) {
+          const color = pip.find(symbol => COLORS.includes(symbol));
+          const choice = await decideMode('twoBridge', twoBridgeIndex, pip, ['color', 'generic'], {
+            color: `Pay {${color}}`, generic: 'Pay {2}',
+          });
+          if (choice) announced.twoBridge[twoBridgeIndex] = choice;
+          twoBridgeIndex++;
+        } else if (pip.includes('PHY')) {
+          const color = pip.find(symbol => COLORS.includes(symbol));
+          const choice = await decideMode('phyrexian', phyrexianIndex, pip, [color, 'life'], {
+            [color]: `Pay {${color}}`, life: 'Pay 2 life',
+          });
+          if (choice) announced.phyrexian[phyrexianIndex] = choice;
+          phyrexianIndex++;
+        } else if (pip.length > 1 && pip.every(symbol => COLORS.includes(symbol))) {
+          const labels = Object.fromEntries(pip.map(color => [color, `Pay {${color}}`]));
+          const choice = await decideMode('hybrid', hybridIndex, pip, pip.slice(), labels);
+          if (choice) announced.hybrid[hybridIndex] = choice;
+          hybridIndex++;
+        }
+      }
+      solveOpts.hybridChoices = announced.hybrid;
+      solveOpts.phyrexianChoices = announced.phyrexian;
+      solveOpts.twoBridgeChoices = announced.twoBridge;
+    }
+    let sol = this.manaSolve(p, cost, forSpell, solveOpts);
     if (!sol) return false;
     // Manualni izbor vrijedi za spellove i samo za ljudskog igraca. Pool mana
     // se i dalje trosi prva; igrac bira tacne permanente za preostali iznos.
     if (opts.isSpell && p.manualMana && !p.isAI && sol.plan.some(step => step.src)) {
-      const allSources = this.manaSources(p, forSpell)
+      const allSources = this.manaSources(p, forSpell, { includeRestricted: true })
         .filter(source => !opts.excludeCards || !opts.excludeCards.includes(source.card));
       const candidates = [...new Set(allSources.map(source => source.card))];
       const suggested = [...new Set(sol.plan.filter(step => step.src).map(step => step.src.card))];
@@ -543,7 +1296,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       if (!(choice && choice.auto)) {
         const cards = Array.isArray(choice) ? choice : choice && choice.cards;
-        const manual = this.manualManaSelectionSolution(p, cost, forSpell, cards, opts);
+        const manual = this.manualManaSelectionSolution(p, cost, forSpell, cards, solveOpts);
         if (!manual) {
           this.lg(`${forSpell && forSpell.card ? forSpell.card.name : 'Spell'}: the selected mana sources cannot pay the cost.`);
           return false;
@@ -554,7 +1307,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const paidCost = sol.effectiveCost || cost;
     // activate sources: plain producers first, converters (which consume mana) last.
     // Sva produkcija ulazi u pool; na kraju se CIJELA cijena skida iz poola.
-    const steps = sol.plan.slice().sort((a, b) => (a.consume ? 1 : 0) - (b.consume ? 1 : 0));
+    const plannedSteps = sol.plan.slice();
+    // Validate all shared activation resources before tapping, milling,
+    // sacrificing, spending life, or changing the pool. This keeps a failed
+    // payment observationally atomic and gives each source a distinct sacrifice.
+    const suggestedResources = manaActivationResourcePlan(this, p, plannedSteps);
+    if (!suggestedResources) return false;
+    const activationResources = await chooseManaActivationResources(this, p, plannedSteps, suggestedResources);
+    if (!activationResources) return false;
+    const steps = activationResources.orderedSteps;
     const requiredLife = steps.reduce((total, step) => {
       if (step.phyrexianLife) return total + step.phyrexianLife;
       if (step.src && step.src.virtual === 'channel') return total + Math.max(0, Number(step.chosen && step.chosen.C) || 0);
@@ -562,22 +1323,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }, 0);
     if (requiredLife > p.life) return false;
     const genTotal0 = Math.max(0, paidCost.generic + (opts.xVal || 0) * (paidCost.x || 0) - (paidCost.xReduction || 0));
-    const needColors = paidCost.pips.map(pp => pp.find(c => COLORS.includes(c))).filter(Boolean);
+    const payPips = paidCost.pips.map(pip => pip.slice());
+    const samePip = (left, right) => left.length === right.length && left.every((part, index) => part === right[index]);
+    for (const step of steps.filter(candidate => candidate.phyrexianLife)) {
+      const index = payPips.findIndex(pip => samePip(pip, step.phyrexianPip || []));
+      // A solver result must identify the exact printed/effective Phyrexian
+      // symbol paid with life. Failing closed here prevents a partial payment
+      // from tapping sources or losing life against the wrong remaining pip.
+      if (index < 0) return false;
+      payPips.splice(index, 1);
+    }
+    const needColors = payPips.map(pp => pp.find(c => COLORS.includes(c))).filter(Boolean);
     let phyPaidWithLife = 0;
     for (const step of steps) {
       if (step.phyrexianLife) { await this.loseLife(p, step.phyrexianLife, 'phyrexian'); phyPaidWithLife++; continue; }
-      if (step.consume) this.deductPool(p, step.consume, { card: step.src.card, isAbility: true });
-      if (await this.activateManaSource(p, step.src, step.chosen, forSpell, needColors) === false) return false;
+      if (step.consume) {
+        const consumeContext = { card: step.src.card, isAbility: true };
+        const exact = step.consumePayment || [];
+        for (const unit of exact) {
+          if (!spendTracedPoolUnit(this, p, unit, consumeContext)) return false;
+        }
+      }
+      const plannedColors = step.anyColors && step.anyColors.length ? step.anyColors.slice() : needColors;
+      const preparedCost = { sacrificeTargets: activationResources.assignments.get(step) || [] };
+      if (await this.activateManaSource(p, step.src, step.chosen, forSpell, plannedColors, false, preparedCost) === false) return false;
     }
     // deduct the full cost from pool (pre-existing pool + fresh production)
     const genTotal = genTotal0;
-    const normalPips = paidCost.pips.filter(pp => pp[1] !== 'PHY');
-    const phyPips = paidCost.pips.filter(pp => pp[1] === 'PHY');
-    const payPips = normalPips.concat(phyPips.slice(phyPaidWithLife));
     this._payColors = new Set(); // sunburst/converge praćenje boja
-    this.deductPool(p, { generic: genTotal, pips: payPips }, forSpell);
+    if (this.deductPool(p, { generic: genTotal, pips: payPips }, forSpell) === false) return false;
     if (forSpell && forSpell.card) forSpell.card.meta._payColors = [...this._payColors];
     if (forSpell) forSpell.phyrexianLifePaid = phyPaidWithLife;
+    if (forSpell) forSpell.alternativeManaChoices = announced;
     // spent tracking for expend
     // Convoke and Phyrexian life pay a portion of the total cost without
     // spending mana.  Effects such as Kurbis and expend care about the mana
@@ -590,7 +1367,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return true;
   };
 
-  G.activateManaSource = async function (p, s, chosen, forSpell, needColors, skipMark) {
+  G.activateManaSource = async function (p, s, chosen, forSpell, needColors, skipMark, preparedCost) {
     if (s.virtual === 'channel') {
       const amount = Math.max(0, Number(chosen && chosen.C) || 0);
       if (!amount || p.channelUntilTurn !== this.turnNo || p.life < amount) return false;
@@ -602,8 +1379,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const c = s.card;
     const cost = s.extraCost;
     if (cost.mill && p.library.length < cost.mill) return false;
-    let sacrificeTargets = [];
-    if (cost.sac) {
+    let sacrificeTargets = preparedCost && Array.isArray(preparedCost.sacrificeTargets)
+      ? preparedCost.sacrificeTargets.slice() : [];
+    if (!preparedCost && cost.sac) {
       const need = cost.sacN || 1;
       const pool = this.bf().filter(x => x.ctrl === p && cost.sac(this, x, c, p) && this.canSacrifice(x));
       if (pool.length < need) return false;
@@ -615,15 +1393,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!Array.isArray(sacrificeTargets) || sacrificeTargets.length !== need ||
         sacrificeTargets.some(card => !pool.includes(card))) return false;
     }
+    if (!preparedCost && cost.sacType) {
+      const pool = this.bf().filter(x => x.ctrl === p && x !== c && x.hasSub(cost.sacType) && this.canSacrifice(x));
+      if (!pool.length) return false;
+      let selected = [pool[0]];
+      if (p.controller) {
+        const answer = await p.controller.decide(this, {
+          type: 'chooseCards', from: pool, min: 1, max: 1,
+          prompt: `${c.name}: sacrifice a ${cost.sacType} for mana`,
+          aiHint: { kind: 'sacCost', src: c },
+        });
+        selected = Array.isArray(answer) ? answer : [];
+      }
+      if (selected.length !== 1 || !pool.includes(selected[0])) return false;
+      sacrificeTargets.push(selected[0]);
+    }
+    const expectedSacrifices = (cost.sac ? Math.max(1, Number(cost.sacN) || 1) : 0) + (cost.sacType ? 1 : 0);
+    if (preparedCost && (sacrificeTargets.length !== expectedSacrifices ||
+      new Set(sacrificeTargets).size !== sacrificeTargets.length ||
+      sacrificeTargets.some(card => card.zone !== 'battlefield' || card.ctrl !== p || !this.canSacrifice(card)))) return false;
     if (!skipMark) this.markAbilityActivated(p, c, s.m && s.m.viaConvoke);
     if (cost.tap) this.tap(c);
     if (cost.life) await this.loseLife(p, cost.life, 'mana');
     if (cost.mill) await this.mill(p, cost.mill);
     if (cost.sacSelf) await this.sacrifice(p, c);
-    if (cost.sacType) {
-      const pool = this.bf().filter(x => x.ctrl === p && x !== c && x.hasSub(cost.sacType));
-      if (pool.length) await this.sacrifice(p, pool[0]);
-    }
     if (sacrificeTargets.length) await this.sacrificeMany(p, sacrificeTargets);
     if (cost.sacSelf && c.hasSub('Treasure') && forSpell) forSpell.treasureUsed = true;
     if (c.is('Artifact') && forSpell) {
@@ -672,6 +1465,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!(Number(n) > 0)) continue;
         p.poolMeta.push({
           color, n, restrict: s.m.restrict, source: c,
+          restrictAbilities: !!s.m.restrictAbilities,
           coloredOnly: !!s.m.coloredOnly, persist: !!s.m.persist,
         });
       }
@@ -693,28 +1487,46 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.deductPool = function (p, cost, forSpell) {
     const spent = this._payColors = this._payColors || new Set();
-    for (const pip of cost.pips) {
-      let done = false;
-      for (const col of pip) {
-        if ((COLORS.includes(col) || col === 'C') && spendPoolUnit(this, p, col, forSpell, false)) {
-          done = true; if (col !== 'C') spent.add(col); break;
-        }
-      }
-      // fallback: ANY-color izvor je mogao proizvesti "pogrešnu" boju — skini bilo koju
-      if (!done) {
-        for (const col of ['C', 'W', 'U', 'B', 'R', 'G']) {
-          if (spendPoolUnit(this, p, col, forSpell, false)) {
-            if (col !== 'C') spent.add(col); break;
+    const legal = restrictedPoolSnapshot(this, p, forSpell);
+    const allocate = (index, pool, coloredOnly, pipColors) => {
+      if (index >= cost.pips.length) {
+        let generic = Math.max(0, Number(cost.generic) || 0);
+        const genericColors = [];
+        const remaining = Object.assign({}, pool);
+        for (const color of ['C', 'W', 'U', 'B', 'R', 'G']) {
+          let available = Math.max(0, (remaining[color] || 0) - (coloredOnly[color] || 0));
+          while (generic > 0 && available > 0) {
+            remaining[color]--;
+            available--;
+            generic--;
+            genericColors.push(color);
           }
         }
+        return generic === 0 ? { pipColors, genericColors } : null;
       }
-    }
-    let gen = cost.generic;
-    for (const col of ['C', 'W', 'U', 'B', 'R', 'G']) {
-      while (gen > 0 && spendPoolUnit(this, p, col, forSpell, true)) {
-        gen--; if (col !== 'C') spent.add(col);
+      const choices = [...new Set(cost.pips[index].filter(color =>
+        (COLORS.includes(color) || color === 'C') && (pool[color] || 0) > 0))];
+      for (const color of choices) {
+        const nextPool = Object.assign({}, pool);
+        const nextColoredOnly = Object.assign({}, coloredOnly);
+        nextPool[color]--;
+        if ((nextColoredOnly[color] || 0) > 0) nextColoredOnly[color]--;
+        const result = allocate(index + 1, nextPool, nextColoredOnly, pipColors.concat([color]));
+        if (result) return result;
       }
+      return null;
+    };
+    const payment = allocate(0, legal.pool, legal.coloredOnlyPool, []);
+    if (!payment) return false;
+    for (const color of payment.pipColors) {
+      if (!spendPoolUnit(this, p, color, forSpell, false)) return false;
+      if (color !== 'C') spent.add(color);
     }
+    for (const color of payment.genericColors) {
+      if (!spendPoolUnit(this, p, color, forSpell, true)) return false;
+      if (color !== 'C') spent.add(color);
+    }
+    return true;
   };
 
   G.trackSpentOnSpell = async function (p, n) {
@@ -971,10 +1783,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       castOpts.from = from;
       const cost = this.spellCost(p, card, castOpts);
       const xVal = cost.x ? (castOpts.xFixed !== undefined ? castOpts.xFixed : 0) : 0;
+      let targetPreviewX = xVal;
       const spellContext = { card, castOpts, xVal };
       if (cost.x && typeof card.def.xValues === 'function') {
         const maxX = this.maxAffordableX(p, cost, card, { castOpts });
-        if (!this.legalXValues(p, card, castOpts, maxX).length) return;
+        const legalValues = this.legalXValues(p, card, castOpts, maxX);
+        if (!legalValues.length) return;
+        targetPreviewX = legalValues[legalValues.length - 1];
+      } else if (cost.x) {
+        targetPreviewX = this.maxAffordableX(p, cost, card, { castOpts });
       }
       if (alt && alt.delve) {
         // delve: reduce generic by available gy cards
@@ -999,14 +1816,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (ac.discard && p.hand.filter(c => c !== card).length < ac.discard) return;
         if (ac.discardOrLife && !p.hand.some(c => c !== card) && p.life < ac.discardOrLife) return;
       }
-      // targets must exist — osim za X-spellove, gdje X (a time i legalne mete)
-      // još nije izabran, pa bi provjera bila lažno negativna
-      if (!cost.x) {
-        const specs = this.spellTargetSpecs(card, castOpts, p);
-        if (specs) {
-          for (const spec of specs) {
-            if (!spec.upTo && this.legalTargets(spec, card, p).length < (spec.count ?? 1)) return;
-          }
+      // A targeted X spell still needs at least one legal target before it may
+      // be offered. Preview the largest affordable/legal X so dynamic filters
+      // (for example "mana value X") are not falsely rejected, while Heat Ray
+      // with an empty battlefield is correctly hidden instead of failing only
+      // after the player clicks it.
+      const targetOpts = cost.x ? Object.assign({}, castOpts, { xVal: targetPreviewX }) : castOpts;
+      const specs = this.spellTargetSpecs(card, targetOpts, p);
+      if (specs) {
+        for (const spec of specs) {
+          if (!spec.upTo && this.legalTargets(spec, card, p).length < (spec.count ?? 1)) return;
         }
       }
       // CR 601.2b: modove smiješ birati samo ako za njih postoje legalne mete.
@@ -1352,10 +2171,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (legalValues && !legalValues.length) return false;
       const minX = legalValues ? legalValues[0] : 0;
       const maxChoice = legalValues ? legalValues[legalValues.length - 1] : maxX;
+      const oracleXDamage = (d.oracleImplementation || []).find(operation =>
+        operation.kind === 'spell-damage' && operation.n === 'X');
       xVal = opts.xVal !== undefined ? Number(opts.xVal) : await p.controller.decide(this, {
         type: 'chooseX', min: minX, max: maxChoice, values: legalValues || undefined,
         card, prompt: `X for ${card.name}?`,
-        aiHint: { kind: 'chooseX', card },
+        aiHint: oracleXDamage
+          ? { kind: 'oracleXDamage', card, operation: oracleXDamage }
+          : { kind: 'chooseX', card },
       });
       xVal = Number(xVal);
       if (legalValues) {
@@ -1737,6 +2560,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     so.foundrySource = paySpell.foundrySource || null;
     so.convokedCards = (paySpell.convokedCards || []).slice();
     so.phyrexianLifePaid = paySpell.phyrexianLifePaid || 0;
+    so.alternativeManaChoices = paySpell.alternativeManaChoices || { hybrid: [], phyrexian: [], twoBridge: [] };
     so.manaSpent = paySpell.manaSpent || 0;
     so.grantedSunburstColors = 0;
     if (p.sunburstGrant && p.sunburstGrant.turn === this.turnNo) {
@@ -1792,6 +2616,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       artifactManaSpent: so.artifactManaSpent,
       grantedSunburstColors: so.grantedSunburstColors,
       phyrexianLifePaid: so.phyrexianLifePaid,
+      alternativeManaChoices: so.alternativeManaChoices || { hybrid: [], phyrexian: [], twoBridge: [] },
+      paymentColors: [...(card.meta._payColors || [])],
     };
     if (paidTimes) { card.meta.paidTimes = paidTimes; so.squadN = paidTimes; }
     rememberCopiableSpellChoices(so, preparedChoiceKeys);
@@ -3538,9 +4364,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.askPriorityAction = async function (p) {
     // gather instant-speed options
     const casts = this.castableList(p).filter(e => {
-      const speed = (e.alt && e.alt.speed) || (e.card.is('Instant') || e.card.kw('flash') || (e.alt && e.alt.adventure && e.card.def.adventure.types === 'Instant') ? 'instant' : 'sorcery');
+      // Hand/command/exile cards do not have derived battlefield `cur`, so
+      // CardInst.kw('flash') alone is false before they are cast.  Keep the
+      // printed keyword check aligned with canCastTiming or real priority
+      // windows silently hide every ordinary Flash creature.
+      const hasFlash = e.card.kw('flash') || (e.card.def.kws || []).includes('flash');
       if (this.stack.length || this.turnPlayer !== p || (this.phase !== 'main1' && this.phase !== 'main2')) {
-        const isInstantSpeed = e.card.is('Instant') || e.card.kw('flash') ||
+        const isInstantSpeed = e.card.is('Instant') || hasFlash ||
           (e.alt && e.alt.adventure && e.card.def.adventure.types === 'Instant') ||
           (e.alt && e.alt.flash) || this.bf().some(source => source.ctrl === p && source.def.grantsFlash &&
             source.def.grantsFlash(this, source, e.card, p));

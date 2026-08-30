@@ -12,32 +12,39 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const registeredNames = new Map();
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
 
-  function permanentSpec(what, prompt) {
+  function permanentSpec(what, prompt, aiGoal) {
     const kinds = what === 'creature or planeswalker' ? ['Creature', 'Planeswalker']
       : what === 'artifact or enchantment' ? ['Artifact', 'Enchantment']
         : what === 'nonland permanent' ? ['nonland']
           : what === 'permanent' ? ['permanent']
             : [what.charAt(0).toUpperCase() + what.slice(1)];
-    return {
+    const spec = {
       what: 'permanent',
       prompt,
       filter: (game, card) => card && card.zone === 'battlefield' && kinds.some(kind =>
         kind === 'permanent' ? true : kind === 'nonland' ? !card.is('Land') : card.is(kind)),
     };
+    if (aiGoal) spec.aiHint = { goal: aiGoal };
+    return spec;
   }
 
-  function damageSpec(what) {
-    if (what === 'any target') return { what: 'any', prompt: 'Damage target' };
-    if (what === 'target creature') return permanentSpec('creature', 'Damage creature');
-    if (what === 'target creature or planeswalker') return permanentSpec('creature or planeswalker', 'Damage creature or planeswalker');
-    if (what === 'target opponent') return { what: 'opponent', prompt: 'Damage opponent' };
-    if (what === 'target player') return { what: 'player', prompt: 'Damage player' };
+  function damageSpec(what, amount) {
+    const withAmount = spec => {
+      spec.aiHint = Object.assign({}, spec.aiHint, { amount });
+      return spec;
+    };
+    if (what === 'any target') return withAmount({ what: 'any', prompt: 'Damage target', aiHint: { goal: 'damage' } });
+    if (what === 'target creature') return withAmount(permanentSpec('creature', 'Damage creature', 'damage'));
+    if (what === 'target creature or planeswalker') return withAmount(permanentSpec('creature or planeswalker', 'Damage creature or planeswalker', 'damage'));
+    if (what === 'target opponent') return withAmount({ what: 'opponent', prompt: 'Damage opponent', aiHint: { goal: 'damage' } });
+    if (what === 'target player') return withAmount({ what: 'player', prompt: 'Damage player', aiHint: { goal: 'damage' } });
     if (what === 'target player or planeswalker') {
-      return {
+      return withAmount({
         what: 'any',
         prompt: 'Damage player or planeswalker',
+        aiHint: { goal: 'damage' },
         filter: (game, target) => target instanceof MTG.Player || target && target.is && target.is('Planeswalker'),
-      };
+      });
     }
     throw new Error('Unknown Oracle damage target class: ' + what);
   }
@@ -53,6 +60,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         zone: 'stack',
         what: 'spell',
         prompt: 'Counter target spell',
+        aiHint: { goal: 'counter' },
         filter: (game, stackObject) => stackObject && stackObject.kind === 'spell',
       }];
       script.resolve = async ctx => {
@@ -64,7 +72,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return;
     }
     if (operation.kind === 'spell-destroy' || operation.kind === 'spell-exile') {
-      script.targets = [permanentSpec(operation.what, operation.kind === 'spell-destroy' ? 'Destroy target' : 'Exile target')];
+      script.targets = [permanentSpec(operation.what,
+        operation.kind === 'spell-destroy' ? 'Destroy target' : 'Exile target', 'removal')];
       script.resolve = async ctx => {
         const target = ctx.targets[0];
         if (!target) return;
@@ -74,7 +83,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return;
     }
     if (operation.kind === 'spell-damage') {
-      if (operation.what !== 'each opponent') script.targets = [damageSpec(operation.what)];
+      if (operation.what !== 'each opponent') script.targets = [damageSpec(operation.what, operation.n)];
       script.resolve = async ctx => {
         const n = amount(ctx);
         if (operation.what === 'each opponent') await ctx.g.damageOpponents(ctx.src, ctx.you, n);
@@ -83,7 +92,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return;
     }
     if (operation.kind === 'spell-pump') {
-      script.targets = [permanentSpec('creature', 'Target creature')];
+      const beneficial = operation.power >= 0 && operation.toughness >= 0;
+      const mixed = operation.power > 0 && operation.toughness < 0;
+      const spec = permanentSpec('creature', 'Target creature', mixed ? 'mixedPump' : beneficial ? 'buff' : 'removal');
+      if (mixed) Object.assign(spec.aiHint, { power: operation.power, toughness: operation.toughness });
+      script.targets = [spec];
       script.resolve = async ctx => {
         MTG.E.pumpUntilEOT(ctx.g, ctx.targets[0], operation.power, operation.toughness, operation.keywords || []);
         await ctx.g.checkSBA();
@@ -103,14 +116,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return;
     }
     if (operation.kind === 'spell-bounce') {
-      script.targets = [permanentSpec(operation.what, 'Return target to hand')];
+      script.targets = [permanentSpec(operation.what, 'Return target to hand', 'bounce')];
       script.resolve = async ctx => {
         if (ctx.targets[0]) await ctx.g.move(ctx.targets[0], 'hand');
       };
       return;
     }
     if (operation.kind === 'spell-discard') {
-      script.targets = [{ what: operation.what, prompt: 'Choose player to discard' }];
+      script.targets = [{ what: operation.what, prompt: 'Choose player to discard', aiHint: { goal: 'discard' } }];
       script.resolve = async ctx => {
         const player = ctx.targets[0];
         if (!player) return;
@@ -129,7 +142,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return;
     }
     if (operation.kind === 'spell-mill') {
-      script.targets = [{ what: 'player', prompt: 'Choose player to mill' }];
+      script.targets = [{ what: 'player', prompt: 'Choose player to mill', aiHint: { goal: 'mill' } }];
       script.resolve = async ctx => {
         if (ctx.targets[0]) await ctx.g.mill(ctx.targets[0], operation.n);
       };

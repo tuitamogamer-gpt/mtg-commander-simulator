@@ -199,6 +199,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const oracle = textOf(def);
     const types = def.types || [];
     const subtypes = def.subtypes || [];
+    const oracleImplementation = def.oracleImplementation || [];
     const is = type => types.includes(type);
     const mv = U.mv ? U.mv(def.cost || '') : 0;
 
@@ -209,6 +210,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     addIf(roles, /draw (?:a|one|two|three|four|x|that many|cards)|draws? an additional/.test(oracle), 'card-draw');
     addIf(roles, /scry|surveil|look at the top|reveal the top|connive/.test(oracle), 'card-selection');
     addIf(roles, /destroy target|exile target|return target .* to (?:its owner'?s|their) hand|deals? .* damage to target/.test(oracle), 'single-target-removal');
+    // Compiled Oracle -toughness spells are genuine removal even when their
+    // reminder-free wording does not match the older destroy/damage regexes.
+    // Mixed +power/-toughness cards remain combat tricks as well, but the AI
+    // must still value an exact-lethal hostile target outside combat.
+    addIf(roles, oracleImplementation.some(operation =>
+      operation.kind === 'spell-pump' && Number(operation.toughness) < 0), 'single-target-removal');
     addIf(roles, /destroy target artifact|exile target artifact/.test(oracle), 'artifact-removal');
     addIf(roles, /destroy target enchantment|exile target enchantment/.test(oracle), 'enchantment-removal');
     addIf(roles, /exile .* graveyard|cards? in graveyards? can'?t|player'?s graveyard/.test(oracle), 'graveyard-hate');
@@ -943,7 +950,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const legalValues = Array.isArray(q.values) && q.values.length
         ? [...new Set(q.values.map(Number))].filter(value => value >= min && value <= max).sort((a, b) => a - b)
         : null;
-      const strategic = legalValues || [...new Set([min, max, Math.min(max, min + 1), Math.min(max, 3), Math.min(max, 5), ...((q.thresholds || []).map(Number))])].filter(value => value >= min && value <= max).sort((a, b) => a - b);
+      const inferredThresholds = [];
+      if (q.aiHint && q.aiHint.kind === 'oracleXDamage' && q.aiHint.card) {
+        const specs = game.spellTargetSpecs(q.aiHint.card, { xVal: max }, player);
+        const candidates = specs && specs[0] ? game.legalTargets(specs[0], q.aiHint.card, player) : [];
+        for (const target of candidates) {
+          if (target instanceof U.CardInst && target.ctrl !== player && target.is('Creature')) {
+            inferredThresholds.push(Math.max(1, target.toughness - target.damage));
+          } else if (target instanceof U.CardInst && target.ctrl !== player && target.is('Planeswalker')) {
+            inferredThresholds.push(Math.max(1, Number(target.counters && target.counters.loyalty) || 0));
+          } else if (target instanceof U.Player && target !== player) inferredThresholds.push(target.life);
+        }
+      }
+      const strategic = legalValues || [...new Set([min, max, Math.min(max, min + 1), Math.min(max, 3), Math.min(max, 5),
+        ...((q.thresholds || []).map(Number)), ...inferredThresholds])]
+        .filter(value => value >= min && value <= max).sort((a, b) => a - b);
       for (const value of strategic) actions.push({ kind: 'chooseX', value });
     } else if (q.type === 'mulligan') {
       actions.push({ kind: 'mulligan', value: false }, { kind: 'mulligan', value: true });
@@ -1018,6 +1039,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return -value + deathValue + tokenValue + alreadyBlighted - (dies && !deathValue && !tokenValue ? 18 : 0);
   }
 
+  function damageProtectionSaves(card) {
+    if (!(card && card.is)) return false;
+    if (Number(card.counters && card.counters.shield || 0) > 0) return true;
+    return card.is('Creature') && (card.kw('indestructible') || Number(card.regenShield || 0) > 0);
+  }
+
   function targetValue(game, player, target, q) {
     const hint = q.aiHint && q.aiHint.goal || '';
     if (target instanceof U.Player) {
@@ -1032,6 +1059,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return delta <= 0 ? -100 : delta * 2.2;
       }
       const threat = playerThreatForGame(game, player, target);
+      if (hint === 'damage') {
+        if (target === player) return -100;
+        const rawAmount = q.aiHint && q.aiHint.amount;
+        const amount = rawAmount === 'X' ? Number(q.aiHint && q.aiHint.x || 0) : Number(rawAmount || 0);
+        if (amount > 0) {
+          const lethal = amount >= target.life;
+          // Actual elimination dominates generic threat ranking. Among lethal
+          // choices, retain a small preference for the more dangerous player
+          // and avoid wasting excess damage when both kills are equivalent.
+          if (lethal) return 220 + threat * 0.2 - Math.max(0, amount - target.life) * 0.5;
+          return threat * 0.45 + Math.min(amount, target.life) * 0.8;
+        }
+      }
       const lethal = target.life <= 7 ? 12 : 0;
       const friendly = target === player ? (/gain|protect|draw/i.test(hint) ? 20 : -30) : 0;
       if (/gift|benefit/i.test(hint)) return target === player ? 24 : -(threat * 0.45);
@@ -1070,6 +1110,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (hostile || game.phase !== 'main1') return -100;
         if (['Darksteel Reactor', 'Lux Artillery', 'Moxite Refinery'].includes(target.name)) return -50;
         return 5 - value * 0.16 - Object.values(target.counters).reduce((sum, n) => sum + Math.max(0, n), 0);
+      }
+      if (hint === 'mixedPump') {
+        const powerDelta = Number(q.aiHint && q.aiHint.power || 0);
+        const toughnessDelta = Number(q.aiHint && q.aiHint.toughness || 0);
+        const remainingToughness = Number(target.toughness || 0) - Number(target.damage || 0);
+        const lethal = remainingToughness + toughnessDelta <= 0;
+        if (hostile) {
+          // +N/-N tricks are removal only when the toughness reduction actually
+          // kills the opposing creature. Otherwise they temporarily make that
+          // threat hit harder and should not be treated as ordinary removal.
+          return lethal ? 18 + value * 1.5 : -8 - value - Math.max(0, powerDelta) * 1.5;
+        }
+        if (lethal) return -100;
+        const inCombat = !!target.attacking || !!target.blocking;
+        return 5 + Math.max(0, powerDelta) * 1.8 + (inCombat ? 8 : 0) + value * 0.08;
+      }
+      if (hint === 'damage') {
+        const rawAmount = q.aiHint && q.aiHint.amount;
+        const damage = rawAmount === 'X' ? Number(q.aiHint && q.aiHint.x || 0) : Number(rawAmount || 0);
+        if (damage > 0) {
+          if (!hostile) return -value * 1.8;
+          const remaining = target.is('Planeswalker')
+            ? Math.max(1, Number(target.counters && target.counters.loyalty) || 0)
+            : Math.max(1, Number(target.toughness || 0) - Number(target.damage || 0));
+          if (damage >= remaining && damageProtectionSaves(target)) {
+            return -10 - value * 0.12;
+          }
+          return damage >= remaining ? 14 + value * 1.5 - (damage - remaining) * 0.35 : value * 0.18 - (remaining - damage);
+        }
       }
       // Tapovanje je za Magma Opus obavezna, neprijateljska interakcija. Bez
       // eksplicitnog svrstavanja u hostile ciljeve evaluator je mogao dati
@@ -1921,7 +1990,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!specs || !specs.length) return null;
     const candidates = game.legalTargets(specs[0], card, player).filter(target => target instanceof U.CardInst && target.ctrl !== player);
     if (!candidates.length) return null;
-    return candidates.map(target => ({ target, score: permanentGameValue(game, target, player) }))
+    const compiledDamage = (card.def.oracleImplementation || []).find(operation =>
+      operation.kind === 'spell-damage' && operation.what !== 'each opponent');
+    return candidates.map(target => {
+      let score = permanentGameValue(game, target, player);
+      if (compiledDamage && target.is('Creature') && damageProtectionSaves(target)) {
+        // A damage spell cannot claim a lethal-removal bonus against a shield,
+        // regeneration shield or indestructible creature. Keep a tiny chip
+        // value so special damage payoffs may still reason about it, but make
+        // an otherwise dead removal cast lose to holding the card.
+        score = Math.min(score * 0.08, 1);
+      }
+      return { target, score };
+    })
       .sort((a, b) => b.score - a.score || a.target.iid - b.target.iid)[0];
   }
 
@@ -2074,7 +2155,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (cost.lifeCost) {
         const lifePressure = player.life <= 8 ? 3 : player.life <= 15 ? 1.35 : 0.55;
         breakdown.safety -= Number(cost.lifeCost) * lifePressure;
-        if (cost.lifeCost >= player.life) breakdown.safety -= 1000;
+        if (cost.lifeCost >= player.life) breakdown.safety -= 1000000;
+      }
+      // Phyrexian symbols are resolved by the mana solver, not represented as
+      // cost.lifeCost. Inspect the actual selected payment plan so the bot does
+      // not cast a legal spell by paying its final life and immediately lose.
+      const payment = game.manaSolve(player, cost, { card, castOpts: action.alt || {}, xVal: 0 }, { xVal: 0 });
+      const phyrexianLife = payment && payment.plan
+        ? payment.plan.reduce((sum, step) => sum + Math.max(0, Number(step.phyrexianLife) || 0), 0)
+        : 0;
+      if (phyrexianLife) {
+        const lifePressure = player.life <= 8 ? 3 : player.life <= 15 ? 1.35 : 0.55;
+        breakdown.safety -= phyrexianLife * lifePressure;
+        if (phyrexianLife >= player.life) breakdown.safety -= 1000000;
       }
       if (sem.roles.includes('ramp') && game.turnNo <= 16) breakdown.resources += 3;
       if (sem.roles.includes('card-draw') || sem.roles.includes('card-selection')) breakdown.resources += Math.max(0, 4 - player.hand.length) * 0.7;
@@ -2091,6 +2184,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (sem.roles.includes('card-draw') || sem.roles.includes('card-selection') || sem.roles.includes('token-maker'))) {
         breakdown.timing += 2.5;
       }
+      // Combat tricks need a concrete reason to beat "hold interaction".  A
+      // one-mana pump otherwise scored below passing even while one of our
+      // creatures was already blocked, so the bot could never demonstrate
+      // otherwise-supported Oracle pump cards.  Only reward a live combatant
+      // that is legal for the semantic target direction supplied by the card
+      // script (friendly buff versus hostile removal/damage).
+      if (phase === 'combat' && sem.roles.includes('combat-trick') && game.combat) {
+        const attackers = game.combat.attackers || [];
+        const blockers = game.bf().filter(candidate => candidate.blocking);
+        const combatants = [...new Set([...attackers, ...blockers])];
+        let relevant = [];
+        const specs = game.spellTargetSpecs(card, action.alt || {}, player) || [];
+        if (specs.length) {
+          const spec = specs[0];
+          const goal = spec.aiHint && spec.aiHint.goal || '';
+          const legal = game.legalTargets(spec, card, player);
+          relevant = combatants.filter(candidate => legal.includes(candidate) &&
+            (/buff|pump|protect/.test(goal) ? candidate.ctrl === player
+              : /removal|damage|destroy|exile|bounce/.test(goal) ? candidate.ctrl !== player
+                : true));
+        } else {
+          relevant = combatants.filter(candidate => candidate.ctrl === player);
+        }
+        if (relevant.length) breakdown.combat += 2.4 + Math.min(2.4, relevant.length * 0.6);
+      }
       if (sem.roles.includes('counterspell')) {
         const top = game.stack[game.stack.length - 1];
         if (!top || top.ctrl === player) breakdown.timing -= 25;
@@ -2103,8 +2221,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (sem.roles.includes('single-target-removal')) {
         const best = bestRemovalCandidate(game, player, card, action.alt);
-        if (!best || best.score < 3.4) breakdown.timing -= 10;
-        else breakdown.threat += best.score * 0.85;
+        const specs = game.spellTargetSpecs(card, action.alt || {}, player) || [];
+        const canBurnOpponent = sem.roles.includes('direct-damage') && specs.some(spec =>
+          game.legalTargets(spec, card, player).some(target => target instanceof U.Player && target !== player));
+        if (best && best.score >= 3.4) breakdown.threat += best.score * 0.85;
+        else if (canBurnOpponent) breakdown.threat += 1.2;
+        else breakdown.timing -= 10;
         const promised = game.diplomacyRequiredRemovalTarget && game.diplomacyRequiredRemovalTarget(player, card);
         if (promised) {
           // A public removal pact should materially change the bot's plan. The
@@ -2113,6 +2235,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           breakdown.timing += 28;
           breakdown.threat += 12;
         }
+      }
+      const compiledDamage = (card.def.oracleImplementation || []).find(operation =>
+        operation.kind === 'spell-damage' && operation.n !== 'X' && operation.what !== 'each opponent');
+      if (compiledDamage) {
+        const amount = Math.max(0, Number(compiledDamage.n) || 0);
+        const specs = game.spellTargetSpecs(card, action.alt || {}, player) || [];
+        const candidates = specs.flatMap(spec => game.legalTargets(spec, card, player));
+        const lethalPermanents = candidates.filter(target => target instanceof U.CardInst && target.ctrl !== player &&
+          ((target.is('Creature') && !damageProtectionSaves(target) && target.toughness - target.damage <= amount) ||
+            (target.is('Planeswalker') && !damageProtectionSaves(target) && (target.counters.loyalty || 0) <= amount)));
+        const lethalPlayers = candidates.filter(target => target instanceof U.Player && target !== player && target.life <= amount);
+        if (lethalPermanents.length) {
+          const best = Math.max(...lethalPermanents.map(target => permanentGameValue(game, target, player)));
+          breakdown.threat += 5 + best * 0.9;
+        }
+        if (lethalPlayers.length) breakdown.threat += 35;
       }
       if (sem.roles.includes('board-wipe')) {
         // Wipe se procjenjuje po STVARNOM učinku na stvorenja, ne po ukupnoj
@@ -2213,7 +2351,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     } else if (action.kind === 'pass' || action.kind === 'done') {
       breakdown.base = 0.2;
-      const interaction = (player.hand || []).filter(card => inferCardSemantics(card.def).roles.some(role => ['counterspell', 'single-target-removal', 'protection', 'combat-trick'].includes(role)));
+      const interaction = (player.hand || []).filter(card => {
+        const roles = inferCardSemantics(card.def).roles;
+        const instantSpeed = card.is('Instant') || (card.def.kws || []).includes('flash');
+        return instantSpeed && roles.some(role => ['counterspell', 'single-target-removal', 'protection', 'combat-trick'].includes(role));
+      });
       if (interaction.length && availableManaEstimate(game, player) > 0) breakdown.timing += phase === 'main1' ? 2.4 : 1.2;
       if (q && q.type === 'priority' && game.stack.length) {
         const top = game.stack[game.stack.length - 1];
@@ -2675,7 +2817,44 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           sum + (/draw|token|destroy|exile|counter/i.test(option.label || '') ? 2 : 0.3), 0);
       }
     } else if (action.kind === 'chooseX') {
-      if (q && q.aiHint && q.aiHint.kind === 'toxicDeluge') {
+      if (q && q.aiHint && q.aiHint.kind === 'oracleXDamage') {
+        const x = Number(action.value) || 0;
+        const operation = q.aiHint.operation || {};
+        const card = q.aiHint.card;
+        const castOpts = { xVal: x };
+        const specs = card ? game.spellTargetSpecs(card, castOpts, player) : null;
+        const candidates = specs && specs[0] ? game.legalTargets(specs[0], card, player) : [];
+        const hostilePermanents = candidates.filter(target => target instanceof U.CardInst &&
+          target.ctrl !== player && (target.is('Creature') || target.is('Planeswalker')));
+        const lethalThreshold = target => target.is('Planeswalker')
+          ? Math.max(1, Number(target.counters && target.counters.loyalty) || 0)
+          : Math.max(1, target.toughness - target.damage);
+        const killable = hostilePermanents.filter(target => !damageProtectionSaves(target) &&
+          lethalThreshold(target) <= x);
+        let permanentScore = -Infinity;
+        if (killable.length) {
+          const best = killable.slice().sort((a, b) =>
+            permanentGameValue(game, b, player) - permanentGameValue(game, a, player))[0];
+          const lethal = lethalThreshold(best);
+          permanentScore = permanentGameValue(game, best, player) * 1.6 + 12 - (x - lethal) * 3 - x * 0.12;
+        }
+        const opponents = candidates.filter(target => target instanceof U.Player && target !== player);
+        let playerScore = -Infinity;
+        if (opponents.length) {
+          const lethalPlayers = opponents.filter(target => target.life <= x);
+          if (lethalPlayers.length) {
+            const exact = Math.min(...lethalPlayers.map(target => target.life));
+            playerScore = 30 + x - Math.max(0, x - exact) * 2;
+          } else playerScore = x * 0.8;
+        }
+        if (permanentScore > -Infinity || playerScore > -Infinity) {
+          breakdown.choice = Math.max(permanentScore, playerScore);
+        } else {
+          // A creature-only X spell with no killable target should prefer the
+          // smallest legal X and, through the cast score, normally be held.
+          breakdown.choice = -8 - x * 0.2;
+        }
+      } else if (q && q.aiHint && q.aiHint.kind === 'toxicDeluge') {
         const x = Number(action.value) || 0;
         for (const creature of game.bf().filter(card => card.is('Creature') && card.toughness <= x)) {
           const value = permanentGameValue(game, creature, player);
