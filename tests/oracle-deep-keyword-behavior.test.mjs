@@ -76,6 +76,16 @@ function fillLibrary(player, n = 100) {
   for (let index = 0; index < n; index++) zoneCard(player, 'Forest', 'library');
 }
 
+function fundPrintedCost(game, player, card, xValue = 3) {
+  for (const color of COLORS) player.pool[color] = 0;
+  const cost = game.spellCost(player, card, { from: 'hand' });
+  player.pool.C = Number(cost.generic || 0) + (cost.x ? xValue : 0);
+  for (const pip of cost.pips || []) {
+    const color = pip.find(option => COLORS.includes(option));
+    if (color) player.pool[color] = (player.pool[color] || 0) + 1;
+  }
+}
+
 function seedFor(name, role, salt = 0) {
   let seed = role === 'ai' ? 860_000 : 850_000;
   for (const char of name) seed = (seed * 33 + char.codePointAt(0)) % 2_000_000_000;
@@ -87,7 +97,19 @@ function humanCastController(card, state) {
     decide: async (game, query) => {
       state.trace.push(query.type);
       if (query.type === 'chooseTargets' && state.preferredTargets?.length) {
-        const legal = state.preferredTargets.filter(target => query.candidates.includes(target));
+        const goal = String(query.aiHint?.goal || '');
+        const friendlyGoal = /buff|recur|untap/.test(goal);
+        const hostileGoal = /bounce|damage|debuff|discard|mill|removal|tap/.test(goal);
+        const ordered = state.preferredTargets.slice().sort((left, right) => {
+          const controller = candidate => candidate instanceof MTG.Player
+            ? candidate : candidate.zone === 'battlefield' ? candidate.ctrl : candidate.owner;
+          const leftFriendly = controller(left) === state.player;
+          const rightFriendly = controller(right) === state.player;
+          const leftScore = friendlyGoal ? Number(leftFriendly) : hostileGoal ? Number(!leftFriendly) : 0;
+          const rightScore = friendlyGoal ? Number(rightFriendly) : hostileGoal ? Number(!rightFriendly) : 0;
+          return rightScore - leftScore;
+        });
+        const legal = ordered.filter(target => query.candidates.includes(target));
         if (legal.length >= (query.min || 0)) return legal.slice(0, query.max || legal.length);
       }
       if (query.type === 'main' && !state.submitted) {
@@ -109,6 +131,68 @@ function humanCastController(card, state) {
   };
 }
 
+function genericEffectIsHarmful(effect) {
+  return ['bounce', 'cant-block-until-eot', 'damage', 'destroy', 'exile', 'lose-life', 'tap'].includes(effect.action) ||
+    effect.action === 'pump' && (Number(effect.power || 0) < 0 || Number(effect.toughness || 0) < 0) ||
+    effect.action === 'counter' && String(effect.counter || '').startsWith('-');
+}
+
+function stageKeywordGenericTargets(game, player, opponent, entry, state) {
+  let index = 0;
+  for (const operation of entry.implementation || []) {
+    if (!['generic-trigger', 'generic-ability'].includes(operation.kind)) continue;
+    const harmful = (operation.effects || []).some(genericEffectIsHarmful);
+    const damage = Math.max(0, ...(operation.effects || []).filter(effect => effect.action === 'damage')
+      .map(effect => Number(effect.n) || 0));
+    for (const target of operation.targets || []) {
+      const count = Math.max(target.min || 0, target.max || 0, 1);
+      for (let quantity = 0; quantity < count; quantity++) {
+        if (target.zone === 'player' || ['player', 'opponent'].includes(target.what)) {
+          state.preferredTargets.push(target.what === 'opponent' || harmful ? opponent : player);
+          continue;
+        }
+        const controller = target.controller === 'you' ? player
+          : target.controller === 'opponent' ? opponent : harmful ? opponent : player;
+        const what = String(target.what || 'creature').toLowerCase();
+        const types = what.includes('artifact') ? ['Artifact', 'Creature']
+          : what.includes('enchantment') ? ['Enchantment', 'Creature']
+            : what.includes('land') ? ['Land', 'Creature'] : ['Creature'];
+        const definition = fixtureDefinition(`${entry.raw.name} generic target ${++index}`, types, {
+          power: types.includes('Creature') ? '20' : undefined,
+          toughness: types.includes('Creature') ? String(damage || 20) : undefined,
+        });
+        if (target.subtype) definition.subtypes = [target.subtype];
+        const candidate = target.zone === 'graveyard'
+          ? zoneCard(controller, definition, 'graveyard')
+          : permanent(game, controller, definition);
+        if (target.tapped) candidate.tapped = true;
+        if (target.attacking || target.attackingOrBlocking) candidate.attacking = controller === player ? opponent : player;
+        if (target.blocking || target.attackingOrBlocking) candidate.blocking = `keyword-generic-${index}`;
+        state.preferredTargets.push(candidate);
+      }
+    }
+  }
+}
+
+function keywordCreatureSurvivesEntry(entry, card) {
+  let toughness = Number(entry.raw.toughness);
+  for (const operation of entry.implementation || []) {
+    if (operation.kind === 'enters-with-counters' && operation.counter === '+1/+1') {
+      toughness += operation.n === 'X' ? Number(card.castMeta?.x || 0) : Number(operation.n || 0);
+    }
+    if (operation.kind === 'controlled-creature-pump-static') toughness += Number(operation.toughness || 0);
+    if (operation.kind === 'generic-static' && ['self', 'your-creatures'].includes(operation.scope)) {
+      toughness += Number(operation.toughness || 0);
+    }
+    if (operation.kind === 'generic-trigger' && operation.event === 'etb') {
+      for (const effect of operation.effects || []) {
+        if (effect.action === 'pump-group' && effect.who === 'your-creatures') toughness += Number(effect.toughness || 0);
+      }
+    }
+  }
+  return toughness > 0;
+}
+
 async function castThroughController(entry, role) {
   const state = { submitted: false, trace: [], preferredTargets: [] };
   const game = new MTG.Game({
@@ -128,10 +212,12 @@ async function castThroughController(entry, role) {
   );
   player.life = 1000;
   opponent.life = 1000;
+  state.player = player;
+  state.opponent = opponent;
   fillLibrary(player);
   fillLibrary(opponent);
-  for (const color of COLORS) player.pool[color] = 20;
   const card = zoneCard(player, entry.raw.name, 'hand');
+  fundPrintedCost(game, player, card);
   if (entry.raw.subtypes.includes('Aura')) {
     // Flash Auras need an actual legal host before priority can expose them.
     // Keep both attachment directions available so the real AI can choose the
@@ -151,9 +237,31 @@ async function castThroughController(entry, role) {
       cost: '{6}', power: '6', toughness: '100', oracle: '',
     }));
   }
-  player.controller = role === 'ai'
-    ? new MTG.AIController(player, { difficulty: 'hard', style: 'balanced' })
-    : humanCastController(card, state);
+  stageKeywordGenericTargets(game, player, opponent, entry, state);
+  if (role === 'ai') {
+    if (!game.bf().some(candidate => candidate.ctrl === opponent)) {
+      permanent(game, opponent, fixtureDefinition(`${entry.raw.name} urgent keyword threat`, ['Creature'], {
+        power: '20', toughness: '20',
+      }));
+    }
+    game.diplomacyRequiredRemovalTarget = () => game.bf().find(candidate => candidate.ctrl === opponent) || null;
+  }
+  if (role === 'ai') {
+    const controller = new MTG.AIController(player, { difficulty: 'hard', style: 'balanced' });
+    const decide = controller.decide.bind(controller);
+    controller.decide = async (currentGame, query) => {
+      if (state.aiSubmitted && query.type === 'main') return { kind: 'done' };
+      if (state.aiSubmitted && query.type === 'priority') return { kind: 'pass' };
+      const result = await decide(currentGame, query);
+      if ((query.type === 'main' || query.type === 'priority') && result?.kind === 'cast' && result.card === card) {
+        state.aiSubmitted = true;
+      }
+      return result;
+    };
+    player.controller = controller;
+  } else {
+    player.controller = humanCastController(card, state);
+  }
 
   game.turnNo = 8;
   game.turnPlayer = player;
@@ -176,15 +284,34 @@ async function castThroughController(entry, role) {
   } else {
     assert.ok(player.controller instanceof MTG.AIController, `${entry.raw.name}/${role}: genuine local AI controller`);
     const decisions = (game.aiDecisionLog || []).filter(decision => decision.playerId === player.idx);
-    assert.ok(decisions.some(decision => String(decision.chosen).includes(entry.raw.name)),
-      `${entry.raw.name}/${role}: local AI chose the exact card (${decisions.map(decision => decision.chosen).join(' | ')})`);
+    const faceDownCast = !!card.castMeta?.alt?.faceDownCast;
+    const choseExpectedAction = faceDownCast
+      ? decisions.some(decision => /face-down creature spell/i.test(String(decision.chosen)))
+      : decisions.some(decision => String(decision.chosen).includes(entry.raw.name));
+    assert.ok(choseExpectedAction,
+      `${entry.raw.name}/${role}: local AI chose the exact ${faceDownCast ? 'identity-safe face-down action' : 'card'} ` +
+      `(${decisions.map(decision => decision.chosen).join(' | ')})`);
+    if (faceDownCast) {
+      assert.equal(decisions.some(decision => JSON.stringify(decision).includes(entry.raw.name)), false,
+        `${entry.raw.name}/${role}: public face-down decision does not leak identity`);
+    }
     assert.equal(decisions.some(decision => decision.fallback), false,
       `${entry.raw.name}/${role}: keyword-card cast used no AI fallback`);
   }
 
   assert.ok(card.castMeta, `${entry.raw.name}/${role}: real paid cast metadata`);
   assert.equal(card.castMeta.alt.free, undefined, `${entry.raw.name}/${role}: controller cast was not free`);
-  const expectedZone = Number(entry.raw.toughness) <= 0 ? 'graveyard' : 'battlefield';
+  if (card.faceDown) {
+    for (const color of COLORS) player.pool[color] = 20;
+    const turnUp = game.activatableList(player).find(action => action.card === card && action.turnFaceUp);
+    assert.ok(turnUp, `${entry.raw.name}/${role}: face-down keyword card exposes its real turn-up action`);
+    assert.equal(await game.activateAbility(player, turnUp), true,
+      `${entry.raw.name}/${role}: face-down keyword card turns face up through the engine`);
+    await settle(game);
+    assert.equal(card.faceDown, false, `${entry.raw.name}/${role}: keyword card is face up for its behavior proof`);
+  }
+  const expectedZone = !entry.raw.types.includes('Creature') || keywordCreatureSurvivesEntry(entry, card)
+    ? 'battlefield' : 'graveyard';
   assert.equal(card.zone, expectedZone, `${entry.raw.name}/${role}: keyword creature resolves and SBA completes`);
   if (card.zone === 'battlefield') {
     game.recalc();
@@ -309,6 +436,17 @@ async function proveAttackKeyword(context, keyword, role) {
   source.sick = keyword === 'haste';
   opponent.life = Math.max(1, source.power);
 
+  if (keyword === 'haste' && !game.canAttackAtAll(source)) {
+    const tapAction = game.activatableList(player).find(action =>
+      action.card === source && action.ability?.cost?.tap);
+    assert.ok(tapAction, `${source.name}/${role}: Haste plus Defender exposes a real tap ability`);
+    assert.equal(await game.activateAbility(player, tapAction), true,
+      `${source.name}/${role}: summoning-sick Haste creature pays a tap cost immediately`);
+    await settle(game);
+    assert.equal(source.tapped, true, `${source.name}/${role}: Haste tap ability consumes the tap cost`);
+    return;
+  }
+
   if (keyword === 'menace') {
     state.blocker = compatibleBlocker(context, `${source.name} single menace blocker`, {
       power: 0, toughness: 100,
@@ -318,9 +456,11 @@ async function proveAttackKeyword(context, keyword, role) {
   }
 
   const lifeBefore = opponent.life;
+  const poisonBefore = opponent.poison || 0;
   await game.combatPhase(player);
   assert.equal(player.turnState.attacked, true, `${source.name}/${role}: ${keyword} card attacks through real combat`);
-  assert.ok(opponent.life < lifeBefore, `${source.name}/${role}: ${keyword} attack deals combat damage`);
+  assert.ok(opponent.life < lifeBefore || (opponent.poison || 0) > poisonBefore,
+    `${source.name}/${role}: ${keyword} attack deals combat damage as life loss or poison`);
   if (keyword === 'haste') {
     assert.ok(game.log.some(item => item.msg.includes(`${source.name} attacks`)),
       `${source.name}/${role}: summoning-sick Haste creature was declared`);
@@ -590,7 +730,7 @@ async function proveKeywordBehavior(entry, declared, role, runtimeOccurrences) {
   return runtimeOccurrences;
 }
 
-test('svih 1.008 keyword karata prolazi human/AI cast, a svaka sposobnost rules probe u oba konteksta', async t => {
+test('svih 1.510 keyword karata prolazi human/AI cast, a svaka sposobnost rules probe u oba konteksta', async t => {
   const rows = keywordRows();
   const singleKeywordRows = rows.filter(({ entry }) => entry.implementedKeywords.length === 1);
   const multiKeywordRows = rows.filter(({ entry }) => entry.implementedKeywords.length > 1);
@@ -603,8 +743,8 @@ test('svih 1.008 keyword karata prolazi human/AI cast, a svaka sposobnost rules 
 
   assert.deepEqual(
     { cards: rows.length, single: singleKeywordRows.length, multi: multiKeywordRows.length, declarations, runtimeInstances },
-    { cards: 1008, single: 789, multi: 219, declarations: 1261, runtimeInstances: 1262 },
-    'frozen 2,600-card keyword cohort',
+    { cards: 1510, single: 1250, multi: 260, declarations: 1814, runtimeInstances: 1815 },
+    'frozen 4,600-card keyword cohort',
   );
 
   let controllerCasts = 0;

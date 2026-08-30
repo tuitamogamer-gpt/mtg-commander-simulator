@@ -6,6 +6,108 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
 
+  // Shockland-style entry choices are replacement effects, so the land is
+  // already on the battlefield (temporarily untapped) while the controller is
+  // deciding.  Compare the exact legal spell/ability windows with and without
+  // that source rather than paying life merely because the first option says
+  // "pay".  The probe is synchronous and restores the permanent before the
+  // rules engine continues resolving the entry replacement.
+  function untappedLandOpportunity(g, p, card) {
+    if (!g || !p || !card || card.zone !== 'battlefield' || card.ctrl !== p || !card.def.mana) return false;
+    const originalTapped = !!card.tapped;
+    const originalCur = card.cur;
+    // handleETB deliberately runs before the normal post-move recalc. Supply
+    // only the printed characteristics needed by legality probes; this object
+    // never escapes the synchronous comparison below.
+    if (!card.cur) {
+      card.cur = {
+        types: (card.def.types || []).slice(),
+        subtypes: (card.def.subtypes || []).slice(),
+        super: (card.def.super || []).slice(),
+        colors: card.def.colorsOverride || U.colorsOfCost(card.def.cost || ''),
+        kw: new Set(card.def.kws || []),
+        extraAbilities: [],
+        extraMana: [],
+        abilitiesDisabled: false,
+        activationDisabled: false,
+        equipCost: card.def.equip,
+        power: Number(card.def.power) || 0,
+        toughness: Number(card.def.toughness) || 0,
+      };
+    }
+    const castKey = entry => `${entry.card && entry.card.iid}|${entry.from || ''}|${entry.alt &&
+      (entry.alt.name || entry.alt.label || entry.alt.altCostStr) || ''}`;
+    const abilityKey = entry => `${entry.card && entry.card.iid}|${entry.idx ?? ''}|${entry.label ||
+      entry.ability && entry.ability.label || ''}`;
+    const legalWindow = () => {
+      let casts = [];
+      let abilities = [];
+      let isManaSource = false;
+      // During an as-enters replacement the new permanent intentionally has
+      // no derived `cur` object yet. castableList/manaSources support that
+      // state, while older activatableList implementations may not; one
+      // unavailable probe must not hide a spell that the new land unlocks.
+      try { if (typeof g.castableList === 'function') casts = g.castableList(p); } catch (error) { casts = []; }
+      try {
+        if (typeof g.activatableList === 'function') {
+          abilities = g.activatableList(p, true).filter(entry => !entry.manaAbility);
+        }
+      } catch (error) { abilities = []; }
+      try {
+        isManaSource = typeof g.manaSources === 'function' &&
+          g.manaSources(p, null, { includeRestricted: true }).some(source => source.card === card);
+      } catch (error) { isManaSource = false; }
+      return {
+        casts,
+        abilities,
+        castKeys: new Set(casts.map(castKey)),
+        abilityKeys: new Set(abilities.map(abilityKey)),
+        isManaSource,
+      };
+    };
+
+    try {
+      card.tapped = false;
+      const untapped = legalWindow();
+      card.tapped = true;
+      const tapped = legalWindow();
+      if (!untapped.isManaSource || tapped.isManaSource) return false;
+      if (untapped.casts.some(entry => !tapped.castKeys.has(castKey(entry)))) return true;
+      if (untapped.abilities.some(entry => !tapped.abilityKeys.has(abilityKey(entry)))) return true;
+      return false;
+    } catch (error) {
+      // An optional life payment must fail closed if a custom card exposes a
+      // malformed affordability hook.  Entering tapped is always rules-legal.
+      return false;
+    } finally {
+      card.tapped = originalTapped;
+      card.cur = originalCur;
+    }
+  }
+
+  function openCombatPower(g, p) {
+    if (!g || typeof g.creatures !== 'function') return 0;
+    const byOpponent = new Map();
+    for (const creature of g.creatures()) {
+      if (!creature.ctrl || creature.ctrl === p || creature.ctrl.lost || creature.tapped ||
+          creature.cur && creature.cur.cantAttack) continue;
+      byOpponent.set(creature.ctrl, (byOpponent.get(creature.ctrl) || 0) + Math.max(0, Number(creature.power) || 0));
+    }
+    return Math.max(0, ...byOpponent.values());
+  }
+
+  MTG.shouldBotPayLifeForUntappedLand = function (g, p, card, rawLifeCost) {
+    const lifeCost = Math.max(0, Number(rawLifeCost) || 0);
+    if (!lifeCost || !p || p.life <= lifeCost) return false;
+    const lifeAfter = p.life - lifeCost;
+    // Ten life is the conservative Commander danger floor.  A visibly open
+    // opposing board can raise it, but never above 24 so healthy-life bots can
+    // still develop through an ordinary two-life land.
+    const safetyFloor = Math.max(10, Math.min(24, openCombatPower(g, p) + 2));
+    if (lifeAfter <= safetyFloor) return false;
+    return untappedLandOpportunity(g, p, card);
+  };
+
   // ============================================================
   // THREAT ASSESSMENT — ko je najveća prijetnja za stolom?
   // ============================================================
@@ -780,6 +882,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     chooseTargets(g, q) {
       const goal = q.aiHint && q.aiHint.goal || (q.spec && q.spec.aiHint && q.spec.aiHint.goal) || 'generic';
       let cands = q.candidates.slice();
+      if (q.aiHint && q.aiHint.avoidCostSource && q.src) {
+        const survivingTargets = cands.filter(target => target !== q.src);
+        if (survivingTargets.length >= (q.min === undefined ? 1 : q.min)) cands = survivingTargets;
+      }
       const avoidedCopyTargets = q.aiHint && q.aiHint.copyTargetPolicy === 'spread'
         ? new Set(q.aiHint.copyUsedTargetIids || []) : null;
       if (avoidedCopyTargets && avoidedCopyTargets.size) {
@@ -1003,6 +1109,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'cleanupDiscard': case 'addlDiscard': case 'ninjutsuReturn': {
           return byValAsc.slice(0, Math.max(min, 0));
         }
+        case 'optionalLoot': {
+          const landCards = from.filter(card => card.is('Land'));
+          const landsNeeded = Math.max(1, 3 - g.lands(this.p).length);
+          const redundantLand = byValAsc.find(card => card.is('Land') && landCards.length > landsNeeded);
+          if (redundantLand) return [redundantLand];
+          const lowValue = byValAsc.find(card => !card.commander && !card.is('Land') && this.cardValue(g, card) < 2.25);
+          return lowValue ? [lowValue] : [];
+        }
         case 'bottomOrder': return byValAsc.slice(0, 1);
         case 'delve': {
           // Delve je SNIŽENJE cijene — min je 0, pa je "uzmi min" značilo da bot
@@ -1224,6 +1338,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return offered[0] ? offered[0].key : keys[0];
         }
         case 'myriadCopy': return keys.includes('yes') ? 'yes' : keys[0];
+        case 'riot': {
+          const card = q.aiHint && q.aiHint.card;
+          const canAttackNow = card && g.turnPlayer === this.p && g.phase === 'main1' && !card.tapped;
+          return canAttackNow && keys.includes('haste') ? 'haste' : (keys.includes('counter') ? 'counter' : keys[0]);
+        }
+        case 'payLifeForUntappedLand': {
+          const card = q.aiHint && q.aiHint.card;
+          const life = q.aiHint && q.aiHint.life;
+          const pay = MTG.shouldBotPayLifeForUntappedLand(g, this.p, card, life);
+          return pay && keys.includes('pay') ? 'pay'
+            : (keys.includes('tapped') ? 'tapped' : keys[0]);
+        }
+        case 'unleash': return keys.includes('counter') ? 'counter' : keys[0];
+        case 'extort': return this.p.life > 2 && keys.includes('yes') ? 'yes' : (keys.includes('no') ? 'no' : keys[0]);
         case 'temptingOffer': {
           const caster = q.aiHint && q.aiHint.caster;
           const accept = this.p.life <= 12 || g.creatures(this.p).length <= 2 || !caster || this.playerThreat(g, caster) < 28;

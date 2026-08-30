@@ -341,6 +341,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return counter ? `${counter.n} COUNTER${counter.n === 1 ? '' : 'S'}` : '';
     }
 
+    poisonCount(p) {
+      const amount = Number(p && p.poison);
+      return Number.isFinite(amount) ? Math.max(0, Math.floor(amount)) : 0;
+    }
+
+    poisonBadge(p) {
+      const amount = this.poisonCount(p);
+      if (!amount) return '';
+      const danger = amount >= 8;
+      const remaining = Math.max(0, 10 - amount);
+      const detail = `${amount} poison counter${amount === 1 ? '' : 's'}. 10 poison counters = loss.` +
+        (danger && remaining ? ` ${remaining} more to the loss threshold.` : '');
+      return `<span class="poisonbadge${danger ? ' danger' : ''}${amount >= 10 ? ' lethal' : ''}" role="img" aria-label="${detail}" title="${detail}">` +
+        `<span aria-hidden="true">☠</span><b>${amount}<i>/10</i></b><small>POISON</small></span>`;
+    }
+
     // Public, currently relevant player state that would otherwise be easy to
     // lose in the game log. Keep this presentation-only: it reads the same
     // card/player metadata used by the rules engine and never exposes secret
@@ -356,6 +372,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const colorName = { W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green', C: 'Colorless' };
       const words = value => String(value || '').replace(/[_-]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
 
+      const poison = this.poisonCount(p);
+      if (poison) add({
+        key: 'poison', kind: 'counter', icon: '☠', label: 'Poison counters',
+        detail: `${poison}/10 poison counters. 10 poison counters = loss.` +
+          (poison < 10 ? ` ${10 - poison} more to the loss threshold.` : ''),
+        duration: 'Counters remain until an effect removes them.',
+      });
       if (g.monarch === p) add({
         key: 'monarch', kind: 'role', icon: '♛', label: 'Monarch',
         detail: g.monarchSince && g.monarchSince.turn !== undefined
@@ -1710,7 +1733,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span class="oppname">${isMonarch ? `<i class="seatcrown" aria-label="Monarch">${U.icon('crown')}</i> ` : ''}${U.icon('player', 'oppidentityicon')} ${esc(p.name)}</span>
           ${isActiveAi ? '<span class="activeaitag">ACTIVE TURN</span>' : ''}
           ${styleMeta ? `<span class="personachip${styleMeta.portrait ? ' hasportrait' : ''}" title="Style: ${esc(styleMeta.label)}">${styleMeta.portrait ? `<img src="${styleMeta.portrait}" alt="" onerror="MTG.imgFail(this)">` : styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
-          <span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${p.life}❤</span>
+          <span class="playerlifetotals"><span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${p.life}❤</span>${this.poisonBadge(p)}</span>
           <span class="oppmeta">${U.icon('cards')}${p.hand.length} ${U.icon('library')}${p.library.length}${statusEffects.length ? ` <button type="button" class="playereffectsbadge" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}</span>
           <span class="oppcmd" title="${esc(cmdTitle)}">${U.icon('crown')}${esc(cmdState)}</span>
           <button class="tbtn small" type="button" aria-label="Open ${esc(p.name)} player details" title="Open ${esc(p.name)} player details">${U.icon('info')}</button>`;
@@ -2062,7 +2085,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (g.monarch === me) info.classList.add('monarch');
       const statusEffects = this.playerStatusEffects(g, me);
       if (statusEffects.length) info.classList.add('has-effects');
-      info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="melife" role="button" tabindex="0" aria-label="You: ${me.life} life. Open player details." title="Open your player details">${me.life}<small>life</small></div>
+      info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="playerlifetotals"><div class="melife" role="button" tabindex="0" aria-label="You: ${me.life} life. Open player details." title="Open your player details">${me.life}<small>life</small></div>${this.poisonBadge(me)}</div>
         ${g.monarch === me ? `<div class="memonarch"><span>${U.icon('crown')}</span><b>MONARCH</b></div>` : ''}
         ${statusEffects.length ? `<button type="button" class="playereffectsbadge mine" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}
         <div class="manapool">${poolStr}</div>

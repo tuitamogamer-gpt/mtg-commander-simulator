@@ -127,6 +127,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.commanders = [];         // CardInst[] — 1 ili 2 (partneri), bez obzira na zonu
       this.chosenCommanders = null; // string[] — izbor igrača prije buildDeck
       this.commanderDamage = {};    // by commander iid
+      this.poison = 0;
       this.lost = false;
       this.controller = null;       // decision maker
       this.isAI = false;
@@ -774,6 +775,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         delete card.meta.suspended;
       }
 
+      if (wasBattlefield && toZone !== 'battlefield') {
+        // LKI belongs to the exact battlefield incarnation. Keep every
+        // departure by zoneVersion so an older Evolve trigger still finds its
+        // entrant after the same physical card blinks more than once.
+        if (!card.battlefieldLKI) card.battlefieldLKI = new Map();
+        card.battlefieldLKI.set(card.zoneVersion, {
+          iid: card.iid, zoneVersion: card.zoneVersion, timestamp: snap.timestamp,
+          power: snap.power, toughness: snap.toughness,
+        });
+      }
       if (fromZone !== toZone) card.zoneVersion = (card.zoneVersion || 0) + 1;
 
       // persist / undying (death replacements to return later — handled post-dies for simplicity)
@@ -1690,13 +1701,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (opts.combat && this.monarch === p && src && src.ctrl && src.ctrl !== p) {
         await this.becomeMonarch(src.ctrl, { reason: 'combat damage', source: src });
       }
-      if (src && src.kw && src.kw('lifelink')) await this.gainLife(src.ctrl, n, src);
       p.turnState.damageTaken = (p.turnState.damageTaken || 0) + n;
-      await this.loseLife(p, n, 'damage');
+      const infect = !!(src && src.kw && src.kw('infect'));
+      const toxic = opts.combat && src && !(src.cur && src.cur.abilitiesDisabled)
+        ? Math.max(0, Number(src.def && src.def.toxic) || 0) : 0;
+      if (infect) {
+        p.poison = (p.poison || 0) + n;
+        this.lg(`${p.name} gets ${n} poison counter${n === 1 ? '' : 's'} (infect).`, 'dmg');
+      }
+      if (toxic) {
+        p.poison = (p.poison || 0) + toxic;
+        this.lg(`${p.name} gets ${toxic} poison counter${toxic === 1 ? '' : 's'} (toxic).`, 'dmg');
+      }
+      if (src && src.kw && src.kw('lifelink')) await this.gainLife(src.ctrl, n, src);
+      if (!infect) await this.loseLife(p, n, 'damage');
       this.note('gameEffect', {
         kind: 'damage', targetKind: 'player', target: p, targetPlayer: p,
         source: src || null, amount: n, combat: !!opts.combat,
-        combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
+        combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0, infect, toxic,
       });
       await this.emit('damageToPlayer', { src, player: p, n, combat: !!opts.combat });
       if (!opts.deferSBA) await this.checkSBA();
@@ -1801,7 +1823,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         target.meta._damageByCtrl.by[src.ctrl.idx] = (target.meta._damageByCtrl.by[src.ctrl.idx] || 0) + n;
       }
       // wither: šteta stvorenjima postaje -1/-1 counteri
-      const wither = (src && src.kw && src.kw('wither')) || this.bf().some(x => x.def.allDamageWither);
+      const wither = (src && src.kw && (src.kw('wither') || src.kw('infect'))) ||
+        this.bf().some(x => x.def.allDamageWither);
       if (wither) {
         if (src && src.kw && src.kw('lifelink')) await this.gainLife(src.ctrl, n, src);
         this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete (wither → -1/-1): ${target.name}.`, 'dmg');
@@ -1810,6 +1833,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.note('gameEffect', {
           kind: 'damage', targetKind: 'permanent', target, targetCard: target,
           source: src || null, amount: n, combat: !!opts.combat, wither: true,
+          infect: !!(src && src.kw && src.kw('infect')),
           combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
         });
         await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
@@ -2924,6 +2948,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (p.lost) continue;
             let dead = false, why = '';
             if (p.life <= 0) { dead = true; why = 'life reached 0'; }
+            if ((p.poison || 0) >= 10) { dead = true; why = 'ten poison counters'; }
             if (p.deckedOut) { dead = true; why = 'empty library'; }
             // 903.10a: 21 štete od ISTOG komandera. Kućno pravilo može tražiti zbir partnera.
             if (this.houseRules && this.houseRules.sumPartnerDamage) {

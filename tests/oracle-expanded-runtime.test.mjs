@@ -333,6 +333,27 @@ for (const role of ROLES) {
   });
 }
 
+test('local deterministic AI executes optional loot only with real discard surplus', async () => {
+  {
+    const context = makeGame('ai');
+    const fodder = Array.from({ length: 4 }, () => zoneCard(context.player, 'Forest', 'hand'));
+    const libraryBefore = context.player.library.length;
+    await castFree(context, 'XR Optional Loot');
+    assert.equal(context.player.library.length, libraryBefore - 1, 'surplus basic land is exchanged for a draw');
+    assert.equal(fodder.filter(card => card.zone === 'graveyard').length, 1, 'AI discards exactly one surplus land');
+    assert.ok(context.state.trace.includes('chooseCards'), 'real local AI receives the optional loot choice');
+  }
+
+  {
+    const context = makeGame('ai');
+    const onlyLand = zoneCard(context.player, 'Forest', 'hand');
+    const libraryBefore = context.player.library.length;
+    await castFree(context, 'XR Optional Loot');
+    assert.equal(context.player.library.length, libraryBefore, 'AI keeps its only needed land and declines the optional draw');
+    assert.equal(onlyLand.zone, 'hand');
+  }
+});
+
 for (const role of ROLES) {
   test(`${role}: multi-operation spell resolves every printed line once and in order`, async () => {
     const context = makeGame(role);

@@ -1,10 +1,12 @@
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import readline from 'node:readline';
 import { Readable } from 'node:stream';
 import { createGunzip } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { extractRawData } from './source-audit.mjs';
+import { parseOracleSpellV4 } from './oracle-spell-v4.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourceDir = path.join(root, 'src', 'oracle-batches');
@@ -12,7 +14,7 @@ const reportDir = path.join(root, 'reports', 'oracle-import');
 const statePath = path.join(reportDir, 'state.json');
 const BULK_INDEX_URL = 'https://api.scryfall.com/bulk-data';
 const DEFAULT_LIMIT = 100;
-const SEMANTIC_COMPILER_VERSION = 3;
+const SEMANTIC_COMPILER_VERSION = 4;
 const USER_AGENT = 'MTGcodexOracleImporter/0.1 (local development)';
 
 const SUPERTYPES = new Set(['Legendary', 'Basic', 'Snow', 'World', 'Ongoing']);
@@ -136,7 +138,8 @@ function parseManaLine(line) {
     };
   }
   const produce = [];
-  for (const choice of match[2].split(/\s+or\s+/i)) {
+  const choices = match[2].replace(/,\s+or\s+/gi, ' or ').replace(/,\s*/g, ' or ').split(/\s+or\s+/i);
+  for (const choice of choices) {
     const symbols = [...choice.matchAll(/\{([WUBRGC])\}/g)].map(entry => entry[1]);
     if (!symbols.length || choice.replace(/\{[WUBRGC]\}/g, '').trim()) return null;
     const option = {};
@@ -289,6 +292,650 @@ function creatureActivatedOperation(card, line) {
   return null;
 }
 
+// Compiler v4 deliberately expands through a small declarative effect model
+// instead of treating an Oracle prefix as implementation.  Every accepted
+// line below maps the complete line to one closed runtime operation; unknown
+// riders and conditions continue to fail closed.
+function genericTarget(what, options = {}) {
+  return Object.assign({ what, zone: 'battlefield', controller: 'any', min: 1, max: 1 }, options);
+}
+
+function genericTrigger(event, effects, options = {}) {
+  return Object.assign({
+    kind: 'generic-trigger', event, effects, targets: [], optional: false,
+    contract: 'generic-trigger-effect',
+  }, options);
+}
+
+function genericAbility(cost, effects, options = {}) {
+  return Object.assign({
+    kind: 'generic-ability', cost, effects, targets: [], sorceryOnly: false,
+    contract: 'generic-activated-effect',
+  }, options);
+}
+
+function genericStatic(scope, options = {}) {
+  // A multiword creature descriptor is not one literal subtype. Keep the
+  // recorded payload stable, but certify only the compound whose AND matcher
+  // is covered by the runtime; unknown compound filters must fail closed.
+  const descriptor = String(options.subtype || '').trim();
+  if (/\s/.test(descriptor) && descriptor.toLowerCase() !== 'eldrazi spawn') return null;
+  return Object.assign({
+    kind: 'generic-static', scope, power: 0, toughness: 0, keywords: [],
+    contract: 'generic-continuous-effect',
+  }, options);
+}
+
+function expandedMechanicOperation(line) {
+  const exact = {
+    Myriad: 'myriad', Infect: 'infect', Exalted: 'exalted', Flanking: 'flanking',
+    'Battle cry': 'battle-cry', Mentor: 'mentor', Training: 'training', Riot: 'riot',
+    Unleash: 'unleash', Evolve: 'evolve', Extort: 'extort', Delve: 'delve',
+    Improvise: 'improvise', 'Affinity for artifacts': 'affinity-artifacts',
+    Devoid: 'devoid', "This spell can't be countered.": 'uncounterable',
+  };
+  if (exact[line]) {
+    return { kind: 'mechanic-' + exact[line], contract: 'mechanic-' + exact[line] };
+  }
+  let match = /^(Afterlife|Bushido|Renown|Bloodthirst|Toxic) ([1-5])$/i.exec(line);
+  if (match) {
+    const mechanic = match[1].toLowerCase();
+    return { kind: 'mechanic-' + mechanic, n: Number(match[2]), contract: 'mechanic-' + mechanic };
+  }
+  match = /^(Plains|Island|Swamp|Mountain|Forest|Basic land)cycling (\{\d+\})$/i.exec(line);
+  if (match) {
+    return {
+      kind: 'mechanic-typecycling', subtype: match[1], cost: match[2],
+      contract: 'mechanic-typecycling',
+    };
+  }
+  return null;
+}
+
+function genericActivatedCost(value) {
+  const source = String(value || '').trim();
+  if (!source) return null;
+  const cost = {};
+  for (const part of source.split(/,\s*/)) {
+    if (part === '{T}') cost.tap = true;
+    else if (validManaSequence(part)) cost.mana = part;
+    else if (/^Pay (\d+) life$/i.test(part)) cost.life = Number(/^Pay (\d+) life$/i.exec(part)[1]);
+    else if (/^Discard a card$/i.test(part)) cost.discard = 1;
+    else if (/^Sacrifice (?:this creature|this artifact|this land)$/i.test(part)) cost.sacSelf = true;
+    else if (/^Sacrifice another creature$/i.test(part)) { cost.sacCreature = true; cost.sacOther = true; }
+    else if (/^Sacrifice a creature$/i.test(part)) cost.sacCreature = true;
+    else if (/^Sacrifice an artifact$/i.test(part)) cost.sacWhat = 'artifact';
+    else if (/^Sacrifice an enchantment$/i.test(part)) cost.sacWhat = 'enchantment';
+    else if (/^Sacrifice a land$/i.test(part)) cost.sacWhat = 'land';
+    else if (/^Remove a (\+1\/\+1|-1\/-1) counter from (?:this creature|this artifact)$/i.test(part)) {
+      const counter = /^Remove a (\+1\/\+1|-1\/-1)/i.exec(part)[1];
+      cost.rmCounter = { kind: counter, n: 1 };
+    }
+    else return null;
+  }
+  return cost;
+}
+
+const GENERIC_NUMBER = '(?:a|an|one|two|three|four|five|six|seven|eight|nine|ten|\\d+)';
+
+function genericNumber(value) {
+  const words = { eight: 8, nine: 9, ten: 10 };
+  return words[String(value || '').toLowerCase()] || numberWord(value);
+}
+
+function closedGenericEffect(card, value) {
+  let text = String(value || '').trim();
+  if (!text.endsWith('.')) return null;
+  text = text.slice(0, -1);
+  let optional = false;
+  if (/^you may /i.test(text)) {
+    optional = true;
+    text = text.replace(/^you may /i, '');
+  }
+  const self = '(?:it|this (?:creature|artifact|enchantment|land|permanent)|' + escapeRegExp(card.name) + ')';
+  let match = new RegExp('^(?:you )?draw (' + GENERIC_NUMBER + ') cards?$', 'i').exec(text);
+  if (match) return { effects: [{ action: 'draw', who: 'you', n: genericNumber(match[1]) }], targets: [], optional };
+  match = new RegExp('^(?:you )?(gain|lose) (' + GENERIC_NUMBER + ') life$', 'i').exec(text);
+  if (match) return {
+    effects: [{ action: match[1].toLowerCase() === 'gain' ? 'gain-life' : 'lose-life', who: 'you', n: genericNumber(match[2]) }],
+    targets: [], optional,
+  };
+  match = new RegExp('^each opponent loses (' + GENERIC_NUMBER + ') life and you gain (' + GENERIC_NUMBER + ') life$', 'i').exec(text);
+  if (match) return {
+    effects: [
+      { action: 'lose-life', who: 'each-opponent', n: genericNumber(match[1]) },
+      { action: 'gain-life', who: 'you', n: genericNumber(match[2]) },
+    ],
+    targets: [], optional,
+  };
+  match = new RegExp('^each opponent loses (' + GENERIC_NUMBER + ') life$', 'i').exec(text);
+  if (match) return {
+    effects: [{ action: 'lose-life', who: 'each-opponent', n: genericNumber(match[1]) }],
+    targets: [], optional,
+  };
+  match = new RegExp('^target opponent loses (' + GENERIC_NUMBER + ') life and you gain (' + GENERIC_NUMBER + ') life$', 'i').exec(text);
+  if (match) return {
+    effects: [
+      { action: 'lose-life', who: 0, n: genericNumber(match[1]) },
+      { action: 'gain-life', who: 'you', n: genericNumber(match[2]) },
+    ],
+    targets: [genericTarget('opponent', { zone: 'player' })], optional,
+  };
+  match = new RegExp('^each player loses (' + GENERIC_NUMBER + ') life$', 'i').exec(text);
+  if (match) return {
+    effects: [{ action: 'lose-life', who: 'each-player', n: genericNumber(match[1]) }],
+    targets: [], optional,
+  };
+  match = new RegExp('^each opponent discards (' + GENERIC_NUMBER + '|a) cards?$', 'i').exec(text);
+  if (match) return {
+    effects: [{ action: 'discard-each-opponent', n: genericNumber(match[1]) }],
+    targets: [], optional,
+  };
+  if (/^draw a card, then discard a card$/i.test(text)) {
+    return {
+      effects: [
+        { action: 'draw', who: 'you', n: 1 },
+        { action: 'discard', who: 'you', n: 1 },
+      ],
+      targets: [], optional,
+    };
+  }
+  match = new RegExp('^' + self + ' deals (' + GENERIC_NUMBER + '|X) damage to (any target|target creature(?: or planeswalker)?|target attacking or blocking creature|target opponent|target player(?: or planeswalker)?|each opponent)$', 'i').exec(text);
+  if (match) {
+    const targetText = match[2].toLowerCase();
+    const n = match[1].toUpperCase() === 'X' ? 'X' : genericNumber(match[1]);
+    if (targetText === 'each opponent') {
+      return { effects: [{ action: 'damage', target: 'each-opponent', n }], targets: [], optional };
+    }
+    const attackingOrBlocking = targetText.includes('attacking or blocking');
+    const what = targetText.replace(/^target /, '').replace(/^attacking or blocking /, '');
+    return {
+      effects: [{ action: 'damage', target: 0, n }],
+      targets: [genericTarget(what === 'any target' ? 'any' : what, {
+        zone: what.includes('player') || what === 'any' ? 'any' : 'battlefield',
+        attackingOrBlocking,
+      })],
+      optional,
+    };
+  }
+  match = new RegExp('^put (' + GENERIC_NUMBER + ') (\\+1\\/\\+1|-1\\/-1) counters? on (?:' + self + ')$', 'i').exec(text);
+  if (match) return {
+    effects: [{ action: 'counter', target: 'self', counter: match[2], n: genericNumber(match[1]) }],
+    targets: [], optional,
+  };
+  match = new RegExp('^put (' + GENERIC_NUMBER + ') (\\+1\\/\\+1|-1\\/-1) counters? on (another )?(?:up to one )?target creature( you control| an opponent controls)?$', 'i').exec(text);
+  if (match) return {
+    effects: [{ action: 'counter', target: 0, counter: match[2], n: genericNumber(match[1]) }],
+    targets: [genericTarget('creature', {
+      controller: match[4] ? (/you control/i.test(match[4]) ? 'you' : 'opponent') : 'any',
+      excludeSelf: !!match[3],
+      min: /up to one/i.test(text) ? 0 : 1,
+    })],
+    optional,
+  };
+  match = new RegExp('^put (' + GENERIC_NUMBER + ') (\\+1\\/\\+1|-1\\/-1) counters? on each (?:other )?creature you control$', 'i').exec(text);
+  if (match) return {
+    effects: [{
+      action: 'counter-group',
+      who: /each other/i.test(text) ? 'your-other-creatures' : 'your-creatures',
+      counter: match[2],
+      n: genericNumber(match[1]),
+    }],
+    targets: [], optional,
+  };
+  match = new RegExp('^' + self + ' gets ([+-]\\d+)\\/([+-]\\d+)(?: and gains? (.+))? until end of turn$', 'i').exec(text);
+  if (match) {
+    const keywords = match[3] ? keywordList(match[3]) : [];
+    if (match[3] && !keywords) return null;
+    return {
+      effects: [{ action: 'pump', target: 'self', power: Number(match[1]), toughness: Number(match[2]), keywords }],
+      targets: [], optional,
+    };
+  }
+  match = /^target creature( you control| an opponent controls)? gets ([+-]\d+)\/([+-]\d+)(?: and gains? (.+))? until end of turn$/i.exec(text);
+  if (match) {
+    const keywords = match[4] ? keywordList(match[4]) : [];
+    if (match[4] && !keywords) return null;
+    return {
+      effects: [{ action: 'pump', target: 0, power: Number(match[2]), toughness: Number(match[3]), keywords }],
+      targets: [genericTarget('creature', {
+        controller: match[1] ? (/you control/i.test(match[1]) ? 'you' : 'opponent') : 'any',
+      })],
+      optional,
+    };
+  }
+  match = /^(creatures you control|other creatures you control|attacking creatures you control) get ([+-]\d+)\/([+-]\d+)(?: and gain (.+))? until end of turn$/i.exec(text);
+  if (match) {
+    const keywords = match[4] ? keywordList(match[4]) : [];
+    if (match[4] && !keywords) return null;
+    return {
+      effects: [{
+        action: 'pump-group',
+        who: /^attacking/i.test(match[1]) ? 'your-attacking-creatures' :
+          /^other/i.test(match[1]) ? 'your-other-creatures' : 'your-creatures',
+        power: Number(match[2]), toughness: Number(match[3]), keywords,
+      }],
+      targets: [], optional,
+    };
+  }
+  match = /^(scry|surveil) ([1-5])$/i.exec(text);
+  if (match) return {
+    effects: [{ action: match[1].toLowerCase(), who: 'you', n: Number(match[2]) }],
+    targets: [], optional,
+  };
+  match = /^investigate(?: (twice|three times))?$/i.exec(text);
+  if (match) return {
+    effects: [{ action: 'investigate', who: 'you', n: match[1] === 'twice' ? 2 : match[1] ? 3 : 1 }],
+    targets: [], optional,
+  };
+  if (/^proliferate$/i.test(text)) return { effects: [{ action: 'proliferate', who: 'you' }], targets: [], optional };
+  if (/^you become the monarch$/i.test(text)) return { effects: [{ action: 'monarch', who: 'you' }], targets: [], optional };
+  if (new RegExp('^' + self + ' connives$', 'i').test(text)) {
+    return { effects: [{ action: 'connive', target: 'self' }], targets: [], optional };
+  }
+  if (new RegExp('^' + self + ' explores$', 'i').test(text)) {
+    return { effects: [{ action: 'explore', target: 'self' }], targets: [], optional };
+  }
+  if (new RegExp('^(?:return )?' + self + " to its owner's hand$", 'i').test(text)) {
+    return { effects: [{ action: 'return-source-to-hand' }], targets: [], optional };
+  }
+  if (new RegExp('^sacrifice ' + self + '$', 'i').test(text)) {
+    return { effects: [{ action: 'sacrifice-source' }], targets: [], optional };
+  }
+  match = /^(destroy|exile) (?:up to one )?target (creature(?: an opponent controls)?|artifact|enchantment|artifact or enchantment|land|nonland permanent(?: an opponent controls)?|permanent)$/i.exec(text);
+  if (match) {
+    const controller = /opponent controls/i.test(match[2]) ? 'opponent' : 'any';
+    const what = match[2].replace(/ an opponent controls/i, '').toLowerCase();
+    return {
+      effects: [{ action: match[1].toLowerCase(), target: 0 }],
+      targets: [genericTarget(what, { controller, min: /up to one/i.test(text) ? 0 : 1 })],
+      optional,
+    };
+  }
+  match = /^return (another )?(?:up to one )?target (creature|artifact|enchantment|nonland permanent|permanent)( an opponent controls| you control)? to its owner's hand$/i.exec(text);
+  if (match) return {
+    effects: [{ action: 'bounce', target: 0 }],
+    targets: [genericTarget(match[2].toLowerCase(), {
+      controller: match[3] ? (/you control/i.test(match[3]) ? 'you' : 'opponent') : 'any',
+      excludeSelf: !!match[1],
+      min: /up to one/i.test(text) ? 0 : 1,
+    })],
+    optional,
+  };
+  match = /^return target (creature|artifact|instant or sorcery|permanent|land) card from your graveyard to your hand$/i.exec(text);
+  if (match) return {
+    effects: [{ action: 'move-to-hand', target: 0 }],
+    targets: [genericTarget(match[1].toLowerCase(), { zone: 'graveyard', controller: 'you' })],
+    optional,
+  };
+  match = /^(tap|untap) (?:up to one )?target (creature|artifact|land|permanent)( an opponent controls| you control)?$/i.exec(text);
+  if (match) return {
+    effects: [{ action: match[1].toLowerCase(), target: 0 }],
+    targets: [genericTarget(match[2].toLowerCase(), {
+      controller: match[3] ? (/you control/i.test(match[3]) ? 'you' : 'opponent') : 'any',
+      min: /up to one/i.test(text) ? 0 : 1,
+    })],
+    optional,
+  };
+  match = /^target (player|opponent) (mills|discards) (a|one|two|three|four|five|six|seven|eight|nine|ten|\d+) cards?$/i.exec(text);
+  if (match) return {
+    effects: [{ action: match[2].toLowerCase() === 'mills' ? 'mill' : 'discard', who: 0, n: genericNumber(match[3]) }],
+    targets: [genericTarget(match[1].toLowerCase(), { zone: 'player' })],
+    optional,
+  };
+  match = /^target creature( an opponent controls)? can't block this turn$/i.exec(text);
+  if (match) return {
+    effects: [{ action: 'cant-block-until-eot', target: 0 }],
+    targets: [genericTarget('creature', { controller: match[1] ? 'opponent' : 'any' })],
+    optional,
+  };
+  const token = spellTokenOperation(text + '.');
+  if (token && token.kind === 'spell-token') {
+    return {
+      effects: [token.tokenKey
+        ? { action: 'token-key', who: 'you', n: token.n, tokenKey: token.tokenKey }
+        : { action: 'token-inline', who: 'you', n: token.n, token: token.token }],
+      targets: [], optional,
+    };
+  }
+  return null;
+}
+
+function closedGenericEffectSequence(card, value) {
+  const direct = closedGenericEffect(card, value);
+  if (direct) return direct;
+  const clauses = String(value || '').trim().split(/(?<=\.)\s+(?=[A-Z])/);
+  if (clauses.length < 2) return null;
+  const merged = { effects: [], targets: [], optional: false };
+  for (const rawClause of clauses) {
+    const clause = rawClause.endsWith('.') ? rawClause : rawClause + '.';
+    const parsed = closedGenericEffect(card, clause);
+    if (!parsed || parsed.optional) return null;
+    const previousEffect = merged.effects.at(-1);
+    const followsTokenCreation = previousEffect &&
+      ['token-key', 'token-inline'].includes(previousEffect.action);
+    const tokenCounterReference = followsTokenCreation && new RegExp(
+      '^put (' + GENERIC_NUMBER + ') (\\+1\\/\\+1|-1\\/-1) counters? on it\\.$', 'i').test(clause);
+    // A pronoun after creating a token refers to that created object, not the
+    // permanent whose ability is resolving.  Only this closed follow-up is
+    // supported; other token-pronoun continuations must remain fail-closed.
+    if (followsTokenCreation && /\bit\b/i.test(clause) && !tokenCounterReference) return null;
+    const offset = merged.targets.length;
+    for (const effect of parsed.effects) {
+      const adjusted = { ...effect };
+      if (tokenCounterReference && adjusted.action === 'counter' && adjusted.target === 'self') {
+        adjusted.target = 'created-tokens';
+      }
+      if (typeof adjusted.target === 'number') adjusted.target += offset;
+      if (typeof adjusted.who === 'number') adjusted.who += offset;
+      merged.effects.push(adjusted);
+    }
+    merged.targets.push(...parsed.targets);
+  }
+  return merged;
+}
+
+function genericEventOperation(card, line) {
+  const subject = selfSubject(card, 'creature');
+  const patterns = [
+    { event: 'etb', filter: 'self', re: new RegExp('^When ' + subject + ' enters, (.+)$', 'i') },
+    { event: 'dies', filter: 'self', re: new RegExp('^When ' + subject + ' dies, (.+)$', 'i') },
+    { event: 'attacks', filter: 'self', re: new RegExp('^Whenever ' + subject + ' attacks, (.+)$', 'i') },
+    { event: 'combatDamageToPlayer', filter: 'self', re: new RegExp('^Whenever ' + subject + ' deals combat damage to a player, (.+)$', 'i') },
+    { event: 'becomesBlocked', filter: 'self-attacker', re: new RegExp('^Whenever ' + subject + ' becomes blocked, (.+)$', 'i') },
+    { event: 'blocks', filter: 'self-blocker', re: new RegExp('^Whenever ' + subject + ' blocks, (.+)$', 'i') },
+    { event: 'becameTapped', filter: 'self-card', re: new RegExp('^Whenever ' + subject + ' becomes tapped, (.+)$', 'i') },
+    { event: 'turnedFaceUp', filter: 'self-card', re: new RegExp('^When ' + subject + ' is turned face up, (.+)$', 'i') },
+    { event: 'upkeep', filter: 'your-upkeep', re: /^At the beginning of your upkeep, (.+)$/i },
+    { event: 'endStep', filter: 'your-end-step', re: /^At the beginning of your end step, (.+)$/i },
+    { event: 'beginCombat', filter: 'your-combat', re: /^At the beginning of combat on your turn, (.+)$/i },
+    { event: 'etb', filter: 'another-your-creature', re: /^Whenever another creature you control enters, (.+)$/i },
+    { event: 'dies', filter: 'another-your-creature', re: /^Whenever another creature you control dies, (.+)$/i },
+    { event: 'etb', filter: 'another-your-artifact', re: /^Whenever another artifact you control enters, (.+)$/i },
+    { event: 'castNonCreature', filter: 'your-cast', re: /^Whenever you cast a noncreature spell, (.+)$/i },
+    { event: 'castIS', filter: 'your-cast', re: /^Whenever you cast an instant or sorcery spell, (.+)$/i },
+    { event: 'draw', filter: 'your-draw', re: /^Whenever you draw a card, (.+)$/i },
+  ];
+  for (const pattern of patterns) {
+    const match = pattern.re.exec(line);
+    if (!match) continue;
+    const parsed = closedGenericEffectSequence(card, match[1]);
+    if (!parsed) return null;
+    return genericTrigger(pattern.event, parsed.effects, {
+      targets: parsed.targets,
+      optional: parsed.optional,
+      eventFilter: pattern.filter,
+    });
+  }
+  return null;
+}
+
+function expandedCreatureLine(card, line) {
+  const mechanic = expandedMechanicOperation(line);
+  if (mechanic) return mechanic;
+  const genericEvent = genericEventOperation(card, line);
+  if (genericEvent) return genericEvent;
+  const subject = selfSubject(card, 'creature');
+  let match = new RegExp('^When ' + subject +
+    ' enters, put (a|one|two|three) \\+1\\/\\+1 counters? on (up to one )?target creature( you control)?\\.$', 'i').exec(line);
+  if (match) {
+    return genericTrigger('etb', [{ action: 'counter', target: 0, counter: '+1/+1', n: numberWord(match[1]) }], {
+      targets: [genericTarget('creature', { controller: match[3] ? 'you' : 'any', min: match[2] ? 0 : 1 })],
+    });
+  }
+  match = new RegExp('^When ' + subject +
+    ' enters, (?:up to one )?target creature( an opponent controls)? gets ([+-]\\d+)\\/([+-]\\d+) until end of turn\\.$', 'i').exec(line);
+  if (match) {
+    return genericTrigger('etb', [{ action: 'pump', target: 0, power: Number(match[2]), toughness: Number(match[3]), keywords: [] }], {
+      targets: [genericTarget('creature', { controller: match[1] ? 'opponent' : 'any', min: /^When .*up to one/i.test(line) ? 0 : 1 })],
+    });
+  }
+  match = new RegExp('^When ' + subject +
+    ' enters, (you may )?(destroy|exile) (up to one )?target (creature(?: an opponent controls)?|artifact|enchantment|land|nonland permanent(?: an opponent controls)?)\\.$', 'i').exec(line);
+  if (match) {
+    const controller = /opponent controls/i.test(match[4]) ? 'opponent' : 'any';
+    const what = match[4].replace(/ an opponent controls/i, '').toLowerCase();
+    return genericTrigger('etb', [{ action: match[2].toLowerCase(), target: 0 }], {
+      optional: !!match[1], targets: [genericTarget(what, { controller, min: match[1] || match[3] ? 0 : 1 })],
+    });
+  }
+  match = new RegExp('^When ' + subject +
+    " enters, (you may )?return (up to one )?(?:other )?target (creature|permanent|nonland permanent|artifact|enchantment)( an opponent controls| you control)? to its owner's hand\\.$", 'i').exec(line);
+  if (match) {
+    const controller = match[4] ? (/opponent/i.test(match[4]) ? 'opponent' : 'you') : 'any';
+    return genericTrigger('etb', [{ action: 'bounce', target: 0 }], {
+      optional: !!match[1], targets: [genericTarget(match[3].toLowerCase(), {
+        controller,
+        min: match[1] || match[2] ? 0 : 1,
+        ...(/\bother target\b/i.test(line) ? { excludeSelf: true } : {}),
+      })],
+    });
+  }
+  match = new RegExp('^When ' + subject +
+    ' enters, (you may )?tap (up to one )?target creature( an opponent controls)?(?: and put a stun counter on it)?\\.$', 'i').exec(line);
+  if (match) {
+    const effects = [{ action: 'tap', target: 0 }];
+    if (/stun counter/i.test(line)) effects.push({ action: 'counter', target: 0, counter: 'stun', n: 1 });
+    return genericTrigger('etb', effects, {
+      optional: !!match[1], targets: [genericTarget('creature', {
+        controller: match[3] ? 'opponent' : 'any', min: match[1] || match[2] ? 0 : 1,
+      })],
+    });
+  }
+  match = new RegExp('^When ' + subject +
+    ' enters, (?:you )?draw (a|one|two|three) cards?(?: and (?:you )?lose (\\d+) life)?\\.$', 'i').exec(line);
+  if (match) {
+    const effects = [{ action: 'draw', who: 'you', n: numberWord(match[1]) }];
+    if (match[2]) effects.push({ action: 'lose-life', who: 'you', n: Number(match[2]) });
+    return genericTrigger('etb', effects);
+  }
+  match = new RegExp('^When ' + subject +
+    ' enters, (you may )?(?:target player )?mills? (one|two|three|four|five|\\d+) cards?\\.$', 'i').exec(line);
+  if (match) {
+    const targeted = /target player/i.test(line);
+    return genericTrigger('etb', [{ action: 'mill', who: targeted ? 0 : 'you', n: numberWord(match[2]) }], {
+      optional: !!match[1], targets: targeted ? [genericTarget('player', { zone: 'player', min: match[1] ? 0 : 1 })] : [],
+    });
+  }
+  if (new RegExp('^When ' + subject + ' enters, investigate\\.$', 'i').test(line)) {
+    return genericTrigger('etb', [{ action: 'investigate', who: 'you', n: 1 }]);
+  }
+  if (new RegExp('^When ' + subject + ' enters, proliferate\\.$', 'i').test(line)) {
+    return genericTrigger('etb', [{ action: 'proliferate', who: 'you' }]);
+  }
+  if (new RegExp('^When ' + subject + ' enters, you become the monarch\\.$', 'i').test(line)) {
+    return genericTrigger('etb', [{ action: 'monarch', who: 'you' }]);
+  }
+  match = new RegExp('^When ' + subject +
+    ' enters, creatures you control get ([+-]\\d+)\\/([+-]\\d+)(?: and gain (.+))? until end of turn\\.$', 'i').exec(line);
+  if (match) {
+    const keywords = match[3] ? keywordList(match[3]) : [];
+    if (match[3] && !keywords) return null;
+    return genericTrigger('etb', [{ action: 'pump-group', who: 'your-creatures', power: Number(match[1]), toughness: Number(match[2]), keywords }]);
+  }
+  match = new RegExp('^When ' + subject + ' dies, (you may )?draw a card\\.$', 'i').exec(line);
+  if (match) return genericTrigger('dies', [{ action: 'draw', who: 'you', n: 1 }], { optional: !!match[1] });
+  match = new RegExp('^When ' + subject + ' dies, create (a|one|two|three) (Treasure|Food|Clue) tokens?\\.$', 'i').exec(line);
+  if (match) return genericTrigger('dies', [{ action: 'token-key', who: 'you', n: numberWord(match[1]), tokenKey: match[2].toLowerCase() }]);
+  if (new RegExp('^When ' + subject + " dies, return it to its owner's hand\\.$", 'i').test(line)) {
+    return genericTrigger('dies', [{ action: 'return-source-to-hand' }]);
+  }
+  match = new RegExp('^When ' + subject + ' dies, (?:you may )?destroy target (land|artifact|enchantment)\\.$', 'i').exec(line);
+  if (match) return genericTrigger('dies', [{ action: 'destroy', target: 0 }], { targets: [genericTarget(match[1].toLowerCase())] });
+  if (new RegExp('^When ' + subject + ' dies, each opponent discards a card\\.$', 'i').test(line)) {
+    return genericTrigger('dies', [{ action: 'discard-each-opponent', n: 1 }]);
+  }
+  match = new RegExp('^When ' + subject + ' dies, put a \\+1\\/\\+1 counter on target creature you control\\.$', 'i').exec(line);
+  if (match) return genericTrigger('dies', [{ action: 'counter', target: 0, counter: '+1/+1', n: 1 }], {
+    targets: [genericTarget('creature', { controller: 'you' })],
+  });
+  match = new RegExp('^When ' + subject +
+    ' dies, target creature an opponent controls gets (-\\d+)\\/(-\\d+) until end of turn\\.$', 'i').exec(line);
+  if (match) return genericTrigger('dies', [{ action: 'pump', target: 0, power: Number(match[1]), toughness: Number(match[2]), keywords: [] }], {
+    targets: [genericTarget('creature', { controller: 'opponent' })],
+  });
+  match = new RegExp('^When ' + subject +
+    ' dies, return another target (artifact|creature) card from your graveyard to your hand\\.$', 'i').exec(line);
+  if (match) return genericTrigger('dies', [{ action: 'move-to-hand', target: 0 }], {
+    targets: [genericTarget(match[1].toLowerCase(), {
+      zone: 'graveyard', controller: 'you', excludeSelf: true,
+    })],
+  });
+  match = new RegExp('^When ' + subject + ' dies, each opponent loses (\\d+) life and you gain (\\d+) life\\.$', 'i').exec(line);
+  if (match) return genericTrigger('dies', [
+    { action: 'lose-life', who: 'each-opponent', n: Number(match[1]) },
+    { action: 'gain-life', who: 'you', n: Number(match[2]) },
+  ]);
+  match = new RegExp('^When ' + subject + ' dies, (?:it|' + escapeRegExp(card.name) + ') deals (\\d+) damage to any target\\.$', 'i').exec(line);
+  if (match) return genericTrigger('dies', [{ action: 'damage', target: 0, n: Number(match[1]) }], {
+    targets: [genericTarget('any', { zone: 'any' })],
+  });
+  match = new RegExp('^Whenever ' + subject +
+    ' deals (combat )?damage to (a player|an opponent), (you may )?draw a card\\.$', 'i').exec(line);
+  if (match) return genericTrigger(match[1] ? 'combatDamageToPlayer' : 'damageToPlayer', [{ action: 'draw', who: 'you', n: 1 }], {
+    optional: !!match[3],
+    ...(match[2].toLowerCase() === 'an opponent' ? { opponentOnly: true } : {}),
+  });
+  if (new RegExp('^Whenever ' + subject +
+    ' deals combat damage to a player, put a \\+1\\/\\+1 counter on (?:it|' + escapeRegExp(card.name) + ')\\.$', 'i').test(line)) {
+    return genericTrigger('combatDamageToPlayer', [{ action: 'counter', target: 'self', counter: '+1/+1', n: 1 }]);
+  }
+  if (new RegExp('^Whenever ' + subject +
+    ' deals combat damage to a player, that player discards a card\\.$', 'i').test(line)) {
+    return genericTrigger('combatDamageToPlayer', [{ action: 'discard-damaged-player', n: 1 }]);
+  }
+  match = new RegExp('^Whenever ' + subject + ' attacks, scry ([1-3])\\.$', 'i').exec(line);
+  if (match) return genericTrigger('attacks', [{ action: 'scry', who: 'you', n: Number(match[1]) }]);
+  match = new RegExp('^Whenever ' + subject + ' attacks, (?:you may )?tap target creature(?: defending player controls)?\\.$', 'i').exec(line);
+  if (match) return genericTrigger('attacks', [{ action: 'tap', target: 0 }], {
+    targets: [genericTarget('creature', { controller: /defending player/i.test(line) ? 'defending-player' : 'any' })],
+  });
+  match = new RegExp('^Landfall — Whenever a land you control enters, ' + subject +
+    ' gets \\+(\\d+)\\/\\+(\\d+) until end of turn\\.$', 'i').exec(line);
+  if (match) return genericTrigger('landfall', [{ action: 'pump', target: 'self', power: Number(match[1]), toughness: Number(match[2]), keywords: [] }]);
+  if (new RegExp('^Landfall — Whenever a land you control enters, put a \\+1\\/\\+1 counter on ' + subject + '\\.$', 'i').test(line)) {
+    return genericTrigger('landfall', [{ action: 'counter', target: 'self', counter: '+1/+1', n: 1 }]);
+  }
+  match = new RegExp('^Landfall — Whenever a land you control enters, ' + subject +
+    ' deals (\\d+) damage to each opponent\\.$', 'i').exec(line);
+  if (match) return genericTrigger('landfall', [{ action: 'damage', target: 'each-opponent', n: Number(match[1]) }]);
+  if (new RegExp('^Whenever you gain life, put a \\+1\\/\\+1 counter on ' + subject + '\\.$', 'i').test(line)) {
+    return genericTrigger('lifeGain', [{ action: 'counter', target: 'self', counter: '+1/+1', n: 1 }]);
+  }
+  if (/^Whenever you gain life, each opponent loses 1 life\.$/i.test(line)) {
+    return genericTrigger('lifeGain', [{ action: 'lose-life', who: 'each-opponent', n: 1 }]);
+  }
+  match = new RegExp('^' + subject + ' enters with (a|one|two|three|X) (\\+1\\/\\+1|-1\\/-1) counters? on it\\.$', 'i').exec(line);
+  if (match) return { kind: 'enters-with-counters', counter: match[2], n: match[1].toUpperCase() === 'X' ? 'X' : numberWord(match[1]), contract: 'permanent-enters-with-counters' };
+
+  match = /^(.+): (.+)$/.exec(line);
+  if (match) {
+    const cost = genericActivatedCost(match[1]);
+    let effect = match[2];
+    if (cost) {
+      const onceEachTurn = / Activate only once each turn\.$/i.test(effect);
+      const sorceryOnly = / Activate only as a sorcery\.$/i.test(effect) ||
+        / Activate only during your turn, before attackers are declared\.$/i.test(effect);
+      effect = effect.replace(/ Activate only once each turn\.$/i, '.')
+        .replace(/ Activate only as a sorcery\.$/i, '.')
+        .replace(/ Activate only during your turn, before attackers are declared\.$/i, '.');
+      const genericEffect = closedGenericEffectSequence(card, effect);
+      if (genericEffect) {
+        return genericAbility(cost, genericEffect.effects, {
+          targets: genericEffect.targets,
+          sorceryOnly,
+          onceEachTurn,
+        });
+      }
+      let result = new RegExp('^' + subject + ' gets ([+-]\\d+)\\/([+-]\\d+) until end of turn\\.(?: Activate only once each turn\\.)?$', 'i').exec(effect);
+      if (result) return genericAbility(cost, [{ action: 'pump', target: 'self', power: Number(result[1]), toughness: Number(result[2]), keywords: [] }], { onceEachTurn: /once each turn/i.test(effect) });
+      result = /^Tap target (creature|artifact|land|permanent)\.(?: Activate only during your turn, before attackers are declared\.)?$/i.exec(effect);
+      if (result) return genericAbility(cost, [{ action: 'tap', target: 0 }], { targets: [genericTarget(result[1].toLowerCase())], sorceryOnly: /only during your turn/i.test(effect) });
+      result = /^Untap target (creature|artifact|land|permanent)\.$/i.exec(effect);
+      if (result) return genericAbility(cost, [{ action: 'untap', target: 0 }], { targets: [genericTarget(result[1].toLowerCase())] });
+      result = new RegExp('^' + subject + ' deals (\\d+) damage to (any target|target player or planeswalker|each opponent)\\.(?: Activate only during your turn, before attackers are declared\\.)?$', 'i').exec(effect);
+      if (result) return genericAbility(cost, [{ action: 'damage', target: result[2].toLowerCase() === 'each opponent' ? 'each-opponent' : 0, n: Number(result[1]) }], {
+        targets: result[2].toLowerCase() === 'each opponent' ? [] : [genericTarget(result[2].toLowerCase(), { zone: 'any' })],
+        sorceryOnly: /only during your turn/i.test(effect),
+      });
+      result = /^Target creature( you control)? gets ([+-]\d+)\/([+-]\d+)(?: and gains? (.+))? until end of turn\.$/i.exec(effect);
+      if (result) {
+        const keywords = result[4] ? keywordList(result[4]) : [];
+        if (!result[4] || keywords) return genericAbility(cost, [{ action: 'pump', target: 0, power: Number(result[2]), toughness: Number(result[3]), keywords }], {
+          targets: [genericTarget('creature', { controller: result[1] ? 'you' : 'any' })],
+        });
+      }
+      result = /^Target creature( you control)? gains? (.+) until end of turn\.$/i.exec(effect);
+      if (result) {
+        const keywords = keywordList(result[2]);
+        if (keywords) return genericAbility(cost, [{ action: 'pump', target: 0, power: 0, toughness: 0, keywords }], {
+          targets: [genericTarget('creature', { controller: result[1] ? 'you' : 'any' })],
+        });
+      }
+      result = /^Draw a card(?:, then discard a card)?\.$/i.exec(effect);
+      if (result) return genericAbility(cost, /then discard/i.test(effect)
+        ? [{ action: 'draw', who: 'you', n: 1 }, { action: 'discard', who: 'you', n: 1 }]
+        : [{ action: 'draw', who: 'you', n: 1 }]);
+      result = /^You gain (\d+) life\.$/i.exec(effect);
+      if (result) return genericAbility(cost, [{ action: 'gain-life', who: 'you', n: Number(result[1]) }]);
+      result = /^Destroy target (artifact|enchantment|artifact or enchantment)\.$/i.exec(effect);
+      if (result) return genericAbility(cost, [{ action: 'destroy', target: 0 }], { targets: [genericTarget(result[1].toLowerCase())] });
+      result = /^Exile target card from a graveyard\.$/i.exec(effect);
+      if (result) return genericAbility(cost, [{ action: 'exile', target: 0 }], { targets: [genericTarget('card', { zone: 'graveyard' })] });
+    }
+  }
+
+  // Multi-block, exact blocker-count, attacks/blocks-alone, and lure clauses
+  // need declaration-wide combat legality primitives. Keep them outside the
+  // certified queue until those rules exist; accepting an inert static would
+  // make both deck import and the interaction audit lie.
+  if (new RegExp('^' + subject + ' can block an additional creature each combat\\.$', 'i').test(line)) return null;
+  if (new RegExp('^' + subject + ' can block any number of creatures\\.$', 'i').test(line)) return null;
+  match = new RegExp('^' + subject + " can\\'t be blocked by creatures with power (\\d+) or less\\.$", 'i').exec(line);
+  if (match) return genericStatic('self', { evasionMaxBlockerPower: Number(match[1]) });
+  if (new RegExp('^' + subject + " can\\'t be blocked by more than one creature\\.$", 'i').test(line)) return null;
+  if (new RegExp('^' + subject + " can\\'t attack or block alone\\.$", 'i').test(line)) return null;
+  if (new RegExp('^' + subject + ' must be blocked if able\\.$', 'i').test(line)) return null;
+  if (new RegExp('^' + subject + " can\\'t be blocked except by creatures with flying\\.$", 'i').test(line)) return genericStatic('self', { blockedOnlyByFlying: true });
+  if (new RegExp('^' + subject + " doesn't untap during your untap step\\.$", 'i').test(line)) {
+    return { kind: 'doesnt-untap', contract: 'untap-step-restriction' };
+  }
+  match = /^(Other )?(?:([A-Za-z][A-Za-z -]+) )?creatures you control get ([+-]\d+)\/([+-]\d+)\.$/i.exec(line);
+  if (match) {
+    return genericStatic(match[1] ? 'your-other-creatures' : 'your-creatures', {
+      subtype: match[2] ? match[2].trim() : null,
+      power: Number(match[3]),
+      toughness: Number(match[4]),
+    });
+  }
+  match = /^(Other )?(?:([A-Za-z][A-Za-z -]+) )?creatures you control have (.+)\.$/i.exec(line);
+  if (match) {
+    const keywords = keywordList(match[3]);
+    if (keywords) return genericStatic(match[1] ? 'your-other-creatures' : 'your-creatures', {
+      subtype: match[2] ? match[2].trim() : null,
+      keywords,
+    });
+  }
+  match = new RegExp('^During your turn, ' + subject + ' gets ([+-]\\d+)\\/([+-]\\d+)\\.$', 'i').exec(line);
+  if (match) return genericStatic('self', {
+    power: Number(match[1]), toughness: Number(match[2]), yourTurnOnly: true,
+  });
+  match = new RegExp('^During your turn, ' + subject + ' has (.+)\\.$', 'i').exec(line);
+  if (match) {
+    const keywords = keywordList(match[1]);
+    if (keywords) return genericStatic('self', { keywords, yourTurnOnly: true });
+  }
+  return null;
+}
+
+function expandedPermanentLine(card, line) {
+  const normalized = String(line || '').replace(
+    /\bthis (?:artifact|enchantment|land|Aura|Equipment|Vehicle)\b/gi,
+    match => match[0] === 'T' ? 'This creature' : 'this creature'
+  );
+  return expandedCreatureLine(card, normalized);
+}
+
 function creatureSemantics(card, rulesCore) {
   if (!/^-?\d+$/.test(String(card.power)) || !/^-?\d+$/.test(String(card.toughness))) {
     return { reason: 'dynamic-power-toughness' };
@@ -438,6 +1085,11 @@ function creatureSemantics(card, rulesCore) {
       implementation.push(token);
       continue;
     }
+    const expanded = expandedCreatureLine(card, line);
+    if (expanded) {
+      implementation.push(expanded);
+      continue;
+    }
     return { reason: 'oracle-needs-explicit-semantics' };
   }
   return {
@@ -475,6 +1127,52 @@ function landSemantics(card, rulesCore) {
     match = new RegExp('^When ' + subject + ' enters(?: the battlefield)?, scry 1\\.$', 'i').exec(line);
     if (match) {
       implementation.push({ kind: 'etb-scry', n: 1, contract: 'etb-library-selection' });
+      continue;
+    }
+    match = new RegExp('^' + subject + ' enters tapped unless you control (two|three) or (more|fewer) other lands\\.$', 'i').exec(line);
+    if (match) {
+      implementation.push({
+        kind: 'conditional-enters-tapped',
+        condition: 'other-land-count',
+        threshold: numberWord(match[1]),
+        comparison: match[2].toLowerCase(),
+        contract: 'conditional-land-entry',
+      });
+      continue;
+    }
+    match = new RegExp('^' + subject + ' enters tapped unless (?:you|a player) (?:has|have) (\\d+) or less life\\.$', 'i').exec(line);
+    if (match) {
+      implementation.push({
+        kind: 'conditional-enters-tapped',
+        condition: 'life-at-most',
+        threshold: Number(match[1]),
+        anyPlayer: /a player/i.test(line),
+        contract: 'conditional-land-entry',
+      });
+      continue;
+    }
+    if (new RegExp('^' + subject + ' enters tapped unless you have two or more opponents\\.$', 'i').test(line)) {
+      implementation.push({
+        kind: 'conditional-enters-tapped',
+        condition: 'opponents-at-least',
+        threshold: 2,
+        contract: 'conditional-land-entry',
+      });
+      continue;
+    }
+    match = new RegExp('^As ' + subject + " enters, you may pay (\\d+) life\\. If you don't, it enters tapped\\.$", 'i').exec(line);
+    if (match) {
+      implementation.push({
+        kind: 'conditional-enters-tapped',
+        condition: 'pay-life',
+        life: Number(match[1]),
+        contract: 'conditional-land-entry',
+      });
+      continue;
+    }
+    const expanded = expandedPermanentLine(card, line);
+    if (expanded) {
+      implementation.push(expanded);
       continue;
     }
     return { reason: 'land-needs-explicit-semantics' };
@@ -586,6 +1284,11 @@ function equipmentSemantics(card, rulesCore) {
       implementation.push({ kind: 'crew', n: Number(crew[1]), contract: 'crew-ability' });
       continue;
     }
+    const expanded = expandedPermanentLine(card, line);
+    if (expanded) {
+      implementation.push(expanded);
+      continue;
+    }
     return { reason: 'noncreature-needs-explicit-semantics' };
   }
   return {
@@ -627,6 +1330,11 @@ function auraSemantics(card, rulesCore) {
     }
     if (/^When this Aura enters, tap enchanted creature\.$/i.test(line)) {
       implementation.push({ kind: 'aura-etb-tap', contract: 'aura-etb-tap' });
+      continue;
+    }
+    const expanded = expandedPermanentLine(card, line);
+    if (expanded) {
+      implementation.push(expanded);
       continue;
     }
     return { reason: 'noncreature-needs-explicit-semantics' };
@@ -676,6 +1384,11 @@ function artifactSemantics(card, parsed, rulesCore) {
       implementation.push({ kind: 'crew', n: Number(crew[1]), contract: 'crew-ability' });
       continue;
     }
+    const expanded = expandedPermanentLine(card, line);
+    if (expanded) {
+      implementation.push(expanded);
+      continue;
+    }
     return { reason: 'noncreature-needs-explicit-semantics' };
   }
   return {
@@ -723,6 +1436,11 @@ function enchantmentSemantics(card, parsed, rulesCore) {
     }
     if (/^All creatures have haste\.$/i.test(line)) {
       implementation.push({ kind: 'global-creature-keyword-static', keyword: 'haste', contract: 'continuous-layer' });
+      continue;
+    }
+    const expanded = expandedPermanentLine(card, line);
+    if (expanded) {
+      implementation.push(expanded);
       continue;
     }
     return { reason: 'noncreature-needs-explicit-semantics' };
@@ -978,14 +1696,41 @@ function spellOperationNeedsTarget(operation) {
 
 function spellSemantics(card, rulesCore) {
   if (!rulesCore) return { reason: 'spell-needs-explicit-semantics' };
+  const v4Fallback = () => {
+    const modifiers = [];
+    const bodyLines = [];
+    for (const line of rulesCore.split('\n')) {
+      const modifier = spellModifierOperation(card, line);
+      if (modifier) modifiers.push(modifier);
+      else bodyLines.push(line);
+    }
+    if (!bodyLines.length) return { reason: 'spell-needs-explicit-semantics' };
+    const parsed = parseOracleSpellV4(card, bodyLines.join('\n'));
+    if (!parsed.ok) return { reason: 'spell-needs-explicit-semantics' };
+    return {
+      semanticClass: 'spell-v4-template',
+      implementedKeywords: [],
+      implementation: [...modifiers, {
+        kind: 'spell-v4',
+        parserVersion: parsed.parserVersion,
+        additionalCosts: parsed.additionalCosts,
+        targets: parsed.targets,
+        effects: parsed.effects,
+        operations: parsed.operations,
+        contract: 'spell-v4-closed-ast',
+      }],
+      oracleContracts: [...new Set([...modifiers.map(operation => operation.contract), 'spell-v4-closed-ast'])],
+      rulesCore,
+    };
+  };
   const implementation = [];
   for (const line of rulesCore.split('\n')) {
     const operation = spellLineOperation(card, line) || spellModifierOperation(card, line);
-    if (!operation) return { reason: 'spell-needs-explicit-semantics' };
+    if (!operation) return v4Fallback();
     implementation.push(operation);
   }
   if (implementation.filter(spellOperationNeedsTarget).length > 1) {
-    return { reason: 'spell-needs-explicit-semantics' };
+    return v4Fallback();
   }
   return {
     semanticClass: 'spell-template',
@@ -1083,6 +1828,34 @@ async function fetchOracleCards() {
     if (line.trim()) cards.push(JSON.parse(line));
   }
   return { bulk, cards };
+}
+
+export async function fetchOracleCardsFromGzip(sourceFile, bulk, expectedSha256 = '') {
+  const absolute = path.resolve(String(sourceFile || ''));
+  if (!sourceFile || !fs.existsSync(absolute)) {
+    throw new Error(`Pinned Oracle source file does not exist: ${absolute}`);
+  }
+  if (!bulk || bulk.type !== 'oracle_cards' || !bulk.id || !bulk.updated_at) {
+    throw new Error('Pinned Oracle source requires oracle_cards type, bulk ID, and updated timestamp.');
+  }
+  if (!/^[a-f0-9]{64}$/i.test(expectedSha256)) {
+    throw new Error('Pinned Oracle source requires --source-sha256 with exactly 64 hexadecimal characters.');
+  }
+
+  const hash = createHash('sha256');
+  for await (const chunk of fs.createReadStream(absolute)) hash.update(chunk);
+  const actualSha256 = hash.digest('hex');
+  if (actualSha256 !== expectedSha256.toLowerCase()) {
+    throw new Error(`Pinned Oracle source SHA-256 mismatch: got ${actualSha256}, expected ${expectedSha256.toLowerCase()}.`);
+  }
+
+  const input = fs.createReadStream(absolute).pipe(createGunzip());
+  const lines = readline.createInterface({ input, crlfDelay: Infinity });
+  const cards = [];
+  for await (const line of lines) {
+    if (line.trim()) cards.push(JSON.parse(line));
+  }
+  return { bulk: { ...bulk, sha256: actualSha256 }, cards };
 }
 
 function addReason(stats, examples, reason, card) {
@@ -1249,6 +2022,7 @@ export function createImportPlan({
       bulkId: bulk.id,
       bulkUpdatedAt: bulk.updated_at,
       bulkDescription: bulk.description,
+      ...(bulk.sha256 ? { bulkSha256: bulk.sha256 } : {}),
     },
     selectionPolicy: {
       games: ['paper'],
@@ -1256,6 +2030,7 @@ export function createImportPlan({
       sort: 'English card name, then Oracle ID',
       semanticClasses: [
         'vanilla', 'keyword-only', 'creature-template', 'land-mana-template', 'spell-template',
+        'spell-v4-template',
         'permanent-template', 'artifact-template', 'enchantment-template', 'equipment-template',
         'aura-template', 'vehicle-template',
       ],
@@ -1383,7 +2158,30 @@ export async function runOracleImport(args = process.argv.slice(2), dependencies
 
   const baseData = extractRawData(io.readFileSync(path.join(workspaceRoot, 'src', 'data.js'), 'utf8'));
   const reservations = reservedOracleCards(outputReportDir, io);
-  const loader = dependencies.fetchOracleCards || fetchOracleCards;
+  const sourceFile = argValue(args, 'source-file', '');
+  let loader = dependencies.fetchOracleCards;
+  if (!loader && sourceFile) {
+    const sourceUpdatedAt = argValue(args, 'source-updated-at', '');
+    const sourceBulkId = argValue(args, 'source-bulk-id', '');
+    const sourceSha256 = argValue(args, 'source-sha256', '');
+    if (!sourceUpdatedAt || !sourceBulkId) {
+      throw new Error('Pinned Oracle source requires --source-updated-at and --source-bulk-id.');
+    }
+    const pinnedBulk = {
+      type: 'oracle_cards',
+      id: sourceBulkId,
+      name: 'Oracle Cards',
+      updated_at: sourceUpdatedAt,
+      description: state.source && state.source.bulkDescription ||
+        'Pinned Scryfall Oracle Cards JSONL snapshot.',
+    };
+    loader = () => fetchOracleCardsFromGzip(
+      path.isAbsolute(sourceFile) ? sourceFile : path.join(workspaceRoot, sourceFile),
+      pinnedBulk,
+      sourceSha256,
+    );
+  }
+  loader ||= fetchOracleCards;
   const { bulk, cards } = await loader();
   const generatedAt = dependencies.now ? dependencies.now() : new Date().toISOString();
   const plan = createImportPlan({

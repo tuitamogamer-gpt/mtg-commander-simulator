@@ -8,6 +8,78 @@ function allEntries(MTG) {
     .filter(entry => entry.semanticClass !== 'manual-deck-semantic');
 }
 
+function assertExecutableOperation(MTG, entry, definition, operation) {
+  const implementation = definition.oracleImplementation || [];
+  assert.ok(implementation.some(candidate => JSON.stringify(candidate) === JSON.stringify(operation)),
+    `${entry.raw.name}: catalog keeps the exact compiled operation`);
+  assert.ok(definition.oracleContracts.includes(operation.contract),
+    `${entry.raw.name}: catalog exposes ${operation.contract}`);
+
+  if (operation.kind === 'spell-v4') {
+    assert.equal(operation.parserVersion, 4, `${entry.raw.name}: closed spell parser version`);
+    assert.equal(operation.contract, 'spell-v4-closed-ast', `${entry.raw.name}: closed spell contract`);
+    assert.equal(definition.oracleSpellV4, true, `${entry.raw.name}: spell-v4 reached the runtime compiler`);
+    assert.deepEqual(definition.oracleSpellV4Operation, operation,
+      `${entry.raw.name}: runtime retains the exact validated spell-v4 AST`);
+    assert.equal(typeof definition.resolve, 'function', `${entry.raw.name}: spell-v4 has an executable resolver`);
+    assert.equal(Array.isArray(operation.operations), true, `${entry.raw.name}: spell-v4 operations array`);
+    assert.equal(operation.operations.length, 1, `${entry.raw.name}: one closed top-level operation`);
+    assert.ok(['sequence', 'modal'].includes(operation.operations[0].kind),
+      `${entry.raw.name}: supported spell-v4 top-level operation`);
+    assert.equal(new Set(operation.targets.map(target => target.id)).size, operation.targets.length,
+      `${entry.raw.name}: unique spell-v4 target ids`);
+    assert.equal(new Set(operation.effects.map(effect => effect.id)).size, operation.effects.length,
+      `${entry.raw.name}: unique spell-v4 effect ids`);
+    for (const effect of operation.effects) {
+      assert.ok(MTG.ORACLE_SPELL_V4_RUNTIME.effectKinds.includes(effect.kind),
+        `${entry.raw.name}: executable spell-v4 effect ${effect.kind}`);
+    }
+    for (const cost of operation.additionalCosts) {
+      assert.ok(MTG.ORACLE_SPELL_V4_RUNTIME.costKinds.includes(cost.kind),
+        `${entry.raw.name}: executable spell-v4 additional cost ${cost.kind}`);
+    }
+    assert.ok(definition.targets || definition.modes, `${entry.raw.name}: spell-v4 exposes targets or modes`);
+    return;
+  }
+
+  if (operation.kind === 'generic-trigger') {
+    assert.ok((definition.triggers || []).some(trigger => trigger.desc === 'Oracle effect'),
+      `${entry.raw.name}: generic trigger compiled to an engine trigger`);
+    assert.ok(Array.isArray(operation.effects) && operation.effects.length,
+      `${entry.raw.name}: generic trigger has executable effects`);
+    assert.ok(Array.isArray(operation.targets), `${entry.raw.name}: generic trigger has a closed target list`);
+    return;
+  }
+  if (operation.kind === 'generic-ability') {
+    assert.ok((definition.abilities || []).some(ability => ability.label === 'Oracle ability'),
+      `${entry.raw.name}: generic ability compiled to an engine action`);
+    assert.ok(Array.isArray(operation.effects) && operation.effects.length,
+      `${entry.raw.name}: generic ability has executable effects`);
+    assert.ok(operation.cost && typeof operation.cost === 'object',
+      `${entry.raw.name}: generic ability has an explicit cost object`);
+    return;
+  }
+  if (operation.kind === 'generic-static') {
+    assert.ok((definition.statics || []).length, `${entry.raw.name}: generic static compiled into the layer engine`);
+    assert.ok(operation.scope, `${entry.raw.name}: generic static has a closed affected scope`);
+    return;
+  }
+  if (operation.kind.startsWith('mechanic-')) {
+    const adapterMechanics = new Set([
+      'mechanic-affinity-artifacts', 'mechanic-afterlife', 'mechanic-battle-cry',
+      'mechanic-bloodthirst', 'mechanic-bushido', 'mechanic-delve', 'mechanic-evolve',
+      'mechanic-exalted', 'mechanic-extort', 'mechanic-flanking', 'mechanic-improvise',
+      'mechanic-infect', 'mechanic-mentor', 'mechanic-myriad', 'mechanic-renown',
+      'mechanic-riot', 'mechanic-toxic', 'mechanic-training', 'mechanic-typecycling',
+      'mechanic-unleash',
+    ]);
+    if (adapterMechanics.has(operation.kind)) {
+      assert.equal(MTG.applyOracleMechanic({}, operation), true,
+        `${entry.raw.name}: ${operation.kind} is accepted by the real mechanic compiler`);
+    }
+  }
+}
+
 function namedFor(MTG, keyword) {
   const entry = allEntries(MTG).find(card => card.implementedKeywords.some(value =>
     value === keyword || keyword === 'ward' && value.startsWith('ward ')));
@@ -35,7 +107,10 @@ function permanent(MTG, game, player, name) {
 test('svaka generička Oracle batch karta mapira kompletan rules core na poznate interakcijske ugovore', () => {
   const MTG = loadEngine();
   const entries = allEntries(MTG);
-  assert.ok(entries.length >= 2600, `expected all 26 generic Oracle batches (2,600 cards), found ${entries.length}`);
+  const batches = MTG.ORACLE_BATCHES.filter(batch => batch.id !== 'moxfield-sauron-dark-lord');
+  assert.equal(batches.length, 46, 'frozen generic Oracle cohort has exactly 46 batches');
+  assert.ok(batches.every(batch => batch.cards.length === 100), 'every generic Oracle batch contains exactly 100 cards');
+  assert.equal(entries.length, 4600, `expected all 46 generic Oracle batches (4,600 cards), found ${entries.length}`);
   for (const entry of entries) {
     const catalog = MTG.CARD_CATALOG[entry.raw.name];
     const deck = { cards: [{ n: 1, name: entry.raw.name }] };
@@ -47,6 +122,7 @@ test('svaka generička Oracle batch karta mapira kompletan rules core na poznate
     for (const operation of entry.implementation || []) {
       assert.ok(MTG.ORACLE_INTERACTION_CONTRACTS[operation.contract], `${entry.raw.name}: known ${operation.contract}`);
       assert.ok(audit.contracts.some(contract => contract.id === operation.contract), `${entry.raw.name}: ${operation.contract}`);
+      assertExecutableOperation(MTG, entry, MTG.DEFS[entry.raw.name], operation);
     }
     for (const keyword of entry.implementedKeywords) {
       const mechanic = keyword.startsWith('ward ') ? 'ward' : keyword;

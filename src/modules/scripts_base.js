@@ -488,11 +488,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // se podtipovi koji se pojavljuju na ne-stvorenjima oduzimaju.
     {
       const creature = new Set(), other = new Set();
-      for (const raw of Object.values(rawCards)) {
-        const t = raw.types || [];
-        const isCre = t.includes('Creature') || t.includes('Kindred') || t.includes('Tribal');
-        for (const s of raw.subtypes || []) (isCre ? creature : other).add(s);
-      }
+      const collectSubtypes = (definition, includeKindred = false) => {
+        const t = definition.types || [];
+        const isCre = t.includes('Creature') || includeKindred && (t.includes('Kindred') || t.includes('Tribal'));
+        for (const s of definition.subtypes || []) (isCre ? creature : other).add(s);
+      };
+      for (const raw of Object.values(rawCards)) collectSubtypes(raw, true);
+      // Token-only creature types (for example Spawn) are still creature
+      // types for Changeling. Include both named and inline Oracle tokens,
+      // while noncreature token subtypes stay outside the creature vocabulary.
+      for (const token of Object.values(MTG.TOKENS || {})) collectSubtypes(token);
+      const collectInlineTokens = value => {
+        if (!value || typeof value !== 'object') return;
+        if (value.token && Array.isArray(value.token.types)) collectSubtypes(value.token);
+        for (const child of Object.values(value)) collectInlineTokens(child);
+      };
+      for (const script of Object.values(scripts || {})) collectInlineTokens(script.oracleImplementation);
       for (const s of other) creature.delete(s);
       MTG.CREATURE_SUBTYPES = creature;
     }

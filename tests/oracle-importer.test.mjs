@@ -3,10 +3,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
+import { gzipSync } from 'node:zlib';
 
 import {
   collectReservedOracleCards,
   createImportPlan,
+  fetchOracleCardsFromGzip,
   moduleSource,
   runOracleImport,
   semanticClass,
@@ -167,7 +170,9 @@ test('flat i wrapped reservations blokiraju i ime i Oracle ID uz legacy/state ko
 
 test('semantic gate odbija djelimične, kompleksne i dinamičke Oracle tekstove', () => {
   const cases = [
-    [oracleCard('Partial Creature', 'partial', { oracle_text: 'Flying\nWhenever this creature attacks, draw a card.' }), 'oracle-needs-explicit-semantics'],
+    [oracleCard('Partial Creature', 'partial', {
+      oracle_text: 'Flying\nWhenever this creature attacks, if you control an artifact, draw a card.',
+    }), 'oracle-needs-explicit-semantics'],
     [oracleCard('Complex Layout', 'complex', { layout: 'transform' }), 'complex-layout'],
     [oracleCard('Dynamic Body', 'dynamic', { power: '*', toughness: '*' }), 'dynamic-power-toughness'],
     [oracleCard('Unknown Permanent', 'walker', {
@@ -180,7 +185,40 @@ test('semantic gate odbija djelimične, kompleksne i dinamičke Oracle tekstove'
   }
 });
 
-test('spell parser prihvata samo potpuno prepoznat multiline tekst i najviše jednu ciljanu operaciju', () => {
+test('v4 combat statics stay fail-closed while another-target and your-turn contracts remain exact', () => {
+  for (const oracle_text of [
+    'This creature can block an additional creature each combat.',
+    'This creature can block any number of creatures.',
+    "This creature can't be blocked by more than one creature.",
+    "This creature can't attack or block alone.",
+    'This creature must be blocked if able.',
+  ]) {
+    assert.deepEqual(
+      semanticClass(oracleCard(`Unsupported ${oracle_text}`, `unsupported-${oracle_text}`, { oracle_text })),
+      { reason: 'oracle-needs-explicit-semantics' },
+      oracle_text,
+    );
+  }
+
+  const yourTurn = semanticClass(oracleCard('Daylight Beast', 'daylight-beast', {
+    oracle_text: 'During your turn, this creature gets +2/+0.',
+  }));
+  assert.equal(yourTurn.implementation[0].kind, 'generic-static');
+  assert.equal(yourTurn.implementation[0].yourTurnOnly, true);
+  assert.equal(yourTurn.implementation[0].power, 2);
+
+  const another = semanticClass(oracleCard('Other Mentor', 'other-mentor', {
+    oracle_text: 'When this creature enters, put one +1/+1 counter on another target creature you control.',
+  }));
+  assert.equal(another.implementation[0].targets[0].excludeSelf, true);
+
+  const recursion = semanticClass(oracleCard('Other Salvager', 'other-salvager', {
+    oracle_text: 'When this creature dies, return another target artifact card from your graveyard to your hand.',
+  }));
+  assert.equal(recursion.implementation[0].targets[0].excludeSelf, true);
+});
+
+test('spell parser prihvata samo potpuno prepoznat tekst i v4 čuva više ciljnih operacija', () => {
   const accepted = semanticClass(oracleCard('Multiline Spell', 'multi', {
     type_line: 'Sorcery', power: undefined, toughness: undefined,
     oracle_text: 'Draw two cards.\nYou gain 2 life.', mana_cost: '{2}{U}',
@@ -191,6 +229,15 @@ test('spell parser prihvata samo potpuno prepoznat multiline tekst i najviše je
     { kind: 'spell-life-gain', n: 2, contract: 'spell-life-gain' },
   ]);
 
+  const twoTarget = semanticClass(oracleCard('Two Target Spell', 'two-target-multi', {
+    type_line: 'Instant', power: undefined, toughness: undefined,
+    oracle_text: 'Destroy target creature.\nTap target creature.', mana_cost: '{2}{U}',
+  }));
+  assert.equal(twoTarget.semanticClass, 'spell-v4-template');
+  assert.equal(twoTarget.implementation[0].kind, 'spell-v4');
+  assert.equal(twoTarget.implementation[0].targets.length, 2);
+  assert.deepEqual(twoTarget.implementation[0].effects.map(effect => effect.kind), ['destroy', 'tap']);
+
   const rejected = [
     oracleCard('Conditional Spell', 'conditional-multi', {
       type_line: 'Sorcery', power: undefined, toughness: undefined,
@@ -199,10 +246,6 @@ test('spell parser prihvata samo potpuno prepoznat multiline tekst i najviše je
     oracleCard('Partial Spell', 'partial-multi', {
       type_line: 'Sorcery', power: undefined, toughness: undefined,
       oracle_text: 'Draw two cards.\nCreate a token.', mana_cost: '{2}{U}',
-    }),
-    oracleCard('Two Target Spell', 'two-target-multi', {
-      type_line: 'Instant', power: undefined, toughness: undefined,
-      oracle_text: 'Destroy target creature.\nTap target creature.', mana_cost: '{2}{U}',
     }),
   ];
   for (const card of rejected) {
@@ -340,6 +383,20 @@ test('morph, disguise i composite keyword/protection parser prihvataju samo tač
     assert.deepEqual(result.implementation, [entry.operation], entry.card.name);
   }
 
+  const twoTreasures = semanticClass(oracleCard('Two Treasures', 'two-treasures', {
+    oracle_text: 'When Two Treasures enters, create two Treasure tokens.',
+  }));
+  assert.equal(twoTreasures.semanticClass, 'creature-template');
+  assert.deepEqual(twoTreasures.implementation, [{
+    kind: 'generic-trigger',
+    event: 'etb',
+    effects: [{ action: 'token-key', who: 'you', n: 2, tokenKey: 'treasure' }],
+    targets: [],
+    optional: false,
+    contract: 'generic-trigger-effect',
+    eventFilter: 'self',
+  }]);
+
   const rejected = [
     oracleCard('Bad Morph', 'bad-morph', { oracle_text: 'Morph {S}' }),
     oracleCard('Bad Disguise', 'bad-disguise', { oracle_text: 'Disguise 2{U}' }),
@@ -422,9 +479,6 @@ test('novi creature trigger parser mapira oba loot reda, optional, Treasure, dis
   const rejected = [
     oracleCard('Loose Loot', 'loose-loot', {
       oracle_text: 'When Loose Loot enters, you may discard a card, then draw a card.',
-    }),
-    oracleCard('Two Treasures', 'two-treasures', {
-      oracle_text: 'When Two Treasures enters, create two Treasure tokens.',
     }),
     oracleCard('Everyone Discards', 'everyone-discards', {
       oracle_text: 'When Everyone Discards enters, each player discards a card.',
@@ -557,6 +611,52 @@ test('runOracleImport povezuje dry-run/write argumente i sve injected dependency
     assert.equal(logs.filter(message => message.startsWith('Wrote ')).length, 3,
       'injected logger receives all write destinations');
     assert.equal(fetchCalls, 4, 'two rejected plans, one dry-run and one write each use injected fetch');
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('pinned gzip loader verifies SHA-256 and preserves exact snapshot provenance', async () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'oracle-pinned-source-'));
+  const sourceFile = path.join(directory, 'oracle.jsonl.gz');
+  try {
+    const payload = `${JSON.stringify(oracleCard('Pinned Card', 'pinned-card'))}\n`;
+    const compressed = gzipSync(payload);
+    fs.writeFileSync(sourceFile, compressed);
+    const sha256 = createHash('sha256').update(compressed).digest('hex');
+    const loaded = await fetchOracleCardsFromGzip(sourceFile, bulk(), sha256.toUpperCase());
+    assert.equal(loaded.cards.length, 1);
+    assert.equal(loaded.cards[0].name, 'Pinned Card');
+    assert.equal(loaded.bulk.updated_at, SNAPSHOT_A);
+    assert.equal(loaded.bulk.sha256, sha256);
+    await assert.rejects(
+      fetchOracleCardsFromGzip(sourceFile, bulk(), '0'.repeat(64)),
+      /SHA-256 mismatch/,
+    );
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('runOracleImport reads a pinned local gzip without network and records checksum', async () => {
+  const directory = importerWorkspace();
+  const sourceFile = path.join(directory, 'oracle.jsonl.gz');
+  try {
+    const compressed = gzipSync(`${JSON.stringify(oracleCard('Pinned Wrapper Card', 'pinned-wrapper'))}\n`);
+    fs.writeFileSync(sourceFile, compressed);
+    const sha256 = createHash('sha256').update(compressed).digest('hex');
+    const result = await runOracleImport([
+      '--limit=1', '--batch=14', `--source-file=${sourceFile}`,
+      '--source-bulk-id=bulk-oracle-test', `--source-updated-at=${SNAPSHOT_A}`,
+      `--source-sha256=${sha256}`, `--expected-snapshot=${SNAPSHOT_A}`,
+    ], {
+      root: directory,
+      now: () => GENERATED_AT,
+      console: { log: () => {} },
+    });
+    assert.equal(result.report.cards[0].raw.name, 'Pinned Wrapper Card');
+    assert.equal(result.report.source.bulkSha256, sha256);
+    assert.equal(result.nextState.source.bulkSha256, sha256);
   } finally {
     fs.rmSync(directory, { recursive: true, force: true });
   }

@@ -438,6 +438,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       damage: card.zone === 'battlefield' ? card.damage || 0 : 0,
       counters: card.zone === 'battlefield' ? Object.freeze(Object.assign({}, card.counters || {})) : Object.freeze({}),
       keywords: Object.freeze(known ? kw.slice().sort() : []),
+      toxic: known && !(card.cur && card.cur.abilitiesDisabled) ? Math.max(0, Number(def && def.toxic) || 0) : 0,
       roles: sem.roles,
       synergyTags: sem.synergyTags,
       attachedTo: card.attachedTo || null,
@@ -474,6 +475,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         id: other.idx,
         name: other.name,
         life: other.life,
+        poison: Math.max(0, Number(other.poison) || 0),
         lost: !!other.lost,
         handCount: other.hand.length,
         libraryCount: other.library.length,
@@ -516,6 +518,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function getPlayerRow(view, id) { return view.players.find(player => player.id === id); }
   function controlledPermanents(view, id) { return view.battlefield.filter(card => card.controllerId === id); }
 
+  function publicPoisonPressure(creatures) {
+    return creatures.reduce((sum, card) => {
+      const power = Math.max(0, card.power || 0);
+      if (!power) return sum;
+      const hits = card.keywords.includes('double strike') ? 2 : 1;
+      return sum + ((card.keywords.includes('infect') ? power : 0) + (card.toxic || 0)) * hits;
+    }, 0);
+  }
+
   function permanentValue(card, profile) {
     if (!card || !card.known) return card && card.faceDown ? 2.1 : 0;
     let value = Math.max(0, card.power || 0) * 0.8 + Math.max(0, card.toughness || 0) * 0.28 + (card.manaValue || 0) * 0.2;
@@ -546,6 +557,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const board = controlledPermanents(view, targetPlayerId);
     const creatures = board.filter(card => card.roles.includes('creature'));
     const boardPower = creatures.reduce((sum, card) => sum + Math.max(0, card.power || 0) * (card.keywords.includes('double strike') ? 1.75 : 1), 0);
+    const lifeDamage = creatures.filter(card => !card.keywords.includes('infect'))
+      .reduce((sum, card) => sum + Math.max(0, card.power || 0) * (card.keywords.includes('double strike') ? 1.75 : 1), 0);
+    const poisonPressure = publicPoisonPressure(creatures);
     const evasivePower = creatures.filter(card => hasAny(card.keywords.join(' '), [/flying/, /trample/, /menace/, /unblockable/]))
       .reduce((sum, card) => sum + Math.max(0, card.power || 0), 0);
     const engineProgress = board.reduce((sum, card) => sum +
@@ -557,7 +571,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (commander && commander.ownerId === targetPlayerId) commanderLethal = Math.max(commanderLethal, Number(damage) || 0);
       }
     }
-    const immediateLethal = observer && (boardPower >= observer.life || commanderLethal >= 18) ? 1 : 0;
+    const immediateLethal = observer && (lifeDamage >= observer.life || commanderLethal >= 18 ||
+      poisonPressure > 0 && (observer.poison || 0) + poisonPressure >= 10) ? 1 : 0;
     const interactionRisk = clamp(target.openMana * 0.8 + target.handCount * 0.35 + (profile && profile.interactionDensity || 0) * 10, 0, 20);
     const recent = view.publicActions.slice(-18).filter(entry => entry.message.includes(target.name));
     const momentum = recent.reduce((score, entry) => score + (/vuče|draw|igra land|Treasure|mana/i.test(entry.message) ? 0.8 : 0), 0);
@@ -583,6 +598,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const lifeSafety = clamp(perspective.life / 40 * 25, -20, 35);
     const maxCommanderDamage = Math.max(0, ...Object.values(perspective.commanderDamage || {}).map(Number));
     const commanderDamageSafety = clamp((21 - maxCommanderDamage) * 1.2, -40, 25);
+    const poisonDanger = Math.max(0, perspective.poison || 0) * 2.5 + Math.max(0, (perspective.poison || 0) - 6) * 6;
     const cardAdvantage = perspective.handCount * 3.2 + perspective.graveyard.filter(card => card.roles.includes('recursion')).length * 1.3;
     const manaDevelopment = controlledPermanents(view, perspectivePlayerId).filter(card => card.roles.includes('land') || card.roles.includes('mana-rock') || card.roles.includes('ramp')).length * 2 + perspective.openMana * 0.4;
     const availableInteraction = interactionInHand(perspective) * 4 + perspective.openMana * 0.25;
@@ -606,9 +622,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       vulnerabilityToPlayers[opponent.id] = round(threat.immediateLethal * 60 + Math.max(0, threat.boardPower - board.filter(card => card.roles.includes('creature')).reduce((s, c) => s + Math.max(0, c.toughness || 0), 0)) * 0.7);
     }
     const immediateLossRisk = perspective.lost ? 1000 : clamp(Math.max(0, ...Object.values(vulnerabilityToPlayers)), 0, 100);
-    const myAttack = board.filter(card => card.roles.includes('creature')).reduce((sum, card) => sum + Math.max(0, card.power || 0), 0);
-    const immediateWinPotential = view.winnerId === perspectivePlayerId ? 1000 : opponents.some(opponent => myAttack >= opponent.life) ? 55 : clamp(comboProgress * 1.4, 0, 50);
-    const survival = lifeSafety + commanderDamageSafety - immediateLossRisk;
+    const myCreatures = board.filter(card => card.roles.includes('creature'));
+    const myAttack = myCreatures.filter(card => !card.keywords.includes('infect')).reduce((sum, card) => sum + Math.max(0, card.power || 0), 0);
+    const myPoison = publicPoisonPressure(myCreatures);
+    const immediateWinPotential = view.winnerId === perspectivePlayerId ? 1000 : opponents.some(opponent =>
+      myAttack >= opponent.life || myPoison > 0 && (opponent.poison || 0) + myPoison >= 10) ? 55 : clamp(comboProgress * 1.4, 0, 50);
+    const survival = lifeSafety + commanderDamageSafety - poisonDanger - immediateLossRisk;
     const w = Object.assign({ lifeSafety: 1, boardPresence: 1, cardAdvantage: 1, manaDevelopment: 1, interaction: 1, commanderProgress: 1, synergyProgress: 1, graveyardValue: 1, comboProgress: 1, recoveryPotential: 1 }, profile.weights || {});
     let totalScore = survival * w.lifeSafety + boardValue * w.boardPresence + cardAdvantage * w.cardAdvantage +
       manaDevelopment * w.manaDevelopment + availableInteraction * w.interaction + commanderProgress * w.commanderProgress +
@@ -616,7 +635,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       recoveryPotential * w.recoveryPotential + immediateWinPotential * 8 - immediateLossRisk * 8;
     if (view.gameOver) totalScore = view.winnerId === perspectivePlayerId ? 1000000 : perspective.lost ? -1000000 : -500000;
     const result = deepFreeze({
-      totalScore: round(totalScore), survival: round(survival), lifeSafety: round(lifeSafety), commanderDamageSafety: round(commanderDamageSafety),
+      totalScore: round(totalScore), survival: round(survival), lifeSafety: round(lifeSafety), commanderDamageSafety: round(commanderDamageSafety), poisonDanger: round(poisonDanger),
       boardValue: round(boardValue), cardAdvantage: round(cardAdvantage), manaDevelopment: round(manaDevelopment), availableInteraction: round(availableInteraction),
       commanderProgress: round(commanderProgress), synergyProgress: round(synergyProgress), comboProgress: round(comboProgress), graveyardValue: round(graveyardValue), recoveryPotential: round(recoveryPotential),
       immediateWinPotential: round(immediateWinPotential), immediateLossRisk: round(immediateLossRisk), threatFromPlayers, vulnerabilityToPlayers,
@@ -630,8 +649,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const payload = {
       t: view.turnNumber, a: view.activePlayerId, p: view.phase, s: view.step, w: view.winnerId,
       players: view.players.map(player => [player.id, player.life, player.lost, player.handCount, player.libraryCount, player.openMana,
-        Object.entries(player.commanderDamage || {}).sort(), player.graveyard.map(card => card.name).sort(), player.commandZone.map(card => [card.id, card.name])]),
-      battlefield: view.battlefield.map(card => [card.id, card.name, card.controllerId, card.tapped, card.power, card.toughness, card.damage, Object.entries(card.counters || {}).sort()]).sort((a, b) => a[0] - b[0]),
+        Object.entries(player.commanderDamage || {}).sort(), player.graveyard.map(card => card.name).sort(), player.commandZone.map(card => [card.id, card.name])]
+        .concat(player.poison > 0 ? [['poison', player.poison]] : [])),
+      battlefield: view.battlefield.map(card => [card.id, card.name, card.controllerId, card.tapped, card.power, card.toughness, card.damage, Object.entries(card.counters || {}).sort()]
+        .concat(card.keywords.includes('infect') || card.toxic > 0
+          ? [['poison', card.keywords.includes('infect'), card.toxic || 0]] : [])).sort((a, b) => a[0] - b[0]),
       stack: view.stack.map(item => [item.kind, item.name, item.controllerId, item.targetIds]),
     };
     const str = JSON.stringify(payload);
@@ -776,6 +798,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
   MTG.scoreBotOpponentChoice = opponentChoiceScore;
 
+  function projectedPlayerDamage(card, damage, damageEvents = 1) {
+    const infect = card.kw('infect');
+    const toxic = !(card.cur && card.cur.abilitiesDisabled) ? Math.max(0, Number(card.def.toxic) || 0) : 0;
+    return {
+      life: infect ? 0 : damage,
+      poison: (infect ? damage : 0) + (damage > 0 ? toxic * damageEvents : 0),
+    };
+  }
+
   // Procjena jednog napada UZ svijest o stvarnim blokovima branioca:
   // - "free block" (bloker ubija napadača i preživi) čini napad čistim gubitkom;
   // - trade se vrednuje razlikom vrijednosti;
@@ -806,11 +837,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     // očekivana šteta koja stvarno prolazi do mete
-    let expDamage;
-    if (!blockers.length) expDamage = hit;
-    else if (card.kw('trample') && Number.isFinite(minBlockerTough)) expDamage = Math.max(0, hit - minBlockerTough);
-    else expDamage = hit * 0.25; // branilac vjerovatno blokira profitabilan blok
-    const lethal = target instanceof U.Player && expDamage > 0 && expDamage >= target.life ? 90 : 0;
+    let expDamage, damageEvents;
+    const strikes = card.kw('double strike') ? 2 : 1;
+    if (!blockers.length) {
+      expDamage = hit;
+      damageEvents = baseHit > 0 ? strikes : 0;
+    } else if (card.kw('trample') && Number.isFinite(minBlockerTough)) {
+      expDamage = Math.max(0, hit - minBlockerTough);
+      damageEvents = (baseHit > minBlockerTough ? 1 : 0) + (strikes === 2 && expDamage > 0 ? 1 : 0);
+    } else {
+      expDamage = hit * 0.25; // branilac vjerovatno blokira profitabilan blok
+      damageEvents = baseHit > 0 ? strikes * 0.25 : 0;
+    }
+    const projected = projectedPlayerDamage(card, expDamage, damageEvents);
+    const poisonLethal = target instanceof U.Player && projected.poison > 0 &&
+      (target.poison || 0) + projected.poison >= 10;
+    const lethal = target instanceof U.Player && (poisonLethal || projected.life > 0 && projected.life >= target.life) ? 90 : 0;
     let commander = 0;
     if (card.commander && target instanceof U.Player && expDamage > 0) {
       const dealt = Number(target.commanderDamage && target.commanderDamage[card.iid] || 0);
@@ -832,11 +874,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (tapsForMana) risk += game.turnNo <= 12 ? 3.5 : 1.75; // čuvaj rani mana razvoj za main 2/reakcije
     const crackback = vigilance ? 0 : game.creatures(defender).filter(creature => !creature.tapped)
       .reduce((sum, creature) => sum + Math.max(0, creature.power || 0), 0) * 0.08;
-    const score = expDamage * 1.15 + lethal + commander + threat - risk - crackback;
+    const poisonPressure = target instanceof U.Player ? projected.poison * 2.5 : 0;
+    const score = expDamage * 1.15 + poisonPressure + lethal + commander + threat - risk - crackback;
     return {
       score, freeBlock, expectedDamage: expDamage, bestTradeLoss,
       blockable: blockers.length > 0, blockerCount: blockers.length,
-      dealsDamage, lethal: lethal > 0, commanderLethal: commander >= 120,
+      dealsDamage, lethal: lethal > 0, poisonLethal, commanderLethal: commander >= 120,
     };
   }
 
@@ -897,7 +940,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function blockAssignmentScore(game, blocker, attacker, defender) {
     const incoming = Math.max(0, game.dmgAmount ? game.dmgAmount(attacker, 'normal') : attacker.power || 0);
     const blockerHit = Math.max(0, game.dmgAmount ? game.dmgAmount(blocker, 'normal') : blocker.power || 0);
-    const savesLethal = incoming >= defender.life ? 90 : 0;
+    const strikes = attacker.kw('double strike') ? 2 : 1;
+    const projected = projectedPlayerDamage(attacker, incoming * strikes, strikes);
+    const savesLethal = projected.life > 0 && projected.life >= defender.life ||
+      projected.poison > 0 && (defender.poison || 0) + projected.poison >= 10 ? 90 : 0;
     const killsAttacker = blockerHit >= attacker.toughness || blocker.kw('deathtouch');
     const blockerDies = incoming >= blocker.toughness || attacker.kw('deathtouch');
     const enginePenalty = inferCardSemantics(blocker.def).roles.includes('engine') ? 6 : 0;
@@ -1203,6 +1249,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function targetValue(game, player, target, q) {
+    if (q && q.aiHint && q.aiHint.avoidCostSource && target === q.src) return -1000;
     const avoidedCopyTargets = q && q.aiHint && q.aiHint.copyTargetPolicy === 'spread'
       ? q.aiHint.copyUsedTargetIids || [] : [];
     if (target instanceof U.CardInst && avoidedCopyTargets.includes(target.iid)) return -1000;
@@ -1382,6 +1429,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const hint = q.aiHint && q.aiHint.kind || '';
     const value = cardDefinitionValue(card.def) + (card.commander ? 8 : 0);
     if (hint === 'crew') return -permanentGameValue(game, card, player);
+    if (hint === 'optionalLoot') {
+      if (card.commander) return -100;
+      const choices = q.from || player.hand || [];
+      const handLands = choices.filter(candidate => candidate.is('Land')).length;
+      const landsNeeded = Math.max(1, 3 - game.lands(player).length);
+      if (card.is('Land')) return handLands > landsNeeded ? 9 - value * 0.1 : -10;
+      const handPressure = choices.length >= 7 ? 4 : 2.25;
+      return handPressure - value;
+    }
     if (hint === 'wakandaBattlefield') {
       const duplicateLegend = (card.def.super || []).includes('Legendary') &&
         game.bf().some(existing => existing.ctrl === player && existing.name === card.name);
@@ -2809,7 +2865,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
-      if (hintKind === 'chooseType') {
+      if (hintKind === 'riot') {
+        const card = q.aiHint.card;
+        const canAttackNow = card && game.turnPlayer === player && game.phase === 'main1' && !card.tapped;
+        breakdown.choice = action.value === (canAttackNow ? 'haste' : 'counter') ? 12 : 0;
+      } else if (hintKind === 'payLifeForUntappedLand') {
+        const shouldPay = typeof MTG.shouldBotPayLifeForUntappedLand === 'function' &&
+          MTG.shouldBotPayLifeForUntappedLand(game, player, q.aiHint.card, q.aiHint.life);
+        if (action.value === 'pay') breakdown.choice = shouldPay ? 25 : -100;
+        else if (action.value === 'tapped') breakdown.choice = shouldPay ? -5 : 15;
+      } else if (hintKind === 'unleash') {
+        breakdown.choice = action.value === 'counter' ? 8 : 0;
+      } else if (hintKind === 'extort') {
+        breakdown.choice = action.value === 'yes' && player.life > 2 ? 8 : 0;
+      } else if (hintKind === 'chooseType') {
         const counts = q.aiHint.counts || {};
         const type = String(action.value || '');
         breakdown.choice = Number(counts[type] || action.option && action.option.count || 0) * 3 +
@@ -3436,7 +3505,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function fullStateFingerprint(game) {
     return JSON.stringify({
       turnNo: game.turnNo, phase: game.phase, step: game.step,
-      players: game.players.map(player => ({ idx: player.idx, life: player.life, lost: player.lost,
+      players: game.players.map(player => ({ idx: player.idx, life: player.life, poison: player.poison || 0, lost: player.lost,
         pool: player.pool, coloredOnlyPool: player.coloredOnlyPool,
         hand: player.hand.map(card => [card.iid, card.name, card.zone]), library: player.library.map(card => [card.iid, card.name, card.zone]),
         graveyard: player.graveyard.map(card => [card.iid, card.name, card.zone]), exile: player.exile.map(card => [card.iid, card.name, card.zone]), command: player.command.map(card => [card.iid, card.name, card.zone]) })),

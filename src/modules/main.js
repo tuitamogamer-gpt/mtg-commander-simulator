@@ -4161,7 +4161,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         try { styleMode = MTG.getAIStyleMode(g, p); } catch (error) { styleMode = null; }
       }
       return {
-        name: p.name, deck: p.deckName, life: p.life, lost: !!p.lost, isAI: !!p.isAI,
+        name: p.name, deck: p.deckName, life: p.life, poison: Number(p.poison) || 0, lost: !!p.lost, isAI: !!p.isAI,
         aiStyle: style ? p.aiStyle : undefined,
         aiStyleLabel: style ? style.label : undefined,
         aiSkill: skill ? skill.id : undefined,

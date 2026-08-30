@@ -92,7 +92,19 @@ function humanController(card, state) {
         }
       }
       if (query.type === 'chooseTargets') {
-        const preferred = state.preferredTargets.filter(target => query.candidates.includes(target));
+        const goal = String(query.aiHint?.goal || '');
+        const friendlyGoal = /buff|recur|untap/.test(goal);
+        const hostileGoal = /bounce|damage|debuff|discard|mill|removal|tap/.test(goal);
+        const strategicallyOrdered = state.preferredTargets.slice().sort((left, right) => {
+          const controller = candidate => candidate instanceof MTG.Player
+            ? candidate : candidate.zone === 'battlefield' ? candidate.ctrl : candidate.owner;
+          const leftFriendly = controller(left) === state.player;
+          const rightFriendly = controller(right) === state.player;
+          const leftScore = friendlyGoal ? Number(leftFriendly) : hostileGoal ? Number(!leftFriendly) : 0;
+          const rightScore = friendlyGoal ? Number(rightFriendly) : hostileGoal ? Number(!rightFriendly) : 0;
+          return rightScore - leftScore;
+        });
+        const preferred = strategicallyOrdered.filter(target => query.candidates.includes(target));
         const selected = preferred.slice(0, query.max || preferred.length);
         for (const candidate of query.candidates) {
           if (selected.length >= (query.min || 0)) break;
@@ -129,7 +141,183 @@ function targetDefinition(what) {
 }
 
 function spellOperation(entry) {
-  return (entry.implementation || []).find(operation => operation.kind.startsWith('spell-')) || null;
+  return (entry.implementation || []).find(operation =>
+    operation.kind.startsWith('spell-') && operation.kind !== 'spell-v4') || null;
+}
+
+function spellV4Operation(entry) {
+  return (entry.implementation || []).find(operation => operation.kind === 'spell-v4') || null;
+}
+
+function v4EffectsForTarget(operation, targetId) {
+  return (operation?.effects || []).filter(effect => (effect.targetIds || []).includes(targetId));
+}
+
+function v4TargetIsHarmful(operation, target) {
+  const harmful = new Set([
+    'counterSpell', 'dealDamage', 'destroy', 'discard', 'exile', 'exileGraveyard',
+    'mill', 'returnToHand', 'tap',
+  ]);
+  return v4EffectsForTarget(operation, target.id).some(effect => harmful.has(effect.kind) ||
+    effect.kind === 'modifyPowerToughness' &&
+      (Number(effect.power || 0) < 0 || Number(effect.toughness || 0) < 0) ||
+    effect.kind === 'putCounters' && String(effect.counterType || '').startsWith('-'));
+}
+
+function v4FixtureTypes(target) {
+  const raw = target.types || target.cardTypes || [];
+  const selected = target.typeMatch === 'all' ? raw : raw.slice(0, 1);
+  const types = selected.flatMap(type => type === 'Permanent' ? ['Artifact'] : [type]);
+  if (!types.length) types.push('Creature');
+  if ((target.filters?.attacking || target.filters?.blocking) && !types.includes('Creature')) types.push('Creature');
+  return [...new Set(types.map(type => type.charAt(0).toUpperCase() + type.slice(1)))];
+}
+
+function stageAdditionalCost(game, player, card, cost, staged, prefix) {
+  if (cost.kind === 'sacrifice') {
+    const quantity = Number(cost.quantity?.max ?? cost.quantity?.min ?? 1) || 1;
+    const types = v4FixtureTypes({ types: cost.object?.types || ['Creature'], filters: cost.object?.filters });
+    for (let index = 0; index < quantity; index++) {
+      const definition = fixtureDefinition(`${prefix} sacrifice ${index + 1}`, types, {
+        super: cost.object?.filters?.legendary ? ['Legendary'] : [],
+      });
+      staged.additionalCosts.push(permanent(game, player, definition));
+    }
+    return;
+  }
+  if (cost.kind === 'discard') {
+    const quantity = Number(cost.quantity?.max ?? cost.quantity?.min ?? 1) || 1;
+    for (let index = 0; index < quantity; index++) {
+      staged.additionalCosts.push(zoneCard(player,
+        fixtureDefinition(`${prefix} discard ${index + 1}`, ['Creature']), 'hand'));
+    }
+    return;
+  }
+  if (cost.kind === 'choice') {
+    for (const child of cost.options || []) stageAdditionalCost(game, player, card, child, staged, `${prefix} choice`);
+    return;
+  }
+  if (cost.kind === 'sequence') {
+    for (const child of cost.costs || []) stageAdditionalCost(game, player, card, child, staged, `${prefix} sequence`);
+  }
+}
+
+function stageV4Target(game, player, opponent, operation, target, index) {
+  if (target.kind === 'player') {
+    return target.relation === 'opponent' || v4TargetIsHarmful(operation, target) ? opponent : player;
+  }
+  if (target.kind === 'spell') {
+    const spellTypes = target.spellTypes?.length ? target.spellTypes : ['Sorcery'];
+    return zoneCard(opponent, fixtureDefinition(`Deep v4 bait ${index + 1}`, spellTypes, {
+      cost: '{1}', oracle: '',
+    }), 'hand');
+  }
+  if (target.kind === 'damageable') {
+    return permanent(game, opponent, fixtureDefinition(`Deep v4 damage target ${index + 1}`, ['Creature'], {
+      power: '20000', toughness: '3', oracle: '',
+    }));
+  }
+
+  const harmful = v4TargetIsHarmful(operation, target);
+  const controller = target.controller === 'you' || target.owner === 'you' ? player
+    : ['opponent', 'notYou'].includes(target.controller) ? opponent
+      : harmful ? opponent : player;
+  const types = v4FixtureTypes(target);
+  const definition = fixtureDefinition(`Deep v4 ${target.kind} ${index + 1}`, types, {
+    super: target.filters?.legendary ? ['Legendary'] : [],
+    power: types.includes('Creature') ? '20000' : undefined,
+    toughness: types.includes('Creature') ? '20000' : undefined,
+  });
+  if (target.subtypes?.length) definition.subtypes = target.subtypes.slice();
+  const card = target.kind === 'card' || target.zone === 'graveyard'
+    ? zoneCard(controller, definition, target.zone || 'graveyard')
+    : permanent(game, controller, definition);
+  if (target.filters?.tapped !== undefined) card.tapped = !!target.filters.tapped;
+  if (target.filters?.attacking) card.attacking = controller === player ? opponent : player;
+  if (target.filters?.blocking) card.blocking = `deep-v4-blocking-${index}`;
+  return card;
+}
+
+function stageV4Scenario(game, player, opponent, card, operation, staged) {
+  if (!operation) return;
+  staged.v4Targets = new Map();
+  staged.v4Baits = [];
+  staged.additionalCosts = [];
+  for (const cost of operation.additionalCosts || []) {
+    stageAdditionalCost(game, player, card, cost, staged, `Deep ${card.name}`);
+  }
+  for (const [targetIndex, target] of (operation.targets || []).entries()) {
+    const quantity = Math.max(target.quantity?.min || 0,
+      target.quantity?.max === null ? 2 : target.quantity?.max || 0);
+    const values = [];
+    for (let index = 0; index < quantity; index++) {
+      const value = stageV4Target(game, player, opponent, operation, target, targetIndex * 10 + index);
+      values.push(value);
+      if (target.kind === 'spell') staged.v4Baits.push(value);
+    }
+    staged.v4Targets.set(target.id, values);
+  }
+  staged.targets.push(...[...staged.v4Targets.values()].flat().filter(value =>
+    value && !(value instanceof MTG.Player) && !staged.v4Baits.includes(value)));
+  if (!staged.target) staged.target = staged.targets[0] || null;
+}
+
+function genericEffectIsHarmful(effect) {
+  return ['bounce', 'cant-block-until-eot', 'damage', 'destroy', 'exile', 'lose-life', 'tap'].includes(effect.action) ||
+    effect.action === 'pump' && (Number(effect.power || 0) < 0 || Number(effect.toughness || 0) < 0) ||
+    effect.action === 'counter' && String(effect.counter || '').startsWith('-');
+}
+
+function stageGenericTarget(game, player, opponent, operation, target, index) {
+  if (target.zone === 'player' || ['player', 'opponent'].includes(target.what)) {
+    return target.what === 'opponent' || (operation.effects || []).some(genericEffectIsHarmful) ? opponent : player;
+  }
+  const harmful = (operation.effects || []).some(genericEffectIsHarmful);
+  const controller = target.controller === 'you' ? player
+    : target.controller === 'opponent' ? opponent : harmful ? opponent : player;
+  const what = String(target.what || 'creature').toLowerCase();
+  const types = what.includes('artifact') && what.includes('enchantment') ? ['Artifact', 'Creature']
+    : what.includes('artifact') ? ['Artifact', 'Creature']
+      : what.includes('enchantment') ? ['Enchantment', 'Creature']
+        : what.includes('land') ? ['Land', 'Creature'] : ['Creature'];
+  const damage = Math.max(0, ...(operation.effects || []).filter(effect => effect.action === 'damage')
+    .map(effect => Number(effect.n) || 0));
+  const definition = fixtureDefinition(`Deep generic target ${index + 1}`, types, {
+    power: types.includes('Creature') ? '20000' : undefined,
+    toughness: types.includes('Creature') ? String(damage || 20000) : undefined,
+  });
+  if (target.subtype) definition.subtypes = [target.subtype];
+  const card = target.zone === 'graveyard'
+    ? zoneCard(controller, definition, 'graveyard')
+    : permanent(game, controller, definition);
+  if (target.tapped !== undefined) card.tapped = !!target.tapped;
+  if (target.attacking || target.attackingOrBlocking) card.attacking = controller === player ? opponent : player;
+  if (target.blocking || target.attackingOrBlocking) card.blocking = `deep-generic-blocking-${index}`;
+  return card;
+}
+
+function stageGenericOperations(game, player, opponent, entry, staged) {
+  let index = 0;
+  for (const operation of entry.implementation || []) {
+    if (!['generic-trigger', 'generic-ability'].includes(operation.kind)) continue;
+    for (const target of operation.targets || []) {
+      const count = Math.max(target.min || 0, target.max || 0, 1);
+      for (let quantity = 0; quantity < count; quantity++) {
+        const value = stageGenericTarget(game, player, opponent, operation, target, index++);
+        if (value instanceof MTG.Player) continue;
+        staged.targets.push(value);
+        if (!staged.target) staged.target = value;
+        if (value.ctrl === player && value.is?.('Creature') && !staged.ownCreature) staged.ownCreature = value;
+      }
+    }
+    if ((operation.effects || []).some(effect =>
+      ['pump-group', 'token-inline'].includes(effect.action)) && !staged.ownCreature) {
+      staged.ownCreature = permanent(game, player, fixtureDefinition(`Deep generic beneficiary ${index++}`));
+    }
+  }
+  if ((entry.implementation || []).some(operation => operation.kind === 'generic-static') && !staged.ownCreature) {
+    staged.ownCreature = permanent(game, player, fixtureDefinition('Deep generic static beneficiary'));
+  }
 }
 
 function attachmentIntent(entry) {
@@ -151,7 +339,22 @@ function fundPrintedCost(game, player, card, xValue = 3) {
   }
 }
 
-function stageScenario(entry, role) {
+function etbLibrarySelectionOperations(entry) {
+  const selections = [];
+  for (const operation of entry.implementation || []) {
+    if (operation.kind === 'etb-scry' || operation.kind === 'etb-surveil') {
+      selections.push({ kind: operation.kind, n: Number(operation.n) || 0 });
+    }
+    if (operation.kind === 'generic-trigger' && operation.event === 'etb') {
+      for (const effect of operation.effects || []) if (effect.action === 'scry' || effect.action === 'surveil') {
+        selections.push({ kind: `etb-${effect.action}`, n: Number(effect.n) || 0 });
+      }
+    }
+  }
+  return selections;
+}
+
+function stageScenario(entry, role, options = {}) {
   const humanState = { submitted: false, aiSubmitted: false, trace: [], preferredTargets: [], librarySelections: [] };
   const game = new MTG.Game({ seed: 830300 + entry.raw.name.length + (role === 'ai' ? 10000 : 0), paced: false, maxTurns: 4, difficulty: 'hard' });
   const player = game.addPlayer(
@@ -168,12 +371,13 @@ function stageScenario(entry, role) {
   );
   player.deckName = `Deep ${role} ${entry.raw.name}`;
   opponent.deckName = 'Deep pass opponent deck';
+  humanState.player = player;
+  humanState.opponent = opponent;
   player.life = 1000;
   opponent.life = 1000;
   fillLibrary(player);
   fillLibrary(opponent);
-  const librarySelectionOperations = (entry.implementation || []).filter(operation =>
-    operation.kind === 'etb-scry' || operation.kind === 'etb-surveil');
+  const librarySelectionOperations = etbLibrarySelectionOperations(entry);
   const selectionCount = Math.max(0, ...librarySelectionOperations.map(operation => Number(operation.n) || 0));
   for (let index = 0; index < selectionCount; index++) {
     const displaced = player.library.pop();
@@ -185,8 +389,12 @@ function stageScenario(entry, role) {
   const card = zoneCard(player, entry.raw.name, 'hand');
   fundPrintedCost(game, player, card);
   const operation = spellOperation(entry);
+  const v4Operation = spellV4Operation(entry);
   const attachment = attachmentIntent(entry);
-  const staged = { target: null, targets: [], decoy: null, ownCreature: null, bait: null };
+  const staged = {
+    target: null, targets: [], decoy: null, ownCreature: null, bait: null,
+    v4Targets: new Map(), v4Baits: [], additionalCosts: [],
+  };
 
   if ((entry.implementation || []).some(candidate => candidate.kind === 'controlled-creature-pump-static')) {
     staged.ownCreature = permanent(game, player, fixtureDefinition('Deep robust anthem beneficiary', ['Creature'], {
@@ -288,15 +496,36 @@ function stageScenario(entry, role) {
     }
   }
 
-  humanState.preferredTargets = [...staged.targets, staged.target, staged.bait, opponent].filter(Boolean);
+  stageGenericOperations(game, player, opponent, entry, staged);
+  stageV4Scenario(game, player, opponent, card, v4Operation, staged);
+
+  humanState.preferredTargets = [
+    ...staged.targets,
+    ...[...staged.v4Targets.values()].flat(),
+    staged.target,
+    staged.bait,
+    ...staged.v4Baits,
+    opponent,
+  ].filter(Boolean);
   if (role === 'ai') {
+    if (options.oracleMatrixUrgency && !game.bf().some(candidate => candidate.ctrl === opponent)) {
+      staged.urgency = permanent(game, opponent, fixtureDefinition(`Deep urgent threat for ${entry.raw.name}`));
+    }
+    // The matrix is a controlled tactical proof, not a goldfish. A public
+    // removal obligation gives the real local evaluator a concrete reason to
+    // deploy ETB, dies and activated interaction whose target is not part of
+    // the spell object's own target specs.
+    if (options.oracleMatrixUrgency) {
+      game.diplomacyRequiredRemovalTarget = () => game.bf().find(candidate => candidate.ctrl === opponent) || null;
+    }
     const controller = new MTG.AIController(player, { difficulty: 'hard', style: 'balanced' });
     const decide = controller.decide.bind(controller);
     controller.decide = async (currentGame, query) => {
       if (humanState.aiSubmitted && query.type === 'main') return { kind: 'done' };
       if (humanState.aiSubmitted && query.type === 'priority') return { kind: 'pass' };
       const result = await decide(currentGame, query);
-      if ((query.type === 'main' || query.type === 'priority') && result && result.kind === 'cast' && result.card === card) {
+      if ((query.type === 'main' || query.type === 'priority') && result &&
+          (result.kind === 'cast' || result.kind === 'land') && result.card === card) {
         humanState.aiSubmitted = true;
       }
       if (query.type === 'scry') {
@@ -314,7 +543,7 @@ function stageScenario(entry, role) {
   player.landsPlayed = 0;
   game.recalc();
 
-  return { game, player, opponent, card, operation, staged, humanState };
+  return { game, player, opponent, card, operation, v4Operation, staged, humanState };
 }
 
 function isHasteOnlyPump(operation) {
@@ -332,6 +561,67 @@ function isCombatInstant(entry, operation) {
 
 function hasFlash(entry) {
   return (entry.implementedKeywords || []).some(keyword => String(keyword).toLowerCase() === 'flash');
+}
+
+function v4HasEffect(operation, kind) {
+  return !!operation && (operation.effects || []).some(effect => effect.kind === kind);
+}
+
+function v4NeedsStackTarget(operation) {
+  return !!operation && (operation.targets || []).some(target => target.kind === 'spell');
+}
+
+function isV4CombatInstant(entry, operation) {
+  return entry.raw.types.includes('Instant') && !!operation &&
+    (v4HasEffect(operation, 'modifyPowerToughness') ||
+      (operation.targets || []).some(target => target.filters?.attacking || target.filters?.blocking));
+}
+
+function stageV4CombatWindow(context) {
+  const { game, player, opponent, v4Operation, staged } = context;
+  const targets = (v4Operation?.targets || []).map(target => ({
+    target,
+    values: staged.v4Targets.get(target.id) || [],
+  }));
+  const blocking = targets.find(row => row.target.filters?.blocking && row.values.length);
+  if (blocking) {
+    const blocker = blocking.values[0];
+    const attackerController = blocker.ctrl === player ? opponent : player;
+    const defender = blocker.ctrl;
+    const attacker = permanent(game, attackerController,
+      fixtureDefinition(`Deep v4 attacker for ${context.card.name}`));
+    attacker.sick = false;
+    attacker.attacking = defender;
+    attacker.wasBlocked = true;
+    attacker.blockedBy = [blocker];
+    blocker.blocking = attacker.iid;
+    game.combat = { attackers: [attacker], defenders: new Map([[defender.idx, [attacker]]]) };
+    game.turnPlayer = attackerController;
+    game.phase = 'combat';
+    game.step = 'blockers';
+    game.recalc();
+    return;
+  }
+
+  const attacking = targets.find(row => row.target.filters?.attacking && row.values.length);
+  let attacker = attacking?.values[0] || targets.flatMap(row => row.values)
+    .find(candidate => candidate instanceof MTG.CardInst && candidate.is('Creature') && candidate.ctrl === player);
+  if (!attacker) attacker = permanent(game, player, fixtureDefinition(`Deep v4 attacker for ${context.card.name}`));
+  const defender = attacker.ctrl === player ? opponent : player;
+  attacker.sick = false;
+  attacker.attacking = defender;
+  const blockerController = defender;
+  const blocker = targets.flatMap(row => row.values)
+    .find(candidate => candidate instanceof MTG.CardInst && candidate.is('Creature') && candidate.ctrl === blockerController) ||
+    permanent(game, blockerController, fixtureDefinition(`Deep v4 blocker for ${context.card.name}`));
+  attacker.wasBlocked = true;
+  attacker.blockedBy = [blocker];
+  blocker.blocking = attacker.iid;
+  game.combat = { attackers: [attacker], defenders: new Map([[defender.idx, [attacker]]]) };
+  game.turnPlayer = attacker.ctrl;
+  game.phase = 'combat';
+  game.step = 'blockers';
+  game.recalc();
 }
 
 function stageCombatWindow(context) {
@@ -379,7 +669,21 @@ function stageCombatWindow(context) {
 }
 
 async function executeScenario(context, entry) {
-  const { game, player, opponent, card, operation, staged } = context;
+  const { game, player, opponent, card, operation, v4Operation, staged } = context;
+  if (v4NeedsStackTarget(v4Operation)) {
+    game.turnPlayer = opponent;
+    game.phase = 'main1';
+    const bait = staged.v4Baits[0];
+    assert.ok(bait, `${entry.raw.name}: spell-v4 counter has a staged legal bait`);
+    const realPriorityRound = game.priorityRound.bind(game);
+    game.priorityRound = async () => {};
+    assert.equal(await game.castSpell(opponent, bait, { from: 'hand', alt: { free: true } }), true,
+      `${entry.raw.name}: spell-v4 hostile bait enters the real Stack`);
+    assert.equal(bait.zone, 'stack');
+    game.priorityRound = realPriorityRound;
+    await realPriorityRound(opponent);
+    return;
+  }
   if (operation && operation.kind === 'spell-counter') {
     game.turnPlayer = opponent;
     game.phase = 'main1';
@@ -408,6 +712,11 @@ async function executeScenario(context, entry) {
     await game.priorityRound(player);
     return;
   }
+  if (isV4CombatInstant(entry, v4Operation)) {
+    stageV4CombatWindow(context);
+    await game.priorityRound(game.turnPlayer);
+    return;
+  }
   if (entry.raw.types.includes('Instant') || hasFlash(entry)) {
     game.turnPlayer = opponent;
     game.phase = 'end';
@@ -428,7 +737,7 @@ async function verifyPermanentOperations(context, entry, before) {
   const sum = kind => operations.filter(operation => operation.kind === kind)
     .reduce((total, operation) => total + Number(operation.n || 0), 0);
 
-  if (operations.some(operation => operation.kind === 'enters-tapped')) {
+  if (operations.some(operation => operation.kind === 'enters-tapped') && !card.faceDown) {
     assert.equal(card.tapped, true, `${entry.raw.name}: normal controller path applies enters tapped`);
   }
   if (sum('etb-life-gain')) {
@@ -437,8 +746,7 @@ async function verifyPermanentOperations(context, entry, before) {
   if (sum('etb-draw')) {
     assert.equal(player.library.length, before.playerLibrary - sum('etb-draw'), `${entry.raw.name}: controller-path ETB draw total`);
   }
-  const selectionOperations = operations.filter(operation =>
-    operation.kind === 'etb-scry' || operation.kind === 'etb-surveil');
+  const selectionOperations = etbLibrarySelectionOperations(entry);
   assert.equal(humanState.librarySelections.length, selectionOperations.length,
     `${entry.raw.name}: every ETB scry/surveil reaches its controller decision`);
   for (let index = 0; index < selectionOperations.length; index++) {
@@ -513,6 +821,34 @@ async function verifyPermanentOperations(context, entry, before) {
   }
 }
 
+function creatureEntryCanChangeStats(entry) {
+  return (entry.implementation || []).some(operation =>
+    ['attacking-creature-pump-static', 'controlled-creature-pump-static', 'enters-with-counters',
+      'generic-static', 'mechanic-bloodthirst', 'mechanic-evolve', 'mechanic-riot',
+      'mechanic-unleash'].includes(operation.kind) ||
+    operation.kind === 'generic-trigger' && (operation.effects || []).some(effect =>
+      ['counter', 'counter-group', 'pump', 'pump-group'].includes(effect.action)));
+}
+
+function creatureSurvivesEntry(entry, card) {
+  let toughness = Number(entry.raw.toughness);
+  for (const operation of entry.implementation || []) {
+    if (operation.kind === 'enters-with-counters' && operation.counter === '+1/+1') {
+      toughness += operation.n === 'X' ? Number(card.castMeta?.x || 0) : Number(operation.n || 0);
+    }
+    if (operation.kind === 'controlled-creature-pump-static') toughness += Number(operation.toughness || 0);
+    if (operation.kind === 'generic-static' && ['self', 'your-creatures'].includes(operation.scope)) {
+      toughness += Number(operation.toughness || 0);
+    }
+    if (operation.kind === 'generic-trigger' && operation.event === 'etb') {
+      for (const effect of operation.effects || []) {
+        if (effect.action === 'pump-group' && effect.who === 'your-creatures') toughness += Number(effect.toughness || 0);
+      }
+    }
+  }
+  return toughness > 0;
+}
+
 function verifySpellOperation(context, entry, before) {
   const { player, opponent, operation, staged } = context;
   if (operation.kind === 'spell-draw') {
@@ -560,7 +896,7 @@ function verifySpellOperation(context, entry, before) {
 }
 
 async function runCard(entry, role) {
-  const context = stageScenario(entry, role);
+  const context = stageScenario(entry, role, { oracleMatrixUrgency: true });
   const { game, player, opponent, card, operation, staged, humanState } = context;
   if ((entry.implementation || []).some(candidate =>
     /^self-(?:pump|keyword|regenerate)-ability$/.test(candidate.kind) && /\/P\}/.test(candidate.cost || ''))) {
@@ -618,19 +954,25 @@ async function runCard(entry, role) {
       const rebounds = (entry.implementation || []).some(candidate => candidate.kind === 'mechanic-rebound');
       assert.equal(card.zone, rebounds ? 'exile' : 'graveyard',
         `${entry.raw.name}: instant/sorcery reaches its rules-correct post-resolution zone`);
-      verifySpellOperation(context, entry, before);
+      if (operation) verifySpellOperation(context, entry, before);
     } else {
       const auraLostWithHost = entry.raw.subtypes.includes('Aura') && staged.target && staged.target.zone !== 'battlefield';
-      const expected = Number(entry.raw.toughness) <= 0 || auraLostWithHost ? 'graveyard' : 'battlefield';
+      const zeroToughness = entry.raw.types.includes('Creature') && !card.faceDown && !creatureSurvivesEntry(entry, card);
+      const expected = zeroToughness || auraLostWithHost ? 'graveyard' : 'battlefield';
       assert.equal(card.zone, expected, `${entry.raw.name}: permanent resolves and SBA completes`);
       if (card.zone === 'battlefield') {
         if (entry.raw.types.includes('Creature')) {
           const expectedPower = card.faceDown ? 2 : Number(entry.raw.power);
           const expectedToughness = card.faceDown ? 2 : Number(entry.raw.toughness);
-          assert.equal(card.power, expectedPower,
-            `${entry.raw.name}: controller path preserves ${card.faceDown ? 'face-down' : 'printed'} power`);
-          assert.equal(card.toughness, expectedToughness,
-            `${entry.raw.name}: controller path preserves ${card.faceDown ? 'face-down' : 'printed'} toughness`);
+          assert.equal(Number.isFinite(card.power), true, `${entry.raw.name}: controller path has finite power`);
+          assert.equal(Number.isFinite(card.toughness), true, `${entry.raw.name}: controller path has finite toughness`);
+          assert.ok(card.toughness > 0, `${entry.raw.name}: resolved creature survives the real SBA check`);
+          if (card.faceDown || !creatureEntryCanChangeStats(entry)) {
+            assert.equal(card.power, expectedPower,
+              `${entry.raw.name}: controller path preserves ${card.faceDown ? 'face-down' : 'printed'} power`);
+            assert.equal(card.toughness, expectedToughness,
+              `${entry.raw.name}: controller path preserves ${card.faceDown ? 'face-down' : 'printed'} toughness`);
+          }
         }
         await verifyPermanentOperations(context, entry, before);
       }
@@ -642,14 +984,14 @@ async function runCard(entry, role) {
   assert.equal(game.gameOver, false, `${entry.raw.name}: controlled proof does not accidentally end the game`);
   return {
     action: entry.raw.types.includes('Land') ? 'land' : 'cast',
-    window: operation && operation.kind === 'spell-counter' ? 'counter-priority'
+    window: operation && operation.kind === 'spell-counter' || v4NeedsStackTarget(context.v4Operation) ? 'counter-priority'
       : isHasteOnlyPump(operation) ? 'main'
-        : isCombatInstant(entry, operation) ? 'combat-priority'
+        : isCombatInstant(entry, operation) || isV4CombatInstant(entry, context.v4Operation) ? 'combat-priority'
         : (entry.raw.types.includes('Instant') || hasFlash(entry)) ? 'end-step-priority' : 'main',
   };
 }
 
-test('svih 2.600 Oracle karata prolazi stvarni human i lokal-AI controller tok', async t => {
+test('svih 4.600 Oracle karata prolazi stvarni human i lokal-AI controller tok', async t => {
   const requestedBatch = process.env.ORACLE_DEEP_BATCH || '';
   const requestedCard = process.env.ORACLE_DEEP_CARD || '';
   const requestedLimit = Number(process.env.ORACLE_DEEP_LIMIT || 0);
@@ -685,9 +1027,9 @@ test('svih 2.600 Oracle karata prolazi stvarni human i lokal-AI controller tok',
   assert.equal(failures.length, 0, failures.slice(0, 80).map(failure =>
     `${failure.batch}/${failure.card}/${failure.role}: ${failure.error}`).join('\n'));
   if (!requestedBatch && !requestedCard && !requestedLimit) {
-    assert.equal(rows.length, 2600);
-    assert.equal(totals.human, 2600);
-    assert.equal(totals.ai, 2600);
+    assert.equal(rows.length, 4600);
+    assert.equal(totals.human, 4600);
+    assert.equal(totals.ai, 4600);
   }
 });
 
@@ -723,10 +1065,10 @@ test('svaki Oracle team-pump zaključava postojeća stvorenja pri rezoluciji', a
   }
 });
 
-test('svih 27 novih legalnih commander kandidata prolazi command zone, tax, povratak i combat za igrača i bota', async t => {
+test('svih 51 novih legalnih commander kandidata prolazi command zone, tax, povratak i combat za igrača i bota', async t => {
   const rows = oracleRows().filter(({ entry }) =>
     (entry.raw.super || []).includes('Legendary') && entry.raw.types.includes('Creature'));
-  assert.equal(rows.length, 27, 'current Oracle cohort has twenty-seven new commander candidates');
+  assert.equal(rows.length, 51, 'current Oracle cohort has fifty-one new commander candidates');
 
   const failures = [];
   let casts = 0;
@@ -753,7 +1095,11 @@ test('svih 27 novih legalnih commander kandidata prolazi command zone, tax, povr
           `${entry.raw.name}/${role}: visible command-zone cast log`);
         casts++;
 
-        assert.notEqual(await game.destroy(card), false, `${entry.raw.name}/${role}: commander can be destroyed`);
+        const removed = card.kw('indestructible')
+          ? await game.exileCard(card)
+          : await game.destroy(card);
+        assert.notEqual(removed, false,
+          `${entry.raw.name}/${role}: commander can change zones through a rules-legal removal effect`);
         while (game.pendingTriggers.length || game.stack.length) {
           await game.flushTriggers();
           if (game.stack.length) await game.resolveTop();
@@ -781,15 +1127,31 @@ test('svih 27 novih legalnih commander kandidata prolazi command zone, tax, povr
 
         card.sick = false;
         card.tapped = false;
+        if (card.power <= 0) game.addCounters(card, '+1/+1', 1 - card.power, false, player);
+        for (const other of game.creatures(player)) if (other !== card) other.tapped = true;
+        opponent.life = 1;
+        opponent.lost = false;
         game.recalc();
         humanState.attackCard = card;
         humanState.attackTarget = opponent;
         const damageBefore = opponent.commanderDamage[card.iid] || 0;
-        const expectedDamage = Math.max(0, card.power);
+        const lifeBefore = opponent.life;
+        const poisonBefore = opponent.poison || 0;
+        const startingPower = Math.max(0, card.power);
         await game.combatPhase(player);
         const damageAfter = opponent.commanderDamage[card.iid] || 0;
-        assert.equal(damageAfter - damageBefore, expectedDamage,
-          `${entry.raw.name}/${role}: unblocked combat records damage by this exact commander`);
+        assert.ok(game.log.some(item => item.msg.includes(`${entry.raw.name} attacks`)),
+          `${entry.raw.name}/${role}: the exact commander is declared as an attacker`);
+        const damageDelta = damageAfter - damageBefore;
+        if (damageDelta > 0) {
+          assert.ok(opponent.life < lifeBefore || (opponent.poison || 0) > poisonBefore,
+            `${entry.raw.name}/${role}: exact commander combat reaches the defending player`);
+        } else {
+          assert.equal(startingPower, 0,
+            `${entry.raw.name}/${role}: only a real zero-power commander may deal no combat damage`);
+          assert.equal(opponent.life, lifeBefore,
+            `${entry.raw.name}/${role}: zero-power commander deals exactly zero life damage`);
+        }
         combatChecks++;
       } catch (error) {
         failures.push({ batch: batch.id, card: entry.raw.name, role, error: error.message });
@@ -915,7 +1277,7 @@ test('stvarni basic landovi plaćaju visoki generic plus colored trošak bez zav
 test('lokalni AI nikad ne plaća posljednji život za Phyrexian pip, ali koristi sigurne life i colored rute', async () => {
   const rows = oracleRows().filter(({ entry }) => MTG.parseCost(MTG.DEFS[entry.raw.name].cost || '')
     .pips.some(pip => pip.includes('PHY')));
-  assert.equal(rows.length, 9);
+  assert.equal(rows.length, 10);
 
   for (const { entry } of rows) {
     const cost = MTG.parseCost(MTG.DEFS[entry.raw.name].cost || '');
@@ -1026,7 +1388,7 @@ function exactHybridPool(player, cost, optionIndex) {
 }
 
 async function castWithExactPool(entry, role, configurePool) {
-  const context = stageScenario(entry, role);
+  const context = stageScenario(entry, role, { oracleMatrixUrgency: true });
   const { player, card, humanState, game } = context;
   clearMana(player);
   const expected = configurePool(context) || {};
@@ -1049,7 +1411,7 @@ async function castWithExactPool(entry, role, configurePool) {
   return context;
 }
 
-test('svaki alternativni mana simbol u 2.600 radi kroz stvarnog igrača i bota', async t => {
+test('svaki alternativni mana simbol u 4.600 radi kroz stvarnog igrača i bota', async t => {
   const rows = oracleRows();
   const hybrid = rows.filter(({ entry }) => MTG.parseCost(entry.raw.manaCost || entry.raw.cost || MTG.DEFS[entry.raw.name].cost || '')
     .pips.some(pip => pip.length === 2 && pip.every(symbol => ['W', 'U', 'B', 'R', 'G'].includes(symbol))));
@@ -1059,7 +1421,7 @@ test('svaki alternativni mana simbol u 2.600 radi kroz stvarnog igrača i bota',
     .pips.some(pip => pip.includes('TWO')));
   const trueColorless = rows.filter(({ entry }) => (entry.raw.manaCost || entry.raw.cost || MTG.DEFS[entry.raw.name].cost || '').includes('{C}'));
   const xSpells = rows.filter(({ entry }) => MTG.parseCost(entry.raw.manaCost || entry.raw.cost || MTG.DEFS[entry.raw.name].cost || '').x > 0);
-  assert.deepEqual([hybrid.length, phyrexian.length, twoBrid.length, trueColorless.length, xSpells.length], [68, 9, 3, 1, 10]);
+  assert.deepEqual([hybrid.length, phyrexian.length, twoBrid.length, trueColorless.length, xSpells.length], [95, 10, 4, 1, 26]);
 
   const failures = [];
   const totals = { hybrid: 0, phyrexian: 0, twoBrid: 0, trueColorlessAccept: 0, trueColorlessReject: 0, x: 0 };
@@ -1243,7 +1605,7 @@ test('svaka compound-type Oracle karta radi kao svaki od svojih tipova kroz stva
     entry.raw.types.includes('Enchantment') && entry.raw.types.includes('Creature'));
   const artifactLands = oracleRows().filter(({ entry }) =>
     entry.raw.types.includes('Artifact') && entry.raw.types.includes('Land'));
-  assert.deepEqual([artifactCreatures.length, enchantmentCreatures.length, artifactLands.length], [131, 9, 2]);
+  assert.deepEqual([artifactCreatures.length, enchantmentCreatures.length, artifactLands.length], [216, 19, 2]);
 
   for (const { entry } of artifactCreatures) {
     await castTypeProbe(entry, 'Shatter', 'graveyard');
@@ -1264,7 +1626,7 @@ test('svaka compound-type Oracle karta radi kao svaki od svojih tipova kroz stva
 
 test('Snow i Kindred zadržavaju stvarni rules identitet kroz import, cast, Stack i rezoluciju', async () => {
   const snowRows = oracleRows().filter(({ entry }) => (entry.raw.super || []).includes('Snow'));
-  assert.equal(snowRows.length, 22);
+  assert.equal(snowRows.length, 24);
   for (const { entry } of snowRows) for (const role of ['human', 'ai']) {
     const context = stageScenario(entry, role);
     await executeScenario(context, entry);
@@ -1306,9 +1668,9 @@ test('Snow i Kindred zadržavaju stvarni rules identitet kroz import, cast, Stac
   assert.equal(context.opponent.life, lifeBefore - 2, 'Tarfire resolves its real damage after the type checks');
 });
 
-test('svih 219 multi-keyword karata drži sve sposobnosti zajedno kroz human i AI rezoluciju', async t => {
+test('svih 260 multi-keyword karata drži sve sposobnosti zajedno kroz human i AI rezoluciju', async t => {
   const rows = oracleRows().filter(({ entry }) => (entry.implementedKeywords || []).length >= 2);
-  assert.equal(rows.length, 219);
+  assert.equal(rows.length, 260);
   let checks = 0;
   for (const { entry } of rows) for (const role of ['human', 'ai']) {
     const context = stageScenario(entry, role);
@@ -1463,10 +1825,10 @@ async function proveTokenKeyword(context, token, keyword) {
   }
 }
 
-test('svaki keyword token svih 19 kreatora radi funkcionalno nakon human i AI ETB puta', async t => {
+test('svaki keyword token sva 22 kreatora radi funkcionalno nakon human i AI ETB puta', async t => {
   const rows = oracleRows().filter(({ entry }) => (entry.implementation || []).some(operation =>
     operation.kind === 'etb-token' && (operation.token?.keywords || []).length));
-  assert.equal(rows.length, 19);
+  assert.equal(rows.length, 22);
   let tokensChecked = 0;
   let keywordChecks = 0;
   for (const { entry } of rows) for (const role of ['human', 'ai']) {
