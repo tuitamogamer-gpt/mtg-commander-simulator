@@ -714,7 +714,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     strive: '{2}{R}',
     targets: (g, card, castOpts, caster) => [T.yourCreature({
       prompt: 'Twinflame: bilo koji broj tvojih stvorenja', count: g.creatures(caster).length, min: 0, upTo: true,
-      aiHint: { goal: 'copy' },
+      aiHint: { goal: 'copy', temporaryCopy: true, haste: true },
     })],
     resolve: async ctx => {
       // pickTargets sa count=1 (samo jedno stvorenje na stolu) sprema JEDAN

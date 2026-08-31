@@ -132,6 +132,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'Robot Villain': 'tmsh/26', 'Ape Villain': 'tmsc/26', 'Ox': 'tmsc/23', 'Elephant': 'tmsc/28',
     'Vibranium': 'tmsc/31', 'Eldrazi Spawn': 'plst/TMH3-2', 'Knight': 'tfin/10',
     'Centaur': 'trvr/10', 'Rhino': 'tmsc/29', 'Dragon Illusion': 'tsoc/13',
+    'Orc Army': 'tltr/5', 'Zombie Army': 'twar/8',
   };
 
   // ============================================================

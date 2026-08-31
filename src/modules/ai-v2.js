@@ -1234,7 +1234,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const strategic = ranked.filter(target => targetValue(game, player, target, q) > 0).slice(0, q.max || ranked.length);
         actions.push({ kind: 'chooseTargets', picks: strategic });
       }
-      for (const picks of combinations(ranked, q.min || 0, q.max || 1, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseTargets', picks });
+      const maxTargets = affordableStriveTargets(game, player, q, Math.min(q.max ?? 1, ranked.length));
+      for (const picks of combinations(ranked, q.min || 0, maxTargets, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseTargets', picks });
     } else if (q.type === 'chooseCards') {
       const ranked = (q.from || []).slice().sort((a, b) => choiceCardValue(game, player, b, q) - choiceCardValue(game, player, a, q) || a.iid - b.iid).slice(0, Math.max(config.targetLimit, q.max || 1));
       if (q.aiHint && q.aiHint.kind === 'genesisWave') {
@@ -1347,6 +1348,44 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (card.cur && (card.cur.hexproof || card.cur.shroud || card.kw('indestructible'))) value *= 1.18;
     if (perspective && card.ctrl === perspective) value *= 1.03;
     return value;
+  }
+
+  function affordableStriveTargets(game, player, q, maximum) {
+    // Strive is paid only when casting the original spell. A spell copy keeps
+    // its target count and may retarget even when its controller has no mana.
+    if (!q.src?.def.strive || !q.so || q.so.isCopy) return maximum;
+    const castOpts = Object.assign({}, q.so.castOpts || {}, { from: q.so.from });
+    const base = game.spellCost(player, q.src, castOpts);
+    const extra = U.parseCost(q.src.def.strive);
+    for (let count = maximum; count >= 0; count--) {
+      const additional = Math.max(0, count - 1);
+      const cost = Object.assign({}, base, {
+        generic: (base.generic || 0) + (extra.generic || 0) * additional,
+        pips: (base.pips || []).concat(...Array.from({ length: additional }, () => extra.pips || [])),
+      });
+      if (game.canPayMana(player, cost, { card: q.src, castOpts, xVal: q.so.x || 0 })) return count;
+    }
+    return 0;
+  }
+
+  function temporaryCopyValue(game, player, target, hint) {
+    if (!(target instanceof U.CardInst) || target.ctrl !== player) return -100;
+    // Copy the printed/copiable body, not counters, tapped state or temporary
+    // animation. In particular, a 0/0 Army does not copy its +1/+1 counters.
+    const base = target.isCopyOf || target.def;
+    const roles = inferCardSemantics(base).roles;
+    const hasEntry = (base.triggers || []).some(trigger => trigger.on === 'etb' &&
+      (!trigger.filter || trigger.filter(game, target, { card: target })));
+    const entryValue = hasEntry && roles.some(role =>
+      ['card-draw', 'single-target-removal', 'ramp', 'token-maker', 'recursion'].includes(role)) ? 5 : 0;
+    const legendConflict = (base.super || []).includes('Legendary') &&
+      !game.bf().some(card => card.ctrl === player && card.def.ignoreLegendRuleCreatures);
+    const hasBody = (base.types || []).includes('Creature') && !legendConflict &&
+      (Number.isNaN(Number(base.toughness)) || Number(base.toughness) > 0);
+    const attacksNow = hasBody && hint.haste && game.turnPlayer === player && game.phase === 'main1' &&
+      !(base.kws || []).includes('defender') && !base.cantAttack;
+    const value = entryValue + (attacksNow ? 4 + Math.max(0, Number(base.power) || 0) * 1.5 : 0);
+    return value > 0 ? value : -100;
   }
 
   function mandatoryCastTriggerDraws(game, player, card) {
@@ -1498,6 +1537,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (target instanceof U.CardInst) {
       const value = permanentGameValue(game, target, player);
       const hostile = target.ctrl !== player;
+      if (q.aiHint && q.aiHint.temporaryCopy) return temporaryCopyValue(game, player, target, q.aiHint);
       if (q.aiHint && q.aiHint.kind === 'equipTarget') {
         if (hostile) return -1000;
         const equipment = q.aiHint.card;
@@ -2680,6 +2720,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       breakdown.base = cardDefinitionValue(card.def) + Math.min(5, spend * 0.35);
       breakdown.synergy = sem.synergyTags.filter(tag => profile.primarySynergies.includes(tag)).length * 2;
       if (card.commander) breakdown.synergy += 2.2 * profile.commanderImportance;
+      const temporaryCopies = (game.spellTargetSpecs(card, action.alt || {}, player) || [])
+        .filter(spec => spec.aiHint && spec.aiHint.temporaryCopy);
+      if (temporaryCopies.length) {
+        const values = temporaryCopies.flatMap(spec => game.legalTargets(spec, card, player)
+          .map(target => temporaryCopyValue(game, player, target, spec.aiHint)));
+        const best = Math.max(0, ...values);
+        // Zero targets is legal, but generic spellslinger/token bonuses must
+        // not turn an empty cast or an immediately lost legend into value.
+        if (best <= 0) breakdown.timing -= 100;
+        else breakdown.combat += best * 0.3;
+      }
       if (cost.lifeCost) {
         const lifePressure = player.life <= 8 ? 3 : player.life <= 15 ? 1.35 : 0.55;
         breakdown.safety -= Number(cost.lifeCost) * lifePressure;

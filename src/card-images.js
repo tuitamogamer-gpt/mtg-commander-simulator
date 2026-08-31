@@ -1015,6 +1015,7 @@ MTG.CARD_IMAGE_PATHS = Object.freeze({
   "Oracle of Mul Daya": "./assets/cards/oracle-of-mul-daya-7a92d40e25.webp",
   "Oran-Rief, the Vastwood": "./assets/cards/oran-rief-the-vastwood-9d9ba28906.webp",
   "Orbital Vibranium Bomb": "./assets/cards/card-back.webp",
+  "Orc Army": "./assets/cards/orc-army-10ea35c8f0.webp",
   "Organic Extinction": "./assets/cards/organic-extinction-826dc54552.webp",
   "Ornithopter of Paradise": "./assets/cards/ornithopter-of-paradise-312500ac62.webp",
   "Orzhov Advokist": "./assets/cards/orzhov-advokist-587d2ba955.webp",
@@ -1680,6 +1681,7 @@ MTG.CARD_IMAGE_PATHS = Object.freeze({
   "Zimone's Hypothesis": "./assets/cards/zimone-s-hypothesis-81a002d448.webp",
   "Zinnia, Valley's Voice": "./assets/cards/zinnia-valley-s-voice-97776a5b00.webp",
   "Zombie": "./assets/cards/zombie-4c876e938c.webp",
+  "Zombie Army": "./assets/cards/zombie-army-0eaa3f2ba6.webp",
   "Zombie Druid": "./assets/cards/zombie-druid-a9d90c3315.webp",
   "Zulaport Cutthroat": "./assets/cards/zulaport-cutthroat-a5f4818013.webp",
   "Zurgo Stormrender": "./assets/cards/zurgo-stormrender-a61f421402.webp",
@@ -1741,6 +1743,7 @@ MTG.CARD_IMAGE_REMOTE_BASES = Object.freeze([MTG.CARD_IMAGE_API_BASE, MTG.CARD_I
 MTG.cardImageAPIURL = function (name) {
   return MTG.CARD_IMAGE_API_BASE + '?format=image&version=normal&fuzzy=' + encodeURIComponent(String(name || ''));
 };
+
 MTG.cardImageAPIURLById = function (id, variant) {
   const version = variant === 'art' ? 'art_crop' : 'normal';
   return MTG.CARD_IMAGE_ID_API_BASE + encodeURIComponent(String(id || '')) + '?format=image&version=' + version;

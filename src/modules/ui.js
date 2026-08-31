@@ -4891,8 +4891,17 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const previous = document.querySelector('.battlefieldarrival');
       if (previous) previous.remove();
       const commander = event.kind === 'commander';
+      const commanderIntro = commander && MTG.commanderIntroForDeck(card.owner && card.owner.deck, card.name);
+      const highlightedCard = () => document.querySelector(`.mini[data-iid="${card.iid}"]`);
+      requestAnimationFrame(() => highlightedCard()?.classList.add('arrival-highlight'));
+      if (commander && !commanderIntro) {
+        // Imported commanders get only the battlefield card highlight, with
+        // no video element, download or empty cinematic frame.
+        setTimeout(() => highlightedCard()?.classList.remove('arrival-highlight'), 3200);
+        return;
+      }
       const reducedMotion = this.reducedMotion || window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const introURL = commander && !reducedMotion && MTG.COMMANDER_INTROS && MTG.COMMANDER_INTROS[card.name];
+      const introURL = !reducedMotion && commanderIntro;
       const introLabel = MTG.COMMANDER_INTRO_LABELS && MTG.COMMANDER_INTRO_LABELS[card.name] || card.name;
       const splash = el('div', `battlefieldarrival ${commander ? 'commander' : 'powerhouse'}`);
       splash.dataset.iid = String(card.iid);
@@ -4922,16 +4931,12 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         const playback = video.play();
         if (playback && typeof playback.catch === 'function') playback.catch(fallback);
       }
-      requestAnimationFrame(() => {
-        const permanent = document.querySelector(`.mini[data-iid="${card.iid}"]`);
-        if (permanent) permanent.classList.add('arrival-highlight');
-      });
       let dismissed = false;
       const dismiss = () => {
         if (dismissed) return;
         dismissed = true;
         splash.classList.add('leaving');
-        document.querySelector(`.mini[data-iid="${card.iid}"]`)?.classList.remove('arrival-highlight');
+        highlightedCard()?.classList.remove('arrival-highlight');
         setTimeout(() => splash.remove(), 320);
       };
       splash.querySelector('.arrivalskip').onclick = dismiss;

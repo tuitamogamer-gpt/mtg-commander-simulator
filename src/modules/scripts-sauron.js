@@ -57,6 +57,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     name: `${kind} Army`, cost: null, super: [], types: ['Creature'], subtypes: [kind, 'Army'],
     power: '0', toughness: '0', oracle: '', colorsOverride: ['B'], kws: [], isTokenDef: true,
   });
+  // Include dynamically created Armies in the shared token/image inventory.
+  MTG.TOKENS.orcArmy = armyDef('Orc');
+  MTG.TOKENS.zombieArmy = armyDef('Zombie');
   const wraithDef = {
     name: 'Wraith', cost: null, super: [], types: ['Creature'], subtypes: ['Wraith'],
     power: '3', toughness: '3', oracle: 'Menace', colorsOverride: ['B'], kws: ['menace'], isTokenDef: true,

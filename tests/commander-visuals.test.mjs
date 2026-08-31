@@ -36,6 +36,22 @@ test('Turtle Power default je Leonardo plus Michelangelo kao legalan partner duo
   assert.equal(player.library.some(card => pair.includes(card.name)), false);
 });
 
+test('only the 27 predefined decks receive commander videos, including both Turtle partners', () => {
+  const predefined = Object.values(MTG.DECKS).filter(deck => !deck.custom && !deck.imported);
+  assert.equal(predefined.length, 27);
+  for (const deck of predefined) {
+    for (const name of MTG.defaultCommanders(deck, MTG.DEFS)) {
+      assert.equal(MTG.commanderIntroForDeck(deck, name), MTG.COMMANDER_INTROS[name], `${deck.name}: ${name}`);
+      assert.equal(MTG.commanderIntroForDeck({ ...deck }, name), MTG.COMMANDER_INTROS[name]);
+      assert.equal(MTG.commanderIntroForDeck({ ...deck, custom: true }, name), null);
+      assert.equal(MTG.commanderIntroForDeck({ ...deck, imported: true }, name), null);
+    }
+  }
+  assert.equal(MTG.commanderIntroForDeck(null, 'Rootha, Mastering the Moment'), null);
+  assert.equal(MTG.commanderIntroForDeck({ name: 'Unknown deck' }, 'Rootha, Mastering the Moment'), null);
+  assert.equal(MTG.commanderIntroForDeck(MTG.DECKS['Prismari Artistry'], 'Sauron, the Dark Lord'), null);
+});
+
 test('lokalni UI icon sprite pokriva ključne arena kontrole', () => {
   const sprite = fs.readFileSync(path.join(root, 'assets/icons/game-ui.svg'), 'utf8');
   for (const icon of ['crown', 'stack', 'log', 'deals', 'hold', 'mana', 'menu', 'attack', 'shield', 'library', 'cards', 'graveyard', 'exile', 'effects', 'player', 'info', 'ring',

@@ -126,5 +126,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'Shiko and Narset, Unified': './assets/commander-intros/shiko-and-narset-unified.mp4',
   });
 
+  // Videos belong to the predefined decks, never to imported lists that
+  // happen to use the same commander. Unknown deck origins use card art.
+  MTG.commanderIntroForDeck = function commanderIntroForDeck(deck, commanderName) {
+    if (!deck || deck.custom || deck.imported) return null;
+    const predefined = MTG.DECKS && MTG.DECKS[deck.name];
+    if (!predefined || predefined.custom || predefined.imported) return null;
+    return MTG.COMMANDER_INTROS[commanderName] || null;
+  };
+
   MTG.COMMANDER_INTRO_LABELS = Object.freeze({});
 })();

@@ -756,7 +756,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!deck || !guide || !route) return;
       const commanders = state.commanders.length ? state.commanders : [deck.commander];
       const leadCommander = commanders[0];
-      const intro = MTG.COMMANDER_INTROS && (MTG.COMMANDER_INTROS[leadCommander] || MTG.COMMANDER_INTROS[deck.commander]);
+      const intro = MTG.commanderIntroForDeck(deck, leadCommander) || MTG.commanderIntroForDeck(deck, deck.commander);
       const counts = deckBreakdown(deck);
       const activeDecks = Object.keys(MTG.DECKS).filter(deckName => !MTG.DECKS[deckName].custom);
       const deckNumber = activeDecks.indexOf(name) + 1;
@@ -4075,7 +4075,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       sumPartnerDamage: !!options.sumPartnerDamage,
       diplomacyEnabled: !!options.diplomacyEnabled,
       difficulty: options.difficulty || 'normal',
-      seed: String(options.seed || '829300'),
+      // Blank delegates to startGame's fresh seed; only explicit replay/test
+      // seeds (including 0) should repeat an imported deck's opening hand.
+      seed: String(options.seed ?? ''),
     });
     return { imported, game };
   }

@@ -86,3 +86,25 @@ test('browser renderers contain no ad hoc Scryfall image URL', () => {
     assert.match(source, /cardImageURL/);
   }
 });
+
+test('Amass creates Orc and Zombie Armies with local art that survives later amass', async () => {
+  const MTG = loadEngine();
+  for (const kind of ['Orc', 'Zombie']) {
+    const game = new MTG.Game({ seed: 31831, paced: false });
+    const player = game.addPlayer('Army image check', { name: 'Sauron import' }, null, false);
+    const army = await MTG.E.amass(game, player, 2, kind);
+    const asset = MTG.cardImageURL(army.name);
+    assert.notEqual(asset, MTG.CARD_IMAGE_PLACEHOLDER, `${army.name} must not show the card back`);
+    assert.match(asset, /^\.\/assets\/cards\/.+\.webp$/);
+    assert.ok(fs.statSync(path.join(root, asset.slice(2))).size > 100);
+    assert.equal(army.counters['+1/+1'], 2);
+
+    const otherKind = kind === 'Orc' ? 'Zombie' : 'Orc';
+    const sameArmy = await MTG.E.amass(game, player, 1, otherKind);
+    assert.equal(sameArmy, army);
+    assert.equal(game.creatures(player).length, 1);
+    assert.equal(army.hasSub(otherKind), true);
+    assert.equal(army.counters['+1/+1'], 3);
+    assert.equal(MTG.cardImageURL(army.name), asset);
+  }
+});
