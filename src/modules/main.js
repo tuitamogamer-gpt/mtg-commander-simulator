@@ -193,6 +193,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span><b>COMMANDER</b><small>SIMULATOR</small></span>
         </a>
         <nav class="mainmenu-navlinks" aria-label="Explore Commander Simulator">
+          <a href="#your-library">My Library</a>
           <a href="#how-it-works">How it works</a>
           <a href="#ways-to-play">Ways to play</a>
         </nav>
@@ -208,11 +209,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <div class="mainmenu-hero-copy">
           <span class="mainmenu-kicker">Play instantly. Save when you sign in.</span>
           <h1 id="mainmenu-title">Your Commander table is ready.</h1>
-          <p>Choose one of ${nDecks} complete decks and play a real four-player pod with visible priority, targets, stack, and combat decisions.</p>
+          <p>Choose from ${nDecks} complete decks. Learn your commander against local AI, or bring your friends to a private Live table.</p>
           <div id="primary-actions" class="mainmenu-actions" tabindex="-1">
-            <button type="button" class="mainmenu-primary" data-menu-action="solo">${U.icon('player')}<span><b>Start a solo table</b><small>You and three deterministic local opponents</small></span></button>
-            <button type="button" class="mainmenu-secondary" data-menu-action="live">${U.icon('deals')}<span><b>Create a Live table</b><small>Choose 2-4 human seats; no bots required</small></span></button>
-            <button type="button" class="mainmenu-import-action" data-menu-action="import">${U.icon('cards')}<span><b>Import your decklist here</b><small>Paste once, save to My Library, then play in Solo</small></span></button>
+            <button type="button" class="mainmenu-primary" data-menu-action="solo">${U.icon('player')}<span><b>Start a solo table</b><small>You + three local AI opponents</small></span></button>
+            <button type="button" class="mainmenu-secondary" data-menu-action="live">${U.icon('deals')}<span><b>Create a Live table</b><small>A private pod for 2-4 friends</small></span></button>
           </div>
           <ul class="mainmenu-trust" aria-label="What you need to play">
             <li><span aria-hidden="true">✓</span>Account optional</li>
@@ -227,9 +227,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         </div>
       </section>
 
+      <section id="your-library" class="mainmenu-library-entry" aria-labelledby="library-entry-title">
+        <div class="mainmenu-library-copy">
+          <span>YOUR DECK LIBRARY</span>
+          <h2 id="library-entry-title">Bring your own deck.</h2>
+          <p>Paste a decklist, check engine support, and save it for your next solo table.</p>
+        </div>
+        <ol class="mainmenu-library-steps" aria-label="Deck import steps">
+          <li><span>01</span>Paste</li><li><span>02</span>Check</li><li><span>03</span>Play</li>
+        </ol>
+        <button type="button" class="mainmenu-import-action" data-menu-action="import">${U.icon('cards')}<span><b>Import your decklist here</b><small>Open My Library</small></span><span aria-hidden="true">↗</span></button>
+      </section>
+
       `;
     if (bootPage) {
       page.classList.remove('mainmenu-boot');
+      // The public entry disables these while loading the engine for import.
+      page.querySelectorAll('[data-menu-action]').forEach(button => { button.disabled = false; });
       const guide = page.querySelector('.mainmenu-guide');
       if (guide && !guide.querySelector('.gameicon')) guide.insertAdjacentHTML('afterbegin', U.icon('info'));
       const solo = page.querySelector('.mainmenu-primary');
@@ -562,6 +576,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       U.enhanceDialog(overlay, dialog, {
         label: 'Import Commander decklist',
         initialFocus: textInput,
+        returnFocus: page.querySelector('.mainmenu-import-action'),
       });
       renderLibrary();
       dialog.scrollTop = 0;
