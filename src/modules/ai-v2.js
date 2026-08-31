@@ -3466,7 +3466,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           breakdown.choice = player.library.length ? (player.hand.length >= 6 ? 2.3 : 1.7) : -2;
         }
       } else if (hintKind === 'commanderZone') {
-        breakdown.choice = action.value === 'cz' ? 40 : -8;
+        const preferred = q.aiHint.toZone === 'graveyard' && q.aiHint.graveyardReturn ? 'stay' : 'cz';
+        breakdown.choice = action.value === preferred ? 40 : -8;
       } else if (hintKind === 'cloudKey') {
         breakdown.choice = action.value === 'Artifact' ? 12 : action.value === 'Creature' ? 3 : 1;
       } else if (hintKind === 'inspiritCounter') {

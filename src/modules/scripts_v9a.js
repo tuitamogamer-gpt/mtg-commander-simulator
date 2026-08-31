@@ -1614,29 +1614,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Gift of Immortality'] = {
     aura: true,
+    returnsEnchantedOnDeath: true,
     auraTarget: [T.creature({ prompt: 'Enchant creature', aiHint: { goal: 'protect' } })],
     triggers: [{
-      on: 'dies', zone: 'graveyard', desc: 'Vrati stvorenje',
-      filter: (g, self, d) => d.card.iid === self.meta._lastAttachedTo &&
-        d.snap.attachments.includes(self.iid),
+      on: 'dies', desc: 'Gift of Immortality: return enchanted creature',
+      // This is a battlefield leaves-the-battlefield trigger. Use the
+      // attachment snapshot even when a simultaneous wipe moved the Aura
+      // first; its mutable attachment/meta state no longer describes death.
+      filter: (g, self, d) => d.snap.types.includes('Creature') &&
+        d.snap.attachedSources.some(entry => entry.card === self && entry.snap.attachedTo === d.card.iid),
       run: async ctx => {
         const c = ctx.data.card;
-        if (c.zone === 'graveyard') {
-          c.owner.graveyard.splice(c.owner.graveyard.indexOf(c), 1);
-          c.zone = 'nowhere';
+        const aura = ctx.src;
+        const attached = ctx.data.snap.attachedSources.find(entry => entry.card === aura);
+        // CardInst is reused across zones. Each return is tied to the exact
+        // object created by this death, not a later incarnation of that card.
+        if (!c.isToken && c.zone === 'graveyard' && c.zoneVersion === ctx.data.snap.zoneVersion + 1) {
+          const auraGraveyardVersion = attached.snap.zoneVersion + 1;
           await ctx.g.move(c, 'battlefield', { ctrl: c.owner });
-          ctx.g.lg(`${c.name} se vraća (Gift of Immortality).`);
-          const aura = ctx.src;
-          const owner = aura.owner;
+          if (c.zone !== 'battlefield') return;
+          const returnedCreatureVersion = c.zoneVersion;
+          ctx.g.lg(`${c.name} returns to the battlefield (Gift of Immortality).`);
           ctx.g.delayed.push({
-            on: 'endStep', once: true, name: 'Gift of Immortality se vraća', ctrl: owner,
-            filter: () => true,
+            on: 'endStep', once: true, src: aura,
+            name: 'Gift of Immortality: return Aura', ctrl: ctx.you,
             run: async c2 => {
-              if (aura.zone !== 'graveyard' || c.zone !== 'battlefield') return;
-              aura.owner.graveyard.splice(aura.owner.graveyard.indexOf(aura), 1);
-              aura.zone = 'nowhere';
-              await c2.g.move(aura, 'battlefield', { ctrl: owner });
-              await c2.g.attach(aura, c);
+              if (aura.zone !== 'graveyard' || aura.zoneVersion !== auraGraveyardVersion ||
+                  c.zone !== 'battlefield' || c.zoneVersion !== returnedCreatureVersion ||
+                  !c2.g.bf().includes(c) || !c.is('Creature') || c2.g.isProtectedFrom(c, aura)) return;
+              // This return does not target. Enter already attached so ETB
+              // triggers see the enchantment, and preserve graveyard events.
+              await c2.g.move(aura, 'battlefield', { ctrl: aura.owner, attachTo: c });
             },
           });
         }

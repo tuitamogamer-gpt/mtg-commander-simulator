@@ -770,10 +770,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // commander zone replacement
       if (card.commander && ['graveyard', 'exile', 'hand', 'library'].includes(toZone) && !opts.noCmdReplace) {
         const zoneLabels = { graveyard: 'Graveyard', exile: 'Exile', hand: 'Hand', library: 'Library' };
+        const returnSource = wasBattlefield && toZone === 'graveyard' && snap.types.includes('Creature') &&
+          snap.attachedSources.find(entry => entry.card.def.returnsEnchantedOnDeath && !entry.snap.abilitiesDisabled);
+        const returnReminder = returnSource
+          ? ` Keep it in the graveyard to let ${returnSource.card.name} return it. Choosing Command zone prevents that return.`
+          : '';
         const keep = await card.owner.controller.decide(this, {
-          type: 'chooseOption', prompt: `${card.name}: return it to the command zone?`,
+          type: 'chooseOption', prompt: `${card.name}: return it to the command zone?${returnReminder}`,
           options: [{ key: 'cz', label: 'Command zone' }, { key: 'stay', label: zoneLabels[toZone] }],
-          aiHint: { kind: 'commanderZone', card, toZone },
+          aiHint: { kind: 'commanderZone', card, toZone, graveyardReturn: !!returnSource },
         });
         if (keep === 'cz') toZone = 'command';
       }
