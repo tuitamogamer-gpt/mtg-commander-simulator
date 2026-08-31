@@ -687,7 +687,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
 
-    snapshot(card) {
+    snapshot(card,includeAttachments=true) {
       return {
         iid: card.iid, timestamp: card.timestamp, name: card.name, def: card.def, ctrl: card.ctrl, owner: card.owner,
         isToken: card.isToken, power: card.power, toughness: card.toughness,
@@ -699,11 +699,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         counters: Object.assign({}, card.counters),
         types: card.cur ? card.cur.types.slice() : card.def.types.slice(),
         subtypes: card.cur ? card.cur.subtypes.slice() : card.def.subtypes.slice(),
-        attachments: card.attachments.slice(), mv: card.mv, colors: card.colors,
+        attachments: card.attachments.slice(), attachedTo:card.attachedTo, zoneVersion:card.zoneVersion, mv: card.mv, colors: card.colors,
         // Keywordi u trenutku odlaska. Bez ovoga je snap.flying bio undefined,
         // pa se Luminous Broodmoth okidao i na stvorenja koja su umrla SA
         // letenjem → beskonačna petlja sa Selfless Spiritom.
         kw: card.cur ? [...card.cur.kw] : [],
+        extraTriggers: (card.cur?.extraTriggers||[]).slice(),
+        attachedSources: includeAttachments?card.attachments.map(id=>this.byIid(id)).filter(Boolean).map(source=>({card:source,ctrl:source.ctrl,snap:this.snapshot(source,false)})):[],
         flying: !!(card.cur && card.cur.kw.has('flying')),
         abilitiesDisabled: !!(card.cur && card.cur.abilitiesDisabled),
       };
@@ -712,7 +714,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async move(card, toZone, opts = {}) {
       const fromZone = card.zone;
       const wasBattlefield = fromZone === 'battlefield';
-      const snap = this.snapshot(card);
+      const snap = opts.battlefieldSnapshot || (wasBattlefield&&(this._simultaneousLeaveSources||[]).find(entry=>entry.card===card)?.snap) || this.snapshot(card);
 
       // Prepared pravi stvarnu kopiju karte koja se baca iz egzila. Kao i sve
       // kopije karata, ona prestaje postojati čim napusti stack (resolve,
@@ -779,6 +781,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Suspend is status of the particular card object in exile, not a
       // perpetual property of the physical CardInst. Once that object leaves
       // exile, a later return is a new object and is no longer suspended.
+      if(fromZone==='exile'&&toZone!=='exile'&&card.meta){delete card.meta.plotted;delete card.meta.plottedTurn;}
       if (fromZone === 'exile' && toZone !== 'exile' && card.meta &&
           Object.prototype.hasOwnProperty.call(card.meta, 'suspended')) {
         delete card.meta.suspended;
@@ -875,6 +878,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (toZone === 'graveyard') { this.diedThisTurn.push(snap); await this.fireLeaveAndDie(card, snap, true); }
           else await this.fireLeaveAndDie(card, snap, false);
         }
+        await this.returnOracleExiles();
         return card;
       }
 
@@ -984,8 +988,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (this._graveyardLeaveBatch) this._graveyardLeaveBatch.push({ card, to: toZone });
         else await this.emit('cardsLeftGraveyard', { cards: [card], to: toZone });
       }
+      await this.returnOracleExiles();
       this.recalc();
       return card;
+    }
+
+    addOracleAnimation(card,effect){
+      this.untilEffects.push({...effect,kind:'oracleAnimation',iid:card.iid,zoneVersion:card.zoneVersion,timestamp:++IID,expires:effect.temporary?'eot':'object'});
+      this.recalc();
+    }
+
+    async returnOracleExiles(){
+      // CR 610.3: expiration creates an immediate one-shot effect, not a
+      // delayed triggered ability. Remove records before nested moves.
+      const expired=(this.oracleExileDurations||[]).filter(row=>row.source.zone!=='battlefield'||row.source.zoneVersion!==row.sourceZoneVersion);
+      this.oracleExileDurations=(this.oracleExileDurations||[]).filter(row=>!expired.includes(row));
+      for(const row of expired)for(const {card,zoneVersion}of row.cards)if(card.zone==='exile'&&card.zoneVersion===zoneVersion)await this.putPermanentOntoBattlefield(card,card.owner);
     }
 
     async withGraveyardEntryBatch(run) {
@@ -1442,16 +1460,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Manifest and cloak instead grant the printed-mana-cost action while
       // still leaving any intrinsic Morph/Disguise special action available.
       if (faceDownKind === 'morph') {
-        if (intrinsicAbilitiesAvailable && original.morph) costs.push({ kind: 'morph', cost: original.morph });
+        if (intrinsicAbilitiesAvailable && original.morph) costs.push({ kind: original.megamorph ? 'megamorph' : 'morph', cost: original.morph });
       } else if (faceDownKind === 'disguise') {
         if (intrinsicAbilitiesAvailable && original.disguise) costs.push({ kind: 'disguise', cost: original.disguise });
       } else {
         // A missing mana cost is unpayable, not an implicit {0} cost.
         if (original.cost) costs.push({ kind: 'mana cost', cost: original.cost });
-        if (intrinsicAbilitiesAvailable && original.morph) costs.push({ kind: 'morph', cost: original.morph });
+        if (intrinsicAbilitiesAvailable && original.morph) costs.push({ kind: original.megamorph ? 'megamorph' : 'morph', cost: original.morph });
         if (intrinsicAbilitiesAvailable && original.disguise) costs.push({ kind: 'disguise', cost: original.disguise });
       }
-      return costs.filter((entry, index, all) => all.findIndex(other => other.cost === entry.cost) === index);
+      return costs.filter((entry, index, all) => all.findIndex(other => other.cost === entry.cost &&
+        (other.kind === 'megamorph') === (entry.kind === 'megamorph')) === index);
     }
 
     faceUpCost(card) {
@@ -1459,24 +1478,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return costs.length ? costs[0].cost : null;
     }
 
-    async turnFaceUp(player, card, chosenCost) {
+    async turnFaceUp(player, card, chosenCost, chosenKind) {
       if (!card || card.zone !== 'battlefield' || card.ctrl !== player || !card.faceDown) return false;
       const original = card.meta && card.meta.faceDownDef;
       const legalCosts = this.faceUpCosts(card);
       const selected = chosenCost === undefined || chosenCost === null
         ? legalCosts[0]
-        : legalCosts.find(entry => entry.cost === chosenCost);
+        : legalCosts.find(entry => entry.cost === chosenCost && (!chosenKind || entry.kind === chosenKind));
       if (!original || !selected) return false;
       const costStr = selected.cost;
-      if (!await this.payMana(player, U.parseCost(costStr), { card, isAbility: true })) return false;
+      const cost=U.parseCost(costStr);let x=0;
+      if(cost.x&&selected.kind!=='mana cost'){
+        const max=this.maxAffordableX(player,cost,card);
+        x=await player.controller.decide(this,{type:'chooseX',min:0,max,card,prompt:'Choose X for turning this card face up',aiHint:{kind:'chooseX',card}});
+        if(!Number.isInteger(x)||x<0||x>max)return false;
+      }
+      if (!await this.payMana(player, {...cost,generic:cost.generic+cost.x*x,x:0}, { card, isAbility: true })) return false;
       card.def = original;
       delete card.meta.faceDownDef;
       delete card.meta.faceDownKind;
       card.faceDown = false;
+      if (selected.kind === 'megamorph') this.addCounters(card, '+1/+1', 1, false, player);
       this.recalc();
       this.lg(`${player.name} turns ${card.name} face up.`, 'effect');
       this.notifyEffect(`🃏 ${card.name} was turned face up.`, { kind: 'faceUp', card, player }, false);
-      await this.emit('turnedFaceUp', { card, player });
+      await this.emit('turnedFaceUp', { card, player, x });
       await this.checkSBA();
       return true;
     }
@@ -2051,8 +2077,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return false;
       }
       this.lg(`${U.playerVerb(p, 'sacrifice', 'sacrifices')} ${card.name}.`, 'sac');
+      const snap=this.snapshot(card);
       await this.move(card, 'graveyard');
-      await this.emit('sacrificed', { player: p, card });
+      await this.emit('sacrificed', { player: p, card, snap });
       return true;
     }
 
@@ -2062,14 +2089,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Jedna instrukcija "sacrifice X/them" je simultan događaj. Sačuvaj
       // kontrolore svih izvora kako bi LKI sposobnosti vidjele cijeli batch.
       const previous = this._simultaneousLeaveSources;
-      const batch = unique.map(card => ({ card, ctrl: card.ctrl }));
+      const batch = unique.map(card => ({ card, ctrl: card.ctrl, snap:this.snapshot(card) }));
       this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
       try {
         await this.withGraveyardEntryBatch(async () => {
           for (const card of unique) {
             this.lg(`${U.playerVerb(p, 'sacrifice', 'sacrifices')} ${card.name}.`, 'sac');
             await this.move(card, 'graveyard');
-            await this.emit('sacrificed', { player: p, card });
+            await this.emit('sacrificed', { player: p, card, snap:batch.find(entry=>entry.card===card).snap });
           }
         });
       } finally {
@@ -2141,7 +2168,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       }
       const previous = this._simultaneousLeaveSources;
-      const batch = doomed.map(card => ({ card, ctrl: card.ctrl }));
+      const batch = doomed.map(card => ({ card, ctrl: card.ctrl, snap:this.snapshot(card) }));
       this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
       try {
         await this.withGraveyardEntryBatch(async () => {
@@ -2170,13 +2197,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       }
       const previous = this._simultaneousLeaveSources;
-      const batch = unique.map(card => ({ card, ctrl: card.ctrl }));
+      const batch = unique.map(card => ({ card, ctrl: card.ctrl, snap:this.snapshot(card) }));
       this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
       try {
         for (const card of unique) if (card.zone === 'battlefield') await this.move(card, 'exile', { suppressVisualEffect: visualBatch });
       } finally {
         this._simultaneousLeaveSources = previous;
       }
+      return unique.length;
+    }
+
+    async bounceMany(cards) {
+      const unique=[...new Set(cards)].filter(card=>card?.zone==='battlefield');
+      // Move attached Auras first so moving their hosts cannot put them in
+      // the graveyard while the same return-all event also includes them.
+      unique.sort((a,b)=>Number(!!b.attachedTo)-Number(!!a.attachedTo));
+      const previous=this._simultaneousLeaveSources;
+      const batch=unique.map(card=>({card,ctrl:card.ctrl,snap:this.snapshot(card)}));
+      this._simultaneousLeaveSources=previous?previous.concat(batch):batch;
+      try{for(const card of unique)if(card.zone==='battlefield')await this.move(card,'hand',{battlefieldSnapshot:batch.find(row=>row.card===card).snap});}
+      finally{this._simultaneousLeaveSources=previous;}
       return unique.length;
     }
 
@@ -2263,6 +2303,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // pass 0: base
       for (const c of bf) {
         const d = c.def;
+        if(d.oracleEchoCost&&c.meta.oracleEchoController!==c.ctrl){c.meta.oracleEchoController=c.ctrl;c.meta.oracleEchoPending=true;}
         const cur = {
           types: d.types.slice(), subtypes: d.subtypes.slice(), super: (d.super || []).slice(),
           colors: d.colorsOverride ? d.colorsOverride.slice() : U.colorsOfCost(d.cost || ''),
@@ -2272,7 +2313,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           cantSacrifice: false, mustAttack: false,
           assignByToughness: false, allCreatureTypes: !!d.changeling,
           allCreatureTypesFromOtherEffects: false, suppressPrintedChangeling: false,
-          extraAbilities: [], wardCost: d.ward || null, extraMana: [],
+          extraAbilities: [], extraTriggers: [], wardCost: d.ward || null, extraMana: [],
           hexproof: false, shroud: false, cantBeBlockedBy: null, unblockable: false,
           protectionFrom: [],
           abilitiesDisabled: false, activationDisabled: false,
@@ -2302,7 +2343,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // pass 1: type-changing + CDA + statics (timestamp order)
       const sorted = bf.slice().sort((a, b) => a.timestamp - b.timestamp);
-      for (const c of sorted) {
+      const animations=this.untilEffects.filter(effect=>effect.kind==='oracleAnimation'&&bf.some(card=>card.iid===effect.iid&&card.zoneVersion===effect.zoneVersion));
+      for (const c of sorted.concat(animations).sort((a,b)=>a.timestamp-b.timestamp)) {
+        if(c.kind==='oracleAnimation'){
+          const card=bf.find(card=>card.iid===c.iid&&card.zoneVersion===c.zoneVersion);
+          card.cur.types=c.retainTypes?[...new Set(card.cur.types.concat(c.types))]:c.types.slice();
+          card.cur.subtypes=c.retainTypes?[...new Set(card.cur.subtypes.filter(type=>!c.subtypes.length||!c.types.includes('Artifact')||!MTG.CREATURE_SUBTYPES.has(type)).concat(c.subtypes))]:c.subtypes.slice();
+          if(c.colors!==null)card.cur.colors=c.colors.slice();
+          for(const keyword of c.keywords)card.cur.kw.add(keyword);
+          continue;
+        }
         const st = c.def.statics;
         if (!st) continue;
         for (const s of st) {
@@ -2315,6 +2365,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if(c.def.oracleCharacteristicPT&&c.cur.abilitiesDisabled)continue;
         if (c.def.cdaPower) c.cur.basePower = c.def.cdaPower(this, c);
         if (c.def.cdaToughness) c.cur.baseToughness = c.def.cdaToughness(this, c);
+      }
+      // Power/toughness setting (layer 7b) precedes buffs and counters.
+      for(const effect of this.untilEffects)if(['oracleBasePT','oracleAnimation'].includes(effect.kind)){
+        const card=bf.find(card=>card.iid===effect.iid&&card.zoneVersion===effect.zoneVersion);
+        if(card){card.cur.basePower=effect.power;card.cur.baseToughness=effect.toughness;}
       }
       for (const c of bf) { c.cur.power = c.cur.basePower; c.cur.toughness = c.cur.baseToughness; }
       // pass 2: static buffs/grants
@@ -2341,6 +2396,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // equipment/aura grants
       for (const c of bf) {
+        if(c.cur.abilitiesDisabled)continue;
         if (c.attachedTo) {
           const host = this.byIid(c.attachedTo);
           const grant = c.cur.attachGrant || c.def.attachGrant;
@@ -2425,9 +2481,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const found = [];
       const seen = new Map();
       const consider = (card, zoneOK, ctrlOverride) => {
-        if (card.cur && card.cur.abilitiesDisabled) return;
-        const trigs = card.def.triggers;
-        if (!trigs) return;
+        const history=['dies','lto','sacrificed'].includes(name)?(data.card===card?data.snap:(this._simultaneousLeaveSources||[]).find(entry=>entry.card===card)?.snap||(data.snap?.attachedSources||[]).find(entry=>entry.card===card)?.snap):null;
+        if (history?history.abilitiesDisabled:card.cur?.abilitiesDisabled) return;
+        const trigs=(card.def.triggers||[]).concat(history?history.extraTriggers||[]:card.cur?.extraTriggers||[]);
         for (const t of trigs) {
           let cardSeen = seen.get(card);
           if (!cardSeen) { cardSeen = new Set(); seen.set(card, cardSeen); }
@@ -2435,7 +2491,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (t.on !== name) continue;
           const zone = t.zone || 'battlefield';
           if (!zoneOK(zone)) continue;
-          if (t.oncePerTurn && card.meta['_once_' + t.on] === this.turnNo) continue;
+          if (t.oncePerTurn && card.meta['_once_' + (t.onceKey||t.on)] === this.turnNo) continue;
           try { if (t.filter && !t.filter(this, card, data)) continue; } catch (e) { continue; }
           cardSeen.add(t);
           found.push({ card, t, ctrlOverride });
@@ -2444,13 +2500,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const c of this.bf()) consider(c, z => z === 'battlefield');
       // Fizička reprezentacija simultanog leave/dies događaja pomjera karte
       // jednu po jednu. Izvori iz cijelog batcha ipak ostaju dostupni preko LKI.
-      if (name === 'dies' || name === 'lto') {
+      if (name === 'dies' || name === 'lto' || name === 'sacrificed') {
         for (const entry of (this._simultaneousLeaveSources || [])) {
           consider(entry.card, z => z === 'battlefield', entry.ctrl);
         }
+        for(const entry of data.snap?.attachedSources||[])consider(entry.card,z=>z==='battlefield',entry.ctrl);
       }
       // dying/leaving card's own leave-triggers
-      if ((name === 'dies' || name === 'lto') && data.card) {
+      if ((name === 'dies' || name === 'lto' || name === 'sacrificed') && data.card) {
         const dc = data.card;
         if (!this.bf().includes(dc)) {
           // The physical card has already reset to its owner outside the
@@ -2472,8 +2529,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async emit(name, data) {
       const found = this.collectTriggers(name, data || {});
+      if(name==='upkeep')for(const card of this.bf())if(card.def.oracleEchoCost&&card.ctrl===data.player)card.meta.oracleEchoPending=false;
       for (const { card, t, ctrlOverride } of found) {
-        if (t.oncePerTurn) card.meta['_once_' + t.on] = this.turnNo;
+        if (t.oncePerTurn) card.meta['_once_' + (t.onceKey||t.on)] = this.turnNo;
         const nativeTimes = Math.max(0, Number(typeof t.times === 'function'
           ? t.times(this, card, data || {})
           : (t.times === undefined ? 1 : t.times)) || 0);

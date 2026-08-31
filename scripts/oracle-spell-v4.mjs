@@ -886,6 +886,11 @@ function resolveCardAndText(cardOrText, rulesCoreOverride) {
  * unsupported line invalidates the entire spell, including already parsed
  * costs/modes, so callers can safely route `ok: false` to explicit semantics.
  */
+export function parseOracleAdditionalCosts(text) {
+  const parsed=parseAdditionalCost(text);
+  return parsed?addIdsToCosts([parsed]):null;
+}
+
 export function parseOracleSpellV4(cardOrText, rulesCoreOverride) {
   const resolved = resolveCardAndText(cardOrText, rulesCoreOverride);
   if (typeof resolved.text !== 'string' || !resolved.text.trim()) {

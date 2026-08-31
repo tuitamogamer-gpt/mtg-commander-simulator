@@ -1706,8 +1706,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     // card's own cost adjust (Ghalta, Octavia, Eris, Blasphemous...)
-    if (card.def.selfCostAdjust && !castOpts.altCostStr) {
-      generic += card.def.selfCostAdjust(this, card, p);
+    if (card.def.selfCostAdjust) {
+      generic += card.def.selfCostAdjust(this, card, p, castOpts);
     }
     // one-shot reductions (Kaza)
     if (p.tempReductions) {
@@ -1908,6 +1908,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     for (const card of p.command) {
       consider(card, 'command');
+      for (const alternative of card.def.altCosts || []) {
+        if (!alternative.cond || alternative.cond(this, p, card)) consider(card, 'command', alternative);
+      }
       if (p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && p.life > card.mv) {
         consider(card, 'command', {
           free: true, bloodcaster: true, lifeCost: card.mv,
@@ -1958,7 +1961,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // exile zone plays (plot, Light Up the Stage, Theater, hideaway executed via effects granting)
     for (const card of p.exile) {
-      if (card.meta && card.meta.plotted) consider(card, 'exile', { free: true, plotPlay: true, speed: 'sorcery' });
+      if (card.meta && card.meta.plotted && card.meta.plottedTurn<this.turnNo) consider(card, 'exile', { free: true, plotPlay: true, speed: 'sorcery' });
       if (card.meta && card.meta.foretold && card.meta.foretoldTurn < this.turnNo && card.def.foretell) {
         const foretell = typeof card.def.foretell === 'string' ? { cost: card.def.foretell } : card.def.foretell;
         consider(card, 'exile', {
@@ -2150,6 +2153,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // opts: {alt, from, xVal, aiChosen...}
     if (p.turnState && p.turnState.cantCastAdditional && !opts.ignoreAdditionalCastLock) return false;
     const alt = opts.alt || null;
+    // Pitch-cost wrappers have already paid their costs before this entry.
+    // These new alternatives instead require a live turn-history condition.
+    if((alt?.surge||alt?.spectacle)&&alt.cond&&!alt.cond(this,p,card))return false;
     const castOpts = alt ? Object.assign({}, alt) : {};
     if (opts.from !== undefined && castOpts.from === undefined) castOpts.from = opts.from;
     // Interni card-scriptovi istorijski koriste i kraći top-level oblik
@@ -2196,8 +2202,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // X
     let xVal = 0;
-    if (cost.x && !castOpts.free) {
-      let maxX = this.maxAffordableX(p, cost, card, { castOpts });
+    if (cost.x && !castOpts.free || d.additionalCostX) {
+      let maxX = d.additionalCostX ? Math.max(0,p.life) : this.maxAffordableX(p, cost, card, { castOpts });
       if (typeof d.xMax === 'function') maxX = Math.min(maxX, Math.max(0, Number(d.xMax(this, card, p, castOpts)) || 0));
       const legalValues = this.legalXValues(p, card, castOpts, maxX);
       if (legalValues && !legalValues.length) return false;
@@ -2224,9 +2230,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       } else xVal = Math.max(0, Math.min(Number.isFinite(xVal) ? xVal : 0, maxX));
     }
-    // CR 107.3b: if an effect casts a spell without paying its mana cost, X
-    // is 0. An externally supplied xVal must never bypass that rule.
-    if (castOpts.free) xVal = 0;
+    // CR 107.3b fixes X in a waived mana cost at zero. An independently
+    // chosen X in an additional life payment (such as Hatred) still applies.
+    if (castOpts.free && !d.additionalCostX) xVal = 0;
     // X mora biti vidljiv filterima meta (npr. "target creature with mana value X")
     castOpts.xVal = xVal;
 
@@ -2252,10 +2258,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (repCostStr) {
       const rCost = U.parseCost(repCostStr);
       let maxN = 0;
-      for (let k = 1; k <= 4; k++) {
-        const comb = { generic: cost.generic + rCost.generic * k, x: cost.x, xReduction: cost.xReduction || 0, pips: cost.pips.concat(Array(k).fill(rCost.pips).flat()) };
-        if (this.canPayMana(p, comb, { card }, { xVal })) maxN = k; else break;
+      const bound=d.multikicker?this.maxAffordableX(p,{...cost,generic:cost.generic+(cost.x||0)*xVal,x:1},card,{castOpts}):4;
+      let low=0,high=bound+1;
+      while(low+1<high){
+        const k=low+Math.floor((high-low)/2);
+        const comb={generic:cost.generic+rCost.generic*k,x:cost.x,xReduction:cost.xReduction||0,pips:cost.pips.concat(Array(k).fill(rCost.pips).flat())};
+        if(this.canPayMana(p,comb,{card},{xVal}))low=k;else high=k;
       }
+      maxN=low;
       if (maxN > 0) {
         paidTimes = await p.controller.decide(this, {
           type: 'chooseX', min: 0, max: maxN, card,
@@ -3209,6 +3219,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const co = so.castOpts || {};
     const queueEvokeSacrifice = permanent => {
       if (!co.evoke || !permanent || permanent.zone !== 'battlefield') return;
+      const enteredVersion = permanent.zoneVersion;
       // Evoke is a triggered ability of the permanent that entered. A copy of
       // an evoked permanent spell enters as a token, but it still has the
       // copied spell's paid alternative cost and therefore creates this same
@@ -3217,9 +3228,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         src: permanent,
         ctrl: permanent.ctrl,
         name: `${permanent.name} — Evoke sacrifice`,
-        onlyIf: () => permanent.zone === 'battlefield',
+        onlyIf: () => permanent.zone === 'battlefield' && permanent.zoneVersion === enteredVersion,
         run: async triggerCtx => {
-          if (permanent.zone === 'battlefield') await triggerCtx.g.sacrifice(permanent.ctrl, permanent);
+          if (permanent.zone === 'battlefield' && permanent.zoneVersion === enteredVersion && permanent.ctrl === triggerCtx.you) {
+            await triggerCtx.g.sacrifice(triggerCtx.you, permanent);
+          }
         },
       });
     };
@@ -3407,7 +3420,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (co.escape && d.escapeCounters) this.addCounters(card, '+1/+1', d.escapeCounters);
     if (co.blitz) { card.meta.blitzed = true; card.meta.tempHaste = true; this.recalc(); }
-    if (co.dash) { card.meta.tempHaste = true; this.recalc(); }
+    if (co.dash) {
+      card.meta.tempHaste = true;this.recalc();
+      const zoneVersion=card.zoneVersion;
+      this.delayed.push({on:'endStep',once:true,src:card,ctrl:p,name:'Dash: return to hand',run:async ctx=>{
+        if(card.zone==='battlefield'&&card.zoneVersion===zoneVersion)await ctx.g.move(card,'hand');
+      }});
+    }
     queueEvokeSacrifice(card);
     await this.checkSBA(); await this.flushTriggers();
   };
@@ -3479,7 +3498,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const faceUp of this.faceUpCosts(c)) {
           if (!this.canPayMana(p, U.parseCost(faceUp.cost), { card: c, isAbility: true })) continue;
           out.push({
-            card: c, turnFaceUp: true, faceUpCost: faceUp.cost, faceUpDef: c.meta.faceDownDef,
+            card: c, turnFaceUp: true, faceUpCost: faceUp.cost, faceUpKind: faceUp.kind, faceUpDef: c.meta.faceDownDef,
             label: `Okreni licem gore: ${c.meta.faceDownDef.name} (${faceUp.kind}: ${faceUp.cost})`,
           });
         }
@@ -3752,7 +3771,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.note('mana', { p });
       return true;
     }
-    if (entry.turnFaceUp) return this.turnFaceUp(p, c, entry.faceUpCost);
+    if (entry.turnFaceUp) return this.turnFaceUp(p, c, entry.faceUpCost, entry.faceUpKind);
     if (c.zone === 'battlefield' && c.cur && c.cur.activationDisabled) return false;
     // Loyalty je trošak. Provjeri ga prije biranja meta i plaćanja drugih
     // troškova, a oznaku korištenja postavi tek kada je aktivacija legalna.
@@ -3907,10 +3926,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
     if (entry.plot) {
+      if(c.zone!=='hand'||this.turnPlayer!==p||this.stack.length||!['main1','main2'].includes(this.phase))return false;
       const ok = await this.payMana(p, U.parseCost(c.def.plot));
       if (!ok) return false;
-      this.remove(c); c.zone = 'exile'; p.exile.push(c);
-      c.meta = { plotted: true };
+      await this.move(c,'exile');
+      c.meta = { plotted: true,plottedTurn:this.turnNo };
       this.lg(`${U.playerVerb(p, 'plot', 'plots')} ${c.name}.`);
       return true;
     }
@@ -4466,6 +4486,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return true;
   };
 
+  G.putPermanentOntoBattlefield = async function(card,ctrl,opts={}) {
+    if((card.def.subtypes||[]).includes('Aura')){
+      const spec=card.def.auraTarget?.[0];
+      if(!spec)return false;
+      const playerAura=['player','opponent'].includes(spec.what);
+      const candidates=(playerAura?this.alivePlayers():this.bf()).filter(candidate=>
+        candidate!==card&&(!playerAura||spec.what!=='opponent'||candidate!==ctrl)&&
+        (!spec.filter||spec.filter(this,candidate,ctrl,card))&&
+        (playerAura||!this.isProtectedFrom(candidate,card)));
+      if(!candidates.length)return false;
+      const choice=await ctrl.controller.decide(this,{type:'chooseCards',from:candidates,min:1,max:1,prompt:card.name+': choose what the Aura enchants',aiHint:{kind:'auraHost',card}});
+      if(!Array.isArray(choice)||choice.length!==1||!candidates.includes(choice[0]))return false;
+      opts={...opts,...(playerAura?{cursedPlayer:choice[0]}:{attachTo:choice[0]})};
+    }
+    await this.move(card,'battlefield',{...opts,ctrl});
+    return card.zone==='battlefield';
+  };
+
   G.attach = async function (att, host) {
     if (!att || !host || att.zone !== 'battlefield' || host.zone !== 'battlefield') return false;
     if (att.attachedTo) {
@@ -4944,7 +4982,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const effect = this.untilEffects[i];
       if (effect.expires !== 'eot' || effect.kind !== 'temporaryControl') continue;
       const card = this.byIid(effect.iid);
-      if (card && card.zone === 'battlefield' && card.ctrl === effect.to) card.ctrl = effect.from;
+      if (card && card.zone === 'battlefield' && (effect.zoneVersion===undefined||card.zoneVersion===effect.zoneVersion) && card.ctrl === effect.to && (effect.controlEpoch===undefined||card.meta.oracleControlEpoch===effect.controlEpoch)) {card.ctrl = effect.from;card.sick=true;if(effect.controlEpoch!==undefined)card.meta.oracleControlEpoch=effect.fromEpoch;}
     }
     this.untilEffects = this.untilEffects.filter(e => e.expires !== 'eot' &&
       !(e.expires === 'yourNext' && e.ctrl === this.nextPlayer(p)) &&

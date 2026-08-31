@@ -51,7 +51,7 @@ function assertExecutableOperation(MTG, entry, definition, operation) {
     return;
   }
   if (operation.kind === 'generic-ability') {
-    assert.ok((definition.abilities || []).some(ability => ability.label === 'Oracle ability'),
+    assert.ok((operation.from==='hand'?[definition.handAbility]:definition.abilities || []).some(ability => ability?.label === 'Oracle ability'),
       `${entry.raw.name}: generic ability compiled to an engine action`);
     assert.ok(operation.v4Body || (Array.isArray(operation.effects) && operation.effects.length),
       `${entry.raw.name}: generic ability has executable effects`);
@@ -108,9 +108,9 @@ test('svaka generička Oracle batch karta mapira kompletan rules core na poznate
   const MTG = loadEngine();
   const entries = allEntries(MTG);
   const batches = MTG.ORACLE_BATCHES.filter(batch => batch.id !== 'moxfield-sauron-dark-lord');
-  assert.equal(batches.length, 66, 'generic Oracle catalog has exactly 66 batches');
+  assert.equal(batches.length, 96, 'generic Oracle catalog has exactly 96 batches');
   assert.ok(batches.every(batch => batch.cards.length === 100), 'every generic Oracle batch contains exactly 100 cards');
-  assert.equal(entries.length, 6600, `expected all 66 generic Oracle batches (6,600 cards), found ${entries.length}`);
+  assert.equal(entries.length, 9600, `expected all 96 generic Oracle batches (9,600 cards), found ${entries.length}`);
   for (const entry of entries) {
     const catalog = MTG.CARD_CATALOG[entry.raw.name];
     const deck = { cards: [{ n: 1, name: entry.raw.name }] };

@@ -12,11 +12,15 @@ import {
   fetchOracleCardsFromGzip,
   moduleSource,
   runOracleImport,
-  semanticClass,
+  semanticClass as latestSemanticClass,
   validateLimit,
   validateManaCost,
   writeImportPlanAtomic,
 } from '../scripts/import-oracle-batch.mjs';
+
+// Preserve the v5 grammar's historical acceptance/rejection contract. The
+// additive v6 compiler and its newly supported rules have their own suite.
+const semanticClass=card=>latestSemanticClass(card,{compilerVersion:5});
 
 const SNAPSHOT_A = '2026-08-29T21:01:52.466+00:00';
 const SNAPSHOT_B = '2026-08-30T21:01:52.466+00:00';
@@ -759,4 +763,15 @@ test('atomic writer uspješno objavljuje runtime/report paritet i ne prepisuje p
   } finally {
     fs.rmSync(directory, { recursive: true, force: true });
   }
+});
+
+test('consecutive plans cannot reuse changed source rules or mutated report descriptors',()=>{
+  const card=oracleCard('Cached rules','cached-rules',{oracle_text:'Flying',keywords:['Flying']});
+  const first=plan({cards:[card]});first.report.cards[0].implementedKeywords.length=0;
+  assert.deepEqual(plan({cards:[card]}).report.cards[0].implementedKeywords,['flying']);
+  card.oracle_text='Unknown rules that cannot be executed.';
+  assert.throws(()=>plan({cards:[card]}),/Only 0 cards/);
+  card.oracle_text='Surge {G}';card.keywords=[];
+  assert.equal(plan({cards:[card]}).report.cards[0].implementation[0].kind,'mechanic-surge');
+  assert.throws(()=>plan({cards:[card],compilerVersion:5}),/Only 0 cards/);
 });

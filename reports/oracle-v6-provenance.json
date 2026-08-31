@@ -1,0 +1,214 @@
+{
+  "ok": true,
+  "first": 67,
+  "last": 96,
+  "batches": 30,
+  "verifiedRows": 3000,
+  "source": {
+    "sha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+    "bulkId": "27bf3214-1271-490b-bdfe-c0be6c23d02e",
+    "updatedAt": "2026-08-30T09:01:56.964+00:00",
+    "rows": 38627
+  },
+  "compilerVersion": 6,
+  "genericCards": 9600,
+  "manualCards": 58,
+  "legacyCards": 1626,
+  "knownLegacyOracleIds": 0,
+  "catalogNames": 11284,
+  "selectedCatalogSha256": "c072f147034033f1c4663edac6421e25fadc4f083913413d01969306186d4132",
+  "genericCatalogSha256": "d8f3bf2145c5f49af9da0456c1c2c6c112a2eb0c52ce930db12bb6162494f87d",
+  "oracleUnionCatalogSha256": "4c338ec2027ca4c5365525177e81e22ede785ca5833d7945bbd218a676c7860c",
+  "normalizedCohortSha256": "64122dd304bf01e95dd10308177fed4663c1e0a1381f3d1b9b9373933b616fdb",
+  "historicalQueueStatisticsReplayed": false,
+  "batchResults": [
+    {
+      "id": "oracle-0067",
+      "rows": 100,
+      "normalizedRowsSha256": "a07954bb592398a6b9f17bcaf67e40b51355b157c1852c498cd3d51789dd0783",
+      "runtimeSha256": "a9798295511701ab8b32d42fbdf0bbc5e8d0a6dd940b373a62f645500329508c"
+    },
+    {
+      "id": "oracle-0068",
+      "rows": 100,
+      "normalizedRowsSha256": "a2492ccbef9c245a6ed104fca5d2eda2d0f92b14700664d728c94a3517c07931",
+      "runtimeSha256": "86d4175095817b8416c0d061111367ae6219b4fb58d6d2dd077bb4c2d05f6999"
+    },
+    {
+      "id": "oracle-0069",
+      "rows": 100,
+      "normalizedRowsSha256": "67bdd0624dccdd4a9adcb5511e7b5454369ea58b8b9d5860913fee37c21c7dfe",
+      "runtimeSha256": "ca096c940e9e12ff33573b79a4bd6cd4d9bbd2197ffb94acb425d810c8e53b64"
+    },
+    {
+      "id": "oracle-0070",
+      "rows": 100,
+      "normalizedRowsSha256": "17db9ee4e2da50e68b3e8fcb5afbf62dd6d5ce2a78f9ef289dc930d819ea5982",
+      "runtimeSha256": "f99306d705a5ce7007f7cb524a3d98a2d92f1a01982a4ccb1b00fade9418e6c0"
+    },
+    {
+      "id": "oracle-0071",
+      "rows": 100,
+      "normalizedRowsSha256": "2366281eecfb8e176009bc3975cf08bf7dc531493f9064af9179080749d74b93",
+      "runtimeSha256": "74a6b04064094ed0f02da9e3204d27ce1e3ff683731bd5db745070042c3b998e"
+    },
+    {
+      "id": "oracle-0072",
+      "rows": 100,
+      "normalizedRowsSha256": "e53ace05b3467161c93749d133f8b5fed08beb12796f86c4d8b926f275c0a811",
+      "runtimeSha256": "cb9c9cc55e90d73094f8a4a511a3c08b9494c6428095512cc2ce53bf2210a722"
+    },
+    {
+      "id": "oracle-0073",
+      "rows": 100,
+      "normalizedRowsSha256": "3a0c9347779cf42daa929671ec59772753a0ae7dba54da15518d69a08aaddd3d",
+      "runtimeSha256": "581340bd180fcaf2c5293ad79454206776a60b811f127d316ec165430b19121e"
+    },
+    {
+      "id": "oracle-0074",
+      "rows": 100,
+      "normalizedRowsSha256": "b912f5df59722a92c29ea411e795ca0693bc0c580d8e1927dcca00b448fe0f16",
+      "runtimeSha256": "7070b0175098ff5827f1e6e694f633aedd3b73acf23ca8dd8ce53f641e8432b2"
+    },
+    {
+      "id": "oracle-0075",
+      "rows": 100,
+      "normalizedRowsSha256": "7e28db12f0c2767382ff3dd4d7b01402f7727e46c46afabedb07f98f6911c82b",
+      "runtimeSha256": "95e62590111edb98e1706239ec7b676720f27b9f4fac468a35027e226bfdb65c"
+    },
+    {
+      "id": "oracle-0076",
+      "rows": 100,
+      "normalizedRowsSha256": "150ae1f6ae33f3ee2d227fc9c5b9387f4e95ddb2a07a7b917be7ab449bd4f0ed",
+      "runtimeSha256": "98932268d9c62c0b2b03ecac725d8e1e897c95ab935f92cd1e712b172e6ca5fd"
+    },
+    {
+      "id": "oracle-0077",
+      "rows": 100,
+      "normalizedRowsSha256": "b3f50e9f99b14219eff272ef20f525948e26b172d3d0763da84de1ca667fa0d7",
+      "runtimeSha256": "54ca2b0a78b89452c17355c621c18068769ab6c57ded8c15c0f728ef842dd3c0"
+    },
+    {
+      "id": "oracle-0078",
+      "rows": 100,
+      "normalizedRowsSha256": "466cf71f0077246e779dc0ef67964766a136b6421d76f6ad853d08ec10312b4d",
+      "runtimeSha256": "56db311ea8a58b95913fb45437cdbb7473edbf344ea18215cd397975622e13d3"
+    },
+    {
+      "id": "oracle-0079",
+      "rows": 100,
+      "normalizedRowsSha256": "368befcd9fe1667d09ff2bc0bf71b7aaa12147c76c29039123b9d775debb3b84",
+      "runtimeSha256": "467cce0a77b31bb4e774bebaecf2ce40574c706a065e71ae79f30d2a164e2614"
+    },
+    {
+      "id": "oracle-0080",
+      "rows": 100,
+      "normalizedRowsSha256": "3e04d6bf8402612f7845386d6523eab12b37b249672a5de75f155febdb004316",
+      "runtimeSha256": "bde1169ed7b443e7bf2c2482be54ee909dd9401ea17d9c624075884626593e76"
+    },
+    {
+      "id": "oracle-0081",
+      "rows": 100,
+      "normalizedRowsSha256": "5c44bfe79055f29b088419aa62fe78076fb3979d1bbc5ed36729c9394018e36e",
+      "runtimeSha256": "75e835140555112f64987182563e412d8cea3476d1dc38949179eb8f1517caa8"
+    },
+    {
+      "id": "oracle-0082",
+      "rows": 100,
+      "normalizedRowsSha256": "8babe6e6136cca7c4625289ee04926ed292c9b3442b892fcbc715be91f73bada",
+      "runtimeSha256": "1f7e8882250bf4c1febd229dd868dd6b61054689b51622a33bd17ec9a3795d2c"
+    },
+    {
+      "id": "oracle-0083",
+      "rows": 100,
+      "normalizedRowsSha256": "0de4be74fe6da0ccf764b4efffe181de8e20e4990963e2e9b32902277ed0842f",
+      "runtimeSha256": "4c7b0fe45abe7822abf7f11331b6e257009cef808ae2d8ce863625e87c6c4e35"
+    },
+    {
+      "id": "oracle-0084",
+      "rows": 100,
+      "normalizedRowsSha256": "fe00ed52b3fa1e66aed56e0d03f01d4799bcded0fb31364e1d147a46d07a83e6",
+      "runtimeSha256": "d8aff27e416410ddd4e60d3ad244cdb53320d24e6a1074d44147d955be17db5d"
+    },
+    {
+      "id": "oracle-0085",
+      "rows": 100,
+      "normalizedRowsSha256": "bbfcd1d35a5e2629613417140d65acff0c0cfe9f2e1cfd573b57520a8ebfc8e9",
+      "runtimeSha256": "354f8aba820dae88d29edeb16271b3d104a5789151f94ae28a2d372265311f3c"
+    },
+    {
+      "id": "oracle-0086",
+      "rows": 100,
+      "normalizedRowsSha256": "bf4422f2c70e14aeec67844fd81e0bb26a26753cbd4d94b20181a2aa41d782f1",
+      "runtimeSha256": "93f40894b383685dd7acd1a44416ed45469bbd8f630a29b4a3444a82b5738642"
+    },
+    {
+      "id": "oracle-0087",
+      "rows": 100,
+      "normalizedRowsSha256": "d710352d060f83eef76b9bb245b1f54ca558edef21073d37a38a5193098cf722",
+      "runtimeSha256": "6d489a359089ff5e11c32c614819a0562defe51fe3f398e98857558793f2d1cc"
+    },
+    {
+      "id": "oracle-0088",
+      "rows": 100,
+      "normalizedRowsSha256": "1488b0d4acb8ba14f5b57ca6ef9c43712cee4ca1790dfb0297e1a634f5749829",
+      "runtimeSha256": "75b95c021b29d82b1f85489325ac671936b4aa2d41335f77d3079a197fd43289"
+    },
+    {
+      "id": "oracle-0089",
+      "rows": 100,
+      "normalizedRowsSha256": "1cdfee8e64d2cb7c10d3570516a5ebc4512b69292c8b26577171ec49d0a90b6d",
+      "runtimeSha256": "70bda558749c2b8bec265113f8c64f0f0401d4b22836de6505534930ade8b487"
+    },
+    {
+      "id": "oracle-0090",
+      "rows": 100,
+      "normalizedRowsSha256": "3e3cfea9695ad9115297aff31b6c7cfffe7c1ce55a529f84be220270b7e6456d",
+      "runtimeSha256": "1bdc44d6c11021265235a5bf54b6b6fa291b008dac07daf52e41a39ffaf21f0e"
+    },
+    {
+      "id": "oracle-0091",
+      "rows": 100,
+      "normalizedRowsSha256": "34040e097ba33ba3dbda86978db0a1c1f9f36099da4f3c10cea8302ad687c89e",
+      "runtimeSha256": "2ff2952857853875f4fd04c205a493efc472299ec5f5a60e8b608941a50d02bb"
+    },
+    {
+      "id": "oracle-0092",
+      "rows": 100,
+      "normalizedRowsSha256": "cf3a324ac3693c4b4c5218e4221ba6866f0562515d44ebeb5ba21b3ec0ddfd70",
+      "runtimeSha256": "9c0400bdcf5ff1ed7a35b6b74ad4db28afcce86f4077d97704c518eff14dd3a8"
+    },
+    {
+      "id": "oracle-0093",
+      "rows": 100,
+      "normalizedRowsSha256": "04919c78bb5f760475064887ddb4bb33de3dbecf0fba191b7f50d1fee36a54ca",
+      "runtimeSha256": "cbb1cb1c942f1f770cb92cd24f398812bfb45dd77c246906f416d79b8a4bb5a3"
+    },
+    {
+      "id": "oracle-0094",
+      "rows": 100,
+      "normalizedRowsSha256": "5fd02105b1290c92ff84c266d5d1eccc2733e3e575c72223bc9e592ea2603b4b",
+      "runtimeSha256": "21b62da8ae7a4258955353ae79c5347d7f445df8ff8481d241820332f5443d56"
+    },
+    {
+      "id": "oracle-0095",
+      "rows": 100,
+      "normalizedRowsSha256": "2eb7343a301f2fee283baf43a2825b9899c25210c06eff0adc84dd46335fc1c7",
+      "runtimeSha256": "215557d871f05989a421863d64e2ee729f317e46b15ac02e3516283e02606b7c"
+    },
+    {
+      "id": "oracle-0096",
+      "rows": 100,
+      "normalizedRowsSha256": "5a9dfe6bbe1b25a03cbad1aa824838121b0c499ee50918dd3b332559fa398d94",
+      "runtimeSha256": "9ca73bdbc9eb1682971bbfc1e103a3ced9660c4681223ce511a860a43b95764f"
+    }
+  ],
+  "compilerFiles": {
+    "scripts/import-oracle-batch.mjs": "652d36e74643a3c0c1ea802e5ce7ee7f1d8da447a9d624e40974a7353558f6e1",
+    "scripts/oracle-spell-v4.mjs": "abe6d402e4d254bf52a91dda72d4451951f0b5969bb6be5414549d0efebb2a25",
+    "scripts/oracle-extensions-v5.mjs": "b1ed9688b68dd2daeb2c749d2c490478832a68ef8b8f1712490adc9769d5c08f",
+    "scripts/oracle-extensions-v6.mjs": "8789b4dd2e9837b8fd565ecd46f89ef599ecb14fbd344ed2b6bab633472a2bad",
+    "scripts/oracle-subtypes.mjs": "ae72f492bac1e6be7452c7dd1923c184b109087875fe6d30a3ada9a17f51981d"
+  },
+  "compilerSha256": "f1024c84c325ae0eec8218dfcc0767b41267c424d656facec581b777fb50ad70"
+}

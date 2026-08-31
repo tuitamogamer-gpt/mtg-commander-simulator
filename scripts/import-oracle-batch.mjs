@@ -7,13 +7,15 @@ import { createGunzip } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { extractRawData } from './source-audit.mjs';
 import { parseOracleSpellV4 } from './oracle-spell-v4.mjs';
-import { extensionEffect as v5Effect, extensionLine as v5Line, characteristicOperation } from './oracle-extensions-v5.mjs';
+import { extensionEffect as v5Effect, extensionLine as v5Line, characteristicOperation as v5Characteristic } from './oracle-extensions-v5.mjs';
+import { extensionEffect as v6Effect, extensionLine as v6Line, characteristicOperation as v6Characteristic, extensionCost as v6Cost, modifierOperation as v6Modifier, modalOperation as v6Modal } from './oracle-extensions-v6.mjs';
 
 // Parsing is synchronous. Preserve existing v4 descriptors verbatim before
 // trying the additive grammar, so an extension cannot rewrite old manifests.
-let extensionsActive = false;
-const extensionEffect = (...args) => extensionsActive ? v5Effect(...args) : null;
-const extensionLine = (...args) => extensionsActive ? v5Line(...args) : null;
+let extensionsActive = 0;
+const extensionEffect = (...args) => extensionsActive === 6 ? v6Effect(...args) : extensionsActive ? v5Effect(...args) : null;
+const extensionLine = (...args) => extensionsActive === 6 ? v6Line(...args) : extensionsActive ? v5Line(...args) : null;
+const characteristicOperation = (...args) => extensionsActive === 6 ? v6Characteristic(...args) : v5Characteristic(...args);
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourceDir = path.join(root, 'src', 'oracle-batches');
@@ -21,7 +23,7 @@ const reportDir = path.join(root, 'reports', 'oracle-import');
 const statePath = path.join(reportDir, 'state.json');
 const BULK_INDEX_URL = 'https://api.scryfall.com/bulk-data';
 const DEFAULT_LIMIT = 100;
-const SEMANTIC_COMPILER_VERSION = 5;
+const SEMANTIC_COMPILER_VERSION = 6;
 const USER_AGENT = 'MTGcodexOracleImporter/0.1 (local development)';
 
 const SUPERTYPES = new Set(['Legendary', 'Basic', 'Snow', 'World', 'Ongoing']);
@@ -114,6 +116,7 @@ function keywordLine(line) {
 }
 
 function keywordList(value, allowed = GRANTABLE_KEYWORDS) {
+  if(extensionsActive===6&&allowed===GRANTABLE_KEYWORDS)allowed=new Set([...IMPLEMENTED_KEYWORDS].filter(keyword=>keyword!=='prowess'));
   const normalized = String(value || '').trim().toLowerCase()
     .replace(/,?\s+and\s+/g, ',')
     .split(/\s*,\s*/)
@@ -138,7 +141,7 @@ function parseManaLine(line) {
     const extended = /^(.+): Add (.+)\.$/.exec(line);
     if (!extended) return null;
     const cost = genericActivatedCost(extended[1]);
-    if (!cost || !cost.tap || Object.keys(cost).some(key => !['tap','mana','life','sacSelf'].includes(key))) return null;
+    if (!cost || !(cost.tap || extensionsActive===6&&cost.sacSelf) || Object.keys(cost).some(key => !['tap','mana','life','sacSelf'].includes(key))) return null;
     const base = parseManaLine('{T}: Add ' + extended[2] + '.');
     return base ? Object.assign(base, { activationCost: cost }) : null;
   }
@@ -205,6 +208,11 @@ function cyclingOperation(line) {
 }
 
 function spellModifierOperation(card, line) {
+  if(extensionsActive===6){const operation=v6Modifier(card,line);if(operation)return operation;}
+  if(extensionsActive===6&&/^(Delve|Improvise|Affinity for artifacts)$/.test(line)){
+    const mechanic=line==='Affinity for artifacts'?'affinity-artifacts':line.toLowerCase();
+    return {kind:'mechanic-'+mechanic,contract:'mechanic-'+mechanic};
+  }
   if(extensionsActive&&line==='Retrace')return {kind:'mechanic-retrace',cost:card.mana_cost,contract:'mechanic-retrace'};
   const foretell=extensionsActive&&/^Foretell ((?:\{(?:\d+|[WUBRGC])\})+)$/.exec(line);
   if(foretell)return {kind:'mechanic-foretell',cost:foretell[1],contract:'mechanic-foretell'};
@@ -373,6 +381,7 @@ function expandedMechanicOperation(line) {
 function genericActivatedCost(value) {
   const source = String(value || '').trim();
   if (!source) return null;
+  if(extensionsActive===6){const extra=v6Cost(source);if(extra)return extra;}
   const cost = {};
   for (const part of source.split(/,\s*/)) {
     if (part === '{T}') cost.tap = true;
@@ -652,6 +661,19 @@ function closedGenericEffectSequence(card, value) {
       }
       if (typeof adjusted.target === 'number' && !(refersToTarget && effect.target==='self')) adjusted.target += offset;
       if (typeof adjusted.who === 'number') adjusted.who += offset;
+      if(extensionsActive===6){
+        if(typeof adjusted.otherTarget==='number')adjusted.otherTarget+=offset;
+        const remap=effect=>{
+          const result={...effect};
+          if(refersToTarget&&result.target==='self')result.target=previousTarget;
+          else if(typeof result.target==='number')result.target+=offset;
+          if(typeof result.otherTarget==='number')result.otherTarget+=offset;
+          if(typeof result.who==='number')result.who+=offset;
+          if(result.effects)result.effects=result.effects.map(remap);
+          return result;
+        };
+        if(adjusted.effects)adjusted.effects=adjusted.effects.map(remap);
+      }
       merged.effects.push(adjusted);
     }
     merged.targets.push(...parsed.targets);
@@ -685,6 +707,19 @@ function genericEventOperation(card, line) {
     if (!match) continue;
     const parsed = closedGenericEffectSequence(card, match[1]);
     if (!parsed) return null;
+    if(extensionsActive===6&&['another-your-creature','another-your-artifact'].includes(pattern.filter)){
+      // In these clauses, bare "it/its" refers to the event's permanent.
+      // Explicit "this creature" and locked target references keep their identity.
+      const eventTarget=/\bon it\b|^it (?:gets|gains|loses)\b/i.test(match[1])&&!/\btarget\b/i.test(match[1]);
+      const eventStat=/\bits (?:power|toughness)\b/i.test(match[1]);
+      const eventSource=/^it deals /i.test(match[1]);
+      const bind=value=>Array.isArray(value)?value.map(bind):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,
+        key==='target'&&item==='self'&&eventTarget?'event-card':key==='kind'&&item==='source-stat'&&eventStat?'event-card-stat':bind(item)])):value;
+      parsed.effects=parsed.effects.map(effect=>({...bind(effect),...(eventSource&&effect.action==='damage'?{source:'event-card'}:{})}));
+    }
+    if(extensionsActive===6&&/^if /i.test(match[1])&&parsed.effects.length===1&&parsed.effects[0].action==='conditional'){
+      return genericTrigger(pattern.event,parsed.effects[0].effects,{targets:parsed.targets,optional:parsed.optional,eventFilter:pattern.filter,condition:parsed.effects[0].condition});
+    }
     return genericTrigger(pattern.event, parsed.effects, {
       targets: parsed.targets,
       optional: parsed.optional,
@@ -1237,7 +1272,7 @@ function landSemantics(card, rulesCore) {
       });
     }
   }
-  if (!implementation.some(operation => operation.kind === 'mana-source')) {
+  if (!implementation.some(operation => operation.kind === 'mana-source') && extensionsActive!==6) {
     return { reason: 'land-needs-explicit-semantics' };
   }
   return {
@@ -1758,6 +1793,8 @@ function spellSemantics(card, rulesCore) {
     const parsed = parseOracleSpellV4(card, bodyLines.join('\n'));
     if (!parsed.ok) {
       if(!extensionsActive)return {reason:'spell-needs-explicit-semantics'};
+      const modal=extensionsActive===6&&v6Modal(card,bodyLines.join('\n'),closedGenericEffectSequence);
+      if(modal)return {semanticClass:'spell-template',implementedKeywords:[],implementation:[...modifiers,modal],oracleContracts:[...new Set([...modifiers.map(operation=>operation.contract),modal.contract])],rulesCore};
       const generic=closedGenericEffectSequence(card,bodyLines.join(' '));
       if(!generic||generic.optional||generic.effects.some(effect=>effect.target==='self')) return { reason: 'spell-needs-explicit-semantics' };
       return {semanticClass:'spell-template',implementedKeywords:[],implementation:[...modifiers,{kind:'spell-generic',...generic,contract:'spell-generic-effect'}],oracleContracts:[...new Set([...modifiers.map(operation=>operation.contract),'spell-generic-effect'])],rulesCore};
@@ -1815,7 +1852,8 @@ function semanticClassCore(card) {
   // Most current Oracle text uses "this creature" rather than its printed
   // name. Keep those identical grammars reusable by the RegExp compiler,
   // without changing the source card or any normalized report fields.
-  if (card.name!=='Clowning Around' && !rulesCore.toLowerCase().includes(card.name.split(',')[0].toLowerCase())) card = { ...card, name: '__OracleSelf__' };
+  const shortName=extensionsActive===6?card.name.split(/,| the /)[0]:card.name.split(',')[0];
+  if (card.name!=='Clowning Around' && !rulesCore.toLowerCase().includes(shortName.toLowerCase())) card = { ...card, name: '__OracleSelf__' };
   if (parsed.types.includes('Creature')) return creatureSemantics(card, rulesCore);
   if (parsed.types.includes('Land')) return landSemantics(card, rulesCore);
   if (parsed.types.includes('Instant') || parsed.types.includes('Sorcery')) return spellSemantics(card, rulesCore);
@@ -1825,30 +1863,50 @@ function semanticClassCore(card) {
 }
 
 export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSION } = {}) {
-  if(![4,5].includes(compilerVersion))throw new Error('Unsupported semantic compiler version: '+compilerVersion);
+  if(![4,5,6].includes(compilerVersion))throw new Error('Unsupported semantic compiler version: '+compilerVersion);
   const previous = extensionsActive;
   try {
-    extensionsActive = false;
+    extensionsActive = 0;
     const existing = semanticClassCore(card);
     if (existing.semanticClass || compilerVersion===4) return existing;
-    extensionsActive = true;
-    const result=semanticClassCore(card);
+    extensionsActive = 5;
+    let result=semanticClassCore(card);
+    if (!result.semanticClass && compilerVersion === 6) {
+      extensionsActive = 6;
+      result = semanticClassCore(card);
+    }
     const operations=result.implementation||[];
+    if (extensionsActive === 6 && operations.some(op => op.kind === 'generic-ability' &&
+      JSON.stringify(op).includes('"action":"add-mana"'))) {
+      return {reason:'mana-ability-needs-explicit-semantics'};
+    }
     // In creature arrival/death triggers, "its power/toughness" refers to
     // that event's creature, which need not be the ability's source.
     for (const operation of operations) {
       if (operation.kind !== 'generic-trigger' || !['etb', 'dies'].includes(operation.event) ||
           !(['any-creature', 'another-creature', 'your-creature', 'another-your-creature'].includes(operation.eventFilter) ||
-            operation.eventFilter?.kind === 'your-subtype')) continue;
+            ['your-subtype','filtered-object'].includes(operation.eventFilter?.kind))) continue;
       for (const effect of operation.effects || []) {
         if (effect.action === 'gain-life' && effect.n?.kind === 'source-stat') effect.n.kind = 'event-card-stat';
       }
     }
     if(operations.filter(op=>['mechanic-unearth','mechanic-embalm','mechanic-grave-return-self'].includes(op.kind)).length>1)return {reason:'conflicting-graveyard-abilities'};
+    if(operations.filter(op=>op.kind==='generic-ability'&&op.from==='hand').length>1)return {reason:'conflicting-hand-abilities'};
+    const boundEvents=operation=>{
+      if(operation.kind==='attachment-operation')return boundEvents(operation.operation);
+      if(operation.grantedOperation)return boundEvents(operation.grantedOperation);
+      const encoded=JSON.stringify(operation);
+      if(/"event-(?:player|card|card-controller)"/.test(encoded)&&operation.kind!=='generic-trigger')return false;
+      if(encoded.includes('"event-player"')&&![operation.event].flat().every(event=>['cast','draw','upkeep','endStep','damageToPlayer','combatDamageToPlayer'].includes(event)))return false;
+      if(/"event-card(?:-controller)?"/.test(encoded)&&![operation.event].flat().every(event=>['etb','dies','lto','cast','castIS','castNonCreature','castCreature','attacks','blocks','becameTapped','becameUntapped','turnedFaceUp'].includes(event)))return false;
+      return true;
+    };
+    if(operations.some(operation=>!boundEvents(operation)))return {reason:'unbound-event-reference'};
     // Event amounts only exist on damage events. Never accept an inert
     // "that much life" outside the closed antecedent that defines it.
-    if(operations.some(op=>JSON.stringify(op).includes('"kind":"event-amount"')&&
-      (op.kind!=='generic-trigger'||![op.event].flat().every(event=>['damageToPlayer','dealtDamage','combatDamageToPlayer'].includes(event)))))return {reason:'unbound-event-amount'};
+    const amountBound=op=>op.kind==='attachment-operation'?amountBound(op.operation):op.grantedOperation?amountBound(op.grantedOperation):!JSON.stringify(op).includes('"kind":"event-amount"')||op.kind==='generic-trigger'&&[op.event].flat().every(event=>['damageToPlayer','dealtDamage','combatDamageToPlayer','lifeGain'].includes(event));
+    if(operations.some(op=>!amountBound(op)))return {reason:'unbound-event-amount'};
+    if(extensionsActive===6&&JSON.stringify(operations).includes('"X"')&&!/\{X\}|pay X life/i.test((card.mana_cost||'')+' '+(card.oracle_text||'')))return {reason:'unbound-X'};
     return result;
   } finally { extensionsActive = previous; }
 }
@@ -2002,6 +2060,18 @@ export function validateLimit(value) {
   return limit;
 }
 
+// Consecutive batches share the same pinned feed. Cache only identical full
+// source rows and compiler versions, and clone descriptors so callers cannot
+// mutate a later plan through an earlier report.
+const planSemanticCache=new WeakMap();
+function planSemantics(card,compilerVersion){
+  const fingerprint=JSON.stringify(card),cached=planSemanticCache.get(card);
+  if(cached?.fingerprint===fingerprint&&cached.compilerVersion===compilerVersion)return structuredClone(cached.result);
+  const result=semanticClass(card,{compilerVersion});
+  planSemanticCache.set(card,{fingerprint,compilerVersion,result:structuredClone(result)});
+  return result;
+}
+
 export function createImportPlan({
   cards,
   bulk,
@@ -2084,7 +2154,7 @@ export function createImportPlan({
       addReason(deferredByReason, deferredExamples, 'already-imported-batch', card);
       continue;
     }
-    const semantics = semanticClass(card, {compilerVersion});
+    const semantics = planSemantics(card,compilerVersion);
     if (!semantics.semanticClass) {
       addReason(deferredByReason, deferredExamples, semantics.reason, card);
       continue;

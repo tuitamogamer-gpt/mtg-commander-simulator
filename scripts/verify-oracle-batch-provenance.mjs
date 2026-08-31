@@ -208,7 +208,7 @@ export async function runProvenanceVerification(args = process.argv.slice(2)) {
     appSource: fs.readFileSync(path.join(workspaceRoot, 'src', 'app.js'), 'utf8'),
     first: options.first, last: options.last, expectedCards: options.expectedCards,
   });
-  result.compilerFiles = Object.fromEntries(['scripts/import-oracle-batch.mjs', 'scripts/oracle-spell-v4.mjs', 'scripts/oracle-extensions-v5.mjs']
+  result.compilerFiles = Object.fromEntries(['scripts/import-oracle-batch.mjs', 'scripts/oracle-spell-v4.mjs', 'scripts/oracle-extensions-v5.mjs', 'scripts/oracle-extensions-v6.mjs', 'scripts/oracle-subtypes.mjs']
     .map(file => [file, sha256(fs.readFileSync(path.join(workspaceRoot, file)))]));
   result.compilerSha256 = sha256(Object.entries(result.compilerFiles).map(([file, digest]) => `${file}\t${digest}`).join('\n'));
   return result;

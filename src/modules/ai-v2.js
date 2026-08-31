@@ -1706,7 +1706,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (hint === 'myrBattlesphere') return 4 - value * 0.03;
     if (hint === 'stationTap') return Math.max(0, card.power) * 4 - value * 0.1;
     if (hint === 'bottomOrder') return -value;
-    if (/discard|sacCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) {
+    if (/discard|sacCost|bounceCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) {
       if(hint==='sacCost'&&(q.aiHint.keepTargets||[]).includes(card))return -10000-value;
       let discardScore = -value;
       if (MTG.getAIBaseStyle(player.aiStyle) === 'josh') {

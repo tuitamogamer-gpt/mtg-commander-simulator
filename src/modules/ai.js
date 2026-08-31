@@ -1118,6 +1118,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return lowValue ? [lowValue] : [];
         }
         case 'bottomOrder': return byValAsc.slice(0, 1);
+        case 'bounceCost': return byValAsc.slice(0, Math.max(min,1));
         case 'delve': {
           // Delve je SNIŽENJE cijene — min je 0, pa je "uzmi min" značilo da bot
           // nikad ne egzilira ništa i onda ne može platiti (Treasure Cruise je

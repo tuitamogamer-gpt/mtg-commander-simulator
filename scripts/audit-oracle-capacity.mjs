@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import readline from 'node:readline';
 import { createGunzip } from 'node:zlib';
-import { semanticClass } from './import-oracle-batch.mjs';
+import { semanticClass, collectReservedOracleCards } from './import-oracle-batch.mjs';
 import { extractRawData } from './source-audit.mjs';
 
 const sourcePath = process.argv[2];
@@ -12,7 +12,11 @@ if (!sourcePath) {
 
 const raw = extractRawData(fs.readFileSync(new URL('../src/data.js', import.meta.url), 'utf8'));
 const state = JSON.parse(fs.readFileSync(new URL('../reports/oracle-import/state.json', import.meta.url), 'utf8'));
-const excludedNames = new Set([...Object.keys(raw.cards), ...(state.importedNames || [])]);
+const reportDir = new URL('../reports/oracle-import/', import.meta.url);
+const reserved = collectReservedOracleCards(fs.readdirSync(reportDir)
+  .filter(name => name.endsWith('.json') && name !== 'state.json')
+  .map(name => JSON.parse(fs.readFileSync(new URL(name, reportDir), 'utf8'))));
+const excludedNames = new Set([...Object.keys(raw.cards), ...(state.importedNames || []), ...reserved.names]);
 
 function stripReminderText(text) {
   let output = '';
@@ -58,7 +62,7 @@ for await (const line of lines) {
   const card = JSON.parse(line);
   if (!card.games?.includes('paper') ||
       card.legalities?.commander !== 'legal' ||
-      excludedNames.has(card.name)) continue;
+      excludedNames.has(card.name) || reserved.ids.has(card.oracle_id)) continue;
   const semantics = semanticClass(card);
   if (semantics.semanticClass) {
     classCounts.set(semantics.semanticClass, (classCounts.get(semantics.semanticClass) || 0) + 1);

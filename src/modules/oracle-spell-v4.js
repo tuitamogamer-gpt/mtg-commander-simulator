@@ -464,7 +464,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const target of targets) {
           if (target.zone !== 'graveyard') continue;
           const controller = effect.controller === 'you' ? ctx.you : target.owner;
-          await game.move(target, 'battlefield', { ctrl: controller, tapped: !!effect.tapped });
+          await game.putPermanentOntoBattlefield(target,controller,{tapped:!!effect.tapped});
         }
       };
       if (typeof game.withBattlefieldEntryBatch === 'function') await game.withBattlefieldEntryBatch(enter);
@@ -725,6 +725,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     costKinds: COST_KINDS,
     operationKinds: OPERATION_KINDS,
   });
+
+  MTG.compileOracleAdditionalCosts = function(costs) {
+    const ids=new Set();for(const cost of costs)validateCost(cost,ids);
+    return {
+      castCond:(game,player,card)=>canPayCosts(game,player,card,costs,{g:game,you:player,src:card,x:0,so:{x:0}}),
+      prepareTargets:async ctx=>planAndCommitCosts(ctx,costs),
+    };
+  };
 
   MTG.compileOracleSpellV4 = function (operation) {
     const { targetMap, effectMap, top } = validateOperation(operation);

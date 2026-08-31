@@ -84,6 +84,61 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ? operation.kind.slice('mechanic-'.length)
       : operation.kind;
 
+    if(kind==='evoke') {
+      push(script,'altCosts',{label:'Evoke '+operation.cost,altCostStr:operation.cost,evoke:true});
+      return true;
+    }
+    if(kind==='surge'||kind==='spectacle'){
+      push(script,'altCosts',{label:kind+' '+operation.cost,altCostStr:operation.cost,[kind]:true,cond:(game,p)=>kind==='surge'?p.turnState.spellsCast>0:game.alivePlayers().some(other=>other!==p&&other.turnState.lifeLost>0)});return true;
+    }
+    if(kind==='devour'){
+      if(!addEtbPlusCounters(script,(game,card)=>(card.meta.oracleDevoured||0)*number(operation)))return false;
+      chainAsEnters(script,async(game,card)=>{
+        const candidates=game.creatures(card.ctrl).filter(other=>other!==card&&game.canSacrifice(other));
+        const answer=await card.ctrl.controller.decide(game,{type:'chooseCards',from:candidates,min:0,max:candidates.length,prompt:'Devour: sacrifice creatures',aiHint:{kind:'sacrifice',source:card}});
+        const picked=[...new Set(Array.isArray(answer)?answer:[])].filter(other=>candidates.includes(other));
+        card.meta.oracleDevoured=await game.sacrificeMany(card.ctrl,picked);
+      });return true;
+    }
+    if(kind==='graft'){
+      if(!addEtbPlusCounters(script,number(operation)))return false;
+      push(script,'triggers',captureTriggerObjects({on:'etb',desc:'Graft',filter:(g,s,d)=>d.card!==s&&d.card?.is('Creature'),run:async(ctx,capture)=>{
+        const target=ctx.data.card;
+        if(!sameBattlefieldObject(ctx.g,ctx.src,capture.source)||!sameBattlefieldObject(ctx.g,target,capture.objects.target)||!(ctx.src.counters['+1/+1']>0))return;
+        const choice=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Move a +1/+1 counter with graft?',options:[{key:'yes',label:'Yes'},{key:'no',label:'No'}],aiHint:{kind:'optTrigger',src:ctx.src}});
+        if(choice==='yes'){ctx.g.removeCounters(ctx.src,'+1/+1',1);plusCounter(ctx.g,target,1,ctx.you);}
+      }},(g,s,d)=>({target:objectIdentity(d.card)})));return true;
+    }
+    if(kind==='dredge'){script.dredge=number(operation);return true;}
+    if(kind==='plot'){script.plot=operation.cost;return true;}
+    if(kind==='dash'){push(script,'altCosts',{label:'Dash '+operation.cost,altCostStr:operation.cost,dash:true});return true;}
+    if(kind==='echo'){
+      script.oracleEchoCost=operation.cost;
+      push(script,'triggers',captureTriggerObjects({on:'upkeep',desc:'Echo '+operation.cost,
+        filter:(game,source,data)=>data.player===source.ctrl&&source.meta.oracleEchoPending,
+        run:async(ctx,capture)=>{
+          const choice=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Pay echo '+operation.cost+'?',options:[{key:'yes',label:'Pay '+operation.cost},{key:'no',label:'Do not pay'}],aiHint:{kind:'pay',cost:operation.cost}});
+          const paid=choice==='yes'&&await ctx.g.payMana(ctx.you,MTG.parseCost(operation.cost),{card:ctx.src});
+          if(!paid&&sameBattlefieldObject(ctx.g,ctx.src,capture.source)&&ctx.src.ctrl===ctx.you)await ctx.g.sacrifice(ctx.you,ctx.src);
+        }},()=>[]));return true;
+    }
+    if(kind==='megamorph') {script.morph=operation.cost;script.megamorph=true;return true;}
+    if(kind==='kicker') {script.kicker={cost:operation.cost};return true;}
+    if(kind==='multikicker') {script.multikicker=operation.cost;return true;}
+    if(kind==='escape') {script.escape={altCostStr:operation.cost,exileN:number(operation)};return true;}
+    if(kind==='no-max-hand') {script.noMaxHand=true;return true;}
+    if(kind==='additional-costs') {
+      if(operation.lifeX)script.additionalCostX=true;
+      const previousCond=script.castCond,previousPrepare=script.prepareTargets;
+      const fragment=MTG.compileOracleAdditionalCosts(operation.costs);
+      script.castCond=(...args)=>(!previousCond||previousCond(...args))&&fragment.castCond(...args);
+      script.prepareTargets=async ctx=>{
+        if(previousPrepare&&await previousPrepare(ctx)===false)return false;
+        return fragment.prepareTargets(ctx);
+      };
+      return true;
+    }
+
     if(kind==='offspring') {script.offspring=operation.cost;return true;}
     if(kind==='foretell') {script.foretell=operation.cost;return true;}
     if(kind==='retrace') {script.retrace={altCostStr:operation.cost};return true;}
