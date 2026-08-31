@@ -28,6 +28,11 @@ function allTargetSpecs(script) {
     ...(script.abilities || []).flatMap(ability => ability.targets || []),
     ...(script.triggers || []).flatMap(trigger => trigger.targets || []),
     ...(script.modes && script.modes.list || []).flatMap(mode => mode.targets || []),
+    ...Object.values(script.splitHalves || {}).flatMap(half => allTargetSpecs(half)),
+    ...(script.adventure ? allTargetSpecs(script.adventure) : []),
+    ...(script.gyAbility ? allTargetSpecs(script.gyAbility) : []),
+    ...(script.handAbility ? allTargetSpecs(script.handAbility) : []),
+    ...(script.saga || []).flatMap(chapter => allTargetSpecs(chapter)),
   ];
 }
 

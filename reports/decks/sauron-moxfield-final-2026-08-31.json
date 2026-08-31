@@ -1,0 +1,80 @@
+{
+  "verifiedAt": "2026-08-31T17:45:16.957Z",
+  "source": {
+    "url": "https://moxfield.com/decks/8Xcac_CNTUiWNEOG4B5UQw",
+    "title": "Sauron, the dark lord (ready to play)",
+    "capturedAt": "2026-08-31T09:57:23.311Z",
+    "method": "Rendered Moxfield article in Codex in-app browser"
+  },
+  "deckFile": "reports/decks/sauron-moxfield-2026-08-31.txt",
+  "deckSha256": "f4e6ec45bde54075b4bc03d2b925ba15498be468962dc3666736b92aa350ae5f",
+  "catalogCards": 14284,
+  "genericBatches": 126,
+  "exactCapturedList": true,
+  "substitutions": [],
+  "summary": {
+    "inputCards": 100,
+    "resolvedCards": 100,
+    "uniqueCards": 79,
+    "unresolvedCards": 0,
+    "colorIdentity": [
+      "U",
+      "B",
+      "R"
+    ],
+    "engineCertified": 79
+  },
+  "commanders": [
+    "Sauron, the Dark Lord"
+  ],
+  "interactionsReady": true,
+  "interactionContracts": [
+    "activated-ability-cost",
+    "amass-army",
+    "combat-trigger",
+    "continuous-layer",
+    "cost-modification",
+    "creature-casting",
+    "draw-discard-replacement",
+    "flying-evasion",
+    "graveyard-zone-change",
+    "land-play",
+    "mana-source",
+    "manual-oracle-resolution",
+    "permanent-casting",
+    "ring-temptation",
+    "saga-chapter-stack",
+    "spell-casting",
+    "target-lock-revalidation",
+    "trigger-stack",
+    "ward-alternative-cost"
+  ],
+  "executableRegression": {
+    "tests": 20,
+    "passed": 20,
+    "failed": 0,
+    "logSha256": "56cea5396af6f3812fc126b25a1695e5045211cf4770084af3692ddc1d97040f",
+    "files": [
+      "tests/sauron-dark-lord.test.mjs",
+      "tests/custom-deck-controller-pilot.test.mjs"
+    ],
+    "completeControlledGames": [
+      {
+        "seed": 829301,
+        "importedSeat": "non-AI controller"
+      },
+      {
+        "seed": 829302,
+        "importedSeat": "actual local AIController"
+      }
+    ]
+  },
+  "browser": {
+    "earlierCatalogCards": 11284,
+    "sourceAndImport": "completed in Codex in-app browser",
+    "earlierGameplay": "partial human game through turn 7, including paid spells and opposing bot turn",
+    "finalCatalogVerification": "blocked by Browser Use URL security policy",
+    "fullBrowserGameCompleted": false,
+    "workaroundAttempted": false
+  }
+}

@@ -726,9 +726,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { run: async ctx => { for (const c of ctx.g.creatures(ctx.you)) if (c !== ctx.src && c.hasSub('Moogle')) ctx.g.addCounters(c, '+1/+1', 2); } },
     ],
     triggers: [{
-      on: 'precombatMain', desc: 'Saga poglavlje', filter: (g, self, d) => d.player === self.ctrl,
-      run: async ctx => { await ctx.g.sagaChapter(ctx.src); },
-    }, {
       on: 'castNonCreature', desc: 'II–III: kopiraj token',
       filter: (g, self, d) => d.player === self.ctrl &&
         self.meta.mogCopyThroughTurnsStarted !== undefined && self.ctrl.turnsStarted < self.meta.mogCopyThroughTurnsStarted,

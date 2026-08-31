@@ -1686,9 +1686,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         },
       },
     ],
-    triggers: [{
-      on: 'upkeep', desc: 'Saga poglavlje', filter: (g, self, d) => d.player === self.ctrl,
-      run: async ctx => { await ctx.g.sagaChapter(ctx.src); },
-    }],
+    triggers: [],
   };
 })();

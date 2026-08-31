@@ -808,10 +808,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { run: async ctx => { await E.searchLandByName(ctx.g, ctx.you, ['Forest'], { tapped: true }); } },
       { run: async ctx => { E.pumpAllUntilEOT(ctx.g, (g, c) => c.ctrl === ctx.you, 0, 0, ['deathtouch']); } },
     ],
-    triggers: [{
-      on: 'upkeep', desc: 'Saga poglavlje', filter: (g, self, d) => d.player === self.ctrl,
-      run: async ctx => { await ctx.g.sagaChapter(ctx.src); },
-    }],
+    triggers: [],
   };
   SC["Gourmand's Talent"] = {
     asEnters: async (g, card) => { card.meta.level = 1; },

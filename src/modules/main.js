@@ -756,7 +756,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!deck || !guide || !route) return;
       const commanders = state.commanders.length ? state.commanders : [deck.commander];
       const leadCommander = commanders[0];
-      const intro = MTG.commanderIntroForDeck(deck, leadCommander) || MTG.commanderIntroForDeck(deck, deck.commander);
+      // Cinematics are optional; a missing visual helper must not prevent
+      // choosing an imported deck or opening its ordinary card-art preview.
+      const intro = MTG.commanderIntroForDeck?.(deck, leadCommander) || MTG.commanderIntroForDeck?.(deck, deck.commander);
       const counts = deckBreakdown(deck);
       const activeDecks = Object.keys(MTG.DECKS).filter(deckName => !MTG.DECKS[deckName].custom);
       const deckNumber = activeDecks.indexOf(name) + 1;

@@ -871,10 +871,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         },
       },
     ],
-    triggers: [{
-      on: 'drawStep', desc: 'Saga poglavlje', filter: (g, self, d) => d.player === self.ctrl,
-      run: async ctx => { await ctx.g.sagaChapter(ctx.src); },
-    }],
+    triggers: [],
   };
   SC['Archnemesis'] = {
     isPlayerAura: true,
@@ -980,10 +977,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     ],
     triggers: [
-      {
-        on: 'drawStep', desc: 'Saga poglavlje', filter: (g, self, d) => d.player === self.ctrl,
-        run: async ctx => { await ctx.g.sagaChapter(ctx.src); },
-      },
       {
         on: 'combatDamageToPlayer', desc: 'Vuci za goadovano stvorenje',
         filter: (g, self, d) => self.meta.dynastyGoaded &&

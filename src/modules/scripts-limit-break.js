@@ -444,10 +444,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       },
     }],
-    triggers: [{
-      on: 'precombatMain', desc: 'Saga chapter', filter: (g, self, data) => data.player === self.ctrl,
-      run: async ctx => { await ctx.g.sagaChapter(ctx.src); },
-    }],
+    triggers: [],
   };
 
   SC["Cloud's Limit Break"] = {

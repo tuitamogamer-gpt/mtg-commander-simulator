@@ -704,7 +704,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { run: async ctx => { await E.amass(ctx.g, ctx.you, 2, 'Orc'); } },
       { run: async ctx => { E.pumpAllUntilEOT(ctx.g, (g, card) => card.ctrl === ctx.you, 1, 0, ['menace']); } },
     ],
-    triggers: [{ on: 'drawStep', desc: 'Saga chapter', filter: (g, self, data) => data.player === self.ctrl, run: async ctx => { await ctx.g.sagaChapter(ctx.src); } }],
+    triggers: [],
   });
 
   define('Call of the Ring', {
@@ -764,7 +764,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       },
     }],
-    triggers: [{ on: 'drawStep', desc: 'Saga chapter', filter: (g, self, data) => data.player === self.ctrl, run: async ctx => { await ctx.g.sagaChapter(ctx.src); } }],
+    triggers: [],
   });
 
   // Lands

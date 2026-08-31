@@ -84,6 +84,57 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ? operation.kind.slice('mechanic-'.length)
       : operation.kind;
 
+    if(kind==='dethrone'){
+      push(script,'triggers',captureTriggerObjects({on:'attacks',desc:'Dethrone',
+        filter:(game,self,data)=>data.card===self&&data.defender instanceof MTG.Player&&data.defender.life===Math.max(...game.alivePlayers().map(player=>player.life)),
+        run:async(ctx,capture)=>{if(sameBattlefieldObject(ctx.g,ctx.src,capture.source))plusCounter(ctx.g,ctx.src,1,ctx.you);},
+      },()=>({})));return true;
+    }
+    if(kind==='rampage'){
+      push(script,'triggers',captureTriggerObjects({on:'becomesBlocked',desc:'Rampage',filter:(game,self,data)=>data.attacker===self,
+        run:async(ctx,capture)=>{
+          if(!sameBattlefieldObject(ctx.g,ctx.src,capture.source))return;
+          const n=Math.max(0,ctx.g.bf().filter(card=>card.blocking===ctx.src.iid).length-1)*number(operation);
+          if(n)MTG.E.pumpUntilEOT(ctx.g,ctx.src,n,n);
+        },
+      },()=>({})));return true;
+    }
+    if(kind==='mobilize'){
+      push(script,'triggers',{on:'attacks',desc:'Mobilize',filter:(game,self,data)=>data.card===self,run:async ctx=>{
+        const made=await ctx.g.makeTokens({name:'Warrior',cost:null,super:[],types:['Creature'],subtypes:['Warrior'],power:'1',toughness:'1',colorsOverride:['R'],kws:[],oracle:'',isTokenDef:true},ctx.you,{n:number(operation),tapped:true,
+          chooseAttacking:async(game,card)=>{
+            const targets=game.alivePlayers().filter(player=>player!==ctx.you).concat(game.bf().filter(card=>card.is('Planeswalker')&&card.ctrl!==ctx.you));
+            if(!targets.length)return null;
+            const answer=await ctx.you.controller.decide(game,{type:'chooseTargets',candidates:targets,min:1,max:1,prompt:'Mobilize: choose who this token attacks',aiHint:{goal:'attackTarget'}});
+            return targets.includes(answer?.[0])?answer[0]:targets[0];
+          }});
+        const identities=made.map(card=>({iid:card.iid,version:card.zoneVersion}));
+        ctx.g.delayed.push({on:'endStep',once:true,src:ctx.src,ctrl:ctx.you,name:'Mobilize sacrifice',run:async later=>{
+          await later.g.sacrificeMany(later.you,identities.map(row=>{const card=later.g.byIid(row.iid);return card?.zone==='battlefield'&&card.zoneVersion===row.version&&card.ctrl===later.you?card:null;}).filter(Boolean));
+        }});
+      }});return true;
+    }
+    if(kind==='squad'){
+      if(script.squad||script.multikicker)return false;script.squad=operation.cost;
+      push(script,'triggers',captureTriggerObjects({on:'etb',desc:'Squad',filter:(game,self,data)=>data.card===self&&(self.meta.paidTimes||0)>0,
+        run:async(ctx,capture)=>{
+          const n=capture.objects.paid;
+          if(n>0){const source=sameBattlefieldObject(ctx.g,ctx.src,capture.source)?ctx.src:{def:capture.objects.def};await ctx.g.copyPermanentToken(source,ctx.you,{n});}
+        },
+      },(game,self)=>({paid:self.meta.paidTimes||0,def:self.isCopyOf||self.def})));
+      return true;
+    }
+    if(kind==='blitz'||kind==='warp'){
+      script[kind==='blitz'?'oracleBlitz':'oracleWarp']=true;
+      push(script,'altCosts',{label:kind+' '+operation.cost,altCostStr:operation.cost,[kind]:true,...(kind==='warp'?{cond:(game,player,card)=>card.zone==='hand'}:{})});
+      if(kind==='blitz')push(script,'statics',{apply:(game,self)=>{
+        if(!self.castMeta?.alt?.blitz)return;
+        self.cur.kw.add('haste');
+        self.cur.extraTriggers.push({on:'dies',desc:'Blitz draw',filter:(g,source,data)=>data.card===source,run:async ctx=>ctx.g.draw(ctx.you,1,ctx.src)});
+      }});
+      return true;
+    }
+
     if(kind==='evoke') {
       push(script,'altCosts',{label:'Evoke '+operation.cost,altCostStr:operation.cost,evoke:true});
       return true;
@@ -123,10 +174,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }},()=>[]));return true;
     }
     if(kind==='megamorph') {script.morph=operation.cost;script.megamorph=true;return true;}
+    if(kind==='replicate'){if(script.squad||script.multikicker)return false;script.replicate=operation.cost;return true;}
+    if(kind==='ravenous'){
+      if(!addEtbPlusCounters(script,(game,card)=>Number(card.castMeta?.x)||0))return false;
+      push(script,'triggers',{on:'etb',desc:'Ravenous',filter:(g,s,d)=>d.card===s&&(Number(s.castMeta?.x)||0)>=5,run:async ctx=>ctx.g.draw(ctx.you,1)});return true;
+    }
+    if(kind==='graveyard-lands'){script.playLandsFromGraveyard=true;return true;}
     if(kind==='kicker') {script.kicker={cost:operation.cost};return true;}
     if(kind==='multikicker') {script.multikicker=operation.cost;return true;}
     if(kind==='escape') {script.escape={altCostStr:operation.cost,exileN:number(operation)};return true;}
     if(kind==='no-max-hand') {script.noMaxHand=true;return true;}
+    if(kind==='player-hexproof'){script.playerHexproof=true;return true;}
+    if(kind==='additional-land'){script.additionalLandPlays=(Number(script.additionalLandPlays)||0)+number(operation);return true;}
     if(kind==='additional-costs') {
       if(operation.lifeX)script.additionalCostX=true;
       const previousCond=script.castCond,previousPrepare=script.prepareTargets;
@@ -141,6 +200,39 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     if(kind==='offspring') {script.offspring=operation.cost;return true;}
     if(kind==='foretell') {script.foretell=operation.cost;return true;}
+    if(kind==='madness') {script.madness=operation.cost;return true;}
+    if(kind==='buyback') {script.buyback=operation.cost;return true;}
+    if(kind==='split-second') {script.splitSecond=true;return true;}
+    if(kind==='jump-start') {script.jumpstart={altCostStr:operation.cost};return true;}
+    if(kind==='fading'||kind==='vanishing') {
+      const counter=kind==='fading'?'fade':'time';
+      if(operation.n!==undefined)chainAsEnters(script,async(game,card)=>game.addCounters(card,counter,number(operation),false,card.ctrl));
+      push(script,'triggers',captureTriggerObjects({on:'upkeep',desc:kind,
+        filter:(game,source,data)=>data.player===source.ctrl&&(kind==='fading'||source.counters.time>0),
+        run:async(ctx,capture)=>{
+          if(!sameBattlefieldObject(ctx.g,ctx.src,capture.source))return;
+          if(ctx.src.counters[counter]>0)ctx.g.removeCounters(ctx.src,counter,1);
+          else if(kind==='fading'&&ctx.src.ctrl===ctx.you)await ctx.g.sacrifice(ctx.you,ctx.src);
+        }},()=>[]));
+      if(kind==='vanishing')push(script,'triggers',captureTriggerObjects({on:'countersRemoved',desc:'Vanishing — sacrifice',
+        filter:(game,source,data)=>data.card===source&&data.kind==='time'&&data.before>0&&data.after===0,
+        run:async(ctx,capture)=>{if(sameBattlefieldObject(ctx.g,ctx.src,capture.source)&&ctx.src.ctrl===ctx.you)await ctx.g.sacrifice(ctx.you,ctx.src);}
+      },()=>[]));
+      return true;
+    }
+    if(kind==='cumulative-upkeep') {
+      push(script,'triggers',captureTriggerObjects({on:'upkeep',desc:'Cumulative upkeep '+operation.cost,
+        filter:(game,source,data)=>data.player===source.ctrl,
+        run:async(ctx,capture)=>{
+          if(!sameBattlefieldObject(ctx.g,ctx.src,capture.source))return;
+          ctx.g.addCounters(ctx.src,'age',1,false,ctx.you);
+          const n=ctx.src.counters.age||0,unit=MTG.parseCost(operation.cost),cost={generic:unit.generic*n,x:0,pips:Array.from({length:n},()=>unit.pips).flat()};
+          const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Pay cumulative upkeep for '+n+' age counters?',
+            options:[{key:'yes',label:'Pay '+operation.cost+' × '+n},{key:'no',label:'Sacrifice'}],aiHint:{kind:'pay',cost}});
+          const paid=answer==='yes'&&await ctx.g.payMana(ctx.you,cost,{card:ctx.src});
+          if(!paid&&sameBattlefieldObject(ctx.g,ctx.src,capture.source)&&ctx.src.ctrl===ctx.you)await ctx.g.sacrifice(ctx.you,ctx.src);
+        }},()=>[]));return true;
+    }
     if(kind==='retrace') {script.retrace={altCostStr:operation.cost};return true;}
     if(kind==='ninjutsu') {script.ninjutsu=operation.cost;return true;}
     if(kind==='eternalize') {script.eternalize=operation.cost;return true;}

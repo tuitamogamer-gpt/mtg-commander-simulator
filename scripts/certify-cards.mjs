@@ -49,7 +49,7 @@ function issuesFor(name) {
   if (types.includes('Land') && /\{T\}:\s*Add/i.test(oracle) && !def.mana) {
     issues.push('Land proizvodi manu u Oracle tekstu, ali nema mana putanju');
   }
-  if ((def.subtypes || []).includes('Equipment') && /Equip/i.test(oracle) && def.equip === undefined && !def.attachGrant) {
+  if ((def.subtypes || []).includes('Equipment') && /^\s*Equip\b/im.test(oracleWithoutReminder(oracle)) && def.equip === undefined && !def.attachGrant) {
     issues.push('Equipment nema equip/attach putanju');
   }
   if ((def.subtypes || []).includes('Aura') && /Enchant (creature|permanent|player|opponent)/i.test(oracle) && !def.auraTarget && !def.isPlayerAura) {

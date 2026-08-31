@@ -1,0 +1,336 @@
+{
+  "verifiedAt": "2026-08-31T17:45:51.813Z",
+  "import": {
+    "at": "2026-08-31T17:33:07.873Z",
+    "draftSha256": "c2fbd4dc67c4166631dd32ba88720e3f74aa51a470ead9b0d20e0b4d85a27ec5",
+    "sourceSha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+    "first": 97,
+    "last": 126,
+    "cards": 3000,
+    "appRegistered": true
+  },
+  "catalog": {
+    "genericBatches": 126,
+    "genericCards": 12600,
+    "manualOracleCards": 58,
+    "legacyCards": 1626,
+    "totalDefinitions": 14284
+  },
+  "tests": {
+    "full": {
+      "tests": 2061,
+      "passed": 2061,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 246589.086042,
+      "logSha256": "9d789f56d8c1165fc69e04cecd305748a1de40bbf268d0b94d5fce9e91485a96"
+    },
+    "boundary": {
+      "tests": 467,
+      "passed": 467,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 4472.176583,
+      "logSha256": "32990c0123a757bc5d58543b10f03043404171d8ad2bfdbeb6aa6002f367bdff"
+    },
+    "moxfield": {
+      "tests": 20,
+      "passed": 20,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 14286.404875,
+      "logSha256": "56cea5396af6f3812fc126b25a1695e5045211cf4770084af3692ddc1d97040f"
+    }
+  },
+  "executableCoverage": {
+    "newCards": {
+      "cardControllerCases": 6000,
+      "keywordCases": 1608,
+      "operationRoutes": 8622,
+      "nestedProofs": 13023,
+      "controllers": [
+        "human",
+        "actual local AIController"
+      ],
+      "logSha256": "9259a144dccd79b2960dbe6c94817ab0bcf85716b2af44b67ce3eeb2b2dc4a7a"
+    },
+    "wholeGenericCatalog": {
+      "cardControllerCases": 25200,
+      "keywordCases": 7754,
+      "operationRoutes": 32476,
+      "nestedProofs": 43879,
+      "controllers": [
+        "human",
+        "actual local AIController"
+      ],
+      "logSha256": "9d789f56d8c1165fc69e04cecd305748a1de40bbf268d0b94d5fce9e91485a96"
+    }
+  },
+  "certification": {
+    "decks": 27,
+    "cardDeckChecks": 2347,
+    "passedCardDeckChecks": 2347,
+    "failedCardDeckChecks": 0,
+    "uniqueCards": 1580,
+    "uniquePassed": 1580,
+    "uniqueFailed": 0,
+    "rawCards": 14284,
+    "rawPassed": 14284,
+    "rawFailed": 0,
+    "inactiveRawCards": 12704,
+    "inactiveRawPassed": 12704,
+    "inactiveRawFailed": 0,
+    "oracleBatchCards": 12658
+  },
+  "provenance": {
+    "ok": true,
+    "first": 97,
+    "last": 126,
+    "batches": 30,
+    "verifiedRows": 3000,
+    "source": {
+      "sha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+      "bulkId": "27bf3214-1271-490b-bdfe-c0be6c23d02e",
+      "updatedAt": "2026-08-30T09:01:56.964+00:00",
+      "rows": 38627
+    },
+    "compilerVersion": 7,
+    "genericCards": 12600,
+    "manualCards": 58,
+    "legacyCards": 1626,
+    "knownLegacyOracleIds": 0,
+    "catalogNames": 14284,
+    "selectedCatalogSha256": "a0d363d95756a5ffc9c6e1936982fc363097b27946ba830ab9b95afdf1762f35",
+    "genericCatalogSha256": "f3e7266fbe48622483e0ef6c3ee58a3c64d7f564871f826d2709a60eab65ba8d",
+    "oracleUnionCatalogSha256": "1f5c0d161aa49e54a8eb8682b59a5a36461cfe50500ee1e3f2a5902cbedda4ef",
+    "normalizedCohortSha256": "aef3c8eed614246fe30aec2b7bcad5723d4337f8695f30e3f14f3276342bfca8",
+    "historicalQueueStatisticsReplayed": false,
+    "batchResults": [
+      {
+        "id": "oracle-0097",
+        "rows": 100,
+        "normalizedRowsSha256": "e1f6f0a4235f6f8a4ab0903378b184f2e625c3b7e64d5ed1035007e49a52ea62",
+        "runtimeSha256": "dc5451713ea33ea16516a9aff60b13d243cd99c3caca1a7ac16fd889a9a25b46"
+      },
+      {
+        "id": "oracle-0098",
+        "rows": 100,
+        "normalizedRowsSha256": "a5ec29531adcb3e46f6b94ce81371943948371a80c458f62506d336baff1e876",
+        "runtimeSha256": "30748e8fed13f940aa4870bde84dc4b2b7bcbc96f27b59efb13267d414517cc0"
+      },
+      {
+        "id": "oracle-0099",
+        "rows": 100,
+        "normalizedRowsSha256": "5a3d122b6f0537f1710f6d662bbae86e75088ba007b1c713e7d49771d80b842f",
+        "runtimeSha256": "64a9cd5b00221939654fc1fafb26711710ce74096a8a4295b7cd626c51e71571"
+      },
+      {
+        "id": "oracle-0100",
+        "rows": 100,
+        "normalizedRowsSha256": "00a3c4d3cf7f77861a471aad93ae36fb698c54fc9edec31d8a0916c6d02001ff",
+        "runtimeSha256": "2274b62ead1ab3ae3998ad71abf6af7ff11745dfd3662b58a7842ee3540803d9"
+      },
+      {
+        "id": "oracle-0101",
+        "rows": 100,
+        "normalizedRowsSha256": "f80985dfe317baee4b8030550db45ab843f5e40f6a0a86101d785ec23f4ed918",
+        "runtimeSha256": "1dcf459a8d4392d5824c7b968524f681b18f658b9dfb6257d20b7a80364c6fa8"
+      },
+      {
+        "id": "oracle-0102",
+        "rows": 100,
+        "normalizedRowsSha256": "0e0020b035ceaf751c6df05da694cdcf120a90cdf001c0ca01311c81d305eee3",
+        "runtimeSha256": "b6da85927da73122c60991bdfd1403f383c43bf2010fe16c3460f388de314c8b"
+      },
+      {
+        "id": "oracle-0103",
+        "rows": 100,
+        "normalizedRowsSha256": "a1221cba42d38b43947800bb25004b6ce3ac85cbe6048ba300e6242218235ca5",
+        "runtimeSha256": "67380b8264706bd7ae2644fa656b90a2da695228ab7ac97f97e37a6c5c3546ff"
+      },
+      {
+        "id": "oracle-0104",
+        "rows": 100,
+        "normalizedRowsSha256": "3b98ce7b46b23d7512e6dcd75643ccb6f4073baed228d1103b5efeba02fea1d3",
+        "runtimeSha256": "eebee62bbeaab109183b8555b0cfc3bf0d514687642559c621a5a9b0207c3f6e"
+      },
+      {
+        "id": "oracle-0105",
+        "rows": 100,
+        "normalizedRowsSha256": "840fd4bfffffd6b45a43ca7be4755102876420cc7265d634a52711dfc103433d",
+        "runtimeSha256": "be2d66f1e99e70f81b6a725419759e2bbe663aa4fa40e56fa66bd79b756f9524"
+      },
+      {
+        "id": "oracle-0106",
+        "rows": 100,
+        "normalizedRowsSha256": "91e9a03d1bab88189b1e65377d6b0c59bda54dfbcafd73dd3e38a361ef79d661",
+        "runtimeSha256": "f2ab3cc8a905a0c64055b2b64641c41537cb4f743acf7067b9ef559ed1380f0b"
+      },
+      {
+        "id": "oracle-0107",
+        "rows": 100,
+        "normalizedRowsSha256": "e4ec0e243e25b5d2286ef10e8c63b7e7e04df6e2962381351578816111263470",
+        "runtimeSha256": "190ffc88c505c0c5ec0bf3d1af2459ca2780d15bdc09551bed4c610c9e7cbe4f"
+      },
+      {
+        "id": "oracle-0108",
+        "rows": 100,
+        "normalizedRowsSha256": "6cd62d32a6ddc2c8be5a8d17848d81af0b498434e2098ca19484b49d8a51c73f",
+        "runtimeSha256": "24dfa28ca8c0f620e92a653247199a9bd8f42845ee40bce4f6eddde469b5c5da"
+      },
+      {
+        "id": "oracle-0109",
+        "rows": 100,
+        "normalizedRowsSha256": "e91f5019b0264ff8be15616a10e5dc115c01e3d4562c26cac6ddbf17500cae77",
+        "runtimeSha256": "914df74fc0959dcc970d493361ec9ffb8689d49a566b5defde4771ce8481d0f4"
+      },
+      {
+        "id": "oracle-0110",
+        "rows": 100,
+        "normalizedRowsSha256": "cecdc4d8033a6fafd2ae9f904f34b3648de12bdeded71a86d45ed722db4ce731",
+        "runtimeSha256": "00b32f538f29040a1d26ee792c704f95ff44c9c427dc65d74170ea326efc603a"
+      },
+      {
+        "id": "oracle-0111",
+        "rows": 100,
+        "normalizedRowsSha256": "caad7c8fd0c939b3669f5b28a55404ae1bb499510bbca39c41283ef66229df04",
+        "runtimeSha256": "62f90b44924442647dd672f574b66e88668156af1a756c6cbb0bd7548ca4f2a8"
+      },
+      {
+        "id": "oracle-0112",
+        "rows": 100,
+        "normalizedRowsSha256": "cfb37276e258c0f455eb68750a8a7cc47333944e50ba56c7d33042b9648dde7d",
+        "runtimeSha256": "4169fea31156c8c4004294414a408f09ef3e84d2ea9844c93ac0205649555c62"
+      },
+      {
+        "id": "oracle-0113",
+        "rows": 100,
+        "normalizedRowsSha256": "f35a3dc0cf623214b4db749e55782d9f33735756c32196381b6b2a0c8330ce66",
+        "runtimeSha256": "9067f6adc73ac9325e5190305d25f41f69cf9b86588e4ee72588fc1f57b4e8b8"
+      },
+      {
+        "id": "oracle-0114",
+        "rows": 100,
+        "normalizedRowsSha256": "ef473ea2f18b5b8de67d00351aab262807cf8cb7f51a5c105818a552d50301a7",
+        "runtimeSha256": "d705bf527a155bcd6d8e69112ea1be6cddac9d4388aedf298d13105b19949fa9"
+      },
+      {
+        "id": "oracle-0115",
+        "rows": 100,
+        "normalizedRowsSha256": "bc02f25847d86480370c2c1cbb9f176e92aee7c25de7b2c4eb359089b8d9d7e3",
+        "runtimeSha256": "96a79388ccab5bf280d0ad0f45b81fd693076d32fa11b91bd0eda5cc0ed3a733"
+      },
+      {
+        "id": "oracle-0116",
+        "rows": 100,
+        "normalizedRowsSha256": "c107d498acf5045507693da4996a97072df56b34f9695a7195619f9e695e176e",
+        "runtimeSha256": "285c6f6c545203529c7d9c00d5c8957449c109329ed8d1e01a46b44612c234ac"
+      },
+      {
+        "id": "oracle-0117",
+        "rows": 100,
+        "normalizedRowsSha256": "8b497bc4e7b317b8a9e1cd768c9d396b462278781c160cd08d68dc104eb28b27",
+        "runtimeSha256": "109ad868a388e6db4e532cafaf1f49b94186d944949e88d5f4afac0b1b7b7ba2"
+      },
+      {
+        "id": "oracle-0118",
+        "rows": 100,
+        "normalizedRowsSha256": "60c938a1e7552d2683cdf602ecb29278c92ee31d452b597ac2f857a72c697215",
+        "runtimeSha256": "3934e725d6e57a924478e222706b6f37d1bba75e4559be77e226f731951fc8e9"
+      },
+      {
+        "id": "oracle-0119",
+        "rows": 100,
+        "normalizedRowsSha256": "efae6052af7ec6ea11d5ddb5cea2d3f03daf41c4ef8b022eb4d2cea7294e0320",
+        "runtimeSha256": "deafaa5fdd2df71d63ed9527ddae52bf14f47d5a5808ff77765f413dfb8dbe31"
+      },
+      {
+        "id": "oracle-0120",
+        "rows": 100,
+        "normalizedRowsSha256": "5480c94ca0ddd2cc475b6201cfcb8a1115b0668cb6a78ddd75660ed92e71a653",
+        "runtimeSha256": "bbf43774c4f58053b7d56d18bb83c9bcb9ef95ce1ff2acff9f568d313885c264"
+      },
+      {
+        "id": "oracle-0121",
+        "rows": 100,
+        "normalizedRowsSha256": "0f8beee538b00f83d91bc1ea744c54afcee92e3b1f7d3b7075b40c7434e9ea3f",
+        "runtimeSha256": "ba4a5ef610f9e7ad05674fa3e82fc7b09042df7325eed17fe3c669402625fc0f"
+      },
+      {
+        "id": "oracle-0122",
+        "rows": 100,
+        "normalizedRowsSha256": "20531a176e6f871e1a187329b2d05c09bdaffdb49ebe7d0e42a123fa49227b0b",
+        "runtimeSha256": "1f65a0b44a940e2231801c4ca05cdef65add7ca9633bf7c9b1e85d7acfe2d2dc"
+      },
+      {
+        "id": "oracle-0123",
+        "rows": 100,
+        "normalizedRowsSha256": "00bc489b443429d854fd0fb21e61b31876aeed7c9b139f39e23070d3aeb9e2c5",
+        "runtimeSha256": "52c39b7a28de97f4c1b53fc9b35a4d5c616a7a92ae51298eb4f574ee56e34d41"
+      },
+      {
+        "id": "oracle-0124",
+        "rows": 100,
+        "normalizedRowsSha256": "adabf9145ae1d6a08e6914b06afdbbaba8f8ce35208ac716909e5727b23f6553",
+        "runtimeSha256": "bbc9eecc0c7eda9c691b2a24c33dd74597e4f9b2ecb8bdbd6a5cc487d999fb43"
+      },
+      {
+        "id": "oracle-0125",
+        "rows": 100,
+        "normalizedRowsSha256": "787b64ed096daf0494125184fafcd1a2bb5e560a24abe541023b058f366d448b",
+        "runtimeSha256": "1da732aa577f525023f2ebc358bd61e14ace636d507441145210557d37de3ba3"
+      },
+      {
+        "id": "oracle-0126",
+        "rows": 100,
+        "normalizedRowsSha256": "bf75fcaae4b665797a77e466022c9e4977b68f2c3de166c1312bf3010f94b815",
+        "runtimeSha256": "cab223eaf91cee4b1985a9d9ec7996dabcd44afaa171dd8e797f069de5f28af6"
+      }
+    ],
+    "compilerFiles": {
+      "scripts/import-oracle-batch.mjs": "33431c8dc3c87fc34c262a3cf5545156f6f989bd5c38899ca90d1fdfab844f87",
+      "scripts/oracle-spell-v4.mjs": "abe6d402e4d254bf52a91dda72d4451951f0b5969bb6be5414549d0efebb2a25",
+      "scripts/oracle-extensions-v5.mjs": "b1ed9688b68dd2daeb2c749d2c490478832a68ef8b8f1712490adc9769d5c08f",
+      "scripts/oracle-extensions-v6.mjs": "8789b4dd2e9837b8fd565ecd46f89ef599ecb14fbd344ed2b6bab633472a2bad",
+      "scripts/oracle-extensions-v7.mjs": "2ff0d7fa696b566d1d9e243f4c86911cbd4d3d26d0ce59e07b2f43cffcd95fc1",
+      "scripts/oracle-flavor-words.json": "d3bf823a0bcebbaff3d8ee6784c56b8952773dab140b29f46e7a2a6e61ebd3e6",
+      "scripts/oracle-subtypes.mjs": "ae72f492bac1e6be7452c7dd1923c184b109087875fe6d30a3ada9a17f51981d"
+    },
+    "compilerSha256": "fce5f90209023b9641b139b3344881fd8d6809789083abf28e042cd8cc07393c"
+  },
+  "fileSha256": {
+    "src/app.js": "58945c9b9049607d6be41b7d840e409fc8d2bebea155507923cd8da93a2d5533",
+    "scripts/import-oracle-batch.mjs": "33431c8dc3c87fc34c262a3cf5545156f6f989bd5c38899ca90d1fdfab844f87",
+    "scripts/oracle-extensions-v7.mjs": "2ff0d7fa696b566d1d9e243f4c86911cbd4d3d26d0ce59e07b2f43cffcd95fc1",
+    "scripts/oracle-flavor-words.json": "d3bf823a0bcebbaff3d8ee6784c56b8952773dab140b29f46e7a2a6e61ebd3e6",
+    "scripts/certify-cards.mjs": "e73770cb8c27353fc8a601a40bdeb52cadc5ba2b7106d903246c9e158feab4ec",
+    "src/modules/oracle-catalog.js": "6a1be76c7a71044bfdf4d2f0599c8d7b0960a8599e492a9eb5cf05acb2009e4f",
+    "src/modules/oracle-mechanics.js": "1e27667079c5d9452774c5c9320e65cb593f057d08b9d2e348298e959dfb3b54",
+    "src/modules/oracle-spell-v4.js": "5ff552c0f024014a7cdf8df96cbb2e2af0450fe9c2fff0c3727c081d24074852",
+    "src/modules/engine.js": "6aa1d1dd9c3d7b68c302fb453d7387c6812221af418225d70029b9e6b993da94",
+    "src/modules/engine2.js": "eda96dea29efb317456b345f160f08ec4bbb9fb34d2e95c0ffa9e7f0727c8546",
+    "src/modules/ai-v2.js": "6b598264de2a45eb1603b06fca20d5df3dcb602eb39a2ba22ad8e3a1f2ba5f23",
+    "src/modules/deck-import.js": "970ebcca1a3798a87f67943c3c4aaeed84514a8f7257c3b8cb81bdc9b0baf7ed",
+    "src/modules/main.js": "4e2c4517276371ed075712fa5531ede118c2b4830818bfe9287030ea2b32ebb3",
+    "src/modules/ui.js": "5f4abd9e4cdb676146ec4c05e0da253af48491d9d143d66c64595b5b3fdc85f5",
+    "tests/oracle-extensions-v7.test.mjs": "495ac79447d0626450e590656f0ff980500f1ae0678b9aa60796a86108e6b6ec",
+    "tests/oracle-bulk-interactions.test.mjs": "2a529e2bfd6ffaab40640e406cb72e11b39448e0e9c7519e9437dfbd3ad2703b",
+    "tests/helpers/oracle-v5-proof.mjs": "c52133661c5ff52e0f59ed20815bdfc88a3af8a8c431368f40a76c1c6de9b389",
+    "tests/oracle-interaction-matrix.test.mjs": "38b5673e56d7224a7284a04a20b74d72f2e660327a2055e9e6e2ce69c8aa915a",
+    "tests/opponent-choice.test.mjs": "3d80e532ff3d6cb6a0cb1ac6fca9ecbb5c06ca6c7dfa15c2710e0624a69979c7"
+  },
+  "release": {
+    "commit": false,
+    "push": false,
+    "deployment": false
+  },
+  "browser": {
+    "finalCheck": "blocked by Browser Use URL security policy",
+    "workaroundAttempted": false,
+    "earlierSourceImportAndPartialGame": true,
+    "fullBrowserGame": false
+  }
+}

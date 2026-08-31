@@ -1493,6 +1493,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function targetValue(game, player, target, q) {
+    if(target instanceof U.CardInst&&q.aiHint?.oracleTargetTapped!==undefined&&target.tapped!==q.aiHint.oracleTargetTapped)return -1000;
     if (q && q.aiHint && q.aiHint.avoidCostSource && target === q.src) return -1000;
     const avoidedCopyTargets = q && q.aiHint && q.aiHint.copyTargetPolicy === 'spread'
       ? q.aiHint.copyUsedTargetIids || [] : [];
@@ -1745,7 +1746,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (hint === 'mariHit') return value;
     if (hint === 'myrBattlesphere') return 4 - value * 0.03;
     if (hint === 'stationTap') return Math.max(0, card.power) * 4 - value * 0.1;
+    if (hint === 'tapCost') return -value - Math.max(0,card.power) * 0.1;
     if (hint === 'bottomOrder') return -value;
+    if (hint === 'reflexiveCost') return -value - ((q.aiHint.keepTargets||[]).includes(card) ? 10000 : 0);
     if (/discard|sacCost|bounceCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) {
       if(hint==='sacCost'&&(q.aiHint.keepTargets||[]).includes(card))return -10000-value;
       let discardScore = -value;
@@ -3145,7 +3148,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
-      if (hintKind === 'riot') {
+      if(hintKind==='oracleLibraryChoice'){
+        const card=q.aiHint.card,wantTop=card&&(card.mv>=3||card.is?.('Creature'));
+        breakdown.choice=action.value===(wantTop?'top':'bottom')?10:0;
+      } else if(hintKind==='oracleKeyword'){
+        const cards=q.aiHint.cards||[],key=action.value;breakdown.choice=cards.some(card=>card.kw?.(key))?-5:({flying:8,'double strike':9,lifelink:player.life<15?12:5,deathtouch:6,haste:game.phase==='main1'&&cards.some(card=>card.sick)?10:1,vigilance:4,trample:5,menace:4,reach:3}[key]||2);
+      } else if(hintKind==='oracleProtection'){
+        const quality=action.option?.quality,threats=[...game.bf().filter(card=>card.ctrl!==player),...game.stack.filter(row=>row.ctrl!==player).map(row=>row.card||row.src).filter(Boolean)];
+        const matches=card=>quality?.kind==='color'?card.colors?.includes(quality.value):quality?.kind==='type'?card.is?.(quality.value):quality?.kind==='colorless'?card.colors?.length===0:false;
+        breakdown.choice=threats.filter(matches).reduce((sum,card)=>sum+1+Math.max(0,card.power||0)+(card.zone==='stack'?15:0),0);
+      } else if(hintKind==='oracleUnlessPayment'){
+        const cost=action.option?.payment,mana=cost?.mana?U.parseCost(cost.mana):null;
+        breakdown.choice=!cost?0:cost.kind==='mana'?12-mana.generic-mana.pips.length:cost.kind==='life'?(player.life>cost.n+5?8-cost.n:-20):cost.kind==='discard'?5-cost.n:cost.kind==='tap'?8-cost.n:3-cost.n;
+      } else if (hintKind === 'riot') {
         const card = q.aiHint.card;
         const canAttackNow = card && game.turnPlayer === player && game.phase === 'main1' && !card.tapped;
         breakdown.choice = action.value === (canAttackNow ? 'haste' : 'counter') ? 12 : 0;

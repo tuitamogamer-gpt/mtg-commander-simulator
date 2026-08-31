@@ -48,8 +48,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.ORACLE_INTERACTION_CONTRACTS = Object.freeze({
+    'adventure-casting': {mechanics:['adventure'],path:'paid Adventure cast → spell Stack → exile permission → paid permanent cast'},
     'creature-casting': { mechanics: ['creature'], path: 'cast spell → stack → permanent' },
-    'permanent-casting': { mechanics: ['artifact', 'enchantment'], path: 'cast spell → stack → permanent' },
+    'permanent-casting': { mechanics: ['artifact', 'enchantment', 'planeswalker'], path: 'cast spell → stack → permanent' },
     'spell-casting': { mechanics: ['instant', 'sorcery'], path: 'cast spell → target lock → Stack → resolution → graveyard' },
     'land-play': { mechanics: ['land'], path: 'land-play timing → battlefield entry → mana/ETB path' },
     'vanilla-permanent': { mechanics: [], path: 'base P/T → continuous effects → combat/SBA' },
@@ -137,6 +138,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'spell-global-pump': { mechanics: ['spell', 'continuous effect'], path: 'Stack resolution → battlefield snapshot → EOT P/T layer → SBA' },
     'spell-counter-on-permanent': { mechanics: ['spell', 'counter'], path: 'target lock → Stack resolution → counter placement' },
     'spell-damage-prevention': { mechanics: ['spell', 'prevention'], path: 'Stack resolution → EOT combat-damage prevention replacement' },
+    'damage-prevention': { mechanics: ['prevention'], path: 'battlefield static ability → matching damage event → prevention' },
     'spell-tap-untap': { mechanics: ['spell', 'tap', 'untap'], path: 'target lock → Stack resolution → exact tapped state' },
     'spell-library-selection': { mechanics: ['spell', 'scry', 'surveil'], path: 'Stack resolution → ordered library choice and zone moves' },
     'spell-add-mana': { mechanics: ['spell', 'mana'], path: 'Stack resolution → color choice → mana pool' },
@@ -164,6 +166,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'mechanic-eternalize': { mechanics: ['eternalize'], path: 'sorcery graveyard activation → exile cost → black 4/4 Zombie copy' },
     'mechanic-ninjutsu': { mechanics: ['ninjutsu'], path: 'unblocked attacker return cost → Stack → tapped attacking entry' },
     'mechanic-foretell': { mechanics: ['foretell'], path: 'special action → face-down exile → later-turn alternative cast' },
+    'mechanic-madness': { mechanics: ['madness'], path: 'discard replacement → exile trigger → paid alternative cast or graveyard' },
+    'mechanic-buyback': { mechanics: ['buyback'], path: 'additional mana payment → return only on successful resolution' },
+    'mechanic-split-second': { mechanics: ['split second'], path: 'Stack lock on spells and nonmana activations; special actions and triggers remain legal' },
+    'mechanic-jump-start': { mechanics: ['jump-start'], path: 'graveyard cast → discard additional cost → exile on Stack departure' },
+    'mechanic-fading': { mechanics: ['fading'], path: 'entry fade counters → upkeep removal or sacrifice' },
+    'mechanic-vanishing': { mechanics: ['vanishing'], path: 'entry time counters → upkeep removal → separate last-counter sacrifice trigger' },
+    'mechanic-cumulative-upkeep': { mechanics: ['cumulative upkeep'], path: 'upkeep age counter → full repeated payment or sacrifice' },
+    'split-casting': { mechanics: ['split','fuse','aftermath'], path: 'choose legal half → pay face cost → face characteristics and resolution' },
+    'saga-chapters': { mechanics: ['saga'], path: 'lore crossing → chapter Stack → final chapter leaves Stack → state-based sacrifice' },
+    'copy-as-enters': { mechanics: ['copy'], path: 'non-target entry choice → copiable characteristics and entry replacements → zone-change reset' },
+    'base-pt-static': { mechanics: ['base-power-toughness'], path: 'continuous layer 7b in timestamp order → modifiers and counters → live source removal' },
+    'protection-static': { mechanics: ['protection'], path: 'live quality filter → targeting, damage, blocking and attachment restrictions' },
     'mechanic-evoke': { mechanics: ['evoke'], path: 'alternative mana payment → permanent spell → ETB sacrifice trigger' },
     'mechanic-dredge': { mechanics: ['dredge'], path: 'individual draw replacement → mill cost → graveyard card to hand' },
     'mechanic-surge': { mechanics: ['surge'], path: 'prior spell cast this turn → optional alternate mana cost' },
@@ -178,6 +192,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'mechanic-multikicker': { mechanics: ['multikicker'], path: 'repeated additional mana payment → captured payment count' },
     'mechanic-escape': { mechanics: ['escape'], path: 'graveyard spell → alternative mana and exile cost → normal resolution' },
     'mechanic-no-max-hand': { mechanics: ['hand size'], path: 'active permanent → cleanup maximum hand size' },
+    'mechanic-player-hexproof': { mechanics: ['player hexproof'], path: 'active permanent → opponent target legality' },
+    'mechanic-additional-land': { mechanics: ['additional land plays'], path: 'active permanent → per-turn land allowance' },
+    'conditional-permanent-entry': { mechanics: ['conditional entry'], path: 'pre-entry condition → tapped or untapped replacement' },
+    'spell-overload-effect': { mechanics: ['overload'], path: 'paid alternative cost → targetless complete expanded effect' },
+    'mechanic-replicate': { mechanics: ['replicate'], path: 'repeated additional mana payment → cast trigger → separately retargeted copies' },
+    'mechanic-ravenous': { mechanics: ['ravenous'], path: 'chosen X → entry counters → threshold draw trigger' },
+    'mechanic-graveyard-lands': { mechanics: ['graveyard land plays'], path: 'active permission → normal land play and turn allowance' },
+    'mechanic-conditional-alternative': { mechanics: ['conditional alternative cost'], path: 'live condition → free cast with remaining additional costs' },
     'mechanic-retrace': { mechanics: ['retrace'], path: 'graveyard cast → mana and land discard payment → Stack' },
     'mechanic-soulshift': { mechanics: ['soulshift'], path: 'dies → Spirit graveyard target and mana value cap → optional return on resolution' },
     'mechanic-modular': { mechanics: ['modular'], path: 'entry counters → dies with last-known counters → artifact creature target' },
@@ -187,6 +209,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'mechanic-afflict': { mechanics: ['afflict'], path: 'becomes blocked → Stack → captured defending player loses life' },
     'mechanic-ingest': { mechanics: ['ingest'], path: 'combat damage to player → Stack → top library card exiled' },
     'mechanic-offspring': { mechanics: ['offspring'], path: 'additional cast payment → ETB trigger → 1/1 copy token' },
+    'mechanic-squad': {mechanics:['squad'],path:'repeated additional payment → ETB Stack trigger → exact copy count'},
+    'mechanic-blitz': {mechanics:['blitz'],path:'alternative payment → haste and death draw → delayed sacrifice'},
+    'mechanic-warp': {mechanics:['warp'],path:'hand alternative payment → delayed exile → later-turn owner cast'},
+    'mechanic-dethrone': {mechanics:['dethrone'],path:'attack highest-life player → Stack → +1/+1 counter'},
+    'mechanic-rampage': {mechanics:['rampage'],path:'becomes blocked → Stack → current excess-blocker pump'},
+    'mechanic-mobilize': {mechanics:['mobilize'],path:'attack → Stack → tapped attacking Warriors → delayed sacrifice'},
     'permanent-enters-with-counters': { mechanics: ['counter'], path: 'battlefield entry replacement → exact/X counter placement → recalculation/SBA' },
     'conditional-land-entry': { mechanics: ['land'], path: 'entry condition → controller choice → tapped/untapped battlefield state' },
     'untap-step-restriction': { mechanics: ['untap'], path: 'untap step eligibility → source remains tapped' },
@@ -244,6 +272,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const key = nameKey(name);
         if (!cachedNameIndex.has(key)) cachedNameIndex.set(key, name);
         else cachedNameIndex.set(key, null);
+      }
+      for(const name of names)for(const alias of MTG.CARD_CATALOG?.[name]?.aliases||[]){
+        const key=nameKey(alias);
+        if(!cachedNameIndex.has(key))cachedNameIndex.set(key,name);
+        else if(cachedNameIndex.get(key)!==name)cachedNameIndex.set(key,null);
       }
     }
     return cachedNameIndex;
@@ -335,7 +368,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (isBatch) {
         batchCards += entry.n;
         if ((def.types || []).includes('Creature')) addContract('creature-casting', entry.name);
-        if ((def.types || []).some(type => type === 'Artifact' || type === 'Enchantment') &&
+        if ((def.types || []).some(type => type === 'Artifact' || type === 'Enchantment' || type === 'Planeswalker') &&
             !(def.types || []).includes('Creature')) addContract('permanent-casting', entry.name);
         if ((def.types || []).includes('Land')) addContract('land-play', entry.name);
         if ((def.types || []).some(type => type === 'Instant' || type === 'Sorcery')) addContract('spell-casting', entry.name);

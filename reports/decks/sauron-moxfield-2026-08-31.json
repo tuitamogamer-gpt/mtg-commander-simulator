@@ -1,0 +1,658 @@
+{
+  "source": {
+    "url": "https://moxfield.com/decks/8Xcac_CNTUiWNEOG4B5UQw",
+    "title": "Sauron, the dark lord (ready to play)",
+    "capturedAt": "2026-08-31T09:57:23.311Z",
+    "method": "Rendered Moxfield article in Codex in-app browser"
+  },
+  "catalogCards": 11284,
+  "originalListMatchesHistoricalFixture": true,
+  "substitutions": [],
+  "summary": {
+    "inputCards": 100,
+    "resolvedCards": 100,
+    "uniqueCards": 79,
+    "unresolvedCards": 0,
+    "colorIdentity": [
+      "U",
+      "B",
+      "R"
+    ],
+    "engineCertified": 79
+  },
+  "interactionsReady": true,
+  "cards": [
+    {
+      "quantity": 1,
+      "name": "Sauron, the Dark Lord",
+      "oracleId": "9f8f29ba-7e64-455d-be05-ec7973f2bd0a",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Disciple of Bolas",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Elrond, Lord of Rivendell",
+      "oracleId": "099ae8f2-5c84-43ab-aaa1-ea69f2bba784",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Gandalf, Friend of the Shire",
+      "oracleId": "7f7c917b-f940-4f43-bafa-31f50a6d9d6f",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Gorbag of Minas Morgul",
+      "oracleId": "e77e97d7-58ff-4454-ba49-66182e550f12",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Grishnákh, Brash Instigator",
+      "oracleId": "1f139012-fa71-4f5f-8c57-6847bff95678",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Herald of Secret Streams",
+      "oracleId": "366a218e-84d3-4cf9-bbc8-f2f8ecce92a3",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Lobelia Sackville-Baggins",
+      "oracleId": "19f5a25a-97fc-41e6-bb26-7c35f4b4e37c",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Lord of the Nazgûl",
+      "oracleId": "2e94bfb2-9f7d-43af-8995-6cd5ffb15b21",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Mauhúr, Uruk-hai Captain",
+      "oracleId": "9966cac0-331f-4627-be5a-5060a6ac5a32",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Mirkwood Bats",
+      "oracleId": "0636b6c3-0662-420a-b30d-f0a14e7c512d",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Nightscape Familiar",
+      "oracleId": "57296ea3-3c0d-49b7-bc08-0d0d8414e9ad",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Orcish Siegemaster",
+      "oracleId": "d852099f-46c6-4676-860c-20a582f733d1",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Pitiless Plunderer",
+      "oracleId": "a784481f-eccb-4112-bb38-04a659319660",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Saruman, the White Hand",
+      "oracleId": "2bade11e-04e0-42a2-8861-9257c99a7c08",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Sauron, Lord of the Rings",
+      "oracleId": "69c674c7-48a5-49c8-b0be-3f2b5c6a548c",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Sauron, the Necromancer",
+      "oracleId": "8dcd7e2b-75a9-476a-a0a0-798613e8dad6",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Taurean Mauler",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "The Mouth of Sauron",
+      "oracleId": "49e3396a-a125-4cca-b02a-4a96102bcb16",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Thryx, the Sudden Storm",
+      "oracleId": "20004398-bd04-4583-8378-9df743246a32",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Wonder",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Callous Dismissal",
+      "oracleId": "9219b7d5-642d-4470-a7c4-f3e56bfae8c7",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Decree of Pain",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Enter the God-Eternals",
+      "oracleId": "67ee7c8b-afcc-4f09-a184-3db01f2ab175",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Flood of Recollection",
+      "oracleId": "02393093-e970-40a0-848b-9cd758450cbb",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Foray of Orcs",
+      "oracleId": "60bfcaef-9014-4707-b681-cc3920bf223e",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Honor the God-Pharaoh",
+      "oracleId": "5ce7780d-8a32-44c2-b779-aae732f5b05d",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Invade the City",
+      "oracleId": "583a4744-89fb-4bd6-8d4c-c3d845e2e19c",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Life's Finale",
+      "oracleId": "0c1d5e6b-f6b6-4dc6-9bc1-3cc00b78da36",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Mystic Retrieval",
+      "oracleId": "b7cfbfa1-dd38-47ff-9138-fa6b247afc11",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Ringsight",
+      "oracleId": "66e42be3-5125-41b4-9efe-8a6a66899bb6",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Taigam's Scheming",
+      "oracleId": "d9c57520-9827-4b8b-8f81-43cca4227c60",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Treason of Isengard",
+      "oracleId": "b04ef0bd-5e96-45d4-afa8-1f3bc8544e1a",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Widespread Brutality",
+      "oracleId": "3a06f4c1-2af1-495f-914f-1ac4e26f87d4",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Altar's Reap",
+      "oracleId": "6a125750-2b8c-4f9d-8173-ac8d14c91ddb",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Bedevil",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Cast Down",
+      "oracleId": "cdaab6b0-1a2d-4809-8e6b-56013acd8f78",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Commence the Endgame",
+      "oracleId": "fedb1947-9fa5-4655-8d02-b370fa63dd16",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Corrupted Conviction",
+      "oracleId": "b45e35df-9032-4482-89a6-c7c50c6d0a79",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Dark Ritual",
+      "oracleId": "53f7c868-b03e-4fc2-8dcf-a75bbfa3272b",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Filter Out",
+      "oracleId": "8c95d823-6bbd-4484-8f38-b1bb20403085",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Lazotep Plating",
+      "oracleId": "ba0082fb-2d4c-489e-8140-93a6fa693fd0",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Murder",
+      "oracleId": "938b4e2c-88d9-4637-bc00-e228920c9a78",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Nasty End",
+      "oracleId": "f73da5d8-fd15-4315-ad3c-c86c28087285",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Orcish Medicine",
+      "oracleId": "2f9a5e7c-f463-4773-bf67-a07339ce9b5d",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Sauron's Ransom",
+      "oracleId": "fe04a81b-413c-4bc8-bb83-29978da9a43d",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Turn Aside",
+      "oracleId": "4325ae73-af43-4a7d-a552-9909f0dc77db",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Ultimate Price",
+      "oracleId": "d740453b-d8f8-48d0-8c50-72a7cdb791b5",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Unlicensed Disintegration",
+      "oracleId": "eaa2ff39-c3cf-428b-a2f1-a6a99a2c806b",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Dimir Signet",
+      "oracleId": "7d881c57-0bd9-4c57-aa4a-b10808b86143",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Infiltration Lens",
+      "oracleId": "72dfd729-ebba-4bb1-83eb-54c2051fea3b",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Library of Leng",
+      "oracleId": "867def48-4be8-4056-bcf1-d6b00450b9a3",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Phial of Galadriel",
+      "oracleId": "08f17ebc-c0fd-493f-84b3-e9250694543e",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Rakdos Signet",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Seer's Lantern",
+      "oracleId": "4b3dd7e5-e0b5-4773-bb16-37b757ae74d8",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Sol Ring",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Spinning Wheel",
+      "oracleId": "e0935a0f-7087-40cd-a094-89f200da6ef0",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Talisman of Creativity",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Talisman of Indulgence",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Book of Mazarbul",
+      "oracleId": "4598c221-b111-4bde-b4dc-673186c4efe6",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Call of the Ring",
+      "oracleId": "9fcb920c-b8d7-4a79-a335-f63050182cca",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Dreadhorde Invasion",
+      "oracleId": "01deabbb-af6a-4998-99a7-35b7cfa9ef77",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "March from the Black Gate",
+      "oracleId": "9259e918-ace5-4f13-9035-d8bc8c820d25",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "One Ring to Rule Them All",
+      "oracleId": "c75add5e-4e9d-4c68-a8ad-b878b1dbc0a4",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Blackcleave Cliffs",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Bloodfell Caves",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Command Tower",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Dismal Backwater",
+      "oracleId": "865a2194-fca0-446e-aae3-ca475cd66e00",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 8,
+      "name": "Island",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Izzet Boilerworks",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Izzet Guildgate",
+      "oracleId": "bf75a3d1-f184-4b48-a913-21caee1db084",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 8,
+      "name": "Mountain",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Prismari Campus",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Rakdos Carnarium",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Shivan Reef",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 8,
+      "name": "Swamp",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Temple of Deceit",
+      "oracleId": "33b9b3bd-33ca-46f3-b8bb-a978bc3d1085",
+      "semanticClass": "manual-deck-semantic",
+      "engineStatus": "certified",
+      "batch": "moxfield-sauron-dark-lord"
+    },
+    {
+      "quantity": 1,
+      "name": "Temple of Epiphany",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    },
+    {
+      "quantity": 1,
+      "name": "Terramorphic Expanse",
+      "oracleId": null,
+      "semanticClass": "manual",
+      "engineStatus": "certified-legacy",
+      "batch": null
+    }
+  ]
+}

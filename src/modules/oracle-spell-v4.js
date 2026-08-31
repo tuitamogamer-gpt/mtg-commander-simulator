@@ -36,7 +36,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const EFFECT_KIND_SET = new Set(EFFECT_KINDS);
   const TARGET_KINDS = new Set(['card', 'damageable', 'permanent', 'player', 'spell']);
   const COST_KINDS = Object.freeze(['choice', 'discard', 'payLife', 'sacrifice', 'sequence']);
-  const COST_KIND_SET = new Set(COST_KINDS);
+  // The frozen v4 parser manifest stays unchanged; v7 adds this explicit cost.
+  const COST_KIND_SET = new Set([...COST_KINDS, 'exileGraveyard']);
   const OPERATION_KINDS = Object.freeze(['modal', 'sequence']);
   const OPERATION_KIND_SET = new Set(OPERATION_KINDS);
 
@@ -93,6 +94,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.kind === 'discard') {
       validateQuantity(cost.quantity, cost.id);
       invariant(cost.object && cost.object.kind === 'card', `${cost.id} discard needs a card object`);
+      return;
+    }
+    if (cost.kind === 'exileGraveyard') {
+      validateQuantity(cost.quantity, cost.id);
+      invariant(cost.object?.kind === 'card' && (!cost.object.types || Array.isArray(cost.object.types)), `${cost.id} exile needs a card filter`);
       return;
     }
     if (cost.kind === 'payLife') {
@@ -572,12 +578,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return {
       sacrifices: plan.sacrifices.slice(),
       discards: plan.discards.slice(),
+      exiles: plan.exiles.slice(),
       life: plan.life,
       choices: plan.choices.slice(),
     };
   }
 
   function simulateCost(game, player, source, cost, ctx, plan) {
+    if (cost.kind === 'exileGraveyard') {
+      const pool = player.graveyard.filter(card => card !== source && !plan.exiles.includes(card) &&
+        (!cost.object.types || cost.object.types.some(type => card.is(type))));
+      if (pool.length < cost.quantity.min) return false;
+      plan.exiles.push(...pool.slice(0, cost.quantity.min));
+      return true;
+    }
     if (cost.kind === 'sacrifice') {
       const needed = cost.quantity.min;
       const pool = game.bf().filter(card => card.ctrl === player && !plan.sacrifices.includes(card) &&
@@ -606,11 +620,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function canPayCosts(game, player, source, costs, ctx) {
-    const plan = { sacrifices: [], discards: [], life: 0, choices: [] };
+    const plan = { sacrifices: [], discards: [], exiles: [], life: 0, choices: [] };
     return costs.every(cost => simulateCost(game, player, source, cost, ctx, plan));
   }
 
   function costLabel(cost, ctx) {
+    if (cost.kind === 'exileGraveyard') return `Exile ${cost.quantity.min} ${(cost.object.types || ['card']).join(' or ')} from your graveyard`;
     if (cost.kind === 'sacrifice') return `Sacrifice ${cost.object.types.join(' or ')}`;
     if (cost.kind === 'discard') return `Discard ${cost.quantity.min} card${cost.quantity.min === 1 ? '' : 's'}`;
     if (cost.kind === 'payLife') return `Pay ${amountValue(cost.amount, ctx)} life`;
@@ -626,6 +641,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   async function planCost(env, cost, plan) {
     const { game, player, source, ctx } = env;
+    if (cost.kind === 'exileGraveyard') {
+      const pool = player.graveyard.filter(card => card !== source && !plan.exiles.includes(card) &&
+        (!cost.object.types || cost.object.types.some(type => card.is(type))));
+      const {min, max} = cost.quantity;
+      if (pool.length < min) return false;
+      const picked = await player.controller.decide(game, {type:'chooseCards', from:pool, min, max,
+        prompt:`${source.name}: ${costLabel(cost, ctx)}`, aiHint:{kind:'delve', card:source}});
+      const chosen = Array.isArray(picked) ? [...new Set(picked)].filter(card => pool.includes(card)) : [];
+      if (chosen.length < min || chosen.length > max) return false;
+      plan.exiles.push(...chosen);
+      return true;
+    }
     if (cost.kind === 'sacrifice') {
       const min = cost.quantity.min;
       const max = cost.quantity.max;
@@ -696,22 +723,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   async function planAndCommitCosts(ctx, costs) {
-    const plan = { sacrifices: [], discards: [], life: 0, choices: [] };
+    const plan = { sacrifices: [], discards: [], exiles: [], life: 0, choices: [] };
     const env = { game: ctx.g, player: ctx.you, source: ctx.src, ctx };
     for (const cost of costs) if (!await planCost(env, cost, plan)) return false;
+    // Planning happens with target selection. No cost may be spent until the
+    // engine has successfully paid the complete mana cost of the spell.
+    (ctx.so.oracleCostPlans || (ctx.so.oracleCostPlans = [])).push(plan);
+    return true;
+  }
 
+  MTG.commitOracleAdditionalCosts = async function(ctx) {
+    const plans = ctx.so.oracleCostPlans || [];
+    delete ctx.so.oracleCostPlans;
+    for (const plan of plans) {
     const record = {
       sacrifices: plan.sacrifices.map(card => ({ iid: card.iid, snapshot: ctx.g.snapshot(card) })),
       discards: plan.discards.map(card => card.iid),
+      exiles: plan.exiles.map(card => card.iid),
       life: plan.life,
       choices: plan.choices.map(choice => ({ ...choice })),
     };
     if (plan.sacrifices.length) await ctx.g.sacrificeMany(ctx.you, plan.sacrifices);
     if (plan.discards.length) await ctx.g.discard(ctx.you, plan.discards, { noReplacement: true });
+    if (plan.exiles.length) await ctx.g.moveGraveyardBatch(plan.exiles, 'exile');
     if (plan.life) await ctx.g.loseLife(ctx.you, plan.life, `${ctx.src.name} additional cost`);
     ctx.so.oracleV4AdditionalCost = record;
+    }
     return true;
-  }
+  };
 
   function modeLabel(option, effectMap, index) {
     if (option.label) return option.label;

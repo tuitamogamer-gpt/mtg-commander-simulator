@@ -4891,7 +4891,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const previous = document.querySelector('.battlefieldarrival');
       if (previous) previous.remove();
       const commander = event.kind === 'commander';
-      const commanderIntro = commander && MTG.commanderIntroForDeck(card.owner && card.owner.deck, card.name);
+      const commanderIntro = commander && MTG.commanderIntroForDeck?.(card.owner && card.owner.deck, card.name);
       const highlightedCard = () => document.querySelector(`.mini[data-iid="${card.iid}"]`);
       requestAnimationFrame(() => highlightedCard()?.classList.add('arrival-highlight'));
       if (commander && !commanderIntro) {

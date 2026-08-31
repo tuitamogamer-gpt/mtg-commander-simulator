@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { semanticClass } from '../scripts/import-oracle-batch.mjs';
+import { semanticClass as latestSemanticClass } from '../scripts/import-oracle-batch.mjs';
+// Keep the frozen v6 acceptance/rejection contract independent of v7.
+const semanticClass=card=>latestSemanticClass(card,{compilerVersion:6});
 import { extensionTarget } from '../scripts/oracle-extensions-v6.mjs';
 import { loadEngine } from './helpers/load-engine.mjs';
 
