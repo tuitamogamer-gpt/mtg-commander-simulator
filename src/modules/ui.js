@@ -1602,6 +1602,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         account.open('profile');
       });
       action('Support & diagnostics', 'Download share-safe debug snapshot', () => this.downloadDebugSnapshot(g));
+      if (MTG.DECKS[this.me?.deckName]?.custom || this.pending?.q.type === 'manualResolve') {
+        const canUseJudge = () => ['main', 'manualResolve'].includes(this.pending?.q.type);
+        const judge = action('Judge', 'Manual card actions', () => {
+          if (!canUseJudge()) return;
+          this.quickMenuOpen = false;
+          this.showJudge = true;
+          this.render();
+        });
+        judge.disabled = !canUseJudge();
+        if (judge.disabled) judge.title = 'Available during your main phase or a manual card resolution.';
+      }
       const lastResort = action('Last Resort', this.lastResortActive ? 'ACTIVE \u00B7 paused recovery' : 'Emergency public-board recovery', () => {
         this.quickMenuOpen = false;
         if (this.lastResortActive) this.showJudge = true;
@@ -2548,11 +2559,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         return row;
       };
-      const judgeBtn = () => {
-        const hasCustom = this.me && this.me.deckName && MTG.DECKS[this.me.deckName] && MTG.DECKS[this.me.deckName].custom;
-        if (!hasCustom && q.type !== 'manualResolve') return null;
-        return btn('⚒️ Judge', () => { this.showJudge = true; this.render(); });
-      };
       if (q.type === 'threatAlert') {
         bar.appendChild(el('div', 'ptext', '⏸️ Paused. Review what the bot is sending at you.'));
         return bar;
@@ -2584,8 +2590,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const oz = offZoneRow();
           if (oz) bar.appendChild(oz);
           const row = el('div', 'btnrow');
-          const jb = judgeBtn();
-          if (jb) row.appendChild(jb);
           row.appendChild(btn(additionalMain ? 'Continue ▶ (next phase)'
             : g.phase === 'main1' ? 'Continue ▶ (combat)' : 'End turn ▶',
           () => this.resolvePending({ kind: 'done' }), 'primary'));

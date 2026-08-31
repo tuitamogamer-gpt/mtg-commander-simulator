@@ -7,6 +7,24 @@ const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const app = read('../src/app.js');
 const main = read('../src/modules/main.js');
 const css = read('../src/frontend-overhaul.css');
+const ui = read('../src/modules/ui.js');
+
+test('custom-deck Judge is a game-menu action and never an extra main-phase action', () => {
+  const menu = ui.slice(ui.indexOf('    renderQuickMenu(g)'), ui.indexOf('    renderLastResortConfirm()'));
+  const mainPhase = ui.slice(ui.indexOf("        case 'main':"), ui.indexOf("        case 'priority':"));
+  assert.match(menu, /action\('Judge', 'Manual card actions'/);
+  assert.match(menu, /this\.quickMenuOpen = false;\s*this\.showJudge = true;/);
+  assert.match(menu, /const canUseJudge = \(\) => \['main', 'manualResolve'\]\.includes\(this\.pending\?\.q\.type\)/);
+  assert.match(menu, /if \(!canUseJudge\(\)\) return;/, 'recheck the safe decision point when clicked');
+  assert.match(menu, /judge\.disabled = !canUseJudge\(\)/);
+  assert.doesNotMatch(mainPhase, /Judge|judgeBtn/);
+  assert.match(ui, /case 'manualResolve':[\s\S]*?Open Judge panel/, 'manual resolution retains its required contextual control');
+});
+
+test('custom deck names are attribute-escaped in explorer recommendations and alternatives', () => {
+  assert.ok(main.includes('data-deck-rec="${escAttr(entry.dataset.deck)}"'));
+  assert.ok(main.includes('data-alt-deck="${escAttr(entry.dataset.deck)}"'));
+});
 
 test('every active deck has a complete spotlight guide with real signature cards', () => {
   const MTG = loadEngine();

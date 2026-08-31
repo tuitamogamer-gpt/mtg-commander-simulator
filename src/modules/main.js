@@ -123,6 +123,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await refreshImportedDeckLibrary({ force: true });
         throw new Error('Your account changed before this deck could be saved. Please try again.');
       }
+      if (!saved || saved.id !== record.id) throw new Error('The account service did not confirm this deck was saved. Please try again.');
       U.hydrateImportedDeckLibrary(globalThis.MTGAccount.decks, { source: 'account' });
       return saved;
     }
@@ -411,7 +412,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         overlay.dataset.libraryReady = String(readyCount);
         librarySource.textContent = library.source === 'loading'
           ? 'Checking your profile…'
-          : library.source === 'account' ? 'Saved to your account' : 'Saved in this browser';
+          : library.source === 'account' ? 'Saved to your account' : 'Saved in this browser · sign in before importing to save to your account';
         if (library.error) {
           libraryList.innerHTML = `<div class="mainmenu-decklibrary-error"><strong>Library unavailable</strong><p>${esc(library.error)}</p>${library.source === 'guest' ? '<button type="button" class="mainmenu-decklibrary-reset">Reset local library</button>' : ''}</div>`;
           const resetButton = libraryList.querySelector('.mainmenu-decklibrary-reset');
@@ -441,22 +442,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <article class="mainmenu-decklibrary-card${entry.ready ? '' : ' is-unavailable'}" data-deck-id="${escAttr(entry.id)}" data-ready="${entry.ready ? 'true' : 'false'}">
             <div><small>${entry.ready ? 'READY TO PLAY' : 'ENGINE UPDATE NEEDED'}</small><h4>${esc(entry.name || 'Unnamed imported deck')}</h4><p>${esc(entry.commanders.join(' + ') || 'Commander unavailable')}</p>${entry.ready ? '' : `<span>${esc(entry.issues[0]?.message || 'This saved deck is not supported by the current engine.')}</span>`}</div>
             <div class="mainmenu-decklibrary-card-actions">
-              <button type="button" class="mainmenu-decklibrary-play" ${entry.ready ? '' : 'disabled'}>Play Solo</button>
+              <button type="button" class="mainmenu-decklibrary-play" ${entry.ready ? '' : 'disabled'}>Choose deck</button>
               <button type="button" class="mainmenu-decklibrary-remove">Remove</button>
             </div>
           </article>`).join('');
         libraryList.querySelectorAll('.mainmenu-decklibrary-play').forEach(button => {
-          button.onclick = () => {
+          button.onclick = async () => {
             const card = button.closest('[data-deck-id]');
             button.disabled = true;
-            button.textContent = 'Starting…';
+            button.textContent = 'Loading…';
             try {
-              const started = U.startSavedImportedCommanderDeck(card.dataset.deckId);
-              if (!started.imported.ok) throw new Error(started.imported.errors[0]?.message || 'This deck no longer passes the engine check.');
+              await ensureImportedLibraryOwner();
+              U.prepareSavedImportedCommanderDeck(card.dataset.deckId);
               close();
             } catch (error) {
               resultBox.dataset.state = 'error';
-              resultBox.innerHTML = `<strong>Deck could not start</strong><p>${esc(error && error.message || 'Unknown library error.')}</p>`;
+              resultBox.innerHTML = `<strong>Deck could not be selected</strong><p>${esc(error && error.message || 'Unknown library error.')}</p>`;
               renderLibrary();
             }
           };
@@ -558,13 +559,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             showValidation(currentValidation);
             return;
           }
-          await saveImportedDeckToLibrary(currentValidation);
+          const saved = await saveImportedDeckToLibrary(currentValidation);
           validatedDeck = currentValidation;
           overlay.dataset.importState = 'saved';
           resultBox.dataset.state = 'ready';
           resultBox.innerHTML = `<strong>Saved to My Library</strong><p>${currentValidation.summary.inputCards} cards · ${currentValidation.summary.engineCertified} engine-certified · ready to play without pasting again.</p><small>Commander: ${esc(currentValidation.commanders.join(' + '))}</small>`;
           saveButton.textContent = 'Saved';
           renderLibrary();
+          if (overlay.isConnected) {
+            U.prepareSavedImportedCommanderDeck(saved.id);
+            close();
+          }
         } catch (error) {
           overlay.dataset.importState = 'error';
           resultBox.dataset.state = 'error';
@@ -700,6 +705,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       search: '', color: 'all', strategy: 'all', year: 'all', favoritesOnly: false,
       setupStage: 'deck', playstyle: 'all',
       favorites: new Set(savedFavorites),
+      importedDeckId: null, importedLibraryOwner: null,
     };
     root.dataset.setupStage = state.setupStage;
     const setupSteps = [...root.querySelectorAll('.setupstep')];
@@ -734,8 +740,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       root.querySelector('.deckspotlightoverlay')?.remove();
       const deck = MTG.DECKS[name];
       const meta = MTG.DECK_META[name] || {};
-      const guide = MTG.DECK_GUIDES[name];
-      const route = guide && MTG.DECK_GUIDE_ROUTES[guide.route];
+      const guide = MTG.DECK_GUIDES[name] || (deck?.custom ? {
+        theme: 'Your imported Commander deck, ready for the same table setup as the built-in decks.',
+        pace: '100 cards', complexity: 'Engine checked',
+        plan: 'Choose the number of opponents, their decks and AI styles, then review the table before starting.',
+        mulligan: 'Review your opening hand when the game begins. You can keep it or take a mulligan.',
+        tip: 'Your saved deck stays in My Library. Pod choices only apply to this game and do not change the saved list.',
+        keys: deck.cards.filter(row => !deck.commanders?.includes(row.name) && row.name !== deck.commander && !(MTG.DEFS[row.name]?.types || []).includes('Land')).slice(0, 3).map(row => row.name),
+      } : null);
+      const route = deck?.custom ? [
+        { label: 'SAVED DECK', title: 'Your list is ready', text: U.getImportedDeckLibrary().source === 'account' ? 'Saved to your account. Find it in My Library after signing in, including on another device.' : 'Saved in this browser. Sign in before importing if you want to keep a deck on your account.' },
+        { label: 'BUILD THE POD', title: 'Choose your opponents', text: 'Pick 1–3 local AI opponents, their decks, styles and difficulty.' },
+        { label: 'REVIEW', title: 'Start when you are ready', text: 'Confirm your choices on the Review screen. Opening this deck does not start a match.' },
+      ] : guide && MTG.DECK_GUIDE_ROUTES[guide.route];
       if (!deck || !guide || !route) return;
       const commanders = state.commanders.length ? state.commanders : [deck.commander];
       const leadCommander = commanders[0];
@@ -753,7 +770,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const keyCards = guide.keys.map(cardName => `
         <figure class="deckspotlightkey">
           <img loading="eager" decoding="async" src="${cardImg(cardName)}" alt="${esc(cardName)}" onerror="MTG.imgFail(this)">
-          <figcaption><small>KEY CARD</small><b>${esc(cardName)}</b></figcaption>
+          <figcaption><small>${deck.custom ? 'FROM YOUR DECK' : 'KEY CARD'}</small><b>${esc(cardName)}</b></figcaption>
         </figure>`).join('');
       dialog.innerHTML = `
         <button type="button" class="deckspotlightclose" aria-label="Close deck spotlight">×</button>
@@ -766,7 +783,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             <span class="deckspotlightpicked"><b>✓</b> Selected for your seat</span>
           </div>
           <div class="deckspotlightintro">
-            <div class="deckspotlightkicker"><span>DECK SPOTLIGHT</span><b>${String(deckNumber).padStart(2, '0')} / ${String(activeDecks.length).padStart(2, '0')}</b></div>
+            <div class="deckspotlightkicker"><span>DECK SPOTLIGHT</span><b>${deck.custom ? 'MY LIBRARY' : `${String(deckNumber).padStart(2, '0')} / ${String(activeDecks.length).padStart(2, '0')}`}</b></div>
             <div class="deckspotlightmana" aria-label="Color identity">${mana}</div>
             <h2 data-dialog-title>${esc(name)}</h2>
             <p class="deckspotlightcommander"><span>COMMANDER</span>${esc(commanders.join(' + '))}</p>
@@ -779,8 +796,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         </header>
         <div class="deckspotlightbody">
           <section class="deckspotlightplan" aria-labelledby="deckspotlight-plan-title">
-            <span class="deckspotlighteyebrow">HOW IT PLAYS</span>
-            <h3 id="deckspotlight-plan-title">Your route through the game</h3>
+            <span class="deckspotlighteyebrow">${deck.custom ? 'BUILD YOUR TABLE' : 'HOW IT PLAYS'}</span>
+            <h3 id="deckspotlight-plan-title">${deck.custom ? 'Choose the rest of your pod' : 'Your route through the game'}</h3>
             <p class="deckspotlightlead">${esc(guide.plan)}</p>
             <ol class="deckspotlightrhythm">${phases}</ol>
           </section>
@@ -790,7 +807,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           </aside>
         </div>
         <section class="deckspotlightsignatures" aria-labelledby="deckspotlight-signatures-title">
-          <div><span class="deckspotlighteyebrow">SIGNATURE PIECES</span><h3 id="deckspotlight-signatures-title">Cards that reveal the deck</h3></div>
+          <div><span class="deckspotlighteyebrow">${deck.custom ? 'YOUR LIST' : 'SIGNATURE PIECES'}</span><h3 id="deckspotlight-signatures-title">${deck.custom ? 'Cards from your deck' : 'Cards that reveal the deck'}</h3></div>
           <div class="deckspotlightkeys">${keyCards}</div>
         </section>
         <footer class="deckspotlightactions">
@@ -858,12 +875,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     left.appendChild(deckTools);
     const deckList = el('div', 'decklist');
     for (const [name, deck] of Object.entries(MTG.DECKS)) {
-      if (deck.custom) continue;
+      const libraryEntry = deck.custom && U.getImportedDeckLibrary().entries.find(entry => entry.name === name && entry.ready);
+      if (deck.custom && (initialMode === 'online' || !libraryEntry)) continue;
       const meta = MTG.DECK_META[name] || {};
       const strategy = MTG.deckStrategy(meta.style);
       const year = ((meta.set || '').match(/20\d{2}/) || [''])[0];
       const entry = el('div', 'deckentry');
       entry.dataset.deck = name;
+      if (libraryEntry) entry.dataset.importedDeckId = libraryEntry.id;
       entry.dataset.name = `${name} ${deck.commander}`.toLowerCase();
       entry.dataset.colors = (meta.colors || []).join('');
       entry.dataset.strategy = strategy;
@@ -901,7 +920,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           replayNotice.hidden = true;
         }
         state.deck = name;
-        state.commanders = MTG.defaultCommanders(deck, MTG.DEFS);
+        state.importedDeckId = libraryEntry ? libraryEntry.id : null;
+        state.importedLibraryOwner = libraryEntry ? currentImportedLibraryOwner() : null;
+        state.commanders = libraryEntry ? libraryEntry.commanders.slice() : MTG.defaultCommanders(deck, MTG.DEFS);
+        const liveChoice = matchType.querySelector('[data-mode="online"]');
+        liveChoice.disabled = !!libraryEntry;
+        liveChoice.title = libraryEntry ? 'Imported decks currently support Solo tables only.' : '';
+        if (libraryEntry && state.mode === 'online') setMatchMode('solo');
         deckList.querySelectorAll('.deckcard').forEach(c => {
           c.classList.remove('selected');
           c.setAttribute('aria-pressed', 'false');
@@ -972,7 +997,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       deckList.querySelectorAll('.deckentry').forEach(entry => entry.classList.toggle('recommended', entry.dataset.strategy === strategy));
       const matches = [...deckList.querySelectorAll(`.deckentry[data-strategy="${strategy}"]`)].slice(0, 3);
       recs.innerHTML = matches.length
-        ? `<small>RECOMMENDED FOR YOU</small>${matches.map(entry => `<button type="button" data-deck-rec="${esc(entry.dataset.deck)}"><b>${esc(entry.dataset.deck)}</b><span>${esc((MTG.DECK_META[entry.dataset.deck] || {}).style || '')}</span></button>`).join('')}`
+        ? `<small>RECOMMENDED FOR YOU</small>${matches.map(entry => `<button type="button" data-deck-rec="${escAttr(entry.dataset.deck)}"><b>${esc(entry.dataset.deck)}</b><span>${esc((MTG.DECK_META[entry.dataset.deck] || {}).style || '')}</span></button>`).join('')}`
         : '';
       recs.querySelectorAll('[data-deck-rec]').forEach(button => {
         button.onclick = () => deckList.querySelector(`.deckentry[data-deck="${CSS.escape(button.dataset.deckRec)}"] .deckcard`)?.click();
@@ -997,7 +1022,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         noResults.querySelector('.deckemptyreason').textContent = `Nothing matches ${activeFilterText()}. Clear everything, or jump to one of the closest decks below.`;
         const alternatives = noResults.querySelector('.deckemptyalternatives');
         alternatives.innerHTML = closestDeckEntries().map(({ entry }) =>
-          `<button type="button" data-alt-deck="${esc(entry.dataset.deck)}"><b>${esc(entry.dataset.deck)}</b><span>${esc((MTG.DECK_META[entry.dataset.deck] || {}).style || '')}</span></button>`).join('');
+          `<button type="button" data-alt-deck="${escAttr(entry.dataset.deck)}"><b>${esc(entry.dataset.deck)}</b><span>${esc((MTG.DECK_META[entry.dataset.deck] || {}).style || '')}</span></button>`).join('');
         alternatives.querySelectorAll('[data-alt-deck]').forEach(button => {
           button.onclick = () => {
             clearFilters();
@@ -1083,7 +1108,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const updateStartLabel = () => {
       if (!state.deck) return;
       const c = state.commanders;
-      startBtn.textContent = state.mode === 'online' ? `Create ${state.livePlayers}-player room` : 'Start game';
+      startBtn.textContent = state.mode === 'online' ? `Create ${state.livePlayers}-player room` : state.importedDeckId ? 'Review pod →' : 'Start game';
       startBtn.title = `${state.deck}: ${c.map(n => n.split(',')[0]).join(' + ')}`;
     };
     function renderCmdBox() {
@@ -1316,7 +1341,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const startBtn = el('button', 'pbtn primary start', 'Choose a deck first');
     startBtn.disabled = true;
-    startBtn.onclick = () => state.mode === 'online' ? openOnlineLobby(state) : startGame(state);
+    const launchSelectedTable = () => {
+      try {
+        return state.mode === 'online' ? openOnlineLobby(state) : startGame(state);
+      } catch (error) {
+        setSetupStage('pod');
+        diagnostics.open = true;
+        showImportStatus(error?.message || 'The table could not start. Please select your deck again.', true);
+      }
+    };
+    startBtn.onclick = () => state.importedDeckId ? setSetupStage('review') : launchSelectedTable();
     right.appendChild(startBtn);
     renderCmdBox();
 
@@ -1403,7 +1437,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <button type="button" class="pbtn primary reviewstart">${state.mode === 'online' ? `Create ${state.livePlayers}-player room` : 'Start game'}</button>
         </div>`;
       reviewStage.querySelector('.reviewback').onclick = () => setSetupStage('pod');
-      reviewStage.querySelector('.reviewstart').onclick = () => state.mode === 'online' ? openOnlineLobby(state) : startGame(state);
+      reviewStage.querySelector('.reviewstart').onclick = launchSelectedTable;
     };
 
     const mobileBar = el('div', 'setupmobilebar');
@@ -1507,6 +1541,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         importFile.value = '';
       }
     };
+    if (options.importedDeckId) {
+      const saved = U.getImportedDeckLibraryEntry(options.importedDeckId);
+      const selectedEntry = [...deckList.querySelectorAll('.deckentry')].find(entry => entry.dataset.deck === saved?.name);
+      if (!selectedEntry) throw new Error('This saved deck is no longer available. Reopen My Library and try again.');
+      selectedEntry.querySelector('.deckcard').click();
+    }
+    filterDecks();
   }
 
   // ---------- Izbor komandera (1 ili 2 partnera) ----------
@@ -1622,6 +1663,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.openOnlineLobby = openOnlineLobby;
 
   function startGame(state) {
+    if (state.importedDeckId) {
+      if (state.importedLibraryOwner !== currentImportedLibraryOwner()) throw new Error('Your account changed. Select the deck again from My Library.');
+      const entry = MTG.getImportedDeckLibraryEntry(state.importedDeckId);
+      if (!entry || entry.name !== state.deck) throw new Error('This saved deck is no longer in My Library.');
+      const validation = MTG.validateImportedDeckRecord(entry.record);
+      if (!validation.ok) throw new Error(validation.errors[0]?.message || 'This deck no longer passes the engine check.');
+      const selectedCommanders = MTG.validateImportedDeck(entry.record, { name: entry.name, commanders: state.commanders });
+      if (!selectedCommanders.ok) throw new Error(selectedCommanders.errors[0]?.message || 'Select legal commanders for this deck.');
+      MTG.registerImportedDeck(validation, { replace: true });
+    }
     const resumeSave = state.resumeSave ? MTG.validateAccountSave(state.resumeSave) : null;
     const savedTimeline = resumeSave ? resumeSave.decisions.slice() : [];
     const recordedTimeline = resumeSave ? resumeSave.decisions.slice() : [];
@@ -1882,6 +1933,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         .map(player => player.aiStyle || player.requestedAIStyle || 'balanced');
       MTG.rematchLastGame = () => startGame({
         deck: state.deck,
+        importedDeckId: state.importedDeckId,
+        importedLibraryOwner: state.importedLibraryOwner,
         ai: state.ai,
         mode: 'solo',
         difficulty: state.difficulty,
@@ -4052,6 +4105,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return startValidatedImportedCommanderDeck(imported, options);
   };
 
+  MTG.prepareSavedImportedCommanderDeck = function (id) {
+    if (currentImportedLibraryOwner() !== importedLibraryOwner) throw new Error('Your profile is still loading. Reopen My Library and try again.');
+    const entry = MTG.getImportedDeckLibraryEntry(id);
+    if (!entry?.record) throw new Error('This saved deck is not in My Library.');
+    const imported = MTG.validateImportedDeckRecord(entry.record);
+    if (!imported.ok) throw new Error(imported.errors[0]?.message || 'This deck no longer passes the engine check.');
+    MTG.registerImportedDeck(imported, { replace: true });
+    renderSetup({ mode: 'solo', importedDeckId: id });
+    return imported;
+  };
+
   MTG.resumeAccountSave = function (save) {
     const checkpoint = MTG.validateAccountSave(save);
     document.querySelector('.account-overlay')?.remove();
@@ -4558,6 +4622,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (owner === importedLibraryOwner) return;
     const previousOwner = activeGameLibraryOwner || importedLibraryOwner;
     hideImportedLibraryWhileOwnerChanges();
+    if (!window._game && $('#setup')?.querySelector('[data-imported-deck-id]')) renderSetup({ mode: 'solo' });
     if (window._game) {
       const humanDeckName = window._game.players?.find(player => !player.isAI)?.deckName;
       if (owner === 'loading') {

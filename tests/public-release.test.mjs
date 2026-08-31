@@ -56,7 +56,12 @@ test('main menu decklist import is a persistent fail-closed library gateway with
   assert.match(main, /class="mainmenu-decklibrary"/);
   assert.match(main, /U\.importCommanderDeck\(textInput\.value/);
   assert.match(main, /saveImportedDeckToLibrary\(currentValidation\)/);
-  assert.match(main, /U\.startSavedImportedCommanderDeck\(card\.dataset\.deckId\)/);
+  assert.match(main, /U\.prepareSavedImportedCommanderDeck\(card\.dataset\.deckId\)/);
+  assert.match(main, /U\.prepareSavedImportedCommanderDeck\(saved\.id\)/);
+  assert.match(main, /renderSetup\(\{ mode: 'solo', importedDeckId: id \}\)/);
+  assert.match(main, /startBtn\.onclick = \(\) => state\.importedDeckId \? setSetupStage\('review'\)/);
+  assert.match(main, /state\.importedLibraryOwner !== currentImportedLibraryOwner\(\)/);
+  assert.match(main, /if \(!saved \|\| saved\.id !== record\.id\) throw new Error/);
   assert.match(main, /U\.validateImportedDeckRecord\(record\)/);
   assert.match(main, /U\.loadGuestImportedDeckLibrary\(\)/);
   assert.match(main, /https:\/\/moxfield\.com\//);
