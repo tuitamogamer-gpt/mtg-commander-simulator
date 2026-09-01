@@ -302,10 +302,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const target = ctx.targets[0];
         if (!target || target.zone !== 'battlefield') return;
         const base = target.isCopyOf || target.def;
-        if (!ctx.src.meta.characteristicOriginalDef) ctx.src.meta.characteristicOriginalDef = ctx.src.def;
-        ctx.src.meta.temporaryCopyTurn = ctx.g.turnNo;
-        ctx.src.isCopyOf = base;
-        ctx.src.def = Object.assign({}, base, { kws: [...new Set([...(base.kws || []), 'myriad'])] });
+        MTG.OracleV8Copies.applyCopy(ctx.g,ctx.src,Object.assign({},base,{kws:[...new Set([...(base.kws||[]),'myriad'])]}),{duration:'eot',controller:ctx.you});
         ctx.g.recalc();
         ctx.g.lg(`Muddle postaje ${target.name} (+myriad) do kraja poteza.`);
       },
@@ -1268,6 +1265,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC["Thor, Asgard's Avenger"] = {
     replace: [{
       event: 'damage',
+      applies: (g, ev, self) => !!ev.src && ev.src !== self && ev.src.ctrl === self.ctrl && (ev.target instanceof MTG.Player ? ev.target !== self.ctrl : !!ev.target?.ctrl && ev.target.ctrl !== self.ctrl),
       run: (g, ev, src) => {
         const s = ev.src;
         if (!s || s === src) return ev.n;

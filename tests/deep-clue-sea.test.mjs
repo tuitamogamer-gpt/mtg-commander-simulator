@@ -231,14 +231,17 @@ test('Koma žrtvuje drugu Zmiju kao cijenu, zaključava permanent i gasi mana i 
   assert.equal(ring.cur.activationDisabled, false);
 });
 
-test('Selvala proizvodi nula kada su svi vrhovi landovi i tačno broj nonland vrhova inače', async () => {
+test('Selvala koristi Stack i proizvodi tačno prema vrhovima na rezoluciji', async () => {
   const { game, players: [clue, opponent, other] } = rulesGame([], 3);
   const selvala = permanent(game, clue, 'Selvala, Explorer Returned');
   for (const player of [clue, opponent, other]) inZone(player, 'Forest', 'library');
-  const entry = game.activatableList(clue).find(action => action.card === selvala && action.manaAbility);
+  const entry = game.activatableList(clue).find(action => action.card === selvala && action.ability);
+  assert.equal(game.manaSources(clue).some(action=>action.card===selvala),false);
   assert.ok(entry);
   const life = clue.life;
   assert.equal(await game.activateAbility(clue, entry), true);
+  assert.equal(clue.hand.length,0);assert.ok(game.stack.some(object=>object.srcCard===selvala));
+  await resolveAll(game);
   assert.equal(clue.pool.G, 0);
   assert.equal(clue.life, life);
   assert.equal(clue.hand.length, 1);
@@ -248,7 +251,12 @@ test('Selvala proizvodi nula kada su svi vrhovi landovi i tačno broj nonland vr
   inZone(clue, 'Graf Mole', 'library');
   inZone(opponent, 'Island', 'library');
   inZone(other, 'Junk Winder', 'library');
-  assert.equal(selvala.def.mana.produce(game, selvala, clue)[0].G, 2);
+  game.untap(selvala);
+  const second=game.activatableList(clue).find(action=>action.card===selvala&&action.ability);
+  assert.ok(second);assert.equal(await game.activateAbility(clue,second),true);
+  assert.equal(clue.pool.G,0);await resolveAll(game);
+  assert.equal(clue.pool.G,2);assert.equal(clue.life,life+2);
+  for(const player of [clue,opponent,other])assert.equal(player.hand.length,2);
 });
 
 test('Tangletrove animira Clue u svakom combatu, a creature Equipment se odmah odvaja', async () => {

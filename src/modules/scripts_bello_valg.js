@@ -530,6 +530,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Gratuitous Violence'] = {
     replace: [{
       event: 'damage',
+      applies: (g, ev, self) => !!ev.src?.is?.('Creature') && ev.src.ctrl === self.ctrl,
       run: (g, evt, src) => {
         if (evt.src && evt.src.ctrl === src.ctrl && evt.src.is && evt.src.is('Creature')) return evt.n * 2;
         return evt.n;
@@ -1330,6 +1331,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     replace: [{
       event: 'damage',
       cond: (g, self) => (self.meta.unlocked || []).includes('torture'),
+      applies: (g, ev, self) => ev.noncombat && !!ev.src && ev.src.ctrl === self.ctrl && ev.target instanceof MTG.Player && ev.target !== self.ctrl,
       run: (g, evt, src) => {
         if (evt.noncombat && evt.src && evt.src.ctrl === src.ctrl && evt.target instanceof MTG.Player && evt.target !== src.ctrl) return evt.n + 2;
         return evt.n;

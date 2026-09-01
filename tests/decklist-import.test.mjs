@@ -79,7 +79,8 @@ test('svaka generička Oracle batch karta može ući u legalan 100-card custom d
     const game = new MTG.Game({ seed: 3, paced: false, maxTurns: 2 });
     const player = game.addPlayer('Probe', imported.deck, null, true);
     game.buildDeck(player, imported.deck, MTG.DEFS, imported.commanders);
-    const instance = player.library.find(card => card.name === name);
+    const printed = MTG.DEFS[name] && MTG.DEFS[name].name;
+    const instance = player.library.find(card => card.name === name || card.name === printed);
     assert.ok(instance, `${name}: CardInst in imported deck`);
     assert.equal(instance.def.oracle, MTG.CARD_CATALOG[name].oracleText, `${name}: exact Oracle survives deck import`);
   }

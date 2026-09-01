@@ -180,9 +180,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const target = ctx.data.card; if (ctx.src.zone !== 'battlefield' || target.zone !== 'battlefield') return;
         const originalName = ctx.src.name;
-        if (!ctx.src.meta.characteristicOriginalDef) ctx.src.meta.characteristicOriginalDef = ctx.src.def;
-        const base = target.isCopyOf || target.def; ctx.src.meta.temporaryCopyTurn = ctx.g.turnNo; ctx.src.isCopyOf = base;
-        ctx.src.def = Object.assign({}, base, { name: originalName, super: [...new Set([...(base.super || []), 'Legendary'])] });
+        const base = target.isCopyOf || target.def;
+        MTG.OracleV8Copies.applyCopy(ctx.g,ctx.src,Object.assign({},base,{name:originalName,super:[...new Set([...(base.super||[]),'Legendary'])]}),{duration:'eot',controller:ctx.you});
         ctx.g.recalc();
       } }],
   };

@@ -113,6 +113,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Academy Manufactor'] = {
     replace: [{
       event: 'createToken',
+      applies: (g, defs) => defs.some(d => typeof d === 'string' ? ['clue', 'food', 'treasure'].includes(d.toLowerCase()) : d?.subtypes?.some(s => ['Clue', 'Food', 'Treasure'].includes(s))),
       run: (g, defs, ctrl, src) => {
         const out = [];
         for (const d of defs) {
@@ -142,6 +143,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Chatterfang, Squirrel General'] = {
     replace: [{
       event: 'createToken',
+      applies: (g, defs) => defs.length > 0,
       run: (g, defs, ctrl, src) => {
         const extra = defs.length;
         const out = defs.slice();

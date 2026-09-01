@@ -481,13 +481,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     E.pumpUntilEOT(ctx.g, ctx.src, 1, 1);
   }
 
-  MTG.buildDefs = function (rawCards, scripts) {
+  MTG.buildDefs = function (rawCards, scripts, options = {}) {
     // Skup stvarnih tipova stvorenja iz baze — koristi ga CardInst.hasSub da
     // "svaki tip stvorenja" (changeling, Maskwood Nexus) ne obuhvati i
     // Aura/Equipment/Vehicle i slične ne-creature podtipove.
     // Karte tipa "Kindred Enchantment — Treefolk Aura" nose i jedno i drugo, pa
     // se podtipovi koji se pojavljuju na ne-stvorenjima oduzimaju.
-    {
+    if (options.registerTypes !== false) {
       const creature = new Set(), other = new Set();
       const collectSubtypes = (definition, includeKindred = false) => {
         const t = definition.types || [];
@@ -495,6 +495,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const s of definition.subtypes || []) (isCre ? creature : other).add(s);
       };
       for (const raw of Object.values(rawCards)) collectSubtypes(raw, true);
+      for (const script of Object.values(scripts || {})) {
+        for (const face of script.oracleFaces?.faces || []) collectSubtypes(face.def, true);
+      }
       // Token-only creature types (for example Spawn) are still creature
       // types for Changeling. Include both named and inline Oracle tokens,
       // while noncreature token subtypes stay outside the creature vocabulary.
@@ -510,6 +513,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     const defs = {};
     for (const [name, raw] of Object.entries(rawCards)) {
+      if (scripts[name]?.oracleFaces) {
+        // The two faces already passed this loader independently. Applying
+        // keyword-derived triggers again would give the front extra Prowess.
+        defs[name] = Object.assign({}, raw, scripts[name]);
+        continue;
+      }
       const d = Object.assign({}, raw);
       d.kws = d.kws || [];
       const oracle = (d.oracle || '');
@@ -519,6 +528,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const line of lines) {
         const clean = line.replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
         if (!clean) continue;
+        if (clean === 'ascend') d.oracleAscend = true;
         // Oracle keyword linije koriste i zarez i tačka-zarez (npr.
         // "Trample; haste; shroud"). Import certifikacija i runtime loader
         // moraju segmentirati isti kompletan rules core.

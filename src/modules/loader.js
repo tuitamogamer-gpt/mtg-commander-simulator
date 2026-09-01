@@ -70,6 +70,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const o = (def && def.oracle) || '';
     const sub = (def && def.subtypes) || [];
     const sup = (def && def.super) || [];
+    const types = (def && def.types) || [];
     const t = { kind: null, label: null, with: null };
     let m;
     if ((m = /^Partner with ([^(\n]+?)\s*(?:\(|$)/m.exec(o))) { t.kind = 'with'; t.with = m[1].trim().replace(/\.$/, ''); }
@@ -78,8 +79,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     else if (/^Friends forever/m.test(o)) { t.kind = 'named'; t.label = 'Friends forever'; }
     else if (/Doctor's companion/i.test(o)) { t.kind = 'doctorsCompanion'; }
     else if (/Choose a Background/i.test(o)) { t.kind = 'background'; }
-    t.isBackground = sub.indexOf('Background') >= 0;
-    t.isDoctor = sub.indexOf('Doctor') >= 0 && sup.indexOf('Legendary') >= 0;
+    t.isBackground = sub.indexOf('Background') >= 0 && sup.indexOf('Legendary') >= 0 && types.indexOf('Enchantment') >= 0;
+    // Doctor's companion names the Doctor, not every legendary object with
+    // Doctor among its subtypes: it must be a Time Lord Doctor creature with
+    // no additional creature types.
+    t.isDoctor = sup.indexOf('Legendary') >= 0 && types.indexOf('Creature') >= 0 &&
+      sub.length === 3 && sub.indexOf('Time') >= 0 && sub.indexOf('Lord') >= 0 && sub.indexOf('Doctor') >= 0;
     return t;
   };
 
@@ -119,7 +124,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const sup = def.super || [], o = def.oracle || '';
     if (def.canBeCommanderExtra) return true;
     if (/can be your commander/i.test(o)) return true;
-    if ((def.subtypes || []).indexOf('Background') >= 0) return true;
+    if ((def.subtypes || []).indexOf('Background') >= 0)
+      return sup.indexOf('Legendary') >= 0 && (def.types || []).indexOf('Enchantment') >= 0;
     return sup.indexOf('Legendary') >= 0 && (def.types || []).indexOf('Creature') >= 0;
   };
 

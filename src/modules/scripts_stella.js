@@ -566,14 +566,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       if (!picked.length) return;
       const t = picked[0];
-      const original = card.def;
       const base = t.isCopyOf || t.def;
-      card.meta.cursedMirrorOriginal = original;
-      card.meta.cursedMirrorTurn = g.turnNo;
-      card.def = Object.assign({}, base, {
+      MTG.OracleV8Copies.applyCopy(g,card,Object.assign({},base,{
         kws: [...new Set([...(base.kws || []), 'haste'])],
-      });
-      card.isCopyOf = base;
+      }),{duration:'eot',controller:card.ctrl});
       g.recalc();
       g.lg(`Cursed Mirror postaje potpuna kopija ${t.name} do kraja poteza.`);
     },

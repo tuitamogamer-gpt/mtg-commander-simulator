@@ -20,6 +20,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ? owner.game._nextCardIid++
           : IID++;
       this.def = def;               // merged def+script (immutable)
+      this.oracleFaces = def.oracleFaces || null;
+      this.oracleFace = this.oracleFaces ? def.oracleFace || 'front' : null;
+      this.oracleTransformCount = 0;
       this.owner = owner;           // player
       this.ctrl = owner;            // controller
       this.zone = 'library';
@@ -32,7 +35,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.attachedTo = null;       // iid
       this.attachments = [];        // iids
       this.isToken = false;
-      this.isCopyOf = null;
+      this._isCopyOf = null;
+      this.copyEpoch = 0;
       this.faceDown = false;
       this.meta = {};               // script scratch space (persists while on battlefield)
       this.timestamp = 0;
@@ -49,7 +53,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.castMeta = null;         // how it was cast (for blitz etc.)
       this.phasedOut = false;       // ostaje fizički na battlefieldu, ali ne postoji u igri
     }
+    get isCopyOf(){return this._isCopyOf;}
+    set isCopyOf(value){this._isCopyOf=value;this.copyEpoch=(this.copyEpoch||0)+1;}
     is(type) {
+      if(this.zone==='stack'&&this.castMeta?.alt?.bestow)return type==='Enchantment';
       if(this.zone==='stack'&&this.castMeta?.alt?.adventure&&this.def.adventure){
         return String(this.def.adventure.types||'').split(/[\s,]+/).includes(type);
       }
@@ -65,6 +72,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         : this.def.types.includes(type);
     }
     hasSub(s) {
+      if(this.zone==='stack'&&this.castMeta?.alt?.bestow)return s==='Aura';
       if(this.zone==='stack'&&this.castMeta?.alt?.adventure&&this.def.adventure)return s===(this.castMeta.alt.omen?'Omen':'Adventure');
       // Derived characteristics belong to the battlefield object. Once the
       // card changes zones, printed characteristics (including characteristic-
@@ -138,6 +146,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     constructor(name, idx) {
       this.name = name; this.idx = idx;
       this.life = 40;
+      this.startingLife = 40;
       this.library = []; this.hand = []; this.graveyard = []; this.exile = []; this.command = [];
       this.pool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
       this.coloredOnlyPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
@@ -163,7 +172,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return {
         spellsCast: 0, nonCreatureSpells: 0, spellsCastList: [], lifeGained: 0, lifeLost: 0, lifeLossEvents: 0,
         manaSpentOnSpells: 0, expendFired: {}, landsEntered: 0, tokensCreated: 0,
-        cardsFromHandLibraryToGraveyard: 0,
+        cardsFromHandLibraryToGraveyard: 0, descended: 0,
+        nonlandPermanentsEntered: 0, permanentEntries: [],
         permanentsLeftBattlefield: 0,
         creaturesDiedUnder: 0, drewThisTurn: 0, firstSpellDone: false, secondSpellDone: false,
         gainedLifeFirst: false, attackedMe: [], artifactAbilitiesActivated: 0, targetedAbilitiesActivated: 0, combatDamageHits: [],
@@ -705,7 +715,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     snapshot(card,includeAttachments=true) {
       const derived=card.zone==='battlefield'&&card.cur;
       return {
-        iid: card.iid, timestamp: card.timestamp, name: card.name, def: card.def, ctrl: card.ctrl, owner: card.owner,
+        iid: card.iid, timestamp: card.timestamp, name: card.name, def: card.def, ctrl: card.ctrl, owner: card.owner, copyEpoch:card.copyEpoch||0, copying:!!card.isCopyOf,
+        oracleFaces: card.oracleFaces, oracleFace: card.oracleFace,
         isToken: card.isToken, power: card.power, toughness: card.toughness,
         tapped: !!card.tapped, blocking: card.blocking,
         enchanted: card.attachments.some(id => this.byIid(id)?.hasSub('Aura')),
@@ -731,6 +742,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async move(card, toZone, opts = {}) {
       const fromZone = card.zone;
+      const oracleFace = MTG.OracleV8Faces?.moveFace(card, toZone, opts);
+      if (oracleFace === false) return card;
       const wasBattlefield = fromZone === 'battlefield';
       const snap = opts.battlefieldSnapshot || (wasBattlefield&&(this._simultaneousLeaveSources||[]).find(entry=>entry.card===card)?.snap) || this.snapshot(card);
 
@@ -819,7 +832,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // entrant after the same physical card blinks more than once.
         if (!card.battlefieldLKI) card.battlefieldLKI = new Map();
         card.battlefieldLKI.set(card.zoneVersion, {
-          iid: card.iid, zoneVersion: card.zoneVersion, timestamp: snap.timestamp,
+          iid: card.iid, zoneVersion: card.zoneVersion, timestamp: snap.timestamp, def:snap.def, copyEpoch:snap.copyEpoch, copying:snap.copying,
+          oracleFaces:snap.oracleFaces,oracleFace:snap.oracleFace,
           power: snap.power, toughness: snap.toughness,
           enteredTurn:snap.enteredTurn,attackedTurn:snap.attackedTurn,
           name:snap.name,types:snap.types.slice(),subtypes:snap.subtypes.slice(),super:snap.super.slice(),colors:snap.colors.slice(),kw:snap.kw.slice(),
@@ -870,8 +884,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             // the Aura enchanted so its graveyard trigger can use LKI.
             a.meta = a.meta || {};
             a.meta._lastAttachedTo = card.iid;
-            a.attachedTo = null;
-            if (a.hasSub('Aura')) await this.move(a, 'graveyard');
+            const bestowed = MTG.OracleV8Permanents?.isBestowed(a);
+            if (bestowed) MTG.OracleV8Permanents.ceaseBestow(this, a);
+            else {
+              a.attachedTo = null;
+              // A simultaneous departure already includes its attached Auras;
+              // their own move must keep the instruction's destination.
+              if (a.hasSub('Aura')&&!(this._simultaneousLeaveSources||[]).some(entry=>entry.card===a)) await this.move(a, 'graveyard');
+            }
           }
         }
         card.attachments = [];
@@ -880,6 +900,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (host) host.attachments = host.attachments.filter(i => i !== card.iid);
           card.attachedTo = null;
         }
+        if (MTG.OracleV8Permanents?.isBestowed(card)) MTG.OracleV8Permanents.ceaseBestow(this, card);
       }
 
       card.tapped = opts.tapped || false;
@@ -895,6 +916,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.def = card.meta.characteristicOriginalDef;
         card.isCopyOf = null;
         delete card.meta.characteristicOriginalDef;
+      }
+      // Keep departure LKI above; the new object uses the selected entry face,
+      // or the front face in every zone other than the Stack/battlefield.
+      if (oracleFace) {
+        const face = ['battlefield', 'stack'].includes(toZone) ? oracleFace : 'front';
+        if (toZone === 'battlefield' && opts.faceDownDef) card.oracleFace = 'front';
+        else MTG.OracleV8Faces.setFace(card, face);
+        if (fromZone !== toZone) card.oracleTransformCount = 0;
       }
       // card.meta se NAMJERNO ne briše pri odlasku sa bojnog polja: "leaves the
       // battlefield"/"dies" trigeri se tek stavljaju na stack i rezolviraju se
@@ -921,9 +950,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.sick = true;
         // "Tapped and attacking" je karakteristika samog ulaska, ne izmjena
         // nakon ETB događaja. ETB filteri zato odmah moraju vidjeti napadača.
-        if (opts.attacking && this.combat) {
+        if (opts.attacking && this.combat && card.ctrl===this.turnPlayer && card.is('Creature')) {
           card.attacking = opts.attacking;
-          card.sick = false;
           if (!this.combat.attackers.includes(card)) this.combat.attackers.push(card);
         }
         // CR 400.7: permanent koji uđe na bojno polje je NOV objekat — svjež meta.
@@ -963,6 +991,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           card.faceDown = true;
         }
         card.meta._enteredTurn = this.turnNo;
+        card.ctrl.turnState.permanentEntries.push({iid:card.iid,zoneVersion:card.zoneVersion,creature:card.is('Creature'),nonland:!card.is('Land')});
+        if(!card.is('Land'))card.ctrl.turnState.nonlandPermanentsEntered++;
         if (card.hasSub && card.hasSub('Elf')) card.ctrl.turnState.elfEntries.push(card.iid);
         await this.handleETB(card, opts);
         if (enteredAttachedTo) await this.emitBattlefieldEntry('attached', { att: card, host: enteredAttachedTo });
@@ -1006,6 +1036,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // per-card cardToGraveyard/LTB events above.  Simultaneous helpers open a
       // batch; an isolated move is a one-card batch of its own.
       if (toZone === 'graveyard' && fromZone !== 'graveyard' && !card.isToken) {
+        if(['Artifact','Battle','Creature','Enchantment','Land','Planeswalker'].some(type=>snap.types?.includes(type)))card.owner.turnState.descended++;
         if ((fromZone === 'hand' || fromZone === 'library') && card.owner && card.owner.turnState) {
           card.owner.turnState.cardsFromHandLibraryToGraveyard =
             (card.owner.turnState.cardsFromHandLibraryToGraveyard || 0) + 1;
@@ -1036,9 +1067,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async returnOracleExiles(){
       // CR 610.3: expiration creates an immediate one-shot effect, not a
       // delayed triggered ability. Remove records before nested moves.
+      if(this._simultaneousLeaveSources?.length)return;
       const expired=(this.oracleExileDurations||[]).filter(row=>row.source.zone!=='battlefield'||row.source.zoneVersion!==row.sourceZoneVersion);
       this.oracleExileDurations=(this.oracleExileDurations||[]).filter(row=>!expired.includes(row));
-      for(const row of expired)for(const {card,zoneVersion}of row.cards)if(card.zone==='exile'&&card.zoneVersion===zoneVersion)await this.putPermanentOntoBattlefield(card,card.owner);
+      const returning=[...new Set(expired.flatMap(row=>row.cards).filter(({card,zoneVersion})=>card.zone==='exile'&&card.zoneVersion===zoneVersion).map(row=>row.card))];
+      if(returning.length)await this.withBattlefieldEntryBatch(async()=>{for(const card of returning)await this.putPermanentOntoBattlefield(card,card.owner);});
     }
 
     async withGraveyardEntryBatch(run) {
@@ -1319,6 +1352,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       this.recalc();
       const evData = { card, ctrl: card.ctrl };
+      // CR 506.3: continuous entry effects can make the would-be attacker
+      // a noncreature. Entry triggers must already observe that outcome.
+      if(card.attacking&&(!card.is('Creature')||card.ctrl!==this.turnPlayer)){
+        card.attacking=null;
+        if(this.combat)this.combat.attackers=this.combat.attackers.filter(attacker=>attacker!==card);
+      }
       // Generic counter event preserves the actual kind. Cards such as
       // Captain Marvel must copy shield/charge/etc. counters, not only +1/+1.
       for (const event of entryCounterEvents) {
@@ -1384,16 +1423,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!Array.isArray(spec)) for (let i = 0; i < n; i++) defs.push(spec);
       // token replacements (Academy Manufactor, Chatterfang)
       if (!opts.noReplace) {
-        const pending = this.replacers('createToken').filter(r => r.ctrl === ctrl);
-        // Svaka Kaya -2 je zaseban replacement effect. Uključi ih u isti
-        // redoslijed kao ostale token replacere i primijeni svaku (x2, x4...).
-        for (const effect of this.untilEffects.filter(e => e.kind === 'tokenDouble' && e.who === ctrl)) {
-          pending.push({
-            ctrl, src: effect.sourceCard || null, label: effect.label || 'Kaya, Geist Hunter',
-            run: async (g, current) => current.concat(current.slice()),
-          });
-        }
-        while (pending.length) {
+        const used = new Set();
+        while (defs.length) {
+          // A previously inapplicable effect can become applicable after a
+          // different replacement changes the proposed tokens (CR 616.1f).
+          const pending = this.replacers('createToken').filter(r => r.ctrl === ctrl && !used.has(r.key) && (!r.applies || r.applies(this, defs, ctrl, r.src)));
+          for (const effect of this.untilEffects.filter(e => e.kind === 'tokenDouble' && e.who === ctrl && !used.has(e))) {
+            pending.push({
+              key: effect, ctrl, src: effect.sourceCard || null, label: effect.label || 'Kaya, Geist Hunter',
+              run: async (g, current) => current.concat(current.slice()),
+            });
+          }
+          if (!pending.length) break;
           let index = 0;
           if (pending.length > 1 && ctrl.controller && ctrl.controller.decide) {
             const picked = await ctrl.controller.decide(this, {
@@ -1405,11 +1446,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               })),
               aiHint: { kind: 'tokenReplacementOrder', defs: defs.slice(), replacements: pending.slice() },
             });
-            const chosen = Number.parseInt(picked, 10);
-            if (Number.isInteger(chosen) && chosen >= 0 && chosen < pending.length) index = chosen;
+            const chosen = pending.findIndex((entry, i) => String(i) === String(picked));
+            if (chosen < 0) throw new Error('Invalid mandatory token replacement choice');
+            index = chosen;
           }
-          const [r] = pending.splice(index, 1);
-          defs = await r.run(this, defs, ctrl, r.src) || defs;
+          const r = pending[index];
+          used.add(r.key);
+          const result = await r.run(this, defs, ctrl, r.src);
+          if (!Array.isArray(result)) throw new Error('Invalid token replacement result');
+          defs = result;
         }
       }
       const made = [];
@@ -1418,14 +1463,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!def) { continue; }
         const c = new CardInst(def, ctrl);
         c.isToken = true;
-        if (opts.copyOf) c.isCopyOf = opts.copyOf;
+        if (opts.copyOf && (Array.isArray(spec) ? spec.includes(sp) : sp === spec)) c.isCopyOf = def;
         c.zone = 'nowhere';
         const attackTarget = typeof opts.chooseAttacking === 'function'
           ? await opts.chooseAttacking(this, c, made.length, opts.attacking)
           : opts.attacking;
         await this.move(c, 'battlefield', {
           ctrl, tapped: opts.tapped, attacking: attackTarget,
-          castMeta: opts.castMeta, entryMeta: opts.entryMeta,
+          castMeta: opts.castMeta, entryMeta: opts.entryMeta, attachTo: opts.attachTo,
         });
         if (opts.haste) c.meta.tempHaste = true;
         made.push(c);
@@ -1462,6 +1507,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async putFaceDown(player, card, kind = 'manifest') {
       if (!player || !card) return null;
+      if (card.oracleFaces && card.zone === 'battlefield') return null;
       const originalDef = card.def;
       card.def = this.faceDownCreatureDef(kind);
       await this.move(card, 'battlefield', {
@@ -1565,17 +1611,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async copyPermanentToken(orig, ctrl, opts = {}) {
-      const base = orig.isCopyOf ? orig.isCopyOf : orig.def;
-      const def = Object.assign({}, base);
-      if (opts.modPT) { def.power = String(opts.modPT[0]); def.toughness = String(opts.modPT[1]); }
-      if (opts.nonlegendary) def.super = (def.super || []).filter(type => type !== 'Legendary');
-      if (opts.copyKeywords) def.kws = [...new Set([...(def.kws || []), ...opts.copyKeywords])];
-      if (opts.addSubtypes) def.subtypes = [...new Set([...(def.subtypes || []), ...opts.addSubtypes])];
-      if (opts.name) def.name = opts.name;
+      const modify = base => {
+        const def = Object.assign({}, base);
+        if (opts.modPT) { def.power = String(opts.modPT[0]); def.toughness = String(opts.modPT[1]); }
+        if (opts.nonlegendary) def.super = (def.super || []).filter(type => type !== 'Legendary');
+        if (opts.copyKeywords) def.kws = [...new Set([...(def.kws || []), ...opts.copyKeywords])];
+        if (opts.addSubtypes) def.subtypes = [...new Set([...(def.subtypes || []), ...opts.addSubtypes])];
+        if (opts.name) def.name = opts.name;
+        return def;
+      };
+      const def = MTG.OracleV8Faces
+        ? MTG.OracleV8Faces.copyTokenDefinition(orig, modify)
+        : modify(orig.isCopyOf || orig.def);
       const made = await this.makeTokens(def, ctrl, {
         n: opts.n === undefined ? 1 : opts.n, copyOf: def, tapped: opts.tapped, attacking: opts.attacking,
         chooseAttacking: opts.chooseAttacking, noReplace: opts.noReplace, haste: opts.haste,
-        castMeta: opts.castMeta, entryMeta: opts.entryMeta,
+        castMeta: opts.castMeta, entryMeta: opts.entryMeta, attachTo: opts.attachTo,
       });
       return made;
     }
@@ -1632,18 +1683,44 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // ============================================================
     // Life / damage / draw
     // ============================================================
+    async chooseReplacement(player, candidates, event, n) {
+      if (candidates.length === 1) return candidates[0];
+      const options = candidates.map((entry, index) => ({
+        key: String(index), label: entry.label || entry.src?.name || 'Replacement effect',
+        source: entry.src || null,
+      }));
+      const choice = await player.controller.decide(this, {
+        type: 'chooseOption', prompt: 'Choose the next replacement or prevention effect', options,
+        aiHint: {kind: 'replacementOrder', event, amount: n},
+      });
+      const index = options.findIndex(option => option.key === String(choice));
+      if (index < 0) throw new Error('Invalid mandatory replacement choice');
+      return candidates[index];
+    }
+
     async gainLife(p, n, srcCard) {
       if (n <= 0 || p.lost) return 0;
       // can't gain life?
       for (const c of this.bf()) {
+        if (c.cur?.abilitiesDisabled) continue;
         if (c.def.noLifegain === 'all') return 0;
         if (c.def.noLifegain === 'opps' && c.ctrl !== p) return 0;
       }
-      for (const r of this.replacers('lifegain')) if (r.ctrl === p) n = r.run(this, n, p, r.src);
+      const used = new Set();
+      while (n > 0) {
+        const candidates = this.replacers('lifegain').filter(r => r.ctrl === p && !used.has(r.key) && (!r.applies || r.applies(this, n, p, r.src)));
+        if (!candidates.length) break;
+        const selected = await this.chooseReplacement(p, candidates, 'lifegain', n);
+        used.add(selected.key);
+        n = await selected.run(this, n, p, selected.src);
+        if (!Number.isFinite(n) || n < 0) throw new Error('Invalid life replacement result');
+      }
+      if (!(n > 0)) return 0;
       p.life += n;
       const first = !p.turnState.gainedLifeFirst;
       p.turnState.gainedLifeFirst = true;
       p.turnState.lifeGained += n;
+      this.recalc();
       this.note('life', { p });
       await this.emit('lifeGain', { player: p, n, first, srcCard });
       return n;
@@ -1692,6 +1769,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       p.life -= n;
       p.turnState.lifeLost += n;
       p.turnState.lifeLossEvents++;
+      this.recalc();
       this.note('life', { p });
       await this.emit('lifeLost', { player: p, n, events: p.turnState.lifeLossEvents });
       return n;
@@ -1720,78 +1798,47 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await this.reviewGlobalEffectWithHuman({
         effectKind: 'damageAllOpponents', source: src, controller, targets, amount: n,
       });
-      let total = 0;
-      const damageOpts = Object.assign({}, opts, { deferSBA: true });
-      for (const target of targets) total += await this.damagePlayer(src, target, n, damageOpts);
-      if (!opts.deferSBA) await this.checkSBA();
+      return this.damageBatch(targets.map(target=>({src,target,n})),opts);
+    }
+
+    damageSourceTrait(src,keyword,opts={}){
+      const traits=opts._damageBatch?.traits.get(src);
+      return traits?traits.keywords.has(keyword):!!src?.kw?.(keyword);
+    }
+    async applyDamageLifelink(src,n,opts={}){
+      if(!this.damageSourceTrait(src,'lifelink',opts))return;
+      if(opts._damageBatch){const batch=opts._damageBatch;batch.lifelink.set(src,(batch.lifelink.get(src)||0)+n);}
+      else await this.gainLife(src.ctrl,n,src);
+    }
+    async damageBatch(hits,opts={}){
+      // A single instruction damages each recipient once per source. Snapshot
+      // amounts and source keywords before wither/counters change the board.
+      const grouped=[],batch={traits:new Map(),lifelink:new Map(),snapshots:new Map()};
+      for(const hit of hits){
+        if(!hit.target||!(hit.n>0))continue;
+        const existing=grouped.find(row=>row.src===hit.src&&row.target===hit.target);
+        if(existing)existing.n+=hit.n;else grouped.push({...hit});
+        if(hit.src&&!batch.traits.has(hit.src))batch.traits.set(hit.src,{controller:hit.src.ctrl,keywords:new Set(['lifelink','deathtouch','wither','infect'].filter(keyword=>hit.src.kw?.(keyword)))});
+        if(hit.src instanceof CardInst&&!batch.snapshots.has(hit.src))batch.snapshots.set(hit.src,hit.src._oracleDamageSnapshot||this.snapshot(hit.src,false));
+      }
+      const previous=this._damageEventQueue,events=[];this._damageEventQueue=events;
+      let total=0;
+      try{
+        for(const hit of grouped)total+=await this.damageAny(hit.src,hit.target,hit.n,{...opts,...hit.opts,_damageBatch:batch,deferSBA:true});
+        for(const [src,n]of batch.lifelink)await this.gainLife(batch.traits.get(src).controller,n,src);
+      }finally{this._damageEventQueue=previous;}
+      if(previous)previous.push(...events);else for(const event of events)await this.emit(event.name,event.data);
+      if(!opts.deferSBA)await this.checkSBA();
       return total;
     }
 
     async damagePlayer(src, p, n, opts = {}) {
       if (n <= 0 || p.lost) return 0;
-      const preventionAllowed = !this.bf().some(card => card.def.damageCantBePrevented);
-      if (preventionAllowed && opts.combat && src && src.is && src.is('Creature') && !src.hasSub('Elf') &&
-        this.untilEffects.some(e => e.kind === 'preventNonElfCombat')) {
-        this.lg(`Galadhrim Ambush prevents combat damage from ${src.name}.`);
-        await this.emit('damagePrevented', { src, target: p, player: p, n, combat: true });
-        return 0;
+      if (!opts._damageReplacementsDone) {
+        n = await this.applyDamageReplacements(src, p, n, opts);
+        if (n > 0 && opts._damageFinalTarget !== p) return this.damageAny(src, opts._damageFinalTarget, n, {...opts, _damageReplacementsDone: true});
       }
-      if (preventionAllowed && opts.combat && this.untilEffects.some(e => e.kind === 'preventAllCombat')) {
-        this.lg(`Combat damage to ${p.name} was prevented.`);
-        await this.emit('damagePrevented', { src, target: p, player: p, n, combat: true });
-        return 0;
-      }
-      // prevencije i preusmjerenja (Selfless Squire, Comeuppance, Deflecting Palm, Gideon's Sacrifice, Take the Bait)
-      for (const e of this.untilEffects.slice()) {
-        if (e.who !== p) continue;
-        if ((e.kind === 'redirectToCreature' || e.kind === 'redirectAllDamage') &&
-          !(opts._appliedRedirects && opts._appliedRedirects.has(e))) {
-          const c = this.byIid(e.iid);
-          if (c && c.zone === 'battlefield') {
-            this.lg(`Damage redirected to ${c.name}.`);
-            const applied = new Set(opts._appliedRedirects || []); applied.add(e);
-            return this.damageCreature(src, c, n, Object.assign({}, opts, { _appliedRedirects: applied }));
-          }
-          continue;
-        }
-        if (preventionAllowed && e.kind === 'comeuppance' && src && src.ctrl !== p) {
-          this.lg(`Comeuppance prevents ${n} damage to ${p.name}.`);
-          await this.emit('damagePrevented', { src, target: p, player: p, n, combat: !!opts.combat });
-          if (src.is && src.is('Creature')) {
-            await this.damageCreature(e.sourceCard || null, src, n, Object.assign({}, opts, { combat: false }));
-          } else if (src.ctrl) {
-            await this.damagePlayer(e.sourceCard || null, src.ctrl, n, Object.assign({}, opts, { combat: false }));
-          }
-          return 0;
-        }
-        if (preventionAllowed && e.kind === 'preventCombatToPlayer' && opts.combat) {
-          this.lg(`Damage to ${p.name} was prevented.`);
-          await this.emit('damagePrevented', { src, target: p, player: p, n, combat: true });
-          return 0;
-        }
-        if (preventionAllowed && e.kind === 'preventToPlayer') {
-          this.lg(`Damage to ${p.name} was prevented.`);
-          await this.emit('damagePrevented', { src, target: p, player: p, n, combat: !!opts.combat });
-          if (e.reflectCreatures && src && src.is && src.is('Creature')) await this.damageCreature(null, src, n, {});
-          return 0;
-        }
-        if (preventionAllowed && e.kind === 'preventNextToPlayer' && (!e.source || e.source === src)) {
-          this.untilEffects.splice(this.untilEffects.indexOf(e), 1);
-          this.lg(`The next damage to ${p.name} was prevented.`);
-          await this.emit('damagePrevented', { src, target: p, player: p, n, combat: !!opts.combat });
-          if (e.reflectToController && src && src.ctrl) {
-            // Deflecting Palm: šteta ide kontroloru izvora, ma šta izvor bio
-            await this.damagePlayer(e.sourceCard || null, src.ctrl, n, Object.assign({}, opts, { combat: false }));
-          } else if (e.reflect && src) {
-            if (src.is && src.is('Creature')) await this.damageCreature(null, src, n, {});
-            else if (src && src.ctrl) await this.damagePlayer(null, src.ctrl, n, {});
-          }
-          return 0;
-        }
-      }
-      n = this.applyDamageReplacements(src, p, n, opts);
-      for(const prevented of opts._oraclePreventionEvents||[])await this.emit('damagePrevented',{src,target:p,player:p,n:prevented,combat:!!opts.combat});
-      if (n <= 0) return 0;
+      if (!(n > 0)) { if (!opts.deferSBA) await this.checkSBA(); return 0; }
       this.lg(`${src ? src.name : 'Source'} deals ${n} damage to ${p.name}.`, 'dmg');
       if (opts.combat && src && src.commander) {
         p.commanderDamage[src.iid] = (p.commanderDamage[src.iid] || 0) + n;
@@ -1803,7 +1850,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await this.becomeMonarch(src.ctrl, { reason: 'combat damage', source: src });
       }
       p.turnState.damageTaken = (p.turnState.damageTaken || 0) + n;
-      const infect = !!(src && src.kw && src.kw('infect'));
+      const infect = this.damageSourceTrait(src,'infect',opts);
       const toxic = opts.combat && src && !(src.cur && src.cur.abilitiesDisabled)
         ? Math.max(0, Number(src.def && src.def.toxic) || 0) : 0;
       if (infect) {
@@ -1814,7 +1861,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         p.poison = (p.poison || 0) + toxic;
         this.lg(`${p.name} gets ${toxic} poison counter${toxic === 1 ? '' : 's'} (toxic).`, 'dmg');
       }
-      if (src && src.kw && src.kw('lifelink')) await this.gainLife(src.ctrl, n, src);
+      await this.applyDamageLifelink(src,n,opts);
       if (!infect) await this.loseLife(p, n, 'damage');
       this.note('gameEffect', {
         kind: 'damage', targetKind: 'player', target: p, targetPlayer: p,
@@ -1828,64 +1875,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async damageCreature(src, target, n, opts = {}) {
       if (n <= 0 || target.zone !== 'battlefield') return 0;
-      const preventionAllowed = !this.bf().some(card => card.def.damageCantBePrevented);
-      if (preventionAllowed && opts.combat && src && src.is && src.is('Creature') && !src.hasSub('Elf') &&
-        this.untilEffects.some(e => e.kind === 'preventNonElfCombat')) {
-        this.lg(`Galadhrim Ambush prevents combat damage from ${src.name}.`);
-        await this.emit('damagePrevented', { src, target, n, combat: true });
-        return 0;
+      if (!opts._damageReplacementsDone) {
+        n = await this.applyDamageReplacements(src, target, n, opts);
+        if (n > 0 && opts._damageFinalTarget !== target) return this.damageAny(src, opts._damageFinalTarget, n, {...opts, _damageReplacementsDone: true});
       }
-      if (preventionAllowed && opts.combat && this.untilEffects.some(e => e.kind === 'preventAllCombat')) {
-        this.lg(`Combat damage to ${target.name} was prevented.`);
-        await this.emit('damagePrevented', { src, target, n, combat: true });
-        return 0;
-      }
-      if (preventionAllowed && this.isProtectedFrom(target, src)) {
-        this.lg(`${target.name}: protection prevents damage from ${src ? src.name : 'the source'}.`);
-        await this.emit('damagePrevented', { src, target, n, combat: !!opts.combat });
-        return 0;
-      }
-      for (const e of this.untilEffects.slice()) {
-        if (e.kind === 'redirectAllDamage' && e.who === target.ctrl && e.iid !== target.iid &&
-          !(opts._appliedRedirects && opts._appliedRedirects.has(e))) {
-          const chosen = this.byIid(e.iid);
-          if (chosen && chosen.zone === 'battlefield') {
-            this.lg(`Damage from ${target.name} was redirected to ${chosen.name}.`);
-            const applied = new Set(opts._appliedRedirects || []); applied.add(e);
-            return this.damageCreature(src, chosen, n, Object.assign({}, opts, { _appliedRedirects: applied }));
-          }
-        }
-        if (preventionAllowed && e.kind === 'comeuppance' && target.is('Planeswalker') &&
-          e.who === target.ctrl && src && src.ctrl !== e.who) {
-          this.lg(`Comeuppance prevents ${n} damage to planeswalker ${target.name}.`);
-          await this.emit('damagePrevented', { src, target, n, combat: !!opts.combat });
-          if (src.is && src.is('Creature')) {
-            await this.damageCreature(e.sourceCard || null, src, n, Object.assign({}, opts, { combat: false }));
-          } else if (src.ctrl) {
-            await this.damagePlayer(e.sourceCard || null, src.ctrl, n, Object.assign({}, opts, { combat: false }));
-          }
-          return 0;
-        }
-      }
-      n = this.applyDamageReplacements(src, target, n, opts);
-      for(const prevented of opts._oraclePreventionEvents||[])await this.emit('damagePrevented',{src,target,n:prevented,combat:!!opts.combat});
-      if (n <= 0) return 0;
-      // prevencija sve štete određenom stvorenju (Kurbis i sl.)
-      if (preventionAllowed && this.untilEffects.some(e => e.kind === 'preventToCreature' && e.iid === target.iid)) {
-        this.lg(`Damage to ${target.name} was prevented.`);
-        await this.emit('damagePrevented', { src, target, n, combat: !!opts.combat });
-        return 0;
-      }
-      // shield counter: upija jedan damage event
-      if (preventionAllowed && (target.counters['shield'] || 0) > 0) {
-        this.removeCounters(target, 'shield', 1);
-        this.lg(`${target.name}: a shield counter absorbs the damage.`);
-        await this.emit('damagePrevented', { src, target, n, combat: !!opts.combat });
-        await this.emit('shieldRemoved', { card: target });
-        return 0;
-      }
+      if (!(n > 0)) { if (!opts.deferSBA) await this.checkSBA(); return 0; }
       if (target.is('Battle')) {
         this.removeCounters(target, 'defense', Math.min(n, target.counters.defense || 0));
+        await this.applyDamageLifelink(src,n,opts);
         this.lg(`${src ? src.name : 'Source'} deals ${n} damage to battle ${target.name}.`, 'dmg');
         target.meta._lastDamageVisual = { turn: this.turnNo, sourceId: src && src.iid || 0 };
         this.note('gameEffect', {
@@ -1900,7 +1897,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (target.is('Planeswalker')) {
         this.removeCounters(target, 'loyalty', n);
         this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete planeswalkeru ${target.name}.`, 'dmg');
-        if (src && src.kw && src.kw('lifelink')) await this.gainLife(src.ctrl, n, src);
+        await this.applyDamageLifelink(src,n,opts);
         target.meta._lastDamageVisual = { turn: this.turnNo, sourceId: src && src.iid || 0 };
         this.note('gameEffect', {
           kind: 'damage', targetKind: 'permanent', target, targetCard: target,
@@ -1926,17 +1923,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // wither: šteta stvorenjima postaje -1/-1 counteri
       if(opts._oracleDamageRecipients&&target.is('Creature'))opts._oracleDamageRecipients.push({iid:target.iid,version:target.zoneVersion});
-      const wither = (src && src.kw && (src.kw('wither') || src.kw('infect'))) ||
+      const wither = this.damageSourceTrait(src,'wither',opts) || this.damageSourceTrait(src,'infect',opts) ||
         this.bf().some(x => x.def.allDamageWither);
       if (wither) {
-        if (src && src.kw && src.kw('lifelink')) await this.gainLife(src.ctrl, n, src);
+        await this.applyDamageLifelink(src,n,opts);
         this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete (wither → -1/-1): ${target.name}.`, 'dmg');
         await this.addM1(target, n, src ? src.ctrl : null, opts.deferSBA);
         target.meta._lastDamageVisual = { turn: this.turnNo, sourceId: src && src.iid || 0 };
         this.note('gameEffect', {
           kind: 'damage', targetKind: 'permanent', target, targetCard: target,
           source: src || null, amount: n, combat: !!opts.combat, wither: true,
-          infect: !!(src && src.kw && src.kw('infect')),
+          infect: this.damageSourceTrait(src,'infect',opts),
           combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
         });
         await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
@@ -1944,8 +1941,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return n;
       }
       target.damage += n;
-      if (src && src.kw && src.kw('deathtouch')) target.deathtouched = true;
-      if (src && src.kw && src.kw('lifelink')) await this.gainLife(src.ctrl, n, src);
+      if (this.damageSourceTrait(src,'deathtouch',opts)) target.deathtouched = true;
+      await this.applyDamageLifelink(src,n,opts);
       this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete: ${target.name}.`, 'dmg');
       target.meta._lastDamageVisual = { turn: this.turnNo, sourceId: src && src.iid || 0 };
       this.note('gameEffect', {
@@ -1966,30 +1963,113 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!deferSBA) await this.checkSBA();
     }
 
-    applyDamageReplacements(src, target, n, opts) {
-      opts._oraclePreventionEvents=[];
-      for (const r of this.replacers('damage')) {
-        if (r.prevent && this.bf().some(card => card.def.damageCantBePrevented)) continue;
-        const prior=n;
-        n = r.run(this, { src, target, n, combat: !!opts.combat, noncombat: !opts.combat }, r.src);
-        if(r.oraclePrevention&&n<prior)opts._oraclePreventionEvents.push(prior-n);
-      }
-      if (!this.bf().some(card => card.def.damageCantBePrevented)) {
-        for(const effect of this.untilEffects)if(effect.kind==='oracleDamagePrevention'){
-          const prior=n;
-          n=effect.run(this,{src,target,n,combat:!!opts.combat,noncombat:!opts.combat});
-          if(n<prior)opts._oraclePreventionEvents.push(prior-n);
+    async applyDamageReplacements(src, target, n, opts = {}) {
+      const data = {src, target, n, combat: !!opts.combat, noncombat: !opts.combat,
+        sourceSnapshot: opts._damageBatch?.snapshots?.get(src)};
+      const used = new Set(opts._appliedRedirects || []);
+      const prevented = async (amount, recipient = data.target) => {
+        if (!(amount > 0)) return;
+        this.note('gameEffect', {kind: 'damagePrevented', target: recipient, amount, source: src});
+        await this.emit('damagePrevented', {src, target: recipient,
+          ...(recipient instanceof Player ? {player: recipient} : {}), n: amount, combat: data.combat});
+      };
+      const reflect = async (effect, amount, creaturesOnly = false) => {
+        if (!(amount > 0) || !src) return;
+        const recipient = effect.reflectToController ? src.ctrl
+          : src.is?.('Creature') ? src : creaturesOnly ? null : src.ctrl;
+        if (!recipient) return;
+        // The effect's controller remains the controller of its damage source
+        // even after the physical spell card has returned to its owner's zone.
+        const reflectionSource = effect.sourceCard && effect.sourceCard.ctrl !== effect.who
+          ? Object.defineProperty(Object.create(effect.sourceCard), 'ctrl', {value: effect.who})
+          : effect.sourceCard || null;
+        await this.damageAny(reflectionSource, recipient, amount, {combat: false, deferSBA: true});
+      };
+      while (data.n > 0) {
+        const preventionAllowed = !this.bf().some(card => !card.cur?.abilitiesDisabled && card.def.damageCantBePrevented);
+        const candidates = [];
+        const add = entry => { if (!used.has(entry.key)) candidates.push(entry); };
+        for (const r of this.replacers('damage')) {
+          if (r.prevent && !preventionAllowed || r.applies && !r.applies(this, data, r.src)) continue;
+          add({key: 'permanent:' + r.key, src: r.src, label: r.label, apply: async () => {
+            const before = data.n;
+            data.n = await r.run(this, data, r.src);
+            if (!Number.isFinite(data.n) || data.n < 0) throw new Error('Invalid damage replacement result');
+            if (r.prevent || r.oraclePrevention) await prevented(before - data.n);
+          }});
         }
-        for (const shield of this.untilEffects) {
-          if (shield.kind !== 'oraclePreventNextAmount' || shield.target !== target ||
-              shield.zoneVersion !== target.zoneVersion || n <= 0 || shield.remaining <= 0) continue;
-          const prevented = Math.min(n, shield.remaining);
-          n -= prevented;
-          shield.remaining -= prevented;
-          this.note('gameEffect', { kind: 'damagePrevented', target, amount: prevented, source: src });
+        const affectedPlayer = data.target instanceof Player ? data.target : data.target?.ctrl || data.target?.owner;
+        for (const effect of this.untilEffects.slice()) {
+          const playerTarget = data.target instanceof Player;
+          const toAffectedPlayer = effect.who === affectedPlayer;
+          if ((effect.kind === 'redirectToCreature' && playerTarget || effect.kind === 'redirectAllDamage') && toAffectedPlayer && effect.iid !== data.target.iid) {
+            const recipient = this.byIid(effect.iid);
+            if (recipient?.zone === 'battlefield' && (effect.zoneVersion === undefined || recipient.zoneVersion === effect.zoneVersion)) {
+              add({key: effect, src: effect.sourceCard, label: 'Redirect damage to ' + recipient.name,
+                apply: async () => { data.target = recipient; }});
+            }
+            continue;
+          }
+          if (!preventionAllowed) continue;
+          let all = false, reflectDamage = false, onlyCreatures = false, consume = false;
+          if (effect.kind === 'preventNonElfCombat') all = data.combat && !!src?.is?.('Creature') && !src.hasSub('Elf');
+          else if (effect.kind === 'preventAllCombat') all = data.combat;
+          else if (effect.kind === 'preventCombatToPlayer') all = playerTarget && toAffectedPlayer && data.combat;
+          else if (effect.kind === 'preventToPlayer') {
+            all = playerTarget && toAffectedPlayer;
+            reflectDamage = !!effect.reflectCreatures; onlyCreatures = true;
+          } else if (effect.kind === 'preventToCreature') all = !playerTarget && effect.iid === data.target.iid && (effect.zoneVersion === undefined || effect.zoneVersion === data.target.zoneVersion);
+          else if (effect.kind === 'comeuppance') {
+            all = toAffectedPlayer && (playerTarget || data.target.is?.('Planeswalker')) && !!src && src.ctrl !== affectedPlayer;
+            reflectDamage = true;
+          } else if (effect.kind === 'preventNextToPlayer') {
+            all = playerTarget && toAffectedPlayer && (!effect.source || effect.source === src && (effect.sourceVersion === undefined || effect.sourceVersion === src.zoneVersion));
+            reflectDamage = !!(effect.reflect || effect.reflectToController); consume = true;
+          }
+          if (all) {
+            add({key: effect, src: effect.sourceCard, label: effect.sourceCard?.name || 'Prevent damage to ' + data.target.name, apply: async () => {
+              const amount = data.n;
+              data.n = 0;
+              if (consume) { const index = this.untilEffects.indexOf(effect); if (index >= 0) this.untilEffects.splice(index, 1); }
+              await prevented(amount);
+              if (reflectDamage) await reflect(effect, amount, onlyCreatures);
+            }});
+          } else if (effect.kind === 'oracleDamagePrevention' && effect.run(this, data) < data.n) {
+            add({key: effect, label: 'Prevent damage', apply: async () => {
+              const before = data.n; data.n = effect.run(this, data); await prevented(before - data.n);
+            }});
+          } else if (effect.kind === 'oraclePreventNextAmount' && effect.target === data.target && effect.zoneVersion === data.target.zoneVersion && effect.remaining > 0) {
+            add({key: effect, label: 'Prevent up to ' + effect.remaining + ' damage', apply: async () => {
+              const amount = Math.min(data.n, effect.remaining);
+              data.n -= amount; effect.remaining -= amount; await prevented(amount);
+            }});
+          }
         }
+        if (!(data.target instanceof Player)) {
+          const permanent = data.target;
+          if (preventionAllowed && this.isProtectedFrom(permanent, src)) add({
+            key: 'protection:' + permanent.iid + ':' + permanent.zoneVersion, src: permanent, label: permanent.name + ' — protection',
+            apply: async () => { const amount = data.n; data.n = 0; await prevented(amount); },
+          });
+          // CR 122.1c/615.12: one prevention effect regardless of the number
+          // of shield counters. Its additional removal still happens when
+          // damage cannot be prevented; finite prevention shields are not spent.
+          if (permanent.counters?.shield > 0) add({
+            key: 'shield:' + permanent.iid + ':' + permanent.zoneVersion, src: permanent, label: permanent.name + ' — shield counter',
+            apply: async () => {
+              this.removeCounters(permanent, 'shield', 1);
+              if (preventionAllowed) { const amount = data.n; data.n = 0; await prevented(amount); }
+              await this.emit('shieldRemoved', {card: permanent});
+            },
+          });
+        }
+        if (!candidates.length) break;
+        const selected = await this.chooseReplacement(affectedPlayer, candidates, 'damage', data.n);
+        used.add(selected.key);
+        await selected.apply();
       }
-      return n;
+      opts._damageFinalTarget = data.target;
+      return data.n;
     }
 
     async damageAny(src, target, n, opts = {}) {
@@ -1997,7 +2077,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return this.damageCreature(src, target, n, opts);
     }
 
-    async draw(p, n, srcCard) {
+    async draw(p, n, srcCard, opts = {}) {
       // Teferi's Ageless Insight: dupla vučenja (osim prvog u draw stepu)
       let total = n;
       const doublers = this.bf().filter(c => c.def.drawDouble && c.ctrl === p).length;
@@ -2052,7 +2132,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             continue;
           }
         }
-        if (!p.library.length) { p.deckedOut = true; await this.checkSBA(); break; }
+        if (!p.library.length) { p.deckedOut = true; if(!opts.deferSBA)await this.checkSBA(); break; }
         const c = p.library.pop();
         p.hand.push(c); c.zone = 'hand';
         drawn++;
@@ -2130,7 +2210,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               if(c.zone==='exile'&&c.zoneVersion===version)await ctx.g.move(c,'graveyard');
             }});
           }
-          c.meta._discardedTurn = this.turnNo; // za mayhem
+          if(MTG.OracleV8Mayhem)MTG.OracleV8Mayhem.noteDiscard(this,p,c);
+          else c.meta._discardedTurn = this.turnNo; // legacy Mayhem definitions
           p.turnState.discardedN = (p.turnState.discardedN || 0) + 1;
           if (wasLand) landsN++;
           await this.emit('discarded', { player: p, card: c });
@@ -2191,6 +2272,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       } finally {
         this._simultaneousLeaveSources = previous;
+        await this.returnOracleExiles();
       }
       return unique.length;
     }
@@ -2266,6 +2348,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       } finally {
         this._simultaneousLeaveSources = previous;
+        await this.returnOracleExiles();
       }
       return doomed.length;
     }
@@ -2293,6 +2376,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const card of unique) if (card.zone === 'battlefield') await this.move(card, 'exile', { ...opts, suppressVisualEffect: visualBatch });
       } finally {
         this._simultaneousLeaveSources = previous;
+        await this.returnOracleExiles();
       }
       return unique.length;
     }
@@ -2306,7 +2390,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const batch=unique.map(card=>({card,ctrl:card.ctrl,snap:this.snapshot(card)}));
       this._simultaneousLeaveSources=previous?previous.concat(batch):batch;
       try{for(const card of unique)if(card.zone==='battlefield')await this.move(card,'hand',{battlefieldSnapshot:batch.find(row=>row.card===card).snap});}
-      finally{this._simultaneousLeaveSources=previous;}
+      finally{this._simultaneousLeaveSources=previous;await this.returnOracleExiles();}
       return unique.length;
     }
 
@@ -2319,21 +2403,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.blocking = null;
     }
 
-    tap(card) {
+    tap(card, { deferEvent = false } = {}) {
       if (!card || card.zone !== 'battlefield' || card.tapped) return false;
       card.tapped = true;
       const firstThisTurn = card.meta._firstTappedTurn !== this.turnNo;
       if (firstThisTurn) {
         card.meta._firstTappedTurn = this.turnNo;
       }
-      void this.emit('becameTapped', { card, player: card.ctrl, firstThisTurn });
+      if (!deferEvent) void this.emit('becameTapped', { card, player: card.ctrl, firstThisTurn });
       return true;
     }
 
-    untap(card) {
+    untap(card, { deferEvent = false } = {}) {
       if (!card || card.zone !== 'battlefield' || !card.tapped) return false;
+      // A stun counter replaces any untap, including an effect outside the
+      // untap step. An object that would not untap never loses a counter.
+      if ((card.counters.stun || 0) > 0) {
+        this.removeCounters(card, 'stun', 1);
+        return false;
+      }
       card.tapped = false;
-      void this.emit('becameUntapped', { card, player: card.ctrl });
+      if (!deferEvent) void this.emit('becameUntapped', { card, player: card.ctrl });
       return true;
     }
 
@@ -2378,18 +2468,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (c.cur && c.cur.abilitiesDisabled) continue;
         const reps = c.def.replace;
         if (!reps) continue;
-        for (const r of reps) {
+        for (const [index, r] of reps.entries()) {
           if (r.event !== event) continue;
           if (r.cond && !r.cond(this, c)) continue;
-          out.push({ ctrl: c.ctrl, src: c, run: r.run, n: r.n, prevent: !!r.prevent, oraclePrevention:!!r.oraclePrevention, priority: r.priority || 0 });
+          out.push({ ctrl: c.ctrl, src: c, run: r.run, applies: r.applies, oracleOperation: r.oracleOperation, label: r.label,
+            key: c.iid + ':' + c.zoneVersion + ':' + index, n: r.n, prevent: !!r.prevent, oraclePrevention:!!r.oraclePrevention, priority: r.priority || 0 });
         }
       }
       out.sort((a, b) => a.priority - b.priority);
       return out;
     }
 
+    grantCityBlessing(player){
+      if(player.cityBlessing||this.bf().filter(card=>card.ctrl===player).length<10)return false;
+      player.cityBlessing=true;this.lg(player.name+" gains the city's blessing.");this.note('cityBlessing',{player});return true;
+    }
+
     recalc() {
       const bf = this.bf();
+      MTG.OracleV8Copies?.recalculate(this);
+      MTG.OracleV8Control?.recalculate(this,bf);
       // pass 0: base
       for (const c of bf) {
         const d = c.def;
@@ -2414,6 +2512,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           cur.baseToughness = d.toughness === '*' ? 0 : parseInt(d.toughness, 10) || 0;
         }
         c.cur = cur;
+        MTG.OracleV8Permanents?.applyBestowBase(c, cur);
       }
       // pass 0.5: dinamički tipovi (Spacecraft station-prag i sl.)
       for (const c of bf) {
@@ -2550,11 +2649,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             (!c.meta.canAttackDefender && !c.cur.defenderCanAttack && !revenge);
         }
       }
-      // city's blessing
-      for (const p of this.players) {
-        const hasAscend = bf.some(c => c.ctrl === p && /(^|\n)Ascend\b/i.test(c.def.oracle || ''));
-        if (!p.cityBlessing && hasAscend && bf.filter(c => c.ctrl === p).length >= 10) p.cityBlessing = true;
-      }
       // Obavijesti samo kad se NOVA dodijeljena sposobnost/keyword pojavi.
       // Recalc se poziva cesto, pa se potpisi pamte na objektu karte da isti
       // stalni efekt ne proizvodi duplikate pri svakom osvjezavanju table.
@@ -2579,6 +2673,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         c.meta._grantedFeatureNotices = features;
       }
+      let newlyBlessed=false;
+      for(const player of this.alivePlayers())if(!player.cityBlessing&&bf.some(card=>card.ctrl===player&&card.def.oracleAscend&&!card.cur.abilitiesDisabled))newlyBlessed=this.grantCityBlessing(player)||newlyBlessed;
+      if(newlyBlessed)this.recalc();
     }
 
     // ============================================================
@@ -2590,7 +2687,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const consider = (card, zoneOK, ctrlOverride) => {
         const history=['dies','lto','sacrificed'].includes(name)?(data.card===card?data.snap:(this._simultaneousLeaveSources||[]).find(entry=>entry.card===card)?.snap||(data.snap?.attachedSources||[]).find(entry=>entry.card===card)?.snap):null;
         if (history?history.abilitiesDisabled:card.cur?.abilitiesDisabled) return;
-        const trigs=(card.def.triggers||[]).concat(history?history.extraTriggers||[]:card.cur?.extraTriggers||[]);
+        const trigs=((history?.def || card.def).triggers||[]).concat(history?history.extraTriggers||[]:card.cur?.extraTriggers||[]);
         for (const t of trigs) {
           let cardSeen = seen.get(card);
           if (!cardSeen) { cardSeen = new Set(); seen.set(card, cardSeen); }
@@ -2598,10 +2695,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (t.on !== name) continue;
           const zone = t.zone || 'battlefield';
           if (!zoneOK(zone)) continue;
-          if (t.oncePerTurn && card.meta['_once_' + (t.onceKey||t.on)] === this.turnNo) continue;
+          const onceStamp=t.oncePerTurn?this.turnNo+':'+(history?.zoneVersion??card.zoneVersion):null;
+          if (t.oncePerTurn && card.meta['_once_' + (t.onceKey||t.on)] === onceStamp) continue;
           try { if (t.filter && !t.filter(this, card, data)) continue; } catch (e) { continue; }
           cardSeen.add(t);
-          found.push({ card, t, ctrlOverride });
+          found.push({ card, t, ctrlOverride, onceStamp });
         }
       };
       for (const c of this.bf()) consider(c, z => z === 'battlefield');
@@ -2638,10 +2736,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async emit(name, data) {
+      if(this._damageEventQueue&&['dealtDamage','damageToPlayer','damagePrevented','shieldRemoved','lifeGain','lifeLost','countersPlaced','countersRemoved','plusAdded','m1Added','monarchChanged'].includes(name)){
+        this._damageEventQueue.push({name,data});return;
+      }
       const found = this.collectTriggers(name, data || {});
       if(name==='upkeep')for(const card of this.bf())if(card.def.oracleEchoCost&&card.ctrl===data.player)card.meta.oracleEchoPending=false;
-      for (const { card, t, ctrlOverride } of found) {
-        if (t.oncePerTurn) card.meta['_once_' + (t.onceKey||t.on)] = this.turnNo;
+      for (const { card, t, ctrlOverride, onceStamp } of found) {
+        if (t.oncePerTurn) card.meta['_once_' + (t.onceKey||t.on)] = onceStamp;
         const nativeTimes = Math.max(0, Number(typeof t.times === 'function'
           ? t.times(this, card, data || {})
           : (t.times === undefined ? 1 : t.times)) || 0);
@@ -2797,8 +2898,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           data: tr.data,
           aiHint: Object.assign({ kind: 'mode', src: tr.src }, tr.modes.aiHint || {}),
         });
-        mode = Number.parseInt(picked, 10);
-        if (!Number.isInteger(mode) || !tr.modes.list[mode]) mode = 0;
+        const selectedKey=options.some(option=>option.key===picked)?picked:options[0].key;
+        mode=Number(selectedKey);
         ctx.mode = mode;
       }
       // Mete mogu zavisiti od trigger podatka (npr. "za svakog protivnika"
@@ -2815,6 +2916,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (targetSpecs && targetSpecs.length) {
         const ok = await this.pickTargets(ctx, targetSpecs, tr.src, ctrl);
         if (!ok) return; // no legal targets → fizzle
+        targetSpecs=ctx.boundTargetSpecs||targetSpecs;
       }
       const selectedMode = mode !== null ? tr.modes.list[mode] : null;
       const prepareTargets = selectedMode && selectedMode.prepareTargets || tr.prepareTargets;
@@ -2866,6 +2968,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     legalTargets(spec, src, ctrl, opts = {}) {
+      if (spec?.oracleBestow && src?.def?.bestowCost) src = MTG.OracleV8Permanents.bestowCastView(src);
       const out = [];
       const zone = spec.zone || 'battlefield';
       const finish = () => this.diplomacyFilterTargets
@@ -2955,7 +3058,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx.targets = [];
       ctx.wardTargets = [];
       const targetedNow = [];
-      for (const spec of specs) {
+      ctx.boundTargetSpecs=specs.map(spec=>typeof spec.bindOracleContext==='function'?spec.bindOracleContext(ctx):spec);
+      for (const spec of ctx.boundTargetSpecs) {
         let cands = this.legalTargets(spec, src, ctrl, { allowForced: !!ctx.diplomacyForcedTargeting });
         if (typeof spec.dependentFilter === 'function') {
           cands = cands.filter(candidate => spec.dependentFilter(this, candidate, ctx.targets, ctrl, src));
@@ -3034,7 +3138,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           src: target,
           ctrl: target.ctrl,
           name: w.sacLegendary ? 'Ward—Sacrifice a legendary artifact or creature'
-            : w.blight ? `Ward—Blight ${w.blight}` : `Ward ${w.life ? `${w.life} life` : w.mana}`,
+            : w.blight ? `Ward—Blight ${w.blight}` : w.discard ? 'Ward—Discard a card' : `Ward ${w.life ? `${w.life} life` : w.mana}`,
           data: { stackObject, payer: stackObject.ctrl, target, ward: w },
           run: async wardCtx => {
             const original = wardCtx.data.stackObject;
@@ -3096,6 +3200,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return true;
       }
       if (w.life) {
+        if(ctrl.life<w.life){this.lg(`${ctrl.name} cannot pay Ward—pay ${w.life} life.`);return false;}
         const yes = await ctrl.controller.decide(this, {
           type: 'chooseOption', prompt: `Ward — pay ${w.life} life to target ${target.name}?`,
           options: [{ key: 'yes', label: `Pay ${w.life} life` }, { key: 'no', label: 'Cancel' }],
@@ -3103,6 +3208,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         if (yes === 'yes') { await this.loseLife(ctrl, w.life, 'ward'); return true; }
         return false;
+      }
+      if(w.discard){
+        const pool=ctrl.hand.slice();
+        if(!pool.length){this.lg(`${ctrl.name} cannot pay Ward—discard a card.`);return false;}
+        const picked=await ctrl.controller.decide(this,{type:'chooseCards',from:pool,min:0,max:1,
+          prompt:`Ward — discard a card to target ${target.name}?`,aiHint:{kind:'ward',target,payment:'discard',cards:pool}});
+        const card=Array.isArray(picked)&&picked.length===1&&pool.includes(picked[0])?picked[0]:null;
+        if(!card)return false;
+        await this.discard(ctrl,[card]);
+        return card.zone!=='hand';
       }
       const cost = U.parseCost(w.mana);
       if (!this.canPayMana(ctrl, cost)) { this.lg(`${ctrl.name} cannot pay ward for ${target.name}.`); return false; }
@@ -3229,11 +3344,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 if (vic.lost) { await this.move(c, 'graveyard'); any = true; continue; }
               } else {
                 const host = c.attachedTo ? this.byIid(c.attachedTo) : null;
-                const auraSpec = c.def.auraTarget && c.def.auraTarget[0];
+                const auraSpec = c.meta?.oracleBestowTarget || c.def.auraTarget && c.def.auraTarget[0];
                 const enchantLegal = host && host.zone === 'battlefield' &&
                   (!auraSpec || !auraSpec.filter || auraSpec.filter(this, host, c.ctrl, c)) &&
-                  !this.isProtectedFrom(host, c);
-                if (!enchantLegal) { await this.move(c, 'graveyard'); any = true; continue; }
+                  !c.is('Creature') && !this.isProtectedFrom(host, c);
+                if (!enchantLegal) {
+                  if (MTG.OracleV8Permanents?.ceaseBestow(this, c)) { any = true; continue; }
+                  await this.move(c, 'graveyard'); any = true; continue;
+                }
               }
             }
             if (subs.includes('Equipment') && c.attachedTo) {

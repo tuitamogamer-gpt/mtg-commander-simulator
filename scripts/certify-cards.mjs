@@ -16,7 +16,9 @@ function oracleWithoutReminder(text) {
 }
 
 function activatedOracleLines(oracle) {
-  return oracleWithoutReminder(oracle).split('\n').filter(line => {
+  // Quoted rules text belongs to a token this card creates, not to the card's
+  // own activation paths.
+  return oracleWithoutReminder(oracle).replace(/"[^"]*"/g, ' ').split('\n').filter(line => {
     const value = line.trim();
     return /^(?:\{[^}]+\}(?:,\s*)?)+[^:]*:/.test(value) ||
       /^(?:Sacrifice|Discard|Tap)\b[^:]*:/.test(value);

@@ -90,6 +90,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC["Angrath's Marauders"] = {
     replace: [{
       event: 'damage',
+      applies: (g, ev, self) => !!ev.src && ev.src.ctrl === self.ctrl,
       run: (g, ev, src) => {
         const s = ev.src;
         if (s && ((s.ctrl && s.ctrl === src.ctrl) || s === src)) return ev.n * 2;

@@ -22,11 +22,27 @@ function card(owner, name) {
   return instance;
 }
 
+// A modal trigger/ability announces its targets per mode through a factory, so
+// the plain compiled implementation is the readable source for those specs.
+function implementationTargetSpecs(implementation) {
+  const specs = [];
+  const visit = node => {
+    if (!node || typeof node !== 'object') return;
+    if (Array.isArray(node.targets)) specs.push(...node.targets);
+    for (const value of Object.values(node)) Array.isArray(value) ? value.forEach(visit) : visit(value);
+  };
+  visit(implementation || []);
+  return specs;
+}
+
 function allTargetSpecs(script) {
   return [
+    ...implementationTargetSpecs(script.oracleImplementation),
     ...(script.targets || []),
-    ...(script.abilities || []).flatMap(ability => ability.targets || []),
-    ...(script.triggers || []).flatMap(trigger => trigger.targets || []),
+    ...(script.abilities || []).flatMap(ability => [...(ability.targets || []),
+      ...((ability.modes && ability.modes.list || []).flatMap(mode => mode.targets || []))]),
+    ...(script.triggers || []).flatMap(trigger => [...(trigger.targets || []),
+      ...((trigger.modes && trigger.modes.list || []).flatMap(mode => mode.targets || []))]),
     ...(script.modes && script.modes.list || []).flatMap(mode => mode.targets || []),
     ...Object.values(script.splitHalves || {}).flatMap(half => allTargetSpecs(half)),
     ...(script.adventure ? allTargetSpecs(script.adventure) : []),
@@ -62,7 +78,8 @@ test('svaki aktivni oracle target-opponent put ima stvarni target spec', () => {
     if (intentionalRandom.has(def.name)) continue;
     const specs = allTargetSpecs(MTG.SCRIPTS[def.name] || {});
     assert.ok(
-      specs.some(spec => spec.what === 'opponent' || spec.what === 'player' || spec.what === 'any'),
+      specs.some(spec => typeof spec.what === 'string' &&
+        (spec.what === 'any' || /\b(?:opponent|player)\b/.test(spec.what))),
       `${def.name}: tekst traži target opponent, ali skripta nema player/opponent target`,
     );
   }

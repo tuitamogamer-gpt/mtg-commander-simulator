@@ -67,7 +67,9 @@ test('svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putan
     assert.equal(!!def.simplified, false, `${name}: simplified`);
     assert.equal((script.statics || []).some(entry => entry.apply && /=>\s*\{\s*\}/.test(String(entry.apply))), false, `${name}: no-op static`);
 
-    const oracle = String(def.oracle || '').replace(/\([^()]*(?:\([^()]*\)[^()]*)*\)/g, ' ');
+    // Quoted text belongs to a created token, not to this card's own paths.
+    const oracle = String(def.oracle || '').replace(/\([^()]*(?:\([^()]*\)[^()]*)*\)/g, ' ')
+      .replace(/"[^"]*"/g, ' ');
     const activated = oracle.split('\n').filter(line => {
       const value = line.trim();
       return /^(?:\{[^}]+\}(?:,\s*)?)+[^:]*:/.test(value) || /^(?:Sacrifice|Discard|Tap)\b[^:]*:/.test(value);
@@ -189,7 +191,7 @@ test('ispravljene višedijelne karte imaju sve Oracle putanje', () => {
   assert.ok(MTG.DEFS['The Odd Acorn Gang'].statics.length);
 });
 
-test('Everlasting Torment zaobilazi prevention i shield, a štetu stvorenju pretvara u wither', async () => {
+test('Everlasting Torment zaobilazi prevenciju, uklanja shield counter i pretvara štetu stvorenju u wither', async () => {
   const MTG = loadEngine();
   const { game, players: [owner, opponent] } = makeGame(MTG);
   battlefield(MTG, game, owner, 'Everlasting Torment');
@@ -200,7 +202,7 @@ test('Everlasting Torment zaobilazi prevention i shield, a štetu stvorenju pret
   game.untilEffects.push({ expires: 'eot', kind: 'preventToPlayer', who: opponent });
 
   assert.equal(await game.damageCreature(source, target, 2, { deferSBA: true }), 2);
-  assert.equal(target.counters.shield, 1);
+  assert.equal(target.counters.shield, 0, 'CR 615.12: unpreventable damage still removes a shield counter');
   assert.equal(target.counters['-1/-1'], 2);
   assert.equal(await game.damagePlayer(source, opponent, 3, { deferSBA: true }), 3);
   assert.equal(opponent.life, 37);

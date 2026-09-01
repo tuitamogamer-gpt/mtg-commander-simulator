@@ -57,6 +57,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       cond: (g, c) => !c.meta.transformed,
       run: async ctx => {
         ctx.src.meta.transformed = true;
+        ctx.src.meta.addedSubtypes = [...new Set([...(ctx.src.meta.addedSubtypes || []), 'Phyrexian'])];
         ctx.g.lg(`${ctx.src.name} se transformiše (P/T = broj +1/+1 countera).`);
         ctx.g.recalc();
       },
@@ -524,6 +525,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Donatello, the Brains'] = {
     replace: [{
       event: 'createToken',
+      applies: (g, defs) => defs.length > 0,
       run: (g, defs, ctrl, src) => defs.concat([TK.mutagen]),
       priority: 5,
     }],
@@ -646,6 +648,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Raphael, the Muscle'] = {
     replace: [{
       event: 'damage',
+      applies: (g, ev, self) => !!ev.src?.is?.('Creature') && ev.src.ctrl === self.ctrl && Object.values(ev.src.counters || {}).some(value => value > 0),
       run: (g, ev, src) => {
         if (ev.src && ev.src.is && ev.src.is('Creature') && ev.src.ctrl === src.ctrl &&
           Object.values(ev.src.counters || {}).some(v => v > 0)) return ev.n * 2;
@@ -786,6 +789,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     replace: [{
       event: 'damage',
       prevent: true,
+      applies: (g, ev, self) => !!ev.target && ev.target !== self && ev.target.ctrl === self.ctrl && !!ev.target.is?.('Creature'),
       run: (g, ev, src) => {
         if (ev.target && ev.target !== src && ev.target.ctrl === src.ctrl && ev.target.is && ev.target.is('Creature')) {
           g.addCounters(ev.target, '+1/+1', ev.n);
@@ -1790,6 +1794,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Divine Visitation'] = {
     replace: [{
       event: 'createToken',
+      applies: (g, defs) => defs.some(d => (typeof d === 'string' ? TK[d] : d)?.types?.includes('Creature')),
       run: (g, defs, ctrl, src) => defs.map(d => {
         const def = typeof d === 'string' ? TK[d] : d;
         if (def && def.types && def.types.includes('Creature')) return TK.angel44;

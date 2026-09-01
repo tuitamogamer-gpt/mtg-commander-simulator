@@ -684,7 +684,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (action.kind === 'declareAttackers') return action.assignments.length ? `Attack: ${action.assignments.map(item => `${item.card.name} → ${item.target.name}`).join(', ')}` : 'No attacks';
     if (action.kind === 'declareBlockers') return action.assignments.length ? `Block: ${action.assignments.map(item => `${item.blocker.name} → ${item.attacker.name}`).join(', ')}` : 'No blocks';
     if (action.kind === 'chooseTargets') return `Targets: ${action.picks.map(target => target.name || target.card && target.card.name || 'stack object').join(', ') || 'none'}`;
-    if (action.kind === 'chooseCards') return `Cards: ${action.picks.map(card => card.name).join(', ') || 'none'}`;
+    if (action.kind === 'chooseCards') return `Cards: ${action.picks.map(card => card.faceDown ? 'Face-down card' : card.name).join(', ') || 'none'}`;
     if (action.kind === 'chooseOption') return `Choose ${action.option && action.option.label || String(action.value)}`;
     if (action.kind === 'chooseX') return `Choose X=${action.value}`;
     if (action.kind === 'mulligan') return action.value ? 'Mulligan' : 'Keep hand';
@@ -1261,6 +1261,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const legalValues = Array.isArray(q.values) && q.values.length
         ? [...new Set(q.values.map(Number))].filter(value => value >= min && value <= max).sort((a, b) => a - b)
         : null;
+      const preferredValues=Array.isArray(q.preferredXValues)&&q.preferredXValues.length
+        ? [...new Set(q.preferredXValues.map(Number))].filter(value=>Number.isInteger(value)&&value>=min&&value<=max).sort((a,b)=>a-b)
+        : null;
       const inferredThresholds = [];
       if (q.aiHint && q.aiHint.kind === 'oracleXDamage' && q.aiHint.card) {
         const specs = game.spellTargetSpecs(q.aiHint.card, { xVal: max }, player);
@@ -1281,7 +1284,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
         }
       }
-      const strategic = legalValues || [...new Set([min, max, Math.min(max, min + 1), Math.min(max, 3), Math.min(max, 5),
+      const strategic = legalValues || preferredValues || [...new Set([min, max, Math.min(max, min + 1), Math.min(max, 3), Math.min(max, 5),
         ...((q.thresholds || []).map(Number)), ...inferredThresholds])]
         .filter(value => value >= min && value <= max).sort((a, b) => a - b);
       for (const value of strategic) actions.push({ kind: 'chooseX', value });
@@ -1659,6 +1662,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // eksplicitnog svrstavanja u hostile ciljeve evaluator je mogao dati
       // viši zbir vlastitim Veyran/Storm-Kiln metama samo zato što su vrednije.
       if (/removal|damage|destroy|exile|bounce|counter|tap/i.test(hint)) return hostile ? value : -value * 1.8;
+      if(hint==='copy')return value;
       if (/buff|pump|protect|copy|recur|return|attach|equip|untap/i.test(hint)) return hostile ? -value : value;
       return hostile ? value * 0.7 : value * 0.5;
     }
@@ -1673,8 +1677,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function choiceCardValue(game, player, card, q) {
     if (!(card instanceof U.CardInst)) return 0;
     const hint = q.aiHint && q.aiHint.kind || '';
+    // Processing exile may choose an opponent's face-down card, but it does
+    // not grant permission to inspect its identity before that choice.
+    if (hint === 'oracleProcessExile') return card.faceDown ? 0 : -cardDefinitionValue(card.def);
     const value = cardDefinitionValue(card.def) + (card.commander ? 8 : 0);
     if (hint === 'crew') return -permanentGameValue(game, card, player);
+    if (hint === 'ward' && q.aiHint.payment === 'discard') {
+      // Ward is paid after the spell is already on the Stack, so declining
+      // loses both the spell and its mana. Discard the cheapest card unless
+      // every option costs more than the permanent the spell is removing.
+      if (card.commander) return -100;
+      const worth = q.aiHint.target ? permanentGameValue(game, q.aiHint.target, player) : 0;
+      return Math.max(0.5, worth + 3) - value;
+    }
     if (hint === 'optionalLoot') {
       if (card.commander) return -100;
       const choices = q.from || player.hand || [];
@@ -1747,6 +1762,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (hint === 'myrBattlesphere') return 4 - value * 0.03;
     if (hint === 'stationTap') return Math.max(0, card.power) * 4 - value * 0.1;
     if (hint === 'tapCost') return -value - Math.max(0,card.power) * 0.1;
+    if(hint==='oraclePermanentChoice'){
+      const relevant=q.aiHint.operation==='untap'?card.tapped:!card.tapped;
+      if(!relevant)return -1;
+      const own=card.ctrl===player,beneficial=q.aiHint.operation==='untap'?own:!own;
+      return (beneficial?1:-1)*(8+Math.max(0,value));
+    }
     if (hint === 'bottomOrder') return -value;
     if (hint === 'reflexiveCost') return -value - ((q.aiHint.keepTargets||[]).includes(card) ? 10000 : 0);
     if (/discard|sacCost|bounceCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) {
@@ -3160,6 +3181,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } else if(hintKind==='oracleUnlessPayment'){
         const cost=action.option?.payment,mana=cost?.mana?U.parseCost(cost.mana):null;
         breakdown.choice=!cost?0:cost.kind==='mana'?12-mana.generic-mana.pips.length:cost.kind==='life'?(player.life>cost.n+5?8-cost.n:-20):cost.kind==='discard'?5-cost.n:cost.kind==='tap'?8-cost.n:3-cost.n;
+        if(cost?.kind==='draw'){
+          const doublers=game.bf().filter(card=>card.ctrl===player&&card.def.drawDouble).length;
+          const extra=cost.n>0&&!player.hand.length&&game.bf().some(card=>card.ctrl===player&&card.def.drawWhileEmptyExtra)?1:0;
+          breakdown.choice=player.library.length>=cost.n*Math.pow(2,doublers)+extra?8+cost.n:-1000;
+        }
       } else if (hintKind === 'riot') {
         const card = q.aiHint.card;
         const canAttackNow = card && game.turnPlayer === player && game.phase === 'main1' && !card.tapped;
@@ -3173,6 +3199,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         breakdown.choice = action.value === 'counter' ? 8 : 0;
       } else if (hintKind === 'extort') {
         breakdown.choice = action.value === 'yes' && player.life > 2 ? 8 : 0;
+      } else if (hintKind === 'entwine') {
+        const extraModes = Math.max(1, Number(q.aiHint.modeCount || 0) - Number(q.aiHint.printedMax || 0));
+        const cost = q.aiHint.cost || {};
+        let price = 0;
+        if (cost.kind === 'mana') {
+          const parsed = U.parseCost(cost.mana || '');
+          price = parsed.generic + parsed.pips.length * 1.35;
+        } else if (cost.kind === 'sacrifice') {
+          const lands = game.bf().filter(card => card.ctrl === player && card.is('Land')).length;
+          price = Number(cost.n || 0) * (lands <= Number(cost.n || 0) + 2 ? 8 : 2.5);
+        }
+        breakdown.choice = action.value === 'yes' ? extraModes * 12 - price : 0;
       } else if (hintKind === 'chooseType') {
         const counts = q.aiHint.counts || {};
         const type = String(action.value || '');
@@ -3636,7 +3674,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           sum + (/draw|token|destroy|exile|counter/i.test(option.label || '') ? 2 : 0.3), 0);
       }
     } else if (action.kind === 'chooseX') {
-      if (q && q.aiHint && q.aiHint.kind === 'oracleXDamage') {
+      if(q?.aiHint?.kind==='oracleResolutionX'&&q.aiHint.drawMultiplier){
+        const draws=action.value*q.aiHint.drawMultiplier+(q.aiHint.drawOffset||0);
+        const doublers=game.bf().filter(card=>card.ctrl===player&&card.def.drawDouble).length;
+        const extra=draws>0&&!player.hand.length&&game.bf().some(card=>card.ctrl===player&&card.def.drawWhileEmptyExtra)?1:0;
+        breakdown.choice=draws*Math.pow(2,doublers)+extra<=player.library.length?action.value*0.7:-1000-draws;
+      } else if (q && q.aiHint && q.aiHint.kind === 'oracleXDamage') {
         const x = Number(action.value) || 0;
         const operation = q.aiHint.operation || {};
         const card = q.aiHint.card;

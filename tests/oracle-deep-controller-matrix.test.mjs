@@ -2331,7 +2331,13 @@ test('zajednički troškovi mana izvora se rezervišu jednom i ne mijenjaju stan
     assert.equal(player.pool.C, 0, 'failed payment leaves no partial floating mana');
 
     zoneCard(player, 'Island', 'library');
-    assert.ok(game.manaSolve(player, cost), 'two library cards fund two distinct Millikin costs');
+    assert.equal(game.manaSolve(player, cost), null, 'CR605.1a library costs cannot activate during mana payment');
+    game.turnPlayer=player;game.turnNo=1;game.phase='main1';game.priorityRound=async()=>{};
+    for(const millikin of millikins){
+      const action=game.activatableList(player).find(entry=>entry.card===millikin&&entry.ability);
+      assert.ok(action);assert.equal(await game.activateAbility(player,action),true);
+      assert.equal(game.stack.at(-1).kind,'ability');await game.resolveTop();
+    }
     assert.equal(await game.payMana(player, cost), true);
     assert.equal(millikins.every(card => card.tapped), true);
     assert.equal(player.library.length, 0);

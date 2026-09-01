@@ -1687,10 +1687,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const target = ctx.targets[0];
         if (!target || target === ctx.src || target.zone !== 'battlefield') return;
         const base = target.isCopyOf || target.def;
-        if (!ctx.src.meta.characteristicOriginalDef) ctx.src.meta.characteristicOriginalDef = ctx.src.def;
-        ctx.src.meta.temporaryCopyTurn = ctx.g.turnNo;
-        ctx.src.isCopyOf = base;
-        ctx.src.def = Object.assign({}, base);
+        MTG.OracleV8Copies.applyCopy(ctx.g,ctx.src,base,{duration:'eot',controller:ctx.you});
         ctx.g.recalc();
         ctx.g.lg(`Mirage Mirror becomes a complete copy of ${target.name} until end of turn.`);
       },
@@ -2351,6 +2348,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     replace: [{
       event: 'damage',
       prevent: true,
+      applies: (g, ev, self) => ev.target === self.ctrl && !!ev.src && ev.src.ctrl !== self.ctrl,
       run: (g, ev, src) => {
         if (ev.target === src.ctrl && ev.src && ev.src.ctrl !== src.ctrl) return Math.max(0, ev.n - 1);
         return ev.n;
@@ -2488,6 +2486,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     replace: [{
       event: 'damage',
       prevent: true,
+      applies: (g, ev, self) => !!self.attachedTo && !!ev.target && ev.target.iid === self.attachedTo && !!g.byIid(self.attachedTo),
       run: (g, ev, src) => {
         if (src.attachedTo && ev.target && ev.target.iid === src.attachedTo) {
           const host = g.byIid(src.attachedTo);

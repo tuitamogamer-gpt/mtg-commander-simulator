@@ -163,6 +163,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Fiendish Duo'] = {
     replace: [{
       event: 'damage',
+      applies: (g, ev, self) => ev.target instanceof MTG.Player && ev.target !== self.ctrl,
       run: (g, evt, src) => {
         if (evt.target instanceof MTG.Player && evt.target !== src.ctrl) return evt.n * 2;
         return evt.n;
@@ -183,16 +184,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Gisela, Blade of Goldnight'] = {
     replace: [{
       event: 'damage',
-      run: (g, evt, src) => {
-        const isOppSide = (t) => (t instanceof MTG.Player) ? t !== src.ctrl : t.ctrl !== src.ctrl;
-        const isMySide = (t) => (t instanceof MTG.Player) ? t === src.ctrl : t.ctrl === src.ctrl;
-        // "If ANY source would deal damage to an opponent or a permanent an
-        // opponent controls" — izvor ne mora biti tvoj. Ranije se udvostručavala
-        // samo tvoja šteta, pa su goadani napadi među protivnicima bili duplo slabiji.
-        if (evt.target && isOppSide(evt.target)) return evt.n * 2;
-        if (evt.target && isMySide(evt.target)) return Math.ceil(evt.n / 2);
-        return evt.n;
-      },
+      applies: (g, ev, self) => !!ev.target && (ev.target instanceof MTG.Player ? ev.target !== self.ctrl : ev.target.ctrl !== self.ctrl),
+      run: (g, ev, self) => ev.target && (ev.target instanceof MTG.Player ? ev.target !== self.ctrl : ev.target.ctrl !== self.ctrl) ? ev.n * 2 : ev.n,
+    }, {
+      event: 'damage', prevent: true,
+      applies: (g, ev, self) => !!ev.target && (ev.target instanceof MTG.Player ? ev.target === self.ctrl : ev.target.ctrl === self.ctrl),
+      // Prevent half rounded UP: the damage remaining is half rounded DOWN.
+      run: (g, ev, self) => ev.target && (ev.target instanceof MTG.Player ? ev.target === self.ctrl : ev.target.ctrl === self.ctrl) ? Math.floor(ev.n / 2) : ev.n,
     }],
   };
   SC['Havoc Eater'] = {
@@ -451,7 +449,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       if (!picked[0]) return;
       ctx.g.untilEffects.push({
-        kind: 'preventNextToPlayer', who: you, expires: 'eot', source: picked[0],
+        kind: 'preventNextToPlayer', who: you, expires: 'eot', source: picked[0], sourceVersion: picked[0].zoneVersion,
         reflectToController: true, sourceCard: ctx.src,
       });
     },
@@ -461,8 +459,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       prompt: 'Your creature or planeswalker', aiHint: { goal: 'protect' },
     })],
     resolve: async ctx => {
-      const you = ctx.you, iid = ctx.targets[0].iid;
-      ctx.g.untilEffects.push({ kind: 'redirectAllDamage', who: you, iid, expires: 'eot' });
+      const you = ctx.you, iid = ctx.targets[0].iid, zoneVersion = ctx.targets[0].zoneVersion;
+      ctx.g.untilEffects.push({ kind: 'redirectAllDamage', who: you, iid, zoneVersion, expires: 'eot', sourceCard: ctx.src });
     },
   };
   SC['Immortal Obligation'] = {

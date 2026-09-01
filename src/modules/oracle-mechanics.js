@@ -84,6 +84,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ? operation.kind.slice('mechanic-'.length)
       : operation.kind;
 
+    if(kind==='strive-v8'){
+      if(script.strive)return false;
+      script.strive=operation.cost;return true;
+    }
+    if(kind==='harmonize-v8'){
+      if(script.harmonize)return false;
+      script.harmonize={cost:operation.cost};return true;
+    }
     if(kind==='dethrone'){
       push(script,'triggers',captureTriggerObjects({on:'attacks',desc:'Dethrone',
         filter:(game,self,data)=>data.card===self&&data.defender instanceof MTG.Player&&data.defender.life===Math.max(...game.alivePlayers().map(player=>player.life)),

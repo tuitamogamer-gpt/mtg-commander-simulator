@@ -182,10 +182,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     run: async ctx => { await ctx.g.draw(ctx.you, 1); },
   }] };
 
-  SC.Millikin = { mana: {
-    manual: true, cost: { tap: true, mill: 1 }, produce: [{ C: 1 }],
+  SC.Millikin = { abilities: [{
+    label: 'Mill a card, then add {C}', cost: { tap: true, mill: 1 },
     cond: (game, card, player) => player.library.length > 0,
-  } };
+    run: async ctx => { ctx.you.pool.C++;ctx.g.note('mana',{p:ctx.you}); },
+    aiScore: () => 1.5,
+  }] };
 
   SC['Reassembling Skeleton'] = { gyAbility: {
     label: 'Return tapped', cost: '{1}{B}', exileSelf: false,
@@ -540,6 +542,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
     } finally {
       ctx.g._simultaneousLeaveSources = previous;
+      await ctx.g.returnOracleExiles();
     }
     const returns = [];
     for (const player of ctx.g.players) for (const card of exiled.get(player) || []) {

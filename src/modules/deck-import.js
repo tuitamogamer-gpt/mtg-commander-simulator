@@ -174,8 +174,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'mechanic-vanishing': { mechanics: ['vanishing'], path: 'entry time counters → upkeep removal → separate last-counter sacrifice trigger' },
     'mechanic-cumulative-upkeep': { mechanics: ['cumulative upkeep'], path: 'upkeep age counter → full repeated payment or sacrifice' },
     'split-casting': { mechanics: ['split','fuse','aftermath'], path: 'choose legal half → pay face cost → face characteristics and resolution' },
+    'double-faced-card': { mechanics: ['modal double-faced card'], path: 'choose a legal printed face → use that face on Stack or battlefield → reset to front after other zone changes' },
+    'commander-pairing': { mechanics: ['commander pairing'], path: 'exact printed pairing tag → commander eligibility and exact mate rule → combined color identity; Partner with also targets a player, searches the named card and shuffles' },
+    'mechanic-bestow': { mechanics: ['bestow'], path: 'choose the alternative cost → target as an Aura spell → enter attached, or continue resolving as a creature when the target is illegal → become a creature when unattached' },
+    'mechanic-entwine': { mechanics: ['entwine'], path: 'choose every printed mode → pay the exact additional mana or sacrifice cost → announce every target → resolve the chosen modes in printed order' },
+    'mechanic-ward-v8': { mechanics: ['ward'], path: 'opponent target → ward trigger → pay the printed life or discard cost or counter the spell' },
+    'mechanic-mayhem-v8': { mechanics: ['mayhem'], path: 'discard this turn → graveyard cast for the mayhem cost → resolution → exile instead of graveyard' },
+    'mechanic-harmonize-v8': { mechanics: ['harmonize'], path: 'graveyard cast permission → harmonize cost with the optional creature tap reduction → resolution → exile instead of graveyard' },
     'saga-chapters': { mechanics: ['saga'], path: 'lore crossing → chapter Stack → final chapter leaves Stack → state-based sacrifice' },
     'copy-as-enters': { mechanics: ['copy'], path: 'non-target entry choice → copiable characteristics and entry replacements → zone-change reset' },
+    'copy-as-enters-v8': { mechanics: ['copy'], path: 'entry choice → exact copiable modifications → entry replacements → zone reset' },
+    'mechanic-ascend': { mechanics: ['ascend'], path: 'ten controlled permanents → persistent city blessing → live conditional effects' },
+    'aura-control-v8': { mechanics: ['control'], path: 'Aura attachment → continuous control layer → timestamp and dependency recheck' },
+    'ordered-replacement-effect': { mechanics: ['replacement'], path: 'affected player orders applicable replacements → recheck after each → transformed event' },
     'base-pt-static': { mechanics: ['base-power-toughness'], path: 'continuous layer 7b in timestamp order → modifiers and counters → live source removal' },
     'protection-static': { mechanics: ['protection'], path: 'live quality filter → targeting, damage, blocking and attachment restrictions' },
     'mechanic-evoke': { mechanics: ['evoke'], path: 'alternative mana payment → permanent spell → ETB sacrifice trigger' },
@@ -376,7 +387,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!script || script.oracleImplemented !== true || script.oracleId !== catalog.oracleId) {
           unsupported.push({ card: entry.name, reason: 'missing-oracle-implementation-marker' });
         }
-        const oracleContracts = script && Array.isArray(script.oracleContracts) ? script.oracleContracts : [];
+        const physicalDescriptor = script && script.oracleFaces;
+        const oracleContracts = physicalDescriptor && Array.isArray(physicalDescriptor.oracleContracts)
+          ? physicalDescriptor.oracleContracts
+          : script && Array.isArray(script.oracleContracts) ? script.oracleContracts : [];
         const implementationKinds = catalog.implementationKinds || [];
         if (catalog.semanticClass === 'manual-deck-semantic' && !oracleContracts.length) {
           unsupported.push({ card: entry.name, reason: 'missing-manual-interaction-contracts' });
@@ -384,8 +398,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (implementationKinds.length && !oracleContracts.length) {
           unsupported.push({ card: entry.name, reason: 'missing-template-interaction-contracts' });
         }
-        const compiledKinds = script && Array.isArray(script.oracleImplementation)
-          ? script.oracleImplementation.map(operation => operation.kind)
+        const compiledImplementation = physicalDescriptor && Array.isArray(physicalDescriptor.oracleImplementation)
+          ? physicalDescriptor.oracleImplementation
+          : script && Array.isArray(script.oracleImplementation) ? script.oracleImplementation : [];
+        const compiledKinds = compiledImplementation.length
+          ? compiledImplementation.map(operation => operation.kind)
           : [];
         if (implementationKinds.length && (compiledKinds.length !== implementationKinds.length ||
             implementationKinds.some((kind, index) => compiledKinds[index] !== kind))) {

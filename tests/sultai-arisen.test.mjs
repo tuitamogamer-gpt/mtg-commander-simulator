@@ -242,7 +242,7 @@ test('Sultai Arisen completes deterministic full games in both seats without AI 
   }
 });
 
-test('Sultai pays Channel X, filtered discard, mill mana, exile-X, and distinct Jarad land costs exactly', async () => {
+test('Sultai pays Channel X, filtered discard, stack-based mill mana, exile-X, and distinct Jarad land costs exactly', async () => {
   let preferredTarget = null;
   const { game, players: [sultai, opponent] } = rulesGame([
     (g, query) => {
@@ -290,10 +290,12 @@ test('Sultai pays Channel X, filtered discard, mill mana, exile-X, and distinct 
   const millikin = permanent(game, sultai, 'Millikin');
   const milled = inZone(sultai, 'Island', 'library');
   const beforeColorless = sultai.pool.C;
-  const manaAction = game.activatableList(sultai).find(entry => entry.card === millikin && entry.manaAbility);
+  const manaAction = game.activatableList(sultai).find(entry => entry.card === millikin && entry.ability);
   assert.ok(manaAction);
   assert.equal(await game.activateAbility(sultai, manaAction), true);
   assert.equal(milled.zone, 'graveyard');
+  assert.equal(sultai.pool.C, beforeColorless, 'milling is a cost but mana waits for resolution');
+  await resolveAll(game);
   assert.equal(sultai.pool.C, beforeColorless + 1);
 
   const fiend = permanent(game, sultai, 'Necropolis Fiend');

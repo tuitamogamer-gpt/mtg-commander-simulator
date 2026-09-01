@@ -410,14 +410,14 @@ test('Avenge discount checks attacks during the relevant previous turn, not perm
   assert.equal(adjust(game, {}, avengers), -2);
 });
 
-test('Thor increases only damage from another source currently controlled by Thor controller', () => {
+test('Thor increases only damage from another source currently controlled by Thor controller', async () => {
   const { game, players: [avengers, opponent] } = rulesGame([], 2);
   permanent(game, avengers, "Thor, Asgard's Avenger");
   const stolen = permanent(game, avengers, 'Hawkeye, Avenging Archer', { ctrl: opponent });
   const opposingPermanent = permanent(game, opponent, 'Bastion Protector');
-  assert.equal(game.applyDamageReplacements(stolen, opposingPermanent, 1, {}), 1);
+  assert.equal(await game.applyDamageReplacements(stolen, opposingPermanent, 1, {}), 1);
   stolen.ctrl = avengers;
-  assert.equal(game.applyDamageReplacements(stolen, opposingPermanent, 1, {}), 2);
+  assert.equal(await game.applyDamageReplacements(stolen, opposingPermanent, 1, {}), 2);
 });
 
 test('Love on the Battlefield delayed combat-damage permission expires at end of that combat', async () => {

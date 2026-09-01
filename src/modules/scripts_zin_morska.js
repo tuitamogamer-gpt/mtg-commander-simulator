@@ -687,6 +687,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Adrix and Nev, Twincasters'] = {
     replace: [{
       event: 'createToken',
+      applies: (g, defs) => defs.length > 0,
       run: (g, defs, ctrl, src) => defs.concat(defs),
       priority: 3,
     }],
@@ -787,11 +788,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Esix, Fractal Bloom'] = {
     replace: [{
       event: 'createToken', priority: 4,
+      applies: (g, defs) => defs.length > 0,
       cond: (g, self) => g.turnPlayer === self.ctrl && self.meta._esixTurn !== g.turnNo,
       run: async (g, defs, ctrl, src) => {
+        src.meta._esixTurn = g.turnNo;
         const cands = g.bf().filter(c => c.is('Creature') && c !== src);
         if (!cands.length) return defs;
-        src.meta._esixTurn = g.turnNo;
         const picked = await ctrl.controller.decide(g, {
           type: 'chooseCards', from: cands, min: 0, max: 1,
           prompt: 'Esix: tokeni mogu postati kopije kojeg stvorenja?', aiHint: { kind: 'esixCopy' },
@@ -1016,21 +1018,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Selvala, Explorer Returned'] = {
-    mana: {
-      manual: true,
+    abilities: [{
+      label: 'Parley',
       cost: { tap: true },
-      produce: (g) => [{ G: g.alivePlayers().filter(q => q.library.length && !q.library[q.library.length - 1].is('Land')).length }],
-      onProduce: async (g, c, p) => {
+      run: async ctx => {
+        const {g,src:c,you:p}=ctx,players=g.apnapFrom(g.turnPlayer||p);
         let nonlands = 0;
-        for (const q of g.alivePlayers()) {
+        for (const q of players) {
           if (!q.library.length) continue;
           const top = q.library[q.library.length - 1];
+          g.lg(c.name+': '+q.name+' reveals '+top.name+'.');
+          await g.revealToHuman({cards:[top],ctrl:q,kind:'reveal',includeLands:true});
           if (!top.is('Land')) nonlands++;
         }
+        p.pool.G+=nonlands;g.note('mana',{p});
         if (nonlands) await g.gainLife(p, nonlands);
-        for (const q of g.alivePlayers()) await g.draw(q, 1);
+        for (const q of players) await g.draw(q, 1);
       },
-    },
+      aiScore: () => 3,
+    }],
   };
   SC['Serene Sleuth'] = {
     triggers: [
