@@ -1453,6 +1453,10 @@ function extensionV4Body(card,text) {
 }
 
 export function baseCondition(text) {
+  // Day/night style checks read the turn that just ended.
+  if(/^no spells were cast last turn$/i.test(text))return {kind:'spells-cast-last-turn',max:0};
+  const castLastTurn=/^a player cast (two|three|four|\d+) or more spells last turn$/i.exec(text);
+  if(castLastTurn)return {kind:'spells-cast-last-turn',playerMin:({two:2,three:3,four:4}[castLastTurn[1].toLowerCase()]??Number(castLastTurn[1]))};
   // A permanent reading its own counters, as printed on the depletion lands.
   const ownCounters=/^there are (no|(?:\d+) or (?:more|fewer)) (\+1\/\+1|-1\/-1|charge|time|storage|depletion|ki|quest|spore) counters on this (?:land|creature|artifact|enchantment|permanent)$/.exec(text);
   if(ownCounters){

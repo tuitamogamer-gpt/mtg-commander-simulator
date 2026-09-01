@@ -45,6 +45,8 @@ function installEffectEvidence(context){
       context.counterChangeEvidence.push(row);return result;
     };
   }
+  context.revealEvidence=[];const originalReveal=game.revealToHuman;
+  game.revealToHuman=async function(payload,...args){context.revealEvidence.push({cards:(payload?.cards||[]).slice(),ctrl:payload?.ctrl,kind:payload?.kind});return originalReveal.call(this,payload,...args);};
   context.millEvidence=[];const originalMill=game.mill;game.mill=async function(player,n,...args){const top=player.library.slice(-n),result=await originalMill.call(this,player,n,...args);context.millEvidence.push({player,n,cards:top.filter(card=>card.zone==='graveyard')});return result;};
   context.damageEvidence=[];const originalDamage=game.damageAny;game.damageAny=async function(source,target,n,...args){const row={target,source,n,before:genericProofSnapshot(context,[])};context.damageEvidence.push(row);row.actual=await originalDamage.call(this,source,target,n,...args);row.after=genericProofSnapshot(context,[]);return row.actual;};
   context.batchEvidence=[];const originalBatch=game.damageBatch;game.damageBatch=async function(hits,...args){const row={hits:hits.slice(),before:genericProofSnapshot(context,[])};context.batchEvidence.push(row);row.actual=await originalBatch.call(this,hits,...args);row.after=genericProofSnapshot(context,[]);return row.actual;};
@@ -58,6 +60,22 @@ function installEffectEvidence(context){
 }
 
 function stageCardCosts(MTG,ctx,entry){
+  // A printed "unless <mana> was spent to cast it" clause kills the permanent
+  // in every other proof unless that mana is actually paid, so the cast is
+  // funded for it up front. Staging the clause itself overrides this again.
+  if(!ctx.paymentCondition){
+    const find=node=>{
+      if(!node||typeof node!=='object')return null;
+      if(node.kind==='mana-spent'&&Array.isArray(node.colors))return node;
+      for(const value of Object.values(node)){
+        const found=Array.isArray(value)?value.reduce((hit,item)=>hit||find(item),null):find(value);
+        if(found)return found;
+      }
+      return null;
+    };
+    const spent=find(entry.implementation||[]);
+    if(spent)ctx.paymentCondition=spent;
+  }
   const stage=cost=>{
     if(cost.kind==='exileGraveyard')for(let i=0;i<cost.quantity.min;i++)zoneCard(MTG,ctx.a,fixtureDefinition('V7 required exile '+i,cost.object.types||['Creature'],{power:'2',toughness:'2'}),'graveyard');
     if(cost.kind==='sacrifice')permanent(MTG,ctx.game,ctx.a,fixtureDefinition('V6 required sacrifice',cost.object.types||['Creature'],{super:['Legendary'],power:'0',toughness:'20'}));
@@ -293,6 +311,8 @@ function cardState(card) {
   return {
     zone: card.zone,
     zoneVersion: card.zoneVersion,
+    oracleFace: card.oracleFace || null,
+    oracleTransformCount: card.oracleTransformCount || 0,
     ctrl: card.ctrl,
     attacking: card.attacking, blocking: card.blocking,
     types: (card.zone==='battlefield'?card.cur?.types||[]:card.def?.types||[]).slice(),
@@ -503,6 +523,8 @@ function genericProofSnapshot(context, trackedCards) {
     drawEvidenceIndex:context.drawEvidence?.length||0,
     exploreEvidenceIndex:context.exploreEvidence?.length||0,
     counterChangeEvidenceIndex:context.counterChangeEvidence?.length||0,
+    revealEvidenceIndex:context.revealEvidence?.length||0,
+    sacrificeEvidenceIndex:context.sacrificeEvidence?.length||0,
   };
 }
 
@@ -723,9 +745,26 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
     }}
     return;
   }
-  if(action==='gain-control'){assert.equal(subject.ctrl,a,label+': selected permanent changes controller');if(effect.temporary)assert.ok(game.untilEffects.some(row=>row.kind==='temporaryControl'&&row.iid===subject.iid));return;}
+  if(action==='gain-control'){
+    // A printed control effect may name a whole target group. Comparing the
+    // controller as a boolean keeps a failure message from serialising the
+    // entire player object graph.
+    const controlled=[subject].flat().filter(Boolean);
+    assert.ok(controlled.length,label+': control effect has a selected subject');
+    for(const card of controlled){
+      assert.equal(card.ctrl===a,true,label+': selected permanent changes controller');
+      if(effect.temporary)assert.ok(game.untilEffects.some(row=>row.kind==='temporaryControl'&&row.iid===card.iid),
+        label+': temporary control is recorded for each permanent');
+    }
+    return;
+  }
   if(action==='base-pt'||action==='animate'){
-    const cards=effect.filters?before.battlefield.filter(card=>effect.filters.some(filter=>matchesTarget(card,filter,context,source))):[subject].flat().filter(Boolean);assert.ok(cards.length,label+': base-stat subjects staged');
+    // A permanent sacrificed to pay for this very ability left the battlefield
+    // before the continuous effect applied, so it is not one of its subjects.
+    const paidWith=new Set((context.sacrificeEvidence||[]).slice(before.sacrificeEvidenceIndex||0).map(row=>row.card));
+    const cards=(effect.filters?before.battlefield.filter(card=>effect.filters.some(filter=>matchesTarget(card,filter,context,source))):[subject].flat().filter(Boolean))
+      .filter(card=>!paidWith.has(card));
+    assert.ok(cards.length,label+': base-stat subjects staged');
     for(const card of cards){const actual=card.zone==='battlefield'?card.cur:card.battlefieldLKI?.get(before.cards.get(card)?.zoneVersion);assert.ok(actual);assert.equal(actual.basePower??actual.power,amount(effect.power));assert.equal(actual.baseToughness??actual.toughness,amount(effect.toughness));for(const keyword of effect.keywords||[])assert.ok(card.kw(keyword));if(action==='animate')for(const type of effect.types)assert.ok(card.is(type));}return;
   }
   if(action==='exile-until-source-leaves'){assert.equal(subject.zone,'exile',label+': exiled while source remains');await game.move(source,'exile');assert.equal(subject.zone,'battlefield',label+': immediate return without a Stack object');return;}
@@ -860,10 +899,27 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
       for(const child of effect.reflexiveBody.effects)await assertGenericEffectEvidence(MTG,context,entry,child,source,witness.object.targets,damagedPlayer,witness.before,trace,label+'/reflexive');
     }else assert.equal(choice.result,'no');
   }else if(action==='conditional') {
-    if(effect.condition.kind==='source-controlled'&&effect.conditionTarget!==undefined){
+    // A condition bound to a chosen target only holds for some choices. When
+    // the controller picked a target it does not hold for, the printed branch
+    // is proved absent instead of being asserted as if it had run.
+    if(effect.conditionTarget!==undefined&&['source-controlled','source-stat-comparison','source-quality'].includes(effect.condition.kind)){
       const target=[selectedTargets[effect.conditionTarget]].flat()[0];
-      if(!target||before.cards.get(target)?.ctrl!==a){
-        for(const child of effect.effects)if(child.action==='draw')assert.equal(context.drawEvidence.slice(before.drawEvidenceIndex).some(row=>row.player===a&&row.source===source&&row.n===child.n),false,label+': noncontrolled target does not grant the conditional draw');
+      const state=target instanceof MTG.CardInst?before.cards.get(target):null;
+      const holds=(()=>{
+        if(!(target instanceof MTG.CardInst))return false;
+        if(effect.condition.kind==='source-controlled')return (state?state.ctrl:target.ctrl)===a;
+        if(effect.condition.kind==='source-stat-comparison'){
+          const value=Number(state?.[effect.condition.stat]??target[effect.condition.stat])||0;
+          return effect.condition.comparison==='greater'?value>=effect.condition.threshold:value<=effect.condition.threshold;
+        }
+        return matchesTarget(target,effect.condition.filter,context,target);
+      })();
+      if(!holds){
+        // Only the draw is provably absent: another effect in the same
+        // resolution may legitimately place counters of the same kind.
+        for(const child of effect.effects){
+          if(child.action==='draw')assert.equal(context.drawEvidence.slice(before.drawEvidenceIndex).some(row=>row.player===a&&row.source===source),false,label+': an unmet condition grants no draw');
+        }
         return;
       }
     }
@@ -922,6 +978,23 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
   else if(action==='learn'){
     const query=trace.find(item=>item.query.type==='chooseOption'&&item.query.prompt.startsWith('Learn:'));assert.ok(query,`${label}: Commander rummage choice`);
     if(query.result==='yes')assert.ok(a.library.length<before.players.get(a).library&&a.graveyard.some(card=>before.players.get(a).handCards.includes(card)),`${label}: rummage discard and draw`);
+  }else if(action==='reveal-hand'||action==='reveal-random-card'){
+    const owner=genericEffectPlayer(effect,selectedTargets,source,a,damagedPlayer,context);
+    assert.ok(owner instanceof MTG.Player,label+': the reveal names a player');
+    const hand=before.players.get(owner).handCards;
+    assert.ok(hand.length,label+': the revealed hand has cards');
+    const rows=(context.revealEvidence||[]).slice(before.revealEvidenceIndex||0).filter(row=>row.ctrl===owner);
+    assert.ok(rows.length,label+': the printed reveal reaches the controller');
+    const shown=rows.at(-1).cards;
+    if(action==='reveal-random-card'){
+      assert.equal(shown.length,1,label+': exactly one card is revealed at random');
+      assert.ok(hand.includes(shown[0]),label+': the random card comes from that hand');
+    }else{
+      assert.equal(shown.length,hand.length,label+': the whole hand is revealed');
+      assert.ok(shown.every(card=>hand.includes(card)),label+': every revealed card is from that hand');
+    }
+    assert.ok(hand.every(card=>card.zone==='hand'),label+': a reveal changes no zone');
+    return;
   }else if(action==='reveal-hand-discard')assert.ok(subject[effect.destination||'graveyard'].some(card=>before.players.get(subject).handCards.includes(card)),`${label}: chosen revealed hand card moved`);
   else if (action === 'draw') {
     const draw=context.drawEvidence?.find(row=>row.player===player&&row.source===source&&row.n===n);
@@ -1099,6 +1172,21 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
   } else if (action === 'discard-each-opponent') {
     assert.ok(a.opponents(game).every(opponent => opponent.hand.length <= before.players.get(opponent).hand - n),
       `${label}: each opponent discards`);
+  } else if(action==='transform-self'){
+    const faces=MTG.OracleV8Faces?.physical(source);
+    assert.ok(faces&&faces.faces.length===2,label+': the source is a printed double-faced card');
+    const started=before.cards.get(source);
+    if(source.zone!=='battlefield'){
+      // A permanent that already left the battlefield turns back to its front
+      // face and never carries the other one into another zone.
+      assert.equal(source.oracleFace,'front',label+': a card outside the battlefield shows its front face');
+      return;
+    }
+    assert.ok((source.oracleTransformCount||0)>(started?.oracleTransformCount||0),label+': the permanent actually transforms');
+    assert.notEqual(source.oracleFace,started?.oracleFace??'front',label+': it turns to its other printed face');
+    assert.equal(source.def,MTG.OracleV8Faces.faceDefinition(faces,source.oracleFace),label+': the active definition is that printed face');
+    assert.equal(source.name,source.def.name,label+': the permanent takes that face\'s printed name');
+    return;
   } else assert.fail(`${entry.raw.name}: no nested generic-effect proof for ${action}`);
 }
 
@@ -1128,7 +1216,10 @@ async function enterPermanentProof(MTG, context, entry, {holdLandTriggers=false}
     assert.equal(card.zone, 'stack', `${card.name}: stack zone`);
     await resolveAll(game);
     const expectedZone = Number(entry.raw.toughness) <= 0 && !card.def.etbCounters ? 'graveyard' : 'battlefield';
-    assert.equal(card.zone, expectedZone,
+    // A permanent whose printed entry sacrifices it legitimately ends in the
+    // graveyard instead of staying on the battlefield.
+    const selfSacrifice = JSON.stringify(entry.implementation || []).includes('"sacrifice-source"');
+    assert.ok(card.zone === expectedZone || (selfSacrifice && card.zone === 'graveyard'),
       `${card.name}: resolves and state-based actions are applied (library=${a.library.length}, lost=${a.lost}, log=${game.log.slice(-4).map(item => item.msg).join(' | ')})`);
   }
   if(!(holdLandTriggers&&entry.raw.types.includes('Land')))await resolveAll(game);
@@ -2593,6 +2684,11 @@ function flattenSpellV4Targets(targetIds, chosenById) {
 function assertSpellV4EffectEvidence(MTG, context, entry, effect, chosenById, before, trace, label, priorZoneMoves) {
   const { game, a } = context;
   const originallyChosen = flattenSpellV4Targets(effect.targetIds || [], chosenById);
+  // "Any number of target ..." is a legal empty announcement: with nothing
+  // chosen the printed effect has no subjects and does nothing.
+  const body=(entry.implementation||[]).map(op=>op.kind==='spell-v4'?op:op.v4Body).find(Boolean);
+  const specs=(body?.targets||[]).filter(spec=>(effect.targetIds||[]).includes(spec.id));
+  if(!originallyChosen.length&&specs.length&&specs.every(spec=>(spec.quantity?.min??1)===0))return;
   const staleTargets = originallyChosen.filter(subject => priorZoneMoves.has(subject));
   for (const subject of staleTargets) {
     const previous = priorZoneMoves.get(subject);
@@ -2946,7 +3042,9 @@ async function spellV4RuntimeOperationProof(MTG, entry, operation, role, nested=
           }
         }
       }
-      if (role === 'ai' && (stackObject.targets || []).length) {
+      // A legal empty announcement means the local AI declined an optional
+      // group; the choice is only proved when it actually named a target.
+      if (role === 'ai' && (stackObject.targets || []).flat().filter(Boolean).length) {
         assert.ok(context.aiTrace.some(query => query.type === 'chooseTargets'),
           `${entry.raw.name}/${role}: genuine local AI receives spell-v4 target choice`);
       }
@@ -3079,7 +3177,7 @@ async function operationProof(MTG, entry, operation, role = 'human') {
     assert.equal(operation.faces.length, 2, entry.raw.name + ': both complete printed faces');
     let checks = 0;
     for (const face of operation.faces) {
-      const faceEntry = faceProofEntry(entry, face);
+      const faceEntry = faceProofEntry(entry, face, operation.layout);
       checks += await withFaceProof(faceEntry, async () => {
         let faceChecks = 0;
         try {

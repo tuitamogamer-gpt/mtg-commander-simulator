@@ -128,7 +128,7 @@ img { -webkit-user-drag: none; }
 .mini .m1counter { position:absolute; top:32px; right:2px; z-index:3; display:flex; align-items:center; gap:2px; min-height:14px; padding:1px 3px; color:#ffe6e1; background:linear-gradient(90deg,#6e1714ee,#32100fee); border:1px solid #e06c59; border-radius:4px; box-shadow:0 0 9px #b8362f88; font:850 7px/1 var(--tbl-cond,inherit); white-space:nowrap; }
 .mini .m1counter .gameicon { width:11px; height:11px; stroke-width:2.2; }
 .mini .m1counter span { color:#ffb4a8; }
-.mini .cnt2 { position: absolute; top: 48px; right: 2px; background: #2a3f6add; color: #dfe8ff; font-size: 9px; padding: 1px 3px; border-radius: 4px; letter-spacing: .3px; white-space: nowrap; }
+.mini .cnt2 { position: absolute; bottom: 15px; right: 2px; z-index: 3; background: #2a3f6add; color: #dfe8ff; font-size: 9px; padding: 1px 3px; border-radius: 4px; letter-spacing: .3px; white-space: nowrap; }
 .mini .crewtag { position: absolute; bottom: 14px; left: 2px; background: #6a4a1add; color: #ffe0b0; font-size: 7.5px; letter-spacing: .12em; padding: 1px 3px; border-radius: 3px; }
 .mini .att { position: absolute; top: 34px; right: 2px; background: #6a5a2add; font-size: 9px; padding: 1px 3px; border-radius: 4px; }
 .mini .badge { position: absolute; top: 2px; left: 2px; display: flex; gap: 2px; color: #f1c36d; filter: drop-shadow(0 0 2px #000); }

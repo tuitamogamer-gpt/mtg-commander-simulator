@@ -725,7 +725,10 @@ function closedGenericEffectSequenceCore(card, value) {
     // supported; other token-pronoun continuations must remain fail-closed.
     if (followsTokenCreation && /\bit\b/i.test(clause) && !tokenCounterReference) return null;
     const offset = merged.targets.length;
-    const remapValue=value=>Array.isArray(value)?value.map(remapValue):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,['target','sourceTarget','otherTarget','who','index','conditionTarget'].includes(key)&&typeof item==='number'?item+offset:remapValue(item)])):value;
+    // A binding created above already names an absolute target index, so the
+    // clause offset must not be applied to it a second time.
+    const boundKinds=['locked-player','target-controller','target-owner'];
+    const remapValue=value=>Array.isArray(value)?value.map(remapValue):value&&typeof value==='object'?(boundKinds.includes(value.kind)?value:Object.fromEntries(Object.entries(value).map(([key,item])=>[key,['target','sourceTarget','otherTarget','who','index','conditionTarget'].includes(key)&&typeof item==='number'?item+offset:remapValue(item)]))):value;
     if(extensionsActive>=7&&offset&&/^up to one other target /i.test(clause)&&parsed.targets.length===1){delete parsed.targets[0].excludeSelf;parsed.targets[0].differentFromPrevious=true;}
     for (const effect of parsed.effects) {
       const adjusted = { ...effect };
@@ -1956,7 +1959,7 @@ export function validateManaCost(manaCost) {
 }
 
 function semanticClassCore(card) {
-  if(extensionsActive===8&&card.layout==='modal_dfc')return compileFaces(card,{compile:face=>semanticClass(face,{compilerVersion:8}),raw:rawCard});
+  if(extensionsActive===8&&['modal_dfc','transform'].includes(card.layout))return compileFaces(card,{compile:face=>semanticClass(face,{compilerVersion:8}),raw:rawCard});
   if(extensionsActive>=7&&/^Backup \d+/m.test(stripReminderText(card.oracle_text||''))){
     if(!card.type_line.includes('Creature')||card.layout!=='normal')return {reason:'backup-needs-normal-creature'};
     const text=stripReminderText(card.oracle_text),lines=text.split('\n').filter(Boolean),backup=line=>/^Backup \d+$/.test(line),plain=lines.filter(line=>!backup(line));
@@ -2082,43 +2085,6 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
     // scope. A trigger on one face cannot lend its event or X to the other.
     if(extensionsActive===8&&operations.length===1&&operations[0].kind==='double-faced-v8')return result;
     if(extensionsActive>=7&&operations.some(op=>op.kind==='generic-static'&&JSON.stringify(op.condition||{}).includes('"kind":"source-stat-comparison"')&&(op.power||op.toughness||op.grantedOperation)))return {reason:'power-dependent-continuous-layer-needs-semantics'};
-    // v8 deferrals: printed shapes whose executable proof does not exist yet.
-    // Each one is measured against the imported set before it is added, so a
-    // frozen batch can never change compilation.
-    if(extensionsActive===8){
-      const deferred=node=>{
-        if(!node||typeof node!=='object')return null;
-        if(node.action==='conditional'&&node.condition?.kind==='source-stat-comparison'&&node.conditionTarget!==undefined)
-          return 'target-stat-condition-needs-proof';
-        if(node.action==='conditional'&&node.condition?.kind==='source-quality'&&
-          (node.effects||[]).some(child=>child.action==='token-key'))
-          return 'target-quality-token-branch-needs-proof';
-        if(node.action==='optional-sacrifice'&&(node.effects||[]).some(child=>child.action==='base-pt'&&
-          (child.power?.kind==='sacrificed-stat'||child.toughness?.kind==='sacrificed-stat')))
-          return 'sacrificed-stat-base-pt-needs-proof';
-        for(const value of Object.values(node)){
-          const reason=Array.isArray(value)?value.reduce((found,item)=>found||deferred(item),null):deferred(value);
-          if(reason)return reason;
-        }
-        return null;
-      };
-      const reason=deferred(operations);
-      if(reason)return {reason};
-      for(const op of operations){
-        const specs=op.targets||[];
-        let control=false;
-        const walk=node=>{
-          if(!node||typeof node!=='object')return;
-          if(node.action==='gain-control'&&typeof node.target==='number'){
-            const spec=specs[node.target];
-            if(spec&&(spec.unbounded||Number(spec.max)>1))control=true;
-          }
-          for(const value of Object.values(node))Array.isArray(value)?value.forEach(walk):walk(value);
-        };
-        walk(op.effects);
-        if(control)return {reason:'multi-target-control-needs-proof'};
-      }
-    }
     if(extensionsActive>=7&&operations.some(op=>op.kind==='generic-trigger'&&!['self','self-card','self-combat'].includes(op.eventFilter)&&JSON.stringify(op.condition||{}).includes('"implicit":true')))return {reason:'event-stat-condition-needs-binding'};
     if(extensionsActive>=7)for(const op of operations)if(JSON.stringify(op).includes('"action":"return-grave-source"')){
       if(op.kind==='generic-ability'&&!op.from&&!op.onceEachTurn&&Object.keys(op.cost||{}).every(key=>['mana','discard','discardFilter','tapFilter','tapN','sacWhat','sacOther','sacFilter','sacN','exileFilter','exileFromGY'].includes(key))){op.from='graveyard';op.retainGraveSource=true;}
@@ -2223,7 +2189,7 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
 
 function rawCard(card) {
   if(card.layout==='split'&&card.card_faces?.length===2)card={...card,mana_cost:card.card_faces.map(face=>face.mana_cost).join(''),type_line:[...new Set(card.card_faces.map(face=>face.type_line))].join(' '),oracle_text:card.card_faces.map(face=>face.name+': '+face.oracle_text).join('\n')};
-  if(['adventure','modal_dfc'].includes(card.layout)&&card.card_faces?.length===2)card={...card,...card.card_faces[0],name:card.name};
+  if(['adventure','modal_dfc','transform'].includes(card.layout)&&card.card_faces?.length===2)card={...card,...card.card_faces[0],name:card.name};
   const parsed = parseTypeLine(card.type_line);
   const raw = {
     name: card.name,
@@ -2251,7 +2217,7 @@ function rawCard(card) {
 function catalogCard(card) {
   return {
     typeLine: card.type_line,
-    ...(['adventure','split','modal_dfc'].includes(card.layout)?{aliases:card.card_faces.map(face=>face.name)}:{}),
+    ...(['adventure','split','modal_dfc','transform'].includes(card.layout)?{aliases:card.card_faces.map(face=>face.name)}:{}),
     colorIdentity: card.color_identity || [],
     colors: card.colors || [],
     keywords: card.keywords || [],
@@ -2459,7 +2425,7 @@ export function createImportPlan({
     }
     sourceNames.add(card.name);
     sourceOracleIds.add(card.oracle_id);
-    if (legacyNames.has(card.name)||(compilerVersion>=7&&card.layout==='adventure'&&legacyNames.has(card.card_faces?.[0]?.name))||(compilerVersion===8&&card.layout==='modal_dfc'&&card.card_faces?.some(face=>legacyNames.has(face.name)))) {
+    if (legacyNames.has(card.name)||(compilerVersion>=7&&card.layout==='adventure'&&legacyNames.has(card.card_faces?.[0]?.name))||(compilerVersion===8&&['modal_dfc','transform'].includes(card.layout)&&card.card_faces?.some(face=>legacyNames.has(face.name)))) {
       addReason(deferredByReason, deferredExamples, 'already-in-legacy-engine', card);
       continue;
     }

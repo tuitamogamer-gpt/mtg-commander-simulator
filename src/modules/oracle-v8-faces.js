@@ -46,7 +46,7 @@
   }
 
   function compile(entry, operation, compileFace) {
-    if (operation.layout !== 'modal_dfc' || operation.faces?.length !== 2 || operation.faces.some((face, index) => face.key !== keys[index] || !face.raw?.name || !Array.isArray(face.raw.types))) fail('invalid complete face descriptor');
+    if (!['modal_dfc', 'transform'].includes(operation.layout) || operation.faces?.length !== 2 || operation.faces.some((face, index) => face.key !== keys[index] || !face.raw?.name || !Array.isArray(face.raw.types))) fail('invalid complete face descriptor');
     const raw = {}, scripts = {};
     for (const face of operation.faces) {
       const faceEntry = {...face, oracleId: entry.oracleId, raw: {...face.raw, kws: [...(face.raw.kws || [])]}};
@@ -101,12 +101,18 @@
     return faceDefinition(tokenFaces, key);
   }
 
+  // A transforming card is always cast or played as its front face; only a
+  // modal card offers a choice between both printed faces.
+  function playableFaces(faces) {
+    return faces.layout === 'transform' ? faces.faces.filter(face => face.key === 'front') : faces.faces;
+  }
+
   function castCandidates(game, player, card, from = card.zone) {
     const faces = physical(card);
-    if (!faces || faces.layout !== 'modal_dfc' || card.zone !== from) return [];
+    if (!faces || card.zone !== from) return [];
     const mine = card.owner === player;
     const result = [];
-    for (const face of faces.faces) {
+    for (const face of playableFaces(faces)) {
       const def = face.def, candidate = view(card, face.key);
       if (def.types.includes('Land')) continue;
       const offer = base => result.push({...base, oracleFace: face.key, name: def.name, label: def.name + (def.cost ? ' ' + def.cost : '')});
@@ -147,9 +153,9 @@
 
   function landFaces(game, player, card) {
     const faces = physical(card);
-    if (!faces || faces.layout !== 'modal_dfc') return [];
+    if (!faces) return [];
     const mine = card.owner === player, from = card.zone;
-    return faces.faces.filter(face => {
+    return playableFaces(faces).filter(face => {
       if (!face.def.types.includes('Land')) return false;
       const candidate = view(card, face.key);
       if (from === 'hand') return mine && player.hand.includes(card);

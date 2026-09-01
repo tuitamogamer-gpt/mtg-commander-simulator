@@ -4,6 +4,7 @@ export function stageFalseCondition(MTG,ctx,condition,source,helpers){
  const {game,a}=ctx;
  if(condition.kind==='cast-main-phase'){game.phase='end';ctx.paymentCondition=null;}
  else if(condition.kind==='city-blessing')a.cityBlessing=false;
+ else if(condition.kind==='spells-cast-last-turn')for(const player of game.players)player.lastTurnSpellsCast=condition.max!==undefined?(condition.max+1):0;
  else if(condition.kind==='starting-life')a.life=(a.startingLife??40)+condition.offset+(condition.comparison==='greater'?-1:1);
  else if(condition.kind==='source-controlled')source.ctrl=ctx.b;
  else if(condition.kind==='opponent-count-range'){
@@ -70,6 +71,11 @@ export function stageCondition(MTG,ctx,condition,source,helpers) {
   const add=(what='Creature',extras={})=>permanent(MTG,game,a,fixtureDefinition('V5 condition '+what,[what],{power:'5',toughness:'20',...extras}));
   switch(condition.kind){
     case 'city-blessing': a.cityBlessing=true;break;
+    // Day/night checks read the turn that just ended, so the recorded
+    // per-player spell counts are set to satisfy the printed comparison.
+    case 'spells-cast-last-turn':
+      for(const player of game.players)player.lastTurnSpellsCast=condition.max!==undefined?0:(condition.playerMin||2);
+      break;
     case 'source-controlled': if(source)source.ctrl=a;break;
     case 'starting-life': a.life=(a.startingLife??40)+condition.offset;break;
     case 'opponent-count-range': {
@@ -115,7 +121,9 @@ export function stageCondition(MTG,ctx,condition,source,helpers) {
     }
     case 'source-attacked': source.meta._attackedTurn=game.turnNo;break;
     case 'source-entry-turn': source.meta._enteredTurn=game.turnNo;break;
-    case 'not': break;
+    // "unless <mana> was spent" is a negated payment check, so that payment is
+    // deliberately not made. Every other negated condition keeps its no-op.
+    case 'not': if(condition.condition?.kind==='mana-spent')stageFalseCondition(MTG,ctx,condition.condition,source,helpers);break;
     case 'all': for(const item of condition.conditions)stageCondition(MTG,ctx,item,source,helpers);break;
     case 'any': stageCondition(MTG,ctx,condition.conditions[0],source,helpers);break;
     case 'count-comparison': if(condition.min===condition.max&&condition.count.zone==='battlefield'){
@@ -286,7 +294,12 @@ export async function characteristicProof(MTG,entry,op,role,h){
   const {game,a}=ctx;h.fund(a);h.fillLibrary(MTG,a,30);
   if(op.count.kind!=='life-total')stageCount(MTG,ctx,op.count,h);
   const source=h.zoneCard(MTG,a,entry.raw.name,'hand');
+  // A characteristic printed on a transforming card's back face only defines
+  // that permanent while it is turned to that face on the battlefield; in every
+  // other zone the card shows its front face instead.
+  const backFaceOnly=entry.oracleLayout==='transform'&&entry.oracleFace==='back';
   const check=()=>{
+    if(backFaceOnly&&source.zone!=='battlefield')return;
     const value=countValue(ctx,source,op.count)*op.multiply+op.offset;
     if(op.power)assert.equal(source.power,value,entry.raw.name+': CDA power in '+source.zone);
     if(op.toughness)assert.equal(source.toughness,value+op.toughnessOffset,entry.raw.name+': CDA toughness in '+source.zone);
@@ -444,7 +457,7 @@ export async function staticProof(MTG,entry,op,role,h){
 
 export const mechanicKinds=new Set(['mechanic-unearth','mechanic-grave-return-self','mechanic-embalm','mechanic-eternalize','mechanic-soulshift','mechanic-modular','mechanic-fabricate','mechanic-living-weapon','mechanic-for-mirrodin','mechanic-offspring','mechanic-afflict','mechanic-ingest','mechanic-ninjutsu','mechanic-foretell','mechanic-retrace','doesnt-untap']);
 for(const kind of ['replicate','ravenous','graveyard-lands','conditional-alternative'])mechanicKinds.add('mechanic-'+kind);
-for(const kind of ['harmonize-v8','ward-v8'])mechanicKinds.add('mechanic-'+kind);
+for(const kind of ['harmonize-v8','ward-v8','strive-v8'])mechanicKinds.add('mechanic-'+kind);
 for(const kind of ['player-hexproof','additional-land','dethrone','rampage','mobilize','squad','blitz','warp','evoke','kicker','multikicker','escape','additional-costs','no-max-hand','echo','dash','dredge','plot','devour','graft','surge','spectacle','madness','buyback','split-second','jump-start','fading','vanishing','cumulative-upkeep'])mechanicKinds.add('mechanic-'+kind);
 export async function mechanicProof(MTG,entry,op,role,h){
  const controller=h.decision({chooseX:(g,q)=>Math.min(3,q.max??3),chooseCards:(g,q)=>q.from.slice(0,q.max??q.min??1),chooseTargets:(g,q)=>q.candidates.slice(0,q.max??q.min??1),chooseOption:(g,q)=>q.options.find(o=>o.key==='yes')?.key||q.options[0].key});
@@ -545,6 +558,33 @@ export async function mechanicProof(MTG,entry,op,role,h){
  }
  if(op.kind==='mechanic-split-second'){
    assert.equal(await game.castSpell(a,source,{from:'hand'}),true);assert.equal(game.hasSplitSecond(),true);const response=h.zoneCard(MTG,b,'Opt','hand');assert.equal(game.canCastTiming(b,response),false);assert.equal(await game.castSpell(b,response,{from:'hand'}),false);await h.resolveAll(game);assert.equal(game.hasSplitSecond(),false);return 3;
+ }
+ if(op.kind==='mechanic-strive-v8'){
+   // Strive is a cost modifier on one printed target group: the extra cost must
+   // be paid once for every target beyond the first, and the announced group
+   // must survive onto the Stack.
+   const generic=entry.implementation.find(operation=>operation.kind==='spell-generic'||operation.kind==='spell-v4');
+   assert.ok(generic,entry.raw.name+': strive has a printed body');
+   const spec=(generic.targets||[])[0];
+   const fixtures=spec&&generic.kind==='spell-generic'
+     ?[0,1].map(index=>h.stageGenericTarget(MTG,ctx,{...spec,unbounded:false,min:1,max:1},'strive-'+index,
+       (generic.effects||[]).find(effect=>effect.target===0)))
+     :[];
+   if(role==='human'&&fixtures.length){
+     const decide=a.controller.decide.bind(a.controller);
+     a.controller.decide=async(g,q)=>q.type==='chooseTargets'?fixtures.filter(card=>q.candidates.includes(card)):decide(g,q);
+   }
+   const printed=MTG.parseCost(entry.raw.cost||''),extra=MTG.parseCost(op.cost);
+   const base=printed.generic+printed.pips.length,step=extra.generic+extra.pips.length;
+   assert.equal(await game.castSpell(a,source,{from:'hand'}),true,entry.raw.name+': strive cast is paid');
+   const object=game.stack.find(row=>row.card===source);
+   assert.ok(object,entry.raw.name+': strive spell uses the Stack');
+   const chosen=(object.targets||[]).flat().filter(Boolean).length;
+   assert.equal(object.striveTargets,chosen,entry.raw.name+': every announced target is locked');
+   if(role==='human'&&fixtures.length)assert.equal(chosen,fixtures.length,entry.raw.name+': the controller announces both printed targets');
+   assert.equal(object.manaSpent,base+step*Math.max(0,chosen-1),entry.raw.name+': the printed strive cost is paid for each target beyond the first');
+   await h.resolveAll(game);
+   return 4;
  }
  if(op.kind==='mechanic-ward-v8'){
    // Ward is proved on the real targeting path: an opponent's printed removal

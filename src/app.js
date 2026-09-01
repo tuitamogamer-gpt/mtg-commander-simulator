@@ -163,6 +163,7 @@ import './oracle-batches/batch-0143.js';
 import './oracle-batches/batch-0144.js';
 import './oracle-batches/batch-0145.js';
 import './oracle-batches/batch-0146.js';
+import './oracle-batches/batch-0147.js';
 import './oracle-batches/sauron-dark-lord.js';
 import './modules/lands.js';
 import './modules/scripts_hazel_abzan.js';

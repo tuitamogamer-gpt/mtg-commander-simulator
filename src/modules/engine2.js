@@ -5276,7 +5276,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this._trigsThisTurn = 0;
     this._extraCombats = 0;
     this._additionalPhases = [];
-    for (const q of this.players) q.turnState = q.freshTurnState();
+    // Day/night style checks read the turn that just ended, so its per-player
+    // spell counts are carried forward before the fresh turn state replaces it.
+    for (const q of this.players) { q.lastTurnSpellsCast = q.turnState.spellsCast || 0; q.turnState = q.freshTurnState(); }
     p.landsPlayed = 0; p.maxLands = 1;
     // Ko me napao u SVOM prošlom potezu (Weathered Sentinels i sl.). Set se ne
     // smije brisati na početku mog poteza — tada se baš i čita — nego se prebaci

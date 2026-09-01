@@ -215,10 +215,12 @@ export function extensionCost(text, card = null) {
   return Object.keys(cost).length ? cost : null;
 }
 export function modifierOperation(card, line, helpers = {}) {
-  // Harmonize is a printed cost modifier whose whole behaviour the engine
-  // already executes; only its declaration was missing. Strive is deliberately
-  // still out of scope: its printed bodies include v4 target groups and an
-  // unbounded control group that have no executable proof yet.
+  // Strive and Harmonize are printed cost modifiers whose whole behaviour the
+  // engine already executes; only their declaration was missing. The "Strive —"
+  // label is an ability word and is stripped before parsing, so the printed
+  // rule arrives without it.
+  const strive=/^(?:Strive — )?This spell costs ((?:\{[^}]+\})+) more to cast for each target beyond the first\.$/.exec(line);
+  if(strive&&/\b(?:Instant|Sorcery)\b/.test(card.type_line||''))return {kind:'mechanic-strive-v8',cost:strive[1],contract:'mechanic-strive-v8'};
   const harmonize=/^Harmonize ((?:\{[^}]+\})+)$/.exec(line);
   if(harmonize&&/\b(?:Instant|Sorcery)\b/.test(card.type_line||''))return {kind:'mechanic-harmonize-v8',cost:harmonize[1],contract:'mechanic-harmonize-v8'};
   const mayhemOperation=mayhem.extensionLine(card,line);

@@ -178,6 +178,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'commander-pairing': { mechanics: ['commander pairing'], path: 'exact printed pairing tag → commander eligibility and exact mate rule → combined color identity; Partner with also targets a player, searches the named card and shuffles' },
     'mechanic-bestow': { mechanics: ['bestow'], path: 'choose the alternative cost → target as an Aura spell → enter attached, or continue resolving as a creature when the target is illegal → become a creature when unattached' },
     'mechanic-entwine': { mechanics: ['entwine'], path: 'choose every printed mode → pay the exact additional mana or sacrifice cost → announce every target → resolve the chosen modes in printed order' },
+    'mechanic-strive-v8': { mechanics: ['strive'], path: 'announce every target → printed strive cost per target beyond the first → single payment → resolution against the whole target set' },
     'mechanic-ward-v8': { mechanics: ['ward'], path: 'opponent target → ward trigger → pay the printed life or discard cost or counter the spell' },
     'mechanic-mayhem-v8': { mechanics: ['mayhem'], path: 'discard this turn → graveyard cast for the mayhem cost → resolution → exile instead of graveyard' },
     'mechanic-harmonize-v8': { mechanics: ['harmonize'], path: 'graveyard cast permission → harmonize cost with the optional creature tap reduction → resolution → exile instead of graveyard' },

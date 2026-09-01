@@ -306,6 +306,35 @@ export function resolutionCostEffect(card, line, helpers) {
 
 export function extensionEffect(card, line, helpers) {
   if (typeof line !== 'string' || !line.endsWith('.')) return null;
+  // "Sacrifice it unless <mana> was spent to cast it" is a printed condition on
+  // how the spell was paid for, not an optional payment on resolution.
+  const unlessSpent = /^Sacrifice (?:it|this (?:creature|artifact|enchantment|permanent))(?: unless|, unless) ((?:\{[WUBRGC]\})+) was spent to cast (?:it|this spell)\.$/i.exec(line);
+  if (unlessSpent) {
+    const colors = [...unlessSpent[1].matchAll(/\{([WUBRGC])\}/g)].map(match => match[1]);
+    return { effects: [{ action: 'conditional', condition: { kind: 'not', condition: { kind: 'mana-spent', colors } },
+      effects: [{ action: 'sacrifice-source' }] }], targets: [], optional: false };
+  }
+  // A transforming permanent swaps to its other printed face and keeps its
+  // physical identity. Only the self reference is closed here.
+  if (/^Transform (?:this (?:creature|artifact|enchantment|land|permanent|planeswalker|battle)|~)\.$/i.test(line)
+    || (card?.name && new RegExp('^Transform ' + card.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\.$', 'i').test(line))) {
+    return { effects: [{ action: 'transform-self' }], targets: [], optional: false };
+  }
+  // A printed hand reveal shows the cards to the table (or privately to you)
+  // and changes no zone. Its only closed shapes are the whole hand and one
+  // card taken at random.
+  const handReveal = /^(?:(Target (?:opponent|player)) reveals their hand|Look at (target (?:opponent|player))'s hand)\.$/i.exec(line);
+  if (handReveal) {
+    const look = !!handReveal[2];
+    const phrase = (handReveal[1] || handReveal[2]).toLowerCase();
+    const spec = (helpers.target || v7Target)(phrase);
+    if (spec) return { effects: [{ action: 'reveal-hand', who: 0, ...(look ? { look: true } : {}) }], targets: [spec], optional: false };
+  }
+  const randomReveal = /^(Target (?:opponent|player)) reveals a card at random from their hand\.$/i.exec(line);
+  if (randomReveal) {
+    const spec = (helpers.target || v7Target)(randomReveal[1].toLowerCase());
+    if (spec) return { effects: [{ action: 'reveal-random-card', who: 0 }], targets: [spec], optional: false };
+  }
   const resolutionCost = resolutionCostEffect(card, line, helpers);
   if (resolutionCost) return resolutionCost;
   let text = line.slice(0, -1), optional = false;

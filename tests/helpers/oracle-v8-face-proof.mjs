@@ -2,15 +2,16 @@ import assert from 'node:assert/strict';
 
 let activeFaceProof = null;
 
-export function faceProofEntry(entry, face) {
+export function faceProofEntry(entry, face, layout = 'modal_dfc') {
   return {...entry, semanticClass: face.semanticClass, implementedKeywords: face.implementedKeywords || [],
     implementation: face.implementation || [], oracleContracts: face.oracleContracts || [], rulesCore: face.rulesCore,
-    raw: {...face.raw, name: entry.raw.name}, oracleFace: face.key, oraclePrintedName: face.raw.name};
+    raw: {...face.raw, name: entry.raw.name}, oracleFace: face.key, oraclePrintedName: face.raw.name, oracleLayout: layout};
 }
 
 export async function withFaceProof(entry, run) {
   const previous = activeFaceProof;
-  activeFaceProof = {canonicalName: entry.raw.name, face: entry.oracleFace, printedName: entry.oraclePrintedName};
+  activeFaceProof = {canonicalName: entry.raw.name, face: entry.oracleFace, printedName: entry.oraclePrintedName,
+    layout: entry.oracleLayout || 'modal_dfc'};
   try {return await run();} finally {activeFaceProof = previous;}
 }
 
@@ -26,6 +27,27 @@ function sourceMatches(card, scope) {
 export function installFaceProof(MTG, game) {
   if (!activeFaceProof) return;
   const scope = game.oracleFaceProof = {...activeFaceProof};
+  // A transforming card is only ever cast as its front face; the other face is
+  // reached on the battlefield. Its ordinary cast therefore needs no face
+  // announcement and must stay visible to the cast list.
+  if (scope.layout === 'transform') {
+    if (scope.face === 'front') return;
+    // The back face is proved where it is actually reachable: the physical card
+    // is cast or played normally and then turns to its printed back face, the
+    // same transition the printed transform ability performs.
+    const originalMove = game.move;
+    game.move = async function (card, toZone, ...rest) {
+      const result = await originalMove.call(this, card, toZone, ...rest);
+      if (sourceMatches(card, scope) && card.zone === 'battlefield' && card.oracleFace !== 'back') {
+        assert.equal(MTG.OracleV8Faces.setFace(card, 'back'), true,
+          scope.canonicalName + ': the permanent turns to its printed back face');
+        card.oracleTransformCount = (card.oracleTransformCount || 0) + 1;
+        this.recalc();
+      }
+      return result;
+    };
+    return;
+  }
   const originalCast = game.castSpell, originalLand = game.playLand, originalCost = game.spellCost, originalList = game.castableList;
   // Keep the real physical CardInst and its front definition in hand. Only
   // the announced face is selected, through the same engine option as UI/AI.

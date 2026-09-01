@@ -1669,6 +1669,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (target && target.kind) {
       const hostile = target.ctrl && target.ctrl !== player;
       const spell = target.card || target.srcCard;
+      // Countering our own spell throws away both cards; it is never chosen
+      // while any other legal object is on the Stack.
+      if (!hostile && hint === 'counter') return -1000;
       return (spell ? cardDefinitionValue(spell.def) : 2) * (hostile ? 1 : -0.5);
     }
     return 0;
@@ -2919,7 +2922,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (sem.roles.includes('counterspell')) {
         const top = game.stack[game.stack.length - 1];
-        if (!top || top.ctrl === player) breakdown.timing -= 25;
+        // A counter answers someone else's spell. With nothing of theirs on the
+        // Stack there is nothing to answer, so the card is never spent; when
+        // only our own spell sits on top the answer simply waits.
+        const opposing = game.stack.filter(object => object.kind === 'spell' && object.ctrl !== player);
+        if (!opposing.length) breakdown.timing -= 1000;
+        else if (top && top.ctrl === player) breakdown.timing -= 25;
         else if (top.kind === 'spell' && MTG.isUncounterable && MTG.isUncounterable(game, top)) {
           // The spell remains a legal target, but a counter-only response has
           // no tactical effect. Incidental riders such as Dismiss's draw do

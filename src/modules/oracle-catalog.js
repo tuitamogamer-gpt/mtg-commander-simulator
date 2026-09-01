@@ -905,6 +905,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if(choice==='tap')ctx.g.tap(card);else if(choice==='untap')ctx.g.untap(card);
       }return;
     }
+    if(effect.action==='transform-self'){
+      // A transforming permanent keeps its physical identity and swaps to its
+      // other printed face. Leaving the battlefield resets it to the front.
+      if(!sameBattlefieldSource(ctx))return;
+      const faces=MTG.OracleV8Faces?.physical(ctx.src);
+      if(!faces||faces.faces.length!==2)return;
+      const next=ctx.src.oracleFace==='back'?'front':'back';
+      if(MTG.OracleV8Faces.setFace(ctx.src,next)){
+        ctx.src.oracleTransformCount=(ctx.src.oracleTransformCount||0)+1;
+        ctx.g.recalc();
+        ctx.g.lg(`${ctx.src.name} transforms.`,'effect');
+        await ctx.g.emit('transformed',{card:ctx.src,face:next});
+      }
+      return;
+    }
     if(effect.action==='gain-control'){
       for(const card of subjects)if(card.zone==='battlefield')MTG.OracleV8Control.gain(ctx.g,card,ctx.you,{temporary:!!effect.temporary});
       ctx.g.recalc();return;
@@ -1098,6 +1113,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.meta.playableBy=ctx.you;card.meta.spellsOnly=!!effect.spellsOnly;
         if(effect.nextOwnTurn)card.meta.playableUntilOwnTurn=ctx.you.turnsStarted+1;
         else card.meta.playableUntil=ctx.g.turnNo;
+      }return;
+    }
+    if(effect.action==='reveal-hand'||effect.action==='reveal-random-card') {
+      for(const player of genericEffectSubjects(ctx,effect.who)){
+        if(!player||!Array.isArray(player.hand))continue;
+        const cards=effect.action==='reveal-random-card'
+          ? (player.hand.length?[player.hand[Math.floor(ctx.g.rnd()*player.hand.length)]]:[])
+          : player.hand.slice();
+        if(!cards.length){ctx.g.lg(`${player.name} has no cards in hand.`);continue;}
+        await ctx.g.revealToHuman({cards,ctrl:player,kind:effect.look?'look':'reveal'});
+        ctx.g.lg(effect.action==='reveal-random-card'
+          ? `${player.name} reveals ${cards[0].name} at random from their hand.`
+          : effect.look?`${ctx.you.name} looks at ${player.name}'s hand (${cards.length}).`
+            :`${player.name} reveals their hand (${cards.length}).`,'reveal');
       }return;
     }
     if(effect.action==='reveal-hand-discard') {
@@ -1769,6 +1798,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(condition.kind==='control-commander')return game.bf().some(card=>card.ctrl===p&&card.commander);
     if(condition.kind==='monarch')return game.monarch===p;
     if(condition.kind==='source-any-counter')return Object.values((evidence&&self.zoneVersion!==evidence.zoneVersion?self.battlefieldLKI?.get(evidence.zoneVersion)?.counters:self.counters)||{}).some(n=>n>0);
+    if(condition.kind==='spells-cast-last-turn'){
+      const counts=game.players.map(player=>Number(player.lastTurnSpellsCast)||0);
+      if(condition.max!==undefined)return counts.reduce((sum,n)=>sum+n,0)<=condition.max;
+      if(condition.playerMin!==undefined)return counts.some(n=>n>=condition.playerMin);
+      return false;
+    }
     if(condition.kind==='source-quality'){
       const snap=evidence&&self.zoneVersion!==evidence.zoneVersion?self.battlefieldLKI?.get(evidence.zoneVersion):null;
       const object=snap?{...snap,_oracleLKI:true,zone:'battlefield',def:{super:snap.super},cur:{super:snap.super},is:type=>snap.types.includes(type),hasSub:type=>snap.subtypes.includes(type)||snap.changeling,kw:keyword=>snap.kw.includes(keyword)}:self;

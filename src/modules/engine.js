@@ -163,6 +163,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.deck = null;
       this.colorIdentity = [];
       this.turnState = this.freshTurnState();
+      this.lastTurnSpellsCast = 0;
       this.cityBlessing = false;
       this.emblems = [];
       this.skipUntapOnce = false;
