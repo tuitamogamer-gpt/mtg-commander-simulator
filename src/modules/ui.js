@@ -74,6 +74,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.playerSheet = null;
       this.zoneBrowse = null;
       this.showLog = false;
+      // An eliminated seat may dismiss its exit overlay and keep watching; a
+      // new UI instance always starts with the overlay armed again.
+      this.eliminationDismissed = false;
+      this.leavingAsLoss = false;
       // desktop paneli — pamte se između partija; kad su oba ugašena
       // sidebar nestaje i tabla dobija punu širinu ekrana
       this.showThreat = localStorage.getItem('mtgThreat') !== '0';
@@ -616,6 +620,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // prekrivao "View log" i igra je izgledala zamrznuto na kraju partije.
       const gameOverHidden = this.showLog || this.sheet || this.playerSheet || this.zoneBrowse;
       if (g.gameOver && !gameOverHidden) root.appendChild(this.renderGameOver(g));
+      // An eliminated seat is not a finished match: the remaining players keep
+      // going, so the human gets an explicit way out instead of being stuck.
+      else if (!g.gameOver && this.me && this.me.lost && !gameOverHidden && !this.eliminationDismissed) {
+        root.appendChild(this.renderEliminated(g));
+      }
       if (this.fatalError) root.appendChild(this.renderFatalRecovery(g));
       U.localizeTree(root);
       this.reuseRenderedImages(root, renderedImages);
@@ -1623,6 +1632,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.lastResortActive) lastResort.classList.add('active');
       if (g.diplomacy && g.diplomacy.enabled) action('Diplomacy & Politics', 'Deals and proposals', () => this.openUtility('diplomacy'));
       action('Help & shortcuts', 'Rules and controls', () => { this.quickMenuOpen = false; this.showHelp = true; this.render(); });
+      if (this.me?.lost && !g.gameOver) {
+        action('I lost', 'Record the loss and return to your profile', () => {
+          this.quickMenuOpen = false;
+          this.render();
+          void this.leaveAsLoss(null);
+        });
+      }
       action('Main menu', soloSaveAvailable && account?.user ? 'Leave after the latest autosave' : 'Leave the current game', async () => {
         const warning = soloSaveAvailable && account?.user
           ? 'Leave this game? Your latest recorded action will be saved to your profile first.'
@@ -4457,6 +4473,56 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       close.onclick = () => { this.showStops = false; this.render(); };
       m.appendChild(close);
       return ov;
+    }
+
+    // Shown once the human seat is out while the table is still playing.
+    renderEliminated(g) {
+      const ov = el('div', 'overlay dark');
+      const m = el('div', 'modal wide matchrecap');
+      const alive = g.players.filter(player => !player.lost);
+      const cause = g.log.filter(entry => entry.cls === 'lose').slice(-1)[0];
+      m.appendChild(el('div', 'recaphead', `
+        <span>ELIMINATED</span>
+        <div class="gameover">You are out of this game.</div>
+        <p>${g.turnNo} turns · ${alive.length} player${alive.length === 1 ? '' : 's'} still at the table</p>
+        ${cause ? `<p>${esc(cause.msg)}</p>` : ''}`));
+      const standings = el('div', 'recapstandings');
+      [...g.players].sort((a, b) => Number(a.lost) - Number(b.lost) || b.life - a.life).forEach((player, index) => {
+        standings.appendChild(el('div', player.lost ? 'eliminated' : '',
+          `<i>${String(index + 1).padStart(2, '0')}</i><span><b>${esc(player.name)}</b><small>${esc(player.deckName || '')}</small></span><strong>${player.life}<small>LIFE</small></strong>`));
+      });
+      m.appendChild(standings);
+      const actions = el('div', 'recapactions');
+      const lost = el('button', 'pbtn primary', 'I lost');
+      lost.onclick = () => this.leaveAsLoss(lost);
+      actions.appendChild(lost);
+      const watch = el('button', 'pbtn', 'Keep watching');
+      watch.onclick = () => { this.eliminationDismissed = true; this.render(); };
+      actions.appendChild(watch);
+      const log = el('button', 'pbtn', 'View full log');
+      log.onclick = () => { this.showLog = true; ov.remove(); this.render(); };
+      actions.appendChild(log);
+      m.appendChild(actions);
+      ov.appendChild(m);
+      return ov;
+    }
+
+    // Records the completed loss on the profile, then leaves for the profile
+    // view. Falls back to the ordinary exit when no account game is running.
+    async leaveAsLoss(button) {
+      if (this.leavingAsLoss) return;
+      this.leavingAsLoss = true;
+      if (button) { button.disabled = true; button.textContent = 'Leaving…'; }
+      try {
+        if (typeof MTG.leaveAsLoss === 'function' && await MTG.leaveAsLoss()) return;
+        if (typeof MTG.exitToMainMenu === 'function') MTG.exitToMainMenu();
+        else location.reload();
+      } catch (error) {
+        console.error(error);
+        this.leavingAsLoss = false;
+        if (button) { button.disabled = false; button.textContent = 'I lost'; }
+        this.toast('Could not leave the table. Try again.');
+      }
     }
 
     renderGameOver(g) {

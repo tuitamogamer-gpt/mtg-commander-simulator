@@ -1851,10 +1851,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     let matchRecorded = false;
     completeAccountMatch = () => {
-      if (matchRecorded || !saveSetup || !accountCanWrite()) return;
+      if (matchRecorded || !saveSetup || !accountCanWrite()) return Promise.resolve(false);
       matchRecorded = true;
       clearTimeout(saveTimer);
-      void globalThis.MTGAccount.completeMatch({
+      return globalThis.MTGAccount.completeMatch({
         matchId,
         deck: saveSetup.deck,
         commanders: saveSetup.commanders,
@@ -1863,13 +1863,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }, gameAccountOwnerId).then(() => {
         ui.accountSaveStatus = { state: 'complete', text: 'Stats updated' };
         ui.queueRender();
+        return true;
       }).catch(error => {
         matchRecorded = false;
         ui.accountSaveStatus = accountBindingDisabled
           ? { state: 'error', text: 'Profile changed · saves paused' }
           : { state: 'error', text: 'Stats pending' };
         console.error('Commander profile stats update failed:', error);
+        return false;
       });
+    };
+    // An eliminated seat can leave a game the remaining players keep going.
+    // The loss is recorded exactly like any other completed match before the
+    // page returns to the profile view.
+    MTG.leaveAsLoss = async () => {
+      if (!ui.me || !ui.me.lost) return false;
+      clearTimeout(saveTimer);
+      try { await completeAccountMatch(); } catch (error) { console.error(error); }
+      // Keep the address the player arrived with and only add the marker the
+      // entry page consumes, so a signed-in seat lands on its profile.
+      const params = new URLSearchParams(location.search);
+      if (globalThis.MTGAccount?.user) params.set('view', 'profile');
+      else params.delete('view');
+      const query = params.toString();
+      location.replace(location.pathname + (query ? `?${query}` : ''));
+      return true;
     };
     if (window._accountGameCleanup) window._accountGameCleanup();
     let lastObservedAccountOwner = gameAccountOwnerId;

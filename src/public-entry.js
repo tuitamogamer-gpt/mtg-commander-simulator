@@ -243,3 +243,18 @@ const initialParams = new URLSearchParams(window.location.search);
 if (initialParams.get('room') || initialParams.get('onlineSmoke') || initialParams.get('smokeDeck')) {
   void loadGame(null);
 }
+
+// A player who left a lost table asked for their profile, so the entry page
+// opens it once the session is known and drops the marker from the address.
+if (initialParams.get('view') === 'profile') {
+  const cleaned = new URLSearchParams(initialParams);
+  cleaned.delete('view');
+  const query = cleaned.toString();
+  history.replaceState(null, '', window.location.pathname + (query ? `?${query}` : ''));
+  const account = globalThis.MTGAccount;
+  if (account) {
+    void Promise.resolve(account.whenReady?.())
+      .then(() => { if (account.user) account.open('profile'); })
+      .catch(() => {});
+  }
+}
