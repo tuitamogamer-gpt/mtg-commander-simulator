@@ -114,10 +114,24 @@ async function loadGame(mode = null) {
   }
 }
 
+function hideLoading() {
+  root.querySelector('.mainmenu-loadveil')?.remove();
+  page.inert = false;
+  root.removeAttribute('aria-busy');
+  page.querySelectorAll('[data-menu-action]').forEach(button => { button.disabled = false; });
+}
+
 globalThis.MTGAccount?.setGameLoader(async save => {
-  await loadGame(null);
-  if (!globalThis.MTG?.resumeAccountSave) throw new Error('The saved-game module did not finish loading.');
-  return globalThis.MTG.resumeAccountSave(save);
+  // Continue from the profile: the veil must never outlive the attempt. A
+  // checkpoint that no longer restores used to leave "Loading all 27 decks."
+  // on screen with the page inert, hiding the real error.
+  try {
+    await loadGame(null);
+    if (!globalThis.MTG?.resumeAccountSave) throw new Error('The saved-game module did not finish loading.');
+    return await globalThis.MTG.resumeAccountSave(save);
+  } finally {
+    hideLoading();
+  }
 });
 
 function openGuide(continueMode = null) {

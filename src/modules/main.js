@@ -1786,19 +1786,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const human = ui.controllerFor(p);
         return {
           async decide(game, request) {
-            while (replayCursor < savedTimeline.length && savedTimeline[replayCursor]?.kind === 'side') {
-              const side = savedTimeline[replayCursor];
-              replayCursor += 1;
-              ui.accountReplay = { current: replayCursor, total: savedTimeline.length };
-              await MTG.replayAccountSideAction(game, p, side.action);
-            }
-            if (replayCursor < savedTimeline.length) {
-              const recorded = savedTimeline[replayCursor];
-              if (recorded?.kind && recorded.kind !== 'decision') throw new Error(`Saved game: timeline entry ${replayCursor + 1} is invalid.`);
-              const result = MTG.restoreSaveDecision(request, p, recorded);
-              replayCursor += 1;
-              ui.accountReplay = { current: replayCursor, total: savedTimeline.length };
-              return result;
+            // A checkpoint replays the recorded decisions against a fresh game.
+            // When the rules engine or the AI changed since the save, a recorded
+            // answer can stop matching the question it now receives. That must
+            // not end the table: replay stops there and the seat plays on from
+            // the state reached so far.
+            const abandonReplay = error => {
+              console.error('Saved game replay stopped early:', error);
+              const restored = replayCursor;
+              savedTimeline.length = replayCursor;
+              recordedTimeline.length = Math.min(recordedTimeline.length, replayCursor);
+              ui.toast(`Saved game restored up to turn ${game.turnNo} (${restored} of ${resumeSave.decisions.length} actions). The rules engine changed since this save, so play continues from here.`);
+            };
+            try {
+              while (replayCursor < savedTimeline.length && savedTimeline[replayCursor]?.kind === 'side') {
+                const side = savedTimeline[replayCursor];
+                replayCursor += 1;
+                ui.accountReplay = { current: replayCursor, total: savedTimeline.length };
+                await MTG.replayAccountSideAction(game, p, side.action);
+              }
+              if (replayCursor < savedTimeline.length) {
+                const recorded = savedTimeline[replayCursor];
+                if (recorded?.kind && recorded.kind !== 'decision') throw new Error(`Saved game: timeline entry ${replayCursor + 1} is invalid.`);
+                const result = MTG.restoreSaveDecision(request, p, recorded);
+                replayCursor += 1;
+                ui.accountReplay = { current: replayCursor, total: savedTimeline.length };
+                return result;
+              }
+            } catch (error) {
+              if (!replayingSave) throw error;
+              abandonReplay(error);
             }
             if (replayingSave) {
               replayingSave = false;

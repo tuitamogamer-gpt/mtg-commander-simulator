@@ -2534,7 +2534,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               g.step === 'blockers' ? 'blockers have been declared' :
                 g.step === 'firstStrike' ? 'first-strike damage is complete' : 'combat is in progress';
             bar.appendChild(el('div', 'ptext',
-              `⚡ <b>Combat response</b>: ${stepLabel}. You have ${(rq.casts || []).length + (rq.acts || []).length} legal options.`));
+              `⚡ <b>Combat response</b>: ${stepLabel}. You have ${(rq.casts || []).length + (rq.acts || []).length} legal option${((rq.casts || []).length + (rq.acts || []).length) === 1 ? '' : 's'}.`));
           } else {
             const who = top && top.ctrl ? top.ctrl.name : 'opponent';
             const what = top ? (top.name || (top.card && top.card.name) || 'something') : 'action';
@@ -2770,8 +2770,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           bar.appendChild(actions);
           break;
         }
+        case 'cardReveal': {
+          // Tokeni/permanenti koji ulaze bez stacka: popup u sredini ekrana
+          // ima Proceed, a prompt bar kaže šta je ušlo i kome pripada.
+          const who = q.ctrl ? q.ctrl.name : 'Opponent';
+          const names = new Map();
+          for (const c of q.cards || []) names.set(c.name, (names.get(c.name) || 0) + 1);
+          const list = [...names].map(([n, k]) => k > 1 ? `${k}× ${n}` : n).join(', ');
+          const verb = q.kind === 'tokens' ? 'creates' : 'puts onto the battlefield';
+          bar.appendChild(el('div', 'ptext',
+            `👁 <b>${esc(who)}</b> ${verb}: ${esc(list)}. Review the cards, then Proceed.`));
+          break;
+        }
         default: {
-          bar.appendChild(el('div', 'ptext', esc(q.prompt || '…')));
+          bar.appendChild(el('div', 'ptext', esc(q.prompt || 'Review the panel in the centre of the table, then continue.')));
         }
       }
       return bar;

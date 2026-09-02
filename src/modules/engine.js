@@ -138,6 +138,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     plus1() { return this.counters['+1/+1'] || 0; }
   }
   MTG.CardInst = CardInst;
+  // Safety valve for token explosions: Gaea's Cradle + "create X tokens where
+  // X is the number of Squirrels you control" doubles the board on every
+  // activation and froze a catalog fuzz game at ~1500 Squirrels. A seat keeps
+  // at most this many tokens; creation beyond it is skipped and logged once
+  // per turn (a table rule, not a Comprehensive Rules effect).
+  MTG.TOKEN_LIMIT_PER_PLAYER = 250;
 
   // ============================================================
   // Player
@@ -1467,6 +1473,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       const made = [];
+      const limit = MTG.TOKEN_LIMIT_PER_PLAYER;
+      if (limit > 0 && defs.length) {
+        const owned = this.battlefield.reduce((k, c) => k + (c.isToken && c.ctrl === ctrl ? 1 : 0), 0);
+        const room = Math.max(0, limit - owned);
+        if (defs.length > room) {
+          if (ctrl.turnState.tokenLimitTurn !== this.turnNo) {
+            ctrl.turnState.tokenLimitTurn = this.turnNo;
+            this.lg(`${ctrl.name} already controls ${owned} tokens — the table limit is ${limit}, so ${defs.length - room} of ${defs.length} new tokens are not created.`, 'token');
+          }
+          defs = defs.slice(0, room);
+        }
+      }
       for (const sp of defs) {
         const def = typeof sp === 'string' ? MTG.TOKENS[sp] : sp;
         if (!def) { continue; }
@@ -3474,7 +3492,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (alive.length <= 1) {
         this.gameOver = true;
         this.winner = alive[0] || null;
-        this.lg(`🏆 ${this.winner ? this.winner.name + ' WINS!' : 'No winner.'}`, 'win');
+        this.lg(`🏆 ${this.winner ? `${U.playerVerb(this.winner, 'WIN', 'WINS')}!` : 'No winner.'}`, 'win');
         this.note('gameover', { winner: this.winner });
       }
     }

@@ -1365,6 +1365,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const g = ctx.g;
       for (const q of g.apnapFrom(ctx.you)) {
         const mine = g.creatures(q);
+        if (!mine.length) continue;          // nothing to keep or sacrifice: no empty prompt
         const picked = await q.controller.decide(g, {
           type: 'chooseCards', from: mine, min: 0, max: mine.length, prompt: 'Keep creatures (total power ≤ 4)',
           aiHint: { kind: 'slaughterKeep' },

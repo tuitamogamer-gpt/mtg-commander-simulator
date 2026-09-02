@@ -4493,6 +4493,7 @@ async function keywordProof(MTG, entry, rawKeyword, role = 'human') {
 
 test('svaki Oracle report je učitan u runtime i nightly minimum je eksplicitno podesiv', (t) => {
   const MTG = loadEngine();
+  MTG.TOKEN_LIMIT_PER_PLAYER = Infinity;  // proofs validate printed mechanics; the table token valve is covered by table-limits-and-prompts.test.mjs
   const reportNames = fs.readdirSync(path.join(root, 'reports', 'oracle-import'))
     .filter(name => /^batch-\d{4}\.json$/.test(name)).sort();
   const reports = reportNames.map(name => JSON.parse(fs.readFileSync(path.join(root, 'reports', 'oracle-import', name), 'utf8')));
@@ -4521,6 +4522,7 @@ test('svaki Oracle report je učitan u runtime i nightly minimum je eksplicitno 
 
 test('svaka generička Oracle karta i svaki deklarisani keyword imaju izvršni dokaz', async (t) => {
   const MTG = loadEngine();
+  MTG.TOKEN_LIMIT_PER_PLAYER = Infinity;  // proofs validate printed mechanics; the table token valve is covered by table-limits-and-prompts.test.mjs
   let candidates=genericEntries(MTG);
   // Draft reports use the identical executable proof before any production
   // batch/state is written. They never satisfy the report/runtime gate above.
@@ -4611,6 +4613,7 @@ test('svaka generička Oracle karta i svaki deklarisani keyword imaju izvršni d
 
 test('interaction gate odbija lažni marker, nepoznat keyword i nevažeće manual/template contracte', () => {
   const MTG = loadEngine();
+  MTG.TOKEN_LIMIT_PER_PLAYER = Infinity;  // proofs validate printed mechanics; the table token valve is covered by table-limits-and-prompts.test.mjs
   const generic = genericEntries(MTG)[0].entry.raw.name;
   const genericScript = MTG.SCRIPTS[generic];
   const genericCatalog = MTG.CARD_CATALOG[generic];
@@ -4672,6 +4675,7 @@ test('interaction gate odbija lažni marker, nepoznat keyword i nevažeće manua
 
 test('Tunnel Surveyor pravi 1/1 bijeli Enchantment Creature — Glimmer token', async () => {
   const MTG = loadEngine();
+  MTG.TOKEN_LIMIT_PER_PLAYER = Infinity;  // proofs validate printed mechanics; the table token valve is covered by table-limits-and-prompts.test.mjs
   const context = gameFor(MTG);
   fillLibrary(MTG, context.a, 5);
   await enterPermanentProof(MTG, context, genericEntries(MTG).find(row => row.entry.raw.name === 'Tunnel Surveyor').entry);
@@ -4688,6 +4692,7 @@ test('Tunnel Surveyor pravi 1/1 bijeli Enchantment Creature — Glimmer token', 
 
 test('Thor Odinson ima dvije odvojene prowess instance i dobija +2/+2 po noncreature castu', async () => {
   const MTG = loadEngine();
+  MTG.TOKEN_LIMIT_PER_PLAYER = Infinity;  // proofs validate printed mechanics; the table token valve is covered by table-limits-and-prompts.test.mjs
   const { game, a } = gameFor(MTG);
   fillLibrary(MTG, a, 5);
   const thor = permanent(MTG, game, a, 'Thor Odinson');
@@ -4704,6 +4709,7 @@ test('Thor Odinson ima dvije odvojene prowess instance i dobija +2/+2 po noncrea
 
 test('ukradeni Oracle dies-draw crta LKI kontroloru, a ne owneru', async () => {
   const MTG = loadEngine();
+  MTG.TOKEN_LIMIT_PER_PLAYER = Infinity;  // proofs validate printed mechanics; the table token valve is covered by table-limits-and-prompts.test.mjs
   const { game, a: owner, b: controller } = gameFor(MTG);
   fillLibrary(MTG, owner, 5);
   fillLibrary(MTG, controller, 5);
@@ -4722,6 +4728,7 @@ test('ukradeni Oracle dies-draw crta LKI kontroloru, a ne owneru', async () => {
 
 test('two-brid plaćanje pokriva krajnje, miješane i normal-plus-two-brid kombinacije', async () => {
   const MTG = loadEngine();
+  MTG.TOKEN_LIMIT_PER_PLAYER = Infinity;  // proofs validate printed mechanics; the table token valve is covered by table-limits-and-prompts.test.mjs
   const printedCost = '{2/R}{2/R}{2/R}';
   assert.equal(MTG.mv(printedCost), 6);
   assert.equal(MTG.costStr(MTG.parseCost(printedCost)), printedCost, 'public mana-cost text never leaks the internal TWO marker');
@@ -4782,6 +4789,7 @@ test('two-brid plaćanje pokriva krajnje, miješane i normal-plus-two-brid kombi
 
 test('Oracle any-target burn vidi Battle, stvarni handleETB postavlja defense i damage ga skida', async () => {
   const MTG = loadEngine();
+  MTG.TOKEN_LIMIT_PER_PLAYER = Infinity;  // proofs validate printed mechanics; the table token valve is covered by table-limits-and-prompts.test.mjs
 
   const castAtBattle = async (name, amount, castOptions, pool = {}) => {
     let battle = null;
@@ -4813,6 +4821,7 @@ test('Oracle any-target burn vidi Battle, stvarni handleETB postavlja defense i 
 
 test('Oracle composite targeti izvršavaju svaku alternativu i permanent/nonland filtere', async () => {
   const MTG = loadEngine();
+  MTG.TOKEN_LIMIT_PER_PLAYER = Infinity;  // proofs validate printed mechanics; the table token valve is covered by table-limits-and-prompts.test.mjs
   const rows = genericEntries(MTG);
   const find = (kind, what) => {
     for (const { entry } of rows) {
@@ -4886,6 +4895,7 @@ test('Oracle composite targeti izvršavaju svaku alternativu i permanent/nonland
 
 test('Oracle spell resolver guardovi su sigurni za stale/uncounterable/empty target stanja', async () => {
   const MTG = loadEngine();
+  MTG.TOKEN_LIMIT_PER_PLAYER = Infinity;  // proofs validate printed mechanics; the table token valve is covered by table-limits-and-prompts.test.mjs
   const rows = genericEntries(MTG).map(row => row.entry);
   const scriptFor = kind => {
     const entry = rows.find(candidate => (candidate.implementation || []).some(operation => operation.kind === kind));
@@ -4927,6 +4937,7 @@ test('Oracle spell resolver guardovi su sigurni za stale/uncounterable/empty tar
 
 test('original ten Oracle Phyrexian-cost cards require two life per unpaid pip', async () => {
   const MTG = loadEngine();
+  MTG.TOKEN_LIMIT_PER_PLAYER = Infinity;  // proofs validate printed mechanics; the table token valve is covered by table-limits-and-prompts.test.mjs
   const entries = genericEntries(MTG).filter(row=>row.batch.sequence<=66).map(row => row.entry)
     .filter(entry => /\{[WUBRG]\/P\}/.test(entry.raw.cost || ''));
   assert.equal(entries.length, 10);
