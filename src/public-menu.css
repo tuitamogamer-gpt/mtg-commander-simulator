@@ -40,7 +40,7 @@ body.account-dialog-open { overflow: hidden; }
   width: 100% !important;
   display: block !important;
   max-width: none !important;
-  min-height: 100dvh;
+  min-height: calc(100 * var(--dvhu));
   margin: 0 !important;
   padding: 0 !important;
   overflow: hidden;
@@ -51,7 +51,7 @@ body.account-dialog-open { overflow: hidden; }
 }
 
 #setup[data-app-view="home"] .mainmenu {
-  min-height: 100dvh;
+  min-height: calc(100 * var(--dvhu));
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   font-family: 'Barlow', system-ui, sans-serif;
@@ -108,7 +108,7 @@ body.account-dialog-open { overflow: hidden; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(20px, 3vw, 38px);
+  gap: clamp(20px, 3 * var(--vwu), 38px);
 }
 
 #setup[data-app-view="home"] .mainmenu-navlinks a {
@@ -203,7 +203,7 @@ body.account-dialog-open { overflow: hidden; }
   display: grid;
   grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
   align-items: center;
-  gap: clamp(36px, 5vw, 72px);
+  gap: clamp(36px, 5 * var(--vwu), 72px);
 }
 
 #setup[data-app-view="home"] .mainmenu-hero-copy {
@@ -227,7 +227,7 @@ body.account-dialog-open { overflow: hidden; }
   max-width: 620px;
   margin: 16px 0 18px;
   color: #f3efe6;
-  font: 400 clamp(46px, 4.6vw, 66px)/1.04 'Marcellus', Georgia, serif;
+  font: 400 clamp(46px, 4.6 * var(--vwu), 66px)/1.04 'Marcellus', Georgia, serif;
   letter-spacing: -.035em;
   text-wrap: balance;
 }
@@ -286,7 +286,7 @@ body.account-dialog-open { overflow: hidden; }
 .account-panel {
   position: relative;
   width: min(920px, 100%);
-  max-height: calc(100dvh - 40px);
+  max-height: calc(100 * var(--dvhu) - 40px);
   overflow: auto;
   background:
     radial-gradient(circle at 88% 2%, rgba(116, 136, 83, .14), transparent 28%),
@@ -314,7 +314,7 @@ body.account-dialog-open { overflow: hidden; }
 }
 
 .account-close:hover { color: #fff; border-color: #d8a867; }
-.account-content { padding: clamp(24px, 4vw, 48px); }
+.account-content { padding: clamp(24px, 4 * var(--vwu), 48px); }
 .account-auth-head { max-width: 600px; padding-right: 48px; }
 .account-auth-head > span,
 .account-profile-head > div > span,
@@ -330,7 +330,7 @@ body.account-dialog-open { overflow: hidden; }
 .account-profile-head h2 {
   margin: 10px 0 8px;
   color: #f2eee5;
-  font: 400 clamp(34px, 5vw, 52px)/1 'Marcellus', Georgia, serif;
+  font: 400 clamp(34px, 5 * var(--vwu), 52px)/1 'Marcellus', Georgia, serif;
   letter-spacing: -.025em;
 }
 .account-auth-head p,
@@ -391,7 +391,7 @@ body.account-dialog-open { overflow: hidden; }
   border-radius: 50%;
   font: 400 30px/1 'Marcellus', Georgia, serif;
 }
-.account-profile-head h2 { font-size: clamp(30px, 4vw, 44px); }
+.account-profile-head h2 { font-size: clamp(30px, 4 * var(--vwu), 44px); }
 
 .account-continue-card,
 .account-empty-save {
@@ -449,7 +449,7 @@ body.account-dialog-open { overflow: hidden; }
 
 @media (max-width: 720px) {
   .account-overlay { padding: 0; place-items: stretch; }
-  .account-panel { width: 100%; max-height: 100dvh; min-height: 100dvh; border: 0; border-radius: 0; }
+  .account-panel { width: 100%; max-height: calc(100 * var(--dvhu)); min-height: calc(100 * var(--dvhu)); border: 0; border-radius: 0; }
   .account-content { padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(28px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
   .account-close { top: max(10px, env(safe-area-inset-top)); margin-right: max(10px, env(safe-area-inset-right)); }
   .account-continue-card { align-items: stretch; flex-direction: column; }
@@ -510,7 +510,7 @@ body.account-dialog-open { overflow: hidden; }
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: clamp(24px, 4vw, 56px);
+  gap: clamp(24px, 4 * var(--vwu), 56px);
   background: #121a1b;
   border: 1px solid #34403c;
   border-radius: var(--ds-r-lg);
@@ -520,7 +520,7 @@ body.account-dialog-open { overflow: hidden; }
 #setup[data-app-view="home"] .mainmenu-library-copy h2 {
   margin: 9px 0 7px;
   color: #f0ece3;
-  font: 400 clamp(26px, 2.6vw, 34px)/1.1 'Marcellus', Georgia, serif;
+  font: 400 clamp(26px, 2.6 * var(--vwu), 34px)/1.1 'Marcellus', Georgia, serif;
   letter-spacing: -.02em;
 }
 #setup[data-app-view="home"] .mainmenu-library-copy p { max-width: 490px; margin: 0; color: #a8b2ad; font-size: 14px; line-height: 1.5; text-wrap: pretty; }
@@ -585,7 +585,7 @@ body.account-dialog-open { overflow: hidden; }
   box-shadow: 0 34px 90px rgba(0, 0, 0, .47);
 }
 
-#setup[data-app-view="home"] .mainmenu-cardfan { position: relative; min-height: clamp(320px, 29vw, 406px); }
+#setup[data-app-view="home"] .mainmenu-cardfan { position: relative; min-height: clamp(320px, 29 * var(--vwu), 406px); }
 
 #setup[data-app-view="home"] .mainmenu-card {
   position: absolute;
@@ -645,7 +645,7 @@ body.account-dialog-open { overflow: hidden; }
 
 #setup[data-app-view="home"] .mainmenu-proof > div {
   min-width: 0;
-  padding: 24px clamp(16px, 2.6vw, 38px);
+  padding: 24px clamp(16px, 2.6 * var(--vwu), 38px);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -680,10 +680,10 @@ body.account-dialog-open { overflow: hidden; }
 #setup[data-app-view="home"] .mainmenu-path {
   width: var(--menu-width);
   margin: 82px auto 0;
-  padding: clamp(34px, 4.2vw, 60px);
+  padding: clamp(34px, 4.2 * var(--vwu), 60px);
   display: grid;
   grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
-  gap: clamp(48px, 7vw, 108px);
+  gap: clamp(48px, 7 * var(--vwu), 108px);
   align-items: center;
   background:
     radial-gradient(circle at 3% 10%, rgba(212, 161, 95, .09), transparent 35%),
@@ -697,7 +697,7 @@ body.account-dialog-open { overflow: hidden; }
 #setup[data-app-view="home"] .mainmenu-final-cta h2 {
   margin: 12px 0 12px;
   color: #eee9df;
-  font: 400 clamp(30px, 3.2vw, 46px)/1 'Marcellus', Georgia, serif;
+  font: 400 clamp(30px, 3.2 * var(--vwu), 46px)/1 'Marcellus', Georgia, serif;
   letter-spacing: -.02em;
   text-wrap: balance;
 }
@@ -753,7 +753,7 @@ body.account-dialog-open { overflow: hidden; }
 
 #setup[data-app-view="home"] .mainmenu-mode {
   min-height: 310px;
-  padding: clamp(28px, 3.5vw, 48px);
+  padding: clamp(28px, 3.5 * var(--vwu), 48px);
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-content: start;
@@ -767,7 +767,7 @@ body.account-dialog-open { overflow: hidden; }
 #setup[data-app-view="home"] .mainmenu-mode > span { width: 50px; height: 50px; display: grid; place-items: center; color: var(--ds-brass); background: rgba(212, 161, 95, .08); border: 1px solid rgba(212, 161, 95, .2); border-radius: 50%; font: 700 11px/1 'Barlow Semi Condensed', system-ui, sans-serif; letter-spacing: .08em; }
 #setup[data-app-view="home"] .mainmenu-mode > span .gameicon { width: 23px; height: 23px; }
 #setup[data-app-view="home"] .mainmenu-mode small { color: #b59a70; font: 800 10px/1 'Barlow Semi Condensed', system-ui, sans-serif; letter-spacing: .15em; }
-#setup[data-app-view="home"] .mainmenu-mode h2 { margin-block: 9px 11px; font-size: clamp(27px, 3vw, 39px); }
+#setup[data-app-view="home"] .mainmenu-mode h2 { margin-block: 9px 11px; font-size: clamp(27px, 3 * var(--vwu), 39px); }
 #setup[data-app-view="home"] .mainmenu-mode p { max-width: 580px; margin: 0; color: #9aa4a1; font-size: 14px; line-height: 1.55; }
 #setup[data-app-view="home"] .mainmenu-mode-points {
   margin: 17px 0 0;
@@ -800,7 +800,7 @@ body.account-dialog-open { overflow: hidden; }
 #setup[data-app-view="home"] .mainmenu-final-cta {
   width: var(--menu-width);
   margin: 22px auto 0;
-  padding: clamp(30px, 4vw, 54px);
+  padding: clamp(30px, 4 * var(--vwu), 54px);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -812,7 +812,7 @@ body.account-dialog-open { overflow: hidden; }
   border-radius: var(--ds-r-lg);
 }
 
-#setup[data-app-view="home"] .mainmenu-final-cta h2 { max-width: 720px; margin: 11px 0 9px; font-size: clamp(29px, 3.4vw, 46px); }
+#setup[data-app-view="home"] .mainmenu-final-cta h2 { max-width: 720px; margin: 11px 0 9px; font-size: clamp(29px, 3.4 * var(--vwu), 46px); }
 #setup[data-app-view="home"] .mainmenu-final-cta p { margin: 0; color: #98a29f; font-size: 14px; line-height: 1.5; }
 #setup[data-app-view="home"] .mainmenu-final-actions { display: flex; gap: 9px; flex: none; }
 #setup[data-app-view="home"] .mainmenu-final-actions button {
@@ -899,8 +899,8 @@ body.account-dialog-open { overflow: hidden; }
 #setup[data-app-view="home"] .mainmenu-deckimport-panel {
   position: relative;
   width: min(1040px, 100%);
-  max-height: calc(100dvh - 40px);
-  padding: clamp(26px, 3vw, 36px);
+  max-height: calc(100 * var(--dvhu) - 40px);
+  padding: clamp(26px, 3 * var(--vwu), 36px);
   overflow: auto;
   background: #101617;
   border: 1px solid #354142;
@@ -930,7 +930,7 @@ body.account-dialog-open { overflow: hidden; }
   font: 800 10px/1 'Barlow Semi Condensed', system-ui, sans-serif;
   letter-spacing: .18em;
 }
-#setup[data-app-view="home"] .mainmenu-deckimport-panel h2 { margin: 12px 0 10px; color: #f2eee5; font: 400 clamp(34px, 4.5vw, 51px)/1 'Marcellus', Georgia, serif; letter-spacing: -.025em; }
+#setup[data-app-view="home"] .mainmenu-deckimport-panel h2 { margin: 12px 0 10px; color: #f2eee5; font: 400 clamp(34px, 4.5 * var(--vwu), 51px)/1 'Marcellus', Georgia, serif; letter-spacing: -.025em; }
 #setup[data-app-view="home"] .mainmenu-deckimport-panel > header p { margin: 0; color: #99a49f; font-size: 13px; line-height: 1.58; }
 #setup[data-app-view="home"] .mainmenu-decklibrary { margin-top: 22px; padding: 16px; background: rgba(10, 15, 16, .76); border: 1px solid #2d3939; border-radius: var(--ds-r-sm); }
 #setup[data-app-view="home"] .mainmenu-decklibrary > header { display: flex; align-items: end; justify-content: space-between; gap: 16px; }
@@ -988,7 +988,7 @@ body.account-dialog-open { overflow: hidden; }
   font: 500 14px/1.5 'Barlow', system-ui, sans-serif;
 }
 #setup[data-app-view="home"] .mainmenu-deckimport-form input { min-height: 48px; padding: 0 13px; }
-#setup[data-app-view="home"] .mainmenu-deckimport-form textarea { min-height: clamp(210px, 28vh, 300px); padding: 13px; resize: vertical; tab-size: 2; }
+#setup[data-app-view="home"] .mainmenu-deckimport-form textarea { min-height: clamp(210px, 28 * var(--vhu), 300px); padding: 13px; resize: vertical; tab-size: 2; }
 #setup[data-app-view="home"] .mainmenu-deckimport-form :is(input, textarea):focus { outline: 2px solid var(--ds-brass-bright); outline-offset: 2px; border-color: transparent; }
 #setup[data-app-view="home"] .mainmenu-deckimport-form textarea::placeholder,
 #setup[data-app-view="home"] .mainmenu-deckimport-form input::placeholder { color: #56615e; }
@@ -1035,7 +1035,7 @@ body.account-dialog-open { overflow: hidden; }
 
 @media (max-width: 600px) {
   #setup[data-app-view="home"] .mainmenu-deckimport { padding: 0; place-items: stretch; }
-  #setup[data-app-view="home"] .mainmenu-deckimport-panel { width: 100%; max-height: 100dvh; min-height: 100dvh; padding: calc(66px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); border: 0; border-radius: 0; }
+  #setup[data-app-view="home"] .mainmenu-deckimport-panel { width: 100%; max-height: calc(100 * var(--dvhu)); min-height: calc(100 * var(--dvhu)); padding: calc(66px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); border: 0; border-radius: 0; }
   #setup[data-app-view="home"] .mainmenu-deckimport-close { top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); }
   #setup[data-app-view="home"] .mainmenu-deckimport-panel > header { padding-right: 0; }
   #setup[data-app-view="home"] .mainmenu-decklibrary { padding: 13px; }
@@ -1071,9 +1071,9 @@ body.account-dialog-open { overflow: hidden; }
 #setup[data-app-view="home"] .mainmenu-onboarding-panel {
   position: relative;
   width: min(940px, 100%);
-  max-height: calc(100dvh - 48px);
+  max-height: calc(100 * var(--dvhu) - 48px);
   overflow: auto;
-  padding: clamp(28px, 4vw, 48px);
+  padding: clamp(28px, 4 * var(--vwu), 48px);
   color: #ece8df;
   background: #0d1314;
   border: 1px solid #344041;
@@ -1100,7 +1100,7 @@ body.account-dialog-open { overflow: hidden; }
 
 #setup[data-app-view="home"] .mainmenu-onboarding-panel header { max-width: 610px; }
 #setup[data-app-view="home"] .mainmenu-onboarding-panel header > span { color: var(--ds-brass); font: 800 10px/1 'Barlow Semi Condensed', system-ui, sans-serif; letter-spacing: .17em; }
-#setup[data-app-view="home"] .mainmenu-onboarding-panel h2 { margin: 12px 0 9px; font: 400 clamp(30px, 4.3vw, 48px)/1 'Marcellus', Georgia, serif; letter-spacing: -.025em; }
+#setup[data-app-view="home"] .mainmenu-onboarding-panel h2 { margin: 12px 0 9px; font: 400 clamp(30px, 4.3 * var(--vwu), 48px)/1 'Marcellus', Georgia, serif; letter-spacing: -.025em; }
 #setup[data-app-view="home"] .mainmenu-onboarding-panel header p { margin: 0; color: #98a29f; font-size: 13px; line-height: 1.5; }
 #setup[data-app-view="home"] .mainmenu-onboarding-grid { margin-top: 34px; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 #setup[data-app-view="home"] .mainmenu-onboarding-grid section { min-height: 138px; padding: 20px; display: grid; grid-template-columns: 40px minmax(0, 1fr); align-content: start; gap: 14px; background: #111819; border: 1px solid #20292a; border-radius: var(--ds-r-sm); }
@@ -1195,12 +1195,12 @@ body.account-dialog-open { overflow: hidden; }
   #setup[data-app-view="home"] .mainmenu-guide { padding-inline: 12px; }
   #setup[data-app-view="home"] .mainmenu-guide span { display: inline; }
   #setup[data-app-view="home"] .mainmenu-hero { padding: 36px 0 24px; gap: 28px; }
-  #setup[data-app-view="home"] .mainmenu-hero h1 { margin-top: 13px; font-size: clamp(42px, 11.3vw, 48px); }
+  #setup[data-app-view="home"] .mainmenu-hero h1 { margin-top: 13px; font-size: clamp(42px, 11.3 * var(--vwu), 48px); }
   #setup[data-app-view="home"] .mainmenu-hero-copy > p { font-size: 14px; }
   #setup[data-app-view="home"] .mainmenu-actions { grid-template-columns: minmax(0, 1fr); }
   #setup[data-app-view="home"] .mainmenu-actions button { width: 100%; }
   #setup[data-app-view="home"] .mainmenu-trust { margin-top: 16px; gap: 8px 14px; }
-  #setup[data-app-view="home"] .mainmenu-cardfan { min-height: clamp(236px, 58vw, 330px); }
+  #setup[data-app-view="home"] .mainmenu-cardfan { min-height: clamp(236px, 58 * var(--vwu), 330px); }
   #setup[data-app-view="home"] .mainmenu-card.card-1 { top: 42px; }
   #setup[data-app-view="home"] .mainmenu-card.card-2 { top: 16px; }
   #setup[data-app-view="home"] .mainmenu-card.card-3 { top: 42px; }
@@ -1224,7 +1224,7 @@ body.account-dialog-open { overflow: hidden; }
   #setup[data-app-view="home"] .mainmenu-final-actions button { width: 100%; }
   #setup[data-app-view="home"] .mainmenu-footer { margin-top: 56px; }
   #setup[data-app-view="home"] .mainmenu-onboarding { padding: 0; place-items: stretch; }
-  #setup[data-app-view="home"] .mainmenu-onboarding-panel { width: 100%; max-height: 100dvh; min-height: 100dvh; padding: calc(68px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); border: 0; border-radius: 0; }
+  #setup[data-app-view="home"] .mainmenu-onboarding-panel { width: 100%; max-height: calc(100 * var(--dvhu)); min-height: calc(100 * var(--dvhu)); padding: calc(68px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); border: 0; border-radius: 0; }
   #setup[data-app-view="home"] .mainmenu-onboarding-close { top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); }
   #setup[data-app-view="home"] .mainmenu-onboarding-grid { grid-template-columns: minmax(0, 1fr); }
   #setup[data-app-view="home"] .mainmenu-onboarding-grid section { min-height: 0; }

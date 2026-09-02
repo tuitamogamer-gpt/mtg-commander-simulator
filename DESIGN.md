@@ -44,6 +44,8 @@ Motion explains entry, focus or state change. It does not run as ambient decorat
 - An empty hand collapses to a compact status rail; it must not reserve card-height space.
 - All primary touch targets are at least 44px.
 - Internal battlefield and drawer scrolling is preferred over page-level horizontal overflow.
+- The client is drawn on a fixed pixel grid sized for ~1440px desktops. Wider screens scale the whole document through `body { zoom: var(--ui-zoom) }` (`design-system.css`, stepped by viewport width and height) instead of shrinking type into the corners. Because zoom multiplies viewport units, stylesheets and inline styles never use raw `vh`/`dvh`/`vw`; they use `calc(N * var(--vhu|--dvhu|--svhu|--vwu))`.
+- Exile and suspend trays sit beside the hand cards, never above them; the hand row may grow but must never push cards below the screen edge.
 
 ## Accessibility and failure states
 

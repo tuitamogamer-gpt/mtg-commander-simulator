@@ -205,7 +205,7 @@ body.deck-spotlight-open { overflow: hidden; }
 #setup .deckspotlight {
   position: relative;
   width: min(1180px, 100%);
-  max-height: calc(100dvh - 48px);
+  max-height: calc(100 * var(--dvhu) - 48px);
   overflow: auto;
   color: var(--ds-copy);
   background: #090d0e;
@@ -288,7 +288,7 @@ body.deck-spotlight-open { overflow: hidden; }
 #setup .deckspotlightkicker b { color: var(--ds-muted); font-weight: 700; }
 #setup .deckspotlightmana { min-height: 22px; margin-top: 25px; display: flex; align-items: center; gap: 5px; }
 #setup .deckspotlightmana img { width: 21px; height: 21px; filter: drop-shadow(0 3px 8px rgba(0, 0, 0, .42)); }
-#setup .deckspotlightintro h2 { margin: 13px 52px 0 0; color: #f0f3f1; font: 400 clamp(38px, 4.8vw, 62px)/.94 'Marcellus', serif; letter-spacing: -.025em; }
+#setup .deckspotlightintro h2 { margin: 13px 52px 0 0; color: #f0f3f1; font: 400 clamp(38px, 4.8 * var(--vwu), 62px)/.94 'Marcellus', serif; letter-spacing: -.025em; }
 #setup .deckspotlightcommander { margin: 12px 0 0; color: #c9d1ce; font: 600 11px/1.35 'Barlow', sans-serif; }
 #setup .deckspotlightcommander span { margin-right: 8px; color: var(--ds-brass); font: 800 7px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .14em; }
 #setup .deckspotlighttheme { max-width: 620px; margin: 22px 0 0; color: #9fa9a6; font: 500 14px/1.55 'Barlow', sans-serif; }
@@ -333,10 +333,10 @@ body.deck-spotlight-open { overflow: hidden; }
 
 @media (max-width: 900px) {
   #setup .deckspotlightoverlay { padding: 12px; }
-  #setup .deckspotlight { max-height: calc(100dvh - 24px); }
+  #setup .deckspotlight { max-height: calc(100 * var(--dvhu) - 24px); }
   #setup .deckspotlighthero { grid-template-columns: minmax(300px, .8fr) minmax(0, 1.2fr); }
   #setup .deckspotlightintro { padding: 38px 28px 28px; }
-  #setup .deckspotlightintro h2 { font-size: clamp(34px, 5vw, 48px); }
+  #setup .deckspotlightintro h2 { font-size: clamp(34px, 5 * var(--vwu), 48px); }
   #setup .deckspotlightstats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   #setup .deckspotlightbody { grid-template-columns: minmax(0, 1fr); }
   #setup .deckspotlightfieldguide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -345,7 +345,7 @@ body.deck-spotlight-open { overflow: hidden; }
 
 @media (max-width: 640px) {
   #setup .deckspotlightoverlay { padding: 0; place-items: stretch; }
-  #setup .deckspotlight { width: 100%; max-height: 100dvh; border: 0; border-radius: 0; }
+  #setup .deckspotlight { width: 100%; max-height: calc(100 * var(--dvhu)); border: 0; border-radius: 0; }
   #setup .deckspotlightclose { position: fixed; top: max(12px, env(safe-area-inset-top)); right: 12px; }
   #setup .deckspotlighthero { min-height: 0; grid-template-columns: minmax(0, 1fr); }
   #setup .deckspotlightvisual { min-height: 248px; }
@@ -354,7 +354,7 @@ body.deck-spotlight-open { overflow: hidden; }
   #setup .deckspotlightpicked { left: 124px; bottom: 17px; max-width: calc(100% - 140px); font-size: 7px; }
   #setup .deckspotlightintro { padding: 26px 16px 25px; }
   #setup .deckspotlightmana { margin-top: 19px; }
-  #setup .deckspotlightintro h2 { margin-right: 0; font-size: clamp(34px, 11vw, 48px); }
+  #setup .deckspotlightintro h2 { margin-right: 0; font-size: clamp(34px, 11 * var(--vwu), 48px); }
   #setup .deckspotlighttheme { margin-top: 17px; font-size: 12px; }
   #setup .deckspotlightbadges span:last-child { flex-basis: 100%; width: max-content; }
   #setup .deckspotlightstats { margin-top: 18px; }
@@ -498,7 +498,7 @@ body.reduced-motion *::after {
   top: 66px;
   left: 50%;
   z-index: 120;
-  width: min(620px, calc(100vw - 32px));
+  width: min(620px, calc(100 * var(--vwu) - 32px));
   min-height: 48px;
   padding: 8px 9px 8px 12px;
   display: flex;
@@ -517,10 +517,10 @@ body.reduced-motion *::after {
 #game .systemstatus b { overflow: hidden; font: 600 10px/1.25 'Barlow', sans-serif; text-overflow: ellipsis; white-space: nowrap; }
 #game .systemstatus .pbtn { min-height: 36px; }
 
-#game .matchrecap { width: min(760px, calc(100vw - 32px)); max-height: min(820px, calc(100dvh - 32px)); overflow: auto; }
+#game .matchrecap { width: min(760px, calc(100 * var(--vwu) - 32px)); max-height: min(820px, calc(100 * var(--dvhu) - 32px)); overflow: auto; }
 #game .recaphead { text-align: center; }
 #game .recaphead > span { color: var(--ds-brass); font: 800 8px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .2em; }
-#game .recaphead .gameover { margin-top: 7px; color: var(--ds-text); font: 400 clamp(28px, 4vw, 42px)/1.05 'Marcellus', serif; }
+#game .recaphead .gameover { margin-top: 7px; color: var(--ds-text); font: 400 clamp(28px, 4 * var(--vwu), 42px)/1.05 'Marcellus', serif; }
 #game .recaphead p { margin: 7px 0 17px; color: var(--ds-muted); font-size: 11px; }
 #game .recapstandings { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
 #game .recapstandings > div { min-height: 58px; padding: 8px 10px; display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 9px; background: rgba(255,255,255,.025); border: 1px solid var(--ds-line-soft); border-radius: var(--ds-r-sm); }
@@ -587,7 +587,7 @@ body.reduced-motion *::after {
   #game .recapstandings { grid-template-columns: minmax(0, 1fr); }
   #game .recapactions,
   #game .fatalactions { grid-template-columns: minmax(0, 1fr); }
-  #game .matchrecap { width: 100%; max-height: 94dvh; }
+  #game .matchrecap { width: 100%; max-height: calc(94 * var(--dvhu)); }
 }
 
 @media (max-width: 767px) and (max-height: 700px) {
@@ -596,7 +596,7 @@ body.reduced-motion *::after {
 
 /* Local AI skill workshop; native dialog supplies focus trapping and Escape. */
 #setup .customskillsbutton { margin: 12px 0 4px; white-space: normal; }
-.aiskilldialog { margin: auto; color: #e4e9ed; background: #121a20; border: 1px solid #526067; border-radius: 14px; padding: 0; width: min(1080px, calc(100vw - 32px)); max-width: none; max-height: calc(100dvh - 32px); overflow: auto; box-shadow: 0 30px 100px #000a; font: 14px/1.5 var(--tbl-sans, sans-serif); }
+.aiskilldialog { margin: auto; color: #e4e9ed; background: #121a20; border: 1px solid #526067; border-radius: 14px; padding: 0; width: min(1080px, calc(100 * var(--vwu) - 32px)); max-width: none; max-height: calc(100 * var(--dvhu) - 32px); overflow: auto; box-shadow: 0 30px 100px #000a; font: 14px/1.5 var(--tbl-sans, sans-serif); }
 .aiskilldialog::backdrop { background: #03090dd9; backdrop-filter: blur(5px); }
 .aiskilldialog *, .aiskilldialog *::before, .aiskilldialog *::after { box-sizing: border-box; }
 .aiskillhead { display: flex; justify-content: space-between; align-items: start; gap: 20px; padding: 26px 28px 20px; border-bottom: 1px solid #33424a; }
@@ -631,10 +631,176 @@ body.reduced-motion *::after {
 .aiskillfooter { position: sticky; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 28px; border-top: 1px solid #40515a; background: #121a20; }
 .aiskillfooter > div { display: flex; gap: 8px; flex-shrink: 0; }.aiskillstatus { margin: 0; font-size: 12px; color: #aacfbd; overflow-wrap: anywhere; }.aiskilldialog .error { color: #ffb2a7; }
 @media (max-width: 700px) {
-  .aiskilldialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+  .aiskilldialog { width: calc(100 * var(--vwu) - 16px); max-height: calc(100 * var(--dvhu) - 16px); }
   .aiskillhead { padding: 18px 16px; gap: 10px; }.aiskillhead h2 { font-size: 26px; }
   .aiskillbody { grid-template-columns: minmax(0, 1fr); padding: 18px 16px; gap: 22px; }
   .aiskilllibrary { border-left: 0; border-top: 1px solid #33424a; padding: 18px 0 0; }
   .aiskillfooter { flex-direction: column; align-items: stretch; gap: 10px; padding: 12px 16px; }
   .aiskillfooter > div > button { flex: 1; }.aiskillsteps { grid-template-columns: 80px minmax(0, 1fr); }
+}
+
+/* ============================================================
+   Interface scale (2026-09-02)
+   The whole document zooms on wide desktops; see --ui-zoom in
+   design-system.css. Every viewport length in the stylesheets is
+   written through --vhu/--dvhu/--vwu so it stays true to the screen.
+   ============================================================ */
+body { zoom: var(--ui-zoom); }
+
+/* ============================================================
+   Hand tray: exile / suspend trays sit BESIDE the cards, never above
+   them, so a playable-from-exile card can no longer push half of the
+   hand below the screen edge. The hand row may also grow when needed.
+   ============================================================ */
+@media (min-width: 768px) {
+  body.game-active #game .handwrap {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    min-height: 0;
+  }
+  body.game-active #game .handwrap > .hand { flex: 1 1 auto; min-width: 0; }
+  body.game-active #game .handwrap > .exiletray,
+  body.game-active #game .handwrap > .suspendtray {
+    flex: 0 0 auto;
+    align-self: stretch;
+    height: auto;
+    margin: 0;
+  }
+  body.game-active #game .handwrap > .exiletray {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 5px;
+    min-width: 212px;
+    max-width: min(320px, 26 * var(--vwu));
+    padding: 6px 8px 7px;
+    border-radius: 5px;
+    border-left: 3px solid #4a90d9;
+    background: linear-gradient(145deg, rgba(20, 39, 63, .96), rgba(8, 12, 13, .98) 62%);
+    box-shadow: inset 0 1px rgba(255, 255, 255, .04), 0 8px 22px rgba(0, 0, 0, .35);
+  }
+  body.game-active #game .handwrap > .exiletray .exiletraytitle { font-size: 9px; letter-spacing: .16em; }
+  body.game-active #game .handwrap > .exiletray .exiletraylist { flex-direction: column; gap: 4px; min-height: 0; overflow: auto; }
+  body.game-active #game .handwrap > .exiletray .exiletraycard { min-width: 0; padding: 3px 34px 3px 5px; border-radius: 4px; }
+  body.game-active #game .handwrap > .exiletray .exiletraycard img { width: 30px; }
+  body.game-active #game .handwrap > .exiletray .exiletraycard b { font-size: 11px; }
+  body.game-active #game .handwrap > .exiletray .exiletraycard small { font-size: 8.5px; }
+}
+@media (min-width: 1280px) {
+  body.game-active #game { grid-template-rows: 58px 24px minmax(150px, .72fr) auto minmax(166px, 1fr) auto minmax(132px, auto) !important; }
+}
+@media (min-width: 1280px) and (max-height: 700px) {
+  body.game-active #game { grid-template-rows: 58px 20px minmax(118px, .55fr) auto minmax(210px, 1fr) auto minmax(108px, auto) !important; }
+}
+@media (min-width: 768px) and (max-width: 1279px) {
+  body.game-active #game { grid-template-rows: 58px 24px minmax(145px, .75fr) auto minmax(170px, 1fr) auto minmax(130px, auto) !important; }
+}
+
+/* ============================================================
+   Pod builder: "Advanced rules" is a clear, tactile toggle, and the
+   difficulty choice explains itself.
+   ============================================================ */
+#setup .advancedrules {
+  margin-top: 16px;
+  border: 1px solid rgba(219, 167, 91, .34) !important;
+  background: linear-gradient(180deg, rgba(219, 167, 91, .07), rgba(10, 15, 16, .98) 46%) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .03);
+  transition: border-color var(--ds-t-base) var(--ds-ease), box-shadow var(--ds-t-base) var(--ds-ease);
+}
+#setup .advancedrules:hover,
+#setup .advancedrules[open] {
+  border-color: rgba(232, 176, 75, .62) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .34), inset 0 1px rgba(255, 255, 255, .05);
+}
+#setup .advancedrules summary { min-height: 62px; padding: 12px 56px 12px 18px; gap: 4px; transition: background-color var(--ds-t-base) var(--ds-ease); }
+#setup .advancedrules summary:hover { background: rgba(219, 167, 91, .05); }
+#setup .advancedrules summary span { font-size: 12px; color: #f0d9ad; letter-spacing: .12em; }
+#setup .advancedrules summary small { margin-top: 3px; font-size: 10px; color: #98a39f; }
+#setup .advancedrules summary::after {
+  content: '' !important;
+  top: 50%;
+  right: 22px;
+  width: 11px;
+  height: 11px;
+  margin-top: -9px;
+  border-right: 2px solid var(--v3-gold);
+  border-bottom: 2px solid var(--v3-gold);
+  transform: rotate(45deg);
+  transition: transform var(--ds-t-base) var(--ds-ease), margin-top var(--ds-t-base) var(--ds-ease);
+}
+#setup .advancedrules[open] summary::after { transform: rotate(-135deg); margin-top: -3px; }
+#setup .advancedbody { display: grid; grid-template-columns: minmax(0, 1fr) !important; align-items: start; gap: 10px; padding: 6px 14px 16px; animation: dsReveal var(--ds-t-slow) var(--ds-ease) both; }
+#setup .advancedbody > * { grid-area: auto !important; grid-column: 1 / -1 !important; min-width: 0; }
+#setup .advancedbody > .cmdcheck {
+  margin-top: 2px !important;
+  padding: 10px 12px;
+  transition: border-color var(--ds-t-base) var(--ds-ease), background-color var(--ds-t-base) var(--ds-ease);
+}
+#setup .advancedbody > .cmdcheck:hover { border-color: rgba(219, 167, 91, .42) !important; background: #121a1b !important; }
+#setup .advancedbody .seclabel { margin: 8px 0 0; color: #d9b272; font: 800 9px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .2em; text-transform: uppercase; }
+#setup .advancedbody .btnrow { margin-top: 0; }
+#setup .difficultyrow .pbtn { position: relative; transition: transform var(--ds-t-fast) var(--ds-ease), background-color var(--ds-t-base) var(--ds-ease), border-color var(--ds-t-base) var(--ds-ease), box-shadow var(--ds-t-base) var(--ds-ease); }
+#setup .difficultyrow .pbtn:hover { transform: translateY(-1px); }
+#setup .difficultynote {
+  display: grid;
+  gap: 8px;
+  padding: 11px 12px 12px;
+  color: #c9d1ce;
+  background: rgba(219, 167, 91, .06);
+  border: 1px solid rgba(219, 167, 91, .24);
+  border-radius: 8px;
+  transition: border-color var(--ds-t-base) var(--ds-ease), background-color var(--ds-t-base) var(--ds-ease);
+}
+#setup .difficultynote.previewing { border-color: rgba(232, 176, 75, .55); background: rgba(219, 167, 91, .1); }
+#setup .difficultynote b { display: block; color: #f2dcae; font: 800 10px/1.1 'Barlow Semi Condensed', sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+#setup .difficultynote b em { margin-left: 8px; color: #8b9693; font: 700 8px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .14em; font-style: normal; }
+#setup .difficultynote p { margin: 0; font: 400 11.5px/1.45 'Barlow', sans-serif; }
+#setup .difficultynote ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+#setup .difficultynote li { padding: 4px 8px; color: #e6d7b6; background: rgba(4, 8, 9, .6); border: 1px solid rgba(219, 167, 91, .2); border-radius: 999px; font: 700 8.5px/1 'Barlow Semi Condensed', sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+#setup .difficultynote li i { margin-right: 5px; color: #97a39f; font-style: normal; }
+
+/* ============================================================
+   Motion polish. One easing family, short durations, and every
+   animation is gated behind the reduced-motion preference.
+   ============================================================ */
+@keyframes dsReveal { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@keyframes dsDialogIn { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes dsFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dsPromptIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: no-preference) {
+  body:not(.reduced-motion) #game .pbtn,
+  body:not(.reduced-motion) #setup .pbtn,
+  body:not(.reduced-motion) #setup .setupstep,
+  body:not(.reduced-motion) #setup .matchtypebtn,
+  body:not(.reduced-motion) #setup .deckcard {
+    transition: transform var(--ds-t-fast) var(--ds-ease), box-shadow var(--ds-t-base) var(--ds-ease), background-color var(--ds-t-base) var(--ds-ease), border-color var(--ds-t-base) var(--ds-ease), color var(--ds-t-base) var(--ds-ease), filter var(--ds-t-base) var(--ds-ease);
+  }
+  body:not(.reduced-motion) #game .pbtn:hover:not(:disabled),
+  body:not(.reduced-motion) #setup .pbtn:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.07); }
+  body:not(.reduced-motion) #game .pbtn:active:not(:disabled),
+  body:not(.reduced-motion) #setup .pbtn:active:not(:disabled) { transform: translateY(0) scale(.985); filter: brightness(.97); transition-duration: 60ms; }
+  body:not(.reduced-motion) #setup .deckcard:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(0, 0, 0, .42); }
+  body:not(.reduced-motion) #game .hcard {
+    transition: transform var(--ds-t-base) var(--ds-ease-spring), box-shadow var(--ds-t-base) var(--ds-ease), border-color var(--ds-t-base) var(--ds-ease), filter var(--ds-t-base) var(--ds-ease);
+  }
+  body:not(.reduced-motion) #game .hcard:hover,
+  body:not(.reduced-motion) #game .hcard:focus-visible { transform: translateY(-9px) scale(1.045); z-index: 4; box-shadow: 0 18px 36px rgba(0, 0, 0, .58), 0 0 0 1px rgba(242, 195, 126, .35); }
+  body:not(.reduced-motion) #game .mini { transition: transform var(--ds-t-base) var(--ds-ease), box-shadow var(--ds-t-base) var(--ds-ease), border-color var(--ds-t-base) var(--ds-ease), filter var(--ds-t-base) var(--ds-ease); }
+  body:not(.reduced-motion) #game .mini:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 14px 28px rgba(0, 0, 0, .5); }
+  body:not(.reduced-motion) .overlay { animation: dsFadeIn var(--ds-t-base) var(--ds-ease) both; }
+  body:not(.reduced-motion) .overlay > .modal,
+  body:not(.reduced-motion) .overlay > .sheet,
+  body:not(.reduced-motion) #game .modal,
+  body:not(.reduced-motion) #game .sheet { animation: dsDialogIn var(--ds-t-slow) var(--ds-ease) both; }
+  body:not(.reduced-motion) #game .promptbar .btnrow .pbtn { animation: dsPromptIn var(--ds-t-base) var(--ds-ease) both; }
+  body:not(.reduced-motion) #game .exiletraycard,
+  body:not(.reduced-motion) #game .suspendtraycard { transition: transform var(--ds-t-fast) var(--ds-ease), border-color var(--ds-t-base) var(--ds-ease), background-color var(--ds-t-base) var(--ds-ease), box-shadow var(--ds-t-base) var(--ds-ease); }
+  body:not(.reduced-motion) #game .exiletraycard:hover,
+  body:not(.reduced-motion) #game .suspendtraycard:hover { transform: translateX(2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #setup .advancedbody, .overlay, .overlay > .modal, .overlay > .sheet, #game .modal, #game .sheet, #game .promptbar .btnrow .pbtn { animation: none !important; }
+  #setup .advancedrules summary::after { transition: none; }
 }

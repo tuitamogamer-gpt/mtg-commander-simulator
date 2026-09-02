@@ -162,7 +162,7 @@ test('the narrow Pod Builder keeps every bot control inside its drawer', () => {
 });
 
 test('short phones keep card-sheet actions above the fold without removing card art', () => {
-  assert.match(css, /@media \(max-width: 420px\) and \(max-height: 700px\)[\s\S]*?#game \.sheetimg:not\(\.noimg\) \{ width: min\(46vw, 150px\); max-height: 210px; object-fit: contain; \}/);
+  assert.match(css, /@media \(max-width: 420px\) and \(max-height: 700px\)[\s\S]*?#game \.sheetimg:not\(\.noimg\) \{ width: min\(46 \* var\(--vwu\), 150px\); max-height: 210px; object-fit: contain; \}/);
   assert.match(css, /@media \(max-width: 767px\) and \(max-height: 700px\)[\s\S]*?#game:has\(\.promptbar \.btnrow \.pbtn\) \{[\s\S]*?grid-template-rows: 76px 48px 96px minmax\(112px, 1fr\) 96px 108px !important;/);
   assert.match(css, /#game:has\(\.promptbar \.btnrow \.pbtn\) \.promptbar \{ min-height: 96px; max-height: 96px; \}/);
   assert.match(css, /#game \.myboard \{[^}]*justify-content: flex-start;[^}]*overflow-y: auto !important;[^}]*overscroll-behavior: contain;/);
@@ -181,7 +181,7 @@ test('minimum-height desktop gives the player battlefield enough room to avoid c
   assert.match(css, /@media \(min-width: 1280px\) and \(max-height: 700px\)[\s\S]*?grid-template-rows: 58px 20px minmax\(118px, \.55fr\) auto minmax\(210px, 1fr\) auto 108px !important;/);
   assert.match(css, /#game \.cardrow \{ min-height: 78px !important; \}/);
   assert.match(css, /#game \.hand \{ min-height: 96px !important; height: 96px;/);
-  assert.match(css, /#game \.sheetimg:not\(\.noimg\) \{ width: min\(30vh, 200px\); max-height: 280px; object-fit: contain; \}/);
+  assert.match(css, /#game \.sheetimg:not\(\.noimg\) \{ width: min\(30 \* var\(--vhu\), 200px\); max-height: 280px; object-fit: contain; \}/);
 });
 
 test('all registered player-facing labels clear the expanded Bosnian leftover audit', () => {

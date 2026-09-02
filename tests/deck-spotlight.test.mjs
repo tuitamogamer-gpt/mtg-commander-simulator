@@ -67,7 +67,7 @@ test('spotlight remains readable and operable from desktop through phone widths'
   assert.match(css, /#setup \.deckspotlightoverlay \{[\s\S]*?position: fixed;[\s\S]*?z-index: 600;/);
   assert.match(css, /#setup \.deckspotlighthero \{[\s\S]*?grid-template-columns:/);
   assert.match(css, /#setup \.deckspotlightactions \{[\s\S]*?position: sticky;/);
-  assert.match(css, /@media \(max-width: 640px\) \{[\s\S]*?#setup \.deckspotlight \{[\s\S]*?max-height: 100dvh;/);
+  assert.match(css, /@media \(max-width: 640px\) \{[\s\S]*?#setup \.deckspotlight \{[\s\S]*?max-height: calc\(100 \* var\(--dvhu\)\);/);
   assert.match(css, /@media \(max-width: 640px\)[\s\S]*?#setup \.deckspotlightrhythm \{ grid-template-columns: minmax\(0, 1fr\); \}/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{[\s\S]*?#setup \.deckspotlightvideo \{ display: none; \}/);
   assert.match(main, /spotlight: spotlight \? \{/);

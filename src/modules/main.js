@@ -1319,14 +1319,54 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const difficultyLabel = el('div', 'seclabel', '<i>AI</i> Difficulty');
     advancedBody.appendChild(difficultyLabel);
-    const diffRow = el('div', 'btnrow center');
+    // What actually changes between the levels (see AI_SEARCH_CONFIG in
+    // ai-v2.js): how many candidate plays the bots weigh, how far ahead they
+    // look, how many lines they simulate and how readily they accept a
+    // slightly weaker play.
+    const DIFFICULTY_NOTES = {
+      easy: {
+        title: 'Easy', tag: 'learning table',
+        text: 'Bots look one step ahead at 4 candidate plays and gladly accept a slightly weaker line. They miss some lethal attacks and make loose trades. Pick this to learn a deck.',
+        facts: [['Lookahead', '1 step'], ['Candidate plays', '4'], ['Simulated lines', '3'], ['Mistakes', 'frequent']],
+      },
+      normal: {
+        title: 'Normal', tag: 'default',
+        text: 'Bots weigh 10 candidate plays up to 3 steps ahead and simulate 6 lines per decision. They take the best line most of the time, with a little variance.',
+        facts: [['Lookahead', '3 steps'], ['Candidate plays', '10'], ['Simulated lines', '6'], ['Mistakes', 'occasional']],
+      },
+      hard: {
+        title: 'Hard', tag: 'competitive',
+        text: 'Bots weigh 18 candidate plays up to 4 steps ahead, simulate 9 lines and consider up to 14 targets. They almost always find the strongest line: open mana gets punished, bad attacks are refused and removal is saved for real threats.',
+        facts: [['Lookahead', '4 steps'], ['Candidate plays', '18'], ['Simulated lines', '9'], ['Mistakes', 'rare']],
+      },
+    };
+    const diffRow = el('div', 'btnrow center difficultyrow');
+    const diffNote = el('div', 'difficultynote');
+    diffNote.id = 'difficultynote';
+    diffNote.setAttribute('role', 'note');
+    const renderDifficultyNote = (key, previewing) => {
+      const note = DIFFICULTY_NOTES[key] || DIFFICULTY_NOTES.normal;
+      diffNote.classList.toggle('previewing', !!previewing);
+      diffNote.innerHTML = `<b>${esc(note.title)}<em>${esc(note.tag)}${previewing ? ' · hover preview' : ' · selected'}</em></b>` +
+        `<p>${esc(note.text)}</p>` +
+        `<ul>${note.facts.map(([label, value]) => `<li><i>${esc(label)}</i>${esc(value)}</li>`).join('')}</ul>`;
+    };
     for (const [k, label] of [['easy', 'Easy'], ['normal', 'Normal'], ['hard', 'Hard']]) {
       const b = el('button', 'pbtn choice' + (k === 'normal' ? ' selected' : ''), label);
       b.dataset.difficulty = k;
-      b.onclick = () => { state.difficulty = k; diffRow.querySelectorAll('.pbtn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); };
+      b.type = 'button';
+      b.title = DIFFICULTY_NOTES[k].text;
+      b.setAttribute('aria-describedby', 'difficultynote');
+      b.onclick = () => { state.difficulty = k; diffRow.querySelectorAll('.pbtn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); renderDifficultyNote(k, false); };
+      b.onmouseenter = () => renderDifficultyNote(k, k !== state.difficulty);
+      b.onfocus = () => renderDifficultyNote(k, k !== state.difficulty);
+      b.onmouseleave = () => renderDifficultyNote(state.difficulty || 'normal', false);
+      b.onblur = () => renderDifficultyNote(state.difficulty || 'normal', false);
       diffRow.appendChild(b);
     }
     advancedBody.appendChild(diffRow);
+    renderDifficultyNote(state.difficulty || 'normal', false);
+    advancedBody.appendChild(diffNote);
     right.appendChild(advanced);
 
     const diagnostics = el('details', 'supportdiagnostics');

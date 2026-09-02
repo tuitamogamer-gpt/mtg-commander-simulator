@@ -114,7 +114,7 @@ test('public menu is responsive, motion-safe, and uses real game artwork', () =>
   assert.match(css, /@media \(max-width: 600px\)/);
   assert.match(css, /@media \(max-width: 900px\) and \(max-height: 650px\)/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
-  assert.match(css, /min-height: 100dvh/);
+  assert.match(css, /min-height: calc\(100 \* var\(--dvhu\)\)/);
   assert.match(css, /\.mainmenu-card img \{[\s\S]*?height: auto/);
   assert.match(css, /\.mainmenu-proof \{ grid-template-columns: repeat\(2, minmax\(0, 1fr\)\); \}/);
   assert.match(css, /:is\(a, button\):focus-visible/);

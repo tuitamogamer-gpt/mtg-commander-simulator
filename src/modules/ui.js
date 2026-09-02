@@ -1728,7 +1728,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const visibleSeats = this.visibleOpponentSeats(g);
       wrap.dataset.opponentCount = String(visibleSeats.length);
       // podesivo: visina zone (povlačenjem) i veličina karata (− / +)
-      wrap.style.setProperty('--opp-h', this.oppHeight + 'dvh');
+      wrap.style.setProperty('--opp-h', `calc(${this.oppHeight} * var(--dvhu))`);
       wrap.style.setProperty('--opp-scale', String(this.oppScale));
       for (const { player: p, seatNo } of visibleSeats) {
         const meta = MTG.DECK_META[p.deckName] || {};
@@ -1844,7 +1844,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         setScale(1);
         this.oppHeight = 42;
         localStorage.setItem('mtgOppH', '42');
-        wrap.style.setProperty('--opp-h', '42dvh');
+        wrap.style.setProperty('--opp-h', 'calc(42 * var(--dvhu))');
       };
       bar.appendChild(el('div', '', 'AI table'));
       bar.appendChild(el('div', 'zspacer'));
@@ -1862,7 +1862,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const cy = e2.touches ? e2.touches[0].clientY : e2.clientY;
           const dvh = ((cy - startY) / window.innerHeight) * 100;
           this.oppHeight = Math.max(14, Math.min(74, Math.round(startH + dvh)));
-          wrap.style.setProperty('--opp-h', this.oppHeight + 'dvh');
+          wrap.style.setProperty('--opp-h', `calc(${this.oppHeight} * var(--dvhu))`);
           if (e2.cancelable) e2.preventDefault();
         };
         const up = () => {

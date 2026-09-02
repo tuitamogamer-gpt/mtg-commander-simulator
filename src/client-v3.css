@@ -49,7 +49,7 @@ body.game-active #game { display: grid !important; }
 #setup {
   width: min(100%, 1560px) !important;
   max-width: none !important;
-  min-height: 100dvh;
+  min-height: calc(100 * var(--dvhu));
   margin: 0 auto !important;
   padding: 0 28px 72px !important;
   color: var(--v3-text);
@@ -193,7 +193,7 @@ body.game-active #game { display: grid !important; }
 #setup .setuphero .title {
   margin: 9px 0 7px !important;
   color: var(--v3-text) !important;
-  font: 400 clamp(34px, 4vw, 56px)/1.03 'Marcellus', serif !important;
+  font: 400 clamp(34px, 4 * var(--vwu), 56px)/1.03 'Marcellus', serif !important;
   letter-spacing: -.025em !important;
   text-transform: none !important;
 }
@@ -484,7 +484,7 @@ body.game-active #game { display: grid !important; }
   position: sticky !important;
   top: 18px !important;
   z-index: 7;
-  max-height: calc(100dvh - 36px);
+  max-height: calc(100 * var(--dvhu) - 36px);
   padding: 0 20px 18px !important;
   display: flex !important;
   flex-direction: column !important;
@@ -619,7 +619,7 @@ body.game-active #game { display: grid !important; }
     right: 0 !important;
     bottom: 0 !important;
     z-index: 120 !important;
-    width: min(430px, 92vw) !important;
+    width: min(430px, 92 * var(--vwu)) !important;
     max-height: none !important;
     border-radius: 0 !important;
     transform: translateX(104%);
@@ -630,7 +630,7 @@ body.game-active #game { display: grid !important; }
   #setup .setupright.mobile-open::before {
     content: '';
     position: fixed;
-    inset: 0 100% 0 -100vw;
+    inset: 0 100% 0 calc(-100 * var(--vwu));
     background: rgba(0, 0, 0, .66);
   }
   #setup .podclose {
@@ -1129,7 +1129,7 @@ body:has(#game .overlay) .toastmsg {
   top: 58px !important;
   right: var(--v3-rail) !important;
   bottom: 0 !important;
-  width: min(370px, calc(100vw - var(--v3-rail))) !important;
+  width: min(370px, calc(100 * var(--vwu) - var(--v3-rail))) !important;
   max-width: none !important;
   padding: 0 12px 18px !important;
   display: flex !important;
@@ -1224,7 +1224,7 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
 }
 #game .quickmenu {
   width: min(440px, 100%);
-  max-height: min(680px, calc(100dvh - 36px));
+  max-height: min(680px, calc(100 * var(--dvhu) - 36px));
   overflow: auto;
   background: linear-gradient(145deg, #111819, #080c0d);
   border: 1px solid rgba(212, 161, 95, .34);
@@ -1267,7 +1267,7 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
     isolation: isolate;
     width: 100% !important;
     max-width: none !important;
-    height: 100dvh !important;
+    height: calc(100 * var(--dvhu)) !important;
     min-height: 620px;
     margin: 0 !important;
     padding: 0 var(--v3-rail) 0 0 !important;
@@ -1340,14 +1340,14 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
   #game .handwrap { padding: 6px 12px 3px !important; }
   #game .hand { min-height: 96px !important; height: 96px; padding-inline: 38px !important; }
   #game .hcard { width: 68px !important; height: 94px !important; }
-  #game .sheetimg:not(.noimg) { width: min(30vh, 200px); max-height: 280px; object-fit: contain; }
+  #game .sheetimg:not(.noimg) { width: min(30 * var(--vhu), 200px); max-height: 280px; object-fit: contain; }
 }
 
 @media (min-width: 768px) and (max-width: 1279px) {
   #game {
     width: 100% !important;
     max-width: none !important;
-    height: 100dvh !important;
+    height: calc(100 * var(--dvhu)) !important;
     margin: 0 !important;
     padding: 0 var(--v3-rail) 0 0 !important;
     overflow: hidden !important;
@@ -1402,7 +1402,7 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
     --v3-rail: 0px;
     width: 100% !important;
     max-width: none !important;
-    height: 100dvh !important;
+    height: calc(100 * var(--dvhu)) !important;
     min-height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -1499,7 +1499,7 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
     grid-area: prompt;
     z-index: 8;
     min-height: 54px;
-    max-height: 34dvh;
+    max-height: calc(34 * var(--dvhu));
     margin: 0 8px !important;
     padding: 7px 8px !important;
     overflow-y: auto;
@@ -1580,12 +1580,12 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
     top: 0 !important;
     right: 0 !important;
     z-index: 130 !important;
-    width: min(390px, 100vw) !important;
+    width: min(390px, 100 * var(--vwu)) !important;
     transform: translateX(104%);
   }
   #game.sidebar-open:not([data-mobile-view="stack"]) .sidebar { transform: translateX(0); }
   #game .quickmenuov { align-items: end; padding: 0; }
-  #game .quickmenu { width: 100%; max-height: 84dvh; border-radius: 14px 14px 0 0; }
+  #game .quickmenu { width: 100%; max-height: calc(84 * var(--dvhu)); border-radius: 14px 14px 0 0; }
   #game .quickmenuitem { min-height: 54px; }
 }
 
@@ -1608,7 +1608,7 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
 }
 
 @media (max-width: 420px) and (max-height: 700px) {
-  #game .sheetimg:not(.noimg) { width: min(46vw, 150px); max-height: 210px; object-fit: contain; }
+  #game .sheetimg:not(.noimg) { width: min(46 * var(--vwu), 150px); max-height: 210px; object-fit: contain; }
   #game .myboard:has(.playerrail.has-library-top) { padding-top: 20px !important; }
   #game .myboard:has(.playerrail.has-library-top) .landrow { order: -1; }
   #game .myboard:has(.playerrail.has-library-top) .playerrail { order: -1; }
@@ -1697,8 +1697,8 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
 
 .online-lobby,
 .online-remote-game {
-  min-height: 100dvh;
-  padding: clamp(22px, 4vw, 58px);
+  min-height: calc(100 * var(--dvhu));
+  padding: clamp(22px, 4 * var(--vwu), 58px);
   color: #e8deca;
   background:
     linear-gradient(rgba(4, 8, 8, .88), rgba(4, 8, 8, .94)),
