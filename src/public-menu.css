@@ -374,7 +374,7 @@ body.account-dialog-open { overflow: hidden; }
   cursor: pointer;
 }
 .account-switch { margin-top: 18px; }
-.account-privacy { max-width: 520px; margin-top: 18px; display: block; color: #6f7a77; line-height: 1.5; }
+.account-privacy { max-width: 520px; margin-top: 18px; display: block; color: var(--ds-muted); line-height: 1.5; }
 .account-service-error { color: #d4aaa2; }
 
 .account-profile-head { min-height: 72px; padding-right: 52px; display: flex; align-items: center; gap: 18px; }
@@ -410,7 +410,7 @@ body.account-dialog-open { overflow: hidden; }
 .account-section h3 { margin: 7px 0 5px; color: var(--ds-text); font-size: 19px; }
 .account-continue-card p,
 .account-empty-save p { margin: 0; color: #a1aba7; font-size: 13px; }
-.account-continue-card div:first-child > span { margin-top: 8px; display: block; color: #6f7b77; font-size: 11px; }
+.account-continue-card div:first-child > span { margin-top: 8px; display: block; color: var(--ds-muted); font-size: 11px; }
 .account-continue-card > div:last-child { min-width: 150px; display: grid; gap: 3px; }
 .account-clear-save { color: #9ba5a2; font-size: 11px; }
 
@@ -421,7 +421,7 @@ body.account-dialog-open { overflow: hidden; }
 
 .account-section { margin-top: 28px; }
 .account-section > header { display: flex; align-items: end; justify-content: space-between; gap: 20px; border-bottom: 1px solid #273132; }
-.account-section > header > span { padding-bottom: 9px; color: #6f7a77; font-size: 11px; }
+.account-section > header > span { padding-bottom: 9px; color: var(--ds-muted); font-size: 11px; }
 .account-commanders { margin-top: 10px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .account-commanders article { min-height: 74px; padding: 13px; display: flex; align-items: center; gap: 11px; background: var(--ds-panel); border: 1px solid #273132; border-radius: 9px; }
 .account-commanders i { color: var(--ds-accent); font: 700 10px/1 var(--ds-font-display); }
@@ -495,8 +495,8 @@ body.account-dialog-open { overflow: hidden; }
   box-shadow: 0 18px 44px rgba(0, 0, 0, .28);
 }
 
-#setup[data-app-view="home"] .mainmenu-primary .gameicon { color: #2f2618; }
-#setup[data-app-view="home"] .mainmenu-primary small { color: #3e2d19; }
+#setup[data-app-view="home"] .mainmenu-primary .gameicon { color: var(--ds-muted); }
+#setup[data-app-view="home"] .mainmenu-primary small { color: var(--ds-accent-soft); }
 #setup[data-app-view="home"] .mainmenu-secondary { color: #ece7dc; background: var(--ds-panel-raised); border: 1px solid #303a3b; }
 #setup[data-app-view="home"] .mainmenu-secondary .gameicon { color: var(--ds-brass); }
 #setup[data-app-view="home"] .mainmenu-secondary small { color: #a1aca7; }
@@ -880,7 +880,7 @@ body.account-dialog-open { overflow: hidden; }
 #setup[data-app-view="home"] .mainmenu-loadveil span { color: var(--ds-brass-bright); font: 800 9px/1 var(--ds-font-display); letter-spacing: .18em; }
 #setup[data-app-view="home"] .mainmenu-loadveil h2 { margin: 13px 0 10px; color: var(--ds-text); font: 400 34px/1.05 var(--ds-font-display); }
 #setup[data-app-view="home"] .mainmenu-loadveil p { margin: 0; color: #8e9996; font-size: 13px; line-height: 1.55; }
-#setup[data-app-view="home"] .mainmenu-loadveil button { min-height: 46px; margin-top: 22px; padding: 0 22px; color: #19140d; background: var(--ds-brass-bright); border: 0; border-radius: var(--ds-r-sm); font-weight: 800; cursor: pointer; }
+#setup[data-app-view="home"] .mainmenu-loadveil button { min-height: 46px; margin-top: 22px; padding: 0 22px; color: var(--ds-accent-ink); background: var(--ds-brass-bright); border: 0; border-radius: var(--ds-r-sm); font-weight: 800; cursor: pointer; }
 #setup[data-app-view="home"] .mainmenu-loadveil.is-error i { display: none; }
 
 #setup[data-app-view="home"] .mainmenu-deckimport {
@@ -976,7 +976,7 @@ body.account-dialog-open { overflow: hidden; }
 #setup[data-app-view="home"] .mainmenu-deckimport-form { display: grid; gap: 10px; }
 #setup[data-app-view="home"] .mainmenu-deckimport-form label { display: grid; gap: 7px; color: #c4ccc9; font-size: 12px; font-weight: 700; }
 #setup[data-app-view="home"] .mainmenu-deckimport-form label > span { display: flex; justify-content: space-between; gap: 12px; }
-#setup[data-app-view="home"] .mainmenu-deckimport-form label small { color: #6f7a76; font-size: 10px; font-weight: 500; }
+#setup[data-app-view="home"] .mainmenu-deckimport-form label small { color: var(--ds-muted); font-size: 10px; font-weight: 500; }
 #setup[data-app-view="home"] .mainmenu-deckimport-form input,
 #setup[data-app-view="home"] .mainmenu-deckimport-form textarea {
   width: 100%;
@@ -990,7 +990,7 @@ body.account-dialog-open { overflow: hidden; }
 #setup[data-app-view="home"] .mainmenu-deckimport-form textarea { min-height: clamp(210px, 28 * var(--vhu), 300px); padding: 13px; resize: vertical; tab-size: 2; }
 #setup[data-app-view="home"] .mainmenu-deckimport-form :is(input, textarea):focus { outline: 2px solid var(--ds-brass-bright); outline-offset: 2px; border-color: transparent; }
 #setup[data-app-view="home"] .mainmenu-deckimport-form textarea::placeholder,
-#setup[data-app-view="home"] .mainmenu-deckimport-form input::placeholder { color: #56615e; }
+#setup[data-app-view="home"] .mainmenu-deckimport-form input::placeholder { color: var(--ds-muted); }
 
 #setup[data-app-view="home"] .mainmenu-deckimport-result {
   min-height: 56px;
@@ -1020,7 +1020,7 @@ body.account-dialog-open { overflow: hidden; }
 #setup[data-app-view="home"] .mainmenu-deckimport-panel aside { padding: 24px; background: #151e1f; border: 1px solid #34403d; border-radius: var(--ds-r-sm); }
 #setup[data-app-view="home"] .mainmenu-deckimport-panel aside h3 { margin: 10px 0 8px; color: #ebe7de; font: 400 25px/1.08 var(--ds-font-display); }
 #setup[data-app-view="home"] .mainmenu-deckimport-panel aside p { margin: 0; color: #a8b2ad; font-size: 13px; line-height: 1.55; }
-#setup[data-app-view="home"] .mainmenu-deckimport-panel aside a { min-height: 48px; margin-top: 18px; padding: 0 14px; display: inline-flex; align-items: center; gap: 8px; color: #18130c; background: var(--ds-brass-bright); border-radius: var(--ds-r-sm); font-size: 12px; font-weight: 800; text-decoration: none; }
+#setup[data-app-view="home"] .mainmenu-deckimport-panel aside a { min-height: 48px; margin-top: 18px; padding: 0 14px; display: inline-flex; align-items: center; gap: 8px; color: var(--ds-accent-ink); background: var(--ds-brass-bright); border-radius: var(--ds-r-sm); font-size: 12px; font-weight: 800; text-decoration: none; }
 #setup[data-app-view="home"] .mainmenu-deckimport-panel aside a:hover { background: #f0c88d; }
 #setup[data-app-view="home"] .mainmenu-deckimport-panel aside ul { margin: 22px 0 0; padding: 18px 0 0 18px; display: grid; gap: 10px; color: #a8b2ad; border-top: 1px solid #34403d; font-size: 12px; line-height: 1.5; }
 #setup[data-app-view="home"] .mainmenu-deckimport-panel code { color: #c6d5b9; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
