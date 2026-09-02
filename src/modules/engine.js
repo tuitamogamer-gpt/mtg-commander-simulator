@@ -2499,7 +2499,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           kw: new Set(d.kws || []),
           power: 0, toughness: 0, basePower: 0, baseToughness: 0,
           cantAttack: false, cantBlock: false, cantUntap: false, blockOnlyFlying: false,
-          cantSacrifice: false, mustAttack: false,
+          cantSacrifice: false, mustAttack: false, mustBeBlocked: false, lure: false,
           assignByToughness: false, allCreatureTypes: !!d.changeling,
           allCreatureTypesFromOtherEffects: false, suppressPrintedChangeling: false,
           extraAbilities: [], extraTriggers: [], wardCost: d.ward || null, extraMana: [],

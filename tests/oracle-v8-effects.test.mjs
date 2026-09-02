@@ -1930,11 +1930,22 @@ test('v8 storage mana grammar rejects other counters, other objects, bounded X c
     ['{T}, Remove any number of charge counters from this land: Add {G} for each charge counter removed this way.'],
     ['{T}, Remove any number of storage counters from another land: Add {G} for each storage counter removed this way.'],
     ['{T}, Remove up to three storage counters from this land: Add {G} for each storage counter removed this way.'],
-    ['{1}, Remove X storage counters from this land: Add X mana in any combination of {G} and/or {W}.'],
+    ['{1}, Remove X storage counters from this land: Add X mana in any combination of {G} and/or {G}.'],
+    ['{1}, Remove X storage counters from another land: Add X mana in any combination of {G} and/or {W}.'],
+    ['{1}, Remove X storage counters from this artifact: Add X mana in any combination of {G} and/or {W}.', 'Artifact'],
     ['{T}, Remove any number of storage counters from this land: Add {G}{G} for each storage counter removed this way.'],
     ['{T}, Remove any number of storage counters from this land: Add {G} for each storage counter on it.'],
     ['{T}, Remove any number of storage counters from this artifact: Add {G} for each storage counter removed this way.', 'Artifact'],
   ]) assert.equal(semanticClass({ ...input('Bad Storage Mana', oracle, type) }, { compilerVersion: 8 }).semanticClass, undefined, oracle);
+
+  // The printed split storage land pays one counter per mana added and divides
+  // the removed counters freely between its two printed colors.
+  const split = semanticClass({ ...input('Split Storage Land',
+    '{1}, Remove X storage counters from this land: Add X mana in any combination of {G} and/or {W}.', 'Land') },
+    { compilerVersion: 8 });
+  assert.equal(split.semanticClass, 'land-mana-template');
+  assert.deepEqual(split.implementation[0].storageCounterMana, { kind: 'storage', colors: ['G', 'W'] });
+  assert.equal(split.implementation[0].activationCost.mana, '{1}');
 });
 
 test('v8 modal parser rejects unknown modes, trailing clauses, unknown headers and unsupported choice timing', () => {

@@ -12,6 +12,7 @@ import { extensionEffect as v6Effect, extensionLine as v6Line, characteristicOpe
 import * as v7 from './oracle-extensions-v7.mjs';
 import * as v8 from './oracle-extensions-v8.mjs';
 import {compileFaces} from './oracle-v8-faces.mjs';
+import {compileLeveler} from './oracle-v8-levels.mjs';
 
 // Parsing is synchronous. Preserve existing v4 descriptors verbatim before
 // trying the additive grammar, so an extension cannot rewrite old manifests.
@@ -1178,6 +1179,14 @@ function creatureSemantics(card, rulesCore) {
       implementation.push({ kind: 'unblockable', contract: 'unblockable-static' });
       continue;
     }
+    if (new RegExp('^' + subject + ' must be blocked if able\\.$', 'i').test(line)) {
+      implementation.push({ kind: 'must-be-blocked', contract: 'must-be-blocked-static' });
+      continue;
+    }
+    if (new RegExp('^All creatures able to block ' + subject + ' do so\\.$', 'i').test(line)) {
+      implementation.push({ kind: 'lure', contract: 'lure-static' });
+      continue;
+    }
     if (new RegExp('^' + subject + ' can block only creatures with flying\\.$', 'i').test(line)) {
       implementation.push({ kind: 'flying-blocker-only', contract: 'flying-blocker-only-static' });
       continue;
@@ -1960,6 +1969,7 @@ export function validateManaCost(manaCost) {
 
 function semanticClassCore(card) {
   if(extensionsActive===8&&['modal_dfc','transform'].includes(card.layout))return compileFaces(card,{compile:face=>semanticClass(face,{compilerVersion:8}),raw:rawCard});
+  if(extensionsActive===8&&card.layout==='leveler')return compileLeveler(card,{compile:band=>semanticClass(band,{compilerVersion:8})});
   if(extensionsActive>=7&&/^Backup \d+/m.test(stripReminderText(card.oracle_text||''))){
     if(!card.type_line.includes('Creature')||card.layout!=='normal')return {reason:'backup-needs-normal-creature'};
     const text=stripReminderText(card.oracle_text),lines=text.split('\n').filter(Boolean),backup=line=>/^Backup \d+$/.test(line),plain=lines.filter(line=>!backup(line));

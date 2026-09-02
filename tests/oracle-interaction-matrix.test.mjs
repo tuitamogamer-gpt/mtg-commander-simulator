@@ -118,9 +118,9 @@ test('svaka generička Oracle batch karta mapira kompletan rules core na poznate
   const MTG = loadEngine();
   const entries = allEntries(MTG);
   const batches = MTG.ORACLE_BATCHES.filter(batch => batch.id !== 'moxfield-sauron-dark-lord');
-  assert.equal(batches.length, 147, 'generic Oracle catalog has exactly 147 batches');
+  assert.equal(batches.length, 148, 'generic Oracle catalog has exactly 148 batches');
   assert.ok(batches.every(batch => batch.cards.length === 100), 'every generic Oracle batch contains exactly 100 cards');
-  assert.equal(entries.length, 14700, `expected all 147 generic Oracle batches (14,700 cards), found ${entries.length}`);
+  assert.equal(entries.length, 14800, `expected all 148 generic Oracle batches (14,800 cards), found ${entries.length}`);
   for (const entry of entries) {
     const catalog = MTG.CARD_CATALOG[entry.raw.name];
     const deck = { cards: [{ n: 1, name: entry.raw.name }] };

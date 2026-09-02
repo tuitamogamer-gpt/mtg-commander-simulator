@@ -3808,6 +3808,9 @@ async function operationProof(MTG, entry, operation, role = 'human') {
       if(cost.sacWhat)stageGenericTarget(MTG,context,{what:['creature','artifact','land','enchantment'].includes(cost.sacWhat)?cost.sacWhat:'creature',subtype:['creature','artifact','land','enchantment','token'].includes(cost.sacWhat)?undefined:cost.sacWhat,token:cost.sacWhat==='token',controller:'you'},'mana-sacrifice');
       if(cost.sacFilter)for(let i=0;i<(cost.sacN||1);i++)stageGenericTarget(MTG,context,{...cost.sacFilter,controller:'you'},'mana-sacrifice-'+i);
       if(cost.rmCounter)source.counters[cost.rmCounter.kind]=cost.rmCounter.n;
+      // Tapping other permanents is an additional cost, so the printed pool of
+      // taps has to exist before the source can be offered at all.
+      if(cost.tapFilter)for(let i=0;i<(cost.tapN||1);i++)stageGenericTarget(MTG,context,{...cost.tapFilter,controller:'you'},'mana-tap-'+i);
       if(operation.storageCounterMana)source.counters[operation.storageCounterMana.kind]=3;
       source.tapped = false;
       source.sick = false;
@@ -3832,10 +3835,21 @@ async function operationProof(MTG, entry, operation, role = 'human') {
         return 1;
       }
       const descriptor = sources.find(candidate => (operation.storageCounterMana
-        ? candidate.m.storageCounterMana?.kind===operation.storageCounterMana.kind&&candidate.m.storageCounterMana?.color===operation.storageCounterMana.color
+        ? candidate.m.storageCounterMana?.kind===operation.storageCounterMana.kind&&
+          String(candidate.m.storageCounterMana?.color)===String(operation.storageCounterMana.color)&&
+          String(candidate.m.storageCounterMana?.colors)===String(operation.storageCounterMana.colors)
         : JSON.stringify(candidate.produce) === wanted) && !!candidate.extraCost?.sacSelf===!!operation.activationCost?.sacSelf);
       assert.ok(descriptor, `${name}: compiled mana source is discoverable`);
-      const chosen = operation.storageCounterMana ? descriptor.produce.find(option=>option[operation.storageCounterMana.color]===2) : descriptor.produce[0];
+      // A split storage land divides the removed counters between two printed
+      // colors, so the staged amount is the option's total rather than a
+      // single color's amount.
+      const optionTotal=option=>Object.entries(option).filter(([key])=>key!=='n')
+        .reduce((sum,[,value])=>sum+Number(value||0),0);
+      const chosen = operation.storageCounterMana
+        ? descriptor.produce.find(option=>operation.storageCounterMana.colors
+          ? optionTotal(option)===2
+          : option[operation.storageCounterMana.color]===2)
+        : descriptor.produce[0];
       assert.ok(chosen, `${name}: flexible mana exposes the staged counter amount`);
       const expected = chosen.ANY ? Number(chosen.n || 1)
         : Object.entries(chosen).filter(([key]) => key !== 'n')
@@ -4003,6 +4017,29 @@ async function operationProof(MTG, entry, operation, role = 'human') {
       game.recalc();
       assert.equal(own.kw(operation.keyword), true, `${name}: own creature gains ${operation.keyword}`);
       assert.equal(hostile.kw(operation.keyword), true, `${name}: opponent creature gains ${operation.keyword}`);
+      return 1;
+    }
+    if (operation.kind === 'must-be-blocked' || operation.kind === 'lure') {
+      // The defending controller declares no blocks at all; the printed
+      // requirement has to put the blockers there by itself.
+      source.sick = false;
+      const idle = [0, 1].map(index => permanent(MTG, game, b, fixtureDefinition('Oracle Idle Blocker ' + index,
+        ['Creature'], { power: '1', toughness: '20', kws: ['first strike'] })));
+      for (const creature of idle) creature.sick = false;
+      // Block assignments are cleared when combat ends, so the count is read
+      // from the damage each forced blocker deals. The attacker is kept alive
+      // for the whole combat so that damage survives to be counted.
+      MTG.E.pumpUntilEOT(game, source, 0, 40);
+      game.recalc();
+      const decide = a.controller.decide.bind(a.controller);
+      a.controller.decide = async (currentGame, query) => query.type === 'attackers'
+        ? [{ card: source, target: b }] : decide(currentGame, query);
+      const before = b.life;
+      await game.combatPhase(a);
+      a.controller.decide = decide;
+      assert.equal(b.life, before, `${name}: the printed blocking requirement is enforced`);
+      assert.equal(source.damage, operation.kind === 'lure' ? 2 : 1,
+        `${name}: exactly the required number of blockers is forced in`);
       return 1;
     }
     if (operation.kind === 'unblockable') {

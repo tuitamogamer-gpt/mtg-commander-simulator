@@ -457,7 +457,8 @@ export async function staticProof(MTG,entry,op,role,h){
 
 export const mechanicKinds=new Set(['mechanic-unearth','mechanic-grave-return-self','mechanic-embalm','mechanic-eternalize','mechanic-soulshift','mechanic-modular','mechanic-fabricate','mechanic-living-weapon','mechanic-for-mirrodin','mechanic-offspring','mechanic-afflict','mechanic-ingest','mechanic-ninjutsu','mechanic-foretell','mechanic-retrace','doesnt-untap']);
 for(const kind of ['replicate','ravenous','graveyard-lands','conditional-alternative'])mechanicKinds.add('mechanic-'+kind);
-for(const kind of ['harmonize-v8','ward-v8','strive-v8'])mechanicKinds.add('mechanic-'+kind);
+for(const kind of ['harmonize-v8','ward-v8','strive-v8','level-up-v8'])mechanicKinds.add('mechanic-'+kind);
+for(const kind of ['casualty','conspire','enlist','flash-surcharge','escape-counters'])mechanicKinds.add('mechanic-'+kind);
 for(const kind of ['player-hexproof','additional-land','dethrone','rampage','mobilize','squad','blitz','warp','evoke','kicker','multikicker','escape','additional-costs','no-max-hand','echo','dash','dredge','plot','devour','graft','surge','spectacle','madness','buyback','split-second','jump-start','fading','vanishing','cumulative-upkeep'])mechanicKinds.add('mechanic-'+kind);
 export async function mechanicProof(MTG,entry,op,role,h){
  const controller=h.decision({chooseX:(g,q)=>Math.min(3,q.max??3),chooseCards:(g,q)=>q.from.slice(0,q.max??q.min??1),chooseTargets:(g,q)=>q.candidates.slice(0,q.max??q.min??1),chooseOption:(g,q)=>q.options.find(o=>o.key==='yes')?.key||q.options[0].key});
@@ -586,6 +587,125 @@ export async function mechanicProof(MTG,entry,op,role,h){
    await h.resolveAll(game);
    return 4;
  }
+ if(op.kind==='mechanic-flash-surcharge'){
+   // Outside its own main phase the card is castable only for the printed
+   // flash alternative, and that alternative costs exactly the printed total.
+   game.turnPlayer=b;game.phase='main1';game.step='main';
+   h.fund(a,100);
+   const offers=game.castableList(a).filter(row=>row.card===source);
+   assert.equal(offers.some(row=>!row.alt),false,entry.raw.name+': no ordinary cast on an opponent turn');
+   const offer=offers.find(row=>row.alt?.altCostStr===op.cost&&row.alt?.speed==='instant');
+   assert.ok(offer,entry.raw.name+': the printed flash alternative is offered');
+   const cost=MTG.parseCost(op.cost),total=cost.generic+cost.pips.length;
+   const before=Object.values(a.pool).reduce((sum,amount)=>sum+amount,0);
+   assert.equal(await game.castSpell(a,source,{from:'hand',alt:offer.alt}),true,entry.raw.name+': the flash alternative is paid');
+   assert.equal(Object.values(a.pool).reduce((sum,amount)=>sum+amount,0),before-total,
+     entry.raw.name+': exactly the printed alternative cost is paid');
+   assert.equal(game.stack.some(row=>row.card===source),true,entry.raw.name+': the spell reaches the Stack on the opponent turn');
+   await h.resolveAll(game);
+   return 3;
+ }
+ if(op.kind==='mechanic-enlist'){
+   // Enlist is proved on the real attack path: the printed creature attacks,
+   // an eligible helper is tapped and exactly its power is added for the turn.
+   const attacker=h.permanent(MTG,game,a,entry.raw.name);
+   attacker.sick=false;
+   const helper=h.permanent(MTG,game,a,h.fixtureDefinition('Enlist helper',['Creature'],{power:'3',toughness:'3'}));
+   helper.sick=false;
+   const sick=h.permanent(MTG,game,a,h.fixtureDefinition('Enlist sick helper',['Creature'],{power:'9',toughness:'9'}));
+   sick.sick=true;
+   game.recalc();
+   const before=attacker.power;
+   game.phase='combat';game.step='attackers';game.turnPlayer=a;
+   attacker.attacking=b;game.combat={attackers:[attacker],blockers:[]};
+   await game.emit('attacks',{card:attacker,player:a,defender:b});
+   await h.resolveAll(game);
+   game.recalc();
+   assert.equal(helper.tapped,true,entry.raw.name+': the enlisted creature is actually tapped');
+   assert.equal(sick.tapped,false,entry.raw.name+': a summoning-sick creature is never enlisted');
+   assert.equal(attacker.power,before+3,entry.raw.name+": exactly the enlisted creature's power is added");
+   return 3;
+ }
+ if(op.kind==='mechanic-casualty'||op.kind==='mechanic-conspire'){
+   // Both mechanics are optional additional costs paid as the spell is cast.
+   // The proof pays the printed cost on the real cast path and shows the copy
+   // arrives through its own trigger, not as part of the original spell.
+   const casualty=op.kind==='mechanic-casualty';
+   const colors=[...new Set(String(entry.raw.cost||'').match(/[WUBRG]/g)||[])];
+   const fodder=casualty
+     ?[h.permanent(MTG,game,a,h.fixtureDefinition('Casualty fodder',['Creature'],{power:String(op.n),toughness:'3'}))]
+     :[0,1].map(index=>h.permanent(MTG,game,a,h.fixtureDefinition('Conspire helper '+index,['Creature'],
+       {power:'1',toughness:'1',colorsOverride:colors.slice(0,1)})));
+   game.recalc();
+   if(!casualty){
+     assert.ok(colors.length,entry.raw.name+': a conspire spell has a printed color to share');
+     for(const creature of fodder)assert.equal(creature.tapped,false,entry.raw.name+': the conspire creatures start untapped');
+   }
+   assert.equal(await game.castSpell(a,source,{from:'hand',xVal:3}),true,entry.raw.name+': the printed additional cost is paid on cast');
+   if(casualty)assert.equal(fodder[0].zone,'graveyard',entry.raw.name+': the casualty creature is actually sacrificed');
+   else for(const creature of fodder)assert.equal(creature.tapped,true,entry.raw.name+': both conspire creatures are actually tapped');
+   assert.equal(game.stack.filter(row=>row.isCopy).length,0,entry.raw.name+': no copy exists while the spell is still on the Stack');
+   await game.flushTriggers();
+   const trigger=game.stack.find(row=>row.kind==='trigger'&&String(row.name).includes(casualty?'Casualty':'Conspire'));
+   assert.ok(trigger,entry.raw.name+': the paid cost reaches the Stack as its own trigger');
+   await game.resolveTop();
+   assert.equal(game.stack.filter(row=>row.isCopy).length,1,entry.raw.name+': the trigger makes exactly one copy');
+   await h.resolveAll(game);
+   return 4;
+ }
+ if(op.kind==='mechanic-level-up-v8'){
+   // A leveler is proved on the printed activation path: the level-up ability
+   // is offered at sorcery speed, each activation adds exactly one counter,
+   // and only the band that is live carries its printed characteristics.
+   const permanent=h.permanent(MTG,game,a,entry.raw.name);
+   permanent.sick=false;game.recalc();
+   const creature=(entry.raw.types||[]).includes('Creature');
+   const banded=[...new Set(op.bands.flatMap(band=>band.implementedKeywords||[]))];
+   const liveBand=n=>[...op.bands].reverse().find(band=>n>=band.min&&(band.max===null||n<=band.max))||null;
+   if(creature){
+     assert.equal(permanent.power,Number(entry.raw.power),entry.raw.name+': level 0 keeps the printed power');
+     assert.equal(permanent.toughness,Number(entry.raw.toughness),entry.raw.name+': level 0 keeps the printed toughness');
+   }
+   for(const keyword of banded)assert.equal(permanent.cur.kw.has(keyword),false,entry.raw.name+': no band keyword before the band is reached');
+   const offered=()=>game.activatableList(a).find(row=>row.card===permanent&&/^Level up /.test(row.ability?.label||''));
+   const first=offered();
+   assert.ok(first,entry.raw.name+': level up is offered on the battlefield');
+   assert.equal(first.ability.sorcery,true,entry.raw.name+': level up only as a sorcery');
+   const top=op.bands[op.bands.length-1].min;
+   assert.ok(first.ability.aiScore(game,permanent,a)>0,entry.raw.name+': a local AI values levelling while a band is ahead');
+   for(let n=1;n<=top;n++){
+     const row=offered();
+     assert.ok(row,entry.raw.name+': level up stays available at level '+(n-1));
+     h.fund(a,100);
+     assert.equal(await game.activateAbility(a,row),true,entry.raw.name+': level up is paid at level '+(n-1));
+     await h.resolveAll(game);
+     assert.equal(permanent.counters.level||0,n,entry.raw.name+': exactly one level counter per activation');
+     game.recalc();
+     const band=liveBand(n);
+     if(band&&band.power!==null){
+       assert.equal(permanent.power,band.power,entry.raw.name+': printed power of the live band at level '+n);
+       assert.equal(permanent.toughness,band.toughness,entry.raw.name+': printed toughness of the live band at level '+n);
+     }
+     for(const keyword of banded)assert.equal(permanent.cur.kw.has(keyword),!!band&&(band.implementedKeywords||[]).includes(keyword),
+       entry.raw.name+': only the live band grants '+keyword+' at level '+n);
+   }
+   assert.equal(offered().ability.aiScore(game,permanent,a),0,entry.raw.name+': a local AI stops levelling at the last band');
+   // Sorcery speed is a real restriction, not only a printed word.
+   const decoy=h.zoneCard(MTG,a,'Grizzly Bears','hand');
+   h.fund(a,100);
+   assert.equal(await game.castSpell(a,decoy,{from:'hand'}),true,entry.raw.name+': a spell is put on the Stack');
+   let offeredWhileBusy=null;
+   const decide=a.controller.decide.bind(a.controller);
+   a.controller.decide=async(g,q)=>{
+     if(q.type==='priority')offeredWhileBusy=(q.acts||[]).some(row=>row.card===permanent&&/^Level up /.test(row.ability?.label||''));
+     return decide(g,q);
+   };
+   await game.askPriorityAction(a);
+   a.controller.decide=decide;
+   assert.notEqual(offeredWhileBusy,true,entry.raw.name+': level up is not offered while a spell is on the Stack');
+   await h.resolveAll(game);
+   return 5;
+ }
  if(op.kind==='mechanic-ward-v8'){
    // Ward is proved on the real targeting path: an opponent's printed removal
    // spell locks the target, the ward trigger reaches the Stack above it, and
@@ -698,6 +818,25 @@ export async function mechanicProof(MTG,entry,op,role,h){
    await cast();const before=source.counters['+1/+1'];assert.ok(before>=op.n);
    const target=new MTG.CardInst(MTG.DEFS['Grizzly Bears'],a);target.zone='nowhere';await game.move(target,'battlefield',{ctrl:a});await h.resolveAll(game);
    assert.equal(target.counters['+1/+1'],1);assert.equal(source.counters['+1/+1']||0,before-1);return 3;
+ }
+ if(op.kind==='mechanic-escape-counters'){
+   // The card is cast for its own printed escape cost and must arrive on the
+   // battlefield carrying exactly the printed number of +1/+1 counters.
+   const escape=entry.implementation.find(operation=>operation.kind==='mechanic-escape');
+   assert.ok(escape,entry.raw.name+': the printed escape cost is compiled alongside its counters');
+   await game.move(source,'graveyard');
+   const fodder=Array.from({length:escape.n},()=>h.zoneCard(MTG,a,'Forest','graveyard'));
+   const option=game.castableList(a).find(row=>row.card===source&&row.alt?.escape);
+   assert.ok(option,entry.raw.name+': escape is offered from the graveyard');
+   assert.equal(await game.castSpell(a,source,{from:'graveyard',alt:option.alt,xVal:3}),true,
+     entry.raw.name+': the escape cost is paid');
+   assert.equal(fodder.filter(card=>card.zone==='exile').length,escape.n,
+     entry.raw.name+': the printed cards are exiled for escape');
+   await h.resolveAll(game);
+   assert.equal(source.zone,'battlefield',entry.raw.name+': the escaped creature resolves onto the battlefield');
+   assert.equal(source.counters['+1/+1']||0,op.n,
+     entry.raw.name+': it escapes with exactly the printed number of +1/+1 counters');
+   return 4;
  }
  if(op.kind==='mechanic-escape'){
    const fodder=Array.from({length:op.n},()=>h.zoneCard(MTG,a,'Forest','graveyard'));

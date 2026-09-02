@@ -1656,6 +1656,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ...(storageMana?{amountFlex:true,storageCounterMana:storageMana}:{}),
           produce:storageMana?(game,card)=>{
             const available=Math.max(0,Number(card.counters[storageMana.kind])||0);
+            // A split storage land pays one counter per mana added, so every
+            // division of the removed counters between its two printed colors
+            // is a distinct printed choice.
+            if(storageMana.colors){
+              // Ordered by fewest counters first: the solver banks the first
+              // option that covers the payment, and spending more counters
+              // than the cost needs would destroy them for nothing.
+              const options=[];
+              for(let total=1;total<=available;total++)
+                for(let first=total;first>=0;first--)
+                  options.push({[storageMana.colors[0]]:first,[storageMana.colors[1]]:total-first});
+              options.push({[storageMana.colors[0]]:0,[storageMana.colors[1]]:0});
+              return options;
+            }
             return [...Array.from({length:available},(_,index)=>({[storageMana.color]:index+1})),{[storageMana.color]:0}];
           }:operation.multiplier?(game,card,player)=>{const n=genericCount(game,card,player,operation.multiplier);return produce().map(option=>Object.fromEntries(Object.entries(option).map(([key,value])=>[key,key==='ANY'?value:value*n])));}:produce(),
           ...(operation.condition?{cond:(game,card,player)=>genericCondition(game,card,operation.condition,player)}:{}),
@@ -2273,6 +2287,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function compileOracleScript(batch, entry) {
     const faces=entry.implementation?.find(operation=>operation.kind==='double-faced-v8');
     if(faces)return MTG.OracleV8Faces.compile(entry,faces,faceEntry=>compileOracleScript(batch,faceEntry));
+    const levels=entry.implementation?.find(operation=>operation.kind==='mechanic-level-up-v8');
+    if(levels)return MTG.OracleV8Levels.compile(entry,levels,bandEntry=>compileOracleScript(batch,bandEntry));
     const implementedKeywords = (entry.implementedKeywords || []).slice();
     const script = {
       oracleBatch: batch.id,
@@ -2562,6 +2578,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (operation.kind === 'must-attack') {
         script.mustAttack = true;
+        continue;
+      }
+      if (operation.kind === 'must-be-blocked') {
+        statics.push({ apply: (game, self) => { self.cur.mustBeBlocked = true; } });
+        continue;
+      }
+      if (operation.kind === 'lure') {
+        statics.push({ apply: (game, self) => { self.cur.lure = true; } });
         continue;
       }
       if (operation.kind === 'unblockable') {

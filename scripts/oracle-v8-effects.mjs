@@ -805,12 +805,24 @@ export function modalOperation(card, text, parseEffect) {
     modes: labels.map((label, index) => ({ label, body: bodies[index] })), contract: 'spell-modal-generic-effect' };
 }
 
+const MANA = /^(?:\{(?:\d+|X|[WUBRGC]|[WUBRG]\/[WUBRG]|[WUBRG]\/P|2\/[WUBRG])\})+$/;
+
 export function extensionLine(card, line, helpers) {
   const storageMana = /^\{T\}, Remove any number of storage counters from this (?:land|creature): Add \{([WUBRGC])\} for each storage counter removed this way\.$/.exec(line);
   if (storageMana && /(?:^| )Land(?: |$)/.test(card.type_line || '')) {
     const color = storageMana[1];
     return { kind: 'mana-source', activationCost: { tap: true, removeManaCounters: { kind: 'storage' } },
       produce: [{ [color]: 1 }], storageCounterMana: { kind: 'storage', color }, contract: 'mana-source' };
+  }
+  // The storage lands spend their counters through an X-shaped removal that
+  // pays for exactly the mana it adds, split freely between two printed colors.
+  const storageSplit = /^((?:\{[^}]+\})+), Remove X storage counters from this (?:land|creature): Add X mana in any combination of \{([WUBRGC])\} and\/or \{([WUBRGC])\}\.$/.exec(line);
+  if (storageSplit && MANA.test(storageSplit[1]) && storageSplit[2] !== storageSplit[3] &&
+    /(?:^| )Land(?: |$)/.test(card.type_line || '')) {
+    const colors = [storageSplit[2], storageSplit[3]];
+    return { kind: 'mana-source', activationCost: { mana: storageSplit[1], removeManaCounters: { kind: 'storage' } },
+      produce: colors.map(color => ({ [color]: 1 })), storageCounterMana: { kind: 'storage', colors },
+      contract: 'mana-source' };
   }
   const modal = /^([^\n]+?[:,] )choose one —\n((?:• [^\n]+(?:\n|$))+)$/i.exec(line);
   if (modal && helpers.line) {

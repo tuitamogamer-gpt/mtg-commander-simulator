@@ -199,9 +199,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return ordered.length === steps.length ? ordered : null;
   }
 
-  function manaActivationResourcePlan(game, player, steps, fixedAssignments, protectedSacrifices = []) {
+  function manaActivationResourcePlan(game, player, steps, fixedAssignments, protectedSacrifices = [], excludedTaps = []) {
     const reserved = new Set(protectedSacrifices);
     const tapped = new Set();
+    const tapGroups = [];
     const oncePerTurn = new Set();
     const removedCounters = new Map();
     const sacrificeGroups = [];
@@ -268,6 +269,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           });
         }
       }
+      // Tapping other permanents is an additional cost like sacrificing one:
+      // every step needs its own untapped permanents, and no permanent can pay
+      // for two steps or be tapped by one step while another taps it itself.
+      if (cost.tapPermanents) {
+        const amount = Math.max(1, Number(cost.tapPermanents.n) || 1);
+        for (let index = 0; index < amount; index++) {
+          tapGroups.push({
+            step, tap: true,
+            filter: candidate => candidate !== card && cost.tapPermanents.filter(game, candidate, card, player),
+          });
+        }
+      }
     }
 
     if (fixedAssignments) {
@@ -279,15 +292,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
 
+    const excluded = new Set(excludedTaps);
     const groups = sacrificeGroups.map(group => ({
       ...group,
       candidates: game.bf().filter(candidate => candidate.ctrl === player && !reserved.has(candidate) &&
         game.canSacrifice(candidate) && group.filter(candidate) &&
         (!fixedAssignments || (fixedAssignments.get(group.step) || []).includes(candidate))),
-    })).sort((left, right) => left.candidates.length - right.candidates.length);
+    })).concat(tapGroups.map(group => ({
+      ...group,
+      // A source this plan already taps for its own cost cannot also be tapped
+      // as somebody else's cost, and neither can a permanent the caller has
+      // reserved for a cost outside this payment.
+      candidates: game.bf().filter(candidate => candidate.ctrl === player && !candidate.tapped &&
+        !tapped.has(candidate) && !excluded.has(candidate) && group.filter(candidate)),
+    }))).sort((left, right) => left.candidates.length - right.candidates.length);
     if (groups.some(group => !group.candidates.length)) return null;
 
     const assignments = new Map();
+    const tapAssignments = new Map();
     let orderedSteps = null;
     const match = index => {
       if (index >= groups.length) {
@@ -295,23 +317,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return !!orderedSteps;
       }
       const group = groups[index];
+      const target = group.tap ? tapAssignments : assignments;
       for (const candidate of group.candidates) {
         if (reserved.has(candidate)) continue;
         reserved.add(candidate);
-        const list = assignments.get(group.step) || [];
+        const list = target.get(group.step) || [];
         list.push(candidate);
-        assignments.set(group.step, list);
+        target.set(group.step, list);
         if (match(index + 1)) return true;
         list.pop();
-        if (!list.length) assignments.delete(group.step);
+        if (!list.length) target.delete(group.step);
         reserved.delete(candidate);
       }
       return false;
     };
-    return match(0) ? { assignments, orderedSteps } : null;
+    return match(0) ? { assignments, tapAssignments, orderedSteps } : null;
   }
 
-  async function chooseManaActivationResources(game, player, steps, suggestedPlan, protectedSacrifices = []) {
+  async function chooseManaActivationResources(game, player, steps, suggestedPlan, protectedSacrifices = [], excludedTaps = []) {
     const assignments = new Map();
     const reserved = new Set(steps.filter(step => step.src && step.src.extraCost && step.src.extraCost.sacSelf)
       .map(step => step.src.card).concat(protectedSacrifices));
@@ -348,7 +371,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (cost.sacType && !await choose(step, 1,
         candidate => candidate.hasSub(cost.sacType), cost.sacType)) return null;
     }
-    return manaActivationResourcePlan(game, player, steps, assignments, protectedSacrifices);
+    return manaActivationResourcePlan(game, player, steps, assignments, protectedSacrifices, excludedTaps);
   }
 
   function manaRestrictionAllows(game, entry, forSpell) {
@@ -472,6 +495,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const kind = m.cost.rmCounter.kind || m.cost.rmCounter;
           if ((c.counters[kind] || 0) < (m.cost.rmCounter.n || 1)) continue;
         }
+        // Tapping other permanents is an ordinary additional cost of a mana
+        // ability (Survivors' Encampment and the Jaspera Sentinel family).
+        if (m.cost && m.cost.tapPermanents && this.bf().filter(x => x.ctrl === p && !x.tapped &&
+          (!m.cost.tap || x !== c) && m.cost.tapPermanents.filter(this, x, c, p)).length < m.cost.tapPermanents.n) continue;
         // 3. argument je kartica-izvor: treba kartama tipa Secluded Courtyard
         // kojima ograničenje zavisi od izbora zapamćenog na samoj karti.
         // Kod plaćanja SPOSOBNOSTI primjenjuju se samo restrikcije koje se
@@ -1093,7 +1120,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const hasResourceSensitiveSources = sources.some(source => {
       const extra = source.extraCost || {};
       return extra.mill || extra.sacType || extra.sac || extra.sacSelf || extra.rmCounter || extra.removeManaCounters ||
-        source.m && source.m.oncePerTurn;
+        extra.tapPermanents || source.m && source.m.oncePerTurn;
     });
     const useMemo = !hasResourceSensitiveSources && (pips.some(pip => pip.length > 1) || sources.some(source =>
       source.rawConsume || source.produce.some(option => option.ANY) || source.m.coloredOnly ||
@@ -1154,7 +1181,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               if (payment.remaining.length || payment.generic > 0) continue;
               const step = Object.assign({}, baseStep, { consumePayment: payment.spendTrace || [] });
               const nextPlan = planAcc.concat([step]);
-              if (hasResourceSensitiveSources && !manaActivationResourcePlan(this, p, nextPlan, undefined, opts.protectedSacrifices)) continue;
+              if (hasResourceSensitiveSources && !manaActivationResourcePlan(this, p, nextPlan, undefined, opts.protectedSacrifices, opts.excludeCards)) continue;
               const nextPool = clonePoolState(payment);
               for (const color of COLORS.concat('C')) {
                 const excess = allocation.excess[color] || 0;
@@ -1356,9 +1383,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Validate all shared activation resources before tapping, milling,
     // sacrificing, spending life, or changing the pool. This keeps a failed
     // payment observationally atomic and gives each source a distinct sacrifice.
-    const suggestedResources = manaActivationResourcePlan(this, p, plannedSteps, undefined, opts.protectedSacrifices);
+    const suggestedResources = manaActivationResourcePlan(this, p, plannedSteps, undefined, opts.protectedSacrifices, opts.excludeCards);
     if (!suggestedResources) return false;
-    const activationResources = await chooseManaActivationResources(this, p, plannedSteps, suggestedResources, opts.protectedSacrifices);
+    const activationResources = await chooseManaActivationResources(this, p, plannedSteps, suggestedResources, opts.protectedSacrifices, opts.excludeCards);
     if (!activationResources) return false;
     const steps = activationResources.orderedSteps;
     const requiredLife = steps.reduce((total, step) => {
@@ -1390,7 +1417,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       const plannedColors = step.anyColors && step.anyColors.length ? step.anyColors.slice() : needColors;
-      const preparedCost = { sacrificeTargets: activationResources.assignments.get(step) || [] };
+      const preparedCost = { sacrificeTargets: activationResources.assignments.get(step) || [],
+        tapTargets: (activationResources.tapAssignments || new Map()).get(step) || [] };
       if (await this.activateManaSource(p, step.src, step.chosen, forSpell, plannedColors, false, preparedCost) === false) return false;
     }
     // deduct the full cost from pool (pre-existing pool + fresh production)
@@ -1463,7 +1491,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (preparedCost && (sacrificeTargets.length !== expectedSacrifices ||
       new Set(sacrificeTargets).size !== sacrificeTargets.length ||
       sacrificeTargets.some(card => card.zone !== 'battlefield' || card.ctrl !== p || !this.canSacrifice(card)))) return false;
+    // A source that is already tapped can no longer pay its own tap cost: the
+    // payment fails instead of producing mana for free.
+    if (cost.tap && c.tapped) return false;
+    let tapCostTargets = [];
+    if (cost.tapPermanents) {
+      const need = Math.max(1, Number(cost.tapPermanents.n) || 1);
+      const pool = this.bf().filter(x => x.ctrl === p && !x.tapped && (!cost.tap || x !== c) &&
+        cost.tapPermanents.filter(this, x, c, p));
+      // Inside a mana payment the targets were reserved with the rest of the
+      // plan; a standalone activation still asks for them.
+      const planned = (preparedCost && preparedCost.tapTargets || []).filter(card => pool.includes(card));
+      if (planned.length === need) tapCostTargets = planned.slice();
+      else {
+        if (preparedCost && preparedCost.tapTargets) return false;
+        if (pool.length < need) return false;
+        const answer = await p.controller.decide(this, {
+          type: 'chooseCards', from: pool, min: need, max: need,
+          prompt: `${c.name}: tap ${need} ${U.plural(need, 'permanent', 'permanenta')} for mana`,
+          aiHint: { kind: 'tapCost', src: c },
+        });
+        tapCostTargets = Array.isArray(answer) ? answer : [];
+      }
+      if (tapCostTargets.length !== need || new Set(tapCostTargets).size !== tapCostTargets.length ||
+        tapCostTargets.some(card => !pool.includes(card))) return false;
+    }
     if (!skipMark) this.markAbilityActivated(p, c, s.m && s.m.viaConvoke);
+    for (const card of tapCostTargets) this.tap(card);
     if (cost.tap) this.tap(c);
     if (cost.exertSelf) {
       if (!cost.tap || c.zone !== 'battlefield') return false;
@@ -2792,6 +2846,46 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
     }
+    // Casualty and conspire are optional additional costs paid as the spell is
+    // cast. Paying one queues a reflexive trigger that copies that same spell.
+    let casualtyPaid = false, conspirePaid = false;
+    if (!faceDownCast && !castOpts.adventure && Number.isInteger(d.casualty)) {
+      const pool = this.creatures(p).filter(c => c !== card && c.power >= d.casualty &&
+        !paidAddl.sacd.includes(c) && this.canSacrifice(c));
+      if (pool.length) {
+        const answer = await p.controller.decide(this, { type: 'chooseOption',
+          prompt: `Casualty ${d.casualty} for ${card.name} — sacrifice a creature to copy it?`,
+          options: [{ key: 'yes', label: 'Pay casualty' }, { key: 'no', label: 'Do not pay' }],
+          aiHint: { kind: 'kicker', card } });
+        if (answer === 'yes') {
+          const picked = await p.controller.decide(this, { type: 'chooseCards', from: pool, min: 1, max: 1,
+            prompt: `Casualty ${d.casualty}: sacrifice which creature?`,
+            aiHint: { kind: 'addlSac', card, required: 1 } });
+          const victim = Array.isArray(picked) ? picked[0] : picked;
+          if (victim && pool.includes(victim)) { paidAddl.sacd = paidAddl.sacd.concat([victim]); casualtyPaid = true; }
+        }
+      }
+    }
+    if (!faceDownCast && !castOpts.adventure && d.conspire) {
+      const spellColors = new Set(card.colors || []);
+      const pool = this.creatures(p).filter(c => !c.tapped && !paidAddl.tapped.includes(c) &&
+        (c.colors || []).some(color => spellColors.has(color)));
+      if (pool.length >= 2) {
+        const answer = await p.controller.decide(this, { type: 'chooseOption',
+          prompt: `Conspire ${card.name} — tap two creatures that share a color with it to copy it?`,
+          options: [{ key: 'yes', label: 'Pay conspire' }, { key: 'no', label: 'Do not pay' }],
+          aiHint: { kind: 'kicker', card } });
+        if (answer === 'yes') {
+          const picked = await p.controller.decide(this, { type: 'chooseCards', from: pool, min: 2, max: 2,
+            prompt: 'Conspire: tap which two creatures?', aiHint: { kind: 'addlTap', card, required: 2 } });
+          if (Array.isArray(picked) && picked.length === 2 && new Set(picked).size === 2 &&
+            picked.every(creature => pool.includes(creature))) {
+            paidAddl.tapped = paidAddl.tapped.concat(picked);
+            conspirePaid = true;
+          }
+        }
+      }
+    }
     if (ac && ac.lifeX && ac.divideAmongTargets && paidAddl.life > 0) {
       const targets = (so.targets || []).flat().filter(Boolean);
       const division = await MTG.E.divideDamage(this, p, card, targets, paidAddl.life, {
@@ -3038,6 +3132,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     // storm
+    for (const [paid, label] of [[casualtyPaid, 'Casualty'], [conspirePaid, 'Conspire']]) if (paid) this.queueTrigger({
+      src: card, ctrl: p, name: label, data: { so },
+      run: async ctx => { await ctx.g.copySpell(ctx.data.so, ctx.you, { mayNewTargets: true }); },
+    });
     if(!faceDownCast&&d.replicate&&paidTimes>0)this.queueTrigger({
       src:card,ctrl:p,name:'Replicate',data:{so,count:paidTimes},run:async ctx=>{
         for(let i=0;i<ctx.data.count;i++)await ctx.g.copySpell(ctx.data.so,ctx.you,{mayNewTargets:true});
@@ -5839,6 +5937,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         b.blocker.blocking = b.attacker.iid;
         b.attacker.blockedBy.push(b.blocker);
       }
+      // Printed blocking requirements (CR 509.1c): the declaration must fulfil
+      // the maximum possible number of them, so any the defending player left
+      // unfulfilled are completed here. A blocker that is already fulfilling
+      // another requirement is never taken away to fulfil this one, and a
+      // requirement that could only be met by breaking a restriction (menace
+      // with a single available blocker) is not met at all.
+      const requiredAttacker = attacker => !!(attacker && attacker.cur && (attacker.cur.lure || attacker.cur.mustBeBlocked));
+      for (const attacker of atks) {
+        if (!requiredAttacker(attacker)) continue;
+        const free = potential.filter(blocker => blocker.blocking !== attacker.iid &&
+          !requiredAttacker(atks.find(other => other.iid === blocker.blocking)) &&
+          this.canBlock(blocker, attacker));
+        const minimum = attacker.kw('menace') ? 2 : 1;
+        const wanted = attacker.cur.lure ? free
+          : free.slice(0, Math.max(0, minimum - attacker.blockedBy.length));
+        if (attacker.blockedBy.length + wanted.length < minimum) continue;
+        for (const blocker of wanted) {
+          if (blocker.blocking) {
+            const previous = atks.find(other => other.iid === blocker.blocking);
+            if (previous) previous.blockedBy = previous.blockedBy.filter(other => other !== blocker);
+          }
+          blocker.blocking = attacker.iid;
+          attacker.blockedBy.push(blocker);
+          this.lg(`${blocker.name} must block ${attacker.name}.`);
+        }
+      }
       // menace validation: if attacker with menace has exactly 1 blocker → illegal, drop
       for (const a of atks) {
         if (a.kw('menace') && a.blockedBy.length === 1) {
@@ -6099,7 +6223,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const ordered = blockers.slice().sort((x, y) => (x.cur.toughness - x.damage) - (y.cur.toughness - y.damage));
         for (let i = 0; i < ordered.length; i++) {
           const b = ordered[i];
-          const lethal = a.kw('deathtouch') ? 1 : Math.max(1, b.cur.toughness - b.damage);
+          // CR 510.1c: lethal damage counts damage already marked this turn, so
+          // a blocker that is already lethally damaged absorbs nothing more.
+          const remainingLethal = Math.max(0, b.cur.toughness - b.damage);
+          const lethal = a.kw('deathtouch') ? Math.min(1, remainingLethal) : remainingLethal;
           let assign = (i === ordered.length - 1 && !a.kw('trample')) ? rem : Math.min(rem, lethal);
           if (a.kw('trample')) assign = Math.min(rem, lethal);
           if (assign > 0) plan.push({ src: a, target: b, n: assign });

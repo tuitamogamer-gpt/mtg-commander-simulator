@@ -2,7 +2,7 @@
 // Every accepted clause has an explicit runtime descriptor; unknown suffixes
 // and ambiguous pronouns remain unsupported.
 import { parseOracleSpellV4, parseOracleAdditionalCosts } from './oracle-spell-v4.mjs';
-import { ORACLE_SUBTYPES } from './oracle-subtypes.mjs';
+import { ORACLE_SUBTYPES, ORACLE_SUBTYPE_TYPES } from './oracle-subtypes.mjs';
 import flavorWords from './oracle-flavor-words.json' with {type:'json'};
 const NUM = '(?:a|an|one|two|three|four|five|six|seven|eight|nine|ten|[0-9]+)';
 const amount = value => ({ a:1, an:1, one:1, two:2, three:3, four:4, five:5, six:6, seven:7, eight:8, nine:9, ten:10 }[value.toLowerCase()] ?? Number(value));
@@ -281,7 +281,7 @@ function extendedTarget(phrase) {
   if(colors){const target=extensionTarget(phrase.replace(colors[0],''));return target?{...target,colorsAny:[colors[1],colors[2]].map(c=>({white:'W',blue:'U',black:'B',red:'R',green:'G'}[c]))}:null;}
   const subtype=/\b(non-)?([A-Z][a-zA-Z-]+)(?: creature)?(?= card from | you control| an opponent controls| with |$)/.exec(phrase);
   if(subtype && ORACLE_SUBTYPES.has(subtype[2])) {
-    const type={Gate:'land',Plains:'land',Island:'land',Swamp:'land',Mountain:'land',Forest:'land',Equipment:'artifact',Vehicle:'artifact',Spacecraft:'artifact',Food:'artifact',Clue:'artifact',Treasure:'artifact',Blood:'artifact',Map:'artifact',Gold:'artifact',Junk:'artifact',Powerstone:'artifact',Incubator:'artifact',Aura:'enchantment',Curse:'enchantment',Shrine:'enchantment',Saga:'enchantment'}[subtype[2]]||'creature';
+    const type=ORACLE_SUBTYPE_TYPES[subtype[2]]||'creature';
     const target=extensionTarget(phrase.slice(0,subtype.index)+type+phrase.slice(subtype.index+subtype[0].length));
     if(target)return {...target,[subtype[1]?'notSubtype':'subtype']:subtype[2]};
   }
@@ -1273,7 +1273,11 @@ export function extensionLine(card, line, helpers) {
       const conditional=/^if (.+?), (.+)$/.exec(body);
       if(conditional){condition=extensionCondition(conditional[1]);if(!condition)return null;body=conditional[2];}
       if(/^it /i.test(body))body=body.replace(/^it /i,'that creature ');
-      if(/\bits\b/i.test(body)&&!/^you gain life equal to its (?:power|toughness)\.$/i.test(body)&&!/^its controller (?:draws|gains|loses|mills|discards) /i.test(body))return null;
+      // "its" normally refers to the triggering object, which this clause does
+      // not bind. A clause that is wholly about the source itself is exempt:
+      // there "its owner" can only be the owner of this permanent.
+      const aboutSource=/^(?:return )?this (?:creature|artifact|enchantment|land|permanent) to its owner's hand\.?$/i.test(body);
+      if(/\bits\b/i.test(body)&&!aboutSource&&!/^you gain life equal to its (?:power|toughness)\.$/i.test(body)&&!/^its controller (?:draws|gains|loses|mills|discards) /i.test(body))return null;
       const parsed=helpers.effect(card,body)||extensionV4Body(card,body);
       if(parsed&&target.what==='land'&&/\bIf that land is /.test(body)){
         const bind=effect=>({...effect,...(effect.action==='conditional'&&effect.condition.kind==='source-quality'&&effect.condition.filter.what==='land'?{conditionTarget:'event-card'}:{}),...(effect.effects?{effects:effect.effects.map(bind)}:{}),...(effect.elseEffects?{elseEffects:effect.elseEffects.map(bind)}:{})});parsed.effects=parsed.effects.map(bind);

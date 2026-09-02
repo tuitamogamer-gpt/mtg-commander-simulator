@@ -59,6 +59,25 @@ export function normalizeManaOperations(operations) {
           ...(operation.onceEachTurn?{onceEachTurn:true}:{}),contract:'mana-source'};
       }
     }
+    // Tapping other untapped permanents you control is an ordinary additional
+    // cost of a printed mana ability (Survivors' Encampment, Jaspera Sentinel).
+    // The frozen v7 normalizer rejects unknown cost keys, so this closed shape
+    // is normalized here instead.
+    if(operation.kind==='generic-ability'&&operation.cost?.tapFilter&&
+      operation.loyalty===undefined&&!operation.from&&!operation.optional&&!operation.sorceryOnly&&
+      !operation.beforeAttackersOnly&&!operation.oncePerObject&&!operation.targets?.length&&
+      operation.effects?.length===1&&operation.effects[0].action==='add-mana'&&
+      Number.isInteger(operation.cost.tapN)&&operation.cost.tapN>0&&
+      operation.cost.tapFilter.zone==='battlefield'&&operation.cost.tapFilter.controller==='you'&&
+      Object.keys(operation.cost).every(key=>['tap','mana','tapFilter','tapN'].includes(key))&&
+      !operation.cost.mana?.includes('{X}')){
+      const effect=operation.effects[0];
+      return {kind:'mana-source',activationCost:operation.cost,produce:effect.choices||[effect.produce],
+        ...(effect.multiplier?{multiplier:effect.multiplier}:{}),
+        ...(effect.restriction?{restriction:effect.restriction}:{}),
+        ...(operation.activationCondition?{condition:operation.activationCondition}:{}),
+        ...(operation.onceEachTurn?{onceEachTurn:true}:{}),contract:'mana-source'};
+    }
     // A printed mana ability may end by marking its own source with a counter
     // and, on the depletion lands, sacrificing it once the last counter is
     // gone. The frozen v7 tail list cannot be widened, so this closed

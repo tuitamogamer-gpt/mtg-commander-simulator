@@ -195,13 +195,24 @@ test('v4 combat statics stay fail-closed while another-target and your-turn cont
     'This creature can block any number of creatures.',
     "This creature can't be blocked by more than one creature.",
     "This creature can't attack or block alone.",
-    'This creature must be blocked if able.',
+    'This creature blocks each combat if able.',
   ]) {
     assert.deepEqual(
       semanticClass(oracleCard(`Unsupported ${oracle_text}`, `unsupported-${oracle_text}`, { oracle_text })),
       { reason: 'oracle-needs-explicit-semantics' },
       oracle_text,
     );
+  }
+
+  // Both printed blocking requirements are executable and are compiled as
+  // their own statics rather than being dropped with the unsupported ones.
+  for (const [oracle_text, kind] of [
+    ['This creature must be blocked if able.', 'must-be-blocked'],
+    ['All creatures able to block this creature do so.', 'lure'],
+  ]) {
+    const requirement = semanticClass(oracleCard(`Requirement ${kind}`, `requirement-${kind}`, { oracle_text }));
+    assert.equal(requirement.implementation.length, 1, oracle_text);
+    assert.equal(requirement.implementation[0].kind, kind, oracle_text);
   }
 
   const yourTurn = semanticClass(oracleCard('Daylight Beast', 'daylight-beast', {

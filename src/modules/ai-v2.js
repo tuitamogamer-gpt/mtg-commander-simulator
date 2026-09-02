@@ -1535,7 +1535,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const lethal = target.life <= 7 ? 12 : 0;
       const friendly = target === player ? (/gain|protect|draw/i.test(hint) ? 20 : -30) : 0;
-      if (/gift|benefit/i.test(hint)) return target === player ? 24 : -(threat * 0.45);
+      // A printed "target player" benefit (draw, counters, life) is kept by the
+      // bot; only an explicit gift goal hands it to somebody else.
+      if (/gift|benefit/i.test(hint) || hint === 'self') return target === player ? 24 : -(threat * 0.45);
       return threat * 0.45 + lethal + friendly;
     }
     if (target instanceof U.CardInst) {
@@ -1661,9 +1663,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Tapovanje je za Magma Opus obavezna, neprijateljska interakcija. Bez
       // eksplicitnog svrstavanja u hostile ciljeve evaluator je mogao dati
       // viši zbir vlastitim Veyran/Storm-Kiln metama samo zato što su vrednije.
-      if (/removal|damage|destroy|exile|bounce|counter|tap/i.test(hint)) return hostile ? value : -value * 1.8;
+      // A cost paid with one of your own permanents is spent on the cheapest
+      // one; pointing it at the best permanent on the board is never right.
+      if (/^sac(Own|rificeOwn)/i.test(hint)) return hostile ? -1000 : -value;
+      if (/removal|damage|destroy|exile|bounce|counter|tap|goad/i.test(hint)) return hostile ? value : -value * 1.8;
       if(hint==='copy')return value;
       if (/buff|pump|protect|copy|recur|return|attach|equip|untap/i.test(hint)) return hostile ? -value : value;
+      // An Aura or an evasion grant belongs to its controller even when the
+      // chosen permanent has no combat value of its own (a land), so the tie
+      // between two such permanents never falls to an opponent's.
+      if (/evasion|aura/i.test(hint)) return hostile ? -(value + 1) : value + 1;
       return hostile ? value * 0.7 : value * 0.5;
     }
     if (target && target.kind) {
@@ -1765,6 +1774,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (hint === 'myrBattlesphere') return 4 - value * 0.03;
     if (hint === 'stationTap') return Math.max(0, card.power) * 4 - value * 0.1;
     if (hint === 'tapCost') return -value - Math.max(0,card.power) * 0.1;
+    // Enlist adds the tapped creature's power to the attacker, so the strongest
+    // spare body is worth tapping and a commander or a 0-power blocker is not.
+    if (hint === 'enlist') return Math.max(0, card.power) * 4 - value * 0.2 - (card.commander ? 14 : 0);
     if(hint==='oraclePermanentChoice'){
       const relevant=q.aiHint.operation==='untap'?card.tapped:!card.tapped;
       if(!relevant)return -1;

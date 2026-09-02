@@ -107,6 +107,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         },
       },()=>({})));return true;
     }
+    if(kind==='escape-counters'){
+      const n=number(operation);
+      if(!Number.isInteger(n)||n<1||!script.escape)return false;
+      script.escapeCounters=n;
+      return true;
+    }
+    if(kind==='flash-surcharge'){
+      if(typeof operation.cost!=='string'||!operation.cost)return false;
+      push(script,'altCosts',{label:'Cast with flash for '+operation.cost,altCostStr:operation.cost,speed:'instant',flash:true});
+      return true;
+    }
+    if(kind==='enlist'){
+      push(script,'triggers',{on:'attacks',desc:'Enlist',filter:(game,self,data)=>data.card===self,run:async ctx=>{
+        // Enlist taps a creature that is neither attacking nor summoning sick
+        // and adds exactly its power for the turn.
+        const pool=ctx.g.creatures(ctx.you).filter(creature=>creature!==ctx.src&&!creature.tapped&&
+          !creature.attacking&&!(creature.sick&&!creature.kw('haste')));
+        if(!pool.length)return;
+        const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseCards',from:pool,min:0,max:1,
+          prompt:'Enlist: tap a creature to add its power?',aiHint:{kind:'enlist',src:ctx.src}});
+        const helper=Array.isArray(answer)?answer[0]:answer;
+        if(!helper||!pool.includes(helper))return;
+        ctx.g.tap(helper);
+        const added=Math.max(0,Number(helper.power)||0);
+        if(added)MTG.E.pumpUntilEOT(ctx.g,ctx.src,added,0);
+      }});
+      return true;
+    }
     if(kind==='mobilize'){
       push(script,'triggers',{on:'attacks',desc:'Mobilize',filter:(game,self,data)=>data.card===self,run:async ctx=>{
         const made=await ctx.g.makeTokens({name:'Warrior',cost:null,super:[],types:['Creature'],subtypes:['Warrior'],power:'1',toughness:'1',colorsOverride:['R'],kws:[],oracle:'',isTokenDef:true},ctx.you,{n:number(operation),tapped:true,
@@ -183,6 +211,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if(kind==='megamorph') {script.morph=operation.cost;script.megamorph=true;return true;}
     if(kind==='replicate'){if(script.squad||script.multikicker)return false;script.replicate=operation.cost;return true;}
+    if(kind==='casualty'){const n=number(operation);if(!Number.isInteger(n)||n<1)return false;script.casualty=n;return true;}
+    if(kind==='conspire'){script.conspire=true;return true;}
     if(kind==='ravenous'){
       if(!addEtbPlusCounters(script,(game,card)=>Number(card.castMeta?.x)||0))return false;
       push(script,'triggers',{on:'etb',desc:'Ravenous',filter:(g,s,d)=>d.card===s&&(Number(s.castMeta?.x)||0)>=5,run:async ctx=>ctx.g.draw(ctx.you,1)});return true;

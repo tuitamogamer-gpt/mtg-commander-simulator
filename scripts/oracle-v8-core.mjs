@@ -4,7 +4,7 @@ import {extensionTarget, extensionCount, extensionCondition, extensionCost, exte
 // Every accepted clause has an explicit runtime descriptor; unknown suffixes
 // and ambiguous pronouns remain unsupported.
 import { parseOracleSpellV4, parseOracleAdditionalCosts } from './oracle-spell-v4.mjs';
-import { ORACLE_SUBTYPES } from './oracle-subtypes.mjs';
+import { ORACLE_SUBTYPES, ORACLE_SUBTYPE_TYPES } from './oracle-subtypes.mjs';
 import flavorWords from './oracle-flavor-words.json' with {type:'json'};
 const NUM = '(?:a|an|one|two|three|four|five|six|seven|eight|nine|ten|[0-9]+)';
 const amount = value => ({ a:1, an:1, one:1, two:2, three:3, four:4, five:5, six:6, seven:7, eight:8, nine:9, ten:10 }[value.toLowerCase()] ?? Number(value));
@@ -61,6 +61,30 @@ export function baseModifier(card,line) {
   if(affinity){const multiplier=extensionCount(affinity[1]+' you control');if(multiplier)return {kind:'cost-modifier',self:true,amount:-1,multiplier,contract:'generic-cost-modification'};}
   const replicate=/^Replicate ((?:\{(?:\d+|[WUBRGC])\})+)$/.exec(line);
   if(replicate&&replicate[1]!=='{0}'&&/Instant|Sorcery/.test(card.type_line))return {kind:'mechanic-replicate',cost:replicate[1],contract:'mechanic-replicate'};
+  // A printed flash surcharge is an alternative cost: the whole printed cost
+  // plus the extra generic mana, castable at instant speed.
+  const flashSurcharge=/^You may cast this spell as though it had flash if you pay ((?:\{\d+\})+) more to cast it\.$/.exec(line);
+  if(flashSurcharge&&card.mana_cost&&!/\{X\}/.test(card.mana_cost)&&!/Instant/.test(card.type_line||'')){
+    const parts=card.mana_cost.match(/\{[^}]+\}/g)||[];
+    const isGeneric=part=>/^\{\d+\}$/.test(part);
+    const generic=parts.filter(isGeneric).reduce((sum,part)=>sum+Number(part.slice(1,-1)),0)+
+      (flashSurcharge[1].match(/\{\d+\}/g)||[]).reduce((sum,part)=>sum+Number(part.slice(1,-1)),0);
+    const rest=parts.filter(part=>!isGeneric(part));
+    if(parts.length)return {kind:'mechanic-flash-surcharge',
+      cost:(generic?'{'+generic+'}':'')+rest.join(''),contract:'mechanic-flash-surcharge'};
+  }
+  // Escape already returns the card; the printed line only says how many
+  // +1/+1 counters it comes back with.
+  const escapeCounters=/^This creature escapes with (a|one|two|three|four|\d+) \+1\/\+1 counters? on it\.$/.exec(line);
+  if(escapeCounters&&/^Escape[—-]/m.test(String(card.oracle_text||''))){
+    const amounts={a:1,one:1,two:2,three:3,four:4};
+    const n=amounts[escapeCounters[1]]??Number(escapeCounters[1]);
+    if(Number.isInteger(n)&&n>0&&n<=4)return {kind:'mechanic-escape-counters',n,contract:'mechanic-escape-counters'};
+  }
+  if(line==='Enlist'&&card.type_line.includes('Creature'))return {kind:'mechanic-enlist',contract:'mechanic-enlist'};
+  const casualty=/^Casualty (\d+)$/.exec(line);
+  if(casualty&&/Instant|Sorcery/.test(card.type_line))return {kind:'mechanic-casualty',n:Number(casualty[1]),contract:'mechanic-casualty'};
+  if(line==='Conspire'&&/Instant|Sorcery/.test(card.type_line))return {kind:'mechanic-conspire',contract:'mechanic-conspire'};
   if(line==='Ravenous'&&card.type_line.includes('Creature'))return {kind:'mechanic-ravenous',contract:'mechanic-ravenous'};
   if(line==='You may play lands from your graveyard.')return {kind:'mechanic-graveyard-lands',contract:'mechanic-graveyard-lands'};
   const free=/^If (.+), you may cast this spell without paying its mana cost\.$/.exec(line);
@@ -288,7 +312,7 @@ function extendedTarget(phrase) {
   if(colors){const target=extensionTarget(phrase.replace(colors[0],''));return target?{...target,colorsAny:[colors[1],colors[2]].map(c=>({white:'W',blue:'U',black:'B',red:'R',green:'G'}[c]))}:null;}
   const subtype=/\b(non-)?([A-Z][a-zA-Z-]+)(?: creature)?(?= card from | you control| an opponent controls| with |$)/.exec(phrase);
   if(subtype && ORACLE_SUBTYPES.has(subtype[2])) {
-    const type={Gate:'land',Plains:'land',Island:'land',Swamp:'land',Mountain:'land',Forest:'land',Equipment:'artifact',Vehicle:'artifact',Spacecraft:'artifact',Food:'artifact',Clue:'artifact',Treasure:'artifact',Blood:'artifact',Map:'artifact',Gold:'artifact',Junk:'artifact',Powerstone:'artifact',Incubator:'artifact',Aura:'enchantment',Curse:'enchantment',Shrine:'enchantment',Saga:'enchantment'}[subtype[2]]||'creature';
+    const type=ORACLE_SUBTYPE_TYPES[subtype[2]]||'creature';
     const target=extensionTarget(phrase.slice(0,subtype.index)+type+phrase.slice(subtype.index+subtype[0].length));
     if(target)return {...target,[subtype[1]?'notSubtype':'subtype']:subtype[2]};
   }
