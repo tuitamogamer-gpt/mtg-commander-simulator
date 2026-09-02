@@ -632,6 +632,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const dialog = overlay.querySelector('.modal, .sheet, .quickmenu');
         if (dialog) U.enhanceDialog(overlay, dialog);
       });
+      // The arena is rebuilt on every state change. Entrance motion belongs
+      // to a surface's first appearance only: a dialog, prompt bar or popup
+      // that shows the same content as in the previous rebuild is marked
+      // settled and keeps still instead of fading in again.
+      const settledKeys = new Set();
+      root.querySelectorAll('.overlay, .quickmenuov, .modal, .sheet, .promptbar, .stackpop').forEach(node => {
+        const heading = node.querySelector('h1, h2, h3, .mtitle, .sheettitle, .ptext, .stagetitle');
+        const key = `${node.className}|${((heading || node).textContent || '').trim().slice(0, 96)}`;
+        if (this.settledKeys && this.settledKeys.has(key)) node.classList.add('settled');
+        settledKeys.add(key);
+      });
+      this.settledKeys = settledKeys;
+      // Looping animations (castable breathing, threat pulses) read this
+      // negative delay so a rebuild continues the loop instead of restarting it.
+      root.style.setProperty('--fx-phase', `-${Math.round(performance.now() % 3600000)}ms`);
     }
 
     renderSystemStatus() {
@@ -4705,12 +4720,31 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const y = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
       const layer = this.gameEffectLayer();
       const combatStep = event.combatStep === 'first' ? 'FIRST STRIKE' : 'COMBAT';
-      const impact = el('div', `gamefx-impact ${event.targetKind || 'permanent'}${event.combat ? ' combat' : ''}`,
-        `<i></i><i></i><i></i><span></span><strong>−${Math.max(0, Number(event.amount) || 0)}</strong><small>${event.combat ? combatStep : 'DAMAGE'}</small>`);
+      const amount = Math.max(0, Number(event.amount) || 0);
+      // Impact tiers scale the number, the ring and the camera with the hit.
+      // A blow that empties a life total is announced as lethal.
+      const tier = amount >= 10 ? 'huge' : amount >= 5 ? 'big' : amount >= 3 ? 'mid' : 'low';
+      const lethal = event.targetKind === 'player' && target && typeof target.life === 'number' && target.life <= 0 && amount > 0;
+      const impact = el('div', `gamefx-impact ${event.targetKind || 'permanent'}${event.combat ? ' combat' : ''} tier-${tier}${lethal ? ' lethal' : ''}`,
+        `<i></i><i></i><i></i><span></span><strong>−${amount}</strong><small>${lethal ? 'LETHAL' : event.combat ? combatStep : 'DAMAGE'}</small>`);
       impact.style.left = `${x}px`;
       impact.style.top = `${y}px`;
       impact.style.setProperty('--combat-delay', `${Math.min(180, Math.max(0, Number(event.combatIndex) || 0) * 28)}ms`);
       layer.appendChild(impact);
+      if (tier === 'big' || tier === 'huge' || lethal) {
+        const gameRoot = document.querySelector('#game');
+        if (gameRoot) {
+          gameRoot.classList.remove('fx-hit-big', 'fx-hit-huge');
+          void gameRoot.offsetWidth;
+          gameRoot.classList.add(tier === 'huge' || lethal ? 'fx-hit-huge' : 'fx-hit-big');
+          setTimeout(() => gameRoot.classList.remove('fx-hit-big', 'fx-hit-huge'), 640);
+        }
+        if (event.targetKind === 'player') {
+          const veil = el('div', `gamefx-vignette${lethal ? ' lethal' : ''}${target === this.me ? ' mine' : ''}`);
+          layer.appendChild(veil);
+          setTimeout(() => veil.remove(), lethal ? 1100 : 780);
+        }
+      }
       if (targetNode) {
         targetNode.classList.remove('fx-damage-target');
         void targetNode.offsetWidth;
@@ -4785,8 +4819,19 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const storm = el('div', `gamefx-wipe mode-${mode}`,
         `<div class="gamefx-wipecloud"></div><div class="gamefx-wiperune">${mode === 'exile' ? '◇' : mode === 'damage' ? '✹' : '✕'}</div>` +
         `<div class="gamefx-wipetitle"><small>${mode === 'exile' ? 'VOID SWEEP' : mode === 'damage' ? 'DAMAGE STORM' : 'BOARD WIPE'}</small><b>${cards.length} PERMANENT${cards.length === 1 ? '' : 'S'}</b></div>`);
+      // A mass removal is the biggest moment on the table: a white flash,
+      // three shockwaves from the centre, a camera push and a longer hold.
+      storm.insertAdjacentHTML('afterbegin', '<div class="gamefx-flash"></div><div class="gamefx-shock"><i></i><i></i><i></i></div>');
+      storm.classList.add(cards.length >= 6 ? 'scale-large' : 'scale-small');
       layer.appendChild(storm);
-      document.querySelector('#game')?.classList.add('fx-boardwipe');
+      const wipeRoot = document.querySelector('#game');
+      wipeRoot?.classList.add('fx-boardwipe');
+      if (wipeRoot) {
+        wipeRoot.classList.remove('fx-boardwipe-camera');
+        void wipeRoot.offsetWidth;
+        wipeRoot.classList.add('fx-boardwipe-camera');
+        setTimeout(() => wipeRoot.classList.remove('fx-boardwipe-camera'), 1200);
+      }
       cards.slice(0, 16).forEach((card, index) => {
         const node = this.gameEffectCardAnchor(card);
         const rect = node && node.getBoundingClientRect();

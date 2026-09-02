@@ -1292,6 +1292,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const advanced = el('details', 'advancedrules');
     advanced.appendChild(el('summary', '', '<span>Advanced rules</span><small>Commander options, politics and difficulty</small>'));
+    // The reveal animation belongs to the click that opens the panel, not to
+    // later re-renders of the pod builder while it stays open.
+    advanced.addEventListener('toggle', () => {
+      if (!advanced.open) return;
+      advanced.classList.add('just-opened');
+      setTimeout(() => advanced.classList.remove('just-opened'), 420);
+    });
     const advancedSummaryCopy = advanced.querySelector('summary small');
     const advancedBody = el('div', 'advancedbody');
     advanced.appendChild(advancedBody);
