@@ -223,7 +223,7 @@ test("Forger's Foundry obilježi plaćeni mali spell, pohrani ga i ponudi masovn
   caster.pool.C = 3;
   caster.pool.U = 2;
   game.recalc();
-  assert.ok(game.activatableList(caster).some(e => e.card === foundry && /pohranjene/.test(e.ability.label)));
+  assert.ok(game.activatableList(caster).some(e => e.card === foundry && /stored spells/.test(e.ability.label)));
 });
 
 test("Hazel's Brewmaster pamti ciljanu egziliranu creature kartu i kopira njene aktivacije na Food", async () => {
@@ -240,7 +240,7 @@ test("Hazel's Brewmaster pamti ciljanu egziliranu creature kartu i kopira njene 
   assert.deepEqual(Array.from(brewmaster.meta.brewedCards), [creature.iid]);
   const food = game.bf().find(c => c.ctrl === caster && c.hasSub('Food'));
   assert.ok(food);
-  assert.ok(food.cur.extraAbilities.some(a => /Vuci 2/.test(a.label)));
+  assert.ok(food.cur.extraAbilities.some(a => /Draw 2/.test(a.label)));
 });
 
 test("Vraska stvarno pretvara isto stvorenje u Treasure i povratkom zone vraća originalnu kartu", async () => {

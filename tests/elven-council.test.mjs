@@ -135,6 +135,9 @@ test('Cirdan može staviti Auru iz ruke i bira legalan attachment bez targetovan
   const cirdan = permanent(game, elven, 'Círdan the Shipwright');
   const target = permanent(game, opponent, 'Elvish Visionary');
   target.cur.shroud = true;
+  // The council makes the opponent draw; an empty library would eliminate
+  // them and CR 800.4a would take the enchanted Visionary out of the game.
+  inZone(opponent, 'Forest', 'library'); inZone(opponent, 'Forest', 'library');
   const lignify = inZone(elven, 'Lignify', 'hand');
   await cirdan.def.triggers[0].run({ g: game, src: cirdan, you: elven });
   assert.equal(lignify.zone, 'battlefield');
@@ -231,10 +234,10 @@ test('kicked Inscription zaključava jedinstvene modeove i mete pri castu', asyn
       if (q.type === 'chooseOption' && /Kicker/.test(q.prompt)) return 'yes';
       if (q.type === 'chooseMulti') return ['0', '1', '2'];
       if (q.type === 'chooseTargets') {
-        if (/dva countera/.test(q.prompt)) return [buffer];
+        if (/two counters/.test(q.prompt)) return [buffer];
         if (q.spec?.what === 'player') return [opponent];
-        if (/Tvoje target/.test(q.prompt)) return [fighter];
-        if (/ne kontrolišeš/.test(q.prompt)) return [enemy];
+        if (/Your target/.test(q.prompt)) return [fighter];
+        if (/you don't control/.test(q.prompt)) return [enemy];
       }
       return defaultDecision(g, q);
     },

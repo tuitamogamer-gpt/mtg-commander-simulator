@@ -2275,7 +2275,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.applyDemonstrate = async function (p, so, card) {
     const yes = await p.controller.decide(this, {
-      type: 'chooseOption', prompt: `Demonstrate: kopiraj ${card.name}? (izabrani protivnik takođe dobija kopiju)`,
+      type: 'chooseOption', prompt: `Demonstrate: copy ${card.name}? (the chosen opponent also gets a copy)`,
       options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
       aiHint: { kind: 'demonstrate', card },
     });
@@ -2934,7 +2934,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const need = castOpts.exileN || 0;
       if (avail.length < need) return false;
       const picked = await p.controller.decide(this, {
-        type: 'chooseCards', from: avail, min: need, max: need, prompt: `Escape: egzilaj ${need} karata`,
+        type: 'chooseCards', from: avail, min: need, max: need, prompt: `Escape: exile ${need} cards`,
         aiHint: { kind: 'delve', card },
       });
       if (picked.length < need) return false;
@@ -3564,7 +3564,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (so.kind === 'trigger') {
       if(so.sagaChapter)(this._resolvingSagaChapters||(this._resolvingSagaChapters=[])).push(so);
       try {
-      this.lg(`Rezolvira se: ${so.name}.`, 'resolve');
+      this.lg(`Resolving: ${so.name}.`, 'resolve');
       await this.pace(so.ctrl && so.ctrl.isAI ? 620 : 150);
       // re-check targets
       const checked = this.revalidateTargets(so.ctx.targets || [], so.targetSpecs, so.srcCard, so.ctrl,
@@ -3584,7 +3584,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return;
     }
     if (so.kind === 'ability') {
-      this.lg(`Rezolvira se: ${so.name}.`, 'resolve');
+      this.lg(`Resolving: ${so.name}.`, 'resolve');
       await this.pace(so.ctrl && so.ctrl.isAI ? 620 : 150);
       const checked = this.revalidateTargets(so.targets || [], so.targetSpecs, so.srcCard, so.ctrl,
         so.targetIdentities || so.ctx && so.ctx.targetIdentities);
@@ -3623,7 +3623,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!so.isCopy) await this.move(card, destination);
       return;
     }
-    this.lg(`Rezolvira se: ${so.name}.`, 'resolve');
+    this.lg(`Resolving: ${so.name}.`, 'resolve');
     await this.pace(p.isAI ? 750 : 200);
     const ctx = {
       g: this, src: spellSource, you: p, targets: so.targets, x: so.x, mode: so.mode, so,
@@ -3761,7 +3761,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           } else if (so.foundrySource) {
             const source = this.byIid(so.foundrySource);
             const store = await p.controller.decide(this, {
-              type: 'chooseOption', prompt: `Forger's Foundry: egzilaj ${card.name} umjesto groblja?`,
+              type: 'chooseOption', prompt: `Forger's Foundry: exile ${card.name} instead of the graveyard?`,
               options: [{ key: 'yes', label: 'Yes, store it in the Foundry' }, { key: 'no', label: 'No, put it in the graveyard' }],
               aiHint: { kind: 'freeCast', card },
             });
@@ -3851,12 +3851,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // of the zone move so ETB/static processing sees the correct host.
       if (host instanceof MTG.Player) {
         await this.move(card, 'battlefield', Object.assign({}, enterOpts, { cursedPlayer: host }));
-        this.lg(`${card.name} prati igrača ${host.name}.`);
+        this.lg(`${card.name} follows ${host.name}.`);
         await this.checkSBA(); await this.flushTriggers();
         return;
       }
       if (!host || !(host instanceof MTG.CardInst) || host.zone !== 'battlefield') {
-        this.lg(`${card.name}: meta aure nestala — ide u groblje.`);
+        this.lg(`${card.name}: its enchanted target is gone — it goes to the graveyard.`);
         await this.move(card, 'graveyard');
         await this.checkSBA(); await this.flushTriggers();
         return;
@@ -3966,7 +3966,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         abs.push({
           label: 'Tap: nanesi štetu jednaku snazi stvorenju', cost: { tap: true },
           targets: [{
-            what: 'creature', prompt: 'Stvorenje kojem nanosi štetu',
+            what: 'creature', prompt: 'Creature to deal damage to',
             filter: (g, target) => target.zone === 'battlefield' && target.is('Creature'),
             aiHint: { goal: 'removal' },
           }],
@@ -4583,7 +4583,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const pool = this.bf().filter(card => card.ctrl === p && extra.return(this, card, c, p));
         pickedReturns = await p.controller.decide(this, {
           type: 'chooseCards', from: pool, min: need, max: need,
-          prompt: `${c.name}: vrati ${need} permanenta u ruku`, aiHint: { kind: 'bounceCost', card: c },
+          prompt: `${c.name}: return ${need} permanents to hand`, aiHint: { kind: 'bounceCost', card: c },
         });
         if (!Array.isArray(pickedReturns) || pickedReturns.length !== need ||
           pickedReturns.some(card => !pool.includes(card))) return false;
@@ -4993,7 +4993,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const exileFilter = typeof cost.exileFromGY === 'object' ? cost.exileFromGY.filter : null;
       const exilePool = p.graveyard.filter(card => !exileFilter || exileFilter(this, card, c, p));
       const picked = await p.controller.decide(this, {
-        type: 'chooseCards', from: exilePool, min: exileN, max: exileN, prompt: 'Egzilaj iz groblja:', aiHint: { kind: 'delve' },
+        type: 'chooseCards', from: exilePool, min: exileN, max: exileN, prompt: 'Exile from graveyard:', aiHint: { kind: 'delve' },
       });
       if (!Array.isArray(picked) || picked.length !== exileN || picked.some(card => !exilePool.includes(card))) return false;
       await this.moveGraveyardBatch(picked, 'exile');
@@ -5357,7 +5357,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await this.runTurn();
     }
     if (!this.gameOver) {
-      this.lg('Limit poteza dostignut — kraj.');
+      this.lg('Turn limit reached — the game ends.');
       this.gameOver = true;
       const alive = this.alivePlayers().slice().sort((a, b) => b.life - a.life);
       this.winner = alive[0] || null;
@@ -5892,7 +5892,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const m of made) m.meta.exileEndCombat = true;
         if (made.length) hit.push(opp.name);
       }
-      if (hit.length) this.lg(`${c.name}: myriad — kopije napadaju ${hit.join(', ')}.`, 'attack');
+      if (hit.length) this.lg(`${c.name}: myriad — copies attack ${hit.join(', ')}.`, 'attack');
     }
     await this.flushTriggers();
     await this.priorityRound(p);
@@ -5976,7 +5976,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const a of atks) if (a.blockedBy.length) a.wasBlocked = true;
     }
     for (const a of this.combat.attackers) {
-      if (a.blockedBy.length) this.lg(`🛡️ ${a.name} blokiran: ${a.blockedBy.map(b => b.name).join(', ')}.`, 'block');
+      if (a.blockedBy.length) this.lg(`🛡️ ${a.name} blocked by: ${a.blockedBy.map(b => b.name).join(', ')}.`, 'block');
     }
     this.note('combat', {});
     if (this.combat.attackers.some(a => a.blockedBy.length)) await this.pace(900);

@@ -281,8 +281,8 @@ test('Magma Opus zaključava podjelu štete i dvije tap mete prije priorityja', 
   let tapTargets;
   const { game, players: [prismari, opponent] } = rulesGame([
     (g, q) => {
-      if (q.type === 'chooseTargets' && q.prompt?.startsWith('Magma Opus: do četiri')) return damageTargets;
-      if (q.type === 'chooseTargets' && q.prompt?.startsWith('Magma Opus: tačno dva')) return tapTargets;
+      if (q.type === 'chooseTargets' && q.prompt?.startsWith('Magma Opus: up to four')) return damageTargets;
+      if (q.type === 'chooseTargets' && q.prompt?.startsWith('Magma Opus: exactly two')) return tapTargets;
       if (q.type === 'chooseX' && q.aiHint?.kind === 'magmaOpusDamage') return 3;
       return defaultDecision(g, q);
     },
@@ -317,13 +317,13 @@ test('Prismari Charm pogađa jednu ili dvije mete, a Command izvršava modove š
   const { game, players: [prismari, first, second] } = rulesGame([
     (g, q) => {
       if (q.type === 'chooseOption' && q.aiHint?.kind === 'prismariCharm') return '1';
-      if (q.type === 'chooseTargets' && q.prompt?.startsWith('1 šteta')) return charmTargets;
+      if (q.type === 'chooseTargets' && q.prompt?.startsWith('1 damage')) return charmTargets;
       if (q.type === 'chooseMulti' && q.aiHint?.kind === 'prismariCommand') {
         sawCommandModes = q.options.map(option => option.key);
         return ['2', '1'];
       }
-      if (q.type === 'chooseTargets' && q.prompt === 'Ko vuče i odbacuje?') return [first];
-      if (q.type === 'chooseTargets' && q.prompt === 'Ko pravi Treasure?') return [second];
+      if (q.type === 'chooseTargets' && q.prompt === 'Who draws and discards?') return [first];
+      if (q.type === 'chooseTargets' && q.prompt === 'Who creates a Treasure?') return [second];
       return defaultDecision(g, q);
     },
   ], 3);
@@ -616,8 +616,8 @@ test('Magma Opus kopija zadržava tačan broj meta i preslikava zaključanu podj
   const { game, players: [prismari, opponent] } = rulesGame([
     (g, q) => {
       if (q.type === 'chooseOption' && q.aiHint?.kind === 'newTargets') return 'yes';
-      if (q.type === 'chooseTargets' && q.prompt?.startsWith('Magma Opus: do četiri')) return newDamage;
-      if (q.type === 'chooseTargets' && q.prompt?.startsWith('Magma Opus: tačno dva')) return newTap;
+      if (q.type === 'chooseTargets' && q.prompt?.startsWith('Magma Opus: up to four')) return newDamage;
+      if (q.type === 'chooseTargets' && q.prompt?.startsWith('Magma Opus: exactly two')) return newTap;
       return defaultDecision(g, q);
     },
   ], 2);

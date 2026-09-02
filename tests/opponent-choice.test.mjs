@@ -147,7 +147,7 @@ test('Abstract Performance prvo bira protivnika, a taj protivnik bira hrpu bez u
   assert.equal('pileA' in pileQuestion.aiHint, false);
   const hiddenOption = pileQuestion.options.find(option => option.key === 'down');
   const faceUpOption = pileQuestion.options.find(option => option.key === 'up');
-  assert.ok(hiddenOption.label.includes('skrivenih'));
+  assert.ok(hiddenOption.label.includes('hidden'));
   assert.equal(hiddenOption.hiddenCount, 4);
   assert.equal('cards' in hiddenOption, false, 'face-down pile must not expose its identities through UI metadata');
   assert.deepEqual([...faceUpOption.cards].map(c => c.name), ['Island', 'Island', 'Island', 'Island']);

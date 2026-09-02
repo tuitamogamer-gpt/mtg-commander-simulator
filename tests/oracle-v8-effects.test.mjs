@@ -1164,7 +1164,14 @@ for (const role of ['human', 'ai']) {
   });
   test(`v8 player counters ${role}: ten poison checks state only after the remaining draw instruction`, async () => {
     const ctx = context(role); fill(ctx.game, ctx.a, 2); await cast(ctx, 'Poison Last');
-    assert.equal(ctx.a.poison, 10); assert.equal(ctx.a.hand.length, 1); assert.equal(ctx.a.library.length, 1); assert.equal(ctx.a.lost, true);
+    assert.equal(ctx.a.poison, 10); assert.equal(ctx.a.lost, true);
+    // CR 800.4a: once the player has lost, every card they own leaves the
+    // game, so the draw is verified through its order in the log instead.
+    const drawIndex = ctx.game.log.findIndex(entry => /draws? 1 card/.test(entry.msg));
+    const loseIndex = ctx.game.log.findIndex(entry => /☠️/.test(entry.msg));
+    assert.ok(drawIndex >= 0, 'the remaining draw instruction still resolved');
+    assert.ok(loseIndex > drawIndex, 'the ten-poison loss was checked only after the draw');
+    assert.equal(ctx.a.hand.length, 0); assert.equal(ctx.a.library.length, 0);
   });
   test(`v8 marker effects ${role}: a marker counter is placed on the source after its chosen graveyard exile`, async () => {
     const ctx = context(role), { game, a, b } = ctx;

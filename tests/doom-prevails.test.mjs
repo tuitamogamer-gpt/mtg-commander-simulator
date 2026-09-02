@@ -465,7 +465,7 @@ test('Tombstone i Time Platform koriste legalne graveyard mete, a suspend stvarn
 
 test('Glorious Purpose stavlja neuspješan pokušaj free-casta u ruku', async () => {
   const { game, players: [doomPlayer] } = rulesGame({
-    chooseOption: (g, q) => /Baci besplatno/.test(q.prompt) ? 'yes' : q.options[0]?.key,
+    chooseOption: (g, q) => /Cast for free/.test(q.prompt) ? 'yes' : q.options[0]?.key,
   }, 2);
   const purpose = permanent(game, doomPlayer, 'Glorious Purpose');
   purpose.counters.plan = 5;

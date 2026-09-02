@@ -8,28 +8,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC['Marauding Mutagen'] = { // = Acidic Slime
     triggers: [{
-      on: 'etb', desc: 'Uništi art/ench/land', filter: etbSelf,
-      targets: [T.permanent((g, c) => c.is('Artifact') || c.is('Enchantment') || c.is('Land'), { prompt: 'Uništi', aiHint: { goal: 'removal' } })],
+      on: 'etb', desc: 'Destroy art/ench/land', filter: etbSelf,
+      targets: [T.permanent((g, c) => c.is('Artifact') || c.is('Enchantment') || c.is('Land'), { prompt: 'Destroy', aiHint: { goal: 'removal' } })],
       run: async ctx => { if (ctx.targets[0]) await ctx.g.destroy(ctx.targets[0]); },
     }],
   };
   SC["Assassin's Trophy"] = {
-    targets: [T.permanent((g, c, ctrl) => c.ctrl !== ctrl, { prompt: 'Uništi permanent', aiHint: { goal: 'removal' } })],
+    targets: [T.permanent((g, c, ctrl) => c.ctrl !== ctrl, { prompt: 'Destroy a permanent', aiHint: { goal: 'removal' } })],
     resolve: async ctx => {
       const t = ctx.targets[0];
       if (!t) return;
       const controller = t.ctrl;
       await ctx.g.destroy(t);
       const search = await controller.controller.decide(ctx.g, {
-        type: 'chooseOption', prompt: `Assassin's Trophy: ${controller.name} može naći basic land`,
-        options: [{ key: 'yes', label: 'Da, traži basic' }, { key: 'no', label: 'Ne' }],
+        type: 'chooseOption', prompt: `Assassin's Trophy: ${controller.name} may search for a basic land`,
+        options: [{ key: 'yes', label: 'Yes, search for a basic' }, { key: 'no', label: 'No' }],
         aiHint: { kind: 'rampChoice' },
       });
       if (search === 'yes') await E.searchBasic(ctx.g, controller, { tapped: false });
     },
   };
   SC['Terminate'] = {
-    targets: [T.creature({ prompt: 'Uništi', aiHint: { goal: 'removal' } })],
+    targets: [T.creature({ prompt: 'Destroy', aiHint: { goal: 'removal' } })],
     resolve: async ctx => { const t = ctx.targets[0]; if (t) { t.regenShield = 0; await ctx.g.destroy(t); } },
   };
   SC['Chain Reaction'] = {
@@ -54,7 +54,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC["Commander's Sphere"] = {
     mana: { cost: { tap: true }, produce: (g, c, p) => p.colorIdentity.map(col => ({ [col]: 1 })) },
     abilities: [{
-      label: 'Sac: vuci', cost: { sacSelf: true },
+      label: 'Sac: draw', cost: { sacSelf: true },
       run: async ctx => { await ctx.g.draw(ctx.you, 1); },
       aiScore: (g, c, p) => g.lands(p).length >= 6 ? 2 : 0.2,
     }],
@@ -76,18 +76,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let pick;
       if (arts.length) {
         const k = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseOption', prompt: 'Odbaci artefakt (1) ili 2 karte?',
-          options: [{ key: 'art', label: 'Artefakt' }, { key: 'two', label: '2 karte' }],
+          type: 'chooseOption', prompt: 'Discard an artifact (1) or 2 cards?',
+          options: [{ key: 'art', label: 'Artifact' }, { key: 'two', label: '2 cards' }],
           aiHint: { kind: 'mode' },
         });
         if (k === 'art') {
-          pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: arts, min: 1, max: 1, prompt: 'Odbaci artefakt', aiHint: { kind: 'addlDiscard' } });
+          pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: arts, min: 1, max: 1, prompt: 'Discard an artifact', aiHint: { kind: 'addlDiscard' } });
           await ctx.g.discard(ctx.you, pick);
           return;
         }
       }
       const n = Math.min(2, ctx.you.hand.length);
-      pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: ctx.you.hand, min: n, max: n, prompt: 'Odbaci 2', aiHint: { kind: 'addlDiscard' } });
+      pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: ctx.you.hand, min: n, max: n, prompt: 'Discard 2', aiHint: { kind: 'addlDiscard' } });
       await ctx.g.discard(ctx.you, pick);
     },
   };
@@ -98,12 +98,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         {
           label: '4 damage to a player or planeswalker',
           targets: [T.any({
-            prompt: 'Igrač ili planeswalker',
+            prompt: 'Player or planeswalker',
             filter: (g, target) => target instanceof MTG.Player || target instanceof MTG.CardInst && target.is('Planeswalker'),
             aiHint: { goal: 'damage', n: 4 },
           })],
         },
-        { label: 'Permanenti indestructible' },
+        { label: 'Permanents gain indestructible' },
         { label: 'Double strike', targets: [T.creature({ prompt: 'Double strike', aiHint: { goal: 'buff' } })] },
       ],
     },
@@ -124,11 +124,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           label: 'Destroy X artifacts and/or enchantments',
           targets: (g, card, castOpts) => [T.permanent(
             (g2, target) => target.is('Artifact') || target.is('Enchantment'),
-            { count: castOpts.xVal || 0, prompt: `Tačno ${castOpts.xVal || 0} meta`, aiHint: { goal: 'removal' } },
+            { count: castOpts.xVal || 0, prompt: `Exactly ${castOpts.xVal || 0} targets`, aiHint: { goal: 'removal' } },
           )],
         },
         {
-          label: 'Ciljani igrač dobija 2X života',
+          label: 'Target player gains 2X life',
           targets: [T.player({ prompt: 'Who gains the life?', aiHint: { goal: 'lifegain' } })],
         },
       ],
@@ -153,8 +153,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Reclamation Sage'] = {
     triggers: [{
-      on: 'etb', desc: 'Uništi art/ench', filter: etbSelf, opt: true,
-      targets: [T.permanent((g, c) => c.is('Artifact') || c.is('Enchantment'), { prompt: 'Uništi', upTo: true, aiHint: { goal: 'removal' } })],
+      on: 'etb', desc: 'Destroy art/ench', filter: etbSelf, opt: true,
+      targets: [T.permanent((g, c) => c.is('Artifact') || c.is('Enchantment'), { prompt: 'Destroy', upTo: true, aiHint: { goal: 'removal' } })],
       run: async ctx => { if (ctx.targets[0]) await ctx.g.destroy(ctx.targets[0]); },
     }],
   };
@@ -199,7 +199,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Woodland Stream'] = dual2('G', 'U', true);
   SC['Thornwood Falls'] = Object.assign(dual2('G', 'U', true), {
     triggers: [{
-      on: 'etb', filter: etbSelf, desc: '+1 život',
+      on: 'etb', filter: etbSelf, desc: '+1 life',
       run: async ctx => { await ctx.g.gainLife(ctx.you, 1); },
     }],
   });
@@ -210,11 +210,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!revealable.length) return true;
       const picked = await card.ctrl.controller.decide(g, {
         type: 'chooseCards', from: revealable, min: 0, max: 1,
-        prompt: 'Vineglimmer Snarl: otkrij Forest ili Island da uđe untapped?',
+        prompt: 'Vineglimmer Snarl: reveal a Forest or Island so it enters untapped?',
         aiHint: { kind: 'revealLand', source: card },
       });
       if (!picked[0]) return true;
-      g.lg(`${card.ctrl.name} otkriva ${picked[0].name} za Vineglimmer Snarl.`);
+      g.lg(`${card.ctrl.name} reveals ${picked[0].name} for Vineglimmer Snarl.`);
       return false;
     },
   });

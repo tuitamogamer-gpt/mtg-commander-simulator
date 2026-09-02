@@ -317,7 +317,7 @@ test('v8 become-copy: legacy Cursed Mirror applies its copied entry replacement 
 test('v8 become-copy: a second as-enters copy replaces Cursed Mirror duration and copied haste', async () => {
   const ctx = context(), {game, b} = ctx, original = put(game, b, model('Nested Entry Final'));
   ctx.state.cards = () => []; const entry = await cast(ctx, 'Entry'); assert.equal(entry.name, 'V8 Become Entry');
-  ctx.state.cards = query => query.prompt.startsWith('Mirror kopira') ? [entry] : [original];
+  ctx.state.cards = query => query.prompt.startsWith('Mirror copies') ? [entry] : [original];
   const source = await cast(ctx, 'Cursed Mirror', {legacy: true});
   assert.equal(source.name, original.name); assert.equal(source.kw('flying'), true); assert.equal(source.kw('haste'), false);
   await turn(ctx, b); assert.equal(source.name, original.name); assert.equal(source.kw('flying'), true);

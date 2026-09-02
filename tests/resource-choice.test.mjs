@@ -44,7 +44,7 @@ test('Ninja Pizza Food nudi odvojeno manu i svoju life aktivaciju', async () => 
   game.recalc();
 
   const choices = game.activatableList(player).filter(entry => entry.card === food);
-  assert.ok(choices.some(entry => entry.ability && /3 života/.test(entry.ability.label)));
+  assert.ok(choices.some(entry => entry.ability && /3 life/.test(entry.ability.label)));
   const manaChoice = choices.find(entry => entry.manaAbility);
   assert.ok(manaChoice);
   assert.match(manaChoice.label, /Ninja Pizza/);
@@ -65,7 +65,7 @@ test('igrač može izabrati Food život umjesto mane koju daje Ninja Pizza', asy
   game.recalc();
 
   const lifeChoice = game.activatableList(player)
-    .find(entry => entry.card === food && entry.ability && /3 života/.test(entry.ability.label));
+    .find(entry => entry.card === food && entry.ability && /3 life/.test(entry.ability.label));
   assert.ok(lifeChoice);
   assert.equal(await game.activateAbility(player, lifeChoice), true);
   assert.equal(player.life, lifeBefore + 3);
@@ -84,7 +84,7 @@ test("Gourmand's Talent artefaktu daje stvarni izbor između njegove mane i Food
   assert.equal(solRing.hasSub('Food'), true);
   const choices = game.activatableList(player).filter(entry => entry.card === solRing);
   assert.ok(choices.some(entry => entry.manaAbility && /2×C/.test(entry.label)));
-  assert.ok(choices.some(entry => entry.ability && /Food: žrtvuj/.test(entry.ability.label)));
+  assert.ok(choices.some(entry => entry.ability && /Food: sacrifice/.test(entry.ability.label)));
 });
 
 test('utility land nudi mana sposobnost uz posebnu aktivaciju', () => {
@@ -96,7 +96,7 @@ test('utility land nudi mana sposobnost uz posebnu aktivaciju', () => {
 
   const choices = game.activatableList(player).filter(entry => entry.card === grounds);
   assert.ok(choices.some(entry => entry.manaAbility && /1×C/.test(entry.label)));
-  assert.ok(choices.some(entry => entry.ability && /egzilaj sva groblja/.test(entry.ability.label)));
+  assert.ok(choices.some(entry => entry.ability && /exile all graveyards/.test(entry.ability.label)));
 });
 
 test('Relic of Legends može za manu tapnuti i novodošlo legendarno stvorenje', async () => {

@@ -114,7 +114,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const kinds = what === 'nonland permanent' ? ['nonland'] : what === 'permanent' ? ['permanent'] :
         what === 'creature or planeswalker' ? ['Creature', 'Planeswalker'] :
           what === 'artifact or enchantment' ? ['Artifact', 'Enchantment'] : [what.charAt(0).toUpperCase() + what.slice(1)];
-      return mk([{ what: 'permanent', filter: permFilter(kinds), prompt: (act === 'destroy' ? 'Uništi' : 'Egzilaj'), aiHint: { goal: 'removal' } }],
+      return mk([{ what: 'permanent', filter: permFilter(kinds), prompt: (act === 'destroy' ? 'Destroy' : 'Exile'), aiHint: { goal: 'removal' } }],
         async ctx => {
           if (act === 'destroy') await ctx.g.destroy(ctx.targets[0]);
           else await ctx.g.exileCard(ctx.targets[0]);
@@ -165,7 +165,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (dm) {
           const dn = Math.min(numWord(dm[1]), ctx.you.hand.length);
           if (dn) {
-            const pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: ctx.you.hand, min: dn, max: dn, prompt: `Odbaci ${dn}`, aiHint: { kind: 'cleanupDiscard' } });
+            const pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: ctx.you.hand, min: dn, max: dn, prompt: `Discard ${dn}`, aiHint: { kind: 'cleanupDiscard' } });
             await ctx.g.discard(ctx.you, pick);
           }
         }
@@ -194,7 +194,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (/gains? trample/i.test(o)) kws.push('trample');
       if (/gains? flying/i.test(o)) kws.push('flying');
       if (/gains? first strike/i.test(o)) kws.push('first strike');
-      return mk([{ what: 'creature', filter: (g2, c) => c.zone === 'battlefield' && c.is('Creature'), prompt: 'Meta', aiHint: { goal: dp >= 0 ? 'buff' : 'removal' } }],
+      return mk([{ what: 'creature', filter: (g2, c) => c.zone === 'battlefield' && c.is('Creature'), prompt: 'Target', aiHint: { goal: dp >= 0 ? 'buff' : 'removal' } }],
         async ctx => { MTG.E.pumpUntilEOT(ctx.g, ctx.targets[0], dp, dt, kws); await ctx.g.checkSBA(); });
     }
     // Creatures you control get +X/+Y
@@ -225,19 +225,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     m = /^Return target (creature|permanent) card from your graveyard to (the battlefield|your hand)/i.exec(first);
     if (m) {
       const toBf = m[2] === 'the battlefield';
-      return mk([{ zone: 'graveyard', what: 'card', filter: (g2, c) => m[1] === 'creature' ? c.is('Creature') : true, prompt: 'Vrati', aiHint: { goal: 'reanimate' } }],
+      return mk([{ zone: 'graveyard', what: 'card', filter: (g2, c) => m[1] === 'creature' ? c.is('Creature') : true, prompt: 'Return', aiHint: { goal: 'reanimate' } }],
         async ctx => {
           const t = ctx.targets[0];
           if (t.zone !== 'graveyard') return;
           if (toBf) await MTG.E.reanimate(ctx.g, ctx.you, t);
-          else { ctx.g.remove(t); t.zone = 'hand'; ctx.you.hand.push(t); ctx.g.lg(`${t.name} u ruku.`); }
+          else { ctx.g.remove(t); t.zone = 'hand'; ctx.you.hand.push(t); ctx.g.lg(`${t.name} to hand.`); }
         });
     }
     // Bounce
     m = /^Return target (creature|nonland permanent|permanent) to its owner's hand/i.exec(first);
     if (m) {
       const kinds = m[1] === 'creature' ? ['Creature'] : ['nonland'];
-      return mk([{ what: 'permanent', filter: permFilter(kinds), prompt: 'Vrati u ruku', aiHint: { goal: 'bounce' } }],
+      return mk([{ what: 'permanent', filter: permFilter(kinds), prompt: 'Return to hand', aiHint: { goal: 'bounce' } }],
         async ctx => { if (ctx.targets[0].zone === 'battlefield') await ctx.g.move(ctx.targets[0], 'hand'); });
     }
     // Gain life
@@ -266,7 +266,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Target player draws N cards
     m = /^Target player draws (two|three|X) cards/i.exec(first);
     if (m) {
-      return mk([{ what: 'player', prompt: 'Ko vuče?', aiHint: { goal: 'drawSelf' } }],
+      return mk([{ what: 'player', prompt: 'Who draws?', aiHint: { goal: 'drawSelf' } }],
         async ctx => {
           await ctx.g.draw(ctx.targets[0], m[1] === 'X' ? (ctx.x || 0) : numWord(m[1]));
           const lm = /loses (\d) life/i.exec(o);
@@ -303,7 +303,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // ako je Aura: enchant creature default
     if (def.subtypes.includes('Aura') && /Enchant creature/i.test(def.oracle || '')) {
-      out.auraTarget = [{ what: 'creature', filter: (g2, c) => c.zone === 'battlefield' && c.is('Creature'), prompt: 'Enchantaj', aiHint: { goal: 'buff' } }];
+      out.auraTarget = [{ what: 'creature', filter: (g2, c) => c.zone === 'battlefield' && c.is('Creature'), prompt: 'Enchant', aiHint: { goal: 'buff' } }];
       out.attachGrant = genericAuraGrant(def);
     }
     // označi je li kartu potrebno ručno rješavati

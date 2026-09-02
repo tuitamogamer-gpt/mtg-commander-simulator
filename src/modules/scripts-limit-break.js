@@ -60,7 +60,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   async function discardOne(game, player, source, optional = false) {
     const picked = await chooseCards(game, player, player.hand, optional ? 0 : 1, 1,
-      `${source.name}: odbaci kartu`, { kind: 'discard', src: source });
+      `${source.name}: discard a card`, { kind: 'discard', src: source });
     if (!picked[0]) return null;
     await game.discard(player, picked);
     return picked[0];

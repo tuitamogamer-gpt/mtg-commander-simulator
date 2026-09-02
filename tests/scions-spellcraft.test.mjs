@@ -288,7 +288,7 @@ test('oba Scions Partner with ETB-a ciljaju bilo kojeg igrača, taj igrač bira 
     let recipient;
     let asked = false;
     const { game, players: [scions, other], controllers } = rulesGame([
-      (g, q) => q.type === 'chooseTargets' && q.prompt?.includes('Ko može naći') ? [recipient] : defaultDecision(g, q),
+      (g, q) => q.type === 'chooseTargets' && q.prompt?.includes('Who may search for') ? [recipient] : defaultDecision(g, q),
       (g, q) => {
         if (q.aiHint?.kind === 'partnerSearch') { asked = true; return 'yes'; }
         return defaultDecision(g, q);
@@ -297,7 +297,7 @@ test('oba Scions Partner with ETB-a ciljaju bilo kojeg igrača, taj igrač bira 
     recipient = other;
     const partner = inZone(other, partnerName, 'library');
     const source = inZone(scions, sourceName, 'hand');
-    controllers[0].decide = async (g, q) => q.type === 'chooseTargets' && q.prompt?.includes('Ko može naći')
+    controllers[0].decide = async (g, q) => q.type === 'chooseTargets' && q.prompt?.includes('Who may search for')
       ? [recipient] : defaultDecision(g, q);
     await game.move(source, 'battlefield', { ctrl: scions });
     await resolveAll(game);

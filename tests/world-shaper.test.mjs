@@ -184,7 +184,7 @@ test('Dredge 2 executable replacement mills exactly two and returns Dakmor Salva
 test('X effects create exact tokens, move selected lands across zones, and preserve Formless Genesis characteristics', async () => {
   const overrides = {
     0: {
-      chooseCards: (game, query) => query.prompt.startsWith('Stavi do') ? query.from.slice(0, query.max) : defaultDecision(game, query),
+      chooseCards: (game, query) => query.prompt.startsWith('Put up to') ? query.from.slice(0, query.max) : defaultDecision(game, query),
     },
   };
   const { game, players: [world, opponent] } = rulesGame(overrides);

@@ -284,9 +284,9 @@ test('Knight nalazi nonbasic Plains untapped, a Myriad drugi basic mora dijeliti
   let secondOptions;
   const { game, players: [coven, opponent] } = rulesGame([
     (g, q) => {
-      if (q.search && q.prompt === 'Nađi land') return [q.from.find(card => card.name === 'Canopy Vista')];
-      if (q.search && q.prompt === 'Prvi basic land') { firstSearch = false; return [q.from.find(card => card.name === 'Plains')]; }
-      if (q.search && q.prompt?.startsWith('Drugi basic')) { secondOptions = q.from.slice(); return [q.from[0]]; }
+      if (q.search && q.prompt === 'Search for a land') return [q.from.find(card => card.name === 'Canopy Vista')];
+      if (q.search && q.prompt === 'First basic land') { firstSearch = false; return [q.from.find(card => card.name === 'Plains')]; }
+      if (q.search && q.prompt?.startsWith('Second basic')) { secondOptions = q.from.slice(); return [q.from[0]]; }
       return defaultDecision(g, q);
     },
   ], 2);

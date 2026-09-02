@@ -138,7 +138,7 @@ test('imported custom deck: real human main-phase decisions play a land and cast
   assert.ok(decisions.filter(entry => entry.type === 'main').length >= 3);
   assert.ok(game.log.some(entry => /plays a land: Swamp/i.test(entry.msg)));
   assert.ok(game.log.some(entry => new RegExp(`casts?\\s+${PILOT_CARD}`, 'i').test(entry.msg)));
-  assert.ok(game.log.some(entry => new RegExp(`Rezolvira se: ${PILOT_CARD}`, 'i').test(entry.msg)));
+  assert.ok(game.log.some(entry => new RegExp(`Resolving: ${PILOT_CARD}`, 'i').test(entry.msg)));
 });
 
 test('imported custom deck: genuine local AIController plays and casts from its custom deck without fallback', async () => {

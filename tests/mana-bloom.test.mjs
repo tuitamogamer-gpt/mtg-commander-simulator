@@ -182,8 +182,8 @@ test('Unbound Flourishing prije Owlin kopije daje i originalnom i token Bloomu d
     (g, query) => {
       if (query.type === 'orderTriggers') {
         return query.triggers.slice().sort((a, b) => {
-          const aCopy = /Kopiraj prvi X/.test(a.name || '');
-          const bCopy = /Kopiraj prvi X/.test(b.name || '');
+          const aCopy = /Copy the first X spell/.test(a.name || '');
+          const bCopy = /Copy the first X spell/.test(b.name || '');
           return Number(bCopy) - Number(aCopy);
         });
       }

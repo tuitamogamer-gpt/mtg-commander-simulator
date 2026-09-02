@@ -20,7 +20,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const tappedDual = (c1, c2) => dual(c1, c2, true);
   const gainDual = (c1, c2) => Object.assign(tappedDual(c1, c2), {
     triggers: [{
-      on: 'etb', filter: (g, self, d) => d.card === self, desc: '+1 život',
+      on: 'etb', filter: (g, self, d) => d.card === self, desc: '+1 life',
       run: async ctx => { await ctx.g.gainLife(ctx.you, 1); },
     }],
   });
@@ -39,12 +39,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!pool.length) return;
       const picked = await card.ctrl.controller.decide(g, {
         type: 'chooseCards', from: pool, min: 0, max: 1,
-        prompt: `${card.name}: možeš pokazati ${subA} ili ${subB} kartu`,
+        prompt: `${card.name}: you may reveal a ${subA} or ${subB} card`,
         aiHint: { kind: 'revealLand', source: card },
       });
       if (picked[0] && pool.includes(picked[0])) {
         card.meta.revealedLandIid = picked[0].iid;
-        g.lg(`${card.ctrl.name} pokazuje ${picked[0].name} za ${card.name}.`);
+        g.lg(`${card.ctrl.name} reveals ${picked[0].name} for ${card.name}.`);
       }
     },
     entersTapped: (g, card) => !card.meta.revealedLandIid,
@@ -80,12 +80,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: [c1, c2], entersTapped: true,
     mana: { cost: { tap: true }, produce: [{ [c1]: 1, [c2]: 1 }] },
     triggers: [{
-      on: 'etb', filter: (g, self, d) => d.card === self, desc: 'Vrati land u ruku',
+      on: 'etb', filter: (g, self, d) => d.card === self, desc: 'Return a land to hand',
       run: async ctx => {
         const pool = ctx.g.lands(ctx.you).filter(l => l !== ctx.src);
         const all = ctx.g.lands(ctx.you);
         const pick = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseCards', from: all, min: 1, max: 1, prompt: 'Vrati land u ruku',
+          type: 'chooseCards', from: all, min: 1, max: 1, prompt: 'Return a land to hand',
           aiHint: { kind: 'bounceLandChoice', self: ctx.src },
         });
         if (pick.length) await ctx.g.move(pick[0], 'hand');
@@ -104,7 +104,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const top = p.library.slice(-4).reverse();
         if (!top.length) return;
         const pick = await p.controller.decide(g, {
-          type: 'chooseCards', from: top, min: 1, max: 1, prompt: 'Hideaway: sakrij jednu',
+          type: 'chooseCards', from: top, min: 1, max: 1, prompt: 'Hideaway: hide one',
           aiHint: { kind: 'hideaway' },
         });
         for (const c of top) p.library.splice(p.library.indexOf(c), 1);
@@ -112,11 +112,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         hid.zone = 'exile'; p.exile.push(hid);
         ctx.src.meta.hideIid = hid.iid;
         for (const c of top) if (c !== hid) { c.zone = 'library'; p.library.unshift(c); }
-        g.lg(`${ctx.src.name}: karta sakrivena (hideaway).`);
+        g.lg(`${ctx.src.name}: card hidden away (hideaway).`);
       },
     }],
     abilities: [{
-      label: 'Igraj sakrivenu kartu', cost: { tap: true, mana: `{${col}}` },
+      label: 'Play the hidden card', cost: { tap: true, mana: `{${col}}` },
       cond: (g, c, p) => {
         if (!c.meta.hideIid) return false;
         const hid = g.byIid(c.meta.hideIid);
@@ -199,7 +199,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: [], mana: tapFor([{ C: 1 }]),
     cycling: { cost: '{W}{B}{G}' },
     abilities: [{
-      label: 'Žrtvuj: nađi basic P/S/F (tapped)', cost: { tap: true, sacSelf: true },
+      label: 'Sacrifice: search for a basic P/S/F (tapped)', cost: { tap: true, sacSelf: true },
       run: async ctx => {
         await E.searchBasic(ctx.g, ctx.you, { tapped: true, filter: d => ['Plains', 'Swamp', 'Forest'].some(s => d.subtypes.includes(s)) });
       },
@@ -212,13 +212,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Bojuka Bog'] = {
     producesColors: ['B'], entersTapped: true, mana: tapFor(['B']),
     triggers: [{
-      on: 'etb', filter: (g, self, d) => d.card === self, desc: 'Egzilaj groblje',
+      on: 'etb', filter: (g, self, d) => d.card === self, desc: 'Exile graveyard',
       targets: [T.player({ prompt: 'Whose graveyard do you exile?', aiHint: { goal: 'gyHate' } })],
       run: async ctx => {
         const t = ctx.targets[0];
         const n = t.graveyard.length;
         for (const c of t.graveyard.slice()) await ctx.g.move(c, 'exile');
-        ctx.g.lg(`Bojuka Bog: egzilirano ${n} karata iz groblja igrača ${t.name}.`);
+        ctx.g.lg(`Bojuka Bog: exiled ${n} cards from ${t.name}'s graveyard.`);
       },
     }],
   };
@@ -282,8 +282,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Access Tunnel'] = {
     producesColors: [], mana: tapFor([{ C: 1 }]),
     abilities: [{
-      label: 'Ne može biti blokiran (pow≤3)', cost: { tap: true, mana: '{3}' },
-      targets: [T.yourCreature({ prompt: 'Stvorenje ≤3 power', filter: (g, c, ctrl) => c.is('Creature') && c.ctrl === ctrl && c.power <= 3, aiHint: { goal: 'evasion' } })],
+      label: "Can't be blocked (pow≤3)", cost: { tap: true, mana: '{3}' },
+      targets: [T.yourCreature({ prompt: 'Creature with power ≤3', filter: (g, c, ctrl) => c.is('Creature') && c.ctrl === ctrl && c.power <= 3, aiHint: { goal: 'evasion' } })],
       run: async ctx => {
         const t = ctx.targets[0], iid = t.iid;
         ctx.g.untilEffects.push({
@@ -297,14 +297,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Grim Backwoods'] = {
     producesColors: [], mana: tapFor([{ C: 1 }]),
     abilities: [{
-      label: 'Žrtvuj stvorenje: vuci kartu', cost: { tap: true, mana: '{2}{B}{G}', sacCreature: true },
+      label: 'Sacrifice a creature: draw a card', cost: { tap: true, mana: '{2}{B}{G}', sacCreature: true },
       run: async ctx => { await ctx.g.draw(ctx.you, 1); },
     }],
   };
   SC['Leechridden Swamp'] = {
     producesColors: ['B'], entersTapped: true, mana: tapFor(['B']),
     abilities: [{
-      label: 'Svaki protivnik gubi 1', cost: { tap: true, mana: '{B}' },
+      label: 'Each opponent loses 1 life', cost: { tap: true, mana: '{B}' },
       cond: (g, c, p) => g.bf().filter(x => x.ctrl === p && x.colors.includes('B')).length >= 2,
       run: async ctx => { await ctx.g.loseLifeOpponents(ctx.src, ctx.you, 1); },
     }],
@@ -312,26 +312,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Shivan Gorge'] = {
     producesColors: [], mana: tapFor([{ C: 1 }]),
     abilities: [{
-      label: '1 šteta svakom protivniku', cost: { tap: true, mana: '{2}{R}' },
+      label: '1 damage to each opponent', cost: { tap: true, mana: '{2}{R}' },
       run: async ctx => { await ctx.g.damageOpponents(ctx.src, ctx.you, 1); },
     }],
   };
   SC['Swarmyard'] = {
     producesColors: [], mana: tapFor([{ C: 1 }]),
     abilities: [{
-      label: 'Regeneriši glodara', cost: { tap: true },
+      label: 'Regenerate Insect/Rat/Spider/Squirrel', cost: { tap: true },
       targets: [{
         what: 'creature', prompt: 'Insect/Rat/Spider/Squirrel',
         filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') && ['Insect', 'Rat', 'Spider', 'Squirrel'].some(s => c.hasSub(s)),
         aiHint: { goal: 'protect' },
       }],
-      run: async ctx => { ctx.targets[0].regenShield++; ctx.g.lg(`${ctx.targets[0].name} dobija regeneracijski štit.`); },
+      run: async ctx => { ctx.targets[0].regenShield++; ctx.g.lg(`${ctx.targets[0].name} gains a regeneration shield.`); },
     }],
   };
   SC['Witch’s Clinic'] = SC["Witch's Clinic"] = {
     producesColors: [], mana: tapFor([{ C: 1 }]),
     abilities: [{
-      label: 'Commander dobija lifelink', cost: { tap: true, mana: '{2}' },
+      label: 'Commander gains lifelink', cost: { tap: true, mana: '{2}' },
       targets: [{
         what: 'creature', prompt: 'Commander', filter: (g, c) => c.zone === 'battlefield' && c.commander,
         aiHint: { goal: 'buff' },
@@ -342,7 +342,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Oran-Rief, the Vastwood'] = {
     producesColors: ['G'], entersTapped: true, mana: tapFor(['G']),
     abilities: [{
-      label: '+1/+1 na zelena stvorenja (nova)', cost: { tap: true }, sorcery: false,
+      label: '+1/+1 counter on green creatures that entered this turn', cost: { tap: true }, sorcery: false,
       run: async ctx => {
         for (const c of ctx.g.creatures(null)) {
           if (c.colors.includes('G') && c.meta._enteredTurn === ctx.g.turnNo) ctx.g.addCounters(c, '+1/+1', 1);
@@ -424,7 +424,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     asEnters: async (g, card) => {
       const options = COLORS.map(color => ({ key: color, label: color }));
       const choice = await card.ctrl.controller.decide(g, {
-        type: 'chooseOption', prompt: `${card.name}: izaberi boju`, options,
+        type: 'chooseOption', prompt: `${card.name}: choose a color`, options,
         aiHint: { kind: 'manaColor' },
       });
       card.meta.chosenColor = COLORS.includes(choice) ? choice : 'G';
@@ -434,7 +434,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       produce: (g, card) => [{ [card.meta.chosenColor || 'G']: 1 }],
     },
     abilities: [{
-      label: 'Rat po protivniku', cost: { tap: true, mana: '{5}' },
+      label: 'A Rat per opponent', cost: { tap: true, mana: '{5}' },
       run: async ctx => { await ctx.g.makeTokens('rat', ctx.you, { n: E.eachOpp(ctx.g, ctx.you).length }); },
     }],
   };
@@ -444,7 +444,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Give lifelink to a creature with a counter', cost: { tap: true, mana: '{2}' },
       targets: [T.yourCreature({
-        prompt: 'Stvorenje s counterom',
+        prompt: 'Creature with a counter',
         filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl === ctrl && Object.keys(c.counters).some(k => c.counters[k] > 0),
         aiHint: { goal: 'buff' },
       })],
@@ -461,9 +461,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     ],
     abilities: [{
-      label: 'Ninja/Turtle neblokabilan', cost: { tap: true, mana: '{3}' },
+      label: 'Ninja/Turtle unblockable', cost: { tap: true, mana: '{3}' },
       targets: [T.creature({
-        prompt: 'Ninja ili Turtle',
+        prompt: 'Ninja or Turtle',
         filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') && (c.hasSub('Ninja') || c.hasSub('Turtle')),
         aiHint: { goal: 'buff' },
       })],
@@ -480,7 +480,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Vibrant Cityscape'] = {
     producesColors: [],
     abilities: [{
-      label: 'Sac: nađi basic (tapped)', cost: { tap: true, sacSelf: true },
+      label: 'Sac: search for a basic (tapped)', cost: { tap: true, sacSelf: true },
       run: async ctx => { await E.searchBasic(ctx.g, ctx.you, { tapped: true }); },
       aiScore: (g, c, p) => 6,
     }],
@@ -488,13 +488,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Fabled Passage'] = {
     producesColors: [],
     abilities: [{
-      label: 'Sac: nađi basic', cost: { tap: true, sacSelf: true },
+      label: 'Sac: search for a basic', cost: { tap: true, sacSelf: true },
       run: async ctx => {
         const found = await E.searchBasic(ctx.g, ctx.you, { tapped: true });
         const land = found[0];
         if (land && ctx.g.lands(ctx.you).length >= 4) {
           land.tapped = false;
-          ctx.g.lg(`Fabled Passage: ${land.name} se untapuje.`);
+          ctx.g.lg(`Fabled Passage: ${land.name} untaps.`);
           ctx.g.recalc();
         }
       },
@@ -517,7 +517,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     asEnters: async (g, card) => {
       const options = COLORS.filter(color => color !== baseColor).map(color => ({ key: color, label: color }));
       const choice = await card.ctrl.controller.decide(g, {
-        type: 'chooseOption', prompt: `${card.name}: druga boja?`, options, aiHint: { kind: 'manaColor' },
+        type: 'chooseOption', prompt: `${card.name}: second color?`, options, aiHint: { kind: 'manaColor' },
       });
       card.meta.thrivingColor = COLORS.includes(choice) && choice !== baseColor ? choice : options[0].key;
     },
@@ -542,7 +542,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Blighted Woodland'] = {
     producesColors: [], mana: { cost: { tap: true }, produce: [{ C: 1 }] },
     abilities: [{
-      label: 'Žrtvuj: dva basica (tapped)', cost: { mana: '{3}{G}', tap: true, sacSelf: true },
+      label: 'Sacrifice: two basics (tapped)', cost: { mana: '{3}{G}', tap: true, sacSelf: true },
       run: async ctx => { await E.searchBasic(ctx.g, ctx.you, { n: 2, tapped: true }); },
     }],
   };
@@ -555,7 +555,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     entersTapped: (g, card) => !g.lands(card.ctrl).some(l => l !== card && l.hasSub('Mountain')),
     mana: tapFor(['R']),
     abilities: [{
-      label: '+1/+0 svojim stvorenjima', cost: { tap: true, mana: '{1}{R}{R}' },
+      label: '+1/+0 to your creatures', cost: { tap: true, mana: '{1}{R}{R}' },
       run: async ctx => { E.pumpAllUntilEOT(ctx.g, (g, c) => c.ctrl === ctx.you, 1, 0); },
     }],
   };
@@ -564,7 +564,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     mana: { cost: { tap: true }, produce: [{ C: 1 }] },
     cycling: { cost: '{R}{W}{B}' },
     abilities: [{
-      label: 'Sac: nađi basic (tapped)', cost: { tap: true, sacSelf: true },
+      label: 'Sac: search for a basic (tapped)', cost: { tap: true, sacSelf: true },
       run: async ctx => { await E.searchBasic(ctx.g, ctx.you, { tapped: true }); },
     }],
   };
@@ -572,14 +572,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: [],
     mana: { cost: { tap: true }, produce: [{ C: 1 }] },
     abilities: [{
-      label: 'Deathtouch+lifelink svima', cost: { tap: true, mana: '{2}{W}{B}' },
+      label: 'Deathtouch+lifelink to your creatures', cost: { tap: true, mana: '{2}{W}{B}' },
       run: async ctx => {
         for (const c of ctx.g.creatures(ctx.you)) E.grantUntilEOT(ctx.g, c, ['deathtouch', 'lifelink']);
       },
     }],
   };
   SC['Windbrisk Heights'] = hideawayLand('W',
-    (g, c, p) => (p.turnState.attackedCount || 0) >= 3, 'napao sa 3+ stvorenja');
+    (g, c, p) => (p.turnState.attackedCount || 0) >= 3, 'attacked with 3+ creatures');
 
   // --- Blight Curse ---
   SC['Festering Thicket'] = tappedCycleDual('B', 'G');
@@ -600,7 +600,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: [],
     mana: { cost: { tap: true }, produce: [{ C: 1 }] },
     abilities: [{
-      label: 'Premjesti counter', cost: { tap: true, mana: '{1}' }, sorcery: true,
+      label: 'Move a counter', cost: { tap: true, mana: '{1}' }, sorcery: true,
       targets: [
         T.permanent((g, c, ctrl) => c.ctrl === ctrl && Object.keys(c.counters).some(k => c.counters[k] > 0), { prompt: 'From (your permanent)', aiHint: { goal: 'buff' } }),
         T.permanent(null, { prompt: 'To another permanent', differentFromPrevious: true, aiHint: { goal: 'buff' } }),
@@ -612,7 +612,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!kinds.length) return;
         let kind = kinds[0];
         if (kinds.length > 1) kind = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseOption', prompt: `${from.name}: koji counter premještaš?`,
+          type: 'chooseOption', prompt: `${from.name}: which counter do you move?`,
           options: kinds.map(key => ({ key, label: key })),
           aiHint: { kind: 'moveCounterKind', source: from, target: to },
         });
@@ -626,7 +626,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Riveteers Overlook'] = {
     producesColors: [], entersTapped: true,
     triggers: [{
-      on: 'etb', filter: (g, self, d) => d.card === self, desc: 'Sac → basic + 1 život',
+      on: 'etb', filter: (g, self, d) => d.card === self, desc: 'Sac → basic + 1 life',
       run: async ctx => {
         if (!await ctx.g.sacrifice(ctx.you, ctx.src)) return;
         await E.searchBasic(ctx.g, ctx.you, { tapped: true, filter: d => ['Swamp', 'Mountain', 'Forest'].some(t => d.subtypes.includes(t)) });
@@ -657,7 +657,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: [],
     mana: { cost: { tap: true }, produce: [{ C: 1 }] },
     abilities: [{
-      label: 'Artefakt iz groblja u ruku', cost: { tap: true, sacSelf: true, mana: '{2}' },
+      label: 'Artifact from graveyard to hand', cost: { tap: true, sacSelf: true, mana: '{2}' },
       cond: (g, c, p) => p.graveyard.some(x => x.is('Artifact')),
       targets: [{
         zone: 'graveyard', what: 'card', prompt: 'Target artifact card in your graveyard',
@@ -677,9 +677,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { cost: { tap: true, mana: '{1}' }, produce: [{ ANY: true, n: 1 }] },
     ],
     abilities: [{
-      label: 'Postani kopija nontoken artefakta', cost: { tap: true, manaFromTarget: true },
+      label: 'Become a copy of a nontoken artifact', cost: { tap: true, manaFromTarget: true },
       targets: [T.permanent((g, target, ctrl) => target.ctrl === ctrl && target.is('Artifact') && !target.isToken, {
-        prompt: 'Nontoken artefakt koji kontrolišeš', aiHint: { goal: 'copy' },
+        prompt: 'Nontoken artifact you control', aiHint: { goal: 'copy' },
       })],
       run: async ctx => {
         const target = ctx.targets[0];
@@ -689,7 +689,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ctx.src.def = copiedDef;
         ctx.src.isCopyOf = copiedDef;
         ctx.g.recalc();
-        ctx.g.lg(`The Mycosynth Gardens postaje kopija: ${target.name}.`);
+        ctx.g.lg(`The Mycosynth Gardens becomes a copy of ${target.name}.`);
       },
       aiScore: (g, card, p) => g.bf().some(x => x.ctrl === p && x.is('Artifact') && !x.isToken && x !== card) ? 1 : 0,
     }],
@@ -701,7 +701,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: [],
     mana: { cost: { tap: true }, produce: [{ C: 1 }] },
     abilities: [{
-      label: 'Vuci kartu', cost: { tap: true, mana: '{3}' },
+      label: 'Draw a card', cost: { tap: true, mana: '{3}' },
       cond: (g, c, p) => g.creatures(p).some(x => x.power >= 4),
       run: async ctx => { await ctx.g.draw(ctx.you, 1); },
     }],
@@ -710,14 +710,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: [],
     mana: { cost: { tap: true }, produce: [{ C: 1 }] },
     abilities: [{
-      label: 'Commander iz CZ u ruku', cost: { tap: true, sacSelf: true },
+      label: 'Commander from the command zone to hand', cost: { tap: true, sacSelf: true },
       cond: (g, c, p) => p.command.length > 0,
       run: async ctx => {
         let cmd = ctx.you.command[0];
         if (ctx.you.command.length > 1) {
           const picked = await ctx.you.controller.decide(ctx.g, {
             type: 'chooseCards', from: ctx.you.command.slice(), min: 1, max: 1,
-            prompt: 'Kojeg komandera u ruku?', aiHint: { kind: 'chooseCreature' },
+            prompt: 'Which commander to hand?', aiHint: { kind: 'chooseCreature' },
           });
           cmd = (picked && picked[0]) || cmd;
         }
@@ -725,7 +725,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ctx.you.command.splice(ctx.you.command.indexOf(cmd), 1);
         cmd.zone = 'hand'; ctx.you.hand.push(cmd);
         cmd.meta._viaBeacon = true;
-        ctx.g.lg(`${cmd.name} ide u ruku (Command Beacon) — bez taxe!`);
+        ctx.g.lg(`${cmd.name} goes to hand (Command Beacon) — no tax!`);
       },
     }],
   };
@@ -733,9 +733,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: [],
     mana: { cost: { tap: true }, produce: [{ C: 1 }] },
     abilities: [{
-      label: 'Uništi nonbasic land', cost: { tap: true, sacSelf: true, mana: '{2}' },
+      label: 'Destroy a nonbasic land', cost: { tap: true, sacSelf: true, mana: '{2}' },
       targets: [{
-        what: 'permanent', prompt: 'Nonbasic land protivnika',
+        what: 'permanent', prompt: "Opponent's nonbasic land",
         filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Land') && !(c.def.super || []).includes('Basic') && c.ctrl !== ctrl,
         aiHint: { goal: 'removal' },
       }],
@@ -753,9 +753,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: [],
     mana: { cost: { tap: true }, produce: [{ C: 1 }] },
     abilities: [{
-      label: 'Uništi nonbasic land', cost: { tap: true, sacSelf: true, mana: '{2}' },
+      label: 'Destroy a nonbasic land', cost: { tap: true, sacSelf: true, mana: '{2}' },
       targets: [{
-        what: 'permanent', prompt: 'Nonbasic land protivnika',
+        what: 'permanent', prompt: "Opponent's nonbasic land",
         filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Land') && !(c.def.super || []).includes('Basic') && c.ctrl !== ctrl,
         aiHint: { goal: 'removal' },
       }],

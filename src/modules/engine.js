@@ -742,6 +742,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async move(card, toZone, opts = {}) {
+      // CR 800.4a/800.4c: a card owned by a player who has left the game no
+      // longer exists. A stale reference held by an effect (a delayed return,
+      // "each player" mass reanimation) must not bring it back into any zone.
+      if (card.owner && card.owner.lost) {
+        if (card.zone !== 'ceased') this.remove(card);
+        card.zone = 'ceased';
+        return card;
+      }
       const fromZone = card.zone;
       const oracleFace = MTG.OracleV8Faces?.moveFace(card, toZone, opts);
       if (oracleFace === false) return card;
@@ -2658,12 +2666,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const features = [];
         for (const kw of c.cur.kw) if (!baseKeywords.has(kw)) features.push(`keyword: ${kw}`);
         for (const ability of c.cur.extraAbilities || []) {
-          if (ability && ability.label) features.push(`sposobnost: ${ability.label}`);
+          if (ability && ability.label) features.push(`ability: ${ability.label}`);
         }
         const previous = new Set(c.meta._grantedFeatureNotices || []);
         for (const feature of features) {
           if (!previous.has(feature)) {
-            this.notifyEffect(`✨ ${c.name} dobija ${feature}.`, { kind: 'abilityGrant', card: c, feature });
+            this.notifyEffect(`✨ ${c.name} gains ${feature}.`, { kind: 'abilityGrant', card: c, feature });
             if (feature.startsWith('keyword: ')) {
               const keyword = feature.slice(9);
               if (MTG.KEYWORD_VISUALS && MTG.KEYWORD_VISUALS[keyword]) {
@@ -3425,8 +3433,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           this.lg(`${c.name} returns to ${c.owner.name} (its controller was eliminated).`);
         }
       }
-      for (const c of this.bf().filter(c => c.owner === p)) {
+      // `this.battlefield` instead of `bf()`: a phased-out permanent must leave
+      // the game as well, not stay hidden in the battlefield array forever.
+      for (const c of this.battlefield.filter(c => c.owner === p)) {
+        // Detach first so a host keeps no dangling attachment id and an Aura
+        // or Equipment left behind sees a missing host in the next SBA pass.
+        this.lastResortDetach(c);
         this.remove(c); c.zone = 'ceased';
+      }
+      // CR 800.4a: every other card that player owns leaves the game too —
+      // hand, library, graveyard, exile and command zone. Otherwise a later
+      // "each player" effect (Living Death, mass reanimation, wheels) can put
+      // an eliminated player's cards back onto the battlefield.
+      for (const zone of ['hand', 'library', 'graveyard', 'exile', 'command']) {
+        const cards = p[zone];
+        if (!Array.isArray(cards)) continue;
+        for (const c of cards.splice(0)) c.zone = 'ceased';
       }
       // odgođeni "vrati kontrolu" trigeri ispalog igrača nemaju više smisla
       this.delayed = this.delayed.filter(d => d.ctrl !== p);
@@ -3438,7 +3460,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           await this.becomeMonarch(next, { reason: `${p.name} was eliminated` });
         } else await this.setMonarch(null, { reason: `${p.name} was eliminated` });
       }
-      this.stack = this.stack.filter(so => so.ctrl !== p);
+      this.stack = this.stack.filter(so => {
+        // A spell card owned by the eliminated player leaves with them even if
+        // someone else controls it; a copy is not a card and stays with its
+        // controller.
+        const ownedCard = so.card && !so.isCopy && so.card.owner === p;
+        if (so.ctrl !== p && !ownedCard) return true;
+        if (ownedCard) so.card.zone = 'ceased';
+        return false;
+      });
       this.recalc();
       const alive = this.alivePlayers();
       if (alive.length <= 1) {

@@ -227,10 +227,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const pick = legals[Math.floor(rnd() * legals.length)];
     const mates = legals.filter(l => MTG.canPartner(pick.def, l.def) &&
       MTG.validateCommanders(deckData, [pick.name, l.name], defs).ok);
-    if (mates.length && rnd() < 0.6) {
+    // A candidate may be legal only together with a partner (its own color
+    // identity does not cover the deck). Such a pick must always bring a mate;
+    // otherwise the engine rejected the selection and silently fell back to
+    // the printed commander.
+    const soloLegal = MTG.validateCommanders(deckData, [pick.name], defs).ok;
+    if (mates.length && (!soloLegal || rnd() < 0.6)) {
       const mate = mates[Math.floor(rnd() * mates.length)];
       return [pick.name, mate.name];
     }
+    if (!soloLegal) return MTG.defaultCommanders(deckData, defs);
     return [pick.name];
   };
 

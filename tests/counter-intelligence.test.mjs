@@ -483,7 +483,7 @@ test('Scry čuva izabrani redoslijed vrha i dna, a Augury pita redoslijed ostatk
   auguryPick = z;
   const bottomOrder = [y, x];
   controllers[0].decide = async (g, q) => {
-    if (q.prompt === 'U ruku:') return [auguryPick];
+    if (q.prompt === 'To hand:') return [auguryPick];
     if (q.aiHint?.kind === 'bottomOrder') return [bottomOrder.shift()];
     if (q.aiHint?.goal === 'proliferate') return [];
     return defaultDecision(g, q);

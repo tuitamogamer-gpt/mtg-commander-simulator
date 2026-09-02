@@ -141,9 +141,9 @@ test('actual Otherworldly Gaze batches three Surveil lands into one Gitrog trigg
 
     await game.flushTriggers();
     const gitrogTriggers = game.stack.filter(item => item.kind === 'trigger' &&
-      /The Gitrog Monster.*Jedan ili više landova/.test(item.name || ''));
+      /The Gitrog Monster.*One or more lands/.test(item.name || ''));
     assert.equal(gitrogTriggers.length, 1, `${role}: one Surveil instruction creates exactly one Gitrog trigger`);
-    assert.equal(game.pendingTriggers.filter(item => /Jedan ili više landova/.test(item.name || item.desc || '')).length, 0);
+    assert.equal(game.pendingTriggers.filter(item => /One or more lands/.test(item.name || item.desc || '')).length, 0);
     if (role === 'ai') {
       assert.ok((game.aiDecisionLog || []).some(entry => entry.playerId === player.idx &&
         /Scry: 0 top \/ 3 bottom/.test(entry.chosen || '')), 'genuine AI chose all three lands for the graveyard');

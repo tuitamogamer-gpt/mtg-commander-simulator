@@ -82,7 +82,7 @@ test('investigate twice su odvojeni događaji, Erdwal pravi samo jednu dodatnu i
   permanent(game, clue, 'Erdwal Illuminator');
   await MTG.E.investigate(game, clue, 2);
   assert.equal(tokenCount(game, clue, 'Clue'), 2);
-  assert.equal(game.pendingTriggers.filter(trigger => trigger.name === 'Dodatna istraga').length, 1);
+  assert.equal(game.pendingTriggers.filter(trigger => trigger.name === 'Additional investigation').length, 1);
   await resolveAll(game);
   assert.equal(tokenCount(game, clue, 'Clue'), 3);
   await MTG.E.investigate(game, clue, 2);
@@ -217,7 +217,7 @@ test('Koma žrtvuje drugu Zmiju kao cijenu, zaključava permanent i gasi mana i 
   const koma = permanent(game, clue, 'Koma, Cosmos Serpent');
   const [coil] = await game.makeTokens('serpentKoma', clue);
   const ring = permanent(game, opponent, 'Sol Ring');
-  const tapMode = game.activatableList(clue).find(entry => entry.card === koma && /ugasi aktivacije/.test(entry.ability.label));
+  const tapMode = game.activatableList(clue).find(entry => entry.card === koma && /prevent its activated abilities/.test(entry.ability.label));
   assert.ok(tapMode);
   assert.equal(await game.activateAbility(clue, tapMode, [ring]), true);
   assert.equal(coil.zone, 'ceased', 'Zmija je žrtvovana prije priorityja');
@@ -348,7 +348,7 @@ test('Disorder in the Court traži tačno X meta bez limita pet i vraća netoken
   let targetPrompt;
   const { game, players: [clue, opponent] } = rulesGame([
     (g, q) => {
-      if (q.type === 'chooseTargets' && q.prompt?.startsWith('Egzilaj privremeno')) {
+      if (q.type === 'chooseTargets' && q.prompt?.startsWith('Exile temporarily')) {
         targetPrompt = q;
         return q.candidates.slice(0, q.max);
       }
@@ -496,7 +496,7 @@ test('Prepared Braingeyser stvarno bira X i metu, okida Aerial i kopija prestaje
 test("Prepared Maestro's Gift zaključava creature metu, fizzla bez fallbacka i uspješno pravi haste kopiju", async () => {
   let copyTarget;
   const { game, players: [prismari] } = rulesGame([
-    (g, q) => q.type === 'chooseTargets' && q.prompt === 'Kopiraj stvorenje' ? [copyTarget] : defaultDecision(g, q),
+    (g, q) => q.type === 'chooseTargets' && q.prompt === 'Copy a creature' ? [copyTarget] : defaultDecision(g, q),
   ], 2);
   const painter = permanent(game, prismari, 'Inspired Skypainter');
   copyTarget = permanent(game, prismari, 'Graf Mole');

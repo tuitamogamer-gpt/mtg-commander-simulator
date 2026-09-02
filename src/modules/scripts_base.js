@@ -21,14 +21,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     rat: tok('Rat', null, ['Creature'], ['Rat'], 1, 1, { colorsOverride: ['B'] }),
     pest: tok('Pest', null, ['Creature'], ['Pest'], 1, 1, {
       colorsOverride: ['B', 'G'],
-      triggers: [{ on: 'dies', filter: (g, self, d) => d.card === self, run: async ctx => { await ctx.g.gainLife(ctx.you, 1); }, desc: 'Pest: +1 život' }],
+      triggers: [{ on: 'dies', filter: (g, self, d) => d.card === self, run: async ctx => { await ctx.g.gainLife(ctx.you, 1); }, desc: 'Pest: +1 life' }],
     }),
     goat: tok('Goat', null, ['Creature'], ['Goat'], 0, 1, { colorsOverride: ['W'] }),
     wolfG: tok('Wolf', null, ['Creature'], ['Wolf'], 2, 2, { colorsOverride: ['G'] }),
     wolfGarruk: tok('Wolf', null, ['Creature'], ['Wolf'], 2, 2, {
       colorsOverride: ['B', 'G'],
       triggers: [{
-        on: 'dies', filter: (g, self, d) => d.card === self, desc: 'Wolf: loyalty za Garruka',
+        on: 'dies', filter: (g, self, d) => d.card === self, desc: 'Wolf: loyalty for Garruk',
         run: async ctx => {
           for (const c of ctx.g.bf()) if (c.name.startsWith('Garruk') && c.is('Planeswalker') && c.ctrl === ctx.you) ctx.g.addCounters(c, 'loyalty', 1);
         },
@@ -40,7 +40,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     devil: tok('Devil', null, ['Creature'], ['Devil'], 1, 1, {
       colorsOverride: ['R'],
       triggers: [{
-        on: 'dies', filter: (g, self, d) => d.card === self, desc: 'Devil: 1 šteta',
+        on: 'dies', filter: (g, self, d) => d.card === self, desc: 'Devil: 1 damage',
         targets: [{ what: 'any', aiHint: { goal: 'damage', n: 1 } }],
         run: async ctx => { await ctx.g.damageAny(ctx.src, ctx.targets[0], 1); },
       }],
@@ -71,19 +71,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }),
     food: tok('Food', null, ['Artifact'], ['Food'], undefined, undefined, {
       abilities: [{
-        label: 'Žrtvuj: +3 života', cost: { mana: '{2}', tap: true, sacSelf: true },
+        label: 'Sacrifice: +3 life', cost: { mana: '{2}', tap: true, sacSelf: true },
         run: async ctx => { await ctx.g.gainLife(ctx.you, 3); },
       }],
     }),
     clue: tok('Clue', null, ['Artifact'], ['Clue'], undefined, undefined, {
       abilities: [{
-        label: 'Žrtvuj: vuci kartu', cost: { mana: '{2}', sacSelf: true },
+        label: 'Sacrifice: draw a card', cost: { mana: '{2}', sacSelf: true },
         run: async ctx => { await ctx.g.draw(ctx.you, 1); },
       }],
     }),
     blood: tok('Blood', null, ['Artifact'], ['Blood'], undefined, undefined, {
       abilities: [{
-        label: 'Žrtvuj: rummage', cost: { mana: '{1}', tap: true, sacSelf: true, discard: 1 },
+        label: 'Sacrifice: rummage', cost: { mana: '{1}', tap: true, sacSelf: true, discard: 1 },
         run: async ctx => { await ctx.g.draw(ctx.you, 1); },
       }],
     }),
@@ -94,7 +94,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     wizard01: tok('Wizard', null, ['Creature'], ['Wizard'], 0, 1, {
       colorsOverride: ['B'],
       triggers: [{
-        on: 'castNonCreature', desc: 'Wizard: 1 šteta svakom protivniku',
+        on: 'castNonCreature', desc: 'Wizard: 1 damage to each opponent',
         filter: (g, self, d) => d.player === self.ctrl,
         run: async ctx => { await ctx.g.damageOpponents(ctx.src, ctx.you, 1); },
       }],
@@ -227,7 +227,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const avail = p.library.filter(c => (c.def.super || []).includes('Basic') && (!opts.filter || opts.filter(c.def)));
       if (!avail.length) break;
       const picked = await p.controller.decide(g, {
-        type: 'chooseCards', from: avail, min: 0, max: 1, prompt: opts.prompt || 'Nađi basic land',
+        type: 'chooseCards', from: avail, min: 0, max: 1, prompt: opts.prompt || 'Search for a basic land',
         aiHint: { kind: 'searchBasic' }, search: true,
       });
       if (!picked.length) break;
@@ -251,7 +251,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const avail = p.library.filter(c => c.is('Land') && (names.some(nm => c.name === nm || c.hasSub && c.def.subtypes.includes(nm))));
     if (!avail.length) { U.shuffle(p.library, g.rnd); return null; }
     const picked = await p.controller.decide(g, {
-      type: 'chooseCards', from: avail, min: 0, max: 1, prompt: 'Nađi land', aiHint: { kind: 'searchBasic' }, search: true,
+      type: 'chooseCards', from: avail, min: 0, max: 1, prompt: 'Search for a land', aiHint: { kind: 'searchBasic' }, search: true,
     });
     if (!picked.length) { U.shuffle(p.library, g.rnd); return null; }
     const c = picked[0];
@@ -278,7 +278,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const c of keep.bottom) c.zone = 'library';
     p.library.unshift(...keep.bottom);
     for (const c of keep.top.slice().reverse()) { c.zone = 'library'; p.library.push(c); }
-    if (keep.bottom.length) g.lg(`${p.name} scry ${n}: ${keep.bottom.length} na dno.`);
+    if (keep.bottom.length) g.lg(`${p.name} scry ${n}: ${keep.bottom.length} to the bottom.`);
     else g.lg(`${p.name} scry ${n}.`);
     await g.emit('scry', { player: p, n: top.length, cards: top.slice() });
   };
@@ -313,8 +313,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
     g.recalc();
     const stat = `${dp >= 0 ? '+' : ''}${dp}/${dt >= 0 ? '+' : ''}${dt}`;
-    const extra = kws && kws.length ? ` i ${kws.join(', ')}` : '';
-    g.notifyEffect(`✨ ${card.name} dobija ${stat}${extra} do kraja poteza.`, { kind: 'temporaryEffect', card });
+    const extra = kws && kws.length ? ` and ${kws.join(', ')}` : '';
+    g.notifyEffect(`✨ ${card.name} gets ${stat}${extra} until end of turn.`, { kind: 'temporaryEffect', card });
   };
 
   E.pumpAllUntilEOT = function (g, filter, dp, dt, kws) {
@@ -344,8 +344,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
     g.recalc();
     const stat = `${dp >= 0 ? '+' : ''}${dp}/${dt >= 0 ? '+' : ''}${dt}`;
-    const extra = kws && kws.length ? ` i ${kws.join(', ')}` : '';
-    if (affected.length) g.notifyEffect(`✨ ${affected.length} stvorenja dobijaju ${stat}${extra} do kraja poteza.`, {
+    const extra = kws && kws.length ? ` and ${kws.join(', ')}` : '';
+    if (affected.length) g.notifyEffect(`✨ ${affected.length} creatures get ${stat}${extra} until end of turn.`, {
       kind: 'temporaryEffect', cards: affected,
     });
   };
@@ -355,7 +355,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   E.reanimate = async function (g, p, card, opts = {}) {
     if (card.zone !== 'graveyard') return null;
     await g.move(card, 'battlefield', { ctrl: p, tapped: opts.tapped });
-    g.lg(`${p.name} vraća ${card.name} iz groblja na battlefield.`);
+    g.lg(`${p.name} returns ${card.name} from the graveyard to the battlefield.`);
     return card;
   };
 
@@ -364,7 +364,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (discardN > 0 && p.hand.length) {
       const n = Math.min(discardN, p.hand.length);
       const picked = await p.controller.decide(g, {
-        type: 'chooseCards', from: p.hand, min: n, max: n, prompt: `Odbaci ${n}`, aiHint: { kind: 'cleanupDiscard' },
+        type: 'chooseCards', from: p.hand, min: n, max: n, prompt: `Discard ${n}`, aiHint: { kind: 'cleanupDiscard' },
       });
       await g.discard(p, picked);
     }
@@ -383,7 +383,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       c.meta.impulseSrc = card ? card.name : '';
       out.push(c);
     }
-    if (out.length) g.lg(`${p.name} egzilira ${out.length} s vrha (može igrati: ${out.map(c => c.name).join(', ')}).`);
+    if (out.length) g.lg(`${p.name} exiles ${out.length} from the top (may play: ${out.map(c => c.name).join(', ')}).`);
     return out;
   };
 
@@ -402,7 +402,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }));
     const key = await p.controller.decide(g, {
       type: 'chooseOption', player: p,
-      prompt: opts.prompt || 'Izaberi protivnika', options,
+      prompt: opts.prompt || 'Choose an opponent', options,
       aiHint: Object.assign({ kind: 'chooseOpponent', goal: opts.goal || 'delegate' }, opts.aiHint || {}),
     });
     return opponents.find(player => String(player.idx) === String(key)) || opponents[0];
@@ -418,9 +418,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   E.mayCastFree = async function (g, p, card, opts = {}) {
     const yes = await p.controller.decide(g, {
-      type: 'chooseOption', prompt: `Baci ${card.name} besplatno?`,
+      type: 'chooseOption', prompt: `Cast ${card.name} for free?`,
       card,
-      options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }],
+      options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }],
       aiHint: { kind: 'freeCast', card },
     });
     if (yes !== 'yes') return false;
@@ -642,7 +642,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Mind Stone'] = {
     mana: { cost: { tap: true }, produce: [{ C: 1 }] },
     abilities: [{
-      label: 'Žrtvuj: vuci kartu', cost: { mana: '{1}', tap: true, sacSelf: true },
+      label: 'Sacrifice: draw a card', cost: { mana: '{1}', tap: true, sacSelf: true },
       run: async ctx => { await ctx.g.draw(ctx.you, 1); },
     }],
   };
@@ -650,7 +650,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Hedron Archive'] = {
     mana: { cost: { tap: true }, produce: [{ C: 2 }] },
     abilities: [{
-      label: 'Žrtvuj: vuci 2', cost: { mana: '{2}', tap: true, sacSelf: true },
+      label: 'Sacrifice: draw 2', cost: { mana: '{2}', tap: true, sacSelf: true },
       run: async ctx => { await ctx.g.draw(ctx.you, 2); },
     }],
   };
@@ -735,7 +735,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Feed the Swarm'] = {
     targets: [{
-      what: 'permanent', prompt: 'Stvorenje ili enchantment protivnika',
+      what: 'permanent', prompt: "Opponent's creature or enchantment",
       filter: (g, c, ctrl) => c.zone === 'battlefield' && c.ctrl !== ctrl && (c.is('Creature') || c.is('Enchantment')),
       aiHint: { goal: 'removal' },
     }],
@@ -747,7 +747,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC['Infernal Grasp'] = {
-    targets: [T.creature({ prompt: 'Uništi stvorenje', aiHint: { goal: 'removal' } })],
+    targets: [T.creature({ prompt: 'Destroy a creature', aiHint: { goal: 'removal' } })],
     resolve: async ctx => { await ctx.g.destroy(ctx.targets[0]); await ctx.g.loseLife(ctx.you, 2); },
   };
   SC['Decree of Pain'] = {
@@ -784,7 +784,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Morbid Opportunist'] = {
     triggers: [{
-      on: 'dies', oncePerTurn: true, desc: 'Vuci kartu',
+      on: 'dies', oncePerTurn: true, desc: 'Draw a card',
       filter: (g, self, d) => d.card !== self && d.snap.types.includes('Creature'),
       run: async ctx => { await ctx.g.draw(ctx.you, 1); },
     }],
@@ -799,11 +799,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Solemn Simulacrum'] = {
     triggers: [
       {
-        on: 'etb', filter: (g, self, d) => d.card === self, opt: true, desc: 'Nađi basic',
+        on: 'etb', filter: (g, self, d) => d.card === self, opt: true, desc: 'Search for a basic',
         run: async ctx => { await E.searchBasic(ctx.g, ctx.you, {}); },
       },
       {
-        on: 'dies', filter: (g, self, d) => d.card === self, opt: true, desc: 'Vuci kartu',
+        on: 'dies', filter: (g, self, d) => d.card === self, opt: true, desc: 'Draw a card',
         run: async ctx => { await ctx.g.draw(ctx.you, 1); },
       },
     ],
@@ -811,7 +811,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Evolving Wilds'] = SC['Terramorphic Expanse'] = {
     producesColors: [],
     abilities: [{
-      label: 'Žrtvuj: nađi basic (tapped)', cost: { tap: true, sacSelf: true },
+      label: 'Sacrifice: search for a basic (tapped)', cost: { tap: true, sacSelf: true },
       run: async ctx => { await E.searchBasic(ctx.g, ctx.you, { tapped: true }); },
     }],
   };

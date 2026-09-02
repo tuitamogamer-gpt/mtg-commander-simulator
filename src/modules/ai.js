@@ -696,7 +696,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let v;
       if (/vuci|draw|karta/.test(label)) v = 3.2;
       else if (/nađi|naci|traži|trazi|search|tutor|basic|forest|plains|island|swamp|mountain/.test(label)) v = 2.6;
-      else if (/uništi|unisti|šteta|steta|fight|gubi|destroy|damage|exile|egzil/.test(label)) v = 2.4;
+      else if (/uništi|unisti|šteta|steta|fight|gubi|lose|destroy|damage|exile|egzil/.test(label)) v = 2.4;
       else if (/token|vjeverica|squirrel|treasure|food|clue|human|spirit|soldier|wolf|\d\/\d/.test(label)) v = 2.3;
       else if (/monstrosity|level|counter|\+1\/\+1/.test(label)) v = 2.0;
       else if (/neblokiran|unblockable|double strike|deathtouch|lifelink|trample|flying|haste|vigilance|indestructible|hexproof|menace|\+\d/.test(label)) {

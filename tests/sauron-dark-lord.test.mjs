@@ -621,11 +621,18 @@ test('uvezeni Sauron špil završava pune determinističke partije kao human sea
   assert.ok(humanDecisions > 0, 'the imported human seat received real controller decisions');
   assert.equal(asPlayer.log.some(entry => /AI V2 fallback/i.test(entry.msg)), false);
 
+  // `aiDecisionLog` keeps only the most recent 160 decisions, so an early
+  // elimination of the imported seat would hide its decisions; count them as
+  // they happen instead.
+  const botDecisions = [];
   const asBot = MTG.newGame({
     humanDeck: 'Quick Draw',
     aiDecks: [imported.deck.name, 'Abzan Armor', 'Elven Council'],
     aiStyles: ['balanced', 'balanced', 'balanced'],
     difficulty: 'normal', seed: 829302, maxTurns: 260, paced: false,
+    onEvent: event => {
+      if (event.type === 'aiDecision' && event.player && event.player.deckName === imported.deck.name) botDecisions.push(event.decision);
+    },
   });
   const importedBot = asBot.players.find(player => player.deckName === imported.deck.name);
   assert.ok(importedBot, 'custom imported deck is accepted in an AI seat');
@@ -634,7 +641,6 @@ test('uvezeni Sauron špil završava pune determinističke partije kao human sea
   assert.ok(asBot.winner);
   assert.ok(asBot.turnNo < asBot.maxTurns);
   assert.equal(asBot.pendingTriggers.length, 0);
-  const botDecisions = (asBot.aiDecisionLog || []).filter(entry => entry.playerId === importedBot.idx);
   assert.ok(botDecisions.length > 0, 'the local AI made decisions for the imported deck');
   assert.equal(botDecisions.some(entry => entry.fallback), false);
   assert.equal(asBot.log.some(entry => /AI V2 fallback/i.test(entry.msg)), false);

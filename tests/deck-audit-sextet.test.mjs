@@ -172,7 +172,7 @@ test('Insatiable Frugivore: igrač bira KOJE tri karte egzila iz groblja', async
   let exilePick = null;
   const { game, players: [me] } = rulesGame([
     (g, q) => {
-      if (q.type === 'chooseOption' && /Egzilaj 3/.test(q.prompt || '')) return exilePick ? 'yes' : 'no';
+      if (q.type === 'chooseOption' && /Exile 3/.test(q.prompt || '')) return exilePick ? 'yes' : 'no';
       if (q.type === 'chooseCards' && q.aiHint && q.aiHint.kind === 'exileFromGy') return exilePick.slice();
       return defaultDecision(g, q);
     },
@@ -270,7 +270,7 @@ test('crew pretvara Vehicle u creature do kraja poteza', async () => {
 test("Sunbird's Invocation: besplatni cast ide iz biblioteke i ne re-okida cast-from-hand triggere", async () => {
   const { game, players: [me] } = rulesGame([
     (g, q) => {
-      if (q.type === 'chooseCards' && (q.prompt || '').startsWith('Baci besplatno')) return q.from.slice(0, 1);
+      if (q.type === 'chooseCards' && (q.prompt || '').startsWith('Cast for free')) return q.from.slice(0, 1);
       return defaultDecision(g, q);
     },
   ]);
@@ -282,7 +282,7 @@ test("Sunbird's Invocation: besplatni cast ide iz biblioteke i ne re-okida cast-
   const ok = await game.castSpell(me, spell, { from: 'hand' });
   assert.equal(ok, true);
   await resolveAll(game);
-  const fires = game.log.filter(entry => entry.msg.startsWith("Sunbird's: otkriveno")).length;
+  const fires = game.log.filter(entry => entry.msg.startsWith("Sunbird's: revealed")).length;
   assert.equal(fires, 1, 'Sunbird smije okinuti samo za cast iz ruke');
 });
 
@@ -768,6 +768,11 @@ test('Bloodthirsty Adversary egziluje izabrani original prije castanja kopije', 
   ]);
   const original = new MTG.CardInst(MTG.DEFS['Think Twice'], me);
   original.zone = 'graveyard'; me.graveyard.push(original);
+  // The copied Think Twice draws a card; an empty library would eliminate the
+  // hero (CR 800.4a then removes every card they own, including the exiled
+  // original), so give the hero something to draw.
+  const fuel = new MTG.CardInst(MTG.DEFS.Island, me);
+  fuel.zone = 'library'; me.library.push(fuel);
   me.pool.R = 1; me.pool.C = 2;
   const adversary = new MTG.CardInst(MTG.DEFS['Bloodthirsty Adversary'], me);
   adversary.zone = 'nowhere';

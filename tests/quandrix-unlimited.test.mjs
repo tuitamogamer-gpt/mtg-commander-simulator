@@ -144,7 +144,7 @@ test("Grove's Bounty bira X, mete i raspodjelu pa ostavlja Ottera u Adventure eg
 test('Prepare pravi stvarne Run the Play i Channel kopije i gasi ih odlaskom izvora', async () => {
   let attacker;
   const { game, players: [quandrix, opponent] } = rulesGame([ (g, q) => {
-    if (q.type === 'chooseTargets' && q.prompt?.includes('Stvorenje za counter') && q.candidates.includes(attacker)) return [attacker];
+    if (q.type === 'chooseTargets' && q.prompt?.includes('Creature for the counter') && q.candidates.includes(attacker)) return [attacker];
     return defaultDecision(g, q);
   } ]);
   const shotcaller = permanent(game, quandrix, 'Striding Shotcaller');
@@ -219,8 +219,8 @@ test('Adventure X kontekst radi za dinamičke mete i ograničenu Troyan/Palette 
 test('Quandrix Command cilja samo karte iz prethodno ciljanog groblja', async () => {
   let seenCards = [];
   const { game, players: [quandrix, opponent] } = rulesGame([ (g, q) => {
-    if (q.type === 'chooseTargets' && q.prompt === 'Čije groblje?') return [opponent];
-    if (q.type === 'chooseTargets' && q.prompt?.includes('Do tri target')) {
+    if (q.type === 'chooseTargets' && q.prompt === 'Whose graveyard?') return [opponent];
+    if (q.type === 'chooseTargets' && q.prompt?.includes('Up to three target')) {
       seenCards = q.candidates.slice();
       return q.candidates.slice(0, q.max);
     }

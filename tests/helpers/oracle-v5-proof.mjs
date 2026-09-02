@@ -769,7 +769,9 @@ export async function mechanicProof(MTG,entry,op,role,h){
    return 5;
  }
  if(op.kind==='mechanic-jump-start'){
-   await game.move(source,'graveyard');const hand=a.hand.length;const row=game.castableList(a).find(row=>row.card===source&&row.alt?.jumpstart);assert.ok(row);assert.equal(await game.castSpell(a,source,{from:'graveyard',alt:row.alt}),true);assert.equal(a.hand.length,hand-1);await h.resolveAll(game);assert.equal(source.zone,'exile');assert.equal(source.castMeta.alt.jumpstart,true);return 3;
+   await game.move(source,'graveyard');const hand=a.hand.length;const row=game.castableList(a).find(row=>row.card===source&&row.alt?.jumpstart);assert.ok(row);assert.equal(await game.castSpell(a,source,{from:'graveyard',alt:row.alt}),true);assert.equal(a.hand.length,hand-1);
+   // A self-targeted proof spell (e.g. Gravitic Punch aimed at its caster) must not eliminate the caster: CR 800.4a would then remove the exiled card from the game before the zone check.
+   a.life=Math.max(a.life,1e6);await h.resolveAll(game);assert.equal(source.zone,'exile');assert.equal(source.castMeta.alt.jumpstart,true);return 3;
  }
  if(op.kind==='mechanic-madness'){
    await game.discard(a,[source],{noReplacement:true});assert.equal(source.zone,'exile',entry.raw.name+': madness replaces even a cost discard');

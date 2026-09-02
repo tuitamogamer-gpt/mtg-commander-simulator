@@ -16,12 +16,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     .some(type => card.is(type));
   const landSacCost = { sac: (g, card) => card.is('Land') };
   const ownGyLand = (opts = {}) => Object.assign({
-    zone: 'graveyard', what: 'card', prompt: 'Land iz svog groblja',
+    zone: 'graveyard', what: 'card', prompt: 'Land from your graveyard',
     filter: (g, card, ctrl) => card.owner === ctrl && card.is('Land'),
     aiHint: { goal: 'recursion' },
   }, opts);
   const anyGyLand = (opts = {}) => Object.assign({
-    zone: 'graveyard', what: 'card', prompt: 'Land iz groblja',
+    zone: 'graveyard', what: 'card', prompt: 'Land from a graveyard',
     filter: (g, card) => card.is('Land'), aiHint: { goal: 'recursion' },
   }, opts);
 
@@ -38,7 +38,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const golem33 = token('Golem', ['Artifact', 'Creature', 'Enchantment'], ['Golem'], 3, 3, { colorsOverride: [] });
   const lander = TK.worldShaperLander ||= token('Lander', ['Artifact'], ['Lander'], undefined, undefined, {
     abilities: [{
-      label: 'Lander: traži basic land', cost: { mana: '{2}', tap: true, sacSelf: true },
+      label: 'Lander: search for a basic land', cost: { mana: '{2}', tap: true, sacSelf: true },
       run: async ctx => { await E.searchBasic(ctx.g, ctx.you, { n: 1, tapped: true }); },
       aiScore: (g, card, player) => player.library.some(isBasicLand) ? 5 : -5,
     }],
@@ -63,7 +63,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (let i = 0; i < n; i++) {
       const pool = player.library.filter(card => card.is('Land') && (!predicate || predicate(card)));
       if (!pool.length) break;
-      const card = await chooseOne(game, player, pool, opts.prompt || 'Nađi land', { kind: 'searchBasic' }, true);
+      const card = await chooseOne(game, player, pool, opts.prompt || 'Search for a land', { kind: 'searchBasic' }, true);
       if (!card) break;
       game.remove(card);
       card.zone = 'nowhere';
@@ -85,7 +85,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function stationAbility(extra = {}) {
     return Object.assign({
-      label: 'Station (tapuj drugo stvorenje)', sorcery: true, cost: { tapCreature: true },
+      label: 'Station (tap another creature)', sorcery: true, cost: { tapCreature: true },
       run: async ctx => {
         if (ctx.src.zone !== 'battlefield') return;
         const n = ctx.tappedCre && ctx.tappedCre.zone === 'battlefield'
@@ -99,16 +99,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   async function sacrificeAnotherPermanent(ctx) {
     const pool = ctx.g.bf().filter(card => card.ctrl === ctx.you && card !== ctx.src && ctx.g.canSacrifice(card));
-    const card = await chooseOne(ctx.g, ctx.you, pool, `${ctx.src.name}: žrtvuj drugi permanent`, { kind: 'sacCost', src: ctx.src });
+    const card = await chooseOne(ctx.g, ctx.you, pool, `${ctx.src.name}: sacrifice another permanent`, { kind: 'sacCost', src: ctx.src });
     if (card) await ctx.g.sacrifice(ctx.you, card);
   }
 
   function fetchLandAbility(types) {
     return {
-      label: `Traži ${types.join(' ili ')}`, cost: { tap: true, sacSelf: true },
+      label: `Search for ${types.join(' or ')}`, cost: { tap: true, sacSelf: true },
       run: async ctx => {
         await searchLands(ctx.g, ctx.you, 1, card => types.some(type => card.hasSub(type)), {
-          tapped: false, prompt: `Nađi ${types.join(' ili ')}`,
+          tapped: false, prompt: `Search for ${types.join(' or ')}`,
         });
       },
       aiScore: (game, card, player) => player.library.some(candidate =>
@@ -197,14 +197,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [
       stationAbility(),
       {
-        label: 'Žrtvuj land: vuci 2 i dodatni land',
+        label: 'Sacrifice a land: draw 2 and an extra land drop',
         cond: (game, card) => (card.counters.charge || 0) >= 2,
         cost: Object.assign({ mana: '{1}', tap: true }, landSacCost),
         run: async ctx => { await ctx.g.draw(ctx.you, 2); ctx.you.maxLands++; }, aiScore: () => 7,
       },
     ],
     triggers: [{
-      on: 'sacrificed', desc: 'Protivnici gube 2',
+      on: 'sacrificed', desc: 'Opponents lose 2 life',
       filter: (game, card, data) => data.player === card.ctrl && data.card.is('Land'),
       run: async ctx => { for (const opponent of E.eachOpp(ctx.g, ctx.you)) await ctx.g.loseLife(opponent, 2, ctx.src.name); },
     }],
@@ -212,7 +212,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC['Groundskeeper'] = {
     abilities: [{
-      label: 'Vrati basic land u ruku', cost: { mana: '{1}{G}' },
+      label: 'Return a basic land to hand', cost: { mana: '{1}{G}' },
       targets: [ownGyLand({ filter: (game, card, ctrl) => card.owner === ctrl && isBasicLand(card) })],
       run: async ctx => { if (ctx.targets[0]) await ctx.g.move(ctx.targets[0], 'hand'); }, aiScore: () => 3,
     }],
@@ -221,7 +221,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Aftermath Analyst'] = {
     triggers: [{ on: 'etb', desc: 'Mill 3', filter: etbSelf, run: async ctx => { await ctx.g.mill(ctx.you, 3); } }],
     abilities: [{
-      label: 'Vrati sve landove iz groblja tapovane', cost: { mana: '{3}{G}', sacSelf: true },
+      label: 'Return all lands from graveyard tapped', cost: { mana: '{3}{G}', sacSelf: true },
       run: async ctx => { await returnAllLands(ctx.g, ctx.you); },
       aiScore: (game, card, player) => 2 + player.graveyard.filter(isLand).length * 2,
     }],
@@ -234,8 +234,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', 1); },
       },
       {
-        on: 'dies', desc: 'Šteta jednaka snazi', filter: (game, card, data) => data.card === card,
-        targets: [T.any({ prompt: 'Juri: meta za štetu', aiHint: { goal: 'damage' } })],
+        on: 'dies', desc: 'Damage equal to power', filter: (game, card, data) => data.card === card,
+        targets: [T.any({ prompt: 'Juri: target for damage', aiHint: { goal: 'damage' } })],
         run: async ctx => { if (ctx.targets[0]) await ctx.g.damageAny(ctx.src, ctx.targets[0], ctx.data.snap.power); },
       },
     ],
@@ -243,10 +243,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC['Satyr Wayfinder'] = {
     triggers: [{
-      on: 'etb', desc: 'Vrhnje 4: land u ruku, ostalo u groblje', filter: etbSelf,
+      on: 'etb', desc: 'Top 4: a land to hand, the rest to graveyard', filter: etbSelf,
       run: async ctx => {
         const top = ctx.you.library.slice(-4);
-        const land = await chooseOne(ctx.g, ctx.you, top.filter(isLand), 'Satyr Wayfinder: land u ruku', { kind: 'searchBasic' }, true);
+        const land = await chooseOne(ctx.g, ctx.you, top.filter(isLand), 'Satyr Wayfinder: land to hand', { kind: 'searchBasic' }, true);
         if (land) await ctx.g.move(land, 'hand');
         for (const card of top) if (card !== land && card.zone === 'library') await ctx.g.move(card, 'graveyard');
       },
@@ -256,7 +256,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Sprouting Goblin'] = {
     kicker: { cost: '{G}' },
     triggers: [{
-      on: 'etb', desc: 'Kicker: traži typed land',
+      on: 'etb', desc: 'Kicker: search for a typed land',
       filter: (game, card, data) => data.card === card && !!card.castMeta && card.castMeta.kicked,
       run: async ctx => {
         await searchLands(ctx.g, ctx.you, 1, card => ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest']
@@ -264,7 +264,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     }],
     abilities: [{
-      label: 'Žrtvuj land: vuci kartu', cost: Object.assign({ mana: '{R}', tap: true }, landSacCost),
+      label: 'Sacrifice a land: draw a card', cost: Object.assign({ mana: '{R}', tap: true }, landSacCost),
       run: async ctx => { await ctx.g.draw(ctx.you, 1); }, aiScore: () => 4,
     }],
   };
@@ -277,7 +277,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC['Evendo Brushrazer'] = {
     triggers: [{
-      on: 'sacrificed', desc: 'Egzilaj vrh', filter: (game, card, data) => data.player === card.ctrl && !data.card.isToken,
+      on: 'sacrificed', desc: 'Exile the top card', filter: (game, card, data) => data.player === card.ctrl && !data.card.isToken,
       run: async ctx => {
         if (!ctx.you.library.length || ctx.src.zone !== 'battlefield') return;
         const card = ctx.you.library.pop(); card.zone = 'exile'; ctx.you.exile.push(card);
@@ -308,16 +308,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC['Loamcrafter Faun'] = {
     triggers: [{
-      on: 'etb', desc: 'Odbaci landove, vrati nonland permanente', filter: etbSelf,
+      on: 'etb', desc: 'Discard lands, return nonland permanents', filter: etbSelf,
       run: async ctx => {
         const lands = ctx.you.hand.filter(isLand);
         const discarded = await chooseCards(ctx.g, ctx.you, lands, 0, lands.length,
-          'Loamcrafter Faun: odbaci landove', { kind: 'addlDiscard', card: ctx.src });
+          'Loamcrafter Faun: discard lands', { kind: 'addlDiscard', card: ctx.src });
         if (!discarded.length) return;
         await ctx.g.discard(ctx.you, discarded);
         const pool = ctx.you.graveyard.filter(card => !card.is('Land') && isPermanent(card));
         const returned = await chooseCards(ctx.g, ctx.you, pool, 0, discarded.length,
-          `Loamcrafter Faun: vrati do ${discarded.length} permanenata`, { kind: 'bestGyCast' });
+          `Loamcrafter Faun: return up to ${discarded.length} permanents`, { kind: 'bestGyCast' });
         for (const card of returned) await ctx.g.move(card, 'hand');
       },
     }],
@@ -325,7 +325,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC['Scouring Swarm'] = {
     triggers: [{
-      on: 'sacrificed', desc: 'Tapovani Insect ili kopija',
+      on: 'sacrificed', desc: 'Tapped Insect or a copy',
       filter: (game, card, data) => data.player === card.ctrl && data.card.is('Land'),
       run: async ctx => {
         if (ctx.you.graveyard.filter(isLand).length >= 7) await ctx.g.copyPermanentToken(ctx.src, ctx.you, { tapped: true });
@@ -336,9 +336,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC['Springbloom Druid'] = {
     triggers: [{
-      on: 'etb', desc: 'Žrtvuj land, traži dva basica', filter: etbSelf, opt: true,
+      on: 'etb', desc: 'Sacrifice a land, search for two basics', filter: etbSelf, opt: true,
       run: async ctx => {
-        const land = await chooseOne(ctx.g, ctx.you, ctx.g.lands(ctx.you), 'Springbloom Druid: žrtvuj land', { kind: 'sacCost', src: ctx.src });
+        const land = await chooseOne(ctx.g, ctx.you, ctx.g.lands(ctx.you), 'Springbloom Druid: sacrifice a land', { kind: 'sacCost', src: ctx.src });
         if (land && await ctx.g.sacrifice(ctx.you, land)) await E.searchBasic(ctx.g, ctx.you, { n: 2, tapped: true });
       },
     }],
@@ -351,7 +351,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => { await E.surveil(ctx.g, ctx.you, 1); },
     }],
     abilities: [{
-      label: 'Žrtvuj land: +2 života', cost: Object.assign({ mana: '{B}{G}' }, landSacCost),
+      label: 'Sacrifice a land: +2 life', cost: Object.assign({ mana: '{B}{G}' }, landSacCost),
       run: async ctx => { await ctx.g.gainLife(ctx.you, 2); }, aiScore: () => 2,
     }],
   };
@@ -360,7 +360,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     entersTapped: true,
     etbCounters: { kind: 'stun', n: 6 },
     triggers: [{
-      on: 'sacrificed', desc: 'Tapovani 4/4 Beast i untap',
+      on: 'sacrificed', desc: 'Tapped 4/4 Beast and untap',
       filter: (game, card, data) => data.player === card.ctrl && data.card.is('Land'),
       run: async ctx => {
         await ctx.g.makeTokens('beast44', ctx.you, { tapped: true });
@@ -368,7 +368,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     }],
     abilities: [{
-      label: 'Žrtvuj land: +2 života', cost: Object.assign({ mana: '{4}' }, landSacCost),
+      label: 'Sacrifice a land: +2 life', cost: Object.assign({ mana: '{4}' }, landSacCost),
       run: async ctx => { await ctx.g.gainLife(ctx.you, 2); }, aiScore: () => 1,
     }],
   };
@@ -376,8 +376,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   async function vinecrasherReturn(ctx) {
     if (ctx.src.zone !== 'graveyard' || !ctx.g.canPayMana(ctx.you, U.parseCost('{G}{G}'))) return;
     const yes = await ctx.you.controller.decide(ctx.g, {
-      type: 'chooseOption', prompt: 'Centaur Vinecrasher: plati {G}{G} i vrati u ruku?',
-      options: [{ key: 'yes', label: 'Da' }, { key: 'no', label: 'Ne' }], aiHint: { kind: 'graveyardReturn', card: ctx.src },
+      type: 'chooseOption', prompt: 'Centaur Vinecrasher: pay {G}{G} and return to hand?',
+      options: [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }], aiHint: { kind: 'graveyardReturn', card: ctx.src },
     });
     if (yes !== 'yes' || !await ctx.g.payMana(ctx.you, U.parseCost('{G}{G}'), { card: ctx.src, isAbility: true })) return;
     if (ctx.src.zone === 'graveyard') await ctx.g.move(ctx.src, 'hand');
@@ -388,11 +388,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       sum + player.graveyard.filter(isLand).length, 0) },
     triggers: [
       {
-        on: 'lto', zone: 'graveyard', desc: 'Plati GG: vrati se',
+        on: 'lto', zone: 'graveyard', desc: 'Pay GG: return to hand',
         filter: (game, card, data) => data.card.zone === 'graveyard' && data.snap.types.includes('Land'), run: vinecrasherReturn,
       },
       {
-        on: 'cardToGraveyard', zone: 'graveyard', desc: 'Plati GG: vrati se',
+        on: 'cardToGraveyard', zone: 'graveyard', desc: 'Pay GG: return to hand',
         filter: (game, card, data) => data.card.is('Land'), run: vinecrasherReturn,
       },
     ],
@@ -401,23 +401,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   async function wastewakerChoice(game, player, source) {
     const permanents = game.bf().filter(card => card.ctrl === player && game.canSacrifice(card));
     const options = [];
-    if (player.hand.length) options.push({ key: 'discard', label: 'Odbaci kartu' });
-    if (permanents.length) options.push({ key: 'sacrifice', label: 'Žrtvuj permanent' });
+    if (player.hand.length) options.push({ key: 'discard', label: 'Discard a card' });
+    if (permanents.length) options.push({ key: 'sacrifice', label: 'Sacrifice a permanent' });
     if (!options.length) return null;
     const key = options.length === 1 ? options[0].key : await player.controller.decide(game, {
-      type: 'chooseOption', prompt: `${source.name}: odbaci ili žrtvuj`, options,
+      type: 'chooseOption', prompt: `${source.name}: discard or sacrifice`, options,
       aiHint: { kind: 'discardOrSacrifice', card: source },
     });
     const kind = options.some(option => option.key === key) ? key : options[0].key;
     const pool = kind === 'discard' ? player.hand.slice() : permanents;
-    const card = await chooseOne(game, player, pool, kind === 'discard' ? 'Odbaci kartu' : 'Žrtvuj permanent',
+    const card = await chooseOne(game, player, pool, kind === 'discard' ? 'Discard a card' : 'Sacrifice a permanent',
       kind === 'discard' ? { kind: 'addlDiscard', card: source } : { kind: 'sacCost', src: source });
     return card ? { player, kind, card, land: card.is('Land') } : null;
   }
 
   SC['Eumidian Wastewaker'] = {
     triggers: [{
-      on: 'attacks', desc: 'Oboje odbacuju ili žrtvuju', filter: attacksSelf,
+      on: 'attacks', desc: 'Both discard or sacrifice', filter: attacksSelf,
       run: async ctx => {
         const defender = ctx.data.defender instanceof MTG.Player ? ctx.data.defender : ctx.data.defender && ctx.data.defender.ctrl;
         const choices = [];
@@ -459,7 +459,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   const windgraceLandTrigger = on => ({
-    on, desc: 'Land iz groblja tapovan', filter: on === 'etb' ? etbSelf : attacksSelf,
+    on, desc: 'Land from graveyard tapped', filter: on === 'etb' ? etbSelf : attacksSelf,
     targets: [anyGyLand({ upTo: true })],
     run: async ctx => {
       const land = ctx.targets[0];
@@ -470,15 +470,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [windgraceLandTrigger('etb'), windgraceLandTrigger('attacks')],
     abilities: [
       {
-        label: 'Odbaci land: +3 života', cost: { mana: '{G}', discard: { n: 1, filter: (game, card) => isLand(card) } },
+        label: 'Discard a land: +3 life', cost: { mana: '{G}', discard: { n: 1, filter: (game, card) => isLand(card) } },
         run: async ctx => { await ctx.g.gainLife(ctx.you, 3); },
       },
       {
-        label: 'Odbaci land: vuci', cost: { mana: '{1}{R}', discard: { n: 1, filter: (game, card) => isLand(card) } },
+        label: 'Discard a land: draw', cost: { mana: '{1}{R}', discard: { n: 1, filter: (game, card) => isLand(card) } },
         run: async ctx => { await ctx.g.draw(ctx.you, 1); },
       },
       {
-        label: 'Odbaci land: indestructible i tap', cost: { mana: '{2}{B}', discard: { n: 1, filter: (game, card) => isLand(card) } },
+        label: 'Discard a land: indestructible and tap', cost: { mana: '{2}{B}', discard: { n: 1, filter: (game, card) => isLand(card) } },
         run: async ctx => {
           if (ctx.src.zone === 'battlefield') { E.grantUntilEOT(ctx.g, ctx.src, ['indestructible']); ctx.src.tapped = true; }
         },
@@ -489,10 +489,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['God-Eternal Bontu'] = {
     triggers: [
       {
-        on: 'etb', desc: 'Žrtvuj bilo koliko, vuci toliko', filter: etbSelf,
+        on: 'etb', desc: 'Sacrifice any number, draw that many', filter: etbSelf,
         run: async ctx => {
           const pool = ctx.g.bf().filter(card => card.ctrl === ctx.you && card !== ctx.src && ctx.g.canSacrifice(card));
-          const picked = await chooseCards(ctx.g, ctx.you, pool, 0, pool.length, 'Bontu: žrtvuj bilo koliko', { kind: 'sacX', src: ctx.src });
+          const picked = await chooseCards(ctx.g, ctx.you, pool, 0, pool.length, 'Bontu: sacrifice any number', { kind: 'sacX', src: ctx.src });
           if (picked.length) { await ctx.g.sacrificeMany(ctx.you, picked); await ctx.g.draw(ctx.you, picked.length); }
         },
       },
@@ -510,13 +510,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   const korvoldSacrifice = on => ({
-    on, desc: 'Žrtvuj drugi permanent', filter: on === 'etb' ? etbSelf : attacksSelf, run: sacrificeAnotherPermanent,
+    on, desc: 'Sacrifice another permanent', filter: on === 'etb' ? etbSelf : attacksSelf, run: sacrificeAnotherPermanent,
   });
   SC['Korvold, Fae-Cursed King'] = {
     triggers: [
       korvoldSacrifice('etb'), korvoldSacrifice('attacks'),
       {
-        on: 'sacrificed', desc: '+1/+1 i vuci', filter: (game, card, data) => data.player === card.ctrl,
+        on: 'sacrificed', desc: '+1/+1 and draw', filter: (game, card, data) => data.player === card.ctrl,
         run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', 1); await ctx.g.draw(ctx.you, 1); },
       },
     ],
@@ -524,7 +524,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC['Mazirek, Kraul Death Priest'] = {
     triggers: [{
-      on: 'sacrificed', desc: '+1/+1 svim tvojim stvorenjima', filter: (game, card, data) => data.card !== card,
+      on: 'sacrificed', desc: '+1/+1 to all your creatures', filter: (game, card, data) => data.card !== card,
       run: async ctx => {
         for (const creature of ctx.g.creatures(ctx.you)) ctx.g.addCounters(creature, '+1/+1', 1, true);
         ctx.g.recalc();
@@ -535,10 +535,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Szarel, Genesis Shepherd'] = {
     playLandsFromGraveyard: true,
     triggers: [{
-      on: 'sacrificed', desc: 'Counteri jednaki Szarel snazi',
+      on: 'sacrificed', desc: "Counters equal to Szarel's power",
       filter: (game, card, data) => game.turnPlayer === card.ctrl && data.player === card.ctrl && data.card !== card && !data.card.isToken,
       targets: [T.yourCreature({
-        prompt: 'Drugo stvorenje za Szarel countere', upTo: true,
+        prompt: 'Another creature for Szarel counters', upTo: true,
         filter: (game, creature, ctrl, source) => creature.zone === 'battlefield' && creature.is('Creature') &&
           creature.ctrl === ctrl && creature !== source, aiHint: { goal: 'buff' },
       })],
@@ -553,27 +553,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     additionalLandPlays: 1,
     triggers: [
       {
-        on: 'upkeep', desc: 'Žrtvuj land ili Gitroga', filter: (game, card, data) => data.player === card.ctrl,
+        on: 'upkeep', desc: 'Sacrifice a land or Gitrog', filter: (game, card, data) => data.player === card.ctrl,
         run: async ctx => {
           const lands = ctx.g.lands(ctx.you).filter(card => ctx.g.canSacrifice(card));
           let sacrificeLand = false;
           if (lands.length) {
             const choice = await ctx.you.controller.decide(ctx.g, {
               type: 'chooseOption', prompt: 'Gitrog upkeep',
-              options: [{ key: 'land', label: 'Žrtvuj land' }, { key: 'gitrog', label: 'Žrtvuj Gitroga' }],
+              options: [{ key: 'land', label: 'Sacrifice a land' }, { key: 'gitrog', label: 'Sacrifice Gitrog' }],
               aiHint: { kind: 'gitrogUpkeep', card: ctx.src },
             });
             sacrificeLand = choice === 'land';
           }
           if (sacrificeLand) {
-            const land = await chooseOne(ctx.g, ctx.you, lands, 'Gitrog: žrtvuj land', { kind: 'sacCost', src: ctx.src });
+            const land = await chooseOne(ctx.g, ctx.you, lands, 'Gitrog: sacrifice a land', { kind: 'sacCost', src: ctx.src });
             if (land && await ctx.g.sacrifice(ctx.you, land)) return;
           }
           if (ctx.src.zone === 'battlefield') await ctx.g.sacrifice(ctx.you, ctx.src);
         },
       },
       {
-        on: 'cardsToGraveyard', desc: 'Jedan ili više landova u groblje',
+        on: 'cardsToGraveyard', desc: 'One or more lands to graveyard',
         filter: (game, source, data) => data.cards.some(card => card.owner === source.ctrl && card.is('Land')),
         run: async ctx => { await ctx.g.draw(ctx.you, 1); },
       },
@@ -583,7 +583,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Titania, Protector of Argoth'] = {
     triggers: [
       {
-        on: 'etb', desc: 'Vrati land iz groblja', filter: etbSelf, targets: [ownGyLand()],
+        on: 'etb', desc: 'Return a land from graveyard', filter: etbSelf, targets: [ownGyLand()],
         run: async ctx => { if (ctx.targets[0] && ctx.targets[0].zone === 'graveyard') await ctx.g.move(ctx.targets[0], 'battlefield', { ctrl: ctx.you }); },
       },
       {
@@ -603,7 +603,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
     triggers: [
       {
-        on: 'attacks', desc: 'Pamti koliko je puta napalo', filter: (game, card, data) => data.card.ctrl === card.ctrl,
+        on: 'attacks', desc: 'Remembers how many times it attacked', filter: (game, card, data) => data.card.ctrl === card.ctrl,
         run: async ctx => {
           const creature = ctx.data.card;
           if (creature.meta._moraugAttackTurn !== ctx.g.turnNo) {
@@ -613,7 +613,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         },
       },
       {
-        on: 'landfall', desc: 'Dodatna borba i untap',
+        on: 'landfall', desc: 'Additional combat and untap',
         filter: (game, card, data) => data.card.ctrl === card.ctrl && (game.phase === 'main1' || game.phase === 'main2'),
         run: async ctx => {
           ctx.g.scheduleAdditionalCombat();
@@ -637,7 +637,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     cdaPower: (game, card) => game.lands(card.ctrl).length + card.ctrl.graveyard.filter(isLand).length,
     cdaToughness: (game, card) => game.lands(card.ctrl).length + card.ctrl.graveyard.filter(isLand).length,
     gyAbility: {
-      label: 'Vrati dva landa: Multani u ruku', cost: '{1}{G}', exileSelf: false,
+      label: 'Return two lands: Multani to hand', cost: '{1}{G}', exileSelf: false,
       extraCost: { return: (game, permanent) => permanent.is('Land'), returnN: 2, allowMana: true },
       run: async ctx => {
         if (ctx.src.zone === 'graveyard') await ctx.g.move(ctx.src, 'hand');
@@ -648,14 +648,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['World Breaker'] = {
     colorsOverride: [],
     triggers: [{
-      on: 'cast', zone: 'stack', desc: 'Egzilaj artifact, enchantment ili land', filter: (game, card, data) => data.card === card,
+      on: 'cast', zone: 'stack', desc: 'Exile an artifact, enchantment or land', filter: (game, card, data) => data.card === card,
       targets: [T.permanent((game, permanent) => permanent.is('Artifact') || permanent.is('Enchantment') || permanent.is('Land'), {
-        prompt: 'World Breaker: egzilaj', aiHint: { goal: 'removal' },
+        prompt: 'World Breaker: exile', aiHint: { goal: 'removal' },
       })],
       run: async ctx => { if (ctx.targets[0]) await ctx.g.exileCard(ctx.targets[0]); },
     }],
     gyAbility: {
-      label: 'Žrtvuj land: vrati World Breaker', cost: '{2}{C}', exileSelf: false,
+      label: 'Sacrifice a land: return World Breaker', cost: '{2}{C}', exileSelf: false,
       extraCost: { sac: (game, permanent) => permanent.is('Land'), sacN: 1, allowMana: true },
       run: async ctx => {
         if (ctx.src.zone === 'graveyard') await ctx.g.move(ctx.src, 'hand');
@@ -677,7 +677,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     xCost: true,
     targets: (game, card, castOpts) => [{
       what: 'permanent', count: castOpts.xVal || 0, min: 0, upTo: true,
-      prompt: `Uništi do ${castOpts.xVal || 0} artifacta/enchantmenta`,
+      prompt: `Destroy up to ${castOpts.xVal || 0} artifacts/enchantments`,
       filter: (g, permanent) => permanent.zone === 'battlefield' && (permanent.is('Artifact') || permanent.is('Enchantment')),
       aiHint: { goal: 'removal' },
     }],
@@ -689,12 +689,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC["Worldsoul's Rage"] = {
     xCost: true,
-    targets: [T.any({ prompt: 'Worldsoul’s Rage: meta', aiHint: { goal: 'damage' } })],
+    targets: [T.any({ prompt: 'Worldsoul’s Rage: target', aiHint: { goal: 'damage' } })],
     resolve: async ctx => {
       if (ctx.targets[0]) await ctx.g.damageAny(ctx.src, ctx.targets[0], ctx.x || 0);
       const pool = ctx.you.hand.concat(ctx.you.graveyard).filter(isLand);
       const picked = await chooseCards(ctx.g, ctx.you, pool, 0, ctx.x || 0,
-        `Stavi do ${ctx.x || 0} landova tapovano`, { kind: 'landRamp', card: ctx.src });
+        `Put up to ${ctx.x || 0} lands onto the battlefield tapped`, { kind: 'landRamp', card: ctx.src });
       for (const land of picked) if (land.zone === 'hand' || land.zone === 'graveyard') {
         await ctx.g.move(land, 'battlefield', { ctrl: ctx.you, tapped: true });
       }
@@ -721,7 +721,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   SC['Skyshroud Claim'] = {
-    resolve: async ctx => { await searchLands(ctx.g, ctx.you, 2, card => card.hasSub('Forest'), { tapped: false, prompt: 'Nađi Forest' }); },
+    resolve: async ctx => { await searchLands(ctx.g, ctx.you, 2, card => card.hasSub('Forest'), { tapped: false, prompt: 'Search for a Forest' }); },
   };
 
   SC['Splendid Reclamation'] = { resolve: async ctx => { await returnAllLands(ctx.g, ctx.you); } };
@@ -736,7 +736,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const player of ctx.g.apnapFrom(ctx.you)) {
         const lands = ctx.g.lands(player).filter(card => ctx.g.canSacrifice(card));
         if (lands.length <= 6) continue;
-        const keep = await chooseCards(ctx.g, player, lands, 6, 6, 'Planetary Annihilation: zadrži šest landova', { kind: 'keepBestLands' });
+        const keep = await chooseCards(ctx.g, player, lands, 6, 6, 'Planetary Annihilation: keep six lands', { kind: 'keepBestLands' });
         const keepSet = new Set(keep);
         sacrifices.push({ player, cards: lands.filter(card => !keepSet.has(card)) });
       }
@@ -769,7 +769,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     }],
     abilities: [{
-      label: 'Žrtvuj land: 3/3 Golem', cost: Object.assign({ mana: '{2}{R}', tap: true }, landSacCost),
+      label: 'Sacrifice a land: 3/3 Golem', cost: Object.assign({ mana: '{2}{R}', tap: true }, landSacCost),
       run: async ctx => { await ctx.g.makeTokens(golem33, ctx.you); }, aiScore: () => 4,
     }],
   };
@@ -777,7 +777,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function panoramaLand(types) {
     return {
       triggers: [{
-        on: 'etb', desc: 'Žrtvuj, traži basic i +1 život', filter: etbSelf,
+        on: 'etb', desc: 'Sacrifice, search for a basic and +1 life', filter: etbSelf,
         run: async ctx => {
           if (!await ctx.g.sacrifice(ctx.you, ctx.src)) return;
           await E.searchBasic(ctx.g, ctx.you, {
@@ -807,7 +807,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     producesColors: ['B'],
     mana: { manual: true, cost: { tap: true, life: 1, counter: 'hatchling' }, produce: [{ B: 1 }] },
     triggers: [{
-      on: 'lto', zone: 'self', desc: 'Insecti po hatchling counteru',
+      on: 'lto', zone: 'self', desc: 'Insects per hatchling counter',
       filter: (game, card, data) => data.card === card && data.card.zone === 'graveyard',
       run: async ctx => {
         const n = ctx.data.snap.counters.hatchling || 0;
