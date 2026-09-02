@@ -26,12 +26,18 @@ Avoid panels inside panels when spacing, a divider or a label can express the sa
 
 ## Type and color
 
-- `Marcellus` is reserved for product, deck and card-display titles.
-- `Barlow` carries reading text and controls.
-- `Barlow Semi Condensed` carries short labels, state and numbers.
+- `Bricolage Grotesque` (variable: optical size, width, weight) carries product, deck and card-display titles and, at 88% width, the short uppercase labels.
+- `Manrope` carries reading text and controls.
+- `JetBrains Mono` with tabular figures carries every number that changes during play: life totals, power/toughness, counts.
 - Body copy is at least 12px on compact screens and 13px when space allows.
 - Muted text must remain readable on the table. Never use low contrast as the only signal for disabled, selected or dangerous state.
 - Brass marks the human's current path; green marks valid progress/sync; red is reserved for danger, failure and destructive actions.
+
+### Palette (obsidian & ember, 2026-09-02)
+
+- Every colour comes from `src/design-system.css`; stylesheets never hard-code the accent or the base. `--ds-table`, `--ds-panel`, `--ds-panel-raised` and `--ds-dialog` are one cool blue-black material; `--ds-accent` (ember `#e07a4a`), `--ds-accent-bright` and `--ds-accent-soft` are the only warm colours, with `--ds-*-rgb` triplets for tints. `--ds-brass` and `--ds-brass-bright` remain as aliases of the accent for older rules.
+- Surfaces: a fixed soft-light grain (`body::after`), radial ambient light in the accent hue, hairlines at 7–9% white, tinted shadows (`rgba(2, 6, 12, …)`), never pure black.
+- Interaction: every control lifts 1px on hover, presses to 98.5% on `:active`, and shows a two-ring focus (outline plus accent halo). Reduced motion removes the lifts.
 
 ## Motion
 
@@ -51,7 +57,7 @@ Motion explains entry, focus or state change. It does not run as ambient decorat
 
 - Dialogs and sheets expose a name, `role="dialog"`, `aria-modal="true"`, initial focus, focus containment, Escape behavior when dismissal is legal, and return focus.
 - Inline validation stays beside the control. Sync failures remain visible in the HUD until resolved. A fatal client error offers retry, setup return and a debug snapshot when a game exists.
-- Focus rings are visible on dark and brass surfaces. Icon-only controls require an accessible name.
+- Focus rings are visible on dark and ember surfaces. Icon-only controls require an accessible name.
 
 ## CSS architecture
 

@@ -2,25 +2,43 @@
 
 @layer commander.tokens {
   :root {
-    --ds-table: #070a0b;
-    --ds-panel: #0d1213;
-    --ds-panel-raised: #141b1c;
-    --ds-dialog: #111819;
-    --ds-line: #303a3b;
-    --ds-line-soft: #20292a;
-    --ds-text: #f5f1e8;
-    --ds-copy: #c4cdca;
-    --ds-muted: #96a19e;
-    --ds-brass: #d4a15f;
-    --ds-brass-bright: #f2c37e;
-    --ds-good: #86b596;
-    --ds-danger: #e59082;
-    --ds-focus: #f6d49f;
-    --ds-r-sm: 7px;
-    --ds-r-md: 10px;
-    --ds-r-lg: 14px;
+    /* Obsidian & ember (2026-09-02 refresh). One cool blue-black material,
+       one warm ember accent, mist text. Every stylesheet reads these tokens;
+       no colour is hard-coded elsewhere. */
+    --ds-table: #07090c;
+    --ds-panel: #0c1015;
+    --ds-panel-raised: #12181f;
+    --ds-dialog: #0f1419;
+    --ds-table-rgb: 7, 9, 12;
+    --ds-panel-rgb: 12, 16, 21;
+    --ds-panel-raised-rgb: 18, 24, 31;
+    --ds-line: #2a3440;
+    --ds-line-soft: #1a222b;
+    --ds-text: #f3f1ec;
+    --ds-copy: #c2c9d0;
+    --ds-muted: #8a96a3;
+    --ds-accent: #e07a4a;
+    --ds-accent-bright: #ffa878;
+    --ds-accent-soft: #c99a86;
+    --ds-accent-ink: #1c0c05;
+    --ds-accent-glow: #ffd9c4;
+    --ds-accent-rgb: 224, 122, 74;
+    --ds-accent-bright-rgb: 255, 168, 120;
+    --ds-accent-soft-rgb: 201, 154, 134;
+    /* Legacy names kept for older rules and inline styles. */
+    --ds-brass: var(--ds-accent);
+    --ds-brass-bright: var(--ds-accent-bright);
+    --ds-good: #7fcaa4;
+    --ds-danger: #ef8b7b;
+    --ds-focus: #ffb58c;
+    --ds-font-display: 'Bricolage Grotesque', 'Manrope', system-ui, sans-serif;
+    --ds-font-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --ds-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --ds-r-sm: 8px;
+    --ds-r-md: 12px;
+    --ds-r-lg: 18px;
     --ds-touch: 44px;
-    --ds-shadow-dialog: 0 36px 110px rgba(0, 0, 0, .72);
+    --ds-shadow-dialog: 0 36px 110px rgba(2, 6, 12, .78), 0 0 0 1px rgba(255, 255, 255, .04);
 
     /* Motion: one easing family and three durations for the whole client. */
     --ds-ease: cubic-bezier(.22, .61, .36, 1);
