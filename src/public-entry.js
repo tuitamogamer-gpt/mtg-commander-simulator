@@ -33,20 +33,18 @@ const detailsMarkup = `
 
   <section id="ways-to-play" class="mainmenu-modes" aria-label="Ways to play">
     <article class="mainmenu-mode solo">
-      <span aria-hidden="true">01</span>
-      <div><small>PLAY AT YOUR PACE</small><h2>Solo Commander</h2><p>Build a complete four-player table around the deck you want to learn.</p><ul class="mainmenu-mode-points"><li>Three local AI opponents</li><li>Adjustable stops and personalities</li><li>Seeded games you can replay</li></ul></div>
-      <button type="button" data-menu-action="solo">Choose a solo deck</button>
+            <div><small>PLAY AT YOUR PACE</small><h2>Solo Commander</h2><p>Build a complete four-player table around the deck you want to learn.</p><ul class="mainmenu-mode-points"><li>Three local AI opponents</li><li>Adjustable stops and personalities</li><li>Seeded games you can replay</li></ul></div>
+      <button type="button" data-menu-action="solo">Start a solo table</button>
     </article>
     <article class="mainmenu-mode live">
-      <span aria-hidden="true">02</span>
-      <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Open a private room for two, three, or four real players with no bot seats.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>Account optional; no public lobby</li><li>Up to four human seats</li></ul></div>
-      <button type="button" data-menu-action="live">Configure a Live table</button>
+            <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Open a private room for two, three, or four real players with no bot seats.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>Account optional; no public lobby</li><li>Up to four human seats</li></ul></div>
+      <button type="button" data-menu-action="live">Create a Live table</button>
     </article>
   </section>
 
   <section class="mainmenu-final-cta" aria-labelledby="final-cta-title">
-    <div><span>YOUR NEXT POD</span><h2 id="final-cta-title">Pick a deck. We will set the table.</h2><p>Start solo now, or invite up to three friends to a private Live room.</p></div>
-    <div class="mainmenu-final-actions"><button type="button" class="mainmenu-primary" data-menu-action="solo">Start solo</button><button type="button" class="mainmenu-secondary" data-menu-action="live">Create Live table</button></div>
+    <div><h2 id="final-cta-title">Pick a deck. We will set the table.</h2><p>Start solo now, or invite up to three friends to a private Live room.</p></div>
+    <div class="mainmenu-final-actions"><button type="button" class="mainmenu-primary" data-menu-action="solo">Start a solo table</button><button type="button" class="mainmenu-secondary" data-menu-action="live">Create a Live table</button></div>
   </section>
 
   <footer class="mainmenu-footer">

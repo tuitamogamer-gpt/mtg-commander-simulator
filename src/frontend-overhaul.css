@@ -804,3 +804,232 @@ body { zoom: var(--ui-zoom); }
   #setup .advancedbody, .overlay, .overlay > .modal, .overlay > .sheet, #game .modal, #game .sheet, #game .promptbar .btnrow .pbtn { animation: none !important; }
   #setup .advancedrules summary::after { transition: none; }
 }
+
+/* ============================================================
+   Premium pass (2026-09-02). One accent (brass), one radius scale per
+   surface (arena 6px, setup/landing 12px), larger type, deeper material.
+   ============================================================ */
+
+/* ---------- Arena: header, phases, ticker ---------- */
+body.game-active #game .topbar {
+  padding: 10px 16px 9px 20px;
+  background:
+    linear-gradient(90deg, rgba(219, 158, 77, .14), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, .025), transparent 60%),
+    rgba(6, 10, 11, .92);
+  border-bottom: 1px solid rgba(236, 218, 181, .22);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .34), inset 0 -1px rgba(255, 255, 255, .03);
+}
+body.game-active #game .phase b { font-size: 23px !important; letter-spacing: -.01em; }
+body.game-active #game .phase { font-size: 12.5px !important; letter-spacing: .08em; color: #b9b6ab; }
+body.game-active #game .phase em { color: #f2c37e; font-style: normal; font-weight: 700; }
+body.game-active #game .stepper { gap: 5px; }
+body.game-active #game .stepper .step {
+  min-width: 44px;
+  padding: 8px 11px;
+  border-radius: 6px;
+  color: #8a8c83;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  background: rgba(255, 255, 255, .03);
+  border-color: rgba(231, 215, 181, .14);
+}
+body.game-active #game .stepper .step.on {
+  color: #1d1408;
+  background: linear-gradient(180deg, #ffd99d, #d79544);
+  border-color: #ffd79b;
+  box-shadow: 0 10px 24px rgba(210, 143, 58, .28), inset 0 1px rgba(255, 255, 255, .55);
+}
+body.game-active #game .tbtn {
+  border-radius: 6px;
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  border-color: rgba(231, 215, 181, .18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .02));
+  box-shadow: inset 0 1px rgba(255, 255, 255, .05);
+}
+body.game-active #game .tbtn:hover { border-color: rgba(242, 195, 126, .5); color: #f8efdc; }
+body.game-active #game .ticker {
+  padding: 0 20px;
+  color: #b3b6ad;
+  font-size: 12.5px;
+  letter-spacing: .01em;
+  background: rgba(6, 9, 10, .6);
+  border-bottom: 1px solid rgba(231, 215, 181, .1);
+}
+
+/* ---------- Arena: opponent seats ---------- */
+body.game-active #game .opprow {
+  border-radius: 8px !important;
+  border: 1px solid rgba(231, 215, 181, .16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .03), transparent 26%),
+    rgba(9, 13, 14, .82);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .34), inset 0 1px rgba(255, 255, 255, .04);
+  transition: border-color var(--ds-t-base) var(--ds-ease), box-shadow var(--ds-t-base) var(--ds-ease);
+}
+body.game-active #game .oppswrap.active-ai-turn .opprow.active,
+body.game-active #game .opprow:has(.activeaitag) {
+  border-color: rgba(242, 195, 126, .62);
+  box-shadow: 0 0 0 1px rgba(242, 195, 126, .18), 0 18px 44px rgba(0, 0, 0, .42), inset 0 1px rgba(255, 255, 255, .06);
+}
+body.game-active #game .opphead {
+  min-height: 56px !important;
+  padding: 8px 10px !important;
+  column-gap: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .025), transparent), rgba(4, 8, 9, .5);
+  border-bottom: 1px solid rgba(231, 215, 181, .14);
+}
+body.game-active #game .oppname { font-size: 13.5px !important; letter-spacing: .07em; font-weight: 700; }
+body.game-active #game .opplife { font-size: 27px !important; letter-spacing: -.01em; }
+body.game-active #game .oppmeta { font-size: 10.5px; color: #9ea198; }
+body.game-active #game .oppcmd { font-size: 9px; letter-spacing: .1em; }
+body.game-active #game .personachip { font-size: 10px; }
+body.game-active #game .seatindex { width: 25px; height: 25px; font-size: 10px; border-radius: 6px; }
+body.game-active #game .activeaitag { font-size: 8.5px; letter-spacing: .18em; }
+
+/* ---------- Arena: battlefield lanes and card tiles ---------- */
+body.game-active #game .boardlanelabel,
+body.game-active #game .oppboardmain .boardlanelabel,
+body.game-active #game .oppresourcelane .boardlanelabel { font-size: 8.5px !important; letter-spacing: .2em !important; color: #8f9187; }
+body.game-active #game .oppresourcelane .boardlanelabel { font-size: 7.5px !important; }
+body.game-active #game .myboard {
+  border: 1px solid rgba(231, 215, 181, .16) !important;
+  background:
+    linear-gradient(180deg, rgba(219, 158, 77, .08), transparent 22%),
+    rgba(6, 10, 11, .34) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .05), 0 20px 50px rgba(0, 0, 0, .28) !important;
+}
+body.game-active #game .myboard::before { font-size: 9px !important; letter-spacing: .26em; color: #d9b272; }
+body.game-active #game .mini,
+body.game-active #game .czcard,
+body.game-active #game .hcard { border-radius: 7px; box-shadow: 0 8px 20px rgba(0, 0, 0, .46), 0 0 0 1px rgba(0, 0, 0, .35); }
+body.game-active #game .mini img,
+body.game-active #game .hcard img { border-radius: 5px; }
+body.game-active #game .mini .mname { font-size: 9.2px; font-weight: 600; letter-spacing: .01em; padding: 3px 4px; background: linear-gradient(180deg, rgba(0, 0, 0, .55), rgba(0, 0, 0, .86)); }
+body.game-active #game .mini .pt { font-size: 11px; padding: 2px 5px; border-radius: 5px; background: rgba(0, 0, 0, .86); box-shadow: 0 0 0 1px rgba(255, 255, 255, .12); }
+body.game-active #game .keywordbadge { font-size: 8px; letter-spacing: .06em; }
+body.game-active #game .czcard { border: 1px solid rgba(231, 215, 181, .22); background: linear-gradient(180deg, rgba(255, 255, 255, .03), transparent 30%), rgba(8, 12, 13, .9); }
+body.game-active #game .czlabel { font-size: 8.5px; letter-spacing: .22em; }
+body.game-active #game .czname { font-size: 15px; }
+body.game-active #game .czcost { font-size: 11px; }
+
+/* ---------- Arena: your rail (life, zones) ---------- */
+body.game-active #game .playerrail .seatyou small { font-size: 9px; letter-spacing: .2em; }
+body.game-active #game .playerrail .melife { font-size: 30px; letter-spacing: -.02em; }
+body.game-active #game .playerrail .melife small { font-size: 9px; letter-spacing: .2em; }
+body.game-active #game .playerrail .zbtn { border-radius: 6px; border-color: rgba(231, 215, 181, .18); font-size: 11px; }
+body.game-active #game .playerrail .zbtn b { font-size: 12px; }
+
+/* ---------- Arena: prompt bar and primary action ---------- */
+body.game-active #game .promptbar {
+  padding: 9px 12px !important;
+  border-radius: 10px 10px 0 0;
+  border-color: rgba(242, 195, 126, .34);
+  background: linear-gradient(180deg, rgba(219, 158, 77, .07), transparent 40%), rgba(8, 12, 13, .92);
+  box-shadow: 0 -14px 34px rgba(0, 0, 0, .34), inset 0 1px rgba(255, 255, 255, .04);
+}
+body.game-active #game .promptbar .ptext { font-size: 13px !important; color: #efe7d6; letter-spacing: .01em; }
+body.game-active #game .promptbar .ptext.dim { color: #a7aaa2; }
+body.game-active #game .pbtn {
+  border-radius: 6px;
+  font-size: 11px;
+  letter-spacing: .16em;
+  padding: 10px 16px;
+}
+body.game-active #game .pbtn.primary {
+  color: #1d1408;
+  background: linear-gradient(180deg, #ffd99d, #d79544);
+  border: 1px solid #ffd79b;
+  box-shadow: 0 10px 26px rgba(210, 143, 58, .3), inset 0 1px rgba(255, 255, 255, .55);
+  text-shadow: none;
+}
+body.game-active #game .pbtn.primary:hover:not(:disabled) { background: linear-gradient(180deg, #ffe2b3, #e2a252); }
+body.game-active #game .handwrap::before { font-size: 9px; letter-spacing: .26em; color: #8b8676; }
+
+/* ---------- Arena: sidebar and utility rail ---------- */
+body.game-active #game .sidebar { border-left: 1px solid rgba(231, 215, 181, .14); }
+body.game-active #game .sidetitle { font-size: 10.5px; letter-spacing: .2em; color: #d9b272; }
+body.game-active #game .sidecount { font-size: 10.5px; }
+body.game-active #game .utilitybutton { border-radius: 6px; }
+body.game-active #game .utilitylabel { font-size: 8.5px; letter-spacing: .16em; }
+
+/* ---------- Dialogs ---------- */
+body.game-active #game .modal,
+body.game-active #game .sheet,
+.overlay > .modal,
+.overlay > .sheet {
+  border: 1px solid rgba(231, 215, 181, .2);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, .72), 0 0 0 1px rgba(0, 0, 0, .5), inset 0 1px rgba(255, 255, 255, .05);
+}
+
+/* ---------- Setup: steps, deck cards, pod builder ---------- */
+#setup .setupstep { font-size: 11px; letter-spacing: .16em; }
+#setup .setupstep span { width: 26px; height: 26px; font-size: 11px; }
+#setup .deckcard {
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, .08) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .03), transparent 30%), #0e1012 !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .34);
+}
+#setup .deckcard:hover { border-color: rgba(232, 176, 75, .4) !important; }
+#setup .deckcard.selected { border-color: rgba(232, 176, 75, .75) !important; box-shadow: 0 0 0 1px rgba(232, 176, 75, .25), 0 16px 40px rgba(0, 0, 0, .44); }
+#setup .deckcard h3, #setup .deckcard .deckname { font-size: 18px; letter-spacing: -.01em; }
+#setup .deckcard p { font-size: 12px; line-height: 1.45; color: #b9bfbc; }
+#setup .deckcard small, #setup .deckcard .decksub { font-size: 10.5px; }
+#setup .seclabel { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #d9b272; }
+#setup .selecteddecksummary { border-radius: 10px; }
+#setup .selecteddecksummary b { font-size: 13px; }
+#setup .selecteddecksummary small { font-size: 8px; }
+#setup .pbtn { border-radius: 8px; }
+#setup .pbtn.choice { min-height: 44px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+#setup .pbtn.start {
+  min-height: 58px !important;
+  font-size: 12px !important;
+  letter-spacing: .18em !important;
+  box-shadow: 0 14px 34px rgba(210, 143, 58, .28), inset 0 1px rgba(255, 255, 255, .55) !important;
+}
+#setup .pbtn.start:hover:not(:disabled) { background: linear-gradient(180deg, #f0c98a, #d19a55) !important; }
+#setup .cmdcheck { font-size: 12.5px; line-height: 1.4; }
+#setup .cmdcheck small { font-size: 10.5px; }
+#setup .matchtypebtn { border-radius: 10px; }
+#setup .botconfig { border-radius: 10px; }
+#setup .styleselect { border-radius: 8px !important; font-size: 12px; }
+
+/* ---------- Landing ---------- */
+#setup[data-app-view="home"] .mainmenu-navlinks a { font-size: 12px; letter-spacing: .14em; }
+#setup[data-app-view="home"] .mainmenu-kicker { font-size: 11.5px; letter-spacing: .2em; }
+#setup[data-app-view="home"] .mainmenu-hero-copy p,
+#setup[data-app-view="home"] .mainmenu-library-copy p,
+#setup[data-app-view="home"] .mainmenu-path-copy p,
+#setup[data-app-view="home"] .mainmenu-mode p,
+#setup[data-app-view="home"] .mainmenu-final-cta p { font-size: 16px; line-height: 1.55; }
+#setup[data-app-view="home"] .mainmenu-primary,
+#setup[data-app-view="home"] .mainmenu-secondary { border-radius: 12px; }
+#setup[data-app-view="home"] .mainmenu-primary { box-shadow: 0 16px 40px rgba(210, 143, 58, .3), inset 0 1px rgba(255, 255, 255, .5); }
+#setup[data-app-view="home"] .mainmenu-mode { border-radius: 16px; }
+#setup[data-app-view="home"] .mainmenu-mode h2 { font-size: clamp(30px, 3.2vw, 42px); }
+#setup[data-app-view="home"] .mainmenu-mode-points li { font-size: 14px; }
+#setup[data-app-view="home"] .mainmenu-path-steps li b { font-size: 17px; }
+#setup[data-app-view="home"] .mainmenu-path-steps li p { font-size: 14px; line-height: 1.5; }
+#setup[data-app-view="home"] .mainmenu-proof-stat b { font-size: 13px; }
+#setup[data-app-view="home"] .mainmenu-proof-stat small { font-size: 11px; }
+#setup[data-app-view="home"] .mainmenu-final-cta { border-radius: 18px; }
+#setup[data-app-view="home"] .mainmenu-footer span,
+#setup[data-app-view="home"] .mainmenu-footer p { font-size: 12px; line-height: 1.55; }
+@media (prefers-reduced-motion: no-preference) {
+  body:not(.reduced-motion) #setup[data-app-view="home"] .mainmenu-card { transition: transform var(--ds-t-slow) var(--ds-ease-spring), box-shadow var(--ds-t-slow) var(--ds-ease); }
+  body:not(.reduced-motion) #setup[data-app-view="home"] .mainmenu-cardfan:hover .mainmenu-card { transform: translateY(-6px); }
+  body:not(.reduced-motion) #setup[data-app-view="home"] .mainmenu-cardfan .mainmenu-card:hover { transform: translateY(-16px) scale(1.04); z-index: 5; box-shadow: 0 30px 60px rgba(0, 0, 0, .6); }
+  @supports (animation-timeline: view()) {
+    body:not(.reduced-motion) #setup[data-app-view="home"] .mainmenu-path,
+    body:not(.reduced-motion) #setup[data-app-view="home"] .mainmenu-modes,
+    body:not(.reduced-motion) #setup[data-app-view="home"] .mainmenu-final-cta,
+    body:not(.reduced-motion) #setup[data-app-view="home"] .mainmenu-library-entry {
+      animation: dsReveal both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 28%;
+    }
+  }
+}
