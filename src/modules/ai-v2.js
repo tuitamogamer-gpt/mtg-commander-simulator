@@ -384,17 +384,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function profileForStyle(profile, player) {
     const skill = styleSkillFor(player);
-    if (!profile || !skill) return profile;
+    // A core archetype without a skill still tilts the evaluation profile
+    // (see CORE_PROFILE_MULTIPLIERS next to applyCoreArchetypeScore).
+    const coreBase = player && MTG.getAIBaseStyle(player.aiStyle);
+    const coreMultipliers = !skill && coreBase && CORE_PROFILE_MULTIPLIERS[coreBase] || null;
+    if (!profile || (!skill && !coreMultipliers)) return profile;
     let byStyle = STYLE_PROFILE_CACHE.get(profile);
     if (!byStyle) { byStyle = new Map(); STYLE_PROFILE_CACHE.set(profile, byStyle); }
     if (byStyle.has(player.aiStyle)) return byStyle.get(player.aiStyle);
-    const multipliers = skill.profileMultipliers || {};
+    const multipliers = skill ? (skill.profileMultipliers || {}) : coreMultipliers;
     const weights = Object.fromEntries(Object.entries(profile.weights || {}).map(([key, value]) =>
       [key, round(value * (multipliers[key] || 1))]));
     const styled = Object.freeze(Object.assign({}, profile, {
       weights: Object.freeze(weights),
       styleKey: player.aiStyle,
-      styleSkill: skill.id,
+      styleSkill: skill ? skill.id : `core-${coreBase}`,
     }));
     byStyle.set(player.aiStyle, styled);
     return styled;
@@ -2561,10 +2565,92 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
   }
 
+  // Core archetypes (Aggressive, Opportunist, Defensive, Saboteur) carry the
+  // persona weights declared in MTG.AI_STYLES. Until 2026-09-02 those weights
+  // were only read by the legacy fallback controller, so in AI V2 the four
+  // styles produced the exact same decisions as Balanced. This policy turns
+  // them into real behaviour: appetite for attacking and blocking, who gets
+  // hunted, and which kinds of spells the seat likes to cast. Balanced stays
+  // neutral; the named signature styles keep their dedicated policies; a
+  // custom skill built on a core base inherits this policy.
+  const CORE_ARCHETYPES = new Set(['aggressive', 'opportunist', 'passive', 'teaser']);
+  const CORE_PROFILE_MULTIPLIERS = Object.freeze({
+    aggressive: Object.freeze({ lifeSafety: 0.8, boardPresence: 1.25, interaction: 0.85, commanderProgress: 1.15, recoveryPotential: 0.85 }),
+    opportunist: Object.freeze({ lifeSafety: 0.9, boardPresence: 1.1, cardAdvantage: 1.05, interaction: 0.95 }),
+    passive: Object.freeze({ lifeSafety: 1.35, boardPresence: 0.9, interaction: 1.25, recoveryPotential: 1.2 }),
+    teaser: Object.freeze({ interaction: 1.2, cardAdvantage: 1.05, boardPresence: 0.95 }),
+  });
+  function coreArchetypeTraits(player) {
+    const base = MTG.getAIBaseStyle(player && player.aiStyle);
+    return CORE_ARCHETYPES.has(base) ? MTG.AI_STYLES[base] || null : null;
+  }
+  function woundedRatio(target) {
+    const life = Number(target && target.life);
+    return Number.isFinite(life) ? 1 - Math.max(0, Math.min(1, life / 40)) : 0;
+  }
+  function applyCoreArchetypeScore(view, action, profile, q, breakdown) {
+    const privateData = PRIVATE_VIEWS.get(view);
+    const game = privateData.game, player = privateData.player;
+    const traits = coreArchetypeTraits(player);
+    if (!traits) return;
+    breakdown.archetype = 0;
+    const defenderOf = target => target instanceof U.Player ? target : target && target.ctrl || null;
+    const threatOf = defender => defender ? MTG.assessPlayerThreat(view, player.idx, defender.idx).totalScore : 0;
+    const opponents = player.opponents(game).filter(o => !o.lost);
+    const leader = opponents.length > 1
+      ? opponents.map(o => ({ o, t: threatOf(o) })).reduce((best, row) => (!best || row.t > best.t ? row : best), null)
+      : null;
+    if (action.kind === 'declareAttackers') {
+      const assignments = action.assignments || [];
+      if (!assignments.length) {
+        // atkThr > 0 means the seat is happy to stay home; < 0 hates it.
+        breakdown.archetype += traits.atkThr * 1.2;
+        return;
+      }
+      let bonus = -traits.atkThr * 0.8 * Math.min(assignments.length, 6);
+      for (const item of assignments) {
+        const defender = defenderOf(item.target);
+        if (!defender) continue;
+        bonus += traits.lowLifeHunt * woundedRatio(defender) * 1.3;
+        if (leader && defender === leader.o) bonus += traits.focusLeader * 0.9;
+      }
+      breakdown.archetype += bonus;
+      // Risk appetite: an aggressive seat discounts the defensive forecast,
+      // a defensive seat weighs it more. Lethal danger stays enormous.
+      const riskScale = traits.atkThr < 0 ? 0.5 : traits.atkThr > 1 ? 1.6 : 1;
+      if (breakdown.safety < 0) breakdown.safety *= riskScale;
+    } else if (action.kind === 'declareBlockers') {
+      const blocks = (action.assignments || []).length;
+      // blockThr > 0: reluctant to block (keeps attackers); < 0: eager.
+      breakdown.archetype += -traits.blockThr * 1.0 * Math.min(blocks, 4);
+      if (traits.keepBlockers && blocks === 0 && (q && q.attackers || []).length) breakdown.archetype -= 0.8;
+    } else if (action.kind === 'cast') {
+      const roles = inferCardSemantics(action.card.def).roles;
+      const has = role => roles.includes(role);
+      let bonus = 0;
+      if (has('creature') || has('token-maker')) bonus += traits.castCreature * 2.2;
+      if (has('direct-damage') || has('single-target-removal') || has('finisher')) bonus += traits.castDamage * 1.8;
+      if (has('protection') || has('lifegain') || has('combat-trick')) bonus += traits.castDefense * 1.8;
+      if (has('stax') || has('commander-support')) bonus += traits.castPolitics * 1.2;
+      if (has('board-wipe')) bonus += traits.wipeBias * 2.2;
+      if (has('counterspell')) bonus += traits.counterBias * 2;
+      breakdown.archetype += bonus;
+    } else if (action.kind === 'chooseTargets') {
+      // Player targets for damage, discard or drain: hunt the wounded, or
+      // the leader, or (opportunist) anyone but the leader.
+      for (const pick of action.picks || []) {
+        if (!(pick instanceof U.Player) || pick === player) continue;
+        breakdown.archetype += traits.lowLifeHunt * woundedRatio(pick) * 1.2;
+        if (leader && pick === leader.o) breakdown.archetype += traits.focusLeader * 0.8;
+      }
+    }
+  }
+
   function applyStyleSkillScore(view, action, profile, q, breakdown) {
     const privateData = PRIVATE_VIEWS.get(view);
     const game = privateData.game, player = privateData.player;
     const skill = styleSkillFor(player);
+    applyCoreArchetypeScore(view, action, profile, q, breakdown);
     if (MTG.AI_STYLES?.[player.aiStyle]?.custom && action.kind === 'cast') {
       const roles = inferCardSemantics(action.card.def).roles;
       breakdown.customSkill = roles.reduce((sum, role) => sum + (skill.roleBonuses[role] || 0), 0);
