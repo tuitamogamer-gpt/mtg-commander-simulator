@@ -1009,6 +1009,10 @@ body.game-active #game .sheet,
 #setup[data-app-view="home"] .mainmenu-primary,
 #setup[data-app-view="home"] .mainmenu-secondary { border-radius: 12px; }
 #setup[data-app-view="home"] .mainmenu-primary { box-shadow: 0 16px 40px rgba(var(--ds-accent-rgb), .3), inset 0 1px rgba(255, 255, 255, .5); }
+/* The hero button sits on the ember gradient, so its caption and icon read in
+   ink; the mist accent only has contrast on dark panels. */
+#setup[data-app-view="home"] .mainmenu-primary small { color: rgba(var(--ds-accent-ink-rgb), .8); }
+#setup[data-app-view="home"] .mainmenu-primary .gameicon { color: rgba(var(--ds-accent-ink-rgb), .85); }
 #setup[data-app-view="home"] .mainmenu-mode { border-radius: 16px; }
 #setup[data-app-view="home"] .mainmenu-mode h2 { font-size: clamp(30px, 3.2vw, 42px); }
 #setup[data-app-view="home"] .mainmenu-mode-points li { font-size: 14px; }

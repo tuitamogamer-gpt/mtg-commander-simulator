@@ -893,14 +893,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const onDown = (ev) => {
         if (ev.target.closest('.stackpopx')) return;
         const r = pop.getBoundingClientRect();
+        const z = this.viewportZoom(pop);   // viewport px → zoomovani px za left/top
         const sx = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left;
         const sy = (ev.touches ? ev.touches[0].clientY : ev.clientY) - r.top;
         pop.classList.add('dragging');
         const move = (e2) => {
           const cx = e2.touches ? e2.touches[0].clientX : e2.clientX;
           const cy = e2.touches ? e2.touches[0].clientY : e2.clientY;
-          const nx = Math.max(4, Math.min(window.innerWidth - r.width - 4, cx - sx));
-          const ny = Math.max(4, Math.min(window.innerHeight - r.height - 4, cy - sy));
+          const nx = Math.max(4, Math.min(window.innerWidth - r.width - 4, cx - sx)) / z;
+          const ny = Math.max(4, Math.min(window.innerHeight - r.height - 4, cy - sy)) / z;
           this.stackPopPos = { x: nx, y: ny };
           pop.style.position = 'fixed'; pop.style.left = nx + 'px'; pop.style.top = ny + 'px';
           if (e2.cancelable) e2.preventDefault();
@@ -1363,6 +1364,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
     }
 
+    // Efektivni CSS zoom jednog čvora. Na širokim ekranima je body { zoom: var(--ui-zoom) },
+    // a koordinate miša i getBoundingClientRect() ostaju u viewport pikselima dok se
+    // left/top fiksno pozicioniranih elemenata unutar body-ja množe zoomom. Sve što se
+    // pozicionira iz JS-a mora viewport koordinate podijeliti ovim faktorom.
+    viewportZoom(node) {
+      const n = node || document.body;
+      if (n && typeof n.currentCSSZoom === 'number' && n.currentCSSZoom > 0) return n.currentCSSZoom;
+      const w = n ? n.offsetWidth : 0;
+      const z = w ? n.getBoundingClientRect().width / w : 0;
+      return z > 0 ? z : 1;
+    }
+
     // hover-preview velikih karata (samo desktop / miš)
     initHoverPreview() {
       if (this._hoverInit) return;
@@ -1371,7 +1384,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const gameEl = $('#game');
       let prev = document.getElementById('hoverprev');
       if (!prev) { prev = document.createElement('div'); prev.id = 'hoverprev'; document.body.appendChild(prev); }
-      let curName = null;
+      let curName = null, zoom = 1;
+      // Sve u viewport pikselima: preview je unutar zoomovanog body-ja, pa su mu
+      // stvarne dimenzije offset × zoom, a left/top se upisuju podijeljeni zoomom.
+      const place = ev => {
+        const w = (prev.offsetWidth || 300) * zoom, h = (prev.offsetHeight || 420) * zoom;
+        const gap = 26 * zoom;
+        let x = ev.clientX + gap;
+        if (x + w > window.innerWidth - 8) x = ev.clientX - w - gap;
+        const y = Math.max(8, Math.min(window.innerHeight - h - 8, ev.clientY - h / 2));
+        prev.style.left = (x / zoom) + 'px'; prev.style.top = (y / zoom) + 'px';
+      };
       gameEl.addEventListener('mouseover', ev => {
         const m = ev.target.closest ? ev.target.closest('.mini,[data-cname]') : null;
         const nm = m && m.dataset ? m.dataset.cname : null;
@@ -1381,14 +1404,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           prev.innerHTML = `<img src="${imgURL(nm, true)}" onerror="MTG.imgFail(this)">`;
         }
         prev.style.display = 'block';
+        zoom = this.viewportZoom(prev);
+        place(ev);
       });
       gameEl.addEventListener('mousemove', ev => {
         if (prev.style.display !== 'block') return;
-        const w = 300, h = 420;
-        let x = ev.clientX + 26;
-        if (x + w > window.innerWidth - 8) x = ev.clientX - w - 26;
-        const y = Math.max(8, Math.min(window.innerHeight - h - 8, ev.clientY - h / 2));
-        prev.style.left = x + 'px'; prev.style.top = y + 'px';
+        place(ev);
       });
       gameEl.addEventListener('mouseleave', () => { prev.style.display = 'none'; curName = null; });
     }
@@ -4701,6 +4722,21 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       return layer;
     }
 
+    // Efekti žive u fiksnom .gamefxlayer unutar zoomovanog body-ja: koordinate iz
+    // getBoundingClientRect() i window.inner* su viewport pikseli i dijele se
+    // zoomom prije upisa u left/top/width/height (v. viewportZoom).
+    fxRect(node) {
+      if (!node) return null;
+      const r = node.getBoundingClientRect();
+      const z = this.viewportZoom(this.gameEffectLayer());
+      return { left: r.left / z, top: r.top / z, width: r.width / z, height: r.height / z };
+    }
+
+    fxViewport() {
+      const z = this.viewportZoom(this.gameEffectLayer());
+      return { width: window.innerWidth / z, height: window.innerHeight / z };
+    }
+
     gameEffectPlayerAnchor(player) {
       if (!player) return null;
       const root = document.querySelector(`[data-player-id="${player.idx}"]`);
@@ -4727,10 +4763,11 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const targetNode = event.targetKind === 'player'
         ? this.gameEffectPlayerAnchor(target)
         : this.gameEffectCardAnchor(target);
-      const rect = targetNode && targetNode.getBoundingClientRect();
-      const x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
-      const y = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
       const layer = this.gameEffectLayer();
+      const rect = this.fxRect(targetNode);
+      const vp = this.fxViewport();
+      const x = rect ? rect.left + rect.width / 2 : vp.width / 2;
+      const y = rect ? rect.top + rect.height / 2 : vp.height / 2;
       const combatStep = event.combatStep === 'first' ? 'FIRST STRIKE' : 'COMBAT';
       const amount = Math.max(0, Number(event.amount) || 0);
       // Impact tiers scale the number, the ring and the camera with the hit.
@@ -4764,7 +4801,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         setTimeout(() => targetNode.classList.remove('fx-damage-target'), 620);
       }
       const sourceNode = this.gameEffectCardAnchor(event.source);
-      const sourceRect = sourceNode && sourceNode.getBoundingClientRect();
+      const sourceRect = this.fxRect(sourceNode);
       if (sourceRect) {
         const sx = sourceRect.left + sourceRect.width / 2, sy = sourceRect.top + sourceRect.height / 2;
         const dx = x - sx, dy = y - sy;
@@ -4798,10 +4835,10 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
 
     showZoneMoveEffect(event) {
       const sourceNode = this.gameEffectCardAnchor(event.card);
-      const sourceRect = sourceNode && sourceNode.getBoundingClientRect();
+      const sourceRect = this.fxRect(sourceNode);
       if (!sourceRect) return;
       const destination = this.gameEffectDestination(event);
-      const destRect = destination && destination.getBoundingClientRect();
+      const destRect = this.fxRect(destination);
       const endX = destRect ? destRect.left + destRect.width / 2 : sourceRect.left + sourceRect.width / 2;
       const endY = destRect ? destRect.top + destRect.height / 2 : -80;
       const layer = this.gameEffectLayer();
@@ -4846,7 +4883,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       }
       cards.slice(0, 16).forEach((card, index) => {
         const node = this.gameEffectCardAnchor(card);
-        const rect = node && node.getBoundingClientRect();
+        const rect = this.fxRect(node);
         if (!rect) return;
         const shard = el('div', `gamefx-wipecard mode-${mode}`);
         shard.appendChild(node.cloneNode(true));
@@ -4885,14 +4922,15 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       if (!visual) return;
       const target = event.card || event.target;
       const node = this.gameEffectCardAnchor(target);
-      const rect = node && node.getBoundingClientRect();
+      const rect = this.fxRect(node);
       const layer = this.gameEffectLayer();
       const fx = el('div', `gamefx-keyword tone-${visual.tone} state-${event.state || 'gained'}`,
         `<i></i><span>${U.icon(visual.icon)}</span><div><small>${event.state === 'prevented' ? 'DESTROY PREVENTED' : 'KEYWORD GAINED'}</small><b>${esc(visual.label)}</b>${target && target.name ? `<em>${esc(target.name)}</em>` : ''}</div>`);
-      const anchorX = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
-      const anchorY = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
-      fx.style.left = `${Math.max(150, Math.min(window.innerWidth - 150, anchorX))}px`;
-      fx.style.top = `${Math.max(70, Math.min(window.innerHeight - 70, anchorY))}px`;
+      const vp = this.fxViewport();
+      const anchorX = rect ? rect.left + rect.width / 2 : vp.width / 2;
+      const anchorY = rect ? rect.top + rect.height / 2 : vp.height / 2;
+      fx.style.left = `${Math.max(150, Math.min(vp.width - 150, anchorX))}px`;
+      fx.style.top = `${Math.max(70, Math.min(vp.height - 70, anchorY))}px`;
       layer.appendChild(fx);
       if (node) { node.classList.add(`fx-keyword-${visual.tone}`); setTimeout(() => node.classList.remove(`fx-keyword-${visual.tone}`), 900); }
       setTimeout(() => fx.remove(), 1180);
@@ -4901,11 +4939,12 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
 
     showCounterChangeEffect(event) {
       const node = this.gameEffectCardAnchor(event.card || event.target);
-      const rect = node && node.getBoundingClientRect();
+      const rect = this.fxRect(node);
       const layer = this.gameEffectLayer();
       const fx = el('div', 'gamefx-minuscounter', `${U.icon('minus-counter')}<b>−1/−1</b><span>×${Math.max(1, Number(event.amount) || 1)}</span>`);
-      fx.style.left = `${rect ? rect.left + rect.width / 2 : window.innerWidth / 2}px`;
-      fx.style.top = `${rect ? rect.top + rect.height / 2 : window.innerHeight / 2}px`;
+      const vp = this.fxViewport();
+      fx.style.left = `${rect ? rect.left + rect.width / 2 : vp.width / 2}px`;
+      fx.style.top = `${rect ? rect.top + rect.height / 2 : vp.height / 2}px`;
       layer.appendChild(fx);
       setTimeout(() => fx.remove(), 1050);
       setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1120);
@@ -4925,7 +4964,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       const layer = this.gameEffectLayer();
       for (const subject of (event.subjects || []).slice(0, 12)) {
         const node = subject instanceof MTG.Player ? this.gameEffectPlayerAnchor(subject) : this.gameEffectCardAnchor(subject);
-        const rect = node && node.getBoundingClientRect();
+        const rect = this.fxRect(node);
         if (!rect) continue;
         const pulse = el('div', 'gamefx-proliferatepulse', `${U.icon('proliferate')}<i></i><i></i>`);
         pulse.style.left = `${rect.left + rect.width / 2}px`; pulse.style.top = `${rect.top + rect.height / 2}px`;
