@@ -148,6 +148,45 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   // Player
   // ============================================================
+  // Oblik odgovora po tipu pitanja. Nepoznati tipovi ostaju netaknuti, a
+  // eksplicitni "cancel" iz UI-ja se nikad ne pretvara u prazan izbor.
+  const LIST_ANSWERS = new Set(['chooseCards', 'chooseTargets', 'chooseMulti', 'bottomCards',
+    'orderTriggers', 'attackers', 'blockers']);
+  MTG.normalizeDecision = function (question, answer, game, player) {
+    const type = question && question.type;
+    if (!type) return answer;
+    if (LIST_ANSWERS.has(type)) {
+      if (Array.isArray(answer)) return answer;
+      // { kind: 'cancel' } i slični namjerni odgovori ostaju netaknuti
+      if (answer && typeof answer === 'object' && answer.kind) return answer;
+      MTG.noteDecisionFallback(game, player, question, 'expected a list');
+      return type === 'orderTriggers' ? (question.triggers || []) : [];
+    }
+    if (type === 'scry') {
+      if (answer && Array.isArray(answer.top) && Array.isArray(answer.bottom)) return answer;
+      MTG.noteDecisionFallback(game, player, question, 'expected { top, bottom }');
+      return { top: (question.cards || []).slice(), bottom: [] };
+    }
+    if (type === 'chooseX') {
+      if (Number.isFinite(answer)) return answer;
+      MTG.noteDecisionFallback(game, player, question, 'expected a number');
+      return Math.max(0, Number(question.min) || 0);
+    }
+    return answer;
+  };
+  MTG.noteDecisionFallback = function (game, player, question, reason) {
+    if (!game || game._simulation) return;
+    game._decisionFallbacks = (game._decisionFallbacks || 0) + 1;
+    const label = question.src && question.src.name || question.card && question.card.name || question.type;
+    const key = `${player && player.idx}|${question.type}|${label}`;
+    game._decisionFallbackKeys = game._decisionFallbackKeys || new Set();
+    if (game._decisionFallbackKeys.has(key)) return;
+    game._decisionFallbackKeys.add(key);
+    if (typeof game.lg === 'function') {
+      game.lg(`⚠️ ${player && player.name || 'A player'} gave no usable answer for ${label} (${reason}); the game continued with a safe default.`, 'warn');
+    }
+  };
+
   class Player {
     constructor(name, idx) {
       this.name = name; this.idx = idx;
@@ -164,7 +203,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.commanderDamage = {};    // by commander iid
       this.poison = 0;
       this.lost = false;
-      this.controller = null;       // decision maker
+      this._controller = null;      // decision maker (see the controller accessor)
       this.isAI = false;
       this.deck = null;
       this.colorIdentity = [];
@@ -175,6 +214,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.skipUntapOnce = false;
       this.turnsStarted = 0;
     }
+    // Jedan izbor koji se vrati u pogrešnom obliku (null umjesto niza) rušio je
+    // cijelu partiju iz card skripte — `pick[0]` na null baca i igrač dobije
+    // fatal overlay usred poteza. Odgovor se zato normalizuje na jednom mjestu,
+    // za svaki kontroler (čovjek, bot, remote), umjesto u 156 poziva.
+    get controller() {
+      const raw = this._controller;
+      if (!raw) return raw;
+      if (this._controllerWrapped && this._controllerWrapped.raw === raw) return this._controllerWrapped.wrapper;
+      const player = this;
+      const wrapper = Object.create(raw);
+      wrapper.decide = async (game, question) => MTG.normalizeDecision(question, await raw.decide(game, question), game, player);
+      this._controllerWrapped = { raw, wrapper };
+      return wrapper;
+    }
+    set controller(value) {
+      this._controller = value;
+      this._controllerWrapped = null;
+    }
+
     freshTurnState() {
       return {
         spellsCast: 0, nonCreatureSpells: 0, spellsCastList: [], lifeGained: 0, lifeLost: 0, lifeLossEvents: 0,

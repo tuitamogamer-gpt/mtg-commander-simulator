@@ -256,9 +256,19 @@
     const plans = choices.map((cost, index) => ({ ...plan(ctx, cost, helpers), index })).filter(row => row.payable);
     let selected = effect.optional === false && plans.length === 1 ? plans[0] : null;
     if (plans.length && !selected) {
-      const options = plans.map(row => ({ key: choices.length === 1 ? 'yes' : 'pay-' + row.index,
-        label: 'Pay: ' + (row.cost.mana || row.cost.kind + ' ' + (row.cost.n === 'all' ? row.n : row.cost.n)),
-        payment: { ...row.cost, n: row.cost.n === 'all' || ['draw', 'life'].includes(row.cost.kind) ? row.n : row.cost.n } }));
+      // Dinamični iznos ("draw cards equal to its power") je opisni objekat.
+      // Bez razrješavanja je igrač u dugmetu vidio "Pay: draw [object Object]".
+      const paymentAmount = row => {
+        const printed = row.cost.n;
+        const resolved = printed === 'all' || typeof printed === 'object' ? row.n : printed;
+        return typeof resolved === 'object' || resolved === undefined || resolved === null || resolved === '' ? null : resolved;
+      };
+      const options = plans.map(row => {
+        const amount = paymentAmount(row);
+        return { key: choices.length === 1 ? 'yes' : 'pay-' + row.index,
+          label: 'Pay: ' + (row.cost.mana || row.cost.kind + (amount === null ? '' : ' ' + amount)),
+          payment: { ...row.cost, n: row.cost.n === 'all' || ['draw', 'life'].includes(row.cost.kind) ? row.n : row.cost.n } };
+      });
       if (effect.optional !== false) options.push({ key: 'no', label: 'Do not pay' });
       const answer = await ctx.you.controller.decide(ctx.g, { type: 'chooseOption', player: ctx.you,
         prompt: ctx.src.name + ': pay for the following effect?', options, aiHint: { kind: 'oracleUnlessPayment', src: ctx.src } });
