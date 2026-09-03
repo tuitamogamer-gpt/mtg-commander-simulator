@@ -155,7 +155,7 @@ export async function prepareCopyLinkedSource(MTG, context, entry, operation, so
     stageCondition(MTG, context, acquire.activationCondition || acquire.condition, source, helpers);
     if (acquire.kind === 'generic-ability') {
       const ordinal = entry.implementation.filter(op => op.kind === 'generic-ability' && !op.from).indexOf(acquire);
-      const compiled = (source.def.abilities || []).filter(ability => ability.label === 'Oracle ability')[ordinal];
+      const compiled = (source.def.abilities || []).filter(ability => ability.oracleCompiled)[ordinal];
       const action = game.activatableList(a).find(candidate => candidate.card === source && candidate.ability === compiled);
       assert.ok(action, entry.raw.name + ': paid linked acquisition is offered');
       assert.equal(await game.activateAbility(a, action), true);

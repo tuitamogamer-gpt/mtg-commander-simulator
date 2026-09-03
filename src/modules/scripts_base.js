@@ -481,6 +481,49 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     E.pumpUntilEOT(ctx.g, ctx.src, 1, 1);
   }
 
+  // Oracle prevodilac svakoj aktiviranoj sposobnosti daje isti placeholder
+  // ("Oracle ability"), pa je u igri 2.948 karata imalo dugme, log i stack
+  // objekat bez ijedne informacije o tome šta karta radi. Ime se uzima iz
+  // teksta same karte — linije oblika "cijena: efekat".
+  const ORACLE_ABILITY_PLACEHOLDER = 'Oracle ability';
+  function oracleAbilityLines(oracle) {
+    return String(oracle || '').split('\n')
+      .map(line => line.replace(/\s*\([^)]*\)/g, '').trim())
+      // "{T}: Add {C}." da, "Flying" ne, "Whenever …, draw a card." ne
+      .filter(line => /^[^:]{1,90}:\s*\S/.test(line) &&
+        !/^(?:whenever|when|at the beginning|as long as|choose one)/i.test(line) &&
+        // Mana sposobnosti žive u `def.mana`, ne u `abilities` — bez ovoga se
+        // linije ne poklope po broju i svaki mana rock ostane bez imena.
+        !/:\s*Add\b[^.]*\.?$/i.test(line));
+  }
+  function shortAbilityName(line) {
+    // "Activate only during your upkeep" je vremensko ograničenje, a dugme se
+    // ionako pojavljuje samo kad je aktivacija legalna — ime ostaje kratko.
+    const clean = String(line || '')
+      .replace(/\s*(?:Activate|Play|Cast|Use)\s+only\b[^.]*\.?\s*$/i, '')
+      .replace(/\s+/g, ' ').trim().replace(/\.$/, '');
+    return clean.length > 96 ? `${clean.slice(0, 93)}…` : clean;
+  }
+  function nameOracleAbilities(def) {
+    const lines = oracleAbilityLines(def.oracle);
+    if (!lines.length) return;
+    const compiled = (def.abilities || []).filter(ability => ability && ability.label === ORACLE_ABILITY_PLACEHOLDER);
+    // Sparivanje je po redoslijedu i samo kad se brojevi tačno poklope; inače
+    // radije ostaje placeholder nego pogrešno ime.
+    if (compiled.length && compiled.length === lines.length) {
+      let index = 0;
+      def.abilities = def.abilities.map(ability => ability && ability.label === ORACLE_ABILITY_PLACEHOLDER
+        ? Object.assign({}, ability, { label: shortAbilityName(lines[index++]) })
+        : ability);
+    }
+    for (const [key, hint] of [['handAbility', /\bhand\b/i], ['gyAbility', /\bgraveyard\b/i]]) {
+      const ability = def[key];
+      if (!ability || ability.label !== ORACLE_ABILITY_PLACEHOLDER) continue;
+      const line = lines.find(candidate => hint.test(candidate)) || (lines.length === 1 ? lines[0] : null);
+      if (line) def[key] = Object.assign({}, ability, { label: shortAbilityName(line) });
+    }
+  }
+
   MTG.buildDefs = function (rawCards, scripts, options = {}) {
     // Skup stvarnih tipova stvorenja iz baze — koristi ga CardInst.hasSub da
     // "svaki tip stvorenja" (changeling, Maskwood Nexus) ne obuhvati i
@@ -567,6 +610,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       d.kws = [...new Set(d.kws)];
+      nameOracleAbilities(d);
       // prowess as trigger
       if (d.kws.includes('prowess')) {
         const prowessTriggers = Array.from({ length: Math.max(1, oracleProwessInstances) }, () => ({

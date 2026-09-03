@@ -1721,6 +1721,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const modeScores = modalBody?.modes.map(mode=>genericAbilityAiScore({...operation,...mode.body},cost));
     return {
       label: operation.label || 'Oracle ability',
+      // Stabilna oznaka da je sposobnost proizvod Oracle prevodioca. Labela je
+      // prezentacijska (buildDefs joj daje tekst same karte), pa se na nju ne
+      // smije oslanjati nijedna provjera.
+      oracleCompiled: true,
       cost,
       targets,
       ...(modes?{modes}:{}),

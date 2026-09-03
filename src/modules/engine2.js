@@ -5166,30 +5166,105 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Da li ovaj priority prozor nudi nešto što cilja objekat na stacku?
   // activatableList/castableList već provjeravaju da meta postoji, pa je ovo
   // istinito samo kad zaista ima šta da se odigra.
-  MTG.priorityRespondsToStack = function (q, game, me) {
-    const stackSpec = spec => !!spec && (spec.zone === 'stack' || spec.what === 'spell' || spec.what === 'ability');
-    // Aktivirana sposobnost sa table: activatableList je već potvrdio da meta
-    // na stacku postoji, pa je ovo uvijek stvarna prilika.
-    for (const entry of q.acts || []) {
-      const targets = entry && entry.ability && entry.ability.targets;
-      if (Array.isArray(targets) && targets.some(stackSpec)) return true;
+  // Meta na stacku ne živi ni jedan prozor duže. Zato svaka karta ili
+  // sposobnost koja je cilja mora dobiti pravi priority prozor, inače je taj
+  // potez u praksi nepostojeći (Stella Lee, Cryptic Command, Sublime Epiphany,
+  // Mister Fantastic…). Specifikacije mete žive na više mjesta i sve se moraju
+  // pregledati — ne samo `def.targets`.
+  const STACK_SPEC = spec => !!spec && (spec.zone === 'stack' || spec.what === 'spell' || spec.what === 'ability');
+  // Counter mod nad VLASTITIM spellom nije stvarna odluka: counterspell u ruci
+  // ne smije zaustavljati svaki tvoj cast. Kopiranje i preusmjeravanje jesu.
+  const COUNTER_GOALS = new Set(['counter', 'counterspell']);
+
+  MTG.stackTargetSpecsOf = function (entry) {
+    const out = [];
+    const push = list => { if (Array.isArray(list)) for (const spec of list) if (STACK_SPEC(spec)) out.push(spec); };
+    if (!entry) return out;
+    // Aktivirana sposobnost (tabla, ruka, groblje) nosi svoje mete direktno.
+    if (entry.ability) push(entry.ability.targets);
+    const def = entry.card && entry.card.def;
+    if (!def) return out;
+    push(def.targets);
+    // Modalne karte drže mete po modu: 23 karte u katalogu (Cryptic Command,
+    // Mystic Confluence, svi Charmovi, Pyroblast…) uopšte ne bi bile vidljive
+    // ovoj provjeri bez ovoga.
+    if (def.modes && Array.isArray(def.modes.list)) for (const mode of def.modes.list) push(mode.targets);
+    // Adventure/alternativna lica nose svoje mete zasebno.
+    for (const key of ['adventure', 'plotFace', 'backFace']) {
+      const face = def[key];
+      if (face) push(face.targets);
     }
-    // Karta iz ruke staje samo ako zaista može pogoditi MOJ objekat na stacku;
-    // counterspell u ruci ne smije zaustavljati svaki moj vlastiti spell.
+    if (Array.isArray(def.faces)) for (const face of def.faces) push(face.targets);
+    return out;
+  };
+
+  MTG.priorityRespondsToStack = function (q, game, me) {
     const stack = (game && game.stack) || [];
     if (!stack.length || !me) return false;
-    for (const entry of q.casts || []) {
-      const targets = entry && entry.card && entry.card.def && entry.card.def.targets;
-      if (!Array.isArray(targets)) continue;
-      for (const spec of targets) {
-        if (!stackSpec(spec)) continue;
+    for (const entry of [...(q.acts || []), ...(q.casts || [])]) {
+      const specs = MTG.stackTargetSpecsOf(entry);
+      if (!specs.length) continue;
+      for (const spec of specs) {
+        const counterGoal = COUNTER_GOALS.has(spec.aiHint && spec.aiHint.goal);
         for (const object of stack) {
-          if (object.ctrl !== me) continue;
-          let ok = true;
+          // Tuđi objekat na stacku je uvijek stvarna odluka; vlastiti samo za
+          // efekte koji ga ne counteruju.
+          if (object.ctrl === me && counterGoal) continue;
+          let ok;
           try { ok = typeof spec.filter !== 'function' || !!spec.filter(game, object, me, entry.card); }
-          catch (error) { ok = false; }
+          catch (error) { ok = object.ctrl !== me; }
           if (ok) return true;
         }
+      }
+    }
+    return false;
+  };
+
+  // Neke sposobnosti su legalne SAMO u prozoru u kojem se trenutno nalazimo
+  // ("Activate only during your upkeep" i sl.). Automatski pass ih čini
+  // nepostojećima u igri: 13 karata u katalogu (Eternal Dragon, Necrosavant,
+  // Undead Gladiator, Dwarven Weaponsmith…) nije imalo nijedan trenutak u
+  // kojem ih igrač može aktivirati. Provjera pita rules engine šta bi bilo
+  // dostupno u običnoj main fazi i staje samo ako ovaj prozor nudi više.
+  const activationKey = entry => [entry.card && entry.card.iid,
+    (entry.ability && entry.ability.label) || entry.label || '', entry.idx ?? '',
+    entry.equip !== undefined ? 'equip' : '', entry.crew ? 'crew' : '', entry.cycling ? 'cycling' : '',
+    entry.plot ? 'plot' : '', entry.foretell ? 'foretell' : '', entry.ninjutsu ? 'ninjutsu' : '',
+    entry.suspend ? 'suspend' : '', entry.handAbility ? 'hand' : '', entry.gyAbility ? 'gy' : '',
+    entry.turnFaceUp ? 'faceup' : '', entry.manaAbility ? 'mana' : ''].join('|');
+  const castEntryKey = entry => [entry.card && entry.card.iid, entry.from || '',
+    (entry.alt && (entry.alt.name || entry.alt.label || entry.alt.altCostStr)) || ''].join('|');
+
+  MTG.priorityHasWindowOnlyPlay = function (q, g, me) {
+    const acts = q.acts || [], casts = q.casts || [];
+    if (!acts.length && !casts.length) return false;
+    const phase = g.phase, step = g.step, turnPlayer = g.turnPlayer;
+    let mainActs, mainCasts;
+    try {
+      g.phase = 'main1'; g.step = ''; g.turnPlayer = me;
+      mainActs = new Set(g.activatableList(me).map(activationKey));
+      mainCasts = new Set(g.castableList(me).map(castEntryKey));
+    } catch (error) {
+      return false;
+    } finally {
+      g.phase = phase; g.step = step; g.turnPlayer = turnPlayer;
+    }
+    if (acts.some(entry => !mainActs.has(activationKey(entry)))) return true;
+    return casts.some(entry => !mainCasts.has(castEntryKey(entry)));
+  };
+
+  // Da li nešto na stacku, što nije moje, cilja mene ili moj permanent?
+  // Threat alert takav potez POKAŽE, ali bez priority prozora igrač na njega
+  // ne može odgovoriti — a protivnikova aktivirana/okinuta sposobnost je do
+  // sada uvijek prolazila bez prilike za odgovor.
+  MTG.stackThreatensPlayer = function (game, me) {
+    for (const object of (game && game.stack) || []) {
+      if (!object || object.ctrl === me) continue;
+      for (const target of (object.targets || []).flat()) {
+        if (!target) continue;
+        if (target === me) return true;
+        if (target.ctrl === me) return true;
+        if (target.owner === me && target.zone && target.zone !== 'battlefield') return true;
       }
     }
     return false;
@@ -5211,7 +5286,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // a on bi se razriješio prije nego dobije priliku da reaguje.
       if (MTG.priorityRespondsToStack(q, g, me)) return false;
       if (mode === 'full') return false;
-      if (mode === 'off' || mode === 'end') return true;
+      if (mode === 'off') return true;
+      // Protivnikova sposobnost uperena u mene ili moj permanent: ako uopšte
+      // imam čime da odgovorim, dobijam pravi prozor. Bez ovoga se na
+      // aktivirane i okinute sposobnosti nikad nije moglo odgovoriti.
+      if (canAct && MTG.stackThreatensPlayer(g, me)) return false;
+      if (mode === 'end') return true;
       if (!canAct) return true;                              // trigeri/sposobnosti bez odgovora → pusti
       // moj vlastiti spell/trigger na vrhu, a nemam nikakav odgovor iz ruke → pusti
       if (top.ctrl === me && !casts.length) return true;
@@ -5220,6 +5300,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (mode === 'full') return false;
     if (mode === 'off') return true;
     if (!canAct) return true;                                // nema šta da se odigra
+    // Sposobnost koja postoji samo u ovom prozoru mora dobiti priliku, inače
+    // je karta u praksi neigriva.
+    if (MTG.priorityHasWindowOnlyPlay(q, g, me)) return false;
     // POSLJEDNJI end step prije mog poteza: zadnja prilika da nešto odigram u
     // tuđem potezu (instanti, flash, aktivacije). Uvijek stani — igrač sam
     // odlučuje kad nastavlja, dugmetom "Nastavi na moj potez".

@@ -169,6 +169,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return node;
     }
 
+    // Jedno mjesto koje imenuje aktivaciju: card sheet i priority prozor moraju
+    // pisati isto (Ninjutsu, Cycling, Plot, sposobnost iz groblja/ruke…).
+    activationLabel(entry) {
+      if (!entry) return 'Activate';
+      const card = entry.card, def = card && card.def || {};
+      if (entry.turnFaceUp || entry.manaAbility) return entry.label || 'Activate';
+      if (entry.handAbility) return (def.handAbility && def.handAbility.label) || 'Ability from your hand';
+      if (entry.gyAbility) return ((entry.gyAbilityOverride || def.gyAbility) || {}).label || 'Ability from your graveyard';
+      if (entry.cycling) return 'Cycling';
+      if (entry.plot) return `Plot ${U.costStr(U.parseCost(def.plot))}`;
+      if (entry.foretell) return 'Foretell {2}';
+      if (entry.ninjutsu) return `Ninjutsu ${entry.ninjutsuCost || ''}`.trim();
+      if (entry.suspend) return `Suspend ${U.costStr(U.parseCost(def.suspend.cost))} — exile with ${def.suspend.n} time counters`;
+      if (entry.equip !== undefined) return `Equip ${U.costStr(U.parseCost(def.equip))}`;
+      if (entry.crew) return `Crew ${def.crew}`;
+      return entry.label || (entry.ability && entry.ability.label) || 'Activate';
+    }
+
     // ---------- controller protocol ----------
     get pending() { return this.pendings && this.pendings.length ? this.pendings[this.pendings.length - 1] : null; }
     set pending(v) {
@@ -2959,10 +2977,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             const abilityRow = el('div', 'btnrow priorityabilities');
             for (const entry of q.acts) {
               const name = entry.card.name;
-              const abilityLabel = entry.label || (entry.ability && entry.ability.label) ||
-                (entry.equip !== undefined ? 'Equip' : entry.crew ? 'Crew' : 'Ability');
-              abilityRow.appendChild(btn(`⚙️ ${esc(name)} — ${esc(abilityLabel)}`,
-                () => this.resolvePending({ kind: 'activate', entry })));
+              const abilityLabel = this.activationLabel(entry);
+              const abilityButton = btn(`⚙️ ${esc(name)} — ${esc(abilityLabel)}`,
+                () => this.resolvePending({ kind: 'activate', entry }));
+              abilityButton.classList.add('abilitybtn');
+              abilityRow.appendChild(abilityButton);
             }
             bar.appendChild(abilityRow);
           }
@@ -4265,11 +4284,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (a.card !== card) continue;
           if (a.ability) usedAbilities.add(a.ability);
           if (a.suspend) suspendActionOffered = true;
-          let label = a.turnFaceUp ? a.label : a.manaAbility ? a.label : a.handAbility ? card.def.handAbility.label :
-            a.gyAbility ? (a.gyAbilityOverride || card.def.gyAbility).label : a.cycling ? 'Cycling' : a.plot ? `Plot ${U.costStr(U.parseCost(card.def.plot))}` : a.foretell ? 'Foretell {2}' : a.ninjutsu ? `Ninjutsu ${a.ninjutsuCost}` : a.suspend ? `Suspend ${U.costStr(U.parseCost(card.def.suspend.cost))} — exile with ${card.def.suspend.n} time counters` :
-            a.equip ? `Equip ${U.costStr(U.parseCost(card.def.equip))}` : a.crew ? `Crew ${card.def.crew}` :
-              (a.ability && a.ability.label) || 'Activate';
-          const b = el('button', 'pbtn wide', (a.turnFaceUp ? '🃏 ' : a.manaAbility ? '⚡ ' : '⚙️ ') + esc(label));
+          const label = this.activationLabel(a);
+          const b = el('button', 'pbtn wide abilitybtn', (a.turnFaceUp ? '🃏 ' : a.manaAbility ? '⚡ ' : '⚙️ ') + esc(label));
           b.onclick = () => { this.sheet = null; this.resolvePending({ kind: 'activate', entry: a }); };
           acts.appendChild(b);
         }
@@ -4277,7 +4293,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (card.zone === 'battlefield' && card.ctrl === this.me && card.def.abilities) {
           for (const ab of card.def.abilities) {
             if (usedAbilities.has(ab) || !ab.label) continue;
-            const b = el('button', 'pbtn wide disabled', `⚙️ ${esc(ab.label)}: unavailable now`);
+            const b = el('button', 'pbtn wide disabled abilitybtn', `⚙️ ${esc(ab.label)}: unavailable now`);
             b.disabled = true;
             acts.appendChild(b);
           }

@@ -59,7 +59,7 @@ function assertExecutableOperation(MTG, entry, definition, operation) {
     return;
   }
   if (operation.kind === 'generic-ability') {
-    assert.ok((operation.from==='hand'?[definition.handAbility]:operation.from==='graveyard'?[definition.gyAbility]:definition.abilities || []).some(ability => ability?.label === 'Oracle ability'),
+    assert.ok((operation.from==='hand'?[definition.handAbility]:operation.from==='graveyard'?[definition.gyAbility]:definition.abilities || []).some(ability => ability?.oracleCompiled),
       `${entry.raw.name}: generic ability compiled to an engine action`);
     assert.ok(operation.v4Body || (Array.isArray(operation.effects) && operation.effects.length) ||
       (operation.modalBody && operation.modalBody.modes.every(mode => mode.body.effects.length)),

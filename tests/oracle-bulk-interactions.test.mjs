@@ -1396,7 +1396,7 @@ async function prepareSourceProgression(MTG,ctx,source,entry,operation){
   const wanted=effectNodes(operation.effects).filter(effect=>effect.action==='conditional'&&effect.condition.kind==='source-quality'&&effect.conditionTarget===undefined);
   if(!wanted.length||wanted.every(effect=>matchesTarget(source,effect.condition.filter,ctx,source)))return;
   const operations=entry.implementation.filter(row=>row.kind==='generic-ability'&&!row.from),index=operations.indexOf(operation.originalOperation||operation);
-  const abilities=(source.def.abilities||[]).filter(row=>row.label==='Oracle ability');
+  const abilities=(source.def.abilities||[]).filter(row=>row.oracleCompiled);
   for(let i=0;i<index;i++)if(effectNodes(operations[i].effects).some(effect=>effect.action==='animate'&&effect.target==='self'&&effect.temporary===false)){
     const action=ctx.game.activatableList(ctx.a).find(row=>row.card===source&&row.ability===abilities[i]);
     if(action){assert.equal(await ctx.game.activateAbility(ctx.a,action),true,entry.raw.name+': paid earlier printed progression');await resolveAll(ctx.game);}
@@ -2063,7 +2063,7 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     before = genericProofSnapshot(context, trackedCards);
     const ordinal = (entry.implementation || []).filter(candidate => candidate.kind === 'generic-ability'&&!candidate.from)
       .indexOf(operation.originalOperation||operation);
-    const compiled = operation.from==='hand'?source.def.handAbility:operation.from==='graveyard'?source.def.gyAbility:(source.def.abilities || []).filter(ability => ability.label === 'Oracle ability')[ordinal];
+    const compiled = operation.from==='hand'?source.def.handAbility:operation.from==='graveyard'?source.def.gyAbility:(source.def.abilities || []).filter(ability => ability.oracleCompiled)[ordinal];
     assert.ok(compiled, `${entry.raw.name}/${role}: compiled generic ability ${ordinal + 1}`);
     operationRun = compiled.run;
     const action = game.activatableList(a).find(candidate => candidate.card === source && (operation.from==='hand'?candidate.handAbility:operation.from==='graveyard'?candidate.gyAbility:candidate.ability === compiled));
@@ -2973,7 +2973,7 @@ async function spellV4RuntimeOperationProof(MTG, entry, operation, role, nested=
             before=genericProofSnapshot(context,[...game.battlefield,...trackedCards,source]);
             const ordinal=entry.implementation.filter(o=>o.kind==='generic-ability'&&!o.from).indexOf(nested);
             if(nested.from==='hand')await game.move(source,'hand');
-            const compiled=nested.from==='hand'?source.def.handAbility:source.def.abilities.filter(o=>o.label==='Oracle ability')[ordinal];
+            const compiled=nested.from==='hand'?source.def.handAbility:source.def.abilities.filter(o=>o.oracleCompiled)[ordinal];
             if(cost.mana?.includes('{X}')){
               const mana=MTG.parseCost(cost.mana);for(const color of Object.keys(a.pool))a.pool[color]=0;
               a.pool.C=mana.generic+3*mana.x;for(const pip of mana.pips)a.pool[pip[0]]++;

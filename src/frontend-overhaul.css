@@ -1579,3 +1579,15 @@ body.game-active #game .btnrow.priorityabilities .pbtn {
   border: 1px solid rgba(var(--ds-accent-rgb), .45);
   background: linear-gradient(180deg, rgba(var(--ds-accent-rgb), .16), rgba(var(--ds-accent-rgb), .06));
 }
+
+
+/* Ability buttons now carry the card's own rules text instead of a placeholder.
+   Sentence case and normal tracking keep a full ability line readable. */
+body.game-active #game .pbtn.abilitybtn {
+  text-transform: none;
+  letter-spacing: .01em;
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: left;
+  white-space: normal;
+}
