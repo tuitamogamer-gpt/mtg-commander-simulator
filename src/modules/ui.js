@@ -649,6 +649,178 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       root.style.setProperty('--fx-phase', `-${Math.round(performance.now() % 3600000)}ms`);
       this.fitBattlefieldLanes(root);
       this.initLaneFit();
+      this.syncZoneEffects(g);
+    }
+
+    // Cards that change zone without crossing the battlefield (impulse exile
+    // from the library, discard, mill, graveyard hate, returns to hand) used to
+    // leave no trace beyond a log line. Every render compares each player's
+    // hand, graveyard and exile with the previous render and flies the new
+    // arrivals from their old zone to the new one as card ghosts.
+    syncZoneEffects(g) {
+      const prev = this._zoneSnapshot;
+      const snapshot = {
+        game: g,
+        battlefield: new Set(g.bf().map(card => card.iid)),
+        stack: new Set(g.stack.map(so => so.card && so.card.iid).filter(Boolean)),
+        players: new Map(),
+      };
+      for (const p of g.players) {
+        snapshot.players.set(p, {
+          hand: new Set(p.hand.map(card => card.iid)),
+          graveyard: new Set(p.graveyard.map(card => card.iid)),
+          exile: new Set(p.exile.map(card => card.iid)),
+        });
+      }
+      this._zoneSnapshot = snapshot;
+      if (!prev || prev.game !== g || g.gameOver) return;
+      const zoneOf = iid => {
+        for (const zones of prev.players.values()) {
+          for (const zone of ['hand', 'graveyard', 'exile']) if (zones[zone].has(iid)) return zone;
+        }
+        if (prev.battlefield.has(iid)) return 'battlefield';
+        if (prev.stack.has(iid)) return 'stack';
+        return 'library';
+      };
+      const groups = new Map();
+      for (const p of g.players) {
+        const was = prev.players.get(p);
+        if (!was) continue;
+        for (const zone of ['exile', 'graveyard', 'hand']) {
+          for (const card of p[zone]) {
+            if (was[zone].has(card.iid)) continue;
+            const from = zoneOf(card.iid);
+            const label = this.zoneFlightLabel(from, zone, card);
+            if (!label) continue;
+            const key = `${p.idx}|${from}|${zone}|${label}`;
+            if (!groups.has(key)) groups.set(key, { player: p, from, to: zone, label, cards: [] });
+            groups.get(key).cards.push(card);
+          }
+        }
+      }
+      let delay = 0;
+      for (const group of [...groups.values()].slice(0, 6)) {
+        this.showZoneFlight(group, delay);
+        delay += 160;
+      }
+    }
+
+    zoneFlightLabel(from, to, card) {
+      if (from === to || from === 'battlefield') return null;   // battlefield exits animate from the engine event
+      if (card.isToken || card.isCopySpell) return null;
+      if (to === 'exile') return card.meta && card.meta.playableBy ? 'EXILED · MAY PLAY' : 'EXILED';
+      if (to === 'graveyard') {
+        if (from === 'hand') return 'DISCARDED';
+        if (from === 'library') return 'MILLED';
+        return null;   // a spell resolving from the stack is routine
+      }
+      if (to === 'hand') return from === 'graveyard' || from === 'exile' ? 'RETURNED TO HAND' : null;
+      return null;
+    }
+
+    zoneAnchor(player, zone) {
+      if (player === this.me) {
+        if (zone === 'hand') return document.querySelector('#game .handwrap, #game .hand');
+        if (zone === 'library') return document.querySelector('#game .meinfo .zbtn[data-z="library-top"]');
+        if (zone === 'graveyard' || zone === 'exile') return document.querySelector(`#game .meinfo .zbtn[data-z="${zone}"]`);
+        if (zone === 'stack') return document.querySelector('#game .center .stack, #game .stackpop, #game .center');
+        return document.querySelector('#game .meinfo');
+      }
+      const root = document.querySelector(`#game [data-player-id="${player.idx}"]`);
+      if (!root) return null;
+      if (zone === 'stack') return document.querySelector('#game .center .stack, #game .stackpop') || root;
+      return root.querySelector('.oppmeta') || root.querySelector('.opplife') || root;
+    }
+
+    showZoneFlight(group, delay = 0) {
+      const { player, from, to, label, cards } = group;
+      const layer = this.gameEffectLayer();
+      const vp = this.fxViewport();
+      const source = this.fxRect(this.zoneAnchor(player, from));
+      const dest = this.fxRect(this.zoneAnchor(player, to));
+      const sx = source ? source.left + source.width / 2 : vp.width / 2;
+      const sy = source ? source.top + source.height / 2 : vp.height / 2;
+      let ex = dest ? dest.left + dest.width / 2 : sx;
+      let ey = dest ? dest.top + dest.height / 2 : sy - 120;
+      // Opponent zones share one anchor: drop the ghost into their board strip
+      // so the flight still reads as movement.
+      if (Math.hypot(ex - sx, ey - sy) < 40) { ex = sx; ey = sy + (player === this.me ? -90 : 90); }
+      const shown = cards.slice(0, 3);
+      const nameOf = card => card.faceDown ? 'Face-down card' : card.name;
+      const fx = el('div', `gamefx-flight to-${to} from-${from}${player === this.me ? ' mine' : ''}`);
+      fx.style.left = `${sx}px`;
+      fx.style.top = `${sy}px`;
+      fx.style.setProperty('--fx-x', `${ex - sx}px`);
+      fx.style.setProperty('--fx-y', `${ey - sy}px`);
+      fx.style.setProperty('--fx-delay', `${delay}ms`);
+      const fan = el('div', 'gamefx-flightcards');
+      shown.forEach((card, index) => {
+        const item = el('div', 'gamefx-flightcard' + (card.faceDown ? ' facedown' : ''));
+        item.style.setProperty('--fan', String(index - (shown.length - 1) / 2));
+        if (!card.faceDown) {
+          const img = el('img');
+          img.src = imgURL(card.name);
+          img.onerror = () => MTG.imgFail(img);
+          item.appendChild(img);
+        }
+        fan.appendChild(item);
+      });
+      fx.appendChild(fan);
+      const names = shown.map(nameOf).join(', ') + (cards.length > shown.length ? ` +${cards.length - shown.length}` : '');
+      fx.appendChild(el('div', 'gamefx-flightbadge',
+        `<small>${esc(player.name)} · ${esc(label)}${cards.length > 1 ? ` ×${cards.length}` : ''}</small><b>${esc(names)}</b>`));
+      layer.appendChild(fx);
+      setTimeout(() => fx.remove(), 1600 + delay);
+      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1660 + delay);
+    }
+
+    // Copies used to be a small corner notice; the burst puts the copied card
+    // in the middle of the table, fans the copies out and names who made them.
+    showSpellCopyBurst(event) {
+      const spell = event && event.spell;
+      if (!spell) return;
+      const source = this.stackObjectSource(spell);
+      const name = source && source.name || spell.name || 'Spell';
+      const byCard = spell.copySource && spell.copySource.name;
+      const by = byCard || (spell.ctrl && spell.ctrl.name) || '';
+      const state = this._copyBurst;
+      if (state && state.name === name && state.node.isConnected) {
+        // A second copy of the same spell in the same moment counts up instead of stacking bursts.
+        state.count++;
+        const small = state.node.querySelector('.gamefx-copylabel small');
+        if (small) small.textContent = `SPELL COPIED · ×${state.count}`;
+        clearTimeout(state.timer);
+        state.timer = setTimeout(() => { state.node.remove(); this._copyBurst = null; }, 1500);
+        return;
+      }
+      const layer = this.gameEffectLayer();
+      const vp = this.fxViewport();
+      const fx = el('div', 'gamefx-copyburst' + (spell.ctrl === this.me ? ' mine' : ''));
+      fx.style.left = `${vp.width / 2}px`;
+      fx.style.top = `${Math.max(150, Math.min(vp.height * 0.42, vp.height - 210))}px`;
+      const fan = el('div', 'gamefx-copyfan');
+      for (let i = 0; i < 3; i++) {
+        const item = el('div', 'gamefx-copycard');
+        item.style.setProperty('--i', String(i));
+        const img = el('img');
+        img.src = imgURL(name);
+        img.onerror = () => MTG.imgFail(img);
+        item.appendChild(img);
+        fan.appendChild(item);
+      }
+      fx.appendChild(fan);
+      fx.appendChild(el('div', 'gamefx-copylabel',
+        `<small>SPELL COPIED${spell.copyIndex ? ` · COPY #${esc(spell.copyIndex)}` : ''}</small><b>${esc(name)}</b>` +
+        (by ? `<em>${esc(byCard ? `created by ${by}` : `copied by ${by}`)}</em>` : '')));
+      layer.appendChild(fx);
+      const sourceNode = spell.copySource ? this.gameEffectCardAnchor(spell.copySource) : null;
+      if (sourceNode) {
+        sourceNode.classList.add('fx-copy-source');
+        setTimeout(() => sourceNode.classList.remove('fx-copy-source'), 1400);
+      }
+      const timer = setTimeout(() => { fx.remove(); if (this._copyBurst && this._copyBurst.node === fx) this._copyBurst = null; }, 1700);
+      this._copyBurst = { name, count: 1, node: fx, timer };
+      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1760);
     }
 
     // Battlefield lanes shrink to fit instead of cutting cards off at the edge.
@@ -867,8 +1039,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const wrap = el('div', 'stackpopwrap revealwrap');
       const pop = el('div', 'stackpop reveal');
       const head = el('div', 'stackpophead');
-      head.appendChild(el('div', 'stackpoptitle',
-        pd.q.kind === 'tokens' ? 'Tokens' : 'Enters the battlefield'));
+      // Reveals and looks are not battlefield entries: the title says what the
+      // popup shows, and a script may name the source ("Gandalf: opponents reveal").
+      const title = pd.q.title
+        || (pd.q.kind === 'tokens' ? 'Tokens'
+          : pd.q.kind === 'reveal' ? 'Revealed'
+            : pd.q.kind === 'look' ? 'Look'
+              : 'Enters the battlefield');
+      head.appendChild(el('div', 'stackpoptitle', esc(title)));
       head.appendChild(el('div', 'stackpopn', String(cards.length)));
       pop.appendChild(head);
 
@@ -890,7 +1068,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const info = el('div', 'stackpopinfo');
         info.appendChild(el('div', 'stackpopname', esc(card.name)));
         const pt = card.cur && card.is('Creature') ? ` · ${card.cur.power}/${card.cur.toughness}` : '';
-        info.appendChild(el('div', 'stackpopsub', esc(who) + pt));
+        // Revealed cards may come from several libraries: name each card's owner.
+        const from = (pd.q.kind === 'reveal' || pd.q.kind === 'look') && card.owner && card.owner.name ? card.owner.name : who;
+        info.appendChild(el('div', 'stackpopsub', esc(from) + pt));
         it.appendChild(info);
         if (n > 1) it.appendChild(el('div', 'stackpopidx', '×' + n));
         it.onclick = () => { this.sheet = { card }; this.render(); };
@@ -2878,6 +3058,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const names = new Map();
           for (const c of q.cards || []) names.set(c.name, (names.get(c.name) || 0) + 1);
           const list = [...names].map(([n, k]) => k > 1 ? `${k}× ${n}` : n).join(', ');
+          if (q.kind === 'reveal' || q.kind === 'look') {
+            const owners = [...new Set((q.cards || []).map(c => c.owner && c.owner.name).filter(Boolean))];
+            const source = q.title ? `<b>${esc(q.title)}</b>` : `<b>${esc(owners.length ? owners.join(', ') : who)}</b> ${q.kind === 'look' ? 'looks at' : 'reveals'}`;
+            bar.appendChild(el('div', 'ptext', `👁 ${source}: ${esc(list)}. Review the cards, then Proceed.`));
+            break;
+          }
           const verb = q.kind === 'tokens' ? 'creates' : 'puts onto the battlefield';
           bar.appendChild(el('div', 'ptext',
             `👁 <b>${esc(who)}</b> ${verb}: ${esc(list)}. Review the cards, then Proceed.`));
@@ -4998,6 +5184,45 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
     }
 
     showKeywordGameEffect(event) {
+      // Mass grants (Leonardo: menace, trample and lifelink on every creature)
+      // would stack a dozen labels; more than three in one tick collapse into
+      // one banner while every affected card still glows.
+      if (!this._keywordBuffer) {
+        this._keywordBuffer = [];
+        setTimeout(() => this.flushKeywordEffects(), 0);
+      }
+      this._keywordBuffer.push(event);
+    }
+
+    flushKeywordEffects() {
+      const events = this._keywordBuffer || [];
+      this._keywordBuffer = null;
+      if (events.length <= 3) {
+        for (const event of events) this.showKeywordGameEffectNow(event);
+        return;
+      }
+      const visuals = MTG.KEYWORD_VISUALS || {};
+      const keywords = [...new Set(events.map(event => event.keyword))].map(keyword => visuals[keyword] ? visuals[keyword].label : keyword);
+      const cards = [...new Set(events.map(event => event.card || event.target).filter(Boolean))];
+      const prevented = events.every(event => event.state === 'prevented');
+      const layer = this.gameEffectLayer();
+      const vp = this.fxViewport();
+      const fx = el('div', 'gamefx-keywordgroup',
+        `<small>${prevented ? 'DESTROY PREVENTED' : 'KEYWORDS GAINED'} · ${cards.length} ${cards.length === 1 ? 'CREATURE' : 'CREATURES'}</small><b>${esc(keywords.join(' · '))}</b>`);
+      fx.style.left = `${vp.width / 2}px`;
+      fx.style.top = `${Math.max(120, Math.min(vp.height * 0.4, vp.height - 160))}px`;
+      layer.appendChild(fx);
+      for (const card of cards) {
+        const node = this.gameEffectCardAnchor(card);
+        if (!node) continue;
+        node.classList.add('fx-keyword-gold');
+        setTimeout(() => node.classList.remove('fx-keyword-gold'), 900);
+      }
+      setTimeout(() => fx.remove(), 1500);
+      setTimeout(() => { if (layer && !layer.children.length) layer.remove(); }, 1560);
+    }
+
+    showKeywordGameEffectNow(event) {
       const visual = MTG.KEYWORD_VISUALS && MTG.KEYWORD_VISUALS[event.keyword];
       if (!visual) return;
       const target = event.card || event.target;
@@ -5018,10 +5243,17 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
     }
 
     showCounterChangeEffect(event) {
-      const node = this.gameEffectCardAnchor(event.card || event.target);
+      const subject = event.card || event.target;
+      const node = subject instanceof MTG.Player ? this.gameEffectPlayerAnchor(subject) : this.gameEffectCardAnchor(subject);
       const rect = this.fxRect(node);
       const layer = this.gameEffectLayer();
-      const fx = el('div', 'gamefx-minuscounter', `${U.icon('minus-counter')}<b>−1/−1</b><span>×${Math.max(1, Number(event.amount) || 1)}</span>`);
+      const amount = Math.max(1, Number(event.amount) || 1);
+      const counterKind = event.counterKind || '-1/-1';
+      const fx = counterKind === '-1/-1'
+        ? el('div', 'gamefx-minuscounter', `${U.icon('minus-counter')}<b>−1/−1</b><span>×${amount}</span>`)
+        : counterKind === '+1/+1'
+          ? el('div', 'gamefx-pluscounter', `<i>+</i><b>+1/+1</b><span>×${amount}</span>`)
+          : el('div', 'gamefx-othercounter', `<b>◆ +${amount}</b><span>${esc(String(counterKind).toUpperCase())}</span>`);
       const vp = this.fxViewport();
       fx.style.left = `${rect ? rect.left + rect.width / 2 : vp.width / 2}px`;
       fx.style.top = `${rect ? rect.top + rect.height / 2 : vp.height / 2}px`;
@@ -5071,6 +5303,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       if (!text) return;
       if (kind === 'spellCopy' && event.spell) {
         this.showSpellCopy(event);
+        this.showSpellCopyBurst(event);
         return;
       }
       let stack = document.querySelector('.effectnoticestack');

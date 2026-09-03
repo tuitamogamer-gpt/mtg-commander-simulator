@@ -1678,7 +1678,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const counterText = `${card.name}: +${n} ${kind} ${U.plural(n, 'counter', 'countera')}.`;
       if (!silent) this.lg(counterText);
       this.notifyEffect(`◆ ${counterText}`, { kind: 'counter', card, counterKind: kind, n }, !!silent);
-      if (kind === '-1/-1') this.note('gameEffect', {
+      // Every counter kind on the battlefield gets a visual pulse (the UI picks
+      // the −1/−1, +1/+1 or generic chip); −1/−1 always did, even off-board.
+      if (kind === '-1/-1' || card.zone === 'battlefield') this.note('gameEffect', {
         kind: 'counterChange', counterKind: kind, card, target: card, amount: n,
       });
       this.recalc();

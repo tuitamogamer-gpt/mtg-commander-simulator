@@ -1112,19 +1112,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'cast', desc: 'MV5+ → maybe a copy',
       filter: (g, self, d) => d.player === self.ctrl && d.mv >= 5,
       run: async ctx => {
-        const g = ctx.g, so = ctx.data.so;
-        let match = false;
+        const g = ctx.g, so = ctx.data.so, spell = ctx.data.card;
+        const revealed = [];
+        let match = null;
         for (const o of E.eachOpp(g, ctx.you)) {
           const top = o.library[o.library.length - 1];
           if (!top) continue;
+          revealed.push(top);
           g.lg(`${o.name} reveals ${top.name}.`);
-          if (top.def.types.some(t => ctx.data.card.def.types.includes(t))) match = true;
+          if (!match && top.def.types.some(t => spell.def.types.includes(t))) match = top;
+        }
+        // The reveal is the whole point of the trigger: show the human what
+        // came up instead of only logging it.
+        if (revealed.length) {
+          await g.revealToHuman({ cards: revealed, ctrl: revealed[0].owner, kind: 'reveal', includeLands: true, title: 'Gandalf: opponents reveal' });
         }
         if (match && so && g.stack.includes(so)) {
+          g.lg(`Gandalf, Westward Voyager: ${match.name} shares a card type with ${spell.name}; the spell is copied and each opponent draws a card.`);
           await g.copySpell(so, ctx.you, { mayNewTargets: true });
           for (const o of E.eachOpp(g, ctx.you)) await g.draw(o, 1);
-          g.lg('Gandalf: spell copied!');
         } else {
+          g.lg(`Gandalf, Westward Voyager: no revealed card shares a type with ${spell.name}; you draw a card.`);
           await g.draw(ctx.you, 1);
         }
       },
