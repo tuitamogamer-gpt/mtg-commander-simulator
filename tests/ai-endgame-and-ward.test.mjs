@@ -180,3 +180,29 @@ test('AI pretraga skalira budžet čvorova prema veličini table', () => {
   const large = MTG.aiSimulationWorkload(game);
   assert.ok(large > small * 3, 'mjera opterećenja mora rasti sa tablom');
 });
+
+test('deck bez ručno napisane teme uzima temu od komandera, ne od slučajnih brojeva', () => {
+  // An imported list has no hand-written theme. Reading its synergies off raw
+  // card counts surfaces whatever is incidentally common; the commander is the
+  // thesis of a Commander deck, so its own tags must carry.
+  const built = Object.keys(MTG.DECKS).filter(name => !MTG.DECKS[name].custom);
+  const source = built.find(name => MTG.AI_DECK_PROFILE_HINTS[name]) || built[0];
+  const deck = MTG.DECKS[source];
+  const lines = ['Commander', `1 ${deck.commander}`, '', 'Deck'];
+  for (const entry of deck.cards) if (entry.name !== deck.commander) lines.push(`${entry.n} ${entry.name}`);
+  const imported = MTG.importCommanderDeck(lines.join('\n'),
+    { name: 'Profile Probe Deck', register: true, replace: true });
+  assert.ok(imported, 'the control deck must import');
+
+  const commanderTags = MTG.inferCardSemantics(MTG.DEFS[deck.commander]).synergyTags || [];
+  assert.ok(commanderTags.length, 'this fixture needs a commander with synergy tags');
+  const profile = MTG.getDeckAIProfile('Profile Probe Deck');
+  assert.ok(commanderTags.some(tag => profile.primarySynergies.includes(tag)),
+    `imported profile ${profile.primarySynergies.join(',')} ignores the commander's own theme ${commanderTags.join(',')}`);
+
+  // a deck that does have a hand-written theme keeps exactly that theme
+  const hinted = MTG.getDeckAIProfile(source);
+  for (const tag of MTG.AI_DECK_PROFILE_HINTS[source].tags || []) {
+    assert.ok(hinted.primarySynergies.includes(tag), `${source} must keep its written theme ${tag}`);
+  }
+});

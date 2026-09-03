@@ -331,6 +331,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!sem.roles.includes('land')) { nonlands++; totalMv += U.mv(def.cost || ''); }
     }
     for (const tag of hint.tags || []) tagCounts[tag] = (tagCounts[tag] || 0) + 12;
+    // A deck without a hand-written theme (every imported list, and a few
+    // built-ins) had its synergies read off raw card counts, which surfaces
+    // whatever is incidentally common instead of what the deck is about. The
+    // commander is the thesis of a Commander deck, so its own synergy tags
+    // carry the weight a hint would have given them.
+    if (!hint.tags) {
+      const commanderDef = deck && deck.commander && U.DEFS && U.DEFS[deck.commander];
+      if (commanderDef) {
+        for (const tag of inferCardSemantics(commanderDef).synergyTags || []) {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 12;
+        }
+      }
+    }
     const avgMv = nonlands ? totalMv / nonlands : 0;
     const rankedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
     const scoreDef = def => {
