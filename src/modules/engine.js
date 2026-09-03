@@ -2625,8 +2625,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const card=bf.find(card=>card.iid===c.iid&&card.zoneVersion===c.zoneVersion);
           card.cur.types=c.retainTypes?[...new Set(card.cur.types.concat(c.types))]:c.types.slice();
           card.cur.subtypes=c.retainTypes?[...new Set(card.cur.subtypes.filter(type=>c.retainAllSubtypes||!(c.replaceCreatureSubtypes||c.subtypes.length&&c.types.includes('Artifact'))||!MTG.CREATURE_SUBTYPES.has(type)).concat(c.subtypes))]:c.subtypes.slice();
-          if(c.colors!==null)card.cur.colors=c.colors.slice();
-          for(const keyword of c.keywords)card.cur.kw.add(keyword);
+          if(c.colors!=null)card.cur.colors=c.colors.slice();
+          for(const keyword of c.keywords||[])card.cur.kw.add(keyword);
           continue;
         }
         const st = c.def.statics;
