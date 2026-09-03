@@ -144,6 +144,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // at most this many tokens; creation beyond it is skipped and logged once
   // per turn (a table rule, not a Comprehensive Rules effect).
   MTG.TOKEN_LIMIT_PER_PLAYER = 250;
+  // Isti razlog kao limit tokena: samo protiv beskonačne petlje, dovoljno
+  // visoko da ga stvarna partija sa punom tablom nikad ne dotakne.
+  MTG.TRIGGER_LIMIT_PER_TURN = 20000;
 
   // ============================================================
   // Player
@@ -2929,8 +2932,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async resolveTriggerNow(tr) {
       // sigurnosni ventil: nijedna trigger petlja ne smije zamrznuti igru
       this._trigsThisTurn = (this._trigsThisTurn || 0) + 1;
-      if (this._trigsThisTurn > 800) {
-        if (this._trigsThisTurn === 801) this.lg('⚠️ Too many triggers in one turn — the safety limit skips the rest.');
+      // Ventil protiv beskonačne petlje okidača, ne protiv velikog stola.
+      // Stara granica od 800 se na kasnoj tabli dostizala legitimno (jedan
+      // board wipe zna okinuti preko deset hiljada okidača), pa su se okidači
+      // tiho prestajali dešavati usred poteza.
+      if (this._trigsThisTurn > MTG.TRIGGER_LIMIT_PER_TURN) {
+        if (this._trigsThisTurn === MTG.TRIGGER_LIMIT_PER_TURN + 1) {
+          this.lg(`⚠️ More than ${MTG.TRIGGER_LIMIT_PER_TURN} triggered abilities in a single turn — the safety limit stops the rest so the game can continue.`, 'warn');
+        }
         return;
       }
       const ctrl = tr.ctrl || (tr.src ? tr.src.ctrl : this.players[0]);

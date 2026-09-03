@@ -5089,6 +5089,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   // Priority
   // ============================================================
+  // Koliko uzastopnih priority pitanja smije proći BEZ ijedne rezolucije ili
+  // odigrane akcije prije nego zaključimo da je petlja zaglavljena.
+  const PRIORITY_STALL_LIMIT = 400;
+  // Posljednja brana: i uz stalni napredak jedna partija ne može opravdano
+  // imati ovoliko priority pitanja u jednom krugu.
+  const PRIORITY_ABSOLUTE_LIMIT = 200000;
+
   G.priorityRound = async function (afterPlayer) {
     if (this.gameOver) return;
     // Cast/activation helperi istorijski sami pozivaju priorityRound. Ako se to
@@ -5104,9 +5111,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ? afterPlayer
       : (this.turnPlayer && !this.turnPlayer.lost ? this.turnPlayer : this.alivePlayers()[0]);
     let consecutivePasses = 0;
+    // Ovaj ventil postoji zbog BESKONAČNE petlje, a ne zbog velikog posla.
+    // Brojanje samih priority pitanja je rušilo kasnu partiju: 300 rezolucija
+    // na četveroigračkom stolu je 1.200 pitanja, a roj okidača ih zna imati i
+    // više. Zato se broji NAPREDAK: svaka rezolucija sa stacka i svaka odigrana
+    // akcija resetuju brojač, pa prekid nastupa samo kad se zaista ništa ne
+    // dešava. Apsolutna gornja granica ostaje kao posljednja brana.
+    let sinceProgress = 0;
     let guard = 0;
     try {
-      while (!this.gameOver && holder && guard++ < 1200) {
+      while (!this.gameOver && holder && guard++ < PRIORITY_ABSOLUTE_LIMIT && sinceProgress < PRIORITY_STALL_LIMIT) {
         await this.flushTriggers();
         if (this.gameOver) return;
         if (holder.lost) holder = this.nextPlayer(holder);
@@ -5118,6 +5132,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const act = await this.askPriorityAction(holder);
         if (act && act.kind !== 'pass') {
           consecutivePasses = 0;
+          sinceProgress = 0;
           this._priorityRestart = null;
           await this.performAction(holder, act);
           holder = this._priorityRestart && !this._priorityRestart.lost ? this._priorityRestart : holder;
@@ -5129,6 +5144,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (consecutivePasses >= this.alivePlayers().length) {
           if (!this.stack.length) break;
           await this.resolveTop();
+          sinceProgress = 0;
           if (this.gameOver) return;
           // Nakon rezolucije aktivni igrač dobija priority (CR 117.3b).
           holder = this.turnPlayer && !this.turnPlayer.lost ? this.turnPlayer : this.alivePlayers()[0];
@@ -5137,8 +5153,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           continue;
         }
         holder = this.nextPlayer(holder);
+        sinceProgress++;
       }
-      if (guard >= 1200) throw new Error('Priority guard exceeded.');
+      // Zaglavljena petlja se prekida i objašnjava igraču umjesto da mu sruši
+      // partiju fatalnim overlayem usred poteza.
+      if (sinceProgress >= PRIORITY_STALL_LIMIT || guard >= PRIORITY_ABSOLUTE_LIMIT) {
+        this.lg('⚠️ The priority loop could not make progress and was released; the stack was left as it is.', 'warn');
+      }
     } finally {
       this.priorityState = null;
       this._priorityRestart = null;
@@ -5474,6 +5495,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.runGame = async function () {
     while (!this.gameOver && this.turnNo < this.maxTurns) {
+      // Between two turns the board is pure data: nothing is on the stack and
+      // no lasting effect is waiting. That is where a real save can be written.
+      if (typeof this.onTurnCheckpoint === 'function') {
+        try { this.onTurnCheckpoint(this); } catch (error) { console.error(error); }
+      }
       await this.runTurn();
     }
     if (!this.gameOver) {

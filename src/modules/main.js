@@ -1723,10 +1723,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       MTG.registerImportedDeck(validation, { replace: true });
     }
     const resumeSave = state.resumeSave ? MTG.validateAccountSave(state.resumeSave) : null;
-    const savedTimeline = resumeSave ? resumeSave.decisions.slice() : [];
+    // A save that carries a written-down board needs no replay at all: the
+    // timeline is only read for saves made before real state saves existed.
+    const restoringBoard = !!(resumeSave && resumeSave.state);
+    const savedTimeline = resumeSave && !restoringBoard ? resumeSave.decisions.slice() : [];
     const recordedTimeline = resumeSave ? resumeSave.decisions.slice() : [];
     let replayCursor = 0;
-    let replayingSave = !!resumeSave;
+    let replayingSave = !!resumeSave && !restoringBoard;
     const matchId = resumeSave?.matchId || (globalThis.crypto?.randomUUID
       ? globalThis.crypto.randomUUID() : `match-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     const matchCreatedAt = resumeSave?.createdAt || new Date().toISOString();
@@ -1875,6 +1878,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // cannot reconstruct a custom deck safely. Keep lifetime match stats while
     // refusing to create a checkpoint that Continue would later reject.
     const accountCheckpointEnabled = !!saveSetup && !MTG.DECKS[state.deck]?.custom;
+    // The board as of the last turn boundary. A resume restores this directly;
+    // the recorded timeline is only the fallback for older saves.
+    let latestBoardState = resumeSave?.state || null;
+    g.onTurnCheckpoint = () => {
+      const snapshot = MTG.captureGameState(g);
+      if (snapshot) { latestBoardState = snapshot; queueAccountSave(); }
+    };
     let gameAccountOwnerId = globalThis.MTGAccount?.user?.id || null;
     let accountBindingDisabled = false;
     const accountCanWrite = () => !accountBindingDisabled
@@ -1893,7 +1903,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ui.accountSaveStatus = { state: 'saving', text: 'Saving…' };
       ui.queueRender();
       try {
-        await globalThis.MTGAccount.saveGame(MTG.buildAccountSave(g, saveSetup, recordedTimeline, matchId), gameAccountOwnerId);
+        await globalThis.MTGAccount.saveGame(
+          MTG.buildAccountSave(g, saveSetup, recordedTimeline, matchId, latestBoardState), gameAccountOwnerId);
         ui.accountSaveStatus = { state: 'saved', text: `Saved · turn ${g.turnNo}` };
         if (notify) ui.toast('Solo game saved to your profile.');
         ui.queueRender();
@@ -4136,7 +4147,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ui.render();
       return;
     }
-    g.start().catch(err => {
+    const begin = restoringBoard
+      ? (async () => {
+        // Put the saved board back and carry on from the turn it was saved at.
+        MTG.restoreGameState(g, resumeSave.state);
+        ui.render();
+        ui.toast(`Saved game restored · turn ${g.turnNo + 1} · the board is exactly as you left it.`);
+        await MTG.resumeGame(g);
+      })()
+      : g.start();
+    begin.catch(err => {
       console.error(err);
       ui.handleFatal(err);
     });

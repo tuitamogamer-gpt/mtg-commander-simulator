@@ -210,9 +210,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     assert(false, `recorded side action ${saved.type} is unsupported.`);
   };
 
-  MTG.buildAccountSave = function (game, setup, decisions, matchId) {
+  MTG.buildAccountSave = function (game, setup, decisions, matchId, state) {
     assert(game && setup && matchId, 'cannot build a checkpoint without a running match.');
     return {
+      // A written-down board. Restoring it needs no replay and does not care
+      // whether the rules engine or the AI changed since the save. The recorded
+      // timeline below stays as a fallback for saves made before this existed.
+      state: state || null,
       schema: 'commander-save/v1',
       mode: 'solo',
       matchId,
@@ -250,6 +254,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     assert(save.setup.aiDecks.every(name => MTG.DECKS?.[name] && !MTG.DECKS[name].custom), 'a saved AI deck is unavailable.');
     assert(new Set([save.setup.deck, ...save.setup.aiDecks]).size === save.setup.aiDecks.length + 1, 'saved decks must remain unique.');
     assert(Array.isArray(save.decisions) && save.decisions.length <= 5000, 'decision history is invalid.');
+    if (save.state) assert(save.state.format >= 2 && Array.isArray(save.state.cards) && Array.isArray(save.state.players),
+      'the saved board is not readable by this build.');
     MTG.validateAISkillSetup(save.setup.aiStyles || [], save.setup.aiCustomSkills || []);
     return save;
   };

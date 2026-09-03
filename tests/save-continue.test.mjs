@@ -120,7 +120,8 @@ test('account save schema keeps deterministic setup, private decisions, and prof
 
   assert.match(mainSource, /MTG\.restoreSaveDecision\(request, p, recorded\)/);
   assert.match(mainSource, /MTG\.replayAccountSideAction\(game, p, side\.action\)/);
-  assert.match(mainSource, /MTG\.buildAccountSave\(g, saveSetup, recordedTimeline, matchId\)/);
+  // the checkpoint writer also carries the written-down board (5th argument)
+  assert.match(mainSource, /MTG\.buildAccountSave\(\s*g,\s*saveSetup,\s*recordedTimeline,\s*matchId,\s*latestBoardState\)/);
   assert.match(mainSource, /paced:\s*true/);
   assert.doesNotMatch(mainSource, /paced:\s*!resumeSave/);
   assert.match(mainSource, /if \(resumeSave\) g\.speedFactor = 0/);
