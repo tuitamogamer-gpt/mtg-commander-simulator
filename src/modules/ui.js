@@ -647,6 +647,83 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Looping animations (castable breathing, threat pulses) read this
       // negative delay so a rebuild continues the loop instead of restarting it.
       root.style.setProperty('--fx-phase', `-${Math.round(performance.now() % 3600000)}ms`);
+      this.fitBattlefieldLanes(root);
+      this.initLaneFit();
+    }
+
+    // Battlefield lanes shrink to fit instead of cutting cards off at the edge.
+    // Each lane is measured unscaled (its content against the box its clipping
+    // ancestors leave visible), then gets the largest CSS zoom at which every
+    // card fits in one or more wrapped rows. Below FIT_MIN the lane scrolls.
+    fitBattlefieldLanes(root) {
+      const host = root || $('#game');
+      if (!host || typeof getComputedStyle !== 'function') return;
+      if (!window.matchMedia || !window.matchMedia('(min-width: 768px)').matches) return;
+      const lanes = [...host.querySelectorAll('.boardlanecards, .oppresourcecards, .manaartifactstrip')];
+      if (!lanes.length) return;
+      const FIT_MIN = 0.5, STEP = 0.025;
+      try {
+        for (const lane of lanes) lane.style.zoom = '';
+        const plans = [];
+        for (const lane of lanes) {
+          const kids = [...lane.children].filter(kid => kid.offsetWidth > 0 && kid.offsetHeight > 0);
+          if (!kids.length) continue;
+          const cs = getComputedStyle(lane);
+          const gapX = parseFloat(cs.columnGap) || 0, gapY = parseFloat(cs.rowGap) || 0;
+          const cw = Math.max(...kids.map(kid => kid.offsetWidth));
+          const ch = Math.max(...kids.map(kid => kid.offsetHeight));
+          // Visible box: the lane's rect cut down by every overflow-clipping ancestor.
+          const box = lane.getBoundingClientRect();
+          let left = box.left, top = box.top, right = box.right, bottom = box.bottom;
+          for (let a = lane.parentElement; a && a !== document.body; a = a.parentElement) {
+            const o = getComputedStyle(a);
+            if (!/hidden|auto|scroll|clip/.test(o.overflow + o.overflowX + o.overflowY)) continue;
+            const r = a.getBoundingClientRect();
+            left = Math.max(left, r.left); top = Math.max(top, r.top);
+            right = Math.min(right, r.right); bottom = Math.min(bottom, r.bottom);
+          }
+          // Rects are viewport pixels; offsets are lane pixels (body zoom).
+          const z0 = this.viewportZoom(lane);
+          const W = Math.max(0, right - left) / z0, H = Math.max(0, bottom - top) / z0 - 2;
+          if (W <= 0 || H <= 0) continue;
+          const n = kids.length;
+          let best = null;
+          for (let z = 1; z >= FIT_MIN - 1e-9 && best == null; z = Math.round((z - STEP) * 1000) / 1000) {
+            const perRow = Math.max(1, Math.floor((W / z + gapX) / (cw + gapX)));
+            const rows = Math.ceil(n / perRow);
+            if (rows * ch + (rows - 1) * gapY <= H / z) best = z;
+          }
+          plans.push([lane, best == null ? FIT_MIN : best, H]);
+        }
+        // Apply after measuring so the layout is read once and written once.
+        // Creature and support lanes share one zoom per board so a player's
+        // cards stay the same size; the small mana strips scale on their own.
+        const boards = new Map();
+        const boardOf = lane => lane.classList.contains('boardlanecards') ? (lane.closest('.opprow, .myboard') || host) : lane;
+        for (const [lane, z] of plans) {
+          const board = boardOf(lane);
+          boards.set(board, Math.min(boards.has(board) ? boards.get(board) : 1, z));
+        }
+        for (const [lane, , H] of plans) {
+          const z = boards.get(boardOf(lane));
+          lane.style.zoom = z < 0.999 ? String(z) : '';
+          // At the floor the rows still overflow: pin the lane to its visible
+          // height so the rest scrolls inside it instead of being clipped.
+          lane.style.maxHeight = z <= FIT_MIN + 1e-9 ? `${Math.floor(H / z)}px` : '';
+        }
+      } catch (err) {
+        // A layout that cannot be measured (headless tests) keeps the unscaled lanes.
+      }
+    }
+
+    initLaneFit() {
+      if (this._laneFitInit || typeof window === 'undefined' || !window.addEventListener) return;
+      this._laneFitInit = true;
+      window.addEventListener('resize', () => {
+        if (this._laneFitQueued) return;
+        this._laneFitQueued = true;
+        requestAnimationFrame(() => { this._laneFitQueued = false; this.fitBattlefieldLanes(); });
+      });
     }
 
     renderSystemStatus() {
@@ -1866,6 +1943,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         localStorage.setItem('mtgOppS', String(this.oppScale));
         wrap.style.setProperty('--opp-scale', String(this.oppScale));
         val.textContent = Math.round(this.oppScale * 100) + '%';
+        this.fitBattlefieldLanes();
       };
       const minus = el('button', 'zbtn', '−');
       minus.title = 'Smaller opponent cards';
@@ -1881,6 +1959,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.oppHeight = 42;
         localStorage.setItem('mtgOppH', '42');
         wrap.style.setProperty('--opp-h', 'calc(42 * var(--dvhu))');
+        this.fitBattlefieldLanes();
       };
       bar.appendChild(el('div', '', 'AI table'));
       bar.appendChild(el('div', 'zspacer'));
@@ -1899,6 +1978,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const dvh = ((cy - startY) / window.innerHeight) * 100;
           this.oppHeight = Math.max(14, Math.min(74, Math.round(startH + dvh)));
           wrap.style.setProperty('--opp-h', `calc(${this.oppHeight} * var(--dvhu))`);
+          this.fitBattlefieldLanes();
           if (e2.cancelable) e2.preventDefault();
         };
         const up = () => {

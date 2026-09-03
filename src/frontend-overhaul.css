@@ -910,6 +910,22 @@ body.game-active #game .mini img,
 body.game-active #game .hcard img { border-radius: 5px; }
 body.game-active #game .mini .mname { font-size: 9.2px; font-weight: 600; letter-spacing: .01em; padding: 3px 4px; background: linear-gradient(180deg, rgba(0, 0, 0, .55), rgba(0, 0, 0, .86)); }
 body.game-active #game .mini .pt { font-size: 11px; padding: 2px 5px; border-radius: 5px; background: rgba(0, 0, 0, .86); box-shadow: 0 0 0 1px rgba(255, 255, 255, .12); }
+/* Battlefield lanes wrap and shrink to fit (ui.js fitBattlefieldLanes) instead of
+   scrolling the last cards half-cut off the right edge. */
+@media (min-width: 768px) {
+  body.game-active #game .boardlanecards,
+  body.game-active #game .oppresourcecards,
+  body.game-active #game .manaartifactstrip { flex-wrap: wrap; align-items: safe flex-end; align-content: safe flex-end; max-height: 100%; overflow: hidden auto; scrollbar-width: thin; }
+  /* The support lane only takes the width its cards need, so a crowded
+     creature lane gets the rest of the opponent's strip. */
+  body.game-active #game .oppboardmain { grid-template-columns: minmax(0, 1fr) fit-content(40%); }
+  /* Desktop rows: the opponent strip needs ~190px for its cards and your board
+     ~340px (creature lane, lands, command zone), so your board gets the larger
+     share of the free height instead of an even .72/1 split. */
+  @media (min-width: 1280px) and (min-height: 701px) {
+    body.game-active #game { grid-template-rows: 58px 24px minmax(150px, .65fr) auto minmax(166px, 1fr) auto 132px !important; }
+  }
+}
 body.game-active #game .keywordbadge { font-size: 8px; letter-spacing: .06em; }
 body.game-active #game .czcard { border: 1px solid rgba(var(--ds-accent-soft-rgb), .22); background: linear-gradient(180deg, rgba(255, 255, 255, .03), transparent 30%), rgba(var(--ds-panel-rgb), .9); }
 body.game-active #game .czlabel { font-size: 8.5px; letter-spacing: .22em; }
