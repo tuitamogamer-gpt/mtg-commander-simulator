@@ -5163,6 +5163,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return g.nextPlayer(g.turnPlayer) === me;
   };
 
+  // Da li ovaj priority prozor nudi nešto što cilja objekat na stacku?
+  // activatableList/castableList već provjeravaju da meta postoji, pa je ovo
+  // istinito samo kad zaista ima šta da se odigra.
+  MTG.priorityRespondsToStack = function (q, game, me) {
+    const stackSpec = spec => !!spec && (spec.zone === 'stack' || spec.what === 'spell' || spec.what === 'ability');
+    // Aktivirana sposobnost sa table: activatableList je već potvrdio da meta
+    // na stacku postoji, pa je ovo uvijek stvarna prilika.
+    for (const entry of q.acts || []) {
+      const targets = entry && entry.ability && entry.ability.targets;
+      if (Array.isArray(targets) && targets.some(stackSpec)) return true;
+    }
+    // Karta iz ruke staje samo ako zaista može pogoditi MOJ objekat na stacku;
+    // counterspell u ruci ne smije zaustavljati svaki moj vlastiti spell.
+    const stack = (game && game.stack) || [];
+    if (!stack.length || !me) return false;
+    for (const entry of q.casts || []) {
+      const targets = entry && entry.card && entry.card.def && entry.card.def.targets;
+      if (!Array.isArray(targets)) continue;
+      for (const spec of targets) {
+        if (!stackSpec(spec)) continue;
+        for (const object of stack) {
+          if (object.ctrl !== me) continue;
+          let ok = true;
+          try { ok = typeof spec.filter !== 'function' || !!spec.filter(game, object, me, entry.card); }
+          catch (error) { ok = false; }
+          if (ok) return true;
+        }
+      }
+    }
+    return false;
+  };
+
   MTG.autoPassPolicy = function (mode, g, q, me) {
     if (!q || q.type !== 'priority') return false;
     const casts = q.casts || [], acts = q.acts || [];
@@ -5173,6 +5205,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Stack se vidi na sredini, a igra ide dalje tek na tvoj klik.
       // (Landovi ne koriste stack, pa oni nikad ne zaustavljaju igru.)
       if (top.ctrl !== me && top.kind === 'spell') return false;
+      // Sposobnost koja cilja objekat NA STACKU (Stella Lee kopira vlastiti
+      // instant, Fork efekti, counter sa table) postoji samo dok taj objekat
+      // stoji. Automatski pass ju je činio nedostupnom: igrač je bacio spell,
+      // a on bi se razriješio prije nego dobije priliku da reaguje.
+      if (MTG.priorityRespondsToStack(q, g, me)) return false;
       if (mode === 'full') return false;
       if (mode === 'off' || mode === 'end') return true;
       if (!canAct) return true;                              // trigeri/sposobnosti bez odgovora → pusti
@@ -6186,7 +6223,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (step === 'normal' && !ds && c.meta._dealtFirstStrike) return 0;
     let byT = c.cur.assignByToughness;
     // "during your turn" toughness assignment (Baldin, Felothar own-ctrl)
-    for (const b of this.bf()) {
+    const sources = this._toughnessCombatSources || this.bf();
+    for (const b of sources) {
+      if (b.zone !== 'battlefield' || b.phasedOut) continue;
       if (b.def.toughnessCombatAll && this.turnPlayer === b.ctrl) byT = true;
       if (b.def.toughnessCombatYours && b.ctrl === c.ctrl) byT = true;
     }

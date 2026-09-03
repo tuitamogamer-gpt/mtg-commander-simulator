@@ -1549,3 +1549,33 @@ body.game-active #game .pbtn.danger { color: #fff; background: linear-gradient(1
 @media (prefers-reduced-motion: reduce) {
   .gamefx-flight, .gamefx-copyburst, .gamefx-copycard, .gamefx-keywordgroup, .gamefx-pluscounter, .gamefx-othercounter { animation-duration: .55s !important; }
 }
+
+
+/* Reveal popup: "Accept all" sits under Proceed as the quiet secondary action.
+   A stack of copies or tokens otherwise asks for one Proceed per copy. */
+body.game-active #game .stackpop.reveal .stackpopfoot {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+body.game-active #game .pbtn.revealacceptall {
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  opacity: .9;
+}
+
+
+/* Priority window: battlefield abilities are offered as their own row so a
+   response that lives on the table (Stella Lee's copy) is as reachable as a
+   card in hand. */
+body.game-active #game .btnrow.priorityabilities {
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+body.game-active #game .btnrow.priorityabilities .pbtn {
+  color: var(--ds-accent-bright);
+  border: 1px solid rgba(var(--ds-accent-rgb), .45);
+  background: linear-gradient(180deg, rgba(var(--ds-accent-rgb), .16), rgba(var(--ds-accent-rgb), .06));
+}

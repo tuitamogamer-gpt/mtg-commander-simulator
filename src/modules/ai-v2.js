@@ -146,6 +146,42 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   MTG.AI_SEARCH_CONFIG = SEARCH_CONFIG;
 
+  // Beam pretraga pravi cijeli snapshot partije po čvoru, pa joj cijena raste
+  // sa svakom kartom na stolu. Kasna partija sa vojskom tokena i punim
+  // grobljima je zato znala zamrznuti browser na desetine sekundi. Budžet je
+  // izražen u "karta × čvor" jedinicama: mala i srednja tabla dobiju isti broj
+  // čvorova kao ranije, a ogromna ih proporcionalno smanji.
+  const SIMULATION_WORK_BUDGET = 28000;
+  const MIN_SEARCH_NODES = 8;
+  // Tvrda kočnica u stvarnom vremenu. Deterministički budžet iznad pokriva
+  // sve realne table; ovo je tu da nijedna patološka partija ne može zaključati
+  // glavnu nit dok igrač čeka.
+  const SEARCH_DEADLINE_MS = { easy: 450, normal: 900, hard: 1400 };
+  MTG.AI_SEARCH_DEADLINE_MS = SEARCH_DEADLINE_MS;
+
+  function simulationWorkload(game) {
+    // Karta na tabli nosi i izvedeno stanje/attachmente, pa je skuplja od
+    // karte u biblioteci ili groblju.
+    let cards = (game.battlefield || []).length * 2;
+    for (const player of game.players || []) {
+      cards += player.hand.length + player.library.length + player.graveyard.length +
+        player.exile.length + player.command.length;
+    }
+    return Math.max(1, cards);
+  }
+  MTG.aiSimulationWorkload = simulationWorkload;
+
+  function searchConfigForState(game, config) {
+    const workload = simulationWorkload(game);
+    const allowance = Math.max(MIN_SEARCH_NODES,
+      Math.min(config.maxNodes, Math.round(SIMULATION_WORK_BUDGET / workload)));
+    if (allowance >= config.maxNodes) return config;
+    return Object.assign({}, config, {
+      maxNodes: allowance,
+      maxDepth: allowance < 24 ? Math.min(config.maxDepth, 2) : config.maxDepth,
+    });
+  }
+
   // Jedino mjesto za neuobičajene semantičke dopune. Card skripte i dalje
   // opisuju pravila; ovi podaci služe samo evaluaciji.
   const CARD_ROLE_OVERRIDES = {
@@ -651,7 +687,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return result;
   };
 
+  // View je zamrznut snapshot, pa je njegov hash konstanta. Bez ovog keša se
+  // isti board serijalizovao po nekoliko puta za svaki simulirani čvor
+  // (evaluateState, utilityVector, kingmaking, seed) i na tabli sa stotinu
+  // tokena je sam hash bio drugi najskuplji dio odluke.
+  const STATE_HASH_CACHE = new WeakMap();
   function stateHash(view) {
+    if (view && typeof view === 'object') {
+      const cached = STATE_HASH_CACHE.get(view);
+      if (cached !== undefined) return cached;
+    }
+    const computed = computeStateHash(view);
+    if (view && typeof view === 'object') STATE_HASH_CACHE.set(view, computed);
+    return computed;
+  }
+  function computeStateHash(view) {
     const payload = {
       t: view.turnNumber, a: view.activePlayerId, p: view.phase, s: view.step, w: view.winnerId,
       players: view.players.map(player => [player.id, player.life, player.lost, player.handCount, player.libraryCount, player.openMana,
@@ -825,7 +875,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // `ctx` is an optional per-declaration cache (threat per defender, defender
   // creatures) so that planning a wide board does not rebuild the full bot
   // view for every attacker × target pair.
-  function attackAssignmentAssessment(game, player, card, target, priorAttackers = 0, ctx = null) {
+  function attackAssignmentAssessment(game, player, card, target, priorAttackers = 0, ctx = null, committedDamage = 0) {
     const defender = target instanceof U.Player ? target : target.ctrl;
     const baseHit = Math.max(0, game.dmgAmount ? game.dmgAmount(card, 'normal') : card.power || 0);
     const hit = baseHit * (card.kw('double strike') ? 2 : 1);
@@ -884,7 +934,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const projected = projectedPlayerDamage(card, expDamage, damageEvents);
     const poisonLethal = target instanceof U.Player && projected.poison > 0 &&
       (target.poison || 0) + projected.poison >= 10;
-    const lethal = target instanceof U.Player && (poisonLethal || projected.life > 0 && projected.life >= target.life) ? 90 : 0;
+    // Šteta preko protivnikovog života (uz rezervu za chump blokove) ne vrijedi
+    // gotovo ništa. Bez ovoga je plan sa 100 štete na igrača sa 3 života
+    // uvijek pobjeđivao mjeren napad, pa je AI slao cijelu tablu bez razloga.
+    const alreadyCommitted = Math.max(0, Number(committedDamage) || 0);
+    let damageValue = expDamage;
+    if (target instanceof U.Player) {
+      const enough = Math.max(0, target.life * 1.5 + 2);
+      const useful = Math.max(0, Math.min(expDamage, enough - alreadyCommitted));
+      damageValue = useful + Math.max(0, expDamage - useful) * 0.08;
+    }
+    const alreadyLethal = target instanceof U.Player && alreadyCommitted >= target.life;
+    const lethal = !alreadyLethal && target instanceof U.Player &&
+      (poisonLethal || projected.life > 0 && projected.life >= target.life) ? 90 : 0;
     let commander = 0;
     if (card.commander && target instanceof U.Player && expDamage > 0) {
       const dealt = Number(target.commanderDamage && target.commanderDamage[card.iid] || 0);
@@ -895,8 +957,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // combat damage. Ranije je i 0/1 Birds of Paradise dobijao isti threat
     // bonus, pa je AI na ranom potezu tapovao izvor mane za doslovno 0 štete.
     const dealsDamage = expDamage > 0;
+    // Pritisak je stvaran samo za štetu koja još nešto mijenja. Napad preko
+    // smrtonosnog praga ne "pritiska" nikoga.
+    const usefulShare = expDamage > 0 ? Math.min(1, damageValue / expDamage) : 0;
     const threat = dealsDamage
-      ? (ctx && ctx.threatFor ? ctx.threatFor(defender) : playerThreatForGame(game, player, defender)) * 0.13 : 0;
+      ? (ctx && ctx.threatFor ? ctx.threatFor(defender) : playerThreatForGame(game, player, defender)) * 0.13 * usefulShare : 0;
     let risk = 0;
     // A punisher is spent on the juiciest attacker first, so a cheap body is
     // deterred less than a real threat: losing a 1/1 to a deathtouch blocker
@@ -906,13 +971,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     else if (bestTradeLoss > 0) risk += (bestTradeLoss * 0.8 + 1) * attractiveness; // nepovoljan trade
     else if (blockers.length) risk += 0.8;                    // chump im poklanja tempo, mala cijena
     const vigilance = card.kw('vigilance');
+    // Tijelo koje ne treba za pobjedu je vrjednije kod kuće nego tapnuto.
+    if (alreadyLethal && !vigilance) risk += 1.2;
     if (!dealsDamage) risk += 2.5;                            // dobrovoljni napad bez štete nema combat korist
     const tapsForMana = !vigilance && !!(card.def.mana && (!card.def.mana.cost || card.def.mana.cost.tap));
     if (tapsForMana) risk += game.turnNo <= 12 ? 3.5 : 1.75; // čuvaj rani mana razvoj za main 2/reakcije
     const crackback = vigilance ? 0 : defenderCreatures.filter(creature => !creature.tapped)
       .reduce((sum, creature) => sum + Math.max(0, creature.power || 0), 0) * 0.08;
     const poisonPressure = target instanceof U.Player ? projected.poison * 2.5 : 0;
-    const score = expDamage * 1.15 + poisonPressure + lethal + commander + threat - risk - crackback;
+    const score = damageValue * 1.15 + poisonPressure + lethal + commander + threat - risk - crackback;
     return {
       score, freeBlock, expectedDamage: expDamage, bestTradeLoss,
       blockable: blockers.length > 0, blockerCount: blockers.length,
@@ -944,6 +1011,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const WIDE_BOARD_ATTACKERS = 28;
   const WIDE_BOARD_BLOCK_TARGETS = 24;
   const WIDE_BOARD_SHIELDS = 16;
+  const MENACE_PARTNER_LIMIT = 6;
+  const FORECAST_ATTACKER_LIMIT = 24;
+  const COMBAT_SURVIVAL_BUDGET_MS = 600;
+  const WIDE_BOARD_SWARM_SHIELDS = 8;
+  const WIDE_BOARD_SWARM_BLOCK_TARGETS = 12;
+  const EMPTY_LIST = Object.freeze([]);
+  // Jedna pretraga blokova pravi hiljade prognoza nad ISTIM nizom napadača;
+  // poredak se zato računa jednom po nizu.
+  const RANKED_ATTACKERS = new WeakMap();
+  function rankedAttackers(attackers) {
+    let ranked = RANKED_ATTACKERS.get(attackers);
+    if (!ranked) {
+      ranked = attackers.slice().sort(byCombatWeight);
+      RANKED_ATTACKERS.set(attackers, ranked);
+    }
+    return ranked;
+  }
   function byCombatWeight(a, b) {
     return (Math.max(0, b.power || 0) + Math.max(0, b.toughness || 0) * 0.3) - (Math.max(0, a.power || 0) + Math.max(0, a.toughness || 0) * 0.3) || a.iid - b.iid;
   }
@@ -956,7 +1040,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // opponent's hand. It ranks declarations; the rules engine still executes
   // all damage, triggers, replacements and legality in the actual game.
   function forecastCombat(game, defender, attackers, assignments, initial = {}) {
-    const cards = [...new Set([...attackers, ...assignments.map(item => item.blocker)])];
+    // Blokovi se traže po napadaču. Filtriranje cijele liste unutar petlje po
+    // napadačima je pravilo O(napadači × blokeri) posla po prognozi, što je na
+    // tabli sa stotinu tokena samo po sebi zamrzavalo deklaraciju napada.
+    const blockersByAttacker = new Map();
+    for (const item of assignments) {
+      const list = blockersByAttacker.get(item.attacker);
+      if (list) list.push(item.blocker);
+      else blockersByAttacker.set(item.attacker, [item.blocker]);
+    }
+    // Roj od stotinu 1/1 tokena nijedna strana ionako ne blokira — pretraga
+    // blokova ih je već ograničavala. Modeluju se najteža tijela i sve što je
+    // stvarno blokirano, a ostatak samo doda svoju štetu braniocu. Bez toga je
+    // svaka prognoza gradila mapu stanja za cijelu tablu.
+    let modeled = attackers, swarm = EMPTY_LIST;
+    if (attackers.length > FORECAST_ATTACKER_LIMIT) {
+      const ranked = rankedAttackers(attackers);
+      modeled = ranked.slice(0, FORECAST_ATTACKER_LIMIT);
+      swarm = [];
+      for (const card of ranked.slice(FORECAST_ATTACKER_LIMIT)) {
+        if (blockersByAttacker.has(card)) modeled.push(card);
+        else swarm.push(card);
+      }
+    }
+    const cards = [...new Set([...modeled, ...assignments.map(item => item.blocker)])];
     const state = new Map(cards.map(card => [card, {
       damage: initial.freshTurn ? 0 : Number(card.damage || 0),
       toughness: Math.max(0, card.toughness), dead: false,
@@ -970,15 +1077,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       commanderDamage: Object.assign({}, initial.commanderDamage || defender.commanderDamage),
       dead: new Set(), removed: new Set(), lifeGain: new Map(), damage: 0, lethal: false };
     const active = card => !state.get(card).dead && !state.get(card).removed;
+    // dmgAmount je najskuplji poziv u prognozi, a unutar jedne prognoze je
+    // konstanta po karti — mijenja se samo lokalni counterReduction.
+    const baseDamage = new Map();
+    const printedDamage = card => {
+      let value = baseDamage.get(card);
+      if (value === undefined) {
+        value = game.dmgAmount(card, 'first') || game.dmgAmount(card, 'normal');
+        baseDamage.set(card, value);
+      }
+      return value;
+    };
     for (const step of ['first', 'normal']) {
       const hits = [];
       const amount = card => {
         const first = card.kw('first strike'), double = card.kw('double strike');
         if (step === 'first' ? !(first || double) : first && !double) return 0;
-        return Math.max(0, (game.dmgAmount(card, 'first') || game.dmgAmount(card, 'normal')) - state.get(card).counterReduction);
+        const row = state.get(card);
+        return Math.max(0, printedDamage(card) - (row ? row.counterReduction : 0));
       };
-      for (const attacker of attackers.filter(active)) {
-        const assigned = assignments.filter(item => item.attacker === attacker).map(item => item.blocker);
+      for (const card of swarm) {
+        const dealt = amount(card);
+        if (dealt > 0) hits.push({ source: card, target: defender, n: dealt });
+      }
+      for (const attacker of modeled.filter(active)) {
+        const assigned = blockersByAttacker.get(attacker) || [];
         const legalBlock = assigned.length >= (attacker.kw('menace') ? 2 : 1);
         const blockers = legalBlock ? assigned.filter(active).sort((a, b) =>
           state.get(a).toughness - state.get(a).damage - state.get(b).toughness + state.get(b).damage || a.iid - b.iid) : [];
@@ -1049,18 +1172,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let assignments = [];
     let outcome = forecastCombat(game, player, attackers, assignments, initial);
     let score = defenseScore(game, player, outcome, initial.life ?? player.life);
-    const available = potential.slice();
+    // A token wall of 1/1s adds nothing but search cost: the greedy pass keeps
+    // the bodies that can actually change a forecast. Without this cap the
+    // declaration search grew with the square of the board and locked the tab.
+    // Što je tabla šira, to pretraga brže eksplodira (runde × napadači ×
+    // blokeri × prognoza). Na roju se zato traži manje, ali stabilno jezgro.
+    const wide = attackers.length > FORECAST_ATTACKER_LIMIT || potential.length > WIDE_BOARD_SHIELDS;
+    const shieldLimit = wide ? WIDE_BOARD_SWARM_SHIELDS : WIDE_BOARD_SHIELDS;
+    const targetLimit = wide ? WIDE_BOARD_SWARM_BLOCK_TARGETS : WIDE_BOARD_BLOCK_TARGETS;
+    const available = potential.length > shieldLimit
+      ? potential.slice().sort((a, b) => (b.toughness - a.toughness) || (b.power - a.power) ||
+        (a.iid - b.iid)).slice(0, shieldLimit)
+      : potential.slice();
     // Against a swarm only the heaviest attackers are worth a block search;
     // the rest still deal their damage in every forecast.
-    const blockCandidates = attackers.length > WIDE_BOARD_BLOCK_TARGETS
-      ? attackers.slice().sort(byCombatWeight).slice(0, WIDE_BOARD_BLOCK_TARGETS) : attackers;
-    while (available.length) {
+    const blockCandidates = attackers.length > targetLimit
+      ? rankedAttackers(attackers).slice(0, targetLimit) : attackers;
+    let rounds = 0;
+    const blockedAttackers = new Set();
+    while (available.length && rounds++ < shieldLimit) {
       let best = null;
       for (const attacker of blockCandidates) {
         const legal = available.filter(card => game.canBlock(card, attacker));
-        const needsPair = attacker.kw('menace') && !assignments.some(item => item.attacker === attacker);
+        const needsPair = attacker.kw('menace') && !blockedAttackers.has(attacker);
         for (let i = 0; i < legal.length; i++) {
-          const pairs = needsPair ? legal.slice(i + 1) : [null];
+          // Menace pairs are the only place a single extra blocker changes
+          // nothing; a handful of partners is enough to find the saving pair.
+          const pairs = needsPair ? legal.slice(i + 1, i + 1 + MENACE_PARTNER_LIMIT) : [null];
           for (const partner of pairs) {
             const picks = partner ? [legal[i], partner] : [legal[i]];
             const next = assignments.concat(picks.map(blocker => ({ blocker, attacker })));
@@ -1072,6 +1210,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (!best) break;
       ({ assignments, outcome, score } = best);
+      for (const item of best.assignments) blockedAttackers.add(item.attacker);
       for (const card of best.picks) available.splice(available.indexOf(card), 1);
     }
     return { assignments, outcome, score };
@@ -1137,6 +1276,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       fodder = ranked.slice(WIDE_BOARD_ATTACKERS).sort((a, b) => a.iid - b.iid);
     }
     const ctx = attackPlanContext(game, player);
+    // Legalne mete se ne mijenjaju unutar jedne deklaracije, a fodder petlja ih
+    // je računala iznova za svaku kartu u svakom planu.
+    const targetCache = new Map();
+    const targetsFor = card => {
+      if (targetCache.has(card)) return targetCache.get(card);
+      const magicTargets = game.legalDeclarationAttackTargets
+        ? game.legalDeclarationAttackTargets(card)
+        : (game.legalAttackTargets ? game.legalAttackTargets(card) : q.attackTargets || q.opponents || []);
+      const list = game.diplomacyAttackTargetsFor
+        ? game.diplomacyAttackTargetsFor(card, magicTargets, forced.has(card))
+        : magicTargets;
+      targetCache.set(card, list);
+      return list;
+    };
     const safetyCache = new Map();
     const reserveCache = new Map();
     const ownCreatures = game.creatures(player);
@@ -1177,49 +1330,52 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!safetyCache.has(key)) safetyCache.set(key, attackPlanSurvival(game, player, assignments));
       return safetyCache.get(key);
     };
-    let beam = [{ assignments: [], score: 0 }];
+    let beam = [{ assignments: [], score: 0, committed: new Map() }];
     for (const attacker of eligible) {
-      const magicTargets = game.legalDeclarationAttackTargets
-        ? game.legalDeclarationAttackTargets(attacker)
-        : (game.legalAttackTargets ? game.legalAttackTargets(attacker) : q.attackTargets || q.opponents || []);
-      const targets = game.diplomacyAttackTargetsFor
-        ? game.diplomacyAttackTargetsFor(attacker, magicTargets, forced.has(attacker))
-        : magicTargets;
+      const targets = targetsFor(attacker);
       const next = [];
       for (const node of beam) {
         // "Must attack if able" ne zahtijeva nemoguću deklaraciju. Ako ovaj
         // napadač nema nijednu legalnu metu, plan mora ostati validan umjesto
         // da cijeli combat generator ostane bez akcije.
-        if (!forced.has(attacker) || !targets.length) next.push({ assignments: node.assignments.slice(), score: node.score });
+        if (!forced.has(attacker) || !targets.length) next.push({ assignments: node.assignments.slice(), score: node.score, committed: node.committed });
         for (const target of targets) {
           const defender = target instanceof U.Player ? target : target.ctrl;
           const prior = node.assignments.filter(item =>
             (item.target instanceof U.Player ? item.target : item.target.ctrl) === defender).length;
+          // Koliko štete je plan već uperio u ovog branioca — višak preko
+          // njegovog života više ne donosi bodove.
+          const already = node.committed.get(defender) || 0;
+          const assessment = attackAssignmentAssessment(game, player, attacker, target, prior, ctx, already);
+          const committed = new Map(node.committed);
+          committed.set(defender, already + Math.max(0, assessment.expectedDamage || 0));
           next.push({
             assignments: node.assignments.concat({ card: attacker, target }),
-            score: node.score + attackAssignmentScore(game, player, attacker, target, prior, ctx),
+            score: node.score + assessment.score,
+            committed,
           });
         }
       }
       beam = next.sort((a, b) => (b.score + reserve(b.assignments)) - (a.score + reserve(a.assignments)) || actionKey({ kind: 'declareAttackers', assignments: a.assignments }).localeCompare(actionKey({ kind: 'declareAttackers', assignments: b.assignments })))
         .slice(0, config.beamWidth);
     }
-    if (!beam.length) beam = [{ assignments: [], score: 0 }];
-    if (!beam.some(plan => plan.assignments.length === 0) && !forced.size) beam.push({ assignments: [], score: 0 });
+    if (!beam.length) beam = [{ assignments: [], score: 0, committed: new Map() }];
+    if (!beam.some(plan => plan.assignments.length === 0) && !forced.size) beam.push({ assignments: [], score: 0, committed: new Map() });
     // Keep concentrated finish attempts even if their nonlethal prefixes were
     // pruned for exposing defense. A safe partial attack must not hide a win.
     for (const target of player.opponents(game)) {
       const assignments = [];
-      let score = 0, legal = true;
+      let score = 0, legal = true, committedHere = 0;
       for (const card of eligible) {
-        const magicTargets = game.legalDeclarationAttackTargets(card);
-        const targets = game.diplomacyAttackTargetsFor ? game.diplomacyAttackTargetsFor(card, magicTargets, forced.has(card)) : magicTargets;
+        const targets = targetsFor(card);
         if (targets.includes(target)) {
-          score += attackAssignmentScore(game, player, card, target, assignments.length, ctx);
+          const assessment = attackAssignmentAssessment(game, player, card, target, assignments.length, ctx, committedHere);
+          score += assessment.score;
+          committedHere += Math.max(0, assessment.expectedDamage || 0);
           assignments.push({ card, target });
         } else if (forced.has(card) && targets.length) { legal = false; break; }
       }
-      if (legal && assignments.length) beam.push({ assignments, score });
+      if (legal && assignments.length) beam.push({ assignments, score, committed: new Map([[target, committedHere]]) });
     }
     // Fodder joins the plan's main target (the one most of the planned bodies
     // attack) when it may legally attack there; a plan that stays home keeps
@@ -1234,17 +1390,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const main = [...tally.entries()].sort((a, b) => b[1] - a[1])[0][0];
         const extra = [];
         for (const card of fodder) {
-          const magicTargets = game.legalDeclarationAttackTargets(card);
-          const targets = game.diplomacyAttackTargetsFor ? game.diplomacyAttackTargetsFor(card, magicTargets, forced.has(card)) : magicTargets;
-          if (targets.includes(main)) extra.push({ card, target: main });
+          if (targetsFor(card).includes(main)) extra.push({ card, target: main });
         }
         extended.push(plan);
-        if (extra.length) extended.push({ assignments: plan.assignments.concat(extra), score: plan.score + extra.length * 0.9 });
+        // Fodder ima smisla samo dok šteta još nedostaje. Kad je plan već
+        // smrtonosan, dodatna tijela ostaju kod kuće kao blokeri.
+        const committedOnMain = plan.committed ? (plan.committed.get(main) || 0) : 0;
+        const mainLife = main instanceof U.Player ? main.life : Infinity;
+        const fodderWorth = committedOnMain >= mainLife ? -0.4 : 0.9;
+        if (extra.length) extended.push({ assignments: plan.assignments.concat(extra), score: plan.score + extra.length * fodderWorth, committed: plan.committed });
       }
       beam = extended;
     }
+    // Prognoza preživljavanja je najskuplji dio deklaracije. Na sporijoj mašini
+    // i najširoj tabli ne smije držati glavnu nit: kad se budžet potroši,
+    // preostali planovi zadrže svoj combat skor umjesto pune prognoze.
+    // Budžet vrijedi samo za široku tablu; uske deklaracije ostaju u potpunosti
+    // determinističke jer se prognoza tamo ionako računa u milisekundama.
+    const survivalDeadline = allEligible.length > FORECAST_ATTACKER_LIMIT
+      ? now() + COMBAT_SURVIVAL_BUDGET_MS : Infinity;
+    const ordered = beam.slice().sort((a, b) => b.score - a.score);
+    const survival = new Map();
+    for (const plan of ordered) {
+      survival.set(plan, survival.size === 0 || now() < survivalDeadline ? safety(plan.assignments) : 0);
+    }
     let plans = beam.map(plan => ({ kind: 'declareAttackers', assignments: plan.assignments,
-      _combatScore: plan.score, _survivalScore: safety(plan.assignments) }));
+      _combatScore: plan.score, _survivalScore: survival.get(plan) || 0 }));
     const promisedTarget = game.diplomacyRequiredAttackTarget && game.diplomacyRequiredAttackTarget(player);
     if (promisedTarget) {
       const canFulfill = eligible.some(attacker => game.canAttackTarget(attacker, promisedTarget) &&
@@ -1259,13 +1430,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function generateBlockPlans(game, player, q, config) {
-    const potential = (q.potential || []).slice().sort((a, b) => a.iid - b.iid);
+    const allPotential = (q.potential || []).slice().sort((a, b) => a.iid - b.iid);
     const attackers = (q.attackers || []).slice();
+    // Sto blokera je isto što i sto poteza u beamu: cijena raste linearno po
+    // kandidatu, a razlika u odbrani ne. Traže se najkorisnija tijela.
+    const potential = allPotential.length > WIDE_BOARD_SHIELDS
+      ? allPotential.slice().sort((a, b) => (b.toughness - a.toughness) || (b.power - a.power) ||
+        (a.iid - b.iid)).slice(0, WIDE_BOARD_SHIELDS).sort((a, b) => a.iid - b.iid)
+      : allPotential;
     // A swarm is forecast in full, but block candidates are limited to its
     // heaviest bodies so the beam stays bounded.
     const blockCandidates = attackers.length > WIDE_BOARD_BLOCK_TARGETS
-      ? attackers.slice().sort(byCombatWeight).slice(0, WIDE_BOARD_BLOCK_TARGETS) : attackers;
+      ? rankedAttackers(attackers).slice(0, WIDE_BOARD_BLOCK_TARGETS) : attackers;
     const score = assignments => defenseScore(game, player, forecastCombat(game, player, attackers, assignments));
+    // Ključ plana je determinističan tie-break, ali njegovo građenje iz stotinu
+    // dodjela unutar komparatora je samo po sebi bilo skuplje od prognoze.
+    const planKey = plan => plan._key !== undefined ? plan._key
+      : (plan._key = actionKey({ kind: 'declareBlockers', assignments: plan.assignments }));
     let beam = [{ assignments: [], score: 0 }];
     for (const blocker of potential) {
       const next = [];
@@ -1277,11 +1458,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           next.push({ assignments, score: score(assignments) });
         }
       }
-      beam = next.sort((a, b) => b.score - a.score || actionKey({ kind: 'declareBlockers', assignments: a.assignments }).localeCompare(actionKey({ kind: 'declareBlockers', assignments: b.assignments })))
+      beam = next.sort((a, b) => b.score - a.score || planKey(a).localeCompare(planKey(b)))
         .slice(0, config.beamWidth);
     }
     beam = beam.filter(plan => attackers.every(attacker => !attacker.kw('menace') || plan.assignments.filter(item => item.attacker === attacker).length !== 1));
-    beam.push(survivalBlocks(game, player, attackers, potential));
+    beam.push(survivalBlocks(game, player, attackers, allPotential));
     if (!beam.length) beam = [{ assignments: [], score: 0 }];
     return beam.map(plan => ({ kind: 'declareBlockers', assignments: plan.assignments, _combatScore: plan.score }));
   }
@@ -1602,7 +1783,74 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return card instanceof U.CardInst && card.zone === 'battlefield' && card.kw('indestructible');
   }
 
+  // ---- Ward -------------------------------------------------------------
+  // Ward nije obična cijena mete: ako ostane neplaćen, spell ili sposobnost
+  // biva counterovana. Bot je zbog toga bacao removal za jednu-dvije mane na
+  // metu sa Ward {4} i sam sebi ubijao potez.
+  function wardOf(target) {
+    return target instanceof U.CardInst && target.cur ? target.cur.wardCost : null;
+  }
+
+  function wardManaAmount(ward) {
+    if (!ward || !ward.mana) return 0;
+    const cost = U.parseCost(ward.mana);
+    return Math.max(0, cost.generic || 0) + (cost.pips || []).length;
+  }
+
+  // Koliko mane ovaj prozor tek treba potrošiti. Mete se biraju PRIJE plaćanja,
+  // pa mana koja se vidi na stolu još uvijek uključuje cijenu samog spella.
+  function reservedManaFor(game, player, q) {
+    const source = q && q.src;
+    if (!source || !q.so || q.so.kind !== 'spell') return 0;
+    try {
+      const cost = game.spellCost(player, source, { from: source.zone });
+      return Math.max(0, cost.generic || 0) + (cost.pips || []).length;
+    } catch (error) {
+      return U.mv(source.def && source.def.cost || '');
+    }
+  }
+
+  function canPayWard(game, player, ward, reserved) {
+    if (!ward) return true;
+    if (ward.sacLegendary) {
+      return game.bf().some(card => card.ctrl === player && (card.cur.super || []).includes('Legendary') &&
+        (card.is('Artifact') || card.is('Creature')));
+    }
+    if (ward.blight) return game.creatures(player).length > 0;
+    if (ward.life) return player.life > Number(ward.life) + 3;
+    if (ward.discard) return player.hand.length > 0;
+    const need = wardManaAmount(ward);
+    if (!need) return true;
+    return availableManaEstimate(game, player) - (reserved || 0) >= need;
+  }
+
+  // Cijena plaćenog warda u istim jedinicama kao ostatak evaluacije mete.
+  function wardPrice(game, player, ward) {
+    if (!ward) return 0;
+    if (ward.sacLegendary) return 12;
+    if (ward.blight) return 3 + Number(ward.blight || 0) * 1.5;
+    if (ward.life) return Number(ward.life || 0) * (player.life <= 15 ? 1.6 : 0.6);
+    if (ward.discard) return 3.5;
+    return wardManaAmount(ward) * 1.4;
+  }
+
+  function wardTargetAdjustment(game, player, target, q) {
+    const ward = wardOf(target);
+    if (!ward || target.ctrl === player) return 0;
+    const reserved = reservedManaFor(game, player, q);
+    if (!canPayWard(game, player, ward, reserved)) return -1000;
+    return -wardPrice(game, player, ward);
+  }
+  MTG.botWardTargetAdjustment = wardTargetAdjustment;
+
   function targetValue(game, player, target, q) {
+    const base = baseTargetValue(game, player, target, q);
+    // Nema smisla plaćati ward za metu koju ionako ne želimo pogoditi.
+    if (base <= 0) return base;
+    return base + wardTargetAdjustment(game, player, target, q);
+  }
+
+  function baseTargetValue(game, player, target, q) {
     if(target instanceof U.CardInst&&q.aiHint?.oracleTargetTapped!==undefined&&target.tapped!==q.aiHint.oracleTargetTapped)return -1000;
     if (q && q.aiHint && q.aiHint.avoidCostSource && target === q.src) return -1000;
     const avoidedCopyTargets = q && q.aiHint && q.aiHint.copyTargetPolicy === 'spread'
@@ -2928,6 +3176,110 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       .sort((a, b) => b.score - a.score || String(a.option.key).localeCompare(String(b.option.key)))[0].option.key;
   };
 
+  // Kad je pobjeda već na stolu, svaka dodatna kopija, token ili "value" potez
+  // je samo odugovlačenje. Rezultat se pamti po viewu jer je view zamrznut
+  // snapshot jedne odluke.
+  const LETHAL_NOW_CACHE = new WeakMap();
+  function lethalAttackReady(game, player) {
+    // Ovo je pravilo o tempu i doživljaju partije, ne o ispravnosti poteza:
+    // kad je pobjeda već na stolu, čovjek ne treba gledati još pet "value"
+    // poteza. Zato vrijedi samo u partiji koja se zaista igra pred igračem;
+    // headless dokazi i test matrice i dalje bacaju sve što je legalno.
+    if (!game.paced) return null;
+    if (game.turnPlayer !== player || game.phase !== 'main1') return null;
+    if (game.stack.length) return null;
+    if (player.turnState && player.turnState.reachedDeclareAttackers) return null;
+    const eligible = game.creatures(player).filter(card => !card.tapped && (!card.sick || card.kw('haste')) &&
+      !card.cur.cantAttack && game.canAttackAtAll(card));
+    if (!eligible.length) return null;
+    for (const opponent of player.opponents(game)) {
+      const attackers = eligible.filter(card => game.canAttackTarget(card, opponent));
+      if (!attackers.length) continue;
+      const blockers = game.creatures(opponent).filter(card => !card.tapped && !card.cur.cantBlock);
+      const defense = survivalBlocks(game, opponent, attackers, blockers);
+      if (defense.outcome.lethal) return opponent;
+    }
+    return null;
+  }
+  function lethalAttackReadyCached(view, game, player) {
+    if (!LETHAL_NOW_CACHE.has(view)) {
+      let victim = null;
+      try { victim = lethalAttackReady(game, player); } catch (error) { victim = null; }
+      LETHAL_NOW_CACHE.set(view, victim);
+    }
+    return LETHAL_NOW_CACHE.get(view);
+  }
+  MTG.botLethalAttackReady = lethalAttackReady;
+
+  // ---- Modal spells ------------------------------------------------------
+  // Modovi su do sada padali na generički "ima riječ destroy → 2 boda", pa je
+  // bot birao prvi ponuđeni mod. Poslije vlastitog wipea je zato ponovo birao
+  // "uništi sva stvorenja" nad praznom tablom umjesto artefakata.
+  const MODE_SWEEP_TYPES = [
+    [/artifacts?[^.]*\benchantments?|enchantments?[^.]*\bartifacts?/i,
+      card => !card.is('Land') && (card.is('Artifact') || card.is('Enchantment'))],
+    [/\bartifacts?\b/i, card => card.is('Artifact') && !card.is('Land')],
+    [/\benchantments?\b/i, card => card.is('Enchantment')],
+    [/\bplaneswalkers?\b/i, card => card.is('Planeswalker')],
+    [/\bnon-?dragons?\b/i, card => card.is('Creature') && !card.hasSub('Dragon')],
+    [/\bdragons?\b/i, card => card.is('Creature') && card.hasSub('Dragon')],
+    [/\bcreatures?\b/i, card => card.is('Creature')],
+    [/\btokens?\b/i, card => card.isToken],
+    [/\blands?\b/i, card => card.is('Land')],
+  ];
+
+  function destroyKindMatcher(kind) {
+    if (!kind) return null;
+    if (kind === 'dragons') return card => card.is('Creature') && card.hasSub('Dragon');
+    if (kind === 'nondragons') return card => card.is('Creature') && !card.hasSub('Dragon');
+    if (kind === 'creatures') return card => card.is('Creature');
+    if (kind === 'artifacts') return card => card.is('Artifact') && !card.is('Land');
+    if (kind === 'enchantments') return card => card.is('Enchantment');
+    if (kind === 'planeswalkers') return card => card.is('Planeswalker');
+    if (kind === 'artifactsEnchantments') return card => !card.is('Land') && (card.is('Artifact') || card.is('Enchantment'));
+    return null;
+  }
+
+  function modeManaValueFilter(label) {
+    const atMost = /(?:mv|mana value)\s*(?:≤|<=|<)\s*(\d+)/i.exec(label) ||
+      /(?:mv|mana value)\s*(\d+)\s*or less/i.exec(label);
+    if (atMost) { const n = Number(atMost[1]); return card => card.mv <= n; }
+    const atLeast = /(?:mv|mana value)\s*(?:≥|>=|>)\s*(\d+)/i.exec(label) ||
+      /(?:mv|mana value)\s*(\d+)\s*or greater/i.exec(label);
+    if (atLeast) { const n = Number(atLeast[1]); return card => card.mv >= n; }
+    return null;
+  }
+
+  // Vrijednost masovnog moda = ono što odnosi protivnicima minus ono što odnosi
+  // meni. Mod koji ne pogađa ništa vrijedi nula, pa gubi od svakog korisnog.
+  function modeSweepValue(game, player, option) {
+    const label = String(option && option.label || '');
+    const meta = option || {};
+    let matcher = destroyKindMatcher(meta.destroyKind);
+    if (!matcher) {
+      const sweepVerb = /\b(destroy|exile|sacrifice|bounce|wipe|return)\b/i.test(label);
+      const singleTarget = /\btarget\b/i.test(label);
+      if (!sweepVerb || singleTarget) return null;
+      const entry = MODE_SWEEP_TYPES.find(([pattern]) => pattern.test(label));
+      if (!entry) return null;
+      matcher = entry[1];
+    }
+    const mvFilter = modeManaValueFilter(label);
+    let value = 0, theirs = 0, mine = 0;
+    for (const permanent of game.bf()) {
+      if (!matcher(permanent)) continue;
+      if (mvFilter && !mvFilter(permanent)) continue;
+      if (permanent.kw('indestructible') && /destroy/i.test(label)) continue;
+      const worth = permanentGameValue(game, permanent, player);
+      if (permanent.ctrl === player) { value -= worth * 1.35; mine++; } else { value += worth; theirs++; }
+    }
+    // Sam broj pogođenih permanenata nosi težinu: mana rock je po vrijednosti
+    // sitan, ali mod koji čisti četiri protivnička mora jasno pobijediti mod
+    // koji ne pogađa ništa.
+    return value + theirs * 1.6 - mine * 1.6;
+  }
+  MTG.botModeSweepValue = modeSweepValue;
+
   function quickScoreAction(view, action, profile, q) {
     const privateData = PRIVATE_VIEWS.get(view);
     const game = privateData.game, player = privateData.player;
@@ -3666,18 +4018,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         breakdown.choice = action.value === 'yes' ? (affordable ? best + 2 : -30) : 0;
       } else if (hintKind === 'scionsWipe') {
-        const kind = action.option && action.option.destroyKind;
-        const affected = game.bf().filter(card => {
-          if (kind === 'dragons') return card.is('Creature') && card.hasSub('Dragon');
-          if (kind === 'nondragons') return card.is('Creature') && !card.hasSub('Dragon');
-          if (kind === 'creatures') return card.is('Creature');
-          if (kind === 'artifactsEnchantments') return !card.is('Land') && (card.is('Artifact') || card.is('Enchantment'));
-          return false;
-        });
-        breakdown.choice = affected.reduce((score, card) => {
-          const value = permanentGameValue(game, card, player);
-          return score + (card.ctrl === player ? -value * 1.35 : value);
-        }, 0);
+        // Isti model kao svaki drugi masovni mod: broji se šta zaista nestaje
+        // sa table, pa mod nad praznim tipom ne može pobijediti korisnog.
+        breakdown.choice = modeSweepValue(game, player, action.option || {}) || 0;
       } else if (hintKind === 'fameFortune') {
         const bestCreature = game.creatures(player).map(card =>
           permanentGameValue(game, card, player) + Math.max(0, card.power) * (card.tapped ? 0.25 : 0.8))
@@ -3804,12 +4147,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           breakdown.choice = lifeUrgency + 3.5 + used.length * 1.2;
         }
       } else {
-        const key = String(action.value).toLowerCase();
-        if (/yes|da|keep|accept|use/.test(key)) breakdown.choice = q && q.aiHint && q.aiHint.kind === 'ward' ? 1.5 : 1;
-        if (/no|ne|decline/.test(key)) breakdown.choice = q && q.aiHint && q.aiHint.kind === 'ward' ? 0 : -0.2;
-        const label = String(action.option && action.option.label || '').toLowerCase();
-        if (/draw|vuci|token|counter|destroy|exile|mana/.test(label)) breakdown.choice += 2;
-        if (/lose|gubi|sacrifice|žrtvuj|discard|odbaci/.test(label)) breakdown.choice -= 1.5;
+        const sweep = action.option ? modeSweepValue(game, player, action.option) : null;
+        if (sweep !== null) {
+          // Masovni mod se mjeri po tabli, ne po riječima u labeli.
+          breakdown.choice = sweep * 0.5;
+        } else {
+          const key = String(action.value).toLowerCase();
+          if (/yes|da|keep|accept|use/.test(key)) breakdown.choice = q && q.aiHint && q.aiHint.kind === 'ward' ? 1.5 : 1;
+          if (/no|ne|decline/.test(key)) breakdown.choice = q && q.aiHint && q.aiHint.kind === 'ward' ? 0 : -0.2;
+          const label = String(action.option && action.option.label || '').toLowerCase();
+          if (/draw|vuci|token|counter|destroy|exile|mana/.test(label)) breakdown.choice += 2;
+          if (/lose|gubi|sacrifice|žrtvuj|discard|odbaci/.test(label)) breakdown.choice -= 1.5;
+        }
       }
     } else if (action.kind === 'chooseMulti') {
       if (q && q.aiHint && q.aiHint.kind === 'collectiveEffort') {
@@ -3879,8 +4228,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           breakdown.choice += theirs * 0.8 - own;
         }
       } else {
-        breakdown.choice = (action.options || []).reduce((sum, option) =>
-          sum + (/draw|token|destroy|exile|counter/i.test(option.label || '') ? 2 : 0.3), 0);
+        breakdown.choice = (action.options || []).reduce((sum, option) => {
+          const sweep = modeSweepValue(game, player, option);
+          if (sweep !== null) return sum + sweep * 0.5;
+          return sum + (/draw|token|destroy|exile|counter/i.test(option.label || '') ? 2 : 0.3);
+        }, 0);
       }
     } else if (action.kind === 'chooseX') {
       if(q?.aiHint?.kind==='oracleResolutionX'&&q.aiHint.drawMultiplier){
@@ -4013,16 +4365,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (action.kind === 'chooseManaSources') {
       breakdown.resources = -(action.value || []).reduce((sum, source) => sum + (source.card && inferCardSemantics(source.card.def).roles.includes('engine') ? 2 : 0.2), 0);
     }
+    // Siguran smrtonosni napad zatvara main fazu: ništa osim landa (koji ne
+    // košta tempo) ne smije pretegnuti nad odlaskom u borbu.
+    if ((q && (q.type === 'main' || q.type === 'priority')) &&
+      (action.kind === 'cast' || action.kind === 'activate' || action.kind === 'done') &&
+      lethalAttackReadyCached(view, game, player)) {
+      if (action.kind === 'done') breakdown.timing += 45;
+      else breakdown.timing -= 45;
+    }
     applyStyleSkillScore(view, action, profile, q, breakdown);
     const total = Object.values(breakdown).reduce((sum, value) => sum + value, 0);
     return { total: round(total), breakdown: Object.fromEntries(Object.entries(breakdown).map(([key, value]) => [key, round(value)])) };
   }
   MTG.quickScoreBotAction = function (view, action, profile, q) { return quickScoreAction(view, action, profile, q); };
 
-  function cloneGraph(value, seen = new Map(), key = '') {
+  function cloneGraph(value, seen = new Map(), key = '', parent = null) {
     if (value === null || typeof value !== 'object') return value;
     if (typeof value === 'function') return value;
     if (key === 'def' || key === 'deck' || key === 'faceDownDef') return value;
+    // `cur` je izvedeno stanje koje recalc() gradi iz nule za svaku kartu na
+    // tabli. Na tabli sa stotinu tokena je njegovo kopiranje bilo skuplje od
+    // jednog recalca, pa ga klon dobija kroz recalc u cloneGameForSimulation.
+    if (key === 'cur' && parent && parent.zone === 'battlefield' && parent.iid !== undefined) return null;
     if (seen.has(value)) return seen.get(value);
     if (Array.isArray(value)) {
       const out = [];
@@ -4045,7 +4409,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const ownKey of Reflect.ownKeys(value)) {
       const descriptor = Object.getOwnPropertyDescriptor(value, ownKey);
       if (!descriptor || !('value' in descriptor)) continue;
-      try { out[ownKey] = cloneGraph(descriptor.value, seen, String(ownKey)); } catch (error) { /* noncritical UI/cache field */ }
+      try { out[ownKey] = cloneGraph(descriptor.value, seen, String(ownKey), value); } catch (error) { /* noncritical UI/cache field */ }
     }
     return out;
   }
@@ -4063,7 +4427,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function cloneGameForSimulation(game, seed) {
-    const clone = cloneGraph(game);
+    // Log i AI dnevnik su čista historija koju simulacija nikad ne čita, ali
+    // na dugoj partiji nose stotine unosa i sami po sebi znače mjerljiv dio
+    // svakog snapshota. Odvoje se samo za trajanje kloniranja.
+    const savedLog = game.log, savedDecisionLog = game.aiDecisionLog;
+    let clone;
+    try {
+      if (Array.isArray(savedLog)) game.log = [];
+      if (Array.isArray(savedDecisionLog)) game.aiDecisionLog = [];
+      clone = cloneGraph(game);
+    } finally {
+      if (Array.isArray(savedLog)) game.log = savedLog;
+      if (Array.isArray(savedDecisionLog)) game.aiDecisionLog = savedDecisionLog;
+    }
     clone._simulation = true;
     // A nested clone already holds the tokens its parent simulation created;
     // restarting the local counter would hand out duplicate ids inside it.
@@ -4075,6 +4451,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     clone._human = undefined;
     clone.rnd = U.mulberry32((Number(seed) || 1) >>> 0);
     for (const player of clone.players) player.game = clone;
+    clone.recalc();
     return clone;
   }
   MTG.cloneGameForAISimulation = cloneGameForSimulation;
@@ -4168,7 +4545,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   MTG.simulateAction = async function (state, action, simulationContext = {}) {
-    const before = fullStateFingerprint(state);
+    // Otisak štiti ŽIVU partiju od skripte koja bi je mutirala mimo klona.
+    // Dublji čvorovi već rade nad bacivim snapshotom, a serijalizacija cijele
+    // biblioteke i table dvaput po čvoru je na velikoj tabli bila skuplja od
+    // same simulirane akcije.
+    const guarded = !state._simulation;
+    const before = guarded ? fullStateFingerprint(state) : null;
     const actor = resolvePlayer(state, simulationContext.playerId ?? simulationContext.botPlayerId ?? (action.card && action.card.ctrl && action.card.ctrl.idx));
     const seed = Number(simulationContext.seed || 1) >>> 0;
     const clone = cloneGameForSimulation(state, seed);
@@ -4191,8 +4573,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       error = caught;
       applied = false;
     }
-    const after = fullStateFingerprint(state);
-    if (before !== after) throw new Error('AI simulacija je mutirala live GameState.');
+    if (guarded && before !== fullStateFingerprint(state)) throw new Error('AI simulacija je mutirala live GameState.');
     const view = cloneActor ? MTG.createBotPlayerView(clone, cloneActor.idx) : null;
     return {
       state: clone,
@@ -4200,6 +4581,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       applied,
       error,
       usedRulesEngine,
+      // Beam pretraga koristi isti view umjesto da ga gradi po drugi put.
+      view,
       utilityVector: view ? utilityVector(view) : {},
       stateHash: view ? stateHash(view) : null,
     };
@@ -4226,17 +4609,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   async function searchActionSequence(game, player, rootCandidate, view, profile, config, seed, stats) {
+    const outOfTime = () => stats.deadline > 0 && now() > stats.deadline;
     const first = await MTG.simulateAction(game, rootCandidate.action, { playerId: player.idx, seed });
     stats.nodes++;
     if (!first.applied) return { score: rootCandidate.quick.total - 25, state: game, rootAction: rootCandidate.action, depth: 0, breakdown: Object.assign({}, rootCandidate.quick.breakdown, { simulation: -25 }), simulationError: first.error && first.error.message };
-    let firstView = MTG.createBotPlayerView(first.state, player.idx);
+    let firstView = first.view || MTG.createBotPlayerView(first.state, player.idx);
     const baseEval = MTG.evaluateState(view, player.idx, profile).totalScore;
     const firstEval = MTG.evaluateState(firstView, player.idx, profile).totalScore;
     const penalty = kingmakingPenalty(view, firstView, player.idx);
     let beam = [{ state: first.state, view: firstView, score: rootCandidate.quick.total + (firstEval - baseEval) * 0.12 - penalty, rootAction: rootCandidate.action, depth: 1 }];
     let best = beam[0];
     const expansionWidth = Math.min(config.beamWidth, config.maxDepth <= 1 ? 2 : config.beamWidth <= 10 ? 5 : 8);
-    for (let depth = 1; depth < config.maxDepth && stats.nodes < config.maxNodes; depth++) {
+    for (let depth = 1; depth < config.maxDepth && stats.nodes < config.maxNodes && !outOfTime(); depth++) {
       const next = [];
       for (const node of beam.slice(0, expansionWidth)) {
         const simPlayer = node.state.players.find(candidate => candidate.idx === player.idx);
@@ -4248,12 +4632,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const ranked = actions.map(action => ({ action, quick: quickScoreAction(nodeView, action, profile, q) }))
           .sort((a, b) => b.quick.total - a.quick.total || actionKey(a.action).localeCompare(actionKey(b.action))).slice(0, expansionWidth);
         if (!ranked.length) { next.push(node); continue; }
-        for (let i = 0; i < ranked.length && stats.nodes < config.maxNodes; i++) {
+        for (let i = 0; i < ranked.length && stats.nodes < config.maxNodes && !outOfTime(); i++) {
           const candidate = ranked[i];
           const sim = await MTG.simulateAction(node.state, candidate.action, { playerId: simPlayer.idx, seed: seed + stats.nodes * 101 + i });
           stats.nodes++;
           if (!sim.applied) continue;
-          const simView = MTG.createBotPlayerView(sim.state, simPlayer.idx);
+          const simView = sim.view || MTG.createBotPlayerView(sim.state, simPlayer.idx);
           const evalDelta = MTG.evaluateState(simView, simPlayer.idx, profile).totalScore - MTG.evaluateState(node.view, simPlayer.idx, profile).totalScore;
           const score = node.score + candidate.quick.total * Math.pow(0.7, depth) + evalDelta * 0.1 - kingmakingPenalty(node.view, simView, simPlayer.idx);
           next.push({ state: sim.state, view: simView, score, rootAction: node.rootAction, depth: depth + 1 });
@@ -4301,20 +4685,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return { chosen: band[0], tieBreak: true };
   }
 
+  const now = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
+
   MTG.chooseBotAction = async function (params) {
-    const started = typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
+    const started = now();
     const game = params.gameState;
     const player = resolvePlayer(game, params.botPlayerId);
     if (!player) throw new Error('AI V2: botPlayerId nije u GameState.');
     const difficulty = normalizeDifficulty(params.difficulty);
-    const config = SEARCH_CONFIG[difficulty];
+    const config = searchConfigForState(game, SEARCH_CONFIG[difficulty]);
     const q = params.actionWindow || null;
     const view = MTG.createBotPlayerView(game, player.idx, q);
     const baseProfile = MTG.getDeckAIProfile(player.deckName || player.deck && player.deck.name) || buildDeckProfile('unknown', player.deck || { cards: [], commander: '' });
     const profile = profileForStyle(baseProfile, player);
     const seed = params.seed === undefined ? defaultSeed(game, view, player.idx) : Number(params.seed) >>> 0;
     const legalActions = MTG.generateLegalActions(view, { difficulty });
-    const stats = { nodes: 0, depth: 0 };
+    const budgetMs = params.budgetMs === undefined ? SEARCH_DEADLINE_MS[difficulty] : Number(params.budgetMs);
+    const stats = { nodes: 0, depth: 0, deadline: budgetMs > 0 ? started + budgetMs : 0 };
     let fallback = false;
     let candidates = legalActions.map(action => ({ action, quick: quickScoreAction(view, action, profile, q) }));
     candidates.sort((a, b) => b.quick.total - a.quick.total || actionKey(a.action).localeCompare(actionKey(b.action)));
@@ -4328,6 +4715,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const searched = [];
     for (const candidate of candidates.slice(0, deepWidth)) {
       if (stats.nodes >= config.maxNodes) break;
+      if (stats.deadline > 0 && searched.length && now() > stats.deadline) break;
       if (searchKinds.has(candidate.action.kind)) {
         try { searched.push(await searchActionSequence(game, player, candidate, view, profile, config, seed + searched.length * 997, stats)); }
         catch (error) {
@@ -4335,12 +4723,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       } else searched.push({ score: candidate.quick.total, rootAction: candidate.action, depth: 0, breakdown: candidate.quick.breakdown });
     }
-    for (const candidate of candidates.slice(deepWidth)) searched.push({ score: candidate.quick.total, rootAction: candidate.action, depth: 0, breakdown: candidate.quick.breakdown });
+    const searchedKeys = new Set(searched.map(entry => actionKey(entry.rootAction)));
+    for (const candidate of candidates) {
+      if (searchedKeys.has(actionKey(candidate.action))) continue;
+      searched.push({ score: candidate.quick.total, rootAction: candidate.action, depth: 0, breakdown: candidate.quick.breakdown });
+    }
     searched.sort((a, b) => b.score - a.score || actionKey(a.rootAction).localeCompare(actionKey(b.rootAction)));
     // Glasovi nisu kozmetički modovi: i mala evaluacijska razlika može značiti
     // ekstra potez ili cijelu vojsku countera za protivnika. Zato se seedovani
     // "malo slabiji potez" ne primjenjuje na vote prozore.
-    const tieTolerance = q && q.type === 'chooseOption' && q.aiHint && q.aiHint.kind === 'vote' ? 0 : config.tieTolerance;
+    // Izbor moda nije kozmetika: "uništi sva stvorenja" i "uništi sve artefakte"
+    // se razlikuju za cijelu partiju, pa se seedovani "malo slabiji potez" ovdje
+    // ne primjenjuje, isto kao ni na glasanju.
+    const strictChoice = q && q.aiHint && ['vote', 'mode', 'modes'].includes(q.aiHint.kind) &&
+      (q.type === 'chooseOption' || q.type === 'chooseMulti');
+    const tieTolerance = strictChoice ? 0 : config.tieTolerance;
     let selection = pickNearTie(searched, seed, tieTolerance, difficulty === 'easy');
     if (!selection.chosen) {
       fallback = true;
@@ -4366,6 +4763,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         scoreBreakdown: chosen.breakdown, threatScores: threats, analyzedNodes: stats.nodes,
         reachedDepth: Math.max(stats.depth, chosen.depth || 0), tieBreak: selection.tieBreak, seed,
         decisionTimeMs: round(elapsed), fallback, difficulty,
+        nodeBudget: config.maxNodes, workload: simulationWorkload(game),
         style: player.aiStyle || 'balanced',
         skill: styleSkillFor(player) && styleSkillFor(player).id || null,
         mode: styleSkillMode(game, player, view, profile),

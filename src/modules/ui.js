@@ -199,6 +199,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     autoAnswer(g, q) {
       if (q.type === 'threatAlert') return undefined;   // uvijek pauziraj i pokaži kartu
+      // "Accept all": jedan klik pusti cijelu bujicu tokena i kopija koja
+      // slijedi u istom potezu (Leitmotif Composer i slični prave po jedan
+      // reveal na svaki spell). Vrijedi samo za taj potez.
+      if (q.type === 'cardReveal' && this.acceptAllReveals === g.turnNo) return null;
       if (q.type === 'priority') {
         // ručni HOLD: staje tačno jednom, u bilo kom modu
         if (this.holdNext) { this.holdNext = false; this._forceStop = true; return undefined; }
@@ -1081,6 +1085,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const btn = el('button', 'pbtn primary wide', 'Proceed ▶');
       btn.onclick = () => this.resolvePendingEntry(pd, null);
       foot.appendChild(btn);
+      // Veliki stack kopija/tokena inače traži jedan Proceed po svakoj kopiji.
+      const acceptAll = el('button', 'pbtn wide revealacceptall', 'Accept all this turn ⏩');
+      acceptAll.title = 'Stop asking about tokens and copies entering play for the rest of this turn.';
+      acceptAll.onclick = () => {
+        this.acceptAllReveals = g.turnNo;
+        for (const entry of (this.pendings || []).slice()) {
+          if (entry.q.type === 'cardReveal') this.resolvePendingEntry(entry, null);
+        }
+      };
+      foot.appendChild(acceptAll);
       pop.appendChild(foot);
       wrap.appendChild(pop);
       return wrap;
@@ -2931,10 +2945,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           const ozc = MTG.offZoneCasts ? MTG.offZoneCasts(q.casts) : [];
           const inHandN = (q.casts || []).length - ozc.length;
+          const actN = (q.acts || []).length;
+          const where = [inHandN ? 'click a card in your hand' : '', actN ? 'or use an ability below' : '']
+            .filter(Boolean).join(' ');
           const hint = nOpt
-            ? ` <span class="hintact">${nOpt} option${nOpt === 1 ? '' : 's'}${inHandN ? ': click a card in your hand' : ''}</span>`
+            ? ` <span class="hintact">${nOpt} option${nOpt === 1 ? '' : 's'}${where ? ': ' + where : ''}</span>`
             : '';
           bar.appendChild(el('div', 'ptext', label + hint));
+          // Sposobnost sa table u priority prozoru nije bila nigdje ponuđena:
+          // igrač je vidio samo "klikni kartu u ruci", pa se npr. Stella Lee
+          // (tap: kopiraj vlastiti instant sa stacka) nije mogla ni naći.
+          if (actN) {
+            const abilityRow = el('div', 'btnrow priorityabilities');
+            for (const entry of q.acts) {
+              const name = entry.card.name;
+              const abilityLabel = entry.label || (entry.ability && entry.ability.label) ||
+                (entry.equip !== undefined ? 'Equip' : entry.crew ? 'Crew' : 'Ability');
+              abilityRow.appendChild(btn(`⚙️ ${esc(name)} — ${esc(abilityLabel)}`,
+                () => this.resolvePending({ kind: 'activate', entry })));
+            }
+            bar.appendChild(abilityRow);
+          }
           const creatureSpell = top && top.kind === 'spell' && top.card && top.card.is('Creature') &&
             !(top.castOpts && top.castOpts.adventure);
           if (creatureSpell) {

@@ -2704,6 +2704,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       let newlyBlessed=false;
       for(const player of this.alivePlayers())if(!player.cityBlessing&&bf.some(card=>card.ctrl===player&&card.def.oracleAscend&&!card.cur.abilitiesDisabled))newlyBlessed=this.grantCityBlessing(player)||newlyBlessed;
+      // dmgAmount se u borbi i u AI prognozama poziva desetine hiljada puta;
+      // bez ovog spiska je svaki poziv skenirao cijelu tablu. Pamti se samo
+      // članstvo (mijenja ga zone promjena, koja uvijek pokreće recalc), dok
+      // se kontrolor čita uživo pri pozivu.
+      this._toughnessCombatSources = bf.filter(card => card.def.toughnessCombatAll || card.def.toughnessCombatYours);
       if(newlyBlessed)this.recalc();
     }
 
