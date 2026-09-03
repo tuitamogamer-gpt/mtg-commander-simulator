@@ -318,10 +318,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return rows;
   };
 
+  // A bot may pilot an imported deck, but only when the player hands that deck
+  // to the seat on purpose. The random filler stays built-in so "Random" never
+  // silently mirrors the player's own list back at them.
   MTG.selectAIDecks = function (humanDeck, aiCount, selections, rnd) {
     const chosen = Array.from({ length: aiCount }, (_, index) => {
       const name = (selections || [])[index];
-      return name && name !== humanDeck && MTG.DECKS[name] && !MTG.DECKS[name].custom ? name : '';
+      return name && name !== humanDeck && MTG.DECKS[name] ? name : '';
     });
     const seen = new Set([humanDeck]);
     for (let i = 0; i < chosen.length; i++) {

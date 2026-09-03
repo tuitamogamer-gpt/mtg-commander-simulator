@@ -5683,6 +5683,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await this.draw(p, 1);
     }
     await this.emit('endStep', { player: p });
+    if (this.diplomacyEndStep) await this.diplomacyEndStep(p);
     await this.flushTriggers();
     await this.priorityRound(p);
     this.emptyPool();          // CR 500.4

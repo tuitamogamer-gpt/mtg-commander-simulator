@@ -5,9 +5,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG;
   const G = MTG.Game.prototype;
   const UNLOCK_ROUNDS = 3;
-  const PROTECTION_TYPES = new Set(['no_attack', 'no_target_player', 'protect_permanent', 'let_resolve']);
+  const PROTECTION_TYPES = new Set(['no_attack', 'no_target_player', 'protect_permanent', 'let_resolve', 'amnesty']);
   const COMBAT_TYPES = new Set(['no_attack', 'pressure_player']);
-  const TURN_TYPES = new Set(['no_target_player', 'protect_permanent', 'remove_permanent']);
+  const TURN_TYPES = new Set(['no_target_player', 'protect_permanent', 'remove_permanent',
+    'amnesty', 'vassal_pledge', 'tribute_permanent']);
+  // Ordinary diplomacy trades small, symmetric promises. A player one turn from
+  // elimination has nothing small left to trade, so a separate, strictly gated
+  // set of much larger promises unlocks for them. Every condition that opens it
+  // is public and countable from the board: no bot reads a hand to decide that
+  // someone is about to die.
+  const LAST_STAND_REQUEST_TYPES = new Set(['amnesty']);
+  const LAST_STAND_OFFER_TYPES = new Set(['vassal_pledge', 'tribute_permanent', 'crusade_pledge']);
+  // Promises that stop their actor from attacking someone, and promises that
+  // commit their actor to attacking someone. The two families cannot overlap.
+  const SHIELD_TYPES = new Set(['no_attack', 'amnesty', 'vassal_pledge']);
+  const AGGRESSION_TYPES = new Set(['pressure_player', 'crusade_pledge']);
+  const VASSAL_TURNS = 2;
+  const CRUSADE_COMBATS = 2;
+  const LAST_STAND_PER_ROUND = 2;
 
   const REASONS = {
     disabled: 'Diplomacy & Politics is disabled for this game.',
@@ -27,6 +42,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     oneSided: 'The exchange is too one-sided.',
     unsafe: 'The deal would help the leading threat too much.',
     unsafeAttack: 'That attack promise is available only while a tactically sound attack exists; a certain free block does not count.',
+    notDesperate: 'A last stand opens only while the public board says you are about to be eliminated.',
+    lastStandRate: 'You have already made your last stand at this table round.',
+    lastStandPair: 'You have already begged this player during this table round.',
+    lastStandShape: 'A last stand asks for amnesty and offers one of the three exclusive promises.',
   };
 
   function state(game) {
@@ -124,6 +143,122 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
   }
 
+  function untappedBlockers(game, defender) {
+    return game.creatures(defender).filter(card => !card.tapped && !(card.cur && card.cur.cantBlock)).length;
+  }
+
+  // Damage the table can push through even if every untapped creature the
+  // player controls eats the single biggest attacker it can reach. This is the
+  // defender's best case, so clearing their life total means the board really
+  // is lethal, not merely large.
+  function unblockableIncoming(game, target) {
+    const shots = [];
+    for (const opponent of activePlayers(game)) {
+      if (opponent === target) continue;
+      if (game.diplomacyAttackBlocked && game.diplomacyAttackBlocked(opponent, target)) continue;
+      for (const card of game.creatures(opponent)) {
+        if (card.tapped || !game.canAttackAtAll(card) || !game.canAttackTarget(card, target)) continue;
+        shots.push(Math.max(0, game.dmgAmount(card, 'normal')));
+      }
+    }
+    shots.sort((a, b) => b - a);
+    return shots.slice(untappedBlockers(game, target)).reduce((sum, amount) => sum + amount, 0);
+  }
+
+  function commanderDamageTaken(game, target) {
+    return Object.values(target.commanderDamage || {}).reduce((worst, amount) => Math.max(worst, amount || 0), 0);
+  }
+
+  function lastStandSignals(game, actor) {
+    const signals = [];
+    if (!actor || actor.lost) return signals;
+    // The same sentences are shown to the player who is dying and to the player
+    // being begged, so they carry their own subject.
+    const self = actor.name === 'You';
+    const who = self ? 'you' : actor.name;
+    const whose = self ? 'your' : `${actor.name}’s`;
+    const is = self ? 'are' : 'is';
+    const have = self ? 'have' : 'has';
+    const lethal = unblockableIncoming(game, actor);
+    const lethalBoard = lethal >= actor.life;
+    if (lethalBoard) signals.push(`the table can push ${lethal} damage through ${whose} blockers and ${who} ${is} at ${actor.life}`);
+    const floor = Math.max(5, Math.round((actor.startingLife || 40) * 0.15));
+    // The life total is already in the sentence above; do not say it twice.
+    if (!lethalBoard && actor.life <= floor) signals.push(`${who} ${is} at ${actor.life} life`);
+    const commander = commanderDamageTaken(game, actor);
+    if (commander >= 16) signals.push(`${who} ${have} taken ${commander} commander damage from one commander`);
+    if ((actor.poison || 0) >= 7) signals.push(`${who} ${have} ${actor.poison} poison counters`);
+    // An empty library is just as fatal, but no promise anyone can make stops
+    // the draw, so it never unlocks a last stand.
+    return signals;
+  }
+
+  function lastStandStatus(game, actor) {
+    const d = state(game), st = status(game);
+    if (!d) return { eligible: false, reason: REASONS.disabled, signals: [], used: 0, remaining: 0 };
+    if (!st.unlocked) return { eligible: false, reason: st.reason, signals: [], used: 0, remaining: 0 };
+    if (!actor || actor.lost) return { eligible: false, reason: REASONS.invalid, signals: [], used: 0, remaining: 0 };
+    const round = roundKey(game, actor);
+    const used = d.lastStandCounts[round] || 0;
+    const remaining = Math.max(0, LAST_STAND_PER_ROUND - used);
+    const runaway = runawayThreat(game);
+    if (runaway && runaway.p === actor)
+      return { eligible: false, reason: REASONS.leader, signals: [], used, remaining };
+    const signals = lastStandSignals(game, actor);
+    if (!signals.length) return { eligible: false, reason: REASONS.notDesperate, signals, used, remaining };
+    if (!remaining) return { eligible: false, reason: REASONS.lastStandRate, signals, used, remaining };
+    return { eligible: true, reason: '', signals, used, remaining };
+  }
+
+  function tributeCandidates(game, actor) {
+    return game.bf().filter(card => card.ctrl === actor && !card.is('Land'))
+      .sort((a, b) => publicPermanentValue(game, b) - publicPermanentValue(game, a) || a.iid - b.iid)
+      .slice(0, 3);
+  }
+
+  function crusadeTarget(game, actor, beneficiary) {
+    const leader = runawayThreat(game) || objectiveTableThreat(game);
+    if (!leader || leader.p === actor || leader.p === beneficiary) return null;
+    return pressureAttackOpportunity(game, actor, leader.p).safe ? leader.p : null;
+  }
+
+  function lastStandOptions(game, actor, beneficiary) {
+    const gate = lastStandStatus(game, actor);
+    if (!gate.eligible || !beneficiary || beneficiary === actor || beneficiary.lost) {
+      return { eligible: false, reason: gate.reason || REASONS.invalid, signals: gate.signals, requests: [], offers: [] };
+    }
+    // The same two limits the proposal itself enforces, so the button and the
+    // composer never offer a deal that will be refused on sending.
+    if (hasPairContract(game, actor, beneficiary))
+      return { eligible: false, reason: REASONS.activePair, signals: gate.signals, requests: [], offers: [] };
+    if (state(game).lastStandPairs[`${roundKey(game, actor)}:${beneficiary.idx}`])
+      return { eligible: false, reason: REASONS.lastStandPair, signals: gate.signals, requests: [], offers: [] };
+    // The request is a promise the other player makes, so it is built from
+    // their side: they are its actor and the desperate player its beneficiary.
+    const requests = [{
+      key: `amnesty:${actor.idx}`, type: 'amnesty',
+      label: optionLabel(game, beneficiary, actor, 'amnesty'),
+    }];
+    const offers = [{
+      key: `vassal_pledge:${beneficiary.idx}`, type: 'vassal_pledge',
+      label: optionLabel(game, actor, beneficiary, 'vassal_pledge'),
+    }];
+    for (const card of tributeCandidates(game, actor)) {
+      offers.push({
+        key: `tribute_permanent:${card.iid}`, type: 'tribute_permanent', targetCardId: card.iid,
+        label: optionLabel(game, actor, beneficiary, 'tribute_permanent', card),
+      });
+    }
+    const crusade = crusadeTarget(game, actor, beneficiary);
+    if (crusade) {
+      offers.push({
+        key: `crusade_pledge:${crusade.idx}`, type: 'crusade_pledge', targetPlayerId: crusade.idx,
+        label: optionLabel(game, actor, beneficiary, 'crusade_pledge', crusade),
+      });
+    }
+    return { eligible: true, reason: '', signals: gate.signals, requests, offers, remaining: gate.remaining };
+  }
+
   function boardSignature(game) {
     return JSON.stringify({
       alive: activePlayers(game).map(candidate => [candidate.idx, candidate.life, candidate.lost]),
@@ -158,6 +293,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (clause.type === 'remove_permanent') return game.byIid(clause.targetCardId)?.name || clause.targetName || 'the named threat';
     if (clause.type === 'let_resolve') return stackByKey(game, clause.stackId)?.name || clause.targetName || 'the named stack object';
     if (clause.type === 'pressure_player') return player(game, clause.targetPlayerId)?.name || 'the leading threat';
+    if (clause.type === 'tribute_permanent') return game.byIid(clause.targetCardId)?.name || clause.targetName || 'the promised permanent';
+    if (clause.type === 'crusade_pledge') return player(game, clause.targetPlayerId)?.name || 'the leading threat';
     return player(game, clause.beneficiaryId)?.name || 'that player';
   }
 
@@ -173,6 +310,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (clause.type === 'let_resolve') return `${actorName} will not counter or harmfully target ${clauseTargetName(game, clause)} on the stack.`;
     if (clause.type === 'pressure_player') return `${actorName} will make a tactically sound attack on ${clauseTargetName(game, clause)} during ${actorPossessive} next combat, if one remains available; a certain free block never counts as able.`;
     if (clause.type === 'remove_permanent') return `${actorName} will cast ${clause.sourceName || 'the announced removal spell'} targeting ${clauseTargetName(game, clause)} by the end of ${actorPossessive} next turn.`;
+    if (clause.type === 'amnesty') return `${actorName} will not attack ${beneficiaryName} and will not choose ${beneficiaryName} or their permanents as harmful targets through ${actorPossessive} next turn.`;
+    if (clause.type === 'vassal_pledge') return `${actorName} will not attack ${beneficiaryName} and will not choose ${beneficiaryName} or their permanents as harmful targets through ${actorPossessive} next two turns.`;
+    if (clause.type === 'tribute_permanent') return `${actorName} will sacrifice ${clauseTargetName(game, clause)} at the beginning of ${actorPossessive} next end step.`;
+    if (clause.type === 'crusade_pledge') return `${actorName} will make a tactically sound attack on ${clauseTargetName(game, clause)} in each of ${actorPossessive} next two combats, whenever one remains available.`;
     if (clause.type === 'choice_vote') {
       const action = clause.state === 'fulfilled' ? 'voted' : 'will vote';
       return `${actorName} ${action} for ${clause.choiceLabel || clause.choiceKey || 'the requested option'} on ${clause.sourceName || 'the public choice'}.`;
@@ -186,6 +327,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (type === 'protect_permanent') return `Do not harmfully target ${target.name} through your next turn`;
     if (type === 'let_resolve') return `Let ${target.name} resolve`;
     if (type === 'pressure_player') return `Make a tactically sound attack on ${target.name} next combat, if one remains available`;
+    // The player's own seat is called "You", so a label about them has to read
+    // as second person or it turns into "do not attack You".
+    const who = beneficiary.name === 'You' ? 'you' : beneficiary.name;
+    const whose = beneficiary.name === 'You' ? 'your' : `${beneficiary.name}’s`;
+    if (type === 'amnesty') return `No attacks and no harmful targeting of ${who} or ${whose} permanents through your next turn`;
+    if (type === 'vassal_pledge') return `No attacks and no harmful targeting of ${who} or ${whose} permanents through your next two turns`;
+    if (type === 'tribute_permanent') return `Sacrifice ${target.name} at the beginning of your next end step`;
+    if (type === 'crusade_pledge') return `Attack ${target.name} in each of your next two combats, whenever a sound attack exists`;
     return 'Short-term promise';
   }
 
@@ -242,6 +391,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const target = player(game, Number(raw));
       if (!target || target === actor || target === beneficiary || target.lost) return null;
       clause.targetPlayerId = target.idx;
+    } else if (type === 'amnesty') {
+      if (Number(raw) !== beneficiary.idx) return null;
+      clause.turnsSpan = 1;
+    } else if (type === 'vassal_pledge') {
+      if (Number(raw) !== beneficiary.idx) return null;
+      clause.turnsSpan = VASSAL_TURNS;
+    } else if (type === 'tribute_permanent') {
+      const card = game.byIid(Number(raw));
+      if (!card || card.zone !== 'battlefield' || card.ctrl !== actor || card.is('Land')) return null;
+      clause.targetCardId = card.iid; clause.targetName = card.name; clause.targetControllerId = actor.idx;
+      clause.turnsSpan = 1;
+    } else if (type === 'crusade_pledge') {
+      const target = player(game, Number(raw));
+      if (!target || target === actor || target === beneficiary || target.lost) return null;
+      clause.targetPlayerId = target.idx;
+      clause.combatsRemaining = CRUSADE_COMBATS;
     } else return null;
     return clause;
   }
@@ -265,8 +430,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function promiseConflict(game, clause) {
     return activeClauses(game).some(({ clause: current }) => {
       if (current.actorId !== clause.actorId) return false;
-      if (current.type === 'no_attack' && clause.type === 'pressure_player' && current.beneficiaryId === clause.targetPlayerId) return true;
-      if (current.type === 'pressure_player' && clause.type === 'no_attack' && current.targetPlayerId === clause.beneficiaryId) return true;
+      // One player cannot promise both to spare and to attack the same player.
+      if (SHIELD_TYPES.has(current.type) && AGGRESSION_TYPES.has(clause.type) && current.beneficiaryId === clause.targetPlayerId) return true;
+      if (AGGRESSION_TYPES.has(current.type) && SHIELD_TYPES.has(clause.type) && current.targetPlayerId === clause.beneficiaryId) return true;
       return false;
     });
   }
@@ -302,8 +468,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     for (const clause of [request, offer]) {
-      if (clause.type !== 'no_attack') continue;
-      const alreadyShielded = activeClauses(game, current => current.type === 'no_attack' && current.beneficiaryId === clause.beneficiaryId).length;
+      if (!SHIELD_TYPES.has(clause.type)) continue;
+      const alreadyShielded = activeClauses(game, current => SHIELD_TYPES.has(current.type) &&
+        current.beneficiaryId === clause.beneficiaryId).length;
       if (alreadyShielded) return { ok: false, reason: REASONS.shield };
     }
     if (!opts.botInitiated && !from.isAI) {
@@ -358,6 +525,36 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const value = Math.max(2, item && item.card ? U.mv(item.card.def.cost || '') + (item.card.commander ? 2 : 0) : 3);
       if (perspective === beneficiary) benefit += value;
       if (perspective === actor) cost += value * 0.7;
+    } else if (clause.type === 'amnesty' || clause.type === 'vassal_pledge') {
+      const turns = clause.type === 'vassal_pledge' ? VASSAL_TURNS : 1;
+      const value = (expectedAttackValue(game, actor, beneficiary) +
+        targetInteractionValue(game, actor, beneficiary, perspective, !opts.publicOnly) + 1) * turns;
+      if (perspective === beneficiary) benefit += value;
+      if (perspective === actor) {
+        // Calling off a kill is the most expensive promise in the game. A bot
+        // that can finish the beneficiary right now must be paid for it.
+        const givingUpTheKill = unblockableIncoming(game, beneficiary) >= beneficiary.life &&
+          visibleAttackPower(game, actor, beneficiary) > 0;
+        cost += value * 0.8 * (givingUpTheKill ? 2.2 : 1);
+      }
+    } else if (clause.type === 'tribute_permanent') {
+      const card = game.byIid(clause.targetCardId);
+      const value = Math.max(1, publicPermanentValue(game, card));
+      // The tribute is paid a turn later, so both sides discount it; the actor
+      // still loses the whole permanent.
+      if (perspective === beneficiary) benefit += value * 0.4;
+      if (perspective === actor) cost += value * 0.62;
+    } else if (clause.type === 'crusade_pledge') {
+      const target = player(game, clause.targetPlayerId);
+      const opportunity = pressureAttackOpportunity(game, actor, target);
+      const rows = threatRows(game);
+      const gap = rows[0] && rows[1] ? rows[0].score - rows[1].score : 0;
+      const value = opportunity.safe ? Math.min(9, 2.4 + opportunity.expectedDamage * 0.75 + gap * 0.14) : 0;
+      if (perspective === beneficiary) benefit += value;
+      if (perspective === actor) {
+        const tacticalDiscount = Math.min(1.1, Math.max(0, opportunity.bestScore) * 0.1);
+        cost += opportunity.safe ? Math.max(1.4, 2.6 - tacticalDiscount) : 12;
+      }
     } else if (clause.type === 'pressure_player') {
       const target = player(game, clause.targetPlayerId);
       const runaway = runawayThreat(game);
@@ -391,6 +588,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return Math.min(2.8, 0.75 + Math.max(0, value) * 0.3);
     }
     if (clause.type === 'pressure_player') return 2.3;
+    if (clause.type === 'amnesty') return 4.5;
+    if (clause.type === 'vassal_pledge') return 4.5 * VASSAL_TURNS;
+    if (clause.type === 'tribute_permanent') {
+      const card = game.byIid(clause.targetCardId);
+      return Math.min(7, 2 + publicPermanentValue(game, card) * 0.35);
+    }
+    if (clause.type === 'crusade_pledge') return 2.3 * CRUSADE_COMBATS;
     return 1;
   }
 
@@ -660,6 +864,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const card = game.byIid(clause.targetCardId);
         if (!card || card.zone !== 'battlefield' || card.ctrl.idx !== clause.targetControllerId)
           setClauseState(game, contract, clause, 'fulfilled', 'the named threat left the battlefield');
+      } else if (clause.type === 'tribute_permanent') {
+        const card = game.byIid(clause.targetCardId);
+        if (!card || card.zone !== 'battlefield' || card.ctrl.idx !== clause.targetControllerId)
+          setClauseState(game, contract, clause, 'void', 'the promised permanent left the battlefield');
+      } else if (clause.type === 'crusade_pledge') {
+        const crusadeTargetPlayer = player(game, clause.targetPlayerId);
+        if (!crusadeTargetPlayer || crusadeTargetPlayer.lost)
+          setClauseState(game, contract, clause, 'void', 'the crusade target left the game');
       } else if (clause.type === 'let_resolve' && !stackByKey(game, clause.stackId)) {
         setClauseState(game, contract, clause, 'fulfilled', 'the stack object left the stack');
       }
@@ -690,7 +902,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const owner = targetOwner(target);
     return activeClauses(game, clause => {
       if (clause.actorId !== ctrl.idx) return false;
-      if (clause.type === 'no_target_player') return owner && owner.idx === clause.beneficiaryId;
+      if (clause.type === 'no_target_player' || clause.type === 'amnesty' || clause.type === 'vassal_pledge')
+        return owner && owner.idx === clause.beneficiaryId;
       if (clause.type === 'protect_permanent') return target && target.iid === clause.targetCardId;
       if (clause.type === 'let_resolve') return target && !(target instanceof U.Player) && !target.zone && stackKey(game, target) === clause.stackId;
       return false;
@@ -1114,6 +1327,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       enabled: !!enabled, unlockAfterRounds: UNLOCK_ROUNDS,
       contracts: [], proposals: [], history: [], rapport: {},
       proposalCounts: {}, pairProposalCounts: {}, rejectedPairs: {},
+      lastStandCounts: {}, lastStandPairs: {},
       botRoundCounts: {}, botPairRounds: {}, botHumanOfferRound: -99,
       nextProposalId: 1, nextContractId: 1, nextStackId: 1, nextChoiceCampaignId: 1,
     };
@@ -1186,6 +1400,57 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return { status: 'rejected', proposal, reason: verdict.reason };
   };
 
+  G.diplomacyLastStandStatus = function (actor) { refresh(this); return lastStandStatus(this, actor); };
+  G.diplomacyLastStandOptions = function (actor, beneficiary) { refresh(this); return lastStandOptions(this, actor, beneficiary); };
+
+  // A last stand skips the ordinary proposal budget — a player who is one turn
+  // from elimination should not be told to come back next round — but it is
+  // limited on its own: twice per table round, once per opponent, and only
+  // while the public board still says they are dying.
+  G.proposeLastStandDiplomacy = function (from, to, requestKey, offerKey) {
+    refresh(this);
+    const d = state(this);
+    if (!d) return { status: 'rejected', reason: REASONS.disabled };
+    const options = lastStandOptions(this, from, to);
+    if (!options.eligible) return { status: 'rejected', reason: options.reason };
+    if (!options.requests.some(option => option.key === requestKey) ||
+      !options.offers.some(option => option.key === offerKey)) return { status: 'rejected', reason: REASONS.lastStandShape };
+    const round = roundKey(this, from);
+    const pair = `${round}:${to.idx}`;
+    if (d.lastStandPairs[pair]) return { status: 'rejected', reason: REASONS.lastStandPair };
+    const request = buildClause(this, to, from, requestKey);
+    const offer = buildClause(this, from, to, offerKey);
+    if (!request || !offer || !LAST_STAND_REQUEST_TYPES.has(request.type) || !LAST_STAND_OFFER_TYPES.has(offer.type))
+      return { status: 'rejected', reason: REASONS.lastStandShape };
+    const proposal = makeProposal(this, from, to, request, offer, from.isAI ? 'bot-last-stand' : 'last-stand');
+    proposal.lastStand = true;
+    proposal.signals = options.signals.slice();
+    const check = validateProposal(this, proposal, { botInitiated: true });
+    if (!check.ok) return { status: 'rejected', reason: check.reason };
+    d.lastStandCounts[round] = (d.lastStandCounts[round] || 0) + 1;
+    d.lastStandPairs[pair] = true;
+    d.proposals.push(proposal);
+    this.lg(`🩸 ${from.name} makes a last stand to ${to.name}: ${clauseLabel(this, offer)}`, 'diplomacy');
+    announceProposal(this, proposal, `${from.name} is one turn from elimination and offers ${to.name}: ${clauseLabel(this, offer)} In return: ${clauseLabel(this, request)}`);
+    if (!to.isAI) {
+      proposal.status = 'pending-human';
+      proposal.reason = `${from.name} is about to be eliminated (${options.signals.join('; ')}).`;
+      return { status: proposal.status, proposal };
+    }
+    const verdict = evaluateProposal(this, proposal, to);
+    proposal.reason = verdict.reason;
+    proposal.math = verdict.math;
+    if (verdict.status === 'accepted')
+      return { status: 'accepted', proposal, contract: activateProposal(this, proposal), reason: verdict.reason };
+    proposal.status = 'rejected';
+    d.history.push({
+      turn: this.turnNo, kind: 'rejected', fromId: from.idx, toId: to.idx, reason: verdict.reason,
+      text: `${to.name} refused a last stand from ${from.name}.`,
+    });
+    this.lg(`🩸 ${to.name} refused a last stand from ${from.name}.`, 'diplomacy');
+    return { status: 'rejected', proposal, reason: verdict.reason };
+  };
+
   G.proposeGroupRemovalDiplomacy = function (from, optionKey) {
     refresh(this);
     const option = groupRemovalOptions(this, from).find(candidate => candidate.key === optionKey);
@@ -1238,7 +1503,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     refresh(this);
     const defender = defenderOf(target);
     if (!actor || !defender) return false;
-    return activeClauses(this, clause => clause.type === 'no_attack' && clause.actorId === actor.idx && clause.beneficiaryId === defender.idx).length > 0;
+    return activeClauses(this, clause => SHIELD_TYPES.has(clause.type) && clause.actorId === actor.idx && clause.beneficiaryId === defender.idx).length > 0;
   };
 
   G.diplomacyAttackTargetsFor = function (card, targets, forced) {
@@ -1249,7 +1514,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.diplomacyRequiredAttackTarget = function (actor) {
     refresh(this);
-    const entry = activeClauses(this, clause => clause.type === 'pressure_player' && clause.actorId === actor.idx)[0];
+    const entry = activeClauses(this, clause => AGGRESSION_TYPES.has(clause.type) && clause.actorId === actor.idx)[0];
     if (!entry) return null;
     const target = player(this, entry.clause.targetPlayerId);
     const opportunity = pressureAttackOpportunity(this, actor, target);
@@ -1261,8 +1526,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.diplomacyVoidAttackPromise = function (actor, target, reason) {
     const defender = defenderOf(target);
     for (const { contract, clause } of activeClauses(this, current => current.actorId === actor.idx &&
-      ((current.type === 'no_attack' && defender && current.beneficiaryId === defender.idx) ||
-       (current.type === 'pressure_player' && current.targetPlayerId === (target && target.idx))))) {
+      ((SHIELD_TYPES.has(current.type) && defender && current.beneficiaryId === defender.idx) ||
+       (AGGRESSION_TYPES.has(current.type) && current.targetPlayerId === (target && target.idx))))) {
       setClauseState(this, contract, clause, 'void', reason || 'a Magic requirement made the promise impossible');
     }
   };
@@ -1271,6 +1536,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     refresh(this);
     for (const { contract, clause } of activeClauses(this, current => current.actorId === actor.idx && COMBAT_TYPES.has(current.type)))
       setClauseState(this, contract, clause, 'fulfilled', 'the promised combat ended');
+    // A crusade covers two combats: the first one only counts down.
+    for (const { contract, clause } of activeClauses(this, current => current.actorId === actor.idx && current.type === 'crusade_pledge')) {
+      clause.combatsRemaining = Math.max(0, (clause.combatsRemaining || 1) - 1);
+      if (!clause.combatsRemaining) setClauseState(this, contract, clause, 'fulfilled', 'both promised combats ended');
+      else this.lg(`⚔️ ${player(this, clause.actorId)?.name || 'A player'} owes ${clause.combatsRemaining} more crusade attack${clause.combatsRemaining === 1 ? '' : 's'} on ${clauseTargetName(this, clause)}.`, 'diplomacy');
+    }
   };
 
   G.diplomacyEndTurn = function (actor) {
@@ -1280,15 +1551,41 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // `createdActorTurns` prevents cleanup on the creation turn from shortening
     // "through your next turn" to only a few remaining phases.
     for (const { contract, clause } of activeClauses(this, current => current.actorId === actor.idx &&
-      TURN_TYPES.has(current.type) && actor.turnsStarted > current.createdActorTurns)) {
+      TURN_TYPES.has(current.type) && actor.turnsStarted > current.createdActorTurns + ((current.turnsSpan || 1) - 1))) {
       if (clause.type === 'remove_permanent') {
         const target = this.byIid(clause.targetCardId);
         setClauseState(this, contract, clause,
           target && target.zone === 'battlefield' && target.ctrl.idx === clause.targetControllerId ? 'broken' : 'fulfilled',
           target && target.zone === 'battlefield' ? 'the announced removal deadline was missed' : 'the named threat left the battlefield');
+      } else if (clause.type === 'tribute_permanent') {
+        // The end step already collects a tribute that could be paid. Reaching
+        // cleanup with the clause still active means it was not.
+        setClauseState(this, contract, clause, 'broken', 'the promised tribute was never sacrificed');
       } else setClauseState(this, contract, clause, 'fulfilled', 'the promised turn ended');
     }
     refresh(this);
+  };
+
+  // Tributes are collected in the end step of the promising player's next turn.
+  // This runs before cleanup, so a paid tribute is already settled by the time
+  // the deadline above is checked.
+  G.diplomacyEndStep = async function (actor) {
+    refresh(this);
+    if (!state(this) || !actor || actor.lost) return;
+    const due = activeClauses(this, clause => clause.type === 'tribute_permanent' && clause.actorId === actor.idx &&
+      actor.turnsStarted > clause.createdActorTurns);
+    for (const { contract, clause } of due) {
+      const card = this.byIid(clause.targetCardId);
+      if (!card || card.zone !== 'battlefield' || card.ctrl !== actor) {
+        setClauseState(this, contract, clause, 'void', 'the promised permanent had already left the battlefield');
+        continue;
+      }
+      this.lg(`🤝 ${actor.name} pays the promised tribute: ${card.name}.`, 'diplomacy');
+      await this.sacrifice(actor, card);
+      setClauseState(this, contract, clause,
+        card.zone === 'battlefield' ? 'broken' : 'fulfilled',
+        card.zone === 'battlefield' ? 'the promised permanent could not be sacrificed' : 'the promised tribute was paid');
+    }
   };
 
   G.diplomacyFilterTargets = function (candidates, spec, src, ctrl, opts = {}) {
@@ -1349,18 +1646,61 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         request: proposal.request ? clauseLabel(this, proposal.request) : '', offer: proposal.offer ? clauseLabel(this, proposal.offer) : '', reason: proposal.reason || '',
         publicBalance: proposal.publicBalance ? Object.assign({}, proposal.publicBalance.to) : null,
         isCounteroffer: !!proposal.isCounteroffer, originalProposalId: proposal.originalProposalId || null,
+        lastStand: !!proposal.lastStand, signals: (proposal.signals || []).slice(),
       })),
       opponents: viewer.opponents(this).map(other => ({ id: other.idx, name: other.name, relation: relation(this, viewer, other) })),
       recent: d.history.slice(-6).map(entry => ({
         turn: entry.turn, kind: entry.kind, text: entry.text || entry.reason || 'A negotiation ended.',
       })),
       offersRemaining: Math.max(0, 2 - (d.proposalCounts[key] || 0)),
+      lastStand: (() => {
+        const gate = lastStandStatus(this, viewer);
+        return {
+          eligible: gate.eligible, reason: gate.reason, signals: gate.signals.slice(),
+          remaining: gate.remaining,
+          opponents: gate.eligible ? viewer.opponents(this)
+            .filter(other => lastStandOptions(this, viewer, other).eligible &&
+              !d.lastStandPairs[`${key}:${other.idx}`] && !hasPairContract(this, viewer, other))
+            .map(other => ({ id: other.idx, name: other.name })) : [],
+        };
+      })(),
       groupRemovalOptions: groupRemovalOptions(this, viewer).map(option => ({
         key: option.key, title: option.title, sourceName: option.sourceName, targetName: option.targetName,
         targetPlayerName: option.targetPlayerName, participantNames: option.participantNames.slice(), labels: option.labels.slice(),
       })),
     };
   };
+
+  // The bot picks the player who is doing the most to kill it and offers the
+  // exclusive promise that costs it least of what it still needs.
+  async function botLastStand(game, from) {
+    if (!lastStandStatus(game, from).eligible) return null;
+    const d = state(game);
+    const round = roundKey(game, from);
+    const candidates = activePlayers(game)
+      .filter(other => other !== from && !d.lastStandPairs[`${round}:${other.idx}`] && !hasPairContract(game, from, other))
+      .map(other => ({ other, pressure: visibleAttackPower(game, other, from) }))
+      .sort((a, b) => b.pressure - a.pressure || a.other.idx - b.other.idx);
+    for (const { other } of candidates) {
+      const options = lastStandOptions(game, from, other);
+      if (!options.eligible || !options.requests.length) continue;
+      const ranked = options.offers
+        .map(option => ({ option, cost: -clauseDelta(game, buildClause(game, from, other, option.key) || {}, from) }))
+        .filter(entry => Number.isFinite(entry.cost))
+        .sort((a, b) => a.cost - b.cost);
+      for (const { option } of ranked) {
+        const result = game.proposeLastStandDiplomacy(from, other, options.requests[0].key, option.key);
+        if (result.status === 'rejected' && result.reason === REASONS.lastStandShape) continue;
+        if (result.status === 'pending-human') d.botHumanOfferRound = status(game).rounds;
+        if (game.reviewDiplomacyWithHuman) await game.reviewDiplomacyWithHuman({
+          source: 'bot-last-stand', status: result.status, proposal: result.proposal || null,
+          contract: result.contract || null, reason: result.reason || '',
+        });
+        return result;
+      }
+    }
+    return null;
+  }
 
   G.processDiplomacyCheckpoint = async function (active) {
     refresh(this);
@@ -1371,6 +1711,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const runaway = runawayThreat(this);
     if (runaway && runaway.p === active) return null;
     const from = active;
+    // A bot that is about to be eliminated begs before it bargains.
+    const lastStand = await botLastStand(this, from);
+    if (lastStand) return lastStand;
     const group = groupRemovalOptions(this, from)[0];
     if (group) {
       d.botRoundCounts[round] = (d.botRoundCounts[round] || 0) + 1;

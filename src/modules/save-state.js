@@ -195,6 +195,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       houseRules: JSON.parse(JSON.stringify(game.houseRules || {})),
       nextCardIid: game._nextCardIid,
       players: game.players.map(capturePlayer),
+      // Agreements are plain data that points at seats and card ids, both of
+      // which the restore preserves. Without this a resumed game would forget
+      // that someone still owes a tribute.
+      diplomacy: game.diplomacy ? JSON.parse(JSON.stringify(game.diplomacy)) : null,
       cards,
     };
   }
@@ -228,6 +232,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     game.untilEffects.length = 0;
     game.delayed.length = 0;
     game.diedThisTurn.length = 0;
+    if (snapshot.diplomacy) game.diplomacy = JSON.parse(JSON.stringify(snapshot.diplomacy));
 
     const byIid = new Map();
     for (const entry of snapshot.cards) {
@@ -335,6 +340,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // not part of the state a save has to reproduce.
         Object.entries(card.counters || {}).filter(([, value]) => value).sort(),
         card.attachedTo ?? null].join('|')).sort(),
+      agreements: (game.diplomacy && game.diplomacy.contracts || []).map(contract =>
+        [contract.id, contract.status, contract.clauses.map(clause => `${clause.type}:${clause.state}`).join(',')].join('|')).sort(),
     });
   };
 })();

@@ -176,6 +176,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (entry.type === 'diplomacyOffer') return {
       type: entry.type, toSeat: Number(entry.toSeat), requestKey: String(entry.requestKey), offerKey: String(entry.offerKey),
     };
+    if (entry.type === 'diplomacyLastStand') return {
+      type: entry.type, toSeat: Number(entry.toSeat), requestKey: String(entry.requestKey), offerKey: String(entry.offerKey),
+    };
     if (entry.type === 'groupDiplomacy') return { type: entry.type, optionKey: String(entry.optionKey) };
     if (entry.type === 'diplomacyResponse') return { type: entry.type, proposalId: Number(entry.proposalId), accept: !!entry.accept };
     assert(false, `side action ${entry.type} is unsupported.`);
@@ -198,6 +201,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       return result;
     }
+    if (saved.type === 'diplomacyLastStand') {
+      const to = game.players.find(candidate => (candidate.onlineSeat ?? candidate.idx) === saved.toSeat);
+      assert(to, 'diplomacy recipient no longer exists.');
+      const result = game.proposeLastStandDiplomacy(player, to, saved.requestKey, saved.offerKey);
+      if (game.reviewDiplomacyWithHuman) await game.reviewDiplomacyWithHuman({
+        source: 'human-last-stand', status: result.status, proposal: result.proposal || null,
+        contract: result.contract || null, reason: result.reason || '',
+      });
+      return result;
+    }
     if (saved.type === 'groupDiplomacy') {
       const result = game.proposeGroupRemovalDiplomacy(player, saved.optionKey);
       if (game.reviewDiplomacyWithHuman) await game.reviewDiplomacyWithHuman({
@@ -209,6 +222,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (saved.type === 'diplomacyResponse') return game.respondToDiplomacyProposal(saved.proposalId, saved.accept, player);
     assert(false, `recorded side action ${saved.type} is unsupported.`);
   };
+
+  function importedDeckRecords(setup) {
+    const names = [setup.deck, ...(setup.aiDecks || [])].filter(Boolean);
+    const records = [];
+    const seen = new Set();
+    for (const name of names) {
+      if (seen.has(name) || !MTG.DECKS?.[name]?.custom) continue;
+      seen.add(name);
+      const record = MTG.importedDeckRecordFor?.(name);
+      if (record) records.push(record);
+    }
+    return records;
+  }
 
   MTG.buildAccountSave = function (game, setup, decisions, matchId, state) {
     assert(game && setup && matchId, 'cannot build a checkpoint without a running match.');
@@ -235,6 +261,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         manaMode: setup.manaMode === 'manual' ? 'manual' : 'auto',
         prioMode: setup.prioMode || 'end',
         seed: String(setup.seed),
+        // Imported decks live only in the library that owns them. A checkpoint
+        // that uses one carries the list itself, so Continue can rebuild the
+        // match even from a browser where the deck was never saved.
+        importedDecks: importedDeckRecords(setup),
       },
       decisions: decisions.slice(),
       summary: {
@@ -246,12 +276,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
   };
 
+  function adoptSavedImportedDecks(save) {
+    const records = Array.isArray(save.setup?.importedDecks) ? save.setup.importedDecks.slice(0, 4) : [];
+    const failures = [];
+    for (const record of records) {
+      const name = record && record.name;
+      if (!name || MTG.DECKS?.[name]) continue;
+      const result = MTG.adoptImportedDeckRecord?.(record) || { ok: false, error: 'decklists cannot be read in this build.' };
+      if (!result.ok) failures.push(`${name}: ${result.error}`);
+    }
+    return failures.length ? ` (${failures.join('; ')})` : '';
+  }
+
   MTG.validateAccountSave = function (save) {
     assert(save && save.schema === 'commander-save/v1' && save.mode === 'solo', 'unsupported checkpoint format.');
     assert(save.setup && typeof save.setup === 'object', 'setup settings are missing.');
-    assert(MTG.DECKS?.[save.setup.deck] && !MTG.DECKS[save.setup.deck].custom, 'the saved human deck is unavailable.');
+    // Imported decks carried by the checkpoint are registered first: after that
+    // every seat is checked the same way, built-in or not.
+    const adopted = adoptSavedImportedDecks(save);
+    assert(MTG.DECKS?.[save.setup.deck], `the saved human deck is unavailable.${adopted}`);
     assert(Array.isArray(save.setup.aiDecks) && save.setup.aiDecks.length >= 1 && save.setup.aiDecks.length <= 3, 'AI seats are invalid.');
-    assert(save.setup.aiDecks.every(name => MTG.DECKS?.[name] && !MTG.DECKS[name].custom), 'a saved AI deck is unavailable.');
+    assert(save.setup.aiDecks.every(name => MTG.DECKS?.[name]), `a saved AI deck is unavailable.${adopted}`);
     assert(new Set([save.setup.deck, ...save.setup.aiDecks]).size === save.setup.aiDecks.length + 1, 'saved decks must remain unique.');
     assert(Array.isArray(save.decisions) && save.decisions.length <= 5000, 'decision history is invalid.');
     if (save.state) assert(save.state.format >= 2 && Array.isArray(save.state.cards) && Array.isArray(save.state.players),

@@ -1659,6 +1659,7 @@ body:has(#setup) { background: #08090d; }
 }
 #game .dipincoming { padding: 11px; box-shadow: inset 3px 0 rgba(211,151,76,.7); }
 #game .dipincoming.counteroffer { box-shadow: inset 3px 0 rgba(126,166,194,.78); }
+#game .dipincoming.laststand { box-shadow: inset 3px 0 rgba(198,86,64,.85); }
 #game .dipincoming > b { color: #f0d5a6; font-size: 12px; }
 #game .dipincoming.counteroffer > b { color: #bdd9e8; }
 #game .diproute { margin-top: 5px; color: #85827a; font-size: 9px; line-height: 1.4; }
@@ -1684,6 +1685,15 @@ body:has(#setup) { background: #08090d; }
 #game .dipgroupdeal small { color: #8da18f; font-size: 9px; }
 #game .dipgroupdeal p { margin: 0; color: #9c9e95; font-size: 9.5px; line-height: 1.4; }
 #game .dipgroupdeal .pbtn { justify-self: start; padding: 7px 10px; font-size: 9px; }
+/* Last stand: the one place diplomacy is allowed to look alarming. */
+#game .diplaststand { display: grid; gap: 7px; padding: 11px; border: 1px solid rgba(198,86,64,.44); border-left: 3px solid #c65640; border-radius: 9px; background: linear-gradient(145deg,rgba(46,18,14,.86),rgba(12,7,7,.92)); }
+#game .diplaststand b { color: #f0c9ba; font-size: 11px; }
+#game .diplaststand small { color: #c39685; font-size: 9px; line-height: 1.45; }
+#game .diplaststand p { margin: 0; color: #a89a94; font-size: 9.5px; line-height: 1.4; }
+#game .diplaststand .dipactions { display: flex; flex-wrap: wrap; gap: 6px; }
+#game .diplaststand .pbtn { padding: 7px 10px; font-size: 9px; }
+#game .laststandmodal { border-color: rgba(198,86,64,.5); }
+#game .laststandmodal .combatkicker { color: #e08a70; }
 #game .diprecent { display: grid; gap: 5px; }
 #game .diprecent p {
   display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 6px; margin: 0; padding: 6px 7px;

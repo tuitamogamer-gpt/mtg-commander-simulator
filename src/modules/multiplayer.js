@@ -5,7 +5,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 // copied into the generated Higgsfield `app/src/logic.js` without carrying DOM
 // state, controllers, or hidden cards across the network boundary.
 (function () {
-  const PROTOCOL_VERSION = 2;
+  const PROTOCOL_VERSION = 3;
   const MIN_HUMAN_SEATS = 2;
   const MAX_HUMAN_SEATS = 4;
   const MAX_SYNC_BYTES = 2_000_000;
@@ -44,9 +44,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       connected: false,
       ready: false,
       deckId: null,
+      // An imported deck exists only in the browser that saved it. The seat
+      // carries its list so the host can build that deck locally; the room
+      // stays JSON-only and no card definitions cross the network.
+      deckRecord: null,
       commanderNames: [],
       aiStyle: null,
     };
+  }
+
+  // A real 100-card list is 5-8 KB; this leaves room for long names without
+  // letting a seat push junk into the shared room state.
+  const MAX_DECK_RECORD_BYTES = 16_000;
+
+  function cleanDeckRecord(value) {
+    if (!isObject(value)) return null;
+    // The limits mirror the library's own record shape, so a list that survives
+    // the room is a list the host can actually validate.
+    const cards = Array.isArray(value.cards) ? value.cards.slice(0, 100) : [];
+    const record = {
+      schema: cleanText(value.schema, 60) || 'commander-deck/v1',
+      id: cleanText(value.id, 85),
+      name: cleanText(value.name, 80),
+      commanders: (Array.isArray(value.commanders) ? value.commanders : [])
+        .map(name => cleanText(name, 160)).filter(Boolean).slice(0, 2),
+      cards: cards.map(entry => ({
+        name: cleanText(entry && entry.name, 160),
+        n: Number.isSafeInteger(entry && entry.n) ? Math.max(0, Math.min(99, entry.n)) : 0,
+        section: cleanText(entry && entry.section, 24),
+      })).filter(entry => entry.name && entry.n > 0),
+    };
+    if (!record.name || !record.cards.length) return null;
+    return byteSize(record) <= MAX_DECK_RECORD_BYTES ? record : null;
   }
 
   function setup(playerIds = [], options = {}) {
@@ -175,6 +204,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (type === 'configure') {
       if (state.phase !== 'lobby' || seat.kind !== 'human') return { ok: false, error: 'Seat cannot be configured now.' };
       if (!cleanText(action.deckId, 120)) return { ok: false, error: 'Choose a deck.' };
+      if (action.deckRecord !== undefined && action.deckRecord !== null) {
+        const record = cleanDeckRecord(action.deckRecord);
+        if (!record) return { ok: false, error: 'That imported decklist could not be read.' };
+        if (record.name !== cleanText(action.deckId, 120)) return { ok: false, error: 'The decklist does not match the chosen deck.' };
+      }
       if (action.commanderNames !== undefined && (!Array.isArray(action.commanderNames) || action.commanderNames.length > 2))
         return { ok: false, error: 'Choose one commander or a legal partner pair.' };
       return { ok: true };
@@ -274,6 +308,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       seat.connected = true;
     } else if (type === 'configure') {
       seat.deckId = cleanText(action.deckId, 120);
+      seat.deckRecord = cleanDeckRecord(action.deckRecord);
       seat.commanderNames = (action.commanderNames || []).map(name => cleanText(name, 160)).filter(Boolean).slice(0, 2);
       seat.name = cleanText(action.name || seat.name, 32);
       seat.ready = action.ready !== false;
@@ -344,6 +379,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       seats: state.seats.map(item => ({
         seat: item.seat, kind: item.kind, role: item.role, name: item.name,
         connected: item.connected, ready: item.ready, deckId: item.deckId,
+        // Everyone sees that a seat brought an imported deck; only the host,
+        // who has to build it, and its own player receive the list itself.
+        deckImported: !!item.deckRecord,
+        deckRecord: seatIndex === 0 || item.seat === seatIndex ? clone(item.deckRecord) : null,
         commanderNames: item.commanderNames, aiStyle: item.aiStyle,
       })),
       settings: clone(state.settings),

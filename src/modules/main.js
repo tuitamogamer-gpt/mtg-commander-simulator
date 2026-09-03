@@ -878,7 +878,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const deckList = el('div', 'decklist');
     for (const [name, deck] of Object.entries(MTG.DECKS)) {
       const libraryEntry = deck.custom && U.getImportedDeckLibrary().entries.find(entry => entry.name === name && entry.ready);
-      if (deck.custom && (initialMode === 'online' || !libraryEntry)) continue;
+      // A ready imported deck is selectable everywhere now, live rooms included:
+      // the seat carries its list to the host.
+      if (deck.custom && !libraryEntry) continue;
       const meta = MTG.DECK_META[name] || {};
       const strategy = MTG.deckStrategy(meta.style);
       const year = ((meta.set || '').match(/20\d{2}/) || [''])[0];
@@ -926,9 +928,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         state.importedLibraryOwner = libraryEntry ? currentImportedLibraryOwner() : null;
         state.commanders = libraryEntry ? libraryEntry.commanders.slice() : MTG.defaultCommanders(deck, MTG.DEFS);
         const liveChoice = matchType.querySelector('[data-mode="online"]');
-        liveChoice.disabled = !!libraryEntry;
-        liveChoice.title = libraryEntry ? 'Imported decks currently support Solo tables only.' : '';
-        if (libraryEntry && state.mode === 'online') setMatchMode('solo');
+        liveChoice.disabled = false;
+        liveChoice.title = libraryEntry
+          ? 'Your imported list travels with your seat so the host can build it.' : '';
         deckList.querySelectorAll('.deckcard').forEach(c => {
           c.classList.remove('selected');
           c.setAttribute('aria-pressed', 'false');
@@ -1182,6 +1184,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       botStyles.innerHTML = '';
       const botNames = ['AI Dragon', 'AI Wolf', 'AI Raven'];
       const deckNames = Object.keys(MTG.DECKS).filter(name => !MTG.DECKS[name].custom).sort((a, b) => a.localeCompare(b));
+      // Decks the player imported are offered to bots too, but only while the
+      // list is ready in My Library — a broken or removed list must never be
+      // dealt to a seat. Online rooms have no bots, so the mode is excluded.
+      const importedDeckNames = state.mode === 'online' ? [] : (MTG.getImportedDeckLibrary?.() || { entries: [] })
+        .entries.filter(entry => entry.ready && MTG.DECKS[entry.name]?.custom)
+        .map(entry => entry.name).sort((a, b) => a.localeCompare(b));
       for (let i = 0; i < state.ai; i++) {
         const config = el('div', 'botconfig');
         const row = el('div', 'botstylerow');
@@ -1216,12 +1224,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         randomDeck.value = '';
         deckSelect.appendChild(randomDeck);
         const unavailable = new Set([state.deck, ...state.aiDecks.filter((deckName, index) => index !== i && deckName)]);
-        for (const deckName of deckNames) {
+        const addDeckOption = (deckName, group) => {
           const option = el('option', '', deckName);
           option.value = deckName;
           option.disabled = unavailable.has(deckName);
           option.selected = state.aiDecks[i] === deckName;
-          deckSelect.appendChild(option);
+          (group || deckSelect).appendChild(option);
+        };
+        for (const deckName of deckNames) addDeckOption(deckName);
+        if (importedDeckNames.length) {
+          const group = el('optgroup');
+          group.label = 'From My Library';
+          for (const deckName of importedDeckNames) addDeckOption(deckName, group);
+          deckSelect.appendChild(group);
         }
         deckSelect.onchange = () => {
           state.aiDecks[i] = deckSelect.value;
@@ -1874,10 +1889,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       seed: String(seed),
       createdAt: matchCreatedAt,
     };
-    // Imported decks persist in My Library, but the v1 match-checkpoint format
-    // cannot reconstruct a custom deck safely. Keep lifetime match stats while
-    // refusing to create a checkpoint that Continue would later reject.
-    const accountCheckpointEnabled = !!saveSetup && !MTG.DECKS[state.deck]?.custom;
+    // A checkpoint now carries the list of every imported deck at the table, so
+    // Continue can rebuild the match. It is refused only when a custom deck in
+    // play has no saved record to carry (a deck removed from My Library).
+    const customDecksInPlay = [state.deck, ...(aiDecks || [])]
+      .filter(name => name && MTG.DECKS[name]?.custom);
+    const accountCheckpointEnabled = !!saveSetup &&
+      customDecksInPlay.every(name => !!MTG.importedDeckRecordFor?.(name));
     // The board as of the last turn boundary. A resume restores this directly;
     // the recorded timeline is only the fallback for older saves.
     let latestBoardState = resumeSave?.state || null;
@@ -4245,6 +4263,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const humans = seats.filter(seat => seat.kind === 'human').sort((a, b) => a.seat - b.seat);
     if (!host || humans.length < 2 || humans.length > 4 || humans.length !== seats.length)
       throw new Error('Live Commander requires two to four human players and no bots.');
+    // Every seat's deck is built on this machine. A guest playing an imported
+    // list sends the list with their seat; the host registers it here so the
+    // engine can build the same deck it would build for its owner.
+    const ownLibrary = new Set((MTG.getImportedDeckLibrary?.() || { entries: [] }).entries
+      .filter(entry => entry.ready).map(entry => entry.name));
+    for (const seat of humans) {
+      if (!seat.deckRecord) continue;
+      const seatName = seat.name || `Player ${seat.seat + 1}`;
+      // The host's own saved lists are never overwritten by a guest's list of
+      // the same name; the guest renames their deck instead.
+      if (seat.seat !== 0 && ownLibrary.has(seat.deckRecord.name))
+        throw new Error(`${seatName} sent a deck named ${seat.deckRecord.name}, which is also in your My Library. Ask them to rename their list.`);
+      const adopted = MTG.adoptImportedDeckRecord(seat.deckRecord);
+      if (!adopted.ok) throw new Error(`${seatName} sent an imported deck that cannot be built: ${adopted.error}`);
+    }
+    const missing = humans.filter(seat => !MTG.DECKS[seat.deckId]);
+    if (missing.length) throw new Error(`No deck named ${missing[0].deckId} is available on the host.`);
     const bridge = MTG.onlineHostBridge(roomClient);
     return startGame({
       deck: host.deckId,
@@ -4730,12 +4765,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     hideImportedLibraryWhileOwnerChanges();
     if (!window._game && $('#setup')?.querySelector('[data-imported-deck-id]')) renderSetup({ mode: 'solo' });
     if (window._game) {
-      const humanDeckName = window._game.players?.find(player => !player.isAI)?.deckName;
+      // Any seat may now hold an imported deck, so a rematch is unsafe as soon
+      // as one of them belongs to a library that just changed hands.
+      const customInPlay = (window._game.players || [])
+        .some(player => player.deckName && MTG.DECKS[player.deckName]?.custom);
       if (owner === 'loading') {
         activeGameLibraryOwner = previousOwner;
         return;
       }
-      if (previousOwner && previousOwner !== 'loading' && previousOwner !== owner && humanDeckName && MTG.DECKS[humanDeckName]?.custom) {
+      if (previousOwner && previousOwner !== 'loading' && previousOwner !== owner && customInPlay) {
         delete MTG.rematchLastGame;
       }
       activeGameLibraryOwner = owner;

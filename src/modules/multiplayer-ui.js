@@ -14,14 +14,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   const artURL = name => MTG.cardImageURL(name);
 
+  // Imported decks join the lobby list once they are ready in My Library. The
+  // host has to build every seat's deck locally, so choosing one also sends its
+  // saved list to the room.
+  function importedDeckNames() {
+    const library = MTG.getImportedDeckLibrary ? MTG.getImportedDeckLibrary() : { entries: [] };
+    return library.entries.filter(entry => entry.ready && MTG.DECKS?.[entry.name]?.custom).map(entry => entry.name);
+  }
+
   function deckCatalog() {
-    return Object.entries(MTG.DECKS || {}).filter(([, deck]) => !deck.custom).map(([name, deck]) => ({
-      id: name, commander: deck.commander, meta: MTG.DECK_META && MTG.DECK_META[name] || {},
-    }));
+    const imported = new Set(importedDeckNames());
+    return Object.entries(MTG.DECKS || {})
+      .filter(([name, deck]) => !deck.custom || imported.has(name))
+      .map(([name, deck]) => ({
+        id: name, commander: deck.commander, imported: !!deck.custom,
+        meta: MTG.DECK_META && MTG.DECK_META[name] || {},
+      }));
   }
 
   function deckOptions(selected, unavailable = new Set()) {
-    return deckCatalog().map(deck => `<option value="${esc(deck.id)}"${deck.id === selected ? ' selected' : ''}${unavailable.has(deck.id) && deck.id !== selected ? ' disabled' : ''}>${esc(deck.id)} — ${esc(deck.commander)}</option>`).join('');
+    return deckCatalog().map(deck => `<option value="${esc(deck.id)}"${deck.id === selected ? ' selected' : ''}${unavailable.has(deck.id) && deck.id !== selected ? ' disabled' : ''}>${esc(deck.id)} — ${esc(deck.commander)}${deck.imported ? ' (My Library)' : ''}</option>`).join('');
+  }
+
+  function configureAction(deckId, extra) {
+    return Object.assign({
+      type: 'configure', deckId,
+      deckRecord: MTG.DECKS?.[deckId]?.custom && MTG.importedDeckRecordFor
+        ? MTG.importedDeckRecordFor(deckId) : null,
+    }, extra);
   }
 
   class OnlineLobby {
@@ -53,10 +73,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await this.perform({ type: 'join', name: this.initial && this.initial.name || (this.client.isHost ? 'Host' : 'Player 2') });
       }
       if (this.initial && this.client.isHost) {
-        await this.perform({
-          type: 'configure', deckId: this.initial.deck,
+        await this.perform(configureAction(this.initial.deck, {
           commanderNames: this.initial.commanders || [], name: this.initial.name || 'Host', ready: true,
-        });
+        }));
         await this.perform({
           type: 'configureSettings', sumPartnerDamage: !!this.initial.sumPartnerDamage,
         });
@@ -87,7 +106,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <div class="onlineseatnum">0${seat.seat + 1}</div>
         <div class="onlineseatstatus"><i></i>${seat.connected ? 'CONNECTED' : 'WAITING'}</div>
         ${deck ? `<img src="${artURL(deck.commander)}" alt="${esc(deck.commander)}" onerror="MTG.imgFail(this)">` : '<div class="onlineseatempty">+</div>'}
-        <div class="onlineseatcopy"><small>${esc(seat.role)}</small><b>${esc(seat.name)}</b><span>${seat.deckId ? esc(seat.deckId) : 'No deck selected'}</span></div>`;
+        <div class="onlineseatcopy"><small>${esc(seat.role)}</small><b>${esc(seat.name)}</b><span>${seat.deckId ? esc(seat.deckId) : 'No deck selected'}${seat.deckImported ? ' <em class="onlineseatimported">imported list</em>' : ''}</span></div>`;
       const unavailable = new Set(view.seats.filter(item => item.seat !== seat.seat).map(item => item.deckId).filter(Boolean));
       if (mine && view.phase === 'lobby') {
         const select = el('select', 'online-deck-select');
@@ -97,7 +116,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const deckId = select.value;
           if (!deckId) return;
           const commanders = MTG.defaultCommanders(MTG.DECKS[deckId], MTG.DEFS);
-          this.perform({ type: 'configure', deckId, commanderNames: commanders, name: seat.name, ready: true });
+          this.perform(configureAction(deckId, { commanderNames: commanders, name: seat.name, ready: true }));
         };
         card.appendChild(select);
       }

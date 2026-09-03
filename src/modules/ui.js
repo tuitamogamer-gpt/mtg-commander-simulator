@@ -1347,6 +1347,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.render();
     }
 
+    beginLastStandOffer(g, to) {
+      const options = g.diplomacyLastStandOptions(this.me, to);
+      if (!options.eligible) { this.toast(options.reason || 'A last stand is not available right now.'); return; }
+      this.diplomacyComposer = {
+        mode: 'last-stand', toId: to.idx,
+        requestKey: options.requests[0].key, offerKey: options.offers[0].key,
+      };
+      this.sidebarTab = 'diplomacy';
+      this.render();
+    }
+
     beginGroupRemovalOffer(g) {
       const options = g.diplomacyGroupRemovalOptions ? g.diplomacyGroupRemovalOptions(this.me) : [];
       if (!options.length) { this.toast('No legal table-removal deal is available right now.'); return; }
@@ -1373,8 +1384,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (view.incoming.length) {
         panel.appendChild(el('div', 'dipsectiontitle', `AWAITING YOUR DECISION · ${view.incoming.length}`));
         for (const proposal of view.incoming) {
-          const card = el('div', 'dipincoming' + (proposal.isCounteroffer ? ' counteroffer' : ''));
-          card.innerHTML = proposal.kind === 'group-removal'
+          const card = el('div', 'dipincoming' + (proposal.isCounteroffer ? ' counteroffer' : '') + (proposal.lastStand ? ' laststand' : ''));
+          card.innerHTML = proposal.lastStand
+            ? `<b>🩸 ${esc(proposal.fromName)} is begging you</b><div class="diproute">${esc(proposal.signals.join(' · ')) || 'They are about to be eliminated.'}</div>`
+            : proposal.kind === 'group-removal'
             ? `<b>◉ ${esc(proposal.fromName)} proposed a three-player table deal</b><div class="diproute">Participants: ${esc(proposal.participantNames.join(' · '))}</div>`
             : proposal.isCounteroffer
             ? `<b>↩ ${esc(proposal.fromName)} countered your offer</b><div class="diproute">Your original terms were not accepted. This is a new proposal from the bot.</div>`
@@ -1429,6 +1442,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         makeGroup.disabled = !view.offersRemaining;
         makeGroup.onclick = () => this.beginGroupRemovalOffer(g);
         group.appendChild(makeGroup); panel.appendChild(group);
+      }
+
+      const lastStand = view.lastStand || { eligible: false, opponents: [] };
+      if (lastStand.eligible && lastStand.opponents.length) {
+        panel.appendChild(el('div', 'dipsectiontitle', 'LAST STAND UNLOCKED'));
+        const box = el('div', 'diplaststand');
+        box.innerHTML = `<b>🩸 You are about to be eliminated</b>` +
+          `<small>${esc(lastStand.signals.join(' · '))}</small>` +
+          `<p>These promises are far bigger than ordinary diplomacy and are open only while the board says you are dying. They do not use your two normal offers.</p>` +
+          `<small>${lastStand.remaining} last stand${lastStand.remaining === 1 ? '' : 's'} left this round · one per player</small>`;
+        const row = el('div', 'dipactions');
+        for (const opponent of lastStand.opponents) {
+          const other = g.players.find(player => player.idx === opponent.id);
+          const beg = el('button', 'pbtn primary', `Beg ${opponent.name}`);
+          beg.disabled = !other || other.lost;
+          beg.onclick = () => this.beginLastStandOffer(g, other);
+          row.appendChild(beg);
+        }
+        box.appendChild(row);
+        panel.appendChild(box);
+      } else if (lastStand.reason && lastStand.signals && lastStand.signals.length) {
+        panel.appendChild(el('div', 'dipsectiontitle', 'LAST STAND'));
+        panel.appendChild(el('div', 'dipempty', esc(lastStand.reason)));
       }
 
       if (view.recent.length) {
@@ -1497,6 +1533,72 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           this.render();
         };
         const cancel = el('button', 'pbtn', 'Cancel'); cancel.onclick = () => { this.diplomacyComposer = null; this.render(); };
+        actions.appendChild(send); actions.appendChild(cancel); modal.appendChild(actions);
+        return ov;
+      }
+      if (composer.mode === 'last-stand') {
+        const target = g.players.find(player => player.idx === composer.toId && !player.lost);
+        const options = target ? g.diplomacyLastStandOptions(this.me, target) : { eligible: false };
+        if (!options.eligible) { this.diplomacyComposer = null; return null; }
+        if (!options.requests.some(option => option.key === composer.requestKey)) composer.requestKey = options.requests[0].key;
+        if (!options.offers.some(option => option.key === composer.offerKey)) composer.offerKey = options.offers[0].key;
+        const ov = el('div', 'overlay dark diplomacyov');
+        const modal = el('div', 'modal diplomacymodal laststandmodal');
+        ov.appendChild(modal);
+        ov.onclick = event => { if (event.target === ov) { this.diplomacyComposer = null; this.render(); } };
+        modal.appendChild(el('div', 'combatkicker', `LAST STAND · YOU → ${esc(target.name)}`));
+        modal.appendChild(el('div', 'mtitle', `You are one turn from elimination`));
+        modal.appendChild(el('div', 'dippreamble', `The board says so publicly: ${esc(options.signals.join('; '))}. That is what unlocks these promises, and they close again the moment you are safe.`));
+
+        const fields = el('div', 'dipfields');
+        const field = (title, sub, list, value, onChange) => {
+          const label = el('label', 'dipfield');
+          label.innerHTML = `<span>${esc(title)}<small>${esc(sub)}</small></span>`;
+          const select = el('select', 'styleselect');
+          for (const option of list) {
+            const node = el('option', '', option.label);
+            node.value = option.key;
+            node.selected = option.key === value;
+            select.appendChild(node);
+          }
+          select.onchange = () => onChange(select.value);
+          label.appendChild(select);
+          return label;
+        };
+        fields.appendChild(field(`YOU ASK ${target.name.toUpperCase()} FOR`, 'Amnesty is the only thing a last stand may ask for',
+          options.requests, composer.requestKey, value => { composer.requestKey = value; this.render(); }));
+        fields.appendChild(field('YOU PROMISE', 'Exclusive to a last stand — far bigger than a normal deal',
+          options.offers, composer.offerKey, value => { composer.offerKey = value; this.render(); }));
+        modal.appendChild(fields);
+
+        const request = options.requests.find(option => option.key === composer.requestKey);
+        const offer = options.offers.find(option => option.key === composer.offerKey);
+        modal.appendChild(el('div', 'dipreview', `<b>YOUR LAST STAND</b><p><span>${esc(target.name.toUpperCase())}</span>${esc(request.label)}</p><p><span>YOU</span>${esc(offer.label)}</p>`));
+        modal.appendChild(el('div', 'dipwarning', 'Begging is not surviving. The bot weighs what it gives up — including a kill it could take this turn — against what you promise. A broken promise is remembered by the whole table.'));
+
+        const actions = el('div', 'btnrow');
+        const send = el('button', 'pbtn primary', 'Make your last stand');
+        send.dataset.testid = 'send-last-stand';
+        send.onclick = async () => {
+          send.disabled = true;
+          const result = g.proposeLastStandDiplomacy(this.me, target, composer.requestKey, composer.offerKey);
+          MTG.captureAccountSideAction?.({
+            type: 'diplomacyLastStand', toSeat: this.lastResortSeat(target),
+            requestKey: composer.requestKey, offerKey: composer.offerKey,
+          });
+          this.diplomacyComposer = null;
+          if (result.status === 'accepted') this.toast(`🤝 ${target.name} accepted. Agreement #${result.contract.id} is active.`);
+          else this.toast(`${target.name} refused: ${result.reason || 'No deal.'}`);
+          this.sidebarTab = 'diplomacy';
+          this.render();
+          if (g.reviewDiplomacyWithHuman) await g.reviewDiplomacyWithHuman({
+            source: 'human-last-stand', status: result.status, proposal: result.proposal || null,
+            contract: result.contract || null, reason: result.reason || '',
+          });
+          this.render();
+        };
+        const cancel = el('button', 'pbtn', 'Cancel');
+        cancel.onclick = () => { this.diplomacyComposer = null; this.render(); };
         actions.appendChild(send); actions.appendChild(cancel); modal.appendChild(actions);
         return ov;
       }

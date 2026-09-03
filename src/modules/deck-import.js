@@ -772,6 +772,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return importedLibrary.entries.find(entry => entry.id === id) || null;
   };
 
+  // An imported deck is only usable away from the browser that owns it — by a
+  // bot seat that must survive a save, or by a live room the host has to build
+  // locally — when the saved record travels with it. This is that record.
+  MTG.importedDeckRecordFor = function (name) {
+    const entry = importedLibrary.entries.find(item => item.ready && item.name === name);
+    return entry && entry.record ? copyRecord(entry.record) : null;
+  };
+
+  // Registers a record that arrived from somewhere else (a live room seat, a
+  // resumed checkpoint) so the local engine can build that deck.
+  MTG.adoptImportedDeckRecord = function (record) {
+    const validation = MTG.validateImportedDeckRecord(record);
+    if (!validation.ok) {
+      const problem = (validation.errors || [])[0];
+      return { ok: false, error: problem && problem.message || 'This decklist no longer passes the engine check.' };
+    }
+    const name = validation.deck.name;
+    const existing = MTG.DECKS && MTG.DECKS[name];
+    if (existing && !existing.custom) return { ok: false, error: `A built-in deck is already named ${name}.` };
+    MTG.registerImportedDeck(validation, { replace: true });
+    return { ok: true, name };
+  };
+
   MTG.hydrateImportedDeckLibrary = function (records, options) {
     options = options || {};
     MTG.clearImportedDeckLibraryRegistrations();

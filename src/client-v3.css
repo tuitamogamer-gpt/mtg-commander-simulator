@@ -1796,6 +1796,7 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
 .onlineseatcopy { display: grid; gap: 3px; min-width: 0; }
 .onlineseatcopy b { overflow: hidden; color: #f0e7d5; font: 20px/1.15 var(--ds-font-display); text-overflow: ellipsis; white-space: nowrap; }
 .onlineseatcopy span { overflow: hidden; color: #aba496; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.onlineseatimported { margin-left: 6px; padding: 1px 6px; border: 1px solid rgba(224, 168, 79, .5); border-radius: 999px; color: #e8b45c; font-size: 10px; font-style: normal; letter-spacing: .04em; text-transform: uppercase; }
 .online-deck-select {
   width: 100%;
   min-height: 42px;
