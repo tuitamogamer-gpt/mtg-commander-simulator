@@ -213,7 +213,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         prompt: `Choose ${opts.xVal || 0} nonlegendary cards to return`,
       })],
       run: async ctx => {
-        const picked = (ctx.targets[0] || []).filter(card => card.zone === 'graveyard' && !isLegendary(card));
+        const picked = [].concat(ctx.targets[0] || []).filter(card => card.zone === 'graveyard' && !isLegendary(card));
         await ctx.g.moveGraveyardBatch(picked, 'hand');
       },
     },
@@ -313,7 +313,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     on: 'etb', desc: 'Exile up to three lands', filter: etbSelf,
     targets: [ownGy(isLand, { count: 3, upTo: true, distinct: true })],
     run: async ctx => {
-      const cards = (ctx.targets[0] || []).filter(card => card && card.zone === 'graveyard').slice(0, 3);
+      const cards = [].concat(ctx.targets[0] || []).filter(card => card && card.zone === 'graveyard').slice(0, 3);
       await ctx.g.moveGraveyardBatch(cards, 'exile');
       ctx.src.meta.harvestLands = cards.map(card => card.iid);
     },
@@ -500,13 +500,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Life from the Loam'] = {
     dredge: 3,
     targets: [ownGy(isLand, { count: 3, upTo: true, distinct: true })],
-    resolve: async ctx => { await ctx.g.moveGraveyardBatch((ctx.targets[0] || []).filter(Boolean), 'hand'); },
+    resolve: async ctx => { await ctx.g.moveGraveyardBatch([].concat(ctx.targets[0] || []).filter(Boolean), 'hand'); },
   };
 
   SC.Victimize = {
     addlCost: { sacCreature: true },
     targets: [ownGy(isCreature, { count: 2, distinct: true })],
-    resolve: async ctx => { for (const card of (ctx.targets[0] || [])) await reanimate(ctx.g, ctx.you, card, { tapped: true }); },
+    resolve: async ctx => { for (const card of [].concat(ctx.targets[0] || [])) await reanimate(ctx.g, ctx.you, card, { tapped: true }); },
   };
 
   SC['Welcome the Dead'] = {

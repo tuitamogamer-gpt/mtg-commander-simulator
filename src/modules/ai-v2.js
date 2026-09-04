@@ -1729,6 +1729,56 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return draws;
   }
 
+  // ---- Spell-heavy playbook ------------------------------------------------
+  // A deck built around instants and sorceries loses in a very specific way:
+  // it spends every card in its own main phase, so on the three turns in
+  // between it holds no answer and blocks with nothing. These helpers let the
+  // scorer see what a spellslinger player sees — payoffs on the board that make
+  // each spell worth more, and answers in hand that are worth more held.
+  // The shapes that actually occur in the catalog: "a noncreature spell",
+  // "an instant or sorcery spell", "or copy an instant or sorcery spell",
+  // "your second spell each turn", plain "a spell". Not "a creature spell",
+  // not "a spell that targets this creature", not artifact/enchantment casts.
+  const CAST_PAYOFF_RE = /whenever you cast (?:or copy )?(?:a noncreature spell|an instant or sorcery spell|an instant\b|a sorcery\b|your (?:first|second) spell each turn|a spell(?! that targets| from| with mana value| during))|magecraft/;
+  function spellCastPayoffs(game, player) {
+    return game.bf().filter(permanent => permanent.ctrl === player &&
+      (CAST_PAYOFF_RE.test(textOf(permanent.def)) || permanent.kw('prowess'))).length;
+  }
+  const HELD_ANSWER_ROLES = ['counterspell', 'single-target-removal', 'direct-damage', 'protection'];
+  function isInstantSpeedCard(card) {
+    return card.is('Instant') || card.kw('flash') || (card.def.kws || []).includes('flash');
+  }
+  function heldInstantAnswers(player, except) {
+    return (player.hand || []).filter(card => card !== except && isInstantSpeedCard(card) && !card.is('Creature') &&
+      (inferCardSemantics(card.def).roles.some(role => HELD_ANSWER_ROLES.includes(role)) ||
+        (card.def.oracleImplementation || []).some(operation => operation.kind === 'spell-fog')));
+  }
+  function cheapestManaValue(cards) {
+    return cards.length ? Math.min(...cards.map(card => U.mv(card.def.cost || ''))) : 0;
+  }
+  // How much a deck cares about keeping answers up: interaction density plus a
+  // nudge for decks whose theme is casting spells at all.
+  function answerHoldWeight(profile) {
+    const density = profile && profile.interactionDensity || 0;
+    const slinger = profile && profile.primarySynergies && profile.primarySynergies.includes('spellslinger') ? 0.6 : 0;
+    return clamp(density * 8 + slinger, 0, 2.2);
+  }
+  // Is there anything on the table (or coming from a full hand) worth keeping
+  // an answer for? Early empty boards are not.
+  function tableWorthAnswering(game, player) {
+    return player.opponents(game).some(opponent => !opponent.lost && (
+      opponent.hand.length >= 2 ||
+      game.bf().some(permanent => permanent.ctrl === opponent && !permanent.is('Land') &&
+        (permanent.is('Creature') && Math.max(0, permanent.power || 0) >= 3 || permanentGameValue(game, permanent, player) >= 6))));
+  }
+  function visibleAttackersAgainst(game, player) {
+    return player.opponents(game).filter(opponent => !opponent.lost)
+      .flatMap(opponent => game.creatures(opponent))
+      .filter(creature => Math.max(0, creature.power || 0) >= 2 && !(creature.cur && creature.cur.cantAttack)).length;
+  }
+  MTG.botSpellCastPayoffs = spellCastPayoffs;
+  MTG.botHeldInstantAnswers = heldInstantAnswers;
+
   function counterRemovalValue(card, player, kind, amount = 1) {
     const harmful = new Set(['-1/-1', '-0/-1', 'stun', 'finality', 'doom', 'bounty']);
     const goodForController = !harmful.has(kind);
@@ -3053,6 +3103,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // value so special damage payoffs may still reason about it, but make
         // an otherwise dead removal cast lose to holding the card.
         score = Math.min(score * 0.08, 1);
+      } else if (compiledDamage && compiledDamage.n !== 'X' && Number.isFinite(Number(compiledDamage.n))) {
+        // Three damage at a six-toughness creature removes nothing. The bot
+        // used to value the target, not the kill, and spent its burn on
+        // exactly the creatures it could not answer.
+        const amount = Number(compiledDamage.n);
+        const survives = target.is('Creature')
+          ? Math.max(0, Number(target.toughness || 0) - Number(target.damage || 0)) > amount
+          : target.is('Planeswalker') ? Number(target.counters && target.counters.loyalty || 0) > amount : false;
+        if (survives) score = Math.min(score * 0.08, 1);
       }
       return { target, score };
     })
@@ -3540,6 +3599,79 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         if (lethalPlayers.length) breakdown.threat += 35;
       }
+      // ---- Spell-heavy playbook, cast side ----
+      // (1) Cast triggers on the board make every cheap spell worth more, and
+      //     worth casting before combat.
+      // (2) Instant-speed removal in our own main phase is only worth it
+      //     against a real threat; a Bolt on a 2/2 is how a spellslinger runs
+      //     out of answers before the table's real threats arrive.
+      // (3) A cantrip with nothing to trigger waits for an opponent's end step.
+      // (4) A cast that leaves no mana for the answer still in hand costs
+      //     that answer for three opposing turns.
+      const isSpellCard = card.is('Instant') || card.is('Sorcery');
+      const payoffs = isSpellCard ? spellCastPayoffs(game, player) : 0;
+      if (payoffs) {
+        breakdown.synergy += Math.min(4.5, 1.4 * payoffs);
+        if (game.turnPlayer === player && phase === 'main1') breakdown.timing += 1;
+      }
+      const holdWeight = answerHoldWeight(profile);
+      const ownMainEmptyStack = game.turnPlayer === player && !game.stack.length && (phase === 'main1' || phase === 'main2');
+      const worthAnswering = holdWeight > 0 && tableWorthAnswering(game, player);
+      if (ownMainEmptyStack && worthAnswering && instantSpeed && isSpellCard && breakdown.threat < 20 &&
+        (sem.roles.includes('single-target-removal') || sem.roles.includes('direct-damage'))) {
+        // What would this answer actually remove right now? Damage counts only
+        // what it kills; "any target" burn is judged by its best creature kill.
+        const best = bestRemovalCandidate(game, player, card, action.alt);
+        let bestNow = best ? best.score : 0;
+        const damageOperation = (card.def.oracleImplementation || []).find(operation =>
+          operation.kind === 'spell-damage' && operation.n !== 'X' && Number.isFinite(Number(operation.n)));
+        if (damageOperation) {
+          const amount = Number(damageOperation.n);
+          for (const spec of game.spellTargetSpecs(card, action.alt || {}, player) || []) {
+            for (const target of game.legalTargets(spec, card, player)) {
+              if (!(target instanceof U.CardInst) || target.ctrl === player || !target.is('Creature')) continue;
+              if (damageProtectionSaves(target) || Number(target.toughness || 0) - Number(target.damage || 0) > amount) continue;
+              bestNow = Math.max(bestNow, permanentGameValue(game, target, player));
+            }
+          }
+        }
+        if (bestNow < 6.5) breakdown.timing -= 3 + 2 * holdWeight;
+      }
+      const valueInstant = instantSpeed && isSpellCard && !sem.roles.includes('ramp') &&
+        !sem.roles.includes('counterspell') && !sem.roles.includes('single-target-removal') &&
+        !sem.roles.includes('direct-damage') && !sem.roles.includes('combat-trick') && !sem.roles.includes('protection') &&
+        (sem.roles.includes('card-draw') || sem.roles.includes('card-selection') || sem.roles.includes('token-maker'));
+      // A cantrip is held in the main phase only when the mana is being kept
+      // open for an answer anyway; otherwise holding it just lets the mana rot
+      // once the rest of the turn taps out. On opponents' turns it waits for
+      // the end step, and while an answer is still in hand it waits for the
+      // last end step before our own untap so the answer keeps its mana.
+      const heldAnswers = heldInstantAnswers(player, card);
+      const reserveNeed = cheapestManaValue(heldAnswers);
+      const availableNow = availableManaEstimate(game, player);
+      // Would this cast leave less mana than the cheapest answer in hand costs?
+      const eatsReserve = reserveNeed > 0 && availableNow >= reserveNeed && availableNow - spend < reserveNeed;
+      const lastWindowBeforeUntap = game.turnPlayer !== player && game.nextPlayer(game.turnPlayer) === player;
+      if (ownMainEmptyStack && valueInstant && !payoffs && eatsReserve) breakdown.timing -= 3 + holdWeight;
+      if (valueInstant && game.turnPlayer !== player && !game.stack.length) {
+        if (phase !== 'end') breakdown.timing -= 4 + holdWeight;
+        else if (eatsReserve && !lastWindowBeforeUntap) breakdown.timing -= 8 + holdWeight;
+      }
+      if (worthAnswering && game.turnPlayer === player && (phase === 'main1' || phase === 'main2')) {
+        // The commander, the deck's engines and a real removal play are worth
+        // tapping out for; filler is not. The reserve has to cost about what a
+        // held answer is worth, or the bot taps out for a two-drop every turn
+        // and is never asked for priority on the three turns in between.
+        const keyPlay = card.commander || profile.importantEngines.includes(card.name) || breakdown.threat >= 8 ||
+          sem.roles.includes('ramp') || sem.roles.includes('mana-rock');
+        if (eatsReserve && !keyPlay) breakdown.resources -= (phase === 'main1' ? 4 : 3) + 2.5 * holdWeight;
+      }
+      // A deck with almost no creatures still needs a body in front of it.
+      if (sem.roles.includes('creature') && !card.is('Instant')) {
+        const blockers = game.creatures(player).filter(creature => !(creature.cur && creature.cur.cantBlock)).length;
+        const attackers = blockers <= 1 ? visibleAttackersAgainst(game, player) : 0;
+        if (attackers >= 2) breakdown.safety += Math.min(4, 1.2 * attackers) * (player.life <= 25 ? 1.5 : 1);
+      }
       const compiledFog = (card.def.oracleImplementation || []).find(operation => operation.kind === 'spell-fog');
       if (compiledFog && game.combat) {
         const incoming = (game.combat.attackers || []).filter(attacker => attacker.ctrl !== player &&
@@ -3718,6 +3850,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return instantSpeed && roles.some(role => ['counterspell', 'single-target-removal', 'protection', 'combat-trick'].includes(role));
       });
       if (interaction.length && availableManaEstimate(game, player) > 0) breakdown.timing += phase === 'main1' ? 2.4 : 1.2;
+      // Spell-heavy playbook: ending the turn with an answer and the mana for
+      // it is a real play, not a missed one.
+      if (game.turnPlayer === player && (phase === 'main1' || phase === 'main2')) {
+        const held = heldInstantAnswers(player, null);
+        const holdWeight = answerHoldWeight(profile);
+        if (held.length && holdWeight > 0 && availableManaEstimate(game, player) >= cheapestManaValue(held) &&
+          tableWorthAnswering(game, player)) breakdown.timing += 1.5 + holdWeight;
+      }
       if (q && q.type === 'priority' && game.stack.length) {
         const top = game.stack[game.stack.length - 1];
         if (top.ctrl === player) breakdown.timing += 30;

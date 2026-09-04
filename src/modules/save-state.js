@@ -145,12 +145,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   // What in this game state cannot be written down?
+  // Goad is the one lasting effect that is pure data — a card id, the player
+  // it may not attack, and the turn it ends on. Everything else in
+  // untilEffects carries a closure and still blocks a save.
+  function isPlainGoad(effect) {
+    return effect && effect.kind === 'goadCard' && typeof effect.apply !== 'function' &&
+      Number.isInteger(effect.iid) && (effect.expires === 'never' || effect.expires === 'untilTurnOf');
+  }
+  function captureGoad(effect) {
+    return {
+      kind: 'goadCard', iid: effect.iid, expires: effect.expires,
+      notPlayer: effect.notPlayer ? effect.notPlayer.idx : null,
+      whoTurn: effect.whoTurn ? effect.whoTurn.idx : null,
+    };
+  }
+
   MTG.gameStateSnapshotBlockers = function (game) {
     const blockers = [];
     if (!game || !Array.isArray(game.players) || !game.players.length) return ['no game'];
     if (game.stack.length) blockers.push(`${game.stack.length} object(s) on the stack`);
     if (game.pendingTriggers.length) blockers.push(`${game.pendingTriggers.length} waiting trigger(s)`);
-    if (game.untilEffects.length) blockers.push(`${game.untilEffects.length} lasting effect(s)`);
+    const lasting = game.untilEffects.filter(effect => !isPlainGoad(effect));
+    if (lasting.length) blockers.push(`${lasting.length} lasting effect(s)`);
     if (game.delayed.length) blockers.push(`${game.delayed.length} delayed trigger(s)`);
     const emblems = game.players.reduce((sum, player) => sum + (player.emblems || []).length, 0);
     if (emblems) blockers.push(`${emblems} emblem(s)`);
@@ -199,6 +215,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // which the restore preserves. Without this a resumed game would forget
       // that someone still owes a tribute.
       diplomacy: game.diplomacy ? JSON.parse(JSON.stringify(game.diplomacy)) : null,
+      goads: game.untilEffects.filter(isPlainGoad).map(captureGoad),
       cards,
     };
   }
@@ -233,6 +250,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     game.delayed.length = 0;
     game.diedThisTurn.length = 0;
     if (snapshot.diplomacy) game.diplomacy = JSON.parse(JSON.stringify(snapshot.diplomacy));
+    for (const goad of snapshot.goads || []) {
+      game.untilEffects.push({
+        kind: 'goadCard', iid: goad.iid, expires: goad.expires,
+        notPlayer: goad.notPlayer === null ? undefined : game.players[goad.notPlayer],
+        whoTurn: goad.whoTurn === null ? undefined : game.players[goad.whoTurn],
+      });
+    }
 
     const byIid = new Map();
     for (const entry of snapshot.cards) {
@@ -340,6 +364,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // not part of the state a save has to reproduce.
         Object.entries(card.counters || {}).filter(([, value]) => value).sort(),
         card.attachedTo ?? null].join('|')).sort(),
+      goads: game.untilEffects.filter(isPlainGoad).map(effect =>
+        [effect.iid, effect.expires, effect.notPlayer ? effect.notPlayer.idx : '', effect.whoTurn ? effect.whoTurn.idx : ''].join('|')).sort(),
       agreements: (game.diplomacy && game.diplomacy.contracts || []).map(contract =>
         [contract.id, contract.status, contract.clauses.map(clause => `${clause.type}:${clause.state}`).join(',')].join('|')).sort(),
     });
