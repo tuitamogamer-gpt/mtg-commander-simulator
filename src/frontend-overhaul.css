@@ -1702,3 +1702,292 @@ body.arena-direct-dragging { user-select: none; }
   body.game-active #game .arena-draggable .arenadragbadge { padding: 4px 6px; font-size: 7.5px; }
   .arena-drag-ghost { transform: translate(-50%, -112%); }
 }
+
+/* Player experience: one setup stage, a personal deck shelf, and table tools. */
+body.high-contrast {
+  --ds-muted: #b8c4d0;
+  --ds-copy: #e1e6ec;
+  --ds-line: #718092;
+  --ds-line-soft: #455363;
+}
+body.high-contrast #game :is(.oppmeta, .zonecount, .styledesc, .emptyrow, .quickmenuitem small) { color: var(--ds-copy) !important; }
+body.high-contrast #game :is(.pbtn, .tbtn, .zbtn, .hcard, .bcard) { border-color: var(--ds-line) !important; }
+#setup[data-app-view="setup"] { padding-bottom: 100px !important; }
+#setup[data-app-view="setup"] .menuhead { max-width: 1440px; margin: auto; padding: 24px 32px 28px; }
+#setup .setuphero { padding: 22px 0 0 !important; }
+#setup .setuphero .title { font-size: clamp(32px, calc(4.2 * var(--vwu)), 60px); font-weight: 650; letter-spacing: -.045em; }
+#setup .setuphero .subtitle { font-size: 14px; color: var(--ds-copy); max-width: 64ch; }
+#setup .setupsteps .setupstep { min-height: 44px; }
+#setup .setupgrid { display: block !important; max-width: 1376px; margin: 0 auto; padding: 28px 32px !important; height: auto !important; overflow: visible !important; }
+#setup .setupleft { width: 100%; max-height: none; overflow: visible; }
+#setup[data-setup-stage="deck"] .setupright { display: none !important; }
+#setup[data-setup-stage="pod"] .setupleft,
+#setup[data-setup-stage="review"] .setupleft { display: none !important; }
+#setup .setupright.mobile-open {
+  position: static !important; inset: auto !important; transform: none !important;
+  display: block; width: 100% !important; max-width: 860px; height: auto !important;
+  max-height: none !important; margin: 0 auto; padding: 28px !important;
+  overflow: visible !important; border: 1px solid var(--ds-line-soft); border-radius: 18px;
+  background: var(--ds-panel); box-shadow: none;
+}
+#setup .setupstagepanel { display: block; }
+#setup .reviewstage { display: none; }
+#setup[data-setup-stage="review"] .podstage { display: none; }
+#setup[data-setup-stage="review"] .reviewstage { display: block; padding: 0; }
+#setup .podclose { display: none !important; }
+#setup .setupnext { display: block; width: 100%; min-height: 54px; margin-top: 20px; font-size: 14px; }
+#setup :is(.reviewstart, .setupnext) { background: linear-gradient(135deg, var(--ds-accent-bright), var(--ds-accent)) !important; color: var(--ds-accent-ink) !important; border-color: var(--ds-accent-bright) !important; }
+#setup .pbtn.start { display: none !important; }
+#setup .controlintro { padding: 0 0 20px; }
+#setup .controlintro h2 { font-size: 30px; }
+#setup .controlintro p { font-size: 13px; max-width: 60ch; }
+#setup .matchtype { margin-top: 0; }
+#setup .botrow { grid-template-columns: 46px 106px minmax(0, 1fr); }
+#setup .botfields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+#setup .botfield > span, #setup .styledesc span { font-size: 10px; }
+#setup .styledesc p { font-size: 12px; line-height: 1.6; }
+#setup .botname { font-size: 14px; }
+#setup .botconfig { margin-bottom: 10px; padding: 16px; }
+#setup .seclabel { margin-top: 22px; padding: 0 0 12px; font-size: 11px; }
+#setup .cmdbox { margin-top: 0; padding: 14px; }
+#setup .advancedrules summary { min-height: 52px; }
+#setup .advancedrules summary small { font-size: 11px; }
+#setup .cmdcheck { font-size: 13px; }
+#setup .deckexplorerhead { align-items: center; margin-bottom: 20px; }
+#setup .deckexplorerhead h2 { font-size: 28px; letter-spacing: -.025em; }
+#setup .deckexploreractions { display: flex; align-items: center; gap: 14px; }
+#setup .deckresultcount { font-size: 12px; font-variant-numeric: tabular-nums; }
+#setup .surprisedeck { min-height: 44px; padding: 0 16px; border: 1px solid var(--ds-line); border-radius: 8px; color: var(--ds-text); background: var(--ds-panel-raised); cursor: pointer; font: 600 13px var(--ds-font-body); }
+#setup .playstylequick { border: 0; border-radius: 12px; background: var(--ds-panel); padding: 18px 20px; margin-bottom: 18px; }
+#setup .playstylequickhead b { font-size: 14px; }
+#setup .playstylequickhead small { font-size: 12px; }
+#setup .playstylechoices button { font-size: 12px; min-height: 46px; }
+#setup .playstylechoices button span { font-size: 12px !important; letter-spacing: 0; }
+#setup .decktools { grid-template-columns: minmax(180px, 1fr) repeat(3, minmax(100px, 135px)) auto; }
+#setup .decktools :is(input, select, button) { font-size: 13px; }
+#setup .deckbrowsebar { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 60px; margin: 4px 0 14px; }
+#setup .activefilters { display: flex; flex-wrap: wrap; gap: 6px; }
+#setup .filterchip { min-height: 36px; padding: 5px 10px; color: var(--ds-accent-bright); background: rgba(var(--ds-accent-rgb), .08); border: 1px solid rgba(var(--ds-accent-rgb), .3); border-radius: 5px; font-size: 12px; cursor: pointer; }
+#setup .deckbrowseoptions { display: flex; align-items: center; gap: 18px; margin-left: auto; flex-shrink: 0; }
+#setup .deckbrowseoptions label { display: flex; align-items: center; gap: 8px; color: var(--ds-muted); font-size: 12px; }
+#setup .decksort { min-height: 44px; color: var(--ds-copy); background: transparent; border: 0; font: 600 12px var(--ds-font-body); }
+#setup .decksort option { background: var(--ds-panel); }
+#setup .deckviewchoices { display: flex; padding: 3px; border: 1px solid var(--ds-line-soft); border-radius: 8px; background: var(--ds-panel); }
+#setup .deckviewchoices button { min-height: 38px; padding: 0 12px; border: 0; border-radius: 5px; background: transparent; color: var(--ds-muted); font: 600 12px var(--ds-font-body); cursor: pointer; }
+#setup .deckviewchoices [aria-pressed="true"] { background: var(--ds-panel-raised); color: var(--ds-text); box-shadow: 0 1px 3px rgba(2, 6, 12, .6); }
+#setup[data-deck-view="gallery"] .decklist { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 20px !important; }
+#setup[data-deck-view="gallery"] .deckcard { display: flex !important; flex-direction: column; min-height: 350px !important; padding: 0; border: 1px solid var(--ds-line-soft); border-radius: 14px; background: var(--ds-panel); overflow: hidden; text-align: left; }
+#setup[data-deck-view="gallery"] .deckart { position: static; width: 100% !important; height: 168px !important; min-height: 168px !important; flex: none; object-fit: cover; object-position: center 30%; opacity: 1; mask-image: none; }
+#setup[data-deck-view="gallery"] .deckinfo { flex: 1; display: flex !important; flex-direction: column; gap: 9px; padding: 19px 20px 16px !important; min-width: 0; width: 100%; }
+#setup[data-deck-view="gallery"] .deckname { font-size: 22px; font-weight: 600; letter-spacing: -.035em; }
+#setup[data-deck-view="gallery"] .deckcmd b { font-size: 12px; }
+#setup[data-deck-view="gallery"] .deckcolors { margin: 0; }
+#setup[data-deck-view="gallery"] .deckstyle { font-size: 10px; }
+#setup[data-deck-view="gallery"] .deckblurb { font-size: 12px; line-height: 1.65; color: var(--ds-copy); }
+#setup[data-deck-view="gallery"] .deckset { margin-top: auto; padding-top: 6px; font-size: 10px; }
+#setup[data-deck-view="gallery"] .deckyear { font: 500 11px var(--ds-font-mono); }
+#setup[data-deck-view="gallery"] .deckfavorite { top: 12px; right: 12px; width: 40px; height: 40px; background: rgba(var(--ds-table-rgb), .86); border: 1px solid rgba(255,255,255,.25); }
+#setup .deckfavorite[aria-pressed="true"] { color: var(--ds-accent-bright); background: var(--ds-panel-raised); }
+#setup[data-deck-view="gallery"] .deckcard:is(:hover, :focus-visible, .selected) { border-color: var(--ds-accent); box-shadow: 0 12px 30px rgba(2, 6, 12, .25); }
+#setup[data-deck-view="compact"] .decklist { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px; }
+#setup[data-deck-view="compact"] .deckcard { min-height: 150px !important; }
+#setup[data-deck-view="compact"] .deckart { min-height: 150px !important; }
+#setup[data-deck-view="compact"] .deckblurb { display: none; }
+#setup[data-deck-view="compact"] .deckname { font-size: 20px; }
+#setup[data-deck-view="compact"] .deckcmd b { font-size: 12px; }
+#setup .setupmobilebar { position: fixed; display: flex; left: 50%; right: auto; bottom: 16px; transform: translateX(-50%); width: min(580px, calc(100% - 32px)); min-height: 72px; padding: 12px 16px; gap: 20px; border: 1px solid rgba(var(--ds-accent-rgb), .4); border-radius: 14px; background: var(--ds-dialog); box-shadow: 0 14px 50px rgba(2,6,12,.75); }
+#setup .setupmobilebar:has(button:disabled),
+#setup[data-setup-stage="pod"] .setupmobilebar,
+#setup[data-setup-stage="review"] .setupmobilebar { display: none !important; }
+#setup .mobiledeck { flex: 1; min-width: 0; }
+#setup .mobiledeck b { font-size: 16px; }
+#setup .setupmobilebar .pbtn { min-height: 44px; padding: 0 24px; font-size: 13px; }
+#setup .recentdecks { margin: 0 0 22px; }
+#setup .recentdecks > span, #setup .savedpodshead > span { display: block; margin-bottom: 10px; color: var(--ds-muted); font-size: 12px; }
+#setup .recentdecks > div { display: flex; flex-wrap: wrap; gap: 10px; }
+#setup .recentdecks button { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 13px 0 0; color: var(--ds-text); background: var(--ds-panel); border: 1px solid var(--ds-line-soft); border-radius: 7px; overflow: hidden; cursor: pointer; }
+#setup .recentdecks img { width: 48px; height: 48px; object-fit: cover; }
+#setup .recentdecks b { font-size: 12px; }
+#setup .recentdecks button > span { color: var(--ds-accent); }
+#setup .savedpodshelf { padding: 18px 20px; border: 1px solid var(--ds-line-soft); background: var(--ds-panel); border-radius: 12px; margin-bottom: 22px; }
+#setup .savedpodshead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+#setup .savedpodshead small { color: var(--ds-muted); font-size: 11px; }
+#setup .savedpodlist { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+#setup .savedpodrow { display: flex; align-items: stretch; border: 1px solid var(--ds-line-soft); border-radius: 8px; overflow: hidden; }
+#setup .savedpodopen { display: flex; flex: 1; gap: 12px; align-items: center; min-width: 0; text-align: left; padding: 12px; background: transparent; color: var(--ds-text); border: 0; cursor: pointer; }
+#setup .savedpodopen > span { color: var(--ds-accent); }
+#setup .savedpodopen > div { display: grid; gap: 4px; min-width: 0; flex: 1; }
+#setup .savedpodopen b { font-size: 13px; overflow-wrap: anywhere; }
+#setup .savedpodopen small { color: var(--ds-muted); font-size: 11px; }
+#setup .savedpodremove { width: 44px; border: 0; border-left: 1px solid var(--ds-line-soft); color: var(--ds-muted); background: transparent; font-size: 20px; cursor: pointer; }
+#setup .savedpodstatus:empty, #setup .savepodstatus:empty { display: none; }
+#setup .savedpodstatus, #setup .savepodstatus { font-size: 12px; color: var(--ds-accent-bright); }
+#setup .podpresets { margin: 20px 0; padding: 0 0 20px; border-bottom: 1px solid var(--ds-line-soft); }
+#setup .podpresets > div:first-child { display: grid; gap: 6px; }
+#setup .podpresets b { font-size: 14px; }
+#setup .podpresets small { font-size: 12px; color: var(--ds-muted); }
+#setup .podpresetchips { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 9px; margin-top: 14px; }
+#setup .podpresetchips button { display: grid; gap: 6px; padding: 14px 12px; text-align: left; border: 1px solid var(--ds-line); border-radius: 9px; background: var(--ds-panel-raised); color: var(--ds-text); cursor: pointer; }
+#setup .podpresetchips button[aria-pressed="true"] { border-color: var(--ds-accent); background: rgba(var(--ds-accent-rgb),.08); }
+#setup .podbuilder:has(.matchtypebtn.live.selected) .podpresets { display: none; }
+#setup .reviewhead h2 { font-size: 32px; }
+#setup .reviewhead p { font-size: 13px; }
+#setup .reviewdeck { padding: 16px; margin-block: 24px; gap: 16px; }
+#setup .reviewdeck b { font-size: 24px; }
+#setup .reviewdeck span { font-size: 13px; }
+#setup .reviewseats > div { min-height: 68px; padding: 12px; }
+#setup .reviewseats b { font-size: 14px; }
+#setup .reviewseats small { font-size: 12px; }
+#setup .reviewstyle { max-width: 230px; }
+#setup .reviewstyle b { font-size: 12px; }
+#setup .reviewrules { margin-block: 24px; }
+#setup .reviewrules dt, #setup .reviewrules dd { font-size: 12px; }
+#setup .reviewactions { display: flex; gap: 12px; }
+#setup .reviewactions .pbtn { min-height: 52px; font-size: 14px; }
+#setup .reviewstart { flex: 1; }
+#setup .savepodform { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--ds-line-soft); }
+#setup .savepodform label { display: grid; gap: 7px; font-size: 14px; color: var(--ds-text); }
+#setup .savepodform small { font-size: 12px; color: var(--ds-muted); }
+#setup .savepodform > div { display: flex; gap: 10px; margin-top: 14px; }
+#setup .savepodform input { min-width: 0; flex: 1; min-height: 44px; padding: 10px 14px; color: var(--ds-text); background: var(--ds-table); border: 1px solid var(--ds-line); border-radius: 8px; font: 500 13px var(--ds-font-body); }
+#setup .savepodform button { min-height: 44px; font-size: 12px; }
+#setup .deckanalysis { display: grid; grid-template-columns: .9fr 1.3fr .7fr; align-items: center; gap: 28px; padding: 28px 36px; border-block: 1px solid var(--ds-line-soft); background: var(--ds-table); }
+#setup .deckanalysis h3 { margin: 7px 0; font: 600 24px var(--ds-font-display); letter-spacing: -.02em; }
+#setup .deckanalysis p { font-size: 12px; line-height: 1.6; color: var(--ds-muted); margin: 0; }
+#setup .manacurve { height: 112px; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; }
+#setup .manacurvebin { display: grid; grid-template-rows: 18px 1fr 20px; gap: 7px; text-align: center; }
+#setup .manacurvebin b, #setup .manacurvebin span { font: 500 11px var(--ds-font-mono); color: var(--ds-muted); }
+#setup .manacurvebin i { display: block; align-self: end; height: max(2px, var(--curve-height)); max-height: 100%; border-radius: 3px 3px 0 0; background: linear-gradient(0deg, rgba(var(--ds-accent-rgb),.45), var(--ds-accent)); }
+#setup .manacurvestats { display: grid; gap: 6px; padding-left: 18px; border-left: 1px solid var(--ds-line-soft); }
+#setup .manacurvestats strong { font: 500 36px var(--ds-font-mono); letter-spacing: -.06em; color: var(--ds-accent-bright); }
+#setup .manacurvestats span { color: var(--ds-copy); font-size: 12px; }
+#setup .manacurvestats b { color: var(--ds-muted); font-size: 11px; font-weight: 500; }
+#setup .returningplayer { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 0 0 30px; padding: 20px 24px; border-block: 1px solid var(--ds-line-soft); }
+#setup .returningplayer > div { margin-right: auto; display: grid; gap: 5px; }
+#setup .returningplayer b { font: 650 20px var(--ds-font-display); }
+#setup .returningplayer span { color: var(--ds-muted); font-size: 12px; }
+#setup .returningplayer button { min-height: 44px; padding: 0 14px; border: 1px solid var(--ds-line); background: var(--ds-panel); color: var(--ds-text); border-radius: 8px; font: 600 12px var(--ds-font-body); cursor: pointer; }
+
+/* Hand sorting changes presentation only; cards keep their engine order. */
+body.game-active #game .handwrap { position: relative; display: flex !important; padding-top: 6px !important; gap: 10px; }
+body.game-active #game .handwrap.is-empty { padding-top: 5px !important; }
+body.game-active #game .handwrap::before { display: none; }
+#game .handtools { order: -1; flex: 0 0 110px; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 12px; }
+#game .handwrap > .hand { min-width: 0; flex: 1; }
+#game .handtoolstitle { font: 650 11px var(--ds-font-body); color: var(--ds-copy); }
+#game .handsortlabel { display: grid; gap: 5px; color: var(--ds-muted); font-size: 11px; }
+#game .handsort { width: 110px; border: 1px solid var(--ds-line-soft); background: var(--ds-panel); color: var(--ds-copy); font: 600 11px var(--ds-font-body); min-height: 38px; border-radius: 5px; padding: 3px 5px; }
+#game[data-hand-size="large"] { --player-hand-height: 182px; }
+#game[data-hand-size="large"] .hand { height: 170px !important; min-height: 170px !important; }
+#game[data-hand-size="large"] .hcard { width: 112px !important; height: 156px !important; }
+#game .commandbutton kbd { font: 500 10px var(--ds-font-mono); color: var(--ds-muted); border: 1px solid var(--ds-line); border-radius: 4px; padding: 3px; }
+#game .quickmenu { width: min(680px, calc(100% - 32px)); }
+#game .quickmenulist { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+#game .quickmenusection { grid-column: 1 / -1; margin: 15px 0 3px; color: var(--ds-accent-soft); font: 600 12px var(--ds-font-body); letter-spacing: .03em; }
+#game .quickmenusection:first-child { margin-top: 0; }
+#game .quickmenuitem { min-height: 67px; display: flex; align-items: flex-start; justify-content: center; flex-direction: column; gap: 6px; padding: 12px 14px; }
+#game .quickmenuitem span { font-size: 13px; font-weight: 650; }
+#game .quickmenuitem small { font-size: 11px; color: var(--ds-muted); line-height: 1.45; text-align: left; }
+#game .shortcutguide { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--ds-line-soft); }
+#game .shortcutguide span { display: flex; gap: 10px; align-items: center; font-size: 12px; }
+#game .shortcutguide kbd { padding: 5px 7px; border: 1px solid var(--ds-line); border-radius: 5px; color: var(--ds-accent-bright); font: 500 10px var(--ds-font-mono); }
+.commandpaletteov { position: fixed; inset: 0; z-index: 16000; display: flex; align-items: flex-start; justify-content: center; padding: max(30px, calc(12 * var(--dvhu))) 16px 24px; background: rgba(var(--ds-table-rgb), .84); backdrop-filter: blur(9px); }
+.commandpalette { display: flex; flex-direction: column; min-width: 0; width: 640px; max-width: 100%; max-height: calc(78 * var(--dvhu)); background: var(--ds-dialog); border: 1px solid var(--ds-line); border-radius: 16px; overflow: hidden; box-shadow: var(--ds-shadow-dialog); color: var(--ds-text); font-family: var(--ds-font-body); }
+.commandpalettehead { display: flex; justify-content: space-between; align-items: center; padding: 20px 22px 14px; gap: 12px; font: 650 22px var(--ds-font-display); }
+.commandpalettehead small { display: block; margin-top: 7px; font: 500 12px var(--ds-font-body); color: var(--ds-muted); }
+.commandclose { flex: none; min-width: 44px; min-height: 44px; font-size: 26px; border: 1px solid var(--ds-line-soft); border-radius: 8px; background: var(--ds-panel-raised); color: var(--ds-copy); cursor: pointer; }
+.commandsearch { margin: 0 22px 10px; width: calc(100% - 44px); min-height: 52px; padding: 12px 15px; font: 500 15px var(--ds-font-body); color: var(--ds-text); border: 1px solid var(--ds-line); border-radius: 9px; background: var(--ds-table); }
+.commandsearch:focus { outline: 2px solid var(--ds-focus); outline-offset: 2px; }
+.commandstatus { padding: 6px 24px 10px; color: var(--ds-muted); font-size: 11px; }
+.commandresults { flex: 1; min-height: 0; overflow-y: auto; padding: 0 12px 12px; overscroll-behavior: contain; }
+.commandresult { width: 100%; display: flex; align-items: center; gap: 14px; padding: 10px 12px; min-height: 67px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--ds-text); text-align: left; cursor: pointer; }
+.commandresult:is(:hover, :focus-visible, .active) { background: var(--ds-panel-raised); border-color: var(--ds-accent); outline: 0; }
+.commandresult img, .commandresulticon { width: 44px; height: 44px; flex: none; object-fit: cover; border-radius: 7px; }
+.commandresulticon { display: grid; place-items: center; background: rgba(var(--ds-accent-rgb), .08); color: var(--ds-accent-bright); font-size: 22px; }
+.commandresultcopy { display: grid; gap: 6px; flex: 1; min-width: 0; }
+.commandresultcopy b { font-size: 14px; font-weight: 650; overflow-wrap: anywhere; }
+.commandresultcopy small { font-size: 11px; color: var(--ds-muted); }
+.commandresultgo { color: var(--ds-muted); }
+.commandfooter { padding: 14px 24px; border-top: 1px solid var(--ds-line-soft); color: var(--ds-muted); font: 500 11px var(--ds-font-mono); }
+.commandempty { padding: 24px; font-size: 13px; color: var(--ds-copy); }
+
+@media (max-width: 1000px) {
+  #setup .setupgrid { padding: 20px !important; }
+  #setup[data-deck-view="gallery"] .decklist { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
+  #setup .decktools { grid-template-columns: minmax(160px,1fr) repeat(3, 100px); }
+  #setup .favoritefilter { grid-column: 1 / -1; }
+  #setup .deckanalysis { gap: 20px; padding: 24px; grid-template-columns: 1fr 1.3fr; }
+  #setup .manacurvestats { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 10px; padding: 0; border: 0; }
+  #setup .manacurvestats strong { font-size: 26px; }
+}
+@media (max-width: 700px) {
+  #setup[data-app-view="setup"] .menuhead { padding: 18px 18px 22px; }
+  #setup .setuphero { padding-top: 24px; }
+  #setup .setuphero .title { font-size: 34px; }
+  #setup .setuphero .subtitle { font-size: 13px; }
+  #setup .setupgrid { padding: 16px !important; }
+  #setup .deckexplorerhead { gap: 10px; }
+  #setup .deckexplorerhead h2 { font-size: 24px; }
+  #setup .deckexploreractions { flex-direction: column-reverse; align-items: flex-end; gap: 6px; }
+  #setup .deckresultcount { font-size: 10px; }
+  #setup .surprisedeck { padding-inline: 11px; font-size: 12px; }
+  #setup .playstylequick { padding: 14px; }
+  #setup .playstylequickhead small { line-height: 1.5; }
+  #setup .decktools { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  #setup .decksearch { grid-column: 1 / -1; }
+  #setup .favoritefilter { grid-column: 1 / -1; }
+  #setup .deckbrowsebar { align-items: flex-start; flex-direction: column; gap: 8px; }
+  #setup .deckbrowseoptions { width: 100%; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  #setup .deckviewchoices button { min-height: 44px; }
+  #setup .deckviewchoices { margin-left: auto; }
+  #setup .filterchip { min-height: 44px; }
+  #setup[data-deck-view="gallery"] .decklist, #setup[data-deck-view="compact"] .decklist { grid-template-columns: minmax(0,1fr) !important; }
+  #setup[data-deck-view="gallery"] .deckart { height: 170px !important; }
+  #setup .setupright.mobile-open { padding: 20px !important; }
+  #setup .botrow { display: grid; grid-template-columns: 40px 1fr; gap: 10px; }
+  #setup .botfields { grid-column: 1 / -1; width: 100%; grid-template-columns: 1fr; gap: 9px; }
+  #setup .botconfig { padding: 12px; }
+  #setup .styledesc { margin-left: 0 !important; }
+  #setup .savedpodlist { grid-template-columns: 1fr; }
+  #setup .savedpodshead { flex-direction: column; align-items: flex-start; gap: 0; margin-bottom: 12px; }
+  #setup .podpresetchips { grid-template-columns: 1fr; }
+  #setup .podpresetchips button { min-height: 62px; }
+  #setup .reviewactions { flex-direction: column-reverse; }
+  #setup .reviewdeck b { font-size: 20px; }
+  #setup .reviewseats small { white-space: normal; }
+  #setup .deckanalysis { grid-template-columns: minmax(0,1fr); padding: 24px 18px; }
+  #setup .manacurvestats { flex-wrap: wrap; }
+  #setup .savepodform > div { flex-direction: column; }
+  #setup .savepodform input { font-size: 16px; }
+  #setup .returningplayer { padding: 18px 0; }
+  #setup .returningplayer > div { width: 100%; }
+  #game .commandbutton kbd { display: none; }
+  #game .quickmenulist { grid-template-columns: 1fr; }
+  #game .quickmenu { width: 100%; }
+  #game .shortcutguide { grid-template-columns: 1fr; }
+  body.game-active #game .handwrap { padding-top: 7px !important; gap: 6px; }
+  #game .handtools { flex-basis: 87px; gap: 8px; }
+  #game .handtoolstitle { font-size: 10px; }
+  #game .handsort { min-height: 44px; width: 87px; font-size: 10px; }
+  #game .handsortlabel > span { display: none; }
+  #game[data-hand-size="large"] { --player-hand-height: 160px; }
+  #game[data-hand-size="large"] .hand { min-height: 140px !important; height: 140px !important; }
+  #game[data-hand-size="large"] .hcard { width: 90px !important; height: 126px !important; }
+  .commandpaletteov { padding: 16px 10px; }
+  .commandpalette { max-height: calc(100 * var(--dvhu) - 32px); }
+  .commandpalettehead { padding: 16px; font-size: 20px; }
+  .commandsearch { margin-inline: 16px; width: calc(100% - 32px); font-size: 16px; }
+  .commandfooter { font-size: 9px; padding: 13px 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .commandpaletteov *, #setup .deckcard { animation: none !important; transition: none !important; }
+}
+@media (min-width: 1280px) {
+  body.game-active #game { grid-template-rows: 58px 24px minmax(150px,.65fr) auto minmax(166px,1fr) auto var(--player-hand-height,132px) !important; }
+}
+@media (min-width: 768px) and (max-width: 1279px) {
+  body.game-active #game { grid-template-rows: 58px 24px minmax(145px,.75fr) auto minmax(170px,1fr) auto var(--player-hand-height,130px) !important; }
+}
+@media (max-width: 767px) {
+  body.game-active #game[data-mobile-view="mine"] { grid-template-rows: 76px 48px 108px minmax(158px,1fr) auto var(--player-hand-height,130px) !important; }
+}

@@ -163,6 +163,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     root.dataset.setupStage = 'home';
     root.removeAttribute('aria-busy');
     $('#game').style.display = 'none';
+    window._ui?.closeCommandPalette?.();
     document.body.classList.remove('game-active', 'deck-spotlight-open', 'mainmenu-dialog-open');
     delete window._game;
     delete window._ui;
@@ -604,6 +605,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
     globalThis.MTGAccount?.render();
 
+    U.renderRecentShelf(page, deck => renderSetup({ mode: 'solo', deck }));
+
     const liveStatus = page.querySelector('.mainmenu-livecheck');
     const localStaticHost = location.protocol === 'file:' || ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
     if (localStaticHost) {
@@ -675,7 +678,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       <div class="setuphero">
         <div class="menu-kicker">Build your table</div>
         <h1 class="title">Choose your commander.</h1>
-        <p class="subtitle">Browse ${nDecks} tested preconstructed decks, then configure a four-player pod.</p>
+        <p class="subtitle">${nDecks} decks. A whole table of possibilities. Find your next favorite.</p>
       </div>`;
     root.appendChild(head);
     const setupTitle = head.querySelector('.title');
@@ -706,9 +709,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       search: '', color: 'all', strategy: 'all', year: 'all', favoritesOnly: false,
       setupStage: 'deck', playstyle: 'all',
       favorites: new Set(savedFavorites),
+      deckView: U.playerPreferences().deckView, deckSort: U.playerPreferences().deckSort,
       importedDeckId: null, importedLibraryOwner: null,
     };
     root.dataset.setupStage = state.setupStage;
+    root.dataset.deckView = state.deckView;
     const setupSteps = [...root.querySelectorAll('.setupstep')];
     setupSteps.filter(step => step.dataset.step !== 'deck').forEach(step => {
       step.disabled = true;
@@ -761,6 +766,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // choosing an imported deck or opening its ordinary card-art preview.
       const intro = MTG.commanderIntroForDeck?.(deck, leadCommander) || MTG.commanderIntroForDeck?.(deck, deck.commander);
       const counts = deckBreakdown(deck);
+      const curve = U.deckManaCurve(deck);
+      const curveMax = Math.max(1, ...curve.bins);
       const activeDecks = Object.keys(MTG.DECKS).filter(deckName => !MTG.DECKS[deckName].custom);
       const deckNumber = activeDecks.indexOf(name) + 1;
       const overlay = el('div', 'deckspotlightoverlay');
@@ -797,6 +804,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             </div>
           </div>
         </header>
+        <section class="deckanalysis" aria-label="Deck mana curve">
+          <div class="deckanalysisintro"><span class="eyebrow">Know your deck</span><h3>Mana curve</h3><p>Nonland cards, including commanders. X counts as 0.</p></div>
+          <div class="manacurve" role="img" aria-label="${escAttr(curve.bins.map((count, i) => `${i === 7 ? '7 or more' : i} mana: ${count} cards`).join('; '))}">
+            ${curve.bins.map((count, i) => `<div class="manacurvebin" title="${i === 7 ? '7+' : i} mana: ${count} cards"><b>${count}</b><i style="--curve-height:${Math.round(count / curveMax * 100)}%"></i><span>${i === 7 ? '7+' : i}</span></div>`).join('')}
+          </div>
+          <div class="manacurvestats"><strong>${curve.average.toFixed(1)}</strong><span>average mana</span><b>${curve.lands} lands · ${curve.spells} nonlands</b></div>
+        </section>
         <div class="deckspotlightbody">
           <section class="deckspotlightplan" aria-labelledby="deckspotlight-plan-title">
             <span class="deckspotlighteyebrow">${deck.custom ? 'BUILD YOUR TABLE' : 'HOW IT PLAYS'}</span>
@@ -852,8 +866,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       <div><span class="eyebrow">Deck explorer</span><h2>Find your playstyle</h2></div>
       <div class="deckexploreractions">
         <span class="deckresultcount">${nDecks} decks</span>
+        <button type="button" class="surprisedeck">↝ Surprise me</button>
       </div>`);
     left.appendChild(explorerHead);
+    const savedPodShelf = el('section', 'savedpodshelf');
+    savedPodShelf.setAttribute('aria-label', 'Saved tables');
+    left.appendChild(savedPodShelf);
+    const recentShelf = el('section', 'recentdecks');
+    const recentNames = U.recentDecks().filter(name => MTG.DECKS[name] && !MTG.DECKS[name].custom);
+    recentShelf.hidden = !recentNames.length;
+    recentShelf.innerHTML = `<span>Back to a favorite</span><div>${recentNames.slice(0, 4).map(name => `<button type="button" data-recent-deck="${escAttr(name)}"><img src="${commanderImg(name)}" alt=""><b>${esc(name)}</b><span>↗</span></button>`).join('')}</div>`;
+    left.appendChild(recentShelf);
     const playstyleQuick = el('section', 'playstylequick');
     playstyleQuick.setAttribute('aria-labelledby', 'playstyle-title');
     playstyleQuick.innerHTML = `
@@ -876,6 +899,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       <label><span class="sr-only">Year</span><select data-filter="year" aria-label="Filter by year"><option value="all">Year</option>${[2026, 2025, 2024, 2023, 2022, 2021].map(y => `<option value="${y}">${y}</option>`).join('')}</select></label>
       <button type="button" class="favoritefilter" aria-pressed="false">☆ Favorites</button>`;
     left.appendChild(deckTools);
+    const deckBrowseBar = el('div', 'deckbrowsebar');
+    deckBrowseBar.innerHTML = `<div class="activefilters" aria-label="Active deck filters"></div><div class="deckbrowseoptions"><label>Sort <select class="decksort" aria-label="Sort decks"><option value="name">Name A–Z</option><option value="recent">Recently played</option><option value="newest">Newest first</option></select></label><div class="deckviewchoices" role="group" aria-label="Deck layout"><button type="button" data-deck-view="gallery">Gallery</button><button type="button" data-deck-view="compact">Compact</button></div></div>`;
+    left.appendChild(deckBrowseBar);
+    deckBrowseBar.querySelector('.decksort').value = state.deckSort;
+    deckBrowseBar.querySelectorAll('[data-deck-view]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.deckView === state.deckView));
+      button.onclick = () => {
+        state.deckView = button.dataset.deckView;
+        root.dataset.deckView = state.deckView;
+        U.savePlayerPreferences({ deckView: state.deckView });
+        deckBrowseBar.querySelectorAll('[data-deck-view]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      };
+    });
     const deckList = el('div', 'decklist');
     for (const [name, deck] of Object.entries(MTG.DECKS)) {
       const libraryEntry = deck.custom && U.getImportedDeckLibrary().entries.find(entry => entry.name === name && entry.ready);
@@ -1011,6 +1047,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const filterDecks = () => {
       let visible = 0;
+      const recents = U.recentDecks();
+      [...deckList.children].sort((a, b) => {
+        if (state.deckSort === 'newest') return Number(b.dataset.year) - Number(a.dataset.year) || a.dataset.deck.localeCompare(b.dataset.deck);
+        if (state.deckSort === 'recent') return (recents.includes(a.dataset.deck) ? recents.indexOf(a.dataset.deck) : 99) - (recents.includes(b.dataset.deck) ? recents.indexOf(b.dataset.deck) : 99) || a.dataset.deck.localeCompare(b.dataset.deck);
+        return a.dataset.deck.localeCompare(b.dataset.deck);
+      }).forEach(entry => deckList.appendChild(entry));
       deckList.querySelectorAll('.deckentry').forEach(entry => {
         const matches = (!state.search || entry.dataset.name.includes(state.search)) &&
           (state.color === 'all' || entry.dataset.colors.includes(state.color)) &&
@@ -1023,6 +1065,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       explorerHead.querySelector('.deckresultcount').textContent = `${visible} deck${visible === 1 ? '' : 's'}`;
       deckList.classList.toggle('noresults', visible === 0);
       noResults.hidden = visible !== 0;
+      const activeFilters = deckBrowseBar.querySelector('.activefilters');
+      activeFilters.replaceChildren();
+      for (const [key, label] of [['search', state.search], ['color', state.color !== 'all' ? `Color ${state.color}` : ''], ['strategy', state.strategy !== 'all' ? state.strategy : ''], ['year', state.year !== 'all' ? state.year : ''], ['favoritesOnly', state.favoritesOnly ? 'Favorites' : '']]) {
+        if (!label) continue;
+        const chip = el('button', 'filterchip');
+        chip.type = 'button'; chip.textContent = `${label} ×`; chip.setAttribute('aria-label', `Remove ${label} filter`);
+        chip.onclick = () => {
+          if (key === 'favoritesOnly') { favoriteFilter.click(); return; }
+          state[key] = key === 'search' ? '' : 'all';
+          if (key === 'search') deckTools.querySelector('input').value = '';
+          else deckTools.querySelector(`[data-filter="${key}"]`).value = 'all';
+          if (key === 'strategy') { state.playstyle = 'all'; renderPlaystyleRecommendations('all'); }
+          filterDecks();
+        };
+        activeFilters.appendChild(chip);
+      }
       if (!visible) {
         noResults.querySelector('.deckemptyreason').textContent = `Nothing matches ${activeFilterText()}. Clear everything, or jump to one of the closest decks below.`;
         const alternatives = noResults.querySelector('.deckemptyalternatives');
@@ -1036,6 +1094,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       }
     };
+    deckBrowseBar.querySelector('.decksort').onchange = event => {
+      state.deckSort = event.target.value;
+      U.savePlayerPreferences({ deckSort: state.deckSort });
+      filterDecks();
+    };
+    explorerHead.querySelector('.surprisedeck').onclick = () => {
+      const choices = [...deckList.querySelectorAll('.deckentry:not([hidden])')];
+      if (choices.length) choices[Math.floor(Math.random() * choices.length)].querySelector('.deckcard').click();
+      else { clearFilters(); explorerHead.querySelector('.surprisedeck').click(); }
+    };
+    recentShelf.querySelectorAll('[data-recent-deck]').forEach(button => {
+      button.onclick = () => deckList.querySelector(`.deckentry[data-deck="${CSS.escape(button.dataset.recentDeck)}"] .deckcard`)?.click();
+    });
     deckTools.querySelector('input').oninput = e => { state.search = e.target.value.trim().toLowerCase(); filterDecks(); };
     deckTools.querySelector('[data-filter="color"]').onchange = e => { state.color = e.target.value; filterDecks(); };
     deckTools.querySelector('[data-filter="strategy"]').onchange = e => { state.strategy = e.target.value; filterDecks(); };
@@ -1057,6 +1128,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       favoriteFilter.classList.remove('on');
       favoriteFilter.setAttribute('aria-pressed', 'false');
       favoriteFilter.textContent = '☆ Favorites';
+      state.playstyle = 'all';
+      renderPlaystyleRecommendations('all');
       filterDecks();
     };
     noResults.querySelector('.deckemptyreset').onclick = clearFilters;
@@ -1428,7 +1501,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         showImportStatus(error?.message || 'The table could not start. Please select your deck again.', true);
       }
     };
-    startBtn.onclick = () => state.importedDeckId ? setSetupStage('review') : launchSelectedTable();
+    startBtn.onclick = () => setSetupStage('review');
     right.appendChild(startBtn);
     renderCmdBox();
 
@@ -1438,8 +1511,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     right.appendChild(podNext);
 
     const setMatchMode = mode => {
+      if (state.mode === 'solo') state.soloAI = state.ai || 3;
       state.mode = mode === 'online' ? 'online' : 'solo';
-      state.ai = state.mode === 'online' ? 0 : 3;
+      state.ai = state.mode === 'online' ? 0 : state.soloAI || 3;
       matchType.querySelectorAll('.matchtypebtn').forEach(button => {
         const selected = button.dataset.mode === state.mode;
         button.classList.toggle('selected', selected);
@@ -1515,6 +1589,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <button type="button" class="pbtn reviewback">← Back to pod</button>
           <button type="button" class="pbtn primary reviewstart">${state.mode === 'online' ? `Create ${state.livePlayers}-player room` : 'Start game'}</button>
         </div>`;
+      if (state.mode === 'solo') {
+        const save = el('form', 'savepodform');
+        save.innerHTML = `<label for="pod-save-name">Keep this table for next time<small>Keep up to six pods on this device. Saves decks, seats and rules; each game gets a fresh shuffle.</small></label><div><input id="pod-save-name" type="text" maxlength="48" placeholder="Name this pod" aria-label="Saved pod name" required><button type="submit" class="pbtn">Save pod</button></div><p role="status" class="savepodstatus"></p>`;
+        save.querySelector('input').value = `${state.deck} table`.slice(0, 48);
+        save.onsubmit = event => {
+          event.preventDefault();
+          const ok = U.savePod(save.querySelector('input').value, state);
+          save.querySelector('.savepodstatus').textContent = ok ? 'Saved on this device. Find it in your deck explorer.' : U.savedPods().length >= 6 ? 'Six pods are already saved. Reuse a name to update a pod, or remove one in the deck explorer.' : 'Could not save. Check the name and browser storage.';
+          renderSavedPods();
+        };
+        reviewStage.appendChild(save);
+      }
       reviewStage.querySelector('.reviewback').onclick = () => setSetupStage('pod');
       reviewStage.querySelector('.reviewstart').onclick = launchSelectedTable;
     };
@@ -1534,14 +1620,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       state.setupStage = ['deck', 'pod', 'review'].includes(stage) ? stage : 'deck';
       root.dataset.setupStage = state.setupStage;
       root.querySelectorAll('.setupstep').forEach(item => item.classList.toggle('on', item.dataset.step === state.setupStage));
+      root.querySelectorAll('.setupstep').forEach(item => {
+        if (item.dataset.step === state.setupStage) item.setAttribute('aria-current', 'step');
+        else item.removeAttribute('aria-current');
+      });
+      const titles = { deck: ['Choose your commander.', `${nDecks} decks. A whole table of possibilities. Find your next favorite.`], pod: ['Make it your table.', 'Choose your opponents and the kind of game you want to play.'], review: ['Your pod is ready.', 'One last look, then shuffle up.'] };
+      setupTitle.textContent = titles[state.setupStage][0];
+      head.querySelector('.subtitle').textContent = titles[state.setupStage][1];
       if (state.setupStage === 'deck') {
         right.classList.remove('mobile-open');
-        left.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } else {
         if (state.setupStage === 'review') renderReviewStage();
         right.classList.add('mobile-open');
         right.scrollTop = 0;
       }
+      window.scrollTo({ top: 0, behavior: 'instant' });
     };
     podNext.onclick = () => setSetupStage('review');
 
@@ -1620,12 +1713,83 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         importFile.value = '';
       }
     };
+    const applySavedPod = pod => {
+      const entry = [...deckList.querySelectorAll('.deckentry')].find(item => item.dataset.deck === pod.setup.deck);
+      if (!entry) { savedPodShelf.querySelector('.savedpodstatus').textContent = 'This deck is unavailable. Open My Library to check its support.'; return; }
+      const snapshot = U.podSnapshot(pod.setup);
+      state.applyingReplay = true;
+      entry.querySelector('.deckcard').click();
+      state.applyingReplay = false;
+      setMatchMode('solo');
+      state.ai = snapshot.ai;
+      state.commanders = U.validateCommanders(MTG.DECKS[state.deck], snapshot.commanders, MTG.DEFS).ok ? snapshot.commanders : U.defaultCommanders(MTG.DECKS[state.deck], MTG.DEFS);
+      const usedDecks = new Set([state.deck]);
+      state.aiDecks = snapshot.aiDecks.map(name => {
+        if (!Object.prototype.hasOwnProperty.call(MTG.DECKS, name) || usedDecks.has(name)) return '';
+        usedDecks.add(name); return name;
+      });
+      state.aiStyles = snapshot.aiStyles.map(key => MTG.AI_STYLES[key] ? key : 'random');
+      state.seed = '';
+      for (const key of ['difficulty', 'aiRandomCommanders', 'sumPartnerDamage', 'diplomacyEnabled']) state[key] = snapshot[key];
+      randRow.querySelector('input').checked = state.aiRandomCommanders;
+      houseRow.querySelector('input').checked = state.sumPartnerDamage;
+      diplomacyRow.querySelector('input').checked = state.diplomacyEnabled;
+      diplomacyRow.classList.toggle('enabled', state.diplomacyEnabled);
+      aiRow.querySelectorAll('[data-ai-count]').forEach(button => button.classList.toggle('selected', Number(button.dataset.aiCount) === state.ai));
+      diffRow.querySelectorAll('[data-difficulty]').forEach(button => button.classList.toggle('selected', button.dataset.difficulty === state.difficulty));
+      renderDifficultyNote(state.difficulty, false);
+      renderCmdBox(); renderBotStyles(); updateStartLabel();
+      setSetupStage('review');
+    };
+    const renderSavedPods = () => {
+      const pods = U.savedPods();
+      savedPodShelf.hidden = !pods.length;
+      savedPodShelf.innerHTML = '<div class="savedpodshead"><span>Saved tables</span><small>Your pod, ready to shuffle again</small></div><div class="savedpodlist"></div><p class="savedpodstatus" role="status"></p>';
+      for (const pod of pods) {
+        const row = el('div', 'savedpodrow');
+        const open = el('button', 'savedpodopen');
+        open.type = 'button';
+        open.innerHTML = `<span>${U.icon('player')}</span><div><b>${esc(pod.name)}</b><small>${esc(pod.setup.deck)} · ${U.podSnapshot(pod.setup).ai} AI</small></div><span>↗</span>`;
+        open.onclick = () => applySavedPod(pod);
+        const remove = el('button', 'savedpodremove', '×');
+        remove.type = 'button'; remove.setAttribute('aria-label', `Remove saved pod ${pod.name}`);
+        remove.onclick = () => { if (U.removePod(pod.name)) renderSavedPods(); else savedPodShelf.querySelector('.savedpodstatus').textContent = 'Browser storage is unavailable.'; };
+        row.append(open, remove); savedPodShelf.querySelector('.savedpodlist').appendChild(row);
+      }
+    };
+    renderSavedPods();
+    const presets = el('section', 'podpresets');
+    presets.innerHTML = '<div><span class="eyebrow">Set the mood</span><b>A starting point for your pod</b><small>You can adjust every choice below.</small></div><div class="podpresetchips"><button type="button" data-pod-preset="learn"><b>Learn a deck</b><small>1 AI · easy · balanced</small></button><button type="button" data-pod-preset="classic"><b>Classic pod</b><small>3 AI · normal · varied styles</small></button><button type="button" data-pod-preset="challenge"><b>Table challenge</b><small>3 AI · hard · politics on</small></button></div>';
+    presets.querySelectorAll('[data-pod-preset]').forEach(button => {
+      button.onclick = () => {
+        setMatchMode('solo');
+        const key = button.dataset.podPreset;
+        state.ai = key === 'learn' ? 1 : 3;
+        state.difficulty = key === 'learn' ? 'easy' : key === 'challenge' ? 'hard' : 'normal';
+        state.aiStyles = key === 'learn' ? ['balanced', 'random', 'random'] : ['aggressive', 'balanced', 'opportunist'];
+        state.diplomacyEnabled = key === 'challenge';
+        state.aiDecks = ['', '', ''];
+        aiRow.querySelectorAll('[data-ai-count]').forEach(item => item.classList.toggle('selected', Number(item.dataset.aiCount) === state.ai));
+        diffRow.querySelectorAll('[data-difficulty]').forEach(item => item.classList.toggle('selected', item.dataset.difficulty === state.difficulty));
+        diplomacyRow.querySelector('input').checked = state.diplomacyEnabled;
+        diplomacyRow.classList.toggle('enabled', state.diplomacyEnabled);
+        renderDifficultyNote(state.difficulty, false); renderBotStyles();
+        presets.querySelectorAll('button').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      };
+    });
+    podStage.insertBefore(presets, matchType.nextSibling);
+    const clearPresetSelection = () => presets.querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', 'false'));
+    podStage.addEventListener('change', clearPresetSelection);
+    podStage.addEventListener('click', event => {
+      if (event.target.closest('[data-ai-count], [data-difficulty], [data-mode]')) clearPresetSelection();
+    });
     if (options.importedDeckId) {
       const saved = U.getImportedDeckLibraryEntry(options.importedDeckId);
       const selectedEntry = [...deckList.querySelectorAll('.deckentry')].find(entry => entry.dataset.deck === saved?.name);
       if (!selectedEntry) throw new Error('This saved deck is no longer available. Reopen My Library and try again.');
       selectedEntry.querySelector('.deckcard').click();
     }
+    if (options.deck && !options.importedDeckId) deckList.querySelector(`.deckentry[data-deck="${CSS.escape(options.deck)}"] .deckcard`)?.click();
     filterDecks();
   }
 
@@ -1752,6 +1916,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!selectedCommanders.ok) throw new Error(selectedCommanders.errors[0]?.message || 'Select legal commanders for this deck.');
       MTG.registerImportedDeck(validation, { replace: true });
     }
+    U.rememberDeck(state.deck);
     const resumeSave = state.resumeSave ? MTG.validateAccountSave(state.resumeSave) : null;
     // A save that carries a written-down board needs no replay at all: the
     // timeline is only read for saves made before real state saves existed.
@@ -4386,6 +4551,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         mode: 'setup',
         deckCount: MTG.DECKS ? Object.keys(MTG.DECKS).length : 0,
         stage: setup && setup.dataset.setupStage || 'deck',
+        deckView: setup?.dataset.deckView || 'gallery',
+        visibleDecks: [...(setup?.querySelectorAll('.deckentry:not([hidden])') || [])].map(entry => entry.dataset.deck),
         arenaDragEnabled: localStorage.getItem('mtgArenaDrag') === '1',
         selectedDeck: selected && selected.closest('.deckentry')?.dataset.deck || null,
         spotlight: spotlight ? {
@@ -4531,6 +4698,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } : null,
       arenaDragEnabled: !!(ui && ui.arenaDragEnabled),
       manaMode: ui ? ui.manaMode : 'auto',
+      playerTools: ui ? {
+        handSort: ui.handSort, handSize: ui.handSize, speed: ui.speed,
+        highContrast: document.body.classList.contains('high-contrast'),
+        searchOpen: !!ui.commandPaletteOpen,
+        searchQuery: document.querySelector('.commandsearch')?.value || '',
+        searchResults: [...document.querySelectorAll('.commandresultcopy')].map(result => result.textContent),
+      } : null,
       lastResort: ui ? {
         active: !!ui.lastResortActive,
         paused: !!g.lastResortPaused,

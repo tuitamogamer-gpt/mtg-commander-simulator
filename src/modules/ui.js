@@ -70,6 +70,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.game = null;
       this.me = null;
       this.pending = null;   // {q, resolve, state}
+      const preferences = MTG.playerPreferences?.() || { handSort: 'draw', handSize: 'standard', speed: 'normal' };
+      this.handSort = preferences.handSort;
+      this.handSize = preferences.handSize;
+      this.speed = preferences.speed;
+      document.body?.classList?.toggle('high-contrast', !!preferences.contrast);
       this.sheet = null;     // card sheet data
       this.playerSheet = null;
       this.zoneBrowse = null;
@@ -808,6 +813,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     render() {
       const g = this.game;
       if (!g) return;
+      if (this.fatalError || g.gameOver) this.closeCommandPalette?.();
       const root = $('#game');
       if (!root) return;
       // Završni rezultat je jedina blokirajuća informacija nakon kraja meča.
@@ -827,6 +833,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       root.classList.toggle('combat-phase', g.phase === 'combat');
       root.classList.toggle('last-resort-active', this.lastResortActive);
       root.classList.toggle('arena-drag-enabled', this.arenaDragEnabled);
+      root.dataset.handSize = this.handSize;
       root.classList.toggle('sidebar-open', this.utilityDrawerOpen);
       root.dataset.mobileView = this.mobileView;
       root.style.setProperty('--arena-turn-accent', g.turnPlayer === this.me ? '#d3974c' : '#778f63');
@@ -865,10 +872,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (quickMenu) root.appendChild(quickMenu);
       const lastResortConfirm = this.renderLastResortConfirm();
       if (lastResortConfirm) root.appendChild(lastResortConfirm);
-      const reveal = this.renderRevealPopup(g);
+      const reveal = this.sheet?.fromSearch ? null : this.renderRevealPopup(g);
       if (reveal) root.appendChild(reveal);
       const diplomacyModal = this.renderDiplomacyModal(g);
-      const modal = diplomacyModal || this.renderAttackersModal(g) || this.renderBlockersModal(g) || this.renderDecisionModal(g);
+      const modal = this.sheet?.fromSearch ? null : diplomacyModal || this.renderAttackersModal(g) || this.renderBlockersModal(g) || this.renderDecisionModal(g);
       // stack popup stoji na sredini, pa se sklanja kad je otvoren bilo koji drugi
       // overlay — inače bi se preklapali baš na istom mjestu
       const blocked = !!modal || !!reveal || !!this.sheet || !!this.playerSheet || !!this.zoneBrowse ||
@@ -1915,7 +1922,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this._keysInit) return;
       this._keysInit = true;
       document.addEventListener('keydown', ev => {
+        if ((typeof window !== 'undefined' && window._ui !== this) || ev.defaultPrevented || this.commandPaletteOpen) return;
+        if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === 'k') {
+          ev.preventDefault(); this.openCommandPalette(); return;
+        }
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(ev.target.tagName)) return;
+        if (ev.target.isContentEditable || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+        if (ev.key === '/' || ev.key === '?') {
+          ev.preventDefault();
+          if (ev.key === '/') this.openCommandPalette();
+          else { this.showHelp = true; this.render(); }
+          return;
+        }
         if (ev.key === 'Escape') {
           if (this.sheet || this.playerSheet || this.zoneBrowse || this.showLog || this.showHelp || this.showJudge ||
             this.showStops || this.diplomacyComposer || this.quickMenuOpen || this.lastResortConfirm || this.utilityDrawerOpen) {
@@ -2160,6 +2178,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
 
       const buttons = el('div', 'topbtns');
+      const search = el('button', 'tbtn hudaction commandbutton', '<span aria-hidden="true">⌕</span><span>FIND</span><kbd>⌘K</kbd>');
+      search.type = 'button';
+      search.title = 'Find a card or command (⌘K / Ctrl+K or /)';
+      search.setAttribute('aria-label', 'Find a card or command');
+      search.onclick = () => this.openCommandPalette();
+      buttons.appendChild(search);
       const hold = el('button', 'tbtn hudaction' + (this.holdNext ? ' armed' : ''), `${U.icon('hold')}<span>HOLD</span>`);
       hold.type = 'button';
       hold.title = this.holdNext
@@ -2217,6 +2241,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       head.appendChild(close);
       panel.appendChild(head);
       const list = el('div', 'quickmenulist');
+      const section = title => list.appendChild(el('h3', 'quickmenusection', title));
       const action = (label, meta, run) => {
         const button = el('button', 'quickmenuitem', `<span>${esc(label)}</span><small>${esc(meta)}</small>`);
         button.type = 'button';
@@ -2224,15 +2249,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         list.appendChild(button);
         return button;
       };
+      section('Pace & decisions');
       this.speed = this.speed || 'normal';
       action('AI turn speed', MTG.SPEEDS[this.speed][2], () => {
         const order = ['normal', 'slow', 'fast'];
         this.speed = order[(order.indexOf(this.speed) + 1) % order.length];
+        MTG.savePlayerPreferences({ speed: this.speed });
         this.applySpeed();
         this.render();
       });
       const mode = MTG.PRIO_MODES.find(item => item.key === (this.prioMode || 'end')) || MTG.PRIO_MODES[0];
       action('Priority stops', mode.label, () => { this.quickMenuOpen = false; this.showStops = true; this.render(); });
+      section('Display & accessibility');
+      action('Hand card size', this.handSize === 'large' ? 'Large' : 'Standard', () => {
+        this.handSize = this.handSize === 'large' ? 'standard' : 'large';
+        MTG.savePlayerPreferences({ handSize: this.handSize });
+        this.render();
+      });
+      action('High contrast', document.body.classList.contains('high-contrast') ? 'On' : 'Off', () => {
+        const contrast = !document.body.classList.contains('high-contrast');
+        document.body.classList.toggle('high-contrast', contrast);
+        MTG.savePlayerPreferences({ contrast });
+        this.render();
+      });
+      action('Arena drag controls', this.arenaDragEnabled ? 'On' : 'Off', () => {
+        this.arenaDragEnabled = !this.arenaDragEnabled;
+        localStorage.setItem('mtgArenaDrag', this.arenaDragEnabled ? '1' : '0');
+        this.render();
+      });
       action('Centered stack preview', this.stackPopup ? 'On' : 'Off', () => {
         this.stackPopup = !this.stackPopup;
         this.stackPopDismissed = 0;
@@ -2259,6 +2303,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         localStorage.setItem('mtgOppH', String(this.oppHeight));
         this.render();
       });
+      section('Table & profile');
+      action('Find a card or command', '⌘K / Ctrl+K · your hand and public cards', () => {
+        this.quickMenuOpen = false; this.render(); this.openCommandPalette();
+      });
       action('Table information', 'Stack, damage and threat', () => this.openUtility('table'));
       action('Game log', `${g.log.length} events`, () => this.openUtility('log'));
       const account = globalThis.MTGAccount;
@@ -2283,6 +2331,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.render();
         account.open('profile');
       });
+      section('Help & recovery');
       action('Support & diagnostics', 'Download share-safe debug snapshot', () => this.downloadDebugSnapshot(g));
       if (MTG.DECKS[this.me?.deckName]?.custom || this.pending?.q.type === 'manualResolve') {
         const canUseJudge = () => ['main', 'manualResolve'].includes(this.pending?.q.type);
@@ -3190,7 +3239,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         tray.appendChild(list);
         row.appendChild(tray);
       }
-      for (const c of me.hand) {
+      for (const c of MTG.sortHandForDisplay(me.hand, this.handSort)) {
         const canSuspendNow = suspendReady.has(c);
         const d = el('div', 'hcard' + (canSuspendNow ? ' suspendready' : '') + (this.threatTargets && this.threatTargets.has(c.iid) ? ' threatened' : ''));
         const colors = c.colors.length ? c.colors : ['C'];
@@ -3255,6 +3304,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         row.appendChild(el('div', 'emptyrow', `${U.icon('cards')}<span><b>Empty hand</b><small>Your battlefield and priority controls remain active.</small></span>`));
       }
       wrap.appendChild(row);
+      if (me.hand.length) wrap.appendChild(this.renderHandTools());
       if (!me.hand.length && !wrap.querySelector('.exiletray, .suspendtray')) wrap.classList.add('is-empty');
       return wrap;
     }
@@ -5275,6 +5325,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       head.appendChild(dismiss);
       m.appendChild(head);
       m.appendChild(el('div', 'helptext', `
+<div class="shortcutguide"><span><kbd>⌘K / Ctrl+K</kbd> Find cards & commands</span><span><kbd>/</kbd> Open search</span><span><kbd>?</kbd> This guide</span><span><kbd>R</kbd> Hold priority</span><span><kbd>Space</kbd> Proceed</span><span><kbd>Esc</kbd> Close panel</span></div>
 <b>🎴 Playing cards:</b> click a card in your hand to open its available actions, such as Cast, Play land, or Cycling. Cards with a <span style="color:#5aa860">green frame</span> can be played now. The <b>✨/🖐 MANA</b> button switches between automatic payment and choosing exact mana sources.<br><br>
 <b>👑 Commander:</b> your commander stays in the COMMAND ZONE above your hand until cast. Click it, then choose Cast. When it dies, you may return it to the command zone; each recast adds {2} commander tax.<br><br>
 <b>⚙️ Abilities and tokens:</b> a permanent with a ⚙️ badge has an available activated ability. Click it, then choose an action such as creating Food, equipping, or crewing.<br><br>

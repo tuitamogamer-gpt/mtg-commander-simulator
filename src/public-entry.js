@@ -2,6 +2,7 @@
 // only after a player asks to enter setup or opens a shared game URL.
 'use strict';
 import './account.js';
+import './modules/player-tools.js';
 
 const root = document.querySelector('#setup');
 const page = root && root.querySelector('.mainmenu');
@@ -53,6 +54,11 @@ const detailsMarkup = `
   </footer>`;
 
 if (!page.querySelector('.mainmenu-proof')) page.insertAdjacentHTML('beforeend', detailsMarkup);
+MTG.renderRecentShelf(page, async deck => {
+  await loadGame('solo');
+  MTG.showSetup?.({ mode: 'solo', deck });
+});
+document.body.classList.toggle('high-contrast', MTG.playerPreferences().contrast);
 root.removeAttribute('aria-busy');
 
 function onboardingComplete() {

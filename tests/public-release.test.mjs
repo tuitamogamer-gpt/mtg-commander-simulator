@@ -59,7 +59,8 @@ test('main menu decklist import is a persistent fail-closed library gateway with
   assert.match(main, /U\.prepareSavedImportedCommanderDeck\(card\.dataset\.deckId\)/);
   assert.match(main, /U\.prepareSavedImportedCommanderDeck\(saved\.id\)/);
   assert.match(main, /renderSetup\(\{ mode: 'solo', importedDeckId: id \}\)/);
-  assert.match(main, /startBtn\.onclick = \(\) => state\.importedDeckId \? setSetupStage\('review'\)/);
+  // Every deck now reaches the review step, including imported lists.
+  assert.match(main, /startBtn\.onclick = \(\) => setSetupStage\('review'\)/);
   assert.match(main, /state\.importedLibraryOwner !== currentImportedLibraryOwner\(\)/);
   assert.match(main, /if \(!saved \|\| saved\.id !== record\.id\) throw new Error/);
   assert.match(main, /U\.validateImportedDeckRecord\(record\)/);

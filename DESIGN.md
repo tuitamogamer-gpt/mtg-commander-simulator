@@ -45,7 +45,7 @@ Motion explains entry, focus or state change. It does not run as ambient decorat
 
 ## Responsive behavior
 
-- Setup on a phone is a real `Deck → Pod → Review` flow. Only the active stage occupies the screen.
+- Setup on every screen is a real `Deck → Pod → Review` flow. Only the active stage occupies the screen. The deck explorer has a full-width gallery and a compact layout; the selected deck has a persistent Continue control.
 - Arena phone navigation is one level: `Mine / Table / Stack / Politics`. A destination does not add a second tab row.
 - An empty hand collapses to a compact status rail; it must not reserve card-height space.
 - All primary touch targets are at least 44px.
@@ -66,3 +66,11 @@ Motion explains entry, focus or state change. It does not run as ambient decorat
 ## JavaScript architecture
 
 Stay with vanilla JavaScript. Reusable presentation belongs in small factories or UI methods: stage navigation, dialog enhancement, public timeline rows, diagnostics and recovery. Do not move rules, legality or AI strategy into DOM code.
+
+## Player tools
+
+- `player-tools.js` owns validated device preferences, recent built-in decks, account-scoped local pod configurations, mana-curve summaries, and presentation-only hand sorting. A saved pod stores setup choices, never a game checkpoint or shuffle seed.
+- `arena-tools.js` owns the searchable card/command dialog and hand controls. Search includes the viewer's hand and public zones. Opponent hands, libraries and face-down identities must never enter search results, search text or image URLs.
+- Search opens the ordinary card sheet; casts, targets and payments still use the pending engine decision. Inspecting during a blocking decision temporarily hides its presentation and restores it on close.
+- Find is available with a visible button, `/`, or Command/Ctrl+K. Each UI instance handles keys only while it is the active game. Search contains focus and makes the arena inert until closed.
+- Hand sort, hand size, AI pacing and high contrast persist on the device. Draw-order sorting preserves the underlying hand array and card identities. Larger cards must still fit the reserved hand row.
