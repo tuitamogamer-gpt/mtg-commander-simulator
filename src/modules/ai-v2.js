@@ -617,7 +617,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const evasivePower = creatures.filter(card => hasAny(card.keywords.join(' '), [/flying/, /trample/, /menace/, /unblockable/]))
       .reduce((sum, card) => sum + Math.max(0, card.power || 0), 0);
     const engineProgress = board.reduce((sum, card) => sum +
-      (card.roles.includes('engine') ? 4 : 0) + (card.roles.includes('combo-piece') ? 5 : 0) + (card.roles.includes('tutor') ? 1 : 0), 0);
+      (card.roles.includes('engine') ? 4 : 0) + (card.roles.includes('combo-piece') ? 5 : 0) + (card.roles.includes('tutor') ? 1 : 0) +
+      // A permanent that repeats card draw is the engine that quietly wins the
+      // game; it is worth more than a trigger that does something else.
+      (card.roles.includes('engine') && card.roles.includes('card-draw') ? 2 : 0), 0);
     let commanderLethal = 0;
     if (observer) {
       for (const [commanderId, damage] of Object.entries(observer.commanderDamage || {})) {
@@ -632,10 +635,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const momentum = recent.reduce((score, entry) => score + (/vuče|draw|igra land|plays a land|Treasure|mana/i.test(entry.message) ? 0.8 : 0), 0);
     const recovery = clamp((profile && profile.weights.recoveryPotential || 1) * target.handCount + target.commandZone.length * 1.5, 0, 18);
     const lifeBuffer = target.life * 0.08;
+    // A player nobody attacks stays at forty while the rest of the table
+    // grinds each other down, and the old model barely noticed: life counted
+    // 0.08 per point, so an eleven-point lead was worth under one point of
+    // threat. Measured over full games, the winners with no board at all sat
+    // BELOW the table's average threat (30.6 vs 36.0) while holding an ~12
+    // life lead. Being far ahead on life is itself a public threat.
+    const others = view.players.filter(row => row.id !== targetPlayerId && !row.lost);
+    const lifeLead = others.length
+      ? clamp((target.life - others.reduce((sum, row) => sum + row.life, 0) / others.length) * LIFE_LEAD_WEIGHT,
+        -LIFE_LEAD_FLOOR, LIFE_LEAD_CEILING)
+      : 0;
     const totalScore = round(immediateLethal * 55 + Math.max(0, commanderLethal - 10) * 1.8 + boardPower * 0.9 + evasivePower * 0.35 +
-      engineProgress + interactionRisk + recovery * 0.45 + momentum + lifeBuffer);
-    return { totalScore, immediateLethal, commanderLethal: round(commanderLethal), boardPower: round(boardPower), engineProgress: round(engineProgress), interactionRisk: round(interactionRisk), recovery: round(recovery) };
+      engineProgress + interactionRisk + recovery * 0.45 + momentum + lifeBuffer + lifeLead);
+    return { totalScore, immediateLethal, commanderLethal: round(commanderLethal), boardPower: round(boardPower), engineProgress: round(engineProgress), interactionRisk: round(interactionRisk), recovery: round(recovery), lifeLead: round(lifeLead) };
   };
+
+  // A twenty-point life lead is about as threatening as a twenty-power board
+  // (boardPower is weighted 0.9). The floor keeps the player who is furthest
+  // behind from being scored as harmless when they still hold a real board.
+  const LIFE_LEAD_WEIGHT = 0.7;
+  const LIFE_LEAD_CEILING = 20;
+  const LIFE_LEAD_FLOOR = 8;
 
   function interactionInHand(row) {
     return (row.hand || []).filter(card => card.roles.some(role => ['single-target-removal', 'counterspell', 'board-wipe', 'protection'].includes(role))).length;
@@ -974,7 +995,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // smrtonosnog praga ne "pritiska" nikoga.
     const usefulShare = expDamage > 0 ? Math.min(1, damageValue / expDamage) : 0;
     const defenderThreat = ctx && ctx.threatFor ? ctx.threatFor(defender) : playerThreatForGame(game, player, defender);
-    let threat = dealsDamage ? defenderThreat * 0.13 * usefulShare : 0;
+    // Personas are allowed to disagree with the table. A seat whose identity is
+    // to let the leader run and peck at whoever stumbles (focusLeader below
+    // zero) gets no pull toward the biggest threat at all — neither half of it,
+    // or the flat term alone would still drag it back onto the leader.
+    const focusLeader = Number((MTG.AI_STYLES && MTG.AI_STYLES[MTG.getAIBaseStyle(player.aiStyle)] || {}).focusLeader);
+    const personaFocus = Number.isFinite(focusLeader) ? clamp(focusLeader / 1.5, 0, 1.2) : 1;
+    let threat = dealsDamage ? defenderThreat * 0.13 * usefulShare * (focusLeader < 0 ? 0 : 1) : 0;
     // Threat assessment decides WHO gets hit, not merely that hitting someone
     // is worth a little. Measured before this: the table's biggest threat took
     // 42% of all attacks — barely more than an even split — and was ignored
@@ -984,14 +1011,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Comparing a defender with the rest of the table fixes the direction: a
     // runaway draws the whole pod, and the player who is behind is left alone.
     const reference = ctx && ctx.referenceFor ? ctx.referenceFor(defender) : null;
-    if (dealsDamage && reference !== null && !freeBlock) {
+    if (dealsDamage && reference !== null && !freeBlock && personaFocus > 0) {
       // Pressure is only pressure if the attack does something. A body the
       // defender eats for free applies none of it — that is how a 2/2 used to
       // be talked into an untapped 8/8 wall — while a blocked attacker that
       // trades or forces a chump still applies most of it.
       const pressureShare = blockers.length ? 0.6 : 1;
       threat += clamp((defenderThreat - reference) * THREAT_FOCUS_WEIGHT,
-        -THREAT_FOCUS_MERCY, THREAT_FOCUS_CEILING) * usefulShare * pressureShare;
+        -THREAT_FOCUS_MERCY, THREAT_FOCUS_CEILING) * usefulShare * pressureShare * personaFocus;
     }
     let risk = 0;
     // A punisher is spent on the juiciest attacker first, so a cheap body is
