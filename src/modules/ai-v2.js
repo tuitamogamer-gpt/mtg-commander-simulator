@@ -973,8 +973,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Pritisak je stvaran samo za štetu koja još nešto mijenja. Napad preko
     // smrtonosnog praga ne "pritiska" nikoga.
     const usefulShare = expDamage > 0 ? Math.min(1, damageValue / expDamage) : 0;
-    const threat = dealsDamage
-      ? (ctx && ctx.threatFor ? ctx.threatFor(defender) : playerThreatForGame(game, player, defender)) * 0.13 * usefulShare : 0;
+    const defenderThreat = ctx && ctx.threatFor ? ctx.threatFor(defender) : playerThreatForGame(game, player, defender);
+    let threat = dealsDamage ? defenderThreat * 0.13 * usefulShare : 0;
+    // Threat assessment decides WHO gets hit, not merely that hitting someone
+    // is worth a little. Measured before this: the table's biggest threat took
+    // 42% of all attacks — barely more than an even split — and was ignored
+    // outright in 35 of 81 declarations where it was attackable and clearly
+    // ahead. The absolute term above was worth 1.6 points at a median threat
+    // spread while a single bad block costs 8, so board risk always won.
+    // Comparing a defender with the rest of the table fixes the direction: a
+    // runaway draws the whole pod, and the player who is behind is left alone.
+    const reference = ctx && ctx.referenceFor ? ctx.referenceFor(defender) : null;
+    if (dealsDamage && reference !== null && !freeBlock) {
+      // Pressure is only pressure if the attack does something. A body the
+      // defender eats for free applies none of it — that is how a 2/2 used to
+      // be talked into an untapped 8/8 wall — while a blocked attacker that
+      // trades or forces a chump still applies most of it.
+      const pressureShare = blockers.length ? 0.6 : 1;
+      threat += clamp((defenderThreat - reference) * THREAT_FOCUS_WEIGHT,
+        -THREAT_FOCUS_MERCY, THREAT_FOCUS_CEILING) * usefulShare * pressureShare;
+    }
     let risk = 0;
     // A punisher is spent on the juiciest attacker first, so a cheap body is
     // deterred less than a real threat: losing a 1/1 to a deathtouch blocker
@@ -1007,10 +1025,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Shared per-declaration cache for the attack planner.
   function attackPlanContext(game, player) {
     const threats = new Map(), creatures = new Map();
+    const threatFor = defender => {
+      if (!threats.has(defender)) threats.set(defender, playerThreatForGame(game, player, defender));
+      return threats.get(defender);
+    };
+    // Every live opponent is scored once, so a defender can be compared with
+    // the rest of the table instead of judged on an absolute number.
+    let table = null;
+    const tableThreats = () => {
+      if (!table) table = player.opponents(game).filter(rival => !rival.lost).map(rival => [rival, threatFor(rival)]);
+      return table;
+    };
     return {
-      threatFor: defender => {
-        if (!threats.has(defender)) threats.set(defender, playerThreatForGame(game, player, defender));
-        return threats.get(defender);
+      threatFor,
+      // The average threat of the OTHER opponents. Above it means this player
+      // is the table's problem; below it means someone else is.
+      referenceFor: defender => {
+        const rows = tableThreats().filter(([rival]) => rival !== defender);
+        if (!rows.length) return null;
+        return rows.reduce((sum, [, value]) => sum + value, 0) / rows.length;
       },
       creaturesOf: defender => {
         if (!creatures.has(defender)) creatures.set(defender, game.creatures(defender));
@@ -1018,9 +1051,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     };
   }
+  MTG.botAttackPlanContext = attackPlanContext;
 
   // Wide boards (token swarms) are planned for the most relevant bodies only;
   // everything past these limits is treated as interchangeable fodder.
+  // How hard the table's threat ranking pulls an attack. At the median spread
+  // (~13 points) the leader is worth about a whole extra attacker; a runaway
+  // (p90 spread ~80) becomes the only sensible target. The mercy cap keeps the
+  // penalty for hitting the weakest player from ever forbidding a lethal swing.
+  const THREAT_FOCUS_WEIGHT = 0.55;
+  const THREAT_FOCUS_CEILING = 30;
+  // Sparing the player who is behind must bias the choice, never veto the
+  // attack: at 12 a bot with one good probe attack and no better target simply
+  // stayed home. Five is under a typical attack's own score.
+  const THREAT_FOCUS_MERCY = 5;
   const WIDE_BOARD_ATTACKERS = 28;
   const WIDE_BOARD_BLOCK_TARGETS = 24;
   const WIDE_BOARD_SHIELDS = 16;
