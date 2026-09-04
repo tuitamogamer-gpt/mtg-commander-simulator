@@ -545,6 +545,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Sadržaj ruke postoji isključivo za posmatrača. Protivnički row nema
       // ni prazni placeholder koji bi kasnije mogao biti slučajno popunjen.
       if (mine) row.hand = other.hand.map(card => publicCard(card, player, true));
+      const forecastCards=[...(gameState.forecastRevealedCards?.(other)||[]),...(gameState.miracleRevealedCards?.(other)||[])];
+      if(!mine&&forecastCards.length)row.revealedHand=forecastCards.map(card=>publicCard(card,player,true));
       return deepFreeze(row);
     });
     const battlefield = gameState.bf().map(card => publicCard(card, player, card.ctrl === player || !card.faceDown));
@@ -942,7 +944,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // blokere. Punisheri ostaju dostupni bez obzira na broj napadača.
     const capacity = Math.max(0, ordinary.length - Math.max(0, priorAttackers - punishers.length));
     const available = punishers.concat(ordinary.slice(0, capacity));
-    const blockable = card.kw('menace') ? available.length >= 2 : available.length >= 1;
+    const blockable = available.length >= game.blockerBounds(card).min;
     const blockers = blockable ? available.map(info => info.blocker) : [];
     let freeBlock = false, bestTradeLoss = 0, minBlockerTough = Infinity;
     for (const info of (blockable ? available : [])) {
@@ -1173,7 +1175,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return value;
     };
     for (const step of ['first', 'normal']) {
-      const hits = [];
+      const hits = [], blockedAttackers = new Map();
       const amount = card => {
         const first = card.kw('first strike'), double = card.kw('double strike');
         if (step === 'first' ? !(first || double) : first && !double) return 0;
@@ -1186,9 +1188,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       for (const attacker of modeled.filter(active)) {
         const assigned = blockersByAttacker.get(attacker) || [];
-        const legalBlock = assigned.length >= (attacker.kw('menace') ? 2 : 1);
+        const bounds = game.blockerBounds(attacker);
+        const legalBlock = assigned.length >= bounds.min && assigned.length <= bounds.max;
         const blockers = legalBlock ? assigned.filter(active).sort((a, b) =>
           state.get(a).toughness - state.get(a).damage - state.get(b).toughness + state.get(b).damage || a.iid - b.iid) : [];
+        for (const blocker of blockers) {if (!blockedAttackers.has(blocker)) blockedAttackers.set(blocker, []); blockedAttackers.get(blocker).push(attacker);}
         let remaining = amount(attacker);
         for (let index = 0; index < blockers.length; index++) {
           const blocker = blockers[index];
@@ -1196,10 +1200,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const dealt = index === blockers.length - 1 && !attacker.kw('trample') ? remaining : Math.min(remaining, lethal);
           if (dealt > 0) hits.push({ source: attacker, target: blocker, n: dealt });
           remaining -= dealt;
-          if (amount(blocker) > 0) hits.push({ source: blocker, target: attacker, n: amount(blocker) });
         }
         if (remaining > 0 && (!legalBlock || attacker.kw('trample'))) hits.push({ source: attacker, target: defender, n: remaining });
       }
+      for (const [blocker, attacking] of blockedAttackers) for (const {attacker, n} of game.assignBlockerDamage(blocker, attacking, amount(blocker), card => state.get(card))) hits.push({source: blocker, target: attacker, n});
       for (const { source, target, n } of hits) {
         if (target !== defender && game.isProtectedFrom(target, source)) continue;
         const targetState = state.get(target);
@@ -1277,14 +1281,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     while (available.length && rounds++ < shieldLimit) {
       let best = null;
       for (const attacker of blockCandidates) {
-        const legal = available.filter(card => game.canBlock(card, attacker));
-        const needsPair = attacker.kw('menace') && !blockedAttackers.has(attacker);
+        const legal = available.filter(card => game.canBlock(card, attacker) && !assignments.some(pair => pair.blocker === card && pair.attacker === attacker));
+        const already = assignments.filter(pair => pair.attacker === attacker).length;
+        const bounds = game.blockerBounds(attacker), need = Math.max(1, bounds.min - already);
+        if (already >= bounds.max) continue;
         for (let i = 0; i < legal.length; i++) {
-          // Menace pairs are the only place a single extra blocker changes
-          // nothing; a handful of partners is enough to find the saving pair.
-          const pairs = needsPair ? legal.slice(i + 1, i + 1 + MENACE_PARTNER_LIMIT) : [null];
+          // A minimum-blocker rule needs a complete group before it changes
+          // damage; consider a bounded set of legal partner groups.
+          const pairs = need > 1 ? combinations(legal.slice(i + 1), need - 1, need - 1, MENACE_PARTNER_LIMIT) : [[]];
           for (const partner of pairs) {
-            const picks = partner ? [legal[i], partner] : [legal[i]];
+            const picks = [legal[i], ...partner];
             const next = assignments.concat(picks.map(blocker => ({ blocker, attacker })));
             const result = forecastCombat(game, player, attackers, next, initial);
             const value = defenseScore(game, player, result, initial.life ?? player.life);
@@ -1295,7 +1301,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!best) break;
       ({ assignments, outcome, score } = best);
       for (const item of best.assignments) blockedAttackers.add(item.attacker);
-      for (const card of best.picks) available.splice(available.indexOf(card), 1);
+      for (const card of best.picks) if (assignments.filter(pair => pair.blocker === card).length >= game.blockerCapacity(card)) available.splice(available.indexOf(card), 1);
     }
     return { assignments, outcome, score };
   }
@@ -1396,7 +1402,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const threat of threats) {
           const hit = Math.max(0, game.dmgAmount(threat, 'first') || game.dmgAmount(threat, 'normal')) * (threat.kw('double strike') ? 2 : 1);
           const legal = available.filter(card => game.canBlock(card, threat)).sort((a, b) => b.toughness - a.toughness || a.iid - b.iid);
-          const need = threat.kw('menace') ? 2 : 1;
+          const need = game.blockerBounds(threat).min;
           if (legal.length < need) incoming += hit;
           else {
             const chosen = legal.slice(0, need);
@@ -1493,6 +1499,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // determinističke jer se prognoza tamo ionako računa u milisekundama.
     const survivalDeadline = allEligible.length > FORECAST_ATTACKER_LIMIT
       ? now() + COMBAT_SURVIVAL_BUDGET_MS : Infinity;
+    beam = beam.filter(plan => game.attackGroupLegal(plan.assignments.map(item => item.card)));
+    if (!beam.length) beam = [{assignments: [], score: 0, committed: new Map()}];
     const ordered = beam.slice().sort((a, b) => b.score - a.score);
     const survival = new Map();
     for (const plan of ordered) {
@@ -1536,17 +1544,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const next = [];
       for (const node of beam) {
         next.push({ assignments: node.assignments.slice(), score: score(node.assignments) });
-        for (const attacker of blockCandidates) {
-          if (!game.canBlock(blocker, attacker)) continue;
-          const assignments = node.assignments.concat({ blocker, attacker });
-          next.push({ assignments, score: score(assignments) });
+        const legal = blockCandidates.filter(attacker => game.canBlock(blocker, attacker) && node.assignments.filter(pair => pair.attacker === attacker).length < game.blockerBounds(attacker).max);
+        const capacity = Math.min(legal.length, game.blockerCapacity(blocker));
+        const groups = capacity === 1 ? legal.map(attacker => [attacker]) : combinations(legal, 1, capacity, Math.max(config.beamWidth * 2, 12));
+        if (capacity > 1) groups.push(legal.slice(0, capacity));
+        for (const group of groups) {
+          const assignments = node.assignments.concat(group.map(attacker => ({blocker, attacker})));
+          next.push({assignments, score: score(assignments)});
         }
       }
       beam = next.sort((a, b) => b.score - a.score || planKey(a).localeCompare(planKey(b)))
         .slice(0, config.beamWidth);
     }
-    beam = beam.filter(plan => attackers.every(attacker => !attacker.kw('menace') || plan.assignments.filter(item => item.attacker === attacker).length !== 1));
     beam.push(survivalBlocks(game, player, attackers, allPotential));
+    beam = beam.filter(plan => game.blockDeclarationLegal(attackers, plan.assignments));
     if (!beam.length) beam = [{ assignments: [], score: 0 }];
     return beam.map(plan => ({ kind: 'declareBlockers', assignments: plan.assignments, _combatScore: plan.score }));
   }
@@ -1858,12 +1869,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function blightRecipientValue(game, player, card, amount = 1) {
     const value = permanentGameValue(game, card, player);
-    const dies = card.toughness <= amount;
+    const dies = diesAfterGlobalPump(card, Number(card.toughness || 0) - amount);
     const oracle = String(card.def.oracle || '').toLowerCase();
-    const deathValue = /when(?:ever)? .*dies|when this creature dies|persist|undying/.test(oracle) ? 7 : 0;
-    const tokenValue = card.isToken ? 4 : 0;
-    const alreadyBlighted = (card.counters['-1/-1'] || 0) > 0 ? 1.5 : 0;
-    return -value + deathValue + tokenValue + alreadyBlighted - (dies && !deathValue && !tokenValue ? 18 : 0);
+    if (dies) {
+      // Persist cannot return a creature that dies with these -1/-1 counters.
+      const deathValue = /when(?:ever)? .*dies|when this creature dies|undying/.test(oracle) ? 7 : 0;
+      const tokenValue = card.isToken ? 4 : 0;
+      return -value + deathValue + tokenValue - 4;
+    }
+    // A surviving 6/6 becomes a 4/4; its engine text and the rest of its body
+    // are not sacrificed. Charge only the lost stats, in the same units as
+    // permanentGameValue, instead of the value of the entire permanent.
+    const powerLost = Math.min(amount, Math.max(0, Number(card.power) || 0));
+    const toughnessLost = Math.min(amount, Math.max(0, Number(card.toughness) || 0));
+    return -(powerLost * 0.8 + toughnessLost * 0.28) * (card.ctrl === player ? 1.03 : 1);
   }
 
   function damageProtectionSaves(card) {
@@ -1962,7 +1981,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function wardPrice(game, player, ward) {
     if (!ward) return 0;
     if (ward.sacLegendary) return 12;
-    if (ward.blight) return 3 + Number(ward.blight || 0) * 1.5;
+    if (ward.blight) {
+      const values = game.creatures(player).map(card => blightRecipientValue(game, player, card, Number(ward.blight)));
+      return values.length ? -Math.max(...values) : Number.POSITIVE_INFINITY;
+    }
     if (ward.life) return Number(ward.life || 0) * (player.life <= 15 ? 1.6 : 0.6);
     if (ward.discard) return 3.5;
     return wardManaAmount(ward) * 1.4;
@@ -1971,11 +1993,47 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function wardTargetAdjustment(game, player, target, q) {
     const ward = wardOf(target);
     if (!ward || target.ctrl === player) return 0;
+    if (q && q.so && q.so.kind === 'spell' && (q.so.card || q.src) && MTG.isUncounterable &&
+      MTG.isUncounterable(game, Object.assign({ card: q.src, ctrl: player }, q.so))) return 0;
     const reserved = reservedManaFor(game, player, q);
     if (!canPayWard(game, player, ward, reserved)) return -1000;
     return -wardPrice(game, player, ward);
   }
   MTG.botWardTargetAdjustment = wardTargetAdjustment;
+
+  function blightWardBenefit(game, player, q) {
+    const target = q.aiHint.target;
+    const original = q.aiHint.stackObject || game.stack.find(object => object.ctrl === player &&
+      (object.targets || []).flat().includes(target));
+    // Older/direct controller prompts do not carry an original effect. Keep
+    // their conservative baseline, never infer removal just from an expensive
+    // warded permanent. Real ward prompts carry the public stack object.
+    if (!original) return 6;
+    if (original.countered) return 0;
+    const source = original.card || original.srcCard || original.ctx && original.ctx.src;
+    let specs = original.targetSpecs || original.ctx && original.ctx.boundTargetSpecs;
+    if (!specs && original.kind === 'spell' && source) {
+      specs = game.spellTargetSpecs(source, original.castOpts || {}, player);
+    }
+    if (!specs || !source) return 0;
+    // Ward counters the whole object, not merely its warded target. The
+    // original Ool may have left while Decimate's other targets still matter.
+    // Reuse resolution's legality check, including captured zone versions, so
+    // a blinked permanent is not mistaken for its original targeted object.
+    const checked = game.revalidateTargets(original.targets || original.ctx && original.ctx.targets || [],
+      specs, source, player, original.targetIdentities || original.ctx && original.ctx.targetIdentities);
+    let benefit = 0;
+    for (const [index, picks] of checked.targets.entries()) {
+      const spec = specs[index];
+      if (!spec || !spec.aiHint) continue;
+      for (const remaining of (Array.isArray(picks) ? picks : [picks]).filter(Boolean)) {
+        benefit += baseTargetValue(game, player, remaining, {
+          src: source, so: original, aiHint: spec.aiHint,
+        });
+      }
+    }
+    return Math.max(0, benefit);
+  }
 
   function targetValue(game, player, target, q) {
     const base = baseTargetValue(game, player, target, q);
@@ -1992,7 +2050,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (target instanceof U.CardInst && avoidedCopyTargets.includes(target.iid)) return -1000;
     const hint = q.aiHint && q.aiHint.goal || '';
     if (target instanceof U.Player) {
-      if (hint === 'proliferate') return target === player ? -100 : 8 + (target.poison || 0) * 2;
+      if (hint === 'proliferate') {const poison=target.poison||0,energy=target.counters?.energy||0;return target===player?(poison?(-12-poison*3):(energy?8:-100)):(poison?8+poison*2:0)-(energy?8:0);}
       if (hint === 'drawSelf') return target === player ? 100 : -100;
       if (hint === 'discard') {
         if (target === player) return -1000;
@@ -2167,6 +2225,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (target && target.kind) {
       const hostile = target.ctrl && target.ctrl !== player;
       const spell = target.card || target.srcCard;
+      if (hint === 'copy-stack') return (spell ? cardDefinitionValue(spell.def) : 2) + (hostile ? 0 : 2);
       // Countering our own spell throws away both cards; it is never chosen
       // while any other legal object is on the Stack.
       if (!hostile && hint === 'counter') return -1000;
@@ -2272,10 +2331,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const own=card.ctrl===player,beneficial=q.aiHint.operation==='untap'?own:!own;
       return (beneficial?1:-1)*(8+Math.max(0,value));
     }
+    if (hint === 'upkeepCounterCost') return -value;
     if (hint === 'bottomOrder') return -value;
     if (hint === 'reflexiveCost') return -value - ((q.aiHint.keepTargets||[]).includes(card) ? 10000 : 0);
+    // Exiling cards for payment spends resources. Preserve a spell/ability's
+    // selected targets when other legal fodder exists, without changing the
+    // legal cost pool (a player may deliberately pay with their own target).
+    // The same legacy hint also labels optional delve discounts (min zero).
+    // Preserve that separate quantity decision; fixed exile costs must choose
+    // exactly min cards and should spend the least valuable legal objects.
+    if (hint === 'delve' && q.min > 0) return -value - ((q.aiHint.keepTargets||[]).includes(card) ? 10000 : 0);
     if (/discard|sacCost|bounceCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) {
-      if(hint==='sacCost'&&(q.aiHint.keepTargets||[]).includes(card))return -10000-value;
+      if((q.aiHint?.keepTargets||[]).includes(card))return -10000-value;
       let discardScore = -value;
       if (MTG.getAIBaseStyle(player.aiStyle) === 'josh') {
         const sem = inferCardSemantics(card.def);
@@ -3184,6 +3251,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           : target.is('Planeswalker') ? Number(target.counters && target.counters.loyalty || 0) > amount : false;
         if (survives) score = Math.min(score * 0.08, 1);
       }
+      // Casting and choosing the target must budget the same Blight payment
+      // as the later Ward prompt, including lethal damage on our recipient.
+      if (wardOf(target)?.blight) score += wardTargetAdjustment(game, player, target, {
+        src: card, so: { kind: 'spell' }, aiHint: specs[0].aiHint,
+      });
       return { target, score };
     })
       .sort((a, b) => b.score - a.score || a.target.iid - b.target.iid)[0];
@@ -3858,7 +3930,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (action.kind === 'activate') {
       const entry = action.entry;
       const card = entry.card;
-      const ability = entry.ability;
+      const ability = entry.ability || (entry.handAbility&&card.def.handAbility?.oracleForecast?card.def.handAbility:null);
       breakdown.base = ability && ability.aiScore ? clamp(ability.aiScore(game, card, player), -30, 30) : 2.4;
       const selfStatLabel = /^([+-]\d+)\/([+-]\d+)$/.exec(String(
         entry.label || ability && ability.label || '',
@@ -3889,6 +3961,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (entry.crew) breakdown.combat += phase === 'main1' ? 2.5 : -0.5;
       if (entry.cycling) breakdown.resources += player.hand.length < 4 ? 1.5 : 0.4;
+      if(entry.cycling)for(const payment of card.def.cycling?.oracleAdditionalCosts||[]){
+        if(payment.kind==='payLife')breakdown.safety-=player.life<=payment.amount.value?10000:payment.amount.value*(player.life<10?2:0.15);
+        if(payment.kind==='sacrifice'&&payment.object?.types?.includes('Land')&&game.lands(player).length<=payment.quantity.min+2)breakdown.resources-=8;
+      }
       if (entry.foretell) breakdown.resources += player.hand.length > 3 ? 1.4 : 0.5;
       if (entry.ninjutsu) breakdown.combat += 5;
       // Ne cycluj land dok si kratak sa landovima a land drop je još otvoren
@@ -3911,7 +3987,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (q && q.type === 'priority') {
         const top = game.stack[game.stack.length - 1];
         if (top && top.ctrl === player) breakdown.timing -= 45;
-        if (!top && game.turnPlayer === player && phase !== 'combat') breakdown.timing -= 35;
+        if (!top && game.turnPlayer === player && phase !== 'combat'&&!ability?.oracleForecast) breakdown.timing -= 35;
       }
     } else if (action.kind === 'pass' || action.kind === 'done') {
       breakdown.base = 0.2;
@@ -3934,7 +4010,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (top.ctrl === player) breakdown.timing += 30;
         if (top.ctrl !== player && top.targets && top.targets.flat().some(target => target && (target === player || target.ctrl === player))) breakdown.safety -= 10;
       }
-      if (q && q.type === 'priority' && !game.stack.length && game.turnPlayer === player && phase !== 'combat') breakdown.timing += 25;
+      if (q && q.type === 'priority' && !game.stack.length && game.turnPlayer === player && phase !== 'combat'&&
+        !(q.acts||[]).some(entry=>entry.handAbility&&entry.card.def.handAbility?.oracleForecast&&
+          entry.card.def.handAbility.aiScore?.(game,entry.card,player)>0)) breakdown.timing += 25;
     } else if (action.kind === 'declareAttackers' || action.kind === 'declareBlockers') {
       breakdown.combat = action._combatScore || 0;
       breakdown.safety = action._survivalScore || 0;
@@ -3954,7 +4032,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
-      if(hintKind==='oracleLibraryChoice'){
+      if(hintKind==='damagePreventionSource'){
+        breakdown.choice=U.OracleV8SourcePrevention.threat(game,player,action.option?.card);
+      } else if(hintKind==='oracleLibraryChoice'){
         const card=q.aiHint.card,wantTop=card&&(card.mv>=3||card.is?.('Creature'));
         breakdown.choice=action.value===(wantTop?'top':'bottom')?10:0;
       } else if(hintKind==='oracleKeyword'){
@@ -3971,6 +4051,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const extra=cost.n>0&&!player.hand.length&&game.bf().some(card=>card.ctrl===player&&card.def.drawWhileEmptyExtra)?1:0;
           breakdown.choice=player.library.length>=cost.n*Math.pow(2,doublers)+extra?8+cost.n:-1000;
         }
+      } else if(hintKind==='oracleMiracleReveal'||hintKind==='oracleMiracleCast'){
+        breakdown.choice=action.value==='yes'?(q.aiHint.affordable?Math.max(2,cardDefinitionValue(q.aiHint.card.def)): -10):0;
+      } else if (hintKind === 'oracleUpkeepCost') {
+        const p=q.aiHint.payment,n=q.aiHint.n,source=q.aiHint.src;
+        let value=q.aiHint.sourceLive?Math.max(8,permanentGameValue(game,source,player)):0,price=n;
+        if(p.kind==='additional'){
+          const cost=p.cost;
+          if(cost.kind==='payLife')price=cost.amount.value*n*(player.life<=10?4:0.6);
+          else {const pool=cost.kind==='discard'?player.hand:game.bf().filter(card=>card.ctrl===player&&(!cost.object.types||cost.object.types.some(type=>card.is(type))));
+            const values=pool.map(card=>cardDefinitionValue(card.def)).sort((a,b)=>a-b);price=values.slice(0,cost.quantity.min*n).reduce((sum,v)=>sum+v,0)*0.65;}
+        } else if(p.kind==='draw'){
+          const doubled=Math.pow(2,game.bf().filter(card=>card.ctrl===player&&card.def.drawDouble).length),extra=!player.hand.length&&game.bf().some(card=>card.ctrl===player&&card.def.drawWhileEmptyExtra)?1:0;
+          price=player.library.length<n*doubled+extra?10000:-4*n;
+        } else if(p.kind==='add-mana')price=-n;
+        else if(p.kind==='self-counter')price=n*2+(source.toughness<=n?value:0);
+        else if(p.kind==='graveyard-bottom')price=n*0.5;
+        breakdown.choice=action.value==='yes'?value-price:0;
+      } else if (hintKind === 'oracleUpkeepLifeRecipient') {
+        const recipient=game.players.find(p=>String(p.idx)===action.value);
+        breakdown.choice=recipient?-recipient.life:0;
       } else if (hintKind === 'riot') {
         const card = q.aiHint.card;
         const canAttackNow = card && game.turnPlayer === player && game.phase === 'main1' && !card.tapped;
@@ -4001,6 +4101,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const type = String(action.value || '');
         breakdown.choice = Number(counts[type] || action.option && action.option.count || 0) * 3 +
           (type === 'Hero' && player.deck && player.deck.name === 'Avengers Assemble' ? 25 : 0);
+      } else if (hintKind === 'oracleColorChange') {
+        // Visible board affinity is a deterministic local choice for effects
+        // changing a permanent's color; it is not a mana-production choice.
+        breakdown.choice = Number(q.aiHint.scores?.[String(action.value || '')] || 0) * 3;
+      } else if (hintKind === 'oracleSearchScopes') {
+        // Zone choices use public graveyards and our own hand only. No
+        // library identities are available until that zone is searched.
+        breakdown.choice = Number(q.aiHint.scores?.[String(action.value || '')] || 0);
       } else if (hintKind === 'photonMana') {
         const color = String(action.value || '');
         const cards = [...player.hand, ...player.command];
@@ -4084,10 +4192,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const value = q.aiHint.card ? cardDefinitionValue(q.aiHint.card.def) : 0;
         breakdown.choice = action.value === 'top' ? value : Math.max(0, 3.2 - value);
       } else if (hintKind === 'ward' && q.aiHint && q.aiHint.payment === 'blight') {
-        const amount = q.aiHint.n || 1;
-        const best = game.creatures(player).map(card => blightRecipientValue(game, player, card, amount))
-          .sort((a, b) => b - a)[0];
-        breakdown.choice = action.value === 'yes' ? (Number.isFinite(best) ? best + 6 : -100) : 0;
+        const price = wardPrice(game, player, { blight: q.aiHint.n || 1 });
+        const benefit = blightWardBenefit(game, player, q);
+        breakdown.choice = action.value === 'yes' ? (Number.isFinite(price) && benefit > 0 ? benefit - price : -100) : 0;
       } else if (hintKind === 'burningCuriosity') {
         const amount = q.aiHint.n || 1;
         const best = game.creatures(player).map(card => blightRecipientValue(game, player, card, amount))
@@ -4635,6 +4742,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!descriptor || !('value' in descriptor)) continue;
       try { out[ownKey] = cloneGraph(descriptor.value, seen, String(ownKey), value); } catch (error) { /* noncritical UI/cache field */ }
     }
+    if(value instanceof MTG.Game){
+      MTG.initializeContinuousEffects(out,cloneGraph(value.untilEffects,seen,'untilEffects',value));
+      // Event-cohort deduplication is a transient identity cache. WeakMap's
+      // contents cannot be graph-cloned, and a prototype-only copy is invalid.
+      if(value._oracleTriggerBatches)out._oracleTriggerBatches=new WeakMap();
+    }
     return out;
   }
 
@@ -4668,6 +4781,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // A nested clone already holds the tokens its parent simulation created;
     // restarting the local counter would hand out duplicate ids inside it.
     clone._nextSimulationIid = game._simulation && Number.isFinite(game._nextSimulationIid) ? game._nextSimulationIid : -1;
+    clone._nextSimulationTimestamp = game._simulation && Number.isFinite(game._nextSimulationTimestamp)
+      ? game._nextSimulationTimestamp : MTG.currentOracleTimestamp();
     clone.paced = false;
     clone.speedFactor = 0;
     clone.onEvent = () => {};
@@ -4959,7 +5074,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Izbor moda nije kozmetika: "uništi sva stvorenja" i "uništi sve artefakte"
     // se razlikuju za cijelu partiju, pa se seedovani "malo slabiji potez" ovdje
     // ne primjenjuje, isto kao ni na glasanju.
-    const strictChoice = q && q.aiHint && ['vote', 'mode', 'modes'].includes(q.aiHint.kind) &&
+    const strictChoice = q && q.aiHint && (['vote', 'mode', 'modes'].includes(q.aiHint.kind) ||
+      q.aiHint.kind === 'ward' && q.aiHint.payment === 'blight') &&
       (q.type === 'chooseOption' || q.type === 'chooseMulti');
     const tieTolerance = strictChoice ? 0 : config.tieTolerance;
     let selection = pickNearTie(searched, seed, tieTolerance, difficulty === 'easy');

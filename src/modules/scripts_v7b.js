@@ -382,22 +382,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Exchange life with toughness', cost: { tap: true },
       targets: [T.opponent({ prompt: 'With whom?', aiHint: { goal: 'lifeSwap' } })],
       run: async ctx => {
-        const o = ctx.targets[0];
-        if (!o) return;
-        const tou = ctx.src.toughness;
+        const o = ctx.targets[0], tree = ctx.src, g = ctx.g;
+        // An exchange needs the same battlefield object, not its last known
+        // toughness or a fresh object represented by a blinked CardInst.
+        if (!o || o.lost || tree.zone !== 'battlefield' || tree.phasedOut ||
+            tree.zoneVersion !== ctx.sourceZoneVersion || !g.bf().includes(tree) ||
+            !tree.is('Creature')) return;
+        const tou = tree.toughness;
         const oldLife = o.life;
-        o.life = tou;
-        ctx.src.meta.touOverride = oldLife;
-        ctx.g.recalc();
-        ctx.g.lg(`Tree of Perdition: ${o.name} now has ${tou} life; the tree is 0/${oldLife}.`);
-        ctx.g.note('life', { p: o });
-        await ctx.g.checkSBA();
+        const delta = tou - oldLife;
+        if (delta > 0 && !g.canGainLife(o)) return;
+        // Layer 7b: setting toughness is a lasting effect, not a CDA. Counters
+        // and buffs still apply afterwards, and later base-setting effects win.
+        delete tree.meta.touOverride;
+        g.addOracleBasePT(tree, { toughness: oldLife });
+        // Set both halves before life triggers can observe the exchange. Life
+        // replacement effects may change the gain/loss, not the old life total.
+        if (delta > 0) await g.gainLife(o, delta, tree);
+        else if (delta < 0) await g.loseLife(o, -delta, tree.name);
+        g.recalc();
+        g.lg(`Tree of Perdition: ${o.name} now has ${o.life} life; the tree is ${tree.power}/${tree.toughness}.`);
+        g.note('life', { p: o });
+        await g.checkSBA();
       },
       aiScore: (g, c, p) => {
         const best = E.eachOpp(g, p).sort((a, b) => b.life - a.life)[0];
         return best && best.life > c.toughness + 8 ? 9 : 0;
       },
     }],
+    // Read legacy saved exchanges until this object next exchanges or leaves.
     cdaToughness: (g, c) => c.meta.touOverride !== undefined ? c.meta.touOverride : 13,
   };
   SC['Village Pillagers'] = {

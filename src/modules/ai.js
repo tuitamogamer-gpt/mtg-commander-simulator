@@ -847,7 +847,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const lethalDanger = totalIncoming >= p.life;
       for (const a of incoming) {
         const dmg = g.dmgAmount(a, 'normal');
-        const cands = q.potential.filter(b => !used.has(b) && g.canBlock(b, a));
+        const cands = q.potential.filter(b => out.filter(pair => pair.blocker === b).length < g.blockerCapacity(b) && g.canBlock(b, a));
         if (!cands.length) continue;
         // best block: kill attacker & survive > kill attacker & trade > chump if lethal danger
         let best = null, bestV = 0;
@@ -866,17 +866,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         const thr = (lethalDanger ? -3 : (p.life < 15 ? 0.5 : 1.5)) + this.persona.blockThr;
         if (best && bestV > thr) {
-          // menace needs two
-          if (a.kw('menace')) {
-            const second = cands.filter(b => b !== best).sort((x, y) => this.permThreat(g, x) - this.permThreat(g, y))[0];
-            if (second) { out.push({ blocker: best, attacker: a }, { blocker: second, attacker: a }); used.add(best); used.add(second); }
+          const minimum = g.blockerBounds(a).min;
+          if (minimum > 1) {
+            const others = cands.filter(b => b !== best).sort((x, y) => this.permThreat(g, x) - this.permThreat(g, y)).slice(0, minimum - 1);
+            if (others.length === minimum - 1) for (const blocker of [best, ...others]) { out.push({blocker, attacker: a}); used.add(blocker); }
           } else {
             out.push({ blocker: best, attacker: a });
             used.add(best);
           }
         }
       }
-      return out;
+      return g.blockDeclarationLegal(q.attackers, out) ? out : [];
     }
 
     chooseTargets(g, q) {
@@ -993,7 +993,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const beneficial = new Set(['+1/+1', 'loyalty', 'charge', 'indestructible', 'shield', 'lore', 'quest', 'acorn', 'soul', 'hour', 'level', 'oil']);
           const harmful = new Set(['-1/-1', '-0/-1', 'stun', 'finality', 'doom', 'bounty']);
           return cands.filter(subject => {
-            if (subject instanceof MTG.Player) return subject !== p && (subject.poison || 0) > 0;
+            if (subject instanceof MTG.Player) return subject===p?!(subject.poison||0)&&(subject.counters?.energy||0)>0:(subject.poison||0)>0;
             const kinds = Object.keys(subject.counters).filter(kind => (subject.counters[kind] || 0) > 0);
             const good = kinds.some(kind => beneficial.has(kind));
             const bad = kinds.some(kind => harmful.has(kind));
@@ -1278,6 +1278,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const kind = q.aiHint && q.aiHint.kind || '';
       const keys = q.options.map(o => o.key);
       switch (kind) {
+        case 'damagePreventionSource': return q.options.slice().sort((a,b)=>MTG.OracleV8SourcePrevention.threat(g,this.p,b.card)-MTG.OracleV8SourcePrevention.threat(g,this.p,a.card))[0]?.key;
         case 'dredge': {
           const offered = q.options.filter(option => option.card);
           if (!offered.length) return keys[0];

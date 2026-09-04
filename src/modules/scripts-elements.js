@@ -345,11 +345,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'etb', desc: 'Flying and combat draw', filter: etbSelf,
       targets: [T.creature({ prompt: 'Target creature', aiHint: { goal: 'buff' } })],
       run: async ctx => {
-        const target = ctx.targets[0]; if (!target) return;
+        const target = ctx.targets[0]; if (!target || target.zone !== 'battlefield' || !target.is('Creature')) return;
         E.grantUntilEOT(ctx.g, target, ['flying']);
-        ctx.g.delayed.push({ on: 'combatDamageToPlayer', expires: 'eot', once: false, ctrl: ctx.you, src: ctx.src,
-          filter: (g, data) => data.card === target,
-          run: async delayed => { await delayed.g.draw(delayed.you, delayed.data.n); } });
+        const iid = target.iid, zoneVersion = target.zoneVersion;
+        // This is an ability granted to the creature, so its controller when
+        // damage happens controls the trigger. Blinking ends the old grant.
+        const trigger = {
+          on: 'combatDamageToPlayer', desc: 'Subterfuge combat draw',
+          filter: (g, self, data) => data.card === self,
+          run: async granted => { await granted.g.draw(granted.you, granted.data.n); },
+        };
+        ctx.g.untilEffects.push({
+          kind: 'subterfugeCombatDraw', expires: 'eot', iid, zoneVersion,
+          apply: (g, battlefield) => {
+            const creature = battlefield.find(card => card.iid === iid && card.zoneVersion === zoneVersion);
+            if (creature) creature.cur.extraTriggers.push(trigger);
+          },
+        });
+        ctx.g.recalc();
       },
     }],
   };

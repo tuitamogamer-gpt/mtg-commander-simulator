@@ -304,6 +304,31 @@ export function resolutionCostEffect(card, line, helpers) {
   }] };
 }
 
+// Resolve the complete two-instruction sentence before generic composition
+// can turn the final "it" into the source spell or permanent.
+export function targetedDamageSacrifice(card, line, helpers) {
+  const match = /^(Target creature you control deals damage equal to its (?:power|toughness) to [^.]+)\. Then sacrifice it\.$/i.exec(line);
+  if (!match) return null;
+  const body = helpers.effect(card, match[1] + '.');
+  if (!complete(body) || body.optional || body.targets.length !== 2 || body.targets[0].controller !== 'you' || body.effects.length !== 1) return null;
+  const effect = body.effects[0];
+  const targetedDamage = effect.action === 'damage-batch' && effect.hits.length === 1 && effect.hits[0].sourceTarget === 0 && effect.hits[0].target === 1 ||
+    effect.action === 'bite' && effect.target === 0 && effect.otherTarget === 1;
+  return targetedDamage ? { ...body, effects: [effect, { action: 'sacrifice-target-v8', target: 0 }] } : null;
+}
+
+export function needsDamageSacrificeRecompile(card, frozen) {
+  const texts = [card.oracle_text, ...(card.card_faces || []).map(face => face.oracle_text)].filter(Boolean);
+  if (!texts.some(text => /(?:^|\n)Target creature you control deals damage equal to its (?:power|toughness) to [^.]+\. Then sacrifice it\.(?:$|\n)/i.test(text))) return false;
+  const invalid = node => {
+    if (!node || typeof node !== 'object') return false;
+    if (Array.isArray(node)) return node.some((effect, index) => index > 0 && effect?.action === 'sacrifice-source' &&
+      (node[index - 1]?.action === 'bite' && node[index - 1].target === 0 || node[index - 1]?.action === 'damage-batch' && node[index - 1].hits?.some(hit => hit.sourceTarget === 0))) || node.some(invalid);
+    return Object.values(node).some(invalid);
+  };
+  return invalid(frozen.implementation);
+}
+
 export function extensionEffect(card, line, helpers) {
   if (typeof line !== 'string' || !line.endsWith('.')) return null;
   // "Sacrifice it unless <mana> was spent to cast it" is a printed condition on
@@ -345,6 +370,167 @@ export function extensionEffect(card, line, helpers) {
   const count = helpers.count || v7Count;
   const result = (effects, targets = []) => ({ effects, targets, optional });
   const parse = candidate => helpers.effect(card, upper(candidate) + '.');
+
+  // Color and creature-subtype changes have their own layers. They neither
+  // animate the permanent nor set its power/toughness or remove abilities.
+  const characteristics = candidate => {
+    const m = /^(.+?) becomes? (white|blue|black|red|green|colorless|the color of your choice|the creature type of your choice)( in addition to its other (colors|types))? until end of turn$/i.exec(candidate);
+    if (!m) return null;
+    const value = m[2].toLowerCase(), subtype = value === 'the creature type of your choice';
+    if (m[3] && (subtype ? m[4] !== 'types' : m[4] !== 'colors' || value === 'colorless')) return null;
+    let reference, specs = [];
+    if (new RegExp('^' + selfPattern(card) + '$', 'i').test(m[1]) && !/Instant|Sorcery/.test(card.type_line) &&
+        (!subtype || /Creature/.test(card.type_line))) reference = 'self';
+    else if (/^enchanted creature$/i.test(m[1]) && /Aura/.test(card.type_line)) reference = 'attached-host';
+    else {
+      const many = /^one or more target (.+)$/i.exec(m[1]);
+      const spec = many ? target('any number of target ' + many[1]) : target(m[1]);
+      if (!spec || spec.zone !== 'battlefield' || !['creature', 'permanent', 'artifact', 'enchantment', 'land', 'planeswalker', 'battle'].includes(spec.what) ||
+          subtype && spec.what !== 'creature') return null;
+      specs = [{ ...spec, ...(many ? { min: 1 } : {}) }]; reference = 0;
+    }
+    const choice = value.startsWith('the ');
+    return result([{ action: 'change-characteristics-v8', target: reference,
+      characteristic: subtype ? 'creature-type' : 'color', ...(choice ? { choose: true } : { colors: value === 'colorless' ? [] : [{ white: 'W', blue: 'U', black: 'B', red: 'R', green: 'G' }[value]] }),
+      retain: !!m[3] }], specs);
+  };
+  const changed = characteristics(text);
+  if (changed) return changed;
+  const changeWithBuff = /^(.+?) (gets? [+-]\d+\/[+-]\d+|gains? [a-z ,'-]+) and becomes? (.+ until end of turn)$/i.exec(text);
+  if (changeWithBuff) {
+    const change = characteristics(changeWithBuff[1] + ' becomes ' + changeWithBuff[3]);
+    const buff = parse(changeWithBuff[1] + ' ' + changeWithBuff[2] + ' until end of turn');
+    const targetKey = rows => JSON.stringify(rows.map(row => Object.fromEntries(Object.entries({ min: 1, max: 1, ...row }).sort(([a], [b]) => a.localeCompare(b)))));
+    if (change && complete(buff) && !buff.optional && buff.effects.length === 1 && buff.effects[0].action === 'pump' &&
+        targetKey(change.targets) === targetKey(buff.targets) && change.effects[0].target === buff.effects[0].target) {
+      return result([...buff.effects, ...change.effects], change.targets);
+    }
+  }
+  // In this exact damage-then-color sentence, "that creature" is the one
+  // targeted by the first instruction, not a free event-card reference.
+  const damagedColor = /^(.+? deals \d+ damage to target creature)\. That creature becomes (white|blue|black|red|green|colorless) until end of turn$/i.exec(text);
+  if (damagedColor) {
+    const damage = parse(damagedColor[1]), change = characteristics('target creature becomes ' + damagedColor[2] + ' until end of turn');
+    if (complete(damage) && !damage.optional && damage.targets.length === 1 && damage.effects.length === 1 &&
+        damage.effects[0].action === 'damage' && damage.effects[0].target === 0 && change) return result([...damage.effects, ...change.effects], damage.targets);
+  }
+
+  // A printed name in a value clause always identifies the source, even if
+  // this effect targets a different permanent. Do not rewrite names in quoted
+  // abilities or named-card filters; those have a different binding scope.
+  if (!/["\n]/.test(text) && !/Instant|Sorcery/.test(card.type_line)) {
+    const names = [card.name, ...(card.name.match(/,| the /) ? [card.name.split(/,| the /)[0]] : [])].filter(Boolean).map(escape).join('|');
+    const namedValue = new RegExp('^(.*?, where X is )(?:(' + names + ')\\\'s (power|toughness|mana value)|the number of (\\+1/\\+1|-1/-1|[a-z]+) counters on (' + names + '))$', 'i').exec(text);
+    if (namedValue) {
+      const normalized = namedValue[1] + (namedValue[3] ? "this permanent's " + namedValue[3] : 'the number of ' + namedValue[4] + ' counters on this permanent');
+      const body = parse(normalized);
+      if (complete(body)) return { ...body, optional: optional || body.optional };
+    }
+  }
+
+  // Printed quantity references remain event-bound. The whole-card compiler
+  // rejects these descriptors outside a damage/life event with an amount.
+  const eventPlayerAmount = /^(?:(you|target opponent|target player|each player|each opponent|that player|its controller|its owner) )?(?:(gains?|loses?) that much life|(draws?|mills?|discards?) that many cards)$/i.exec(text);
+  if (eventPlayerAmount) {
+    const normalized = text.replace(/that much life/i, '1 life').replace(/that many cards/i, '1 card');
+    const body = parse(normalized);
+    if (complete(body) && !body.optional && body.effects.length === 1 &&
+        ['gain-life', 'lose-life', 'draw', 'mill', 'discard'].includes(body.effects[0].action) && body.effects[0].n === 1) {
+      return result([{ ...body.effects[0], n: { kind: 'event-amount' } }], body.targets);
+    }
+  }
+  const eventCounters = /^(put that many (?:\+1\/\+1|-1\/-1|[a-z]+) counters on) (.+)$/i.exec(text);
+  if (eventCounters) {
+    const body = parse(text.replace(/^put that many /i, 'put one ').replace(/ counters on /i, ' counter on '));
+    if (complete(body) && !body.optional && body.effects.length === 1 && body.effects[0].action === 'counter' && body.effects[0].n === 1) {
+      return result([{ ...body.effects[0], n: { kind: 'event-amount' } }], body.targets);
+    }
+  }
+  const fractionalLife = /^(you|target opponent|target player|each player|each opponent|that player|they|its controller|its owner) loses? (half|a third of) (your|their) life, rounded (up|down)$/i.exec(text);
+  if (fractionalLife && (fractionalLife[1].toLowerCase() === 'you') === (fractionalLife[3].toLowerCase() === 'your')) {
+    const subject = fractionalLife[1].toLowerCase() === 'they' ? 'that player' : fractionalLife[1];
+    const body = parse(subject + (subject.toLowerCase() === 'you' ? ' lose' : ' loses') + ' 1 life');
+    if (complete(body) && !body.optional && body.effects.length === 1 && body.effects[0].action === 'lose-life') {
+      return result([{ ...body.effects[0], n: { kind: 'affected-player-count', count: { kind: 'life-total' },
+        divide: fractionalLife[2].toLowerCase() === 'half' ? 2 : 3, round: fractionalLife[4].toLowerCase() } }], body.targets);
+    }
+  }
+  const amountDamage = new RegExp('^' + selfPattern(card) + ' deals that much damage to (.+)$', 'i').exec(text);
+  if (amountDamage) {
+    const body = parse(text.replace(/that much damage/i, '1 damage'));
+    if (complete(body) && !body.optional && body.effects.length === 1 && body.effects[0].action === 'damage' && body.effects[0].n === 1) {
+      return result([{ ...body.effects[0], n: { kind: 'event-amount' } }], body.targets);
+    }
+  }
+  const amountTokens = /^create that many (.+)$/i.exec(text);
+  if (amountTokens) {
+    const body = parse('create one ' + amountTokens[1]);
+    if (complete(body) && !body.optional && !body.targets.length && body.effects.length === 1 &&
+        ['token-inline', 'token-key'].includes(body.effects[0].action) && body.effects[0].n === 1) {
+      return result([{ ...body.effects[0], n: { kind: 'event-amount' } }]);
+    }
+  }
+
+  // These are alternative word orders for one temporary modification. Keep
+  // the complete count clause after the duration, and validate the resulting
+  // descriptor rather than splitting the sentence into unrelated targets.
+  const durationCount = /^until end of turn, ([^.]+?), where X is ([^.]+)$/i.exec(text);
+  if (durationCount && !/["\n]/.test(text) && !/\buntil\b/i.test(durationCount[1])) {
+    const body = parse(durationCount[1] + ' until end of turn, where X is ' + durationCount[2]);
+    if (complete(body) && !body.optional && body.effects.length === 1 &&
+        (body.effects[0].action === 'pump' || body.effects[0].action === 'battlefield-group' && body.effects[0].operation === 'pump')) {
+      return { ...body, optional };
+    }
+  }
+  const keywordFirst = /^(.+?) (gains?) ([a-z ,'-]+) and (gets?) ([+-](?:\d+|X))\/([+-](?:\d+|X)) until end of turn(, where X is [^.]+)?$/i.exec(text);
+  if (keywordFirst && helpers.keywordList(keywordFirst[3])) {
+    const body = parse(keywordFirst[1] + ' ' + keywordFirst[4] + ' ' + keywordFirst[5] + '/' + keywordFirst[6] +
+      ' and ' + keywordFirst[2] + ' ' + keywordFirst[3] + ' until end of turn' + (keywordFirst[7] || ''));
+    if (complete(body) && !body.optional && body.effects.length === 1 &&
+        (body.effects[0].action === 'pump' || body.effects[0].action === 'battlefield-group' && body.effects[0].operation === 'pump')) {
+      return { ...body, optional };
+    }
+  }
+  const grantText = text.replace(/^until end of turn, (.+)$/i, '$1 until end of turn');
+  const targetedGrant = /^((?:(?:another |up to one )?target) .+?) gains ((?:[a-z ,'-]+ and )?)"([^"]+)" until end of turn$/i.exec(grantText);
+  if (targetedGrant && helpers.line) {
+    const spec = target(targetedGrant[1]), keywords = targetedGrant[2] ? helpers.keywordList(targetedGrant[2].replace(/ and $/i, '')) : [];
+    const virtual = { ...card, name: '__GrantedPermanent__', type_line: 'Creature', mana_cost: '', oracle_text: targetedGrant[3] };
+    const quoted = targetedGrant[3].replace(/\.?$/, '.');
+    let operation = keywords && helpers.line(virtual, quoted);
+    const returnOnDeath = /^When this creature dies, return it to the battlefield( tapped)? under its owner's control(?: with a \+1\/\+1 counter on it)?\.$/i.exec(quoted);
+    if (!operation && keywords && returnOnDeath) operation = { kind: 'generic-trigger', event: 'dies', eventFilter: 'self',
+      effects: [{ action: 'return-died-source-v8', tapped: !!returnOnDeath[1], ...(quoted.includes('with a +1/+1 counter') ? { counter: '+1/+1' } : {}) }],
+      targets: [], optional: false, contract: 'generic-trigger-effect' };
+    const selfEvent = /^(?:When|Whenever) this creature (attacks|blocks|dies), (.+)\.$/i.exec(quoted);
+    if (!operation && keywords && selfEvent) {
+      const body = helpers.effect(virtual, upper(selfEvent[2]) + '.');
+      if (complete(body)) operation = { kind: 'generic-trigger', event: selfEvent[1].toLowerCase(), eventFilter: 'self', ...body, contract: 'generic-trigger-effect' };
+    }
+    if (spec?.zone === 'battlefield' && operation?.kind === 'generic-trigger' && !Array.isArray(operation.event) &&
+        !operation.from && !operation.condition && !operation.activationCondition && !operation.v4Body &&
+        !/"action":"add-mana"/.test(JSON.stringify(operation))) {
+      return result([{ action: 'grant-operation', target: 0, operation, keywords }], [spec]);
+    }
+  }
+  const pumpedGrant = /^(.+?) gets ([+-]\d+)\/([+-]\d+) and gains ((?:[a-z ,'-]+ and )?"[^"]+") until end of turn$/i.exec(grantText);
+  if (pumpedGrant) {
+    const pump = parse(pumpedGrant[1] + ' gets ' + pumpedGrant[2] + '/' + pumpedGrant[3] + ' until end of turn');
+    const grant = parse(pumpedGrant[1] + ' gains ' + pumpedGrant[4] + ' until end of turn');
+    const targetKey = spec => JSON.stringify(Object.entries({ ...spec, min: spec.min ?? 1, max: spec.max ?? 1 }).sort(([a], [b]) => a.localeCompare(b)));
+    if (complete(pump) && complete(grant) && !pump.optional && !grant.optional && pump.targets.length === 1 &&
+        grant.targets.length === 1 && targetKey(pump.targets[0]) === targetKey(grant.targets[0]) && pump.effects.length === 1 && grant.effects.length === 1 &&
+        pump.effects[0].action === 'pump' && pump.effects[0].target === 0 && grant.effects[0].action === 'grant-operation' && grant.effects[0].target === 0) {
+      return result([...pump.effects, ...grant.effects], pump.targets);
+    }
+  }
+  // This subject-less imperative still discards the controller's entire hand.
+  // Reuse the existing actual-discard count and simultaneous-player handling.
+  const wholeHand = /^discard all (?:the )?cards in your hand, then draw (that many|[a-z]+|\d+) cards$/i.exec(text);
+  if (wholeHand) {
+    const body = parse('you discard your hand, then draw ' + wholeHand[1] + ' cards');
+    if (complete(body) && !body.optional && !body.targets.length && body.effects.length === 1 && body.effects[0].action === 'discard-hand-draw') return { ...body, optional };
+  }
 
   // CR 508.4 supplies a defender choice for each creature created attacking.
   // Printed "that player" restrictions are a different binding and are not
@@ -668,7 +854,7 @@ export function extensionEffect(card, line, helpers) {
   ] }]);
   m = /^(target .+?) deals damage equal to its (power|toughness) to (.+)$/i.exec(text);
   if (m) {
-    const source = target(m[1]), other = /^(?:any other|another|other) target /i.test(m[3]);
+    const source = target(m[1]), other = /^(?:any other|another|other) target(?: |$)/i.test(m[3]);
     const recipient = damageTarget(m[3].replace(/^any other target$/i, 'any target').replace(/^(?:another|other) target /i, 'target '));
     if (source?.zone === 'battlefield' && source.what === 'creature' && (source.max ?? 1) === 1 && !source.unbounded && damageable(recipient)) {
       if (other) { delete recipient.excludeSelf; recipient.differentFromPrevious = true; }
@@ -748,7 +934,7 @@ export function extensionEffect(card, line, helpers) {
   const matchingUnit = (verb, unit) => /^(?:gain|lose)/i.test(verb) ? unit.toLowerCase() === 'life' : /^cards?$/i.test(unit);
   m = new RegExp('^(each player|each opponent|target player|target opponent) (draws|gains|loses|mills|discards) (' + NUMBER + ') (cards?|life) for each (.+)$', 'i').exec(text);
   if (m && matchingUnit(m[2], m[4])) {
-    const relative = m[5].replace(/ they control$/i, ' you control').replace(/\btheir (hand|graveyard)$/i, 'your $1');
+    const relative = m[5].replace(/\bthey control\b/i, 'you control').replace(/\btheir (hand|graveyard)$/i, 'your $1');
     const value = relative !== m[5] ? count(relative) : null;
     const targeted = /^target /i.test(m[1]), spec = targeted ? target(m[1].toLowerCase()) : null;
     if (value && (!targeted || spec?.zone === 'player')) return result([{

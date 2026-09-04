@@ -153,22 +153,28 @@
           !['number', 'string'].includes(typeof item.n) || typeof item.n === 'string' && !['all', 'rest'].includes(item.n) ||
           item.destination === 'top' && ![0, 2].includes(item.offset || 0))) throw new Error('Unknown library search placement');
     if (!effect.unrestricted && !effect.filter || effect.unrestricted && effect.filter) throw new Error('Unknown library search filter');
+    if(effect.optionalSearch){
+      const answer=await chooser.controller.decide(ctx.g,{type:'chooseOption',player:chooser,prompt:'Search your library?',options:[{key:'yes',label:'Search'},{key:'no',label:'Decline'}],aiHint:{kind:'confirm'}});
+      if(!['yes','no'].includes(answer))throw new Error('Invalid optional search choice');
+      if(answer==='no')return null;
+    }
     const predicate = effect.filter && helpers.target({...effect.filter, zone: 'graveyard', controller: 'any'}, [], 0, ctx.data).filter;
-    let candidates = owner.library.filter(card => !predicate || predicate(ctx.g, card, ctx.you, ctx.src));
+    let candidates = owner.library.filter(card => !predicate || predicate(ctx.g, card, effect.ownerSearch?owner:ctx.you, ctx.src));
     if (effect.differentNames) {
       const names = new Set(); candidates = candidates.filter(card => !names.has(card.name) && names.add(card.name));
     }
     const requested = effect.n === 'all' ? candidates.length : Math.max(0, Math.floor(helpers.amount(effect.n, ctx)));
     const maximum = Math.min(candidates.length, requested), minimum = effect.upTo || !effect.unrestricted ? 0 : maximum;
+    const versions=new Map(candidates.map(card=>[card,card.zoneVersion]));
     const picked = maximum ? await chooser.controller.decide(ctx.g, {type: 'chooseCards', from: candidates, min: minimum, max: maximum,
       search: true, prompt: 'Search your library', aiHint: {kind: effect.filter?.what === 'land' ? 'searchBasic' : 'recur'}}) : [];
     if (!Array.isArray(picked) || picked.length < minimum || picked.length > maximum || new Set(picked).size !== picked.length ||
-        picked.some(card => !candidates.includes(card)) || effect.differentNames && new Set(picked.map(card => card.name)).size !== picked.length) {
+        picked.some(card => !candidates.includes(card)||card.zone!=='library'||card.zoneVersion!==versions.get(card)||!owner.library.includes(card)) || effect.differentNames && new Set(picked.map(card => card.name)).size !== picked.length) {
       throw new Error('Invalid library search selection');
     }
     const selected = picked.map(card => ({card, version: card.zoneVersion}));
     const present = entry => entry.card.zone === 'library' && entry.card.zoneVersion === entry.version && owner.library.includes(entry.card);
-    if (effect.reveal && selected.length) await ctx.g.revealToHuman({cards: selected.map(entry => entry.card), ctrl: chooser, kind: 'reveal'});
+
     const unassigned = selected.slice(), assignments = [];
     for (const placement of effect.placements) {
       const count = placement.n === 'all' || placement.n === 'rest' ? unassigned.length : Math.min(unassigned.length, Math.max(0, Math.floor(placement.n)));
@@ -185,6 +191,8 @@
       assignments.push({placement, entries: cards});
     }
     if (unassigned.length) throw new Error('Incomplete library search partition');
+    const finish=async()=>{
+      if (effect.reveal && selected.length) await ctx.g.revealToHuman({cards: selected.filter(present).map(entry => entry.card), ctrl: chooser, kind: 'reveal'});
     for (const destination of ['hand']) for (const item of assignments.filter(item => item.placement.destination === destination)) {
       for (const entry of item.entries) if (present(entry)) await ctx.g.move(entry.card, destination);
     }
@@ -193,7 +201,7 @@
     });
     await ctx.g.withBattlefieldEntryBatch(async () => {
       for (const item of assignments.filter(item => item.placement.destination === 'battlefield')) for (const entry of item.entries) if (present(entry)) {
-        await ctx.g.putPermanentOntoBattlefield(entry.card, ctx.you, {tapped: !!item.placement.tapped});
+        await ctx.g.putPermanentOntoBattlefield(entry.card, effect.ownerSearch?owner:ctx.you, {tapped: !!item.placement.tapped});
       }
     });
     const top = assignments.filter(item => item.placement.destination === 'top')
@@ -212,6 +220,9 @@
       if (offset) owner.library.splice(Math.max(0, owner.library.length - offset), 0, ...arranged.slice().reverse());
       else owner.library.push(...arranged.slice().reverse());
     }
+    };
+    if(execution.deferPlacement)return finish;
+    await finish();
   }
 
   async function run(ctx, effect, helpers) {
@@ -222,7 +233,11 @@
     const execution = {}, affected = [...new Set(owners)].filter(player => player instanceof M.Player);
     if (effect.action === 'library-zone-shuffle-v8') return M.OracleV8Library.shuffleZones(ctx, effect, helpers, affected, execution);
     if (effect.action === 'library-search-v8') {
-      for (const owner of affected) await M.OracleV8Library.search(ctx, effect, helpers, owner, effect.chooser === 'owner' ? owner : ctx.you, execution);
+      if(effect.ownerSearch){
+        execution.deferPlacement=true;const pending=[];
+        for(const owner of affected){const finish=await M.OracleV8Library.search(ctx,effect,helpers,owner,owner,execution);if(finish)pending.push(finish);}
+        await ctx.g.withBattlefieldEntryBatch(async()=>{for(const finish of pending)await finish();});
+      }else for (const owner of affected) await M.OracleV8Library.search(ctx, effect, helpers, owner, effect.chooser === 'owner' ? owner : ctx.you, execution);
       return;
     }
     for (const owner of affected) {

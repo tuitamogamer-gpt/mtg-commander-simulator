@@ -711,7 +711,7 @@ function closedGenericEffectSequenceCore(card, value) {
     if(parsed.optional){parsed.effects=[{action:'optional-payment',payment:{},effects:parsed.effects}];parsed.optional=false;}
     if(extensionsActive>=7&&typeof previousTarget==='number'){
       const previousSpec=merged.targets[previousTarget],playerTarget=['player','opponent'].includes(previousSpec?.what);
-      const map=value=>Array.isArray(value)?value.map(map):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,
+      const map=value=>extensionsActive===8&&value?.action==='install-trigger-v8'?value:Array.isArray(value)?value.map(map):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,
         ['target','who'].includes(key)&&item==='event-player'&&playerTarget?{kind:'locked-player',index:previousTarget}:
         ['target','who'].includes(key)&&['event-card-controller','event-card-owner'].includes(item)&&!playerTarget?{kind:item==='event-card-owner'?'target-owner':'target-controller',index:previousTarget}:map(item)])):value;
       parsed.effects=parsed.effects.map(map);
@@ -729,7 +729,7 @@ function closedGenericEffectSequenceCore(card, value) {
     // A binding created above already names an absolute target index, so the
     // clause offset must not be applied to it a second time.
     const boundKinds=['locked-player','target-controller','target-owner'];
-    const remapValue=value=>Array.isArray(value)?value.map(remapValue):value&&typeof value==='object'?(boundKinds.includes(value.kind)?value:Object.fromEntries(Object.entries(value).map(([key,item])=>[key,['target','sourceTarget','otherTarget','who','index','conditionTarget'].includes(key)&&typeof item==='number'?item+offset:remapValue(item)]))):value;
+    const remapValue=value=>extensionsActive===8&&value?.action==='install-trigger-v8'?value:Array.isArray(value)?value.map(remapValue):value&&typeof value==='object'?(boundKinds.includes(value.kind)?value:Object.fromEntries(Object.entries(value).map(([key,item])=>[key,['target','sourceTarget','otherTarget','who','index','conditionTarget'].includes(key)&&typeof item==='number'?item+offset:remapValue(item)]))):value;
     if(extensionsActive>=7&&offset&&/^up to one other target /i.test(clause)&&parsed.targets.length===1){delete parsed.targets[0].excludeSelf;parsed.targets[0].differentFromPrevious=true;}
     for (const effect of parsed.effects) {
       const adjusted = { ...effect };
@@ -772,6 +772,7 @@ function closedGenericEffectSequenceCore(card, value) {
         const bindCopy=value=>{
           if(Array.isArray(value))return value.map(bindCopy);
           if(!value||typeof value!=='object')return value;
+          if(value.action==='install-trigger-v8')return value;
           if(value.action==='become-copy-v8'&&['copy-reference','event-card'].includes(value.otherTarget))return {...value,otherTarget:{kind:'resolved-target',index:previousTarget}};
           return Object.fromEntries(Object.entries(value).map(([key,child])=>[key,bindCopy(child)]));
         };
@@ -1053,12 +1054,12 @@ function expandedCreatureLine(card, line) {
   // need declaration-wide combat legality primitives. Keep them outside the
   // certified queue until those rules exist; accepting an inert static would
   // make both deck import and the interaction audit lie.
-  if (new RegExp('^' + subject + ' can block an additional creature each combat\\.$', 'i').test(line)) return null;
-  if (new RegExp('^' + subject + ' can block any number of creatures\\.$', 'i').test(line)) return null;
+  if (new RegExp('^' + subject + ' can block an additional creature each combat\\.$', 'i').test(line)) return extensionsActive===8 ? extensionLine(card,line,{keywordList,effect:closedGenericEffectSequence}) : null;
+  if (new RegExp('^' + subject + ' can block any number of creatures\\.$', 'i').test(line)) return extensionsActive===8 ? extensionLine(card,line,{keywordList,effect:closedGenericEffectSequence}) : null;
   match = new RegExp('^' + subject + " can\\'t be blocked by creatures with power (\\d+) or less\\.$", 'i').exec(line);
   if (match) return genericStatic('self', { evasionMaxBlockerPower: Number(match[1]) });
-  if (new RegExp('^' + subject + " can\\'t be blocked by more than one creature\\.$", 'i').test(line)) return null;
-  if (new RegExp('^' + subject + " can\\'t attack or block alone\\.$", 'i').test(line)) return null;
+  if (new RegExp('^' + subject + " can\\'t be blocked by more than one creature\\.$", 'i').test(line)) return extensionsActive===8 ? extensionLine(card,line,{keywordList,effect:closedGenericEffectSequence}) : null;
+  if (new RegExp('^' + subject + " can\\'t attack or block alone\\.$", 'i').test(line)) return extensionsActive===8 ? extensionLine(card,line,{keywordList,effect:closedGenericEffectSequence}) : null;
   if (new RegExp('^' + subject + ' must be blocked if able\\.$', 'i').test(line)) return null;
   if (new RegExp('^' + subject + " can\\'t be blocked except by creatures with flying\\.$", 'i').test(line)) return genericStatic('self', { blockedOnlyByFlying: true });
   if (new RegExp('^' + subject + " doesn't untap during your untap step\\.$", 'i').test(line)) {
@@ -2038,7 +2039,8 @@ function semanticClassCore(card) {
   // name. Keep those identical grammars reusable by the RegExp compiler,
   // without changing the source card or any normalized report fields.
   const shortName=extensionsActive>=6?card.name.split(/,| the /)[0]:card.name.split(',')[0];
-  if (card.name!=='Clowning Around' && !rulesCore.toLowerCase().includes(shortName.toLowerCase())) card = { ...card, name: '__OracleSelf__' };
+  const legendaryAlias=extensionsActive===8&&parsed.super.includes('Legendary')?card.name.split(/,| of | the /)[0]:null;
+  if (card.name!=='Clowning Around' && !rulesCore.toLowerCase().includes(shortName.toLowerCase()) && !(legendaryAlias&&rulesCore.toLowerCase().includes(legendaryAlias.toLowerCase()))) card = { ...card, name: '__OracleSelf__' };
   if (extensionsActive>=7&&parsed.types.includes('Planeswalker')) {
     if(!/^\d+$/.test(String(card.loyalty)))return {reason:'unsupported-loyalty-value'};
     const result=artifactSemantics(card,parsed,rulesCore);
@@ -2091,6 +2093,46 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
     if(extensionsActive>=7&&result.implementation){result.implementation=currentExtensions().normalizeManaOperations(result.implementation);result.oracleContracts=[...new Set(result.implementation.map(operation=>operation.contract))];}
     if(compilerVersion>=7&&result.implementation)result.implementation=currentExtensions().normalizeTokenOperations(result.implementation);
     const operations=result.implementation||[];
+    // A revealed/selected card is not the source of its revealing ability.
+    // The closed library primitive has no exported selected-card binding yet;
+    // reject a following implicit source reference instead of silently using
+    // the original permanent (for example, a newly revealed Demon's power).
+    if(extensionsActive===8){
+      const unsupportedCounterPayment=node=>!!node&&typeof node==='object'&&(
+        node.kind==='mana-source'&&!!node.activationCost?.oracleCounterPayment||
+        node.kind==='generic-ability'&&!!node.from&&!!node.cost?.oracleCounterPayment||
+        Object.values(node).some(value=>Array.isArray(value)?value.some(unsupportedCounterPayment):unsupportedCounterPayment(value)));
+      if(operations.some(unsupportedCounterPayment))return {reason:'counter-payment-needs-supported-activation-zone'};
+      // A quoted/granted ability starts its own resolution scope. Its source
+      // references do not refer to a card selected by the granting effect.
+      const isolated=new Set(['operation','grantedOperation','modes','modalBody']);
+      const implicit=node=>{
+        if(typeof node==='string')return ['event-card','event-card-controller','event-card-owner'].includes(node);
+        return !!node&&typeof node==='object'&&(
+          ['source-stat','source-counters','source-attachments','event-card-stat','event-card-counters'].includes(node.kind)||
+          node.action==='conditional'&&node.condition?.kind==='source-quality'&&node.conditionTarget===undefined||
+          Object.entries(node).some(([key,value])=>!isolated.has(key)&&(Array.isArray(value)?value.some(implicit):implicit(value))));
+      };
+      const selects=node=>!!node&&typeof node==='object'&&(
+        node.action==='library-select-v8'||node.action==='library-search-v8'||node.action==='search-own-zones-v8'||
+        Object.entries(node).some(([key,value])=>!isolated.has(key)&&(Array.isArray(value)?value.some(selects):selects(value))));
+      const unbound=nodes=>{
+        if(!Array.isArray(nodes))return false;
+        let selected=false;
+        for(const node of nodes||[]){
+          if(selected&&implicit(node))return true;
+          if(selects(node))selected=true;
+        }
+        return false;
+      };
+      // Visit every execution list, including modal bodies and nested grants.
+      // A selected card inside a conditional also affects later instructions
+      // in the surrounding list, even when that branch might not be taken.
+      const invalidScope=node=>!!node&&typeof node==='object'&&(
+        unbound(node.effects)||unbound(node.elseEffects)||
+        Object.values(node).some(value=>Array.isArray(value)?value.some(invalidScope):invalidScope(value)));
+      if(operations.some(invalidScope))return {reason:'library-selected-reference-needs-binding'};
+    }
     // Every complete face has already passed these binding checks in its own
     // scope. A trigger on one face cannot lend its event or X to the other.
     if(extensionsActive===8&&operations.length===1&&operations[0].kind==='double-faced-v8')return result;
@@ -2118,12 +2160,13 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
         if (effect.action === 'gain-life' && effect.n?.kind === 'source-stat') effect.n.kind = 'event-card-stat';
       }
     }
-    if(operations.filter(op=>['mechanic-unearth','mechanic-embalm','mechanic-eternalize','mechanic-grave-return-self'].includes(op.kind)||op.kind==='generic-ability'&&op.from==='graveyard').length>1)return {reason:'conflicting-graveyard-abilities'};
+    if(operations.filter(op=>['mechanic-unearth','mechanic-embalm','mechanic-eternalize','mechanic-grave-return-self','mechanic-encore-v8'].includes(op.kind)||op.kind==='mechanic-zone-keyword-cost-v8'&&op.keyword==='eternalize'||op.kind==='generic-ability'&&op.from==='graveyard').length>1)return {reason:'conflicting-graveyard-abilities'};
     if(operations.filter(op=>op.kind==='generic-ability'&&op.from==='hand').length>1)return {reason:'conflicting-hand-abilities'};
+    if(operations.filter(op=>op.kind==='cycling'||op.kind==='mechanic-zone-keyword-cost-v8'&&op.keyword==='cycling').length>1)return {reason:'conflicting-cycling-costs'};
     const bindingScopes=[];
     const addScope=op=>{
       const strip=value=>Array.isArray(value)?value.map(strip):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).filter(([key,child])=>{
-        if(value.action==='grant-operation'&&key==='operation'){addScope(child);return false;}return true;
+        if(value.action==='grant-operation'&&key==='operation'||extensionsActive===8&&value.action==='install-trigger-v8'&&key==='trigger'){addScope(child);return false;}return true;
       }).map(([key,child])=>[key,strip(child)])):value;
       bindingScopes.push(strip(op));
     };
@@ -2133,13 +2176,14 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
       if(operation.grantedOperation)return boundEvents(operation.grantedOperation);
       const encoded=JSON.stringify(operation);
       if(/"event-(?:player|card|card-controller|card-owner|card-stat|card-counters)"/.test(encoded)&&operation.kind!=='generic-trigger')return false;
-      if(extensionsActive===8&&operation.eventFilter?.kind==='v8-event')return (!['event-card-stat','event-card-counters','event-card-owner'].some(kind=>encoded.includes('"'+kind+'"'))||v8.eventReferenceAllowed(operation,'event-card'))&&['event-player','event-card','event-card-controller'].every(reference=>!encoded.includes('"'+reference+'"')||v8.eventReferenceAllowed(operation,reference));
+      if(extensionsActive===8&&['v8-event','damage-event-v8'].includes(operation.eventFilter?.kind))return (!['event-card-stat','event-card-counters','event-card-owner'].some(kind=>encoded.includes('"'+kind+'"'))||v8.eventReferenceAllowed(operation,'event-card'))&&['event-player','event-card','event-card-controller'].every(reference=>!encoded.includes('"'+reference+'"')||v8.eventReferenceAllowed(operation,reference));
       if(encoded.includes('"event-player"')&&![operation.event].flat().every(event=>['cast','draw','upkeep','endStep','damageToPlayer','combatDamageToPlayer',...(extensionsActive===8?['drawStep','precombatMain','beginCombat']:[]),...(extensionsActive>=7&&operation.eventFilter==='self-unblocked'?['blockersDeclared']:[])].includes(event)))return false;
       if(/"event-card(?:-controller)?"/.test(encoded)&&![operation.event].flat().every(event=>['etb','dies','lto','cast','castIS','castNonCreature','castCreature','attacks','blocks','becameTapped','becameUntapped','turnedFaceUp',...(extensionsActive>=7?['combatDamageToPlayer',...(operation.eventFilter?.kind==='self-creature-combat'?['becomesBlockedByCreature']:[])]:[])].includes(event)))return false;
       return true;
     };
     if(bindingScopes.some(operation=>!boundEvents(operation)))return {reason:'unbound-event-reference'};
     if(extensionsActive===8&&JSON.stringify(operations).includes('"copy-reference"'))return {reason:'unbound-copy-reference'};
+    if(extensionsActive===8&&bindingScopes.some(operation=>!v8.boundStackCopyReferences(operation)))return {reason:'unbound-stack-copy-reference'};
     if(extensionsActive===8){
       const xTargetsBound=operation=>{
         if(operation.kind==='attachment-operation')return xTargetsBound(operation.operation);
@@ -2150,8 +2194,8 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
           operation.kind==='generic-trigger'&&operation.event==='etb'&&operation.eventFilter==='self'&&printedX;
         const checkBody=body=>{
           const {targets=[],...other}=body;
-          if(JSON.stringify(other).includes('"threshold":"X"'))return false;
-          return !JSON.stringify(targets).includes('"threshold":"X"')||allowed;
+          if(/"threshold":"X"|"targetCountX":true/.test(JSON.stringify(other)))return false;
+          return !/"threshold":"X"|"targetCountX":true/.test(JSON.stringify(targets))||allowed;
         };
         if(operation.kind==='spell-modal-generic')return operation.modes.every(mode=>checkBody(mode.body));
         return checkBody(operation);
@@ -2190,7 +2234,7 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
     }
     // Event amounts only exist on damage events. Never accept an inert
     // "that much life" outside the closed antecedent that defines it.
-    const amountBound=op=>op.kind==='attachment-operation'?amountBound(op.operation):op.grantedOperation?amountBound(op.grantedOperation):!JSON.stringify(op).includes('"kind":"event-amount"')||op.kind==='generic-trigger'&&(extensionsActive===8&&op.eventFilter?.kind==='v8-event'?v8.eventReferenceAllowed(op,'event-amount'):[op.event].flat().every(event=>['damageToPlayer','dealtDamage','combatDamageToPlayer','lifeGain'].includes(event)));
+    const amountBound=op=>op.kind==='attachment-operation'?amountBound(op.operation):op.grantedOperation?amountBound(op.grantedOperation):!JSON.stringify(op).includes('"kind":"event-amount"')||op.kind==='generic-trigger'&&(extensionsActive===8&&['v8-event','damage-event-v8'].includes(op.eventFilter?.kind)?v8.eventReferenceAllowed(op,'event-amount'):[op.event].flat().every(event=>['damageToPlayer','dealtDamage','combatDamageToPlayer','lifeGain'].includes(event)));
     if(bindingScopes.some(op=>!amountBound(op)))return {reason:'unbound-event-amount'};
     if(extensionsActive>=6&&JSON.stringify(operations).includes('"X"')&&!/\{X\}|pay X life/i.test((card.mana_cost||'')+' '+(card.oracle_text||'')+(extensionsActive>=7?(card.card_faces||[]).map(face=>(face.mana_cost||'')+' '+(face.oracle_text||'')).join(' '):'')))return {reason:'unbound-X'};
     return result;

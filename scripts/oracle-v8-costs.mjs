@@ -1,6 +1,7 @@
 // Cost modifiers share the engine's total-cost calculation. Every adjective
 // remains an explicit predicate; no unrecognized suffix can change a price.
 import {ORACLE_SUBTYPES} from './oracle-subtypes.mjs';
+import {extensionCost as counterCost} from './oracle-v8-counter-costs.mjs';
 const COLORS={white:'W',blue:'U',black:'B',red:'R',green:'G'};
 const SPELL_FILTER={what:'card',zone:'battlefield',controller:'any',min:1};
 
@@ -18,6 +19,41 @@ function spellFilter(noun,h){
   const words=noun.replace(/^(Creature|Artifact|Enchantment|Instant|Sorcery|White|Blue|Black|Red|Green)\b/,word=>word.toLowerCase());
   const result=h.target('target '+words);
   return result?.zone==='battlefield'?result:null;
+}
+
+// These are equivalent printed spellings of existing activation primitives.
+// Normalize only complete cost atoms; a card name in a named-card predicate
+// must never become a reference to the source of the ability.
+export function extensionCost(text,h={},card=null){
+  const counters=counterCost(text,h,card);if(counters)return counters;
+  if(typeof h.priorCost!=='function')return null;
+  let normalized=String(text),otherSacrifice=false;
+  if(card?.name){
+    const names=[...new Set([card.name,card.name.split(/,| the /)[0]])].sort((a,b)=>b.length-a.length);
+    for(const name of names){
+      const escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      normalized=normalized.replace(new RegExp('(^|, )Sacrifice '+escaped+'(?=,|$)','g'),'$1Sacrifice this permanent');
+      normalized=normalized.replace(new RegExp('(^|, )Exile '+escaped+'(?=,|$)','g'),'$1Exile this permanent');
+      normalized=normalized.replace(new RegExp("(^|, )Return "+escaped+" to its owner's hand(?=,|$)",'g'),"$1Return this permanent to its owner's hand");
+    }
+  }
+  const fixed='(?:a|an|one|two|three|four|five|six|seven|eight|nine|ten|[1-9][0-9]*)';
+  normalized=normalized.replace(new RegExp('(^|, )Exile ('+fixed+') cards from your graveyard(?=,|$)','g'),'$1Exile $2 card from your graveyard');
+  normalized=normalized.replace(/(^|, )Tap another untapped (?=[^,]+ you control(?:,|$))/g,'$1Tap one other untapped ');
+  normalized=normalized.replace(new RegExp('(^|, )Sacrifice ('+fixed+') other (?=[^,]+(?:,|$))','g'),(_,lead,n)=>{otherSacrifice=true;return lead+'Sacrifice '+n+' ';});
+  if(normalized===text)return null;
+  const seen=new Set();
+  for(const part of normalized.split(/,\s*/)){
+    const key=part==='{T}'?'tapSymbol':part.startsWith('{')?'mana':part.split(' ')[0].toLowerCase();
+    if(seen.has(key))return null;
+    seen.add(key);
+  }
+  const parsed=h.priorCost(normalized);
+  if(!parsed)return null;
+  for(const field of ['discard','exileFromGY','sacN','tapN'])if(parsed[field]!==undefined&&
+    (!Number.isSafeInteger(parsed[field])||parsed[field]<1))return null;
+  if(otherSacrifice&&!parsed.sacFilter&&!parsed.sacWhat)return null;
+  return {...parsed,...(otherSacrifice?{sacOther:true}:{})};
 }
 
 export function modifierOperation(card,line,h){

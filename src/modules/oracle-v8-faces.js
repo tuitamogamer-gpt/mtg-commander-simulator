@@ -175,6 +175,7 @@
     const def = faceDefinition(physical(card), key);
     if (!def || def.types.includes('Land')) return false;
     const from = castOptions.from || card.zone;
+    if(castOptions.oracleImmediateCast!==undefined)return !!M.OracleV8PlayPermissions?.allowed(game,player,card,castOptions);
     if (card.isCopySpell && card.zone === 'nowhere' && castOptions.free) return true;
     const alternatives = castCandidates(game, player, card, from).filter(option => option.oracleFace === key);
     if (!alternatives.length) return false;

@@ -8,17 +8,55 @@ import * as effects from './oracle-v8-effects.mjs';
 import * as permanents from './oracle-v8-permanents.mjs';
 import * as linked from './oracle-v8-linked.mjs';
 import * as copies from './oracle-v8-copies.mjs';
+import * as stackCopy from './oracle-v8-stack-copy.mjs';
+import * as targetQuantities from './oracle-v8-target-quantities.mjs';
+import * as targetPredicates from './oracle-v8-target-predicates.mjs';
+import * as attachedEffects from './oracle-v8-attached-effects.mjs';
+import * as results from './oracle-v8-results.mjs';
 import * as control from './oracle-v8-control.mjs';
 import * as library from './oracle-v8-library.mjs';
+import * as multizoneSearch from './oracle-v8-multizone-search.mjs';
 import * as entwine from './oracle-v8-entwine.mjs';
 import * as splice from './oracle-v8-splice.mjs';
 import * as costs from './oracle-v8-costs.mjs';
+import * as additionalCosts from './oracle-v8-additional-costs.mjs';
+import * as alternativeCosts from './oracle-v8-alternative-costs.mjs';
+import * as activationRules from './oracle-v8-activation-rules.mjs';
+import * as publicAbilities from './oracle-v8-public-abilities.mjs';
+import * as keywordCosts from './oracle-v8-keyword-costs.mjs';
+import * as batchTriggers from './oracle-v8-batch-triggers.mjs';
+import * as observationTriggers from './oracle-v8-observation-triggers.mjs';
+import * as forecast from './oracle-v8-forecast.mjs';
+import * as turns from './oracle-v8-turns.mjs';
+import * as untap from './oracle-v8-untap.mjs';
+import * as delayedTriggers from './oracle-v8-delayed-triggers.mjs';
+import * as damageEvents from './oracle-v8-damage-events.mjs';
+import * as coins from './oracle-v8-coins.mjs';
+import * as combatCosts from './oracle-v8-combat-costs.mjs';
+import * as castingChoices from './oracle-v8-casting-choices.mjs';
+import * as awaken from './oracle-v8-awaken.mjs';
+import * as morphCosts from './oracle-v8-morph-costs.mjs';
+import * as equipCosts from './oracle-v8-equip-costs.mjs';
+import * as upkeepCosts from './oracle-v8-upkeep-costs.mjs';
+import * as keywordPayments from './oracle-v8-keyword-payments.mjs';
+import * as encore from './oracle-v8-encore.mjs';
+import * as miracle from './oracle-v8-miracle.mjs';
+import * as zoneKeywords from './oracle-v8-zone-keyword-costs.mjs';
+import * as playPermissions from './oracle-v8-play-permissions.mjs';
+import * as revealed from './oracle-v8-revealed.mjs';
+import * as energy from './oracle-v8-energy.mjs';
+import * as handSize from './oracle-v8-hand-size.mjs';
+import * as castEvents from './oracle-v8-cast-events.mjs';
+import * as castingRules from './oracle-v8-casting-rules.mjs';
+import * as timing from './oracle-v8-timing.mjs';
+import * as prevention from './oracle-v8-prevention.mjs';
+import * as counts from './oracle-v8-counts.mjs';
 import * as mayhem from './oracle-v8-mayhem.mjs';
 import { ORACLE_SUBTYPES } from './oracle-subtypes.mjs';
 
 const NUM = '(?:a|an|one|two|three|four|five|six|seven|eight|nine|ten|\\d+)';
 const number = value => ({a:1,an:1,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10}[value] ?? Number(value));
-const KEYWORDS = new Set(['flying','reach','first strike','double strike','deathtouch','lifelink','trample','haste','vigilance','menace','defender','indestructible','hexproof','shroud','flash','prowess','shadow','fear','intimidate','skulk','horsemanship','wither']);
+const KEYWORDS = new Set(['flying','reach','first strike','double strike','deathtouch','lifelink','trample','haste','vigilance','menace','defender','indestructible','hexproof','shroud','flash','prowess','shadow','fear','intimidate','skulk','horsemanship','wither','islandwalk']);
 function singular(text) {
   return text.replace(/\b(creatures|artifacts|enchantments|lands|permanents|planeswalkers|cards|tokens)\b/g, word => word.slice(0,-1))
     .replace(/\b([A-Z][A-Za-z-]+)s\b/g,(word,base)=>ORACLE_SUBTYPES.has(word)?word:ORACLE_SUBTYPES.has(base)?base:word)
@@ -27,13 +65,17 @@ function singular(text) {
 
 export const normalizeAbilityWords = v7.normalizeAbilityWords;
 export const normalizeTokenOperations = v7.normalizeTokenOperations;
-export const eventReferenceAllowed = permanents.eventReferenceAllowed;
-export const needsCopyRecompile = (card,frozen)=>copies.needsRecompile(card,frozen)||library.needsRecompile(card,frozen);
+export const eventReferenceAllowed = (op,reference)=>damageEvents.eventReferenceAllowed(op,reference)||permanents.eventReferenceAllowed(op,reference);
+export const boundStackCopyReferences = stackCopy.boundReferences;
+export const needsCopyRecompile = (card,frozen)=>copies.needsRecompile(card,frozen)||library.needsRecompile(card,frozen)||effects.needsDamageSacrificeRecompile(card,frozen);
 // CR 605.1a (August 2026): moving a card to/from a library in either
 // costs or effects disqualifies an activated ability from being a mana ability.
 export function normalizeManaOperations(operations) {
-  const libraryMove=node=>!!node&&typeof node==='object'&&(node.mill>0||['draw','mill','loot','wheel','search','look-select','library-select-v8','library-zone-shuffle-v8','library-search-v8','exile-top','move-to-library','shuffle-graveyard','hand-to-library'].includes(node.action)||Object.values(node).some(value=>Array.isArray(value)?value.some(libraryMove):libraryMove(value)));
+  const libraryMove=node=>!!node&&typeof node==='object'&&(node.mill>0||['draw','mill','loot','wheel','search','look-select','library-select-v8','library-zone-shuffle-v8','library-search-v8','search-own-zones-v8','exile-top','move-to-library','shuffle-graveyard','hand-to-library','cast-card-v8','cast-from-hand-v8','cast-from-graveyard-v8','cast-inspected-v8'].includes(node.action)||Object.values(node).some(value=>Array.isArray(value)?value.some(libraryMove):libraryMove(value)));
   return operations.map(operation=>{
+    if(operation.kind==='generic-ability'&&operation.cost?.energy&&operation.loyalty===undefined&&!operation.from&&!operation.optional&&!operation.sorceryOnly&&!operation.beforeAttackersOnly&&!operation.oncePerObject&&!operation.targets?.length&&operation.effects?.length===1&&operation.effects[0].action==='add-mana'&&Object.keys(operation.cost).every(key=>['energy','tap','mana','sacSelf'].includes(key))&&!operation.cost.mana?.includes('{X}')){
+      const effect=operation.effects[0];return {kind:'mana-source',activationCost:operation.cost,produce:effect.choices||[effect.produce],...(effect.multiplier?{multiplier:effect.multiplier}:{}),...(effect.restriction?{restriction:effect.restriction}:{}),...(operation.activationCondition?{condition:operation.activationCondition}:{}),...(operation.onceEachTurn?{onceEachTurn:true}:{}),contract:'mana-source'};
+    }
     if(operation.kind==='generic-ability'&&operation.effects?.some(effect=>effect.action==='add-mana')&&libraryMove(operation))return {...operation,stackMana:true};
     // Exert is part of Oasis Ritualist's mana-ability activation cost. The
     // frozen v7 normalizer correctly rejects unknown cost keys, so preserve
@@ -109,6 +151,8 @@ export function normalizeManaOperations(operations) {
 }
 
 export function extensionTarget(text) {
+  if(/\btarget Aura attached to /.test(text))return targetPredicates.extensionTarget(text,{target:extensionTarget});
+  const stackTarget=stackCopy.extensionTarget(text);if(stackTarget)return stackTarget;
   if(text==='target opponent or planeswalker')return {what:'player or planeswalker',zone:'battlefield',controller:'any',excludeYou:true,min:1};
   const chosenX=/^(.+?) with (mana value|power|toughness) X(?: or (less|greater))?( from (?:your|a|an opponent's) graveyard)?$/.exec(text);
   if(chosenX){const base=extensionTarget(chosenX[1]+(chosenX[4]||''));if(base)return {...base,stat:chosenX[2]==='mana value'?'mv':chosenX[2],comparison:chosenX[3]||'equal',threshold:'X'};}
@@ -148,7 +192,9 @@ export function extensionTarget(text) {
     const target = extensionTarget(match[1]);
     if (target) return {...target,stat:match[2]==='mana value'?'mv':match[2],comparison:match[3],threshold:Number(match[4])+(match[3]==='less'?-1:1)};
   }
-  return null;
+  const spellMV=/^(target spell) with mana value (\d+)( or less| or greater)?$/.exec(text);
+  if(spellMV)return {...extensionTarget(spellMV[1]),stat:'mv',threshold:Number(spellMV[2]),comparison:spellMV[3]===' or less'?'less':spellMV[3]?'greater':'equal'};
+  return targetPredicates.extensionTarget(text,{target:extensionTarget});
 }
 export function extensionCount(text) {
   const eventCounter=/^(\+1\/\+1|-1\/-1|[a-z]+) counters? on that (?:creature|permanent)$/.exec(text);
@@ -175,9 +221,10 @@ export function extensionCount(text) {
     const target=extensionTarget('target '+noun+(noun.endsWith('card')?'':' card')+' from a graveyard');
     if(target)return {kind:'count',zone,what:'card',filters:[{...target,controller:'any'}],controller:match[2].startsWith('your opponents')?'opponents':match[2]==='all graveyards'?'all':'you'};
   }
-  return null;
+  return counts.extensionCount(text,{count:extensionCount}) || castingRules.extensionCount(text,{count:extensionCount,target:extensionTarget}) || permanents.extensionCount(text,{count:extensionCount,target:extensionTarget});
 }
 export function extensionCondition(text) {
+  const turn=turns.extensionCondition(text);if(turn)return turn;
   const opponentCount=new RegExp('^an opponent controls ('+NUM+') or more (.+)$').exec(text);
   if(opponentCount){
     const count=extensionCount(opponentCount[2]+' you control');
@@ -214,13 +261,23 @@ export function extensionCondition(text) {
   if(match){const count=extensionCount(match[2]+' you control');if(count)return {kind:'count-comparison',count,max:number(match[1])};}
   match=/^(?:it|this creature|this artifact|this enchantment|this land|this permanent) (?:isn't|is not) (attacking or blocking|attacking|blocking|tapped|untapped)$/.exec(text);
   if(match){const conditions=match[1].split(' or ').map(status=>({kind:'not',condition:{kind:'source-status',status}}));return conditions.length===1?conditions[0]:{kind:'all',conditions};}
-  return null;
+  return permanents.extensionCondition?.(text,{condition:extensionCondition,count:extensionCount,target:extensionTarget})||castingRules.extensionCondition(text,{condition:extensionCondition,count:extensionCount,target:extensionTarget})||null;
 }
 export function extensionCost(text, card = null) {
+  if(/\{E\}/.test(text)){
+    const parts=String(text).split(/,\s*/),energyParts=parts.filter(part=>part.startsWith('Pay ')&&energy.fixedAmount(part.slice(4))!==null);
+    if(energyParts.length!==1)return null;
+    const n=energy.fixedAmount(energyParts[0].slice(4)),rest=parts.filter(part=>part!==energyParts[0]);
+    if(!Number.isSafeInteger(n)||n<1)return null;
+    const base=rest.length?extensionCost(rest.join(', '),card):{};
+    return base?{...base,energy:n}:null;
+  }
   const previous = core.baseCost(text) || v6.extensionCost(text);
   if (previous) return previous;
   const effectCost = effects.extensionCost(text, { target: extensionTarget }, card);
   if (effectCost) return effectCost;
+  const extendedCost=costs.extensionCost?.(text,{target:extensionTarget,priorCost:core.baseCost},card);
+  if(extendedCost)return extendedCost;
   const cost = {};
   for (const part of String(text).split(/,\s*/)) {
     let key, value;
@@ -254,7 +311,18 @@ export function modifierOperation(card, line, helpers = {}) {
     const combat=permanents.modifierOperation(card,line,helpersFor(helpers));
     if(combat)return combat;
   }
-  return costs.modifierOperation(card,line,helpersFor(helpers)) || core.baseModifier(card, line) || v6.modifierOperation(card, line) || permanents.modifierOperation(card, line, helpersFor(helpers)) || null;
+  const result = costs.modifierOperation(card,line,helpersFor(helpers)) || core.baseModifier(card, line) || v6.modifierOperation(card, line) || permanents.modifierOperation(card, line, helpersFor(helpers)) || additionalCosts.modifierOperation(card,line) || alternativeCosts.modifierOperation(card,line,helpersFor(helpers)) || timing.modifierOperation(card,line,helpersFor(helpers)) || castingRules.modifierOperation(card,line,helpersFor(helpers)) || keywordCosts.modifierOperation(card,line,helpersFor(helpers)) || forecast.modifierOperation(card,line,helpersFor(helpers)) || combatCosts.modifierOperation(card,line,helpersFor(helpers)) || encore.modifierOperation(card,line) || miracle.modifierOperation(card,line) || zoneKeywords.modifierOperation(card,line) || keywordPayments.modifierOperation(card,line) || upkeepCosts.modifierOperation(card,line) || equipCosts.modifierOperation(card,line,helpersFor(helpers)) || morphCosts.modifierOperation(card,line) || awaken.modifierOperation(card,line) || castingChoices.modifierOperation(card,line) || null;
+  if(result)return result;
+  if(/\b(?:Instant|Sorcery)\b/.test(card.type_line||'')&&/^(?:\{(?:\d+|[WUBRGC])\})+, Exile this card from your graveyard: /.test(line)){
+    const ability=core.baseLine(card,line,helpersFor(helpers,card));
+    if(ability?.kind==='generic-ability'&&ability.from==='graveyard'&&ability.cost.exileSelf)return ability;
+  }
+  if(/\b(?:Instant|Sorcery)\b/.test(card.type_line||'')&&/^When you cast this spell, /.test(line)){
+    const context=helpersFor(helpers,card);
+    const cast=permanents.extensionLine(card,line,context)||castEvents.extensionLine(card,line,context);
+    if(cast?.kind==='generic-trigger'&&cast.event==='cast'&&cast.eventFilter==='self'&&cast.zone==='stack')return cast;
+  }
+  return null;
 }
 export function characteristicOperation(card, line, helpers = {}) {
   return core.baseCharacteristic(card, line) || v6.characteristicOperation(card, line) || v5.characteristicOperation(card, line) || permanents.characteristicOperation(card, line, helpersFor(helpers)) || null;
@@ -273,8 +341,16 @@ export function extensionEffect(card, line, helpers) {
     if(normalized!==line)return extensionEffect(card,normalized,helpers);
   }
   const context = helpersFor(helpers, card);
-  const body=effects.resolutionCostEffect(card,line,context) || linked.extensionEffect(card, line, context) || copies.extensionEffect(card, line, context) || library.extensionEffect(card,line,context) || core.baseEffect(card, line, context) || v6.extensionEffect(card, line, context) || v5.extensionEffect(card, line, context) || effects.extensionEffect(card, line, context) || null;
+  const body=coins.extensionEffect(card,line,context) || results.extensionEffect(card,line,context) || stackCopy.extensionEffect(card,line,context) || delayedTriggers.extensionEffect(card,line,context) || untap.extensionEffect(card,line,context) || turns.extensionEffect(card,line,context) || playPermissions.extensionEffect(card,line,context) || effects.targetedDamageSacrifice(card,line,context) || effects.resolutionCostEffect(card,line,context) || linked.extensionEffect(card, line, context) || copies.extensionEffect(card, line, context) || multizoneSearch.extensionEffect(card,line,context) || library.extensionEffect(card,line,context) || core.baseEffect(card, line, context) || v6.extensionEffect(card, line, context) || v5.extensionEffect(card, line, context) || effects.extensionEffect(card, line, context) || timing.extensionEffect(card,line,context) || prevention.extensionEffect(card,line,context) || permanents.extensionEffect?.(card,line,context) || library.fallbackEffect(card,line,context) || revealed.extensionEffect(card,line,context) || targetQuantities.extensionEffect(card,line,context) || energy.extensionEffect(card,line,context) || attachedEffects.extensionEffect(card,line,context) || handSize.extensionEffect(card,line,context) || targetPredicates.extensionEffect(card,line,context) || null;
   if(!body)return null;
+  if(/\b(?:enchanted|equipped) (?:creature|artifact|enchantment|land|permanent)\b[^.]*\bif it(?:'s| is)\b/i.test(line)){
+    const bind=node=>Array.isArray(node)?node.map(bind):node&&typeof node==='object'?{...Object.fromEntries(Object.entries(node).map(([key,value])=>[key,bind(value)])),...(node.action==='conditional'&&node.conditionTarget===undefined&&['source-quality','source-controlled','source-stat-comparison'].includes(node.condition?.kind)&&JSON.stringify(node.effects).includes('attached-host')?{conditionTarget:'attached-host'}:{})}:node;
+    body.effects=body.effects.map(bind);
+  }
+  const unboundRelative=value=>value&&typeof value==='object'&&(
+    value.kind==='v8-permanent-count'&&value.relative||
+    !['v8-target-permanent-count','generic-static','attachment-grant'].includes(value.kind)&&Object.values(value).some(unboundRelative));
+  if(unboundRelative(body.effects))return null;
   return {...body,effects:body.effects.map(effect=>{
     const index=typeof effect.target==='number'?effect.target:effect.who;
     if(!['damage','draw','mill','gain-life','lose-life'].includes(effect.action)||typeof index!=='number'||!['player','opponent'].includes(body.targets[index]?.what))return effect;
@@ -287,6 +363,16 @@ export function libraryEffect(card,line,helpers){return library.extensionEffect(
 export function resolutionCostEffect(card,line,helpers){return effects.resolutionCostEffect(card,line,helpersFor(helpers, card));}
 export function extensionLine(card, line, helpers) {
   const context = helpersFor(helpers, card);
+  const energyTrigger=energy.extensionLine(card,line,context);if(energyTrigger)return energyTrigger;
+  const equip=equipCosts.modifierOperation(card,line,context);if(equip)return equip;
+  const batchTrigger=batchTriggers.extensionLine(card,line,context);if(batchTrigger)return batchTrigger;
+  // Preserve the original unconditional life-gain descriptor while newer
+  // observed event forms retain their exact timing and once-per-turn scope.
+  const observedTrigger=observationTriggers.extensionLine(card,line,context);
+  if(observedTrigger){
+    if(/^Whenever you gain life, /.test(line)&&!line.endsWith(' This ability triggers only once each turn.'))return core.baseLine(card,line,context)||observedTrigger;
+    return observedTrigger;
+  }
   const priority=permanents.priorityLine(card,line,context);
   if(priority!==undefined)return priority;
   // Cycling is a printed hand ability, not a battlefield rule: the creature and
@@ -294,5 +380,10 @@ export function extensionLine(card, line, helpers) {
   // to the remaining permanent templates here.
   const cycling=/^Cycling ((?:\{[^}]+\})+)$/.exec(line);
   if(cycling&&!/\b(?:Instant|Sorcery)\b/.test(card.type_line||''))return {kind:'cycling',cost:cycling[1],contract:'cycling-ability'};
-  return splice.extensionLine(card,line) || costs.modifierOperation(card,line,context) || control.extensionLine(card,line,context) || linked.extensionLine(card, line, context) || copies.extensionLine(card, line, context) || mayhem.extensionLine(card,line,context) || core.baseLine(card, line, context) || v6.extensionLine(card, line, context) || v5.extensionLine(card, line, context) || effects.extensionLine(card, line, context) || permanents.extensionLine(card, line,context) || null;
+  const operation=splice.extensionLine(card,line) || costs.modifierOperation(card,line,context) || control.extensionLine(card,line,context) || linked.extensionLine(card, line, context) || copies.extensionLine(card, line, context) || mayhem.extensionLine(card,line,context) || stackCopy.extensionLine(card,line,context) || core.baseLine(card, line, context) || v6.extensionLine(card, line, context) || v5.extensionLine(card, line, context) || effects.extensionLine(card, line, context) || permanents.extensionLine(card, line,context) || activationRules.extensionLine(card,line,context) || publicAbilities.extensionLine(card,line,context) || keywordCosts.extensionLine(card,line,context) || forecast.extensionLine(card,line,context) || combatCosts.extensionLine(card,line,context) || encore.modifierOperation(card,line) || miracle.modifierOperation(card,line) || zoneKeywords.modifierOperation(card,line) || keywordPayments.modifierOperation(card,line) || upkeepCosts.modifierOperation(card,line) || equipCosts.modifierOperation(card,line,context) || morphCosts.modifierOperation(card,line) || awaken.modifierOperation(card,line) || castingChoices.modifierOperation(card,line) || castEvents.extensionLine(card,line,context) || damageEvents.extensionLine(card,line,context) || coins.extensionLine(card,line,context) || energy.extensionLine(card,line,context) || handSize.extensionLine(card,line,context) || null;
+  if(operation?.kind==='generic-trigger'&&!operation.condition&&operation.effects?.length===1&&/^When(?:ever)? .+?, if /.test(line)){
+    const branch=operation.effects[0];
+    if(branch.action==='conditional'&&branch.condition?.kind==='v8-live-condition'&&!branch.elseEffects)return {...operation,condition:branch.condition,effects:branch.effects};
+  }
+  return operation;
 }

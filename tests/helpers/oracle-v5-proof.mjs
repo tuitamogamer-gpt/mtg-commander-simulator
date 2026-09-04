@@ -1,4 +1,16 @@
 import assert from 'node:assert/strict';
+import {proveOracleAwaken} from './oracle-v8-awaken-proof.mjs';
+import {proveOracleMorphCost} from './oracle-v8-morph-cost-proof.mjs';
+import {proveOracleEquipReduction} from './oracle-v8-equip-cost-proof.mjs';
+import {proveOracleUpkeepCost} from './oracle-v8-upkeep-cost-proof.mjs';
+import {proveOracleKeywordPayment} from './oracle-v8-keyword-payment-proof.mjs';
+import {proveOracleEncore} from './oracle-v8-encore-proof.mjs';
+import {proveOracleMiracle} from './oracle-v8-miracle-proof.mjs';
+import {proveOracleZoneKeywordCost} from './oracle-v8-zone-keyword-cost-proof.mjs';
+import {stageLiveCondition} from './oracle-v8-live-condition-proof.mjs';
+import {permanentCountValue,stagePermanentCount} from './oracle-v8-permanent-count-proof.mjs';
+import {stageEntryCastingRules,stageCastingRuleCondition,stageCastingRuleCount,castingRuleCountValue} from './oracle-v8-casting-rule-proof.mjs';
+import { stageOracleCastingCosts, assertOracleCastingCostRecord, proveOracleAlternativeCastingCost, proveOracleCastingChoice } from './oracle-v8-casting-cost-proof.mjs';
 
 export function stageFalseCondition(MTG,ctx,condition,source,helpers){
  const {game,a}=ctx;
@@ -23,6 +35,14 @@ export function stageFalseCondition(MTG,ctx,condition,source,helpers){
  else if(condition.kind==='all')stageFalseCondition(MTG,ctx,condition.conditions[0],source,helpers);
  else if(condition.kind==='your-turn')game.turnPlayer=ctx.b;
  else if(condition.kind==='not-your-turn')game.turnPlayer=a;
+ else if(condition.kind==='count-comparison'&&condition.count.kind==='v8-permanent-count'&&condition.count.test==='controller-graveyard'){
+  const player=source.ctrl,n=Math.max(0,(condition.min||1)-1);while(player.graveyard.length>n){const card=player.graveyard.pop();card.zone='library';player.library.push(card);}
+ }
+ else if(condition.kind==='count-comparison'&&condition.count.kind==='source-counters'){
+  const n=condition.max!==undefined?condition.max+1:condition.min>0?condition.min-1:null;
+  assert.ok(Number.isSafeInteger(n)&&n>=0,'source-counter condition has a realizable false bound');
+  source.counters=source.counters||{};source.counters[condition.count.counter]=n;
+ }
  else if(condition.kind==='count-comparison'&&condition.count.zone==='battlefield'){
   if(condition.min){for(const card of game.bf().slice())if(card!==source&&matches(card,condition.count.what)&&(!condition.count.filters||condition.count.filters.some(f=>matchesTarget(card,f,ctx,source)))){game.battlefield.splice(game.battlefield.indexOf(card),1);card.zone='hand';card.owner.hand.push(card);}}
   else for(let i=0;i<=(condition.max||0);i++)stageCount(MTG,ctx,condition.count,helpers);
@@ -64,12 +84,18 @@ export function stageFalseCondition(MTG,ctx,condition,source,helpers){
 }
 
 export function stageCondition(MTG,ctx,condition,source,helpers) {
+  if(stageLiveCondition(MTG,ctx,condition,source,helpers))return;
+  if(stageCastingRuleCondition(MTG,ctx,condition,source,helpers))return;
   if(condition?.kind==='your-phase'){ctx.game.turnPlayer=ctx.a;ctx.game.phase=condition.phase==='main'?'main1':condition.phase;return;}
   if(!condition)return;
   const {game,a,b}=ctx;
   const {permanent,fixtureDefinition,zoneCard}=helpers;
   const add=(what='Creature',extras={})=>permanent(MTG,game,a,fixtureDefinition('V5 condition '+what,[what],{power:'5',toughness:'20',...extras}));
   switch(condition.kind){
+    // The event helper stages the actual event card or paid spell after it exists.
+    case 'v8-event-condition': break;
+    case 'combat-ordinal-v8': game.turnPlayer=a;game.phase='combat';a.turnState.combatPhaseCount=condition.n;break;
+    case 'phase-v8': game.turnPlayer=a;game.phase='main1';break;
     case 'city-blessing': a.cityBlessing=true;break;
     // Day/night checks read the turn that just ended, so the recorded
     // per-player spell counts are set to satisfy the printed comparison.
@@ -121,17 +147,26 @@ export function stageCondition(MTG,ctx,condition,source,helpers) {
     }
     case 'source-attacked': source.meta._attackedTurn=game.turnNo;break;
     case 'source-entry-turn': source.meta._enteredTurn=game.turnNo;break;
-    // "unless <mana> was spent" is a negated payment check, so that payment is
-    // deliberately not made. Every other negated condition keeps its no-op.
-    case 'not': if(condition.condition?.kind==='mana-spent')stageFalseCondition(MTG,ctx,condition.condition,source,helpers);break;
+    // Negative payment and source-counter predicates need a concrete false
+    // inner state, including counters above a printed maximum.
+    case 'not': if(condition.condition?.kind==='mana-spent'||condition.condition?.kind==='count-comparison'&&['source-counters','v8-permanent-count'].includes(condition.condition.count.kind))stageFalseCondition(MTG,ctx,condition.condition,source,helpers);break;
     case 'all': for(const item of condition.conditions)stageCondition(MTG,ctx,item,source,helpers);break;
     case 'any': stageCondition(MTG,ctx,condition.conditions[0],source,helpers);break;
-    case 'count-comparison': if(condition.min===condition.max&&condition.count.zone==='battlefield'){
+    case 'count-comparison': if(condition.count.kind==='source-attachments'){
+      assert.equal(source.zone,'battlefield','attachment condition is staged on an actual permanent');
+      const node=condition.count,desired=condition.min??0;
+      for(const attachment of game.bf().slice())if(countValue(ctx,source,node)>desired&&attachment.attachedTo===source.iid&&(node.what==='permanent'||attachment.hasSub(node.what))){
+        source.attachments=source.attachments.filter(id=>id!==attachment.iid);attachment.attachedTo=null;
+      }
+      while(countValue(ctx,source,node)<desired){const attachment=permanent(MTG,game,a,fixtureDefinition('Condition attachment '+source.attachments.length,[node.what==='Aura'?'Enchantment':'Artifact'],{subtypes:[node.what==='permanent'?'Equipment':node.what]}));attachment.attachedTo=source.iid;source.attachments.push(attachment.iid);}
+      game.recalc();
+    }else if(condition.min===condition.max&&condition.count.zone==='battlefield'){
       const node=condition.count,pending=source.zone==='hand'&&!node.other&&matches(source,node.what)&&(!node.filters||node.filters.some(f=>matchesTarget(source,f,ctx,source)))?1:0,desired=Math.max(0,condition.min-pending);
       for(let i=0;i<desired&&countValue(ctx,source,node)<desired;i++)stageCount(MTG,ctx,node,helpers);
       for(const card of game.bf().slice())if(countValue(ctx,source,node)>desired&&card!==source&&!ctx.proofLockedTargets?.includes(card)&&card.ctrl===a&&matches(card,node.what)&&(!node.filters||node.filters.some(f=>matchesTarget(card,f,ctx,source)))){game.battlefield.splice(game.battlefield.indexOf(card),1);card.zone='hand';a.hand.push(card);}
-    }else if(condition.count.kind==='source-counters'){if(source.counters){source.counters[condition.count.counter]=condition.min||0;game.recalc();}}else if(condition.min){for(let i=0;i<condition.min&&countValue(ctx,source,condition.count)<condition.min;i++)stageCount(MTG,ctx,condition.count,helpers);}else if(condition.count.zone==='hand'){while(a.hand.length>(condition.max||0)){const card=a.hand.pop();card.zone='library';a.library.push(card);}}else if(condition.max===0&&condition.count.zone==='battlefield'){
-      for(const card of game.bf().slice())if(card.ctrl===a&&(!condition.count.other||card!==source)&&matches(card,condition.count.what)&&(!condition.count.filters||condition.count.filters.some(f=>matchesTarget(card,f,ctx,source)))){game.battlefield.splice(game.battlefield.indexOf(card),1);card.zone='hand';a.hand.push(card);}
+    }else if(condition.count.kind==='source-counters'){if(source.counters){source.counters[condition.count.counter]=condition.min||0;game.recalc();}}else if(condition.min){for(let i=0;i<condition.min&&countValue(ctx,source,condition.count)<condition.min;i++)stageCount(MTG,{...ctx,countSource:source},condition.count,helpers);}else if(condition.count.zone==='hand'){while(a.hand.length>(condition.max||0)){const card=a.hand.pop();card.zone='library';a.library.push(card);}}else if(condition.max===0&&condition.count.zone==='battlefield'){
+      const controls=card=>condition.count.controller==='all'||(condition.count.controller==='opponents'?card.ctrl!==a:card.ctrl===a);
+      for(const card of game.bf().slice())if(controls(card)&&(!condition.count.other||card!==source)&&matches(card,condition.count.what)&&(!condition.count.filters||condition.count.filters.some(f=>matchesTarget(card,f,ctx,source)))){game.battlefield.splice(game.battlefield.indexOf(card),1);card.zone='hand';card.owner.hand.push(card);}
     }break;
     case 'turn-stat': a.turnState[condition.field]=condition.min;break;
     case 'x-range': source.castMeta={...(source.castMeta||{}),x:condition.min??condition.max};break;
@@ -180,6 +215,8 @@ export function stageCondition(MTG,ctx,condition,source,helpers) {
 }
 
 export function countValue(ctx,source,node,snapshot=null){
+  if(node?.kind==='v8-permanent-count')return permanentCountValue(ctx,source,node,snapshot);
+ const castingValue=castingRuleCountValue(ctx,source,node);if(castingValue!==undefined)return castingValue;
   if(typeof node==='number')return node;
   if(['source-stat','explicit-source-stat'].includes(node.kind))return Math.max(0,Number(snapshot?.cards.get(source)?.[node.stat]??source?.[node.stat])||0);
   const {game,a}=ctx;
@@ -248,6 +285,8 @@ export function matchesTarget(card,f,ctx,source){
  return true;
 }
 export function stageCount(MTG,ctx,node,helpers){
+ if(stagePermanentCount(MTG,ctx,node,helpers))return;
+ if(stageCastingRuleCount(MTG,ctx,node,helpers))return;
   if(typeof node!=='object'||node===null)return;
   if(node.kind==='source-attachments'){
     if(ctx.countSource)for(let n=0;n<2;n++){
@@ -259,7 +298,7 @@ export function stageCount(MTG,ctx,node,helpers){
   if(node.kind==='opponent-poison-total'){ctx.b.poison=3;return;}
   if(node.kind==='opponent-count')return;
   if(node.kind==='creature-total-power'){helpers.permanent(MTG,ctx.game,ctx.a,helpers.fixtureDefinition('Total power counted',['Creature'],{power:'8',toughness:'10'}));return;}
-  if(['sacrificed-stat','destroyed-count','damage-dealt','life-lost','event-card-counters'].includes(node.kind))return;
+  if(['sacrificed-stat','destroyed-count','damage-dealt','life-lost','event-card-counters','event-card-stat'].includes(node.kind))return;
   if(node.kind==='max-stat'){for(const filter of node.filters){const card=helpers.stageGenericTarget(MTG,ctx,filter,'entry-maximum');if(!filter.stat)card.def.power='3';}ctx.game.recalc();return;}
   if(node.kind==='devotion'){helpers.permanent(MTG,ctx.game,ctx.a,helpers.fixtureDefinition('Devotion counted',['Enchantment'],{cost:'{'+node.colors[0]+'}{'+node.colors[0]+'}'}));return;}
   if(node.kind==='party'){for(const type of ['Cleric','Rogue','Warrior','Wizard'])helpers.permanent(MTG,ctx.game,ctx.a,helpers.fixtureDefinition('Party '+type,['Creature'],{subtypes:[type],power:'1',toughness:'20'}));return;}
@@ -292,6 +331,8 @@ export function stageCount(MTG,ctx,node,helpers){
 export async function characteristicProof(MTG,entry,op,role,h){
   const ctx=h.gameFor(MTG,[h.decision(),h.decision()],{ai:role==='ai'});
   const {game,a}=ctx;h.fund(a);h.fillLibrary(MTG,a,30);
+  stageOracleCastingCosts(MTG,ctx,entry,h);
+  stageEntryCastingRules(MTG,ctx,entry,h);
   if(op.count.kind!=='life-total')stageCount(MTG,ctx,op.count,h);
   const source=h.zoneCard(MTG,a,entry.raw.name,'hand');
   // A characteristic printed on a transforming card's back face only defines
@@ -316,6 +357,14 @@ export async function characteristicProof(MTG,entry,op,role,h){
 }
 
 export async function combatRestrictionProof(MTG,ctx,card,op,h,label){
+ if(op.combatRule?.kind==='block-capacity'){
+   const rule=op.combatRule,capacity=ctx.game.blockerCapacity(card);
+   assert.ok(rule.any?capacity===Infinity:capacity>=1+(rule.additional||0),label+': current blocking capacity includes resolved effect');
+   const opponent=card.ctrl===ctx.a?ctx.b:ctx.a;
+   const attackers=Array.from({length:Math.min(capacity,3)},(_,index)=>h.permanent(MTG,ctx.game,opponent,h.fixtureDefinition('Capacity proof attacker '+index,['Creature'],{power:'1',toughness:'20'})));
+   assert.equal(ctx.game.blockDeclarationLegal(attackers,attackers.map(attacker=>({blocker:card,attacker}))),true,label+': real declaration accepts all capacity slots');
+   return 2;
+ }
  if(!['cantAttack','cantBlock','unblockable','blockOnlyFlying','attackerFilters','relativeAttackerPower','blockerFilters','defenderRule','cantAttackSourceController'].some(key=>op[key]))return 0;
  const {game,a,b}=ctx;let checks=0;
  const opponent=card.ctrl===a?b:a;
@@ -456,6 +505,16 @@ export async function staticProof(MTG,entry,op,role,h){
 }
 
 export const mechanicKinds=new Set(['mechanic-unearth','mechanic-grave-return-self','mechanic-embalm','mechanic-eternalize','mechanic-soulshift','mechanic-modular','mechanic-fabricate','mechanic-living-weapon','mechanic-for-mirrodin','mechanic-offspring','mechanic-afflict','mechanic-ingest','mechanic-ninjutsu','mechanic-foretell','mechanic-retrace','doesnt-untap']);
+mechanicKinds.add('mechanic-alternative-costs-v8');
+mechanicKinds.add('mechanic-casting-choice-v8');
+mechanicKinds.add('mechanic-awaken-v8');
+mechanicKinds.add('mechanic-morph-cost-v8');
+mechanicKinds.add('mechanic-equip-reduction-v8');
+mechanicKinds.add('mechanic-upkeep-cost-v8');
+mechanicKinds.add('mechanic-keyword-payment-v8');
+mechanicKinds.add('mechanic-encore-v8');
+mechanicKinds.add('mechanic-miracle-v8');
+mechanicKinds.add('mechanic-zone-keyword-cost-v8');mechanicKinds.add('mechanic-cycling-rule-v8');
 for(const kind of ['replicate','ravenous','graveyard-lands','conditional-alternative'])mechanicKinds.add('mechanic-'+kind);
 for(const kind of ['harmonize-v8','ward-v8','strive-v8','level-up-v8'])mechanicKinds.add('mechanic-'+kind);
 for(const kind of ['casualty','conspire','enlist','flash-surcharge','escape-counters'])mechanicKinds.add('mechanic-'+kind);
@@ -465,15 +524,8 @@ export async function mechanicProof(MTG,entry,op,role,h){
  const ctx=h.gameFor(MTG,[controller,h.decision()],{ai:role==='ai'}),{game,a,b}=ctx;
  h.fund(a,100);h.fillLibrary(MTG,a,60);h.fillLibrary(MTG,b,60);
  for(let i=0;i<5;i++)h.zoneCard(MTG,a,'Forest','hand');
- const additionalFixtures=[];
- const stageAdditional=cost=>{
-   if(cost.kind==='exileGraveyard')for(let i=0;i<cost.quantity.min;i++)additionalFixtures.push(h.zoneCard(MTG,a,h.fixtureDefinition('V7 additional exile '+i,cost.object.types||['Creature'],{power:'2',toughness:'2'}),'graveyard'));
-   if(cost.kind==='sacrifice'){
-     const card=h.permanent(MTG,game,a,h.fixtureDefinition('V6 additional cost permanent',cost.object.types||['Creature'],{super:['Legendary'],power:'0',toughness:'20'}));additionalFixtures.push(card);
-   }
-   for(const child of cost.options||cost.costs||[])stageAdditional(child);
- };
- for(const operation of entry.implementation)if(operation.kind==='mechanic-additional-costs')for(const cost of operation.costs)stageAdditional(cost);
+ const additionalFixtures=stageOracleCastingCosts(MTG,ctx,entry,h);
+  stageEntryCastingRules(MTG,ctx,entry,h);
  for(const operation of entry.implementation){
    if(operation.kind==='copy-as-enters')h.stageGenericTarget(MTG,ctx,operation.filter,'copy-model');
    if(operation.kind==='aura-target')h.permanent(MTG,game,a,'Grizzly Bears');
@@ -856,11 +908,21 @@ export async function mechanicProof(MTG,entry,op,role,h){
    else assert.ok(source.castMeta.paidTimes>0,entry.raw.name+': multikicker payment count');
    assert.ok(Object.values(a.pool).reduce((x,y)=>x+y,0)<prior);await h.resolveAll(game);return 3;
  }
+ if(op.kind==='mechanic-alternative-costs-v8')return proveOracleAlternativeCastingCost(MTG,ctx,entry,op,source,{...h,stageCondition});
+ if(op.kind==='mechanic-keyword-payment-v8')return proveOracleKeywordPayment(MTG,ctx,entry,op,source,h);
+ if(op.kind==='mechanic-encore-v8')return proveOracleEncore(MTG,ctx,entry,op,source,h);
+ if(op.kind==='mechanic-miracle-v8')return proveOracleMiracle(MTG,ctx,entry,op,source,h);
+ if(['mechanic-zone-keyword-cost-v8','mechanic-cycling-rule-v8'].includes(op.kind))return proveOracleZoneKeywordCost(MTG,ctx,entry,op,source,h);
+ if(op.kind==='mechanic-upkeep-cost-v8')return proveOracleUpkeepCost(MTG,ctx,entry,op,source,h);
+ if(op.kind==='mechanic-equip-reduction-v8')return proveOracleEquipReduction(MTG,ctx,entry,op,source,h);
+ if(op.kind==='mechanic-morph-cost-v8')return proveOracleMorphCost(MTG,ctx,entry,op,source,h);
+ if(op.kind==='mechanic-awaken-v8')return proveOracleAwaken(MTG,ctx,entry,op,source,h);
+ if(op.kind==='mechanic-casting-choice-v8')return proveOracleCastingChoice(MTG,ctx,entry,op,source,h);
  if(op.kind==='mechanic-additional-costs'){
-   const prior={hand:a.hand.filter(card=>card!==source),life:a.life,battlefield:game.bf().slice()};
+   const legalObjects=[...additionalFixtures,...a.hand.filter(card=>card!==source),...a.graveyard,...game.bf()];
    assert.equal(await game.castSpell(a,source,{from:'hand',xVal:3}),true);assert.equal(source.zone,'stack');
-   const paid=cost=>cost.kind==='exileGraveyard'?additionalFixtures.filter(card=>card.zone==='exile').length>=cost.quantity.min:cost.kind==='sacrifice'?prior.battlefield.filter(card=>['graveyard','ceased'].includes(card.zone)&&(!cost.object.types||cost.object.types.some(type=>card.is(type)))).length>=cost.quantity.min:cost.kind==='discard'?prior.hand.filter(card=>card.zone==='graveyard').length>=cost.quantity.min:cost.kind==='payLife'?a.life<prior.life:cost.kind==='choice'?cost.options.some(paid):cost.kind==='sequence'?cost.costs.every(paid):false;
-   assert.ok(op.costs.every(paid),entry.raw.name+': every mandatory additional cost is paid before resolution');await h.resolveAll(game);return 3;
+   assertOracleCastingCostRecord(source,game.stack.find(object=>object.card===source),entry,legalObjects);
+   await h.resolveAll(game);return 3;
  }
  if(op.kind==='mechanic-player-hexproof'){
    await cast();const spell=h.zoneCard(MTG,b,'Doom Blade','hand');assert.equal(game.legalTargets({what:'player',zone:'player'},spell,b).includes(a),false,entry.raw.name+': opponent cannot target player');assert.equal(game.legalTargets({what:'player',zone:'player'},source,a).includes(a),true,entry.raw.name+': own player remains legal');await game.move(source,'exile');assert.equal(game.legalTargets({what:'player',zone:'player'},spell,b).includes(a),true);return 3;
@@ -914,7 +976,11 @@ export async function mechanicProof(MTG,entry,op,role,h){
    game.turnNo++;
    if(entry.implementation.some(o=>o.kind==='spell-counter'))await h.stageSpellV4Target(MTG,ctx,{name:entry.raw.name},{kind:'spell',zone:'stack',quantity:{min:1,max:1}},{kind:'counterSpell',targetIds:[]},'Instant',0);
    const option=game.castableList(a).find(row=>row.card===source&&row.alt?.foretell);assert.ok(option,entry.raw.name+': later foretell cast');assert.equal(option.alt.altCostStr,op.cost);
-   assert.equal(await game.castSpell(a,source,{from:'exile',alt:option.alt,xVal:3}),true);await h.resolveAll(game);assert.equal(source.faceDown,false);assert.notEqual(source.zone,'exile');return 4;
+   assert.equal(await game.castSpell(a,source,{from:'exile',alt:option.alt,xVal:3}),true);
+   assert.ok(game.stack.some(object=>object.card===source),entry.raw.name+': foretell spell reaches the Stack');
+   await h.resolveAll(game);assert.equal(source.faceDown,false);
+   if(JSON.stringify(entry.implementation).includes('\"action\":\"exile-resolving-spell\"'))assert.equal(source.zone,'exile');else assert.notEqual(source.zone,'exile');
+   assert.equal(game.castableList(a).some(row=>row.card===source&&row.alt?.foretell),false,entry.raw.name+': consumed foretell permission is not reusable');return 6;
  }
  if(op.kind==='mechanic-retrace'){
    const lands=a.hand.slice();const option=game.castableList(a).find(row=>row.card===source&&row.alt?.retrace);assert.ok(option,entry.raw.name+': retrace cast offered');

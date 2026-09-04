@@ -284,12 +284,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   E.surveil = async function (g, p, n, opts = {}) {
-    if (!p.library.length || n <= 0) return;
+    if (n <= 0) return;
     const top = p.library.slice(-n).reverse();
-    const keep = await p.controller.decide(g, {
+    const keep = top.length?await p.controller.decide(g, {
       type: 'scry', cards: top, prompt: `Surveil ${n}`, player: p, surveil: true,
       drawReserve: Math.max(0, Number(opts.drawReserve) || 0),
-    });
+    }):{top:[],bottom:[]};
     for (const c of top) p.library.splice(p.library.indexOf(c), 1);
     // Surveil moves every selected card as one instruction. Keep the
     // per-card movement events, but emit a single cardsToGraveyard batch so
@@ -298,6 +298,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const c of keep.bottom) await g.move(c, 'graveyard');
     });
     for (const c of keep.top.slice().reverse()) { c.zone = 'library'; p.library.push(c); }
+    const first=!p.turnState.surveilEvents;p.turnState.surveilEvents=(p.turnState.surveilEvents||0)+1;
+    await g.emit('surveil',{player:p,n,first});
   };
 
   E.pumpUntilEOT = function (g, card, dp, dt, kws) {
@@ -552,6 +554,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       };
       for (const script of Object.values(scripts || {})) collectInlineTokens(script.oracleImplementation);
       for (const s of other) creature.delete(s);
+      // CR 205.3m (2026-06-19): these are creature types even when the
+      // catalog uses them only in animation text, rather than a type line.
+      for (const subtype of ['Blinkmoth', 'Llama']) creature.add(subtype);
       MTG.CREATURE_SUBTYPES = creature;
     }
     const defs = {};
@@ -796,10 +801,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Decree of Pain'] = {
     resolve: async ctx => {
-      let n = 0;
-      for (const c of ctx.g.bf().filter(c => c.is('Creature')).slice()) {
-        if (await ctx.g.destroy(c, { noRegen: true })) n++;
-      }
+      const n = await ctx.g.destroyMany(ctx.g.creatures(), { noRegen: true, source: ctx.src });
       await ctx.g.draw(ctx.you, n);
     },
     cycling: {

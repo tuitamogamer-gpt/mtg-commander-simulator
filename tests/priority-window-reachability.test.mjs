@@ -95,9 +95,22 @@ test('svaka karta koja cilja stack ima prozor u kojem se stvarno može odigrati'
         // costs the catalog actually asks for: bodies, artifacts, cards in hand
         for (let index = 0; index < 3; index++) permanent(me, 'Sol Ring');
         for (let index = 0; index < 3; index++) permanent(me, 'Grizzly Bears');
+        // A typed sacrifice such as Abjure needs a blue permanent; an Island
+        // produces blue mana but remains colorless.
+        permanent(me, 'Merfolk Looter');
         for (let index = 0; index < 4; index++) zoneCard(me, 'Lightning Bolt', 'hand');
         me.turnState.spellsCast = 5;
         const card = zone === 'battlefield' ? permanent(me, name) : zoneCard(me, name, zone);
+        // These Stack abilities have printed prerequisites beyond mana and
+        // their target. Stage those prerequisites before testing the window.
+        if (name === 'Echo Mage') card.counters.level = 2;
+        if (name === 'Kitsa, Otterball Elite') card.counters['+1/+1'] = 2;
+        if (name === 'Sigil Tracer') permanent(me, 'Sigil Tracer');
+        // Direct battlefield fixtures skip entry replacement effects. Preserve
+        // the printed counter that a real arrival supplies for payment (for
+        // example Glen Elendra Guardian's initial -1/-1 counter).
+        for(const operation of def.oracleImplementation||[])if(operation.kind==='enters-with-counters'&&Number.isSafeInteger(operation.n)&&operation.n>0)
+          card.counters[operation.counter]=operation.n;
         game.recalc();
         const object = pushStackObject(game, stackIsMine ? me : rival, kind, stackCardName);
         game.recalc();

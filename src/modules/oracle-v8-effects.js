@@ -1,6 +1,6 @@
 // Closed v8 effect descriptors. Oracle text is parsed only by the importer.
 ((MTG) => {
-  const actions = new Set(['resolution-cost', 'player-counter', 'group-sequence', 'delayed-object', 'remove-from-combat']);
+  const actions = new Set(['resolution-cost', 'player-counter', 'group-sequence', 'delayed-object', 'remove-from-combat', 'return-died-source-v8', 'change-characteristics-v8', 'sacrifice-target-v8']);
   const cardKinds = new Set(['discard', 'sacrifice', 'return', 'tap', 'exile', 'library', 'reveal', 'remove-counter', 'process-exile']);
   const amountKinds = new Set(['count', 'source-stat', 'explicit-source-stat', 'target-stat', 'target-count', 'affected-player-count', 'event-card-stat', 'event-amount', 'turn-count', 'source-counters', 'sum', 'max-stat', 'devotion', 'party', 'died-count', 'source-attachments', 'creature-total-power', 'opponent-count', 'opponent-poison-total']);
   const amountValid = value => Number.isInteger(value) && value >= 0 || value && amountKinds.has(value.kind) &&
@@ -189,6 +189,55 @@
   }
 
   async function run(ctx, effect, helpers) {
+    if (effect.action === 'sacrifice-target-v8') {
+      if (!Number.isInteger(effect.target) || effect.target < 0) throw new Error('Invalid sacrifice target reference');
+      const subjects = helpers.subjects(ctx, effect.target);
+      if (!subjects.length) return;
+      const locked = ctx._oracleTargetControllers?.[effect.target];
+      if (!Array.isArray(locked)) throw new Error('Missing sacrifice target incarnation');
+      const cards = locked.filter(row => subjects.includes(row.subject) && row.subject instanceof MTG.CardInst &&
+        row.subject.zone === 'battlefield' && row.subject.zoneVersion === row.zoneVersion && row.subject.ctrl === ctx.you && ctx.g.canSacrifice(row.subject))
+        .map(row => row.subject);
+      await ctx.g.sacrificeMany(ctx.you, [...new Set(cards)]);
+      return;
+    }
+    if (effect.action === 'change-characteristics-v8') {
+      const subtype = effect.characteristic === 'creature-type';
+      if (!['color', 'creature-type'].includes(effect.characteristic) || typeof effect.retain !== 'boolean' ||
+          effect.choose !== undefined && effect.choose !== true ||
+          (subtype ? effect.choose !== true || effect.colors !== undefined : effect.choose === true ? effect.colors !== undefined :
+            !Array.isArray(effect.colors) || effect.colors.length > 1 || effect.colors.some(color => !['W', 'U', 'B', 'R', 'G'].includes(color)))) throw new Error('Unsupported characteristic change');
+      const locked = [...new Set(helpers.subjects(ctx, effect.target))].filter(card => card instanceof MTG.CardInst && card.zone === 'battlefield')
+        .map(card => ({ card, version: card.zoneVersion }));
+      if (!locked.length) return;
+      let choice;
+      if (effect.choose) {
+        const values = subtype ? [...MTG.CREATURE_SUBTYPES].sort() : ['W', 'U', 'B', 'R', 'G'];
+        const scores = Object.fromEntries(values.map(value => [value, ctx.g.bf().filter(card => card.ctrl === ctx.you && !locked.some(row => row.card === card) &&
+          (subtype ? card.hasSub(value) : card.colors.includes(value))).length]));
+        choice = await ctx.you.controller.decide(ctx.g, { type: 'chooseOption', player: ctx.you,
+          prompt: ctx.src.name + ': choose a ' + (subtype ? 'creature type' : 'color'),
+          options: values.map(key => ({ key, label: subtype ? key : { W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green' }[key] })),
+          aiHint: subtype ? { kind: 'chooseType', counts: scores } : { kind: 'oracleColorChange', scores } });
+        if (!values.includes(choice)) throw new Error('Invalid mandatory characteristic choice');
+      }
+      ctx.g.addOracleCharacteristics(locked.filter(row => row.card.zone === 'battlefield' && row.card.zoneVersion === row.version).map(row => row.card),
+        { retain: effect.retain, ...(subtype ? { creatureType: choice } : { colors: effect.choose ? [choice] : effect.colors.slice() }) });
+      return;
+    }
+    if (effect.action === 'return-died-source-v8') {
+      if (effect.counter !== undefined && effect.counter !== '+1/+1') throw new Error('Unsupported death return counter');
+      // A granted dies trigger tracks the card in the graveyard reached by
+      // that death. An exile/blink and a later death are new incarnations.
+      const source = ctx.src;
+      if (source instanceof MTG.CardInst && !source.isToken && source.zone === 'graveyard' &&
+          source.zoneVersion === ctx.sourceZoneVersion && ctx.data?.card === source && ctx.data.snap &&
+          ctx.oracleSourceCapture?.zone === 'graveyard') {
+        await ctx.g.putPermanentOntoBattlefield(source, source.owner, { tapped: !!effect.tapped,
+          ...(effect.counter ? { additionalCounters: { [effect.counter]: 1 } } : {}) });
+      }
+      return;
+    }
     if (effect.action === 'remove-from-combat') {
       for (const card of new Set(helpers.subjects(ctx, effect.target))) if (card instanceof MTG.CardInst && card.zone === 'battlefield' && card.is('Creature')) ctx.g.removeFromCombat(card);
       return;
@@ -235,7 +284,7 @@
       return;
     }
     if (effect.action === 'group-sequence') {
-      const allowed = new Set(['tap', 'untap', 'pump', 'counter', 'base-pt', 'cant-block-until-eot', 'unblockable-until-eot', 'skip-next-untap']);
+      const allowed = new Set(['tap', 'untap', 'pump', 'counter', 'base-pt', 'cant-block-until-eot', 'unblockable-until-eot', 'skip-next-untap', 'linked-untap-v8']);
       if (!Array.isArray(effect.filters) || !effect.filters.length || !Array.isArray(effect.effects) || !effect.effects.length || effect.effects.some(child => !allowed.has(child.action) || child.target !== 'affected-group')) throw new Error('Unsupported retained group effect');
       const filters = effect.filters.map(filter => helpers.target({ ...filter, excludeSelf: !!filter.excludeSelf && helpers.sameSource(ctx) }, [], 0, ctx.data).filter);
       const locked = ctx.g.bf().filter(card => filters.some(filter => filter(ctx.g, card, ctx.you, ctx.src))).map(card => ({ card, version: card.zoneVersion }));

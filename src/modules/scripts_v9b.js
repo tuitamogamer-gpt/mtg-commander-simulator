@@ -2170,7 +2170,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
     resolve: async ctx => {
       const [a, b] = ctx.targets;
-      if (!a || !b) return;
+      // CR 608.2b: each legal target keeps its independent effect even
+      // when the other target became illegal and no fight can happen.
+      if (a) ctx.g.addCounters(a, '+1/+1', 1);
+      if (!b) return;
       const victimIid = b.iid, victimTimestamp = b.timestamp, you = ctx.you;
       ctx.g.delayed.push({
         on: 'dies', expires: 'eot', name: 'Fight for the Throne — monarch', ctrl: you,
@@ -2182,11 +2185,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
         },
       });
-      ctx.g.addCounters(a, '+1/+1', 1);
-      const aPower = Math.max(0, a.power), bPower = Math.max(0, b.power);
-      await ctx.g.damageCreature(a, b, aPower, { deferSBA: true });
-      await ctx.g.damageCreature(b, a, bPower, { deferSBA: true });
-      await ctx.g.checkSBA();
+      if (!a) return;
+      await ctx.g.damageBatch([
+        { src: a, target: b, n: Math.max(0, a.power) },
+        { src: b, target: a, n: Math.max(0, b.power) },
+      ]);
     },
   };
   SC['Generous Gift'] = {

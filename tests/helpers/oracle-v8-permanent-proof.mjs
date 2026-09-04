@@ -5,6 +5,34 @@ const asCard = value => Array.isArray(value) ? value[0] : value;
 const sameOperation = (left, right) => left === right || JSON.stringify(left) === JSON.stringify(right);
 const definitionOf = (MTG, value) => typeof value === 'string' ? MTG.TOKENS[value] : value;
 
+export async function typeStaticProof(MTG, entry, operation, role, h) {
+  const ctx = h.gameFor(MTG, [h.decision(), h.decision()], {ai: role === 'ai'}), {game, a, b} = ctx;
+  h.assertControllerRole(MTG, ctx, entry.raw.name + '/' + role + '/conditional-type');
+  h.fund(a, 100); h.fillLibrary(MTG, a, 30); h.fillLibrary(MTG, b, 30);
+  h.stageCardCosts(MTG, ctx, entry);
+  const source = h.zoneCard(MTG, a, entry.raw.name, 'hand');
+  assert.equal(await game.castSpell(a, source, {from: 'hand'}), true); await h.resolveAll(game);
+  assert.equal(source.zone, 'battlefield'); assert.equal(source.is('Creature'), false, 'low threshold leaves a noncreature permanent');
+  const condition = operation.condition;
+  assert.equal(condition.kind, 'count-comparison');
+  if (condition.count.kind === 'devotion') {
+    const required = condition.max + 1;
+    const support = h.permanent(MTG, game, a, h.fixtureDefinition('Devotion threshold support', ['Enchantment'], {cost: ('{' + condition.count.colors[0] + '}').repeat(required)}));
+    assert.equal(source.is('Creature'), true); assert.equal(source.hasSub('God'), true);
+    game.addCounters(source, '+1/+1', 1); assert.equal(source.power, Number(entry.raw.power) + 1);
+    await game.move(support, 'graveyard'); assert.equal(source.is('Creature'), false); assert.equal(source.hasSub('God'), false);
+    assert.equal(source.counters['+1/+1'], 1);
+  } else {
+    assert.equal(condition.count.kind, 'source-counters'); const counter = condition.count.counter;
+    game.addCounters(source, counter, condition.min - 1); assert.equal(source.is('Creature'), false);
+    game.addCounters(source, counter, 1); assert.equal(source.is('Creature'), true); assert.equal(source.hasSub('Vehicle'), true);
+    assert.equal(source.cur.basePower, Number(entry.raw.power)); assert.equal(source.cur.baseToughness, Number(entry.raw.toughness));
+    game.removeCounters(source, counter, 1); assert.equal(source.is('Creature'), false);
+  }
+  assert.equal(source.is('Artifact') || source.is('Enchantment'), true, 'the original permanent type remains');
+  return 8;
+}
+
 function arithmeticExpected(n, transform) {
   if (transform.multiply !== undefined) return n * transform.multiply;
   if (transform.add !== undefined) return Math.max(0, n + transform.add);
@@ -101,20 +129,49 @@ export async function replacementProof(MTG, entry, operation, role, h) {
   observeReplacement(game, source, operation, journal);
   let checks = 3;
 
-  if (operation.event === 'damage') {
+  if (operation.event === 'etbTapped' || operation.event === 'etbCounters') {
+    for (const [index, filter] of operation.filters.entries()) {
+      const target = asCard(h.stageGenericTarget(MTG, ctx, filter, 'replacement-entry-target-' + index));
+      assert.ok(target && target !== source, label + ': actual matching entrant');
+      assert.equal(replacement.applies(game, target, source), true, label + ': matching entry predicate');
+      if (filter.excludeSelf) assert.equal(replacement.applies(game, source, source), false, label + ': other excludes source');
+      if (filter.controller === 'you' || filter.controller === 'opponent') {
+        const wrong = new MTG.CardInst(target.def, target.ctrl === a ? b : a); wrong.zone = 'battlefield';
+        assert.equal(replacement.applies(game, wrong, source), false, label + ': wrong entering controller');
+      }
+      const controller = target.ctrl;
+      await game.move(target, 'hand');
+      const observed = [], emit = game.emit.bind(game);
+      game.emit = async (event, data) => { if (data?.card === target && ['etb', 'countersPlaced'].includes(event)) observed.push({event, n: data.n, tapped: data.card.tapped}); return emit(event, data); };
+      try { await game.move(target, 'battlefield', {ctrl: controller}); } finally { game.emit = emit; }
+      if (operation.event === 'etbTapped') {
+        assert.equal(target.tapped, true, label + ': actual entrant is tapped');
+        assert.ok(observed.some(row => row.event === 'etb' && row.tapped), label + ': the ETB observer sees tapped state');
+        assert.ok(journal.some(row => row.event === 'etbTapped'), label + ': actual entry replacement executes');
+      } else {
+        assert.equal(target.counters['+1/+1'], operation.n, label + ': exact additional entry counters');
+        const counters = observed.filter(row => row.event === 'countersPlaced');
+        assert.equal(counters.length, 1, label + ': one entry counter event');
+        assert.equal(counters[0].n, operation.n, label + ': exact observed counter amount');
+      }
+      checks += 7;
+    }
+  } else if (operation.event === 'damage') {
     let origin;
-    const from = operation.source;
+    const from = operation.source.alternatives?.[0] || operation.source;
+    if (operation.condition) stageCondition(MTG, ctx, operation.condition, source, h);
     if (from.subject === 'self') origin = source;
     else if (from.subject === 'attached') origin = game.byIid(source.attachedTo);
     else {
       origin = asCard(h.stageGenericTarget(MTG, ctx, {...from.filter, controller: from.controller === 'opponent' ? 'opponent' : 'you'}, 'replacement-origin'));
-      if (!origin.is('Instant') && !origin.is('Sorcery') && origin.zone !== 'battlefield') await game.move(origin, 'battlefield', {ctrl: origin.ctrl});
+      if (!from.spellOnly && !origin.is('Instant') && !origin.is('Sorcery') && origin.zone !== 'battlefield') await game.move(origin, 'battlefield', {ctrl: origin.ctrl});
     }
     const to = operation.recipient;
     const target = to.subject === 'self' ? source : to.subject === 'attached' ? game.byIid(source.attachedTo)
       : to.players ? to.players === 'opponent' ? b : a : asCard(h.stageGenericTarget(MTG, ctx, to.permanents, 'replacement-recipient'));
     assert.ok(origin && target, label + ': damage objects');
     const n = Math.max(1, Math.min(operation.maxAmount === undefined ? Infinity : Math.max(1, operation.maxAmount - 1), Math.max(5, operation.minAmount || 0, (operation.transform.set || 0) + 2, -(operation.transform.add || 0) + 2)));
+    const exerciseDamage = async () => {
     const data = {src: origin, target, n, combat: operation.combat === true, noncombat: operation.combat !== true};
     if (operation.requiresCounter && !source.counters[operation.requiresCounter]) {
       assert.equal(replacement.applies(game, data, source), false, label + ': the counter condition can be false');
@@ -155,6 +212,17 @@ export async function replacementProof(MTG, entry, operation, role, h) {
     if (dealt > 0) assert.ok(events.some(event => event.n === dealt && (event.target || event.player) === target), label + ': final amount reaches the actual damage event');
     else assert.equal(events.length, 0, label + ': zero resulting damage emits no damage event');
     checks += 8;
+    };
+    if (from.spellOnly) {
+      // An auxiliary printed-quality spell produces real damage while its
+      // paid spell object resolves. The imported replacement is untouched.
+      origin.def = {...origin.def, ...(!origin.is('Instant') && !origin.is('Sorcery') ? {types: ['Instant'], subtypes: [], cost: '{0}'} : {}), resolve: exerciseDamage};
+      const player = origin.ctrl, oldTurn = game.turnPlayer, oldPhase = game.phase;
+      await game.move(origin, 'hand'); game.turnPlayer = player; game.phase = 'main1';
+      try { assert.equal(await game.castSpell(player, origin, {from: 'hand'}), true, label + ': actual damaging spell cast'); await h.resolveAll(game); }
+      finally { game.turnPlayer = oldTurn; game.phase = oldPhase; }
+      assert.equal(journal.length, 1, label + ': damaging spell resolved');
+    } else await exerciseDamage();
   } else if (operation.event === 'lifegain') {
     assert.equal(replacement.applies(game, 3, a, source), true, label + ': own gain applies');
     assert.equal(replacement.applies(game, 3, b, source), false, label + ': other player does not apply');

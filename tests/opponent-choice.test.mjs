@@ -36,16 +36,18 @@ function implementationTargetSpecs(implementation) {
 }
 
 function allTargetSpecs(script) {
+  const directTargets = node => Array.isArray(node?.targets) ? node.targets : [];
   return [
     ...implementationTargetSpecs(script.oracleImplementation),
-    ...(script.targets || []),
-    ...(script.abilities || []).flatMap(ability => [...(ability.targets || []),
-      ...((ability.modes && ability.modes.list || []).flatMap(mode => mode.targets || []))]),
-    ...(script.triggers || []).flatMap(trigger => [...(trigger.targets || []),
-      ...((trigger.modes && trigger.modes.list || []).flatMap(mode => mode.targets || []))]),
-    ...(script.modes && script.modes.list || []).flatMap(mode => mode.targets || []),
+    ...directTargets(script),
+    ...(script.abilities || []).flatMap(ability => [...directTargets(ability),
+      ...((ability.modes && ability.modes.list || []).flatMap(mode => directTargets(mode)))]),
+    ...(script.triggers || []).flatMap(trigger => [...directTargets(trigger),
+      ...((trigger.modes && trigger.modes.list || []).flatMap(mode => directTargets(mode)))]),
+    ...(script.modes && script.modes.list || []).flatMap(mode => directTargets(mode)),
     ...Object.values(script.splitHalves || {}).flatMap(half => allTargetSpecs(half)),
     ...(script.adventure ? allTargetSpecs(script.adventure) : []),
+    ...(script.oracleFaces?.faces || []).flatMap(face => allTargetSpecs(face.def || {})),
     ...(script.gyAbility ? allTargetSpecs(script.gyAbility) : []),
     ...(script.handAbility ? allTargetSpecs(script.handAbility) : []),
     ...(script.saga || []).flatMap(chapter => allTargetSpecs(chapter)),
@@ -70,13 +72,20 @@ test('centralni netargetirani izbor prikazuje svakog živog protivnika i poštuj
 });
 
 test('svaki aktivni oracle target-opponent put ima stvarni target spec', () => {
-  const targetOpponentCards = Object.values(MTG.DEFS)
-    .filter(def => /target opponents?\b/i.test(def.oracle || ''));
+  const targetOpponentCards = Object.entries(MTG.DEFS)
+    .filter(([, def]) => /target opponents?\b/i.test(def.oracle || ''));
   const intentionalRandom = new Set(['Vial Smasher the Fierce']);
+  const { game, players: [controller] } = choiceFixture();
 
-  for (const def of targetOpponentCards) {
+  for (const [canonicalName, def] of targetOpponentCards) {
     if (intentionalRandom.has(def.name)) continue;
-    const specs = allTargetSpecs(MTG.SCRIPTS[def.name] || {});
+    const script = MTG.SCRIPTS[canonicalName] || {};
+    const specs = allTargetSpecs(script);
+    if (typeof script.targets === 'function') {
+      const targets = script.targets(game, card(controller, canonicalName), {}, controller);
+      assert.ok(targets == null || Array.isArray(targets), canonicalName + ': target factory returns actual specs');
+      specs.push(...(targets || []));
+    }
     assert.ok(
       specs.some(spec => typeof spec.what === 'string' &&
         (spec.what === 'any' || /\b(?:opponent|player)\b/.test(spec.what))),

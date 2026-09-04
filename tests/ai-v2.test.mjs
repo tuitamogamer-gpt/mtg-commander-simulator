@@ -322,6 +322,58 @@ test('simulateAction koristi rules engine i ne mutira live state', async () => {
   assert.equal(result.state.battlefield.some(card => card.iid === land.iid), true);
 });
 
+test('AI simulation preserves copy, loss and timing records with independent storage and clocks', async () => {
+  const {game,players:[bot,opponent]}=gameFixture();
+  const creature=addCard(game,bot,syntheticDef('Simulation original',{power:2,toughness:3}));
+  const copied=syntheticDef('Simulation copied',{power:7,toughness:8,kws:['flying']});
+  MTG.OracleV8Copies.applyCopy(game,creature,copied,{duration:'next-turn',controller:bot});
+  MTG.OracleV8AbilityLoss.add(game,[creature],{temporary:true});
+  const spell=addCard(game,bot,syntheticDef('Simulation flash creature'),'hand');
+  bot.turnState.oracleFlashUntilTurn=[{turn:game.turnNo,filter:{what:'creature',zone:'graveyard',controller:'any',min:1}}];
+  bot.counters.energy=4;
+  const land=addPlains(game,bot,'hand');game.recalc();
+  assert.equal(creature.power,7);assert.equal(creature.kw('flying'),false);
+  const liveEffects=game.untilEffects,liveRows=Array.from(liveEffects),liveClock=MTG.currentOracleTimestamp();
+  const result=await MTG.simulateAction(game,{kind:'land',card:land},{playerId:bot.idx,seed:55});
+  assert.equal(result.applied,true);assert.equal(result.error,null);
+  const clone=result.state,cloneBot=clone.players[0],cloneCreature=clone.byIid(creature.iid),cloneSpell=clone.byIid(spell.iid);
+  assert.notEqual(clone.untilEffects,liveEffects);assert.notEqual(clone.untilEffects[0],liveRows[0]);
+  assert.equal(clone.untilEffects.find(row=>row.oracleCopyLayer).whoTurn,cloneBot);
+  assert.equal(cloneCreature.power,7);assert.equal(cloneCreature.kw('flying'),false);
+  assert.deepEqual(Array.from(clone.untilEffects,row=>[row.kind,row.timestamp,row.oracleLayerTimestamp,row.expires]),liveRows.map(row=>[row.kind,row.timestamp,row.oracleLayerTimestamp,row.expires]));
+  clone.turnPlayer=clone.players[1];clone.phase='end';assert.equal(clone.canCastTiming(cloneBot,cloneSpell),true);
+  cloneBot.turnState.oracleFlashUntilTurn[0].turn--;
+  assert.equal(clone.canCastTiming(cloneBot,cloneSpell),false);assert.equal(bot.turnState.oracleFlashUntilTurn[0].turn,game.turnNo);
+  cloneBot.counters.energy=1;assert.equal(bot.counters.energy,4);
+  clone.addCounters(cloneCreature,'flying',1);assert.equal(cloneCreature.kw('flying'),true,'counter granted after loss remains an ability');
+  assert.equal(creature.kw('flying'),false);assert.equal(creature.counters.flying,undefined);
+  clone.untilEffects=clone.untilEffects.filter(row=>!row.oracleCopyLayer);clone.recalc();
+  assert.equal(cloneCreature.power,2);assert.equal(creature.power,7);
+  const layer=MTG.OracleV8Copies.applyCopy(clone,cloneCreature,copied,{duration:'eot'});clone.recalc();
+  assert.ok(layer.oracleLayerTimestamp>liveClock,'new effect receives a later simulation-local timestamp');
+  const firstClock=clone._nextSimulationTimestamp;
+  const nested=MTG.cloneGameForAISimulation(clone,56),nestedCreature=nested.byIid(creature.iid);
+  assert.equal(nested._nextSimulationTimestamp,firstClock);assert.equal(nestedCreature.power,7);
+  nested.untilEffects=nested.untilEffects.filter(row=>row.kind!=='oracleAbilityLoss');
+  nested.addOracleBasePT(nestedCreature,{power:4,toughness:5,temporary:true});
+  assert.ok(nested._nextSimulationTimestamp>firstClock);assert.equal(clone._nextSimulationTimestamp,firstClock);
+  assert.equal(nestedCreature.power,4);assert.equal(cloneCreature.power,7);assert.equal(creature.power,7);
+  assert.equal(MTG.currentOracleTimestamp(),liveClock,'simulation never consumes live continuous-effect timestamps');
+  assert.equal(game.untilEffects,liveEffects);assert.deepEqual(Array.from(game.untilEffects),liveRows);
+  assert.equal(liveRows[0].whoTurn,bot);assert.equal(game.turnPlayer,bot);assert.notEqual(clone.turnPlayer,opponent);
+});
+
+test('AI clone retains a valid independent event-cohort cache',async()=>{
+  const {game,players:[bot]}=gameFixture(),cohort={};
+  game._oracleTriggerBatches=new WeakMap([[cohort,new Map([[bot,'live']])]]);
+  const clone=MTG.cloneGameForAISimulation(game,71),fresh={};
+  assert.equal(clone._oracleTriggerBatches.get(cohort),undefined);
+  clone._oracleTriggerBatches.set(fresh,'simulated');
+  assert.equal(clone._oracleTriggerBatches.get(fresh),'simulated');
+  assert.equal(game._oracleTriggerBatches.get(fresh),undefined);
+  assert.equal(game._oracleTriggerBatches.get(cohort).get(bot),'live');
+});
+
 test('beam search razmatra nastavak poslije landa', async () => {
   const { game, players: [bot] } = gameFixture();
   addPlains(game, bot);

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { stageCount, countValue, matchesTarget } from './oracle-v5-proof.mjs';
 
-const actions = new Set(['player-counter', 'group-sequence', 'delayed-object', 'remove-from-combat', 'skip-next-untap']);
+const actions = new Set(['player-counter', 'group-sequence', 'delayed-object', 'remove-from-combat', 'skip-next-untap', 'change-characteristics-v8', 'sacrifice-target-v8']);
 const worlds = new WeakMap(), installed = new WeakSet();
 const flat = value => [value].flat().filter(Boolean);
 const same = (first, second) => JSON.stringify(first) === JSON.stringify(second);
@@ -10,7 +10,12 @@ const attackingToken = effect => effect.action === 'token-inline' && effect.atta
 function install(MTG, context, h) {
   let state = worlds.get(context.game);
   if (!state) {
-    state = { context, h, rows: [], frozen: [], tokenRows: [], resolving: null }; worlds.set(context.game, state);
+    state = { context, h, rows: [], frozen: [], tokenRows: [], sacrifices: [], resolving: null }; worlds.set(context.game, state);
+    const emit = context.game.emit;
+    context.game.emit = async function(event, data, ...rest) {
+      if (event === 'sacrificed') state.sacrifices.push({ card: data.card, player: data.player, snap: data.snap });
+      return emit.call(this, event, data, ...rest);
+    };
     const resolve = context.game.resolveTop;
     context.game.resolveTop = async function(...args) {
       const object = this.stack.at(-1);
@@ -51,10 +56,15 @@ function install(MTG, context, h) {
         row.blockedBy = (card.blockedBy || []).slice(); row.wasBlocked = !!card.wasBlocked; row.regenShield = card.regenShield || 0;
         row.isToken = !!card.isToken; row.owner = card.owner;
         row.noUntapOnce = !!card.meta?.noUntapOnce;
+        row.cantSacrifice = !!card.cur?.cantSacrifice;
       }
       return value;
     };
     const row = { effect, ctx, source: ctx.src, targets: (ctx.targets || []).slice(), createdTokens: (ctx._oracleCreatedTokens || []).map(item => ({...item})), before: snapshot(), children: [] };
+    if (effect.action === 'sacrifice-target-v8') {
+      row.targetLocks = (ctx._oracleTargetControllers?.[effect.target] || []).map(entry => ({ ...entry }));
+      row.sacrificeStart = state.sacrifices.length;
+    }
     state.rows.push(row);
     try {
       return await original.call(this, ctx, effect, { ...helpers, effects: async (childCtx, effects) => {
@@ -63,6 +73,7 @@ function install(MTG, context, h) {
       } });
     } finally {
       row.after = snapshot();
+      if (effect.action === 'sacrifice-target-v8') row.sacrifices = state.sacrifices.slice(row.sacrificeStart);
       if (effect.action === 'delayed-object') {
         const added = row.after.delayed.filter(entry => !row.before.delayed.includes(entry));
         row.delayedEntries = added;
@@ -110,7 +121,7 @@ function objectSubjects(row) {
   if (reference === 'created-tokens') return row.createdTokens.filter(entry => valid(entry.card, entry.zoneVersion)).map(entry => entry.card);
   if (reference === 'attached-host') {
     const source = initial.cards.get(row.source);
-    return source?.zone === 'battlefield' && source.zoneVersion === row.ctx.sourceZoneVersion ? initial.battlefield.filter(card => card.iid === row.source.attachedTo) : [];
+    return valid(row.source,row.ctx.sourceZoneVersion) ? initial.battlefield.filter(card => card.iid === row.source.attachedTo) : [];
   }
   assert.fail('Missing independent object-effect subject proof: ' + JSON.stringify(reference));
 }
@@ -187,6 +198,47 @@ export async function assertV8Effect(MTG, context, entry, effect, source, target
   }
   const row = context.v8EffectWitnesses?.find(row => !row.verified && row.source === source && same(row.effect, effect));
   assert.ok(row, label + ': effect executes through the real v8 runtime'); row.verified = true;
+  if (effect.action === 'sacrifice-target-v8') {
+    const selected = flat(row.targets[effect.target]);
+    const expected = [...new Set(row.targetLocks.filter(lock => {
+      const old = row.before.cards.get(lock.subject);
+      return selected.includes(lock.subject) && old?.zone === 'battlefield' && old.zoneVersion === lock.zoneVersion && old.ctrl === row.ctx.you && !old.cantSacrifice;
+    }).map(lock => lock.subject))];
+    assert.deepEqual(row.sacrifices.map(event => event.card), expected, label + ': only the originally selected legal incarnation is sacrificed');
+    for (const card of expected) {
+      assert.ok(row.sacrifices.some(event => event.card === card && event.player === row.ctx.you), label + ': the controlling player actually sacrifices it');
+      const old = row.before.cards.get(card), after = row.after.cards.get(card);
+      assert.ok(after.zone !== 'battlefield' || after.zoneVersion !== old.zoneVersion, label + ': sacrifice moves the selected incarnation off the battlefield');
+    }
+    return true;
+  }
+  if(effect.action==='change-characteristics-v8'){
+    const affected=objectSubjects(row),records=row.after.untilEffects.filter(record=>!row.before.untilEffects.includes(record)&&record.kind==='oracleCharacteristics');
+    assert.ok(affected.length,label+': actual characteristic-change subject');
+    assert.equal(records.length,affected.length,label+': exactly the selected incarnations change');
+    for(const card of affected){
+      const old=row.before.cards.get(card),after=row.after.cards.get(card),record=records.find(record=>record.iid===card.iid);
+      assert.ok(record,label+': each selected object receives the effect');
+      assert.equal(record.zoneVersion,old.zoneVersion);assert.equal(record.expires,'eot');
+      assert.equal(record.power,undefined);assert.equal(record.toughness,undefined);
+      assert.deepEqual(after.types,old.types,label+': card types are preserved');
+      if(effect.characteristic==='color'){
+        const color=effect.choose?record.colors[0]:null;
+        if(effect.choose)assert.ok(trace.some(item=>item.query.aiHint?.kind==='oracleColorChange'&&item.result===color&&item.query.options.some(option=>option.key===color)),label+': actual controller chooses a legal color');
+        const expected=[...new Set([...(effect.retain?old.colors:[]),...(effect.choose?[color]:effect.colors)])].sort();
+        assert.deepEqual([...after.colors].sort(),expected,label+': exact replacement or added colors');
+        assert.deepEqual(after.subtypes,old.subtypes,label+': a color change preserves subtypes');
+      }else{
+        const subtype=record.creatureType;
+        assert.ok(MTG.CREATURE_SUBTYPES.has(subtype));
+        assert.ok(trace.some(item=>item.query.aiHint?.kind==='chooseType'&&item.result===subtype&&item.query.options.some(option=>option.key===subtype)),label+': actual controller chooses a legal creature type');
+        const expected=[...new Set([...old.subtypes.filter(type=>effect.retain||!MTG.CREATURE_SUBTYPES.has(type)),subtype])].sort();
+        assert.deepEqual([...after.subtypes].sort(),expected,label+': exact replacement or added creature type');
+        assert.deepEqual(after.colors,old.colors,label+': a subtype change preserves colors');
+      }
+    }
+    return true;
+  }
   if (effect.action === 'delayed-object') {
     assert.equal(row.delayedEntries.length, 1, label + ': one printed delayed trigger is installed');
     const delayed = row.delayed.entry; row.delayed.label = label; row.delayed.subjects = objectSubjects(row);
@@ -251,6 +303,7 @@ export async function assertV8Effect(MTG, context, entry, effect, source, target
         assert.equal(after.toughness - old.toughness, (expected.toughness || 0) * multiplier, label + ': group applies exact toughness');
         for (const keyword of expected.keywords || []) assert.ok(after.keywords.includes(keyword), label + ': group grants every printed keyword');
       } else if (printed.action === 'counter') assert.ok((after.counters[printed.counter] || 0) >= (old.counters[printed.counter] || 0) + value(context, row, printed.n, child.before), label + ': printed counters are actually placed');
+      else if (printed.action === 'linked-untap-v8')assert.ok(child.after.untilEffects.some(effect=>effect.kind==='oracleUntapLock'&&effect.iid===card.iid&&effect.zoneVersion===card.zoneVersion&&effect.sourceIid===row.source.iid&&effect.mode===printed.mode),label+': original group object retains the exact linked duration');
       else if (printed.action === 'skip-next-untap') { assert.equal(after.noUntapOnce, true, label + ': every retained group object receives its next-untap restriction'); retainFreeze(context, [card], label); }
       else if (printed.action === 'cant-block-until-eot') assert.equal(after.cantBlock, true, label + ': retained object cannot block');
       else if (printed.action === 'unblockable-until-eot') assert.equal(after.unblockable, true, label + ': retained object cannot be blocked');

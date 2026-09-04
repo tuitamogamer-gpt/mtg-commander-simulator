@@ -10,7 +10,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 // Not everything in a live game is data: until-end-of-turn effects, delayed
 // triggers and emblems carry closures created by card scripts, and there is no
 // general way to serialize a function. So a snapshot is only taken at a moment
-// when none of those exist — in practice the start of a turn, which is a
+// when none of those unsupported effects exist — in practice the start of a turn, which is a
 // natural resume point anyway and covers the large majority of turns. When a
 // turn begins with a lingering effect the previous snapshot is kept, so the
 // worst case is resuming one turn earlier rather than losing the game.
@@ -123,6 +123,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       life: player.life,
       startingLife: player.startingLife,
       poison: Number(player.poison) || 0,
+      counters: {energy: Number(player.counters?.energy) || 0},
       lost: !!player.lost,
       landsPlayed: Number(player.landsPlayed) || 0,
       maxLands: Number(player.maxLands) || 1,
@@ -145,9 +146,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   // What in this game state cannot be written down?
-  // Goad is the one lasting effect that is pure data — a card id, the player
-  // it may not attack, and the turn it ends on. Everything else in
-  // untilEffects carries a closure and still blocks a save.
+  // Only explicitly supported data-only lasting effects are portable. Unknown
+  // effect shapes and closures still block a save instead of silently changing
+  // the resumed rules state.
   function isPlainGoad(effect) {
     return effect && effect.kind === 'goadCard' && typeof effect.apply !== 'function' &&
       Number.isInteger(effect.iid) && (effect.expires === 'never' || effect.expires === 'untilTurnOf');
@@ -160,18 +161,51 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
   }
 
+  const BASE_PT_FIELDS = new Set(['kind', 'iid', 'zoneVersion', 'timestamp', 'expires', 'power', 'toughness', 'keywords', 'temporary']);
+  const MAX_BASE_PT_EFFECTS = 4096;
+  function isPlainBasePT(effect) {
+    return effect && effect.kind === 'oracleBasePT' &&
+      Object.keys(effect).every(key => BASE_PT_FIELDS.has(key)) &&
+      Number.isSafeInteger(effect.iid) && effect.iid > 0 &&
+      Number.isSafeInteger(effect.zoneVersion) && effect.zoneVersion >= 0 &&
+      Number.isSafeInteger(effect.timestamp) && effect.timestamp > 0 && effect.timestamp <= MTG.MAX_RESTORED_TIMESTAMP &&
+      (effect.expires === 'object' || effect.expires === 'eot') &&
+      (effect.temporary === undefined || typeof effect.temporary === 'boolean') &&
+      (effect.expires === 'eot') === (effect.temporary === true) &&
+      (effect.power !== undefined || effect.toughness !== undefined) &&
+      [effect.power, effect.toughness].every(value => value === undefined || Number.isSafeInteger(value)) &&
+      (effect.keywords === undefined || Array.isArray(effect.keywords) && effect.keywords.length <= 32 &&
+        effect.keywords.every(keyword => typeof keyword === 'string' && keyword.length <= 64));
+  }
+  function captureBasePT(effect) {
+    const out = {
+      kind: 'oracleBasePT', iid: effect.iid, zoneVersion: effect.zoneVersion,
+      timestamp: effect.timestamp, expires: effect.expires,
+    };
+    for (const field of ['power', 'toughness', 'temporary']) if (effect[field] !== undefined) out[field] = effect[field];
+    if (effect.keywords !== undefined) out.keywords = effect.keywords.slice();
+    return out;
+  }
+  function currentBasePTEffects(game) {
+    const versions = new Map(game.battlefield.map(card => [card.iid, card.zoneVersion]));
+    // A blink/death permanently invalidates the old object-version effect.
+    // Do not carry these inert historical entries into every later checkpoint.
+    return game.untilEffects.filter(effect => isPlainBasePT(effect) && versions.get(effect.iid) === effect.zoneVersion);
+  }
+
   MTG.gameStateSnapshotBlockers = function (game) {
     const blockers = [];
     if (!game || !Array.isArray(game.players) || !game.players.length) return ['no game'];
     if (game.stack.length) blockers.push(`${game.stack.length} object(s) on the stack`);
     if (game.pendingTriggers.length) blockers.push(`${game.pendingTriggers.length} waiting trigger(s)`);
-    const lasting = game.untilEffects.filter(effect => !isPlainGoad(effect));
+    const lasting = game.untilEffects.filter(effect => !isPlainGoad(effect) && !isPlainBasePT(effect));
     if (lasting.length) blockers.push(`${lasting.length} lasting effect(s)`);
+    if (currentBasePTEffects(game).length > MAX_BASE_PT_EFFECTS) blockers.push('too many base power/toughness effects');
     if (game.delayed.length) blockers.push(`${game.delayed.length} delayed trigger(s)`);
     const emblems = game.players.reduce((sum, player) => sum + (player.emblems || []).length, 0);
     if (emblems) blockers.push(`${emblems} emblem(s)`);
     if ((game._additionalPhases || []).length) blockers.push('a scheduled additional phase');
-    if ((game.extraTurns || []).length) blockers.push('a scheduled extra turn');
+    if ((game.extraTurns || []).length || game._extraTurnAnchor) blockers.push('a scheduled extra turn');
     return blockers;
   };
 
@@ -216,6 +250,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // that someone still owes a tribute.
       diplomacy: game.diplomacy ? JSON.parse(JSON.stringify(game.diplomacy)) : null,
       goads: game.untilEffects.filter(isPlainGoad).map(captureGoad),
+      basePTEffects: currentBasePTEffects(game).map(captureBasePT),
       cards,
     };
   }
@@ -237,6 +272,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     assert(snapshot && snapshot.format === FORMAT, 'this save was written by a different build.');
     assert(Array.isArray(snapshot.players) && snapshot.players.length === game.players.length,
       'the saved table has a different number of seats.');
+    assert(snapshot.players.every(player=>player.counters===undefined||player.counters&&Number.isSafeInteger(player.counters.energy??0)&&(player.counters.energy??0)>=0), 'invalid player energy counters.');
+    const basePTEffects = snapshot.basePTEffects === undefined ? [] : snapshot.basePTEffects;
+    assert(Array.isArray(basePTEffects) && basePTEffects.length <= MAX_BASE_PT_EFFECTS && basePTEffects.every(isPlainBasePT),
+      'invalid base power/toughness effects.');
+    // Leave ample exact-integer headroom for future cards/effects. A malformed
+    // save must never poison the process-wide clock near MAX_SAFE_INTEGER.
+    assert(Array.isArray(snapshot.cards) && snapshot.cards.every(card => card.timestamp === undefined ||
+      Number.isSafeInteger(card.timestamp) && card.timestamp >= 0 && card.timestamp <= MTG.MAX_RESTORED_TIMESTAMP),
+      'invalid card timestamps.');
 
     game.battlefield.length = 0;
     for (const player of game.players) {
@@ -293,11 +337,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
 
+    for (const effect of basePTEffects) {
+      const card = byIid.get(effect.iid);
+      if (card && card.zone === 'battlefield' && card.zoneVersion === effect.zoneVersion) game.untilEffects.push(captureBasePT(effect));
+    }
+
     for (const [index, saved] of snapshot.players.entries()) {
       const player = game.players[index];
       player.life = saved.life;
       player.startingLife = saved.startingLife;
       player.poison = saved.poison;
+      player.counters = {energy: saved.counters?.energy || 0};
       player.lost = saved.lost;
       player.landsPlayed = saved.landsPlayed;
       player.maxLands = saved.maxLands;
@@ -329,6 +379,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // New cards must never reuse an identity that is already on the table.
     const highest = snapshot.cards.reduce((max, entry) => Math.max(max, Number(entry.iid) || 0), 0);
     game._nextCardIid = Math.max(Number(snapshot.nextCardIid) || 0, highest + 1);
+    // Later layer-setting effects must sort after the saved permanents and
+    // effects even when this process started with a fresh timestamp clock.
+    const highestTimestamp = game.battlefield.concat(game.untilEffects).reduce((max, entry) =>
+      Number.isSafeInteger(entry.timestamp) ? Math.max(max, entry.timestamp) : max, 0);
+    MTG.reserveTimestamp(highestTimestamp);
     // The random stream cannot be captured (it lives in a closure), so a
     // resumed game gets a fresh but deterministic one: the same save always
     // continues the same way.
@@ -353,7 +408,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       active: game.turnPlayer ? game.turnPlayer.idx : null,
       monarch: game.monarch ? game.monarch.idx : null,
       players: game.players.map(player => ({
-        idx: player.idx, life: player.life, poison: player.poison || 0, lost: !!player.lost,
+        idx: player.idx, life: player.life, poison: player.poison || 0, energy: player.counters?.energy || 0, lost: !!player.lost,
         commanderDamage: Object.entries(player.commanderDamage || {}).sort(),
         zones: ['library', 'hand', 'graveyard', 'exile', 'command'].map(zone =>
           player[zone].map(card => `${card.name}#${card.iid}`).sort().join(',')),
@@ -366,6 +421,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.attachedTo ?? null].join('|')).sort(),
       goads: game.untilEffects.filter(isPlainGoad).map(effect =>
         [effect.iid, effect.expires, effect.notPlayer ? effect.notPlayer.idx : '', effect.whoTurn ? effect.whoTurn.idx : ''].join('|')).sort(),
+      basePTEffects: currentBasePTEffects(game).map(captureBasePT),
       agreements: (game.diplomacy && game.diplomacy.contracts || []).map(contract =>
         [contract.id, contract.status, contract.clauses.map(clause => `${clause.type}:${clause.state}`).join(',')].join('|')).sort(),
     });

@@ -16,7 +16,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const repeats = Math.pow(2, tekuthals);
     for (let pass = 0; pass < repeats; pass++) {
       const permanents = g.bf().filter(c => Object.values(c.counters).some(n => n > 0));
-      const players = g.alivePlayers().filter(q => (q.poison || 0) > 0);
+      const players = g.alivePlayers().filter(q => (q.poison || 0) > 0 || (q.counters?.energy||0)>0);
       const candidates = permanents.concat(players);
       if (!candidates.length) {
         g.lg(`${p.name} proliferates (no counters to choose).`);
@@ -32,7 +32,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const additions = chosen.map(subject => ({
         target: subject,
         kinds: subject instanceof MTG.Player
-          ? ((subject.poison || 0) > 0 ? ['poison'] : [])
+          ? [...((subject.poison||0)>0?['poison']:[]),...((subject.counters?.energy||0)>0?['energy']:[])]
           : Object.entries(subject.counters || {}).filter(([, n]) => n > 0).map(([kind]) => kind),
       }));
       for (const subject of chosen) {
@@ -41,6 +41,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             subject.poison++;
             g.lg(`${subject.name}: poison ${subject.poison}.`);
           }
+          if((subject.counters?.energy||0)>0)await MTG.OracleV8Energy.gain(g,subject,1,null);
           continue;
         }
         for (const kind of Object.keys(subject.counters)) {

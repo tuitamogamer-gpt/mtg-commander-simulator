@@ -959,20 +959,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const t = ctx.targets[0];
         if (!t) return;
-        await ctx.g.exileCard(t);
-        const whaleIid = ctx.src.iid, tRef = t;
-        ctx.g.delayed.push({
-          on: 'lto', name: 'Whale releases', ctrl: ctx.you,
-          filter: (g2, d) => d.card && d.card.iid === whaleIid,
-          run: async c2 => {
-            if (tRef.zone === 'exile') {
-              tRef.owner.exile.splice(tRef.owner.exile.indexOf(tRef), 1);
-              tRef.zone = 'nowhere';
-              await c2.g.move(tRef, 'battlefield', { ctrl: tRef.owner });
-              c2.g.lg(`${tRef.name} returns (the whale is gone).`);
-            }
-          },
+        const sourceZoneVersion = ctx.sourceZoneVersion ?? ctx.src.zoneVersion;
+        // CR 610.3b: the duration cannot begin after this Whale has left.
+        if (ctx.src.zone !== 'battlefield' || ctx.src.zoneVersion !== sourceZoneVersion) return;
+        // Use the engine's immediate return effect, with both zone identities,
+        // so leaving never creates a response window or returns a later exile.
+        (ctx.g.oracleExileDurations ||= []).push({
+          source: ctx.src, sourceZoneVersion,
+          cards: [{ card: t, zoneVersion: t.zoneVersion + 1 }],
         });
+        await ctx.g.exileMany([t]);
       },
     }],
   };
@@ -1446,15 +1442,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Windswift Slice'] = {
     targets: [
-      T.yourCreature({ prompt: 'Your creature', aiHint: { goal: 'buff' } }),
-      T.oppCreature({ prompt: 'Target', aiHint: { goal: 'removal' } }),
+      T.yourCreature({ prompt: 'Windswift Slice: your creature that will deal damage equal to its power', aiHint: { goal: 'buff' } }),
+      T.oppCreature({ prompt: 'Windswift Slice: creature to damage; excess damage creates 1/1 green Elf Warriors', aiHint: { goal: 'removal' } }),
     ],
     resolve: async ctx => {
       const [a, b] = ctx.targets;
       if (!a || !b) return;
-      const lethal = a.kw('deathtouch') ? 1 : Math.max(0, b.toughness - b.damage);
-      const dealt = await ctx.g.damageCreature(a, b, a.power);
-      const excess = Math.max(0, dealt - lethal);
+      const damageResults = [];
+      // Finish both instructions before SBA so a lethally damaged creature
+      // still applies its abilities when the Elf Warriors enter (CR 704.4).
+      const dealt = await ctx.g.damageCreature(a, b, a.power, { deferSBA: true, damageResults });
+      const excess = damageResults.reduce((total, result) => total + result.excess, 0);
+      ctx.g.lg(`Windswift Slice: ${dealt} damage dealt, ${excess} excess damage — create ${excess} 1/1 green Elf Warrior token${excess === 1 ? '' : 's'}.`, 'token');
       if (excess > 0) await ctx.g.makeTokens('elfWarrior', ctx.you, { n: excess });
     },
   };
@@ -1529,8 +1528,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         { key: 'knowledge', label: '📚 Knowledge (3 cards)' },
       ], (voter) => voter === ctx.you ? 'time' : 'knowledge');
       if (E7.voteBeats(votes, 'time', 'knowledge')) {
-        ctx.g.extraTurns = ctx.g.extraTurns || [];
-        ctx.g.extraTurns.push(ctx.you);
+        ctx.g.scheduleExtraTurn(ctx.you);
         ctx.g.lg(`${ctx.you.name} gets an EXTRA TURN!`);
       } else {
         await ctx.g.draw(ctx.you, 3);
@@ -1666,6 +1664,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     aura: true,
     auraTarget: [T.creature({ prompt: 'Enchant creature', aiHint: { goal: 'debuff' } })],
     statics: [{
+      oracleLegacyAbilityLoss: true,
       // phase 1 = layer 7b (CR 613.4b): base P/T se mora postaviti PRIJE nego
       // recalc kopira base → cur, inače se upis tiho izgubi.
       phase: 1,

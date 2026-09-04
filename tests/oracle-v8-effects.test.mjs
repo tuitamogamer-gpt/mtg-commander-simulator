@@ -2000,7 +2000,7 @@ test('v8 effect parser rejects incomplete instructions and unsupported semantic 
     'You may discard two cards, then exile your hand. If you do, draw three cards.',
     'You may sacrifice a creature or do something unknown. If you do, draw a card.',
     'You may exile a creature card from your graveyard without revealing it. If you do, draw a card.',
-    'You may pay {E}. If you do, draw a card.',
+    'You may pay half an {E}. If you do, draw a card.',
     'Reveal cards from the top of your library until you reveal a nonlegendary creature card with lesser mana value, put it onto the battlefield, then put the rest on the bottom of your library in a random order.',
     'You may sacrifice two creatures. If you do, reveal cards from the top of your library until you reveal a nonlegendary creature card with lesser mana value, put it onto the battlefield, then put the rest on the bottom of your library in a random order.',
     'You may pay {X}. If you do, draw X cards. X cannot be larger than a secret number.',

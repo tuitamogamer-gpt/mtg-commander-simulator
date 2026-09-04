@@ -21,6 +21,24 @@ function destination(text) {
     ...(text.endsWith('a random order') ? {random: true} : {})};
 }
 function filterFor(text, helpers) {
+  const original=text.replace(/ and\/or /g,' or ').replace(/\bcards\b/g,'card').trim();
+  // Keep the printed position of "card" before qualifications. Moving it to
+  // the end turns "creature card with mana value 3 or less" into a different,
+  // unrecognizable noun phrase.
+  const direct=original!=='card'&&/\bcard\b/.test(original)&&helpers.target?.('target '+original+' from your graveyard');
+  if(direct?.zone==='graveyard')return {filter:direct};
+  const stat=/^(.+?) cards? with (power|toughness|power or toughness) (\d+) or (less|greater)$/.exec(original);
+  if(stat){
+    const base=helpers.target?.('target '+stat[1]+' card from your graveyard');if(!base||base.zone!=='graveyard')return null;
+    const rules=stat[2].split(' or ').map(name=>({...base,stat:name,threshold:Number(stat[3]),comparison:stat[4]}));
+    return {filter:rules.length===1?rules[0]:{what:'card',zone:'graveyard',controller:'you',min:1,alternatives:rules}};
+  }
+  if(original==='historic card')return {filter:{what:'card',zone:'graveyard',controller:'you',min:1,alternatives:[
+    {what:'artifact',zone:'graveyard',controller:'you',min:1},
+    {what:'card',zone:'graveyard',controller:'you',min:1,legendary:true},
+    {what:'card',zone:'graveyard',controller:'you',min:1,subtype:'Saga'},
+  ]}};
+  if(original==='land card with a basic land type')return {filter:{what:'land',zone:'graveyard',controller:'you',min:1,alternatives:['Plains','Island','Swamp','Mountain','Forest'].map(subtype=>({what:'land',zone:'graveyard',controller:'you',min:1,subtype}))}};
   text = text.replace(/ and\/or /g, ' or ').replace(/\bcards?\b/g, '').trim()
     .replace(/\b(creatures|artifacts|enchantments|lands|permanents|planeswalkers)\b/g, word => word.slice(0, -1));
   if (!text || /^(?:one of them|of them|of those cards)$/i.test(text)) return {};
@@ -153,6 +171,11 @@ export function paymentLibraryEffect(card, line, helpers = {}) {
 }
 
 export function extensionEffect(card, line, helpers = {}) {
+  const removalSearch=/^(Destroy (?:up to one )?target [^.]+\.) (Its controller may search .+)$/.exec(line);
+  if(removalSearch){
+    const first=helpers.effect?.(card,removalSearch[1]),search=ownerSearchEffect(card,removalSearch[2],helpers,{kind:'target-controller',index:0});
+    if(first&&!first.optional&&first.targets?.length===1&&first.targets[0].zone==='battlefield'&&first.effects?.length===1&&first.effects[0].action==='destroy'&&search)return {targets:first.targets,optional:false,effects:[...first.effects,...search.effects]};
+  }
   let text = String(line).trim(); if (!text.endsWith('.')) return null;
   text = text.slice(0, -1);
   const zoneShuffle = /^(?:(Target player|Each player) shuffles? their (graveyard|hand and graveyard) into their library|Shuffle your (graveyard|hand and graveyard) into your library)(?:, then (draws?|draw) (a|an|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|\d+) cards?)?$/i.exec(text);
@@ -249,6 +272,8 @@ export function extensionEffect(card, line, helpers = {}) {
     n = countFor(head[5], helpers); if (n === null || n === undefined) return null;
   }
   let body = head[6];
+  body = body.replace(/^(You may put |Put )one of those cards back on top/i, '$1one of those cards on top')
+    .replace(/^Put one into your hand/i, 'Put one of them into your hand');
   const result = (selections, rest) => ({targets, optional, effects: [{action: 'library-select-v8', n, ...(who !== 'you' ? {who} : {}),
     visibility: head[1].toLowerCase() === 'reveal' ? 'reveal' : 'look', selections, rest, ...(optionalShuffle ? {optionalShuffle: true} : {})}]});
 
@@ -262,8 +287,36 @@ export function extensionEffect(card, line, helpers = {}) {
   const parts = partition(body);
   if (!parts) {const selection = select(body, helpers); return selection ? result([selection], {destination: 'stay'}) : null;}
   const {rest, singularOther} = parts; body = parts.body;
+  body=body.replace(/^(Reveal .+? from among (?:them|the revealed cards)), then put /i,'$1 and put ');
   const selection = select(body, helpers);
   if (!selection) return null;
   if (singularOther && (typeof n !== 'number' || !selection.required || selection.filter || selection.max !== n - 1)) return null;
   return result([selection], rest);
+}
+
+export {filterFor as libraryFilter};
+
+// Runs after the frozen core/older grammars, preserving their descriptors.
+export function fallbackEffect(card,line,helpers={}){
+ const ownerSearch=ownerSearchEffect(card,line,helpers);if(ownerSearch)return ownerSearch;
+ const search=new RegExp('^(You may )?Search your library for ('+SEARCH_QUANTITY+') (.+?)(?:, (reveal (?:it|them|that card|those cards)))?(?:, | and )put (?:it|them|that card|those cards) (into your hand|into your graveyard|onto the battlefield(?: tapped)?), then shuffle\\.$','i').exec(line);
+ if(!search)return null;
+ const selected=searchFilterFor(search[3],helpers),placement=searchPlacement(search[5]);
+ if(!selected||!placement||selected.unrestricted&&placement.destination==='battlefield')return null;
+ return {targets:[],optional:!!search[1],effects:[{action:'library-search-v8',who:'you',...searchQuantity(search[2]),...selected,reveal:!!search[4],placements:[{n:'all',...placement}]}]};
+}
+
+function ownerSearchEffect(card,line,helpers,overrideWho){
+ const actor=/^(Each player|Each opponent|Each other player|Target player|Target opponent|That player|That creature's controller|Its controller) (may )?search(?:es)? (?:their|that player's) library for (.+)\.$/i.exec(line);
+ if(!actor||actor[1].toLowerCase()==='its controller'&&!overrideWho)return null;
+ let body=actor[3].replace(/\btheir (hand|graveyard)\b/g,'your $1')
+  .replace(/\. Then each player who searched their library this way shuffles$/i,', then shuffle');
+ const parsed=new RegExp('^('+SEARCH_QUANTITY+') (.+?)(?:, (reveal (?:it|them|that card|those cards)))?(?:, | and )put (?:it|them|that card|those cards) (into your hand|onto the battlefield(?: tapped)?), then shuffle$','i').exec(body);
+ if(!parsed)return null;
+ const selected=searchFilterFor(parsed[2],helpers),placement=searchPlacement(parsed[4]);
+ if(!selected||!placement||selected.unrestricted&&placement.destination==='battlefield')return null;
+ const noun=actor[1].toLowerCase(),targeted=noun.startsWith('target '),target=targeted?helpers.target(noun):null;
+ if(targeted&&!target)return null;
+ const who=overrideWho??(targeted?0:noun==='each player'?'each-player':noun==='each opponent'||noun==='each other player'?'each-opponent':noun==='that player'?'event-player':'event-card-controller');
+ return {targets:targeted?[target]:[],optional:false,effects:[{action:'library-search-v8',who,chooser:'owner',ownerSearch:true,optionalSearch:!!actor[2],...searchQuantity(parsed[1]),...selected,reveal:!!parsed[3],placements:[{n:'all',...placement}]}]};
 }

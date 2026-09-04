@@ -257,6 +257,23 @@ async function paidCast(ctx, name) {
   return card;
 }
 
+test('quoted conditions remain inside the granted ability while an outer condition gates the grant',()=>{
+  const card={name:'Quoted Boundary Equipment',type_line:'Artifact — Equipment',mana_cost:'{1}',layout:'normal'};
+  const inner='Equipped creature gets +0/+1 and has "This creature has hexproof as long as it\'s untapped."';
+  const parse=rule=>semanticClass({...card,oracle_text:rule+'\nEquip {1}'},{compilerVersion:8});
+  const operations=parse(inner).implementation;
+  assert.equal(operations[0].toughness,1);assert.equal(operations[0].condition,undefined);
+  assert.deepEqual(operations[1].keywords,['hexproof']);
+  assert.deepEqual(operations[1].condition,{kind:'source-status',status:'untapped'});
+  assert.equal(operations[1].conditionSubject,'affected');
+  const outer=parse('Equipped creature has "{G}: Draw a card." as long as it\'s untapped.').implementation[0];
+  assert.equal(outer.kind,'attachment-operation');assert.deepEqual(outer.condition,{kind:'source-status',status:'untapped'});
+  assert.equal(outer.operation.kind,'generic-ability');assert.deepEqual(outer.operation.effects,[{action:'draw',who:'you',n:1}]);
+  for(const malformed of [inner.replace('untapped','dancing'),inner+' Invent an unsupported effect.',inner.replace(/"$/,''),inner.replace('hexproof','hexproof and an unsupported ability')]){
+    assert.equal(parse(malformed).semanticClass,undefined,malformed);
+  }
+});
+
 test('v8 permanent clauses add closed grammar without rewriting supported v7 descriptors', () => {
   for (const args of sources) {
     const card = input(...args);

@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEngine } from '../tests/helpers/load-engine.mjs';
 import { auditSource } from './source-audit.mjs';
+import { oracleEquipAbility } from './card-certification-rules.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const reportDir = path.join(root, 'reports');
@@ -51,7 +52,7 @@ function issuesFor(name) {
   if (types.includes('Land') && /\{T\}:\s*Add/i.test(oracle) && !def.mana) {
     issues.push('Land proizvodi manu u Oracle tekstu, ali nema mana putanju');
   }
-  if ((def.subtypes || []).includes('Equipment') && /^\s*Equip\b/im.test(oracleWithoutReminder(oracle)) && def.equip === undefined && !def.attachGrant) {
+  if ((def.subtypes || []).includes('Equipment') && /^\s*Equip\b/im.test(oracleWithoutReminder(oracle)) && def.equip === undefined && !def.attachGrant && !oracleEquipAbility(def)) {
     issues.push('Equipment nema equip/attach putanju');
   }
   if ((def.subtypes || []).includes('Aura') && /Enchant (creature|permanent|player|opponent)/i.test(oracle) && !def.auraTarget && !def.isPlayerAura) {

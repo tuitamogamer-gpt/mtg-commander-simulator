@@ -1,14 +1,42 @@
 import assert from 'node:assert/strict';
+import { stageCondition } from './oracle-v5-proof.mjs';
+
+function stageBoundEventCondition(MTG,ctx,source,card,condition,h){
+  if(condition?.kind!=='v8-event-condition'||!card)return;
+  const {game,a}=ctx,predicate=condition.predicate;
+  if(predicate==='past-counters'){
+    if(condition.counter)card.counters[condition.counter]=condition.min??0;
+    else if(condition.max===0)card.counters={};
+    else card.counters.charge=Math.max(1,condition.min||1);
+  }else if(predicate==='past-blocking')card.blocking=condition.negate?null:source.iid;
+  else if(['past-quality','live-quality','past-historic'].includes(predicate)&&!card.def.oracleImplementation){
+    const filter=predicate==='past-historic'?{what:'artifact',zone:'battlefield',controller:'you'}:condition.filter;
+    const sample=h.stageGenericTarget(MTG,ctx,filter,'v8-bound-quality');
+    card.def={...sample.def,name:card.def.name};card.isToken=sample.isToken;
+    game.battlefield.splice(game.battlefield.indexOf(sample),1);
+  }else if(predicate==='past-owned-aura'){
+    const aura=h.permanent(MTG,game,a,h.fixtureDefinition('V8 bound Aura',['Enchantment'],{subtypes:['Aura']}));
+    aura.attachedTo=card.iid;card.attachments.push(aura.iid);
+  }else if(predicate==='live-stats'&&!card.def.oracleImplementation)card.def={...card.def,power:String(condition.power),toughness:String(condition.toughness)};
+  else if(predicate==='greater-than-source'&&!card.def.oracleImplementation)card.def={...card.def,power:String(source.power+1),toughness:'20'};
+  else if(predicate==='entered-turn')card.meta._enteredTurn=game.turnNo;
+  else if(predicate==='live-keyword'){
+    if(condition.negate)delete card.counters[condition.keyword];else card.counters[condition.keyword]=1;
+  }
+  game.recalc();
+}
 
 // Events are exercised through the same engine operations used by gameplay.
 // Synthetic objects provide qualifying public characteristics; the imported
 // card's implementation is never changed to make its predicate pass.
 export async function fireV8Event(MTG,ctx,source,operation,h){
-  const {game,a,b}=ctx,f=operation.eventFilter,event=operation.event;
+  const {game,a,b}=ctx,f=operation.eventFilter,event=operation.event,bound=operation.condition?.kind==='v8-event-condition'?operation.condition:null;
   if(f?.kind!=='v8-event')return false;
-  const player=f.player==='opponent'||['damageToPlayer','combatDamageToPlayer'].includes(event)&&f.player!=='you'?b:a;
+  if(f.headerCondition)stageCondition(MTG,ctx,f.headerCondition,source,h);
+  const player=f.declaredDefender==='you'||f.player==='opponent'||['damageToPlayer','combatDamageToPlayer'].includes(event)&&f.player!=='you'?b:a;
   let card;
   if(f.attachedSource&&!source.attachedTo){const host=h.stageGenericTarget(MTG,ctx,{what:'creature',controller:'you'},'v8-damage-host');host.def.power='2';game.recalc();await game.attach(source,host);}
+  if(f.attachedAttacking&&!source.attachedTo){const host=h.stageGenericTarget(MTG,ctx,{what:'creature',controller:'you'},'v8-battalion-host');await game.attach(source,host);}
   if(f.sourceSubject==='attached'&&!source.attachedTo){const host=h.stageGenericTarget(MTG,ctx,{what:'creature',controller:'you'},'v8-combat-host');await game.attach(source,host);}
   if(f.sourceField){
     const participant=f.sourceSubject==='attached'?game.byIid(source.attachedTo):source;
@@ -19,11 +47,25 @@ export async function fireV8Event(MTG,ctx,source,operation,h){
     if(!source.attachedTo)await game.attach(source,card);
   }else if(f.field!=='so'&&event!=='cast'&&!['lifeGain','lifeLost','crime','scry'].includes(event)){
     const nestedController=f.target?.alternatives?.find(filter=>filter.controller&&filter.controller!=='any')?.controller;
-    const controller=f.target?.controller&&f.target.controller!=='any'?f.target.controller:nestedController||(['targeted','damageToPlayer','combatDamageToPlayer'].includes(event)?'you':player===a?'you':'opponent');
-    card=h.stageGenericTarget(MTG,ctx,{what:event==='landPlayed'?'land':'creature',...f.target,controller},'v8-event');
+    const controller=f.damageSourceController&&f.damageSourceController!=='any'?f.damageSourceController:
+      f.target?.controller&&f.target.controller!=='any'?f.target.controller:nestedController||
+      (event==='attacks'&&['you','you-or-your-planeswalker'].includes(f.defender)?'opponent':
+        ['targeted','damageToPlayer','combatDamageToPlayer'].includes(event)?'you':player===a?'you':'opponent');
+    // A source-quality descriptor uses the graveyard card grammar so that an
+    // instant, artifact, or creature is all expressible. Its damage event still
+    // originates from the source's actual battlefield/Stack incarnation.
+    card=h.stageGenericTarget(MTG,ctx,{what:event==='landPlayed'?'land':'creature',...f.target,
+      ...(f.damageSourceController?{zone:'battlefield'}:{}),controller},'v8-event');
   }
   if(card){
+    if(f.subject==='attached'&&!card.def.oracleImplementation&&/"kind":"event-card-stat"/.test(JSON.stringify(operation.effects||[]))){
+      // Generic defensive fixtures have enormous power/toughness so ordinary
+      // removal probes survive. A host-stat token/library ability must instead
+      // exercise a small real cohort, rather than create twenty thousand tokens.
+      card.def={...card.def,power:'3',toughness:'5'};game.recalc();
+    }
     h.stageEventConditions?.(MTG,ctx,card,operation);
+    stageBoundEventCondition(MTG,ctx,source,card,bound,h);
     ctx.eventCard=card;ctx.eventController=card.ctrl;ctx.eventCardBefore=h.cardState(card);
     ctx.eventCardStats={power:card.power,toughness:card.toughness,mv:card.mv};
   }
@@ -37,6 +79,10 @@ export async function fireV8Event(MTG,ctx,source,operation,h){
     await game.move(card,f.to||'exile');
   }else if(event==='etb'){
     if(card.zone==='battlefield')await game.move(card,'hand');
+    if(f.enteredTapped===false){
+      const entryRule=card.def.oracleImplementation?.find(operation=>operation.kind==='conditional-enters-tapped'&&operation.condition==='generic');
+      if(entryRule)stageCondition(MTG,ctx,entryRule.untappedCondition,card,h);
+    }
     await game.move(card,'battlefield',{ctrl:card.ctrl});
   }else if(event==='dies')await game.move(card,'graveyard');
   else if(event==='lto')await game.move(card,'exile');
@@ -52,7 +98,36 @@ export async function fireV8Event(MTG,ctx,source,operation,h){
     const action=game.activatableList(card.owner).find(row=>row.card===card&&row.cycling);assert.ok(action,'v8 paid cycling action');
     assert.equal(await game.activateAbility(card.owner,action),true);
   }else if(event==='cast'){
-    const so=await h.stageGenericStackTarget(MTG,{...ctx,b:player,preserveCastTurn:operation.condition?.kind==='your-turn'},f.target||{what:'spell',zone:'stack'},'v8-cast');
+    let so;
+    if(f.castTarget||f.castTargetsSelf||f.castOrdinal||f.castMinimumOrdinal||f.castKicked||f.castAdventure||bound){
+      const ordinal=f.castOrdinal||f.castMinimumOrdinal;
+      if(ordinal&&player.turnState.spellsCast>=ordinal){game.turnNo++;for(const participant of game.players)participant.turnState=participant.freshTurnState();}
+      const savedTurn=game.turnPlayer,savedPhase=game.phase;
+      game.turnPlayer=bound?.predicate==='caster-not-turn'?(player===a?b:a):player;game.phase='main1';h.fund(player,100);
+      try{
+        while(ordinal&&player.turnState.spellsCast<ordinal-1){
+          const primer=h.zoneCard(MTG,player,h.fixtureDefinition('Cast ordinal primer',['Instant'],{cost:'{0}',resolve:async()=>{}}),'hand');
+          assert.equal(await game.castSpell(player,primer,{from:'hand'}),true,'ordinal priming uses an actual cast');
+        }
+        const filter=f.target?.spellFilter?.alternatives?.[0]||f.target?.spellFilter;
+        const type=f.castAdventure?'Creature':filter?.what==='enchantment'?'Enchantment':'Instant';
+        const target=f.castTargetsSelf?source:f.castTarget?h.stageGenericTarget(MTG,ctx,f.castTarget,'v8-cast-target'):null;
+        const subtypes=filter?.subtype?[filter.subtype]:[];
+        const candidate=h.zoneCard(MTG,player,h.fixtureDefinition('V8 qualified cast',[type],{
+          cost:'{'+(bound?.predicate==='cast-mana'?bound.min:bound?.predicate==='cast-mana-vs-source-power'?Math.max(1,source.power+1):0)+'}',subtypes,power:'2',toughness:'20',
+          ...(subtypes.includes('Aura')?{aura:true}:{}),
+          ...(target?{targets:[{what:'permanent',filter:(g,c)=>c===target}]}:{}),
+          ...(f.castKicked||bound?.predicate==='cast-kicked'?{kicker:{cost:'{0}'}}:{}),
+          ...(f.castAdventure?{adventure:{adventure:true,name:'V8 adventure',cost:'{0}',altCostStr:'{0}',types:'Sorcery',resolve:async()=>{}}}:{}),
+          resolve:async()=>{},
+        }),'hand');
+        const emit=game.emit.bind(game);
+        game.emit=async(name,data)=>{if(name==='cast'&&data.so?.card===candidate)so=data.so;return emit(name,data);};
+        try{assert.equal(await game.castSpell(player,candidate,{from:'hand'}),true,'qualified event uses the real paid cast');}finally{game.emit=emit;}
+        assert.ok(so,'qualified cast was emitted');
+        if(f.castKicked||bound?.predicate==='cast-kicked')assert.equal(so.kicked,true,'the controller chose the actual kicker payment');
+      }finally{game.turnPlayer=bound?.predicate==='caster-not-turn'?(player===a?b:a):savedTurn;game.phase=savedPhase;}
+    }else so=await h.stageGenericStackTarget(MTG,{...ctx,b:player,preserveCastTurn:operation.condition?.kind==='your-turn'},f.target||{what:'spell',zone:'stack'},'v8-cast');
     ctx.eventCard=so.card;ctx.eventCardBefore=h.cardState(so.card);ctx.eventCardStats={power:so.card.power,toughness:so.card.toughness,mv:so.card.mv};ctx.eventController=player;
   }else if(event==='countersPlaced')game.addCounters(card,f.counter||'charge',n,false,player);
   else if(event==='countersRemoved'){
@@ -74,11 +149,15 @@ export async function fireV8Event(MTG,ctx,source,operation,h){
       ctx.eventAmount=origin.power;game.combat={attackers:[origin],defenders:new Map()};await game.combatDamage(origin.ctrl,'normal');
     }else await game.damageAny(origin,recipient,n,{combat:!!f.combat,deferSBA:true});
   }else if(event==='attacks'){
-    card.attacking=card.ctrl===a?b:a;await game.emit('attacks',{card,player:card.ctrl,defender:card.attacking});
+    card.attacking=f.defender==='you'||f.defender==='you-or-your-planeswalker'?a:f.defender==='opponent'?b:card.ctrl===a?b:a;
+    ctx.eventPlayer=card.ctrl;
+    game.combat={...(game.combat||{}),attackers:[card],defenders:new Map([[card.attacking,[card]]])};
+    game.recalc();
+    await game.emit('attacks',{card,player:card.ctrl,defender:card.attacking,firstThisTurn:game.recordCombatObjectEvent(card,'attacks')===1});
   }else if(['blocks','becomesBlocked','becomesBlockedByCreature'].includes(event)){
     // These are the exact object bindings emitted after a legal declaration.
     // The combat-rule matrix separately exercises full blocker selection.
-    const objects={[f.field||'card']:card};
+    const objects={[f.field||(event==='blocks'?'blocker':'attacker')]:card};
     if(f.sourceField)objects[f.sourceField]=f.sourceSubject==='attached'?game.byIid(source.attachedTo):source;
     let attacker=objects.attacker,blocker=objects.blocker;
     if(!attacker)attacker=h.stageGenericTarget(MTG,ctx,{what:'creature',controller:blocker?.ctrl===a?'opponent':'you'},'v8-attacker');
@@ -89,10 +168,21 @@ export async function fireV8Event(MTG,ctx,source,operation,h){
     if(f.playerField==='defender')ctx.eventPlayer=blocker.ctrl;
     await game.emit(event,{attacker,blocker,blockers:attacker.blockedBy});
   }else if(event==='attackersDeclared'){
-    const count=f.totalMax===1?1:Math.max(f.totalMin||1,f.minMatching||1),attackers=[];
+    const separateSource=f.selfAttacking&&f.subject==='another'?1:0;
+    const count=f.totalMax===1?1:Math.max(f.totalMin||1,(f.minMatching||1)+separateSource,f.minOtherThanAttached?f.minOtherThanAttached+1:1),attackers=[];
     if(f.selfAttacking||f.subject==='self')attackers.push(source);
+    if(f.attachedAttacking)attackers.push(game.byIid(source.attachedTo));
     while(attackers.length<count)attackers.push(h.stageGenericTarget(MTG,ctx,{what:'creature',controller:player===a?'you':'opponent',...f.target},'v8-attack-'+attackers.length));
-    for(const attacker of attackers)attacker.attacking=f.defendingYou?a:player===a?b:a;
+    for(const attacker of attackers){
+      attacker.attacking=f.defendingYou||f.declaredDefender==='you'?a:player===a?b:a;
+      if(f.attackerStatus==='suspected')attacker.meta.suspected=true;
+      if(f.attackerStatus==='enchanted-by-you'){
+        const aura=h.stageGenericTarget(MTG,ctx,{what:'permanent',zone:'battlefield',controller:'you'},'v8-attack-aura');
+        aura.def={...aura.def,types:['Enchantment'],subtypes:['Aura']};game.recalc();await game.attach(aura,attacker);
+      }
+    }
+    game.combat={...(game.combat||{}),attackers,defenders:new Map()};
+    game.recalc();
     if(attackers.length===1){ctx.eventCard=attackers[0];ctx.eventCardBefore=h.cardState(attackers[0]);ctx.eventCardStats={power:attackers[0].power,toughness:attackers[0].toughness};}
     await game.emit('attackersDeclared',{player,attackers});
   }else if(event==='lifeGain')await game.gainLife(player,n,source);

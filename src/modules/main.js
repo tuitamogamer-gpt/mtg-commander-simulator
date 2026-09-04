@@ -4389,6 +4389,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ? c.meta.faceDownDef.name : undefined,
       power: c.is('Creature') ? c.power : undefined,
       toughness: c.is('Creature') ? c.toughness : undefined,
+      damage: c.zone === 'battlefield' && c.is('Creature') ? c.damage || 0 : undefined,
+      deathtouched: c.zone === 'battlefield' && c.is('Creature') ? !!c.deathtouched : undefined,
       attacking: c.attacking ? c.attacking.name : null,
       blocking: c.blocking || null,
       attachedTo: c.attachedTo ? (g.byIid(c.attachedTo)?.name || c.attachedTo) : null,
@@ -4467,7 +4469,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (pending.type === 'blockers') {
         const selected = ui && ui.pending && ui.pending.assigns
-          ? [...ui.pending.assigns.entries()] : [];
+          ? [...ui.pending.assigns.entries()].flatMap(([blocker, targets]) => [].concat(targets).map(attacker => [blocker, attacker])) : [];
         return [{
           label: selected.length ? `Confirm blocks (${selected.length})` : 'No blocks',
           value: selected.map(([blocker, attacker]) => ({ blocker: blocker.name, attacker: attacker.name })),
@@ -4563,7 +4565,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             selectionKind: pending.spec && pending.spec.what === 'proliferate' ? 'proliferate choice' : 'target',
             adds: pending.spec && pending.spec.what === 'proliferate'
               ? (target instanceof MTG.Player
-                ? ((target.poison || 0) > 0 ? ['+1 poison'] : [])
+                ? [...((target.poison||0)>0?['+1 poison']:[]),...((target.counters?.energy||0)>0?['+1 energy']:[])]
                 : Object.entries(target.counters || {}).filter(([, amount]) => amount > 0).map(([kind]) => `+1 ${kind}`))
               : undefined,
           })) : undefined,
@@ -4682,9 +4684,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ? (ui.pending.sel || []).filter(entry => entry && entry.card && entry.target)
             .map(entry => ({ card: entry.card.name, target: entry.target.name }))
           : ui.pending.q.type === 'blockers' && ui.pending.assigns
-            ? [...ui.pending.assigns.entries()].map(([blocker, attacker]) => ({
+            ? [...ui.pending.assigns.entries()].flatMap(([blocker, targets]) => [].concat(targets).map(attacker => ({
               card: blocker.name, target: attacker.name,
-            }))
+            })))
             : [],
       } : null,
       players,

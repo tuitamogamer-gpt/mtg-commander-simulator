@@ -396,6 +396,13 @@ function extendedEffect(card,line,helpers) {
   let text=line.slice(0,-1),optional=false;
   if(/^you may /i.test(text)){text=text.slice(8);optional=true;}
   const result=(effects,targets=[])=>({effects,targets,optional});
+  // Random discard is resolved by the game's seeded random source, never by
+  // either controller choosing the card. Keep the complete suffix mandatory.
+  const randomDiscard=new RegExp('^(?:(you|target player|target opponent) )?discards? ('+NUM+'|X) cards? at random$','i').exec(text);
+  if(randomDiscard){
+    const actor=(randomDiscard[1]||'you').toLowerCase(),targeted=actor.startsWith('target ');
+    return result([{action:'discard',who:targeted?0:'you',n:randomDiscard[2]==='X'?'X':amount(randomDiscard[2]),random:true}],targeted?[extensionTarget(actor)]:[]);
+  }
   const self=selfPattern(card,true);
   let m;
   if(/^you create /i.test(text)){
@@ -496,8 +503,11 @@ function extendedEffect(card,line,helpers) {
   if(/^discard your hand,? then draw /i.test(text))return helpers.effect(card,'You '+text[0].toLowerCase()+text.slice(1)+'.');
   const have=/^have (it|this creature|target .+?) (deal|gain|lose|get) (.+)$/i.exec(text);
   if(optional&&have){const body=helpers.effect(card,have[1]+' '+have[2]+'s '+have[3]+'.');if(body&&!body.optional)return {...body,optional:true};}
+  const postHandValue=/^target (opponent|player) reveals their hand\. You choose (?:a|an) (.+?) from it with mana value (\d+) or (less|greater)(?: and exile that card|\. That player discards that card)$/i.exec(text);
+  if(postHandValue)return helpers.effect(card,'Target '+postHandValue[1]+' reveals their hand. You choose a '+postHandValue[2]+' with mana value '+postHandValue[3]+' or '+postHandValue[4]+' from it. That player '+(text.endsWith('and exile that card')?'exiles':'discards')+' that card.');
   const revealed=/^target (opponent|player) reveals their hand\. You choose (?:a|an) (.+?) from it\. That player (discards that card|exiles that card|shuffles that card into their library)(?:\. (.+))?$/i.exec(text)
-    ||/^target (opponent|player) reveals their hand\. You choose (?:a|an) (.+?) from it and (exile that card)(?:\. (.+))?$/i.exec(text);
+    ||/^target (opponent|player) reveals their hand\. You choose (?:a|an) (.+?) from it and (exile that card)(?:\. (.+))?$/i.exec(text)
+    ||/^target (opponent|player) reveals their hand\. You choose (?:a|an) (.+?) from it\. (Exile that card)(?:\. (.+))?$/i.exec(text);
   if(revealed){const filter=searchFilter(revealed[2].replace(/ card$/,''));if(filter){
     const body=result([{action:'reveal-hand-discard',target:0,what:'card',filter,destination:revealed[3].startsWith('discard')?'graveyard':revealed[3].startsWith('shuffle')?'library':'exile'}],[extensionTarget('target '+revealed[1])]);
     if(!revealed[4])return body;
@@ -739,7 +749,14 @@ function extendedEffect(card,line,helpers) {
   m=/^sacrifice (another|a|an) (.+?)\. If you do, (.+)$/i.exec(text);
   if(m&&optional){const filter=extensionTarget((m[1]==='another'?'another ':'')+'target '+m[2]),body=filter&&helpers.effect(card,m[3]+'.');if(filter?.zone==='battlefield'&&body&&!body.optional)return {...body,optional:false,effects:[{action:'optional-sacrifice',filter,n:1,effects:body.effects}]};}
   m=/^(.+?)(?: until end of turn)? for each (.+?)( until end of turn)?$/i.exec(text);
-  if(m){const count=extensionCount(m[2]),body=count&&helpers.effect(card,m[1]+(m[3]||/ until end of turn for each /.test(text)?' until end of turn':'')+'.');if(body&&!body.optional&&body.effects.length===1){const effect=body.effects[0];if(['pump','pump-group','battlefield-group'].includes(effect.action)&&(!effect.operation||effect.operation==='pump'))return {...body,effects:[{...effect,multiplier:count}]};if(['draw','gain-life','lose-life','mill','counter'].includes(effect.action)&&typeof effect.n==='number')return {...body,effects:[{...effect,n:{...count,multiply:effect.n}}]};}}
+  if(m){let count=extensionCount(m[2]);const body=count&&helpers.effect(card,m[1]+(m[3]||/ until end of turn for each /.test(text)?' until end of turn':'')+'.');if(body&&!body.optional&&body.effects.length===1){const effect=body.effects[0];
+    if(count.kind==='v8-permanent-count'&&count.relative){
+      // A relative count must bind the actual target; a later untargeted
+      // instruction needs an explicit antecedent parser, never the spell card.
+      if(typeof effect.target!=='number'&&effect.target!=='self')return null;
+      count={kind:'v8-target-permanent-count',target:effect.target,count};
+    }
+    if(['pump','pump-group','battlefield-group'].includes(effect.action)&&(!effect.operation||effect.operation==='pump'))return {...body,effects:[{...effect,multiplier:count}]};if(['draw','gain-life','lose-life','mill','counter'].includes(effect.action)&&typeof effect.n==='number')return {...body,effects:[{...effect,n:{...count,multiply:effect.n}}]};}}
   if(/ (?:gets? an additional|has .+ until end of turn)/i.test(text)){const normalized=text.replace(/gets? an additional /i,'gets ').replace(/ has (.+) until end of turn$/i,' gains $1 until end of turn');if(normalized!==text){const body=helpers.effect(card,normalized+'.');if(body)return body;}}
   m=/^(.+?), where X is ([^.]+)\. (.+)$/i.exec(text);
   if(m){const head=helpers.effect(card,m[1]+', where X is '+m[2]+'.'),tail=helpers.effect(card,m[3]+'.');if(head&&tail&&!head.optional&&!tail.optional){const offset=head.targets.length,antecedent=head.effects.at(-1)?.target,refers=typeof antecedent==='number'&&/\b(?:it|that creature|that permanent)\b/i.test(m[3])&&!/\bthis /i.test(m[3]),shift=object=>Array.isArray(object)?object.map(shift):object&&typeof object==='object'?Object.fromEntries(Object.entries(object).map(([key,value])=>[key,key==='target'&&value==='self'&&refers?antecedent:['target','otherTarget','who','conditionTarget'].includes(key)&&typeof value==='number'?value+offset:shift(value)])):object;return result([...head.effects,...tail.effects.map(shift)],[...head.targets,...tail.targets]);}}
@@ -940,7 +957,7 @@ function extendedLine(card,line,helpers) {
   if(defender)return {...base,scope:'self',defenderCanAttack:true};
   const modifier=modifierOperation(card,line);if(modifier)return modifier;
   const grant=/^(?:Enchanted|Equipped) (?:creature|permanent|artifact|land) gets ([+-]\d+)\/([+-]\d+) for each (.+?)(?: and has (.+))?\.$/.exec(line);
-  if(grant){const multiplier=grant[3]==='of its colors'?{kind:'host-colors'}:extensionCount(grant[3]),keywords=grant[4]?helpers.keywordList(grant[4]):[];if(multiplier&&keywords)return {kind:'attachment-grant',power:Number(grant[1]),toughness:Number(grant[2]),multiplier,keywords,contract:'attachment-continuous-effect'};}
+  if(grant){const multiplier=grant[3]==='of its colors'?{kind:'host-colors'}:extensionCount(grant[3]),keywords=grant[4]?helpers.keywordList(grant[4]):[];if(multiplier&&keywords)return {kind:'attachment-grant',power:Number(grant[1]),toughness:Number(grant[2]),multiplier,keywords,...(multiplier.kind==='v8-permanent-count'&&(multiplier.relative||multiplier.other)?{multiplierSubject:'affected'}:{}),contract:'attachment-continuous-effect'};}
   const quoted=/^(?:Enchanted|Equipped) (?:creature|permanent|artifact|land) has "(.+)"\.?$/.exec(line);
   if(quoted&&!quoted[1].includes(card.name)){
     const operation=grantedOperation(extensionLine({...card,name:'__GrantedPermanent__'},quoted[1],helpers));

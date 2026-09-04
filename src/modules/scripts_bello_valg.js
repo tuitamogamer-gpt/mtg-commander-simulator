@@ -150,12 +150,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // "Other creatures have ..." — odluku donosi kontrolor NAPADAČA, ne Grothamin
         controller: (g, self, d) => d.card.ctrl,
         filter: (g, self, d) => d.card !== self && g.bf().includes(self),
+        prepareTargets: ctx => { ctx.fightAttackerZoneVersion = ctx.data.card.zoneVersion; },
         run: async ctx => {
           const a = ctx.data.card, gro = ctx.src, g = ctx.g;
-          if (a.zone !== 'battlefield' || gro.zone !== 'battlefield') return;
+          if (!g.bf().includes(a) || !g.bf().includes(gro) || !a.is('Creature') || !gro.is('Creature') ||
+              ctx.sourceZoneVersion != null && gro.zoneVersion !== ctx.sourceZoneVersion ||
+              ctx.fightAttackerZoneVersion != null && a.zoneVersion !== ctx.fightAttackerZoneVersion) return;
           g.lg(`${a.name} fights Grotham!`);
-          await g.damageCreature(gro, a, gro.power);
-          await g.damageCreature(a, gro, a.power);
+          // CR 701.14: both creatures deal their pre-fight power, including
+          // when the first damage result places -1/-1 counters on the other.
+          await g.damageBatch([
+            { src: gro, target: a, n: gro.power },
+            { src: a, target: gro, n: a.power },
+          ]);
         },
       },
       {
@@ -793,8 +800,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       targets: [{ what: 'creature', prompt: 'Fights:', filter: (g, c, ctrl, src) => c.zone === 'battlefield' && c.is('Creature') && c !== src, aiHint: { goal: 'fightTaunter' } }],
       run: async ctx => {
         const a = ctx.src, b = ctx.targets[0];
-        await ctx.g.damageCreature(a, b, a.power);
-        await ctx.g.damageCreature(b, a, b.power);
+        if (!ctx.g.bf().includes(a) || !ctx.g.bf().includes(b) || !a.is('Creature') || !b.is('Creature') ||
+            ctx.sourceZoneVersion != null && a.zoneVersion !== ctx.sourceZoneVersion) return;
+        await ctx.g.damageBatch([
+          { src: a, target: b, n: a.power },
+          { src: b, target: a, n: b.power },
+        ]);
       },
     }],
   };

@@ -6,6 +6,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
 
   let IID = 1;
+  const continuousOwners = new WeakMap();
+  // Resolving continuous effects receive their timestamp when created, even
+  // if several instructions run before the next characteristic recalculation.
+  class ContinuousEffects extends Array {
+    static get [Symbol.species](){return Array;}
+    push(...effects){for(const effect of effects)if(effect&&effect.oracleLayerTimestamp===undefined&&!(['oracleAnimation','oracleBasePT','oracleCharacteristics','oracleAbilityLoss'].includes(effect.kind)&&effect.timestamp!==undefined))effect.oracleLayerTimestamp=continuousOwners.get(this).nextOracleTimestamp();return super.push(...effects);}
+  }
+  // Reinstall storage when making an AI snapshot: copying this accessor would
+  // retain its original closure, while dropping it loses all active layers.
+  MTG.initializeContinuousEffects = (game, initial = []) => {
+    let effects;
+    const set = value => {effects=value;Object.setPrototypeOf(effects,ContinuousEffects.prototype);continuousOwners.set(effects,game);};
+    set(initial);
+    Object.defineProperty(game,'untilEffects',{enumerable:true,configurable:true,get:()=>effects,set});
+  };
+  MTG.currentOracleTimestamp = () => IID;
+  MTG.MAX_RESTORED_TIMESTAMP = 2 ** 48;
+  // Save restoration must preserve the ordering of future continuous effects.
+  MTG.reserveTimestamp = value => {
+    if (Number.isSafeInteger(value) && value >= 0 && value <= MTG.MAX_RESTORED_TIMESTAMP) IID = Math.max(IID, value + 1);
+  };
 
   // ============================================================
   // Card instance
@@ -205,6 +226,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.chosenCommanders = null; // string[] — izbor igrača prije buildDeck
       this.commanderDamage = {};    // by commander iid
       this.poison = 0;
+      this.counters = {}; // Public player counters, including energy.
       this.lost = false;
       this._controller = null;      // decision maker (see the controller accessor)
       this.isAI = false;
@@ -285,7 +307,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.stack = [];
       this.pendingTriggers = [];
       this.delayed = [];            // delayed triggers
-      this.untilEffects = [];       // global until-eot effects
+      MTG.initializeContinuousEffects(this);
       this.turn = 0;
       this.turnPlayer = null;
       this.phase = 'setup';
@@ -795,8 +817,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         types: derived ? card.cur.types.slice() : card.def.types.slice(),
         super: derived ? (card.cur.super||card.def.super||[]).slice() : (card.def.super||[]).slice(),
         subtypes: derived ? card.cur.subtypes.slice() : card.def.subtypes.slice(),
-        attachments: card.attachments.slice(), attachedTo:card.attachedTo, zoneVersion:card.zoneVersion, mv: card.mv, colors: card.colors,
-        enteredTurn:card.meta._enteredTurn,attackedTurn:card.meta._attackedTurn,
+        changeling: derived ? !!card.cur.types.includes('Creature')&&!!(card.def.changeling&&!card.cur.abilitiesDisabled&&!card.cur.suppressPrintedChangeling||card.cur.allCreatureTypesFromOtherEffects||!card.def.changeling&&card.cur.allCreatureTypes) : !!card.def.changeling,
+        attachments: card.attachments.slice(), attachedTo:card.attachedTo, attachedHostVersion:this.byIid(card.attachedTo)?.zoneVersion, zoneVersion:card.zoneVersion, mv: card.mv, colors: card.colors,
+        enteredTurn:card.meta._enteredTurn,attackedTurn:card.meta._attackedTurn,renowned:!!card.meta.renowned,
         // Keywordi u trenutku odlaska. Bez ovoga je snap.flying bio undefined,
         // pa se Luminous Broodmoth okidao i na stvorenja koja su umrla SA
         // letenjem → beskonačna petlja sa Selfless Spiritom.
@@ -909,12 +932,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!card.battlefieldLKI) card.battlefieldLKI = new Map();
         card.battlefieldLKI.set(card.zoneVersion, {
           iid: card.iid, zoneVersion: card.zoneVersion, timestamp: snap.timestamp, def:snap.def, copyEpoch:snap.copyEpoch, copying:snap.copying,
-          oracleFaces:snap.oracleFaces,oracleFace:snap.oracleFace,
+          oracleFaces:snap.oracleFaces,oracleFace:snap.oracleFace,attachedTo:snap.attachedTo,attachedHostVersion:snap.attachedHostVersion,
           power: snap.power, toughness: snap.toughness,
-          enteredTurn:snap.enteredTurn,attackedTurn:snap.attackedTurn,
+          enteredTurn:snap.enteredTurn,attackedTurn:snap.attackedTurn,renowned:snap.renowned,attachedSources:snap.attachedSources,
           name:snap.name,types:snap.types.slice(),subtypes:snap.subtypes.slice(),super:snap.super.slice(),colors:snap.colors.slice(),kw:snap.kw.slice(),
           counters:{...snap.counters},isToken:snap.isToken,commander:snap.commander,mv:snap.mv,ctrl:snap.ctrl,owner:snap.owner,
-          changeling:!!snap.def.changeling&&!snap.abilitiesDisabled,
+          changeling:!!snap.changeling,
           tapped: snap.tapped, attacking: !!snap.attacking,
           blocking: snap.blocking !== null && snap.blocking !== undefined && snap.blocking !== false,
           enchanted: snap.enchanted, equipped: snap.equipped,
@@ -1021,7 +1044,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.zone = toZone;
       if (toZone === 'battlefield') {
         card.ctrl = opts.ctrl || card.owner;
-        card.timestamp = ++IID;
+        card.timestamp = this.nextOracleTimestamp();
         this.battlefield.push(card);
         card.sick = true;
         // "Tapped and attacking" je karakteristika samog ulaska, ne izmjena
@@ -1131,12 +1154,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return card;
     }
 
+    refreshOracleTimestamp(card){card.timestamp=this.nextOracleTimestamp();}
+    nextOracleTimestamp(){return this._simulation?++this._nextSimulationTimestamp:++IID;}
+
     addOracleAnimation(card,effect){
-      this.untilEffects.push({...effect,kind:'oracleAnimation',iid:card.iid,zoneVersion:card.zoneVersion,timestamp:++IID,expires:effect.temporary?'eot':'object'});
+      this.untilEffects.push({...effect,kind:'oracleAnimation',iid:card.iid,zoneVersion:card.zoneVersion,timestamp:this.nextOracleTimestamp(),expires:effect.temporary?'eot':'object'});
       this.recalc();
     }
     addOracleBasePT(card,effect){
-      this.untilEffects.push({...effect,kind:'oracleBasePT',iid:card.iid,zoneVersion:card.zoneVersion,timestamp:++IID,expires:effect.temporary?'eot':'object'});
+      this.untilEffects.push({...effect,kind:'oracleBasePT',iid:card.iid,zoneVersion:card.zoneVersion,timestamp:this.nextOracleTimestamp(),expires:effect.temporary?'eot':'object'});
+      this.recalc();
+    }
+    addOracleCharacteristics(cards,effect){
+      const timestamp=this.nextOracleTimestamp();
+      for(const card of new Set(cards))if(card.zone==='battlefield')this.untilEffects.push({...effect,kind:'oracleCharacteristics',iid:card.iid,zoneVersion:card.zoneVersion,timestamp,expires:'eot'});
       this.recalc();
     }
 
@@ -1206,9 +1237,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this._battlefieldEntryReplacementSnapshot = previousSnapshot;
       }
       if (previous) previous.push(...batch);
-      else for (const event of batch) {
-        if (event.run) await event.run();
-        else await this.emit(event.name, event.data);
+      else {
+        MTG.oracleV8FinishConditionEntryBatch?.(this,batch);
+        const oracleBatch={};
+        for (const event of batch) {
+          if (event.run) await event.run();
+          else await this.emit(event.name, {...event.data,oracleBatch});
+        }
       }
       return result;
     }
@@ -1312,6 +1347,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const batchedReplacement = !!this._battlefieldEntryReplacementSnapshot;
       if (batchedReplacement) this._entryReplacementPhase = (this._entryReplacementPhase || 0) + 1;
       try {
+      // Earlier physical insertions in the same simultaneous event may have
+      // recalculated existing sources using a co-entrant Aura or control effect.
+      // Re-evaluate those sources against the pre-entry battlefield membership
+      // before this entrant's replacement choices. The ordinary post-entry
+      // recalculation below restores all new continuous effects afterward.
+      if (batchedReplacement) this.recalc();
       // Copy i drugi as-enters replacementi postavljaju karakteristike prije
       // enters-tapped i enters-with-counters replacementa kopirane karte.
       const appliedEntryReplacements=new Set();
@@ -1325,19 +1366,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (t) card.tapped = true;
       }
       if (opts.tapped) card.tapped = true;
-      // Horizon Explorer-style replacement. It applies after every printed or
-      // effect-imposed tapped entry instruction, so the land is already
-      // untapped when landfall and ETB observers see it.
-      if (card.is('Land') && this.bf().some(source =>
-        source !== card && source.ctrl === card.ctrl && source.def.landsEnterUntapped)) {
-        card.tapped = false;
-      }
-      if (card.is('Creature') && this.bf().some(source =>
-        source.ctrl !== card.ctrl && source.def.opponentsCreaturesEnterTapped)) {
-        card.tapped = true;
-      }
+      // Global entry-state replacements finish before ETB observers. The
+      // affected controller chooses their order when several apply.
+      await MTG.oracleV8ApplyEntryState(this, card);
+      const additionalEntryCounters = {...opts.additionalCounters};
+      const entryCounterReplacements = card.is('Creature') ? this.replacers('etbCounters').filter(rule =>
+        rule.oracleOperation?.kind === 'v8-replacement' && rule.applies(this, card, rule.src)) : [];
+      const extraPlus = entryCounterReplacements.reduce((sum, rule) => sum + rule.n, 0);
+      if (extraPlus) additionalEntryCounters['+1/+1'] = (additionalEntryCounters['+1/+1'] || 0) + extraPlus;
       if (d.etbCounters) {
         let n = typeof d.etbCounters.n === 'function' ? d.etbCounters.n(this, card) : d.etbCounters.n;
+        // Additional entry counters belong to the same event as printed entry
+        // counters: Hardened Scales and similar replacements apply once to the
+        // combined amount, and observers receive one countersPlaced event.
+        if (extraPlus && d.etbCounters.kind === '+1/+1') {
+          n = Math.max(0, n) + additionalEntryCounters['+1/+1'];
+          delete additionalEntryCounters['+1/+1'];
+        }
         if (n > 0 && d.etbCounters.kind === '+1/+1') n = this.adjustPlusCounters(card, n);
         if (n > 0) {
           card.counters[d.etbCounters.kind] = (card.counters[d.etbCounters.kind] || 0) + n;
@@ -1350,8 +1395,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (d.etbCounters.kind === '+1/+1') entryPlusCounters.push({ n, before: 0, after: n });
         }
       }
-      if (opts.additionalCounters) {
-        for (const [kind, rawN] of Object.entries(opts.additionalCounters)) {
+      if (Object.keys(additionalEntryCounters).length) {
+        for (const [kind, rawN] of Object.entries(additionalEntryCounters)) {
           let n = Math.max(0, Number(rawN) || 0);
           if (kind === '+1/+1') n = this.adjustPlusCounters(card, n);
           if (!n) continue;
@@ -1401,6 +1446,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // additional +1/+1 counters replacements (Grumgully)
       if (card.is('Creature')) {
         for (const r of this.replacers('etbCounters')) {
+          if (r.oracleOperation?.kind === 'v8-replacement') continue;
           if (r.run(this, card, r.src)) {
             const nn = typeof r.n === 'function' ? r.n(this, card, r.src) : (r.n || 1);
             if (nn > 0) this.addCounters(card, '+1/+1', nn, true, r.src.ctrl);
@@ -1427,7 +1473,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         entryCounterEvents.push({kind:'lore',n:1,before,after:before+1,by:card.ctrl});
       }
       this.recalc();
-      const evData = { card, ctrl: card.ctrl };
+      const evData = { card, ctrl: card.ctrl, oracleEntryVersion: card.zoneVersion };
+      MTG.oracleV8RecordConditionEntry?.(this,card);
       // CR 506.3: continuous entry effects can make the would-be attacker
       // a noncreature. Entry triggers must already observe that outcome.
       if(card.attacking&&(!card.is('Creature')||card.ctrl!==this.turnPlayer)){
@@ -1490,6 +1537,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Tokens & counters
     // ============================================================
     async makeTokens(spec, ctrl, opts = {}) {
+      return this._battlefieldEntryEvents ? this._makeTokenBatch(spec,ctrl,opts) : this.withBattlefieldEntryBatch(()=>this._makeTokenBatch(spec,ctrl,opts));
+    }
+
+    async _makeTokenBatch(spec, ctrl, opts = {}) {
       // spec: token def name from MTG.TOKENS or inline def; opts: {n, tapped, attacking, copyOf}
       // Explicit zero is meaningful for X spells. `opts.n || 1` turned X=0
       // into one token for Grand Crescendo, Martial Coup, Sylvan Offering and
@@ -1642,7 +1693,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     faceUpCosts(card) {
       const original = card && card.meta && card.meta.faceDownDef;
-      if (!original || !(original.types || []).includes('Creature')) return [];
+      if (!original) return [];
       const faceDownKind = card.meta.faceDownKind || 'manifest';
       const intrinsicAbilitiesAvailable = !(card.cur && card.cur.abilitiesDisabled);
       const costs = [];
@@ -1656,10 +1707,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (intrinsicAbilitiesAvailable && original.disguise) costs.push({ kind: 'disguise', cost: original.disguise });
       } else {
         // A missing mana cost is unpayable, not an implicit {0} cost.
-        if (original.cost) costs.push({ kind: 'mana cost', cost: original.cost });
+        if ((original.types||[]).includes('Creature') && original.cost) costs.push({ kind: 'mana cost', cost: original.cost });
         if (intrinsicAbilitiesAvailable && original.morph) costs.push({ kind: original.megamorph ? 'megamorph' : 'morph', cost: original.morph });
         if (intrinsicAbilitiesAvailable && original.disguise) costs.push({ kind: 'disguise', cost: original.disguise });
       }
+      for(const option of costs)if(option.kind==='morph'&&original.oracleMorphPayment)option.label=original.oracleMorphPayment.label;
       return costs.filter((entry, index, all) => all.findIndex(other => other.cost === entry.cost &&
         (other.kind === 'megamorph') === (entry.kind === 'megamorph')) === index);
     }
@@ -1684,7 +1736,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         x=await player.controller.decide(this,{type:'chooseX',min:0,max,card,prompt:'Choose X for turning this card face up',aiHint:{kind:'chooseX',card}});
         if(!Number.isInteger(x)||x<0||x>max)return false;
       }
-      if (!await this.payMana(player, {...cost,generic:cost.generic+cost.x*x,x:0}, { card, isAbility: true })) return false;
+      const payment=selected.kind==='morph'&&original.oracleMorphPayment;
+      if(payment){
+        const record=await MTG.OracleV8MorphCosts.pay(this,player,card,payment);if(!record)return false;
+        // Paying a return cost can itself remove this permanent. Its new
+        // object is not turned face up and creates no turned-face-up event.
+        if(card.zone!=='battlefield'||card.zoneVersion!==record.sourceZoneVersion)return true;
+        card.meta.oracleFaceUpPayment=record;
+      }else if (!await this.payMana(player, {...cost,generic:cost.generic+cost.x*x,x:0}, { card, isAbility: true })) return false;
       card.def = original;
       delete card.meta.faceDownDef;
       delete card.meta.faceDownKind;
@@ -1736,6 +1795,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (kind === '+1/+1' && card.is && card.is('Creature')) n = this.adjustPlusCounters(card, n);
       const before = card.counters[kind] || 0;
       card.counters[kind] = (card.counters[kind] || 0) + n;
+      if(n>0&&['flying','double strike','first strike','deathtouch','lifelink','trample','vigilance','menace','reach','hexproof','shroud','indestructible'].includes(kind))(card.meta.oracleCounterTimestamps||(card.meta.oracleCounterTimestamps={}))[kind]=this.nextOracleTimestamp();
       const counterText = `${card.name}: +${n} ${kind} ${U.plural(n, 'counter', 'countera')}.`;
       if (!silent) this.lg(counterText);
       this.notifyEffect(`◆ ${counterText}`, { kind: 'counter', card, counterKind: kind, n }, !!silent);
@@ -1788,14 +1848,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return candidates[index];
     }
 
-    async gainLife(p, n, srcCard) {
-      if (n <= 0 || p.lost) return 0;
-      // can't gain life?
+    canGainLife(p) {
+      if (!p || p.lost) return false;
       for (const c of this.bf()) {
         if (c.cur?.abilitiesDisabled) continue;
-        if (c.def.noLifegain === 'all') return 0;
-        if (c.def.noLifegain === 'opps' && c.ctrl !== p) return 0;
+        if (c.def.noLifegain === 'all') return false;
+        if (c.def.noLifegain === 'opps' && c.ctrl !== p) return false;
       }
+      return true;
+    }
+
+    async gainLife(p, n, srcCard) {
+      if (n <= 0 || !this.canGainLife(p)) return 0;
       const used = new Set();
       while (n > 0) {
         const candidates = this.replacers('lifegain').filter(r => r.ctrl === p && !used.has(r.key) && (!r.applies || r.applies(this, n, p, r.src)));
@@ -1895,12 +1959,43 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const traits=opts._damageBatch?.traits.get(src);
       return traits?traits.keywords.has(keyword):!!src?.kw?.(keyword);
     }
+    recordDamageResult(src, target, n, opts) {
+      if (!opts.damageResults) return;
+      // CR 120.10: measure the actual recipient after redirection/prevention,
+      // before marked damage, wither counters, loyalty or defense can change.
+      const thresholds = [];
+      if (target.is?.('Creature')) {
+        const remaining = Math.max(0, target.toughness - target.damage);
+        thresholds.push(this.damageSourceTrait(src, 'deathtouch', opts) ? Math.min(1, remaining) : remaining);
+      }
+      if (target.is?.('Planeswalker')) thresholds.push(Math.max(0, target.counters.loyalty || 0));
+      if (target.is?.('Battle')) thresholds.push(Math.max(0, target.counters.defense || 0));
+      const lethal = thresholds.length ? Math.min(...thresholds) : null;
+      opts.damageResults.push({ target, amount: n, lethal, excess: lethal === null ? 0 : Math.max(0, n - lethal) });
+    }
     async applyDamageLifelink(src,n,opts={}){
       if(!this.damageSourceTrait(src,'lifelink',opts))return;
       if(opts._damageBatch){const batch=opts._damageBatch;batch.lifelink.set(src,(batch.lifelink.get(src)||0)+n);}
       else await this.gainLife(src.ctrl,n,src);
     }
+    async withOracleDamageBatch(run){
+      if(this._oracleDamageBatch)return run();
+      const hits=[];hits.snapshots=MTG.OracleV8DamageEvents?.batchSnapshots(this);this._oracleDamageBatch=hits;
+      let result;try{result=await run();}finally{this._oracleDamageBatch=null;}
+      if(MTG.OracleV8DamageEvents)await MTG.OracleV8DamageEvents.emit(this,hits);
+      return result;
+    }
+    async emitOracleDamage(hit){
+      if(!hit)return;
+      if(this._oracleDamageBatch)this._oracleDamageBatch.push(hit);
+      else await MTG.OracleV8DamageEvents.emit(this,[hit]);
+    }
     async damageBatch(hits,opts={}){
+      const total=await this.withOracleDamageBatch(()=>this._dealDamageBatch(hits,{...opts,deferSBA:true}));
+      if(!opts.deferSBA)await this.checkSBA();
+      return total;
+    }
+    async _dealDamageBatch(hits,opts={}){
       // A single instruction damages each recipient once per source. Snapshot
       // amounts and source keywords before wither/counters change the board.
       const grouped=[],batch={traits:new Map(),lifelink:new Map(),snapshots:new Map()};
@@ -1929,6 +2024,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (n > 0 && opts._damageFinalTarget !== p) return this.damageAny(src, opts._damageFinalTarget, n, {...opts, _damageReplacementsDone: true});
       }
       if (!(n > 0)) { if (!opts.deferSBA) await this.checkSBA(); return 0; }
+      const oracleHit=MTG.OracleV8DamageEvents?.capture(this,src,p,n,opts);
+      this.recordDamageResult(src, p, n, opts);
       this.lg(`${src ? src.name : 'Source'} deals ${n} damage to ${p.name}.`, 'dmg');
       if (opts.combat && src && src.commander) {
         p.commanderDamage[src.iid] = (p.commanderDamage[src.iid] || 0) + n;
@@ -1959,6 +2056,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0, infect, toxic,
       });
       await this.emit('damageToPlayer', { src, player: p, n, combat: !!opts.combat });
+      await this.emitOracleDamage(oracleHit);
       if (!opts.deferSBA) await this.checkSBA();
       return n;
     }
@@ -1970,6 +2068,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (n > 0 && opts._damageFinalTarget !== target) return this.damageAny(src, opts._damageFinalTarget, n, {...opts, _damageReplacementsDone: true});
       }
       if (!(n > 0)) { if (!opts.deferSBA) await this.checkSBA(); return 0; }
+      const oracleHit=MTG.OracleV8DamageEvents?.capture(this,src,target,n,opts);
+      this.recordDamageResult(src, target, n, opts);
       if (target.is('Battle')) {
         this.removeCounters(target, 'defense', Math.min(n, target.counters.defense || 0));
         await this.applyDamageLifelink(src,n,opts);
@@ -1981,6 +2081,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
         });
         await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
+      await this.emitOracleDamage(oracleHit);
         if (!opts.deferSBA) await this.checkSBA();
         return n;
       }
@@ -1995,6 +2096,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
         });
         await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
+      await this.emitOracleDamage(oracleHit);
         if (!opts.deferSBA) await this.checkSBA();
         return n;
       }
@@ -2016,9 +2118,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const wither = this.damageSourceTrait(src,'wither',opts) || this.damageSourceTrait(src,'infect',opts) ||
         this.bf().some(x => x.def.allDamageWither);
       if (wither) {
+        // Counters are a result of damage, so deathtouch still applies even
+        // when the creature has no marked damage (CR 120.3d, 702.2b).
+        if (this.damageSourceTrait(src,'deathtouch',opts)) target.deathtouched = true;
         await this.applyDamageLifelink(src,n,opts);
         this.lg(`${src ? src.name : 'Izvor'} nanosi ${n} štete (wither → -1/-1): ${target.name}.`, 'dmg');
-        await this.addM1(target, n, src ? src.ctrl : null, opts.deferSBA);
+        // Damage triggers see the event before its state-based deaths.
+        await this.addM1(target, n, src ? src.ctrl : null, true);
         target.meta._lastDamageVisual = { turn: this.turnNo, sourceId: src && src.iid || 0 };
         this.note('gameEffect', {
           kind: 'damage', targetKind: 'permanent', target, targetCard: target,
@@ -2027,6 +2133,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
         });
         await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
+      await this.emitOracleDamage(oracleHit);
         if (!opts.deferSBA) await this.checkSBA();
         return n;
       }
@@ -2041,6 +2148,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         combatStep: opts.combatStep || null, combatIndex: opts.combatIndex || 0,
       });
       await this.emit('dealtDamage', { src, target, n, combat: !!opts.combat });
+      await this.emitOracleDamage(oracleHit);
       if (!opts.deferSBA) await this.checkSBA();
       return n;
     }
@@ -2055,7 +2163,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async applyDamageReplacements(src, target, n, opts = {}) {
       const data = {src, target, n, combat: !!opts.combat, noncombat: !opts.combat,
-        sourceSnapshot: opts._damageBatch?.snapshots?.get(src)};
+        sourceSnapshot: opts._damageBatch?.snapshots?.get(src), batch: opts._damageBatch || this._oracleDamageBatch};
       const used = new Set(opts._appliedRedirects || []);
       const prevented = async (amount, recipient = data.target) => {
         if (!(amount > 0)) return;
@@ -2101,6 +2209,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             continue;
           }
           if (!preventionAllowed) continue;
+          if(effect.kind==='oracleChosenSourcePrevention'&&MTG.OracleV8SourcePrevention.applies(this,effect,data)){
+            add({key:effect,src:effect.sourceCard,label:effect.sourceCard.name+' — chosen source',apply:async()=>{
+              const amount=await MTG.OracleV8SourcePrevention.prevent(this,effect,data);data.n-=amount;await prevented(amount);
+            }});continue;
+          }
           let all = false, reflectDamage = false, onlyCreatures = false, consume = false;
           if (effect.kind === 'preventNonElfCombat') all = data.combat && !!src?.is?.('Creature') && !src.hasSub('Elf');
           else if (effect.kind === 'preventAllCombat') all = data.combat;
@@ -2128,7 +2241,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             add({key: effect, label: 'Prevent damage', apply: async () => {
               const before = data.n; data.n = effect.run(this, data); await prevented(before - data.n);
             }});
-          } else if (effect.kind === 'oraclePreventNextAmount' && effect.target === data.target && effect.zoneVersion === data.target.zoneVersion && effect.remaining > 0) {
+          } else if (effect.kind === 'oraclePreventNextAmount' && (effect.direction==='by'?effect.target?.iid===data.src?.iid:effect.target===data.target) && effect.zoneVersion === (effect.direction==='by'?data.src:data.target)?.zoneVersion && (!effect.combat||data.combat) && effect.remaining > 0) {
             add({key: effect, label: 'Prevent up to ' + effect.remaining + ' damage', apply: async () => {
               const amount = Math.min(data.n, effect.remaining);
               data.n -= amount; effect.remaining -= amount; await prevented(amount);
@@ -2228,12 +2341,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         drawn++;
         p.turnState.drewThisTurn++;
         if (this.phase === 'draw') p.turnState._firstDrawDone = true;
+        if(c.def.oracleMiracle)await MTG.OracleV8Miracle.onDraw(this,p,c);
         await this.emit('draw', { player: p, card: c, srcCard, nth: p.turnState.drewThisTurn });
         // Miracle is a draw-triggered alternative cast, not a permanent-zone
         // ability. Queue it directly while the freshly drawn card is in hand;
         // it will be put on the stack after the current object finishes
         // resolving, matching the normal trigger/priority path.
-        if (this.turnNo > 0 && p.turnState.drewThisTurn === 1 && c.def.miracle) {
+        if (this.turnNo > 0 && p.turnState.drewThisTurn === 1 && c.def.miracle && !c.def.oracleMiracle) {
           this.queueTrigger({
             src: c, ctrl: p, name: `Miracle ${c.def.miracle}`, opt: true,
             onlyIf: () => c.zone === 'hand',
@@ -2267,6 +2381,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async discard(p, cards, opts = {}) {
       let landsN = 0;
+      const oracleBatch={};
       await this.withGraveyardEntryBatch(async () => {
         for (const c of cards) {
           if (c.zone !== 'hand' || !p.hand.includes(c)) continue;
@@ -2304,7 +2419,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           else c.meta._discardedTurn = this.turnNo; // legacy Mayhem definitions
           p.turnState.discardedN = (p.turnState.discardedN || 0) + 1;
           if (wasLand) landsN++;
-          await this.emit('discarded', { player: p, card: c });
+          await this.emit('discarded', { player: p, card: c,oracleBatch });
         }
       });
       if (landsN) await this.emit('discardedLands', { player: p, n: landsN });
@@ -2513,6 +2628,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return false;
       }
       card.tapped = false;
+      card.meta.oracleUntapEpoch=(card.meta.oracleUntapEpoch||0)+1;
+      MTG.OracleV8Untap?.sourceUntapped(this,card);
       if (!deferEvent) void this.emit('becameUntapped', { card, player: card.ctrl });
       return true;
     }
@@ -2622,23 +2739,68 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // pass 1: type-changing + CDA + statics (timestamp order)
       const sorted = bf.slice().sort((a, b) => a.timestamp - b.timestamp);
-      const animations=this.untilEffects.filter(effect=>effect.kind==='oracleAnimation'&&bf.some(card=>card.iid===effect.iid&&card.zoneVersion===effect.zoneVersion));
-      for (const c of sorted.concat(animations).sort((a,b)=>a.timestamp-b.timestamp)) {
+      const abilityLayers=MTG.OracleV8AbilityLoss?.begin(this,bf);
+      const inAbilityLayer=(timestamp,run)=>abilityLayers?abilityLayers.at(timestamp,run):run();
+      const animations=this.untilEffects.filter(effect=>['oracleAnimation','oracleCharacteristics'].includes(effect.kind)&&bf.some(card=>card.iid===effect.iid&&card.zoneVersion===effect.zoneVersion));
+      // Older printed scripts combine type/ability changes and base P/T in
+      // phase 1. Capture their assignments so layer 7b can replay just P/T in
+      // timestamp order alongside a resolving animation, without rerunning a
+      // script's type changes or removing abilities for a second time.
+      const legacyBaseWrites=[],captureBase=animations.some(effect=>effect.kind==='oracleAnimation')||!!abilityLayers?.records.length||sorted.some(card=>(card.def.statics||[]).some(effect=>effect.phase===7));
+      let baseWriteTimestamp=null;
+      const captureAbilityLoss=!!abilityLayers||sorted.some(card=>(card.def.statics||[]).some(effect=>effect.continuesAfterType));
+      if(captureAbilityLoss)for(const card of bf){
+        let disabled=card.cur.abilitiesDisabled;
+        Object.defineProperty(card.cur,'abilitiesDisabled',{configurable:true,enumerable:true,get:()=>disabled,set:value=>{disabled=value;if(value&&baseWriteTimestamp!==null)card.cur.oracleAbilityLossTimestamp=baseWriteTimestamp;}});
+      }
+
+      if(captureBase)for(const card of bf)for(const [key,field]of [['basePower','power'],['baseToughness','toughness']]){
+        let value=card.cur[key];
+        Object.defineProperty(card.cur,key,{configurable:true,enumerable:true,get:()=>value,set:next=>{
+          value=next;
+          if(baseWriteTimestamp!==null)legacyBaseWrites.push({kind:'oracleLegacyBase',iid:card.iid,zoneVersion:card.zoneVersion,timestamp:baseWriteTimestamp,[field]:next});
+        }});
+      }
+      for (const c of sorted.concat(animations,abilityLayers?.records||[]).sort((a,b)=>a.timestamp-b.timestamp)) {
+        if(c.kind==='oracleAbilityLoss'){const card=bf.find(card=>card.iid===c.iid&&card.zoneVersion===c.zoneVersion);MTG.OracleV8AbilityLoss.change(card,c);continue;}
+        if(c.kind==='oracleCharacteristics'){
+          const card=bf.find(card=>card.iid===c.iid&&card.zoneVersion===c.zoneVersion);
+          if(c.colors)card.cur.colors=c.retain?[...new Set(card.cur.colors.concat(c.colors))]:c.colors.slice();
+          if(c.creatureType&&(card.cur.types.includes('Creature')||card.cur.types.includes('Kindred'))){
+            if(!c.retain){
+              card.cur.subtypes=card.cur.subtypes.filter(type=>!MTG.CREATURE_SUBTYPES.has(type));
+              card.cur.allCreatureTypes=false;card.cur.allCreatureTypesFromOtherEffects=false;card.cur.suppressPrintedChangeling=true;
+            }
+            if(!card.cur.subtypes.includes(c.creatureType))card.cur.subtypes.push(c.creatureType);
+          }
+          continue;
+        }
         if(c.kind==='oracleAnimation'){
           const card=bf.find(card=>card.iid===c.iid&&card.zoneVersion===c.zoneVersion);
           card.cur.types=c.retainTypes?[...new Set(card.cur.types.concat(c.types))]:c.types.slice();
           card.cur.subtypes=c.retainTypes?[...new Set(card.cur.subtypes.filter(type=>c.retainAllSubtypes||!(c.replaceCreatureSubtypes||c.subtypes.length&&c.types.includes('Artifact'))||!MTG.CREATURE_SUBTYPES.has(type)).concat(c.subtypes))]:c.subtypes.slice();
+          if(!c.retainAllSubtypes&&(c.replaceCreatureSubtypes||!c.retainTypes||c.subtypes.length&&c.types.includes('Artifact'))){
+            card.cur.allCreatureTypes=false;card.cur.allCreatureTypesFromOtherEffects=false;card.cur.suppressPrintedChangeling=true;
+          }
+          if(c.allCreatureTypes){card.cur.allCreatureTypes=true;card.cur.allCreatureTypesFromOtherEffects=true;}
           if(c.colors!=null)card.cur.colors=c.colors.slice();
-          for(const keyword of c.keywords||[])card.cur.kw.add(keyword);
+          inAbilityLayer(c.timestamp,()=>{for(const keyword of c.keywords||[])card.cur.kw.add(keyword);});
+          for(const keyword of c.removeKeywords||[])card.cur.kw.delete(keyword);
           continue;
         }
         const st = c.def.statics;
         if (!st) continue;
         for (const s of st) {
           if (s.cond && !s.cond(this, c)) continue;
-          if (s.phase === 1 && s.apply) s.apply(this, c, bf);
+          if (s.phase === 1 && s.apply) {
+            baseWriteTimestamp=c.timestamp;
+            try{inAbilityLayer(c.timestamp,()=>s.apply(this, c, bf));}finally{baseWriteTimestamp=null;}
+          }
         }
       }
+      if(captureAbilityLoss)for(const card of bf)Object.defineProperty(card.cur,'abilitiesDisabled',{value:card.cur.abilitiesDisabled,writable:true,configurable:true,enumerable:true});
+      abilityLayers?.apply();
+      if(captureBase)for(const card of bf)for(const key of ['basePower','baseToughness'])Object.defineProperty(card.cur,key,{value:card.cur[key],writable:true,configurable:true,enumerable:true});
       // CDA power (Haughty Djinn etc.)
       for (const c of bf) {
         if(c.def.oracleCharacteristicPT&&c.cur.abilitiesDisabled)continue;
@@ -2646,25 +2808,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (c.def.cdaToughness) c.cur.baseToughness = c.def.cdaToughness(this, c);
       }
       // Power/toughness setting (layer 7b) precedes buffs and counters.
-      const baseEffects=sorted.concat(this.untilEffects.filter(effect=>['oracleBasePT','oracleAnimation'].includes(effect.kind))).sort((a,b)=>a.timestamp-b.timestamp);
+      const baseEffects=sorted.concat(legacyBaseWrites,this.untilEffects.filter(effect=>['oracleBasePT','oracleAnimation','oracleAbilityLoss'].includes(effect.kind))).sort((a,b)=>a.timestamp-b.timestamp);
       for(const effect of baseEffects){
-        if(effect.def){if(!effect.cur.abilitiesDisabled)for(const staticEffect of effect.def.statics||[])if(staticEffect.phase===7&&(!staticEffect.cond||staticEffect.cond(this,effect)))staticEffect.apply?.(this,effect,bf);continue;}
+        if(effect.def){for(const staticEffect of effect.def.statics||[])if((!effect.cur.abilitiesDisabled||staticEffect.continuesAfterType)&&staticEffect.phase===7&&(!staticEffect.cond||staticEffect.cond(this,effect)))staticEffect.apply?.(this,effect,bf);continue;}
         const card=bf.find(card=>card.iid===effect.iid&&card.zoneVersion===effect.zoneVersion);
-        if(card){card.cur.basePower=effect.power;card.cur.baseToughness=effect.toughness;for(const keyword of effect.keywords||[])card.cur.kw.add(keyword);}
+        if(card){
+          // Some exchanges set toughness alone; preserve the other characteristic.
+          if(effect.power!==undefined)card.cur.basePower=effect.power;
+          if(effect.toughness!==undefined)card.cur.baseToughness=effect.toughness;
+          // Animation abilities were applied with their timestamp above. A
+          // later removal such as Lignify must not be undone by the P/T pass.
+          if(!['oracleAnimation','oracleAbilityLoss'].includes(effect.kind))inAbilityLayer(effect.timestamp,()=>{for(const keyword of effect.keywords||[])card.cur.kw.add(keyword);});
+        }
       }
       for (const c of bf) { c.cur.power = c.cur.basePower; c.cur.toughness = c.cur.baseToughness; }
       // pass 2: static buffs/grants
       for (const c of sorted) {
-        if (c.cur.abilitiesDisabled) continue;
         const st = c.def.statics;
         if (!st) continue;
         for (const s of st) {
+          if(c.cur.abilitiesDisabled&&!s.continuesAfterType)continue;
           if (s.cond && !s.cond(this, c)) continue;
-          if ((!s.phase || s.phase === 2) && s.apply) s.apply(this, c, bf);
+          if ((!s.phase || s.phase === 2) && s.apply) inAbilityLayer(c.timestamp,()=>s.apply(this, c, bf));
         }
       }
       // emblems
-      for (const p of this.players) for (const e of p.emblems) if (e.apply) e.apply(this, p, bf);
+      for (const p of this.players) for (const e of p.emblems) if (e.apply) inAbilityLayer(e.timestamp,()=>e.apply(this, p, bf));
       // Continuous abilities that function specifically from the graveyard
       // (Wonder and similar cards) are evaluated every recalc, so they also
       // see lands/permanents that entered before the source reached the yard.
@@ -2672,7 +2841,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const statics = source.def.graveyardStatics || (source.def.graveyardStatic ? [source.def.graveyardStatic] : []);
         for (const effect of statics) {
           if (effect.cond && !effect.cond(this, source, player)) continue;
-          if (effect.apply) effect.apply(this, source, bf, player);
+          if (effect.apply) inAbilityLayer(source.timestamp,()=>effect.apply(this, source, bf, player));
         }
       }
       // equipment/aura grants
@@ -2681,7 +2850,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (c.attachedTo) {
           const host = this.byIid(c.attachedTo);
           const grant = c.cur.attachGrant || c.def.attachGrant;
-          if (host && host.zone === 'battlefield' && grant) grant(this, c, host);
+          if (host && host.zone === 'battlefield' && grant) inAbilityLayer(c.timestamp,()=>grant(this, c, host));
         }
       }
       // pass 3: counters
@@ -2690,18 +2859,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           c.cur.power += (c.counters['+1/+1'] || 0) - (c.counters['-1/-1'] || 0);
           c.cur.toughness += (c.counters['+1/+1'] || 0) - (c.counters['-1/-1'] || 0);
           c.cur.toughness -= (c.counters['-0/-1'] || 0);
-          if ((c.counters['flying'] || 0) > 0) c.cur.kw.add('flying');
+          if ((c.counters['flying'] || 0) > 0) inAbilityLayer(c.meta.oracleCounterTimestamps?.flying??c.timestamp,()=>c.cur.kw.add('flying'));
         }
         // Keyword counters modify any permanent that can have the ability, not
         // only creatures.  Wakanda Forever! can put indestructible on an artifact
         // or land, and that counter must still stop destroy effects.
         for (const kwc of ['double strike', 'first strike', 'deathtouch', 'lifelink',
           'trample', 'vigilance', 'menace', 'reach', 'hexproof', 'shroud', 'indestructible']) {
-          if ((c.counters[kwc] || 0) > 0) c.cur.kw.add(kwc);
+          if ((c.counters[kwc] || 0) > 0) inAbilityLayer(c.meta.oracleCounterTimestamps?.[kwc]??c.timestamp,()=>c.cur.kw.add(kwc));
         }
       }
+      MTG.OracleV8Untap?.recalculate(this,bf);
       // pass 4: until-EOT effects in timestamp order
       for (const e of this.untilEffects) {
+        inAbilityLayer(e.oracleLayerTimestamp??e.timestamp,()=>{
         if(e.kind==='oracleGrantedOperation'){
           const card=bf.find(card=>card.iid===e.iid&&card.zoneVersion===e.zoneVersion);
           if(card){card.cur[e.field].push(...e.grants);for(const keyword of e.keywords)card.cur.kw.add(keyword);}
@@ -2711,6 +2882,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if(card)MTG.applyOracleCombatRestriction(this,card,e.restriction,this.players[e.controller]);
         }
         if (e.apply) e.apply(this, bf);
+        });
       }
       // CR 613.4d: switching is applied after all power/toughness modifiers,
       // including modifiers created later than the switch.
@@ -2719,14 +2891,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if(card)[card.cur.power,card.cur.toughness]=[card.cur.toughness,card.cur.power];
       }
       // pass 5: per-card temp flags
-      for(const c of sorted)if(!c.cur.abilitiesDisabled)for(const effect of c.def.statics||[])if(effect.phase===5&&(!effect.cond||effect.cond(this,c)))effect.apply?.(this,c,bf);
+      for(const c of sorted)if(!c.cur.abilitiesDisabled)for(const effect of c.def.statics||[])if(effect.phase===5&&(!effect.cond||effect.cond(this,c)))inAbilityLayer(c.timestamp,()=>effect.apply?.(this,c,bf));
       for (const c of bf) {
-        if (c.meta.tempHaste || c.meta.oracleHaste) c.cur.kw.add('haste');
+        if (c.meta.tempHaste || c.meta.oracleHaste) inAbilityLayer(c.meta.oracleHasteTimestamp??c.timestamp,()=>c.cur.kw.add('haste'));
         // Older card scripts used fast boolean flags while the shared keyword
         // path used `cur.kw`. Keep both representations coherent so legality,
         // visible badges and gained-keyword FX always describe the same state.
-        if (c.cur.hexproof) c.cur.kw.add('hexproof');
-        if (c.cur.shroud) c.cur.kw.add('shroud');
+        if (c.cur.hexproof) inAbilityLayer(Infinity,()=>c.cur.kw.add('hexproof'));
+        if (c.cur.shroud) inAbilityLayer(Infinity,()=>c.cur.kw.add('shroud'));
         if (c.meta.suspected) { c.cur.kw.add('menace'); c.cur.cantBlock = true; }
         if (c.cur.kw.has('defender')) {
           // Weathered Sentinels: "can attack players who attacked you last turn
@@ -2740,6 +2912,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       // Obavijesti samo kad se NOVA dodijeljena sposobnost/keyword pojavi.
+      abilityLayers?.finish();
       // Recalc se poziva cesto, pa se potpisi pamte na objektu karte da isti
       // stalni efekt ne proizvodi duplikate pri svakom osvjezavanju table.
       for (const c of bf) {
@@ -2770,6 +2943,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // članstvo (mijenja ga zone promjena, koja uvijek pokreće recalc), dok
       // se kontrolor čita uživo pri pozivu.
       this._toughnessCombatSources = bf.filter(card => card.def.toughnessCombatAll || card.def.toughnessCombatYours);
+      this._oracleDamageWatch=bf.some(card=>!card.cur.abilitiesDisabled&&(card.def.triggers||[]).concat(card.cur.extraTriggers||[]).some(trigger=>[].concat(trigger.on).some(event=>/^oracleDamage/.test(event))));
       if(newlyBlessed)this.recalc();
     }
 
@@ -2781,8 +2955,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const seen = new Map();
       const consider = (card, zoneOK, ctrlOverride) => {
         const history=['dies','lto','sacrificed'].includes(name)?(data.card===card?data.snap:(this._simultaneousLeaveSources||[]).find(entry=>entry.card===card)?.snap||(data.snap?.attachedSources||[]).find(entry=>entry.card===card)?.snap):null;
-        if (history?history.abilitiesDisabled:card.cur?.abilitiesDisabled) return;
-        const trigs=((history?.def || card.def).triggers||[]).concat(history?history.extraTriggers||[]:card.cur?.extraTriggers||[]);
+        const disabled=history?history.abilitiesDisabled:card.cur?.abilitiesDisabled;
+        const trigs=(disabled?[]:(history?.def || card.def).triggers||[]).concat(history?history.extraTriggers||[]:card.cur?.extraTriggers||[]);
         for (const t of trigs) {
           let cardSeen = seen.get(card);
           if (!cardSeen) { cardSeen = new Set(); seen.set(card, cardSeen); }
@@ -2831,12 +3005,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async emit(name, data) {
+      MTG.oracleV8RecordConditionEvent?.(this,name,data);
       if(this._damageEventQueue&&['dealtDamage','damageToPlayer','damagePrevented','shieldRemoved','lifeGain','lifeLost','countersPlaced','countersRemoved','plusAdded','m1Added','monarchChanged'].includes(name)){
         this._damageEventQueue.push({name,data});return;
       }
       const found = this.collectTriggers(name, data || {});
+      const oracleBatch=data?.oracleBatch||(['dies','lto','sacrificed'].includes(name)?this._simultaneousLeaveSources:null);
       if(name==='upkeep')for(const card of this.bf())if(card.def.oracleEchoCost&&card.ctrl===data.player)card.meta.oracleEchoPending=false;
       for (const { card, t, ctrlOverride, onceStamp } of found) {
+        if(t.oncePerBatch&&oracleBatch){
+          const batches=this._oracleTriggerBatches||(this._oracleTriggerBatches=new WeakMap());
+          let sources=batches.get(oracleBatch);if(!sources){sources=new Map();batches.set(oracleBatch,sources);}
+          let triggers=sources.get(card);if(!triggers){triggers=new Map();sources.set(card,triggers);}
+          const version=(this._simultaneousLeaveSources||[]).find(row=>row.card===card)?.snap.zoneVersion??card.zoneVersion;
+          if(triggers.get(t)===version)continue;
+          triggers.set(t,version);
+        }
         if (t.oncePerTurn) card.meta['_once_' + (t.onceKey||t.on)] = onceStamp;
         const nativeTimes = Math.max(0, Number(typeof t.times === 'function'
           ? t.times(this, card, data || {})
@@ -2886,7 +3070,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const dl = this.delayed.filter(d => d.on === name && (!d.filter || d.filter(this, data)));
       for (const d of dl) {
         if (d.once !== false) this.delayed.splice(this.delayed.indexOf(d), 1);
-        this.queueTrigger({ src: d.src, name: d.name || name, run: d.run, ctrl: d.ctrl, data, targets: d.targets });
+        this.queueTrigger({ src: d.src, name: d.name || name, run: d.run, ctrl: d.ctrl, data, targets: d.targets, prepareTargets:d.prepareTargets, opt:d.opt });
       }
     }
     emitSync(name, data) { /* fire-and-forget for non-trigger notifications */ this.note(name, data || {}); }
@@ -3248,7 +3432,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               wardCtx.g.lg(`${original.name}: Ward cannot counter it.`);
               return;
             }
-            const paid = await wardCtx.g.payWard(wardCtx.data.payer, wardCtx.data.target, wardCtx.data.ward);
+            const paid = await wardCtx.g.payWard(wardCtx.data.payer, wardCtx.data.target, wardCtx.data.ward, original);
             if (paid) return;
             if (original.kind === 'spell') {
               original.countered = true;
@@ -3267,7 +3451,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
 
-    async payWard(ctrl, target, wardOverride) {
+    async payWard(ctrl, target, wardOverride, stackObject = null) {
       const w = wardOverride || target.cur.wardCost;
       if (w.sacLegendary) {
         const pool = this.bf().filter(card => card.ctrl === ctrl && this.canSacrifice(card) &&
@@ -3290,7 +3474,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const yes = await ctrl.controller.decide(this, {
           type: 'chooseOption', prompt: `Ward — put ${w.blight} -1/-1 counters on your creature to target ${target.name}?`,
           options: [{ key: 'yes', label: `Blight ${w.blight}` }, { key: 'no', label: 'Cancel' }],
-          aiHint: { kind: 'ward', target, payment: 'blight', n: w.blight },
+          aiHint: { kind: 'ward', target, payment: 'blight', n: w.blight, stackObject },
         });
         if (yes !== 'yes') return false;
         const picked = await ctrl.controller.decide(this, {
@@ -3397,7 +3581,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           for (const card of this.bf()) {
             if (!card.is('Creature') || !card.meta._lastDamageVisual || card.meta._lastDamageVisual.turn !== this.turnNo) continue;
             const zeroToughness = card.cur.toughness <= 0;
-            const lethalMarked = card.damage >= card.cur.toughness || (card.deathtouched && card.damage > 0);
+            const lethalMarked = card.damage >= card.cur.toughness || card.deathtouched;
             const actuallyDies = zeroToughness || (lethalMarked && !card.kw('indestructible') &&
               (card.counters.shield || 0) <= 0 && card.regenShield <= 0);
             if (!actuallyDies || card.meta._boardWipeVisualTurn === this.turnNo) continue;
@@ -3418,10 +3602,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               if (c.cur.toughness <= 0) {
                 await this.move(c, 'graveyard'); any = true; continue;
               }
-              if (c.damage >= c.cur.toughness || (c.deathtouched && c.damage > 0)) {
+              if (c.damage >= c.cur.toughness || c.deathtouched) {
                 const died = await this.destroy(c, {});
+                // CR 704.5h only considers deathtouch damage since the last
+                // SBA check. An indestructible survivor must not carry that
+                // cause of destruction into a later loss of indestructible.
+                c.deathtouched = false;
                 if (died !== false) any = true;
-                else if (!c.kw('indestructible')) { c.damage = 0; c.deathtouched = false; }
+                else if (!c.kw('indestructible')) c.damage = 0;
                 // CR 702.12b: indestructible ne briše označenu štetu — ona ostaje
                 // do cleanupa, pa stvorenje umire ako izgubi indestructible.
                 continue;

@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { loadEngine } from './helpers/load-engine.mjs';
 
 function allEntries(MTG) {
@@ -118,9 +119,11 @@ test('svaka generička Oracle batch karta mapira kompletan rules core na poznate
   const MTG = loadEngine();
   const entries = allEntries(MTG);
   const batches = MTG.ORACLE_BATCHES.filter(batch => batch.id !== 'moxfield-sauron-dark-lord');
-  assert.equal(batches.length, 148, 'generic Oracle catalog has exactly 148 batches');
+  const state = JSON.parse(fs.readFileSync(new URL('../reports/oracle-import/state.json', import.meta.url), 'utf8'));
+  assert.ok(state.batches.length >= 148, 'the existing catalog is preserved');
+  assert.deepEqual(Array.from(batches, batch => batch.id), state.batches.map(batch => batch.id), 'every recorded batch is registered in order');
   assert.ok(batches.every(batch => batch.cards.length === 100), 'every generic Oracle batch contains exactly 100 cards');
-  assert.equal(entries.length, 14800, `expected all 148 generic Oracle batches (14,800 cards), found ${entries.length}`);
+  assert.equal(entries.length, state.batches.length * 100, 'all recorded generic cards have executable contracts');
   for (const entry of entries) {
     const catalog = MTG.CARD_CATALOG[entry.raw.name];
     const deck = { cards: [{ n: 1, name: entry.raw.name }] };

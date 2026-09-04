@@ -124,6 +124,15 @@ img { -webkit-user-drag: none; }
 .mini img { position: absolute; inset: 2px; width: calc(100% - 4px); height: calc(100% - 4px); object-fit: cover; border-radius: 5px; }
 .mini .mname { position: absolute; bottom: 0; left: 0; right: 0; font-size: 8.2px; background: #000b; padding: 2px 3px; line-height: 1.1; max-height: 22px; overflow: hidden; }
 .mini .pt { position: absolute; top: 2px; right: 2px; background: #000d; color: #fff; font-size: 10px; font-weight: 800; padding: 1px 4px; border-radius: 5px; }
+.mini.has-marked-damage { min-width:max-content; }
+.permanentpile:has(> .mini.has-marked-damage) { min-width:max-content; }
+/* Keep the stat row in flow so long damage/P-T values size the card instead
+   of clipping inside an absolutely positioned 52px opponent card. */
+.mini .markeddamagestats { position:relative; margin:2px; z-index:5; display:flex; align-items:center; justify-content:space-between; gap:2px; }
+.mini .markeddamagestats .pt { position:static; flex:0 0 auto; }
+.mini .markeddamage { display:block; padding:2px 3px; color:#ffe5df; background:#661b17; border:1px solid #e27868; border-radius:4px; box-shadow:0 1px 4px #000b; font:850 7.5px/1 var(--tbl-cond,inherit); white-space:nowrap; }
+.mini.sm .markeddamage { padding:2px; font-size:6.5px; }
+.mini.has-marked-damage .badge { top:21px; }
 .mini .cnt { position: absolute; top: 18px; right: 2px; background: #2a6a2add; font-size: 9px; padding: 1px 3px; border-radius: 4px; }
 .mini .m1counter { position:absolute; top:32px; right:2px; z-index:3; display:flex; align-items:center; gap:2px; min-height:14px; padding:1px 3px; color:#ffe6e1; background:linear-gradient(90deg,#6e1714ee,#32100fee); border:1px solid #e06c59; border-radius:4px; box-shadow:0 0 9px #b8362f88; font:850 7px/1 var(--tbl-cond,inherit); white-space:nowrap; }
 .mini .m1counter .gameicon { width:11px; height:11px; stroke-width:2.2; }
@@ -402,6 +411,9 @@ img { -webkit-user-drag: none; }
 .sname { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .stype { font-size: 12px; color: var(--ds-accent-soft); margin: 3px 0; }
 .spt { font-size: 13px; font-weight: 700; margin: 2px 0; }
+.smarkeddamage { display:grid; gap:4px; margin:7px 0; padding:8px 10px; color:#f8d6ce; background:#361c1b; border-left:3px solid #e27868; border-radius:4px; }
+.smarkeddamage b { font-size:12px; }
+.smarkeddamage span { font-size:11px; line-height:1.45; }
 .soracle { font-size: 12.5px; line-height: 1.45; color: #cdd; background: #14161c; border-radius: 8px; padding: 8px; margin-top: 5px; }
 .simplified { font-size: 11px; color: #d9a05a; margin-top: 5px; }
 .sheetacts { display: flex; flex-direction: column; gap: 2px; }
@@ -3984,6 +3996,7 @@ span.msym.mana-glyph {
 #game .poisonbadge b { color: inherit; font-size: 11px; font-variant-numeric: tabular-nums; }
 #game .poisonbadge i { font-size: 8px; font-style: normal; opacity: .8; }
 #game .poisonbadge small { font-size: 7px; letter-spacing: .04em; }
+#game .poisonbadge.energybadge { color: #f5da91; background: #302814; border-color: #9d823d; }
 #game .poisonbadge.danger { color: #ffd4ad; border-color: #d78355; background: #40251c; }
 #game .poisonbadge.lethal { color: #ffe0de; border-color: #ec766d; background: #511e24; }
 

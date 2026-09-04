@@ -829,12 +829,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ],
       },
       run: async ctx => {
+        if (!ctx.g.bf().includes(ctx.src) ||
+            ctx.sourceZoneVersion != null && ctx.src.zoneVersion !== ctx.sourceZoneVersion) return;
         if (ctx.mode === 0) ctx.g.addCounters(ctx.src, '+1/+1', ctx.src.counters['+1/+1'] || 0);
         else {
           const target = ctx.targets[0];
-          if (target) {
-            await ctx.g.damageCreature(ctx.src, target, ctx.src.power);
-            await ctx.g.damageCreature(target, ctx.src, target.power);
+          if (ctx.src.is('Creature') && ctx.g.bf().includes(target) && target.is('Creature')) {
+            await ctx.g.damageBatch([
+              { src: ctx.src, target, n: ctx.src.power },
+              { src: target, target: ctx.src, n: target.power },
+            ]);
           }
         }
       },

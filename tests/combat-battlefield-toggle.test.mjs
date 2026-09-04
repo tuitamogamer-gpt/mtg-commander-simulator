@@ -19,6 +19,8 @@ test('battlefield pogled vraća igrača u isti combat korak bez gubitka izbora',
   assert.match(uiSource, /Battlefield view · \$\{n\} attacker/);
   assert.match(uiSource, /pd\.sel\.map\(entry => \(\{ card: entry\.card, target: entry\.target \}\)\)/,
     'attacker assignmenti ostaju u pending odluci dok je tabla otvorena');
-  assert.match(uiSource, /for \(const \[b, a\] of pd\.assigns\)/,
+  assert.match(uiSource, /const blocks = this\.blockAssignments\(pd\)/,
     'blocker assignmenti ostaju u pending odluci dok je tabla otvorena');
+  assert.match(uiSource, /blockAssignments\(pd = this\.pending\)[\s\S]*pd\.assigns\.entries\(\)[\s\S]*concat\(targets\)\.map\(attacker => \(\{blocker, attacker\}\)\)/,
+    'jedan bloker zadržava svaki izabrani napad dok je tabla otvorena');
 });

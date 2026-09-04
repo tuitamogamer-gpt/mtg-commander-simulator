@@ -26,7 +26,7 @@ function clauses(text) {
   parts.push(text.slice(start)); return parts;
 }
 
-function modifications(card, text, helpers, allowRetainedAbility = false) {
+export function modifications(card, text, helpers, allowRetainedAbility = false) {
   if (!text) return {};
   const parts = clauses(text); if (!parts) return null;
   const mod = {};

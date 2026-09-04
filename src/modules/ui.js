@@ -384,6 +384,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         `<span aria-hidden="true">☠</span><b>${amount}<i>/10</i></b><small>POISON</small></span>`;
     }
 
+    energyBadge(p) {
+      const n=p?.counters?.energy||0;
+      return n?`<span class="poisonbadge energybadge" role="img" aria-label="${n} energy counters" title="${n} energy counters"><span aria-hidden="true">ϟ</span><b>${n}</b><small>ENERGY</small></span>`:'';
+    }
+
     // Public, currently relevant player state that would otherwise be easy to
     // lose in the game log. Keep this presentation-only: it reads the same
     // card/player metadata used by the rules engine and never exposes secret
@@ -399,6 +404,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const colorName = { W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green', C: 'Colorless' };
       const words = value => String(value || '').replace(/[_-]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
 
+      if(p.counters?.energy)add({key:'energy',kind:'counter',icon:'ϟ',label:'Energy counters',detail:`${p.counters.energy} energy available to spend.`,duration:'Counters remain until an effect removes them.'});
       const poison = this.poisonCount(p);
       if (poison) add({
         key: 'poison', kind: 'counter', icon: '☠', label: 'Poison counters',
@@ -2188,7 +2194,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span class="oppname">${isMonarch ? `<i class="seatcrown" aria-label="Monarch">${U.icon('crown')}</i> ` : ''}${U.icon('player', 'oppidentityicon')} ${esc(p.name)}</span>
           ${isActiveAi ? '<span class="activeaitag">ACTIVE TURN</span>' : ''}
           ${styleMeta ? `<span class="personachip${styleMeta.portrait ? ' hasportrait' : ''}" title="Style: ${escAttr(styleMeta.label)}">${styleMeta.portrait ? `<img src="${styleMeta.portrait}" alt="" onerror="MTG.imgFail(this)">` : styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
-          <span class="playerlifetotals"><span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${p.life}❤</span>${this.poisonBadge(p)}</span>
+          <span class="playerlifetotals"><span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${p.life}❤</span>${this.poisonBadge(p)}${this.energyBadge(p)}</span>
           <span class="oppmeta">${U.icon('cards')}${p.hand.length} ${U.icon('library')}${p.library.length}${statusEffects.length ? ` <button type="button" class="playereffectsbadge" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}</span>
           <span class="oppcmd" title="${esc(cmdTitle)}">${U.icon('crown')}${esc(cmdState)}</span>
           <button class="tbtn small" type="button" aria-label="Open ${esc(p.name)} player details" title="Open ${esc(p.name)} player details">${U.icon('info')}</button>`;
@@ -2390,7 +2396,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const c of perms) {
         const key = c.commander || c.attachments.length || c.attacking || c.blocking
           ? 'solo' + c.iid
-          : `${c.name}|${c.tapped}|${c.sick}|${c.is('Creature') ? c.power + '/' + c.toughness : ''}|${JSON.stringify(c.counters)}|${c.isToken}`;
+          : `${c.name}|${c.tapped}|${c.sick}|${c.is('Creature') ? c.power + '/' + c.toughness : ''}|${JSON.stringify(c.counters)}|${c.damage || 0}|${!!c.deathtouched}|${c.isToken}`;
         if (groups.has(key)) groups.get(key).n++;
         else { const entry = { card: c, n: 1 }; groups.set(key, entry); out.push(entry); }
       }
@@ -2543,7 +2549,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (g.monarch === me) info.classList.add('monarch');
       const statusEffects = this.playerStatusEffects(g, me);
       if (statusEffects.length) info.classList.add('has-effects');
-      info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="playerlifetotals"><div class="melife" role="button" tabindex="0" aria-label="You: ${me.life} life. Open player details." title="Open your player details">${me.life}<small>life</small></div>${this.poisonBadge(me)}</div>
+      info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="playerlifetotals"><div class="melife" role="button" tabindex="0" aria-label="You: ${me.life} life. Open player details." title="Open your player details">${me.life}<small>life</small></div>${this.poisonBadge(me)}${this.energyBadge(me)}</div>
         ${g.monarch === me ? `<div class="memonarch"><span>${U.icon('crown')}</span><b>MONARCH</b></div>` : ''}
         ${statusEffects.length ? `<button type="button" class="playereffectsbadge mine" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}
         <div class="manapool">${poolStr}</div>
@@ -2689,6 +2695,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return badges.length ? `<div class="keywordrack${badges.length > 3 ? ' dense' : ''}" data-ability-count="${badges.length}" aria-label="Visible keyword abilities">${badges.join('')}</div>` : '';
     }
 
+    markedDamageState(c) {
+      const amount = Number(c && c.damage);
+      if (!c || c.zone !== 'battlefield' || !c.is('Creature') || !Number.isFinite(amount) || amount <= 0) return null;
+      const remaining = Math.max(0, c.toughness - amount);
+      const threshold = c.deathtouched ? 'Deathtouch damage is marked.'
+        : remaining === 0 ? 'Lethal damage is marked.'
+          : `${remaining} more damage to reach lethal damage at current toughness.`;
+      const detail = `${amount} damage marked. ${threshold}${c.kw('indestructible') ? ' Indestructible prevents destruction from damage.' : ''} Damage does not reduce toughness. Marked damage clears during cleanup.`;
+      return { amount, detail };
+    }
+
     miniCard(g, c, opts = {}) {
       const threatened = this.threatTargets && this.threatTargets.has(c.iid);
       const shownFaceDownDef = this.visibleFaceDownDef(c);
@@ -2711,6 +2728,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.actable && this.actable.has(c.iid)) { badges.push(U.icon('effects')); d.classList.add('actable'); }
       if (c.commander) d.classList.add('cmdr');
       const pt = c.is('Creature') ? `<div class="pt">${c.power}/${c.toughness}</div>` : (c.is('Planeswalker') ? `<div class="pt">◆${c.counters['loyalty'] || 0}</div>` : '');
+      const markedDamage = this.markedDamageState(c);
+      const combatStats = markedDamage
+        ? `<div class="markeddamagestats"><span class="markeddamage" data-damage="${markedDamage.amount}" title="${escAttr(markedDamage.detail)}" aria-label="${escAttr(markedDamage.detail)}">${markedDamage.amount} DMG</span>${pt}</div>`
+        : pt;
+      if (markedDamage) d.classList.add('has-marked-damage');
       const cnt = (c.counters['+1/+1'] || 0) ? `<div class="cnt">+${c.counters['+1/+1']}</div>` : '';
       const minusN = c.counters['-1/-1'] || 0;
       const minusCounter = minusN
@@ -2740,12 +2762,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       d.innerHTML = `
         <img loading="lazy" src="${c.faceDown && !mayLookFaceDown ? MTG.BLANK_PX : imgURL(faceName)}" onerror="MTG.imgFail(this)">
         <div class="mname">${esc(c.faceDown ? 'Face-down creature' : c.name.split(' // ')[0])}</div>
-        ${pt}${cnt}${minusCounter}${oc}${crewed}${att}${tok}${landCreatureTag}${fd}${stackN}${keywordBadges}
+        ${combatStats}${cnt}${minusCounter}${oc}${crewed}${att}${tok}${landCreatureTag}${fd}${stackN}${keywordBadges}
         ${badges.length ? `<div class="badge">${badges.join('')}</div>` : ''}`;
       d.dataset.cname = mayLookFaceDown ? faceName : c.name;
-      const accessibleName = c.faceDown && !mayLookFaceDown
+      let accessibleName = c.faceDown && !mayLookFaceDown
         ? 'Face-down permanent'
         : `${faceName}${landCreature ? `. Land creature ${c.power}/${c.toughness}` : ''}`;
+      if (markedDamage) accessibleName += `. ${markedDamage.detail}`;
       // interactions
       if (this.markSelectedTarget(d, c)) {
         const proliferate = pd && pd.q.spec && pd.q.spec.what === 'proliferate';
@@ -2773,13 +2796,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (pd && pd.q.type === 'blockers') {
         if (pd.q.potential.includes(c)) {
           d.classList.add('eligible');
-          const assigned = pd.assigns.get(c);
-          if (assigned) {
+          const assigned = this.blockTargets(c, pd);
+          if (assigned.length) {
             d.classList.add('blocking');
-            d.appendChild(el('div', 'atkchip', `🛡 ${esc(assigned.name)}`));
+            d.appendChild(el('div', 'atkchip', `🛡 ${esc(assigned.map(card => card.name).join(', '))}`));
           }
           d.onclick = () => this.assignBlocker(c);
-          return this.makeKeyboardButton(d, `${accessibleName}. ${assigned ? 'Remove this blocker assignment.' : 'Assign this creature as a blocker.'}`);
+          return this.makeKeyboardButton(d, `${accessibleName}. ${assigned.length ? 'Change this blocker assignment.' : 'Assign this creature as a blocker.'}`);
         }
       }
       d.onclick = () => { this.sheet = { card: c }; this.render(); };
@@ -2800,11 +2823,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         for (const l of (pd.q.lands || [])) castable.set(l, castable.get(l) || []);
         for (const a of (pd.q.acts || [])) {
-          if ((a.cycling || a.plot || a.foretell || a.suspend || a.ninjutsu) && a.card.zone === 'hand') {
+          if ((a.cycling || a.plot || a.foretell || a.suspend || a.ninjutsu || a.handAbility) && a.card.zone === 'hand') {
             if (!castable.has(a.card)) castable.set(a.card, []);
             if (a.suspend) suspendReady.add(a.card);
           }
         }
+      }
+      const miracleCards=g.miracleRevealedCards?.()||[],forecastCards=[...(g.forecastRevealedCards?.()||[]),...miracleCards];
+      if(forecastCards.length){
+        const tray=el('div','exiletray forecasttray');
+        tray.appendChild(el('div','exiletraytitle',miracleCards.length?'Revealed cards — Miracle / Forecast':'Forecast — revealed until upkeep ends'));
+        const list=el('div','exiletraylist');
+        for(const card of forecastCards){
+          const item=el('button','exiletraycard');item.dataset.cname=card.name;
+          item.title=`${card.name} — revealed in ${card.owner.name}'s hand`;
+          item.innerHTML=`<img loading="lazy" src="${imgURL(card.name)}" onerror="MTG.imgFail(this)"><span><b>${esc(card.name)}</b><small>${esc(card.owner.name)} · ${miracleCards.includes(card)?'Miracle':'Forecast'}</small></span>`;
+          item.onclick=()=>{this.sheet={card};this.render();};list.appendChild(item);
+        }
+        tray.appendChild(list);wrap.appendChild(tray);
       }
       // 🌀 IMPULSE / PLOT: karte u egzilu koje trenutno smiješ igrati moraju
       // biti stalno vidljive — inače igrač ne zna ŠTA je egzilirano i da li
@@ -3129,13 +3165,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             atkRow.appendChild(chip);
           }
           bar.appendChild(atkRow);
-          const blocks = [];
-          for (const [b, a] of pd.assigns) blocks.push({ blocker: b, attacker: a });
+          const blocks = this.blockAssignments(pd);
           const brow = el('div', 'btnrow');
           const back = btn('🛡 Back to Block Overview', () => { pd.boardPeek = false; this.render(); });
           back.dataset.testid = 'back-to-combat-overlay';
           brow.appendChild(back);
-          brow.appendChild(btn(blocks.length ? `Confirm blocks (${blocks.length})` : 'No blocks ▶', () => this.resolvePending(blocks), 'primary'));
+          const confirm = btn(blocks.length ? `Confirm blocks (${blocks.length})` : 'No blocks ▶', () => this.resolvePending(blocks), 'primary');
+          confirm.disabled = !g.blockDeclarationLegal(q.attackers, blocks);
+          brow.appendChild(confirm);
           bar.appendChild(brow);
           break;
         }
@@ -3173,7 +3210,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           pd.sel.forEach((target, index) => {
             const additions = proliferate
               ? (target instanceof MTG.Player
-                ? ((target.poison || 0) > 0 ? '+1 poison' : 'no counters')
+                ? [...((target.poison||0)>0?['+1 poison']:[]),...((target.counters?.energy||0)>0?['+1 energy']:[])].join(' · ')||'no counters'
                 : Object.entries(target.counters || {}).filter(([, n]) => n > 0).map(([kind]) => `+1 ${kind}`).join(' · '))
               : '';
             const chip = el('button', `targetpickchip${proliferate ? ' proliferatechoice' : ''}`,
@@ -3896,21 +3933,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Svaki napadač je "lane" sa slikom, P/T, keywordima i predviđenim ishodom
     // bloka. Ispod su svi tvoji slobodni blokeri. Klik na lane → klik na
     // blokera. "Show battlefield" privremeno skloni prozor i vrati stari tok.
-    blockOutcome(g, attacker, blockers) {
-      const atkPow = Math.max(0, g.dmgAmount(attacker, 'normal'));
-      const totalBlockPow = blockers.reduce((sum, b) => sum + Math.max(0, g.dmgAmount(b, 'normal')), 0);
-      const attackerDies = blockers.length > 0 && (
+    blockOutcome(g, attacker, blockers, assignments = blockers.map(blocker => ({blocker, attacker}))) {
+      const assignedDamage = blocker => g.assignBlockerDamage(blocker, assignments.filter(pair => pair.blocker === blocker).map(pair => pair.attacker), g.dmgAmount(blocker, 'normal')).find(row => row.attacker === attacker)?.n || 0;
+      const totalBlockPow = blockers.reduce((sum, blocker) => sum + assignedDamage(blocker), 0);
+      const attackerDies = !attacker.kw('indestructible') && blockers.length > 0 && (
         totalBlockPow >= Math.max(1, attacker.toughness - attacker.damage) ||
-        blockers.some(b => b.kw('deathtouch') && g.dmgAmount(b, 'normal') > 0));
-      const dying = [];
-      let rem = atkPow;
-      const ordered = blockers.slice().sort((x, y) => (x.toughness - x.damage) - (y.toughness - y.damage));
-      for (const b of ordered) {
-        const lethal = attacker.kw('deathtouch') ? 1 : Math.max(1, b.toughness - b.damage);
-        if (rem >= lethal) { dying.push(b); rem -= lethal; } else break;
+        blockers.some(blocker => blocker.kw('deathtouch') && assignedDamage(blocker) > 0));
+      const incoming = new Map(), deathtouched = new Set(); let trampleThrough = 0;
+      for (const attacking of new Set(assignments.map(pair => pair.attacker))) {
+        const defending = [...new Set(assignments.filter(pair => pair.attacker === attacking).map(pair => pair.blocker))]
+          .sort((a, b) => a.toughness - a.damage - b.toughness + b.damage || a.iid - b.iid);
+        let remaining = Math.max(0, g.dmgAmount(attacking, 'normal'));
+        for (const [index, blocker] of defending.entries()) {
+          const lethal = Math.max(0, blocker.toughness - blocker.damage), needed = attacking.kw('deathtouch') ? Math.min(1, lethal) : lethal;
+          const n = index === defending.length - 1 && !attacking.kw('trample') ? remaining : Math.min(remaining, needed);
+          incoming.set(blocker, (incoming.get(blocker) || 0) + n);
+          if (n > 0 && attacking.kw('deathtouch')) deathtouched.add(blocker);
+          remaining -= n; if (!remaining) break;
+        }
+        if (attacking === attacker && attacking.kw('trample')) trampleThrough = remaining;
       }
-      const trampleThrough = attacker.kw('trample') ? Math.max(0, rem) : 0;
-      return { attackerDies, dying, trampleThrough };
+      const dying = blockers.filter(blocker => !blocker.kw('indestructible') && ((incoming.get(blocker) || 0) >= blocker.toughness - blocker.damage || deathtouched.has(blocker)));
+      return {attackerDies, dying, trampleThrough};
     }
 
     renderBlockersModal(g) {
@@ -3919,7 +3963,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const q = pd.q;
       if (!pd.mode && q.attackers.length) pd.mode = q.attackers[0];
       const KW = ['flying', 'trample', 'menace', 'first strike', 'double strike', 'deathtouch', 'lifelink'];
-      const assignedTo = attacker => [...pd.assigns.entries()].filter(([, a]) => a === attacker).map(([b]) => b);
+      const assignments = this.blockAssignments(pd);
+      const assignedTo = attacker => assignments.filter(pair => pair.attacker === attacker).map(pair => pair.blocker);
       const ov = el('div', 'overlay dark blockov');
       const m = el('div', 'modal blockmodal');
       ov.appendChild(m);
@@ -3930,7 +3975,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       let unblockedDamage = 0;
       for (const a of q.attackers) {
         if (!assignedTo(a).length) unblockedDamage += Math.max(0, g.dmgAmount(a, 'normal')) * (a.kw('double strike') ? 2 : 1);
-        else unblockedDamage += this.blockOutcome(g, a, assignedTo(a)).trampleThrough * (a.kw('double strike') ? 2 : 1);
+        else unblockedDamage += this.blockOutcome(g, a, assignedTo(a), assignments).trampleThrough * (a.kw('double strike') ? 2 : 1);
       }
       const me = this.me;
       m.appendChild(el('div', 'blockhead',
@@ -3942,7 +3987,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const lanes = el('div', 'blocklanes');
       for (const a of q.attackers) {
         const mine = assignedTo(a);
-        const outcome = this.blockOutcome(g, a, mine);
+        const outcome = this.blockOutcome(g, a, mine, assignments);
         const lane = el('div', 'blocklane' + (pd.mode === a ? ' sel' : ''));
         const kws = KW.filter(k => a.kw(k)).join(' · ');
         const hitTarget = a.attacking === me ? 'YOU' : (a.attacking && a.attacking.name ? a.attacking.name : 'you');
@@ -3971,7 +4016,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const chip = ev.target.closest('.blockchip');
           if (chip) {
             const b = mine.find(x => String(x.iid) === chip.dataset.biid);
-            if (b) { pd.assigns.delete(b); this.render(); return; }
+            if (b) { this.assignBlocker(b, a); return; }
           }
           pd.mode = a; this.render();
         };
@@ -3983,41 +4028,40 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         pd.mode ? `Your untapped creatures — click to block <b>${esc(pd.mode.name)}</b>:` : 'Your untapped creatures:'));
       const row = el('div', 'blockcandidates');
       for (const b of q.potential) {
-        const assigned = pd.assigns.get(b);
+        const assigned = this.blockTargets(b, pd);
         const canNow = pd.mode ? g.canBlock(b, pd.mode) : true;
         const bkws = KW.concat(['reach', 'defender']).filter(k => b.kw(k)).join(' · ');
-        const cell = el('button', 'blockcand' + (assigned ? ' assigned' : '') + (!canNow && !assigned ? ' cant' : ''));
+        const cell = el('button', 'blockcand' + (assigned.length ? ' assigned' : '') + (!canNow && !assigned.length ? ' cant' : ''));
         cell.innerHTML = `
           <img src="${imgURL(b.name)}" onerror="MTG.imgFail(this)">
           <span><b>${esc(b.name)}</b><small>${b.power}/${b.toughness}${bkws ? ' · ' + esc(bkws) : ''}</small>
-          ${assigned ? `<i class="assignedto">🛡 blocks ${esc(assigned.name)}</i>` : ''}</span>`;
+          ${assigned.length ? `<i class="assignedto">🛡 blocks ${esc(assigned.map(card => card.name).join(', '))}</i>` : ''}</span>`;
         cell.onclick = () => {
-          if (assigned) { pd.assigns.delete(b); this.render(); return; }
           if (!pd.mode) { this.toast('First click the attacker row you want to block.'); return; }
-          if (!g.canBlock(b, pd.mode)) { this.toast(`${b.name} cannot block ${pd.mode.name} (flying, menace, or another restriction).`); return; }
-          pd.assigns.set(b, pd.mode);
-          this.render();
+          this.assignBlocker(b, pd.mode);
         };
         row.appendChild(cell);
       }
       if (!q.potential.length) row.appendChild(el('div', 'emptyrow', 'You have no creatures able to block.'));
       m.appendChild(row);
 
-      // menace upozorenje
-      const menaceBroken = q.attackers.filter(a => a.kw('menace') && assignedTo(a).length === 1);
-      if (menaceBroken.length) {
-        m.appendChild(el('div', 'blockmenacewarn',
-          `👿 Menace: ${esc(menaceBroken.map(a => a.name).join(', '))} needs at least TWO blockers — a single block will be ignored.`));
+      const invalidBounds = q.attackers.filter(attacker => {const n = assignedTo(attacker).length, bounds = g.blockerBounds(attacker); return n > 0 && (n < bounds.min || n > bounds.max);});
+      for (const attacker of invalidBounds) {
+        const bounds = g.blockerBounds(attacker);
+        m.appendChild(el('div', 'blockmenacewarn', `${esc(attacker.name)} needs ${bounds.min > 1 ? 'at least ' + bounds.min : 'at most ' + bounds.max} blockers for a legal block.`));
       }
+      const declaredBlockers = [...new Set(assignments.map(pair => pair.blocker))];
+      const missingCompanion = declaredBlockers.filter(blocker => !(blocker.cur.blockGroupRestrictions || []).every(test => test(declaredBlockers)));
+      if (missingCompanion.length) m.appendChild(el('div', 'blockmenacewarn', `${esc(missingCompanion.map(card => card.name).join(', '))} needs another qualifying creature to block this combat.`));
 
       const foot = el('div', 'btnrow blockfoot');
-      const blocks = [];
-      for (const [b, a] of pd.assigns) blocks.push({ blocker: b, attacker: a });
+      const blocks = this.blockAssignments(pd);
       const peek = el('button', 'pbtn', '🗺 Show Battlefield');
       peek.dataset.testid = 'show-combat-battlefield';
       peek.onclick = () => { pd.boardPeek = true; this.render(); };
       foot.appendChild(peek);
       const confirm = el('button', 'pbtn primary', blocks.length ? `Confirm blocks (${blocks.length}) ✓` : 'No blocks ▶');
+      confirm.disabled = !g.blockDeclarationLegal(q.attackers, blocks);
       confirm.onclick = () => this.resolvePending(blocks);
       foot.appendChild(confirm);
       m.appendChild(foot);
@@ -4286,13 +4330,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.render();
     }
 
-    assignBlocker(b) {
-      const pd = this.pending;
-      if (pd.assigns.has(b)) { pd.assigns.delete(b); this.render(); return; }
-      const a = pd.mode || pd.q.attackers[0];
+    blockTargets(blocker, pd = this.pending) {
+      return [].concat(pd.assigns.get(blocker) || []);
+    }
+    blockAssignments(pd = this.pending) {
+      return [...pd.assigns.entries()].flatMap(([blocker, targets]) => [].concat(targets).map(attacker => ({blocker, attacker})));
+    }
+    assignBlocker(b, selectedAttacker) {
+      const pd = this.pending, a = selectedAttacker || pd.mode || pd.q.attackers[0];
       if (!a) return;
-      if (!this.game.canBlock(b, a)) { this.toast('Cannot block because of flying, menace, or another restriction.'); return; }
-      pd.assigns.set(b, a);
+      const assigned = this.blockTargets(b, pd), capacity = this.game.blockerCapacity(b);
+      if (assigned.includes(a) || capacity === 1 && assigned.length) {
+        const remaining = capacity === 1 ? [] : assigned.filter(card => card !== a);
+        if (remaining.length) pd.assigns.set(b, remaining); else pd.assigns.delete(b);
+        this.render(); return;
+      }
+      if (assigned.length >= capacity) { this.toast(`${b.name} cannot block another creature this combat.`); return; }
+      if (!this.game.canBlock(b, a)) { this.toast('Cannot block because of flying or another restriction.'); return; }
+      if (this.blockAssignments(pd).filter(pair => pair.attacker === a).length >= this.game.blockerBounds(a).max) {this.toast(`${a.name} cannot be blocked by another creature.`); return;}
+      pd.assigns.set(b, capacity === 1 ? a : assigned.concat(a));
       this.render();
     }
 
@@ -4348,12 +4404,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ? Object.entries(MTG.KEYWORD_VISUALS).filter(([keyword, visual]) => MTG.cardHasVisualAbility(card, keyword, visual)).map(([keyword, visual]) =>
           `<span class="sheetkeyword tone-${visual.tone}">${U.icon(visual.icon)}<b>${esc(visual.label)}</b>${(card.counters[keyword] || 0) ? `<small>${card.counters[keyword]} counter${card.counters[keyword] === 1 ? '' : 's'}</small>` : ''}</span>`).join('')
         : '';
+      const markedDamage = this.markedDamageState(card);
       info.innerHTML = `${card.faceDown ? `<div class="facedownsheet">🃏 ${faceDownLabel}${mayLookFaceDown ? ' · only you can see its identity' : ''}</div>` : ''}` +
         `${landCreature ? '<div class="animatedpermanentstate">LAND CREATURE · ACTIVE ON THE BATTLEFIELD</div>' : ''}` +
         suspendState +
         `<div class="sname">${esc(shownName)} ${costHTML(shownDef.cost || '')}</div>
         <div class="stype">${esc(typeLine)}</div>
         ${card.is('Creature') && card.cur ? `<div class="spt">${card.power}/${card.toughness}${card.tapped ? ' · TAPPED' : ''}${Object.entries(card.counters).filter(([k, v]) => v > 0).map(([k, v]) => ` · ${v}×${k}`).join('')}</div>` : ''}
+        ${markedDamage ? `<div class="smarkeddamage"><b>${markedDamage.amount} damage marked</b><span>${esc(markedDamage.detail)}</span></div>` : ''}
         ${sheetKeywords ? `<div class="sheetkeywords">${sheetKeywords}</div>` : ''}
         <div class="soracle">${esc(shownDef.oracle || '').replace(/\n/g, '<br>')}</div>
         ${shownDef.simplified ? `<div class="simplified">⚠️ ${esc(shownDef.simplified)}</div>` : ''}`;

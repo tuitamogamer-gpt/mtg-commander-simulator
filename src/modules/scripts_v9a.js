@@ -1082,10 +1082,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const t = ctx.targets[0];
         if (!t || t === ctx.src) return;
         E.pumpUntilEOT(ctx.g, t, 2, 0);
-        const iid = t.iid;
+        const iid = t.iid, zoneVersion = t.zoneVersion;
         ctx.g.untilEffects.push({
           expires: 'eot', kind: 'hexproof',
-          apply: (g2, bf) => { const x = bf.find(y => y.iid === iid); if (x) x.cur.hexproof = true; },
+          apply: (g2, bf) => { const x = bf.find(y => y.iid === iid && y.zoneVersion === zoneVersion); if (x) x.cur.hexproof = true; },
         });
         ctx.g.recalc();
       },
@@ -1351,11 +1351,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       const t = ctx.targets[0];
       if (!t) return;
-      ctx.g.untilEffects.push({ kind: 'redirectAllDamage', who: ctx.you, iid: t.iid, expires: 'eot' });
-      const you = ctx.you, iid = t.iid;
+      const you = ctx.you, iid = t.iid, zoneVersion = t.zoneVersion;
+      ctx.g.untilEffects.push({ kind: 'redirectAllDamage', who: you, iid, zoneVersion, expires: 'eot' });
       ctx.g.delayed.push({
         on: 'dies', expires: 'eot', name: 'Heroic Sacrifice', ctrl: you,
-        filter: (g2, d) => d.card.iid === iid,
+        filter: (g2, d) => d.card.iid === iid && d.snap?.zoneVersion === zoneVersion,
         targets: [T.yourCreature({
           upTo: true, prompt: 'Move the sacrificed creature’s counters to up to one creature',
           aiHint: { goal: 'buff' },
@@ -1739,16 +1739,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     ],
     abilities: [{
-      label: 'Protect a legend', cost: { tap: true, mana: '{3}', sacSelf: true },
+      label: 'Protect a legend', cost: { tap: true, mana: '{3}', exileSelf: true },
       targets: [T.creature({ prompt: 'Legenda', filter: (g, c) => c.zone === 'battlefield' && (c.cur.super || []).includes('Legendary'), aiHint: { goal: 'protect' } })],
       run: async ctx => {
         const t = ctx.targets[0];
         if (!t) return;
         E.grantUntilEOT(ctx.g, t, ['indestructible']);
-        const iid = t.iid;
+        const iid = t.iid, zoneVersion = t.zoneVersion;
         ctx.g.untilEffects.push({
           expires: 'eot', kind: 'hexproof',
-          apply: (g2, bf) => { const x = bf.find(y => y.iid === iid); if (x) x.cur.hexproof = true; },
+          apply: (g2, bf) => { const x = bf.find(y => y.iid === iid && y.zoneVersion === zoneVersion); if (x) x.cur.hexproof = true; },
         });
         ctx.g.recalc();
       },

@@ -162,10 +162,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       for (const c of ctx.g.bf().filter(c => c.ctrl === ctx.you)) {
         E.grantUntilEOT(ctx.g, c, ['indestructible']);
-        const iid = c.iid;
+        const iid = c.iid, zoneVersion = c.zoneVersion;
         ctx.g.untilEffects.push({
           expires: 'eot', kind: 'hexproof',
-          apply: (g2, bf) => { const x = bf.find(y => y.iid === iid); if (x) x.cur.hexproof = true; },
+          apply: (g2, bf) => { const x = bf.find(y => y.iid === iid && y.zoneVersion === zoneVersion); if (x) x.cur.hexproof = true; },
         });
       }
       ctx.g.recalc();

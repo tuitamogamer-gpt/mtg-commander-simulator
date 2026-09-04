@@ -1,5 +1,7 @@
 // Canonical subtype spellings from Commander-legal paper cards in the pinned
-// 2026-08-30 Scryfall Oracle snapshot. Gameplay checks use the actual card.
+// 2026-08-30 Scryfall Oracle snapshot, plus Blinkmoth and Llama from animation
+// text (creature types in Wizards CR 205.3m, 2026-06-19). Gameplay checks use
+// the actual card.
 export const ORACLE_SUBTYPES = new Set([
   "Adventure",
   "Advisor",
@@ -44,6 +46,7 @@ export const ORACLE_SUBTYPES = new Set([
   "Berserker",
   "Bird",
   "Bison",
+  "Blinkmoth",
   "Boar",
   "Bobblehead",
   "Bolas",
@@ -214,6 +217,7 @@ export const ORACLE_SUBTYPES = new Set([
   "Licid",
   "Liliana",
   "Lizard",
+  "Llama",
   "Lobster",
   "Locus",
   "Lolth",

@@ -54,6 +54,22 @@ function amount(value, engine, context, before) {
   if (typeof value === 'number') return Math.max(0, value);
   if (value === 'X') return Math.max(0, engine.x ?? engine.src?.castMeta?.x ?? 0);
   if (value?.kind === 'sum') return value.values.reduce((sum, child) => sum + amount(child, engine, context, before), 0);
+  if(value?.kind==='source-counters'){
+    const source=engine.src,version=engine.sourceZoneVersion??engine.oracleSourceCapture?.zoneVersion;
+    const observed=source.zone==='battlefield'&&(version===undefined||source.zoneVersion===version)
+      ? before?.cards.get(source)||source
+      : engine.data?.card===source&&engine.data.snap?engine.data.snap:source.battlefieldLKI?.get(version);
+    assert.ok(observed,'source counter amount uses the exact live source or its last battlefield object');
+    return Math.max(0,Number(observed.counters?.[value.counter])||0)*(value.multiply??1);
+  }
+  if (value?.kind === 'event-card-stat') {
+    const card = engine.oracleSourceCapture?.eventCard || engine.data?.card;
+    const observed = engine.data?.card === card && engine.data?.snap ? engine.data.snap
+      : card?.zone === 'battlefield' && card.zoneVersion === engine.eventCardZoneVersion ? before.cards.get(card) || card
+      : card?.battlefieldLKI?.get(engine.eventCardZoneVersion);
+    assert.ok(observed, 'event amount has the observed object or its last battlefield information');
+    return Math.max(0, Number(observed[value.stat]) || 0);
+  }
   return countValue({...context, a: engine.you}, engine.src, value, before);
 }
 
@@ -100,7 +116,9 @@ export function installLibraryProof(MTG, context, helpers) {
     controller.decide = async (game, query) => {
       const record = {player, query, from: Array.from(query.from || []), cards: Array.from(query.cards || [])};
       if (game === context.game) context.libraryProof.queries.push(record);
-      record.answer = await decide(game, query);
+      const ownerSearch=context.libraryProof.rows.at(-1)?.effect.ownerSearch;
+      record.answer = game===context.game&&!player.isAI&&ownerSearch&&query.type==='chooseCards'&&query.search
+        ? query.from.slice(0,query.max) : await decide(game, query);
       return record.answer;
     };
   }
@@ -172,6 +190,12 @@ export function installLibraryProof(MTG, context, helpers) {
     row.shuffles = proof.shuffles.slice(row.shuffleStart); row.graveyardLeaves = proof.graveyardLeaves.slice(row.graveyardLeaveStart);
     return result;
   };
+  const run = MTG.OracleV8Library.run;
+  MTG.OracleV8Library.run=async(engine,...args)=>{
+    const result=await run(engine,...args),current=worlds.get(engine.g);
+    for(const row of current?.libraryProof.rows||[])if(row.finishAfterSearch){const finish=row.finishAfterSearch;delete row.finishAfterSearch;finish();}
+    return result;
+  };
   const search = MTG.OracleV8Library.search;
   MTG.OracleV8Library.search = async (engine, effect, runtimeHelpers, owner, chooser, execution) => {
     const current = worlds.get(engine.g);
@@ -189,6 +213,8 @@ export function installLibraryProof(MTG, context, helpers) {
       entryStart: proof.entries.length, graveyardEntryStart: proof.graveyardEntries.length, engine};
     proof.rows.push(row);
     const result = await search(engine, effect, runtimeHelpers, owner, chooser, execution);
+    const queryEnd=proof.queries.length;
+    const finish=()=>{
     row.after = {library: Array.from(owner.library), hand: Array.from(owner.hand), graveyard: Array.from(owner.graveyard),
       battlefield: engine.g.bf().slice(), states: new Map(library.map(card => [card, snapshot(card)]))};
     row.afterOtherPlayers = new Map([...row.otherPlayers.keys()].map(player => [player, {
@@ -197,6 +223,14 @@ export function installLibraryProof(MTG, context, helpers) {
     row.queries = proof.queries.slice(row.queryStart); row.reveals = proof.reveals.slice(row.revealStart);
     row.shuffles = proof.shuffles.slice(row.shuffleStart); row.entries = proof.entries.slice(row.entryStart);
     row.graveyardEntries = proof.graveyardEntries.slice(row.graveyardEntryStart);
+    if(effect.ownerSearch){
+      row.queries=proof.queries.slice(row.queryStart,queryEnd);
+      row.reveals=row.reveals.filter(reveal=>reveal.ctrl===chooser);
+      row.shuffles=row.shuffles.filter(shuffle=>shuffle.owner===owner);
+      row.entries=row.entries.filter(entry=>row.before.states.has(entry.card));
+    }
+    };
+    if(effect.ownerSearch)row.finishAfterSearch=finish;else finish();
     return result;
   };
 }
@@ -222,14 +256,20 @@ export function stageLibraryEffect(MTG, context, effect, helpers) {
     return true;
   }
   if (effect.action === 'library-search-v8') {
-    assert.ok(effect.who === undefined || effect.who === 'you', 'library search proof stages only its closed self-library scope');
+    assert.ok(effect.who === undefined || effect.who === 'you'||effect.ownerSearch===true, 'library search uses a declared closed owner scope');
     assert.ok(Array.isArray(effect.placements) && effect.placements.length && effect.placements.every(placement =>
       ['hand', 'graveyard', 'battlefield', 'top'].includes(placement.destination) &&
       (typeof placement.n === 'number' || ['all', 'rest'].includes(placement.n)) &&
       (placement.destination !== 'top' || [0, 2].includes(placement.offset || 0))), 'library search uses only closed placements');
     assert.equal(!!effect.unrestricted, !effect.filter, 'library search has exactly one closed candidate domain');
     if (effect.n !== 'all') stageCount(MTG, context, effect.n, helpers);
-    const owner = context.a, relative = {...context, a: owner, b: context.game.players.find(player => player !== owner)};
+    const owners=effect.ownerSearch?context.game.players:[context.a];
+    if(effect.ownerSearch){
+      for(const owner of owners)if(owner.isAI&&!(owner.controller instanceof MTG.AIController))owner.controller=new MTG.AIController(owner,{difficulty:'hard',style:'balanced'});
+      installLibraryProof(MTG,context,helpers);
+    }
+    for(const owner of owners){
+    const relative = {...context, a: owner, b: context.game.players.find(player => player !== owner)};
     const desired = effect.n === 'all' ? 4 : Math.min(8, Math.max(3, typeof effect.n === 'number' ? effect.n : 4));
     const candidates = [];
     for (let index = 0; index < desired; index++) {
@@ -261,6 +301,7 @@ export function stageLibraryEffect(MTG, context, effect, helpers) {
     }
     if (effect.placements.some(placement => placement.destination === 'battlefield') && candidates.some(card => card.hasSub('Aura'))) {
       helpers.permanent(MTG, context.game, owner, 'Grizzly Bears');
+    }
     }
     context.game.recalc();
     return true;
@@ -387,7 +428,7 @@ function assertLibrarySearchRow(context, row, effect, label) {
     assert.equal(after.owner, before.owner, label + ': library search preserves ownership');
     assert.equal(after.version, before.version + (placement.destination === 'top' ? 0 : 1), label + ': exact searched-card zone incarnation');
     if (placement.destination === 'battlefield') {
-      assert.equal(after.ctrl, row.you, label + ": searched permanent enters under the searcher's control");
+      assert.equal(after.ctrl, effect.ownerSearch?row.owner:row.you, label + ": searched permanent enters under the printed controller");
       if (placement.tapped) assert.equal(after.tapped, true, label + ': printed tapped entry is preserved');
     }
   }
@@ -437,9 +478,13 @@ function assertLibrarySearchRow(context, row, effect, label) {
   for (const record of entrantRows) assert.ok(battlefieldCards.every(card => record.battlefield.some(state =>
     state.card === card && state.version === row.after.states.get(card).version)), label + ': searched permanents enter as one simultaneous batch');
 
-  const allowedQueries = new Set([...searchQueries, ...partitionQueries, ...orderQueries]);
+  const optionalQueries=row.queries.filter(record=>record.query.prompt==='Search your library?');
+  assert.equal(optionalQueries.length,effect.optionalSearch?1:0,label+': exact optional owner search choice');
+  for(const choice of optionalQueries){assert.equal(choice.player,row.owner);assert.equal(choice.answer,'yes',label+': success proof accepts the optional search');}
+  const allowedQueries = new Set([...searchQueries, ...partitionQueries, ...orderQueries,...optionalQueries]);
   assert.ok(row.queries.every(record => allowedQueries.has(record)), label + ': library search creates no unrelated hidden choice');
   for (const [player, before] of row.otherPlayers) {
+    if(effect.ownerSearch&&row.expectedOwners.includes(player))continue;
     const after = row.afterOtherPlayers.get(player);
     for (const zone of ['library', 'hand', 'graveyard', 'exile']) assert.deepEqual(ids(after[zone]), ids(before[zone]), label + ': unrelated player ' + zone + ' is untouched');
   }
@@ -490,6 +535,7 @@ function assertZoneShuffle(context, effect, label) {
     assert.ok(event.states.every(state => state.zone === 'library'), label + ': all graveyard cards moved before the group event fires');
   } else assert.equal(row.graveyardLeaves.length, 0);
   for (const [player, before] of row.otherPlayers) {
+    if(effect.ownerSearch&&row.expectedOwners.includes(player))continue;
     const after = row.afterOtherPlayers.get(player);
     for (const zone of ['library', 'hand', 'graveyard', 'exile']) assert.deepEqual(ids(after[zone]), ids(before[zone]), label + ': unrelated player ' + zone + ' is untouched');
   }

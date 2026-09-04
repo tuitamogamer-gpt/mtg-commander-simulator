@@ -223,5 +223,5 @@
     if (operation.tapped) card.def = {...layer.definition, entersTapped: true};
   }
 
-  M.OracleV8Copies = {actions, run, asEnters, applyCopy, recalculate};
+  M.OracleV8Copies = {actions, run, asEnters, applyCopy, recalculate, modifiedDefinition};
 })(globalThis.MTG ||= {});

@@ -201,7 +201,9 @@ try {
   check(!await page.evaluate(() => !!window._game), 'My Library selection opens Deck spotlight without auto-start');
   await page.locator('.deckspotlightcontinue').click();
   assert.equal((await state()).stage, 'pod');
-  assert.equal(await page.locator('[data-mode="online"]').isDisabled(), true);
+  // Imported lists now also support Live players. This gate exercises the
+  // selected Solo table, whose reviewed seats must remain actual local AI.
+  assert.equal(await page.locator('[data-mode="solo"]').evaluate(element=>element.classList.contains('selected')), true);
   await page.locator('[data-ai-count="2"]').click();
   const decks = page.locator('.botfields .deckselect');
   await decks.nth(0).selectOption('Quick Draw');
@@ -232,14 +234,14 @@ try {
       turn: game.turnNo, manaSpent: card.castMeta?.manaSpent ?? null });
     const emit = game.emit;
     game.emit = async function (event, data) {
-      if (event === 'cast' && data.card) record.casts.push(describe(data.card, data.player));
+      if (this===game&&!this._simulation&&event === 'cast' && data.card) record.casts.push(describe(data.card, data.player));
       return emit.call(this, event, data);
     };
     const resolveTop = game.resolveTop;
     game.resolveTop = async function (...values) {
       const top = this.stack.at(-1), logStart = this.log.length;
       const result = await resolveTop.apply(this, values);
-      if (top?.kind === 'spell') record.resolved.push({ ...describe(top.card, top.ctrl),
+      if (this===game&&!this._simulation&&top?.kind === 'spell') record.resolved.push({ ...describe(top.card, top.ctrl),
         zone: top.card.zone, countered: !!top.countered,
         fizzled: this.log.slice(logStart).some(row => row.msg.includes(`${top.card.name}: all targets are illegal`)) });
       return result;
