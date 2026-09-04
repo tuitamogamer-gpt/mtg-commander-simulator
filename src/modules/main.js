@@ -701,6 +701,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       aiStyles: ['random', 'random', 'random'],
       commanders: [], aiRandomCommanders: false, sumPartnerDamage: false,
       diplomacyEnabled: false,
+      arenaDragEnabled: localStorage.getItem('mtgArenaDrag') === '1',
       applyingReplay: false,
       search: '', color: 'all', strategy: 'all', year: 'all', favoritesOnly: false,
       setupStage: 'deck', playstyle: 'all',
@@ -1306,7 +1307,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderBotStyles();
 
     const advanced = el('details', 'advancedrules');
-    advanced.appendChild(el('summary', '', '<span>Advanced rules</span><small>Commander options, politics and difficulty</small>'));
+    advanced.appendChild(el('summary', '', '<span>Advanced rules</span><small>Commander options, Arena controls, politics and difficulty</small>'));
     // The reveal animation belongs to the click that opens the panel, not to
     // later re-renders of the pod builder while it stays open.
     advanced.addEventListener('toggle', () => {
@@ -1338,6 +1339,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       diplomacyRow.classList.toggle('enabled', state.diplomacyEnabled);
     };
     advancedBody.appendChild(diplomacyRow);
+
+    const arenaDragRow = el('label', 'cmdcheck arenadragsetup');
+    arenaDragRow.title = 'A faster input method only. Every cast, target and combat assignment still uses the normal rules engine.';
+    arenaDragRow.innerHTML = `<input type="checkbox"> <span><b>Arena-style drag controls</b><small>Drag playable cards from your hand to the battlefield or directly onto a legal target. In Battlefield View, drag attackers and blockers to their assignments. Click controls remain available.</small><em>Saved on this device</em></span>`;
+    const arenaDragInput = arenaDragRow.querySelector('input');
+    arenaDragInput.checked = state.arenaDragEnabled;
+    arenaDragRow.classList.toggle('enabled', state.arenaDragEnabled);
+    arenaDragInput.onchange = e => {
+      state.arenaDragEnabled = e.target.checked;
+      localStorage.setItem('mtgArenaDrag', state.arenaDragEnabled ? '1' : '0');
+      arenaDragRow.classList.toggle('enabled', state.arenaDragEnabled);
+    };
+    advancedBody.appendChild(arenaDragRow);
 
     const difficultyLabel = el('div', 'seclabel', '<i>AI</i> Difficulty');
     advancedBody.appendChild(difficultyLabel);
@@ -1444,8 +1458,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         : '<i>Pod</i> Opponents <em>Choose each AI deck</em>';
       diplomacyRow.hidden = state.mode === 'online';
       advancedSummaryCopy.textContent = state.mode === 'online'
-        ? 'Commander damage options for this human table'
-        : 'Commander options, politics and difficulty';
+        ? 'Commander damage and Arena controls for this human table'
+        : 'Commander options, Arena controls, politics and difficulty';
       if (state.mode === 'online') {
         state.diplomacyEnabled = false;
         diplomacyRow.querySelector('input').checked = false;
@@ -1495,6 +1509,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ${state.mode === 'solo' ? `<div><dt>Difficulty</dt><dd>${esc(state.difficulty)}</dd></div>` : ''}
           <div><dt>Politics</dt><dd>${state.diplomacyEnabled ? 'Enabled after round 3' : 'Off'}</dd></div>
           <div><dt>Commander damage</dt><dd>${state.sumPartnerDamage ? 'House rule: combined' : 'Official: tracked separately'}</dd></div>
+          <div><dt>Arena drag</dt><dd>${state.arenaDragEnabled ? 'On · click controls also active' : 'Off'}</dd></div>
         </dl>
         <div class="reviewactions">
           <button type="button" class="pbtn reviewback">← Back to pod</button>
@@ -1756,6 +1771,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const aiDecks = remoteHumans.length ? [] : MTG.selectAIDecks(state.deck, state.ai, state.aiDecks, rnd);
 
     const ui = new MTG.UI();
+    if (typeof state.arenaDragEnabled === 'boolean') ui.arenaDragEnabled = state.arenaDragEnabled;
     if (resumeSave?.setup.manaMode === 'manual' || resumeSave?.setup.manaMode === 'auto') ui.manaMode = resumeSave.setup.manaMode;
     if (resumeSave?.setup.prioMode) ui.prioMode = resumeSave.setup.prioMode;
     let gameRef = null;
@@ -4370,6 +4386,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         mode: 'setup',
         deckCount: MTG.DECKS ? Object.keys(MTG.DECKS).length : 0,
         stage: setup && setup.dataset.setupStage || 'deck',
+        arenaDragEnabled: localStorage.getItem('mtgArenaDrag') === '1',
         selectedDeck: selected && selected.closest('.deckentry')?.dataset.deck || null,
         spotlight: spotlight ? {
           deck: spotlight.dataset.deck,
@@ -4512,6 +4529,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         comment: ui.activePersonaReaction.comment,
         detail: ui.activePersonaReaction.detail,
       } : null,
+      arenaDragEnabled: !!(ui && ui.arenaDragEnabled),
       manaMode: ui ? ui.manaMode : 'auto',
       lastResort: ui ? {
         active: !!ui.lastResortActive,

@@ -3399,7 +3399,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx.wardTargets = [];
       const targetedNow = [];
       ctx.boundTargetSpecs=specs.map(spec=>typeof spec.bindOracleContext==='function'?spec.bindOracleContext(ctx):spec);
-      for (const spec of ctx.boundTargetSpecs) {
+      for (const [specIndex, spec] of ctx.boundTargetSpecs.entries()) {
         let cands = this.legalTargets(spec, src, ctrl, { allowForced: !!ctx.diplomacyForcedTargeting });
         if (ctx.targetChoiceFilter) cands = cands.filter(candidate => ctx.targetChoiceFilter(candidate, ctx.targets.length));
         if (typeof spec.dependentFilter === 'function') {
@@ -3421,6 +3421,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const decision = await ctrl.controller.decide(this, {
           type: 'chooseTargets', spec, candidates: cands, min: Math.min(min, cands.length), max,
           src, so: ctx.so || null, prompt: spec.prompt || 'Izaberi metu',
+          // Arena-style drag may suggest one exact target, but legality remains
+          // authoritative here. A stale/illegal suggestion is simply omitted
+          // and the ordinary target prompt continues unchanged.
+          quickTarget: max === 1 && cands.includes(ctx.quickTargets?.[specIndex])
+            ? ctx.quickTargets[specIndex] : undefined,
           aiHint: ctx.so && ctx.so.x !== undefined
             ? Object.assign({}, spec.aiHint || {}, { x: ctx.so.x })
             : spec.aiHint,

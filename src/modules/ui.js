@@ -93,6 +93,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.fatalError = null;
       this.reducedMotion = localStorage.getItem('mtgReducedMotion') === '1';
       if (document.body && document.body.classList) document.body.classList.toggle('reduced-motion', this.reducedMotion);
+      // Optional, sticky second input path. It never owns rules state: every
+      // successful drop is translated into the same controller answer used by
+      // the existing click UI.
+      this.arenaDragEnabled = localStorage.getItem('mtgArenaDrag') === '1';
+      this.arenaDragState = null;
       this.mobileView = 'mine';
       this.diplomacyComposer = null;
       // THE STACK kao popup na sredini — sam iskoči kad nešto stane na stack
@@ -169,6 +174,232 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return node;
     }
 
+    registerArenaDropTarget(node, target) {
+      if (!this.arenaDragEnabled || !node || !target) return node;
+      node._arenaDropTarget = target;
+      node.dataset.arenaDrop = '';
+      node.dataset.arenaDropKind = target.kind;
+      return node;
+    }
+
+    arenaCastDragSource(entry) {
+      if (!entry || !entry.card || !this.game) return null;
+      const g = this.game, card = entry.card;
+      const source = { kind: 'cast', card, entry, directTargets: [] };
+      try {
+        const castOpts = { ...(entry.alt || {}) };
+        if (entry.from !== undefined && castOpts.from === undefined) castOpts.from = entry.from;
+        const definition = g.castDefinition(card, castOpts);
+        const cost = g.spellCost(this.me, card, castOpts);
+        const specs = g.spellTargetSpecs(card, castOpts, this.me);
+        // A single fixed target can be carried through the cast as a verified
+        // suggestion. X-dependent and modal target graphs still open the
+        // ordinary choices after the drop.
+        if (Array.isArray(specs) && specs.length === 1 && !definition.modes && !cost.x) {
+          const spec = specs[0];
+          const max = spec.count === Infinity ? Infinity : (spec.count ?? 1);
+          if (max === 1 && typeof spec.bindOracleContext !== 'function' &&
+            typeof spec.dependentFilter !== 'function') {
+            source.directTargets = g.legalTargets(spec, card, this.me);
+          }
+        }
+      } catch (error) {
+        // A preview is never authority. If a card needs context that is only
+        // created during casting, the drop still starts the normal cast flow.
+        source.directTargets = [];
+      }
+      return source;
+    }
+
+    arenaLegalAttackTargets(card, pd = this.pending) {
+      if (!pd || pd.q.type !== 'attackers' || !pd.q.eligible.includes(card)) return [];
+      const g = this.game;
+      const raw = g.legalDeclarationAttackTargets
+        ? g.legalDeclarationAttackTargets(card)
+        : (g.legalAttackTargets ? g.legalAttackTargets(card) : pd.q.attackTargets || pd.q.opponents || []);
+      return g.diplomacyAttackTargetsFor
+        ? g.diplomacyAttackTargetsFor(card, raw, (pd.q.forced || []).includes(card))
+        : raw;
+    }
+
+    arenaCanDrop(source, target) {
+      const pd = this.pending, q = pd && pd.q;
+      if (!source || !target || !q) return false;
+      if (source.kind === 'land') {
+        return (q.type === 'main' || q.type === 'priority') &&
+          (q.lands || []).includes(source.card) && target.kind === 'land-zone';
+      }
+      if (source.kind === 'cast') {
+        const current = (q.casts || []).find(entry => entry === source.entry ||
+          entry.card === source.card && entry.alt === source.entry.alt && entry.from === source.entry.from);
+        if (!current || !['main', 'priority'].includes(q.type)) return false;
+        if (target.kind === 'cast-zone') return true;
+        return target.kind === 'entity' && source.directTargets.includes(target.value);
+      }
+      if (source.kind === 'attacker') {
+        return q.type === 'attackers' && q.eligible.includes(source.card) &&
+          target.kind === 'entity' && this.arenaLegalAttackTargets(source.card, pd).includes(target.value);
+      }
+      if (source.kind === 'blocker') {
+        const attacker = target.kind === 'entity' ? target.value : null;
+        if (q.type !== 'blockers' || !q.potential.includes(source.card) || !q.attackers.includes(attacker)) return false;
+        const assigned = this.blockTargets(source.card, pd);
+        if (assigned.includes(attacker)) return true;
+        if (!this.game.canBlock(source.card, attacker)) return false;
+        if (assigned.length >= this.game.blockerCapacity(source.card)) return false;
+        return this.blockAssignments(pd).filter(pair => pair.attacker === attacker).length < this.game.blockerBounds(attacker).max;
+      }
+      return false;
+    }
+
+    arenaDropAt(clientX, clientY, source) {
+      let node = document.elementFromPoint(clientX, clientY);
+      while (node && node !== document.documentElement) {
+        const target = node._arenaDropTarget;
+        if (target) {
+          if (this.arenaCanDrop(source, target)) return { node, target, valid: true };
+          // A card/player/Stack object under the pointer is an intentional
+          // semantic target. Do not silently reinterpret an illegal target as
+          // empty battlefield space behind it.
+          if (target.kind === 'entity') return { node, target, valid: false };
+        }
+        node = node.parentElement;
+      }
+      return null;
+    }
+
+    arenaSourceLabel(source) {
+      if (source.kind === 'land') return 'PLAY LAND';
+      if (source.kind === 'attacker') return 'ASSIGN ATTACKER';
+      if (source.kind === 'blocker') return 'ASSIGN BLOCKER';
+      return 'CAST SPELL';
+    }
+
+    enableArenaDrag(node, source) {
+      if (!this.arenaDragEnabled || !node || !source || !source.card) return node;
+      node.classList.add('arena-draggable');
+      node.dataset.arenaSource = source.kind;
+      node.addEventListener('click', event => {
+        if (!this._arenaSuppressClickUntil || Date.now() > this._arenaSuppressClickUntil) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }, true);
+      node.addEventListener('pointerdown', down => {
+        if (down.button !== 0 || down.isPrimary === false || this.arenaDragState) return;
+        const pointerId = down.pointerId;
+        const startX = down.clientX, startY = down.clientY;
+        let lastX = startX, lastY = startY, active = false, ghost = null, hover = null;
+        let holdTimer = null;
+
+        const clearHighlights = () => {
+          document.querySelectorAll('.arena-drop-ready, .arena-drop-over')
+            .forEach(target => target.classList.remove('arena-drop-ready', 'arena-drop-over'));
+        };
+        const positionGhost = (x, y) => {
+          if (!ghost) return;
+          ghost.style.left = `${x}px`;
+          ghost.style.top = `${y}px`;
+          const hit = this.arenaDropAt(x, y, source);
+          if (hover && hover !== hit?.node) hover.classList.remove('arena-drop-over');
+          hover = hit && hit.valid ? hit.node : null;
+          if (hover) hover.classList.add('arena-drop-over');
+          ghost.classList.toggle('invalid', !!hit && !hit.valid);
+        };
+        const activate = () => {
+          if (active || this.arenaDragState) return;
+          active = true;
+          this.arenaDragState = { source, node };
+          this._arenaSuppressHoverUntil = Date.now() + 1000;
+          const hoverPreview = document.getElementById('hoverprev');
+          if (hoverPreview) hoverPreview.style.display = 'none';
+          node.classList.add('arena-dragging-source');
+          document.body.classList.add('arena-direct-dragging');
+          ghost = el('div', 'arena-drag-ghost');
+          ghost.innerHTML = `<img src="${imgURL(source.card.name)}" onerror="MTG.imgFail(this)"><span><small>${this.arenaSourceLabel(source)}</small><b>${esc(source.card.name.split(' // ')[0])}</b></span>`;
+          document.body.appendChild(ghost);
+          document.querySelectorAll('[data-arena-drop]').forEach(targetNode => {
+            if (this.arenaCanDrop(source, targetNode._arenaDropTarget)) targetNode.classList.add('arena-drop-ready');
+          });
+          positionGhost(lastX, lastY);
+        };
+        const cleanup = () => {
+          if (holdTimer) clearTimeout(holdTimer);
+          window.removeEventListener('pointermove', move, true);
+          window.removeEventListener('pointerup', up, true);
+          window.removeEventListener('pointercancel', cancel, true);
+          clearHighlights();
+          node.classList.remove('arena-dragging-source');
+          document.body.classList.remove('arena-direct-dragging');
+          if (ghost) ghost.remove();
+          if (this.arenaDragState && this.arenaDragState.node === node) this.arenaDragState = null;
+        };
+        const move = event => {
+          if (event.pointerId !== pointerId) return;
+          lastX = event.clientX; lastY = event.clientY;
+          const distance = Math.hypot(lastX - startX, lastY - startY);
+          if (!active && down.pointerType !== 'touch' && distance >= 7) activate();
+          if (!active && down.pointerType === 'touch' && distance > 12) { cleanup(); return; }
+          if (!active) return;
+          if (event.cancelable) event.preventDefault();
+          positionGhost(lastX, lastY);
+        };
+        const up = event => {
+          if (event.pointerId !== pointerId) return;
+          const hit = active ? this.arenaDropAt(event.clientX, event.clientY, source) : null;
+          if (active) {
+            this._arenaSuppressClickUntil = Date.now() + 350;
+            this._arenaSuppressHoverUntil = Date.now() + 650;
+            const suppressCompatibilityClick = click => {
+              click.preventDefault();
+              click.stopImmediatePropagation();
+              document.removeEventListener('click', suppressCompatibilityClick, true);
+            };
+            document.addEventListener('click', suppressCompatibilityClick, true);
+            setTimeout(() => document.removeEventListener('click', suppressCompatibilityClick, true), 350);
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          cleanup();
+          if (hit && hit.valid) this.performArenaDrop(source, hit.target);
+          else if (active) this.toast('That is not a legal drop. Nothing changed.');
+        };
+        const cancel = event => { if (event.pointerId === pointerId) cleanup(); };
+        window.addEventListener('pointermove', move, true);
+        window.addEventListener('pointerup', up, true);
+        window.addEventListener('pointercancel', cancel, true);
+        if (down.pointerType === 'touch') holdTimer = setTimeout(activate, 180);
+      });
+      return node;
+    }
+
+    performArenaDrop(source, target) {
+      if (!this.arenaCanDrop(source, target)) {
+        this.toast('That is no longer a legal drop. Nothing changed.');
+        return;
+      }
+      if (source.kind === 'land') {
+        this.toast(`Played ${source.card.name} by drag.`);
+        this.resolvePending({ kind: 'land', card: source.card });
+        return;
+      }
+      if (source.kind === 'cast') {
+        const quickTarget = target.kind === 'entity' ? target.value : null;
+        this.toast(quickTarget
+          ? `Casting ${source.card.name} → ${quickTarget.name || quickTarget.card?.name || 'Stack target'}.`
+          : `Casting ${source.card.name} by drag.`);
+        this.resolvePending({
+          kind: 'cast', card: source.card, alt: source.entry.alt, from: source.entry.from,
+          ...(quickTarget ? { quickTarget } : {}),
+        });
+        return;
+      }
+      if (source.kind === 'attacker') {
+        this.assignAttackerTo(source.card, target.value);
+        return;
+      }
+      if (source.kind === 'blocker') this.assignBlocker(source.card, target.value);
+    }
+
     // Jedno mjesto koje imenuje aktivaciju: card sheet i priority prozor moraju
     // pisati isto (Ninjutsu, Cycling, Plot, sposobnost iz groblja/ruke…).
     activationLabel(entry) {
@@ -217,6 +448,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     autoAnswer(g, q) {
       if (q.type === 'threatAlert') return undefined;   // uvijek pauziraj i pokaži kartu
+      if (this.arenaDragEnabled && q.type === 'chooseTargets' && q.max === 1 &&
+        q.quickTarget && (q.candidates || []).includes(q.quickTarget)) return [q.quickTarget];
       // "Accept all": jedan klik pusti cijelu bujicu tokena i kopija koja
       // slijedi u istom potezu (Leitmotif Composer i slični prave po jedan
       // reveal na svaki spell). Vrijedi samo za taj potez.
@@ -593,6 +826,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       root.classList.toggle('ai-turn', !!(g.turnPlayer && g.turnPlayer.isAI));
       root.classList.toggle('combat-phase', g.phase === 'combat');
       root.classList.toggle('last-resort-active', this.lastResortActive);
+      root.classList.toggle('arena-drag-enabled', this.arenaDragEnabled);
       root.classList.toggle('sidebar-open', this.utilityDrawerOpen);
       root.dataset.mobileView = this.mobileView;
       root.style.setProperty('--arena-turn-accent', g.turnPlayer === this.me ? '#d3974c' : '#778f63');
@@ -1793,6 +2027,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         prev.style.left = (x / zoom) + 'px'; prev.style.top = (y / zoom) + 'px';
       };
       gameEl.addEventListener('mouseover', ev => {
+        if (this.arenaDragState || Date.now() < (this._arenaSuppressHoverUntil || 0)) {
+          prev.style.display = 'none'; curName = null; return;
+        }
         const m = ev.target.closest ? ev.target.closest('.mini,[data-cname]') : null;
         const nm = m && m.dataset ? m.dataset.cname : null;
         if (!nm) { prev.style.display = 'none'; curName = null; return; }
@@ -1805,6 +2042,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         place(ev);
       });
       gameEl.addEventListener('mousemove', ev => {
+        if (this.arenaDragState || Date.now() < (this._arenaSuppressHoverUntil || 0)) {
+          prev.style.display = 'none'; curName = null; return;
+        }
         if (prev.style.display !== 'block') return;
         place(ev);
       });
@@ -2190,6 +2430,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const collapsed = this.collapsed.has(p.idx);
         // header
         const head = el('div', 'opphead' + (isCandidate ? ' targetable' : ''));
+        this.registerArenaDropTarget(head, { kind: 'entity', value: p });
         head.title = isCandidate ? `Choose ${p.name} ${proliferateChoice ? 'for proliferate' : 'as the target'}`
           : collapsed ? `Expand ${p.name}'s battlefield` : `Collapse ${p.name}'s battlefield`;
         const cmdList = (p.commanders && p.commanders.length) ? p.commanders : p.command;
@@ -2355,6 +2596,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     renderCenter(g) {
       const wrap = el('div', 'center');
+      this.registerArenaDropTarget(wrap, { kind: 'cast-zone' });
       if (g.combat && g.combat.attackers && g.combat.attackers.length) {
         const map = el('div', 'combatmap');
         map.appendChild(el('div', 'combatmaptitle', `Combat · ${esc(this.phaseName(g))}`));
@@ -2373,6 +2615,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           for (const attacker of attackers) {
             rawDamage += g.dmgAmount(attacker, 'normal');
             const item = el('div', 'combatunit');
+            this.registerArenaDropTarget(item, { kind: 'entity', value: attacker });
             const blocked = attacker.blockedBy && attacker.blockedBy.length;
             item.innerHTML = `<img src="${imgURL(attacker.name)}" onerror="MTG.imgFail(this)">
               <span><b>${esc(attacker.name)}</b><small>${attacker.power}/${attacker.toughness}${blocked ? ` · blocked by ${esc(attacker.blockedBy.map(b => b.name).join(', '))}` : ''}</small></span>`;
@@ -2395,6 +2638,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (let i = g.stack.length - 1; i >= 0; i--) {
           const so = g.stack[i];
           const item = el('div', 'stackitem' + (i === g.stack.length - 1 ? ' top' : '') + (so.isCopy ? ' copy' : ''));
+          this.registerArenaDropTarget(item, { kind: 'entity', value: so });
           item.innerHTML = `<b>${esc(this.stackDisplayName(so))}</b><span class="who">${esc(so.ctrl.name)}</span><small class="stackinlinegoal">🎯 ${esc(this.stackTargetSummary(so))}</small>`;
           const targetFlow = this.renderStackTargetFlow(so, { compact: true, includeSource: true, maxTargets: 4 });
           if (targetFlow) item.appendChild(targetFlow);
@@ -2440,6 +2684,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const equipment = card.hasSub('Equipment');
       const item = el('div', 'attachedcard' + (opts.sm ? ' sm' : '') +
         (card.tapped ? ' tapped' : '') + (equipment ? ' equipment' : ' aura'));
+      this.registerArenaDropTarget(item, { kind: 'entity', value: card });
       item.dataset.cname = card.name;
       item.title = `${card.name}: ${equipment ? 'equipped' : 'attached'} to ${host.name}`;
       item.innerHTML = `<img loading="lazy" src="${imgURL(card.name)}" onerror="MTG.imgFail(this)">
@@ -2514,6 +2759,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderMyBoard(g) {
       const me = this.me;
       const wrap = el('div', 'myboard');
+      this.registerArenaDropTarget(wrap, { kind: 'cast-zone' });
       const battlefield = this.battlefieldGroups(g, me);
       const row1 = el('div', 'cardrow mybattlefieldmain');
       const creatures = this.permanentLane(g, 'CREATURES', battlefield.creatures, { className: 'creaturelane' });
@@ -2525,12 +2771,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // lands & info row
       const row2 = el('div', 'landrow');
       const resourceZone = el('section', 'resourcezone');
+      this.registerArenaDropTarget(resourceZone, { kind: 'land-zone' });
       resourceZone.appendChild(el('div', 'boardlanelabel', 'LANDS · MANA'));
       const landStrip = el('div', 'landstrip');
       const groups = this.landGroups(g, me);
       for (const [name, lands] of Object.entries(groups)) {
         const untapped = lands.filter(l => !l.tapped).length;
         const lc = el('div', 'landstack' + (untapped === 0 ? ' tapped' : ''));
+        this.registerArenaDropTarget(lc, { kind: 'entity', value: lands[0] });
         const cols = (lands[0].def.producesColors || []).map(c => `<span class="dot" style="background:${COLHEX[c]}"></span>`).join('');
         lc.innerHTML = `<div class="lname">${esc(name)}</div><div>${cols}</div><div class="lcount">${untapped}/${lands.length}</div>`;
         const selectedLand = lands.find(l => this.selectedTargetIndex(l) >= 0);
@@ -2547,6 +2795,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           manaArtifacts.appendChild(this.permanentPile(g, entry.card, { sm: true, stackN: entry.n }));
         }
         resourceZone.appendChild(manaArtifacts);
+      }
+      const arenaLandReady = this.arenaDragEnabled && this.pending &&
+        ['main', 'priority'].includes(this.pending.q.type) && (this.pending.q.lands || []).length > 0;
+      if (arenaLandReady && resourceZone.children.length === 1) {
+        resourceZone.appendChild(el('div', 'arenalandempty', 'Drop a land here'));
       }
       if (resourceZone.children.length > 1) row2.appendChild(resourceZone);
       // mana pool
@@ -2591,6 +2844,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const effectsBadge = info.querySelector('.playereffectsbadge');
       if (effectsBadge) effectsBadge.onclick = () => { this.playerSheet = me; this.render(); };
       const myLife = info.querySelector('.melife');
+      this.registerArenaDropTarget(myLife, { kind: 'entity', value: me });
       if (this.markSelectedTarget(myLife, me)) {
         // selected player target can be removed directly
       } else if (this.isCandidate(me)) {
@@ -2736,6 +2990,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const landCreature = c.is('Land') && c.is('Creature');
       const d = el('div', 'mini' + (opts.sm ? ' sm' : '') + (c.tapped ? ' tapped' : '') + (c.sick && c.is('Creature') && !c.kw('haste') ? ' sick' : '') + (threatened ? ' threatened' : '') + (c.faceDown ? ' facedown' : '') + (landCreature ? ' landcreature' : ''));
       d.dataset.iid = String(c.iid);
+      this.registerArenaDropTarget(d, { kind: 'entity', value: c });
       const colors = c.colors.length ? c.colors : ['C'];
       const grad = colors.length > 1
         ? `linear-gradient(135deg, ${colors.map(x => COLHEX[x]).join(',')})`
@@ -2812,6 +3067,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             d.appendChild(el('div', 'atkchip', `⚔ ${esc(tname)}`));
           }
           d.onclick = () => this.toggleAttacker(c);
+          if (pd.boardPeek) this.enableArenaDrag(d, { kind: 'attacker', card: c });
           return this.makeKeyboardButton(d, `${accessibleName}. ${sel ? 'Remove this attacker.' : 'Assign this creature as an attacker.'}`);
         }
       }
@@ -2824,6 +3080,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             d.appendChild(el('div', 'atkchip', `🛡 ${esc(assigned.map(card => card.name).join(', '))}`));
           }
           d.onclick = () => this.assignBlocker(c);
+          if (pd.boardPeek) this.enableArenaDrag(d, { kind: 'blocker', card: c });
           return this.makeKeyboardButton(d, `${accessibleName}. ${assigned.length ? 'Change this blocker assignment.' : 'Assign this creature as a blocker.'}`);
         }
       }
@@ -2947,6 +3204,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ${suspendTag}
           <div class="mname">${esc(c.name.split(' // ')[0])}</div>`;
         d.dataset.cname = c.name;
+        let arenaSource = null;
+        if (this.arenaDragEnabled && pd && ['main', 'priority'].includes(pd.q.type)) {
+          const castEntries = (pd.q.casts || []).filter(entry => entry.card === c);
+          const landOffered = (pd.q.lands || []).includes(c);
+          // A drag is immediate only when it identifies one actual game
+          // action. Cards with multiple spell faces/cost routes keep the
+          // existing sheet so the player can choose deliberately.
+          if (castEntries.length + (landOffered ? 1 : 0) === 1) {
+            arenaSource = landOffered
+              ? { kind: 'land', card: c }
+              : this.arenaCastDragSource(castEntries[0]);
+          }
+        }
+        if (arenaSource) {
+          this.enableArenaDrag(d, arenaSource);
+          d.dataset.testid = 'arena-drag-source';
+          d.appendChild(el('span', 'arenadragbadge', '↗ DRAG'));
+        }
         if (this.markSelectedTarget(d, c)) {
           // selected target can be removed directly
         } else if (this.isCandidate(c)) {
@@ -2961,7 +3236,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           : canSuspendNow
             ? `Suspend available now for ${c.def.suspend.cost} with ${c.def.suspend.n} time counters. Open card actions.`
           : d.classList.contains('castable')
-            ? 'Playable now. Open card actions.'
+            ? `Playable now.${arenaSource ? ' Drag to play immediately, or open card actions.' : ' Open card actions.'}`
             : 'Open card details.';
         d.setAttribute('role', 'button');
         d.setAttribute('tabindex', '0');
@@ -3089,6 +3364,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           let hint = additionalMain
             ? '◆ Additional main phase: click a card for actions'
             : g.phase === 'main1' ? '🎴 Main phase 1: click a card for actions' : '🎴 Main phase 2';
+          if (this.arenaDragEnabled) hint = hint.replace('click a card for actions', 'drag a playable card to act now, or click for actions');
           if (this.actable && this.actable.size) hint += ` · <span class="hintact">⚙️ = ability (${this.actable.size})</span>`;
           bar.appendChild(el('div', 'ptext', hint));
           const oz = offZoneRow();
@@ -3124,7 +3400,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const ozc = MTG.offZoneCasts ? MTG.offZoneCasts(q.casts) : [];
           const inHandN = (q.casts || []).length - ozc.length;
           const actN = (q.acts || []).length;
-          const where = [inHandN ? 'click a card in your hand' : '', actN ? 'or use an ability below' : '']
+          const where = [inHandN ? (this.arenaDragEnabled ? 'drag or click a card in your hand' : 'click a card in your hand') : '', actN ? 'or use an ability below' : '']
             .filter(Boolean).join(' ');
           const hint = nOpt
             ? ` <span class="hintact">${nOpt} option${nOpt === 1 ? '' : 's'}${where ? ': ' + where : ''}</span>`
@@ -3169,17 +3445,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const n = pd.sel.length;
           if (pd.boardPeek) {
             bar.classList.add('combatboardpeek');
-            bar.appendChild(el('div', 'ptext', `🗺 Battlefield view · ${n} attacker${n === 1 ? '' : 's'} still assigned.`));
+            bar.appendChild(el('div', 'ptext', this.arenaDragEnabled
+              ? `🗺 Battlefield view · drag a glowing creature onto a player or planeswalker. ${n} attacker${n === 1 ? '' : 's'} assigned.`
+              : `🗺 Battlefield view · ${n} attacker${n === 1 ? '' : 's'} still assigned.`));
             const row = el('div', 'btnrow');
-            const back = btn('⚔ Back to Attack Overview', () => { pd.boardPeek = false; this.render(); }, 'primary');
+            const back = btn('⚔ Back to Attack Overview', () => { pd.boardPeek = false; this.render(); });
             back.dataset.testid = 'back-to-combat-overlay';
             row.appendChild(back);
+            if (n) row.appendChild(btn('Clear assignments', () => { pd.sel = []; this.render(); }));
+            const selectedCards = new Set(pd.sel.map(entry => entry.card));
+            const missingForced = (q.forced || []).some(card =>
+              this.arenaLegalAttackTargets(card, pd).length && !selectedCards.has(card));
+            const confirm = btn(n ? `Confirm attack (${n}) ✓` : 'No attacks ▶', () =>
+              this.resolvePending(pd.sel.map(entry => ({ card: entry.card, target: entry.target }))), 'primary');
+            confirm.disabled = missingForced;
+            confirm.dataset.testid = 'confirm-combat-battlefield';
+            row.appendChild(confirm);
             bar.appendChild(row);
           } else bar.appendChild(el('div', 'ptext', `⚔️ Assign attackers in the open combat table (${n} selected).`));
           break;
         }
         case 'blockers': {
-          bar.appendChild(el('div', 'ptext', '🛡️ Blocks: click an attacker above, then click your blocker.'));
+          bar.appendChild(el('div', 'ptext', this.arenaDragEnabled && pd.boardPeek
+            ? '🛡️ Blocks: drag a glowing blocker directly onto an incoming attacker, or use the click flow.'
+            : '🛡️ Blocks: click an attacker above, then click your blocker.'));
           const atkRow = el('div', 'atkrow');
           for (const a of q.attackers) {
             const chip = el('div', 'atkchipbig' + (pd.mode === a ? ' selchip' : ''), `⚔ ${esc(a.name)} ${a.power}/${a.toughness}${a.kw('flying') ? '✈' : ''}${a.kw('menace') ? '👿' : ''}${a.kw('trample') ? '💢' : ''}`);
@@ -4348,7 +4637,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const target = pd.attackTarget || (pd.q.attackTargets || pd.q.opponents || [])[0];
       const current = pd.sel.find(entry => entry.card === c);
       if (current) pd.sel.splice(pd.sel.indexOf(current), 1);
-      else if (target) pd.sel.push({ card: c, target });
+      else if (target && this.arenaLegalAttackTargets(c, pd).includes(target)) pd.sel.push({ card: c, target });
+      this.render();
+    }
+
+    assignAttackerTo(card, target) {
+      const pd = this.pending;
+      if (!pd || pd.q.type !== 'attackers' || !this.arenaLegalAttackTargets(card, pd).includes(target)) {
+        this.toast(`${card ? card.name : 'This creature'} cannot attack that defender.`);
+        return;
+      }
+      const current = pd.sel.find(entry => entry.card === card);
+      if (current) current.target = target;
+      else pd.sel.push({ card, target });
+      pd.attackTarget = target;
       this.render();
     }
 

@@ -2441,7 +2441,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Casting
   // ============================================================
   G.castSpell = async function (p, card, opts = {}) {
-    // opts: {alt, from, xVal, aiChosen...}
+    // opts: {alt, from, xVal, aiChosen..., quickTargets}
     if (this.hasSplitSecond()) return false;
     if (p.turnState && p.turnState.cantCastAdditional && !opts.ignoreAdditionalCastLock) return false;
     const alt = opts.alt || null;
@@ -2823,7 +2823,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Target selection is still part of proposing the spell. No mana or
       // additional cost has been paid and the card has not moved yet, so the
       // human may safely abort here without rewinding game information.
-      const ctx = { g: this, src: card, you: p, so, cancelable: !castOpts.suspend };
+      const ctx = {
+        g: this, src: card, you: p, so, cancelable: !castOpts.suspend,
+        quickTargets: Array.isArray(opts.quickTargets) ? opts.quickTargets.slice() : [],
+      };
       const ok = await this.pickTargets(ctx, specs, card, p);
       if (!ok) {
         this.lg(ctx.cancelled ? `${card.name}: casting cancelled.` : `${card.name}: nema legalnih meta.`);
@@ -2837,7 +2840,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const mi of mode) specs2.push(...modeTargetsFor(this, d.modes.list[mi], card, castOpts));
       if (specs2.length) {
         so.targetSpecs = specs2;
-        const ctx = { g: this, src: card, you: p, so, cancelable: !castOpts.suspend };
+        const ctx = {
+          g: this, src: card, you: p, so, cancelable: !castOpts.suspend,
+          quickTargets: Array.isArray(opts.quickTargets) ? opts.quickTargets.slice() : [],
+        };
         const ok = await this.pickTargets(ctx, specs2, card, p);
         if (!ok) {
           this.lg(ctx.cancelled ? `${card.name}: casting cancelled.` : `${card.name}: nema legalnih meta.`);
@@ -5782,7 +5788,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.performAction = async function (p, act) {
     if (act.kind === 'cast') {
-      return await this.castSpell(p, act.card, { alt: act.alt, from: act.from, xVal: act.xVal });
+      return await this.castSpell(p, act.card, {
+        alt: act.alt, from: act.from, xVal: act.xVal,
+        quickTargets: act.quickTarget ? [act.quickTarget] : act.quickTargets,
+      });
     } else if (act.kind === 'activate') {
       return await this.activateAbility(p, act.entry, act.targets);
     } else if (act.kind === 'land') {
