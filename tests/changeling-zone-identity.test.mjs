@@ -12,7 +12,7 @@ function fallbackDecision(query) {
     const changeling = query.candidates.find(card => card.name === 'Game-Trail Changeling');
     return changeling ? [changeling] : query.candidates.slice(0, query.min || 0);
   }
-  if (query.type === 'chooseCards') return query.from.slice(0, query.min || 0);
+  if (query.type === 'chooseCards') return query.from.slice(0, query.aiHint?.kind === 'recur' ? 1 : query.min || 0);
   if (query.type === 'chooseOption') return query.options[0]?.key;
   if (query.type === 'chooseX') return query.min || 0;
   if (query.type === 'orderTriggers') return query.triggers;

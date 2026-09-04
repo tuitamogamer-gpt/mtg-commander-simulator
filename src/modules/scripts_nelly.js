@@ -567,19 +567,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     flashback: { cost: '{4}{W}', altCostStr: '{4}{W}', speed: 'sorcery' },
     targets: [{
       zone: 'graveyard', what: 'card', prompt: 'Permanent MV≤3',
-      filter: (g, c) => c.mv <= 3 && ['Creature', 'Artifact', 'Enchantment', 'Land', 'Planeswalker'].some(t => c.is(t)),
+      filter: (g, c) => c.mv <= 3 && ['Creature', 'Artifact', 'Enchantment', 'Land', 'Planeswalker', 'Battle'].some(t => c.is(t)),
       aiHint: { goal: 'reanimate' },
     }],
     resolve: async ctx => {
       if (ctx.targets[0] && ctx.targets[0].zone === 'graveyard') await E.reanimate(ctx.g, ctx.you, ctx.targets[0]);
-      if (ctx.so.castOpts && ctx.so.castOpts.flashback) {
-        const cands = ctx.you.graveyard.filter(c => c.mv <= 3 && ['Creature', 'Artifact', 'Enchantment', 'Land', 'Planeswalker'].some(t => c.is(t)));
-        if (cands.length) {
-          const pick = await ctx.you.controller.decide(ctx.g, {
-            type: 'chooseCards', from: cands, min: 0, max: 1, prompt: 'Copy: return one more', aiHint: { kind: 'reanimate' },
-          });
-          if (pick.length) await E.reanimate(ctx.g, ctx.you, pick[0]);
-        }
+      if (!ctx.so.isCopy && ctx.so.from === 'graveyard') {
+        const choice = await ctx.you.controller.decide(ctx.g, {
+          type: 'chooseOption', prompt: "Copy Sevinne's Reclamation?",
+          options: [{ key: 'yes', label: 'Copy the spell' }, { key: 'no', label: 'Do not copy' }],
+          aiHint: { kind: 'optTrigger', name: "Copy Sevinne's Reclamation", src: ctx.src },
+        });
+        if (choice === 'yes') await ctx.g.copySpell(ctx.so, ctx.you, { mayNewTargets: true });
       }
     },
   };

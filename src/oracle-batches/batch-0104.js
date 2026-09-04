@@ -1372,7 +1372,7 @@ MTG.registerOracleBatch({
           "cost": {
             "mana": "{1}",
             "tapFilter": {
-              "what": "creature",
+              "what": "land",
               "zone": "battlefield",
               "controller": "you",
               "min": 1,

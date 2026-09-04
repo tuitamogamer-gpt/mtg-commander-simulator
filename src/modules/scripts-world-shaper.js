@@ -453,6 +453,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   SC['Oracle of Mul Daya'] = {
+    revealAllTop: true,
     revealOwnTop: true,
     playTop: (game, card, top) => top.is('Land'),
     additionalLandPlays: 1,

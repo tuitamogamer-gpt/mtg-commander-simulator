@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadEngine } from './helpers/load-engine.mjs';
+import { castThroughSuspend } from './helpers/oracle-suspend-cast-proof.mjs';
 
 const MTG = loadEngine();
 const COLORS = ['W', 'U', 'B', 'R', 'G', 'C'];
@@ -74,6 +75,8 @@ function humanController(card, state) {
         return [{ card: state.attackCard, target: state.attackTarget || query.opponents[0] }];
       }
       if (query.type === 'main' && !state.submitted) {
+        const suspend=(query.acts||[]).find(candidate=>candidate.card===card&&candidate.suspend);
+        if(!card.def.cost&&suspend){state.submitted=true;return {kind:'activate',entry:suspend};}
         const land = query.lands.find(candidate => candidate === card);
         if (land) {
           state.submitted = true;
@@ -526,7 +529,7 @@ function stageScenario(entry, role, options = {}) {
       if (humanState.aiSubmitted && query.type === 'priority') return { kind: 'pass' };
       const result = await decide(currentGame, query);
       if ((query.type === 'main' || query.type === 'priority') && result &&
-          (result.kind === 'cast' || result.kind === 'land') && result.card === card) {
+          ((result.kind === 'cast' || result.kind === 'land') && result.card === card || result.kind==='activate'&&result.entry?.card===card&&result.entry.suspend)) {
         humanState.aiSubmitted = true;
       }
       if (query.type === 'scry') {
@@ -671,6 +674,17 @@ function stageCombatWindow(context) {
 
 async function executeScenario(context, entry) {
   const { game, player, opponent, card, operation, v4Operation, staged } = context;
+  if(!card.def.cost&&card.def.suspend){
+    game.turnPlayer=player;game.phase='main1';game.step='main';
+    for(const color of COLORS)player.pool[color]=0;
+    const cost=MTG.parseCost(card.def.suspend.cost);player.pool.C=cost.generic;
+    for(const pip of cost.pips)player.pool[pip.find(color=>COLORS.includes(color))]++;
+    await game.mainPhase(player);
+    assert.equal(card.zone,'exile',entry.raw.name+': real controller chooses Suspend');
+    await castThroughSuspend(MTG,game,player,card,{alreadySuspended:true});
+    await game.priorityRound(player);
+    return;
+  }
   if (v4NeedsStackTarget(v4Operation)) {
     game.turnPlayer = opponent;
     game.phase = 'main1';
@@ -948,9 +962,14 @@ async function runCard(entry, role) {
     assert.equal(player.landsPlayed, 1, `${entry.raw.name}: consumes one real land play`);
   } else {
     assert.ok(card.castMeta, `${entry.raw.name}: normal paid cast records cast metadata`);
-    assert.equal(card.castMeta.alt.free, undefined, `${entry.raw.name}: deep controller proof does not bypass mana with a free cast`);
-    assert.equal(game.log.some(item => item.msg.includes(entry.raw.name) && /\(free\)/.test(item.msg)), false,
-      `${entry.raw.name}: normal controller proof has no free-cast log`);
+    if(!card.def.cost&&card.def.suspend){
+      assert.equal(card.castMeta.alt.free,true,entry.raw.name+': free cast comes from the completed Suspend trigger');
+      assert.equal(card.castMeta.alt.suspend,true);assert.equal(card.castMeta.from,'exile');
+    }else{
+      assert.equal(card.castMeta.alt.free, undefined, `${entry.raw.name}: deep controller proof does not bypass mana with a free cast`);
+      assert.equal(game.log.some(item => item.msg.includes(entry.raw.name) && /\(free\)/.test(item.msg)), false,
+        `${entry.raw.name}: normal controller proof has no free-cast log`);
+    }
     if (entry.raw.types.includes('Instant') || entry.raw.types.includes('Sorcery')) {
       const rebounds = (entry.implementation || []).some(candidate => candidate.kind === 'mechanic-rebound');
       assert.equal(card.zone, rebounds ? 'exile' : 'graveyard',

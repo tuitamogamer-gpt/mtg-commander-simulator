@@ -4418,8 +4418,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         battlefield: g.battlefield.filter(c => c.ctrl === p).map(card),
         hand: p === ui.me ? p.hand.map(card) : undefined,
         exile: p === ui.me ? p.exile.map(card) : undefined,
-        visibleLibraryTop: p === ui.me && g.bf().some(source => source.ctrl === p && source.def.revealOwnTop) && p.library.length
-          ? card(p.library[p.library.length - 1]) : undefined,
+        visibleLibraryTop: ui.visibleLibraryTop?.(g, p) ? card(ui.visibleLibraryTop(g, p)) : undefined,
         activeEffects: ui && ui.playerStatusEffects ? ui.playerStatusEffects(g, p).map(effect => ({
           kind: effect.kind, label: effect.label, detail: effect.detail,
           source: effect.source || null, duration: effect.duration || null,

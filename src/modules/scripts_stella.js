@@ -281,7 +281,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     targets: [T.creature({ prompt: 'Destroy (3/3 Ape)', aiHint: { goal: 'removal' } })],
     resolve: async ctx => {
       const t = ctx.targets[0], c2 = t.ctrl;
-      if (await ctx.g.destroy(t, { noRegen: true })) await ctx.g.makeTokens('ape33', c2);
+      await ctx.g.destroy(t, { noRegen: true });
+      await ctx.g.makeTokens('ape33', c2);
     },
   };
   SC['Radical Idea'] = {

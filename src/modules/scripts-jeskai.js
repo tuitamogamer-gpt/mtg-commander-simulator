@@ -299,7 +299,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC['Ancestral Vision'] = {
     suspend: { cost: '{U}', n: 4 },
-    castCond: (game, player, card) => card.zone !== 'hand',
     targets: [T.player({ prompt: 'Player who draws three cards', aiHint: { goal: 'draw' } })],
     resolve: async ctx => { if (ctx.targets[0]) await ctx.g.draw(ctx.targets[0], 3); },
   };

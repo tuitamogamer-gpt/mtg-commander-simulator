@@ -759,13 +759,13 @@ for(const role of ['human','ai']){
   }
  });
  test(`v7 ${role}: X and graveyard counter payments use the amount on resolution`,async()=>{
-  for(const name of ['X Counter','Dynamic Counter'])for(const pay of [false,true]){const ctx=context(role),{game,a,b}=ctx,spell=put(game,b,'Grizzly Bears','hand');b.pool.G=1;b.pool.C=1;assert.equal(await game.castSpell(b,spell,{from:'hand'}),true);
+  for(const name of ['X Counter','Dynamic Counter'])for(const pay of [false,true]){const ctx=context(role),{game,a,b}=ctx,spell=put(game,b,'Grizzly Bears','hand');b.pool.G=1;b.pool.C=1;game.turnPlayer=b;assert.equal(await game.castSpell(b,spell,{from:'hand'}),true);
    for(let i=0;i<3;i++)put(game,a,'Forest','graveyard');b.pool.C=pay?3:0;
    await cast(ctx,name,{xVal:3});assert.equal(spell.zone,pay?'battlefield':'graveyard',name+'/'+pay);assert.equal(b.pool.C,0);
   }
  });
  test(`v7 ${role}: conditional counter exile applies only if payment is not made`,async()=>{
-  for(const pay of [false,true]){const ctx=context(role),{game,b}=ctx,spell=put(game,b,'Grizzly Bears','hand');b.pool.G=1;b.pool.C=1;assert.equal(await game.castSpell(b,spell,{from:'hand'}),true);b.pool.C=pay?3:0;
+  for(const pay of [false,true]){const ctx=context(role),{game,b}=ctx,spell=put(game,b,'Grizzly Bears','hand');b.pool.G=1;b.pool.C=1;game.turnPlayer=b;assert.equal(await game.castSpell(b,spell,{from:'hand'}),true);b.pool.C=pay?3:0;
    await cast(ctx,'Conditional Exile Counter');assert.equal(spell.zone,pay?'battlefield':'exile');assert.equal(b.pool.C,0);
   }
  });
@@ -1176,7 +1176,7 @@ for(const role of ['human','ai']){
   for(const tapped of [false,true]){const ctx=context(role),{game,b}=ctx,target=put(game,b,'Grizzly Bears');target.tapped=tapped;await cast(ctx,'Conditional Destroy');assert.equal(target.zone,tapped?'graveyard':'battlefield');}
  });
  test(`v7 ${role}: a counter replacement exiles the spell`,async()=>{
-  const ctx=context(role),{game,b}=ctx,card=put(game,b,'Grizzly Bears','hand');b.pool.G=1;b.pool.C=1;assert.equal(await game.castSpell(b,card,{from:'hand'}),true);await cast(ctx,'Exile Counter');assert.equal(card.zone,'exile');
+  const ctx=context(role),{game,b}=ctx,card=put(game,b,'Grizzly Bears','hand');b.pool.G=1;b.pool.C=1;game.turnPlayer=b;assert.equal(await game.castSpell(b,card,{from:'hand'}),true);await cast(ctx,'Exile Counter');assert.equal(card.zone,'exile');
  });
  test(`v7 ${role}: devotion counts a hybrid symbol once and ignores mana symbols in rules text`,async()=>{
   const ctx=context(role),{game,a}=ctx;const def={...MTG.DEFS['Grizzly Bears'],cost:'{G/W}{G}{W}',oracle:'{G}{G}: Draw a card.'};const card=new MTG.CardInst(def,a);card.zone='battlefield';game.battlefield.push(card);game.recalc();const life=a.life;await cast(ctx,'Devout');assert.equal(a.life,life+3);

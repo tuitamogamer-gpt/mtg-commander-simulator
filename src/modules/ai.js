@@ -426,6 +426,49 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
   };
 
+  // Optional resource loops can be legal indefinitely (Kodama, a bounce land
+  // and a landfall token maker). A local bot must eventually take the legal
+  // decline branch. Card draws, a changed hand or damage to an opponent reset
+  // the budget, so a progressing finite sequence is not mistaken for a loop.
+  function optionalTriggerBudget(controller, game, player, query, accepted = false) {
+    const hint = query.aiHint;
+    if (query.type !== 'chooseOption' || hint?.kind !== 'optTrigger' || !hint.src ||
+      !query.options?.some(option => option.key === 'yes') || !query.options.some(option => option.key === 'no')) return false;
+    if (controller._optionalTriggerBudget?.turn !== game.turnNo) controller._optionalTriggerBudget = { turn: game.turnNo, entries: new Map() };
+    const eventCard = query.data?.card;
+    const revealed = eventCard?.meta?.revealedTo;
+    const knownEvent = eventCard && (revealed === 'all' || Array.isArray(revealed) && revealed.includes(player.idx) ||
+      !eventCard.faceDown && (['battlefield','graveyard','exile','stack','command'].includes(eventCard.zone) ||
+        eventCard.zone === 'hand' && eventCard.owner === player));
+    const key = `${hint.src.iid}|${hint.src.zoneVersion}|${hint.name || query.prompt}|${knownEvent ? eventCard.name : 'unknown event card'}`;
+    const progress = JSON.stringify([player.hand.map(card => card.name).sort(), player.library.length,
+      game.players.filter(other => other !== player).map(other => [other.life, other.poison, other.lost])]);
+    const entries = controller._optionalTriggerBudget.entries;
+    let entry = entries.get(key);
+    if (!entry || entry.progress !== progress) { entry = { progress, accepted: 0 }; entries.set(key, entry); }
+    if (accepted) entry.accepted++;
+    return entry.accepted >= 24;
+  }
+  MTG.optionalAITriggerBudget = optionalTriggerBudget;
+
+  MTG.firstPayableAICardSelection = function (query, cards) {
+    const payable = query.aiHint?.canPayRemaining;
+    if (typeof payable !== 'function') return null;
+    const minimum = query.min ?? 1;
+    const visit = (start, picks) => {
+      if (!payable(picks)) return null;
+      if (picks.length === minimum) return picks;
+      for (let index = start; index <= cards.length - (minimum - picks.length); index++) {
+        const found = visit(index + 1, picks.concat(cards[index]));
+        if (found) return found;
+      }
+      return null;
+    };
+    // Remaining mana cannot improve when more sources are reserved for a
+    // sacrifice. Pruning failed partial sets avoids exponential dead branches.
+    return visit(0, []);
+  };
+
   class AIController {
     constructor(player, opts = {}) {
       this.p = player;
@@ -511,6 +554,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // ---------- main decide ----------
     async decide(g, q) {
+      if (optionalTriggerBudget(this, g, this.p, q)) return 'no';
       if (MTG.chooseBotAction) {
         try {
           const prioritySessionKey = q.type === 'priority'
@@ -526,6 +570,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             actionWindow: q,
           });
           const answer = MTG.unwrapBotDecisionAction(this.lastV2Decision.action);
+          if (answer === 'yes') optionalTriggerBudget(this, g, this.p, q, true);
           if (answer && answer.kind !== 'pass') {
             if (emptyPriorityKey) this._v2EmptyPriorityUsed = emptyPriorityKey;
             if (prioritySessionKey) this._v2PrioritySessionUsed = prioritySessionKey;
@@ -546,7 +591,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'blockers': return this.blockers(g, q);
         case 'chooseTargets': return this.chooseTargets(g, q);
         case 'chooseCards': return this.chooseCards(g, q);
-        case 'chooseOption': return this.chooseOption(g, q);
+        case 'chooseOption': {
+          const answer = this.chooseOption(g, q);
+          if (answer === 'yes') optionalTriggerBudget(this, g, this.p, q, true);
+          return answer;
+        }
         case 'chooseMulti': return this.chooseMulti(g, q);
         case 'chooseX': return this.chooseX(g, q);
         case 'scry': return this.scry(g, q);
@@ -915,6 +964,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const myPerms = byThreatDesc.filter(x => x.ctrl === p);
       const oppPlayers = cands.filter(x => x instanceof MTG.Player && x !== p);
       switch (goal) {
+        case 'oracleBasePT': {
+          const scored = cands.map(card => ({card, value: MTG.oracleBasePTTargetValue(g, p, card, q)}))
+            .sort((a,b) => b.value - a.value || a.card.iid - b.card.iid);
+          return scored.filter((row,index) => index < min || row.value > 0).slice(0,max).map(row => row.card);
+        }
         case 'blight': {
           const n = q.aiHint && q.aiHint.n || 1;
           const mine = myPerms.slice().sort((a, b) => this.blightRecipientScore(g, b, n) - this.blightRecipientScore(g, a, n));
@@ -1127,6 +1181,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         case 'sacCost': case 'addlSac': case 'eliminateSacrifice': case 'forcedSac': case 'sacToken': case 'sacX': case 'braidsSac': {
           const sorted = byThreatAsc;
+          if (typeof q.aiHint?.canPayRemaining === 'function') {
+            const preferred = kind === 'sacX' ? sorted.filter(card => card.isToken).slice(0, Math.max(min, 2)) : sorted.slice(0, Math.max(min, 1));
+            if (preferred.length >= min && preferred.length <= max && q.aiHint.canPayRemaining(preferred)) return preferred;
+            return MTG.firstPayableAICardSelection(q, sorted) || [];
+          }
           if (kind === 'sacX') {
             // sacrifice tokens only, small number
             const toks = sorted.filter(c => c.isToken);
@@ -1177,6 +1236,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         case 'crew': {
           // tap least valuable untapped creatures
+          if (!Number.isFinite(q.aiHint.need)) return byThreatAsc.slice(0, min);
           const need = q.aiHint.need || 1;
           const sorted = byThreatAsc;
           const out = [];

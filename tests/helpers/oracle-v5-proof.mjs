@@ -544,7 +544,7 @@ export async function mechanicProof(MTG,entry,op,role,h){
  for(const operation of entry.implementation||[])if(operation.kind==='attachment-grant'&&operation.multiplier)stageCount(MTG,ctx,operation.multiplier,h);
  if(JSON.stringify(entry.implementation).includes('"kind":"sacrificed-stat"')){for(const card of game.creatures(a))if(!card.def.oracleImplementation){card.def.power='3';card.def.toughness='4';}game.recalc();}
  const source=h.zoneCard(MTG,a,entry.raw.name,['mechanic-unearth','mechanic-grave-return-self','mechanic-embalm','mechanic-eternalize','mechanic-retrace','mechanic-escape'].includes(op.kind)?'graveyard':'hand');
- const cast=async()=>{assert.equal(await game.castSpell(a,source,{from:'hand',xVal:3}),true,entry.raw.name+': mechanic paid cast');await h.resolveAll(game);};
+ const cast=async()=>{if(source.is('Land'))assert.equal(await game.playLand(a,source),true,entry.raw.name+': mechanic real land play');else assert.equal(await game.castSpell(a,source,{from:'hand',xVal:3}),true,entry.raw.name+': mechanic paid cast');await h.resolveAll(game);};
  if(op.kind==='mechanic-replicate'){
    h.constrainSquadMana(MTG,a,entry);assert.equal(await game.castSpell(a,source,{from:'hand'}),true);const original=game.stack.find(row=>row.card===source),paid=source.castMeta.paidTimes;assert.ok(paid>0,entry.raw.name+': positive replicate payment');const spells=a.turnState.spellsCast;
    await game.flushTriggers();const trigger=game.stack.find(row=>row.kind==='trigger'&&row.name.includes('Replicate'));assert.ok(trigger);assert.equal(game.stack.filter(row=>row.isCopy).length,0);

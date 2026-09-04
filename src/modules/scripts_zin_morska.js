@@ -427,19 +427,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => {
           const t = ctx.targets[0];
           if (!t) return;
-          ctx.src.meta._exiledMV = t.mv;
-          ctx.src.meta._exiledOwner = t.owner.idx;
+          const version = t.zoneVersion;
           await ctx.g.exileCard(t);
+          if (t.zone !== 'exile' || t.zoneVersion !== version + 1) return;
+          const meta = ctx.sourceMeta;
+          meta.skyclaveExiled = meta.skyclaveExiled || [];
+          meta.skyclaveExiled.push({ iid: t.iid, zoneVersion: t.zoneVersion });
         },
       },
       {
         on: 'lto', filter: (g, self, d) => d.card === self, desc: 'Illusion',
-        onlyIf: (g, self) => self.meta._exiledMV !== undefined,
         run: async ctx => {
-          const x = ctx.src.meta._exiledMV;
-          const owner = ctx.g.players[ctx.src.meta._exiledOwner];
-          const def = Object.assign({}, TK.illusionX, { power: String(x), toughness: String(x) });
-          await ctx.g.makeTokens(def, owner);
+          for (const record of ctx.sourceMeta.skyclaveExiled || []) {
+            const card = ctx.g.byIid(record.iid);
+            if (card?.zone !== 'exile' || card.zoneVersion !== record.zoneVersion) continue;
+            const def = Object.assign({}, TK.illusionX, { power: String(card.mv), toughness: String(card.mv) });
+            await ctx.g.makeTokens(def, card.owner);
+          }
         },
       },
     ],
@@ -497,7 +501,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     targets: [T.creature({ prompt: 'Destroy (3/3 Frog)', aiHint: { goal: 'removal' } })],
     resolve: async ctx => {
       const t = ctx.targets[0], c2 = t.ctrl;
-      if (await ctx.g.destroy(t, { noRegen: true })) await ctx.g.makeTokens('frogLizard', c2);
+      await ctx.g.destroy(t, { noRegen: true });
+      await ctx.g.makeTokens('frogLizard', c2);
     },
   };
   SC['Rowdy Research'] = {
@@ -1222,23 +1227,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const g = ctx.g, x = ctx.x || 0;
       const selected = ctx.targets[0];
       const list = (Array.isArray(selected) ? selected : [selected].filter(Boolean)).slice(0, x);
-      const flicked = [];
-      for (const t of list) {
-        if (t.zone !== 'battlefield' || t.isToken) { if (t.isToken) await g.exileCard(t); continue; }
-        await g.move(t, 'exile');
-        flicked.push(t);
-      }
+      const candidates = list.filter(t => t?.zone === 'battlefield')
+        .map(card => ({ card, zoneVersion: card.zoneVersion + 1 }));
+      await g.exileMany(candidates.map(entry => entry.card));
+      const flicked = candidates.filter(({ card, zoneVersion }) =>
+        !card.isToken && card.zone === 'exile' && card.zoneVersion === zoneVersion);
       if (x) await E.investigate(g, ctx.you, x);
       g.delayed.push({
         on: 'endStep', once: true, name: 'Return from exile', ctrl: ctx.you,
         run: async c2 => {
-          for (const t of flicked) {
-            if (t.zone === 'exile') {
-              t.owner.exile.splice(t.owner.exile.indexOf(t), 1);
-              t.zone = 'nowhere';
-              await c2.g.move(t, 'battlefield', { ctrl: t.owner, tapped: true });
-            }
-          }
+          await c2.g.withBattlefieldEntryBatch(async () => {
+            for (const { card, zoneVersion } of flicked)
+              if (card.zone === 'exile' && card.zoneVersion === zoneVersion)
+                await c2.g.putPermanentOntoBattlefield(card, card.owner, { tapped: true });
+          });
         },
       });
     },

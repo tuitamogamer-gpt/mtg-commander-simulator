@@ -806,6 +806,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const derived=card.zone==='battlefield'&&card.cur;
       return {
         iid: card.iid, timestamp: card.timestamp, name: card.name, def: card.def, ctrl: card.ctrl, owner: card.owner, copyEpoch:card.copyEpoch||0, copying:!!card.isCopyOf,
+        sourceMeta: card.meta,
         oracleFaces: card.oracleFaces, oracleFace: card.oracleFace,
         isToken: card.isToken, power: card.power, toughness: card.toughness,
         tapped: !!card.tapped, blocking: card.blocking,
@@ -1760,7 +1761,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async copyPermanentToken(orig, ctrl, opts = {}) {
       const modify = base => {
         const def = Object.assign({}, base);
-        if (opts.modPT) { def.power = String(opts.modPT[0]); def.toughness = String(opts.modPT[1]); }
+        if (opts.modPT) {
+          def.power = String(opts.modPT[0]); def.toughness = String(opts.modPT[1]);
+          // CR 707.9d: a fixed copiable P/T exception excludes the original
+          // characteristic-defining ability, including for copies of this copy.
+          delete def.cdaPower; delete def.cdaToughness; delete def.oracleCharacteristicPT;
+        }
         if (opts.nonlegendary) def.super = (def.super || []).filter(type => type !== 'Legendary');
         if (opts.copyKeywords) def.kws = [...new Set([...(def.kws || []), ...opts.copyKeywords])];
         if (opts.addSubtypes) def.subtypes = [...new Set([...(def.subtypes || []), ...opts.addSubtypes])];
@@ -2968,7 +2974,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (t.oncePerTurn && card.meta['_once_' + (t.onceKey||t.on)] === onceStamp) continue;
           try { if (t.filter && !t.filter(this, card, data)) continue; } catch (e) { continue; }
           cardSeen.add(t);
-          found.push({ card, t, ctrlOverride, onceStamp });
+          found.push({ card, t, ctrlOverride, onceStamp, history });
         }
       };
       for (const c of this.bf()) consider(c, z => z === 'battlefield');
@@ -3012,7 +3018,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const found = this.collectTriggers(name, data || {});
       const oracleBatch=data?.oracleBatch||(['dies','lto','sacrificed'].includes(name)?this._simultaneousLeaveSources:null);
       if(name==='upkeep')for(const card of this.bf())if(card.def.oracleEchoCost&&card.ctrl===data.player)card.meta.oracleEchoPending=false;
-      for (const { card, t, ctrlOverride, onceStamp } of found) {
+      for (const { card, t, ctrlOverride, onceStamp, history } of found) {
         if(t.oncePerBatch&&oracleBatch){
           const batches=this._oracleTriggerBatches||(this._oracleTriggerBatches=new WeakMap());
           let sources=batches.get(oracleBatch);if(!sources){sources=new Map();batches.set(oracleBatch,sources);}
@@ -3044,6 +3050,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (let i = 0; i < times; i++) {
           this.queueTrigger({
             src: card,
+            ...(history ? {sourceZoneVersion: history.zoneVersion, sourceMeta: history.sourceMeta,
+              sourceAttachedTo: history.attachedTo, sourceAttachedToZoneVersion: history.attachedHostVersion} : {}),
             ctrl: typeof t.controller === 'function'
               ? t.controller(this, card, data || {})
               : (t.controller || ctrlOverride),
@@ -3076,6 +3084,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     emitSync(name, data) { /* fire-and-forget for non-trigger notifications */ this.note(name, data || {}); }
 
     queueTrigger(tr) {
+      // Capture at the event, before another action can blink the source or
+      // change its controller. A new zone incarnation receives a new meta
+      // object, while linked abilities retain the old object's records.
+      if (tr.src instanceof CardInst) {
+        if (tr.sourceZoneVersion === undefined) tr.sourceZoneVersion = tr.src.zoneVersion;
+        if (tr.sourceMeta === undefined) tr.sourceMeta = tr.src.meta;
+        if (tr.sourceAttachedTo === undefined) tr.sourceAttachedTo = tr.src.attachedTo;
+        if (tr.sourceAttachedToZoneVersion === undefined) tr.sourceAttachedToZoneVersion = this.byIid(tr.sourceAttachedTo)?.zoneVersion ?? null;
+        if (!tr.ctrl) tr.ctrl = tr.src.ctrl;
+      }
       this.pendingTriggers.push(tr);
     }
 
@@ -3128,28 +3146,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const ctrl = tr.ctrl || (tr.src ? tr.src.ctrl : this.players[0]);
       if (ctrl.lost) return;
-      if (tr.onlyIf && !tr.onlyIf(this, tr.src, tr.data)) return;
       const ctx = {
         g: this, src: tr.src, you: ctrl, data: tr.data, targets: [],
         // A triggered ability belongs to the exact source object that created
         // it. CardInst instances are reused across zones, so scripts that need
         // to re-check an intervening-if condition at resolution must also be
         // able to distinguish a permanent that left and later returned.
-        sourceZoneVersion: tr.src instanceof CardInst ? tr.src.zoneVersion : null,
+        sourceZoneVersion: tr.sourceZoneVersion ?? (tr.src instanceof CardInst ? tr.src.zoneVersion : null),
+        sourceMeta: tr.sourceMeta ?? tr.src?.meta,
         // Attachment-triggered abilities may need last known information if
         // their Aura is removed in response. Snapshot the exact enchanted
         // battlefield object while the trigger is put on the Stack; reading
         // `src.attachedTo` later could instead observe a new object after a
         // leave-and-return sequence.
-        sourceAttachedTo: tr.src instanceof CardInst ? tr.src.attachedTo : null,
-        sourceAttachedToZoneVersion: tr.src instanceof CardInst && tr.src.attachedTo
-          ? this.byIid(tr.src.attachedTo)?.zoneVersion ?? null
-          : null,
+        sourceAttachedTo: tr.sourceAttachedTo ?? null,
+        sourceAttachedToZoneVersion: tr.sourceAttachedToZoneVersion ?? null,
         // Obavezni trigger ne smije izgubiti Magic metu zbog društvenog
         // ugovora. Ako je jedina moguća meta zaštićena dogovorom, Magic pravilo
         // pobjeđuje, a diplomatija bilježi izuzetak bez krivice.
         diplomacyForcedTargeting: !tr.opt,
       };
+      if (tr.onlyIf && !tr.onlyIf(this, tr.src, tr.data, ctx)) return;
       // optional trigger?
       if (tr.opt) {
         const yes = await ctrl.controller.decide(this, {
@@ -3339,6 +3356,44 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         : identity ? Object.assign({}, identity) : null);
     }
 
+    canChooseTargets(specs, src, ctrl, context = {}) {
+      if (!specs?.length) return true;
+      const ctx = {g: this, src, you: ctrl, ...context};
+      const bound = context.bindTargets === false ? specs : specs.map(spec => typeof spec.bindOracleContext === 'function' ? spec.bindOracleContext(ctx) : spec);
+      const minimum = spec => spec.min ?? (spec.upTo ? 0 : spec.count ?? 1);
+      const sequential = bound.some(spec => spec.differentFromPrevious || spec.differentFromAllPrevious || spec.dependentFilter);
+      if (!sequential) return bound.every(spec => {
+        const pool = this.legalTargets(spec, src, ctrl);
+        return (spec.distinctCtrl ? new Set(pool.filter(card => card.ctrl).map(card => card.ctrl)).size + pool.filter(card => !card.ctrl).length : pool.length) >= minimum(spec);
+      });
+      // Separate target instructions may require different objects. Check a
+      // complete assignment instead of counting the same sole creature for
+      // both instructions (Curtains' Call). Independent large groups use the
+      // fast count path above.
+      const visit = (index, previous) => {
+        if (index === bound.length) return true;
+        const spec = bound[index];
+        let pool = this.legalTargets(spec, src, ctrl);
+        if (spec.dependentFilter) pool = pool.filter(card => spec.dependentFilter(this, card, previous, ctrl, src));
+        const excluded = spec.differentFromAllPrevious ? previous.flat().filter(Boolean)
+          : spec.differentFromPrevious ? [previous.at(-1)].flat().filter(Boolean) : [];
+        pool = pool.filter(card => !excluded.includes(card));
+        const min = minimum(spec), max = Math.min(pool.length, spec.count ?? 1);
+        if (pool.length < min) return false;
+        const choose = (start, picks, count) => {
+          if (picks.length === count) return visit(index + 1, previous.concat([(spec.count ?? 1) === 1 ? picks[0] : picks]));
+          for (let i = start; i <= pool.length - (count - picks.length); i++) {
+            if (spec.distinctCtrl && picks.some(card => card.ctrl === pool[i].ctrl)) continue;
+            if (choose(i + 1, picks.concat(pool[i]), count)) return true;
+          }
+          return false;
+        };
+        for (let n = min; n <= max; n++) if (choose(0, [], n)) return true;
+        return false;
+      };
+      return visit(0, []);
+    }
+
     async pickTargets(ctx, specs, src, ctrl) {
       ctx.targets = [];
       ctx.wardTargets = [];
@@ -3346,6 +3401,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx.boundTargetSpecs=specs.map(spec=>typeof spec.bindOracleContext==='function'?spec.bindOracleContext(ctx):spec);
       for (const spec of ctx.boundTargetSpecs) {
         let cands = this.legalTargets(spec, src, ctrl, { allowForced: !!ctx.diplomacyForcedTargeting });
+        if (ctx.targetChoiceFilter) cands = cands.filter(candidate => ctx.targetChoiceFilter(candidate, ctx.targets.length));
         if (typeof spec.dependentFilter === 'function') {
           cands = cands.filter(candidate => spec.dependentFilter(this, candidate, ctx.targets, ctrl, src));
         }

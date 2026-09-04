@@ -4,6 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEngine } from './helpers/load-engine.mjs';
+import { castThroughSuspend } from './helpers/oracle-suspend-cast-proof.mjs';
+import { assertGameStateInvariants, assertRecalculationStable } from './helpers/game-state-invariants.mjs';
 import {stageV8Effect,assertV8Effect,finishV8EffectProof} from './helpers/oracle-v8-effect-proof.mjs';
 import { replacementProof, untapProof, commanderPairingProof, bestowProof, typeStaticProof } from './helpers/oracle-v8-permanent-proof.mjs';
 import {combatStaticProof}from'./helpers/oracle-v8-combat-proof.mjs';
@@ -175,8 +177,26 @@ function recordingDecision(trace, overrides = {}) {
   };
 }
 
+let activeProofGames = null;
+
+async function checkedProof(run, label, evidence) {
+  activeProofGames = [];
+  try {
+    const result = await run();
+    for (const game of activeProofGames) {
+      assertGameStateInvariants(game, label);
+      assertRecalculationStable(game, label);
+      evidence.checkedGames += 1;
+    }
+    return result;
+  } finally {
+    activeProofGames = null;
+  }
+}
+
 function gameFor(MTG, controllers = [decision(), decision()], options = {}) {
   const game = new MTG.Game({ seed: 1007, paced: false, maxTurns: 5 });
+  activeProofGames?.push(game);
   installFaceProof(MTG, game);
   const a = game.addPlayer('Oracle A', { name: 'Oracle A' }, controllers[0], options.ai === true);
   const b = game.addPlayer('Oracle B', { name: 'Oracle B' }, controllers[1], true);
@@ -469,9 +489,10 @@ function stageGenericTarget(MTG, context, target, index, effect = null) {
   const card = zone === 'battlefield'
     ? permanent(MTG, game, controller, definition)
     : (() => {
-        const result = new MTG.CardInst(definition, controller);
+        const owner = target.owner === 'you' ? a : controller;
+        const result = new MTG.CardInst(definition, owner);
         result.zone = zone;
-        controller[zone].push(result);
+        owner[zone].push(result);
         return result;
       })();
   if (target.tapped) card.tapped = true;
@@ -1348,7 +1369,8 @@ async function enterPermanentProof(MTG, context, entry, {holdLandTriggers=false}
   } else {
     for (const color of ['W', 'U', 'B', 'R', 'G', 'C']) a.pool[color] = 30;
     constrainSquadMana(MTG,a,entry);
-    assert.equal(await game.castSpell(a, card, { from: 'hand', xVal: 3 }), true, `${card.name}: paid cast enters the real stack`);
+    if(!card.def.cost&&card.def.suspend)await castThroughSuspend(MTG,game,a,card);
+    else assert.equal(await game.castSpell(a, card, { from: 'hand', xVal: 3 }), true, `${card.name}: paid cast enters the real stack`);
     assert.equal(card.zone, 'stack', `${card.name}: stack zone`);
     await resolveAll(game);
     const expectedZone = Number(entry.raw.toughness) <= 0 && !card.def.etbCounters ? 'graveyard' : 'battlefield';
@@ -1656,11 +1678,18 @@ async function fireGenericEvent(MTG,context,source,operation){
     const colors={white:'W',blue:'U',black:'B',red:'R',green:'G'};
     const def=fixtureDefinition('V5 cast event probe',[type],{cost:'{0}',subtypes:filter?.subtypes||[what],colorsOverride:colors[what]?[colors[what]]:what==='multicolored'?['G','W']:[],
       ...(filter==='your-spell-targets-self'?{targets:[{what:'creature',filter:(g,c)=>c===source}],resolve:async()=>{}}:{})});
-    if(filter?.opponentsTurn){game.turnPlayer=b;def.kws=['flash'];}
+    const requiredTurn=operation.condition?.kind==='your-turn'?a:
+      filter?.opponentsTurn||operation.condition?.kind==='not-your-turn'?b:null;
+    // The trigger's turn restriction concerns its controller, independently
+    // of who casts the witness (Eyes of the Wisent / Breath of the Sleepless).
+    if(requiredTurn){game.turnPlayer=requiredTurn;if(caster!==requiredTurn&&type!=='Instant')def.kws=['flash'];}
     for(let index=0;index<(filter?.kind==='your-numbered-cast'?filter.n:1);index++){
     const spell=new MTG.CardInst(def,caster);spell.zone='hand';caster.hand.push(spell);
     context.eventCard=spell;context.eventController=caster;context.eventCardBefore=cardState(spell);
-    assert.equal(await game.castSpell(caster,spell,{from:'hand'}),true,'real cast event probe');
+    const previousPlayer=game.turnPlayer,previousPhase=game.phase;
+    if(!requiredTurn){game.turnPlayer=caster;game.phase='main1';}
+    try{assert.equal(await game.castSpell(caster,spell,{from:'hand'}),true,'real cast event probe');}
+    finally{game.turnPlayer=previousPlayer;game.phase=previousPhase;}
     }
   }else if(event==='spellCopied'){
     const spell=zoneCard(MTG,a,'Opt','hand');assert.equal(await game.castSpell(a,spell,{from:'hand'}),true);await game.copySpell(game.stack.find(row=>row.card===spell),a,{mayNewTargets:true});
@@ -2205,7 +2234,8 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     const conditionAlt=prepareConditionPayment(MTG,context,entry);
     const graveyardAlt=graveyardCast?game.castableList(a).find(row=>row.card===source&&row.alt?.flashback)?.alt:null;
     if(graveyardCast)assert.ok(graveyardAlt,entry.raw.name+': the printed graveyard permission is offered');
-    assert.equal(await game.castSpell(a,source,{from,xVal:proofXValue(operation),...(graveyardAlt?{alt:graveyardAlt}:{}),...(operation.adventure?{alt:{...source.def.adventure,adventure:true}}:splitAlt?{alt:splitAlt}:conditionAlt?{alt:conditionAlt}:{})}),true,`${entry.raw.name}/${role}: paid generic spell cast`);
+    if(!source.def.cost&&source.def.suspend)await castThroughSuspend(MTG,game,a,source);
+    else assert.equal(await game.castSpell(a,source,{from,xVal:proofXValue(operation),...(graveyardAlt?{alt:graveyardAlt}:{}),...(operation.adventure?{alt:{...source.def.adventure,adventure:true}}:splitAlt?{alt:splitAlt}:conditionAlt?{alt:conditionAlt}:{})}),true,`${entry.raw.name}/${role}: paid generic spell cast`);
     before.players.set(a,playerState(a));
     const object=game.stack.find(row=>row.kind==='spell'&&row.card===source);assert.ok(object,`${entry.raw.name}/${role}: actual spell Stack`);
     if(entry.implementation.some(operation=>operation.kind==='mechanic-additional-costs'))assertOracleCastingCostRecord(source,object,entry);
@@ -3145,6 +3175,10 @@ async function spellV4RuntimeOperationProof(MTG, entry, operation, role, nested=
         const id = basePlan.targetIds[index];
         if (stagedById.has(id)) continue;
         const target = targetMap.get(id);
+        // A permanent with a counter activation must enter before the hostile
+        // spell is cast. The same target is staged below after entry; putting
+        // it on the Stack now would make the permanent's ordinary cast illegal.
+        if(nested&&!(nested.event==='etb'&&['self','self-card',undefined].includes(nested.eventFilter))&&target.kind==='spell')continue;
         const variants = spellV4TargetVariants(target);
         const variant = variants[Math.min(variantIndex, variants.length - 1)];
         stagedById.set(id, await stageSpellV4Target(MTG, context, source, target,
@@ -3193,11 +3227,12 @@ async function spellV4RuntimeOperationProof(MTG, entry, operation, role, nested=
         ? { from: 'hand', xVal: 3 } : { from: 'hand', alt: { free: true } };
       const conditionAlt=prepareConditionPayment(MTG,context,entry);if(conditionAlt)castOptions.alt=conditionAlt;
       if(source.def.replicate&&!nested)for(const color of Object.keys(a.pool))a.pool[color]=0;
-      const cast = await game.castSpell(a, source, nested?{from:'hand',xVal:3}:castOptions);
+      const isLandSource=!!nested&&entry.raw.types.includes('Land');
+      const cast = isLandSource?await game.playLand(a,source):await game.castSpell(a, source, nested?{from:'hand',xVal:3}:castOptions);
       assert.equal(cast, true,
         `${entry.raw.name}/${role}: spell-v4 plan ${JSON.stringify(basePlan.modes)} variant ${variantIndex} casts`);
       let stackObject = game.stack.find(candidate => candidate.card === source);
-      assert.ok(stackObject, `${entry.raw.name}/${role}: spell-v4 source reaches Stack`);
+      if(!isLandSource)assert.ok(stackObject, `${entry.raw.name}/${role}: spell-v4 source reaches Stack`);
       if(nested){
         if(nested.event==='etb'&&['self','self-card',undefined].includes(nested.eventFilter)){
           stageCondition(MTG,context,nested.condition,source,v5Helpers());
@@ -4829,10 +4864,11 @@ test('svaka generička Oracle karta i svaki deklarisani keyword imaju izvršni d
     t.diagnostic('DRAFT_ONLY: candidate verification does not import cards or certify production coverage.');
   }
   const proofFilter = String(process.env.ORACLE_PROOF_FILTER || '').trim().toLowerCase();
+  const proofNames=process.env.ORACLE_PROOF_NAMES_FILE?new Set(JSON.parse(fs.readFileSync(process.env.ORACLE_PROOF_NAMES_FILE,'utf8'))):null;
   const rows = candidates.filter(({ batch, entry }) =>
     (!process.env.ORACLE_PROOF_FIRST || batch.sequence>=Number(process.env.ORACLE_PROOF_FIRST)) &&
     (!process.env.ORACLE_PROOF_LAST || batch.sequence<=Number(process.env.ORACLE_PROOF_LAST)) &&
-    (!proofFilter || entry.raw.name.toLowerCase().includes(proofFilter)));
+    (!proofFilter || entry.raw.name.toLowerCase().includes(proofFilter))&&(!proofNames||proofNames.has(entry.raw.name)));
   assert.ok(rows.length, `Oracle proof filter has fixtures: ${proofFilter || 'all'}`);
   let cardExecutions = 0;
   let keywordExecutions = 0;
@@ -4842,8 +4878,12 @@ test('svaka generička Oracle karta i svaki deklarisani keyword imaju izvršni d
   const operationCounts = {};
   const templateCounts = {};
   const failures = [];
+  const stateEvidence = { checkedGames: 0 };
+  const cardEvidence = [];
 
   for (const { batch, entry } of rows) {
+    const beforeFailures = failures.length;
+    const beforeGames = stateEvidence.checkedGames;
     if(process.env.ORACLE_PROOF_PROGRESS)process.stderr.write(entry.raw.name+'\n');
     const audit = MTG.auditImportedDeckInteractions({ cards: [{ n: 1, name: entry.raw.name }] }, MTG.DEFS);
     assert.equal(audit.ready, true, `${batch.id}/${entry.raw.name}: ${JSON.stringify(audit.unsupported)}`);
@@ -4857,7 +4897,7 @@ test('svaka generička Oracle karta i svaki deklarisani keyword imaju izvršni d
         for (const operation of operations) {
           try {
             if(process.env.ORACLE_PROOF_PROGRESS)process.stderr.write('  '+role+'/'+operation.kind+'\n');
-            operationExecutions += await operationProof(MTG, entry, operation, role);
+            operationExecutions += await checkedProof(() => operationProof(MTG, entry, operation, role), `${entry.raw.name}/${role}/${operation.kind}`, stateEvidence);
             operationRouteExecutions += 1;
             operationCounts[`${role}:${operation.kind}`] = (operationCounts[`${role}:${operation.kind}`] || 0) + 1;
           } catch (error) {
@@ -4868,7 +4908,7 @@ test('svaka generička Oracle karta i svaki deklarisani keyword imaju izvršni d
         if (cardPassed) cardExecutions += 1;
       } else {
         try {
-          cardExecutions += await cardProof(MTG, entry, role);
+          cardExecutions += await checkedProof(() => cardProof(MTG, entry, role), `${entry.raw.name}/${role}/card`, stateEvidence);
         } catch (error) {
           cardPassed = false;
           failures.push(`${batch.id}/${entry.raw.name}/${role}/card: ${error.message}`);
@@ -4881,17 +4921,19 @@ test('svaka generička Oracle karta i svaki deklarisani keyword imaju izvršni d
         assert.ok(contract, `${entry.raw.name}: declared ${declared} has a contract`);
         assert.ok(audit.contracts.some(item => item.id === contract), `${entry.raw.name}: audit exposes ${contract}`);
         try {
-          keywordExecutions += await keywordProof(MTG, entry, declared, role);
+          keywordExecutions += await checkedProof(() => keywordProof(MTG, entry, declared, role), `${entry.raw.name}/${role}/keyword-${declared}`, stateEvidence);
           keywordCounts[`${role}:${key}`] = (keywordCounts[`${role}:${key}`] || 0) + 1;
         } catch (error) {
           failures.push(`${batch.id}/${entry.raw.name}/${role}/keyword-${declared}: ${error.message}`);
         }
       }
     }
+    cardEvidence.push({ name: entry.raw.name, oracleId: entry.oracleId, batch: batch.id, passed: failures.length === beforeFailures, operationKinds: operations.map(operation => operation.kind), keywords: entry.implementedKeywords || [], roles: ['human', 'ai'], checkedGames: stateEvidence.checkedGames - beforeGames, failures: failures.slice(beforeFailures) });
   }
 
   const declaredKeywordTotal = rows.reduce((sum, row) => sum + declaredKeywordOccurrences(MTG, row.entry).length, 0);
   const declaredOperationTotal = rows.reduce((sum, row) => sum + (row.entry.implementation || []).length, 0);
+  if (process.env.ORACLE_PROOF_REPORT) fs.writeFileSync(process.env.ORACLE_PROOF_REPORT, JSON.stringify({ schema: 'oracle-execution-evidence/v1', cards: cardEvidence, stateInvariantGames: stateEvidence.checkedGames, failures, limitation: 'Controlled scenarios and state invariants; not exhaustive Oracle interpretation or all card combinations.' }, null, 2) + '\n');
   assert.equal(failures.length, 0, `Oracle executable-proof failures (${failures.length}):\n${failures.join('\n')}`);
   assert.equal(cardExecutions, rows.length * 2, 'one real human and local-AI land-play/cast/resolution proof per Oracle card');
   assert.equal(keywordExecutions, declaredKeywordTotal * 2, 'one human and local-AI proof per declared keyword occurrence');

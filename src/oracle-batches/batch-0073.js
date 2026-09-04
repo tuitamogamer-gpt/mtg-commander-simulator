@@ -303,7 +303,7 @@ MTG.registerOracleBatch({
                 "what": "permanent",
                 "filters": [
                   {
-                    "what": "creature",
+                    "what": "land",
                     "zone": "battlefield",
                     "controller": "you",
                     "min": 1,
@@ -6148,7 +6148,7 @@ MTG.registerOracleBatch({
                         "subtype": "Spacecraft"
                       },
                       {
-                        "what": "creature",
+                        "what": "land",
                         "zone": "battlefield",
                         "controller": "you",
                         "min": 1,

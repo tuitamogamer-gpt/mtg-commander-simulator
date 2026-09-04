@@ -8,6 +8,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const etbSelf = (g, self, d) => d.card === self;
   const myCreatureDies = (g, self, d) => d.snap.types.includes('Creature') && d.snap.ctrl === self.ctrl;
   const anotherCreatureDies = (g, self, d) => d.card !== self && d.snap.types.includes('Creature');
+  const urnCards = (g, meta) => (meta?.urn || []).flatMap(record => {
+    const card = g.byIid(record.iid);
+    return card?.zone === 'exile' && card.zoneVersion === record.zoneVersion ? [card] : [];
+  });
 
   E.proliferate = async function (g, p) {
     // Svaki Tekuthal je zaseban replacement efekt. Svaki proliferate traži
@@ -590,8 +594,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const t = ctx.targets[0], g = ctx.g;
       const owner = t.ctrl;
       const p2 = Math.ceil(t.power / 2), t2 = Math.ceil(t.toughness / 2);
-      if (await g.destroy(t)) {
-        await g.copyPermanentToken(t, owner, { n: 2, modPT: [p2, Math.max(1, t2)] });
+      // Preserve copiable values before leaving resets a copy or a back face.
+      // The explicit P/T exception also removes the copied P/T CDA (CR 707.9d).
+      const copied = U.OracleV8Faces.copyTokenDefinition(t, base =>
+        U.OracleV8Copies.modifiedDefinition(base, { power: p2, toughness: t2 }));
+      const version = t.zoneVersion, deaths = g.diedThisTurn.length;
+      await g.destroy(t);
+      if (g.diedThisTurn.slice(deaths).some(snap => snap.iid === t.iid && snap.zoneVersion === version)) {
+        await g.copyPermanentToken({ def: copied, oracleFaces: copied.oracleFaces || null,
+          oracleFace: copied.oracleFace || null }, owner, { n: 2 });
       }
     },
   };
@@ -1439,34 +1450,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [
       {
         on: 'dies', opt: true, desc: 'Exile into the urn',
-        filter: (g, self, d) => d.snap.ctrl === self.ctrl && d.snap.types.includes('Creature') && d.snap.toughness >= 4 && !d.snap.isToken,
+        filter: (g, self, d) => d.snap.owner === self.ctrl && d.snap.types.includes('Creature') && d.snap.toughness >= 4,
         run: async ctx => {
-          const c = ctx.data.card;
-          if (c.zone === 'graveyard') {
+          const c = ctx.data.card, version = ctx.data.snap.zoneVersion + 1;
+          if (c.zone === 'graveyard' && c.zoneVersion === version && c.owner === ctx.you) {
             await ctx.g.move(c, 'exile');
-            ctx.src.meta.urn = ctx.src.meta.urn || [];
-            ctx.src.meta.urn.push(c.iid);
-            ctx.g.lg(`${c.name} exiled into Colfenor's Urn (${ctx.src.meta.urn.length}/3).`);
+            if (c.zone !== 'exile' || c.zoneVersion !== version + 1) return;
+            const meta = ctx.sourceMeta;
+            meta.urn = meta.urn || [];
+            meta.urn.push({ iid: c.iid, zoneVersion: c.zoneVersion });
+            ctx.g.lg(`${c.name} exiled into Colfenor's Urn (${urnCards(ctx.g, meta).length}/3).`);
           }
         },
       },
       {
-        on: 'endStep', desc: 'Return', filter: () => true,
-        onlyIf: (g, self) => (self.meta.urn || []).length >= 3,
+        on: 'endStep', desc: 'Return', filter: (g, self) => urnCards(g, self.meta).length >= 3,
         run: async ctx => {
           const g = ctx.g;
-          // Lista se mora pročitati PRIJE žrtvovanja — nakon odlaska sa bojnog
-          // polja urna više ne nosi svoj spisak, pa se nije vraćalo ništa.
-          const iids = (ctx.src.meta.urn || []).slice();
-          await g.sacrifice(ctx.you, ctx.src);
-          for (const iid of iids) {
-            const c = g.byIid(iid);
-            if (c && c.zone === 'exile') {
-              c.owner.exile.splice(c.owner.exile.indexOf(c), 1);
-              c.zone = 'nowhere';
-              await g.move(c, 'battlefield', { ctrl: c.owner });
-            }
-          }
+          const cards = urnCards(g, ctx.sourceMeta);
+          // Recheck the intervening condition and sacrifice the same object.
+          if (cards.length < 3 || ctx.src.zone !== 'battlefield' ||
+              ctx.src.zoneVersion !== ctx.sourceZoneVersion || ctx.src.ctrl !== ctx.you) return;
+          if (!await g.sacrifice(ctx.you, ctx.src)) return;
+          await g.withBattlefieldEntryBatch(async () => {
+            for (const card of cards) await g.putPermanentOntoBattlefield(card, card.owner);
+          });
         },
       },
     ],

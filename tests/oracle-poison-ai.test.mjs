@@ -32,6 +32,9 @@ function put(game, player, definition, zone = 'battlefield') {
 }
 
 async function castActual(game, player, name) {
+  game.turnPlayer = player;
+  game.phase = 'main1';
+  game.step = 'main';
   const card = put(game, player, name, 'hand');
   player.pool.B = 8;
   player.pool.C = 8;

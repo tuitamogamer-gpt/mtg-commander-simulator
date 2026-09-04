@@ -2153,6 +2153,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return seats;
     }
 
+    libraryTopSources(g, player) {
+      return g.bf().filter(source => source.ctrl === player && !source.cur?.abilitiesDisabled &&
+        (source.def.revealAllTop || player === this.me && source.def.revealOwnTop));
+    }
+
+    visibleLibraryTop(g, player) {
+      return this.libraryTopSources(g, player).length ? player.library[player.library.length - 1] || null : null;
+    }
+
     renderOpponents(g) {
       this.collapsed = this.collapsed || new Set();
       const outer = el('div', 'oppsouter');
@@ -2199,6 +2208,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span class="oppcmd" title="${esc(cmdTitle)}">${U.icon('crown')}${esc(cmdState)}</span>
           <button class="tbtn small" type="button" aria-label="Open ${esc(p.name)} player details" title="Open ${esc(p.name)} player details">${U.icon('info')}</button>`;
         head.querySelector('.tbtn.small').onclick = (e) => { e.stopPropagation(); this.playerSheet = p; this.render(); };
+        const libraryTop = this.visibleLibraryTop(g, p);
+        if (libraryTop) {
+          const topCard = el('button', 'zbtn');
+          Object.assign(topCard.style, { display: 'block', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
+          topCard.type = 'button';
+          topCard.dataset.testid = 'opponent-library-top';
+          topCard.dataset.cname = libraryTop.name;
+          topCard.textContent = `Top: ${libraryTop.name}`;
+          topCard.title = `${p.name}'s publicly revealed library top: ${libraryTop.name}`;
+          topCard.setAttribute('aria-label', `${p.name}'s revealed library top: ${libraryTop.name}. Open card details.`);
+          topCard.onclick = e => { e.stopPropagation(); this.sheet = { card: libraryTop }; this.render(); };
+          head.querySelector('.oppmeta').appendChild(topCard);
+        }
         const effectsBadge = head.querySelector('.playereffectsbadge');
         if (effectsBadge) effectsBadge.onclick = (e) => { e.stopPropagation(); this.playerSheet = p; this.render(); };
         // EDHLAB-style: life tap = detalji (commander dmg itd.), ostatak = collapse
@@ -2531,7 +2553,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const pool = me.pool;
       const poolStr = Object.entries(pool).filter(([k, v]) => v > 0)
         .map(([k, v]) => `<span class="manapoolchip">${manaGlyph(k, 'poolglyph')}<b>${v}</b></span>`).join('');
-      const libraryTopSources = g.bf().filter(card => card.ctrl === me && card.def.revealOwnTop);
+      const libraryTopSources = this.libraryTopSources(g, me);
       const maySeeLibraryTop = libraryTopSources.length > 0;
       const libraryTop = maySeeLibraryTop ? me.library[me.library.length - 1] : null;
       const pendingMain = this.pending && (this.pending.q.type === 'main' || this.pending.q.type === 'priority')

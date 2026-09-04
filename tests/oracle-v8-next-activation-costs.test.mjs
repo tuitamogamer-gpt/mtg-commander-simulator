@@ -124,8 +124,8 @@ test('next activation a sacrifice payment may tap for mana but cannot also be sa
   for(const manaKind of ['tap','sacSelf']){
     const ctx=ready('human','Next Activation Captain, Bold');ctx.a.pool.C=0;
     ctx.source.def={...ctx.source.def,mana:[{cost:{[manaKind]:true},produce:[{C:1}]}]};ctx.game.recalc();
-    const action=entry(ctx);assert.ok(action,'the source is a real usable mana source');
-    assert.equal(await ctx.game.activateAbility(ctx.a,action),manaKind==='tap');
+    const action=entry(ctx);assert.equal(!!action,manaKind==='tap','only jointly payable mana and sacrifice costs are offered');
+    assert.equal(await ctx.game.activateAbility(ctx.a,action||rawEntry(ctx)),manaKind==='tap');
     if(manaKind==='tap'){assert.equal(ctx.source.zone,'graveyard');assert.equal(ctx.game.stack.length,1);await settle(ctx.game);assert.equal(ctx.a.hand.length,2);}
     else {assert.equal(ctx.source.zone,'battlefield');assert.equal(ctx.source.tapped,false);assert.equal(ctx.game.stack.length,0);}
   }

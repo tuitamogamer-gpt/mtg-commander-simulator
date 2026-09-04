@@ -523,6 +523,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.createBotPlayerView = function (gameState, botPlayerId, actionWindow) {
     const player = resolvePlayer(gameState, botPlayerId);
     if (!player) throw new Error(`AI V2: nepoznat bot player ${botPlayerId}`);
+    const battlefieldCards = gameState.bf();
     const players = gameState.players.map(other => {
       const mine = other === player;
       const row = {
@@ -545,11 +546,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Sadržaj ruke postoji isključivo za posmatrača. Protivnički row nema
       // ni prazni placeholder koji bi kasnije mogao biti slučajno popunjen.
       if (mine) row.hand = other.hand.map(card => publicCard(card, player, true));
+      if (other.library.length && battlefieldCards.some(source => source.ctrl === other && !source.cur?.abilitiesDisabled &&
+        (source.def.revealAllTop || mine && source.def.revealOwnTop))) row.visibleLibraryTop = publicCard(other.library.at(-1), player, true);
       const forecastCards=[...(gameState.forecastRevealedCards?.(other)||[]),...(gameState.miracleRevealedCards?.(other)||[])];
       if(!mine&&forecastCards.length)row.revealedHand=forecastCards.map(card=>publicCard(card,player,true));
       return deepFreeze(row);
     });
-    const battlefield = gameState.bf().map(card => publicCard(card, player, card.ctrl === player || !card.faceDown));
+    const battlefield = battlefieldCards.map(card => publicCard(card, player, card.ctrl === player || !card.faceDown));
     const view = {
       perspectivePlayerId: player.idx,
       turnNumber: gameState.turnNo,
@@ -1602,7 +1605,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (q.type === 'blockers') {
       actions.push(...generateBlockPlans(game, player, q, config));
     } else if (q.type === 'chooseTargets') {
-      let ranked = (q.candidates || []).slice().sort((a, b) => targetValue(game, player, b, q) - targetValue(game, player, a, q) || targetStableKey(a).localeCompare(targetStableKey(b))).slice(0, config.targetLimit);
+      let ranked = (q.candidates || []).slice().sort((a, b) => targetValue(game, player, b, q) - targetValue(game, player, a, q) || targetStableKey(a).localeCompare(targetStableKey(b)));
       if (q.spec && q.spec.distinctCtrl) {
         // najviše jedna meta po kontroloru — zadrži najbolju po svakom
         const perCtrl = new Set();
@@ -1613,6 +1616,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return true;
         });
       }
+      // A search-width limit cannot turn a mandatory twenty-target spell into
+      // an empty choice. Keep enough distinct legal candidates to pay the
+      // announced target count; optional targets remain bounded as before.
+      ranked = ranked.slice(0, Math.max(config.targetLimit, q.min || 0));
       if (q.aiHint && ['proliferate', 'depthshaker'].includes(q.aiHint.goal)) {
         const strategic = ranked.filter(target => targetValue(game, player, target, q) > 0).slice(0, q.max || ranked.length);
         actions.push({ kind: 'chooseTargets', picks: strategic });
@@ -1620,17 +1627,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const maxTargets = affordableStriveTargets(game, player, q, Math.min(q.max ?? 1, ranked.length));
       for (const picks of combinations(ranked, q.min || 0, maxTargets, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseTargets', picks });
     } else if (q.type === 'chooseCards') {
-      const ranked = (q.from || []).slice().sort((a, b) => choiceCardValue(game, player, b, q) - choiceCardValue(game, player, a, q) || a.iid - b.iid).slice(0, Math.max(config.targetLimit, q.max || 1));
+      const allRanked = (q.from || []).slice().sort((a, b) => choiceCardValue(game, player, b, q) - choiceCardValue(game, player, a, q) || a.iid - b.iid);
+      const ranked = allRanked.slice(0, Math.max(config.targetLimit, q.min || 0, q.max || 1));
       if (q.aiHint && q.aiHint.kind === 'genesisWave') {
         const picks = ranked.filter(card => !((card.def.super || []).includes('Legendary') &&
           game.bf().some(existing => existing.ctrl === player && existing.name === card.name)));
         actions.push({ kind: 'chooseCards', picks });
       }
-      if (q.aiHint && q.aiHint.kind === 'crew') {
+      if (q.aiHint && q.aiHint.kind === 'crew' && Number.isFinite(q.aiHint.need)) {
         const picks = minimalCrewPayment(game, player, ranked, q.aiHint.need);
-        if (picks) actions.push({ kind: 'chooseCards', picks });
+        if (picks && picks.length >= (q.min || 0) && picks.length <= (q.max ?? ranked.length)) actions.push({ kind: 'chooseCards', picks });
       }
-      for (const picks of combinations(ranked, q.min || 0, q.max || 1, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseCards', picks });
+      for (const picks of combinations(ranked, q.min || 0, q.max || 1, Math.max(config.beamWidth * 2, 12))) {
+        if (!q.aiHint?.canPayRemaining || q.aiHint.canPayRemaining(picks)) actions.push({ kind: 'chooseCards', picks });
+      }
+      if (typeof q.aiHint?.canPayRemaining === 'function' && !actions.length) {
+        const picks = MTG.firstPayableAICardSelection(q, allRanked);
+        if (picks) actions.push({kind:'chooseCards',picks});
+      }
     } else if (q.type === 'chooseOption') {
       for (const option of q.options || []) actions.push({ kind: 'chooseOption', value: option.key, option });
     } else if (q.type === 'chooseMulti') {
@@ -2042,6 +2056,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return base + wardTargetAdjustment(game, player, target, q);
   }
 
+  function oracleBasePTTargetValue(game, player, target, q) {
+    if (!(target instanceof U.CardInst) || typeof q.aiHint?.basePT !== 'function') return -1000;
+    const change = q.aiHint.basePT(game, target, player, q.src);
+    if (!change || !target.is('Creature') && !change.becomesCreature) return -1000;
+    const creature = target.is('Creature'), hostile = target.ctrl !== player;
+    const oldPower = Number(target.power) || 0, oldToughness = Number(target.toughness) || 0;
+    const power = change.power === undefined ? oldPower : Number(change.power) + oldPower - (Number(target.cur?.basePower) || 0);
+    const toughness = change.toughness === undefined ? oldToughness : Number(change.toughness) + oldToughness - (Number(target.cur?.baseToughness) || 0);
+    if (!Number.isFinite(power) || !Number.isFinite(toughness)) return -1000;
+    const value = permanentGameValue(game, target, player);
+    if (diesAfterGlobalPump(target, toughness)) return hostile ? 20 + value * 1.5 : -1000;
+    const keywords = (change.keywords || []).filter(keyword => !target.kw(keyword));
+    const keywordValue = keywords.reduce((sum, keyword) => sum + ({ flying: 3, trample: 2, haste: target.sick ? 3 : 0,
+      vigilance: 2, lifelink: player.life < 15 ? 4 : 2, deathtouch: 3, 'double strike': 5 }[keyword] || 1), 0);
+    let improvement = (power - (creature ? oldPower : 0)) * 1.3 +
+      (toughness - (creature ? oldToughness : 0)) * 0.6 + keywordValue;
+    if (!creature && change.temporary && target.tapped) improvement *= 0.15;
+    return hostile ? -improvement : improvement;
+  }
+  MTG.oracleBasePTTargetValue = oracleBasePTTargetValue;
+
   function baseTargetValue(game, player, target, q) {
     if(target instanceof U.CardInst&&q.aiHint?.oracleTargetTapped!==undefined&&target.tapped!==q.aiHint.oracleTargetTapped)return -1000;
     if (q && q.aiHint && q.aiHint.avoidCostSource && target === q.src) return -1000;
@@ -2088,6 +2123,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return threat * 0.45 + lethal + friendly;
     }
     if (target instanceof U.CardInst) {
+      if (hint === 'oracleBasePT') return oracleBasePTTargetValue(game, player, target, q);
       const value = permanentGameValue(game, target, player);
       const hostile = target.ctrl !== player;
       if (q.aiHint && q.aiHint.temporaryCopy) return temporaryCopyValue(game, player, target, q.aiHint);
@@ -4025,7 +4061,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (power < need) breakdown.choice = -1000;
         else {
           const tapCost = action.picks.reduce((sum, card) => sum + permanentGameValue(game, card, player), 0);
-          breakdown.choice = 20 - tapCost - Math.max(0, power - need) * 1.5 - action.picks.length * 0.4;
+          const excessPower = Number.isFinite(q.aiHint.need) ? Math.max(0, power - need) : 0;
+          breakdown.choice = 20 - tapCost - excessPower * 1.5 - action.picks.length * 0.4;
         }
       } else {
         breakdown.choice = action.picks.reduce((sum, card) => sum + choiceCardValue(game, player, card, q || {}), 0);
@@ -4795,6 +4832,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
   MTG.cloneGameForAISimulation = cloneGameForSimulation;
 
+  function prepareSearchInformation(clone, information) {
+    const observer = clone.players.find(player => player.idx === information.observerId);
+    if (!observer) return;
+    const known = new Set(information.knownCardIds || []);
+    for (const source of clone.bf()) {
+      if (source.cur?.abilitiesDisabled || !(source.def.revealAllTop || source.ctrl === observer && source.def.revealOwnTop)) continue;
+      const top = source.ctrl?.library.at(-1);
+      if (top) known.add(top.iid);
+    }
+    const explicitlyKnown = card => known.has(card.iid) || card.meta?.revealedTo === 'all' ||
+      Array.isArray(card.meta?.revealedTo) && card.meta.revealedTo.includes(observer.idx);
+    for (const player of clone.players) {
+      const revealed = new Set([...(clone.forecastRevealedCards?.(player) || []), ...(clone.miracleRevealedCards?.(player) || [])]);
+      // A hypothesis may use the unseen card pool, but neither its real order
+      // nor its secret hand/library allocation. Canonicalize before shuffling
+      // so swapping unknown cards cannot change a seeded search result.
+      const slots = [];
+      if (player !== observer) player.hand.forEach((card, index) => {
+        if (!explicitlyKnown(card) && !revealed.has(card)) slots.push({ zone: 'hand', index, card });
+      });
+      player.library.forEach((card, index) => {
+        if (!explicitlyKnown(card)) slots.push({ zone: 'library', index, card });
+      });
+      const pool = slots.map(slot => slot.card).sort((a, b) => a.iid - b.iid);
+      U.shuffle(pool, U.mulberry32((information.seed ^ Math.imul(player.idx + 1, 2654435761)) >>> 0));
+      slots.forEach((slot, index) => {
+        player[slot.zone][slot.index] = pool[index];
+        pool[index].zone = slot.zone;
+      });
+    }
+  }
+
   function altIdentity(alt) { return alt && (alt.name || alt.label || alt.altCostStr || (alt.adventure ? 'adventure' : '') || (alt.room && alt.room.name) || '') || ''; }
 
   function mapActionToClone(action, originalGame, clone) {
@@ -4840,6 +4909,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function immediateSimulationController(player, observerIdx, seed) {
     return {
       async decide(game, q) {
+        if (MTG.optionalAITriggerBudget(this, game, player, q)) return 'no';
         if (q.type === 'priority' || q.type === 'main') return q.type === 'priority' ? { kind: 'pass' } : { kind: 'done' };
         if (q.type === 'combatReview' || q.type === 'cardReveal' || q.type === 'threatAlert' || q.type === 'manualResolve') return 'ok';
         const view = MTG.createBotPlayerView(game, player.idx, q);
@@ -4847,7 +4917,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const actions = MTG.generateLegalActions(view, { difficulty: 'normal' });
         const ranked = actions.map(action => ({ action, quick: quickScoreAction(view, action, profile, q).total }))
           .sort((a, b) => b.quick - a.quick || actionKey(a.action).localeCompare(actionKey(b.action)));
-        return unwrapDecisionAction(ranked[0] && ranked[0].action);
+        const answer = unwrapDecisionAction(ranked[0] && ranked[0].action);
+        if (answer === 'yes') MTG.optionalAITriggerBudget(this, game, player, q, true);
+        return answer;
       },
     };
   }
@@ -4893,6 +4965,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const actor = resolvePlayer(state, simulationContext.playerId ?? simulationContext.botPlayerId ?? (action.card && action.card.ctrl && action.card.ctrl.idx));
     const seed = Number(simulationContext.seed || 1) >>> 0;
     const clone = cloneGameForSimulation(state, seed);
+    // Faithful rules-engine simulation remains the default API. Only search
+    // roots sample hidden information; descendants keep that same hypothesis.
+    if (!state._simulation && simulationContext.searchInformation) prepareSearchInformation(clone, simulationContext.searchInformation);
     const cloneActor = actor ? clone.players.find(player => player.idx === actor.idx) : null;
     for (const player of clone.players) player.controller = immediateSimulationController(player, cloneActor && cloneActor.idx, seed + player.idx + 1);
     const mapped = mapActionToClone(action, state, clone);
@@ -4947,9 +5022,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return round(runaway * 0.18);
   }
 
-  async function searchActionSequence(game, player, rootCandidate, view, profile, config, seed, stats) {
+  async function searchActionSequence(game, player, rootCandidate, view, profile, config, seed, stats, searchInformation) {
     const outOfTime = () => stats.deadline > 0 && now() > stats.deadline;
-    const first = await MTG.simulateAction(game, rootCandidate.action, { playerId: player.idx, seed });
+    const first = await MTG.simulateAction(game, rootCandidate.action, { playerId: player.idx, seed, searchInformation });
     stats.nodes++;
     if (!first.applied) return { score: rootCandidate.quick.total - 25, state: game, rootAction: rootCandidate.action, depth: 0, breakdown: Object.assign({}, rootCandidate.quick.breakdown, { simulation: -25 }), simulationError: first.error && first.error.message };
     let firstView = first.view || MTG.createBotPlayerView(first.state, player.idx);
@@ -5051,12 +5126,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // benchmark/test `forceSearch` koriste puni beam.
     const deepSearch = params.forceSearch === true || (params.forceSearch !== false && !!game.paced);
     const deepWidth = deepSearch ? Math.min(config.beamWidth, difficulty === 'easy' ? 3 : difficulty === 'normal' ? 6 : 9) : 0;
+    const searchInformation = deepSearch ? {
+      observerId: player.idx, seed,
+      // Offered library/foreign-hand actions identify cards the acting player
+      // can already see or play. Do not shuffle a known source out of its zone.
+      knownCardIds: legalActions.flatMap(action => [action.card, action.entry?.card])
+        .filter(card => card && (card.zone === 'library' || card.zone === 'hand' && card.owner !== player)).map(card => card.iid),
+    } : null;
     const searched = [];
     for (const candidate of candidates.slice(0, deepWidth)) {
       if (stats.nodes >= config.maxNodes) break;
       if (stats.deadline > 0 && searched.length && now() > stats.deadline) break;
       if (searchKinds.has(candidate.action.kind)) {
-        try { searched.push(await searchActionSequence(game, player, candidate, view, profile, config, seed + searched.length * 997, stats)); }
+        try { searched.push(await searchActionSequence(game, player, candidate, view, profile, config, seed + searched.length * 997, stats, searchInformation)); }
         catch (error) {
           searched.push({ score: candidate.quick.total - 12, rootAction: candidate.action, depth: 0, breakdown: Object.assign({}, candidate.quick.breakdown, { simulation: -12 }), simulationError: error.message });
         }

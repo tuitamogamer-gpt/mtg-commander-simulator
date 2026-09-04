@@ -1547,17 +1547,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     modes: {
       pick: 1,
       list: [
-        { label: 'Destroy an artifact', targets: [T.permanent((g, c) => c.is('Artifact') && !c.is('Land'), { prompt: 'Artifact', aiHint: { goal: 'removal' } })] },
+        { label: 'Destroy an artifact', targets: [T.permanent((g, c) => c.is('Artifact'), { prompt: 'Artifact', aiHint: { goal: 'removal' } })] },
         { label: 'Destroy an enchantment', targets: [T.permanent((g, c) => c.is('Enchantment'), { prompt: 'Ench', aiHint: { goal: 'removal' } })] },
         {
           label: 'Both', targets: [
-            T.permanent((g, c) => c.is('Artifact') && !c.is('Land'), { prompt: 'Artifact', aiHint: { goal: 'removal' } }),
+            T.permanent((g, c) => c.is('Artifact'), { prompt: 'Artifact', aiHint: { goal: 'removal' } }),
             T.permanent((g, c) => c.is('Enchantment'), { prompt: 'Ench', aiHint: { goal: 'removal' } }),
           ],
         },
       ],
     },
-    resolve: async ctx => { for (const t of ctx.targets.filter(Boolean)) if (t.zone === 'battlefield') await ctx.g.destroy(t); },
+    resolve: async ctx => { await ctx.g.destroyMany(ctx.targets.filter(Boolean)); },
   };
   // Oracle nema zaseban resolution efekt: cijeli tekst čine cascade i rebound.
   SC['Into the Time Vortex'] = { cascade: true, rebound: true, rulesOnlySpell: true };
@@ -1567,7 +1567,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       pick: 1,
       list: [
         { label: 'Fight damage', targets: [T.yourCreature({ prompt: 'Yours', aiHint: { goal: 'buff' } }), T.oppCreature({ prompt: 'Target', aiHint: { goal: 'removal' } })] },
-        { label: 'Destroy artifact/ench', targets: [T.permanent((g, c) => (c.is('Artifact') || c.is('Enchantment')) && !c.is('Land'), { prompt: 'Target', aiHint: { goal: 'removal' } })] },
+        { label: 'Destroy artifact/ench', targets: [T.permanent((g, c) => c.is('Artifact') || c.is('Enchantment'), { prompt: 'Target', aiHint: { goal: 'removal' } })] },
       ],
     },
     resolve: async ctx => {

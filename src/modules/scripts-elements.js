@@ -298,14 +298,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Horde of Notions'] = {
     abilities: [{
-      label: 'Play Elemental from a graveyard', cost: { mana: '{W}{U}{B}{R}{G}' },
-      targets: [graveTarget('Target Elemental card in a graveyard', (g, card) => card.hasSub('Elemental'), true)],
+      label: 'Play Elemental from your graveyard', cost: { mana: '{W}{U}{B}{R}{G}' },
+      targets: [graveTarget('Target Elemental card in your graveyard', (g, card) => card.hasSub('Elemental'))],
       run: async ctx => {
-        const card = ctx.targets[0]; if (!card || card.zone !== 'graveyard') return;
-        const owner = card.owner; owner.graveyard.splice(owner.graveyard.indexOf(card), 1);
-        card.zone = 'hand'; ctx.you.hand.push(card);
-        const ok = await ctx.g.castSpell(ctx.you, card, { free: true, from: 'hand' });
-        if (!ok) { ctx.g.remove(card); card.zone = 'graveyard'; owner.graveyard.push(card); }
+        const card = ctx.targets[0]; if (!card || card.zone !== 'graveyard' || card.owner !== ctx.you) return;
+        await U.OracleV8PlayPermissions.castOne(ctx, [card], { free: true }, {});
       }, aiScore: () => 6,
     }],
   };

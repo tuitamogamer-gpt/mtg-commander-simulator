@@ -5716,7 +5716,7 @@ MTG.registerOracleBatch({
                   "what": "permanent",
                   "filters": [
                     {
-                      "what": "creature",
+                      "what": "land",
                       "zone": "battlefield",
                       "controller": "you",
                       "min": 1,

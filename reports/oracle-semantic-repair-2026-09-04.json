@@ -1,0 +1,437 @@
+{
+  "schemaVersion": 1,
+  "id": "oracle-subtype-selector-repair-2026-09-04",
+  "reason": "Historical generated selectors used creature for land/artifact subtypes. Current original-version recompilation changes only the reviewed what leaf.",
+  "rules": "https://media.wizards.com/2026/downloads/MagicCompRules%2020260819.txt",
+  "source": {
+    "sha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+    "updatedAt": "2026-08-30T09:01:56.964+00:00",
+    "bulkId": "27bf3214-1271-490b-bdfe-c0be6c23d02e"
+  },
+  "preserved": [
+    "Oracle IDs",
+    "Scryfall IDs",
+    "source fields",
+    "raw card fields",
+    "catalog fields",
+    "batch membership",
+    "positions",
+    "compiler versions",
+    "import state"
+  ],
+  "cards": [
+    {
+      "batch": "oracle-0070",
+      "compilerVersion": 6,
+      "name": "Cactarantula",
+      "oracleId": "18a5fe34-0c97-486c-b09a-80535a99e982",
+      "subtype": "Desert",
+      "path": "/0/condition/count/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "85f3e61f498f01cefcbcb0bb2f378db2231d91b9b11d061598e3ec2b5a182660",
+      "afterImplementationSha256": "721864201935060f9e40a7344d13fa95fd7b9fd259717d68bfc0ef46b412d266"
+    },
+    {
+      "batch": "oracle-0071",
+      "compilerVersion": 6,
+      "name": "Charisma Bobblehead",
+      "oracleId": "77897962-7d67-4fa8-858f-2f35a322d7c6",
+      "subtype": "Bobblehead",
+      "path": "/1/effects/0/n/filters/0/what",
+      "before": "creature",
+      "after": "artifact",
+      "beforeImplementationSha256": "d6a3dbf932ef36a13f43041f7cccfb11f842ba0681cab4097001a3c5e1d709aa",
+      "afterImplementationSha256": "3376869c1ebfe4080cea7ce5d952205f0760c0ddf6bb43e022ef5bdcb8ae0c71"
+    },
+    {
+      "batch": "oracle-0073",
+      "compilerVersion": 6,
+      "name": "Desert's Due",
+      "oracleId": "909eacf3-05ce-4c2b-97a8-49b6ea597b64",
+      "subtype": "Desert",
+      "path": "/0/effects/1/multiplier/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "88715bb62d2318d17794aa3ee3acaa7fe91fcb9ba37885b81a54eda47134e011",
+      "afterImplementationSha256": "e93cc08e02981c5e37925df4eb73a475e7d552273051ae6a7ef7034e94798a33"
+    },
+    {
+      "batch": "oracle-0073",
+      "compilerVersion": 6,
+      "name": "Drill Too Deep",
+      "oracleId": "0413e0e4-c8f8-44c3-a749-c799766bc8cd",
+      "subtype": "Planet",
+      "path": "/0/modes/0/body/targets/0/alternatives/1/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "5f6d7f8a7ffe1b4f5676f987fd11f1018b32ec30eefa5ba09ed22c8c7f381341",
+      "afterImplementationSha256": "89bc356454113f6c1babb0f6de7cb3471eeefb3d5b24f674e641d238502a3afe"
+    },
+    {
+      "batch": "oracle-0075",
+      "compilerVersion": 6,
+      "name": "Failed Fording",
+      "oracleId": "fe4bbe82-1d6b-4f3d-8cc0-f6df22d9e9fb",
+      "subtype": "Desert",
+      "path": "/0/effects/1/condition/count/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "ae65e4bf11d1c9eca28dd95e19816145a499d6f4d991cb5639b4d4aa1145de16",
+      "afterImplementationSha256": "e8453f432b047265fd5839b70a52af27666b236a57c0cb7c5436a8038266cdc2"
+    },
+    {
+      "batch": "oracle-0076",
+      "compilerVersion": 6,
+      "name": "Gargantuan Leech",
+      "oracleId": "073f12d1-eaa1-4d08-bc1d-b216a3dc0c67",
+      "subtype": "Cave",
+      "path": "/0/multiplier/values/0/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "99aca44a765e7598f5f8a161e6c772691ea2ccae8aed8bd691b0ef520fd7de56",
+      "afterImplementationSha256": "a6b756b061dd4a89f792c047bc9e5e57248374b39423a3df3888a33abb257a89"
+    },
+    {
+      "batch": "oracle-0079",
+      "compilerVersion": 6,
+      "name": "Intelligence Bobblehead",
+      "oracleId": "16e6bd4b-fbf1-4bbe-9271-a74f59320e0d",
+      "subtype": "Bobblehead",
+      "path": "/1/effects/0/n/filters/0/what",
+      "before": "creature",
+      "after": "artifact",
+      "beforeImplementationSha256": "1b0850c8b6b40edc0cac2db8b0abbb81686c65e7d758897c77378dfe3613f98f",
+      "afterImplementationSha256": "413c3a9821f885875608e8a5631561f93a0bd3fb83601a6c91af721ce4713e27"
+    },
+    {
+      "batch": "oracle-0086",
+      "compilerVersion": 6,
+      "name": "Ramunap Hydra",
+      "oracleId": "a2dadaf5-eaa1-4c43-9e21-bb2334ceb918",
+      "subtype": "Desert",
+      "path": "/0/condition/count/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "09fab6841491476a8a75aff4c55a46121f703ec31f8384674ce3c639fb71ef8b",
+      "afterImplementationSha256": "e1f7dbdcf3459ff7eef4ff02b452575c09be275c43b42801167b3a26cfb4afc9"
+    },
+    {
+      "batch": "oracle-0091",
+      "compilerVersion": 6,
+      "name": "Strength Bobblehead",
+      "oracleId": "bd0e22d1-4789-406d-9293-3ade30365b32",
+      "subtype": "Bobblehead",
+      "path": "/1/effects/0/n/filters/0/what",
+      "before": "creature",
+      "after": "artifact",
+      "beforeImplementationSha256": "08a5d7966f78f701a409c9fe183b2240fb7ad0ba900b493e6406a0ca0f4cbbb4",
+      "afterImplementationSha256": "7153f1b3ccdb577a5dfa8390d6e840048b6c6e17d6744f6b3190fdf41ab48e59"
+    },
+    {
+      "batch": "oracle-0094",
+      "compilerVersion": 6,
+      "name": "Trenchpost",
+      "oracleId": "42f1ccb8-eda0-4828-ac07-82d4e950d7e1",
+      "subtype": "Locus",
+      "path": "/1/effects/0/n/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "2a259404eb12f06efacbc81fc6e6297232cba62feb35e5d2d5f17fe70f9c8bac",
+      "afterImplementationSha256": "a3783b9c15a4c70a647da429d255e78d3a05d1cd02c521c525839c88ef81d9c9"
+    },
+    {
+      "batch": "oracle-0101",
+      "compilerVersion": 7,
+      "name": "Colossal Rattlewurm",
+      "oracleId": "510659d6-69b4-4b04-8836-08b76213954e",
+      "subtype": "Desert",
+      "path": "/0/condition/count/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "e8282ff7b7a6fdb03bd1b8690509bece93c3d821f668ed1fa0d74363ddb8f70f",
+      "afterImplementationSha256": "31e822af0eea0dbb3993b0d5c70c263c208307b22cb8378cb3856de98b7ae6d4"
+    },
+    {
+      "batch": "oracle-0104",
+      "compilerVersion": 7,
+      "name": "Dune Diviner",
+      "oracleId": "4bf308fc-a54e-4fba-b0fd-3bedb4db3b18",
+      "subtype": "Desert",
+      "path": "/0/cost/tapFilter/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "fa1368379d4e23d52e84baf25c4fd7d2c99e022b036d515c0e3251fcb31f6577",
+      "afterImplementationSha256": "ab25741f34259dcafebcc502044259a177ea384741b1b9d2df34f3218960f593"
+    },
+    {
+      "batch": "oracle-0107",
+      "compilerVersion": 7,
+      "name": "Gilded Cerodon",
+      "oracleId": "93dd5f2e-aa13-4616-bfe6-466524b274ff",
+      "subtype": "Desert",
+      "path": "/0/condition/conditions/0/count/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "bbce223b9fc8b9429d66571b4388d05700e2079b9c6583a50d241cd4325227cc",
+      "afterImplementationSha256": "2a4db73edfda52826b3562b48dc97b49af3cc9598e2065d333a508e4af958cb6"
+    },
+    {
+      "batch": "oracle-0118",
+      "compilerVersion": 7,
+      "name": "Sand Strangler",
+      "oracleId": "c429716b-bd3a-4060-b8a3-82e3d6aecd88",
+      "subtype": "Desert",
+      "path": "/0/condition/conditions/0/count/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "84e9fada2aa288b856c0ad495808603366a07c8593fe0b529bda9956e2e76622",
+      "afterImplementationSha256": "c16b8921c72a8654fbf3eb69f72d5bd6df5191397c0b87de71228071df1043cf"
+    },
+    {
+      "batch": "oracle-0119",
+      "compilerVersion": 7,
+      "name": "Sidewinder Naga",
+      "oracleId": "92247856-35a4-4c1d-90bc-fa0d28524ecd",
+      "subtype": "Desert",
+      "path": "/0/condition/conditions/0/count/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "34e3e75880eacccbf6a4ce1f876f900f42dbc01fa83c303a9b380a61cf56d163",
+      "afterImplementationSha256": "d94fab04a959ae8ab6f28145f9d39e5e1b6bbcb521cc02ac46b50cc90d70c6ad"
+    },
+    {
+      "batch": "oracle-0120",
+      "compilerVersion": 7,
+      "name": "Solitary Camel",
+      "oracleId": "2eac0c6a-b289-4b75-9571-59869e62d180",
+      "subtype": "Desert",
+      "path": "/0/condition/conditions/0/count/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "1c89e6906e8fb4c3f7f6fa0a6d4f4e892b962e15676ba3afeff4c54303763845",
+      "afterImplementationSha256": "13bbdd9206cf58ac2f74f754a4d27e8487a40473481e6683fb9caa9efe8841f0"
+    },
+    {
+      "batch": "oracle-0123",
+      "compilerVersion": 7,
+      "name": "Travel the Overworld",
+      "oracleId": "61e3709e-7ecd-4a59-bca1-019d16795740",
+      "subtype": "Town",
+      "path": "/0/multiplier/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "77c6f53d424485a8438f06ac15f8966cdc5cbc047286a0ae47700acd5f2ccfd6",
+      "afterImplementationSha256": "79d50bfd3cc9dd201f75c338aeb821e84ec822c88561b431ebec6db20c292f2b"
+    },
+    {
+      "batch": "oracle-0125",
+      "compilerVersion": 7,
+      "name": "Wall of Forgotten Pharaohs",
+      "oracleId": "7ab15fcd-8371-4b3c-b534-e9ef44249213",
+      "subtype": "Desert",
+      "path": "/0/activationCondition/conditions/0/count/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "93f791b19c8e4eb2f2df2e367907f91d0503ea9acc716b25c4571f2f96588cfd",
+      "afterImplementationSha256": "5b186a2c5e63891868534600b560269b35f186e641d352273f93f8d939cb7c3f"
+    },
+    {
+      "batch": "oracle-0126",
+      "compilerVersion": 7,
+      "name": "Wretched Camel",
+      "oracleId": "525d1562-4fb6-4df3-ab6d-ab6a94c866e0",
+      "subtype": "Desert",
+      "path": "/0/condition/conditions/0/count/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "308c9c2d0415a7a7736f030f06705297b6015e6d30cc39e961e95b59f874a7da",
+      "afterImplementationSha256": "3d583e0fd06a496dc6f3b4210309e4a5fc0e10394225ade56a4e0b6d398a1aa1"
+    },
+    {
+      "batch": "oracle-0138",
+      "compilerVersion": 8,
+      "name": "Outcaster Greenblade",
+      "oracleId": "855a2579-8f78-46ce-a3a8-eddc808bd7b4",
+      "subtype": "Desert",
+      "path": "/1/multiplier/filters/0/what",
+      "before": "creature",
+      "after": "land",
+      "beforeImplementationSha256": "3bb4e17e4172260aef03d2fd30dd35f481feec3efa08ecd837ff316880bc7c3c",
+      "afterImplementationSha256": "e56894fdf50ddee4abfc79c13464c294f2790356641e1662c5338c3b44534271"
+    }
+  ],
+  "batches": [
+    {
+      "id": "oracle-0070",
+      "beforeReportSha256": "29d83339e3f554dd04ae424c1d707d4bfd6a042a29bd0bf0a7b9b0650e4e4f24",
+      "afterReportSha256": "280d5e540c9d29084a811c53b9643c286520672878c35d793f7549b1ba9deff7",
+      "beforeRuntimeSha256": "f99306d705a5ce7007f7cb524a3d98a2d92f1a01982a4ccb1b00fade9418e6c0",
+      "afterRuntimeSha256": "8b7c05161fe48524c91a29284ed7d7468c8ebcad195c16f8eb2ffbfdeb5a66e8",
+      "report": "reports/oracle-import/batch-0070.json",
+      "runtime": "src/oracle-batches/batch-0070.js"
+    },
+    {
+      "id": "oracle-0071",
+      "beforeReportSha256": "92d35537ad40041be63baf67bb2b3652a24677f1b7c35c6454de14d149b759eb",
+      "afterReportSha256": "d1361240b8408f5c02f3859e4bffe98bc7a9c15b922ab0ed10be50c0af26a0f6",
+      "beforeRuntimeSha256": "74a6b04064094ed0f02da9e3204d27ce1e3ff683731bd5db745070042c3b998e",
+      "afterRuntimeSha256": "989baf0d7ea3b1a44d6c3955ac10e8e2588c99fc98cf425f701a8860a0e3d3d4",
+      "report": "reports/oracle-import/batch-0071.json",
+      "runtime": "src/oracle-batches/batch-0071.js"
+    },
+    {
+      "id": "oracle-0073",
+      "beforeReportSha256": "0690fb6717f07e10fa174308521cf0194911f4c7ec5ed43a5842acc2222a10ba",
+      "afterReportSha256": "ba3910496d9214490572a991ddc96139be98d70054df1c8a9472184843bfcdd4",
+      "beforeRuntimeSha256": "581340bd180fcaf2c5293ad79454206776a60b811f127d316ec165430b19121e",
+      "afterRuntimeSha256": "3cdadcb68404853829366be44735a555f4c199dc292bba00b84b5615b70873e0",
+      "report": "reports/oracle-import/batch-0073.json",
+      "runtime": "src/oracle-batches/batch-0073.js"
+    },
+    {
+      "id": "oracle-0075",
+      "beforeReportSha256": "372dedc7d08d3ced17c9047f70c1639d347a06a68bb00ad12f50e43be047623a",
+      "afterReportSha256": "7822b248a0919ad05ff5772d79bd6260cc9a730317c8ab4ffbfa8bbfb743cceb",
+      "beforeRuntimeSha256": "95e62590111edb98e1706239ec7b676720f27b9f4fac468a35027e226bfdb65c",
+      "afterRuntimeSha256": "6ce87f1268dcd5f408f7a686a42cf359787bd220cb81a3a3fe4182f0169b6fa7",
+      "report": "reports/oracle-import/batch-0075.json",
+      "runtime": "src/oracle-batches/batch-0075.js"
+    },
+    {
+      "id": "oracle-0076",
+      "beforeReportSha256": "028249acf1e3125402d440ef823011448adf08a8ea242a5ff7304538d830e61e",
+      "afterReportSha256": "7d20e00f3bef728c8b7ef543b0ee9d1657eddcaaaf79eb5d2d4f352d0c9dfe49",
+      "beforeRuntimeSha256": "98932268d9c62c0b2b03ecac725d8e1e897c95ab935f92cd1e712b172e6ca5fd",
+      "afterRuntimeSha256": "c189d352c1e664a60a80f9db3d5aa8b419cc7c42946c2d393ea91e05f3594dff",
+      "report": "reports/oracle-import/batch-0076.json",
+      "runtime": "src/oracle-batches/batch-0076.js"
+    },
+    {
+      "id": "oracle-0079",
+      "beforeReportSha256": "69c7b0079102ae02752e3ea6de0f390fa64d98d2e4cb02c549504628ddec9489",
+      "afterReportSha256": "9ab00a56653af67c607d9fb9717c10ae083171397752aa12f9b8f7c3c2266003",
+      "beforeRuntimeSha256": "467cce0a77b31bb4e774bebaecf2ce40574c706a065e71ae79f30d2a164e2614",
+      "afterRuntimeSha256": "8e4035761005395988a169392da7ccb5691749cd6739db4983f804a0e6cb5613",
+      "report": "reports/oracle-import/batch-0079.json",
+      "runtime": "src/oracle-batches/batch-0079.js"
+    },
+    {
+      "id": "oracle-0086",
+      "beforeReportSha256": "10f2446544810f39ea1a5c9628f3cad5e7ad6c0ea96b77996adb2888c23e2d00",
+      "afterReportSha256": "145ddbd4694c4994cb29729ba29fba98b651891475711525cf99635889ab3df1",
+      "beforeRuntimeSha256": "93f40894b383685dd7acd1a44416ed45469bbd8f630a29b4a3444a82b5738642",
+      "afterRuntimeSha256": "2e76acabd74eb8e614403c5f2b7329c2e6b317c08309b336f63bed9c5674841e",
+      "report": "reports/oracle-import/batch-0086.json",
+      "runtime": "src/oracle-batches/batch-0086.js"
+    },
+    {
+      "id": "oracle-0091",
+      "beforeReportSha256": "8696c902c4adb52c985e69df9f4426708c99209660542077ee443a0889b273ab",
+      "afterReportSha256": "91a56ef690db4102a6bd9daeecab4407fda2ce4c3a7d8f33d194cd5829ab4b9b",
+      "beforeRuntimeSha256": "2ff2952857853875f4fd04c205a493efc472299ec5f5a60e8b608941a50d02bb",
+      "afterRuntimeSha256": "4cfc74a1d5af323ddfac5c351bdb24788e29d050f022478bd13f15e7b9da6288",
+      "report": "reports/oracle-import/batch-0091.json",
+      "runtime": "src/oracle-batches/batch-0091.js"
+    },
+    {
+      "id": "oracle-0094",
+      "beforeReportSha256": "ff41befb4fa2ed3118f07a92e588ea88547b3414a5fa89002828abc04357afec",
+      "afterReportSha256": "d4c540858b2db5a940252842838f326c26998ce7d9bb04f5e58e74c3331995fd",
+      "beforeRuntimeSha256": "21b62da8ae7a4258955353ae79c5347d7f445df8ff8481d241820332f5443d56",
+      "afterRuntimeSha256": "671a8a1ee04116e34ac984c77fea1eee0eca77288d0f7930fa270c1d6980da23",
+      "report": "reports/oracle-import/batch-0094.json",
+      "runtime": "src/oracle-batches/batch-0094.js"
+    },
+    {
+      "id": "oracle-0101",
+      "beforeReportSha256": "a30c21f5738b773d3043e5584ec4e5c723fdfbf8a5a49c7cae8176ea326a9e69",
+      "afterReportSha256": "4a48c48182b13179b34b91090ae38f4965ca57433cb81c898584b40f18708c89",
+      "beforeRuntimeSha256": "1dcf459a8d4392d5824c7b968524f681b18f658b9dfb6257d20b7a80364c6fa8",
+      "afterRuntimeSha256": "9fff653d637c6ef989a8545123da9152f468bd26f9f283f5bcd88f3675548eb9",
+      "report": "reports/oracle-import/batch-0101.json",
+      "runtime": "src/oracle-batches/batch-0101.js"
+    },
+    {
+      "id": "oracle-0104",
+      "beforeReportSha256": "9a88f47c13ff07da52846b16aaeebc4c9c27c3d9406525a39de40052ce83670f",
+      "afterReportSha256": "3d7e4dffe71b4f17c4b634b9b707069f3305a245c9d286d4dc4243f64baed391",
+      "beforeRuntimeSha256": "eebee62bbeaab109183b8555b0cfc3bf0d514687642559c621a5a9b0207c3f6e",
+      "afterRuntimeSha256": "8faf1cda81d124dd135b65b4efe439963e51be87c001f5e31ec765a0fd1a7827",
+      "report": "reports/oracle-import/batch-0104.json",
+      "runtime": "src/oracle-batches/batch-0104.js"
+    },
+    {
+      "id": "oracle-0107",
+      "beforeReportSha256": "e6b160bbfd62b1df1c308b2d8c94002c505acc6e68e97346f1565f6a345c221f",
+      "afterReportSha256": "4a0b9a853ca63855bfb0aad4bd6884d66a702774a172fec4185bd7463e65e0c6",
+      "beforeRuntimeSha256": "190ffc88c505c0c5ec0bf3d1af2459ca2780d15bdc09551bed4c610c9e7cbe4f",
+      "afterRuntimeSha256": "14448e89a937651af899fea8611b01a25eb5880969562827b82e93be6feb5c58",
+      "report": "reports/oracle-import/batch-0107.json",
+      "runtime": "src/oracle-batches/batch-0107.js"
+    },
+    {
+      "id": "oracle-0118",
+      "beforeReportSha256": "e697b9f674401dbc6f343512dfe058c314fdc3d1d2c6f73954ed281d404016fd",
+      "afterReportSha256": "fb9c8cda8bf948e93303218dc63011ef00528b4832912b353fe0237de7d0f305",
+      "beforeRuntimeSha256": "3934e725d6e57a924478e222706b6f37d1bba75e4559be77e226f731951fc8e9",
+      "afterRuntimeSha256": "9219c66cd6440511580a6a6457e06134e437891ea96a1d37975eefbbcee06ed2",
+      "report": "reports/oracle-import/batch-0118.json",
+      "runtime": "src/oracle-batches/batch-0118.js"
+    },
+    {
+      "id": "oracle-0119",
+      "beforeReportSha256": "efd7eb4d179ba590bba3c1adf1d59ddbba03114cd101df15045672df7275c762",
+      "afterReportSha256": "17fd7631d44373bdfc12a42ca586a6c5d254d118f510e320c32e736872e4177f",
+      "beforeRuntimeSha256": "deafaa5fdd2df71d63ed9527ddae52bf14f47d5a5808ff77765f413dfb8dbe31",
+      "afterRuntimeSha256": "5623b2ab106c8d6c587f85b8e7cc82611e493637c7c2c2f0d3f5a8b093bf9f08",
+      "report": "reports/oracle-import/batch-0119.json",
+      "runtime": "src/oracle-batches/batch-0119.js"
+    },
+    {
+      "id": "oracle-0120",
+      "beforeReportSha256": "416712966b92784f34ddd8c294ead7b5be73aee0d49f893c2c2fd7273ef2e6a2",
+      "afterReportSha256": "4da938bc92f7637cf824adeef4d7aa8273c13d6c25c8564ebd4aba340cca555f",
+      "beforeRuntimeSha256": "bbf43774c4f58053b7d56d18bb83c9bcb9ef95ce1ff2acff9f568d313885c264",
+      "afterRuntimeSha256": "db8a38fd23b4ee8f801600eff7ee4710c3d3c480ed9bad51c76d0b7f5596a8c7",
+      "report": "reports/oracle-import/batch-0120.json",
+      "runtime": "src/oracle-batches/batch-0120.js"
+    },
+    {
+      "id": "oracle-0123",
+      "beforeReportSha256": "f5eb77309241690c8aa9500c720140ecd06a1bdbf81830c374ab826227573eb2",
+      "afterReportSha256": "fa426f568d12b3dcad8a460f67651a355df13b1a48f21b2081ebc483b82ed5d0",
+      "beforeRuntimeSha256": "52c39b7a28de97f4c1b53fc9b35a4d5c616a7a92ae51298eb4f574ee56e34d41",
+      "afterRuntimeSha256": "dfa64f246b4c652e015a1743979952eeef295a2c5d4aa90689eb2cc150ce0093",
+      "report": "reports/oracle-import/batch-0123.json",
+      "runtime": "src/oracle-batches/batch-0123.js"
+    },
+    {
+      "id": "oracle-0125",
+      "beforeReportSha256": "fb3b6c41307428f6b80a3df19965276ac9374cc7c30b7101a974197cd9b5fdbe",
+      "afterReportSha256": "ba37185f993dde5651de1a4184113aa22d7233eea1ff241d9b93d4880e856936",
+      "beforeRuntimeSha256": "1da732aa577f525023f2ebc358bd61e14ace636d507441145210557d37de3ba3",
+      "afterRuntimeSha256": "327a9598a7174b5e689cea6fdb1ca833ce2fd52f7699aa67091481a43755cba2",
+      "report": "reports/oracle-import/batch-0125.json",
+      "runtime": "src/oracle-batches/batch-0125.js"
+    },
+    {
+      "id": "oracle-0126",
+      "beforeReportSha256": "ec65a2907a467c657827100831b746ec7d1ad061fe04d06863c36740fa8c5657",
+      "afterReportSha256": "3148859b52e65eddc1c5f12dd13f91e510e0c109355aa66d1aa5f94bf3193f40",
+      "beforeRuntimeSha256": "cab223eaf91cee4b1985a9d9ec7996dabcd44afaa171dd8e797f069de5f28af6",
+      "afterRuntimeSha256": "394a09ed73b08b3186b6c18fc53571330bc587407c5522fb965eb14166d7e0d6",
+      "report": "reports/oracle-import/batch-0126.json",
+      "runtime": "src/oracle-batches/batch-0126.js"
+    },
+    {
+      "id": "oracle-0138",
+      "beforeReportSha256": "9a43d6ebfd6301eb5f598376e427bac576da27a85a4ea8cea63a04df6ef138fa",
+      "afterReportSha256": "2808d3225b8ce4ebcfddb763e840eea72e6636c42906829b42cd2b79c24d7565",
+      "beforeRuntimeSha256": "80d0139f62c402e40e74be08ae65ab708fc5b6213bba0beb7bb0b482dbb9295e",
+      "afterRuntimeSha256": "ff56138ee37abe41d8b72e6d64a60b4274154fb828a1b2b5a90365b17a1f9c41",
+      "report": "reports/oracle-import/batch-0138.json",
+      "runtime": "src/oracle-batches/batch-0138.js"
+    }
+  ]
+}
