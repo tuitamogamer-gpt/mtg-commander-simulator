@@ -21,6 +21,7 @@ await context.addInitScript(() => {
 });
 const page = await context.newPage();
 page.on('pageerror', error => errors.push(error.message));
+page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
 page.on('response', response => { if (response.status() >= 400) requests.push({ status: response.status(), url: response.url() }); });
 const shot = name => page.screenshot({ path: `${out}/${name}.png` });
 const state = () => page.evaluate(() => MTG.renderGameState());
@@ -38,6 +39,7 @@ try {
   assert.equal((await state()).deckView, 'gallery');
   assert.equal(await page.locator('.setupright').isVisible(), false);
   assert.equal(await page.locator('.deckcard').first().evaluate(node => getComputedStyle(node).display), 'flex');
+  await page.waitForFunction(() => [...document.querySelectorAll('.deckart')].slice(0, 3).every(img => img.complete && img.naturalWidth > 0));
   await shot('desktop-gallery');
   await page.locator('[data-deck-view="compact"]').click();
   assert.equal((await state()).deckView, 'compact');
@@ -84,8 +86,14 @@ try {
   for (const [width, height] of [[320, 740], [390, 844], [820, 1180], [1280, 720], [1900, 950]]) {
     await page.setViewportSize({ width, height });
     await noOverflow(`deck explorer ${width}`);
+    const dock = await page.locator('.setupmobilebar').evaluate(bar => {
+      const rect = bar.getBoundingClientRect(), art = bar.querySelector('img').getBoundingClientRect();
+      return { height: rect.height, left: rect.left, right: rect.right, bottom: rect.bottom, imageHeight: art.height, zoom: Number(getComputedStyle(document.body).zoom) || 1 };
+    });
+    assert.ok(dock.height <= 100 * dock.zoom && dock.imageHeight <= 52 * dock.zoom, `selected deck stays a compact dock at ${width}: ${JSON.stringify(dock)}`);
+    assert.ok(dock.left >= 0 && dock.right <= width + 1 && dock.bottom <= height + 1, `selected deck dock fits ${width}`);
     await shot(`setup-${width}`);
-    await page.locator('[data-step="pod"]').click();
+    await page.locator('.setupmobilebar button').click();
     await noOverflow(`pod ${width}`);
     await page.locator('.setupnext').scrollIntoViewIfNeeded();
     await page.locator('.setupnext').click();
