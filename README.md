@@ -6,7 +6,7 @@ A browser Commander table with local AI opponents, private multiplayer, animated
 
 ![Commander Simulator Command Table interface](assets/menu/command-table-preview.jpg)
 
-**Explore:** [Game modes](#what-you-can-play) · [Precons and commander videos](#27-precon-decks-and-commander-video-animations) · [First game](#your-first-game) · [Deck import](#import-your-deck) · [AI and Command Zone styles](#ai-archetypes-and-custom-skills) · [Diplomacy & Politics](#diplomacy--politics) · [Run locally](#run-locally) · [Hosting and Live](#vercel-and-multiplayer) · [Saves and help](#saves-privacy-and-troubleshooting) · [Current limits](#current-limits)
+**Explore:** [Game modes](#what-you-can-play) · [Precons and commander videos](#27-precon-decks-and-commander-video-animations) · [First game](#your-first-game) · [Automatic and manual mana](#automatic-and-manual-mana) · [Deck import](#import-your-deck) · [AI and Command Zone styles](#ai-archetypes-and-custom-skills) · [Diplomacy & Politics](#diplomacy--politics) · [Judge and recovery](#judge-and-last-resort-recovery) · [Run locally](#run-locally) · [Hosting and Live](#vercel-and-multiplayer) · [Saves and help](#saves-privacy-and-troubleshooting) · [Current limits](#current-limits)
 
 ## What you can play
 
@@ -74,9 +74,32 @@ The built-in library contains **27 precon decks, each with 100 cards and command
 4. Keep or mulligan your opening hand. Use the available action buttons to play lands, cast spells, activate abilities, and pass priority.
 5. **HOLD** arms a stop at the next priority window; **Proceed** advances a presented action or review. Important spells and combat decisions wait for your input. Click controls remain available alongside optional drag controls.
 
-The arena includes card inspection, searchable zones, a game log, combat assignments, priority settings, and desktop/mobile table views. Optional Last Resort/Judge controls and Politics house rules are explained in the game; their use can change a match beyond ordinary automated rules handling.
+The arena includes card inspection, searchable zones, a game log, combat assignments, priority settings, and desktop/mobile table views. [Judge and Last Resort](#judge-and-last-resort-recovery) provide manual actions and emergency state corrections when you need to repair a game; [Politics](#diplomacy--politics) adds optional enforced negotiations.
 
 Solo players and Live hosts use the **Command Table** interface. **Table** shows the opponents together; **Focus** gives a selected opponent more room. The decision panel keeps the current action visible, and target/combat choices reveal the relevant players. Live guests use the separate remote player view. The landing-page Table/Focus preview shows screenshots of the interface; it does not start a game.
+
+## Automatic and manual mana
+
+The arena's **MANA** button switches between automatic payment and choosing your mana sources manually. **Automatic** is the default; the preference is saved in your current browser. The toggle is part of the full Solo/Live-host arena; remote Live guests currently use automatic payment through their separate decision interface.
+
+| Mode | How payment works |
+| --- | --- |
+| **Automatic mana** | Choose your spell and its required decisions. The payment solver uses available pool mana and selects a legal combination of sources, accounting for colors, restrictions, and activation costs. You do not need to pre-tap each land. |
+| **Manual mana** | When your spell needs additional sources, a **Choose mana sources** dialog opens with a suggested selection. Choose the exact lands, mana rocks, Treasure, or eligible convoke/improvise sources you want to commit, then confirm. |
+
+### Choose sources manually
+
+1. Click **MANA** to enable manual mode, then choose the spell you want to cast.
+2. Complete any required spell choices, such as X, an alternative payment, or targets.
+3. In the mana-source dialog, review the displayed cost and the mana already in your pool. Pool mana is spent before the selected permanents are used for the remainder.
+4. Click source rows to select or deselect them. **Tap selected sources ✓** becomes available when that exact selection can pay the cost. The solver still handles valid color allocation and source activation; selecting a permanent does not waive its restrictions or costs.
+5. Confirm the selection, or choose **Use automatic mana this time** to let the solver handle this payment without changing your saved manual-mode preference.
+
+For example, to pay **{2}{G}** while keeping an Island available for interaction, select an untapped Forest and Sol Ring when those sources are legal and sufficient. If the selection cannot pay, adjust it or use the one-payment automatic option. A matching total alone is not enough: colored pips, required colorless mana, source restrictions, and activation requirements still apply.
+
+The source picker is for **human spell payments that need additional sources**. It does not open when the pool already covers the cost, and the toggle does not add the same picker to every activated-ability payment. Cards that expose a separate **Mana: …** action can still use it through their available actions; there is no general Undo/Clear-mana button. Floating mana is shown beside the player's information and normally empties when leaving the current step or phase, except where a card preserves it.
+
+**Automatic mana is separate from automatic priority passing.** It pays for an action you chose; it does not choose your spell, dismiss required decisions, or disable **HOLD**. Hybrid, two-brid, and Phyrexian symbols can still ask you how to pay when multiple legal options exist—for example **Pay {W}**, **Pay {2}**, or **Pay 2 life**—in either mana mode. Use **MENU → Priority stops** to configure response windows independently.
 
 ## Import your deck
 
@@ -177,6 +200,39 @@ The Politics panel separates **Awaiting your decision**, **Active agreements**, 
 Ordinary agreements are short and specific. There are no permanent alliances, secret-vote bargains, open-ended favors, or promises to concede. The engine rejects conflicting or one-sided commitments, restricts buying protection for a runaway leader, and limits simultaneous combat-immunity agreements. The displayed **Reciprocity Check** is an estimate of benefit, cost, and promise scope, not a currency or a reward paid to a player.
 
 Accepted terms constrain voluntary attacks and harmful target choices. Mandatory Magic actions can override an impossible promise without blame, and terms expire or become void when their conditions no longer apply. A no-targeting deal does not stop a nontargeted board wipe merely because it would affect a protected permanent. **Politics is an optional house-rule layer**; leave it off for games without enforced negotiation contracts or campaign tie-breaks. Printed voting mechanics on supported cards still work with Politics off.
+
+## Judge and Last Resort recovery
+
+The game includes tools for **manual card actions and extensive public-board correction** when an effect needs handling or the game reaches the wrong state. Open **MENU → Help & recovery** in the full arena. **Judge** provides manual actions through the rules engine; **Last Resort** pauses the game and lets you set the intended public state directly.
+
+### Judge: perform card actions manually
+
+The **Judge → Manual card actions** menu entry appears for an imported/custom deck or a pending manual card resolution. It is usable during your main decision or that manual resolution. A precon player needing emergency corrections can use **Last Resort** even when the separate Judge entry is absent.
+
+The Judge toolbox lets you draw a card, deal damage, destroy or exile a target, return a card to hand, add +1/+1 counters, apply a temporary power/toughness adjustment, tap or untap, gain or lose life, add mana, return one of your graveyard cards to the battlefield, and create preset or simple custom creature tokens. Choose an action, enter its amount when prompted, then select the player or card it affects.
+
+For a **manual card resolution**, the panel shows the card's instructions. Apply the intended effects, then use **Done** in the resolution controls to continue. Actions such as damage, destruction, life changes, and token creation use the normal engine helpers, so applicable prevention, replacement effects, and triggered abilities can matter. This tool does not make an unsupported decklist pass the import validator.
+
+### Last Resort: repair the board and resume
+
+Use **MENU → Last Resort → Enable & pause game** for a direct correction. The engine pauses at its next safe checkpoint while you use the toolbox. Select **EDIT PLAYER** for player-level changes, then choose a visible card when a correction needs a target.
+
+| Correction | What you can change in the full toolbox |
+| --- | --- |
+| **Life and mana** | Set a player's exact life total or the exact amount of one mana color in their pool. |
+| **Counters and damage** | Set a named counter's amount on a permanent, or set its marked damage separately. Marked damage does not reduce printed toughness. |
+| **Tap state and control** | Tap/untap a battlefield card or give control of it to the selected player. |
+| **Zones** | Move an accessible card among battlefield, graveyard, exile, command zone, and its owner's hand. Public-zone browsers help you select the card. |
+| **Tokens and permanents** | Add preset tokens, a simple custom P/T token with a supported keyword, or a known permanent by exact card name to the selected player's battlefield. |
+| **Battlefield order** | Move a card left or right among its controller's battlefield cards. |
+
+For example, if an effect left the wrong life total, a missing token, or a permanent under the wrong controller, pause recovery, set the life total, add the intended token, and correct the controller. **Last Resort edits do not fire normal card triggers**: they repair the resulting state, so adding a missing token does not automatically replay the triggers that would have accompanied its original creation. Each correction is recorded in the public game log.
+
+**Close toolbox · keep paused** hides the controls while preserving the recovery pause. When the board is correct, choose **Finish recovery & resume**. Closing the toolbox alone does not resume the game.
+
+Last Resort is also available in **Commander Live**. The host has the full arena toolbox; remote guests have a compact **LAST RESORT / FINISH RECOVERY** panel for public corrections. Guest requests go to the host for validation and synchronization, and the table sees the resulting log. The remote panel has fewer controls than the full host toolbox.
+
+Recovery preserves hidden-information boundaries: it does not reveal opponents' hands, libraries, or face-down identities, and it is not a library editor or a rewind to an earlier turn. It changes the listed game state rather than implementing new card abilities or repairing the underlying source code. If you encounter a reproducible problem, also keep a share-safe debug snapshot for the [bug report](https://github.com/tuitamogamer-gpt/mtg-commander-simulator/issues).
 
 ## Run locally
 
