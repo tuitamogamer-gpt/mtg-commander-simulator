@@ -10,6 +10,96 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (text !== undefined) item.textContent = text;
     return item;
   };
+  U.UI.prototype.applyArenaBackground = function (root = document.querySelector('#game')) {
+    if (!root) return;
+    const preset = U.ARENA_BACKGROUNDS.find(item => item.id === this.arenaBackground) || U.ARENA_BACKGROUNDS[0];
+    root.dataset.arenaBackground = preset.id;
+    root.style.setProperty('--arena-shade', String(U.normalizeArenaDim(this.arenaDim) / 100));
+  };
+  U.UI.prototype.renderArenaBackgrounds = function () {
+    const ui = this, overlay = node('div', 'quickmenuov arenabackgroundov');
+    const panel = node('section', 'quickmenu arenabackgroundpicker');
+    const head = node('header', 'quickmenuhead');
+    const heading = node('div', '');
+    heading.append(node('span', '', 'Make it your table'), node('h2', '', 'Arena background'));
+    const close = node('button', 'quickmenuclose', '×');
+    close.type = 'button'; close.setAttribute('aria-label', 'Close arena backgrounds');
+    const dismiss = () => {
+      ui.quickMenuOpen = false; ui.render();
+      document.querySelector('.menubutton')?.focus({ preventScroll: true });
+    };
+    close.onclick = dismiss;
+    head.append(heading, close);
+    const body = node('div', 'arenabackgroundbody');
+    const preview = node('div', 'arenabackgroundpreview');
+    const caption = node('div', 'arenabackgroundcaption');
+    const name = node('b', ''), detail = node('span', '');
+    caption.append(name, detail); preview.appendChild(caption); body.appendChild(preview);
+    const status = node('div', 'arenabackgroundstatus', 'Applied immediately · saved on this device');
+    status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
+    const selectPreset = id => {
+      ui.arenaBackground = id;
+      const saved = U.savePlayerPreferences({ arenaBackground: id, arenaDim: ui.arenaDim });
+      ui.applyArenaBackground();
+      update();
+      status.textContent = saved ? `${name.textContent} applied · saved on this device` : `${name.textContent} applied for this session · device storage is unavailable`;
+    };
+    for (const group of ['Mana colors', 'Scenes']) {
+      const section = node('section', 'arenabackgroundsection');
+      const label = node('h3', '', group); label.id = group === 'Scenes' ? 'arena-scenes-label' : 'arena-colors-label';
+      const grid = node('div', `arenabackgroundgrid ${group === 'Scenes' ? 'scenes' : 'colors'}`);
+      grid.setAttribute('role', 'group'); grid.setAttribute('aria-labelledby', label.id);
+      for (const preset of U.ARENA_BACKGROUNDS.filter(item => item.group === group)) {
+        const button = node('button', 'arenabackgroundchoice');
+        button.type = 'button'; button.dataset.arenaBackground = preset.id;
+        button.setAttribute('aria-label', `${preset.label} background`);
+        const art = node('span', 'arenabackgroundart'); art.setAttribute('aria-hidden', 'true');
+        if (preset.mana) {
+          const mana = node('img', ''); mana.src = `./assets/mana/${preset.mana}.svg`; mana.alt = ''; art.appendChild(mana);
+        }
+        const selected = node('span', 'arenabackgroundcheck', '✓'); selected.setAttribute('aria-hidden', 'true');
+        button.append(art, node('span', 'arenabackgroundlabel', preset.label), selected);
+        button.onclick = () => selectPreset(preset.id);
+        grid.appendChild(button);
+      }
+      section.append(label, grid); body.appendChild(section);
+    }
+    const dimmer = node('div', 'arenabackgrounddimmer');
+    const dimLabel = node('label', '', 'Dim background'); dimLabel.htmlFor = 'arena-background-dim';
+    const dimValue = node('output', ''); dimValue.htmlFor = 'arena-background-dim';
+    const input = node('input', ''); input.id = 'arena-background-dim'; input.type = 'range';
+    input.min = '0'; input.max = '75'; input.step = '5'; input.value = String(ui.arenaDim);
+    input.oninput = () => {
+      ui.arenaDim = U.normalizeArenaDim(Number(input.value));
+      const saved = U.savePlayerPreferences({ arenaBackground: ui.arenaBackground, arenaDim: ui.arenaDim });
+      ui.applyArenaBackground(); update();
+      status.textContent = saved ? 'Applied immediately · saved on this device' : 'Applied for this session · device storage is unavailable';
+    };
+    dimmer.append(dimLabel, dimValue, input); body.appendChild(dimmer);
+    const foot = node('footer', 'arenabackgroundfooter');
+    const back = node('button', 'pbtn arenabackgroundback', '← Arena controls'); back.type = 'button';
+    back.onclick = () => { ui.quickMenuOpen = true; ui.render(); document.querySelector('.arenabackgroundopen')?.focus({ preventScroll: true }); };
+    const done = node('button', 'pbtn primary arenabackgrounddone', 'Done'); done.type = 'button'; done.onclick = dismiss;
+    foot.append(back, done);
+    body.append(status); panel.append(head, body, foot); overlay.appendChild(panel);
+    overlay.onclick = event => { if (event.target === overlay) dismiss(); };
+    panel.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); dismiss(); }
+    });
+    function update() {
+      const preset = U.ARENA_BACKGROUNDS.find(item => item.id === ui.arenaBackground) || U.ARENA_BACKGROUNDS[0];
+      preview.dataset.arenaBackground = preset.id;
+      preview.style.setProperty('--arena-shade', String(ui.arenaDim / 100));
+      name.textContent = preset.label; detail.textContent = preset.detail;
+      dimValue.textContent = `${ui.arenaDim}%`;
+      input.setAttribute('aria-valuetext', `${ui.arenaDim}% dimmed`);
+      panel.querySelectorAll('.arenabackgroundchoice').forEach(button => {
+        button.setAttribute('aria-pressed', String(button.dataset.arenaBackground === preset.id));
+      });
+    }
+    update();
+    return overlay;
+  };
   U.UI.prototype.openCommandPalette = function () {
     if (this.commandPaletteOpen || this.fatalError) return;
     this.commandPaletteOpen = true;
@@ -58,6 +148,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     overlay.onclick = event => { if (event.target === overlay) dismiss(); };
     const commands = [
       ['Arena settings', 'Display, pacing, and accessibility', () => { ui.quickMenuOpen = true; ui.render(); }],
+      ['Arena background', 'Mana colors, scenes, and brightness', () => { ui.quickMenuOpen = 'backgrounds'; ui.render(); }],
       ['Game log', 'Review every public event', () => ui.openUtility('log')],
       ['Stack and table', 'Stack, commander damage, and threat', () => ui.openUtility('table')],
       ['Priority stops', 'Choose when the game waits for you', () => { ui.showStops = true; ui.render(); }],

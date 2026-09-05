@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<defs>
+<linearGradient id="sky" x2="0" y2="1"><stop stop-color="#091923"/><stop offset=".58" stop-color="#315854"/><stop offset="1" stop-color="#0a2526"/></linearGradient>
+<radialGradient id="moon"><stop stop-color="#e8f0c8" stop-opacity=".68"/><stop offset=".25" stop-color="#b3d9bd" stop-opacity=".17"/><stop offset="1" stop-color="#b3d9bd" stop-opacity="0"/></radialGradient>
+<linearGradient id="path" x1=".4" y1="0" x2=".6" y2="1"><stop stop-color="#afc8a8" stop-opacity=".12"/><stop offset="1" stop-color="#76a69b" stop-opacity=".44"/></linearGradient>
+<filter id="soft"><feGaussianBlur stdDeviation="24"/></filter>
+</defs>
+<path fill="url(#sky)" d="M0 0h1920v1080H0z"/>
+<circle cx="1210" cy="215" r="370" fill="url(#moon)"/><circle cx="1210" cy="215" r="52" fill="#d7e7c8" opacity=".88"/>
+<path d="M0 510 190 324 384 465 591 354 825 502 1078 411 1270 478 1440 354 1723 447 1920 365V1080H0Z" fill="#153434"/>
+<g fill="#244942" stroke="#355b51" stroke-width="3"><path d="M665 666V356h54v310m-65-310v-26h78v26m-82 310v22h85v-22M839 650V404h48v246m-55-246v-22h62v22m-65 246v18h70v-18M679 330v-29l173 57v24l-173-52"/><path d="M1100 673V447h47v226m-54-226v-22h61v22m-64 226v18h70v-18M1147 425l98-34v28l-98 28"/></g>
+<path d="M0 719Q286 586 545 692T1075 689T1560 657T1920 702V1080H0Z" fill="#0d2928"/>
+<path d="M963 658c-190 58 259 118 59 202s-199 119-118 220h404c-330-164 21-183-149-272s-219-102-196-150Z" fill="url(#path)"/>
+<g fill="#091e20"><path d="M0 0h151l45 237 63 216-8 265 85 362H0V0m178 327 115-123 142-64-106 101-119 207m-56-288 246-77 86-76-95 117-221 105"/><path d="M1721 0h199v1080h-301l92-342-18-283 62-225m-39 230-164-145-178-13 161-22 191 91m-7-215-183-87-59-64 97 47 178 35"/></g>
+<g fill="#14322d"><ellipse cx="307" cy="85" rx="320" ry="105"/><ellipse cx="1790" cy="140" rx="240" ry="128"/><ellipse cx="120" cy="164" rx="156" ry="102"/></g>
+<ellipse cx="1010" cy="748" rx="610" ry="22" fill="#91b9a5" opacity=".18" filter="url(#soft)"/>
+<g fill="#a6d4ac" opacity=".6"><circle cx="607" cy="616" r="2"/><circle cx="1287" cy="565" r="3"/><circle cx="399" cy="810" r="2"/><circle cx="1396" cy="794" r="2"/><circle cx="779" cy="796" r="3"/><circle cx="1161" cy="707" r="2"/></g>
+<path d="m0 971 153-87 153 35 96 161H0m1399 109 81-150 169 5 173-90 98 66v169" fill="#07191b"/>
+</svg>

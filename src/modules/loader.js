@@ -68,7 +68,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   //   Doctor's companion         – + bilo koji legendarni Doctor
   MTG.cmdTag = function (def) {
     const o = (def && def.oracle) || '';
-    const sub = (def && def.subtypes) || [];
+    const sub = MTG.normalizeSubtypes((def && def.subtypes) || []);
     const sup = (def && def.super) || [];
     const types = (def && def.types) || [];
     const t = { kind: null, label: null, with: null };
@@ -84,7 +84,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Doctor among its subtypes: it must be a Time Lord Doctor creature with
     // no additional creature types.
     t.isDoctor = sup.indexOf('Legendary') >= 0 && types.indexOf('Creature') >= 0 &&
-      sub.length === 3 && sub.indexOf('Time') >= 0 && sub.indexOf('Lord') >= 0 && sub.indexOf('Doctor') >= 0;
+      sub.length === 2 && sub.indexOf('Time Lord') >= 0 && sub.indexOf('Doctor') >= 0 &&
+      !def.changeling && !(def.kws || []).includes('changeling');
     return t;
   };
 

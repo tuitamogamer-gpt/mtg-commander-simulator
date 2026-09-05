@@ -6,16 +6,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
 
-  // Shockland-style entry choices are replacement effects, so the land is
-  // already on the battlefield (temporarily untapped) while the controller is
-  // deciding.  Compare the exact legal spell/ability windows with and without
-  // that source rather than paying life merely because the first option says
-  // "pay".  The probe is synchronous and restores the permanent before the
-  // rules engine continues resolving the entry replacement.
+  // During an entry replacement the incoming land is structurally inserted,
+  // but is not available for real payments yet. Compare the future legal
+  // spell/ability windows after it enters tapped or untapped. The hypothetical
+  // battlefield view and characteristics are restored before the choice ends.
   function untappedLandOpportunity(g, p, card) {
     if (!g || !p || !card || card.zone !== 'battlefield' || card.ctrl !== p || !card.def.mana) return false;
     const originalTapped = !!card.tapped;
     const originalCur = card.cur;
+    const originalEntrySnapshot = g._battlefieldEntryReplacementSnapshot;
     // handleETB deliberately runs before the normal post-move recalc. Supply
     // only the printed characteristics needed by legality probes; this object
     // never escapes the synchronous comparison below.
@@ -67,6 +66,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
 
     try {
+      if(g._entryReplacementPhase && originalEntrySnapshot && !originalEntrySnapshot.includes(card)) {
+        // Include only this entrant. Other simultaneous entrants still await
+        // their replacement choices and cannot finance this land's payment.
+        g._battlefieldEntryReplacementSnapshot = [...originalEntrySnapshot,card];
+      }
       card.tapped = false;
       const untapped = legalWindow();
       card.tapped = true;
@@ -82,6 +86,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } finally {
       card.tapped = originalTapped;
       card.cur = originalCur;
+      g._battlefieldEntryReplacementSnapshot = originalEntrySnapshot;
     }
   }
 

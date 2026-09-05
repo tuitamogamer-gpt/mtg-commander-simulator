@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import fs from 'node:fs';
 import { collectReservedOracleCards, createImportPlan, moduleSource } from '../scripts/import-oracle-batch.mjs';
 import { parseProvenanceArgs, verifyOracleBatchProvenance } from '../scripts/verify-oracle-batch-provenance.mjs';
 
@@ -185,4 +186,30 @@ test('read-only CLI requires a pinned digest, exact cohort and known options, wi
     [...args, '--first=27.5'], [...args, '--first=47'], [...args, '--expected-cards=1999'],
     [...args, args[0]], ['--source-file=/tmp/pinned.jsonl.gz', '--source-sha256=invalid'],
   ]) assert.throws(() => parseProvenanceArgs(invalid));
+});
+
+test('Time Lord compatibility is explicit, source-bound, and preserves strict frozen bytes and every unrelated field', () => {
+  const historic = JSON.parse(fs.readFileSync(new URL('../reports/oracle-import/batch-0144.json', import.meta.url))).cards.find(row => row.raw.name === 'Time Lord Regeneration');
+  const card = sourceCard(historic.raw.name, {
+    oracle_text: historic.raw.oracle, type_line: historic.catalog.typeLine,
+    mana_cost: historic.raw.cost, power: undefined, toughness: undefined,
+    colors: ['U'], color_identity: ['U'],
+  });
+  const plan = createImportPlan({cards:[card],bulk:BULK,baseNames:new Set(),limit:1,sequence:27});
+  assert.equal(plan.report.cards[0].implementation[0].targets[0].subtype,'Time Lord');
+  const report = structuredClone(plan.report);
+  report.cards[0].implementation = JSON.parse(JSON.stringify(report.cards[0].implementation).replaceAll('"subtype":"Time Lord"','"subtype":"Lord"'));
+  const input = {sourceCards:[card],bulk:{...BULK},reports:[report],manualReports:[],state:plan.nextState,legacyCards:{},
+    runtimeSources:new Map([[report.id,moduleSource(report)]]),appSource:"import './oracle-batches/batch-0027.js';",
+    first:27,last:27,batchSize:1,expectedCards:1};
+  const before=structuredClone(input),result=verifyOracleBatchProvenance(input);
+  assert.deepEqual(result.semanticCompatibilityNormalizations,[{batch:report.id,name:card.name,oracleId:card.oracle_id,kind:'Time Lord single subtype'}]);
+  assert.deepEqual(input,before);
+  const changed=structuredClone(input);
+  changed.reports[0].cards[0].implementation[0].targets[0].controller='any';
+  changed.runtimeSources.set(report.id,moduleSource(changed.reports[0]));
+  assert.throws(()=>verifyOracleBatchProvenance(changed),/full normalized source\/compiler row/);
+  const wrongBytes=structuredClone(input);
+  wrongBytes.runtimeSources.set(report.id,wrongBytes.runtimeSources.get(report.id)+'\n');
+  assert.throws(()=>verifyOracleBatchProvenance(wrongBytes),/byte parity/);
 });

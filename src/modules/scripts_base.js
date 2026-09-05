@@ -526,6 +526,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
   }
 
+  // Older pinned exports split the only multiword creature subtype. Keep
+  // those source records intact and canonicalize their runtime definitions.
+  MTG.normalizeSubtypes = function (subtypes = []) {
+    const canonical = [];
+    for (let i = 0; i < subtypes.length; i++) {
+      if (subtypes[i] === 'Time' && subtypes[i + 1] === 'Lord') { canonical.push('Time Lord'); i++; }
+      else canonical.push(subtypes[i]);
+    }
+    return canonical;
+  };
+
   MTG.buildDefs = function (rawCards, scripts, options = {}) {
     // Skup stvarnih tipova stvorenja iz baze — koristi ga CardInst.hasSub da
     // "svaki tip stvorenja" (changeling, Maskwood Nexus) ne obuhvati i
@@ -537,7 +548,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const collectSubtypes = (definition, includeKindred = false) => {
         const t = definition.types || [];
         const isCre = t.includes('Creature') || includeKindred && (t.includes('Kindred') || t.includes('Tribal'));
-        for (const s of definition.subtypes || []) (isCre ? creature : other).add(s);
+        for (const s of MTG.normalizeSubtypes(definition.subtypes)) (isCre ? creature : other).add(s);
       };
       for (const raw of Object.values(rawCards)) collectSubtypes(raw, true);
       for (const script of Object.values(scripts || {})) {
@@ -565,6 +576,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // The two faces already passed this loader independently. Applying
         // keyword-derived triggers again would give the front extra Prowess.
         defs[name] = Object.assign({}, raw, scripts[name]);
+        defs[name].subtypes = MTG.normalizeSubtypes(defs[name].subtypes);
         continue;
       }
       const d = Object.assign({}, raw);
@@ -614,6 +626,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           else d[k] = v;
         }
       }
+      d.subtypes = MTG.normalizeSubtypes(d.subtypes);
       d.kws = [...new Set(d.kws)];
       nameOracleAbilities(d);
       // prowess as trigger

@@ -171,6 +171,23 @@ export function paymentLibraryEffect(card, line, helpers = {}) {
 }
 
 export function extensionEffect(card, line, helpers = {}) {
+  // These complete clauses bind X to a source stat or graveyard count, not
+  // the spell's paid X. Preserve their established executable AST while the
+  // general library parser remains fail-closed for unbound selection filters.
+  const localX = /^(Look at|Reveal) the top X cards of your library, where X is (its power|its toughness|the number of creature cards in your graveyard)\. You may put a (green )?permanent card with mana value X or less from among them onto the battlefield\. Put the rest on the bottom of your library in a random order\.$/i.exec(line);
+  if (localX) {
+    const binding = localX[2].toLowerCase();
+    const value = binding.startsWith('its ') ? {kind:'source-stat',stat:binding.slice(4)} :
+      {kind:'count',zone:'graveyard',what:'creature',controller:'you'};
+    return {targets:[],optional:false,effects:[{action:'look-select',n:value,what:'card',
+      filter:{what:'permanent',zone:'graveyard',controller:'you',min:1,...(localX[3]?{color:'green'}:{}),stat:'mv',comparison:'less',threshold:{...value}},
+      max:1,required:false,destination:'battlefield',tapped:false,revealAll:localX[1].toLowerCase()==='reveal',rest:'bottom',random:true}]};
+  }
+  const sourceName=String(card.name||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const localCounters=new RegExp('^Look at the top X cards of your library, where X is the number of time counters on (?:this creature|this permanent|it|'+sourceName+')\\. You may put a nonland permanent card with mana value (\\d+) or less from among them onto the battlefield\\. Put the rest on the bottom of your library in a random order\\.$','i').exec(line);
+  if(localCounters)return {targets:[],optional:false,effects:[{action:'look-select',n:{kind:'source-counters',counter:'time'},what:'card',
+    filter:{what:'nonland permanent',zone:'graveyard',controller:'you',min:1,stat:'mv',comparison:'less',threshold:Number(localCounters[1])},
+    max:1,required:false,destination:'battlefield',tapped:false,revealAll:false,rest:'bottom',random:true}]};
   const removalSearch=/^(Destroy (?:up to one )?target [^.]+\.) (Its controller may search .+)$/.exec(line);
   if(removalSearch){
     const first=helpers.effect?.(card,removalSearch[1]),search=ownerSearchEffect(card,removalSearch[2],helpers,{kind:'target-controller',index:0});

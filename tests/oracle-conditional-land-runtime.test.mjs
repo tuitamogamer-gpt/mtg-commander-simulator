@@ -197,6 +197,28 @@ test('local AI deterministically pays 2 only when safe untapped mana unlocks a l
   assert.equal(noUse.controller.lastV2Decision.action.value, 'tapped');
 });
 
+test('shockland AI future-mana probe restores the real pre-entry battlefield and mana availability', async () => {
+  const context=makeGame('ai'),{game,player,controller}=context;
+  zoneCard(game,player,'Sol Ring');
+  const decide=controller.decide.bind(controller);let checked=0;
+  controller.decide=async (currentGame,query)=>{
+    if(query.aiHint?.kind!=='payLifeForUntappedLand')return decide(currentGame,query);
+    const card=query.aiHint.card,snapshot=game._battlefieldEntryReplacementSnapshot,cur=card.cur;
+    assert.equal(game.bf().includes(card),false);
+    assert.equal(game.manaSources(player).some(source=>source.card===card),false);
+    const result=await decide(currentGame,query);
+    assert.equal(result,'pay');
+    assert.equal(game._battlefieldEntryReplacementSnapshot,snapshot);
+    assert.equal(card.cur,cur);
+    assert.equal(game.bf().includes(card),false);
+    assert.equal(game.manaSources(player).some(source=>source.card===card),false);
+    checked++;return result;
+  };
+  const card=await playConditionalLand(context,'QA Pain Gate');
+  assert.equal(checked,1);assert.equal(card.tapped,false);assert.equal(player.life,38);
+  assert.ok(game.manaSources(player).some(source=>source.card===card));
+});
+
 for (const role of ['human', 'ai']) {
   test(`${role}: other-land-count comparisons execute during actual battlefield entry`, async () => {
     const morePasses = makeGame(role);

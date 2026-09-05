@@ -12,6 +12,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     catch { return false; }
   };
   const choose = (value, values, fallback) => values.includes(value) ? value : fallback;
+  U.ARENA_BACKGROUNDS = Object.freeze([
+    { id: 'table', label: 'Commander table', group: 'Scenes', detail: 'The familiar stone battlefield' },
+    { id: 'war-room', label: 'War room', group: 'Scenes', detail: 'Warm light over a waiting table' },
+    { id: 'moonlit-grove', label: 'Moonlit grove', group: 'Scenes', detail: 'Ancient ruins beneath a silver moon' },
+    { id: 'molten-forge', label: 'Molten forge', group: 'Scenes', detail: 'Basalt peaks and rivers of ember' },
+    { id: 'astral-sanctum', label: 'Astral sanctum', group: 'Scenes', detail: 'A quiet citadel among the stars' },
+    { id: 'white', label: 'White', group: 'Mana colors', mana: 'W', detail: 'Soft ivory and sunlit gold' },
+    { id: 'blue', label: 'Blue', group: 'Mana colors', mana: 'U', detail: 'Deep currents and glacial light' },
+    { id: 'black', label: 'Black', group: 'Mana colors', mana: 'B', detail: 'Obsidian and violet shadows' },
+    { id: 'red', label: 'Red', group: 'Mana colors', mana: 'R', detail: 'Crimson stone and glowing embers' },
+    { id: 'green', label: 'Green', group: 'Mana colors', mana: 'G', detail: 'Emerald shade and mossy light' },
+    { id: 'colorless', label: 'Colorless', group: 'Mana colors', mana: 'C', detail: 'Cool slate with a silver glow' },
+  ].map(item => Object.freeze(item)));
+  U.normalizeArenaDim = value => typeof value === 'number' && Number.isFinite(value)
+    ? Math.max(0, Math.min(75, Math.round(value / 5) * 5)) : 30;
   U.playerPreferences = () => {
     const raw = U.readPreference('mtgPlayerPreferences', {}) || {};
     return {
@@ -21,6 +36,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       handSize: choose(raw.handSize, ['standard', 'large'], 'standard'),
       contrast: raw.contrast === true,
       speed: choose(raw.speed, ['normal', 'slow', 'fast'], 'normal'),
+      arenaBackground: choose(raw.arenaBackground, U.ARENA_BACKGROUNDS.map(item => item.id), 'table'),
+      arenaDim: U.normalizeArenaDim(raw.arenaDim),
     };
   };
   U.savePlayerPreferences = changes => U.writePreference('mtgPlayerPreferences', { ...U.playerPreferences(), ...changes });

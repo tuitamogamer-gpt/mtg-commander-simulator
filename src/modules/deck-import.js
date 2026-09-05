@@ -45,6 +45,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ward: 'ward-stack-payment',
     flash: 'flash-cast-timing',
     prowess: 'prowess-cast-trigger',
+    phasing: 'phasing-untap-cycle',
   });
 
   MTG.ORACLE_INTERACTION_CONTRACTS = Object.freeze({
@@ -54,6 +55,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'spell-casting': { mechanics: ['instant', 'sorcery'], path: 'cast spell → target lock → Stack → resolution → graveyard' },
     'land-play': { mechanics: ['land'], path: 'land-play timing → battlefield entry → mana/ETB path' },
     'vanilla-permanent': { mechanics: [], path: 'base P/T → continuous effects → combat/SBA' },
+    'phasing-untap-cycle': { mechanics: ['phasing'], path: 'simultaneous own untap phase cycle → phased object exclusions → attachment and counter identity' },
     'flying-evasion': { mechanics: ['flying'], path: 'combat blocker legality' },
     'reach-blocking': { mechanics: ['reach'], path: 'combat blocker legality against flying' },
     'landwalk-evasion': { mechanics: ['landwalk'], path: 'matching defender land subtype → blocker legality' },
@@ -186,6 +188,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'saga-chapters': { mechanics: ['saga'], path: 'lore crossing → chapter Stack → final chapter leaves Stack → state-based sacrifice' },
     'copy-as-enters': { mechanics: ['copy'], path: 'non-target entry choice → copiable characteristics and entry replacements → zone-change reset' },
     'copy-as-enters-v8': { mechanics: ['copy'], path: 'entry choice → exact copiable modifications → entry replacements → zone reset' },
+    'as-enters-color-choice': { mechanics: ['color-choice'], path: 'entry replacement → controller selects an allowed color → persist on this object → choose again on reentry' },
+    'chosen-color-mana-source': { mechanics: ['mana', 'color-choice'], path: 'chosen color → tap the source → add only the selected mana → enforce any land ability spending restriction' },
     'mechanic-ascend': { mechanics: ['ascend'], path: 'ten controlled permanents → persistent city blessing → live conditional effects' },
     'aura-control-v8': { mechanics: ['control'], path: 'Aura attachment → continuous control layer → timestamp and dependency recheck' },
     'ordered-replacement-effect': { mechanics: ['replacement'], path: 'affected player orders applicable replacements → recheck after each → transformed event' },
@@ -193,6 +197,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'continuous-ability-removal': { mechanics: ['ability-removal', 'continuous-effect'], path: 'type and color changes → layer-six ability removal and later grants → base power/toughness → source, zone and duration rechecks' },
     'continuous-layered-characteristics': { mechanics: ['type-color-change', 'continuous-effect'], path: 'begin type or color layer → capture affected permanents → continue the same effect through ability and power/toughness layers → recalculate on condition or source changes' },
     'continuous-characteristic-type': { mechanics: ['type-color-change'], path: 'continuous type and color layer → source condition and control → live affected permanents → source removal' },
+    'continuous-basic-land-types': { mechanics: ['type-color-change', 'mana'], path: 'basic land type layer → intrinsic mana abilities → ability removal layer → source removal restores prior types and abilities' },
     'base-pt-static': { mechanics: ['base-power-toughness'], path: 'continuous layer 7b in timestamp order → modifiers and counters → live source removal' },
     'protection-static': { mechanics: ['protection'], path: 'live quality filter → targeting, damage, blocking and attachment restrictions' },
     'mechanic-evoke': { mechanics: ['evoke'], path: 'alternative mana payment → permanent spell → ETB sacrifice trigger' },
@@ -219,6 +224,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'mechanic-alternative-costs-v8': { mechanics: ['alternative costs'], path: 'choose a printed canonical alternative → recheck its condition and zone → pay exact mana and additional costs → Stack → resolution' },
     'casting-cost-modifiers-v8': { mechanics: ['casting cost modifiers'], path: 'check every printed condition and live count → combine exact reductions → choose targets → pay the adjusted cost → Stack' },
     'casting-restriction-v8': { mechanics: ['casting restrictions'], path: 'reject an unmet printed casting restriction → satisfy it → recheck before payment → cast through Stack' },
+    'spell-limit-v8': { mechanics: ['casting restrictions'], path: 'track spells cast this turn → enforce every active per-player limit before announcement and payment → restore permission when the source leaves' },
     'public-activated-ability-v8': { mechanics: ['any-player activation'], path: 'controller or opponent chooses the printed ability → activating player pays all costs → that player controls the ability on Stack → source stays under its existing controller' },
     'mechanic-multikicker': { mechanics: ['multikicker'], path: 'repeated additional mana payment → captured payment count' },
     'mechanic-escape': { mechanics: ['escape'], path: 'graveyard spell → alternative mana and exile cost → normal resolution' },

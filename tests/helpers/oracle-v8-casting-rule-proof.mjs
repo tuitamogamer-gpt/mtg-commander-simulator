@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import {stageCondition,stageCount,countValue} from './oracle-v5-proof.mjs';
+import {stageCastingLimitCondition,stageFalseCastingLimitCondition} from './oracle-v8-casting-limits-proof.mjs';
 
 // The v5 fixture dispatcher calls these before its historical switch. Return
 // false/undefined for historical descriptors so existing proofs keep their path.
 export function stageCastingRuleCondition(MTG,ctx,condition,source,h){
+ if(stageCastingLimitCondition(MTG,ctx,condition))return true;
  if(condition?.kind==='casting-opponent-upkeep-v8'){ctx.game.turnPlayer=ctx.b;ctx.game.phase='upkeep';return true;}
  if(condition?.kind!=='casting-turn-stat-v8')return false;
  const p=condition.players==='you'?ctx.a:ctx.b;
@@ -71,6 +73,7 @@ export async function castingRulesProof(MTG,entry,operation,role,h){
  await stageTargets(MTG,ctx,entry,source,h);
  let checks=0;
  if(operation.kind==='casting-restriction-v8'){
+  stageFalseCastingLimitCondition(MTG,ctx,operation.condition);
   assert.equal(source.def.oracleCastRestriction(game,source,a),false,source.name+': initial casting restriction is unmet');
   const before=Object.values(a.pool).reduce((n,v)=>n+v,0);
   assert.equal(await game.castSpell(a,source,{from:'hand'}),false,source.name+': illegal cast is rejected');
@@ -82,13 +85,22 @@ export async function castingRulesProof(MTG,entry,operation,role,h){
  for(const op of modifiers){if(op.condition)stageCondition(MTG,ctx,op.condition,source,h);if(op.multiplier)stageCount(MTG,ctx,op.multiplier,h);}
  h.stageCardCosts?.(MTG,ctx,entry);
  const printed=MTG.parseCost(source.def.cost),units=modifiers.map(op=>op.multiplier?countValue(ctx,source,op.multiplier):1);
- const expectedGeneric=modifiers.reduce((n,op,i)=>n+(op.reductionCap!==undefined?Math.max(-op.reductionCap,op.amount*units[i]):op.amount*units[i]),printed.generic);
- const expectedPips=printed.pips.map(p=>Array.from(p));
- for(const [i,op]of modifiers.entries())for(let n=0;n<units[i];n++)for(const color of op.coloredReduction||[]){const index=expectedPips.findIndex(pip=>pip.length===1&&pip[0]===color);if(index>=0)expectedPips.splice(index,1);}
  const before=Object.values(a.pool).reduce((n,v)=>n+v,0);
  assert.ok(game.castableList(a).some(row=>row.card===source),source.name+': genuinely payable cast appears');
  assert.equal(await game.castSpell(a,source,{from:'hand'}),true,source.name+': real cast succeeds');
  const stack=game.stack.find(row=>row.card===source);assert.ok(stack,source.name+': cast reaches Stack');
+ // Optional printed additional costs are real announcement choices in this
+ // casting-rule route too. Read the frozen Entwine cost, not the spent total.
+ let additional={generic:0,pips:[]};
+ if(stack.castOpts?.entwined){
+  const entwine=entry.implementation.find(op=>op.kind==='mechanic-entwine');
+  assert.ok(entwine,source.name+': Entwine announcement has a printed operation');
+  if(entwine.cost.kind==='mana')additional=MTG.parseCost(entwine.cost.mana);
+  else assert.equal(entwine.cost.kind,'sacrifice',source.name+': known nonmana Entwine cost');
+ }
+ const expectedGeneric=modifiers.reduce((n,op,i)=>n+(op.reductionCap!==undefined?Math.max(-op.reductionCap,op.amount*units[i]):op.amount*units[i]),printed.generic+additional.generic);
+ const expectedPips=[...printed.pips,...additional.pips].map(p=>Array.from(p));
+ for(const [i,op]of modifiers.entries())for(let n=0;n<units[i];n++)for(const color of op.coloredReduction||[]){const index=expectedPips.findIndex(pip=>pip.length===1&&pip[0]===color);if(index>=0)expectedPips.splice(index,1);}
  const expected=Math.max(0,expectedGeneric+printed.x*(stack.x||0))+expectedPips.length;
  assert.equal(before-Object.values(a.pool).reduce((n,v)=>n+v,0),expected,source.name+': floating mana payment matches independent printed modifiers');
  assert.equal(stack.manaSpent,expected,source.name+': Stack records exact paid mana');

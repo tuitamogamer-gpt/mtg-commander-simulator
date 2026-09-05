@@ -84,7 +84,14 @@ export async function fireV8Event(MTG,ctx,source,operation,h){
       if(entryRule)stageCondition(MTG,ctx,entryRule.untappedCondition,card,h);
     }
     await game.move(card,'battlefield',{ctrl:card.ctrl});
-  }else if(event==='dies')await game.move(card,'graveyard');
+  }else if(event==='dies'){
+    if(f.damageByThisTurn){
+      const damagingSource=f.damageByThisTurn==='attached'?game.byIid(source.attachedTo):source;
+      assert.ok(damagingSource,'historical-damage trigger has its actual source');
+      assert.equal(await game.damageCreature(damagingSource,card,1,{deferSBA:true}),1,'positive actual damage establishes the prerequisite');
+    }
+    await game.move(card,'graveyard');
+  }
   else if(event==='lto')await game.move(card,'exile');
   else if(event==='sacrificed')await game.sacrifice(card.ctrl,card);
   else if(event==='discarded'){
@@ -150,8 +157,8 @@ export async function fireV8Event(MTG,ctx,source,operation,h){
     }else await game.damageAny(origin,recipient,n,{combat:!!f.combat,deferSBA:true});
   }else if(event==='attacks'){
     card.attacking=f.defender==='you'||f.defender==='you-or-your-planeswalker'?a:f.defender==='opponent'?b:card.ctrl===a?b:a;
-    ctx.eventPlayer=card.ctrl;
-    game.combat={...(game.combat||{}),attackers:[card],defenders:new Map([[card.attacking,[card]]])};
+    ctx.eventPlayer=f.playerField==='defender'?card.attacking:card.ctrl;
+    game.combat={...(game.combat||{}),attackers:[card],defenders:new Map([[card.attacking,[card]]]),declaredAttackTargets:[card.attacking]};
     game.recalc();
     await game.emit('attacks',{card,player:card.ctrl,defender:card.attacking,firstThisTurn:game.recordCombatObjectEvent(card,'attacks')===1});
   }else if(['blocks','becomesBlocked','becomesBlockedByCreature'].includes(event)){

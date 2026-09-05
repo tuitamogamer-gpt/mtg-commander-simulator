@@ -4700,10 +4700,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       manaMode: ui ? ui.manaMode : 'auto',
       playerTools: ui ? {
         handSort: ui.handSort, handSize: ui.handSize, speed: ui.speed,
-        highContrast: document.body.classList.contains('high-contrast'),
+        arenaBackground: ui.arenaBackground, arenaDim: ui.arenaDim,
+        arenaBackgroundPickerOpen: ui.quickMenuOpen === 'backgrounds',
+        highContrast: !!document.body?.classList?.contains('high-contrast'),
         searchOpen: !!ui.commandPaletteOpen,
         searchQuery: document.querySelector('.commandsearch')?.value || '',
-        searchResults: [...document.querySelectorAll('.commandresultcopy')].map(result => result.textContent),
+        searchResults: [...(document.querySelectorAll?.('.commandresultcopy') || [])].map(result => result.textContent),
       } : null,
       lastResort: ui ? {
         active: !!ui.lastResortActive,

@@ -410,23 +410,31 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function publicCard(card, viewer) {
     if (!card) return null;
     const owner = card.owner || card.ctrl;
+    const meta = card.meta || {};
+    // Owning an exiled card does not grant permission to inspect it (CR 406.3).
+    // A face-down permanent's controller can look, and explicit permissions
+    // cover cards stolen by Klaw, Extract Power, foretell and hideaway.
+    const mayLookFaceDown = card.ctrl === viewer && !!meta.faceDownDef ||
+      meta.revealedTo === 'all' || Array.isArray(meta.revealedTo) && meta.revealedTo.includes(viewer.idx);
     const hidden = card.zone === 'library' || (card.zone === 'hand' && owner !== viewer) ||
-      (card.faceDown && card.ctrl !== viewer);
+      (card.faceDown && !mayLookFaceDown);
+    const publicPermanent = card.zone === 'battlefield' && (!hidden || !!meta.faceDownDef);
+    const shownDef = !hidden && card.faceDown && meta.faceDownDef || card.def;
     return {
       token: cardToken(card),
-      name: hidden ? 'Hidden card' : card.name,
+      name: hidden ? 'Hidden card' : shownDef.name,
       zone: card.zone,
       ownerSeat: owner ? owner.onlineSeat ?? owner.idx : null,
       controllerSeat: card.ctrl ? card.ctrl.onlineSeat ?? card.ctrl.idx : null,
       hidden,
       tapped: card.zone === 'battlefield' ? !!card.tapped : undefined,
       faceDown: !!card.faceDown,
-      power: !hidden && card.zone === 'battlefield' ? card.power : undefined,
-      toughness: !hidden && card.zone === 'battlefield' ? card.toughness : undefined,
-      counters: !hidden && card.counters ? clone(card.counters) : undefined,
-      commander: !hidden ? !!card.commander : undefined,
-      cost: !hidden && card.def ? card.def.cost || '' : undefined,
-      types: !hidden && card.def ? (card.def.types || []).slice() : undefined,
+      power: publicPermanent ? card.power : undefined,
+      toughness: publicPermanent ? card.toughness : undefined,
+      counters: (publicPermanent || !hidden) && card.counters ? clone(card.counters) : undefined,
+      commander: publicPermanent || !hidden ? !!card.commander : undefined,
+      cost: (publicPermanent || !hidden) && card.def ? card.def.cost || '' : undefined,
+      types: (publicPermanent || !hidden) && card.def ? (card.def.types || []).slice() : undefined,
     };
   }
 

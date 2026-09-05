@@ -29,7 +29,7 @@ export async function layeredStaticProof(MTG,entry,operation,role,h){
     for(const subtype of operation.change.addCreatureTypes||[])if(!target.def.subtypes.includes(subtype))assert.equal(target.hasSub(subtype),false,label+': source removal ends added type');
     if(operation.change.allCreatureTypes)assert.equal(target.hasSub('Brushwagg'),false,label+': source removal ends all-types grant');
     const counters=(target.counters['+1/+1']||0)-(target.counters['-1/-1']||0);
-    assert.equal(target.power,Number(target.def.power)+counters,label+': source removal ends continuous P/T change');
+    assert.equal(target.power,(Number(target.def.power)||0)+counters,label+': source removal restores printed P/T including noncreature zero');
   }
   return 8;
 }

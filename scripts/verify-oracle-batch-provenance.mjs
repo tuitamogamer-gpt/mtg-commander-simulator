@@ -19,6 +19,19 @@ function canonical(value) {
   return Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])]));
 }
 
+function sourceSemanticRow(row) {
+  const text=row.raw?.oracle||'';
+  if(!/\bTime Lord\b/.test(text)||/\bLord\b/.test(text.replace(/\bTime Lord\b/g,''))||
+    !/"(?:subtype|notSubtype)":"Lord"/.test(JSON.stringify(row.implementation)))return row;
+  // CR 205.3m: this documented runtime compatibility repair combines the
+  // historical split subtype. Every other source/descriptor field must still
+  // match exactly, and module/report bytes remain independently unchanged.
+  const normalize=node=>Array.isArray(node)?node.map(normalize):node&&typeof node==='object'?
+    Object.fromEntries(Object.entries(node).map(([key,value])=>[key,
+      (key==='subtype'||key==='notSubtype')&&value==='Lord'?'Time Lord':normalize(value)])):node;
+  return {...row,implementation:normalize(row.implementation)};
+}
+
 function unique(values, label) {
   const seen = new Set();
   for (const value of values) {
@@ -112,7 +125,7 @@ export function verifyOracleBatchProvenance({
   }
   const paperCards = sourceCards.filter(card => card.games?.includes('paper'));
   const commanderLegalCards = paperCards.filter(card => card.legalities?.commander === 'legal');
-  const batchResults = [];
+  const batchResults = [], semanticCompatibilityNormalizations = [];
   for (const report of selected) {
     const originalCards = report.cards.map(row => {
       const candidates = byOracleId.get(row.oracleId) || [];
@@ -123,17 +136,24 @@ export function verifyOracleBatchProvenance({
     // historical ready/deferred queue statistics are not current semantics.
     // Every row still runs through the production importer's complete raw,
     // catalog, legality, keyword, Oracle-contract and implementation compiler.
-    const compiled = createImportPlan({
-      cards: originalCards, bulk, baseNames: new Set(), sequence: report.sequence,
-      limit: report.cards.length, generatedAt: report.generatedAt,
-      compilerVersion: report.selectionPolicy.compilerVersion,
-    }).report;
+    let compiled;
+    try {
+      compiled = createImportPlan({
+        cards: originalCards, bulk, baseNames: new Set(), sequence: report.sequence,
+        limit: report.cards.length, generatedAt: report.generatedAt,
+        compilerVersion: report.selectionPolicy.compilerVersion,
+      }).report;
+    } catch (error) {
+      throw new Error(`${report.id}: ${error.message}`, {cause: error});
+    }
     for (const field of ['schemaVersion', 'id', 'sequence', 'generatedAt', 'source', 'selectionPolicy']) {
       assert.deepEqual(report[field], normalized(compiled[field]), `${report.id}: ${field} provenance`);
     }
     const expectedRows = normalized(compiled.cards);
     report.cards.forEach((row, index) => {
-      assert.deepEqual(row, expectedRows[index], `${report.id}/${row.raw.name}: full normalized source/compiler row`);
+      const semanticRow=sourceSemanticRow(row);
+      assert.deepEqual(semanticRow, expectedRows[index], `${report.id}/${row.raw.name}: full normalized source/compiler row`);
+      if(semanticRow!==row)semanticCompatibilityNormalizations.push({batch:report.id,name:row.raw.name,oracleId:row.oracleId,kind:'Time Lord single subtype'});
     });
     for (const [field, expected] of Object.entries({
       oracleRows: sourceCards.length, paperCards: paperCards.length,
@@ -157,6 +177,7 @@ export function verifyOracleBatchProvenance({
     oracleUnionCatalogSha256: catalogHash(union),
     normalizedCohortSha256: sha256(JSON.stringify(canonical(selected.map(report => ({ id: report.id, cards: report.cards }))))),
     historicalQueueStatisticsReplayed: false,
+    semanticCompatibilityNormalizations,
     batchResults,
   };
 }
@@ -208,7 +229,7 @@ export async function runProvenanceVerification(args = process.argv.slice(2)) {
     appSource: fs.readFileSync(path.join(workspaceRoot, 'src', 'app.js'), 'utf8'),
     first: options.first, last: options.last, expectedCards: options.expectedCards,
   });
-  result.compilerFiles = Object.fromEntries(['scripts/import-oracle-batch.mjs', 'scripts/oracle-spell-v4.mjs', 'scripts/oracle-extensions-v5.mjs', 'scripts/oracle-extensions-v6.mjs', 'scripts/oracle-extensions-v7.mjs', 'scripts/oracle-extensions-v8.mjs', 'scripts/oracle-v8-core.mjs', 'scripts/oracle-v8-effects.mjs', 'scripts/oracle-v8-permanents.mjs', 'scripts/oracle-v8-ability-loss.mjs', 'scripts/oracle-v8-combat.mjs', 'scripts/oracle-v8-faces.mjs', 'scripts/oracle-v8-levels.mjs', 'scripts/oracle-v8-linked.mjs', 'scripts/oracle-v8-copies.mjs', 'scripts/oracle-v8-stack-copy.mjs','scripts/oracle-v8-target-quantities.mjs','scripts/oracle-v8-target-predicates.mjs','scripts/oracle-v8-attached-effects.mjs', 'scripts/oracle-v8-results.mjs', 'scripts/oracle-v8-batch-triggers.mjs', 'scripts/oracle-v8-observation-triggers.mjs', 'scripts/oracle-v8-control.mjs', 'scripts/oracle-v8-library.mjs', 'scripts/oracle-v8-multizone-search.mjs', 'scripts/oracle-v8-entwine.mjs', 'scripts/oracle-v8-splice.mjs', 'scripts/oracle-v8-costs.mjs', 'scripts/oracle-v8-additional-costs.mjs', 'scripts/oracle-v8-alternative-costs.mjs', 'scripts/oracle-v8-timing.mjs', 'scripts/oracle-v8-prevention.mjs', 'scripts/oracle-v8-activation-rules.mjs', 'scripts/oracle-v8-public-abilities.mjs', 'scripts/oracle-v8-keyword-costs.mjs', 'scripts/oracle-v8-forecast.mjs', 'scripts/oracle-v8-turns.mjs', 'scripts/oracle-v8-untap.mjs', 'scripts/oracle-v8-delayed-triggers.mjs', 'scripts/oracle-v8-damage-events.mjs', 'scripts/oracle-v8-coins.mjs', 'scripts/oracle-v8-combat-costs.mjs', 'scripts/oracle-v8-casting-choices.mjs', 'scripts/oracle-v8-awaken.mjs', 'scripts/oracle-v8-morph-costs.mjs', 'scripts/oracle-v8-equip-costs.mjs', 'scripts/oracle-v8-upkeep-costs.mjs', 'scripts/oracle-v8-keyword-payments.mjs', 'scripts/oracle-v8-encore.mjs', 'scripts/oracle-v8-miracle.mjs', 'scripts/oracle-v8-zone-keyword-costs.mjs', 'scripts/oracle-v8-counter-costs.mjs', 'scripts/oracle-v8-play-permissions.mjs', 'scripts/oracle-v8-revealed.mjs', 'scripts/oracle-v8-energy.mjs', 'scripts/oracle-v8-hand-size.mjs', 'scripts/oracle-v8-cast-events.mjs', 'scripts/oracle-v8-casting-rules.mjs', 'scripts/oracle-v8-counts.mjs', 'scripts/oracle-v8-mayhem.mjs', 'scripts/oracle-flavor-words.json', 'scripts/oracle-subtypes.mjs']
+  result.compilerFiles = Object.fromEntries(['scripts/import-oracle-batch.mjs', 'scripts/oracle-spell-v4.mjs', 'scripts/oracle-extensions-v5.mjs', 'scripts/oracle-extensions-v6.mjs', 'scripts/oracle-extensions-v7.mjs', 'scripts/oracle-extensions-v8.mjs', 'scripts/oracle-v8-core.mjs', 'scripts/oracle-v8-effects.mjs', 'scripts/oracle-v8-permanents.mjs', 'scripts/oracle-v8-ability-loss.mjs', 'scripts/oracle-v8-combat.mjs', 'scripts/oracle-v8-faces.mjs', 'scripts/oracle-v8-levels.mjs', 'scripts/oracle-v8-linked.mjs', 'scripts/oracle-v8-copies.mjs', 'scripts/oracle-v8-stack-copy.mjs','scripts/oracle-v8-target-quantities.mjs','scripts/oracle-v8-target-predicates.mjs','scripts/oracle-v8-attached-effects.mjs', 'scripts/oracle-v8-results.mjs', 'scripts/oracle-v8-batch-triggers.mjs', 'scripts/oracle-v8-observation-triggers.mjs', 'scripts/oracle-v8-control.mjs', 'scripts/oracle-v8-library.mjs', 'scripts/oracle-v8-multizone-search.mjs', 'scripts/oracle-v8-entwine.mjs', 'scripts/oracle-v8-splice.mjs', 'scripts/oracle-v8-costs.mjs', 'scripts/oracle-v8-additional-costs.mjs', 'scripts/oracle-v8-alternative-costs.mjs', 'scripts/oracle-v8-timing.mjs', 'scripts/oracle-v8-prevention.mjs', 'scripts/oracle-v8-activation-rules.mjs', 'scripts/oracle-v8-public-abilities.mjs', 'scripts/oracle-v8-keyword-costs.mjs', 'scripts/oracle-v8-forecast.mjs', 'scripts/oracle-v8-turns.mjs', 'scripts/oracle-v8-untap.mjs', 'scripts/oracle-v8-delayed-triggers.mjs', 'scripts/oracle-v8-damage-events.mjs', 'scripts/oracle-v8-coins.mjs', 'scripts/oracle-v8-clash.mjs', 'scripts/oracle-v8-combat-costs.mjs', 'scripts/oracle-v8-casting-choices.mjs', 'scripts/oracle-v8-awaken.mjs', 'scripts/oracle-v8-morph-costs.mjs', 'scripts/oracle-v8-equip-costs.mjs', 'scripts/oracle-v8-upkeep-costs.mjs', 'scripts/oracle-v8-keyword-payments.mjs', 'scripts/oracle-v8-encore.mjs', 'scripts/oracle-v8-miracle.mjs', 'scripts/oracle-v8-zone-keyword-costs.mjs', 'scripts/oracle-v8-counter-costs.mjs', 'scripts/oracle-v8-play-permissions.mjs', 'scripts/oracle-v8-revealed.mjs', 'scripts/oracle-v8-energy.mjs', 'scripts/oracle-v8-hand-size.mjs', 'scripts/oracle-v8-cast-events.mjs', 'scripts/oracle-v8-casting-rules.mjs', 'scripts/oracle-v8-counts.mjs', 'scripts/oracle-v8-mayhem.mjs', 'scripts/oracle-v8-scope-effects.mjs', 'scripts/oracle-v8-combat-restrictions.mjs', 'scripts/oracle-v8-mana-extensions.mjs', 'scripts/oracle-v8-characteristics.mjs', 'scripts/oracle-v8-activation-prohibitions.mjs', 'scripts/oracle-v8-activation-suffixes.mjs', 'scripts/oracle-v8-kicker-replacements.mjs', 'scripts/oracle-v8-land-types.mjs', 'scripts/oracle-v8-divided-damage.mjs', 'scripts/oracle-v8-counter-effects.mjs', 'scripts/oracle-v8-combat-keywords.mjs', 'scripts/oracle-v8-phasing.mjs', 'scripts/oracle-v8-casting-limits.mjs', 'scripts/oracle-flavor-words.json', 'scripts/oracle-subtypes.mjs']
     .map(file => [file, sha256(fs.readFileSync(path.join(workspaceRoot, file)))]));
   result.compilerSha256 = sha256(Object.entries(result.compilerFiles).map(([file, digest]) => `${file}\t${digest}`).join('\n'));
   return result;

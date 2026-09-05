@@ -10,6 +10,7 @@ function allEntries(MTG) {
 }
 
 function assertExecutableOperation(MTG, entry, definition, operation) {
+  operation = MTG.normalizeOracleTimeLordEntry({...entry, implementation:[operation]}).implementation[0];
   if (operation.kind === 'double-faced-v8') {
     // The runtime definition is the front face, so the printed faces are
     // checked against their own compiled operations.
@@ -124,7 +125,13 @@ test('svaka generička Oracle batch karta mapira kompletan rules core na poznate
   assert.deepEqual(Array.from(batches, batch => batch.id), state.batches.map(batch => batch.id), 'every recorded batch is registered in order');
   assert.ok(batches.every(batch => batch.cards.length === 100), 'every generic Oracle batch contains exactly 100 cards');
   assert.equal(entries.length, state.batches.length * 100, 'all recorded generic cards have executable contracts');
+  const frozenRows = new Map(state.batches.flatMap(batch => {
+    const report = JSON.parse(fs.readFileSync(new URL('../reports/oracle-import/batch-' + String(batch.sequence).padStart(4, '0') + '.json', import.meta.url), 'utf8'));
+    return report.cards.map(entry => [entry.oracleId, entry]);
+  }));
   for (const entry of entries) {
+    assert.deepEqual(JSON.parse(JSON.stringify(entry)), frozenRows.get(entry.oracleId),
+      `${entry.raw.name}: runtime registration preserves the complete frozen source row`);
     const catalog = MTG.CARD_CATALOG[entry.raw.name];
     const deck = { cards: [{ n: 1, name: entry.raw.name }] };
     const audit = MTG.auditImportedDeckInteractions(deck, MTG.DEFS);

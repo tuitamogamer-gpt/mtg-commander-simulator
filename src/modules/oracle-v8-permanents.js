@@ -229,6 +229,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Every restriction is re-created by normal recalculation. The callbacks
   // read live characteristics at declaration; nothing is baked into a card.
   MTG.oracleV8ApplyCombatRule = function (game, card, rule, controller) {
+    if(MTG.OracleV8CombatRestrictions?.apply(game,card,rule,controller))return;
     const fields = {
       'blocker-bounds': ['min', 'max'], 'block-capacity': ['additional', 'any', 'equipment'], companion: ['attack', 'block', 'greaterPower', 'colors'],
       'defender-attack': ['predicate'], 'attacker-block': ['predicate'],
@@ -333,6 +334,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   const keys = new Set(['kind', 'field', 'target', 'player', 'playerField', 'subject', 'sourceSelf', 'attachedSource', 'sourceField', 'sourceSubject', 'blockerTarget', 'lookBack', 'from', 'to', 'counter', 'minAmount', 'maxAmount', 'zeroRemaining', 'combat', 'spellOnly', 'instantSorceryOnly', 'nonmana', 'firstThisTurn', 'totalMin', 'totalMax', 'minMatching', 'selfAttacking', 'defendingYou', 'defender', 'damageSourceController', 'enteredTapped', 'castTarget', 'castTargetsSelf', 'castOrdinal', 'castMinimumOrdinal', 'casterTurn', 'castKicked', 'castAdventure', 'perDefender', 'declaredDefender', 'attackerStatus', 'attachedAttacking', 'minOtherThanAttached']);
   keys.add('headerCondition');
+  keys.add('damageByThisTurn');
   const zones = new Set(['battlefield', 'graveyard', 'hand', 'library', 'stack', 'exile', 'command']);
 
   function validate(event, rule) {
@@ -341,9 +343,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!schema) throw new Error('Unsupported v8 event: ' + event);
     if (Object.keys(rule).some(key => !keys.has(key))) throw new Error('Unknown v8 event predicate field');
     if (rule.headerCondition !== undefined && (!['attacks', 'blocks'].includes(event) || rule.subject !== 'self' || !rule.headerCondition || typeof rule.headerCondition !== 'object')) throw new Error('Invalid v8 trigger-event condition');
+    if(rule.damageByThisTurn!==undefined&&(event!=='dies'||!['self','attached'].includes(rule.damageByThisTurn)))throw new Error('Invalid v8 historical-damage event');
     if (rule.field !== undefined && !schema.fields.includes(rule.field)) throw new Error('Invalid v8 event object field');
     if (rule.player !== undefined && !['you', 'opponent', 'any'].includes(rule.player)) throw new Error('Invalid v8 event player relation');
-    if (rule.playerField !== undefined && !(rule.playerField === 'by' && event === 'countersPlaced' || rule.playerField === 'owner' && ['dies', 'cardToGraveyard', 'cardLeftGraveyard'].includes(event) || rule.playerField === 'defender' && schema.combatants)) throw new Error('Invalid v8 event player field');
+    if (rule.playerField !== undefined && !(rule.playerField === 'by' && event === 'countersPlaced' || rule.playerField === 'owner' && ['dies', 'cardToGraveyard', 'cardLeftGraveyard'].includes(event) || rule.playerField === 'defender' && (schema.combatants||event==='attacks'))) throw new Error('Invalid v8 event player field');
     if (rule.lookBack !== undefined && !(rule.lookBack === false && ['dies', 'cardToGraveyard'].includes(event))) throw new Error('Invalid v8 event observation zone');
     if (rule.subject !== undefined && !['self', 'another', 'attached'].includes(rule.subject)) throw new Error('Invalid v8 event object relation');
     for (const key of ['sourceSelf', 'attachedSource', 'zeroRemaining', 'spellOnly', 'instantSorceryOnly', 'firstThisTurn', 'selfAttacking', 'defendingYou']) {
@@ -407,7 +410,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function eventPlayer(event, rule, data, card) {
     const field = rule.playerField || events[event].player;
-    if (field === 'defender') return data?.attacker?.attacking instanceof MTG.Player ? data.attacker.attacking : data?.attacker?.attacking?.ctrl;
+    if (field === 'defender') {const defender=data?.defender||data?.attacker?.attacking;return defender instanceof MTG.Player?defender:defender?.ctrl;}
     if (field === 'owner') return card?.owner;
     if (field === 'controller') return data?.card === card && data.snap ? data.snap.ctrl : card?.ctrl;
     return data?.[field];
@@ -524,6 +527,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return (game, source, data) => {
       if (!data) return false;
       const snap = sourceSnapshot(game, source, data), controller = snap?.ctrl || source.ctrl;
+      if(rule.damageByThisTurn&&!MTG.OracleV8DamageHistory.damaged(game,source,snap,data.card,data.snap,rule.damageByThisTurn))return false;
       if (rule.headerCondition && !genericCondition(game, source, rule.headerCondition, controller)) return false;
       const card = cardAt(event, rule, data);
       if (event === 'cast') {

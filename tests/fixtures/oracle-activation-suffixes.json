@@ -1,0 +1,272 @@
+[
+  {
+    "id": "1a6bb0c2-1e3c-48cd-8f10-49f047e0514c",
+    "oracle_id": "12c98c1e-7e02-473d-b494-ad8a0731fe82",
+    "name": "Lagomos, Hand of Hatred",
+    "layout": "normal",
+    "type_line": "Legendary Creature — Human Shaman",
+    "mana_cost": "{1}{B}{R}",
+    "oracle_text": "At the beginning of combat on your turn, create a 2/1 red Elemental creature token with trample and haste. Sacrifice it at the beginning of the next end step.\n{T}: Search your library for a card, put it into your hand, then shuffle. Activate only if five or more creatures died this turn.",
+    "power": "1",
+    "toughness": "3",
+    "keywords": [],
+    "color_identity": [
+      "B",
+      "R"
+    ]
+  },
+  {
+    "id": "c74e13eb-6f82-4db1-9d0d-8310f48d9f6d",
+    "oracle_id": "195107ad-879d-4b02-a44a-a3ba70fedf88",
+    "name": "Desert",
+    "layout": "normal",
+    "type_line": "Land — Desert",
+    "mana_cost": "",
+    "oracle_text": "{T}: Add {C}.\n{T}: This land deals 1 damage to target attacking creature. Activate only during the end of combat step.",
+    "keywords": [],
+    "color_identity": []
+  },
+  {
+    "id": "a9406050-d76b-4569-a463-e21acaf84166",
+    "oracle_id": "3850479f-1c1e-4a72-ae47-6da2997202e2",
+    "name": "Cinder Crawler",
+    "layout": "normal",
+    "type_line": "Creature — Salamander",
+    "mana_cost": "{1}{R}",
+    "oracle_text": "{R}: This creature gets +1/+0 until end of turn. Activate only if this creature is blocked.",
+    "power": "1",
+    "toughness": "2",
+    "keywords": [],
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "6b01ebcf-8451-486e-84f6-8e6e1bb9d6e3",
+    "oracle_id": "3853ef6a-6771-4708-8ed5-d667f646de5a",
+    "name": "Glory",
+    "layout": "normal",
+    "type_line": "Creature — Incarnation",
+    "mana_cost": "{3}{W}{W}",
+    "oracle_text": "Flying\n{2}{W}: Choose a color. Creatures you control gain protection from the chosen color until end of turn. Activate only if this card is in your graveyard.",
+    "power": "3",
+    "toughness": "3",
+    "keywords": [
+      "Flying"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "b9d52c11-f955-489e-b3c9-5a7e1a7933e8",
+    "oracle_id": "42a96276-fddc-435e-bd47-04f9c6001ec7",
+    "name": "Skarrgan Firebird",
+    "layout": "normal",
+    "type_line": "Creature — Phoenix",
+    "mana_cost": "{4}{R}{R}",
+    "oracle_text": "Bloodthirst 3 (If an opponent was dealt damage this turn, this creature enters with three +1/+1 counters on it.)\nFlying\n{R}{R}{R}: Return this card from your graveyard to your hand. Activate only if an opponent was dealt damage this turn.",
+    "power": "3",
+    "toughness": "3",
+    "keywords": [
+      "Flying",
+      "Bloodthirst"
+    ],
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "7e95a7cc-ed77-4ca4-80db-61c0fc68bf50",
+    "oracle_id": "5bb06e6f-e3af-4caa-b66d-77248ad46b61",
+    "name": "Lilypad Village",
+    "layout": "normal",
+    "type_line": "Land",
+    "mana_cost": "",
+    "oracle_text": "{T}: Add {C}.\n{T}: Add {U}. Spend this mana only to cast a creature spell.\n{U}, {T}: Surveil 2. Activate only if a Bird, Frog, Otter, or Rat entered the battlefield under your control this turn.",
+    "keywords": [
+      "Surveil"
+    ],
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "32a8cf47-cfe4-4a11-a57d-bebeb2fae437",
+    "oracle_id": "63e86054-5e9c-48fe-92a1-b71aeb6ee57f",
+    "name": "Gilt-Blade Prowler",
+    "layout": "normal",
+    "type_line": "Creature — Human Rogue",
+    "mana_cost": "{2}{B}",
+    "oracle_text": "{1}, {T}, Pay 1 life: Draw a card. Activate only if you've discarded a card this turn.",
+    "power": "2",
+    "toughness": "3",
+    "keywords": [],
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "899db99b-df27-4848-a23d-5c645deae450",
+    "oracle_id": "69266cb7-50eb-43d2-96d6-fc3c85be49f7",
+    "name": "Magus of the Library",
+    "layout": "normal",
+    "type_line": "Creature — Human Wizard",
+    "mana_cost": "{G}{G}",
+    "oracle_text": "{T}: Add {C}.\n{T}: Draw a card. Activate only if you have exactly seven cards in hand.",
+    "power": "1",
+    "toughness": "1",
+    "keywords": [],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "6a1c710b-bd67-4174-ab02-6ae98a7575ac",
+    "oracle_id": "76ae3779-c821-4cd3-8d0f-8c42d1206ce4",
+    "name": "Gutterbones",
+    "layout": "normal",
+    "type_line": "Creature — Skeleton Warrior",
+    "mana_cost": "{B}",
+    "oracle_text": "This creature enters tapped.\n{1}{B}: Return this card from your graveyard to your hand. Activate only during your turn and only if an opponent lost life this turn.",
+    "power": "2",
+    "toughness": "1",
+    "keywords": [],
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "8eae4481-977f-4bb7-bb1a-ab7100e6ba47",
+    "oracle_id": "86ed6073-c35c-4d29-9911-5fe191dd875f",
+    "name": "The Biblioplex",
+    "layout": "normal",
+    "type_line": "Land",
+    "mana_cost": "",
+    "oracle_text": "{T}: Add {C}.\n{2}, {T}: Look at the top card of your library. If it's an instant or sorcery card, you may reveal it and put it into your hand. If you don't put the card into your hand, you may put it into your graveyard. Activate only if you have exactly zero or seven cards in hand.",
+    "keywords": [],
+    "color_identity": []
+  },
+  {
+    "id": "fdcc821b-8125-4585-ba44-4bf8c1873fbf",
+    "oracle_id": "8faccd56-dfc2-4cfc-880c-db40b935336a",
+    "name": "Trade Caravan",
+    "layout": "normal",
+    "type_line": "Creature — Human Nomad",
+    "mana_cost": "{W}",
+    "oracle_text": "At the beginning of your upkeep, put a currency counter on this creature.\nRemove two currency counters from this creature: Untap target basic land. Activate only during an opponent's upkeep.",
+    "power": "1",
+    "toughness": "1",
+    "keywords": [],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "122e5e24-d704-4f1c-9577-0f25aaabb7ed",
+    "oracle_id": "9248f9b9-ddaa-459c-91e6-9045a65b0f07",
+    "name": "Tapestry of the Ages",
+    "layout": "normal",
+    "type_line": "Artifact",
+    "mana_cost": "{4}",
+    "oracle_text": "{2}, {T}: Draw a card. Activate only if you've cast a noncreature spell this turn.",
+    "keywords": [],
+    "color_identity": []
+  },
+  {
+    "id": "c24e74e9-ce88-48af-a113-b4fe76f963d4",
+    "oracle_id": "9360d30c-4556-4b41-bd50-08b4367e5efb",
+    "name": "Sawback Manticore",
+    "layout": "normal",
+    "type_line": "Creature — Manticore",
+    "mana_cost": "{3}{R}{G}",
+    "oracle_text": "{4}: This creature gains flying until end of turn.\n{1}: This creature deals 2 damage to target attacking or blocking creature. Activate only if this creature is attacking or blocking and only once each turn.",
+    "power": "2",
+    "toughness": "4",
+    "keywords": [],
+    "color_identity": [
+      "G",
+      "R"
+    ]
+  },
+  {
+    "id": "7f0b7bfc-f126-4885-a663-6f8dcc52e663",
+    "oracle_id": "a0b2d446-fe90-40f8-8674-7421c425b489",
+    "name": "Seeker of Insight",
+    "layout": "normal",
+    "type_line": "Creature — Human Wizard",
+    "mana_cost": "{1}{U}",
+    "oracle_text": "{T}: Draw a card, then discard a card. Activate only if you've cast a noncreature spell this turn.",
+    "power": "1",
+    "toughness": "3",
+    "keywords": [],
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "7d14a430-6e08-40cf-970a-cae84bba6ef7",
+    "oracle_id": "aba53a54-8666-430d-899e-45ad9f783a4a",
+    "name": "Dwarven Armory",
+    "layout": "normal",
+    "type_line": "Enchantment",
+    "mana_cost": "{2}{R}{R}",
+    "oracle_text": "{2}, Sacrifice a land: Put a +2/+2 counter on target creature. Activate only during any upkeep step.",
+    "keywords": [],
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "b93b824c-414d-4dd5-848f-bff678a289ba",
+    "oracle_id": "b22e55ef-fb74-4991-a43b-9d3ce06c23e5",
+    "name": "Zhalfirin Decoy",
+    "layout": "normal",
+    "type_line": "Creature — Human Soldier",
+    "mana_cost": "{1}{W}",
+    "oracle_text": "{T}: Tap target creature. Activate only if you had a creature enter the battlefield under your control this turn.",
+    "power": "1",
+    "toughness": "3",
+    "keywords": [],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "1ca736c7-35a9-48c7-b5a9-69b2a6e33ad0",
+    "oracle_id": "b80df711-af51-4f9a-9a3f-f7a4cddc9c2c",
+    "name": "Goro-Goro, Disciple of Ryusei",
+    "layout": "normal",
+    "type_line": "Legendary Creature — Goblin Samurai",
+    "mana_cost": "{1}{R}",
+    "oracle_text": "{R}: Creatures you control gain haste until end of turn.\n{3}{R}{R}: Create a 5/5 red Dragon Spirit creature token with flying. Activate only if you control an attacking modified creature. (Equipment, Auras you control, and counters are modifications.)",
+    "power": "2",
+    "toughness": "2",
+    "keywords": [],
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "a30c2025-03cf-4c3d-9dd5-0d25f7019d25",
+    "oracle_id": "cb923c4d-1d2e-4039-90bb-72d1981b9738",
+    "name": "Endless Atlas",
+    "layout": "normal",
+    "type_line": "Artifact",
+    "mana_cost": "{2}",
+    "oracle_text": "{2}, {T}: Draw a card. Activate only if you control three or more lands with the same name.",
+    "keywords": [],
+    "color_identity": []
+  },
+  {
+    "id": "bc7f3009-c852-41e7-8e62-d2ee637b3998",
+    "oracle_id": "ce08aff3-efe6-4186-9557-274e00a7ca38",
+    "name": "Sceptre of Eternal Glory",
+    "layout": "normal",
+    "type_line": "Legendary Artifact",
+    "mana_cost": "{4}",
+    "oracle_text": "{T}: Add one mana of any color.\n{T}: Add three mana of any one color. Activate only if you control three or more lands with the same name.",
+    "keywords": [],
+    "color_identity": []
+  }
+]

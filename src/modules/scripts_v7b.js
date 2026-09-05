@@ -1179,7 +1179,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         type: 'chooseCards', from: changed, min: 0, max: changed.length,
         prompt: 'Which proliferated permanents phase out?', aiHint: { kind: 'protectPick' },
       });
-      for (const card of picked) ctx.g.phaseOut(card, ctx.you);
+      ctx.g.phaseOutMany(picked, ctx.you);
     },
   };
   SC['Universal Surveillance'] = {

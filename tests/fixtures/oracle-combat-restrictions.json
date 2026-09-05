@@ -1,0 +1,817 @@
+[
+  {
+    "name": "Indomitable Might",
+    "oracle_id": "069c3c87-81a8-4d2a-ad2f-8d3243d0e3db",
+    "id": "063b156b-7e05-4b49-a40a-54d713004ebf",
+    "oracle_text": "Flash\nEnchant creature\nEnchanted creature gets +3/+3.\nEnchanted creature's controller may have it assign its combat damage as though it weren't blocked.",
+    "mana_cost": "{3}{G}",
+    "type_line": "Enchantment — Aura",
+    "layout": "normal",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": [
+      "Enchant",
+      "Flash"
+    ]
+  },
+  {
+    "name": "Nacatl Hunt-Pride",
+    "oracle_id": "094bc780-3c37-4863-b6ed-e2d16ed94544",
+    "id": "a1214688-084e-4a6a-928e-9434d594725a",
+    "oracle_text": "Vigilance\n{R}, {T}: Target creature can't block this turn.\n{G}, {T}: Target creature blocks this turn if able.",
+    "mana_cost": "{5}{W}",
+    "type_line": "Creature — Cat Warrior",
+    "layout": "normal",
+    "power": "5",
+    "toughness": "4",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "G",
+      "R",
+      "W"
+    ],
+    "keywords": [
+      "Vigilance"
+    ]
+  },
+  {
+    "name": "Culling Mark",
+    "oracle_id": "0cb7f468-070a-463c-b00c-16db3421d16a",
+    "id": "d4c45eda-9f00-4b40-b91d-0ed00151923c",
+    "oracle_text": "Target creature blocks this turn if able.",
+    "mana_cost": "{2}{G}",
+    "type_line": "Sorcery",
+    "layout": "normal",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Razorgrass Screen",
+    "oracle_id": "1818324c-2738-42e2-a78b-63abf325d8e9",
+    "id": "21e79f57-2214-414a-ab34-2b737d4bb972",
+    "oracle_text": "Defender (This creature can't attack.)\nThis creature blocks each combat if able.",
+    "mana_cost": "{1}",
+    "type_line": "Artifact Creature — Wall",
+    "layout": "normal",
+    "power": "2",
+    "toughness": "1",
+    "colors": [],
+    "color_identity": [],
+    "keywords": [
+      "Defender"
+    ]
+  },
+  {
+    "name": "Grand Melee",
+    "oracle_id": "1accf98a-0905-4a9d-9ab3-72e9f853f4ab",
+    "id": "9a0d3142-4224-4b51-885d-33c8938418c1",
+    "oracle_text": "All creatures attack each combat if able.\nAll creatures block each combat if able.",
+    "mana_cost": "{3}{R}",
+    "type_line": "Enchantment",
+    "layout": "normal",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Courtly Provocateur",
+    "oracle_id": "3752277a-5b3c-4902-90a1-63acdac66dc9",
+    "id": "ba912207-a8bf-4ffb-9967-34029cb09f7f",
+    "oracle_text": "{T}: Target creature attacks this turn if able.\n{T}: Target creature blocks this turn if able.",
+    "mana_cost": "{2}{U}",
+    "type_line": "Creature — Human Wizard",
+    "layout": "normal",
+    "power": "1",
+    "toughness": "1",
+    "colors": [
+      "U"
+    ],
+    "color_identity": [
+      "U"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Furor of the Bitten",
+    "oracle_id": "40be0923-5d57-46fd-84ef-7f1a1fd5da42",
+    "id": "cb0e6279-8a66-4124-9def-fa0c83c26db9",
+    "oracle_text": "Enchant creature\nEnchanted creature gets +2/+2 and attacks each combat if able.",
+    "mana_cost": "{R}",
+    "type_line": "Enchantment — Aura",
+    "layout": "normal",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Enchant"
+    ]
+  },
+  {
+    "name": "Iron Golem",
+    "oracle_id": "43990801-ed4a-49ff-a96e-03faa302214f",
+    "id": "5ae24ef5-b12c-48ee-935a-00e048fb8d0f",
+    "oracle_text": "Vigilance\nThis creature attacks or blocks each combat if able.",
+    "mana_cost": "{4}",
+    "type_line": "Artifact Creature — Golem",
+    "layout": "normal",
+    "power": "5",
+    "toughness": "3",
+    "colors": [],
+    "color_identity": [],
+    "keywords": [
+      "Vigilance"
+    ]
+  },
+  {
+    "name": "Dark Maze",
+    "oracle_id": "44c65424-9c44-4bd8-9022-7ef5bb5b898e",
+    "id": "74fe0349-a114-4bb8-a9ae-97d0f8f46ddb",
+    "oracle_text": "Defender (This creature can't attack.)\n{0}: This creature can attack this turn as though it didn't have defender. Exile it at the beginning of the next end step.",
+    "mana_cost": "{4}{U}",
+    "type_line": "Creature — Wall",
+    "layout": "normal",
+    "power": "4",
+    "toughness": "5",
+    "colors": [
+      "U"
+    ],
+    "color_identity": [
+      "U"
+    ],
+    "keywords": [
+      "Defender"
+    ]
+  },
+  {
+    "name": "Relentless Raptor",
+    "oracle_id": "4727db28-98e9-453d-90c3-2d51365d32fc",
+    "id": "2d0727ba-4180-4908-93be-a8abf29a8958",
+    "oracle_text": "Vigilance\nThis creature attacks or blocks each combat if able.",
+    "mana_cost": "{R}{W}",
+    "type_line": "Creature — Dinosaur",
+    "layout": "normal",
+    "power": "3",
+    "toughness": "3",
+    "colors": [
+      "R",
+      "W"
+    ],
+    "color_identity": [
+      "R",
+      "W"
+    ],
+    "keywords": [
+      "Vigilance"
+    ]
+  },
+  {
+    "name": "Peema Aether-Seer",
+    "oracle_id": "4a00f56e-e558-4239-bc75-fb0af7639042",
+    "id": "fe1bc709-2157-4711-a027-c0ff00ff2728",
+    "oracle_text": "When this creature enters, you get an amount of {E} (energy counters) equal to the greatest power among creatures you control.\nPay {E}{E}{E}: Target creature blocks this turn if able.",
+    "mana_cost": "{3}{G}",
+    "type_line": "Creature — Elf Druid",
+    "layout": "normal",
+    "power": "3",
+    "toughness": "2",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Heckling Fiends",
+    "oracle_id": "4b8fb8dc-f1c5-4994-8a58-4849e7e85539",
+    "id": "ad68539a-c7d3-46ee-ab94-ef9cc0f12dc3",
+    "oracle_text": "{2}{R}: Target creature attacks this turn if able.",
+    "mana_cost": "{2}{R}",
+    "type_line": "Creature — Devil",
+    "layout": "normal",
+    "power": "2",
+    "toughness": "2",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Lurking Arynx",
+    "oracle_id": "57303267-7e69-4bd3-8e1f-a528d41121a1",
+    "id": "7f59bc0b-88de-4580-bfc8-5af911d9ee99",
+    "oracle_text": "Formidable — {2}{G}: Target creature blocks this creature this turn if able. Activate only if creatures you control have total power 8 or greater.",
+    "mana_cost": "{4}{G}",
+    "type_line": "Creature — Cat Beast",
+    "layout": "normal",
+    "power": "3",
+    "toughness": "5",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": [
+      "Formidable"
+    ]
+  },
+  {
+    "name": "Pride of Lions",
+    "oracle_id": "5b5e0df8-f8f0-40a1-9814-89d73a026ad0",
+    "id": "b521602b-d44b-4c7a-8b28-de0a7cda434b",
+    "oracle_text": "You may have this creature assign its combat damage as though it weren't blocked.",
+    "mana_cost": "{3}{G}{G}",
+    "type_line": "Creature — Cat",
+    "layout": "normal",
+    "power": "4",
+    "toughness": "4",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Maraleaf Rider",
+    "oracle_id": "66412a7a-4ec0-41f0-80ad-eb483213ff81",
+    "id": "1b2b198d-493c-4d6c-bfb6-e842728522f6",
+    "oracle_text": "Sacrifice a Food: Target creature blocks this creature this turn if able.",
+    "mana_cost": "{1}{G}",
+    "type_line": "Creature — Elf Knight",
+    "layout": "normal",
+    "power": "3",
+    "toughness": "1",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Guise of Fire",
+    "oracle_id": "69d4d459-d680-45d9-a3dc-468e4ecce12e",
+    "id": "beb10d42-fa19-400c-bad8-ec3827f077bc",
+    "oracle_text": "Enchant creature\nEnchanted creature gets +1/-1 and attacks each combat if able.",
+    "mana_cost": "{R}",
+    "type_line": "Enchantment — Aura",
+    "layout": "normal",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Enchant"
+    ]
+  },
+  {
+    "name": "Uncontrollable Anger",
+    "oracle_id": "6e3befe3-38c1-42d1-8825-c40eb0c6adec",
+    "id": "abd16c43-098c-4f38-b0e2-9ad84dd09eb9",
+    "oracle_text": "Flash (You may cast this spell any time you could cast an instant.)\nEnchant creature\nEnchanted creature gets +2/+2 and attacks each combat if able.",
+    "mana_cost": "{2}{R}{R}",
+    "type_line": "Enchantment — Aura",
+    "layout": "normal",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Enchant",
+      "Flash"
+    ]
+  },
+  {
+    "name": "Imps' Taunt",
+    "oracle_id": "7ebec169-d941-460e-9e3c-ba54b5066b05",
+    "id": "79d6ed64-9f5c-4233-85a9-028b8e5949c3",
+    "oracle_text": "Buyback {3} (You may pay an additional {3} as you cast this spell. If you do, put this card into your hand as it resolves.)\nTarget creature attacks this turn if able.",
+    "mana_cost": "{1}{B}",
+    "type_line": "Instant",
+    "layout": "normal",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [
+      "Buyback"
+    ]
+  },
+  {
+    "name": "Trumpeting Armodon",
+    "oracle_id": "7fc3c2a5-2754-4237-8a37-cb3166c20c3c",
+    "id": "38f94fd1-6f85-41ad-9674-f05cc893324f",
+    "oracle_text": "{1}{G}: Target creature blocks this creature this turn if able.",
+    "mana_cost": "{3}{G}",
+    "type_line": "Creature — Elephant",
+    "layout": "normal",
+    "power": "3",
+    "toughness": "3",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Tornado Elemental",
+    "oracle_id": "822cecd9-f93e-4fd4-a496-9bec653b4099",
+    "id": "9859d07b-d7df-4fc3-895a-6b2749c562ad",
+    "oracle_text": "When this creature enters, it deals 6 damage to each creature with flying.\nYou may have this creature assign its combat damage as though it weren't blocked.",
+    "mana_cost": "{5}{G}{G}",
+    "type_line": "Creature — Elemental",
+    "layout": "normal",
+    "power": "6",
+    "toughness": "6",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Fearsome Temper",
+    "oracle_id": "85e9bc3e-e0da-4ad4-9631-472f75f91663",
+    "id": "c6e7884c-2d66-42d1-87d1-1341a6fa52d8",
+    "oracle_text": "Enchant creature\nEnchanted creature gets +2/+2 and has \"{2}{R}: Target creature can't block this creature this turn.\"",
+    "mana_cost": "{2}{R}",
+    "type_line": "Enchantment — Aura",
+    "layout": "normal",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Enchant"
+    ]
+  },
+  {
+    "name": "Tangle Angler",
+    "oracle_id": "887a9f2f-17b4-4a20-a464-9665cde6f293",
+    "id": "b678bd68-e866-4081-95f9-2bd93a84d400",
+    "oracle_text": "Infect (This creature deals damage to creatures in the form of -1/-1 counters and to players in the form of poison counters.)\n{G}: Target creature blocks this creature this turn if able.",
+    "mana_cost": "{3}{G}",
+    "type_line": "Creature — Phyrexian Horror",
+    "layout": "normal",
+    "power": "1",
+    "toughness": "5",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": [
+      "Infect"
+    ]
+  },
+  {
+    "name": "Spin Engine",
+    "oracle_id": "88e98269-fe0e-42f8-830d-776aa06a58dc",
+    "id": "fc820134-ae9a-4c99-a869-cee7f1f6d79b",
+    "oracle_text": "{R}: Target creature can't block this creature this turn.",
+    "mana_cost": "{3}",
+    "type_line": "Artifact Creature — Construct",
+    "layout": "normal",
+    "power": "3",
+    "toughness": "1",
+    "colors": [],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Shipwreck Singer",
+    "oracle_id": "8aae6f84-02ac-4f8f-9721-b12138588b6b",
+    "id": "6e38de33-b2f1-40f4-bf3c-2ebc738cf8ad",
+    "oracle_text": "Flying\n{1}{U}: Target creature an opponent controls attacks this turn if able.\n{1}{B}, {T}: Attacking creatures get -1/-1 until end of turn.",
+    "mana_cost": "{U}{B}",
+    "type_line": "Creature — Siren",
+    "layout": "normal",
+    "power": "1",
+    "toughness": "2",
+    "colors": [
+      "B",
+      "U"
+    ],
+    "color_identity": [
+      "B",
+      "U"
+    ],
+    "keywords": [
+      "Flying"
+    ]
+  },
+  {
+    "name": "Matsu-Tribe Decoy",
+    "oracle_id": "90d8020c-a3e4-4dee-9abf-25d80406b8ab",
+    "id": "14bf9bec-9a5d-48a6-941b-95e1633b9484",
+    "oracle_text": "{2}{G}: Target creature blocks this creature this turn if able.\nWhenever this creature deals combat damage to a creature, tap that creature and it doesn't untap during its controller's next untap step.",
+    "mana_cost": "{2}{G}",
+    "type_line": "Creature — Snake Warrior",
+    "layout": "normal",
+    "power": "1",
+    "toughness": "3",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Impending Doom",
+    "oracle_id": "94366283-3b28-4d6a-96e7-c04e5aead5a6",
+    "id": "5681db91-5dab-41e6-96f2-275ec9495e5b",
+    "oracle_text": "Enchant creature\nEnchanted creature gets +3/+3 and attacks each combat if able.\nWhen enchanted creature dies, this Aura deals 3 damage to that creature's controller.",
+    "mana_cost": "{2}{R}",
+    "type_line": "Enchantment — Aura",
+    "layout": "normal",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Enchant"
+    ]
+  },
+  {
+    "name": "Spinebiter",
+    "oracle_id": "9b844a0c-590f-46c7-b53e-c99398e0d8c0",
+    "id": "cfc79ac6-ffc6-4506-9dea-e20176f960ea",
+    "oracle_text": "Infect (This creature deals damage to creatures in the form of -1/-1 counters and to players in the form of poison counters.)\nYou may have this creature assign its combat damage as though it weren't blocked.",
+    "mana_cost": "{4}{G}{G}",
+    "type_line": "Creature — Phyrexian Beast",
+    "layout": "normal",
+    "power": "3",
+    "toughness": "4",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": [
+      "Infect"
+    ]
+  },
+  {
+    "name": "Thorn Elemental",
+    "oracle_id": "9cdf840d-314e-46ef-9c04-74f145d9e65b",
+    "id": "da901037-20e6-4445-8e7e-1ccd2e8b13ae",
+    "oracle_text": "You may have this creature assign its combat damage as though it weren't blocked.",
+    "mana_cost": "{5}{G}{G}",
+    "type_line": "Creature — Elemental",
+    "layout": "normal",
+    "power": "7",
+    "toughness": "7",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Burning-Tree Bloodscale",
+    "oracle_id": "a9be4be0-71fe-41d9-8f30-351385753fc9",
+    "id": "c6492648-8115-41ff-a184-08efebae28b1",
+    "oracle_text": "Bloodthirst 1 (If an opponent was dealt damage this turn, this creature enters with a +1/+1 counter on it.)\n{2}{R}: Target creature can't block this creature this turn.\n{2}{G}: Target creature blocks this creature this turn if able.",
+    "mana_cost": "{2}{R}{G}",
+    "type_line": "Creature — Lizard Berserker",
+    "layout": "normal",
+    "power": "2",
+    "toughness": "2",
+    "colors": [
+      "G",
+      "R"
+    ],
+    "color_identity": [
+      "G",
+      "R"
+    ],
+    "keywords": [
+      "Bloodthirst"
+    ]
+  },
+  {
+    "name": "Rampant Elephant",
+    "oracle_id": "aaaaf370-6486-4e17-9a93-92e05ebcf29f",
+    "id": "752642d2-3dad-4f58-b154-beb5982141dc",
+    "oracle_text": "{G}: Target creature blocks this creature this turn if able.",
+    "mana_cost": "{3}{W}",
+    "type_line": "Creature — Elephant",
+    "layout": "normal",
+    "power": "2",
+    "toughness": "2",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "G",
+      "W"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Rage Nimbus",
+    "oracle_id": "ab5b49d4-e648-43f1-bcc0-7dd4763316ee",
+    "id": "7c213b45-d86b-4ced-9ab9-44cd84ad94a4",
+    "oracle_text": "Defender, flying\n{1}{R}: Target creature attacks this turn if able.",
+    "mana_cost": "{2}{R}",
+    "type_line": "Creature — Elemental",
+    "layout": "normal",
+    "power": "5",
+    "toughness": "3",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Flying",
+      "Defender"
+    ]
+  },
+  {
+    "name": "Academic Dispute",
+    "oracle_id": "b22de128-6dad-4e15-a547-1c9ca08df5ff",
+    "id": "4620cc3b-e401-4096-b310-fed080806344",
+    "oracle_text": "Target creature blocks this turn if able. You may have it gain reach until end of turn.\nLearn. (You may reveal a Lesson card you own from outside the game and put it into your hand, or discard a card to draw a card.)",
+    "mana_cost": "{R}",
+    "type_line": "Instant",
+    "layout": "normal",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Learn"
+    ]
+  },
+  {
+    "name": "Tormentor's Trident",
+    "oracle_id": "b74992b8-2857-403b-88cf-f2718873571a",
+    "id": "9543d454-27d6-42ba-aad8-54811d180cfb",
+    "oracle_text": "Equipped creature gets +3/+0 and attacks each combat if able.\nEquip {3}",
+    "mana_cost": "{2}",
+    "type_line": "Artifact — Equipment",
+    "layout": "normal",
+    "colors": [],
+    "color_identity": [],
+    "keywords": [
+      "Equip"
+    ]
+  },
+  {
+    "name": "Mogis's Warhound",
+    "oracle_id": "bb87917f-33fb-4024-9317-0992c2f8f55e",
+    "id": "f2e73e06-d708-41dc-b20c-1f71651230e1",
+    "oracle_text": "Bestow {2}{R} (If you cast this card for its bestow cost, it's an Aura spell with enchant creature. It becomes a creature again if it's not attached.)\nThis creature attacks each combat if able.\nEnchanted creature gets +2/+2 and attacks each combat if able.",
+    "mana_cost": "{1}{R}",
+    "type_line": "Enchantment Creature — Dog",
+    "layout": "normal",
+    "power": "2",
+    "toughness": "2",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Bestow"
+    ]
+  },
+  {
+    "name": "Screeching Griffin",
+    "oracle_id": "beae83d2-20b8-47ef-83d9-25a7f90d1da2",
+    "id": "5e2fa710-4615-42de-8716-41b009b56d32",
+    "oracle_text": "Flying\n{R}: Target creature can't block this creature this turn.",
+    "mana_cost": "{3}{W}",
+    "type_line": "Creature — Griffin",
+    "layout": "normal",
+    "power": "2",
+    "toughness": "2",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "R",
+      "W"
+    ],
+    "keywords": [
+      "Flying"
+    ]
+  },
+  {
+    "name": "Culvert Ambusher",
+    "oracle_id": "c11fef0f-972d-4756-9902-fd3e3af00707",
+    "id": "2ccdc58b-1e7e-402c-88f9-c789ff1dae31",
+    "oracle_text": "When this creature enters or is turned face up, target creature blocks this turn if able.\nDisguise {4}{G} (You may cast this card face down for {3} as a 2/2 creature with ward {2}. Turn it face up any time for its disguise cost.)",
+    "mana_cost": "{3}{G}{G}",
+    "type_line": "Creature — Wurm Horror",
+    "layout": "normal",
+    "power": "4",
+    "toughness": "5",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": [
+      "Disguise"
+    ]
+  },
+  {
+    "name": "Otarian Juggernaut",
+    "oracle_id": "c19f79bb-a608-4455-98ef-aac129cea8c5",
+    "id": "752420dc-d69a-4c9d-b563-f8928a4a0920",
+    "oracle_text": "This creature can't be blocked by Walls.\nThreshold — As long as there are seven or more cards in your graveyard, this creature gets +3/+0 and attacks each combat if able.",
+    "mana_cost": "{4}",
+    "type_line": "Artifact Creature — Juggernaut",
+    "layout": "normal",
+    "power": "2",
+    "toughness": "3",
+    "colors": [],
+    "color_identity": [],
+    "keywords": [
+      "Threshold"
+    ]
+  },
+  {
+    "name": "Mirror Wall",
+    "oracle_id": "c4ab446a-97e4-46a5-89a8-180a0bf3447c",
+    "id": "d0e52b73-ebdf-4339-8780-84327a59ca57",
+    "oracle_text": "Defender (This creature can't attack.)\n{W}: This creature can attack this turn as though it didn't have defender.",
+    "mana_cost": "{3}{U}",
+    "type_line": "Creature — Wall",
+    "layout": "normal",
+    "power": "3",
+    "toughness": "4",
+    "colors": [
+      "U"
+    ],
+    "color_identity": [
+      "U",
+      "W"
+    ],
+    "keywords": [
+      "Defender"
+    ]
+  },
+  {
+    "name": "Boiling Blood",
+    "oracle_id": "cd55a003-da0d-4522-b08a-d0731b1050c6",
+    "id": "3fcb85b6-ab5a-40db-aaae-555315f32877",
+    "oracle_text": "Target creature attacks this turn if able.\nDraw a card.",
+    "mana_cost": "{2}{R}",
+    "type_line": "Instant",
+    "layout": "normal",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Duct Crawler",
+    "oracle_id": "d47a7aa5-3b64-4ff8-bb10-e46a34d1993c",
+    "id": "d913e4d2-3502-41f3-871e-59b3b13df58a",
+    "oracle_text": "{1}{R}: Target creature can't block this creature this turn.",
+    "mana_cost": "{R}",
+    "type_line": "Creature — Insect",
+    "layout": "normal",
+    "power": "1",
+    "toughness": "1",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Kozilek's Pathfinder",
+    "oracle_id": "de5a8edb-c41a-4f3a-9231-c54486ba7739",
+    "id": "b75585bd-fdd8-44d1-8c7c-b96df5fc473e",
+    "oracle_text": "{C}: Target creature can't block this creature this turn. ({C} represents colorless mana.)",
+    "mana_cost": "{6}",
+    "type_line": "Creature — Eldrazi",
+    "layout": "normal",
+    "power": "5",
+    "toughness": "5",
+    "colors": [],
+    "color_identity": [],
+    "keywords": []
+  },
+  {
+    "name": "Rhox",
+    "oracle_id": "f6f4c684-2915-4a58-9c4b-487387f7cf73",
+    "id": "6aa50126-f6ec-4917-ac45-4b1f8f23ca09",
+    "oracle_text": "You may have this creature assign its combat damage as though it weren't blocked.\n{2}{G}: Regenerate this creature. (The next time this creature would be destroyed this turn, instead tap it, remove it from combat, and heal all damage on it.)",
+    "mana_cost": "{4}{G}{G}",
+    "type_line": "Creature — Rhino Beast",
+    "layout": "normal",
+    "power": "5",
+    "toughness": "5",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": [
+      "Heal",
+      "Regenerate"
+    ]
+  },
+  {
+    "name": "Lone Wolf",
+    "oracle_id": "f77dfcb6-72b0-4d50-8177-6f6c57a034b9",
+    "id": "309d32e9-c9b0-46bb-8d99-1ddd2e34a60b",
+    "oracle_text": "You may have this creature assign its combat damage as though it weren't blocked.",
+    "mana_cost": "{2}{G}",
+    "type_line": "Creature — Wolf",
+    "layout": "normal",
+    "power": "2",
+    "toughness": "2",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Shessra, Death's Whisper",
+    "oracle_id": "fb29737c-2dfa-4139-988b-29dc8b829c08",
+    "id": "60ca5fef-af21-4e2b-9efa-61e08a638a1f",
+    "oracle_text": "Bewitching Whispers — When Shessra enters, target creature blocks this turn if able.\nWhispers of the Grave — At the beginning of your end step, if a creature died this turn, you may pay 2 life. If you do, draw a card.",
+    "mana_cost": "{2}{B}{G}",
+    "type_line": "Legendary Creature — Human Elf Warlock",
+    "layout": "normal",
+    "power": "1",
+    "toughness": "3",
+    "colors": [
+      "B",
+      "G"
+    ],
+    "color_identity": [
+      "B",
+      "G"
+    ],
+    "keywords": []
+  }
+]

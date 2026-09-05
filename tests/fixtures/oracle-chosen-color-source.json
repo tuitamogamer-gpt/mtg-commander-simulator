@@ -1,0 +1,189 @@
+[
+  {
+    "id": "c0e6f002-9a10-49a1-8604-2b8ff57732dd",
+    "oracle_id": "15f1fe23-5af4-4fc4-8cde-2e0bf9f9be0c",
+    "name": "Citadel Gate",
+    "layout": "normal",
+    "mana_cost": "",
+    "type_line": "Land — Gate",
+    "oracle_text": "This land enters tapped.\nAs this land enters, choose a color other than white.\n{T}: Add {W} or one mana of the chosen color.",
+    "colors": [],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "557470dc-c594-4b26-81b9-356bedb0c215",
+    "oracle_id": "1999b5ac-21fb-4d99-ad72-58bf507f9a59",
+    "name": "Cliffgate",
+    "layout": "normal",
+    "mana_cost": "",
+    "type_line": "Land — Gate",
+    "oracle_text": "This land enters tapped.\nAs this land enters, choose a color other than red.\n{T}: Add {R} or one mana of the chosen color.",
+    "colors": [],
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "b2548ad2-3c62-4ed1-899c-1002b46cdd8f",
+    "oracle_id": "21d700e8-0255-418e-96a0-6fe05b3f836d",
+    "name": "Coldsteel Heart",
+    "layout": "normal",
+    "mana_cost": "{2}",
+    "type_line": "Snow Artifact",
+    "oracle_text": "This artifact enters tapped.\nAs this artifact enters, choose a color.\n{T}: Add one mana of the chosen color.",
+    "colors": [],
+    "color_identity": []
+  },
+  {
+    "id": "f09d98db-0176-41a7-b99b-ead29876cdab",
+    "oracle_id": "2ac34f3e-822d-4fde-99ca-a31c4d9503fd",
+    "name": "Shimmerdrift Vale",
+    "layout": "normal",
+    "mana_cost": "",
+    "type_line": "Snow Land",
+    "oracle_text": "This land enters tapped.\nAs this land enters, choose a color.\n{T}: Add one mana of the chosen color.",
+    "colors": [],
+    "color_identity": []
+  },
+  {
+    "id": "fa9c7e09-8384-4866-af92-ba56bd307d9c",
+    "oracle_id": "3b4b6af2-f929-4082-a5ae-61a4e074bf14",
+    "name": "Silhana Starfletcher",
+    "layout": "normal",
+    "mana_cost": "{2}{G}",
+    "type_line": "Creature — Elf Druid Archer",
+    "oracle_text": "Reach (This creature can block creatures with flying.)\nAs this creature enters, choose a color.\n{T}: Add one mana of the chosen color.",
+    "power": "1",
+    "toughness": "3",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "a8c1dce3-6136-4294-9d2b-5ef8527d733b",
+    "oracle_id": "4cdb9f80-d08f-4986-99c8-573166d66082",
+    "name": "Night Market",
+    "layout": "normal",
+    "mana_cost": "",
+    "type_line": "Land",
+    "oracle_text": "This land enters tapped. As it enters, choose a color.\n{T}: Add one mana of the chosen color.\nCycling {3} ({3}, Discard this card: Draw a card.)",
+    "colors": [],
+    "color_identity": []
+  },
+  {
+    "id": "3e1c9b1a-e306-47bb-9f68-2083660319c0",
+    "oracle_id": "508189e1-9cef-4f9c-8ff1-078c99a0f603",
+    "name": "Sunken Citadel",
+    "layout": "normal",
+    "mana_cost": "",
+    "type_line": "Land — Cave",
+    "oracle_text": "This land enters tapped. As it enters, choose a color.\n{T}: Add one mana of the chosen color.\n{T}: Add two mana of the chosen color. Spend this mana only to activate abilities of land sources.",
+    "colors": [],
+    "color_identity": []
+  },
+  {
+    "id": "65ff914e-3f3e-4b7a-b69d-73575b68fb8e",
+    "oracle_id": "660d44a2-391a-416c-b46c-ddcc3739f527",
+    "name": "Valgavoth's Lair",
+    "layout": "normal",
+    "mana_cost": "",
+    "type_line": "Enchantment Land",
+    "oracle_text": "Hexproof\nThis land enters tapped. As it enters, choose a color.\n{T}: Add one mana of the chosen color.",
+    "colors": [],
+    "color_identity": []
+  },
+  {
+    "id": "64db46d4-f91f-49cc-971c-b8e19f0c4ea9",
+    "oracle_id": "b26cfeb0-7bbe-4d93-8eed-e832f175a80c",
+    "name": "Crossroads Village",
+    "layout": "normal",
+    "mana_cost": "",
+    "type_line": "Land — Town",
+    "oracle_text": "This land enters tapped. As it enters, choose a color.\n{T}: Add one mana of the chosen color.",
+    "colors": [],
+    "color_identity": []
+  },
+  {
+    "id": "d97f31e1-bcaf-4316-a2de-49e2cf7566ec",
+    "oracle_id": "b574c540-9f8a-4fd4-8809-d02c9b099ddc",
+    "name": "Sea Gate",
+    "layout": "normal",
+    "mana_cost": "",
+    "type_line": "Land — Gate",
+    "oracle_text": "This land enters tapped.\nAs this land enters, choose a color other than blue.\n{T}: Add {U} or one mana of the chosen color.",
+    "colors": [],
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "68b90f54-d629-4126-82cc-13b51d6c1c3e",
+    "oracle_id": "d23c3613-bc5e-4fc5-939c-62a090c53a79",
+    "name": "Uncharted Haven",
+    "layout": "normal",
+    "mana_cost": "",
+    "type_line": "Land",
+    "oracle_text": "This land enters tapped. As it enters, choose a color.\n{T}: Add one mana of the chosen color.",
+    "colors": [],
+    "color_identity": []
+  },
+  {
+    "id": "793d4978-9e00-453d-8dc2-6d51ad6c26b7",
+    "oracle_id": "dd6e67c0-66a1-49b7-8a86-3cf4b209fd07",
+    "name": "Manor Gate",
+    "layout": "normal",
+    "mana_cost": "",
+    "type_line": "Land — Gate",
+    "oracle_text": "This land enters tapped.\nAs this land enters, choose a color other than green.\n{T}: Add {G} or one mana of the chosen color.",
+    "colors": [],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "c4ceb589-c741-44ac-98c8-3d997953ee61",
+    "oracle_id": "dde6bce5-8bbe-4866-b5aa-2c05c7d37241",
+    "name": "Black Dragon Gate",
+    "layout": "normal",
+    "mana_cost": "",
+    "type_line": "Land — Gate",
+    "oracle_text": "This land enters tapped.\nAs this land enters, choose a color other than black.\n{T}: Add {B} or one mana of the chosen color.",
+    "colors": [],
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "c3d2e816-c06d-4c5d-98fe-c350d8cfab27",
+    "oracle_id": "e103f422-85c0-43f8-8a2f-8b7863e503fa",
+    "name": "Mirage Mesa",
+    "layout": "normal",
+    "mana_cost": "",
+    "type_line": "Land — Desert",
+    "oracle_text": "This land enters tapped. As it enters, choose a color.\n{T}: Add one mana of the chosen color.",
+    "colors": [],
+    "color_identity": []
+  },
+  {
+    "id": "74a39656-769f-4540-9a30-f637a8ec302e",
+    "oracle_id": "e2975a88-5a5a-462a-90b9-d8c00150b6d3",
+    "name": "Quirion Elves",
+    "layout": "normal",
+    "mana_cost": "{1}{G}",
+    "type_line": "Creature — Elf Druid",
+    "oracle_text": "As this creature enters, choose a color.\n{T}: Add {G}.\n{T}: Add one mana of the chosen color.",
+    "power": "1",
+    "toughness": "1",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ]
+  }
+]

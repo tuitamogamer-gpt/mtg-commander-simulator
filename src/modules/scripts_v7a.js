@@ -149,31 +149,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const c of rest) { c.zone = 'library'; p.library.unshift(c); }
     g.lg(`${p.name}: discover ${n}${hit ? ` → ${hit.name}` : ' (nothing)'}.`);
   };
-  E7.clash = async (g, p) => {
-    const opps = E.eachOpp(g, p).filter(o => o.library.length);
-    const o = await E.chooseOpponent(g, p, {
-      candidates: opps, prompt: 'Clash — choose an opponent', goal: 'clash',
-    });
-    const mine = p.library[p.library.length - 1];
-    const theirs = o && o.library[o.library.length - 1];
-    const mv1 = mine ? mine.mv : -1, mv2 = theirs ? theirs.mv : -1;
-    g.lg(`Clash: ${p.name} (${mine ? mine.name : '—'} mv${mv1}) vs ${o ? o.name : '—'} (${theirs ? theirs.name : '—'} mv${mv2}).`);
-    const place = async (player, card) => {
-      if (!player || !card) return;
-      const where = await player.controller.decide(g, {
-        type: 'chooseOption', prompt: `Clash — ${card.name} stays on top or goes to the bottom?`,
-        card,
-        options: [{ key: 'top', label: 'Leave on top' }, { key: 'bottom', label: 'Put on the bottom' }],
-        aiHint: { kind: 'clashPlace', card },
-      });
-      if (where === 'bottom' && player.library[player.library.length - 1] === card) {
-        player.library.pop(); player.library.unshift(card);
-      }
-    };
-    await place(p, mine);
-    await place(o, theirs);
-    return mv1 > mv2;
-  };
+  E7.clash = async (g, p) => (await g.clash(p)).won;
   // glasanje — "will of the council" (javno, redom)
   E7.vote = async (g, you, src, options, aiPick) => {
     const votes = new Map();

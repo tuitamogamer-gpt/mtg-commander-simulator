@@ -22,6 +22,11 @@ import * as costs from './oracle-v8-costs.mjs';
 import * as additionalCosts from './oracle-v8-additional-costs.mjs';
 import * as alternativeCosts from './oracle-v8-alternative-costs.mjs';
 import * as activationRules from './oracle-v8-activation-rules.mjs';
+import * as activationSuffixes from './oracle-v8-activation-suffixes.mjs';
+import * as kickerReplacements from './oracle-v8-kicker-replacements.mjs';
+import * as counterEffects from './oracle-v8-counter-effects.mjs';
+import * as combatKeywords from './oracle-v8-combat-keywords.mjs';
+import * as phasing from './oracle-v8-phasing.mjs';
 import * as publicAbilities from './oracle-v8-public-abilities.mjs';
 import * as keywordCosts from './oracle-v8-keyword-costs.mjs';
 import * as batchTriggers from './oracle-v8-batch-triggers.mjs';
@@ -32,6 +37,7 @@ import * as untap from './oracle-v8-untap.mjs';
 import * as delayedTriggers from './oracle-v8-delayed-triggers.mjs';
 import * as damageEvents from './oracle-v8-damage-events.mjs';
 import * as coins from './oracle-v8-coins.mjs';
+import * as clash from './oracle-v8-clash.mjs';
 import * as combatCosts from './oracle-v8-combat-costs.mjs';
 import * as castingChoices from './oracle-v8-casting-choices.mjs';
 import * as awaken from './oracle-v8-awaken.mjs';
@@ -48,15 +54,23 @@ import * as energy from './oracle-v8-energy.mjs';
 import * as handSize from './oracle-v8-hand-size.mjs';
 import * as castEvents from './oracle-v8-cast-events.mjs';
 import * as castingRules from './oracle-v8-casting-rules.mjs';
+import * as castingLimits from './oracle-v8-casting-limits.mjs';
 import * as timing from './oracle-v8-timing.mjs';
 import * as prevention from './oracle-v8-prevention.mjs';
 import * as counts from './oracle-v8-counts.mjs';
 import * as mayhem from './oracle-v8-mayhem.mjs';
+import * as scopedEffects from './oracle-v8-scope-effects.mjs';
+import * as combatRestrictions from './oracle-v8-combat-restrictions.mjs';
+import * as manaExtensions from './oracle-v8-mana-extensions.mjs';
+import * as dividedDamage from './oracle-v8-divided-damage.mjs';
+import * as characteristics from './oracle-v8-characteristics.mjs';
+import * as landTypes from './oracle-v8-land-types.mjs';
+import * as activationProhibitions from './oracle-v8-activation-prohibitions.mjs';
 import { ORACLE_SUBTYPES } from './oracle-subtypes.mjs';
 
 const NUM = '(?:a|an|one|two|three|four|five|six|seven|eight|nine|ten|\\d+)';
 const number = value => ({a:1,an:1,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10}[value] ?? Number(value));
-const KEYWORDS = new Set(['flying','reach','first strike','double strike','deathtouch','lifelink','trample','haste','vigilance','menace','defender','indestructible','hexproof','shroud','flash','prowess','shadow','fear','intimidate','skulk','horsemanship','wither','islandwalk']);
+const KEYWORDS = new Set(['flying','reach','first strike','double strike','deathtouch','lifelink','trample','haste','vigilance','menace','defender','indestructible','hexproof','shroud','flash','prowess','shadow','fear','intimidate','skulk','horsemanship','wither','islandwalk','phasing']);
 function singular(text) {
   return text.replace(/\b(creatures|artifacts|enchantments|lands|permanents|planeswalkers|cards|tokens)\b/g, word => word.slice(0,-1))
     .replace(/\b([A-Z][A-Za-z-]+)s\b/g,(word,base)=>ORACLE_SUBTYPES.has(word)?word:ORACLE_SUBTYPES.has(base)?base:word)
@@ -73,6 +87,9 @@ export const needsCopyRecompile = (card,frozen)=>copies.needsRecompile(card,froz
 export function normalizeManaOperations(operations) {
   const libraryMove=node=>!!node&&typeof node==='object'&&(node.mill>0||['draw','mill','loot','wheel','search','look-select','library-select-v8','library-zone-shuffle-v8','library-search-v8','search-own-zones-v8','exile-top','move-to-library','shuffle-graveyard','hand-to-library','cast-card-v8','cast-from-hand-v8','cast-from-graveyard-v8','cast-inspected-v8'].includes(node.action)||Object.values(node).some(value=>Array.isArray(value)?value.some(libraryMove):libraryMove(value)));
   return operations.map(operation=>{
+    // CR 605.1a: a loyalty ability or any targeted ability always uses the
+    // Stack, even when its fully parsed instructions add mana.
+    if(operation.kind==='generic-ability'&&(operation.loyalty!==undefined||operation.targets?.length)&&operation.effects?.some(effect=>effect.action==='add-mana'))return {...operation,stackMana:true};
     if(operation.kind==='generic-ability'&&operation.cost?.energy&&operation.loyalty===undefined&&!operation.from&&!operation.optional&&!operation.sorceryOnly&&!operation.beforeAttackersOnly&&!operation.oncePerObject&&!operation.targets?.length&&operation.effects?.length===1&&operation.effects[0].action==='add-mana'&&Object.keys(operation.cost).every(key=>['energy','tap','mana','sacSelf'].includes(key))&&!operation.cost.mana?.includes('{X}')){
       const effect=operation.effects[0];return {kind:'mana-source',activationCost:operation.cost,produce:effect.choices||[effect.produce],...(effect.multiplier?{multiplier:effect.multiplier}:{}),...(effect.restriction?{restriction:effect.restriction}:{}),...(operation.activationCondition?{condition:operation.activationCondition}:{}),...(operation.onceEachTurn?{onceEachTurn:true}:{}),contract:'mana-source'};
     }
@@ -151,6 +168,16 @@ export function normalizeManaOperations(operations) {
 }
 
 export function extensionTarget(text) {
+  // CR 205.3m: Time Lord is one subtype. Tokenize that exact multiword
+  // noun before the legacy single-word parser can overwrite Time with Lord.
+  if (/\bTime Lord\b/.test(text)) {
+    const marker = ['Advisor', 'Aetherborn', 'Alien', 'Ally', 'Angel'].find(type => !text.includes(type));
+    if (!marker) return null;
+    const target = extensionTarget(text.replace(/\bTime Lord\b/g, marker));
+    const restore = node => Array.isArray(node) ? node.map(restore) : node && typeof node === 'object' ?
+      Object.fromEntries(Object.entries(node).map(([key, value]) => [key, restore(value)])) : node === marker ? 'Time Lord' : node;
+    return target ? restore(target) : null;
+  }
   if(/\btarget Aura attached to /.test(text))return targetPredicates.extensionTarget(text,{target:extensionTarget});
   const stackTarget=stackCopy.extensionTarget(text);if(stackTarget)return stackTarget;
   if(text==='target opponent or planeswalker')return {what:'player or planeswalker',zone:'battlefield',controller:'any',excludeYou:true,min:1};
@@ -261,7 +288,7 @@ export function extensionCondition(text) {
   if(match){const count=extensionCount(match[2]+' you control');if(count)return {kind:'count-comparison',count,max:number(match[1])};}
   match=/^(?:it|this creature|this artifact|this enchantment|this land|this permanent) (?:isn't|is not) (attacking or blocking|attacking|blocking|tapped|untapped)$/.exec(text);
   if(match){const conditions=match[1].split(' or ').map(status=>({kind:'not',condition:{kind:'source-status',status}}));return conditions.length===1?conditions[0]:{kind:'all',conditions};}
-  return permanents.extensionCondition?.(text,{condition:extensionCondition,count:extensionCount,target:extensionTarget})||castingRules.extensionCondition(text,{condition:extensionCondition,count:extensionCount,target:extensionTarget})||null;
+  return permanents.extensionCondition?.(text,{condition:extensionCondition,count:extensionCount,target:extensionTarget})||castingRules.extensionCondition(text,{condition:extensionCondition,count:extensionCount,target:extensionTarget})||castingLimits.extensionCondition(text)||null;
 }
 export function extensionCost(text, card = null) {
   if(/\{E\}/.test(text)){
@@ -291,6 +318,8 @@ export function extensionCost(text, card = null) {
   return Object.keys(cost).length ? cost : null;
 }
 export function modifierOperation(card, line, helpers = {}) {
+  const combatRule = combatRestrictions.modifierOperation(card, line, helpersFor(helpers, card));
+  if (combatRule) return combatRule;
   // Strive and Harmonize are printed cost modifiers whose whole behaviour the
   // engine already executes; only their declaration was missing. The "Strive —"
   // label is an ability word and is stripped before parsing, so the printed
@@ -311,8 +340,10 @@ export function modifierOperation(card, line, helpers = {}) {
     const combat=permanents.modifierOperation(card,line,helpersFor(helpers));
     if(combat)return combat;
   }
-  const result = costs.modifierOperation(card,line,helpersFor(helpers)) || core.baseModifier(card, line) || v6.modifierOperation(card, line) || permanents.modifierOperation(card, line, helpersFor(helpers)) || additionalCosts.modifierOperation(card,line) || alternativeCosts.modifierOperation(card,line,helpersFor(helpers)) || timing.modifierOperation(card,line,helpersFor(helpers)) || castingRules.modifierOperation(card,line,helpersFor(helpers)) || keywordCosts.modifierOperation(card,line,helpersFor(helpers)) || forecast.modifierOperation(card,line,helpersFor(helpers)) || combatCosts.modifierOperation(card,line,helpersFor(helpers)) || encore.modifierOperation(card,line) || miracle.modifierOperation(card,line) || zoneKeywords.modifierOperation(card,line) || keywordPayments.modifierOperation(card,line) || upkeepCosts.modifierOperation(card,line) || equipCosts.modifierOperation(card,line,helpersFor(helpers)) || morphCosts.modifierOperation(card,line) || awaken.modifierOperation(card,line) || castingChoices.modifierOperation(card,line) || null;
+  const result = costs.modifierOperation(card,line,helpersFor(helpers)) || core.baseModifier(card, line) || v6.modifierOperation(card, line) || permanents.modifierOperation(card, line, helpersFor(helpers)) || additionalCosts.modifierOperation(card,line) || alternativeCosts.modifierOperation(card,line,helpersFor(helpers)) || timing.modifierOperation(card,line,helpersFor(helpers)) || castingRules.modifierOperation(card,line,helpersFor(helpers)) || keywordCosts.modifierOperation(card,line,helpersFor(helpers)) || forecast.modifierOperation(card,line,helpersFor(helpers)) || combatCosts.modifierOperation(card,line,helpersFor(helpers)) || encore.modifierOperation(card,line) || miracle.modifierOperation(card,line) || zoneKeywords.modifierOperation(card,line) || keywordPayments.modifierOperation(card,line) || upkeepCosts.modifierOperation(card,line) || equipCosts.modifierOperation(card,line,helpersFor(helpers)) || morphCosts.modifierOperation(card,line) || awaken.modifierOperation(card,line) || castingChoices.modifierOperation(card,line) || castingLimits.modifierOperation(card,line) || combatKeywords.modifierOperation(card,line,helpersFor(helpers,card)) || null;
   if(result)return result;
+  const prohibition = activationProhibitions.modifierOperation(card,line,helpersFor(helpers,card));
+  if(prohibition)return prohibition;
   if(/\b(?:Instant|Sorcery)\b/.test(card.type_line||'')&&/^(?:\{(?:\d+|[WUBRGC])\})+, Exile this card from your graveyard: /.test(line)){
     const ability=core.baseLine(card,line,helpersFor(helpers,card));
     if(ability?.kind==='generic-ability'&&ability.from==='graveyard'&&ability.cost.exileSelf)return ability;
@@ -335,13 +366,15 @@ function helpersFor(helpers, card = null) {
   return { ...helpers, target: extensionTarget, count: extensionCount, value:core.extensionValue, condition: extensionCondition, cost: text => extensionCost(text, card), normalizeOperations:normalizeManaOperations, line: (card,line)=>extensionLine(card,line,helpers) };
 }
 export function extensionEffect(card, line, helpers) {
+  const combatRule = combatRestrictions.extensionEffect(card, line, helpersFor(helpers, card));
+  if (combatRule) return combatRule;
   if(card.name&&!card.name.startsWith('__OracleEvent')&&!line.includes('"')){
     const self=card.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
     const normalized=line.replace(new RegExp('((?:\\+1/\\+1|-1/-1|[a-z]+) counters? on )'+self+'(?=[.,]|$)','g'),'$1this permanent');
     if(normalized!==line)return extensionEffect(card,normalized,helpers);
   }
   const context = helpersFor(helpers, card);
-  const body=coins.extensionEffect(card,line,context) || results.extensionEffect(card,line,context) || stackCopy.extensionEffect(card,line,context) || delayedTriggers.extensionEffect(card,line,context) || untap.extensionEffect(card,line,context) || turns.extensionEffect(card,line,context) || playPermissions.extensionEffect(card,line,context) || effects.targetedDamageSacrifice(card,line,context) || effects.resolutionCostEffect(card,line,context) || linked.extensionEffect(card, line, context) || copies.extensionEffect(card, line, context) || multizoneSearch.extensionEffect(card,line,context) || library.extensionEffect(card,line,context) || core.baseEffect(card, line, context) || v6.extensionEffect(card, line, context) || v5.extensionEffect(card, line, context) || effects.extensionEffect(card, line, context) || timing.extensionEffect(card,line,context) || prevention.extensionEffect(card,line,context) || permanents.extensionEffect?.(card,line,context) || library.fallbackEffect(card,line,context) || revealed.extensionEffect(card,line,context) || targetQuantities.extensionEffect(card,line,context) || energy.extensionEffect(card,line,context) || attachedEffects.extensionEffect(card,line,context) || handSize.extensionEffect(card,line,context) || targetPredicates.extensionEffect(card,line,context) || null;
+  const body=clash.extensionEffect(card,line,context) || coins.extensionEffect(card,line,context) || results.extensionEffect(card,line,context) || stackCopy.extensionEffect(card,line,context) || delayedTriggers.extensionEffect(card,line,context) || untap.extensionEffect(card,line,context) || turns.extensionEffect(card,line,context) || playPermissions.extensionEffect(card,line,context) || effects.targetedDamageSacrifice(card,line,context) || effects.resolutionCostEffect(card,line,context) || linked.extensionEffect(card, line, context) || copies.extensionEffect(card, line, context) || multizoneSearch.extensionEffect(card,line,context) || library.extensionEffect(card,line,context) || core.baseEffect(card, line, context) || v6.extensionEffect(card, line, context) || v5.extensionEffect(card, line, context) || effects.extensionEffect(card, line, context) || timing.extensionEffect(card,line,context) || prevention.extensionEffect(card,line,context) || permanents.extensionEffect?.(card,line,context) || library.fallbackEffect(card,line,context) || revealed.extensionEffect(card,line,context) || targetQuantities.extensionEffect(card,line,context) || energy.extensionEffect(card,line,context) || attachedEffects.extensionEffect(card,line,context) || handSize.extensionEffect(card,line,context) || targetPredicates.extensionEffect(card,line,context) || scopedEffects.extensionEffect(card,line,context) || manaExtensions.extensionEffect(card,line,context) || characteristics.extensionEffect(card,line,context) || landTypes.extensionEffect(card,line,context) || activationProhibitions.extensionEffect(card,line,context) || kickerReplacements.extensionEffect(card,line,context) || counterEffects.extensionEffect(card,line,context) || phasing.extensionEffect(card,line,context) || dividedDamage.extensionEffect(card,line,context) || null;
   if(!body)return null;
   if(/\b(?:enchanted|equipped) (?:creature|artifact|enchantment|land|permanent)\b[^.]*\bif it(?:'s| is)\b/i.test(line)){
     const bind=node=>Array.isArray(node)?node.map(bind):node&&typeof node==='object'?{...Object.fromEntries(Object.entries(node).map(([key,value])=>[key,bind(value)])),...(node.action==='conditional'&&node.conditionTarget===undefined&&['source-quality','source-controlled','source-stat-comparison'].includes(node.condition?.kind)&&JSON.stringify(node.effects).includes('attached-host')?{conditionTarget:'attached-host'}:{})}:node;
@@ -363,14 +396,22 @@ export function libraryEffect(card,line,helpers){return library.extensionEffect(
 export function resolutionCostEffect(card,line,helpers){return effects.resolutionCostEffect(card,line,helpersFor(helpers, card));}
 export function extensionLine(card, line, helpers) {
   const context = helpersFor(helpers, card);
+  const combatRule = combatRestrictions.extensionLine(card, line, context);
+  if (combatRule) return combatRule;
   const energyTrigger=energy.extensionLine(card,line,context);if(energyTrigger)return energyTrigger;
   const equip=equipCosts.modifierOperation(card,line,context);if(equip)return equip;
   const batchTrigger=batchTriggers.extensionLine(card,line,context);if(batchTrigger)return batchTrigger;
-  // Preserve the original unconditional life-gain descriptor while newer
+  if(/^When (?:enchanted|equipped) creature deals (?:combat )?damage to (?:a player|an opponent), /.test(line)) {
+    const prior=permanents.extensionLine(card,line.replace(/^When /,'Whenever '),context);
+    if(prior)return prior;
+  }
+  // Preserve the original unconditional life-change descriptors while newer
   // observed event forms retain their exact timing and once-per-turn scope.
   const observedTrigger=observationTriggers.extensionLine(card,line,context);
   if(observedTrigger){
+    if(/^Whenever you (?:gain|lose) life during (?:your turn|an opponent's turn), (?!if )/.test(line)&&!line.endsWith(' This ability triggers only once each turn.'))return permanents.extensionLine(card,line,context)||observedTrigger;
     if(/^Whenever you gain life, /.test(line)&&!line.endsWith(' This ability triggers only once each turn.'))return core.baseLine(card,line,context)||observedTrigger;
+    if(/^Whenever you lose life, (?!if )/.test(line)&&!line.endsWith(' This ability triggers only once each turn.'))return permanents.extensionLine(card,line,context)||observedTrigger;
     return observedTrigger;
   }
   const priority=permanents.priorityLine(card,line,context);
@@ -380,7 +421,7 @@ export function extensionLine(card, line, helpers) {
   // to the remaining permanent templates here.
   const cycling=/^Cycling ((?:\{[^}]+\})+)$/.exec(line);
   if(cycling&&!/\b(?:Instant|Sorcery)\b/.test(card.type_line||''))return {kind:'cycling',cost:cycling[1],contract:'cycling-ability'};
-  const operation=splice.extensionLine(card,line) || costs.modifierOperation(card,line,context) || control.extensionLine(card,line,context) || linked.extensionLine(card, line, context) || copies.extensionLine(card, line, context) || mayhem.extensionLine(card,line,context) || stackCopy.extensionLine(card,line,context) || core.baseLine(card, line, context) || v6.extensionLine(card, line, context) || v5.extensionLine(card, line, context) || effects.extensionLine(card, line, context) || permanents.extensionLine(card, line,context) || activationRules.extensionLine(card,line,context) || publicAbilities.extensionLine(card,line,context) || keywordCosts.extensionLine(card,line,context) || forecast.extensionLine(card,line,context) || combatCosts.extensionLine(card,line,context) || encore.modifierOperation(card,line) || miracle.modifierOperation(card,line) || zoneKeywords.modifierOperation(card,line) || keywordPayments.modifierOperation(card,line) || upkeepCosts.modifierOperation(card,line) || equipCosts.modifierOperation(card,line,context) || morphCosts.modifierOperation(card,line) || awaken.modifierOperation(card,line) || castingChoices.modifierOperation(card,line) || castEvents.extensionLine(card,line,context) || damageEvents.extensionLine(card,line,context) || coins.extensionLine(card,line,context) || energy.extensionLine(card,line,context) || handSize.extensionLine(card,line,context) || null;
+  const operation=splice.extensionLine(card,line) || costs.modifierOperation(card,line,context) || control.extensionLine(card,line,context) || linked.extensionLine(card, line, context) || copies.extensionLine(card, line, context) || mayhem.extensionLine(card,line,context) || stackCopy.extensionLine(card,line,context) || core.baseLine(card, line, context) || v6.extensionLine(card, line, context) || v5.extensionLine(card, line, context) || effects.extensionLine(card, line, context) || permanents.extensionLine(card, line,context) || activationRules.extensionLine(card,line,context) || publicAbilities.extensionLine(card,line,context) || keywordCosts.extensionLine(card,line,context) || forecast.extensionLine(card,line,context) || combatCosts.extensionLine(card,line,context) || encore.modifierOperation(card,line) || miracle.modifierOperation(card,line) || zoneKeywords.modifierOperation(card,line) || keywordPayments.modifierOperation(card,line) || upkeepCosts.modifierOperation(card,line) || equipCosts.modifierOperation(card,line,context) || morphCosts.modifierOperation(card,line) || awaken.modifierOperation(card,line) || castingChoices.modifierOperation(card,line) || castEvents.extensionLine(card,line,context) || damageEvents.extensionLine(card,line,context) || clash.extensionLine(card,line,context) || coins.extensionLine(card,line,context) || energy.extensionLine(card,line,context) || handSize.extensionLine(card,line,context) || characteristics.extensionLine(card,line,context) || landTypes.extensionLine(card,line,context) || activationProhibitions.extensionLine(card,line,context) || manaExtensions.extensionLine(card,line,context) || activationSuffixes.extensionLine(card,line,context) || phasing.extensionLine(card,line,context) || combatKeywords.extensionLine(card,line,context) || null;
   if(operation?.kind==='generic-trigger'&&!operation.condition&&operation.effects?.length===1&&/^When(?:ever)? .+?, if /.test(line)){
     const branch=operation.effects[0];
     if(branch.action==='conditional'&&branch.condition?.kind==='v8-live-condition'&&!branch.elseEffects)return {...operation,condition:branch.condition,effects:branch.effects};

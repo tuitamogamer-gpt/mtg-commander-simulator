@@ -4,12 +4,12 @@ import { semanticClass } from '../../scripts/import-oracle-batch.mjs';
 
 export function fixtureEngine(rows) {
   const MTG=loadEngine();
-  const cards=rows.map(([name,oracle,type='Creature — Bear',cost='{G}'],index)=>{
-    const input={name,oracle_text:oracle,type_line:type,mana_cost:cost,layout:'normal',power:'2',toughness:'3'};
+  const cards=rows.map(([name,oracle,type='Creature — Bear',cost='{G}',extra={}],index)=>{
+    const input={name,oracle_text:oracle,type_line:type,mana_cost:cost,layout:'normal',power:'2',toughness:'3',...extra};
     const semantic=semanticClass(input);
     assert.ok(semantic.semanticClass,name+': '+semantic.reason);
     return {position:index+1,oracleId:name,scryfallId:name,...semantic,
-      raw:{name,oracle,cost,types:type.split(' — ')[0].split(' '),subtypes:type.split(' — ')[1]?.split(' ')||[],super:[],power:'2',toughness:'3',_ci:['G']},
+      raw:{name,oracle,cost,types:type.split(' — ')[0].split(' '),subtypes:type.split(' — ')[1]?.split(' ')||[],super:[],power:String(extra.power ?? '2'),toughness:String(extra.toughness ?? '3'),...(extra.loyalty!==undefined?{loyalty:extra.loyalty}:{}),_ci:['G']},
       catalog:{commanderLegality:'legal',typeLine:type}};
   });
   MTG.registerOracleBatch({id:'oracle-v8-primitives-test',sequence:9991,cards});MTG.initData(MTG.RAW_DATA);

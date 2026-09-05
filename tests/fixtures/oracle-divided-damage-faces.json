@@ -1,0 +1,140 @@
+[
+  {
+    "name": "Amethyst Dragon // Explosive Crystal",
+    "id": "57adbd6e-88ec-4472-a9c9-90b679fa881f",
+    "oracle_id": "0961b68d-bb0c-4bfb-ad78-01f90b3b97c8",
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Amethyst Dragon",
+        "mana_cost": "{4}{R}{R}",
+        "type_line": "Creature — Dragon",
+        "oracle_text": "Flying, haste",
+        "power": "4",
+        "toughness": "4",
+        "flavor_text": "\"At least it's a beautiful way to die.\"\n—Erinis, gloom stalker",
+        "artist": "Piotr Dura",
+        "artist_id": "aff176e8-1d15-432e-ad1d-207a474decba",
+        "illustration_id": "d9e84014-2395-4348-9c82-0e00124f57df"
+      },
+      {
+        "object": "card_face",
+        "name": "Explosive Crystal",
+        "mana_cost": "{4}{R}",
+        "type_line": "Sorcery — Adventure",
+        "oracle_text": "Explosive Crystal deals 4 damage divided as you choose among any number of targets. (Then exile this card. You may cast the creature later from exile.)",
+        "artist": "Piotr Dura",
+        "artist_id": "aff176e8-1d15-432e-ad1d-207a474decba"
+      }
+    ],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "not_legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "layout": "adventure",
+    "type_line": "Creature — Dragon // Sorcery — Adventure",
+    "mana_cost": "{4}{R}{R} // {4}{R}",
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Flying",
+      "Haste"
+    ],
+    "colors": [
+      "R"
+    ]
+  },
+  {
+    "name": "Fire // Ice",
+    "id": "18303862-4726-4136-814f-157aa7006579",
+    "oracle_id": "ae92942b-919c-4ea9-b693-85fcef765d5a",
+    "card_faces": [
+      {
+        "object": "card_face",
+        "name": "Fire",
+        "mana_cost": "{1}{R}",
+        "type_line": "Instant",
+        "oracle_text": "Fire deals 2 damage divided as you choose among one or two targets.",
+        "artist": "David Martin",
+        "artist_id": "996ad764-4ae0-4952-8bb5-5a75c9d68275",
+        "illustration_id": "c890cb20-7e04-4ad0-96a6-8854cd409c14"
+      },
+      {
+        "object": "card_face",
+        "name": "Ice",
+        "mana_cost": "{1}{U}",
+        "type_line": "Instant",
+        "oracle_text": "Tap target permanent.\nDraw a card.",
+        "artist": "Franz Vohwinkel",
+        "artist_id": "3a243c17-3baa-4b53-9599-645311cd7d3d"
+      }
+    ],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "legal",
+      "predh": "legal",
+      "tlr": "legal"
+    },
+    "layout": "split",
+    "type_line": "Instant // Instant",
+    "mana_cost": "{1}{R} // {1}{U}",
+    "color_identity": [
+      "R",
+      "U"
+    ],
+    "keywords": [],
+    "colors": [
+      "R",
+      "U"
+    ]
+  }
+]

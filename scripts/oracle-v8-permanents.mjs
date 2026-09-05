@@ -899,6 +899,20 @@ export function extensionLine(card, line, helpers = {}) {
   const layered=typeof helpers.keywordList==='function'&&layeredStatic(card,line,helpers);if(layered)return layered;
 
   const self = sourcePattern(card);
+  const damagedDeath=new RegExp('^Whenever a creature dealt damage by '+self+' this turn dies, (.+)$','i').exec(line);
+  if(damagedDeath){
+    const text=damagedDeath[1],rule={damageByThisTurn:'self',target:{what:'creature',zone:'battlefield',controller:'any'}};
+    const direct=objectTrigger(card,'dies',rule,text,helpers);if(direct)return direct;
+    const descriptor=effects=>({kind:'generic-trigger',event:'dies',eventFilter:{kind:'v8-event',...rule},targets:[],effects,contract:'generic-trigger-effect'});
+    const life=/^you gain life equal to that creature's (power|toughness)\.$/.exec(text);
+    if(life)return descriptor([{action:'gain-life',who:'you',n:{kind:'event-card-stat',stat:life[1]}}]);
+    if(text==='return that card to the battlefield under your control.')return descriptor([{action:'reanimate',target:'event-card',controller:'you',tapped:false}]);
+    const tokenExile=/^(create .+? token) and exile that card\.$/.exec(text);
+    if(tokenExile){const body=helpers.effect(card,tokenExile[1]+'.');if(body&&!body.optional&&!body.targets.length&&body.effects.every(effect=>['token-inline','token-key'].includes(effect.action)))return descriptor([...body.effects,{action:'exile',target:'event-card'}]);}
+    const tokens=/^create (a (?:Clue|Food|Blood|Treasure) token) and (a (?:Clue|Food|Blood|Treasure) token)\.$/.exec(text);
+    if(tokens){const bodies=tokens.slice(1).map(part=>helpers.effect(card,'Create '+part+'.'));if(bodies.every(body=>body&&!body.optional&&!body.targets.length&&body.effects.every(effect=>['token-inline','token-key'].includes(effect.action))))return descriptor(bodies.flatMap(body=>body.effects));}
+    return null;
+  }
   if(!line.includes('"')&&!/^(?:When|Whenever|At|Until|If|As long as) /.test(line)){
     const also=line.replace(/^(.*?)(?: also) (get|have) /,'$1 $2 ');
     if(also!==line)return readLine(card,also,helpers);

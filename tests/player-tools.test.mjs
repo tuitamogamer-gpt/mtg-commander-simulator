@@ -18,10 +18,17 @@ test('corrupt or unavailable browser storage cannot prevent player tools from lo
   const { U, values, sandbox } = tools();
   values.set('mtgPlayerPreferences', '{bad json');
   assert.equal(U.playerPreferences().deckView, 'gallery');
-  values.set('mtgPlayerPreferences', JSON.stringify({ handSort: 'script', speed: 'turbo', contrast: 'true' }));
+  values.set('mtgPlayerPreferences', JSON.stringify({ handSort: 'script', speed: 'turbo', contrast: 'true', arenaBackground: 'https://untrusted.test/image', arenaDim: '75' }));
   assert.equal(U.playerPreferences().handSort, 'draw');
   assert.equal(U.playerPreferences().speed, 'normal');
   assert.equal(U.playerPreferences().contrast, false);
+  assert.equal(U.playerPreferences().arenaBackground, 'table');
+  assert.equal(U.playerPreferences().arenaDim, 30);
+  U.savePlayerPreferences({ arenaBackground: 'moonlit-grove', arenaDim: 100 });
+  assert.equal(U.playerPreferences().arenaBackground, 'moonlit-grove');
+  assert.equal(U.playerPreferences().arenaDim, 75);
+  U.savePlayerPreferences({ arenaDim: -10 });
+  assert.equal(U.playerPreferences().arenaDim, 0);
   sandbox.localStorage = { getItem() { throw new Error('blocked'); }, setItem() { throw new Error('quota'); } };
   assert.equal(U.playerPreferences().handSize, 'standard');
   assert.equal(U.savePlayerPreferences({ handSize: 'large' }), false);

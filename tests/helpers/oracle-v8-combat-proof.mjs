@@ -1,3 +1,4 @@
+import {combatExtraProof} from './oracle-v8-combat-restrictions-proof.mjs';
 import assert from 'node:assert/strict';
 import {stageCondition} from './oracle-v5-proof.mjs';
 
@@ -10,6 +11,7 @@ export async function combatStaticProof(MTG, entry, operation, role, h) {
   let card = source;
   if (operation.kind === 'attachment-grant') {card = make('Combat enchanted host'); await game.attach(source, card);}
   else if (operation.scope === 'filtered-permanents') card = h.stageGenericTarget(MTG, ctx, {...operation.filters[0], controller: 'you'}, 'combat recipient');
+  else if (operation.scope && operation.scope !== 'self') card = make('Combat group recipient', operation.scope === 'opponent-creatures' ? b : a);
   stageCondition(MTG, ctx, operation.condition, operation.conditionSubject === 'affected' ? card : source, h);
   if (operation.condition?.kind === 'source-quality' && operation.condition.filter.what === 'creature' && !source.is('Creature')) {
     const abilities = entry.implementation.filter(candidate => candidate.kind === 'generic-ability' && !candidate.from);
@@ -21,6 +23,7 @@ export async function combatStaticProof(MTG, entry, operation, role, h) {
     assert.equal(source.is('Creature'), true, entry.raw.name + ': actual paid animation makes the source a creature');
   }
   const rule = operation.combatRule; game.recalc(); card.sick = false; card.tapped = false;
+  const extra = await combatExtraProof(MTG,ctx,card,rule,h,entry.raw.name); if(extra !== null)return extra;
   const blocker = make('Combat legal blocker', b, {power: '2', kws: ['flying', 'reach', 'shadow', 'horsemanship'], colorsOverride: ['W', 'U', 'B', 'R', 'G']});
   // A shadow blocker cannot block ordinary creatures. Match the source's
   // existing evasion so each test isolates this printed additional clause.

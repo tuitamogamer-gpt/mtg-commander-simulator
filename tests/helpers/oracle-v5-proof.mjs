@@ -1,3 +1,5 @@
+import {stageActivationSuffix} from './oracle-v8-activation-suffixes-proof.mjs';
+import {combatExtraProof} from './oracle-v8-combat-restrictions-proof.mjs';
 import assert from 'node:assert/strict';
 import {proveOracleAwaken} from './oracle-v8-awaken-proof.mjs';
 import {proveOracleMorphCost} from './oracle-v8-morph-cost-proof.mjs';
@@ -15,6 +17,7 @@ import { stageOracleCastingCosts, assertOracleCastingCostRecord, proveOracleAlte
 export function stageFalseCondition(MTG,ctx,condition,source,helpers){
  const {game,a}=ctx;
  if(condition.kind==='cast-main-phase'){game.phase='end';ctx.paymentCondition=null;}
+ else if(condition.kind==='kicked'){ctx.kickerProof=false;}
  else if(condition.kind==='city-blessing')a.cityBlessing=false;
  else if(condition.kind==='spells-cast-last-turn')for(const player of game.players)player.lastTurnSpellsCast=condition.max!==undefined?(condition.max+1):0;
  else if(condition.kind==='starting-life')a.life=(a.startingLife??40)+condition.offset+(condition.comparison==='greater'?-1:1);
@@ -84,6 +87,7 @@ export function stageFalseCondition(MTG,ctx,condition,source,helpers){
 }
 
 export function stageCondition(MTG,ctx,condition,source,helpers) {
+  if(stageActivationSuffix(MTG,ctx,condition,source))return;
   if(stageLiveCondition(MTG,ctx,condition,source,helpers))return;
   if(stageCastingRuleCondition(MTG,ctx,condition,source,helpers))return;
   if(condition?.kind==='your-phase'){ctx.game.turnPlayer=ctx.a;ctx.game.phase=condition.phase==='main'?'main1':condition.phase;return;}
@@ -357,6 +361,22 @@ export async function characteristicProof(MTG,entry,op,role,h){
 }
 
 export async function combatRestrictionProof(MTG,ctx,card,op,h,label){
+ let activationChecks=0;
+ if(op.activationDisabled){
+   const original=card.def,ability={cost:{},run:async()=>{throw new Error('Prohibited ability ran');}};
+   try{
+     card.def={...original,kws:[...(original.kws||[]),'vigilance'],abilities:[ability],mana:{cost:{tap:true},produce:[{G:1}]}};
+     ctx.game.recalc();
+     assert.equal(card.cur.activationDisabled,true,label+': activation prohibition survives recalculation');
+     assert.equal(card.kw('vigilance'),true,label+': prohibition preserves keywords');
+     assert.equal(ctx.game.activatableList(card.ctrl).some(entry=>entry.card===card&&!entry.turnFaceUp),false,label+': prohibited actions absent from real player and AI action list');
+     assert.equal(ctx.game.manaSources(card.ctrl).some(entry=>entry.card===card),false,label+': prohibited mana source unavailable');
+     assert.equal(await ctx.game.activateAbility(card.ctrl,{card,ability,idx:0}),false,label+': stale activation rejected');
+     activationChecks=5;
+   }finally{card.def=original;ctx.game.recalc();}
+ }
+ const extra = await combatExtraProof(MTG,ctx,card,op.combatRule,h,label); if(extra !== null)return extra;
+ if(op.mustAttack){assert.equal(ctx.game.isForcedToAttack(card),true,label+': resolved attack requirement');return 1;}
  if(op.combatRule?.kind==='block-capacity'){
    const rule=op.combatRule,capacity=ctx.game.blockerCapacity(card);
    assert.ok(rule.any?capacity===Infinity:capacity>=1+(rule.additional||0),label+': current blocking capacity includes resolved effect');
@@ -365,8 +385,8 @@ export async function combatRestrictionProof(MTG,ctx,card,op,h,label){
    assert.equal(ctx.game.blockDeclarationLegal(attackers,attackers.map(attacker=>({blocker:card,attacker}))),true,label+': real declaration accepts all capacity slots');
    return 2;
  }
- if(!['cantAttack','cantBlock','unblockable','blockOnlyFlying','attackerFilters','relativeAttackerPower','blockerFilters','defenderRule','cantAttackSourceController'].some(key=>op[key]))return 0;
- const {game,a,b}=ctx;let checks=0;
+ if(!['cantAttack','cantBlock','unblockable','blockOnlyFlying','attackerFilters','relativeAttackerPower','blockerFilters','defenderRule','cantAttackSourceController'].some(key=>op[key]))return activationChecks;
+ const {game,a,b}=ctx;let checks=activationChecks;
  const opponent=card.ctrl===a?b:a;
  const probe=h.permanent(MTG,game,opponent,h.fixtureDefinition('Combat legality probe',['Creature'],{power:'1',toughness:'20',colorsOverride:[],kws:[]}));
  if(op.cantAttack){assert.equal(card.cur.cantAttack,true,label+': attack restriction applied');assert.equal(game.canAttackAtAll(card),false);checks++;}
@@ -490,7 +510,7 @@ export async function staticProof(MTG,entry,op,role,h){
  if(op.subtype==='tapped'){target.tapped=true;opposite.tapped=true;}
  if(op.subtype==='attacking'){target.attacking=b;opposite.attacking=a;}
  if(op.subtype==='token'){target.isToken=true;opposite.isToken=true;}
- if(op.subtype?.toLowerCase()==='enchanted')for(const card of [target,opposite]){const aura=h.permanent(MTG,game,card.ctrl,h.fixtureDefinition('V6 attached Aura',['Enchantment'],{subtypes:['Aura']}));aura.attachedTo=card.iid;card.attachments.push(aura.iid);}
+ if(['enchanted','equipped'].includes(op.subtype?.toLowerCase()))for(const card of [target,opposite]){const equipped=op.subtype.toLowerCase()==='equipped',attachment=h.permanent(MTG,game,card.ctrl,h.fixtureDefinition('V6 actual attachment',[equipped?'Artifact':'Enchantment'],{subtypes:[equipped?'Equipment':'Aura']}));attachment.attachedTo=card.iid;card.attachments.push(attachment.iid);}
  game.recalc();
  const prior={power:target.power,toughness:target.toughness,opposite:opposite.power,source:source.power};
  const statics=source.def.statics,selected=statics.find(s=>s.oracleOperation===op);assert.ok(selected);

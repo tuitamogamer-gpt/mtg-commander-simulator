@@ -1,0 +1,618 @@
+[
+  {
+    "name": "Darkest Hour",
+    "oracle_id": "5667376e-e59c-4b17-b096-5d92cdfe3db1",
+    "id": "aeeb0f91-2084-448a-8226-95d7c87dd6bb",
+    "oracle_text": "All creatures are black.",
+    "type_line": "Enchantment",
+    "mana_cost": "{B}",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "layout": "normal"
+  },
+  {
+    "name": "Thran Lens",
+    "oracle_id": "0ac723bf-ce86-4028-a693-0ef498e4c82d",
+    "id": "200c3666-5ba0-4f0a-adbe-a97af0aa28d1",
+    "oracle_text": "All permanents are colorless.",
+    "type_line": "Artifact",
+    "mana_cost": "{2}",
+    "colors": [],
+    "color_identity": [],
+    "layout": "normal"
+  },
+  {
+    "name": "Ghostflame Sliver",
+    "oracle_id": "cb7d65f7-003f-46db-af71-7b575c713c6b",
+    "id": "64eb10d1-22c6-4848-a7f4-c6ccd2c66dae",
+    "oracle_text": "All Slivers are colorless.",
+    "type_line": "Creature — Sliver",
+    "mana_cost": "{B}{R}",
+    "power": "2",
+    "toughness": "2",
+    "colors": [
+      "B",
+      "R"
+    ],
+    "color_identity": [
+      "B",
+      "R"
+    ],
+    "layout": "normal"
+  },
+  {
+    "name": "Hivestone",
+    "oracle_id": "72aeed80-653b-4c53-ba65-a339aad14b9a",
+    "id": "69e62171-713c-49c0-8e16-b193ff181dcd",
+    "oracle_text": "Creatures you control are Slivers in addition to their other creature types.",
+    "type_line": "Artifact",
+    "mana_cost": "{2}",
+    "colors": [],
+    "color_identity": [],
+    "layout": "normal"
+  },
+  {
+    "name": "Dralnu's Crusade",
+    "oracle_id": "ff48cf80-4950-4ae4-9f7c-8d826b2f26f7",
+    "id": "844976c7-c8f7-435a-9bd4-1fea3c635030",
+    "oracle_text": "All Goblins get +1/+1.\nAll Goblins are black and are Zombies in addition to their other creature types.",
+    "type_line": "Enchantment",
+    "mana_cost": "{1}{B}{R}",
+    "colors": [
+      "B",
+      "R"
+    ],
+    "color_identity": [
+      "B",
+      "R"
+    ],
+    "layout": "normal"
+  },
+  {
+    "name": "Viridescent Wisps",
+    "oracle_id": "3003e19e-ae60-4e10-b688-d0cac2a63cb2",
+    "id": "6c33871f-0e6a-4616-b484-e79b1945255f",
+    "oracle_text": "Target creature becomes green and gets +1/+0 until end of turn.\nDraw a card.",
+    "type_line": "Instant",
+    "mana_cost": "{G}",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "layout": "normal"
+  },
+  {
+    "name": "Niveous Wisps",
+    "oracle_id": "e4ecd56c-216d-4c3a-9dfa-09ae1be03e4f",
+    "id": "bea1e2c4-1671-4322-b8ba-e4e1a879cf37",
+    "oracle_text": "Target creature becomes white until end of turn. Tap that creature.\nDraw a card.",
+    "type_line": "Instant",
+    "mana_cost": "{W}",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "W"
+    ],
+    "layout": "normal"
+  },
+  {
+    "name": "Cerulean Wisps",
+    "oracle_id": "a6605c50-558e-417c-8c75-6c45b06d6e13",
+    "id": "0dca4f46-0aad-484f-b4ea-ed61a4fc1a89",
+    "oracle_text": "Target creature becomes blue until end of turn. Untap that creature.\nDraw a card.",
+    "type_line": "Instant",
+    "mana_cost": "{U}",
+    "colors": [
+      "U"
+    ],
+    "color_identity": [
+      "U"
+    ],
+    "layout": "normal"
+  },
+  {
+    "name": "Crimson Wisps",
+    "oracle_id": "e699d140-eb13-4f15-aecb-85c76e8b1b14",
+    "id": "a65c81ff-fc5d-4191-93fb-52eb806457b7",
+    "oracle_text": "Target creature becomes red and gains haste until end of turn. (It can attack and {T} this turn.)\nDraw a card.",
+    "type_line": "Instant",
+    "mana_cost": "{R}",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "layout": "normal"
+  },
+  {
+    "name": "Aphotic Wisps",
+    "oracle_id": "db951ec2-d751-479d-af1f-885d3cf50027",
+    "id": "52fd47e7-02c5-4f91-bb3b-697c4c53232a",
+    "oracle_text": "Target creature becomes black and gains fear until end of turn. (It can't be blocked except by artifact creatures and/or black creatures.)\nDraw a card.",
+    "type_line": "Instant",
+    "mana_cost": "{B}",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "layout": "normal"
+  },
+  {
+    "name": "Argent Mutation",
+    "oracle_id": "652ef093-06e9-4bf1-b9cf-950fe043b319",
+    "id": "507fa5fd-2aa5-4721-a059-2c8c3056a4ca",
+    "oracle_text": "Target permanent becomes an artifact in addition to its other types until end of turn.\nDraw a card.",
+    "type_line": "Instant",
+    "mana_cost": "{2}{U}",
+    "colors": [
+      "U"
+    ],
+    "color_identity": [
+      "U"
+    ],
+    "layout": "normal"
+  },
+  {
+    "name": "Myr Landshaper",
+    "oracle_id": "7432fbe1-dce6-4b3c-a6b4-764f4612a6b6",
+    "id": "0fb654ac-9bb0-465e-8878-5456c154274f",
+    "oracle_text": "{T}: Target land becomes an artifact in addition to its other types until end of turn.",
+    "type_line": "Artifact Creature — Myr",
+    "mana_cost": "{3}",
+    "power": "1",
+    "toughness": "1",
+    "colors": [],
+    "color_identity": [],
+    "layout": "normal"
+  },
+  {
+    "name": "Liquimetal Coating",
+    "oracle_id": "f4bdc551-c2eb-4a34-a3e3-b4a017c925af",
+    "id": "f631447c-36e3-4d82-a658-19c9767a216b",
+    "oracle_text": "{T}: Target permanent becomes an artifact in addition to its other types until end of turn.",
+    "type_line": "Artifact",
+    "mana_cost": "{2}",
+    "colors": [],
+    "color_identity": [],
+    "layout": "normal"
+  },
+  {
+    "name": "Liquimetal Torque",
+    "oracle_id": "b7d4b7dd-fbb1-4ca3-875f-ef13a95e66ad",
+    "id": "13c6101a-da40-4785-8ccb-4e779bbbdb55",
+    "oracle_text": "{T}: Add {C}.\n{T}: Target nonland permanent becomes an artifact in addition to its other types until end of turn.",
+    "type_line": "Artifact",
+    "mana_cost": "{2}",
+    "colors": [],
+    "color_identity": [],
+    "layout": "normal"
+  },
+  {
+    "name": "Thran Forge",
+    "oracle_id": "cb4414a6-27d0-4922-938b-391283535f24",
+    "id": "b9c9691b-bee8-4251-8275-5f6ba14a8ecd",
+    "oracle_text": "{2}: Until end of turn, target nonartifact creature gets +1/+0 and becomes an artifact in addition to its other types.",
+    "type_line": "Artifact",
+    "mana_cost": "{3}",
+    "colors": [],
+    "color_identity": [],
+    "layout": "normal"
+  },
+  {
+    "name": "Scrapbasket",
+    "oracle_id": "779269f9-78c1-4e65-bafe-b6dea40a2b24",
+    "id": "3c7f0a6d-4127-4ea4-be16-2ed6b263a3f3",
+    "oracle_text": "{1}: This creature becomes all colors until end of turn.",
+    "type_line": "Artifact Creature — Scarecrow",
+    "mana_cost": "{4}",
+    "power": "3",
+    "toughness": "2",
+    "colors": [],
+    "color_identity": [],
+    "layout": "normal"
+  },
+  {
+    "name": "Stone by Sunlight",
+    "oracle_id": "7907bbf0-f6d9-4e5b-b5de-73cd94979f98",
+    "id": "c5752731-253c-4b41-bdd8-94c26d715206",
+    "oracle_text": "Choose one —\n• Destroy target creature with power 4 or greater.\n• Until end of turn, target creature becomes an artifact in addition to its other types and gains indestructible. (Damage and effects that say \"destroy\" don't destroy it.)",
+    "type_line": "Instant",
+    "mana_cost": "{1}{W}",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "W"
+    ],
+    "layout": "normal"
+  },
+  {
+    "name": "Dalakos, Crafter of Wonders",
+    "oracle_id": "211814a5-195d-41c6-b96c-4c26b2cbb33c",
+    "id": "57ea0ba2-3ccf-4313-ad1d-161272c48851",
+    "oracle_text": "{T}: Add {C}{C}. Spend this mana only to cast artifact spells or activate abilities of artifacts.\nEquipped creatures you control have flying and haste.",
+    "type_line": "Legendary Creature — Merfolk Artificer",
+    "mana_cost": "{1}{U}{R}",
+    "power": "2",
+    "toughness": "4",
+    "colors": [
+      "R",
+      "U"
+    ],
+    "color_identity": [
+      "R",
+      "U"
+    ],
+    "layout": "normal"
+  },
+  {
+    "id": "e60b6c02-c1f1-4ab9-bd62-ae3b447a898f",
+    "oracle_id": "4f142d99-8146-4b16-a2cc-ac03da19b960",
+    "name": "Ursine Champion",
+    "layout": "normal",
+    "mana_cost": "{1}{G}",
+    "type_line": "Creature — Human Berserker",
+    "oracle_text": "{5}{G}: This creature gets +3/+3 and becomes a Bear Berserker until end of turn. Activate only once each turn.",
+    "power": "2",
+    "toughness": "2",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "arena",
+      "paper",
+      "mtgo"
+    ]
+  },
+  {
+    "id": "a61a7809-4bef-48e9-afbc-e473eb7072e8",
+    "oracle_id": "19ff1424-6505-4702-86ad-2d7518b584f6",
+    "name": "Wishful Merfolk",
+    "layout": "normal",
+    "mana_cost": "{1}{U}",
+    "type_line": "Creature — Merfolk",
+    "oracle_text": "Defender\n{1}{U}: This creature loses defender and becomes a Human until end of turn.",
+    "power": "3",
+    "toughness": "2",
+    "colors": [
+      "U"
+    ],
+    "color_identity": [
+      "U"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "arena",
+      "paper"
+    ]
+  },
+  {
+    "id": "5389663a-fe25-41b9-8c92-1f4d7721ffc2",
+    "oracle_id": "fb7070ab-c234-4d54-8cdc-caf106bf24a6",
+    "name": "Mild-Mannered Librarian",
+    "layout": "normal",
+    "mana_cost": "{G}",
+    "type_line": "Creature — Human",
+    "oracle_text": "{3}{G}: This creature becomes a Werewolf. Put two +1/+1 counters on it and you draw a card. Activate only once.",
+    "power": "1",
+    "toughness": "1",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ]
+  },
+  {
+    "id": "aba9a42c-6bb8-4f77-9d3a-e749713b2431",
+    "oracle_id": "6ad1d8d0-06c0-4804-af5f-60ffb358f371",
+    "name": "Boldwyr Intimidator",
+    "layout": "normal",
+    "mana_cost": "{5}{R}{R}",
+    "type_line": "Creature — Giant Warrior",
+    "oracle_text": "Cowards can't block Warriors.\n{R}: Target creature becomes a Coward until end of turn.\n{2}{R}: Target creature becomes a Warrior until end of turn.",
+    "power": "5",
+    "toughness": "5",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "id": "9203fde4-dbc1-449f-9618-4656f0e25e3c",
+    "oracle_id": "52d8e70b-7e94-4e17-811f-70afe39ff9bd",
+    "name": "Memnarch",
+    "layout": "normal",
+    "mana_cost": "{7}",
+    "type_line": "Legendary Artifact Creature — Wizard",
+    "oracle_text": "{1}{U}{U}: Target permanent becomes an artifact in addition to its other types. (This effect lasts indefinitely.)\n{3}{U}: Gain control of target artifact. (This effect lasts indefinitely.)",
+    "power": "4",
+    "toughness": "5",
+    "colors": [],
+    "color_identity": [
+      "U"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper"
+    ]
+  },
+  {
+    "id": "27906645-7d43-4c18-a20b-8d683069351e",
+    "oracle_id": "38c83332-2d21-450c-ae97-34109b565f59",
+    "name": "Tyrite Sanctum",
+    "layout": "normal",
+    "mana_cost": "",
+    "type_line": "Land",
+    "oracle_text": "{T}: Add {C}.\n{2}, {T}: Target legendary creature becomes a God in addition to its other types. Put a +1/+1 counter on it.\n{4}, {T}, Sacrifice this land: Put an indestructible counter on target God.",
+    "colors": [],
+    "color_identity": [],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo"
+    ]
+  },
+  {
+    "id": "a8f3d2cb-d073-4df8-8769-49612628a377",
+    "oracle_id": "4e552be1-0702-4e18-822f-98611f8a8e70",
+    "name": "Enter the Avatar State",
+    "layout": "normal",
+    "mana_cost": "{W}",
+    "type_line": "Instant — Lesson",
+    "oracle_text": "Until end of turn, target creature you control becomes an Avatar in addition to its other types and gains flying, first strike, lifelink, and hexproof. (A creature with hexproof can't be the target of spells or abilities your opponents control.)",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "W"
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ]
+  },
+  {
+    "id": "5fef478f-3cb4-4b1f-9544-d7690d2b5144",
+    "oracle_id": "5c94b616-8edf-465c-b316-4599df95c52a",
+    "name": "Stegron the Dinosaur Man",
+    "layout": "normal",
+    "mana_cost": "{4}{R}",
+    "type_line": "Legendary Creature — Dinosaur Villain",
+    "oracle_text": "Menace (This creature can't be blocked except by two or more creatures.)\nDinosaur Formula — {1}{R}, Discard this card: Until end of turn, target creature you control gets +3/+1 and becomes a Dinosaur in addition to its other types.",
+    "power": "5",
+    "toughness": "4",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ]
+  }
+]

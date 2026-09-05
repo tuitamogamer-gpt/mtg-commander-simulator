@@ -1426,7 +1426,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filter: (g, c, ctrl) => c.ctrl === ctrl && !c.is('Land'), aiHint: { goal: 'protect' },
     }],
     resolve: async ctx => {
-      for (const card of (Array.isArray(ctx.targets[0]) ? ctx.targets[0] : ctx.targets).filter(Boolean)) ctx.g.phaseOut(card, ctx.you);
+      ctx.g.phaseOutMany((Array.isArray(ctx.targets[0]) ? ctx.targets[0] : ctx.targets).filter(Boolean), ctx.you);
     },
   };
   SC['First Family'] = {

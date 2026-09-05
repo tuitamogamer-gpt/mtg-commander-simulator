@@ -216,6 +216,7 @@ export async function assertPaymentEffect(MTG, context, entry, effect, source, s
   }
   if (branch) {
     const childContext = { ...context, a: row.player, oraclePaymentCapture: branch.ctx.oraclePaymentCapture,
+      oracleAnnouncementTrace: context.oracleAnnouncementTrace || trace,
       sacrificeEvidence: branch.ctx.sacd || context.sacrificeEvidence.slice(row.sacrifices) };
     const childTrace = trace.slice(branch.traceEnd ?? row.traceStart ?? 0, row.traceEnd ?? trace.length);
     for (const child of branch.effects) await h.assertGenericEffectEvidence(MTG, childContext, entry, child, source, row.targets, damagedPlayer, branch.before, childTrace, label + (paid ? '/paid' : '/declined'));

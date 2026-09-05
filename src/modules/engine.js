@@ -804,14 +804,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     snapshot(card,includeAttachments=true) {
       const derived=card.zone==='battlefield'&&card.cur;
+      const activeAttachments=card.attachments.map(id=>this.byIid(id)).filter(source=>source?.zone==='battlefield'&&!source.phasedOut&&source.attachedTo===card.iid);
       return {
         iid: card.iid, timestamp: card.timestamp, name: card.name, def: card.def, ctrl: card.ctrl, owner: card.owner, copyEpoch:card.copyEpoch||0, copying:!!card.isCopyOf,
         sourceMeta: card.meta,
         oracleFaces: card.oracleFaces, oracleFace: card.oracleFace,
         isToken: card.isToken, power: card.power, toughness: card.toughness,
         tapped: !!card.tapped, blocking: card.blocking,
-        enchanted: card.attachments.some(id => this.byIid(id)?.hasSub('Aura')),
-        equipped: card.attachments.some(id => this.byIid(id)?.hasSub('Equipment')),
+        enchanted: activeAttachments.some(source=>source.hasSub('Aura')),
+        equipped: activeAttachments.some(source=>source.hasSub('Equipment')),
         commander: card.commander, attacking: card.attacking, plus1: card.plus1(),
         minus1: card.counters['-1/-1'] || 0,
         counters: Object.assign({}, card.counters),
@@ -826,7 +827,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // letenjem → beskonačna petlja sa Selfless Spiritom.
         kw: derived ? [...card.cur.kw] : [...(card.def.kws||[])],
         extraTriggers: (card.cur?.extraTriggers||[]).slice(),
-        attachedSources: includeAttachments?card.attachments.map(id=>this.byIid(id)).filter(Boolean).map(source=>({card:source,ctrl:source.ctrl,snap:this.snapshot(source,false)})):[],
+        attachedSources: includeAttachments?activeAttachments.map(source=>({card:source,ctrl:source.ctrl,snap:this.snapshot(source,false)})):[],
         flying: !!(card.cur && card.cur.kw.has('flying')),
         abilitiesDisabled: !!(card.cur && card.cur.abilitiesDisabled),
       };
@@ -841,6 +842,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         card.zone = 'ceased';
         return card;
       }
+      // CR 702.26b: ordinary effects cannot move an object that is phased out.
+      // Player departure removes owned objects separately (CR 800.4).
+      if (card.zone === 'battlefield' && card.phasedOut) return card;
       const fromZone = card.zone;
       const oracleFace = MTG.OracleV8Faces?.moveFace(card, toZone, opts);
       if (oracleFace === false) return card;
@@ -978,7 +982,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // detach everything
         for (const aid of card.attachments.slice()) {
           const a = this.byIid(aid);
-          if (a) {
+          if (a && !a.phasedOut) {
             // Auras such as Gift of Immortality trigger after both the creature
             // and the Aura have reached the graveyard. Preserve which object
             // the Aura enchanted so its graveyard trigger can use LKI.
@@ -1044,6 +1048,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
       card.zone = toZone;
       if (toZone === 'battlefield') {
+        // This is a new battlefield object. Its prior derived types cannot
+        // govern entry replacement checks while the entrant is excluded from
+        // the pre-entry battlefield and recalc deliberately leaves it out.
+        card.cur = null;
         card.ctrl = opts.ctrl || card.owner;
         card.timestamp = this.nextOracleTimestamp();
         this.battlefield.push(card);
@@ -1052,6 +1060,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // nakon ETB događaja. ETB filteri zato odmah moraju vidjeti napadača.
         if (opts.attacking && this.combat && card.ctrl===this.turnPlayer && card.is('Creature')) {
           card.attacking = opts.attacking;
+          this.combat.hadAttackers = true;
           if (!this.combat.attackers.includes(card)) this.combat.attackers.push(card);
         }
         // CR 400.7: permanent koji uđe na bojno polje je NOV objekat — svjež meta.
@@ -1345,21 +1354,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const entryPlusCounters = [];
       const entryCounterEvents = [];
       card.meta = card.meta || {};
-      const batchedReplacement = !!this._battlefieldEntryReplacementSnapshot;
-      if (batchedReplacement) this._entryReplacementPhase = (this._entryReplacementPhase || 0) + 1;
+      const previousEntrySnapshot = this._battlefieldEntryReplacementSnapshot;
+      // Structural insertion precedes replacement choices in this engine.
+      // A single entrant, just like a simultaneous batch, is not yet an
+      // available permanent while those choices and payments are made.
+      if (!previousEntrySnapshot) this._battlefieldEntryReplacementSnapshot = this.bf().filter(candidate => candidate !== card);
+      this._entryReplacementPhase = (this._entryReplacementPhase || 0) + 1;
       try {
       // Earlier physical insertions in the same simultaneous event may have
       // recalculated existing sources using a co-entrant Aura or control effect.
       // Re-evaluate those sources against the pre-entry battlefield membership
       // before this entrant's replacement choices. The ordinary post-entry
       // recalculation below restores all new continuous effects afterward.
-      if (batchedReplacement) this.recalc();
+      this.recalc();
       // Copy i drugi as-enters replacementi postavljaju karakteristike prije
       // enters-tapped i enters-with-counters replacementa kopirane karte.
       const appliedEntryReplacements=new Set();
       while (d.asEnters && !appliedEntryReplacements.has(d.asEnters)) {
         appliedEntryReplacements.add(d.asEnters);
         await d.asEnters(this, card);
+        if (card.def !== d) card.cur = null;
         d = card.def;
       }
       if (d.entersTapped && !opts.forceUntapped) {
@@ -1460,10 +1474,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       } finally {
-        if (batchedReplacement) {
-          this._entryReplacementPhase--;
-          if (!this._entryReplacementPhase) delete this._entryReplacementPhase;
-        }
+        this._entryReplacementPhase--;
+        if (!this._entryReplacementPhase) delete this._entryReplacementPhase;
+        this._battlefieldEntryReplacementSnapshot = previousEntrySnapshot;
       }
       // CR 714.3a: the first lore counter is part of entering, not a
       // counter-adding triggered ability. Chapter triggers wait for the
@@ -1797,7 +1810,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       by.turnState._putCounterThisTurn = (by.turnState._putCounterThisTurn || 0) + n;
     }
     addCounters(card, kind, n, silent, by) {
-      if (n <= 0) return;
+      if (n <= 0 || card.zone === 'battlefield' && card.phasedOut) return;
       if (kind === '+1/+1' && card.is && card.is('Creature')) n = this.adjustPlusCounters(card, n);
       const before = card.counters[kind] || 0;
       card.counters[kind] = (card.counters[kind] || 0) + n;
@@ -1829,6 +1842,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     removeCounters(card, kind, n) {
+      if (card.zone === 'battlefield' && card.phasedOut) return;
       const before=card.counters[kind]||0;
       card.counters[kind] = Math.max(0, before - Math.max(0,n));
       this.recalc();
@@ -1966,6 +1980,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return traits?traits.keywords.has(keyword):!!src?.kw?.(keyword);
     }
     recordDamageResult(src, target, n, opts) {
+      MTG.OracleV8DamageHistory?.record(this,src,target,n,opts);
       if (!opts.damageResults) return;
       // CR 120.10: measure the actual recipient after redirection/prevention,
       // before marked damage, wither counters, loyalty or defense can change.
@@ -2068,7 +2083,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async damageCreature(src, target, n, opts = {}) {
-      if (n <= 0 || target.zone !== 'battlefield') return 0;
+      if (n <= 0 || target.zone !== 'battlefield' || target.phasedOut) return 0;
       if (!opts._damageReplacementsDone) {
         n = await this.applyDamageReplacements(src, target, n, opts);
         if (n > 0 && opts._damageFinalTarget !== target) return this.damageAny(src, opts._damageFinalTarget, n, {...opts, _damageReplacementsDone: true});
@@ -2450,7 +2465,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     canSacrifice(card) {
-      return !!card && card.zone === 'battlefield' && !(card.cur && card.cur.cantSacrifice);
+      return !!card && card.zone === 'battlefield' && !card.phasedOut && !(card.cur && card.cur.cantSacrifice);
     }
 
     async sacrifice(p, card) {
@@ -2489,7 +2504,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async destroy(card, opts = {}) {
-      if (card.zone !== 'battlefield') return false;
+      if (card.zone !== 'battlefield' || card.phasedOut) return false;
       if (card.kw('indestructible') && !opts.ignoreIndestructible) {
         this.lg(`${card.name} is indestructible — destroy is prevented.`);
         this.note('gameEffect', { kind: 'keyword', keyword: 'indestructible', state: 'prevented', card, target: card, source: opts.source || null });
@@ -2497,7 +2512,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if ((card.counters['shield'] || 0) > 0 && !opts.ignoreIndestructible) {
         this.removeCounters(card, 'shield', 1);
-        card.damage = 0; card.deathtouched = false;
         this.lg(`${card.name}: shield counter sprječava uništenje.`);
         await this.emit('shieldRemoved', { card });
         return false;
@@ -2518,7 +2532,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // može regenerisati zaključava se prije nego prvi permanent napusti tablu.
       // Inače bi odlazak lorda/Spacecrafta usred petlje promijenio sudbinu
       // permanenata koji su bili zaštićeni u trenutku efekta.
-      const unique = [...new Set(cards)].filter(card => card && card.zone === 'battlefield');
+      const unique = [...new Set(cards)].filter(card => card && card.zone === 'battlefield' && !card.phasedOut);
       const doomed = [];
       for (const card of unique) {
         if (card.kw('indestructible') && !opts.ignoreIndestructible) {
@@ -2528,7 +2542,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         if ((card.counters['shield'] || 0) > 0 && !opts.ignoreIndestructible) {
           this.removeCounters(card, 'shield', 1);
-          card.damage = 0; card.deathtouched = false;
           this.lg(`${card.name}: shield counter sprječava uništenje.`);
           await this.emit('shieldRemoved', { card });
           continue;
@@ -2615,7 +2628,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     tap(card, { deferEvent = false } = {}) {
-      if (!card || card.zone !== 'battlefield' || card.tapped) return false;
+      if (!card || card.zone !== 'battlefield' || card.phasedOut || card.tapped) return false;
       card.tapped = true;
       const firstThisTurn = card.meta._firstTappedTurn !== this.turnNo;
       if (firstThisTurn) {
@@ -2626,7 +2639,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     untap(card, { deferEvent = false } = {}) {
-      if (!card || card.zone !== 'battlefield' || !card.tapped) return false;
+      if (!card || card.zone !== 'battlefield' || card.phasedOut || !card.tapped) return false;
       // A stun counter replaces any untap, including an effect outside the
       // untap step. An object that would not untap never loses a counter.
       if ((card.counters.stun || 0) > 0) {
@@ -2641,35 +2654,97 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     phaseOut(card, phaseInFor) {
-      if (!card || card.zone !== 'battlefield' || card.phasedOut) return false;
-      const all = [card];
-      for (const iid of card.attachments || []) {
-        const attachment = this.byIid(iid);
-        if (attachment && attachment.zone === 'battlefield') all.push(attachment);
-      }
-      for (const permanent of all) {
-        permanent.phasedOut = true;
-        permanent.meta.phaseInFor = phaseInFor || card.ctrl;
-        this.removeFromCombat(permanent);
-      }
-      this.lg(`${card.name} phases out.`);
-      this.recalc();
-      this.note('phaseOut', { card, cards: all });
-      return true;
+      return this.phaseOutMany([card], phaseInFor).length > 0;
     }
 
-    phaseInFor(player) {
-      const returning = this.battlefield.filter(c => c.zone === 'battlefield' && c.phasedOut && c.meta.phaseInFor === player);
+    phaseOutMany(cards, phaseInFor, { deferRecalc = false } = {}) {
+      const selected = new Set(cards.filter(card => card?.zone === 'battlefield' && !card.phasedOut));
+      const all = [], visited = new Set();
+      // CR 702.26h: selecting an attachment and its host in the same event
+      // still phases the attachment indirectly, regardless of target order.
+      const roots = [...selected].filter(card => {
+        const seen = new Set([card]);
+        for (let host = this.byIid(card.attachedTo); host && !seen.has(host); host = this.byIid(host.attachedTo)) {
+          if (host.zone !== 'battlefield' || host.phasedOut) break;
+          if (selected.has(host)) return false;
+          seen.add(host);
+        }
+        return true;
+      });
+      const collect = (card, root, player) => {
+        if (!card || card.zone !== 'battlefield' || card.phasedOut || visited.has(card)) return;
+        visited.add(card); all.push(card); card.meta ||= {};
+        // Keep only portable identities: a Player reference is discarded by
+        // saved-state JSON and used to strand phased permanents after loading.
+        card.meta.phaseInPlayer = player.idx;
+        delete card.meta.phaseInFor;
+        if (card !== root) card.meta.phaseIndirect = { iid: root.iid, zoneVersion: root.zoneVersion };
+        else delete card.meta.phaseIndirect;
+        const host = this.byIid(card.attachedTo);
+        if (host) card.meta.phaseAttachment = { iid: host.iid, zoneVersion: host.zoneVersion };
+        else delete card.meta.phaseAttachment;
+        for (const iid of card.attachments || []) {
+          const attachment = this.byIid(iid);
+          if (attachment?.attachedTo === card.iid) collect(attachment, root, player);
+        }
+      };
+      for (const root of roots) collect(root, root, phaseInFor || root.ctrl);
+      for (const permanent of all) { permanent.phasedOut = true; this.removeFromCombat(permanent); }
+      if (!all.length) return all;
+      for (const root of roots) this.lg(`${root.name} phases out.`);
+      if (!deferRecalc) { this.recalc(); this.note('phaseOut', { card: roots[0], cards: all }); }
+      return all;
+    }
+
+    phaseInCandidates(player) {
+      const phased = this.battlefield.filter(c => c.zone === 'battlefield' && c.phasedOut);
+      const direct = phased.filter(c => !c.meta.phaseIndirect &&
+        (c.meta.phaseInPlayer === player.idx || c.meta.phaseInFor === player));
+      return phased.filter(c => direct.includes(c) || direct.some(root =>
+        c.meta.phaseIndirect?.iid === root.iid && c.meta.phaseIndirect.zoneVersion === root.zoneVersion));
+    }
+
+    phaseInFor(player, { returning = this.phaseInCandidates(player), deferRecalc = false } = {}) {
       for (const card of returning) {
         card.phasedOut = false;
+        const remembered = card.meta.phaseAttachment;
+        if (remembered) {
+          const host = this.byIid(remembered.iid);
+          // CR 702.26i/j: return attached only to the same battlefield object;
+          // a blink is a new object. Neither case emits attachment events.
+          if (host?.zone === 'battlefield' && host.zoneVersion === remembered.zoneVersion) {
+            card.attachedTo = host.iid;
+            if (!host.attachments.includes(card.iid)) host.attachments.push(card.iid);
+          } else {
+            if (host) host.attachments = host.attachments.filter(iid => iid !== card.iid);
+            card.attachedTo = null;
+          }
+        }
         delete card.meta.phaseInFor;
+        delete card.meta.phaseInPlayer;
+        delete card.meta.phaseIndirect;
+        delete card.meta.phaseAttachment;
       }
       if (returning.length) {
         this.lg(`${player.name}: ${returning.length} permanenta phases in.`);
-        this.recalc();
-        this.note('phaseIn', { player, cards: returning });
+        if (!deferRecalc) { this.recalc(); this.note('phaseIn', { player, cards: returning }); }
       }
       return returning;
+    }
+
+    phaseDuringUntap(player) {
+      // CR 702.26a: both sets are fixed before this simultaneous turn action.
+      // Newly phased-out permanents must not return in the very same untap,
+      // and a directly returning Aura is not newly swept out with its host.
+      const returning = this.phaseInCandidates(player);
+      const leaving = this.bf().filter(card => card.ctrl === player && card.kw('phasing'));
+      const phased = this.phaseOutMany(leaving, undefined, { deferRecalc: true });
+      this.phaseInFor(player, { returning, deferRecalc: true });
+      if (phased.length || returning.length) {
+        this.recalc();
+        if (phased.length) this.note('phaseOut', { card: phased[0], cards: phased });
+        if (returning.length) this.note('phaseIn', { player, cards: returning });
+      }
     }
 
     // ============================================================
@@ -2805,6 +2880,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       if(captureAbilityLoss)for(const card of bf)Object.defineProperty(card.cur,'abilitiesDisabled',{value:card.cur.abilitiesDisabled,writable:true,configurable:true,enumerable:true});
+      // CR 305.6: land types supply abilities in layer four, before any
+      // layer-six removal, independently of the type effect's timestamp.
+      inAbilityLayer(-Infinity,()=>MTG.OracleV8LandTypes?.addIntrinsicMana(bf));
       abilityLayers?.apply();
       if(captureBase)for(const card of bf)for(const key of ['basePower','baseToughness'])Object.defineProperty(card.cur,key,{value:card.cur[key],writable:true,configurable:true,enumerable:true});
       // CDA power (Haughty Djinn etc.)
@@ -2856,7 +2934,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (c.attachedTo) {
           const host = this.byIid(c.attachedTo);
           const grant = c.cur.attachGrant || c.def.attachGrant;
-          if (host && host.zone === 'battlefield' && grant) inAbilityLayer(c.timestamp,()=>grant(this, c, host));
+          if (host && host.zone === 'battlefield' && !host.phasedOut && grant) inAbilityLayer(c.timestamp,()=>grant(this, c, host));
         }
       }
       // pass 3: counters
@@ -3627,136 +3705,138 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (dead) { await this.playerLoses(p, why); any = true; }
           }
           if (this.gameOver) return;
-          // +1/+1 / -1/-1 annihilate
-          for (const c of this.bf()) {
-            const p1 = c.counters['+1/+1'] || 0, m1 = c.counters['-1/-1'] || 0;
-            if (p1 && m1) { const k = Math.min(p1, m1); c.counters['+1/+1'] -= k; c.counters['-1/-1'] -= k; }
-          }
-          this.recalc();
-          // creatures die
-          // Damage-based sweepers resolve as a series of deferred damage
-          // events followed by one SBA pass. Detect a shared damage source so
-          // three or more simultaneous deaths receive one table-wide storm
-          // treatment instead of a noisy stack of unrelated card exits.
-          const lethalDamageGroups = new Map();
-          for (const card of this.bf()) {
-            if (!card.is('Creature') || !card.meta._lastDamageVisual || card.meta._lastDamageVisual.turn !== this.turnNo) continue;
-            const zeroToughness = card.cur.toughness <= 0;
-            const lethalMarked = card.damage >= card.cur.toughness || card.deathtouched;
-            const actuallyDies = zeroToughness || (lethalMarked && !card.kw('indestructible') &&
-              (card.counters.shield || 0) <= 0 && card.regenShield <= 0);
-            if (!actuallyDies || card.meta._boardWipeVisualTurn === this.turnNo) continue;
-            const sourceId = card.meta._lastDamageVisual.sourceId || 0;
-            if (!lethalDamageGroups.has(sourceId)) lethalDamageGroups.set(sourceId, []);
-            lethalDamageGroups.get(sourceId).push(card);
-          }
-          for (const [sourceId, cards] of lethalDamageGroups) {
-            if (cards.length < 3) continue;
-            for (const card of cards) card.meta._boardWipeVisualTurn = this.turnNo;
-            this.note('gameEffect', {
-              kind: 'boardWipe', mode: 'damage', cards: cards.slice(), count: cards.length,
-              source: sourceId ? this.byIid(sourceId) : null,
-            });
-          }
-          for (const c of this.bf()) {
-            if (c.is('Creature')) {
-              if (c.cur.toughness <= 0) {
-                await this.move(c, 'graveyard'); any = true; continue;
-              }
-              if (c.damage >= c.cur.toughness || c.deathtouched) {
-                const died = await this.destroy(c, {});
-                // CR 704.5h only considers deathtouch damage since the last
-                // SBA check. An indestructible survivor must not carry that
-                // cause of destruction into a later loss of indestructible.
-                c.deathtouched = false;
-                if (died !== false) any = true;
-                else if (!c.kw('indestructible')) c.damage = 0;
-                // CR 702.12b: indestructible ne briše označenu štetu — ona ostaje
-                // do cleanupa, pa stvorenje umire ako izgubi indestructible.
-                continue;
-              }
-            }
-            if (c.is('Planeswalker') && (c.counters['loyalty'] || 0) <= 0) {
-              await this.move(c, 'graveyard'); any = true; continue;
-            }
-            // aura attachment legality (CR 704.5m)
-            // `subtypes` umjesto hasSub: uz Maskwood Nexus (allCreatureTypes)
-            // hasSub('Aura') vraća true za SVAKO stvorenje, pa je cijela tabla
-            // odlazila u groblje.
-            const subs = (c.cur && c.cur.subtypes) || c.def.subtypes || [];
-            if (subs.includes('Aura')) {
-              // An Aura enchanting a player stores that Player directly; an
-              // Aura enchanting a permanent stores the permanent iid. Derive
-              // the attachment kind from the actual host instead of optional
-              // per-card metadata.
-              const vic = c.meta && c.meta.cursedPlayer;
-              if (vic instanceof Player) {
-                if (vic.lost) { await this.move(c, 'graveyard'); any = true; continue; }
-              } else {
-                const host = c.attachedTo ? this.byIid(c.attachedTo) : null;
-                const auraSpec = c.meta?.oracleBestowTarget || c.def.auraTarget && c.def.auraTarget[0];
-                const enchantLegal = host && host.zone === 'battlefield' &&
-                  (!auraSpec || !auraSpec.filter || auraSpec.filter(this, host, c.ctrl, c)) &&
-                  !c.is('Creature') && !this.isProtectedFrom(host, c);
-                if (!enchantLegal) {
-                  if (MTG.OracleV8Permanents?.ceaseBestow(this, c)) { any = true; continue; }
-                  await this.move(c, 'graveyard'); any = true; continue;
-                }
-              }
-            }
-            if (subs.includes('Equipment') && c.attachedTo) {
-              const host = this.byIid(c.attachedTo);
-              if (c.is('Creature') || !host || host.zone !== 'battlefield' || !host.is('Creature') ||
-                this.isProtectedFrom(host, c)) {
-                const h2 = host;
-                if (h2) h2.attachments = h2.attachments.filter(i => i !== c.iid);
-                c.attachedTo = null;
-              }
-            }
-            // CR 704.5s: the final chapter must leave the Stack first;
-            // unrelated triggers cannot keep a completed Saga alive.
-            if (c.def.saga && (c.counters.lore||0)>=c.def.saga.length && !this.sagaHasPendingChapter(c)) {
-              await this.sacrifice(c.ctrl, c); any = true; continue;
-            }
-          }
-          // legend rule
-          const byName = {};
-          for (const c of this.bf()) {
-            if ((c.cur.super || []).includes('Legendary')) {
-              const key = c.ctrl.idx + '|' + c.name;
-              (byName[key] = byName[key] || []).push(c);
-            }
-          }
-          for (const key of Object.keys(byName)) {
-            const list = byName[key];
-            const controller = list[0] && list[0].ctrl;
-            if (list[0] && list[0].is('Creature') && controller &&
-              this.bf().some(c => c.ctrl === controller && c.def.ignoreLegendRuleCreatures)) continue;
-            if (list.length > 1) {
-              // CR 704.5j: KONTROLOR bira koju zadržava — ne "najnovija".
-              // Sa "najnovija" je token-kopija tvoje bafovane legende ubijala original.
-              const worth = c => (c.isToken ? 0 : 1000) + (c.commander ? 500 : 0) +
-                (c.counters['+1/+1'] || 0) * 10 + c.attachments.length * 5 + c.cur.toughness;
-              list.sort((a, b) => worth(b) - worth(a) || b.timestamp - a.timestamp);
-              let keep = list[0];
-              const owner = keep.ctrl;
-              if (owner && owner.controller && !owner.isAI) {
-                const picked = await owner.controller.decide(this, {
-                  type: 'chooseCards', from: list.slice(), min: 1, max: 1,
-                  prompt: `Legend rule: zadrži jednu kopiju — ${keep.name}`,
-                  aiHint: { kind: 'legendKeep' },
-                });
-                if (picked && picked[0]) keep = picked[0];
-              }
-              for (const c of list) if (c !== keep) await this.move(c, 'graveyard', { noCmdReplace: false });
-              any = true;
-            }
-          }
+          if (await this.performPermanentStateBasedActions()) any = true;
         }
       } finally {
         this._sbaRunning = false;
         if (this._sbaAgain) { this._sbaAgain = false; await this.checkSBA(); }
       }
+    }
+
+    async performPermanentStateBasedActions() {
+      // CR 704.3/704.8: decide the complete pass from one game state, then
+      // perform it simultaneously. In particular counter cancellation must
+      // not erase Undying/Persist LKI, and a dying lord or death-trigger source
+      // must not change later members of this same pass.
+      const battlefield = this.bf();
+      const moves = new Map(), preventions = [], counterPairs = [], detach = [], ceaseBestow = [];
+      const deathtouchChecks = [];
+      for (const card of battlefield) {
+        const pairs = Math.min(card.counters['+1/+1'] || 0, card.counters['-1/-1'] || 0);
+        if (pairs) counterPairs.push({card, pairs});
+        if (card.is('Creature')) {
+          if (card.toughness <= 0) moves.set(card, 'graveyard');
+          else if (card.damage >= card.toughness || card.deathtouched) {
+            deathtouchChecks.push(card);
+            if (card.kw('indestructible')) {
+              // Marked damage remains until cleanup. Deathtouch only checks
+              // damage since the previous SBA check (CR 704.5h).
+            } else if (card.regenShield > 0) preventions.push({card});
+            else moves.set(card, 'graveyard');
+          }
+        }
+        if (card.is('Planeswalker') && (card.counters.loyalty || 0) <= 0) moves.set(card, 'graveyard');
+        const subs = card.cur.subtypes || card.def.subtypes || [];
+        if (subs.includes('Aura')) {
+          const player = card.meta?.cursedPlayer;
+          const host = card.attachedTo ? this.byIid(card.attachedTo) : null;
+          const spec = card.meta?.oracleBestowTarget || card.def.auraTarget?.[0];
+          const legal = player instanceof Player ? !player.lost : host && host.zone === 'battlefield' &&
+            (!spec?.filter || spec.filter(this, host, card.ctrl, card)) && !card.is('Creature') && !this.isProtectedFrom(host, card);
+          if (!legal) {
+            if (MTG.OracleV8Permanents?.isBestowed(card)) ceaseBestow.push(card);
+            else moves.set(card, 'graveyard');
+          }
+        }
+        if (subs.includes('Equipment') && card.attachedTo) {
+          const host = this.byIid(card.attachedTo);
+          if (card.is('Creature') || !host || host.zone !== 'battlefield' || !host.is('Creature') || this.isProtectedFrom(host, card)) detach.push(card);
+        }
+        if (card.def.saga && (card.counters.lore || 0) >= card.def.saga.length && !this.sagaHasPendingChapter(card) && this.canSacrifice(card)) moves.set(card, 'sacrifice');
+      }
+      // Legend choices belong to this same pre-action state, including when
+      // one of the copies also has lethal damage or zero toughness.
+      const legends = new Map();
+      for (const card of battlefield) if ((card.cur.super || []).includes('Legendary')) {
+        const key = card.ctrl.idx + '|' + card.name;
+        if (!legends.has(key)) legends.set(key, []);
+        legends.get(key).push(card);
+      }
+      for (const list of legends.values()) {
+        if (list.length < 2) continue;
+        const controller = list[0].ctrl;
+        if (list[0].is('Creature') && battlefield.some(card => card.ctrl === controller && card.def.ignoreLegendRuleCreatures)) continue;
+        const worth = card => (card.isToken ? 0 : 1000) + (card.commander ? 500 : 0) +
+          (card.counters['+1/+1'] || 0) * 10 + card.attachments.length * 5 + card.toughness;
+        list.sort((a, b) => worth(b) - worth(a) || b.timestamp - a.timestamp);
+        let keep = list[0];
+        if (controller?.controller && !controller.isAI) {
+          const picked = await controller.controller.decide(this, {
+            type: 'chooseCards', from: list.slice(), min: 1, max: 1,
+            prompt: `Legend rule: zadrži jednu kopiju — ${keep.name}`, aiHint: {kind: 'legendKeep'},
+          });
+          if (picked?.length === 1 && list.includes(picked[0])) keep = picked[0];
+        }
+        for (const card of list) if (card !== keep) moves.set(card, 'graveyard');
+      }
+      const changes = moves.size || preventions.length || counterPairs.length || detach.length || ceaseBestow.length;
+      // An indestructible creature may have only a deathtouch marker to clear;
+      // that does not cause another pass or erase its marked damage.
+      if (!changes) { for (const card of deathtouchChecks) card.deathtouched = false; return false; }
+      const previous = this._simultaneousLeaveSources;
+      // Include survivors: leave triggers look back at all pre-event sources,
+      // including a survivor whose granted ability disappears with its lord.
+      const batch = moves.size ? battlefield.map(card => ({card, ctrl: card.ctrl, snap: this.snapshot(card)})) : null;
+      if (batch) this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
+      try {
+        for (const {card, pairs} of counterPairs) {
+          card.counters['+1/+1'] -= pairs; card.counters['-1/-1'] -= pairs;
+        }
+        for (const card of deathtouchChecks) card.deathtouched = false;
+        for (const {card} of preventions) {
+          // A distinct SBA that puts this permanent directly into a graveyard
+          // is not stopped by its destruction replacement.
+          if (moves.has(card)) continue;
+          card.damage = 0;
+          // CR 122.1c protects against destruction by an effect. A shield
+          // cannot replace lethal-damage or deathtouch state-based actions.
+          card.regenShield--; card.tapped = true;
+          if (this.combat) this.removeFromCombat(card);
+          this.lg(`${card.name} se regeneriše.`);
+        }
+        for (const card of ceaseBestow) if (!moves.has(card)) MTG.OracleV8Permanents.ceaseBestow(this, card);
+        for (const card of detach) {
+          const host = this.byIid(card.attachedTo);
+          if (host) host.attachments = host.attachments.filter(iid => iid !== card.iid);
+          card.attachedTo = null;
+        }
+        const damageGroups = new Map();
+        for (const [card] of moves) {
+          const damage = card.meta._lastDamageVisual;
+          if (!card.is('Creature') || damage?.turn !== this.turnNo || card.meta._boardWipeVisualTurn === this.turnNo) continue;
+          const key = damage.sourceId || 0;
+          if (!damageGroups.has(key)) damageGroups.set(key, []);
+          damageGroups.get(key).push(card);
+        }
+        for (const [sourceId, cards] of damageGroups) if (cards.length >= 3) {
+          for (const card of cards) card.meta._boardWipeVisualTurn = this.turnNo;
+          this.note('gameEffect', {kind: 'boardWipe', mode: 'damage', cards: cards.slice(), count: cards.length,
+            source: sourceId ? this.byIid(sourceId) : null});
+        }
+        await this.withGraveyardEntryBatch(async () => {
+          for (const [card, kind] of moves) {
+            if (card.zone !== 'battlefield') continue;
+            const entry = batch.find(row => row.card === card);
+            if (kind === 'sacrifice') this.lg(`${U.playerVerb(entry.ctrl, 'sacrifice', 'sacrifices')} ${card.name}.`, 'sac');
+            await this.move(card, 'graveyard');
+            if (kind === 'sacrifice') await this.emit('sacrificed', {player: entry.ctrl, card, snap: entry.snap});
+          }
+        });
+      } finally {
+        this._simultaneousLeaveSources = previous;
+        if (batch) await this.returnOracleExiles();
+      }
+      return true;
     }
 
     async playerLoses(p, why) {

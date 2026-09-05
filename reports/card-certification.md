@@ -1,12 +1,12 @@
 # Card-by-card certifikacija
 
-Generisano: 2026-09-04T13:19:48.352Z
+Generisano: 2026-09-05T09:50:16.701Z
 
 Aktivni deckovi: **27** · stvarno jedinstvenih karata: **1580** · card/deck provjere: **2347**
 
 Jedinstvene karte — PASS: **1580** · FAIL: **0** · card/deck pojave — PASS: **2347** · FAIL: **0**
 
-Cijela raw baza — PASS: **18484/18484** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **16904** karata, uključujući **16858** certifikovanih Oracle batch karata.
+Cijela raw baza — PASS: **18884/18884** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **17304** karata, uključujući **17258** certifikovanih Oracle batch karata.
 
 `Blame Game` je namjerno izbačen iz proizvoda. Oracle batch karte su dostupne engine-u i budućem katalogu, ali još nisu dio nekog ugrađenog 100-card decka.
 
@@ -2570,6 +2570,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Abandoned Air Temple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abandoned Campground | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abandoned Outpost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Abattoir Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abbey Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abbey Matron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abbot of Keral Keep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -2616,6 +2617,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Abzan Monument | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abzan Runemark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abzan Skycaptain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Academic Dispute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Academy Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Academy Elite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Academy Journeymage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -2626,6 +2628,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Accelerated Evolution | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Accelerated Mutation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Acclaimed Contender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Accomplished Alchemist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Accomplished Automaton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Accorder Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Accorder's Shield | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -2658,6 +2661,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Adaptive Shimmerer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Adaptive Snapjaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Adaptive Sporesinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Adder-Staff Boggart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Additive Evolution | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Adelbert Steiner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Adeliz, the Cinder Wind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -2667,6 +2671,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Admonition Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Adorned Crocodile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Adorned Pouncer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Adriana, Captain of the Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Adric, Mathematical Genius | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Adult Gold Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Advance Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -2697,6 +2702,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Aerial Maneuver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aerial Predation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aerial Responder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aerial Volley | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aerie Auxiliary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aerie Bowmasters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aerie Mystics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -2870,7 +2876,9 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Alchemist's Gift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alchemist's Greeting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alchemist's Vial | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aleatory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alela, Artful Provocateur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Alena, Kessig Trapper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alert Heedbonder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alert Shu Infantry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Alesha's Legacy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -2949,6 +2957,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Ambush Paratrooper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ambush Viper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ambush Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Amethyst Dragon // Explosive Crystal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Amok | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Amorphous Axe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Amphibian Downpour | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -2992,6 +3001,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Ancient Hellkite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancient Hydra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancient Kavu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ancient Lumberknot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancient Silverback | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancient Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ancient Spring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3082,6 +3092,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Antagonize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anthem of Champions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anthem of Rakdos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Anthroplasm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anti-Venom, Horrifying Healer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anticipate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Antiquities on the Loose | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3100,6 +3111,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Aphetto Grifter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aphetto Runecaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aphetto Vulture | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Aphotic Wisps | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Apocalypse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Apocalypse Demon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Apocalypse Runner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3150,13 +3162,17 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Arborea Pegasus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arboreal Alliance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arboretum Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arc Lightning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arc Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arc Reactor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arc Runner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arc Trail | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arcades, the Strategist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcane Encyclopedia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcane Epiphany | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcane Flight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcane Infusion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arcane Laboratory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcane Melee | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcane Spyglass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arcane Subtraction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3199,9 +3215,11 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Archmage of Echoes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archmage of Runes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archmage's Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Archon of Emeria | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archon of Falling Stars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archon of Justice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archon of Sun's Grace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Archon of the Triumvirate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archpriest of Iona | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archpriest of Shadows | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archway Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3227,6 +3245,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Arena Athlete | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arena Trickster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arenson's Aura | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Argent Mutation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Argent Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Argentum Armor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Argivian Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3275,18 +3294,21 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Armory Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Armory of Iroas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arms Dealer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arms of Hadar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Army Ants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Army of Allah | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arni Slays the Troll | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arnim Zola, Bio-Fanatic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arnjlot's Ascent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arno Dorian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arrest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arrester's Admonition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arrester's Zeal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arrogant Bloodlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arrogant Outlaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arrogant Poet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arrogant Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Arrow Volley Trap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arrows of Justice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arterial Flow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Artful Dodge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3299,12 +3321,14 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Artillerize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Artillery Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Artisan of Forms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Artisan of Kozilek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Artisan's Sorrow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Artistic Refusal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arvad the Cursed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arwen Undómiel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arwen's Gift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Asari Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ascend from Avernus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ascendant Dustspeaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ascendant Evincar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ascendant Packleader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3325,6 +3349,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Ashiok's Forerunner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashiok's Reaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashiok's Skulker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ashling's Command | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashmouth Hound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashnod the Uncaring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashnod's Altar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3339,6 +3364,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Asphyxiate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aspiring Aeronaut | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Assassin Den | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Assassin Gauntlet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Assassin Initiate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Assassin's Ink | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Assassin's Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3510,12 +3536,14 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Azami, Lady of Scrolls | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Azimaet Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aziza, Mage Tower Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Azorius Arrester | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Azorius Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Azorius Cluestone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Azorius First-Wing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Azorius Guildgate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Azorius Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Azorius Herald | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Azorius Justiciar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Azorius Keyrune | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Azorius Knight-Arbiter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Azorius Locket | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3546,6 +3574,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Bala Ged Recovery // Bala Ged Sanctuary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bala Ged Scorpion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Balamb T-Rexaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Baldur's Gate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Balduvian Barbarians | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Balduvian Bears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Balduvian Berserker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3621,6 +3650,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Bargain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barge In | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barging Sergeant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bark of Doran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barkchannel Pathway // Tidechannel Pathway | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barkform Harvester | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Barkhide Mauler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3649,6 +3679,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Bartolomé del Presidio | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Basalt Gargoyle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Basalt Monolith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Base Camp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Baseball Bat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bash to Bits | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bashful Beastie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3763,6 +3794,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Bedhead Beastie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bedlam | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bedlam Reveler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bedrock Tortoise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beetle, Legacy Criminal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beetle-Headed Merchants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beetleform Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3775,7 +3807,9 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Belbe's Armor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Belbe's Percher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Belle of the Brawl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Belligerent Brontodon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Belligerent Guest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Belligerent Hatchling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Belligerent Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Belligerent Whiptail | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Belligerent of the Ball | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3817,6 +3851,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Bequeathal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bereavement | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beregond of the Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Berserk Murlodont | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Berserkers of Blood Ridge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beseech the Queen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beskir Shieldmate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3842,6 +3877,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Big Play | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Big Wheel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bigfin Bouncer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bighorner Rancher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bilbo Baggins, Burglar // Take a Glance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bilbo's Deadly Slice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bilbo's Ring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3852,6 +3888,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Bile Urchin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bile-Vial Boggart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bilious Skulldweller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bill the Pony | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Billiard Room | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Billowing Shriekmass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3887,6 +3924,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Black Carriage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Black Cat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Black Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Black Dragon Gate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Black Market | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Black Oak of Odunos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Black Panther, Claws of Bast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3926,6 +3964,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Blanchwood Armor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blanchwood Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blanchwood Treefolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blanket of Night | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blaring Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blaring Recruiter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blasted Landscape | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -3994,6 +4033,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Blinding Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blinding Souleater | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blinding Spray | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blink Dog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blink of an Eye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blinking Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blinkmoth Infusion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4023,11 +4063,14 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Blood Burglar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Celebrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Crypt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blood Cultist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Divination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Feud | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Fountain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blood Frenzy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Glutton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Host | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Blood Hound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Hustler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Mist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4139,9 +4182,11 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Body of Knowledge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bofur, Reliable Guardian // Concerted Care | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bog Badger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bog Down | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bog Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bog Glider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bog Gnarr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bog Hoodlums | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bog Imp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bog Initiate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bog Naughty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4153,6 +4198,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Bog Wreckage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bog-Strider Ash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bogardan Firefiend | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bogardan Hellkite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bogardan Lancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bogardan Rager | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boggart Arsonists | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4171,6 +4217,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Bogwater Lumaret | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boilerbilges Ripper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Boiling Blood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boiling Earth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boiling Rock Prison | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boiling Seas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4178,9 +4225,11 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Bola Slinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bola Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bold Biochemist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Bold Defense | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bold Impaler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boldwyr Aggressor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boldwyr Heavyweights | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Boldwyr Intimidator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bolg's Company | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bolg, Erebor's Reckoning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bolrac-Clan Basher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4288,6 +4337,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Boulder Dash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boulder Salvo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boulderborn Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Boulderfall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bounce Off | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bouncer's Beatdown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bouncing Beebles | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4356,6 +4406,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Breakneck Berserker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breakneck Rider // Neck Breaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breath Weapon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Breath of Darigaaz | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breath of Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breath of Malfegor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breath of the Sleepless | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4364,6 +4415,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Bred for the Hunt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breeding Pit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breeding Pool | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Breezekeeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bretagard Stronghold | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breya's Apprentice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Breya, Etherium Shaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4388,8 +4440,10 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Brightstone Ritual | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brightwood Tracker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brigid's Command | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Brigid, Hero of Kinsbaile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brigone, Soldier of Meletis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brilliant Plan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Brilliant Restoration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brimstone Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brimstone Roundup | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brimstone Trebuchet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4417,6 +4471,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Broadcast Rambler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Broadside Barrage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Broadside Bombardiers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Broken Ambitions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Broken Bond | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Broken Concentration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Broken Dam | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4425,6 +4480,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Brokers Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brokers Initiate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Brokers Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Brontotherium | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bronze Sable | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bronze Sword | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bronze Walrus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4499,6 +4555,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Burning Sun's Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burning Vengeance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burning-Fist Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Burning-Tree Bloodscale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burning-Tree Emissary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burning-Tree Vandal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burning-Yard Trainer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4510,6 +4567,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Burrowguard Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burrowing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burrowing Razormaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Burst Lightning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burst of Energy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burst of Speed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Burst of Strength | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4623,6 +4681,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Canopy Gorger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Canopy Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Canopy Stalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Canopy Surge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Canopy Tactician | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cantivore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Canyon Crawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4671,6 +4730,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Caregiver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Careless Celebrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Caress of Phyrexia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cargo Ship | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Carnage Altar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Carnage Gladiator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Carnage Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4698,6 +4758,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Cartouche of Solidarity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cartouche of Zeal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cascade Seer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cascading Cataracts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Casey Jones, Asphalt Hooligan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Casey Jones, Jury-Rig Justiciar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cast Down | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4825,6 +4886,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Cerodon Yearling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Certain Death | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cerulean Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cerulean Wisps | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cerulean Wyvern | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cessation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ceta Disciple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4853,6 +4915,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Champion of the Parish | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Champion of the Perished | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Champion's Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Champion's Victory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chance-Met Elves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chancellor of Tales | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4860,9 +4923,11 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Chandra's Magmutt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra's Outburst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra's Pyreling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chandra's Pyrohelix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra's Regulator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra's Revolution | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chandra's Spitfire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chandra, Novice Pyromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Change of Fortune | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Change of Heart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Change the Equation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4877,6 +4942,8 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Chaos Terminator Lord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chaos Wand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chaosphere | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chaotic Goo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Chaotic Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chapel Geist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chaplain's Blessing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Char | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4978,6 +5045,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Chronozoa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chupacabra Echo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cinder Barrens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cinder Crawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cinder Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cinder Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cinder Hellion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -4986,6 +5054,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Cinder Storm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cinder Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cinderbones | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cinderclasm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cindering Cutthroat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cinderslash Ravager | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cindervines | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5004,6 +5073,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Circular Logic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cirith Ungol Patrol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Citadel Castellan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Citadel Gate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Citanul Centaurs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Citanul Hierophants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Citanul Woodreaders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5071,6 +5141,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Clever Lumimancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clickslither | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cliff Threader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cliffgate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cliffhaven Kitesail | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cliffhaven Sell-Sword | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cliffhaven Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5081,6 +5152,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Clinging Darkness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clinquant Skymage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cloak of Feathers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cloak of Invisibility | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cloak of Mists | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cloak of the Bat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cloaked Siren | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5165,6 +5237,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Cold Storage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cold-Eyed Selkie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cold-Water Snapper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Coldsteel Heart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coliseum Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Collar the Culprit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Collateral Damage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5172,6 +5245,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Collective Blessing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Collective Nightmare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Collective Unconscious | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Collector Ouphe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Collector's Case | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Collector's Vault | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Colleen Wing, Street Samurai | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5182,6 +5256,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Colossal Collision | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Colossal Dreadmask | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Colossal Dreadmaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Colossal Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Colossal Heroics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Colossal Majesty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Colossal Might | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5201,6 +5276,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Comforting Counsel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coming In Hot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Command Bridge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Command of Unsummoning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Command the Storm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Commander Eesha | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Commander's Authority | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5268,6 +5344,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Conjurer's Closet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Connive // Concoct | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Conquering Manticore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Conqueror's Pledge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Conscripted Infantry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Consecrated Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Consecrated by Blood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5316,6 +5393,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Convalescence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Convalescent Care | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Convenient Target | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Conversion Apparatus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Conversion Chamber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Converter Beast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Convicted Killer // Branded Howler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5349,6 +5427,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Core Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cori Mountain Monastery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cori Mountain Stalwart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cormela, Glamour Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cornered Crook | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cornered by Black Mages | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coronation of Chaos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5410,6 +5489,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Court of Embereth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Court of Grace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Court of Ire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Courtly Provocateur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Covenant of Blood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Covert Operative | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Coveted Peacock | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5465,6 +5545,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Crazed Skirge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Creakwood Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Creakwood Liege | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Creakwood Safewright | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Creeperhulk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Creeping Bloodsucker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Creeping Corrosion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5475,6 +5556,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Cremate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crenellated Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Creosote Heath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Crested Craghorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crested Herdcaller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crested Sunmare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cresting Mosasaurus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5488,6 +5570,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Crimson Muckwader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crimson Operative | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crimson Roc | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Crimson Wisps | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crippling Blight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crippling Chill | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crippling Fatigue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5506,6 +5589,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Crossbow Infantry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crossroads Candleguide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crossroads Consecrator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Crossroads Village | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crossroads Watcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crosstown Courier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crossway Troublemakers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5555,6 +5639,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Crypt Cobra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crypt Creeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crypt Feaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Crypt Incursion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crypt Lurker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crypt Ripper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crypt Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5574,6 +5659,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Crystal Barricade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystal Chimes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystal Dragon // Rob the Hoard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Crystal Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystal Grotto | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystal Quarry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystal Rod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5588,6 +5674,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Cudgel Troll | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Culling Dais | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Culling Drone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Culling Mark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Culling Sun | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Culling the Weak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Culmination of Studies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5595,6 +5682,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Cultbrand Cinder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cultist's Staff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cultivator's Caravan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Culvert Ambusher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cumber Stone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cunning Advisor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cunning Breezedancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5624,6 +5712,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Cursed Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cursed Monstrosity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cursed Ronin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Cursed Totem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Custodi Lich | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Custodian of the Trove | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Customs Depot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5669,6 +5758,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Dakmor Lancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dakmor Scorpion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dakmor Sorceress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dalakos, Crafter of Wonders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dalek Squadron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dalkovan Encampment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dalkovan Packbeasts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5714,6 +5804,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Dark Hatchling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Heart of the Wood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Inquiry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dark Maze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Nourishment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Offering | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Petition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5729,6 +5820,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Dark Withering | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark-Dweller Oracle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darkbore Pathway // Slitherbore Pathway | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Darkest Hour | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darkheart Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darkling Stalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darklit Gargoyle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5767,10 +5859,12 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Daunting Defender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dauntless Aven | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dauntless Cathar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dauntless Dismantler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dauntless Escort | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dauntless Onslaught | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dauntless River Marshal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dauntless Survivor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dauntless Unity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dauntless Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dauthi Cutthroat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dauthi Embrace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5791,6 +5885,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Dawnfeather Eagle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawnfluke | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawnglade Regent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dawnglare Invoker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawnhand Eulogist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawnhart Disciple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawnhart Geist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5873,6 +5968,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Deathbellow Raider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathbellow War Cry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathbloom Gardener | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Deathbloom Ritualist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathbloom Thallid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathbringer Liege | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathbringer Regent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5896,6 +5992,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Deathmark Prelate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathmask Nezumi | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathreap Ritual | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Deathrite Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathspore Thallid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathsprout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Debilitating Injury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5962,9 +6059,11 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Defiant Bloodlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defiant Elf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defiant Falcon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Defiant Greatmaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defiant Khenra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defiant Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defiant Salvager | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Defiant Stand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defiant Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defiant Survivor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defibrillating Current | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -5973,6 +6072,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Definitely Not a Turtle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deflecting Palm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defossilize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Deft Dismissal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deft Duelist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defy Death | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defy Gravity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6019,6 +6119,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Demonmail Hauberk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Demonspine Whip | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Demoralize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Demotion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Demystify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Den Protector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Denethor, Ruling Steward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6037,6 +6138,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Depower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deprive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Depths of Desire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Deputized Protester | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deputy of Acquittals | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deranged Outcast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deranged Whelp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6047,6 +6149,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Desecrated Earth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desecrated Tomb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desecration Plague | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Desert | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert Cerodon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert Sandstorm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6057,14 +6160,18 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Desert of the Mindful | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert of the True | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert's Due | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Desert's Hold | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deserted Beach | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deserted Temple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deserter's Disciple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deserter's Quarters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desiccated Naga | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desolate Lighthouse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Desolation Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Desolation Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desolation Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desolation Twin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Desolation of Smaug | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desperate Bloodseeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desperate Castaways | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desperate Farmer // Depraved Harvester | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6216,6 +6323,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Disperse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dispersing Orb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Displace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Displacement Wave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Displacer Kitten | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Disposal Mummy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Disrupt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6306,6 +6414,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Doomwake Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doorkeeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Doorman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Doran, the Siege Tower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dori, Bearer of Friends | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dormant Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dormant Volcano | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6390,6 +6499,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Drake Haven | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drake-Skull Cameo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drakewing Krasis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dralnu's Crusade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dramatic Finale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dramatic Rescue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dramatic Reversal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6443,6 +6553,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Dream Spoilers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream Stalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream Strix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dream Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream Trawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream Twist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dream's Grip | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6485,6 +6596,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Drogskol Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drogskol Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drogskol Reaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Drogskol Reinforcements | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drogskol Shieldmate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dromad Purebred | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dromar's Attendant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6539,6 +6651,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Drumhunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Drunau Corpse Trawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dryad Greenseeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dryad of the Ilysian Grove | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dryad's Caress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dryad's Favor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dryad's Revival | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6550,6 +6663,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Dualcaster Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dub | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dubious Delicacy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Duct Crawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Duel Tactics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Duelcraft Trainer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dueling Coach | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6577,6 +6691,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Duress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Durkwood Baloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Durkwood Boars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dusk // Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dusk Charger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dusk Feaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dusk Imp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6611,6 +6726,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Duty Beyond Death | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Duty-Bound Dead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dwarfhold Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Dwarven Armory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dwarven Berserker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dwarven Blastminer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dwarven Bloodboiler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6658,6 +6774,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Eagle of the Watch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eagles of the North | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Early Frost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Early Harvest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earsplitting Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earth Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earth King's Lieutenant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6672,6 +6789,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Earth-Origin Yak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earthblighter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earthbrawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Earthcraft | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earthen Arms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earthen Goo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Earthquake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6719,6 +6837,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Edge of the Divinity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Edgewall Innkeeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Edgewall Pack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Edifice of Authority | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eel-Hounds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eerie Gravestone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eerie Interlude | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6732,6 +6851,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Eidolon of Blossoms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eidolon of Inspiration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eidolon of Philosophy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Eidolon of Rhetoric | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eidolon of the Great Revel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eiganjo Castle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eiganjo Exemplar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6761,14 +6881,17 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Eldrazi Displacer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eldrazi Linebreaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eldrazi Obligator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Eldrazi Ravager | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eldrazi Repurposer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eldrazi Skyspawner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Eldrazi Temple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Eldritch Immunity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Electric Revelation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Electrickery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Electrify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Electro's Bolt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Electroduplicate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Electrolyze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Electropotence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Electrostatic Bolt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Electrostatic Infantry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6828,6 +6951,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Elvish Archers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Archivist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Bard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Elvish Berserker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Branchbender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elvish Clancaller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6920,8 +7044,10 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Enclave Elite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Encroach | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Encroaching Wastes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Encrust | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | End the Festivities | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Endbringer's Revel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Endless Atlas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Endless Cockroaches | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Endless Obedience | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Endless One | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -6963,6 +7089,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Ensouled Scimitar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ent-Draught Basin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Entangler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Enter the Avatar State | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enter the Enigma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enter the God-Eternals | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Enterprising Scallywag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7163,6 +7290,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Explosive Apparatus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Explosive Entry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Explosive Getaway | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Explosive Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Explosive Impact | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Explosive Prodigy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Explosive Shot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7355,6 +7483,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Fearless Pup | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fearless Skald | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fearsome Awakening | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fearsome Temper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feast of Blood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feast of Dreams | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feast of Flesh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7462,6 +7591,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Fiddlehead Kami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Field Creeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Field Marshal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Field Research | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Field Surgeon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Field Trip | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Field of Reality | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7483,6 +7613,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Fiery Inscription | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiery Intervention | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiery Islet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fiery Justice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiery Mantle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiery Temper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fight On! | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7500,6 +7631,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Fin-Clade Fugitives | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Final Death | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Final Flare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Final Flourish | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Final Parting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Final Payment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Final Revels | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7510,6 +7642,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Finale of Eternity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Finch Formation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Finishing Blow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fire // Ice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire Ants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire Bowman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire Diamond | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7530,10 +7663,12 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Fire Snake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire Urchin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire Whip | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fire at Will | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire of Orthanc | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire-Field Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire-Omen Crane | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fire-Rim Form | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Firebending Lesson | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Firebending Student | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fireblade Artist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fireblade Charger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7553,6 +7688,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Firemane Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Firemantle Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Firemaw Kavu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Firemind Vessel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Firemind's Research | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fires of Undeath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fires of Victory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7573,6 +7709,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Fisk Tower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fissure Vent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fissure Wizard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Fistful of Force | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fists of Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fists of Ironwood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fists of the Anvil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7612,7 +7749,9 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Flamekin Gildweaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flamekin Harbinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flamekin Spitfire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flames of the Firebrand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flameshadow Conjuring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Flameshot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flamespeaker Adept | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flamespeaker's Will | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flametongue Kavu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7791,6 +7930,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Forced Adaptation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forced Fruition | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forced Landing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Forced March | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forced Worship | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forceful Denial | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forebear's Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7820,6 +7960,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Foriysian Interceptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foriysian Totem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fork in the Road | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Forked Bolt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forlorn Flats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forlorn Pseudamma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Form a Posse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7886,6 +8027,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Freewind Equenaut | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Freewind Falcon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Freeze in Place | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Frenetic Efreet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Frenetic Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Frenetic Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Frenzied Arynx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7987,6 +8129,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Furnace Strider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Furnace Whelp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Furnace of Rath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Furor of the Bitten | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Furtive Analyst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Furtive Courier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Furtive Homunculus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8038,6 +8181,8 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Gallant Citizen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gallant Pie-Wielder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gallant Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gallifrey Council Chamber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gallifrey Falls // No More | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gallowbraid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gallows Warden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gallows at Willow Hill | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8051,6 +8196,9 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Gamma Grotesque | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ganax, Astral Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gandalf, Friend of the Shire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gandalf, Spark Starter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gang of Devils | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gang of Elk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gangly Stompling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gangrenous Goliath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Garenbrig Carver // Shield's Might | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8070,6 +8218,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Garruk's Warsteed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Garruk, Primal Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Garrulous Sycophant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Garza Zol, Plague Queen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gaseous Form | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gastal Blockbuster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gate Hound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8090,6 +8239,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Gathering Place | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gatstaf Arsonists // Gatstaf Ravagers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gatstaf Shepherd // Gatstaf Howler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gauntlets of Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gavony Ironwright | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gavony Silversmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gavony Township | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8124,6 +8274,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Gene Pollinator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | General Kudro of Drannith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | General Leo Cristophe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | General Marhault Elsdragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | General Thunderbolt Ross | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | General Traag, Heart of Stone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | General's Kabuto | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8139,6 +8290,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Geology Enthusiast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Geomancer's Gambit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Geometer's Arthropod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Geosurge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Geothermal Crevice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Geothermal Kami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Geralf's Masterpiece | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8198,6 +8350,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Ghost-Lit Warder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ghostblade Eidolon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ghostfire Slice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ghostflame Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ghostform | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ghostly Changeling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ghostly Flicker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8254,6 +8407,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Gift of Estates | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gift of Fangs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gift of Granite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gift of Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gift of Orzhova | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gift of Paradise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gift of Strands | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8277,6 +8431,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Gilded Pinions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gilded Scuttler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gilded Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gilt-Blade Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gilt-Leaf Seer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gilt-Leaf's Embrace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Giltgrove Stalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8307,6 +8462,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Glacial Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glacier Godmaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glade Gnarr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Glade Watcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gladecover Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gladehart Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glademuse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8391,6 +8547,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Glorious Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glorious Protector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glorious Sunrise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Glory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glory Bearers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glory Seeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glory of Warfare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8417,6 +8574,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Gnarlroot Pallbearer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gnarlroot Trapper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gnarlwood Dryad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gnashing of Teeth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gnat Alley Creeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gnat Miser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gnathosaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8465,6 +8623,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Goblin Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Chariot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Chieftain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goblin Clearcutter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Cohort | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Commando | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Cratermaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8488,6 +8647,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Goblin Glider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Glory Chaser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Goon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goblin Grappler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Grenade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Grenadiers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goblin Heelcutter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8641,6 +8801,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Gorilla Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goring Ceratops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gorion, Wise Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Goro-Goro, Disciple of Ryusei | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gossamer Phantasm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gothmog, Morgul Lieutenant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gouged Zealot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8660,7 +8821,9 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Gran Pulse Ochu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gran-Gran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grand Arbiter Augustin IV | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grand Architect | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grand Ball Guest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grand Melee | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Granger Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Granite Grip | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Granite Witness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8726,6 +8889,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Great Divide Guide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Great Fierce Bee | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Great Forest Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Great Hall of the Citadel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Great Hart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Great Sable Stag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Great Teacher's Decree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8837,6 +9001,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Grove of the Burnwillows | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grovetender Druids | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grow Extra Arms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Grow from the Ashes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Growing Ranks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Growth Curve | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Growth-Chamber Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8873,6 +9038,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Guardian Seraph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guardian Shield-Bearer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guardian of Cloverdell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Guardian of Faith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guardian of Ghirapur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guardian of Pilgrims | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guardian of Solitude | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8892,12 +9058,15 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Guidelight Synergist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guiding Bolt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guiding Voice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Guild Globe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guild Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guildless Commons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guildpact Informant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guildscorn Ward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guildsworn Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guilty Conscience | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Guise of Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gulf Squid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gulping Scraptrap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gumdrop Poisoner // Tempt with Treats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8921,6 +9090,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Gutless Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gutless Plunderer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gutter Skulk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Gutterbones | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guttural Response | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gutwrencher Oni | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Guul Draz Assassin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8949,6 +9119,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Hagra Crocodile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hagra Diabolist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hagra Sharpshooter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hail of Arrows | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hair-Strung Koto | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hajar, Loyal Bodyguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Halam Djinn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8977,6 +9148,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Hamlet Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hamlet Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hammer Dropper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hammer Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hammer of Ruin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hammerfist Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hammerhand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8989,6 +9161,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Hand That Feeds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hand of Cruelty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hand of Death | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hand of Emrakul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hand of Honor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hand of Silumgar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hangar Scrounger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8998,6 +9171,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Hanweir Watchkeep // Bane of Hanweir | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hapless Researcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Happy Hogan, Dauntless Driver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Harabaz Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haradrim Spearmaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Harald, King of Skemfar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Harbin, Vanguard Aviator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9015,6 +9189,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Hardened Tactician | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hardened-Scale Armor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hardy Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hargilde, Kindly Runechanter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Harmattan Efreet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Harmless Assault | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Harmonic Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9073,6 +9248,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Hawkeye, Bowslinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hawkeye, Clint Barton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hawkeye, Trick Shot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Haystack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hazard of the Dunes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hazardous Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hazardous Conditions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9119,6 +9295,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Heartlash Cinder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heartless Pillage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heartless Summoning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Heartmender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hearts on Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heartstabber Mosquito | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heartwood Treefolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9134,6 +9311,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Heavy Infantry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heavy Mattock | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heavyweight Demolisher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Heckling Fiends | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hecteyes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hedge Maze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hedge Troll | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9151,6 +9329,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Heir of Falkenrath // Heir to the Night | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heir of the Ancient Fang | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heir of the Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Heirloom Auntie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heirs of Stromkirk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hekma Sentinels | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heliod's Pilgrim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9216,6 +9395,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Hermetic Study | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hermit Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hermit of the Natterknolls // Lone Wolf of the Natterknolls | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hermitic Herbalist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hermitic Nautilus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hero in Training | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hero of Goma Fada | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9269,9 +9449,11 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Hieroglyphic Illumination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hieromancer's Cage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hierophant's Chalice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | High Alert | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | High Fae Trickster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | High Ground | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | High Market | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | High Noon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | High Priest of Penance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | High Seas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | High Sentinels of Arashin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9290,6 +9472,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Highspire Artisan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Highspire Infusion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Highspire Mantis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hightide Hermit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Highway Robber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Higure, the Still Wind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hijack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9320,6 +9503,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Hithlain Knots | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hive Stirrings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hivespine Wolverine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hivestone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hixus, Prison Warden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hoar Shade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hoard Robber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9329,6 +9513,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Hobgoblin, Mantled Marauder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hog-Monkey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hold at Bay | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hold for Questioning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hold the Gates | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hold the Line | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Holdout Settlement | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9365,6 +9550,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Honor Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Honor Troll | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Honor of the Pure | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Honor the Fallen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Honor the God-Pharaoh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Honor's Reward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Honor-Worn Shaku | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9451,6 +9637,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Hoverguard Sweepers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hovermyr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hoverstone Pilgrim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | How to Start a Riot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Howl from Beyond | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Howl of the Horde | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Howl of the Night Pack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9471,6 +9658,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Huatli's Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Huatli's Snubhorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Huatli, Dinosaur Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Huatli, the Sun's Heart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hugs, Grisly Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hulk, Always Angry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hulk, Bruce Banner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9548,6 +9736,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Hyperion, Supreme Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hypersonic Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hypervolt Grasp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Hypnotic Cloud | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hypnotic Grifter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hypochondria | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hypothesizzle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9584,6 +9773,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Ichthyomorphosis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iconic Shield | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Icy Manipulator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Identity Crisis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Idle Thoughts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Idolized | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Idyllic Grange | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9593,6 +9783,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Igneous Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Igneous Inspiration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ignis Scientia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ignite Disorder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ignite the Beacon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ignition Team | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ignoble Soldier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9632,6 +9823,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Immolation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Immortal Obligation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Immortal Phoenix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Immortus, Master of Eternity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Imodane's Recruiter // Train Troops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Imotekh the Stormlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Impact Tremors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9641,6 +9833,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Impeccable Timing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Impede Momentum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Impending Disaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Impending Doom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Imperial Aerosaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Imperial Ceratops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Imperial Hellkite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9676,11 +9869,13 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Improvised Arsenal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Improvised Club | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Improvised Weaponry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Imps' Taunt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Impulse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | In Oketra's Name | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | In the Presence of Ages | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | In the Trenches | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | In the Web of War | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Inaction Injunction | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iname, Death Aspect | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Incandescent Aria | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Incendiary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9704,6 +9899,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Index | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Indigo Faerie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Indomitable Archangel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Indomitable Might | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Indomitable Will | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Indrik Stomphowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Indulgent Aristocrat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9821,8 +10017,10 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Intangible Virtue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Integrity // Intervention | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Intelligence Bobblehead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Interdimensional Web Watch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Interdisciplinary Mascot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Interjection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Interplanar Beacon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Interpret the Signs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Intervene | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Intimidation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9842,6 +10040,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Intrepid Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Intrepid Provisioner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Intrepid Rabbit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Intrepid Stablemaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Intrepid Tenderfoot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Intrepid Trufflesnout // Go Hog Wild | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Introduction to Annihilation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9897,6 +10096,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Iroh, Firebending Instructor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iron Bully | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iron Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Iron Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iron Hills | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iron Lad, Young Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iron Lance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9940,6 +10140,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Isolate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Isolation Cell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Isolation Zone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Isperia's Skywatch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Isperia, Supreme Judge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | It Doesn't Add Up | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | It That Heralds the End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9958,6 +10159,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Ivy Lane Denizen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ixalli's Diviner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ixalli's Keeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ixalli's Lorekeeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ixidor's Will | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Izoni, Thousand-Eyed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Izzet Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10008,10 +10210,12 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Jareth, Leonine Titan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jarl of the Forsaken | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jasmine Boreal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jasmine Dragon Tea Shop | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jaspera Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Javelin of Lightning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jawbone Duelist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jawbone Skulkin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Jaws of Stone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jaya's Firenado | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jaya's Greeting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Jaya, Venerated Firemage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10183,6 +10387,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Kapow! | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kapsho Kitefins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karai's Technique | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Karametra's Acolyte | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karametra's Blessing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karametra's Favor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karametra, God of Harvests | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10199,6 +10404,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Karoo Meerkat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karplusan Hound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karplusan Wolverine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Karstoderm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karsus Depthguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karvanista, Loyal Lupari // Lupari Shield | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kaseto, Orochi Archmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10483,6 +10689,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Koskun Keep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Koth's Courier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kozilek's Channeler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kozilek's Pathfinder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kozilek's Predator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kozilek's Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kozilek's Shrieker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10499,6 +10706,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Krark-Clan Ogre | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Krark-Clan Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Krark-Clan Stoker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Krasis Incubation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kraul Foragers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kraul Raider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kraul Stinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10531,6 +10739,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Krosan Tusker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Krosan Warchief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Krosan Wayfarer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Krotiq Nestguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Krovikan Elementalist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Krovikan Mist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Krovikan Scoundrel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10545,6 +10754,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Kudo, King Among Bears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kujar Seedsculptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kuldotha Cackler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Kuldotha Flamefiend | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kuldotha Forgemaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kuldotha Phoenix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kuldotha Rebirth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10582,6 +10792,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Lady Zhurong, Warrior Queen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lady of Laughter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lagac Lizard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lagomos, Hand of Hatred | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lagonna-Band Elder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lagonna-Band Storyteller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lagonna-Band Trailblazer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10615,6 +10826,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Large Bear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Larger Than Life | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Laser Screwdriver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lash Out | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lash of Malice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lash of Thorns | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lash of the Balrog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10656,10 +10868,12 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Lavafume Invoker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lavakin Brawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lavastep Raider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lavinia of the Tenth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lavinia, Foil to Conspiracy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Law-Rune Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lawbringer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lawless Broker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lawmage's Binding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lay Claim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lay Down Arms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lay Waste | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10737,6 +10951,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Lethal Protection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lethargy Trap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Letter of Acceptance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Leveler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Levitating Statue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Levitation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ley Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10826,6 +11041,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Liliana's Steward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Liliana, Death Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lilting Refrain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lilypad Village | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lilysplash Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Limestone Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Liminal Hold | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10834,12 +11050,15 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Linebreaker Baloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lingering Phantom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lingering Tormentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Linvala, Keeper of Silence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Linvala, the Preserver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lion Heart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lion Vulture | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lionheart Glimmer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lionheart Maverick | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Liquify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Liquimetal Coating | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Liquimetal Torque | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lithatog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lithobraking | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lithophage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10910,6 +11129,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Lone Missionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lone Revenant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lone Rider // It That Rides as One | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lone Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lonely Arroyo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lonesome Unicorn // Rider in Need | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Long Goodbye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10972,6 +11192,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Lotho, Corrupt Shirriff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lotleth Troll | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lotus Bloom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lotus Blossom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lotus Field | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lotus Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lotus Path Djinn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10980,6 +11201,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Louisoix's Sacrifice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lounge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lowland Oaf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lowland Tracker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loxodon Anchorite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loxodon Battle Priest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Loxodon Convert | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11040,6 +11262,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Lupine Prototype | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lupinflower Village | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lurching Rotbeast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lurking Arynx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lurking Chupacabra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lurking Crocodile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lurking Deadeye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11055,6 +11278,8 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Luxurious Libation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lychguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lydia Frye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lyev Decree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Lyev Skyknight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lyla, Holographic Assistant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lynx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lyra Dawnbringer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11084,6 +11309,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Mad Prophet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mad Ratter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Madame Hydra, Reanimated | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Madame Vastra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Madblind Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Madcap Skills | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Madrush Cyclops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11105,6 +11331,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Maggot Carrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maggot Therapy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magic Damper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Magic Missile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magic Pot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magistrate's Scepter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magistrate's Veto | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11118,7 +11345,9 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Magma Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magma Spray | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magma Vein | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Magmaroth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magmatic Chasm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Magmatic Core | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magmatic Force | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magmatic Insight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magmatic Sinkhole | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11134,6 +11363,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Magus of the Candelabra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magus of the Coffers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magus of the Disk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Magus of the Library | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magus of the Moat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magus of the Tabernacle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magus of the Wheel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11205,6 +11435,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Managorger Hydra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Manakin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Manalith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Manamorphose | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Manaweft Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mandible Justiciar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mandibular Kite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11221,6 +11452,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Manifold Mouse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Manipulate Fate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mannichi, the Fevered Dream | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Manor Gate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Manor Skeleton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Manriki-Gusari | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Manta Riders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11237,6 +11469,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Map the Frontier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Map the Wastes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maraleaf Pixie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Maraleaf Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marang River Skeleton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marauder's Axe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marauding Blight-Priest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11296,6 +11529,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Markov Blademaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Markov Crusader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Markov Dreadknight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Markov Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Markov Patrician | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Markov Purifier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Markov Retribution | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11307,6 +11541,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Marrow Shards | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marrow-Gnawer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marsh Boa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Marsh Casualties | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marsh Crocodile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marsh Flats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marsh Flitter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11324,6 +11559,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Marshmist Titan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Martial Glory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Martial Impetus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Martial Law | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Martyr for the Cause | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Martyr of Dusk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Martyr's Cause | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11331,6 +11567,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Martyred Rusalka | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Martyrs' Tomb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marvelous Melee | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Marvo, Deep Operative | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mary Jane Watson | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mascot Interception | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mask of Avacyn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11358,6 +11595,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Master Skald | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Master Splicer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Master Transmuter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Master of Dark Rites | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Master of Diversion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Master of Etherium | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Master of Pearls | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11377,6 +11615,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Matca Rioters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Matoya, Archon Elder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Matsu-Tribe Birdstalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Matsu-Tribe Decoy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Matsu-Tribe Sniper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Matterbending Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mauhúr, Uruk-hai Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11435,8 +11674,10 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Meletis Astronomer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Meloku the Clouded Mirror | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Melt Terrain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Meltdown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Meltstrider Eulogist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Meltstrider's Gear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Memnarch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Memorial Team Leader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Memorial to Genius | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Memorial to Glory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11448,6 +11689,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Memory Plunder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Memory Sluice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Memory Worm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Menagerie Liberator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mending Hands | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mending Touch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Meneldor, Swift Savior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11492,6 +11734,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Merfolk Mistbinder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Merfolk Observer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Merfolk Pupil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Merfolk Raiders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Merfolk Seastalkers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Merfolk Secretkeeper // Venture Deeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Merfolk Seer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11531,6 +11774,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Metallurgeon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Metalspinner's Puzzleknot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Metamorphic Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Metamorphosis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Metastatic Evangel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Metathran Elite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Metathran Soldier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11567,6 +11811,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Might Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Might Weaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Might of Alara | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Might of Murasa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Might of Oaks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Might of the Ancestors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Might of the Masses | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11582,6 +11827,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Migratory Route | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Miirym, Sentinel Wyrm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mikokoro, Center of the Sea | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mild-Mannered Librarian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Militant Inquisitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Militant Monk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Military Discipline | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11664,6 +11910,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Minwu, White Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Miracle Worker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Miraculous Recovery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mirage Mesa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirage Mockery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirari | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mire Blight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11696,6 +11943,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Mirror Image | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirror Mockery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirror Sheen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mirror Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirror-Sigil Sergeant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirrormade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mirrormere Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11779,12 +12027,14 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Mocking Sprite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mockingbird, Ace Agent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mockingbird, Bobbi Morse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Moderation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mogg Alarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mogg Bombers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mogg Cannon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mogg Fanatic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mogg Flunkies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mogg Jailer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mogg Mob | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mogg Raider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mogg Salvage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mogg Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11793,6 +12043,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Mogg War Marshal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moggcatcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mogis's Favor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Mogis's Warhound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mold Adder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mold Shambler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Molder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11857,6 +12108,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Monstrous Carabid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Monstrous Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Monstrous Hound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Monstrous Onslaught | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Monumental Corruption | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Monumental Henge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Moodmark Painter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11994,6 +12246,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Murasa Brute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murasa Pyromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murasa Ranger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Murasa Rootgrazer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murder Investigation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murder of Crows | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12032,11 +12285,13 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Myr Convert | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Kinsmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Myr Landshaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Matrix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Mindservant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Moonvessel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Propagator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Quadropod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Myr Reservoir | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Retriever | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Scrapling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Myr Sire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12077,6 +12332,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Mystifying Maze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mythic Proportions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mythos of Brokkos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nacatl Hunt-Pride | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nacatl Outlander | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nacatl Savage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nacre Talisman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12085,6 +12341,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Naga Oracle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nagao, Bound by Honor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nagging Thoughts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nahiri's Binding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nahiri's Machinations | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nahiri's Stoneblades | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Naiad of Hidden Coves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12116,6 +12373,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Nasty End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nasty Little Rabbit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nath's Buffoon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nath's Elite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Natural Connection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Natural End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Natural Obsolescence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12135,6 +12393,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Nav Squad Commandos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Navigator's Ruin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Naya Battlemage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Naya Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Naya Hushblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Naya Panorama | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Naya Sojourners | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12156,6 +12415,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Necrogenesis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necrogoyf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necromancer's Assistant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Necromancer's Covenant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necromancer's Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necromantic Thirst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necromaster Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12227,6 +12487,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Neurok Replica | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Neurok Spy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Neutralize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Neutralize the Guards | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Neutralizing Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Neva, Stalked by Nightmares | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Never // Return | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12237,6 +12498,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | New Frontiers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | New Generation's Technique | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | New Horizons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | New Prahv Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | News Helicopter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nexus Wardens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nezahal, Primal Tide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12258,8 +12520,10 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Niblis of the Urn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nicanzil, Current Conductor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nick Valentine, Private Eye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Night // Day | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Night Clubber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Night Incarnate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Night Market | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Night Market Aeronaut | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Night Market Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Night Market Lookout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12344,6 +12608,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Niv-Mizzet, Dracogenius | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Niv-Mizzet, Visionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Niv-Mizzet, the Firemind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Niveous Wisps | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nivix Barrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nivix Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12403,6 +12668,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Noxious Field | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Noxious Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Noxious Groodion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Noxious Hatchling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Noxious Newt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Noxious Revival | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Noxious Toad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12412,6 +12678,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Null Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Null Elemental Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Null Group Biological Assets | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nulldrifter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nullify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nullmage Shepherd | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nullpriest of Oblivion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12428,6 +12695,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Nylea's Emissary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nylea's Forerunner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nylea's Huntmaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Nylea's Presence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nylea, God of the Hunt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nylea, Keen-Eyed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nymris, Oona's Trickster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12447,6 +12715,8 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Nyxborn Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | O'aka, Traveling Merchant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oak Street Innkeeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oaken Brawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Oaken Siren | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oakenform | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oakgnarl Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oakhame Adversary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12657,6 +12927,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Orbs of Warding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orbweaver Kumo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orc Sureshot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Orca, Siege Demon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orchard Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orchard Strider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orcish Artillery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12720,10 +12991,12 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Orzhov Racketeers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orzhova, the Church of Deals | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oscorp Research Team | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Osgood, Operation Double | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ossuary Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ostiary Thrull | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ostracize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ostrich-Horse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Otarian Juggernaut | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Otepec Huntmaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Otherworld Atlas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Otherworldly Escort | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12821,6 +13094,8 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Panicked Bystander // Cackling Culprit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Panther Warriors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Papercraft Decoy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Paperfin Rascal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Paradigm Shift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paradise Mantle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paragon of Eternal Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Paragon of Fierce Defiance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12844,6 +13119,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Parhelion II | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Parhelion Patrol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Part Water | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Part the Veil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Part the Waterveil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Parting Thoughts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pashalik Mons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12865,9 +13141,11 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Pathbreaker Ibex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pathfinding Axejaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pathmaker Initiate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pathrazer of Ulamog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Patriar's Seal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Patriarch's Desire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Patrician Geist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Patrician's Scorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Patriot, Young Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Patrol Hound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Patron Wizard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12895,6 +13173,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Pedal to the Metal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pedantic Learning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Peek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Peema Aether-Seer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Peema Outrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Peema Trailblazer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Peer Past the Veil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12953,6 +13232,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Pestilence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pestilence Demon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pestilence Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pestilent Haze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pestilent Kathari | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pestilent Syphoner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pestilent Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12964,6 +13244,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Petravark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Petrified Field | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Petrified Plating | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Petrify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Petrifying Meddler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pewter Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phalanx Formation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13145,6 +13426,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Planar Cleansing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Planar Collapse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Planar Despair | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Planar Disruption | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Planar Engineering | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Planar Incision | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Planar Outburst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13232,6 +13514,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Power Armor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Power Boost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Power Conduit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Power Depot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Power Fist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Power Matrix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Power of Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13249,6 +13532,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Precision Bolt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Predation Steward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Predator Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Predator Ooze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Predator's Gambit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Predator's Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Predator, Flagship | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13282,6 +13566,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Prickly Pair | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pride Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pride Sovereign | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pride of Lions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pride of the Clouds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pride of the Perfect | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prideful Feastling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13304,13 +13589,16 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Primal Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primal Forcemage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primal Frenzy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Primal Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primal Huntbeast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primal Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primal Visitation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primalcrux | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primaris Chaplain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Primaris Eliminator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prime Speaker Zegana | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primeval Herald | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Primeval Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primeval Protector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primeval Shambler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primevals' Glorious Rebirth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13320,11 +13608,14 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Primordial Sage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primordial Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prince Imrahil the Fair | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prismari Pledgemage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prismatic Boon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prismatic Lens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prismatic Omen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prismatic Vista | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prismite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prison Realm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Prison Sentence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prisoner's Dilemma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pristine Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pristine Skywise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13432,6 +13723,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Pull Through the Weft | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pull Under | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pull from the Grave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pulling Teeth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pulsar Squadron Ace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pulsating Illusion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pulse Tracker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13498,6 +13790,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Pyroclastic Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyroconvergence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyrohemia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pyrokinesis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyromancer's Assault | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyromancer's Gauntlet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyromancer's Swath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13506,6 +13799,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Pyromatics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyrophobia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyrostatic Pillar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Pyrotechnics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pyrrhic Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Python | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Qarsi High Priest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13569,6 +13863,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Quina, Qu Gourmet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quintorius, Field Historian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quirion Druid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Quirion Elves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quirion Ranger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quirion Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Quirion Trailblazer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13581,6 +13876,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Rabble-Rouser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rabid Bite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rabid Bloodsucker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rabid Elephant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rabid Gnaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rabid Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rabid Wolverines | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13608,6 +13904,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Ragamuffin Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ragamuffyn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ragavan, Nimble Pilferer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rage Nimbus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rage Reflection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rage Thrower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rage Weaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13641,8 +13938,11 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Rain of Tears | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rain of Thorns | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rainbow Crow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rainbow Efreet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rainveil Rejuvenator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raise Dead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raise the Alarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Raise the Past | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raised by Giants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raised by Wolves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Raka Disciple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13684,6 +13984,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Rally the Forces | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rally the Galadhrim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rally the Peasants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rally the Troops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rambunctious Mutt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ramosian Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ramosian Commander | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13699,6 +14000,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Rampaging Monument | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rampaging Rendhorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rampaging Spiketail | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rampant Elephant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rampart Crawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rampart Smasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ramroller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13807,6 +14109,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Razorfin Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Razorfoot Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Razorgrass Ambush // Razorgrass Field | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Razorgrass Screen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Razorjaw Oni | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Razorkin Hordecaller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Razormane Masticore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13822,6 +14125,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Ready to Rumble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reality Heist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reality Hemorrhage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Reality Ripple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reality Scramble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reality Spasm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Realm Razer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13872,6 +14176,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Reckless Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reckoner's Bargain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reclaim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Reclaim the Wastes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reclaiming Vines | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reclusive Artificer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reclusive Taxidermist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13881,6 +14186,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Reconnaissance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reconstructed Thopter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Recover | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Recross the Paths | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Recruit the Worthy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Recruiter of the Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Recruitment Officer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13897,9 +14203,11 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Redcap Raiders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Redcap Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Redeem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Redeem the Lost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Redemption Arc | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Redemption Choir | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rediscover the Way | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Redress Fate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Redrock Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Redtooth Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reduce in Stature | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13946,12 +14254,14 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Reki, the History of Kamigawa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reknit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relearn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Release the Ants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Release the Gremlins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Release to Memory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relentless Advance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relentless Assault | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relentless Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relentless Pursuit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Relentless Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relentless Rohirrim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relentless Skaabs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relic Bane | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13962,6 +14272,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Relic Runner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relic Sloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relic Vial | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Relic of Sauron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relic's Roar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Relief Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reliquary Monk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13973,6 +14284,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Remorseful Cleric | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Remote Farm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Remote Isle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Remove | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Renari, Merchant of Marvels | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Renata, Called to the Hunt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rend Flesh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13987,6 +14299,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Renegade Map | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Renegade Rallier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Renegade Reaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Renegade Silent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Renegade Tactics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Renegade Troops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Renegade Wheelsmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14022,6 +14335,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Rescue Retriever | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Research Assistant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Research Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Research the Deep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Resentful Revelation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reservoir Walker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reshape the Earth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14061,6 +14375,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Resuscitate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Retaliation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Retaliator Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Retract | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Retraction Helix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Retreat to Coralhelm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Retreat to Emeria | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14082,6 +14397,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Return to the Sewers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Returned Centaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Returned Pastcaller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Returned Phalanx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Returned Reveler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reveille Squad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revel Ruiner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14104,6 +14420,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Revitalize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revitalizing Repast // Old-Growth Grove | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Revive the Fallen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revive the Shire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reviving Dose | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reviving Melody | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14116,6 +14433,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Rhizome Lurcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhonas the Indomitable | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhonas's Monument | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rhox | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhox Bodyguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhox Brute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rhox Charger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14187,6 +14505,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Ringing Strike Mastery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rings of Brighthearth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ringsight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Ringskipper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ringwarden Owl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riot Control | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riot Devils | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14259,6 +14578,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | River Kaijin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | River Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | River Sneak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | River's Rebuke | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riverglide Pathway // Lavaglide Pathway | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riverguard's Reflexes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riverpyre Verge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14285,6 +14605,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Rob the Archives | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Robber Fly | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Robe of Mirrors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Robe of Stars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Robe of the Archmagi | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Robobrain War Mind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Robotics Mastery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14294,6 +14615,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Roc Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rock Badger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rock Basilisk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rock Slide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rock Soldiers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rockcaster Platoon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rocketeer Boostbuggy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14312,7 +14634,9 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Rogue's Gloves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rohirrim Lancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Roil Cartographer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Roil Eruption | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Roil Spout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Roil's Retribution | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Roiling Dragonstorm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Roku's Mastery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rollick of Abandon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14320,8 +14644,10 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Rolling Spoil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rolling Stones | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rolling Temblor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rolling Thunder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Romana II | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Romantic Rendezvous | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rona's Vortex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ronin Cavekeeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ronin Cliffrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ronin Houndmaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14423,6 +14749,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Ruinous Ultimatum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruins Recluse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruins of Oran-Rief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Rule of Law | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rumbleweed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rumbling Baloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rumbling Rockslide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14529,6 +14856,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Sacred Prey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sacred White Deer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sacred Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sacrifice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saddle of the Cavalier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saddleback Lagac | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saddled Rimestag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14555,6 +14883,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Sage of the Falls | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sage of the Fang | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sage of the Inward Eye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sage of the Maze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sage of the Skies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sage's Dousing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sage's Knowledge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14625,7 +14954,9 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Sanctum Gargoyle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum Seeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sanctum Weaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum of Calm Waters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sanctum of Fruitful Harvest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum of Shattered Heights | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum of Stone Fangs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanctum of Tranquil Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14634,6 +14965,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Sand Silos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sand Squid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sand Strangler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sandbar Crocodile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sandbar Merfolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sandbar Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sandblast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14683,6 +15015,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Saprazzan Raider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saprazzan Skerry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saproling Cluster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Saproling Migration | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saproling Symbiosis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sapseep Forest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saradoc, Master of Buckland | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14699,6 +15032,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Sarkhan's Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sarkhan's Resolve | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sarkhan's Triumph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sarkhan, Fireblood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sarpadian Simulacrum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sarulf's Packmate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saruli Caretaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14724,6 +15058,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Sauron, the Necromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sautekh Immortal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savaen Elves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Savage Beating | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savage Conception | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savage Gorger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savage Gorilla | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14751,6 +15086,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Savor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savvy Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Saw It Coming | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sawback Manticore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sawblade Scamp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sawtooth Thresher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sazh Katzroy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14810,6 +15146,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Scepter of Dominance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scepter of Fugue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scepter of Insight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sceptre of Eternal Glory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Schema Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Schismotivate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scholar of Athreos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14836,6 +15173,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Scorching Missile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scorching Shot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scorching Spear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scorching Winds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scorchmark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scorchwalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scoria Cat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14873,6 +15211,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Scragnoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scrap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scrap Compactor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Scrapbasket | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scrapdiver Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scrapheap Scrounger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scrapper Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14896,6 +15235,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Screams of the Damned | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Screeching Bat // Stalking Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Screeching Buzzard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Screeching Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Screeching Phoenix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Screeching Silcaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Screeching Skaab | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14930,6 +15270,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Scytheclaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sea Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sea Eagle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sea Gate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sea Gate Banneret | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sea Gate Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sea Gate Loremaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14990,6 +15331,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Secret Plans | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Secretkeeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Secrets of the Dead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Secure Detention | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Secure the Scene | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Secure the Wastes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Securitron Squadron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15014,6 +15356,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Seek the Horizon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Seek the Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Seeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Seeker of Insight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Seeker of Skybreak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Seeker of Sunlight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Seeker of the Way | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15081,7 +15424,9 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Senate Courier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Senate Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Senate Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sengir Bats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sengir Connoisseur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sengir Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sensei's Divining Top | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Senseless Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sensor Splicer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15287,6 +15632,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Shepherd of the Flock // Usher to Safety | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shepherd of the Lost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shepherding Spirits | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shessra, Death's Whisper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shi'ar Soldier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shield Mate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shield Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15304,6 +15650,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Shifting Woodland | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shimmer Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shimmer of Possibility | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shimmerdrift Vale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shimmering Barrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shimmering Grotto | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shimmering Wings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15326,6 +15673,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Shipwreck Moray | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shipwreck Patrol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shipwreck Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shipwreck Singer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shire Scarecrow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shire Shirriff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shire Terrace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15334,6 +15682,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Shivan Devastator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shivan Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shivan Emissary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shivan Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shivan Harvest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shivan Hellkite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shivan Meteor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15379,6 +15728,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Shredder's Revenge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shredder, Unrelenting | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shredding Winds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shrewd Hatchling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shrewd Storyteller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shriek Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shriek of Dread | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15395,6 +15745,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Shrine of Burning Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shrine of Loyal Legions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shrine of Piercing Vision | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Shrine of the Forsaken Gods | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shrivel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shroofus Sproutsire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shrouded Shepherd // Cleave Shadows | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15476,6 +15827,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Silent Submersible | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Silent-Blade Oni | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Silhana Ledgewalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Silhana Starfletcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Silhana Wayfinder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Silk Net | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Silk, Web Weaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15540,6 +15892,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Simic Locket | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Simic Ragworm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Simic Sky Swallower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Simoon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Simplify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sin Collector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sinew Dancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15579,6 +15932,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Skarrg Goliath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skarrg Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skarrg, the Rage Pits | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skarrgan Firebird | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skarrgan Pit-Skulk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skarrgan Skybreaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skateboard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15668,6 +16022,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Skyclave Relic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyclave Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyclave Shadowcat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyclave Squid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyclaw Thrash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skycloud Egg | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skycrash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15676,6 +16031,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Skyhunter Patrol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyhunter Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyhunter Skirmisher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Skyhunter Strike Force | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyknight Legionnaire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyknight Squire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyknight Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15772,6 +16128,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Slinking Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slinking Skirge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slip On the Ring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Slip Out the Back | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slip Through Space | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slippery Bogle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Slippery Karst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15909,6 +16266,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Soldier of the Pantheon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Solemn Offering | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Solemn Recruit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Solid Footing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Solidarity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Solitary Camel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Solitary Hunter // One of the Pack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15965,6 +16323,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Sorin, Vampire Lord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Barrier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Channeling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Soul Collector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Diviner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Enervation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Feast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15972,6 +16331,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Soul Manipulation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Net | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Read | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Soul Reap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Salvage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Shepherd | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soul Snare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16012,6 +16372,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Soulstone Sanctuary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soulsurge Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soulsworn Jury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Soulsworn Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soultether Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Soured Springs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | South Wind Avatar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16042,6 +16403,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Sparktongue Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sparring Collar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sparring Construct | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sparring Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sparring Mummy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sparring Regimen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spartan Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16167,10 +16529,13 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Spiketail Drakeling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spiketail Hatchling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spikewheel Acrobat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spin Engine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spin Out | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spinal Centipede | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spinal Parasite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spincrusher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spindrift Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spinebiter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spined Basher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spined Fluke | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spined Karok | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16265,16 +16630,20 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Sporemound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sporesower Thallid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sporocyst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sporogenesis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sporoloth Ancient | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spotcycle Scouter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spread the Sickness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spreading Flames | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spreading Insurrection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spreading Rot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spring // Mind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Spring Cleaning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spring Splasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spring of Eternal Peace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spring-Leaf Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Springing Tiger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Springjack Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Springjack Shepherd | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Springjaw Trap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Springleaf Drum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16398,6 +16767,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Startling Development | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starved Rusalka | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starwinder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stasis Cocoon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stasis Field | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stasis Snare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Statecraft | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16442,6 +16812,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Steel-Plume Marshal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Steelburr Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Steelclad Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Steelclad Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Steelclaw Lance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Steelfin Whale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Steelform Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16451,6 +16822,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Steelshaper's Gift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Steeple Creeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Steeple Roc | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stegron the Dinosaur Man | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stench of Decay | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stenchskipper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stensia Banquet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16513,6 +16885,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Stolen Stark Tech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stolen Strategy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stomp and Howl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stomped by the Foot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stomper Cub | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stomping Ground | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stone Catapult | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16526,6 +16899,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Stone Quarry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stone Rain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stone Retrieval Unit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stone by Sunlight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stone-Seeder Hierophant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stonebound Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stonebrow, Krosan Hero | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16542,6 +16916,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Stonewood Invocation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stonewood Invoker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stonework Puma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stony Silence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stony Strength | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stony-Voiced Goblins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stonybrook Angler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16590,6 +16965,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Stormscape Master | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stormsplitter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stormsurge Kraken | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stormtide Leviathan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stormwatch Eagle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stormwild Capridor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stormwing Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16667,6 +17043,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Structural Distortion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Struggle // Survive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Struggle for Skemfar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stuck in Summoner's Sanctum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Student of Ojutai | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Student of Warfare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Study | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16677,7 +17054,9 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Stun Sniper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stunning Shot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stunt Double | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Stupefying Touch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stupor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sturdy Hatchling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sturmgeist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stymied Hopes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Subjugator Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16783,6 +17162,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Sunhome Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sunhome Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sunhome Stalwart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sunken Citadel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sunken Field | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sunlance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sunlit Hoplite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16830,6 +17210,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Supply Runners | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Supply-Line Cranes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Supportive Parents | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Suppression Bonds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Supreme Phantom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Supreme Verdict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Supreme Will | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16874,6 +17255,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Swaggering Corsair | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swallowing Plague | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swamp Mosquito | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Swampbenders | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swampsnare Trap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swarm Culler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swarm Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16923,12 +17305,14 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Swordwise Centaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sworn Companions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sworn Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sygg's Command | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sygg, River Guide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sylvan Advocate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sylvan Anthem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sylvan Basilisk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sylvan Bounty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sylvan Brushstrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Sylvan Echoes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sylvan Hierophant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sylvan Messenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sylvan Might | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17005,6 +17389,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Taken by Nightmares | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Takeno's Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Takenuma Bleeder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Talara's Battalion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Talas Air Ship | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Talas Explorer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Talas Lookout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17028,6 +17413,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Tamiyo's Safekeeping | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tana, the Bloodsower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tandem Tactics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tangle Angler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tangle Asp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tangle Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tangle Hulk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17046,6 +17432,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Tanufel Rimespeaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Taoist Hermit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Taoist Mystic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tapestry of the Ages | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tapping at the Window | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tar Pit Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tar Pitcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17099,6 +17486,10 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Teetering Peaks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teeterpeak Ambusher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teferi's Care | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teferi's Curse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teferi's Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teferi's Honor Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teferi's Isle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teferi's Protege | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teferi's Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teferi's Tutelage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17118,6 +17509,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Telekinetic Bonds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Telekinetic Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Telepathic Spies | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Teleport | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teleportation Circle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Telim'Tor's Darts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teller of Tales | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17130,6 +17522,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Tempered Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tempered in Solitude | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tempest Angler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Tempest Caller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tempest Djinn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tempest Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tempest Hart // Scan the Clouds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17194,6 +17587,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Terra Stomper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terrain Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terrain Generator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Terrarion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terravore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terrian, World Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Territorial Allosaurus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17257,6 +17651,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | The Art of Tea | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Autonomous Furnace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Battle of Bywater | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | The Biblioplex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Binding of the Titans | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Birth of Meletis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Black Breath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17364,6 +17759,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Thorin's Last Stand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thorin, Company's Leader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thorin, King of Durin's Folk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thorn Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thorn Lieutenant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thorn Mammoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thorn of Amethyst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17421,8 +17817,10 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Thraben Watcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thragtusk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thrakkus the Butcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thran Forge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thran Foundry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thran Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thran Lens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thran Quarry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thran Vigil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thran War Machine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17461,6 +17859,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Throne of the God-Pharaoh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Throttle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Throwing Knife | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Thrull Parasite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thrumming Hivepool | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thrun, the Last Troll | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thryx, the Sudden Storm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17585,6 +17984,7 @@ Commander: **Shiko and Narset, Unified** · 100 karata · 89 jedinstvenih · PAS
 | PASS | Tishana, Voice of Thunder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Titan of Eternal Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Titan's Grave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
+| PASS | Titan's Revenge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Titan's Strength | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Titania's Boon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Titania's Chosen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |

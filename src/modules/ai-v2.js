@@ -468,7 +468,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Vlasnik ne zna automatski identitet karte egzilirane licem nadolje.
     // Manifest/cloak je izuzetak: kontrolor smije pogledati vlastitu skrivenu
     // kartu, a `revealedTo` pokriva Klaw/Extract Power dozvole.
-    const ownerKnows = card.owner === viewer && (!card.faceDown || card.meta && card.meta.faceDownDef);
+    const ownerKnows = !card.faceDown && card.owner === viewer ||
+      card.ctrl === viewer && !!(card.meta && card.meta.faceDownDef);
     const revealedTo = card.meta && card.meta.revealedTo;
     const known = !!forceKnown || ownerKnows || !card.faceDown || card.zone === 'graveyard' || card.zone === 'command' ||
       revealedTo === 'all' || Array.isArray(revealedTo) && revealedTo.includes(viewer.idx);
@@ -4069,7 +4070,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
-      if(hintKind==='damagePreventionSource'){
+      if(hintKind==='combatAsUnblocked'){
+        const {card,blockers=[],amount=0,defender}=q.aiHint;
+        const defendingPlayer=defender instanceof MTG.Player;
+        const lethal=defendingPlayer ? card?.kw('infect') ? (defender.poison||0)+amount>=10
+          : defender.life<=amount || card?.commander&&(defender.commanderDamage?.[card.iid]||0)+amount>=21
+          : defender?.is?.('Planeswalker')&&(defender.counters.loyalty||0)<=amount;
+        let remaining=amount,removal=0;
+        for(const blocker of blockers.slice().sort((a,b)=>(a.toughness-a.damage)-(b.toughness-b.damage))){
+          const need=card?.kw('deathtouch')?1:Math.max(0,blocker.toughness-blocker.damage);
+          if(remaining>=need&&!blocker.kw('indestructible'))removal+=permanentGameValue(game,blocker,player)*0.35;
+          remaining-=Math.min(remaining,need);
+        }
+        breakdown.choice=action.value==='yes'?(lethal?1000:amount*(card?.kw('infect')?3:0.8)):removal;
+      } else if(hintKind==='damagePreventionSource'){
         breakdown.choice=U.OracleV8SourcePrevention.threat(game,player,action.option?.card);
       } else if(hintKind==='oracleLibraryChoice'){
         const card=q.aiHint.card,wantTop=card&&(card.mv>=3||card.is?.('Creature'));

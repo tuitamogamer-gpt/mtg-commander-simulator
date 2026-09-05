@@ -1,0 +1,463 @@
+[
+  {
+    "id": "74004b11-53dc-475c-8d29-cf52403456cf",
+    "oracle_id": "1095fcd9-8127-4345-9052-fccb350296d3",
+    "name": "Hold for Questioning",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{3}{U}",
+    "oracle_text": "Enchant creature or planeswalker\nWhen this Aura enters, tap enchanted permanent and investigate. (Create a Clue token. It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")\nEnchanted permanent doesn't untap during its controller's untap step and its activated abilities can't be activated.",
+    "keywords": [
+      "Investigate",
+      "Enchant"
+    ],
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "c64771e8-94bb-452b-b028-619ed3b4327c",
+    "oracle_id": "10f0e797-3887-4c2b-9cff-80f110b952e1",
+    "name": "Lawmage's Binding",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{1}{W}{U}",
+    "oracle_text": "Flash\nEnchant creature\nEnchanted creature can't attack or block, and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant",
+      "Flash"
+    ],
+    "color_identity": [
+      "U",
+      "W"
+    ]
+  },
+  {
+    "id": "2f3e1033-428a-4263-8813-fdb8bb4b6425",
+    "oracle_id": "191ec087-7817-4c56-b2d5-66de5c663536",
+    "name": "Lyev Skyknight",
+    "layout": "normal",
+    "type_line": "Creature — Human Knight",
+    "mana_cost": "{1}{W}{U}",
+    "oracle_text": "Flying\nWhen this creature enters, detain target nonland permanent an opponent controls. (Until your next turn, that permanent can't attack or block and its activated abilities can't be activated.)",
+    "power": "3",
+    "toughness": "1",
+    "keywords": [
+      "Flying",
+      "Detain"
+    ],
+    "color_identity": [
+      "U",
+      "W"
+    ]
+  },
+  {
+    "id": "bf91d847-4a87-4a65-8d6d-e20d538c5cec",
+    "oracle_id": "27ecb717-6251-4066-b57e-7070e9e44bbf",
+    "name": "Archon of the Triumvirate",
+    "layout": "normal",
+    "type_line": "Creature — Archon",
+    "mana_cost": "{5}{W}{U}",
+    "oracle_text": "Flying\nWhenever this creature attacks, detain up to two target nonland permanents your opponents control. (Until your next turn, those permanents can't attack or block and their activated abilities can't be activated.)",
+    "power": "4",
+    "toughness": "5",
+    "keywords": [
+      "Flying",
+      "Detain"
+    ],
+    "color_identity": [
+      "U",
+      "W"
+    ]
+  },
+  {
+    "id": "f531a657-9e60-453a-b72c-2ba04913698f",
+    "oracle_id": "2e056743-78ff-45b6-80df-7486d52d5df6",
+    "name": "Encrust",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{1}{U}{U}",
+    "oracle_text": "Enchant artifact or creature\nEnchanted permanent doesn't untap during its controller's untap step and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "0906ebfc-4756-4caf-83ff-859e181f3bef",
+    "oracle_id": "35dead9a-20ab-45e9-be3e-36857c928ab9",
+    "name": "Viper's Kiss",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{B}",
+    "oracle_text": "Enchant creature\nEnchanted creature gets -1/-1, and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "c737cd7a-e1ef-4a74-9e85-b56ea06b05d7",
+    "oracle_id": "3f2a27a1-f9cf-4dac-a248-5c6af4de3722",
+    "name": "Azorius Arrester",
+    "layout": "normal",
+    "type_line": "Creature — Human Soldier",
+    "mana_cost": "{1}{W}",
+    "oracle_text": "When this creature enters, detain target creature an opponent controls. (Until your next turn, that creature can't attack or block and its activated abilities can't be activated.)",
+    "power": "2",
+    "toughness": "1",
+    "keywords": [
+      "Detain"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "019ba84d-d236-45c5-a8ad-75def7736d0c",
+    "oracle_id": "5101fa05-3cca-499c-8c48-198ba0f8c672",
+    "name": "Isperia's Skywatch",
+    "layout": "normal",
+    "type_line": "Creature — Vedalken Knight",
+    "mana_cost": "{5}{U}",
+    "oracle_text": "Flying\nWhen this creature enters, detain target creature an opponent controls. (Until your next turn, that creature can't attack or block and its activated abilities can't be activated.)",
+    "power": "3",
+    "toughness": "3",
+    "keywords": [
+      "Flying",
+      "Detain"
+    ],
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "58907d3b-9deb-4485-8ae2-c4e97c519212",
+    "oracle_id": "55df6fa3-3d24-46d5-b325-099336c3f0fd",
+    "name": "Lavinia of the Tenth",
+    "layout": "normal",
+    "type_line": "Legendary Creature — Human Soldier",
+    "mana_cost": "{3}{W}{U}",
+    "oracle_text": "Protection from red\nWhen Lavinia enters, detain each nonland permanent your opponents control with mana value 4 or less. (Until your next turn, those permanents can't attack or block and their activated abilities can't be activated.)",
+    "power": "4",
+    "toughness": "4",
+    "keywords": [
+      "Protection",
+      "Detain"
+    ],
+    "color_identity": [
+      "U",
+      "W"
+    ]
+  },
+  {
+    "id": "6355ae63-3072-4c6f-bf46-ee6e9c4fedba",
+    "oracle_id": "566eafea-c8c2-43d6-b491-f20de276cdb6",
+    "name": "Stupefying Touch",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{1}{U}",
+    "oracle_text": "Enchant creature\nWhen this Aura enters, draw a card.\nEnchanted creature's activated abilities can't be activated.",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "698b47d1-c72e-4dc3-b28b-7421e0163f22",
+    "oracle_id": "5912d4b7-d18d-4619-a96b-d2615200971f",
+    "name": "New Prahv Guildmage",
+    "layout": "normal",
+    "type_line": "Creature — Human Wizard",
+    "mana_cost": "{W}{U}",
+    "oracle_text": "{W}{U}: Target creature gains flying until end of turn.\n{3}{W}{U}: Detain target nonland permanent an opponent controls. (Until your next turn, that permanent can't attack or block and its activated abilities can't be activated.)",
+    "power": "2",
+    "toughness": "2",
+    "keywords": [
+      "Detain"
+    ],
+    "color_identity": [
+      "U",
+      "W"
+    ]
+  },
+  {
+    "id": "8ee69a1f-aeed-4eb4-8987-fa720fc99715",
+    "oracle_id": "6128679e-7e54-41e4-ab6e-25aeeffed49f",
+    "name": "Planar Disruption",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{1}{W}",
+    "oracle_text": "Enchant artifact, creature, or planeswalker\nEnchanted permanent can't attack or block, and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "8da986da-e8ee-4b53-8bbd-9285d0f7f3cb",
+    "oracle_id": "66e2e816-5197-4151-a6c0-352c34c2eec7",
+    "name": "Krasis Incubation",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{2}{G}{U}",
+    "oracle_text": "Enchant creature\nEnchanted creature can't attack or block, and its activated abilities can't be activated.\n{1}{G}{U}, Return this Aura to its owner's hand: Put two +1/+1 counters on enchanted creature.",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "G",
+      "U"
+    ]
+  },
+  {
+    "id": "76832ca8-95b2-4bc8-a191-9e2f50b77626",
+    "oracle_id": "6d9f2fe0-5657-45b4-9431-36e0f6c8eba2",
+    "name": "Prison Sentence",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{2}{W}",
+    "oracle_text": "Enchant creature\nWhen this Aura enters, scry 2.\nEnchanted creature can't attack or block, and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant",
+      "Scry"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "5342ec3c-9d26-474a-9df5-c21ac90bb233",
+    "oracle_id": "6f6bb2dd-c888-43bd-b9ef-8bd451ab669b",
+    "name": "Inaction Injunction",
+    "layout": "normal",
+    "type_line": "Sorcery",
+    "mana_cost": "{1}{U}",
+    "oracle_text": "Detain target creature an opponent controls. (Until your next turn, that creature can't attack or block and its activated abilities can't be activated.)\nDraw a card.",
+    "keywords": [
+      "Detain"
+    ],
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "66e6fa29-087f-4da6-9114-30feec708560",
+    "oracle_id": "7c16707e-24da-4a7e-9d24-d3731987f675",
+    "name": "Edifice of Authority",
+    "layout": "normal",
+    "type_line": "Artifact",
+    "mana_cost": "{3}",
+    "oracle_text": "{1}, {T}: Target creature can't attack this turn. Put a brick counter on this artifact.\n{1}, {T}: Until your next turn, target creature can't attack or block and its activated abilities can't be activated. Activate only if there are three or more brick counters on this artifact.",
+    "keywords": [],
+    "color_identity": []
+  },
+  {
+    "id": "9fc0be19-e041-4347-a51c-7e93a3d9e712",
+    "oracle_id": "81728b98-8cf9-4734-a318-69184bb4d15c",
+    "name": "Arrest",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{2}{W}",
+    "oracle_text": "Enchant creature\nEnchanted creature can't attack or block, and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "6678501e-6349-4e37-ab4c-a31a3d408d52",
+    "oracle_id": "84d308ce-c3c5-4612-accc-6e6cc68a33be",
+    "name": "Stuck in Summoner's Sanctum",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{2}{U}",
+    "oracle_text": "Flash\nEnchant artifact or creature\nWhen this Aura enters, tap enchanted permanent.\nEnchanted permanent doesn't untap during its controller's untap step and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant",
+      "Flash"
+    ],
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "421eac28-d6f2-44f2-b7ca-eb73fbf23887",
+    "oracle_id": "8f674382-78b5-462c-9a7f-c5f613c317d4",
+    "name": "Nahiri's Binding",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{1}{W}{W}",
+    "oracle_text": "Enchant creature or planeswalker\nEnchanted permanent can't attack or block, and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "8082298e-05c4-48b3-9367-713f59aafdc6",
+    "oracle_id": "a3639381-e401-409e-8f07-0a3bc736c50d",
+    "name": "Desert's Hold",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{2}{W}",
+    "oracle_text": "Enchant creature\nWhen this Aura enters, if you control a Desert or there is a Desert card in your graveyard, you gain 3 life.\nEnchanted creature can't attack or block, and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "773cf2aa-4337-4d14-8a8e-ff8b1fdec1b5",
+    "oracle_id": "ace64875-ca4b-45c7-8b46-29ef2f2629dd",
+    "name": "Lyev Decree",
+    "layout": "normal",
+    "type_line": "Sorcery",
+    "mana_cost": "{1}{W}",
+    "oracle_text": "Detain up to two target creatures your opponents control. (Until your next turn, those creatures can't attack or block and their activated abilities can't be activated.)",
+    "keywords": [
+      "Detain"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "5b2ca75e-ccb0-4e5b-8dda-445fe0130732",
+    "oracle_id": "ba11db54-149d-427e-b9ff-d1e29bbcbb11",
+    "name": "Stasis Cocoon",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{1}{W}",
+    "oracle_text": "Enchant artifact\nEnchanted artifact can't attack or block, and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "69202217-ef36-4d6c-bbd0-ebbb2ade51f7",
+    "oracle_id": "c333eb79-300e-4dc0-9126-8dca1bac6ef2",
+    "name": "Demotion",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{W}",
+    "oracle_text": "Enchant creature\nEnchanted creature can't block, and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "1628e808-f0d7-4225-8020-d9cbd14c510e",
+    "oracle_id": "cba0eae3-73ea-4ea9-87bf-1015e490da90",
+    "name": "Azorius Justiciar",
+    "layout": "normal",
+    "type_line": "Creature — Human Wizard",
+    "mana_cost": "{2}{W}{W}",
+    "oracle_text": "When this creature enters, detain up to two target creatures your opponents control. (Until your next turn, those creatures can't attack or block and their activated abilities can't be activated.)",
+    "power": "2",
+    "toughness": "2",
+    "keywords": [
+      "Detain"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "ae5233b5-08fe-4b63-a0fa-6e5e07df3fa8",
+    "oracle_id": "ce95e51d-4ef3-44a8-ae47-cf1bf71ebd3f",
+    "name": "Secure Detention",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{3}{W}",
+    "oracle_text": "Enchant artifact or creature\nWhen this Aura enters, create a 1/1 white Soldier creature token.\nEnchanted permanent can't attack or block, and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "21078b6f-a39d-4ec8-879e-ad10d97c3ff6",
+    "oracle_id": "dfcf9f38-eb26-4033-b7c0-45ed29417aa5",
+    "name": "Martial Law",
+    "layout": "normal",
+    "type_line": "Enchantment",
+    "mana_cost": "{2}{W}{W}",
+    "oracle_text": "At the beginning of your upkeep, detain target creature an opponent controls. (Until your next turn, that creature can't attack or block and its activated abilities can't be activated.)",
+    "keywords": [
+      "Detain"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "32602ed9-c0a7-4498-a333-235eaae628df",
+    "oracle_id": "e67e3cf1-6da9-4b52-a945-47bf54f69ffa",
+    "name": "Soulsworn Spirit",
+    "layout": "normal",
+    "type_line": "Creature — Spirit",
+    "mana_cost": "{3}{U}",
+    "oracle_text": "This creature can't be blocked.\nWhen this creature enters, detain target creature an opponent controls. (Until your next turn, that creature can't attack or block and its activated abilities can't be activated.)",
+    "power": "2",
+    "toughness": "1",
+    "keywords": [
+      "Detain"
+    ],
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "d34c717b-224b-4289-826d-f5b1f7c3dbfb",
+    "oracle_id": "e844ded0-821a-4378-8f58-bf1e1c0269d5",
+    "name": "Suppression Bonds",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{3}{W}",
+    "oracle_text": "Enchant nonland permanent\nEnchanted permanent can't attack or block, and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "bbc5f28f-6361-455f-ac82-260a70e59316",
+    "oracle_id": "ebec110e-aff3-48aa-abf6-309dd2ffb478",
+    "name": "Petrify",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{1}{W}",
+    "oracle_text": "Enchant artifact or creature\nEnchanted permanent can't attack or block, and its activated abilities can't be activated.",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  }
+]

@@ -46,6 +46,15 @@ test('Counter cost rejects stale selected object, invalid choice count and disap
  const changed=ready('human','Counter Typed'),candidate=own(changed);candidate.counters['+1/+1']=1;changed.a.controller.decide=async()=>{candidate.counters['+1/+1']=0;return[candidate];};assert.equal(await changed.game.activateAbility(changed.a,raw(changed)),false);assert.equal(changed.a.pool.G,1);
  const invalid=ready('human','Counter Other'),card=own(invalid);card.counters.charge=1;invalid.a.controller.decide=async()=>[card,card];assert.equal(await invalid.game.activateAbility(invalid.a,raw(invalid)),false);assert.equal(invalid.source.tapped,false);
 });
+for(const role of ['human','ai'])test(`Counter cost ${role}: a source phasing while its counter choice is pending cannot pay with absent counters`,async()=>{
+ const ctx=ready(role,'Counter Any Self');ctx.source.counters.charge=2;ctx.game.recalc();
+ const offered=entry(ctx),decide=ctx.a.controller.decide.bind(ctx.a.controller);assert.ok(offered);
+ ctx.a.controller.decide=async(g,q)=>{const answer=await decide(g,q);if(q.type==='chooseCards'&&q.aiHint?.kind==='counterCost')g.phaseOut(ctx.source);return answer;};
+ assert.equal(await ctx.game.activateAbility(ctx.a,offered),false);
+ assert.equal(ctx.source.phasedOut,true);assert.equal(ctx.source.counters.charge,2);assert.equal(ctx.a.pool.C,1);
+ assert.equal(ctx.game.stack.length,0);assert.equal(ctx.source.tapped,false);
+ assert.equal((ctx.game.aiDecisionLog||[]).some(row=>row.fallback),false);
+});
 test('Counter cost named source and both modal choices use the real Stack payment',async()=>{
  const named=ready('human','Counter Named');named.source.counters.oil=3;assert.equal(await named.game.activateAbility(named.a,entry(named)),true);assert.equal(named.source.counters.oil||0,0);await settle(named.game);
  for(const index of [0,1]){const ctx=ready('human','Counter Modal'),other=own(ctx);other.counters.charge=1;const decide=ctx.a.controller.decide.bind(ctx.a.controller);ctx.a.controller.decide=async(g,q)=>q.aiHint?.kind==='mode'?String(index):decide(g,q);const life=ctx.a.life;assert.equal(await ctx.game.activateAbility(ctx.a,entry(ctx)),true);assert.equal(other.counters.charge||0,0);await settle(ctx.game);assert.equal(ctx.a.hand.length,index?0:1);assert.equal(ctx.a.life,life+(index?2:0));}

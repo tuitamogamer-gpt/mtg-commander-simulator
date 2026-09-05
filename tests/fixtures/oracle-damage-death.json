@@ -1,0 +1,243 @@
+[
+  {
+    "id": "fb468da0-b72b-4b46-994a-20677206ffb7",
+    "oracle_id": "031ddf1e-afcf-4b09-8859-4df0f0ab5dcf",
+    "name": "Blood Cultist",
+    "layout": "normal",
+    "type_line": "Creature — Human Wizard",
+    "mana_cost": "{1}{B}{R}",
+    "oracle_text": "{T}: This creature deals 1 damage to target creature.\nWhenever a creature dealt damage by this creature this turn dies, put a +1/+1 counter on this creature.",
+    "power": "1",
+    "toughness": "1",
+    "keywords": [],
+    "color_identity": [
+      "B",
+      "R"
+    ]
+  },
+  {
+    "id": "f62abe9c-7599-433b-a964-10d6641f3586",
+    "oracle_id": "0a07a676-890f-49a2-9a2d-17d7b1dc6868",
+    "name": "Wight",
+    "layout": "normal",
+    "type_line": "Creature — Zombie Soldier",
+    "mana_cost": "{1}{B}",
+    "oracle_text": "This creature enters tapped.\nLife Drain — Whenever a creature dealt damage by this creature this turn dies, create a tapped 2/2 black Zombie creature token and exile that card.",
+    "power": "3",
+    "toughness": "2",
+    "keywords": [],
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "43297ddd-276f-4d2d-9d9c-937603d0e376",
+    "oracle_id": "2b211adb-de44-4468-b65d-907a09aa7e9d",
+    "name": "Abattoir Ghoul",
+    "layout": "normal",
+    "type_line": "Creature — Zombie",
+    "mana_cost": "{3}{B}",
+    "oracle_text": "First strike\nWhenever a creature dealt damage by this creature this turn dies, you gain life equal to that creature's toughness.",
+    "power": "3",
+    "toughness": "2",
+    "keywords": [
+      "First strike"
+    ],
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "28c56db1-bb2d-4383-90aa-72d00fe476b2",
+    "oracle_id": "448037c0-20b5-4ca4-9d8f-2702b4697127",
+    "name": "Vampiric Sliver",
+    "layout": "normal",
+    "type_line": "Creature — Sliver",
+    "mana_cost": "{3}{B}",
+    "oracle_text": "All Sliver creatures have \"Whenever a creature dealt damage by this creature this turn dies, put a +1/+1 counter on this creature.\"",
+    "power": "3",
+    "toughness": "3",
+    "keywords": [],
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "94849571-928a-4c6d-9868-58f606941679",
+    "oracle_id": "4789357c-3ab7-4327-b5ee-b1110ddb876f",
+    "name": "Madame Vastra",
+    "layout": "normal",
+    "type_line": "Legendary Creature — Lizard Detective",
+    "mana_cost": "{2}{G}{U}",
+    "oracle_text": "Partner with Jenny Flint (When this creature enters, target player may put Jenny Flint into their hand from their library, then shuffle.)\nMadame Vastra must be blocked if able.\nWhenever a creature dealt damage by Madame Vastra this turn dies, create a Clue token and a Food token.",
+    "power": "3",
+    "toughness": "3",
+    "keywords": [
+      "Partner with",
+      "Food",
+      "Partner"
+    ],
+    "color_identity": [
+      "G",
+      "U"
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "f8a73bf1-cf14-4a36-97ff-868212e0bfb8",
+        "component": "combo_piece",
+        "name": "Madame Vastra",
+        "type_line": "Legendary Creature — Lizard Detective",
+        "uri": "https://api.scryfall.com/cards/f8a73bf1-cf14-4a36-97ff-868212e0bfb8"
+      },
+      {
+        "object": "related_card",
+        "id": "1145be5c-62f5-43ef-8dea-3a1e85ad9b72",
+        "component": "token",
+        "name": "Clue",
+        "type_line": "Token Artifact — Clue",
+        "uri": "https://api.scryfall.com/cards/1145be5c-62f5-43ef-8dea-3a1e85ad9b72"
+      },
+      {
+        "object": "related_card",
+        "id": "be99852d-54f7-42bd-b2a2-e123302650eb",
+        "component": "token",
+        "name": "Food",
+        "type_line": "Token Artifact — Food",
+        "uri": "https://api.scryfall.com/cards/be99852d-54f7-42bd-b2a2-e123302650eb"
+      },
+      {
+        "object": "related_card",
+        "id": "eb7bc3ef-7a2e-4d5f-8c6a-a1a4409b1ea2",
+        "component": "combo_piece",
+        "name": "Jenny Flint",
+        "type_line": "Legendary Creature — Human Detective",
+        "uri": "https://api.scryfall.com/cards/eb7bc3ef-7a2e-4d5f-8c6a-a1a4409b1ea2"
+      }
+    ]
+  },
+  {
+    "id": "3570143b-183b-4ae2-8806-3d0c4cd7406e",
+    "oracle_id": "5b48e926-fc0e-403c-a47b-1f1d96e2eaf7",
+    "name": "Garza Zol, Plague Queen",
+    "layout": "normal",
+    "type_line": "Legendary Creature — Vampire Noble",
+    "mana_cost": "{4}{U}{B}{R}",
+    "oracle_text": "Flying, haste\nWhenever a creature dealt damage by Garza Zol this turn dies, put a +1/+1 counter on Garza Zol.\nWhenever Garza Zol deals combat damage to a player, you may draw a card.",
+    "power": "5",
+    "toughness": "5",
+    "keywords": [
+      "Flying",
+      "Haste"
+    ],
+    "color_identity": [
+      "B",
+      "R",
+      "U"
+    ]
+  },
+  {
+    "id": "de652420-eacf-4f9d-9f13-c6bc02b0fa72",
+    "oracle_id": "749141aa-f6c4-4ad8-b146-406e68ae9b0b",
+    "name": "Sengir Vampire",
+    "layout": "normal",
+    "type_line": "Creature — Vampire",
+    "mana_cost": "{3}{B}{B}",
+    "oracle_text": "Flying (This creature can't be blocked except by creatures with flying or reach.)\nWhenever a creature dealt damage by this creature this turn dies, put a +1/+1 counter on this creature.",
+    "power": "4",
+    "toughness": "4",
+    "keywords": [
+      "Flying"
+    ],
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "5c0848dc-dd4c-48d0-a22f-bd1fba070b21",
+    "oracle_id": "7b7b3a34-13ff-45d4-ad0d-ac4bad9d0581",
+    "name": "Soul Collector",
+    "layout": "normal",
+    "type_line": "Creature — Vampire",
+    "mana_cost": "{3}{B}{B}",
+    "oracle_text": "Flying\nWhenever a creature dealt damage by this creature this turn dies, return that card to the battlefield under your control.\nMorph {B}{B}{B} (You may cast this card face down as a 2/2 creature for {3}. Turn it face up any time for its morph cost.)",
+    "power": "3",
+    "toughness": "4",
+    "keywords": [
+      "Flying",
+      "Morph"
+    ],
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "333b3cca-ebbf-4ceb-a6a5-3d49cb2e143a",
+    "oracle_id": "a51ec70d-1356-4403-a858-b99445bac54a",
+    "name": "Predator Ooze",
+    "layout": "normal",
+    "type_line": "Creature — Ooze",
+    "mana_cost": "{G}{G}{G}",
+    "oracle_text": "Indestructible (Damage and effects that say \"destroy\" don't destroy this creature.)\nWhenever this creature attacks, put a +1/+1 counter on it.\nWhenever a creature dealt damage by this creature this turn dies, put a +1/+1 counter on this creature.",
+    "power": "1",
+    "toughness": "1",
+    "keywords": [
+      "Indestructible"
+    ],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "3c745c2c-4311-412d-a137-02bf6d106e46",
+    "oracle_id": "ade8f21a-a7bb-4bd9-a7f2-9fa3060ff1e8",
+    "name": "Sengir Bats",
+    "layout": "normal",
+    "type_line": "Creature — Bat",
+    "mana_cost": "{1}{B}{B}",
+    "oracle_text": "Flying\nWhenever a creature dealt damage by this creature this turn dies, put a +1/+1 counter on this creature.",
+    "power": "1",
+    "toughness": "2",
+    "keywords": [
+      "Flying"
+    ],
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "597bc4ae-335d-4d1d-8a57-530291abc540",
+    "oracle_id": "e262ea6f-c8c7-45c7-a9a6-29dcbe6300a4",
+    "name": "Markov Enforcer",
+    "layout": "normal",
+    "type_line": "Creature — Vampire Soldier",
+    "mana_cost": "{4}{R}{R}",
+    "oracle_text": "Whenever this creature or another Vampire you control enters, this creature fights up to one target creature an opponent controls.\nWhenever a creature dealt damage by this creature this turn dies, create a Blood token. (It's an artifact with \"{1}, {T}, Discard a card, Sacrifice this token: Draw a card.\")",
+    "power": "6",
+    "toughness": "6",
+    "keywords": [
+      "Fight"
+    ],
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "6bf8eff8-6b39-4e5e-b8a9-1da53e837809",
+    "oracle_id": "e8941499-2b31-417b-b2d2-10a144826703",
+    "name": "Vampiric Dragon",
+    "layout": "normal",
+    "type_line": "Creature — Vampire Dragon",
+    "mana_cost": "{6}{B}{R}",
+    "oracle_text": "Flying\nWhenever a creature dealt damage by this creature this turn dies, put a +1/+1 counter on this creature.\n{1}{R}: This creature deals 1 damage to target creature.",
+    "power": "5",
+    "toughness": "5",
+    "keywords": [
+      "Flying"
+    ],
+    "color_identity": [
+      "B",
+      "R"
+    ]
+  }
+]

@@ -53,14 +53,14 @@ const IMPLEMENTED_KEYWORDS = new Set([
   'haste', 'vigilance', 'menace', 'reach', 'defender', 'indestructible',
   'hexproof', 'shroud', 'flash', 'prowess', 'forestwalk', 'wither', 'fear',
   'intimidate', 'skulk', 'shadow', 'horsemanship', 'plainswalk', 'islandwalk',
-  'swampwalk', 'mountainwalk',
+  'swampwalk', 'mountainwalk', 'phasing',
 ]);
 const TOKEN_KEYWORDS = new Set([...IMPLEMENTED_KEYWORDS].filter(keyword => keyword !== 'prowess'));
 const COLOR_WORDS = Object.freeze({ white: 'W', blue: 'U', black: 'B', red: 'R', green: 'G' });
 const GRANTABLE_KEYWORDS = new Set([
   'flying', 'first strike', 'double strike', 'deathtouch', 'lifelink', 'trample',
   'haste', 'vigilance', 'menace', 'reach', 'indestructible', 'hexproof', 'shroud',
-  'wither',
+  'wither', 'phasing',
 ]);
 const MANA_SEQUENCE = '(?:\\{(?:\\d+|X|[WUBRGC]|[WUBRG]\\/P|[WUBRG]\\/[WUBRG]|2\\/[WUBRG])\\})+';
 
@@ -1297,7 +1297,7 @@ function landSemantics(card, rulesCore) {
   const subject = selfSubject(card, 'land');
   for (const line of rulesCore ? permanentLines(rulesCore) : []) {
     const keywords = keywordLine(line);
-    if (extensionsActive && keywords && keywords.every(keyword => keyword === 'indestructible' || keyword === 'hexproof' || keyword === 'shroud')) {
+    if (extensionsActive && keywords && keywords.every(keyword => keyword === 'indestructible' || keyword === 'hexproof' || keyword === 'shroud' || extensionsActive===8&&keyword === 'phasing')) {
       implementation.push(genericStatic('self', { keywords }));
       continue;
     }
@@ -1448,6 +1448,8 @@ function attachmentGrantOperation(line, prefix) {
 }
 
 function auraTargetOperation(line) {
+  const expanded=extensionsActive===8&&/^Enchant (nonland permanent|creature or planeswalker|artifact, creature, or planeswalker)$/i.exec(line);
+  if(expanded)return {kind:'aura-target',what:expanded[1].toLowerCase().replace(', creature, or ',' or creature or '),contract:'aura-targeting'};
   const match = /^Enchant (creature you control|artifact or creature|creature|land|permanent|artifact|enchantment)$/i.exec(line);
   if (!match) return null;
   return { kind: 'aura-target', what: match[1].toLowerCase(), contract: 'aura-targeting' };
@@ -2194,7 +2196,19 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
           operation.kind==='generic-trigger'&&operation.event==='etb'&&operation.eventFilter==='self'&&printedX;
         const checkBody=body=>{
           const {targets=[],...other}=body;
-          if(/"threshold":"X"|"targetCountX":true/.test(JSON.stringify(other)))return false;
+          // These nontargeted filters run through genericResolutionTargetSpec
+          // using this spell/activation's paid X. No trigger or child ability
+          // may borrow a different scope's X, and unknown filter locations stay
+          // rejected by the scan below.
+          const boundFilter=filter=>!allowed||!filter||typeof filter!=='object'?filter:{...filter,
+            ...(filter.threshold==='X'?{threshold:0}:{}),
+            ...(filter.alternatives?{alternatives:filter.alternatives.map(boundFilter)}:{})};
+          const boundEffects=node=>Array.isArray(node)?node.map(boundEffects):node&&typeof node==='object'?{
+            ...Object.fromEntries(Object.entries(node).map(([key,value])=>[key,boundEffects(value)])),
+            ...(node.action==='zone-select'&&node.zone==='graveyard'&&['battlefield','hand','exile'].includes(node.destination)?{filter:boundFilter(node.filter)}:{}),
+            ...(node.action==='battlefield-group'&&Array.isArray(node.filters)?{filters:node.filters.map(boundFilter)}:{}),
+          }:node;
+          if(/"threshold":"X"|"targetCountX":true/.test(JSON.stringify(boundEffects(other))))return false;
           return !/"threshold":"X"|"targetCountX":true/.test(JSON.stringify(targets))||allowed;
         };
         if(operation.kind==='spell-modal-generic')return operation.modes.every(mode=>checkBody(mode.body));

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<defs>
+<linearGradient id="sky" x2="0" y2="1"><stop stop-color="#181521"/><stop offset=".52" stop-color="#743b30"/><stop offset="1" stop-color="#23151c"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#ffbc66" stop-opacity=".64"/><stop offset=".5" stop-color="#e46f39" stop-opacity=".18"/><stop offset="1" stop-color="#e46f39" stop-opacity="0"/></radialGradient>
+<linearGradient id="lava" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#cb6439"/><stop offset=".55" stop-color="#fca65b"/><stop offset="1" stop-color="#aa422b"/></linearGradient>
+<filter id="blur"><feGaussianBlur stdDeviation="25"/></filter>
+</defs>
+<path fill="url(#sky)" d="M0 0h1920v1080H0z"/>
+<ellipse cx="980" cy="490" rx="850" ry="480" fill="url(#glow)"/>
+<path d="M0 569 205 434 342 526 597 200 674 260 798 518 1122 446 1391 310 1618 510 1744 396 1920 547V1080H0Z" fill="#33242b"/>
+<path d="m597 200 34 129 110 168-36-161-31-76Z" fill="#804030"/>
+<path d="M0 736 266 582 450 697 690 532 866 715 1114 604 1379 529 1606 693 1838 538 1920 602V1080H0Z" fill="#231f26"/>
+<path d="M1028 612c119 53-119 94 16 151s189 60 56 126-155 97-104 191h430c-319-133-15-121-97-242s-353-115-301-226" fill="#e3763e" opacity=".3" filter="url(#blur)"/>
+<path d="M1028 612c119 53-119 94 16 151s189 60 56 126-155 97-104 191h360c-270-126 1-152-71-242s-309-115-257-226" fill="url(#lava)"/>
+<path d="M1028 612c81 67-149 89-11 169s202 42 64 122-121 113-104 177" fill="none" stroke="#ffd18a" stroke-width="8" opacity=".7"/>
+<g fill="#161a20" stroke="#3d2e2e" stroke-width="3"><path d="M0 0h137l45 318 101 456-23 306H0m97-1080 24 318 46 196-73 402M0 608l294 91 54 72-168-41"/><path d="m1747 0-35 458-155 401-29 221h392V0m-159 0 22 511-66 384m-151-172 354-165v59l-389 179"/><path d="m449 1080-24-190 85-51 79 241m-132-198 39-27 15 179M1324 1080l74-129 132-1 48 130"/></g>
+<g fill="#f4a25c" opacity=".65"><path d="m683 576 2-9 2 9-2 4m577-210 2-13 2 13-2 4m-433 358 2-8 2 8-2 3m633 52 2-11 2 11-2 5m-553-319 2-7 2 7-2 3"/><circle cx="1534" cy="435" r="2"/><circle cx="984" cy="535" r="2"/><circle cx="386" cy="490" r="2"/></g>
+</svg>

@@ -930,6 +930,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ? Math.max(0, source.rawConsume.generic) +
           source.rawConsume.pips.filter(pip => !pip.includes('PHY')).length
         : 0;
+      // A pure, non-tapping mana filter can be activated repeatedly while its
+      // input is available. Keeping only non-positive net output here makes
+      // the search finite without assuming that taps, counters or per-turn
+      // conditions can be paid again.
+      source.repeatableFilter = rawActivationMana > 0 && rawActivationMana >= maximumOutput &&
+        !source.rawConsume.pips.some(pip => pip.includes('PHY')) &&
+        !source.m.oncePerTurn && !source.m.cond && !source.m.afterProduce &&
+        Object.keys(source.extraCost).every(key => key === 'mana');
       const canUseArtifactDiscount = !opts.artifactAbilityAlreadyUsed && source.card &&
         source.card.is && source.card.is('Artifact') && !(source.m && source.m.viaConvoke);
       const activationMana = Math.max(0, rawActivationMana -
@@ -1156,7 +1164,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!needPips.length && needGen <= 0) {
         return lifeCost <= p.life - (opts.reservedLife || 0) ? { plan: planAcc, pool: availablePool } : null;
       }
-      const attemptSource = (s, nextOrdinaryIdx, nextConverterMask) => {
+      const attemptSource = (s, nextOrdinaryIdx, nextConverterMask, reusableBit = 0n) => {
         // Jedna karta = jedno tapanje. Pain i filter landovi imaju po dvije
         // {T} sposobnosti kao zasebne unose, ali karta se smije tapnuti jednom.
         if (s.extraCost && s.extraCost.tap &&
@@ -1173,7 +1181,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const usedAfter = artifactAbilityUsed || isArtifactAbility;
           const consPips = consume ? consume.pips.map(pip => pip.slice()) : [];
           const consGen = consume ? consume.generic : 0;
-          const hasLaterConverter = nextConverterMask !== 0n;
+          const hasLaterConverter = (nextConverterMask & ~reusableBit) !== 0n;
           const directAllowed = manaRestrictionAllows(this,
             {
               restrict: s.m.restrict,
@@ -1222,7 +1230,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (let index = 0; index < converterSources.length; index++) {
         const bit = 1n << BigInt(index);
         if (!(converterMask & bit)) continue;
-        const result = attemptSource(converterSources[index], ordinaryIdx, converterMask & ~bit);
+        const source = converterSources[index];
+        const result = attemptSource(source, ordinaryIdx,
+          source.repeatableFilter ? converterMask : converterMask & ~bit,
+          source.repeatableFilter ? bit : 0n);
         if (result) return result;
       }
 
@@ -1931,6 +1942,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
   G.canCastTiming = function (p, card, alt) {
     if (this.hasSplitSecond()) return false;
+    if (MTG.OracleV8CastingLimits && !MTG.OracleV8CastingLimits.allowed(this,p)) return false;
     if(alt?.oracleSneakCost&&(!alt.oracleAlternativeCost||
       !card.def.altCosts?.some(option=>option.oracleSneakCost&&option.oracleAlternativeId===alt.oracleAlternativeId)||
       this.turnPlayer!==p||this.phase!=='combat'||this.step!=='blockers'||!this.combat))return false;
@@ -2443,6 +2455,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.castSpell = async function (p, card, opts = {}) {
     // opts: {alt, from, xVal, aiChosen..., quickTargets}
     if (this.hasSplitSecond()) return false;
+    if (MTG.OracleV8CastingLimits && !MTG.OracleV8CastingLimits.allowed(this,p)) return false;
     if (p.turnState && p.turnState.cantCastAdditional && !opts.ignoreAdditionalCastLock) return false;
     const alt = opts.alt || null;
     if(alt?.warp&&card.zone!=='hand')return false;
@@ -3126,6 +3139,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     // Recheck planned Oracle costs before any mana or cards are consumed.
+    if (MTG.OracleV8CastingLimits && !MTG.OracleV8CastingLimits.allowed(this,p)) return false;
     if(so.oracleCastingChoicePlan&&!MTG.OracleV8CastingChoices.validate({g:this,you:p,src:card,so},d.oracleCastingChoice))return false;
     if(castOpts.foretell&&!foretellCastAllowed(this,p,card,castOpts))return false;
     if(castOpts.oracleImmediateCast!==undefined&&(!MTG.OracleV8PlayPermissions?.allowed(this,p,card,castOpts)||!this.canCastTiming(p,card,castOpts)))return false;
@@ -3297,7 +3311,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     p.turnState.spellsCastList.push({
       name: so.name, mv: stackMV, card, so,
       castOpts: so.castOpts || {}, isInstantSorcery, isCreature: isCreatureSpell,
-      types:spellTypes, historic,
+      types:spellTypes, colors:card.colors.slice(), historic,
     });
     const castData = {
       player: p, card, so, mv: stackMV,
@@ -3635,13 +3649,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         .slice(0, amounts.length).map((target, index) => ({ iid: target.iid, n: amounts[index] }));
     }
     if (copy.damageDivision) {
-      const amounts = copy.damageDivision.map(entry => entry.n);
+      const originalDivision = copy.damageDivision;
       const damageTargets = Array.isArray(copy.targets[0]) ? copy.targets[0] : (copy.targets || []).flat().filter(Boolean);
-      copy.damageDivision = damageTargets.slice(0, amounts.length).map((target, index) => ({
-        iid: target.iid,
-        playerIdx: target instanceof MTG.Player ? target.idx : null,
-        n: amounts[index],
-      }));
+      copy.damageDivision = originalDivision.flatMap((entry, index) => {
+        const target = entry.targetSlot !== undefined
+          ? [copy.targets[entry.targetSlot]].flat().filter(Boolean)[entry.targetOrdinal]
+          : damageTargets[index];
+        return target ? [{...entry,iid:target.iid,playerIdx:target instanceof MTG.Player ? target.idx : null}] : [];
+      });
     }
     // Zadržana ili forceTarget meta postaje metom nove spell-kopije jednako kao
     // i ručno retargetovana meta. pickTargets je event već emitovao samo kada je
@@ -3717,14 +3732,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     }
     if (copyCtx.damageDivision) {
-      const amounts = copyCtx.damageDivision.map(entry => entry.n);
-      const damageTargets = Array.isArray(copy.targets[0])
-        ? copy.targets[0] : (copy.targets || []).flat().filter(Boolean);
-      copyCtx.damageDivision = damageTargets.slice(0, amounts.length).map((target, index) => ({
-        iid: target.iid,
-        playerIdx: target instanceof MTG.Player ? target.idx : null,
-        n: amounts[index],
-      }));
+      const originalDivision = copyCtx.damageDivision;
+      const damageTargets = Array.isArray(copy.targets[0]) ? copy.targets[0] : (copy.targets || []).flat().filter(Boolean);
+      copyCtx.damageDivision = originalDivision.flatMap((entry, index) => {
+        const target = entry.targetSlot !== undefined
+          ? [copy.targets[entry.targetSlot]].flat().filter(Boolean)[entry.targetOrdinal]
+          : damageTargets[index];
+        return target ? [{...entry,iid:target.iid,playerIdx:target instanceof MTG.Player ? target.idx : null}] : [];
+      });
       copy.damageDivision = copyCtx.damageDivision;
     }
     if (copyCtx.counterDistribution) {
@@ -3894,7 +3909,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const leftCount = (d.targets || []).length;
       await d.resolve(Object.assign({}, ctx, { targets: ctx.targets.slice(0, leftCount) }));
       const rightTargets = this.revalidateTargets(ctx.targets.slice(leftCount), (so.targetSpecs || []).slice(leftCount), card, p, (so.targetIdentities || []).slice(leftCount)).targets;
-      await d.splitHalves[co.splitFuse].resolve(Object.assign({}, ctx, { targets: rightTargets }));
+      await d.splitHalves[co.splitFuse].resolve(Object.assign({}, ctx, { targets: rightTargets, oracleTargetOffset:leftCount }));
       if (!so.isCopy && card.zone === 'stack') await this.move(card, co.flashback || co.jumpstart || co.exileAfter ? 'exile' : 'graveyard');
       await this.checkSBA(); await this.flushTriggers();
       return;
@@ -4527,6 +4542,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.note('mana', { p });
       return true;
     }
+    // A retained UI/AI entry can outlive its source's phase-out. Phased
+    // permanents cannot activate any kind of battlefield ability (702.26b).
+    if (c.zone === 'battlefield' && c.phasedOut) return false;
     if (entry.turnFaceUp) return this.turnFaceUp(p, c, entry.faceUpCost, entry.faceUpKind);
     if (c.zone === 'battlefield' && c.cur && c.cur.activationDisabled) return false;
     // Loyalty je trošak. Provjeri ga prije biranja meta i plaćanja drugih
@@ -5056,6 +5074,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     ctx.targetIdentities = this.captureTargetIdentities(ctx.targets);
     let tapPermanents=[];
+    if (a.prepareTargets && await a.prepareTargets(ctx) === false) return false;
     let returnPermanents=[];
     const costVersions=new Map();
     const rememberCostPool=pool=>{for(const card of pool)if(!costVersions.has(card))costVersions.set(card,{zone:card.zone,version:card.zoneVersion});};
@@ -5467,7 +5486,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   G.attach = async function (att, host) {
-    if (!att || !host || att.zone !== 'battlefield' || host.zone !== 'battlefield') return false;
+    if (!att || !host || att.zone !== 'battlefield' || host.zone !== 'battlefield' || att.phasedOut || host.phasedOut) return false;
     if(att.attachedTo!==host.iid)this.refreshOracleTimestamp(att);
     if (att.attachedTo) {
       const old = this.byIid(att.attachedTo);
@@ -5952,7 +5971,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.recalc();
     const untapped=[];
     if (!p.skipUntapOnce) {
-      this.phaseInFor(p);
+      this.phaseDuringUntap(p);
       const keepTapped=new Set();
       // Eligibility is simultaneous too: removing one stun counter may
       // recalculate the board, but cannot change another object's eligibility.
@@ -6117,8 +6136,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       await this.discard(p, picked, { noReplacement: true });
     }
-    // damage clears, until-EOT expire
-    for (const c of this.bf()) {
+    // CR 514.2 explicitly removes marked damage from phased-out permanents
+    // too. Cleanup also expires regeneration shields without phasing them in.
+    for (const c of this.battlefield.filter(card => card.zone === 'battlefield')) {
       c.damage = 0; c.deathtouched = false; c.regenShield = 0;
       // "…dealt combat damage by this creature THIS TURN" — bez čišćenja je
       // Steel Hellkite zauvijek pamtio svakog koga je ikad pogodio.
@@ -6257,7 +6277,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.phase = 'combat'; this.step = 'begin';
     this.note('phase', {});
     await this.pace(p.isAI ? 330 : 0);
-    this.combat = { attackers: [], defenders: new Map() };
+    this.combat = { attackers: [], defenders: new Map(), declaredAttackTargets: [], blockersDeclared: false, hadAttackers: false };
     await this.emit('beginCombat', { player: p });
     await this.flushTriggers();
     await this.priorityRound(p);
@@ -6271,21 +6291,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // CR 506.7: this deadline applies even with no eligible attackers and
     // remains passed during any extra combat phases later in this turn.
     p.turnState.reachedDeclareAttackers = true;
-    if (!elig.length || !oppList.length) {
-      // CR 506.1/511.1: end of combat korak se dešava i kad niko ne napada —
-      // "at end of combat" odgođeni efekti moraju dobiti priliku.
-      await this.endCombatStep(p);
-      return;
-    }
     this.step = 'attackers';
     this.note('phase', {});
     await this.pace(p.isAI ? 330 : 0);
     // forced attackers
     const forced = elig.filter(c => this.isForcedToAttack(c));
     const attackTargets = oppList.concat(this.bf().filter(card => card.is('Planeswalker') && card.ctrl !== p));
-    const declared = await p.controller.decide(this, {
+    const declared = elig.length && oppList.length ? await p.controller.decide(this, {
       type: 'attackers', eligible: elig, opponents: oppList, attackTargets, forced,
-    });
+    }) : [];
     const decl = Array.isArray(declared) ? declared : [];
     // decl: [{card, target(Player or planeswalker CardInst)}]
     const declarationTargets = c => this.legalDeclarationAttackTargets(c);
@@ -6391,8 +6405,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
     }
-    if (!attackers.length) { await this.endCombatStep(p); return; }
-    this.combat.attackers = attackers;
+    // Remember the actual declaration before attack triggers can remove or
+    // redirect a creature. Entering already attacking does not attack a player.
+    this.combat.declaredAttackTargets = [...new Set(attackers.map(card=>card.attacking))];
+    this.combat.hadAttackers ||= attackers.length>0;
+    this.combat.attackers = [...new Set([...this.combat.attackers,...attackers])];
     // statici uslovljeni napadom (Berserkers' Onslaught: "attacking creatures you
     // control have double strike") moraju biti aktivni PRIJE anyFS provjere i
     // prije nanošenja štete — inače se čita zastarjeli keyword set.
@@ -6441,7 +6458,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
     }
     if (attackers.some(card => card.commander)) p.turnState.attackedWithCommander = true;
-    await this.emit('attackersDeclared', { player: p, attackers });
+    if (attackers.length) await this.emit('attackersDeclared', { player: p, attackers });
     // MYRIAD — "Whenever this creature attacks, for each opponent other than the
     // one it's attacking, you may create a tapped token copy attacking that player.
     // Exile those tokens at end of combat." (čišćenje već postoji: meta.exileEndCombat)
@@ -6475,8 +6492,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await this.priorityRound(p);
     if (this.gameOver) { this.combat = null; return; }
 
+    // CR 508.2/508.8: even an empty declaration gets priority. Only the
+    // blockers and damage steps are skipped, after that priority window.
+    if (!this.combat.hadAttackers) { await this.endCombatStep(p); return; }
     // blockers per defending player
     this.step = 'blockers';
+    this.combat.blockersDeclared = true;
     this.note('phase', {});
     await this.pace(p.isAI ? 330 : 0);
     const byDefender = new Map();
@@ -6599,6 +6620,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // CR 511: end of combat korak. Poziva se i kad borbe nije ni bilo, jer
   // "at end of combat" odgođeni efekti moraju okinuti u svakom slučaju.
   G.endCombatStep = async function (p) {
+    p.turnState.reachedCombatDamageDeadline = true;
     this.step = 'endCombat';
     await this.emit('endCombat', { player: p });
     // myriad tokens exile
@@ -6833,14 +6855,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.completeRequiredBlocks = function (attackers, potential) {
     // The ordinary path remains cheap. Only declarations with the new group
     // restrictions and an actual blocking requirement need this exact search.
-    if (!attackers.some(card => card.cur.lure || card.cur.mustBeBlocked) ||
-        !attackers.some(card => card.cur.minBlockers || card.cur.maxBlockers) && !potential.some(card => card.cur.blockGroupRestrictions?.length || this.blockerCapacity(card) > 1)) return;
+    const extra = MTG.OracleV8CombatRestrictions;
+    const extraRequirements = potential.some(card => extra?.hasRequirements(card));
+    if (!extraRequirements && (!attackers.some(card => card.cur.lure || card.cur.mustBeBlocked) ||
+        !attackers.some(card => card.cur.minBlockers || card.cur.maxBlockers) && !potential.some(card => card.cur.blockGroupRestrictions?.length || this.blockerCapacity(card) > 1))) return;
     const candidates = potential.filter(blocker => attackers.some(attacker => this.canBlock(blocker, attacker)));
     const legal = new Map(candidates.map(blocker => [blocker, attackers.filter(attacker => this.canBlock(blocker, attacker))]));
-    const score = assignments => assignments.filter(pair => pair.attacker.cur.lure).length + attackers.filter(attacker => attacker.cur.mustBeBlocked && assignments.some(pair => pair.attacker === attacker)).length;
+    const extraScore = assignments => extraRequirements ? extra.score(potential, assignments) : 0;
+    const extraUpper = blockers => extraRequirements ? blockers.reduce((n, blocker) => n + extra.upper(blocker, legal.get(blocker), this.blockerCapacity(blocker)), 0) : 0;
+    const score = assignments => assignments.filter(pair => pair.attacker.cur.lure).length + attackers.filter(attacker => attacker.cur.mustBeBlocked && assignments.some(pair => pair.attacker === attacker)).length + extraScore(assignments);
     let best = attackers.flatMap(attacker => attacker.blockedBy.map(blocker => ({blocker, attacker}))), bestScore = score(best);
     const lureCapacity = blocker => Math.min(this.blockerCapacity(blocker), legal.get(blocker).filter(attacker => attacker.cur.lure).length);
-    const upper = candidates.reduce((sum, blocker) => sum + lureCapacity(blocker), 0) + attackers.filter(attacker => attacker.cur.mustBeBlocked && candidates.filter(blocker => legal.get(blocker).includes(attacker)).length >= this.blockerBounds(attacker).min).length;
+    const upper = candidates.reduce((sum, blocker) => sum + lureCapacity(blocker), 0) + attackers.filter(attacker => attacker.cur.mustBeBlocked && candidates.filter(blocker => legal.get(blocker).includes(attacker)).length >= this.blockerBounds(attacker).min).length + extraUpper(candidates);
     if (bestScore >= upper) return;
     // Each candidate has its current number of blocking slots. A bound on the
     // remaining requirements prunes branches as soon as they cannot improve
@@ -6850,7 +6876,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const visit = index => {
       if (bestScore >= upper) return;
       const remaining = candidates.slice(index);
-      const bound = chosen.filter(pair => pair.attacker.cur.lure).length + remaining.reduce((sum, blocker) => sum + lureCapacity(blocker), 0) + attackers.filter(attacker => attacker.cur.mustBeBlocked && ((counts.get(attacker) || 0) + remaining.filter(blocker => legal.get(blocker).includes(attacker)).length >= this.blockerBounds(attacker).min)).length;
+      const bound = chosen.filter(pair => pair.attacker.cur.lure).length + remaining.reduce((sum, blocker) => sum + lureCapacity(blocker), 0) + attackers.filter(attacker => attacker.cur.mustBeBlocked && ((counts.get(attacker) || 0) + remaining.filter(blocker => legal.get(blocker).includes(attacker)).length >= this.blockerBounds(attacker).min)).length + extraScore(chosen) + extraUpper(remaining);
       if (bound <= bestScore) return;
       if (index === candidates.length) {
         if (!this.blockDeclarationLegal(attackers, chosen)) return;
@@ -6884,7 +6910,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // first strike koraku (plus double strikeri). Stvorenje koje je first strike
     // dobilo TEK nakon prvog koraka i dalje udara u normalnom.
     if (step === 'normal' && !ds && c.meta._dealtFirstStrike) return 0;
-    let byT = c.cur.assignByToughness;
+    let byT = c.cur.assignByToughness || MTG.OracleV8CombatRestrictions?.usesToughness(c);
     // "during your turn" toughness assignment (Baldin, Felothar own-ctrl)
     const sources = this._toughnessCombatSources || this.bf();
     for (const b of sources) {
@@ -6896,6 +6922,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   G.combatDamage = async function (p, stepKind) {
+    p.turnState.reachedCombatDamageDeadline = true;
     this.step = stepKind === 'first' ? 'firstStrike' : 'damage';
     const cmb = this.combat;
     if (!cmb) return;
@@ -6912,8 +6939,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (amt > 0) dealt.push(a);
       const blockers = [...new Set(a.blockedBy.filter(b => b.zone === 'battlefield'))];
       for (const blocker of blockers) {if (!blockedAttackers.has(blocker)) blockedAttackers.set(blocker, []); blockedAttackers.get(blocker).push(a);}
+      // A printed optional assignment changes only the attacker's damage:
+      // blockers still assign their own simultaneous combat damage normally.
+      const asUnblocked = await MTG.OracleV8CombatRestrictions?.assignUnblocked(this, a, blockers, amt);
       // nikad blokiran → udara branioca/planeswalkera
-      if (!blockers.length && !a.wasBlocked) {
+      if (asUnblocked || !blockers.length && !a.wasBlocked) {
         if (amt > 0) {
           if (a.attacking instanceof MTG.Player) plan.push({ src: a, target: a.attacking, n: amt, toPlayer: true });
           else if (a.attacking && a.attacking.zone === 'battlefield') plan.push({ src: a, target: a.attacking, n: amt });

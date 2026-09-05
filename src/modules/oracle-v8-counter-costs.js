@@ -8,7 +8,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  }
  function entries(ctx,info){
   const cards=info.self?[ctx.src]:ctx.g.bf();
-  return cards.filter(card=>card.zone==='battlefield'&&(info.self||card.ctrl===ctx.you&&info.filter(ctx.g,card,ctx.src,ctx.you)))
+  return cards.filter(card=>card.zone==='battlefield'&&!card.phasedOut&&(info.self||card.ctrl===ctx.you&&info.filter(ctx.g,card,ctx.src,ctx.you)))
    .flatMap(card=>Object.entries(card.counters).filter(([kind,n])=>n>0&&(!info.kinds||info.kinds.includes(kind))).map(([kind,n])=>({card,kind,n,zoneVersion:card.zoneVersion})));
  }
  const used=(plan,row)=>plan.filter(item=>item.card===row.card&&item.kind===row.kind).length;

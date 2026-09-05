@@ -1731,7 +1731,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         produce: (g, card) => {
           const colors = new Set();
           for (const permanent of g.bf()) {
-            if (permanent.ctrl !== card.ctrl || !(permanent.cur.super || []).includes('Legendary')) continue;
+            if (permanent.ctrl !== card.ctrl || !((permanent.cur && permanent.cur.super) || permanent.def.super || []).includes('Legendary')) continue;
             for (const color of permanent.colors) colors.add(color);
           }
           return [...colors].map(color => ({ [color]: 1 }));

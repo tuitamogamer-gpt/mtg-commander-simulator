@@ -74,6 +74,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.handSort = preferences.handSort;
       this.handSize = preferences.handSize;
       this.speed = preferences.speed;
+      this.arenaBackground = preferences.arenaBackground || 'table';
+      this.arenaDim = preferences.arenaDim ?? 30;
       document.body?.classList?.toggle('high-contrast', !!preferences.contrast);
       this.sheet = null;     // card sheet data
       this.playerSheet = null;
@@ -690,7 +692,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           });
         };
         addChoice('creature-type', 'Chosen creature type', meta.chosenType);
-        addChoice('color', 'Chosen color', meta.chosenColor, colorName[meta.chosenColor] || words(meta.chosenColor));
+        const chosenColor = meta.oracleChosenColor || meta.chosenColor;
+        addChoice('color', 'Chosen color', chosenColor, colorName[chosenColor] || words(chosenColor));
         addChoice('thriving-color', 'Chosen color', meta.thrivingColor, colorName[meta.thrivingColor] || words(meta.thrivingColor));
         addChoice('siege-mode', 'Chosen mode', meta.siegeMode, words(meta.siegeMode));
         if (Number.isFinite(meta.level)) addChoice('class-level', 'Class level', meta.level, `Level ${meta.level}`);
@@ -834,6 +837,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       root.classList.toggle('last-resort-active', this.lastResortActive);
       root.classList.toggle('arena-drag-enabled', this.arenaDragEnabled);
       root.dataset.handSize = this.handSize;
+      this.applyArenaBackground?.(root);
       root.classList.toggle('sidebar-open', this.utilityDrawerOpen);
       root.dataset.mobileView = this.mobileView;
       root.style.setProperty('--arena-turn-accent', g.turnPlayer === this.me ? '#d3974c' : '#778f63');
@@ -1306,12 +1310,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!cards.length) return null;
       const who = pd.q.ctrl ? pd.q.ctrl.name : '';
       const wrap = el('div', 'stackpopwrap revealwrap');
-      const pop = el('div', 'stackpop reveal');
+      const pop = el('div', 'stackpop reveal' + (pd.q.kind === 'clash' ? ' revealclash' : ''));
       const head = el('div', 'stackpophead');
       // Reveals and looks are not battlefield entries: the title says what the
       // popup shows, and a script may name the source ("Gandalf: opponents reveal").
       const title = pd.q.title
         || (pd.q.kind === 'tokens' ? 'Tokens'
+          : pd.q.kind === 'clash' ? 'Clash · revealed together'
           : pd.q.kind === 'reveal' ? 'Revealed'
             : pd.q.kind === 'look' ? 'Look'
               : 'Enters the battlefield');
@@ -1323,7 +1328,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // grupiši iste (npr. 8× Soldier) da lista ostane čitljiva
       const groups = new Map();
       for (const c of cards) {
-        const k = c.name;
+        const k = pd.q.kind === 'clash' ? c.iid : c.name;
         if (!groups.has(k)) groups.set(k, { card: c, n: 0 });
         groups.get(k).n++;
       }
@@ -1338,14 +1343,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         info.appendChild(el('div', 'stackpopname', esc(card.name)));
         const pt = card.cur && card.is('Creature') ? ` · ${card.cur.power}/${card.cur.toughness}` : '';
         // Revealed cards may come from several libraries: name each card's owner.
-        const from = (pd.q.kind === 'reveal' || pd.q.kind === 'look') && card.owner && card.owner.name ? card.owner.name : who;
-        info.appendChild(el('div', 'stackpopsub', esc(from) + pt));
+        const from = (['reveal', 'look', 'clash'].includes(pd.q.kind)) && card.owner && card.owner.name ? card.owner.name : who;
+        info.appendChild(el('div', 'stackpopsub', esc(from) + (pd.q.kind === 'clash' ? ' · Mana value ' + card.mv : pt)));
         it.appendChild(info);
         if (n > 1) it.appendChild(el('div', 'stackpopidx', '×' + n));
         it.onclick = () => { this.sheet = { card }; this.render(); };
         body.appendChild(it);
       }
       pop.appendChild(body);
+      if (pd.q.kind === 'clash') pop.appendChild(el('div', 'clashresult', esc(pd.q.clashSummary || 'Compare the revealed mana values.')));
       const foot = el('div', 'stackpopfoot');
       const btn = el('button', 'pbtn primary wide', 'Proceed ▶');
       btn.onclick = () => this.resolvePendingEntry(pd, null);
@@ -2231,6 +2237,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     renderQuickMenu(g) {
       if (!this.quickMenuOpen) return null;
+      if (this.quickMenuOpen === 'backgrounds') return this.renderArenaBackgrounds();
       const overlay = el('div', 'quickmenuov');
       const panel = el('div', 'quickmenu');
       const head = el('div', 'quickmenuhead', '<div><span>Game menu</span><h2>Arena controls</h2></div>');
@@ -2261,6 +2268,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const mode = MTG.PRIO_MODES.find(item => item.key === (this.prioMode || 'end')) || MTG.PRIO_MODES[0];
       action('Priority stops', mode.label, () => { this.quickMenuOpen = false; this.showStops = true; this.render(); });
       section('Display & accessibility');
+      action('Arena background', U.ARENA_BACKGROUNDS.find(item => item.id === this.arenaBackground)?.label || 'Commander table', () => {
+        this.quickMenuOpen = 'backgrounds'; this.render();
+      }).classList.add('arenabackgroundopen');
       action('Hand card size', this.handSize === 'large' ? 'Large' : 'Standard', () => {
         this.handSize = this.handSize === 'large' ? 'standard' : 'large';
         MTG.savePlayerPreferences({ handSize: this.handSize });
@@ -3608,6 +3618,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const names = new Map();
           for (const c of q.cards || []) names.set(c.name, (names.get(c.name) || 0) + 1);
           const list = [...names].map(([n, k]) => k > 1 ? `${k}× ${n}` : n).join(', ');
+          if (q.kind === 'clash') {
+            bar.appendChild(el('div', 'ptext', `Clash: ${esc((q.cards || []).map(card => card.owner.name + ' — ' + card.name + ' (mana value ' + card.mv + ')').join('; '))}. ${esc(q.clashSummary || '')}`));
+            break;
+          }
           if (q.kind === 'reveal' || q.kind === 'look') {
             const owners = [...new Set((q.cards || []).map(c => c.owner && c.owner.name).filter(Boolean))];
             const source = q.title ? `<b>${esc(q.title)}</b>` : `<b>${esc(owners.length ? owners.join(', ') : who)}</b> ${q.kind === 'look' ? 'looks at' : 'reveals'}`;
@@ -4131,6 +4145,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         seen.add(value);
         cards.push(value);
       };
+      if (q.aiHint?.kind === 'clashPlace') add(q.revealedCards);
       add(q.card); add(q.source); add(q.src); add(q.target);
       const hint = q.aiHint || {};
       add(hint.card); add(hint.source); add(hint.src); add(hint.target); add(hint.top); add(hint.cards);
@@ -4141,12 +4156,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderDecisionCards(q) {
       const cards = this.decisionCards(q);
       if (!cards.length) return null;
-      const wrap = el('div', 'decisioncards');
+      const wrap = el('div', 'decisioncards' + (q.aiHint?.kind === 'clashPlace' ? ' clashdecisioncards' : ''));
       wrap.dataset.testid = 'decision-card-visuals';
       wrap.appendChild(el('div', 'decisioncardslabel', cards.length === 1 ? 'CARD IN THIS CHOICE' : 'CARDS IN THIS CHOICE'));
       const grid = el('div', 'cardgrid decisioncardgrid');
-      for (const card of cards) grid.appendChild(this.bigCardEl(card));
+      for (const card of cards) {
+        if (q.aiHint?.kind !== 'clashPlace') { grid.appendChild(this.bigCardEl(card)); continue; }
+        const tile = el('div', 'clashchoicecard');
+        tile.appendChild(this.bigCardEl(card));
+        tile.appendChild(el('div', 'clashcardvalue', esc(card.owner.name) + ' · Mana value ' + card.mv));
+        grid.appendChild(tile);
+      }
       wrap.appendChild(grid);
+      if (q.aiHint?.kind === 'clashPlace') wrap.appendChild(el('div', 'clashresult', esc(q.clashSummary || '')));
       return wrap;
     }
 

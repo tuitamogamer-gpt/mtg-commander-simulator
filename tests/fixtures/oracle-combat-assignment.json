@@ -1,0 +1,267 @@
+[
+  {
+    "id": "ce124f6e-ef0c-4d01-a876-e34d3e445108",
+    "oracle_id": "5f657279-cc0f-4431-b517-47bd1c7109b6",
+    "name": "High Alert",
+    "layout": "normal",
+    "type_line": "Enchantment",
+    "mana_cost": "{1}{W}{U}",
+    "oracle_text": "Each creature you control assigns combat damage equal to its toughness rather than its power.\nCreatures you control can attack as though they didn't have defender.\n{2}{W}{U}: Untap target creature.",
+    "keywords": [],
+    "color_identity": [
+      "U",
+      "W"
+    ]
+  },
+  {
+    "id": "fe394a38-ee44-4342-adcf-8c65d14f4978",
+    "oracle_id": "9daed342-e773-43ec-a8e2-98126b505e8a",
+    "name": "Rabid Elephant",
+    "layout": "normal",
+    "type_line": "Creature — Elephant",
+    "mana_cost": "{4}{G}",
+    "oracle_text": "Whenever this creature becomes blocked, it gets +2/+2 until end of turn for each creature blocking it.",
+    "power": "3",
+    "toughness": "4",
+    "keywords": [],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "e0ad8e7f-cda0-4529-94fc-dd3709158a94",
+    "oracle_id": "a46d96d9-8e59-4777-8208-7730b9e33240",
+    "name": "Doran, the Siege Tower",
+    "layout": "normal",
+    "type_line": "Legendary Creature — Treefolk Shaman",
+    "mana_cost": "{W}{B}{G}",
+    "oracle_text": "Each creature assigns combat damage equal to its toughness rather than its power.",
+    "power": "0",
+    "toughness": "5",
+    "keywords": [],
+    "color_identity": [
+      "B",
+      "G",
+      "W"
+    ]
+  },
+  {
+    "id": "499c4674-dd9f-4848-8447-721f842a0213",
+    "oracle_id": "a762e8cb-9d33-41fc-b2e8-0c5ad4d7268e",
+    "name": "Berserk Murlodont",
+    "layout": "normal",
+    "type_line": "Creature — Beast",
+    "mana_cost": "{4}{G}",
+    "oracle_text": "Whenever a Beast becomes blocked, it gets +1/+1 until end of turn for each creature blocking it.",
+    "power": "3",
+    "toughness": "3",
+    "keywords": [],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "cd0a61c9-8b14-4255-8453-4b74d90fe0a3",
+    "oracle_id": "b99d6d51-3ead-4b81-8e0c-f458619ebb24",
+    "name": "Gang of Elk",
+    "layout": "normal",
+    "type_line": "Creature — Elk Beast",
+    "mana_cost": "{5}{G}",
+    "oracle_text": "Whenever this creature becomes blocked, it gets +2/+2 until end of turn for each creature blocking it.",
+    "power": "5",
+    "toughness": "4",
+    "keywords": [],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "d829d9de-83fa-4feb-8efc-0075315163c6",
+    "oracle_id": "c54879da-0f1d-4ad0-b082-95f0e4d35685",
+    "name": "Sparring Golem",
+    "layout": "normal",
+    "type_line": "Artifact Creature — Golem",
+    "mana_cost": "{3}",
+    "oracle_text": "Whenever this creature becomes blocked, it gets +1/+1 until end of turn for each creature blocking it.",
+    "power": "2",
+    "toughness": "2",
+    "keywords": [],
+    "color_identity": []
+  },
+  {
+    "id": "777633d7-e31c-4ea3-a085-2858d6ee6040",
+    "oracle_id": "c9046281-dedb-4246-8e5d-7786fe0c41c7",
+    "name": "Elvish Berserker",
+    "layout": "normal",
+    "type_line": "Creature — Elf Berserker",
+    "mana_cost": "{G}",
+    "oracle_text": "Whenever this creature becomes blocked, it gets +1/+1 until end of turn for each creature blocking it.",
+    "power": "1",
+    "toughness": "1",
+    "keywords": [],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "22264087-bac4-4746-b6ce-0d44cce163e6",
+    "oracle_id": "d714f1f6-539e-4a2a-b738-226854d7ff09",
+    "name": "Ancient Lumberknot",
+    "layout": "normal",
+    "type_line": "Creature — Treefolk",
+    "mana_cost": "{2}{B}{G}",
+    "oracle_text": "Each creature you control with toughness greater than its power assigns combat damage equal to its toughness rather than its power.",
+    "power": "1",
+    "toughness": "4",
+    "keywords": [],
+    "color_identity": [
+      "B",
+      "G"
+    ]
+  },
+  {
+    "id": "701bd623-3100-44dc-adec-53fa3a95ab19",
+    "oracle_id": "d9c2e674-11a9-47f0-8790-a53b62c43fe6",
+    "name": "Bedrock Tortoise",
+    "layout": "normal",
+    "type_line": "Creature — Turtle",
+    "mana_cost": "{3}{G}",
+    "oracle_text": "During your turn, creatures you control have hexproof.\nEach creature you control with toughness greater than its power assigns combat damage equal to its toughness rather than its power.",
+    "power": "0",
+    "toughness": "6",
+    "keywords": [],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "98210276-1b85-4db5-8ab4-ecb08f5d2ee2",
+    "oracle_id": "db3ba239-2239-4e9d-ad70-cff32ed24578",
+    "name": "Bark of Doran",
+    "layout": "normal",
+    "type_line": "Artifact — Equipment",
+    "mana_cost": "{1}{W}",
+    "oracle_text": "Equipped creature gets +0/+1.\nAs long as equipped creature's toughness is greater than its power, it assigns combat damage equal to its toughness rather than its power.\nEquip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)",
+    "keywords": [
+      "Equip"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "d709742c-82a2-457e-9991-85e98d78029d",
+    "oracle_id": "e1a13723-a6b1-4160-8eb5-f7a4860898a3",
+    "name": "Huatli, the Sun's Heart",
+    "layout": "normal",
+    "type_line": "Legendary Planeswalker — Huatli",
+    "mana_cost": "{2}{G/W}",
+    "oracle_text": "Each creature you control assigns combat damage equal to its toughness rather than its power.\n−3: You gain life equal to the greatest toughness among creatures you control.",
+    "keywords": [],
+    "color_identity": [
+      "G",
+      "W"
+    ],
+    "loyalty": "7"
+  },
+  {
+    "id": "9ac68519-ed7f-4f38-9549-c02975f88eed",
+    "oracle_id": "e461ef8d-59ca-440a-8773-da1de3b6b195",
+    "name": "Bill the Pony",
+    "layout": "normal",
+    "type_line": "Legendary Creature — Horse",
+    "mana_cost": "{3}{W}",
+    "oracle_text": "When Bill the Pony enters, create two Food tokens. (They're artifacts with \"{2}, {T}, Sacrifice this token: You gain 3 life.\")\nSacrifice a Food: Until end of turn, target creature you control assigns combat damage equal to its toughness rather than its power.",
+    "power": "1",
+    "toughness": "4",
+    "keywords": [
+      "Food"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "da0d5436-b881-45ac-b8ec-248d88714021",
+    "oracle_id": "e5741c85-cd09-4ccb-ab39-3f3a62f98939",
+    "name": "Gauntlets of Light",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{2}{W}",
+    "oracle_text": "Enchant creature\nEnchanted creature gets +0/+2 and assigns combat damage equal to its toughness rather than its power.\nEnchanted creature has \"{2}{W}: Untap this creature.\"",
+    "keywords": [
+      "Enchant"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "1e90c638-d4b2-4243-bbc4-1cc10516c40f",
+    "oracle_id": "e7fc5ad6-f2f0-4b06-a61b-05022db9d93b",
+    "name": "Arcades, the Strategist",
+    "layout": "normal",
+    "type_line": "Legendary Creature — Elder Dragon",
+    "mana_cost": "{1}{G}{W}{U}",
+    "oracle_text": "Flying, vigilance\nWhenever a creature you control with defender enters, draw a card.\nEach creature you control with defender assigns combat damage equal to its toughness rather than its power and can attack as though it didn't have defender.",
+    "power": "3",
+    "toughness": "5",
+    "keywords": [
+      "Flying",
+      "Vigilance"
+    ],
+    "color_identity": [
+      "G",
+      "U",
+      "W"
+    ]
+  },
+  {
+    "id": "0900a8d1-a1b1-48c9-8af1-726a623c7d74",
+    "oracle_id": "edc91e1a-a305-4c14-9d85-077a410528fa",
+    "name": "Solid Footing",
+    "layout": "normal",
+    "type_line": "Enchantment — Aura",
+    "mana_cost": "{W}",
+    "oracle_text": "Flash\nEnchant creature\nEnchanted creature gets +1/+1.\nAs long as enchanted creature has vigilance, it assigns combat damage equal to its toughness rather than its power.",
+    "keywords": [
+      "Enchant",
+      "Flash"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "bf2931bd-bedc-45e8-b3f0-e2a220dbac1b",
+    "oracle_id": "f49b31ce-910e-446a-b7a7-4274d71e961d",
+    "name": "General Marhault Elsdragon",
+    "layout": "normal",
+    "type_line": "Legendary Creature — Elf Warrior",
+    "mana_cost": "{2}{R}{G}",
+    "oracle_text": "Whenever a creature you control becomes blocked, it gets +3/+3 until end of turn for each creature blocking it.",
+    "power": "4",
+    "toughness": "4",
+    "keywords": [],
+    "color_identity": [
+      "G",
+      "R"
+    ]
+  },
+  {
+    "id": "39bab75a-2c1f-4ff1-a26e-134e52f61d39",
+    "oracle_id": "fa2d8440-a44a-44fe-8624-0e8b4be53f44",
+    "name": "Belligerent Brontodon",
+    "layout": "normal",
+    "type_line": "Creature — Dinosaur",
+    "mana_cost": "{5}{G}{W}",
+    "oracle_text": "Each creature you control assigns combat damage equal to its toughness rather than its power.",
+    "power": "4",
+    "toughness": "6",
+    "keywords": [],
+    "color_identity": [
+      "G",
+      "W"
+    ]
+  }
+]

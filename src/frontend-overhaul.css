@@ -1994,3 +1994,73 @@ body.game-active #game .handwrap::before { display: none; }
 @media (max-width: 767px) {
   body.game-active #game[data-mobile-view="mine"] { grid-template-rows: 76px 48px 108px minmax(158px,1fr) auto var(--player-hand-height,130px) !important; }
 }
+
+/* Arena atmosphere is a presentation preference; panels retain their readable surfaces. */
+[data-arena-background="table"] { --arena-art: url('../assets/backgrounds/commander-arena-table.jpg'); }
+[data-arena-background="war-room"] { --arena-art: url('../assets/backgrounds/commander-war-room.webp'); }
+[data-arena-background="moonlit-grove"] { --arena-art: url('../assets/backgrounds/moonlit-grove.svg'); }
+[data-arena-background="molten-forge"] { --arena-art: url('../assets/backgrounds/molten-forge.svg'); }
+[data-arena-background="astral-sanctum"] { --arena-art: url('../assets/backgrounds/astral-sanctum.svg'); }
+[data-arena-background="white"] { --arena-art: radial-gradient(ellipse at 68% 22%, #b1a174, transparent 62%), radial-gradient(ellipse at 14% 88%, #777367, transparent 65%), linear-gradient(140deg, #4a4940, #292f34); }
+[data-arena-background="blue"] { --arena-art: radial-gradient(ellipse at 72% 15%, #2e718d, transparent 65%), radial-gradient(ellipse at 20% 92%, #173f68, transparent 65%), linear-gradient(130deg, #122936, #101c35); }
+[data-arena-background="black"] { --arena-art: radial-gradient(ellipse at 70% 16%, #61526e, transparent 65%), radial-gradient(ellipse at 10% 85%, #3b284c, transparent 65%), linear-gradient(140deg, #22242c, #11121c); }
+[data-arena-background="red"] { --arena-art: radial-gradient(ellipse at 72% 18%, #a24f37, transparent 65%), radial-gradient(ellipse at 15% 90%, #632b2f, transparent 65%), linear-gradient(130deg, #3b2529, #221a26); }
+[data-arena-background="green"] { --arena-art: radial-gradient(ellipse at 68% 20%, #47795b, transparent 65%), radial-gradient(ellipse at 14% 85%, #294e47, transparent 65%), linear-gradient(140deg, #203c35, #102a2b); }
+[data-arena-background="colorless"] { --arena-art: radial-gradient(ellipse at 70% 17%, #6e818b, transparent 65%), radial-gradient(ellipse at 14% 87%, #3f5064, transparent 65%), linear-gradient(140deg, #293540, #17212c); }
+body.game-active #game[data-arena-background] {
+  background-image: linear-gradient(rgba(var(--ds-table-rgb), var(--arena-shade, .3)), rgba(var(--ds-table-rgb), var(--arena-shade, .3))), var(--arena-art) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-color: var(--ds-table) !important;
+}
+#game .arenabackgroundpicker { width: min(720px, 100%); max-height: calc(100 * var(--dvhu) - 36px); display: flex; flex-direction: column; overflow: hidden; }
+#game .arenabackgroundpicker .quickmenuhead { flex: none; padding: 20px 24px; }
+#game .arenabackgroundpicker .quickmenuhead h2 { font-size: 28px; }
+#game .arenabackgroundbody { overflow: auto; min-height: 0; padding: 20px 24px 16px; scrollbar-width: thin; }
+#game .arenabackgroundpreview { position: relative; height: 180px; border-radius: var(--ds-r-md); overflow: hidden; background-image: linear-gradient(rgba(var(--ds-table-rgb), var(--arena-shade, .3)), rgba(var(--ds-table-rgb), var(--arena-shade, .3))), var(--arena-art); background-size: cover; background-position: center; }
+#game .arenabackgroundcaption { position: absolute; inset: auto 0 0; padding: 32px 18px 16px; display: grid; gap: 4px; background: linear-gradient(transparent, rgba(var(--ds-table-rgb), .92)); }
+#game .arenabackgroundcaption b { color: var(--ds-text); font: 600 22px/1.2 var(--ds-font-display); }
+#game .arenabackgroundcaption span { color: var(--ds-copy); font: 12px/1.5 var(--ds-font-body); }
+#game .arenabackgroundsection { margin-top: 20px; }
+#game .arenabackgroundsection h3 { margin: 0 0 10px; color: var(--ds-copy); font: 600 12px/1.4 var(--ds-font-body); }
+#game .arenabackgroundgrid { display: grid; gap: 10px; }
+#game .arenabackgroundgrid.colors { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+#game .arenabackgroundgrid.scenes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#game .arenabackgroundchoice { position: relative; min-width: 0; min-height: 76px; padding: 0; overflow: hidden; color: var(--ds-copy); border: 1px solid var(--ds-line-soft); border-radius: var(--ds-r-sm); background: var(--ds-panel); cursor: pointer; text-align: left; }
+#game .arenabackgroundchoice:hover { border-color: var(--ds-copy); }
+#game .arenabackgroundchoice[aria-pressed="true"] { border-color: var(--ds-accent-bright); box-shadow: 0 0 0 1px var(--ds-accent-bright); color: var(--ds-text); }
+#game .arenabackgroundart { display: grid; place-items: center; height: 58px; background-image: var(--arena-art); background-position: center; background-size: cover; }
+#game .scenes .arenabackgroundart { height: 72px; }
+#game .arenabackgroundart img { width: 25px; height: 25px; filter: drop-shadow(0 2px 4px rgba(var(--ds-table-rgb), .3)); }
+#game .arenabackgroundlabel { display: block; padding: 8px 9px; font: 600 11px/1.4 var(--ds-font-body); }
+#game .colors .arenabackgroundlabel { text-align: center; padding-inline: 3px; }
+#game .arenabackgroundcheck { position: absolute; top: 6px; right: 6px; display: none; place-items: center; width: 19px; height: 19px; border-radius: 50%; background: var(--ds-accent-bright); color: var(--ds-accent-ink); font-size: 12px; font-weight: 800; }
+#game .arenabackgroundchoice[aria-pressed="true"] .arenabackgroundcheck { display: grid; }
+#game .arenabackgrounddimmer { margin-top: 24px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 12px; font: 600 12px/1.5 var(--ds-font-body); color: var(--ds-copy); }
+#game .arenabackgrounddimmer output { color: var(--ds-text); font-family: var(--ds-font-mono); }
+#game .arenabackgrounddimmer input { grid-column: 1 / -1; width: 100%; min-height: 44px; margin: 0; accent-color: var(--ds-accent-bright); cursor: pointer; }
+#game .arenabackgroundstatus { min-height: 18px; color: var(--ds-muted); font: 11px/1.6 var(--ds-font-body); }
+#game .arenabackgroundfooter { display: flex; justify-content: space-between; gap: 12px; flex: none; padding: 14px 24px; border-top: 1px solid var(--ds-line-soft); background: var(--ds-dialog); }
+#game .arenabackgroundfooter .pbtn { min-height: 44px; min-width: 104px; font-size: 12px; }
+@media (max-width: 767px) {
+  #game .arenabackgroundov { padding: 10px; }
+  #game .arenabackgroundpicker { max-height: calc(100 * var(--dvhu) - 20px); }
+  #game .arenabackgroundpicker .quickmenuhead { padding: 16px; }
+  #game .arenabackgroundpicker .quickmenuhead h2 { font-size: 24px; }
+  #game .arenabackgroundbody { padding: 14px 16px; }
+  #game .arenabackgroundpreview { height: 140px; }
+  #game .arenabackgroundgrid { gap: 8px; }
+  #game .arenabackgroundgrid.colors { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #game .arenabackgroundgrid.scenes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #game .arenabackgroundfooter { padding: 12px 16px; }
+}
+
+/* Clash reveals both known cards together and keeps their values in view. */
+.revealclash .stackpopitem { display: flex; align-items: center; gap: 14px; }
+.revealclash .stackpopitem > img { width: 64px; height: 89px; flex: 0 0 64px; object-fit: cover; }
+.revealclash .stackpopsub { display: block; margin-top: 6px; color: #e4bc8c; }
+.clashresult { padding: 10px 12px; color: #f1c292; font-size: 12px; line-height: 1.5; text-align: center; }
+.clashdecisioncards .decisioncardgrid { grid-template-columns: repeat(2, minmax(0, 170px)); gap: 8px; }
+.clashchoicecard { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+.clashcardvalue { color: #e4bc8c; font-size: 11px; line-height: 1.4; text-align: center; }
