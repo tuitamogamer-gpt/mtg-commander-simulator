@@ -4425,21 +4425,23 @@ MTG.registerOracleBatch({
           "eventFilter": {
             "kind": "attached-object"
           },
+          "targets": [],
+          "optional": false,
           "effects": [
             {
               "action": "token-inline",
               "who": "you",
               "n": 1,
               "token": {
-                "name": "Forest Dryad land",
+                "name": "Forest Dryad",
                 "super": [],
                 "types": [
+                  "Land",
                   "Creature"
                 ],
                 "subtypes": [
                   "Forest",
-                  "Dryad",
-                  "land"
+                  "Dryad"
                 ],
                 "power": "1",
                 "toughness": "1",
@@ -4450,8 +4452,6 @@ MTG.registerOracleBatch({
               }
             }
           ],
-          "targets": [],
-          "optional": false,
           "contract": "generic-trigger-effect"
         },
         {

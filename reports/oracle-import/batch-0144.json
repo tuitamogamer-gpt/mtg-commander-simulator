@@ -5377,67 +5377,97 @@
       "implementation": [
         {
           "kind": "spell-generic",
-          "effects": [
-            {
-              "action": "draw",
-              "who": "you",
-              "n": 1
-            },
-            {
-              "action": "token-inline",
-              "who": "you",
-              "n": 1,
-              "token": {
-                "name": "Rabbit creature token. Then each opponent may draw a card. Create a 1/1 Rabbit creature token. For each opponent who does, you draw a card. You create a 1/1 Rabbit",
-                "super": [],
-                "types": [
-                  "Creature"
-                ],
-                "subtypes": [
-                  "Rabbit",
-                  "creature",
-                  "token.",
-                  "Then",
-                  "each",
-                  "opponent",
-                  "may",
-                  "draw",
-                  "a",
-                  "card.",
-                  "Create",
-                  "a",
-                  "1/1",
-                  "Rabbit",
-                  "creature",
-                  "token.",
-                  "For",
-                  "each",
-                  "opponent",
-                  "who",
-                  "does,",
-                  "you",
-                  "draw",
-                  "a",
-                  "card.",
-                  "You",
-                  "create",
-                  "a",
-                  "1/1",
-                  "Rabbit"
-                ],
-                "power": "1",
-                "toughness": "1",
-                "colors": [
-                  "W",
-                  "W",
-                  "W"
-                ],
-                "keywords": []
-              }
-            }
-          ],
           "targets": [],
           "optional": false,
+          "effects": [
+            {
+              "action": "tempting-offer-v8",
+              "effects": [
+                {
+                  "action": "draw",
+                  "who": "you",
+                  "n": 1
+                },
+                {
+                  "action": "token-inline",
+                  "who": "you",
+                  "n": 1,
+                  "token": {
+                    "name": "Rabbit",
+                    "super": [],
+                    "types": [
+                      "Creature"
+                    ],
+                    "subtypes": [
+                      "Rabbit"
+                    ],
+                    "power": "1",
+                    "toughness": "1",
+                    "colors": [
+                      "W"
+                    ],
+                    "keywords": []
+                  }
+                }
+              ],
+              "offered": [
+                {
+                  "action": "draw",
+                  "who": "you",
+                  "n": 1
+                },
+                {
+                  "action": "token-inline",
+                  "who": "you",
+                  "n": 1,
+                  "token": {
+                    "name": "Rabbit",
+                    "super": [],
+                    "types": [
+                      "Creature"
+                    ],
+                    "subtypes": [
+                      "Rabbit"
+                    ],
+                    "power": "1",
+                    "toughness": "1",
+                    "colors": [
+                      "W"
+                    ],
+                    "keywords": []
+                  }
+                }
+              ],
+              "reward": [
+                {
+                  "action": "draw",
+                  "who": "you",
+                  "n": 1
+                },
+                {
+                  "action": "token-inline",
+                  "who": "you",
+                  "n": 1,
+                  "token": {
+                    "name": "Rabbit",
+                    "super": [],
+                    "types": [
+                      "Creature"
+                    ],
+                    "subtypes": [
+                      "Rabbit"
+                    ],
+                    "power": "1",
+                    "toughness": "1",
+                    "colors": [
+                      "W"
+                    ],
+                    "keywords": []
+                  }
+                }
+              ]
+            }
+          ],
           "contract": "spell-generic-effect"
         }
       ],

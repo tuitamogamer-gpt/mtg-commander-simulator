@@ -7,9 +7,11 @@ export function extensionCost(text,h,card){
  let n,kinds,subject,m;
  if((m=/^Remove a (.+) counter or a (.+) counter from (.+)$/.exec(atom))){n=1;kinds=m.slice(1,3);subject=m[3];if(!kinds.every(kind=>counter.test(kind)))return null;}
  else if((m=new RegExp('^Remove ('+NUM+') (?:(.+) )?counters? from (.+)$').exec(atom))){n=number(m[1]);kinds=m[2]?[m[2]]:null;subject=m[3];if(kinds&&!kinds.every(kind=>counter.test(kind)))return null;}
+ else if((m=/^Remove (X|all|any number of) (.+) counters from (.+)$/.exec(atom))){n=m[1]==='any number of'?'chosen':m[1];kinds=[m[2]];subject=m[3];if(!/^(?:[+-][0-9]+\/[+-][0-9]+|[a-z]+)$/.test(kinds[0]))return null;}
  else return null;
  const selfNames=['this creature','this artifact','this enchantment','this permanent',card?.name,card?.name?.split(/,| the /)[0]].filter(Boolean);
- const self=selfNames.includes(subject),among=subject.startsWith('among ');let filter;
+ const self=selfNames.includes(subject)||typeof n==='string'&&card?.name?.startsWith(subject+' of '),among=subject.startsWith('among ');let filter;
+ const variable=typeof n==='string';if(variable&&!self)return null;
  if(!self){
   if(!subject.endsWith(' you control'))return null;
   let noun=subject.replace(/^among /,'').replace(/^(?:a|an) /,'').replace(/ you control$/,'');
@@ -22,7 +24,8 @@ export function extensionCost(text,h,card){
  const base={};
  if(prefix){
   const pieces=prefix.split(', ');if(pieces.length>2)return null;
-  for(const part of pieces){if(part==='{T}'&&!base.tap)base.tap=true;else if(!base.mana&&/^(?:\{(?:[0-9]+|[WUBRGC]|[WUBRG]\/[WUBRG])\})+$/.test(part))base.mana=part;else return null;}
+  for(const part of pieces){if(part==='{T}'&&!base.tap)base.tap=true;else if(!base.mana&&(variable?/^(?:\{(?:[0-9]+|[WUBRGCX]|[WUBRG]\/[WUBRG])\})+$/:/^(?:\{(?:[0-9]+|[WUBRGC]|[WUBRG]\/[WUBRG])\})+$/).test(part))base.mana=part;else return null;}
  }
+ if(variable&&n!=='X'&&base.mana?.includes('{X}'))return null;
  return{...base,oracleCounterPayment:{n,kinds,self,among,...(filter?{filter}:{})}};
 }

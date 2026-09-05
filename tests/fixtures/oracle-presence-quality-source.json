@@ -1,0 +1,1278 @@
+[
+  {
+    "position": 97,
+    "oracleId": "c627f1a8-9a57-4eb9-a8a5-2c285446fe97",
+    "scryfallId": "ebdef552-17d0-4b48-868e-058af02101be",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [],
+    "implementation": [
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "power": 1,
+        "toughness": 1,
+        "keywords": [],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "black",
+          "other": true
+        },
+        "contract": "generic-continuous-effect"
+      }
+    ],
+    "oracleContracts": [
+      "generic-continuous-effect"
+    ],
+    "rulesCore": "This creature gets +1/+1 as long as you control another black creature.",
+    "raw": {
+      "name": "Ashenmoor Cohort",
+      "cost": "{5}{B}",
+      "super": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elemental",
+        "Warrior"
+      ],
+      "oracle": "This creature gets +1/+1 as long as you control another black creature.",
+      "_ci": [
+        "B"
+      ],
+      "_oracleId": "c627f1a8-9a57-4eb9-a8a5-2c285446fe97",
+      "_scryfallId": "ebdef552-17d0-4b48-868e-058af02101be",
+      "_layout": "normal",
+      "_set": "shm",
+      "_collectorNumber": "56",
+      "_rarity": "common",
+      "power": "4",
+      "toughness": "3"
+    },
+    "catalog": {
+      "typeLine": "Creature \u2014 Elemental Warrior",
+      "colorIdentity": [
+        "B"
+      ],
+      "colors": [
+        "B"
+      ],
+      "keywords": [],
+      "commanderLegality": "legal",
+      "set": "shm",
+      "setName": "Shadowmoor",
+      "collectorNumber": "56",
+      "rarity": "common",
+      "releasedAt": "2008-05-02",
+      "scryfallUri": "https://scryfall.com/card/shm/56/ashenmoor-cohort?utm_source=api"
+    }
+  },
+  {
+    "position": 30,
+    "oracleId": "7c415180-c179-474b-8c58-e7096bd2c763",
+    "scryfallId": "d191b8f7-40e0-47f3-8395-659f26a12851",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [
+      "first strike"
+    ],
+    "implementation": [
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "power": 1,
+        "toughness": 1,
+        "keywords": [],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "white",
+          "other": true
+        },
+        "contract": "generic-continuous-effect"
+      }
+    ],
+    "oracleContracts": [
+      "generic-continuous-effect"
+    ],
+    "rulesCore": "First strike\nThis creature gets +1/+1 as long as you control another white creature.",
+    "raw": {
+      "name": "Ballynock Cohort",
+      "cost": "{2}{W}",
+      "super": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Kithkin",
+        "Soldier"
+      ],
+      "oracle": "First strike\nThis creature gets +1/+1 as long as you control another white creature.",
+      "_ci": [
+        "W"
+      ],
+      "_oracleId": "7c415180-c179-474b-8c58-e7096bd2c763",
+      "_scryfallId": "d191b8f7-40e0-47f3-8395-659f26a12851",
+      "_layout": "normal",
+      "_set": "ema",
+      "_collectorNumber": "3",
+      "_rarity": "common",
+      "power": "2",
+      "toughness": "2"
+    },
+    "catalog": {
+      "typeLine": "Creature \u2014 Kithkin Soldier",
+      "colorIdentity": [
+        "W"
+      ],
+      "colors": [
+        "W"
+      ],
+      "keywords": [
+        "First strike"
+      ],
+      "commanderLegality": "legal",
+      "set": "ema",
+      "setName": "Eternal Masters",
+      "collectorNumber": "3",
+      "rarity": "common",
+      "releasedAt": "2016-06-10",
+      "scryfallUri": "https://scryfall.com/card/ema/3/ballynock-cohort?utm_source=api"
+    }
+  },
+  {
+    "position": 79,
+    "oracleId": "5f7a4ffb-83f7-46e5-b0a7-c8b068af6969",
+    "scryfallId": "44793043-82b4-415b-a9ab-d564fdbcd314",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [],
+    "implementation": [
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "keywords": [
+          "haste"
+        ],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "red",
+          "other": false
+        },
+        "contract": "generic-continuous-effect"
+      },
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "keywords": [
+          "wither"
+        ],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "green",
+          "other": false
+        },
+        "contract": "generic-continuous-effect"
+      }
+    ],
+    "oracleContracts": [
+      "generic-continuous-effect"
+    ],
+    "rulesCore": "This creature has haste as long as you control a red creature.\nThis creature has wither as long as you control a green creature.",
+    "raw": {
+      "name": "Blazethorn Scarecrow",
+      "cost": "{5}",
+      "super": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Scarecrow"
+      ],
+      "oracle": "This creature has haste as long as you control a red creature.\nThis creature has wither as long as you control a green creature. (It deals damage to creatures in the form of -1/-1 counters.)",
+      "_ci": [],
+      "_oracleId": "5f7a4ffb-83f7-46e5-b0a7-c8b068af6969",
+      "_scryfallId": "44793043-82b4-415b-a9ab-d564fdbcd314",
+      "_layout": "normal",
+      "_set": "shm",
+      "_collectorNumber": "246",
+      "_rarity": "common",
+      "power": "3",
+      "toughness": "3"
+    },
+    "catalog": {
+      "typeLine": "Artifact Creature \u2014 Scarecrow",
+      "colorIdentity": [],
+      "colors": [],
+      "keywords": [],
+      "commanderLegality": "legal",
+      "set": "shm",
+      "setName": "Shadowmoor",
+      "collectorNumber": "246",
+      "rarity": "common",
+      "releasedAt": "2008-05-02",
+      "scryfallUri": "https://scryfall.com/card/shm/246/blazethorn-scarecrow?utm_source=api"
+    }
+  },
+  {
+    "position": 30,
+    "oracleId": "598283f3-ae29-43b9-8743-6c065136dcad",
+    "scryfallId": "caf9d87a-533c-4641-9738-e7b98d92b015",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [
+      "flying"
+    ],
+    "implementation": [
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "power": 1,
+        "toughness": 1,
+        "keywords": [],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "blue",
+          "other": true
+        },
+        "contract": "generic-continuous-effect"
+      }
+    ],
+    "oracleContracts": [
+      "generic-continuous-effect"
+    ],
+    "rulesCore": "Flying\nThis creature gets +1/+1 as long as you control another blue creature.",
+    "raw": {
+      "name": "Briarberry Cohort",
+      "cost": "{1}{U}",
+      "super": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Faerie",
+        "Soldier"
+      ],
+      "oracle": "Flying\nThis creature gets +1/+1 as long as you control another blue creature.",
+      "_ci": [
+        "U"
+      ],
+      "_oracleId": "598283f3-ae29-43b9-8743-6c065136dcad",
+      "_scryfallId": "caf9d87a-533c-4641-9738-e7b98d92b015",
+      "_layout": "normal",
+      "_set": "shm",
+      "_collectorNumber": "30",
+      "_rarity": "common",
+      "power": "1",
+      "toughness": "1"
+    },
+    "catalog": {
+      "typeLine": "Creature \u2014 Faerie Soldier",
+      "colorIdentity": [
+        "U"
+      ],
+      "colors": [
+        "U"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "commanderLegality": "legal",
+      "set": "shm",
+      "setName": "Shadowmoor",
+      "collectorNumber": "30",
+      "rarity": "common",
+      "releasedAt": "2008-05-02",
+      "scryfallUri": "https://scryfall.com/card/shm/30/briarberry-cohort?utm_source=api"
+    }
+  },
+  {
+    "position": 47,
+    "oracleId": "470f0043-3ffe-470b-981f-425f0583a87e",
+    "scryfallId": "8c17b102-a25d-4fff-8718-3bdd53092552",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [],
+    "implementation": [
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "power": 1,
+        "toughness": 1,
+        "keywords": [],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "green",
+          "other": true
+        },
+        "contract": "generic-continuous-effect"
+      }
+    ],
+    "oracleContracts": [
+      "generic-continuous-effect"
+    ],
+    "rulesCore": "This creature gets +1/+1 as long as you control another green creature.",
+    "raw": {
+      "name": "Crabapple Cohort",
+      "cost": "{4}{G}",
+      "super": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Treefolk",
+        "Warrior"
+      ],
+      "oracle": "This creature gets +1/+1 as long as you control another green creature.",
+      "_ci": [
+        "G"
+      ],
+      "_oracleId": "470f0043-3ffe-470b-981f-425f0583a87e",
+      "_scryfallId": "8c17b102-a25d-4fff-8718-3bdd53092552",
+      "_layout": "normal",
+      "_set": "shm",
+      "_collectorNumber": "109",
+      "_rarity": "common",
+      "power": "4",
+      "toughness": "4"
+    },
+    "catalog": {
+      "typeLine": "Creature \u2014 Treefolk Warrior",
+      "colorIdentity": [
+        "G"
+      ],
+      "colors": [
+        "G"
+      ],
+      "keywords": [],
+      "commanderLegality": "legal",
+      "set": "shm",
+      "setName": "Shadowmoor",
+      "collectorNumber": "109",
+      "rarity": "common",
+      "releasedAt": "2008-05-02",
+      "scryfallUri": "https://scryfall.com/card/shm/109/crabapple-cohort?utm_source=api"
+    }
+  },
+  {
+    "position": 40,
+    "oracleId": "3c98c925-f380-4520-970d-4c1abbebefe3",
+    "scryfallId": "12e7e2b5-3141-4a19-aa49-91ab7e5c211c",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [],
+    "implementation": [
+      {
+        "kind": "mechanic-devoid",
+        "contract": "mechanic-devoid"
+      },
+      {
+        "kind": "mechanic-ingest",
+        "contract": "mechanic-ingest"
+      },
+      {
+        "kind": "generic-trigger",
+        "event": "etb",
+        "eventFilter": "self",
+        "effects": [
+          {
+            "action": "lose-life",
+            "who": "each-opponent",
+            "n": 2
+          }
+        ],
+        "targets": [],
+        "optional": false,
+        "condition": {
+          "kind": "has-permanent",
+          "what": "colorless",
+          "other": true
+        },
+        "contract": "generic-trigger-effect"
+      }
+    ],
+    "oracleContracts": [
+      "mechanic-devoid",
+      "mechanic-ingest",
+      "generic-trigger-effect"
+    ],
+    "rulesCore": "Devoid\nIngest\nWhen this creature enters, if you control another colorless creature, each opponent loses 2 life.",
+    "raw": {
+      "name": "Dominator Drone",
+      "cost": "{2}{B}",
+      "super": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Eldrazi",
+        "Drone"
+      ],
+      "oracle": "Devoid (This card has no color.)\nIngest (Whenever this creature deals combat damage to a player, that player exiles the top card of their library.)\nWhen this creature enters, if you control another colorless creature, each opponent loses 2 life.",
+      "_ci": [
+        "B"
+      ],
+      "_oracleId": "3c98c925-f380-4520-970d-4c1abbebefe3",
+      "_scryfallId": "12e7e2b5-3141-4a19-aa49-91ab7e5c211c",
+      "_layout": "normal",
+      "_set": "bfz",
+      "_collectorNumber": "92",
+      "_rarity": "common",
+      "power": "3",
+      "toughness": "2"
+    },
+    "catalog": {
+      "typeLine": "Creature \u2014 Eldrazi Drone",
+      "colorIdentity": [
+        "B"
+      ],
+      "colors": [],
+      "keywords": [
+        "Devoid",
+        "Ingest"
+      ],
+      "commanderLegality": "legal",
+      "set": "bfz",
+      "setName": "Battle for Zendikar",
+      "collectorNumber": "92",
+      "rarity": "common",
+      "releasedAt": "2015-10-02",
+      "scryfallUri": "https://scryfall.com/card/bfz/92/dominator-drone?utm_source=api"
+    }
+  },
+  {
+    "position": 7,
+    "oracleId": "aa0c6fea-c90c-4b65-aa1e-18e5b34ea6e3",
+    "scryfallId": "62f3ec85-552d-4e28-939e-ab2c39e3e9c5",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [],
+    "implementation": [
+      {
+        "kind": "mechanic-devoid",
+        "contract": "mechanic-devoid"
+      },
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "keywords": [
+          "haste"
+        ],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "colorless",
+          "other": true
+        },
+        "contract": "generic-continuous-effect"
+      }
+    ],
+    "oracleContracts": [
+      "mechanic-devoid",
+      "generic-continuous-effect"
+    ],
+    "rulesCore": "Devoid\nThis creature has haste as long as you control another colorless creature.",
+    "raw": {
+      "name": "Eldrazi Aggressor",
+      "cost": "{2}{R}",
+      "super": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Eldrazi",
+        "Drone"
+      ],
+      "oracle": "Devoid (This card has no color.)\nThis creature has haste as long as you control another colorless creature.",
+      "_ci": [
+        "R"
+      ],
+      "_oracleId": "aa0c6fea-c90c-4b65-aa1e-18e5b34ea6e3",
+      "_scryfallId": "62f3ec85-552d-4e28-939e-ab2c39e3e9c5",
+      "_layout": "normal",
+      "_set": "ogw",
+      "_collectorNumber": "95",
+      "_rarity": "common",
+      "power": "2",
+      "toughness": "3"
+    },
+    "catalog": {
+      "typeLine": "Creature \u2014 Eldrazi Drone",
+      "colorIdentity": [
+        "R"
+      ],
+      "colors": [],
+      "keywords": [
+        "Devoid"
+      ],
+      "commanderLegality": "legal",
+      "set": "ogw",
+      "setName": "Oath of the Gatewatch",
+      "collectorNumber": "95",
+      "rarity": "common",
+      "releasedAt": "2016-01-22",
+      "scryfallUri": "https://scryfall.com/card/ogw/95/eldrazi-aggressor?utm_source=api"
+    }
+  },
+  {
+    "position": 60,
+    "oracleId": "0c0f7092-3fe6-4a6e-8b4e-803810b43e50",
+    "scryfallId": "1d532b01-8bf7-4a27-a438-db03bcd00694",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [],
+    "implementation": [
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "power": 2,
+        "toughness": 0,
+        "keywords": [],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "blue",
+          "other": false
+        },
+        "contract": "generic-continuous-effect"
+      }
+    ],
+    "oracleContracts": [
+      "generic-continuous-effect"
+    ],
+    "rulesCore": "This creature gets +2/+0 as long as you control a blue creature.",
+    "raw": {
+      "name": "Gearsmith Guardian",
+      "cost": "{5}",
+      "super": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Construct"
+      ],
+      "oracle": "This creature gets +2/+0 as long as you control a blue creature.",
+      "_ci": [],
+      "_oracleId": "0c0f7092-3fe6-4a6e-8b4e-803810b43e50",
+      "_scryfallId": "1d532b01-8bf7-4a27-a438-db03bcd00694",
+      "_layout": "normal",
+      "_set": "m19",
+      "_collectorNumber": "237",
+      "_rarity": "common",
+      "power": "3",
+      "toughness": "5"
+    },
+    "catalog": {
+      "typeLine": "Artifact Creature \u2014 Construct",
+      "colorIdentity": [],
+      "colors": [],
+      "keywords": [],
+      "commanderLegality": "legal",
+      "set": "m19",
+      "setName": "Core Set 2019",
+      "collectorNumber": "237",
+      "rarity": "common",
+      "releasedAt": "2018-07-13",
+      "scryfallUri": "https://scryfall.com/card/m19/237/gearsmith-guardian?utm_source=api"
+    }
+  },
+  {
+    "position": 59,
+    "oracleId": "5d575b78-3d7b-4860-abc3-e99e429279a1",
+    "scryfallId": "19cfacff-e884-4954-aa6b-ed56ca942bf2",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [
+      "trample"
+    ],
+    "implementation": [
+      {
+        "kind": "generic-trigger",
+        "event": "etb",
+        "eventFilter": "self",
+        "effects": [
+          {
+            "action": "token-key",
+            "who": "you",
+            "n": 1,
+            "tokenKey": "treasure"
+          }
+        ],
+        "targets": [],
+        "optional": false,
+        "condition": {
+          "kind": "has-permanent",
+          "what": "outlaw",
+          "other": true
+        },
+        "contract": "generic-trigger-effect"
+      }
+    ],
+    "oracleContracts": [
+      "generic-trigger-effect"
+    ],
+    "rulesCore": "Trample\nWhen this creature enters, if you control another outlaw, create a Treasure token.",
+    "raw": {
+      "name": "Mine Raider",
+      "cost": "{2}{R}",
+      "super": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Rogue"
+      ],
+      "oracle": "Trample\nWhen this creature enters, if you control another outlaw, create a Treasure token. (Assassins, Mercenaries, Pirates, Rogues, and Warlocks are outlaws. A Treasure token is an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+      "_ci": [
+        "R"
+      ],
+      "_oracleId": "5d575b78-3d7b-4860-abc3-e99e429279a1",
+      "_scryfallId": "19cfacff-e884-4954-aa6b-ed56ca942bf2",
+      "_layout": "normal",
+      "_set": "otj",
+      "_collectorNumber": "135",
+      "_rarity": "common",
+      "power": "3",
+      "toughness": "2",
+      "_produced": [
+        "B",
+        "G",
+        "R",
+        "U",
+        "W"
+      ]
+    },
+    "catalog": {
+      "typeLine": "Creature \u2014 Human Rogue",
+      "colorIdentity": [
+        "R"
+      ],
+      "colors": [
+        "R"
+      ],
+      "keywords": [
+        "Treasure",
+        "Trample"
+      ],
+      "commanderLegality": "legal",
+      "set": "otj",
+      "setName": "Outlaws of Thunder Junction",
+      "collectorNumber": "135",
+      "rarity": "common",
+      "releasedAt": "2024-04-19",
+      "scryfallUri": "https://scryfall.com/card/otj/135/mine-raider?utm_source=api"
+    }
+  },
+  {
+    "position": 61,
+    "oracleId": "197fd850-0a08-4e82-9249-a8d719436f77",
+    "scryfallId": "097decb6-03bd-4a84-ab9a-75becf85cae8",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [
+      "haste"
+    ],
+    "implementation": [
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "power": 1,
+        "toughness": 1,
+        "keywords": [],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "white",
+          "other": false
+        },
+        "contract": "generic-continuous-effect"
+      },
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "power": 1,
+        "toughness": 1,
+        "keywords": [],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "blue",
+          "other": false
+        },
+        "contract": "generic-continuous-effect"
+      }
+    ],
+    "oracleContracts": [
+      "generic-continuous-effect"
+    ],
+    "rulesCore": "Haste\nThis creature gets +1/+1 as long as you control a white creature.\nThis creature gets +1/+1 as long as you control a blue creature.",
+    "raw": {
+      "name": "Minotaur Tactician",
+      "cost": "{3}{R}",
+      "super": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Minotaur"
+      ],
+      "oracle": "Haste\nThis creature gets +1/+1 as long as you control a white creature.\nThis creature gets +1/+1 as long as you control a blue creature.",
+      "_ci": [
+        "R"
+      ],
+      "_oracleId": "197fd850-0a08-4e82-9249-a8d719436f77",
+      "_scryfallId": "097decb6-03bd-4a84-ab9a-75becf85cae8",
+      "_layout": "normal",
+      "_set": "apc",
+      "_collectorNumber": "65",
+      "_rarity": "common",
+      "power": "1",
+      "toughness": "1"
+    },
+    "catalog": {
+      "typeLine": "Creature \u2014 Minotaur",
+      "colorIdentity": [
+        "R"
+      ],
+      "colors": [
+        "R"
+      ],
+      "keywords": [
+        "Haste"
+      ],
+      "commanderLegality": "legal",
+      "set": "apc",
+      "setName": "Apocalypse",
+      "collectorNumber": "65",
+      "rarity": "common",
+      "releasedAt": "2001-06-04",
+      "scryfallUri": "https://scryfall.com/card/apc/65/minotaur-tactician?utm_source=api"
+    }
+  },
+  {
+    "position": 99,
+    "oracleId": "788bd9ae-b78e-4c86-bf12-d4e19780491a",
+    "scryfallId": "8fcb1f26-9a2a-40bd-b291-4ef8ce375cdf",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [
+      "haste"
+    ],
+    "implementation": [
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "power": 1,
+        "toughness": 1,
+        "keywords": [],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "red",
+          "other": true
+        },
+        "contract": "generic-continuous-effect"
+      }
+    ],
+    "oracleContracts": [
+      "generic-continuous-effect"
+    ],
+    "rulesCore": "Haste\nThis creature gets +1/+1 as long as you control another red creature.",
+    "raw": {
+      "name": "Mudbrawler Cohort",
+      "cost": "{1}{R}",
+      "super": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Goblin",
+        "Warrior"
+      ],
+      "oracle": "Haste\nThis creature gets +1/+1 as long as you control another red creature.",
+      "_ci": [
+        "R"
+      ],
+      "_oracleId": "788bd9ae-b78e-4c86-bf12-d4e19780491a",
+      "_scryfallId": "8fcb1f26-9a2a-40bd-b291-4ef8ce375cdf",
+      "_layout": "normal",
+      "_set": "shm",
+      "_collectorNumber": "100",
+      "_rarity": "common",
+      "power": "1",
+      "toughness": "1"
+    },
+    "catalog": {
+      "typeLine": "Creature \u2014 Goblin Warrior",
+      "colorIdentity": [
+        "R"
+      ],
+      "colors": [
+        "R"
+      ],
+      "keywords": [
+        "Haste"
+      ],
+      "commanderLegality": "legal",
+      "set": "shm",
+      "setName": "Shadowmoor",
+      "collectorNumber": "100",
+      "rarity": "common",
+      "releasedAt": "2008-05-02",
+      "scryfallUri": "https://scryfall.com/card/shm/100/mudbrawler-cohort?utm_source=api"
+    }
+  },
+  {
+    "position": 65,
+    "oracleId": "1abcfe8d-4beb-4910-b353-1227e1256329",
+    "scryfallId": "d247bd88-9593-462c-8f9e-28e29c064c10",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [],
+    "implementation": [
+      {
+        "kind": "generic-trigger",
+        "event": "etb",
+        "eventFilter": "self",
+        "effects": [
+          {
+            "action": "token-inline",
+            "who": "you",
+            "n": 1,
+            "token": {
+              "name": "Warrior",
+              "super": [],
+              "types": [
+                "Creature"
+              ],
+              "subtypes": [
+                "Warrior"
+              ],
+              "power": "1",
+              "toughness": "1",
+              "colors": [
+                "W"
+              ],
+              "keywords": [
+                "vigilance"
+              ]
+            }
+          }
+        ],
+        "targets": [],
+        "optional": false,
+        "condition": {
+          "kind": "has-permanent",
+          "what": "tapped",
+          "other": false
+        },
+        "contract": "generic-trigger-effect"
+      }
+    ],
+    "oracleContracts": [
+      "generic-trigger-effect"
+    ],
+    "rulesCore": "When this creature enters, if you control a tapped creature, create a 1/1 white Warrior creature token with vigilance.",
+    "raw": {
+      "name": "Supply Caravan",
+      "cost": "{4}{W}",
+      "super": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Camel"
+      ],
+      "oracle": "When this creature enters, if you control a tapped creature, create a 1/1 white Warrior creature token with vigilance.",
+      "_ci": [
+        "W"
+      ],
+      "_oracleId": "1abcfe8d-4beb-4910-b353-1227e1256329",
+      "_scryfallId": "d247bd88-9593-462c-8f9e-28e29c064c10",
+      "_layout": "normal",
+      "_set": "akh",
+      "_collectorNumber": "30",
+      "_rarity": "common",
+      "power": "3",
+      "toughness": "5"
+    },
+    "catalog": {
+      "typeLine": "Creature \u2014 Camel",
+      "colorIdentity": [
+        "W"
+      ],
+      "colors": [
+        "W"
+      ],
+      "keywords": [],
+      "commanderLegality": "legal",
+      "set": "akh",
+      "setName": "Amonkhet",
+      "collectorNumber": "30",
+      "rarity": "common",
+      "releasedAt": "2017-04-28",
+      "scryfallUri": "https://scryfall.com/card/akh/30/supply-caravan?utm_source=api"
+    }
+  },
+  {
+    "position": 27,
+    "oracleId": "fe01e07c-dbca-4598-a944-1b194df44260",
+    "scryfallId": "3489ac0a-cbdb-43d5-be73-6cb65ae54a20",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [],
+    "implementation": [
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "keywords": [
+          "wither"
+        ],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "green",
+          "other": false
+        },
+        "contract": "generic-continuous-effect"
+      },
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "keywords": [
+          "vigilance"
+        ],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "white",
+          "other": false
+        },
+        "contract": "generic-continuous-effect"
+      }
+    ],
+    "oracleContracts": [
+      "generic-continuous-effect"
+    ],
+    "rulesCore": "This creature has wither as long as you control a green creature.\nThis creature has vigilance as long as you control a white creature.",
+    "raw": {
+      "name": "Thornwatch Scarecrow",
+      "cost": "{6}",
+      "super": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Scarecrow"
+      ],
+      "oracle": "This creature has wither as long as you control a green creature. (It deals damage to creatures in the form of -1/-1 counters.)\nThis creature has vigilance as long as you control a white creature.",
+      "_ci": [],
+      "_oracleId": "fe01e07c-dbca-4598-a944-1b194df44260",
+      "_scryfallId": "3489ac0a-cbdb-43d5-be73-6cb65ae54a20",
+      "_layout": "normal",
+      "_set": "shm",
+      "_collectorNumber": "265",
+      "_rarity": "common",
+      "power": "4",
+      "toughness": "4"
+    },
+    "catalog": {
+      "typeLine": "Artifact Creature \u2014 Scarecrow",
+      "colorIdentity": [],
+      "colors": [],
+      "keywords": [],
+      "commanderLegality": "legal",
+      "set": "shm",
+      "setName": "Shadowmoor",
+      "collectorNumber": "265",
+      "rarity": "common",
+      "releasedAt": "2008-05-02",
+      "scryfallUri": "https://scryfall.com/card/shm/265/thornwatch-scarecrow?utm_source=api"
+    }
+  },
+  {
+    "position": 100,
+    "oracleId": "24bd190c-04bf-44d3-97ba-9dafd9adf7ae",
+    "scryfallId": "5c7774fd-3460-46e3-9c9c-7aa70f2ff6d8",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [],
+    "implementation": [
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "keywords": [
+          "vigilance"
+        ],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "white",
+          "other": false
+        },
+        "contract": "generic-continuous-effect"
+      },
+      {
+        "kind": "generic-static",
+        "scope": "self",
+        "keywords": [
+          "flying"
+        ],
+        "condition": {
+          "kind": "has-permanent",
+          "what": "blue",
+          "other": false
+        },
+        "contract": "generic-continuous-effect"
+      }
+    ],
+    "oracleContracts": [
+      "generic-continuous-effect"
+    ],
+    "rulesCore": "This creature has vigilance as long as you control a white creature.\nThis creature has flying as long as you control a blue creature.",
+    "raw": {
+      "name": "Watchwing Scarecrow",
+      "cost": "{4}",
+      "super": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Scarecrow"
+      ],
+      "oracle": "This creature has vigilance as long as you control a white creature.\nThis creature has flying as long as you control a blue creature.",
+      "_ci": [],
+      "_oracleId": "24bd190c-04bf-44d3-97ba-9dafd9adf7ae",
+      "_scryfallId": "5c7774fd-3460-46e3-9c9c-7aa70f2ff6d8",
+      "_layout": "normal",
+      "_set": "shm",
+      "_collectorNumber": "268",
+      "_rarity": "common",
+      "power": "2",
+      "toughness": "4"
+    },
+    "catalog": {
+      "typeLine": "Artifact Creature \u2014 Scarecrow",
+      "colorIdentity": [],
+      "colors": [],
+      "keywords": [],
+      "commanderLegality": "legal",
+      "set": "shm",
+      "setName": "Shadowmoor",
+      "collectorNumber": "268",
+      "rarity": "common",
+      "releasedAt": "2008-05-02",
+      "scryfallUri": "https://scryfall.com/card/shm/268/watchwing-scarecrow?utm_source=api"
+    }
+  },
+  {
+    "position": 76,
+    "oracleId": "3fb399fa-123f-448e-a473-573a1fab2c78",
+    "scryfallId": "d00d618d-abad-475b-b938-e111282ea1c3",
+    "semanticClass": "spell-template",
+    "implementedKeywords": [],
+    "implementation": [
+      {
+        "kind": "spell-generic",
+        "effects": [
+          {
+            "action": "pump-group",
+            "who": "your-creatures",
+            "power": 2,
+            "toughness": 0,
+            "keywords": []
+          },
+          {
+            "action": "conditional",
+            "condition": {
+              "kind": "has-permanent",
+              "what": "modified",
+              "other": false
+            },
+            "effects": [
+              {
+                "action": "draw",
+                "who": "you",
+                "n": 1
+              }
+            ]
+          }
+        ],
+        "targets": [],
+        "optional": false,
+        "contract": "spell-generic-effect"
+      }
+    ],
+    "oracleContracts": [
+      "spell-generic-effect"
+    ],
+    "rulesCore": "Creatures you control get +2/+0 until end of turn. If you control a modified creature, draw a card.",
+    "raw": {
+      "name": "Ambitious Assault",
+      "cost": "{2}{R}",
+      "super": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "oracle": "Creatures you control get +2/+0 until end of turn. If you control a modified creature, draw a card. (Equipment, Auras you control, and counters are modifications.)",
+      "_ci": [
+        "R"
+      ],
+      "_oracleId": "3fb399fa-123f-448e-a473-573a1fab2c78",
+      "_scryfallId": "d00d618d-abad-475b-b938-e111282ea1c3",
+      "_layout": "normal",
+      "_set": "neo",
+      "_collectorNumber": "133",
+      "_rarity": "common"
+    },
+    "catalog": {
+      "typeLine": "Instant",
+      "colorIdentity": [
+        "R"
+      ],
+      "colors": [
+        "R"
+      ],
+      "keywords": [],
+      "commanderLegality": "legal",
+      "set": "neo",
+      "setName": "Kamigawa: Neon Dynasty",
+      "collectorNumber": "133",
+      "rarity": "common",
+      "releasedAt": "2022-02-18",
+      "scryfallUri": "https://scryfall.com/card/neo/133/ambitious-assault?utm_source=api"
+    }
+  },
+  {
+    "position": 91,
+    "oracleId": "6bcdbded-46f0-44b9-86ad-edd6414e7ef6",
+    "scryfallId": "d45daa56-6ad8-4df7-9d81-3193fd32e574",
+    "semanticClass": "creature-template",
+    "implementedKeywords": [],
+    "implementation": [
+      {
+        "kind": "enters-with-counters",
+        "counter": "+1/+1",
+        "n": 1,
+        "condition": {
+          "kind": "has-permanent",
+          "what": "modified",
+          "other": false
+        },
+        "contract": "permanent-enters-with-counters"
+      }
+    ],
+    "oracleContracts": [
+      "permanent-enters-with-counters"
+    ],
+    "rulesCore": "This creature enters with a +1/+1 counter on it if you control a modified creature.",
+    "raw": {
+      "name": "Heir of the Ancient Fang",
+      "cost": "{2}{G}",
+      "super": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Snake",
+        "Samurai"
+      ],
+      "oracle": "This creature enters with a +1/+1 counter on it if you control a modified creature. (Equipment, Auras you control, and counters are modifications.)",
+      "_ci": [
+        "G"
+      ],
+      "_oracleId": "6bcdbded-46f0-44b9-86ad-edd6414e7ef6",
+      "_scryfallId": "d45daa56-6ad8-4df7-9d81-3193fd32e574",
+      "_layout": "normal",
+      "_set": "neo",
+      "_collectorNumber": "191",
+      "_rarity": "common",
+      "power": "2",
+      "toughness": "3"
+    },
+    "catalog": {
+      "typeLine": "Creature \u2014 Snake Samurai",
+      "colorIdentity": [
+        "G"
+      ],
+      "colors": [
+        "G"
+      ],
+      "keywords": [],
+      "commanderLegality": "legal",
+      "set": "neo",
+      "setName": "Kamigawa: Neon Dynasty",
+      "collectorNumber": "191",
+      "rarity": "common",
+      "releasedAt": "2022-02-18",
+      "scryfallUri": "https://scryfall.com/card/neo/191/heir-of-the-ancient-fang?utm_source=api"
+    }
+  },
+  {
+    "position": 84,
+    "oracleId": "5b5ef88c-f863-4f55-91fc-a63f7f3c1b3f",
+    "scryfallId": "f7502b9c-b759-499a-8e94-22f87f5eb142",
+    "semanticClass": "spell-template",
+    "implementedKeywords": [],
+    "implementation": [
+      {
+        "kind": "spell-generic",
+        "effects": [
+          {
+            "action": "pump-group",
+            "who": "your-creatures",
+            "power": 2,
+            "toughness": 0,
+            "keywords": []
+          },
+          {
+            "action": "conditional",
+            "condition": {
+              "kind": "has-permanent",
+              "what": "outlaw",
+              "other": false
+            },
+            "effects": [
+              {
+                "action": "exile-top",
+                "who": "you",
+                "n": 1,
+                "permission": {
+                  "spellsOnly": false,
+                  "nextOwnTurn": true,
+                  "anyColor": false
+                }
+              }
+            ]
+          }
+        ],
+        "targets": [],
+        "optional": false,
+        "contract": "spell-generic-effect"
+      }
+    ],
+    "oracleContracts": [
+      "spell-generic-effect"
+    ],
+    "rulesCore": "Creatures you control get +2/+0 until end of turn. If you control an outlaw, exile the top card of your library. Until the end of your next turn, you may play that card.",
+    "raw": {
+      "name": "Outlaws' Fury",
+      "cost": "{2}{R}",
+      "super": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "oracle": "Creatures you control get +2/+0 until end of turn. If you control an outlaw, exile the top card of your library. Until the end of your next turn, you may play that card. (Assassins, Mercenaries, Pirates, Rogues, and Warlocks are outlaws.)",
+      "_ci": [
+        "R"
+      ],
+      "_oracleId": "5b5ef88c-f863-4f55-91fc-a63f7f3c1b3f",
+      "_scryfallId": "f7502b9c-b759-499a-8e94-22f87f5eb142",
+      "_layout": "normal",
+      "_set": "otj",
+      "_collectorNumber": "136",
+      "_rarity": "common"
+    },
+    "catalog": {
+      "typeLine": "Instant",
+      "colorIdentity": [
+        "R"
+      ],
+      "colors": [
+        "R"
+      ],
+      "keywords": [],
+      "commanderLegality": "legal",
+      "set": "otj",
+      "setName": "Outlaws of Thunder Junction",
+      "collectorNumber": "136",
+      "rarity": "common",
+      "releasedAt": "2024-04-19",
+      "scryfallUri": "https://scryfall.com/card/otj/136/outlaws-fury?utm_source=api"
+    }
+  }
+]

@@ -47,11 +47,38 @@ function filterFor(text, helpers) {
     return land ? {filter: {...land, basic: true}} : null;
   }
   const filter = helpers.target?.('target ' + text + ' card from your graveyard') || helpers.target?.('target ' + text + ' from your graveyard');
-  if (!filter || filter.zone !== 'graveyard') return null;
+  if (!filter || filter.zone !== 'graveyard') {
+    const permanent=/^(legendary )?([A-Z][A-Za-z-]*(?: [A-Z][A-Za-z-]*)?) permanent card( with mana value (?:X|\d+)(?: or (?:less|greater))?)?$/.exec(original);
+    if(permanent){
+      const subtype=helpers.target?.('target '+permanent[2]+' card'+(permanent[3]||'')+' from your graveyard');
+      if(subtype?.zone==='graveyard'&&subtype.what==='card'&&subtype.subtype)return {filter:{...subtype,what:'permanent',...(permanent[1]?{legendary:true}:{})}};
+    }
+    const eitherMv=/^(.+?) card with mana value (\d+) or (\d+)$/.exec(original);
+    if(eitherMv){
+      const base=helpers.target?.('target '+eitherMv[1]+' card from your graveyard');
+      if(base?.zone==='graveyard')return {filter:{what:'card',zone:'graveyard',controller:'you',min:1,alternatives:[eitherMv[2],eitherMv[3]].map(n=>({...base,stat:'mv',comparison:'equal',threshold:Number(n)}))}};
+    }
+    // Each alternative must be a complete qualified card noun. An "or" in
+    // a mana-value comparison or a card name is not a type alternative.
+    const pieces=original.split(/(?:,? or | and\/or )/);
+    if(pieces.length>1&&pieces.every(piece=>/ card$/.test(piece))){
+      const alternatives=pieces.map(piece=>filterFor(piece,helpers)?.filter);
+      if(alternatives.every(Boolean))return {filter:{what:'card',zone:'graveyard',controller:'you',min:1,alternatives}};
+    }
+    return null;
+  }
   return {filter};
 }
 
 function searchFilterFor(text, helpers) {
+  const named=/^cards? named (.+)$/.exec(text.trim());
+  // A comma can belong to a legendary card's name, but must never absorb
+  // another Oracle instruction when a later placement clause backtracks.
+  const instructionInName=/[.;:\n]|, (?:then|reveal|exile|put|shuffle|return|draw|search|sacrifice|destroy|tap|untap|discard|mill|create|pay|add|gain|lose|deal|counter|choose|look)\b/i;
+  if(named&&!/ and /.test(named[1])&&!instructionInName.test(named[1])){
+    const names=named[1].split(' or ');
+    if(names.every(name=>name.trim()===name&&name.length>0))return {unrestricted:false,names};
+  }
   const unrestricted = /^cards?$/i.test(text.trim());
   const parsed = filterFor(text, helpers);
   if (!parsed || !unrestricted && !parsed.filter) return null;
@@ -316,11 +343,16 @@ export {filterFor as libraryFilter};
 // Runs after the frozen core/older grammars, preserving their descriptors.
 export function fallbackEffect(card,line,helpers={}){
  const ownerSearch=ownerSearchEffect(card,line,helpers);if(ownerSearch)return ownerSearch;
- const search=new RegExp('^(You may )?Search your library for ('+SEARCH_QUANTITY+') (.+?)(?:, (reveal (?:it|them|that card|those cards)))?(?:, | and )put (?:it|them|that card|those cards) (into your hand|into your graveyard|onto the battlefield(?: tapped)?), then shuffle\\.$','i').exec(line);
+ const search=new RegExp('^(You may )?Search your library for ('+SEARCH_QUANTITY+') (.+?)(?:, where X is (.+?))?(?:(?:, |\\. )(reveal (?:it|them|that card|those cards)))?(?:, |\\. | and )put (?:it|them|that card|those cards) (into your hand|into your graveyard|onto the battlefield(?: tapped)?), then shuffle\\.$','i').exec(line);
  if(!search)return null;
- const selected=searchFilterFor(search[3],helpers),placement=searchPlacement(search[5]);
+ const selected=searchFilterFor(search[3],helpers),placement=searchPlacement(search[6]),count=searchQuantity(search[2]);
+ if(search[4]){
+   if(count.n!=='X')return null;
+   const amount=countFor(search[4],helpers);if(amount==null)return null;
+   count.n=amount;
+ }
  if(!selected||!placement||selected.unrestricted&&placement.destination==='battlefield')return null;
- return {targets:[],optional:!!search[1],effects:[{action:'library-search-v8',who:'you',...searchQuantity(search[2]),...selected,reveal:!!search[4],placements:[{n:'all',...placement}]}]};
+ return {targets:[],optional:!!search[1],effects:[{action:'library-search-v8',who:'you',...count,...selected,reveal:!!search[5],placements:[{n:'all',...placement}]}]};
 }
 
 function ownerSearchEffect(card,line,helpers,overrideWho){

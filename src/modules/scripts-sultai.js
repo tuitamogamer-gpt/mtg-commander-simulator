@@ -247,7 +247,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC['Amphin Mutineer'] = {
     triggers: [{
-      on: 'etb', desc: 'Exile a non-Salamander creature', opt: true, filter: etbSelf,
+      on: 'etb', desc: 'Exile a non-Salamander creature', filter: etbSelf,
       targets: [T.creature({ filter: (g, card) => card.zone === 'battlefield' && card.is('Creature') && !card.hasSub('Salamander'),
         upTo: true, prompt: 'Non-Salamander creature to exile', aiHint: { goal: 'removal' } })],
       run: async ctx => { const target = ctx.targets[0]; if (!target) return; const ctrl = target.ctrl; await ctx.g.move(target, 'exile'); await ctx.g.makeTokens(salamander, ctrl); },
@@ -433,7 +433,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Noxious Gearhulk'] = { triggers: [{
     on: 'etb', desc: 'Destroy another creature', opt: true, filter: etbSelf,
     targets: [T.creature({ filter: (g, card, ctrl, self) => card.zone === 'battlefield' && card.is('Creature') && card !== self,
-      upTo: true, prompt: 'Another creature to destroy', aiHint: { goal: 'removal' } })],
+      prompt: 'Another creature to destroy', aiHint: { goal: 'removal' } })],
     run: async ctx => { const card = ctx.targets[0]; if (!card) return; const toughness = Math.max(0, card.toughness); if (await ctx.g.destroy(card)) await ctx.g.gainLife(ctx.you, toughness); },
   }] };
 

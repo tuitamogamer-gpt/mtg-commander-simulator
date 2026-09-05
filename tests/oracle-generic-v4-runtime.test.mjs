@@ -409,7 +409,7 @@ test('generic investigate, proliferate, monarch, and dies source identity use re
   {
     const context = gameContext();
     await castFree(context, 'V4 Investigator');
-    assert.equal(context.game.bf().filter(card => card.ctrl === context.player && card.name === 'Clue').length, 1);
+    assert.equal(context.game.bf().filter(card => card.ctrl === context.player && card.name === 'Clue Token').length, 1);
   }
   {
     const state = { targets: [] };
@@ -505,7 +505,7 @@ test('generic dies effects preserve source identity, simultaneous discard, token
     const source = await castFree(context, 'V4 Death Smith');
     await context.game.destroy(source);
     await settle(context.game);
-    assert.equal(context.game.bf().filter(card => card.ctrl === context.player && card.name === 'Treasure').length, 2);
+    assert.equal(context.game.bf().filter(card => card.ctrl === context.player && card.name === 'Treasure Token').length, 2);
   }
   {
     const context = gameContext();
@@ -795,10 +795,10 @@ test('new v4 group, token, connive, explore, sacrifice, cant-block, surveil, and
     await castFree(context, 'V4 Upkeep Muster');
     await context.game.emit('upkeep', { player: context.opponent });
     await settle(context.game);
-    assert.equal(context.game.bf().filter(card => card.ctrl === context.player && card.name === 'Soldier').length, 0);
+    assert.equal(context.game.bf().filter(card => card.ctrl === context.player && card.name === 'Soldier Token').length, 0);
     await context.game.emit('upkeep', { player: context.player });
     await settle(context.game);
-    const soldiers = context.game.bf().filter(card => card.ctrl === context.player && card.name === 'Soldier');
+    const soldiers = context.game.bf().filter(card => card.ctrl === context.player && card.name === 'Soldier Token');
     assert.equal(soldiers.length, 2);
     assert.ok(soldiers.every(card => card.power === 1 && card.toughness === 1 && card.kw('vigilance')));
   }
@@ -1373,14 +1373,14 @@ test('Recon Craft Theta counters the created Alien, including every token-doubli
       const etbBodies = [];
       const originalEmit = context.game.emit.bind(context.game);
       context.game.emit = async (event, data) => {
-        if (event === 'etb' && data.card?.isToken && data.card.name === 'Alien') {
+        if (event === 'etb' && data.card?.isToken && data.card.name === 'Alien Token') {
           etbBodies.push([data.card.power, data.card.toughness]);
         }
         return originalEmit(event, data);
       };
       if (doubled) context.game.untilEffects.push({ kind: 'tokenDouble', who: context.player, expires: 'eot' });
       const theta = await castFree(context, raw.name);
-      const aliens = context.game.bf().filter(card => card.ctrl === context.player && card.isToken && card.name === 'Alien');
+      const aliens = context.game.bf().filter(card => card.ctrl === context.player && card.isToken && card.name === 'Alien Token');
       assert.equal(aliens.length, doubled ? 2 : 1, 'all created tokens survive resolution');
       assert.equal(etbBodies.length, aliens.length);
       for (const body of etbBodies) assert.deepEqual(body, [0, 0],

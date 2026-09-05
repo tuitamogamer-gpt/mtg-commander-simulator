@@ -260,10 +260,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     }, {
       on: 'dies', desc: 'Card on top', filter: (g, self, data) => data.card === self, opt: true,
-      targets: [graveTarget('Another card in your graveyard', (g, card, ctrl, source) => card.owner === ctrl && card !== source, false, true)],
+      targets: [graveTarget('Another card in your graveyard', (g, card, ctrl, source) => card.owner === ctrl && card !== source, false, false)],
       run: async ctx => {
-        const target = ctx.targets[0]; if (!target) return;
-        if (ctx.src.zone === 'graveyard') await ctx.g.move(ctx.src, 'exile');
+        const target = ctx.targets[0];
+        if (!target || ctx.src.zone !== 'graveyard' || ctx.src.zoneVersion !== ctx.sourceZoneVersion + 1) return;
+        await ctx.g.move(ctx.src, 'exile');
+        if (ctx.src.zone !== 'exile') return;
         await putOnTop(ctx.g, target);
       },
     }],
@@ -377,11 +379,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     run: async ctx => { await ctx.g.makeTokens('elementsShapeshifter11', ctx.you, { n: 3 }); } }] };
   SC['Greenwarden of Murasa'] = {
     triggers: [{ on: 'etb', desc: 'Return a card', filter: etbSelf, opt: true,
-      targets: [graveTarget('Card in your graveyard', (g, card, ctrl) => card.owner === ctrl, false, true)],
+      targets: [graveTarget('Card in your graveyard', (g, card, ctrl) => card.owner === ctrl, false, false)],
       run: async ctx => { await returnToHand(ctx.g, ctx.targets[0]); } }, {
       on: 'dies', desc: 'Exile to return a card', filter: (g, self, data) => data.card === self, opt: true,
-      targets: [graveTarget('Another card in your graveyard', (g, card, ctrl, source) => card.owner === ctrl && card !== source, false, true)],
-      run: async ctx => { if (!ctx.targets[0] || ctx.src.zone !== 'graveyard') return; await ctx.g.move(ctx.src, 'exile'); await returnToHand(ctx.g, ctx.targets[0]); },
+      targets: [graveTarget('Card in your graveyard', (g, card, ctrl) => card.owner === ctrl, false, false)],
+      run: async ctx => { if (!ctx.targets[0] || ctx.src.zone !== 'graveyard' || ctx.src.zoneVersion !== ctx.sourceZoneVersion + 1) return; await ctx.g.move(ctx.src, 'exile'); if (ctx.src.zone !== 'exile') return; await returnToHand(ctx.g, ctx.targets[0]); },
     }],
   };
   SC.Jubilation = { gyAbility: encore('{7}{G}{G}'), triggers: [{ on: 'etb', desc: '+2/+2 and trample', filter: etbSelf,
@@ -406,7 +408,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC.Impulsivity = {
     gyAbility: encore('{7}{R}{R}'),
     triggers: [{ on: 'etb', desc: 'Cast instant/sorcery from graveyard', filter: etbSelf, opt: true,
-      targets: [graveTarget('Instant or sorcery in a graveyard', (g, card) => card.is('Instant') || card.is('Sorcery'), true, true)],
+      targets: [graveTarget('Instant or sorcery in a graveyard', (g, card) => card.is('Instant') || card.is('Sorcery'), true, false)],
       run: async ctx => { const card = ctx.targets[0]; if (card) await ctx.g.castSpell(ctx.you, card, { from: 'graveyard', free: true, exileAfter: true }); } }],
   };
   SC['Omnath, Locus of Rage'] = {

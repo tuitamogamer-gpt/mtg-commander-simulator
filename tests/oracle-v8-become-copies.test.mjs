@@ -111,12 +111,14 @@ async function turn(ctx, player) {
 test('v8 become-copy grammar rejects unsupported exceptions and binds the source separately from the model', () => {
   for (const oracle_text of [
     'This creature becomes a copy of target creature, except it has a secret ability.',
-    'This creature becomes a copy of target creature, except its name is Someone Else.',
+    'This creature becomes a copy of target creature, except its name is Someone Else; draw a card.',
     'Target creature becomes a copy of each other creature.',
     'Target creature becomes a copy of it.',
     'This creature becomes a copy of target creature until the end of the game.',
     'Target creature becomes a copy of target creature, except it has this ability.',
   ]) assert.equal(semanticClass({name: 'Closed Become', type_line: 'Instant', layout: 'normal', oracle_text}, {compilerVersion: 8}).semanticClass, undefined, oracle_text);
+  const renamed=semanticClass({name:'Closed Become',type_line:'Instant',layout:'normal',oracle_text:'This creature becomes a copy of target creature, except its name is Someone Else.'},{compilerVersion:8});
+  assert.equal(renamed.implementation[0].effects[0].modifications.name,'Someone Else');
   const bound = fixtures.find(card => card.raw.name.endsWith(' Bound') && !card.raw.name.endsWith('Subject Bound')).implementation[0];
   const copy = bound.effects.at(-1).effects[0];
   assert.equal(copy.target, 'copy-source'); assert.equal(copy.otherTarget.kind, 'resolved-target'); assert.equal(copy.otherTarget.index, 0);

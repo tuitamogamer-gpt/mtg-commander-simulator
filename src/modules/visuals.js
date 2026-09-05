@@ -49,7 +49,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // to the visual registry makes battlefield badges and the card sheet agree.
   MTG.cardHasVisualAbility = function cardHasVisualAbility(card, keyword, visual) {
     if (!card || !card.cur) return false;
-    if (visual && visual.derived === 'ward') return !!card.cur.wardCost;
+    if (visual && visual.derived === 'ward') return !!card.cur.wardCost || !!card.cur.extraWards?.length;
     if (keyword === 'hexproof' && card.cur.hexproof) return true;
     if (keyword === 'shroud' && card.cur.shroud) return true;
     return card.kw(keyword);

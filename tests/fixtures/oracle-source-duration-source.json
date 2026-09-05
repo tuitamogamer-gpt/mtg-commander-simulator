@@ -1,0 +1,777 @@
+[
+  {
+    "id": "b404d6c7-0b65-4c6a-b141-9dffbeb120db",
+    "oracle_id": "4164034a-5e59-4e40-a150-2c1000b0bd0d",
+    "name": "Extraction Specialist",
+    "layout": "normal",
+    "mana_cost": "{2}{W}",
+    "type_line": "Creature \u2014 Human Rogue",
+    "oracle_text": "Lifelink\nWhen this creature enters, return target creature card with mana value 2 or less from your graveyard to the battlefield. That creature can't attack or block for as long as you control this creature.",
+    "power": "3",
+    "toughness": "2",
+    "color_identity": [
+      "W"
+    ],
+    "colors": [
+      "W"
+    ],
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "keywords": [
+      "Lifelink"
+    ]
+  },
+  {
+    "id": "9ee837b8-c280-4a5b-acdf-71247ab096f5",
+    "oracle_id": "44581d4f-746b-43b8-a34d-16dc383ab70e",
+    "name": "Dragonlord Silumgar",
+    "layout": "normal",
+    "mana_cost": "{4}{U}{B}",
+    "type_line": "Legendary Creature \u2014 Elder Dragon",
+    "oracle_text": "Flying, deathtouch\nWhen Dragonlord Silumgar enters, gain control of target creature or planeswalker for as long as you control Dragonlord Silumgar.",
+    "power": "3",
+    "toughness": "5",
+    "color_identity": [
+      "B",
+      "U"
+    ],
+    "colors": [
+      "B",
+      "U"
+    ],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "keywords": [
+      "Deathtouch",
+      "Flying"
+    ]
+  },
+  {
+    "id": "0f922e87-1744-4966-9e3a-54917f7f3d9e",
+    "oracle_id": "54250029-1bd7-4caf-a839-9497607ce725",
+    "name": "Quicksmith Spy",
+    "layout": "normal",
+    "mana_cost": "{3}{U}",
+    "type_line": "Creature \u2014 Human Artificer",
+    "oracle_text": "When this creature enters, target artifact you control gains \"{T}: Draw a card\" for as long as you control this creature.",
+    "power": "2",
+    "toughness": "3",
+    "color_identity": [
+      "U"
+    ],
+    "colors": [
+      "U"
+    ],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "keywords": []
+  },
+  {
+    "id": "3d27e65f-6d55-420e-a843-16097b50f7a2",
+    "oracle_id": "5902e074-7154-4fc7-8776-b87e8b1925e7",
+    "name": "Aegis Angel",
+    "layout": "normal",
+    "mana_cost": "{4}{W}{W}",
+    "type_line": "Creature \u2014 Angel",
+    "oracle_text": "Flying (This creature can't be blocked except by creatures with flying or reach.)\nWhen this creature enters, another target permanent gains indestructible for as long as you control this creature. (Effects that say \"destroy\" don't destroy it. A creature with indestructible can't be destroyed by damage.)",
+    "power": "5",
+    "toughness": "5",
+    "color_identity": [
+      "W"
+    ],
+    "colors": [
+      "W"
+    ],
+    "games": [
+      "paper"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "keywords": [
+      "Flying"
+    ]
+  },
+  {
+    "id": "79e16191-8dca-491b-b892-17696023d581",
+    "oracle_id": "78f22413-4e61-4191-9d30-7b5d6538446e",
+    "name": "Helm of Possession",
+    "layout": "normal",
+    "mana_cost": "{4}",
+    "type_line": "Artifact",
+    "oracle_text": "You may choose not to untap this artifact during your untap step.\n{2}, {T}, Sacrifice a creature: Gain control of target creature for as long as you control this artifact and this artifact remains tapped.",
+    "color_identity": [],
+    "colors": [],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "not_legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "legal",
+      "predh": "legal",
+      "tlr": "not_legal"
+    },
+    "keywords": []
+  },
+  {
+    "id": "ee84e61e-d99a-489b-a3b1-cb45fc81bce6",
+    "oracle_id": "797adc7e-03a9-4221-bdaf-4c46dcb95701",
+    "name": "Hivis of the Scale",
+    "layout": "normal",
+    "mana_cost": "{3}{R}{R}",
+    "type_line": "Legendary Creature \u2014 Lizard Shaman",
+    "oracle_text": "You may choose not to untap Hivis during your untap step.\n{T}: Gain control of target Dragon for as long as you control Hivis and Hivis remains tapped.",
+    "power": "3",
+    "toughness": "4",
+    "color_identity": [
+      "R"
+    ],
+    "colors": [
+      "R"
+    ],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "not_legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "legal",
+      "predh": "legal",
+      "tlr": "not_legal"
+    },
+    "keywords": []
+  },
+  {
+    "id": "66139c73-8e14-433d-bcb6-ae3e518bcdfb",
+    "oracle_id": "7e0d2965-bbcd-4214-b1b6-c0d2601ce078",
+    "name": "Roil Elemental",
+    "layout": "normal",
+    "mana_cost": "{3}{U}{U}{U}",
+    "type_line": "Creature \u2014 Elemental",
+    "oracle_text": "Flying\nLandfall \u2014 Whenever a land you control enters, you may gain control of target creature for as long as you control this creature.",
+    "power": "3",
+    "toughness": "2",
+    "color_identity": [
+      "U"
+    ],
+    "colors": [
+      "U"
+    ],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "legal",
+      "tlr": "not_legal"
+    },
+    "keywords": [
+      "Landfall",
+      "Flying"
+    ]
+  },
+  {
+    "id": "a6cb10f5-ee9f-49e6-826a-a2a2395daa92",
+    "oracle_id": "8dd473c7-afd9-40f1-bb8e-0a00f4687318",
+    "name": "Mind Flayer",
+    "layout": "normal",
+    "mana_cost": "{3}{U}{U}",
+    "type_line": "Creature \u2014 Horror",
+    "oracle_text": "Dominate Monster \u2014 When this creature enters, gain control of target creature for as long as you control this creature.",
+    "power": "3",
+    "toughness": "3",
+    "color_identity": [
+      "U"
+    ],
+    "colors": [
+      "U"
+    ],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "keywords": []
+  },
+  {
+    "id": "f2b22b32-be24-48e3-aa81-9256190df02c",
+    "oracle_id": "904b2603-00c3-44d2-a43c-c25439dd8038",
+    "name": "Kellogg, Dangerous Mind",
+    "layout": "normal",
+    "mana_cost": "{1}{B}{R}",
+    "type_line": "Legendary Creature \u2014 Human Mercenary",
+    "oracle_text": "First strike, haste\nWhenever Kellogg attacks, create a Treasure token.\nSacrifice five Treasures: Gain control of target creature for as long as you control Kellogg. Activate only as a sorcery.",
+    "power": "3",
+    "toughness": "2",
+    "color_identity": [
+      "B",
+      "R"
+    ],
+    "colors": [
+      "B",
+      "R"
+    ],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "not_legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "keywords": [
+      "First strike",
+      "Treasure",
+      "Haste"
+    ]
+  },
+  {
+    "id": "703f57d5-d8bb-4fb6-9dc9-71a5b4308f04",
+    "oracle_id": "a32b8502-7427-48a5-a880-14516ff2fe77",
+    "name": "Master Thief",
+    "layout": "normal",
+    "mana_cost": "{2}{U}{U}",
+    "type_line": "Creature \u2014 Human Rogue",
+    "oracle_text": "When this creature enters, gain control of target artifact for as long as you control this creature.",
+    "power": "2",
+    "toughness": "2",
+    "color_identity": [
+      "U"
+    ],
+    "colors": [
+      "U"
+    ],
+    "games": [
+      "paper"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "keywords": []
+  },
+  {
+    "id": "195821f4-ba3d-4412-930f-f3656b319dfd",
+    "oracle_id": "aa9a45a5-0250-465b-962e-f2d45dea26f9",
+    "name": "Scroll of Isildur",
+    "layout": "saga",
+    "mana_cost": "{2}{U}",
+    "type_line": "Enchantment \u2014 Saga",
+    "oracle_text": "(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)\nI \u2014 Gain control of up to one target artifact for as long as you control this Saga. The Ring tempts you.\nII \u2014 Tap up to two target creatures. Put a stun counter on each of them.\nIII \u2014 Draw a card for each tapped creature target opponent controls.",
+    "color_identity": [
+      "U"
+    ],
+    "colors": [
+      "U"
+    ],
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "keywords": []
+  },
+  {
+    "id": "f206b0a1-50d8-4d53-850d-fb15fd328267",
+    "oracle_id": "ab7c0256-eea9-4e0d-932d-c25460eed836",
+    "name": "Possession Engine",
+    "layout": "normal",
+    "mana_cost": "{3}{U}{U}",
+    "type_line": "Artifact \u2014 Vehicle",
+    "oracle_text": "When this Vehicle enters, gain control of target creature an opponent controls for as long as you control this Vehicle. That creature can't attack or block for as long as you control this Vehicle.\nCrew 3",
+    "power": "5",
+    "toughness": "5",
+    "color_identity": [
+      "U"
+    ],
+    "colors": [
+      "U"
+    ],
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "keywords": [
+      "Crew"
+    ]
+  },
+  {
+    "id": "9ae65f96-7bfd-4390-88bf-764c26bf4668",
+    "oracle_id": "bce30bc5-b059-42bb-a9a4-5886f5607160",
+    "name": "Tale of Tin\u00faviel",
+    "layout": "saga",
+    "mana_cost": "{3}{W}{W}",
+    "type_line": "Enchantment \u2014 Saga",
+    "oracle_text": "(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)\nI \u2014 Target creature you control gains indestructible for as long as you control this Saga.\nII \u2014 Return target creature card from your graveyard to the battlefield.\nIII \u2014 Up to two target creatures you control each gain lifelink until end of turn.",
+    "color_identity": [
+      "W"
+    ],
+    "colors": [
+      "W"
+    ],
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "keywords": []
+  },
+  {
+    "id": "ce216785-aa81-44b4-9562-9b7eca743a0c",
+    "oracle_id": "bd3eeaba-964b-49ea-bb11-5875a78b8a4c",
+    "name": "Rubinia Soulsinger",
+    "layout": "normal",
+    "mana_cost": "{2}{G}{W}{U}",
+    "type_line": "Legendary Creature \u2014 Faerie",
+    "oracle_text": "You may choose not to untap Rubinia Soulsinger during your untap step.\n{T}: Gain control of target creature for as long as you control Rubinia Soulsinger and Rubinia Soulsinger remains tapped.",
+    "power": "2",
+    "toughness": "3",
+    "color_identity": [
+      "G",
+      "U",
+      "W"
+    ],
+    "colors": [
+      "G",
+      "U",
+      "W"
+    ],
+    "games": [
+      "paper"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "not_legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "legal",
+      "predh": "legal",
+      "tlr": "not_legal"
+    },
+    "keywords": []
+  },
+  {
+    "id": "2d5f9755-b137-439c-9b54-1ad71ec1f9ec",
+    "oracle_id": "d69594fc-9250-41e7-a170-d4705615312c",
+    "name": "Quicksmith Rebel",
+    "layout": "normal",
+    "mana_cost": "{3}{R}",
+    "type_line": "Creature \u2014 Human Artificer",
+    "oracle_text": "When this creature enters, target artifact you control gains \"{T}: This artifact deals 2 damage to any target\" for as long as you control this creature.",
+    "power": "3",
+    "toughness": "2",
+    "color_identity": [
+      "R"
+    ],
+    "colors": [
+      "R"
+    ],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "keywords": []
+  },
+  {
+    "id": "cbbfd21e-96f1-4e5b-8546-73bb5a887b98",
+    "oracle_id": "d89bd776-8489-4c34-94ea-db1b088d9379",
+    "name": "Kyodai, Soul of Kamigawa",
+    "layout": "normal",
+    "mana_cost": "{3}{W}",
+    "type_line": "Legendary Creature \u2014 Dragon Spirit",
+    "oracle_text": "Flash\nFlying\nWhen Kyodai enters, another target permanent gains indestructible for as long as you control Kyodai.\n{W}{U}{B}{R}{G}: Kyodai gets +5/+5 until end of turn.",
+    "power": "3",
+    "toughness": "3",
+    "color_identity": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "colors": [
+      "W"
+    ],
+    "games": [
+      "paper",
+      "mtgo",
+      "arena"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "keywords": [
+      "Flying",
+      "Flash"
+    ]
+  }
+]

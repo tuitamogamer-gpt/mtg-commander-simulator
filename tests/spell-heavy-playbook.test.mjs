@@ -154,38 +154,54 @@ test('a defenceless spell deck values a body when the table is swinging', async 
   assert.ok((bears.breakdown || bears.scoreBreakdown).safety >= 4, `a blocker is worth extra with three Titans across the table (safety ${(bears.breakdown || bears.scoreBreakdown).safety})`);
 });
 
-test('spell decks win their share of a real pod', { timeout: 600_000 }, async () => {
-  // The original measurement: 24 games each, Quick Draw 17% and Prismari 4%
-  // where chance in a four-player pod is 25%. Twelve games per deck here is
-  // enough to catch a relapse into the "cast everything now" pattern, which
-  // showed up as zero instants cast on opponents' turns.
-  let othersTurnCasts = 0, ownMainCasts = 0, wins = 0, games = 0;
-  for (const deck of ['Quick Draw', 'Prismari Artistry']) {
+test('spell decks win their share of a real pod', { timeout: 600_000 }, async (t) => {
+  // Measure every spell-deck seat in these pods. The opponent pool can also
+  // contain the other spell deck; its real casts and wins belong to the same
+  // archetype measurement regardless of which setup field selected its seat.
+  const spellDecks = new Set(['Quick Draw', 'Prismari Artistry']);
+  let othersTurnCasts = 0, ownMainCasts = 0, wins = 0, games = 0, observedSeats = 0;
+  const results = [];
+  for (const deck of spellDecks) {
     const pool = Object.keys(MTG.DECKS).filter(name => !MTG.DECKS[name].custom && name !== deck);
     for (let index = 0; index < 6; index++) {
       const game = MTG.newGame({
         humanDeck: deck, aiDecks: [0, 1, 2].map(k => pool[(index * 3 + k) % pool.length]),
         aiStyles: ['balanced', 'balanced', 'balanced'], difficulty: 'normal', seed: 7000 + index, maxTurns: 45, paced: false,
       });
-      const seat = game.players.find(player => player.deckName === deck);
-      const original = seat.controller.decide.bind(seat.controller);
-      seat.controller = { decide: async (current, q) => {
-        const answer = await original(current, q);
-        if ((q.type === 'main' || q.type === 'priority') && answer && answer.kind === 'cast' && (answer.card.is('Instant') || answer.card.is('Sorcery'))) {
-          if (current.turnPlayer === seat) ownMainCasts++; else othersTurnCasts++;
-        }
-        return answer;
-      } };
+      const seats = game.players.filter(player => spellDecks.has(player.deckName));
+      observedSeats += seats.length;
+      for (const seat of seats) {
+        const original = seat.controller.decide.bind(seat.controller);
+        seat.controller.decide = async (current, q) => {
+          const answer = await original(current, q);
+          if ((q.type === 'main' || q.type === 'priority') && answer && answer.kind === 'cast' && (answer.card.is('Instant') || answer.card.is('Sorcery'))) {
+            if (current.turnPlayer === seat) ownMainCasts++; else othersTurnCasts++;
+          }
+          return answer;
+        };
+      }
+      let decisions = 0;
+      const failures = [], onEvent = game.onEvent;
+      game.onEvent = event => {
+        onEvent(event);
+        if (event.type === 'aiDecision') { decisions++; if (event.decision.fallback) failures.push('AI decision fallback'); }
+        if (event.type === 'log' && /AI V2 fallback|gave no usable answer/.test(event.msg)) failures.push(event.msg);
+      };
       await game.start();
+      assert.equal(game.gameOver, true, `${deck}/${7000 + index}: the real pod completes`);
+      assert.ok(game.winner && game.players.includes(game.winner));
+      assert.ok(decisions > 0, 'real controller decisions were observed throughout the game');
+      assert.deepEqual(failures, [], 'the entire game has no controller error or fallback');
       games++;
-      if (game.winner === seat) wins++;
+      if (seats.includes(game.winner)) wins++;
+      results.push(`${deck}/${7000 + index}: ${game.winner.deckName}`);
     }
   }
-  // Whether a given pod ever hands these decks an instant-speed window is a
-  // property of the games, not of the policy — the isolated tests above are
-  // what pin the timing rules down. What a pod run can still catch is the
-  // original failure: a spell deck that never gets to cast anything at all.
-  assert.ok(ownMainCasts + othersTurnCasts >= games * 2,
-    `spell decks actually cast their spells (${ownMainCasts} own / ${othersTurnCasts} others' turns over ${games} games)`);
-  assert.ok(wins >= 1, `two spell decks over ${games} games must win at least once (${wins})`);
+  // Exact timing choices are tested above. Whole games additionally require
+  // spell decks to play their cards and win at least one of the fixed pods.
+  assert.ok(ownMainCasts + othersTurnCasts >= observedSeats * 2,
+    `spell decks actually cast their spells (${ownMainCasts} own / ${othersTurnCasts} others' turns over ${observedSeats} seats in ${games} games)`);
+  assert.ok(wins >= 1, `spell decks across ${observedSeats} seats in ${games} games must win at least once (${wins})`);
+  t.diagnostic(`SPELL_PODS games=${games} seats=${observedSeats} wins=${wins} ownCasts=${ownMainCasts} otherTurnCasts=${othersTurnCasts}`);
+  t.diagnostic(results.join('; '));
 });

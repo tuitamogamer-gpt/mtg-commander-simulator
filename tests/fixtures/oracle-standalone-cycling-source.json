@@ -1,0 +1,252 @@
+[
+  {
+    "name": "Deem Worthy",
+    "id": "99a2ed5f-62b8-4308-a656-f273f62f6ab8",
+    "oracle_id": "008c92bc-3022-4d34-aa04-584576ff8f8e",
+    "oracle_text": "Deem Worthy deals 7 damage to target creature.\nCycling {3}{R} ({3}{R}, Discard this card: Draw a card.)\nWhen you cycle this card, you may have it deal 2 damage to target creature.",
+    "type_line": "Instant",
+    "mana_cost": "{4}{R}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "name": "Death Pulse",
+    "id": "524fd470-e535-47ea-98a0-6187e429dfe1",
+    "oracle_id": "2227bab2-36a0-47f1-a797-7b82323eca9d",
+    "oracle_text": "Target creature gets -4/-4 until end of turn.\nCycling {1}{B}{B} ({1}{B}{B}, Discard this card: Draw a card.)\nWhen you cycle this card, you may have target creature get -1/-1 until end of turn.",
+    "type_line": "Instant",
+    "mana_cost": "{2}{B}{B}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "name": "Resounding Scream",
+    "id": "64d27eb7-2d3b-4daf-9cf6-c254fdacceb0",
+    "oracle_id": "287d5a5d-e477-4d5b-815a-d83c73f4792d",
+    "oracle_text": "Target player discards a card at random.\nCycling {5}{U}{B}{R} ({5}{U}{B}{R}, Discard this card: Draw a card.)\nWhen you cycle this card, target player discards two cards at random.",
+    "type_line": "Sorcery",
+    "mana_cost": "{2}{B}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "B",
+      "R",
+      "U"
+    ]
+  },
+  {
+    "name": "Resounding Roar",
+    "id": "217bf237-a758-4500-b221-5e88fed9d0fc",
+    "oracle_id": "40ad5a52-37ad-4524-be06-9e263a907d31",
+    "oracle_text": "Target creature gets +3/+3 until end of turn.\nCycling {5}{R}{G}{W} ({5}{R}{G}{W}, Discard this card: Draw a card.)\nWhen you cycle this card, target creature gets +6/+6 until end of turn.",
+    "type_line": "Instant",
+    "mana_cost": "{1}{G}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "G",
+      "R",
+      "W"
+    ]
+  },
+  {
+    "name": "Slice and Dice",
+    "id": "dad077c9-abc7-4296-a5d1-9441aa6c38c0",
+    "oracle_id": "463fc961-d34e-4f40-b383-5b78a0fcb5c8",
+    "oracle_text": "Slice and Dice deals 4 damage to each creature.\nCycling {2}{R} ({2}{R}, Discard this card: Draw a card.)\nWhen you cycle this card, you may have it deal 1 damage to each creature.",
+    "type_line": "Sorcery",
+    "mana_cost": "{4}{R}{R}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "name": "Sunfire Balm",
+    "id": "0d563ebb-ecd1-406c-9d69-c101acdeced7",
+    "oracle_id": "61d2f269-8674-4429-a07c-59972afd9ede",
+    "oracle_text": "Prevent the next 4 damage that would be dealt to any target this turn.\nCycling {1}{W} ({1}{W}, Discard this card: Draw a card.)\nWhen you cycle this card, you may prevent the next 1 damage that would be dealt to any target this turn.",
+    "type_line": "Instant",
+    "mana_cost": "{2}{W}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "name": "Resounding Silence",
+    "id": "5b3b0908-5408-41fd-8e69-2bc785e19304",
+    "oracle_id": "6eefa487-1542-4d24-80bd-4893d9d908c8",
+    "oracle_text": "Exile target attacking creature.\nCycling {5}{G}{W}{U} ({5}{G}{W}{U}, Discard this card: Draw a card.)\nWhen you cycle this card, exile up to two target attacking creatures.",
+    "type_line": "Instant",
+    "mana_cost": "{3}{W}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "G",
+      "U",
+      "W"
+    ]
+  },
+  {
+    "name": "Resounding Wave",
+    "id": "f3eca679-076d-42f0-9ec0-b8116a94e373",
+    "oracle_id": "7e607fc7-ec22-4249-8936-70a026f9996d",
+    "oracle_text": "Return target permanent to its owner's hand.\nCycling {5}{W}{U}{B} ({5}{W}{U}{B}, Discard this card: Draw a card.)\nWhen you cycle this card, return two target permanents to their owners' hands.",
+    "type_line": "Instant",
+    "mana_cost": "{2}{U}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "B",
+      "U",
+      "W"
+    ]
+  },
+  {
+    "name": "Primal Boost",
+    "id": "59f93eb0-cb0c-4ee0-8006-3d3c7515d254",
+    "oracle_id": "902e7d4b-7ab4-40b5-b3a5-c83ef604989a",
+    "oracle_text": "Target creature gets +4/+4 until end of turn.\nCycling {2}{G} ({2}{G}, Discard this card: Draw a card.)\nWhen you cycle this card, you may have target creature get +1/+1 until end of turn.",
+    "type_line": "Instant",
+    "mana_cost": "{2}{G}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "name": "Decree of Savagery",
+    "id": "ec6d7db1-eeb2-4e9e-9a4f-488595bbcf1c",
+    "oracle_id": "96a6a8d4-6077-470f-984e-b576a24557a2",
+    "oracle_text": "Put four +1/+1 counters on each creature you control.\nCycling {4}{G}{G} ({4}{G}{G}, Discard this card: Draw a card.)\nWhen you cycle this card, you may put four +1/+1 counters on target creature.",
+    "type_line": "Instant",
+    "mana_cost": "{7}{G}{G}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "name": "Choking Tethers",
+    "id": "eb0d0c81-8698-41db-a687-47af028e910e",
+    "oracle_id": "a60348fa-b182-4667-9e38-15bdf3511f82",
+    "oracle_text": "Tap up to four target creatures.\nCycling {1}{U} ({1}{U}, Discard this card: Draw a card.)\nWhen you cycle this card, you may tap target creature.",
+    "type_line": "Instant",
+    "mana_cost": "{3}{U}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "name": "Renewed Faith",
+    "id": "a7d66dd3-330f-4b12-81f6-52d7a31013a9",
+    "oracle_id": "aa4ecefa-808e-4706-af16-4ea5af9743fc",
+    "oracle_text": "You gain 6 life.\nCycling {1}{W} ({1}{W}, Discard this card: Draw a card.)\nWhen you cycle this card, you may gain 2 life.",
+    "type_line": "Instant",
+    "mana_cost": "{2}{W}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "name": "Resounding Thunder",
+    "id": "680b7955-d939-4195-aba8-b46a8c925616",
+    "oracle_id": "b0e1d26e-2fa1-4826-bfe9-01b0bd2c138b",
+    "oracle_text": "Resounding Thunder deals 3 damage to any target.\nCycling {5}{B}{R}{G} ({5}{B}{R}{G}, Discard this card: Draw a card.)\nWhen you cycle this card, it deals 6 damage to any target.",
+    "type_line": "Instant",
+    "mana_cost": "{2}{R}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "B",
+      "G",
+      "R"
+    ]
+  },
+  {
+    "name": "Dirge of Dread",
+    "id": "d69a1a58-6aab-4feb-850c-31fd2220bbc0",
+    "oracle_id": "be7b16ef-32aa-40d5-b287-c5e79d52d6b9",
+    "oracle_text": "All creatures gain fear until end of turn. (They can't be blocked except by artifact creatures and/or black creatures.)\nCycling {1}{B} ({1}{B}, Discard this card: Draw a card.)\nWhen you cycle this card, you may have target creature gain fear until end of turn.",
+    "type_line": "Sorcery",
+    "mana_cost": "{2}{B}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "name": "Solar Blast",
+    "id": "87202a72-72aa-46d3-ba16-10a180276905",
+    "oracle_id": "ece3e379-c586-48bd-8742-472b5deccc35",
+    "oracle_text": "Solar Blast deals 3 damage to any target.\nCycling {1}{R}{R} ({1}{R}{R}, Discard this card: Draw a card.)\nWhen you cycle this card, you may have it deal 1 damage to any target.",
+    "type_line": "Instant",
+    "mana_cost": "{3}{R}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "name": "Complicate",
+    "id": "33f69670-e494-42b8-9148-fe105ec61aa0",
+    "oracle_id": "fc09cbc0-2d28-44c6-b9a9-b95e9e58bb1b",
+    "oracle_text": "Counter target spell unless its controller pays {3}.\nCycling {2}{U} ({2}{U}, Discard this card: Draw a card.)\nWhen you cycle this card, you may counter target spell unless its controller pays {1}.",
+    "type_line": "Instant",
+    "mana_cost": "{2}{U}",
+    "layout": "normal",
+    "keywords": [
+      "Cycling"
+    ],
+    "color_identity": [
+      "U"
+    ]
+  }
+]

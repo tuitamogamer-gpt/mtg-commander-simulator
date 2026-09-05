@@ -418,7 +418,7 @@ for (const role of ROLES) {
       const context = makeGame(role);
       const beforeTokens = context.game.battlefield.filter(card => card.isToken && card.ctrl === context.player).length;
       await castFree(context, 'XR Treasure');
-      const treasures = context.game.battlefield.filter(card => card.isToken && card.ctrl === context.player && card.name === 'Treasure');
+      const treasures = context.game.battlefield.filter(card => card.isToken && card.ctrl === context.player && card.name === 'Treasure Token');
       assert.equal(treasures.length, beforeTokens + 1);
       assert.equal(treasures[0].is('Artifact'), true);
     }
@@ -499,9 +499,9 @@ for (const role of ROLES) {
       const context = makeGame(role);
       await castFree(context, 'XR Multi Insight');
       await castFree(context, 'XR Channel');
-      const before = context.game.battlefield.filter(card => card.isToken && card.ctrl === context.player && card.name === 'Treasure').length;
+      const before = context.game.battlefield.filter(card => card.isToken && card.ctrl === context.player && card.name === 'Treasure Token').length;
       await castFree(context, 'XR Storm');
-      const after = context.game.battlefield.filter(card => card.isToken && card.ctrl === context.player && card.name === 'Treasure').length;
+      const after = context.game.battlefield.filter(card => card.isToken && card.ctrl === context.player && card.name === 'Treasure Token').length;
       assert.equal(after - before, 3, 'two earlier casts create two Storm copies plus the original');
     }
   });

@@ -142,7 +142,7 @@ test('vivid counts five colors and Elemental Spectacle makes five 5/5 tokens', a
   }
   const spectacle = new MTG.CardInst(MTG.DEFS['Elemental Spectacle'], elements);
   await spectacle.def.resolve({ g: game, src: spectacle, you: elements, targets: [], so: { castOpts: {} } });
-  assert.equal(game.creatures(elements).filter(card => card.isToken && card.name === 'Elemental' && card.power === 5).length, 5);
+  assert.equal(game.creatures(elements).filter(card => card.isToken && card.name === 'Elemental Token' && card.power === 5).length, 5);
 });
 
 test('Haunting Voyage uses the real face-down foretell lifecycle and returns every chosen-type creature', async () => {

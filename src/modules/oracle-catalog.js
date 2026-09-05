@@ -74,6 +74,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // values. Quantities such as damage, mana and ordinary +X/+X retain the
     // existing zero floor. The caller supplies that rules context explicitly.
     const statNumber=value=>preserveNegative?(Number(value)||0):Math.max(0,Number(value)||0);
+    if(value?.kind==='counter-payment-v8')return MTG.OracleV8VariableCounterCosts.amount(ctx,value);
     if(value?.kind==='combat-attacked-opponents-v8')return MTG.OracleV8CombatRestrictions.attackedOpponents(ctx,value);
     if(value?.kind==='combat-blocker-count-v8')return MTG.OracleV8CombatRestrictions.blockerCount(ctx,value);
     if(value?.kind==='v8-target-permanent-count'){
@@ -162,23 +163,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function genericTargetHint(target, effects, index) {
     const flatten=rows=>rows.flatMap(row=>[row,...(row.hits||[]).map(hit=>({...hit,action:'damage'})),...flatten(row.effects||[]),...flatten(row.elseEffects||[])]);
+    const onlyYou=spec=>spec.controller==='you'||!!spec.alternatives?.length&&spec.alternatives.every(onlyYou);
+    if(flatten(effects||[]).some(effect=>effect.action==='delayed-objects-v8'&&effect.operation==='return'&&effect.capture.kind==='subjects'&&effect.capture.target===index))return {goal:onlyYou(target)?'protect':'bounce'};
     const matching = flatten(effects || []).filter(candidate => candidate.target === index || candidate.otherTarget === index || candidate.who === index || candidate.sourceTarget === index);
     if(matching.some(effect=>effect.action==='damage')&&matching.some(effect=>effect.action==='tap'))return {goal:'tap'};
     // A color clause is neutral by itself. In a Wisp, the actual pump/tap/
     // untap instruction determines whether the shared target is helped.
     const effect = matching.find(candidate => candidate.action === 'counter' && candidate.counter === 'stun') || matching.find(candidate => !['change-characteristics-v8', 'characteristics-v8'].includes(candidate.action)) || matching[0];
     if (!effect) return null;
+    if(effect.action==='next-draw-replacement-v8'&&effect.mode==='redirect')return {goal:'damage',oracleEffect:'draw-replacement'};
+    if(effect.action==='role-token-v8')return {goal:effect.role==='Cursed'?'debuff':'buff'};
+    if(effect.action==='same-name-group-v8')return {...genericTargetHint(target,[{...effect.effect,target:effect.target}],index),oracleNameGroup:effect};
     if(effect.action==='battlefield-group'&&typeof effect.target==='number'){
       const benefit=effect.operation==='untap'||effect.operation==='regenerate'||effect.operation==='pump'&&Number(effect.power||0)>=0&&Number(effect.toughness||0)>=0||effect.operation==='counter'&&!['-1/-1','stun'].includes(effect.counter);
       return {goal:benefit?'benefit':'damage',amount:effect.operation==='damage'?effect.n:0,oracleEffect:'player-scoped-group'};
     }
+    if(effect.action==='prevent-all')return {goal:effect.direction==='by'?'debuff':'protect'};
     if(effect.action==='zone-select'&&typeof effect.who==='number')return {goal:effect.destination==='exile'?'damage':'benefit',amount:0,oracleEffect:'player-scoped-zone'};
+    if(effect.action==='gain-control')return{goal:'steal'};
+    if(effect.action==='copy-counters-v8')return {goal:'buff'};
+    if(effect.action==='move-counters-v8')return {goal:effect.target===index?'counterTransferRecipient':'counterTransferDonor',counterKind:effect.counter,counterN:effect.n,counterSourceTarget:effect.sourceTarget,counterRecipientSelf:effect.target==='self'};
     if(effect.sourceTarget===index&&effect.target!==index)return {goal:'buff'};
     if(['copy-token','copy-token-v8'].includes(effect.action))return {goal:'copy'};
     if(effect.action==='become-copy-v8')return {goal:effect.otherTarget===index?'copy':'buff'};
     if (['grant-operation','choose-keyword','backup'].includes(effect.action)) return {goal:'buff'};
     if (['animate','base-pt'].includes(effect.action)) return {goal:'oracleBasePT',oracleBasePTEffect:effect};
     if (effect.action === 'goad'||effect.action==='suspect') return {goal:effect.action};
+    if(effect.action==='same-name-search-v8')return {goal:effect.prior==='counter'?'counter':effect.owner==='target-player'?'damage':effect.destination==='exile'?'removal':'recur',...(effect.owner==='target-player'?{amount:0}:effect.destination==='exile'?{removalKind:'exile'}:{})};
     if (effect.action === 'counter-spell') return {goal:'counter'};
     if (effect.action === 'fight') return {goal: effect.target===index?'buff':'removal'};
     if (effect.action === 'bite') return {goal: effect.target===index&&effect.otherTarget!==index?'buff':'damage'};
@@ -203,6 +214,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (effect.action === 'reanimate') return { goal: 'recur' };
     if (['regenerate', 'prevent-next', 'unblockable-until-eot', 'attach-source'].includes(effect.action)) return { goal: 'buff' };
     if(effect.action==='player-counter'&&effect.counter==='poison')return {goal:'damage',amount:effect.n};
+    if(effect.action==='set-basic-land-types-v8')return {goal:effect.retain?'buff':'debuff'};
     if (effect.action === 'counter') {
       const harmful = effect.counter === '-1/-1' || effect.counter === 'stun';
       return { goal: harmful ? 'removal' : 'buff' };
@@ -216,7 +228,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const beneficial = power >= 0 && toughness >= 0;
       return {
         goal: mixed ? 'mixedPump' : beneficial ? 'buff' : 'debuff',
-        power, toughness, keywords: (effect.keywords || []).slice(), untilEOT: true,
+        power, toughness, keywords: (effect.keywords || []).slice(), untilEOT: !effect.duration?.startsWith('source-controlled'),
       };
     }
     return null;
@@ -470,6 +482,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const matches=entry=>eventFilter.what==='card'||eventFilter.what==='instant or sorcery'&&entry.isInstantSorcery||eventFilter.what==='noncreature'&&!entry.isCreature||entry.types?.includes(eventFilter.what[0].toUpperCase()+eventFilter.what.slice(1));
       return matches(data)&&(self.ctrl.turnState.spellsCastList||[]).filter(matches).length===eventFilter.n;
     };
+    if(eventFilter?.kind==='exerted-creature-v8')return (game,self,data)=>MTG.OracleV8Exert.eventMatches(game,self,data,eventFilter);
+    if(['exploited-self-v8','exploited-controller-v8'].includes(eventFilter?.kind))return (game,self,data)=>MTG.OracleV8Exploit.matches(game,self,data,eventFilter);
     if(eventFilter==='your-player')return (game,self,data)=>data.player===self.ctrl;
     if(eventFilter?.kind==='filtered-sacrifice')return (game,self,data)=>{
       const controller=(data.card===self?data.snap?.ctrl:(game._simultaneousLeaveSources||[]).find(row=>row.card===self)?.ctrl)||self.ctrl;
@@ -758,6 +772,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function genericPreventionMatches(game,source,player,effect,data,locked) {
     if(effect.combat==='combat'&&!data.combat||effect.combat==='noncombat'&&data.combat)return false;
+    if(effect.yourTurnOnly&&game.turnPlayer!==player)return false;
+    if(effect.recipientPlayers&&!(data.target instanceof MTG.Player))return false;
+    if(effect.sourceUnblocked&&(!data.src?.attacking||data.src.wasBlocked||data.src.blockedBy?.length))return false;
+    const sourceView=data.src instanceof MTG.CardInst?Object.defineProperty(Object.create(data.src),'zone',{value:'battlefield'}):null;
+    if(effect.sourceFilters&&!effect.sourceFilters.some(filter=>sourceView&&genericTargetSpec(filter,[],0).filter(game,sourceView,player,source)))return false;
+    if(effect.recipientFilters&&!effect.recipientFilters.some(filter=>data.target instanceof MTG.CardInst&&genericTargetSpec(filter,[],0).filter(game,data.target,player,source)))return false;
     const matches=subject=>{
       if(!subject)return false;
       if(locked?.some(row=>subject.iid===row.iid&&subject.zoneVersion===row.version))return true;
@@ -783,16 +803,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   async function runGenericEffect(ctx, effect) {
+    if(['source-controlled','source-controlled-tapped'].includes(effect.duration)){
+      const duration=MTG.OracleV8Untap.capture(ctx,effect.duration==='source-controlled-tapped'?'controlled-tapped':'controlled');
+      if(!MTG.OracleV8Untap.sourceValid(ctx.g,duration))return;
+      const prior=new Set(ctx.g.untilEffects);
+      if(effect.action==='pump'){for(const card of genericEffectSubjects(ctx,effect.target))if(card.zone==='battlefield')ctx.g.untilEffects.push({kind:'oracleSourcePump',expires:'object',iid:card.iid,zoneVersion:card.zoneVersion,timestamp:ctx.g.nextOracleTimestamp(),power:genericAmount(effect.power,ctx,true),toughness:genericAmount(effect.toughness,ctx,true),keywords:effect.keywords||[]});}
+      else await runGenericEffect(ctx,{...effect,duration:effect.action==='combat-restriction'?'eot':null});
+      for(const record of ctx.g.untilEffects)if(!prior.has(record)&&['eot','object'].includes(record.expires))Object.assign(record,{sourceDuration:duration,expires:'sourceDuration'});
+      ctx.g.recalc();return;
+    }
+    if(effect.action==='same-name-search-v8')return MTG.OracleV8NameSearch.run(ctx,effect,{subjects:genericEffectSubjects});
+    if(effect.action==='same-name-group-v8')return MTG.OracleV8NameGroups.run(ctx,effect,{subjects:genericEffectSubjects,effect:runGenericEffect});
     if(effect.action==='no-hand-limit-v8'){ctx.you.noMaxHandForever=true;return;}
     if(MTG.OracleV8Energy?.actions.has(effect.action))return MTG.OracleV8Energy.run(ctx,effect,{amount:genericAmount,run:runGenericEffects});
     if(MTG.OracleV8LandTypes?.actions.has(effect.action))return MTG.OracleV8LandTypes.run(ctx,effect,{subjects:genericEffectSubjects});
+    if(MTG.OracleV8CounterTransfers?.actions.has(effect.action))return MTG.OracleV8CounterTransfers.run(ctx,effect,{subjects:genericEffectSubjects});
     if(MTG.OracleV8CounterEffects?.actions.has(effect.action))return MTG.OracleV8CounterEffects.run(ctx,effect,{subjects:genericEffectSubjects,filter:(filter,card)=>genericResolutionTargetSpec(ctx,filter,[],0,ctx.data).filter(ctx.g,card,ctx.you,ctx.src)});
     if(MTG.OracleV8Phasing?.actions.has(effect.action))return MTG.OracleV8Phasing.run(ctx,effect,{subjects:genericEffectSubjects});
     if(MTG.OracleV8Characteristics?.actions.has(effect.action))return MTG.OracleV8Characteristics.run(ctx,effect,{subjects:genericEffectSubjects});
     if(effect.action==='reveal-card-v8')return MTG.OracleV8Revealed.run(ctx,effect,{run:runGenericEffects,target:genericTargetSpec});
+    if(effect.action==='monstrosity-v8')return MTG.OracleV8CreatureUpgrades.run(ctx,effect,{amount:genericAmount});
+    if(effect.action==='exploit-v8')return MTG.OracleV8Exploit.run(ctx,effect);
+    if(effect.action==='role-token-v8')return MTG.OracleV8PredefinedTokens.run(ctx,effect,{subjects:genericEffectSubjects,inline:genericInlineToken,filter:(filter,card)=>genericResolutionTargetSpec(ctx,filter,[],0,ctx.data).filter(ctx.g,card,ctx.you,ctx.src)});
+    if(effect.action==='next-draw-replacement-v8')return MTG.OracleV8DrawReplacements.run(ctx,effect,{subjects:genericEffectSubjects});
     if(effect.action==='choose-damage-source-v8')return MTG.OracleV8SourcePrevention.run(ctx,effect,{subjects:genericEffectSubjects});
     if(effect.action==='clash-v8')return MTG.OracleV8Clash.run(ctx,effect,{effect:runGenericEffect});
     if(effect.action==='coin-flip-v8')return MTG.OracleV8Coins.run(ctx,effect,{subjects:genericEffectSubjects,run:runGenericEffects});
+    if(MTG.OracleV8DelayedObjects?.actions.has(effect.action))return MTG.OracleV8DelayedObjects.run(ctx,effect,{subjects:genericEffectSubjects,run:runGenericEffects,effect:runGenericEffect,filter:(filter,card)=>genericResolutionTargetSpec(ctx,filter,[],0,ctx.data).filter(ctx.g,card,ctx.you,ctx.src)});
+    if(MTG.OracleV8TokenForms?.actions.has(effect.action))return MTG.OracleV8TokenForms.run(ctx,effect,{run:runGenericEffects,effect:runGenericEffect});
     if(effect.action==='install-trigger-v8')return MTG.OracleV8DelayedTriggers.install(ctx,effect,compileGenericTrigger);
     if(effect.action==='linked-untap-v8')return MTG.OracleV8Untap.run(ctx,effect,genericEffectSubjects);
     if(effect.action==='extra-turn-v8'){for(const player of genericEffectSubjects(ctx,effect.target))if(player instanceof MTG.Player&&!player.lost)ctx.g.scheduleExtraTurn(player);return;}
@@ -1717,7 +1755,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         modalBody.modes.some(mode => !mode.body || mode.body.optional || !Array.isArray(mode.body.targets) ||
           !Array.isArray(mode.body.effects) || !mode.body.effects.length))) throw new Error('Unsupported Oracle trigger modes');
     const dynamicTargets = /"controller":"(?:defending-player|event-player)"|"event-card(?:-stat|-counters)?"|"threshold":"X"/.test(JSON.stringify(operation.targets||[]));
-    const targetedOptional = !!operation.optional && (operation.event==='saga-chapter' || (operation.targets || []).length > 0 || operation.v4Body?.targets.length > 0);
+    // Cycling's optional effect is chosen when its trigger resolves, after
+    // players have had the opportunity to respond to that Stack object.
+    const targetedOptional = !!operation.optional && (operation.zone==='cycling-source' || operation.event==='state' || operation.event==='saga-chapter' || (operation.targets || []).length > 0 || operation.v4Body?.targets.length > 0);
     // CardInst is intentionally reused across zones. Remember the exact
     // incarnation while collectTriggers examines the event, rather than when
     // the pending trigger is later flushed onto the Stack. A hidden Symbol
@@ -1745,7 +1785,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         timestamp: source instanceof MTG.CardInst ? history?.timestamp??source.timestamp : null,
         zoneVersion: source instanceof MTG.CardInst ? history?.zoneVersion??source.zoneVersion : null,
         copyEpoch: history?history.copyEpoch||0:data?.card===source&&data.snap?data.snap.copyEpoch||0:source.copyEpoch||0,
-        untapEpoch:source.meta?.oracleUntapEpoch||0,durationControlEpoch:source.meta?.oracleDurationControl?.epoch||0,
+        untapEpoch:source.meta?.oracleUntapEpoch||0,phaseEpoch:source.meta?.oraclePhaseEpoch||0,durationControlEpoch:source.meta?.oracleDurationControl?.epoch||0,
         copying: history?!!history.copying:data?.card===source&&data.snap?!!data.snap.copying:!!source.isCopyOf,
         zone: history?'battlefield':source.zone,
         controller,
@@ -1753,7 +1793,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         castFrom: source.castMeta?.from,
         wasCast:!!source.castMeta?.wasCast,
         castPhase:source.castMeta?.castPhase,manaSpent:source.castMeta?.manaSpent,paymentColorCounts:{...(source.castMeta?.paymentColorCounts||{})},
-        castX: Number(operation.eventFilter?.kind==='qualified-cast-v8'&&operation.eventFilter.manaX?data?.so?.x:operation.event==='turnedFaceUp'?data?.x:source.castMeta?.x) || 0,
+        castX: Number(operation.eventFilter?.kind==='qualified-cast-v8'&&operation.eventFilter.manaX?data?.so?.x:['turnedFaceUp','monstrous'].includes(operation.event)?data?.x:source.castMeta?.x) || 0,
+        upgradeStatus: MTG.OracleV8CreatureUpgrades?.capture(source),
         kicked: !!source.castMeta?.kicked,
         paidTimes: Number(source.castMeta?.paidTimes)||0,
         copiableDef: source.isCopyOf||source.def,
@@ -1792,7 +1833,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx.sourceCopyEpoch = capture.copyEpoch;
       ctx.sourceCopying = capture.copying;
       ctx.eventCardZoneVersion = capture.eventCardZoneVersion;
-      if (operation.event === 'turnedFaceUp' || ['etb','cast'].includes(operation.event) && operation.eventFilter === 'self' || operation.eventFilter?.kind==='qualified-cast-v8'&&operation.eventFilter.manaX) ctx.x = capture.castX;
+      if (['turnedFaceUp','monstrous'].includes(operation.event) || ['etb','cast'].includes(operation.event) && operation.eventFilter === 'self' || operation.eventFilter?.kind==='qualified-cast-v8'&&operation.eventFilter.manaX) ctx.x = capture.castX;
     };
     const baseFilter = genericTriggerFilter(operation.event, operation.eventFilter);
     const triggerTimes = MTG.oracleV8TriggerTimes?.(operation.event, operation.eventFilter, genericTargetSpec);
@@ -1862,6 +1903,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function genericAbilityAiScore(operation, cost) {
     return (game, source, player) => {
+      if(MTG.OracleV8VariableCounterCosts?.emptyOutcome(operation,source))return -100;
       const specs = genericTargetSpecs(operation.targets, operation.effects);
       for (const spec of specs) {
         const candidates = game.legalTargets(spec, source, player);
@@ -2091,6 +2133,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function genericCondition(game,self,condition,p=self.ctrl,evidence) {
     if(['casting-window-v8','casting-spell-history-v8'].includes(condition?.kind))return MTG.OracleV8CastingLimits.condition(game,self,condition,p);
+    if(condition?.kind==='creature-upgrade-state-v8')return MTG.OracleV8CreatureUpgrades.condition(game,self,condition,p,evidence);
     if(condition?.kind==='activation-state-v8')return MTG.OracleV8ActivationSuffixes.condition(game,self,condition,p);
     if(condition.kind==='v8-live-condition')return MTG.oracleV8LiveCondition(game,self,condition,p,genericTargetSpec,evidence);
     if(condition.kind==='combat-ordinal-v8')return game.phase==='combat'&&game.turnPlayer?.turnState.combatPhaseCount===condition.n;
@@ -2123,6 +2166,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(condition.kind==='control-commander')return game.bf().some(card=>card.ctrl===p&&card.commander);
     if(condition.kind==='monarch')return game.monarch===p;
     if(condition.kind==='source-any-counter')return Object.values((evidence&&self.zoneVersion!==evidence.zoneVersion?self.battlefieldLKI?.get(evidence.zoneVersion)?.counters:self.counters)||{}).some(n=>n>0);
+    if(condition.kind==='source-modified')return game.isModifiedCreature(self);
     if(condition.kind==='spells-cast-last-turn'){
       const counts=game.players.map(player=>Number(player.lastTurnSpellsCast)||0);
       if(condition.max!==undefined)return counts.reduce((sum,n)=>sum+n,0)<=condition.max;
@@ -2152,7 +2196,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(condition.kind==='coven')return new Set(game.creatures(p).map(card=>card.power)).size>=3;
     if(condition.kind==='formidable')return game.creatures(p).reduce((sum,card)=>sum+card.power,0)>=8;
     if(condition.kind==='pack-tactics')return evidence?.packTactics??(game.combat?.attackers||[]).filter(card=>card.ctrl===p).reduce((sum,card)=>sum+card.power,0)>=6;
-    if(condition.kind==='has-permanent')return game.bf().some(card=>card.ctrl===p&&(!condition.other||!sameSource||card!==self)&&(condition.what==='commander'?!!card.commander:genericSearchMatches(card,condition.what)));
+    if(condition.kind==='has-permanent'){
+      // Older manifests retained the adjective from "a [quality] creature".
+      // Keep those descriptors stable while testing the actual creature's
+      // current characteristics. Outlaw itself describes any permanent with
+      // one of the five creature types (including a noncreature Kindred).
+      const colors={white:'W',blue:'U',black:'B',red:'R',green:'G'},what=condition.what;
+      const matches=card=>colors[what]?card.is('Creature')&&card.colors.includes(colors[what]):
+        what==='colorless'?card.is('Creature')&&card.colors.length===0:
+        what==='tapped'?card.is('Creature')&&card.tapped:
+        what==='modified'?game.isModifiedCreature(card):
+        what==='outlaw'?['Assassin','Mercenary','Pirate','Rogue','Warlock'].some(type=>card.hasSub(type)):
+        what==='commander'?!!card.commander:genericSearchMatches(card,what);
+      return game.bf().some(card=>card.ctrl===p&&(!condition.other||!sameSource||card!==self)&&matches(card));
+    }
     if(condition.kind==='life')return condition.comparison==='less'?p.life<=condition.threshold:p.life>=condition.threshold;
     if(condition.kind==='source-status') {
       if (!sameSource) {
@@ -2643,8 +2700,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const declaredAttachmentGrants = (entry.implementation || [])
       .filter(operation => operation.kind === 'attachment-grant');
     for (const operation of (entry.implementation || []).flatMap(operation=>operation.kind==='casting-cost-modifiers-v8'?operation.modifiers:[operation])) {
+      if(MTG.OracleV8Exert?.apply(script,operation,{trigger:compileGenericTrigger,score:genericAbilityAiScore}))continue;
+      MTG.OracleV8Exploit?.apply(script,operation,{score:genericAbilityAiScore,target:genericTargetSpec});
       if(MTG.OracleV8HandSize?.apply(script,operation))continue;
       if(MTG.OracleV8CastingLimits?.apply(script,operation))continue;
+      if(MTG.StateTriggers?.apply(script,operation,{trigger:compileGenericTrigger,condition:genericCondition}))continue;
+      if(operation.kind==='zone-replacement-v8'){(script.oracleZoneReplacements||=[]).push(MTG.OracleV8ZoneReplacements.compile(operation));continue;}
+      if(['soulbond-v8','soulbond-grant-v8'].includes(operation.kind)){const compiled=MTG.OracleV8Soulbond.compile(operation,{static:compileGenericStatic});if(compiled.triggers)triggers.push(...compiled.triggers);if(compiled.static)statics.push(compiled.static);continue;}
+      if(operation.kind==='creature-upgrade-entry-v8'){script.oracleCreatureEntryUpgrade=MTG.OracleV8CreatureUpgrades.compile(operation);continue;}
+      if(operation.kind==='draw-replacement-v8'){(script.oracleDrawReplacements||=[]).push(MTG.OracleV8DrawReplacements.compile(operation));continue;}
+      if(operation.kind==='entry-counters-v8'){(script.oracleEntryCounters||=[]).push(MTG.OracleV8EntryCounters.compile(operation));continue;}
+      if(operation.kind==='entry-counter-bonus-v8'){(script.oracleEntryBonuses||=[]).push(MTG.OracleV8EntryCounters.compile(operation));continue;}
       if(operation.kind==='casting-restriction-v8') {
         const previous=script.oracleCastRestriction;
         script.oracleCastRestriction=(game,card,player)=>(!previous||previous(game,card,player))&&genericCondition(game,card,operation.condition,player);
@@ -2949,7 +3015,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (operation.kind === 'generic-ability') {
         const compiled=compileGenericAbility(operation);
-        if(operation.from==='hand')script.handAbility={...compiled,cost:operation.cost.mana,...(operation.forecast?{oracleForecast:true,oracleForecastTap:compiled.cost.tapPermanents}:{})};
+        if(operation.from==='hand')script.handAbility={...compiled,cost:compiled.cost.mana||'{0}',...(operation.forecast?{oracleForecast:true,oracleForecastTap:compiled.cost.tapPermanents}:{})};
         else if(operation.from==='graveyard')script.gyAbility={...compiled,cost:operation.cost.mana||'{0}',exileSelf:!operation.retainGraveSource,...(operation.retainGraveSource?{extraCost:compiled.cost}:{})};
         else abilities.push(compiled);
         continue;
@@ -2957,7 +3023,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (operation.kind === 'generic-static') {
         if(operation.scope==='self'&&operation.keywords?.includes('flash'))
           (script.oracleSelfFlashConditions||(script.oracleSelfFlashConditions=[])).push(operation.condition||null);
-        statics.push(compileGenericStatic(operation));
+        // Frozen early rows expanded modified into counters/enchanted/equipped,
+        // losing the Aura-controller restriction. Repair only that exact
+        // printed static clause; the stored provenance descriptor stays intact.
+        const legacyModified={kind:'any',conditions:[{kind:'source-any-counter'},{kind:'source-status',status:'enchanted'},{kind:'source-status',status:'equipped'}]};
+        const modifiedClause=/\bas long as (?:it's|this creature is) modified\b/i.test(entry.raw.oracle||'');
+        const runtimeOperation=modifiedClause&&JSON.stringify(operation.condition)===JSON.stringify(legacyModified)?{...operation,condition:{kind:'source-modified'}}:operation;
+        const staticLayer=compileGenericStatic(runtimeOperation);
+        staticLayer.oracleOperation=operation;
+        statics.push(staticLayer);
         continue;
       }
       if (operation.kind === 'enters-with-counters') {
@@ -3631,4 +3705,5 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     MTG.CARD_CATALOG = catalog;
     return catalog;
   };
+  MTG.OracleV8PredefinedTokens?.initialize({inline:genericInlineToken});
 })();

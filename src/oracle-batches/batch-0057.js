@@ -2655,16 +2655,16 @@ MTG.registerOracleBatch({
               "n": 1,
               "tapped": true,
               "token": {
-                "name": "Robot artifact",
+                "name": "Robot",
                 "power": "2",
                 "toughness": "2",
                 "subtypes": [
-                  "Robot",
-                  "artifact"
+                  "Robot"
                 ],
                 "colors": [],
                 "types": [
-                  "Creature"
+                  "Creature",
+                  "Artifact"
                 ],
                 "keywords": []
               }

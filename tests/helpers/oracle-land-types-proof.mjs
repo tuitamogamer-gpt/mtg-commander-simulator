@@ -30,8 +30,8 @@ export async function landTypesProof(M, entry, operation, role, h) {
     assert.equal(game.stack.length, 0, label + ': intrinsic mana does not use Stack');
   }
   host.tapped = false; a.pool.C = 1;
-  assert.ok(game.activatableList(a).some(row => row.card === host && row.ability?.label.includes('2/2')), label + ': printed animation remains available');
-  const enemy = put(M, game, b, 'Wastes');
+  assert.equal(game.activatableList(a).some(row => row.card === host && row.ability?.label.includes('2/2')), operation.retain, label + ': printed animation is retained only by additive typing');
+  const enemy = put(M, game, b, operation.retain?'Wastes':"Mishra's Factory");
   for (const type of operation.types) assert.equal(enemy.hasSub(type), !operation.attached && operation.filters[0].controller === 'any', label + ': exact controller scope');
   await game.move(source, 'exile');
   for (const type of operation.types) assert.equal(host.hasSub(type), false, label + ': source removal restores old types');

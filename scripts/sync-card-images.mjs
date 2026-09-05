@@ -174,21 +174,24 @@ function manifestSource(cardPaths, artPaths, missing) {
     `  const version = variant === 'art' ? 'art_crop' : 'normal';\n` +
     `  return MTG.CARD_IMAGE_ID_API_BASE + encodeURIComponent(String(id || '')) + '?format=image&version=' + version;\n` +
     `};\n\n` +
-    `MTG.cardImageURL = function (name, variant) {\n` +
-    `  const face = String(name || '').split(' // ')[0];\n` +
-    `  const local = variant === 'art'\n` +
-    `    ? MTG.CARD_ART_PATHS[face] || MTG.CARD_IMAGE_PATHS[face]\n` +
-    `    : MTG.CARD_IMAGE_PATHS[face];\n` +
-    `  if (local === MTG.CARD_IMAGE_PLACEHOLDER && MTG.CARD_IMAGE_MISSING.includes(face)) {\n` +
-    `    return MTG.cardImageAPIURL(face);\n` +
-    `  }\n` +
-    `  if (local) return local;\n` +
-    `  const catalog = MTG.CARD_CATALOG && MTG.CARD_CATALOG[face];\n` +
-    `  if (catalog && catalog.engineBatch && catalog.scryfallId) {\n` +
-    `    return MTG.cardImageAPIURLById(catalog.scryfallId, variant);\n` +
-    `  }\n` +
-    `  return MTG.CARD_IMAGE_PLACEHOLDER;\n` +
-    `};\n`;
+    "MTG.cardImageURL = function (name, variant) {\n" +
+    "  const face = String(name || '').split(' // ')[0];\n" +
+    "  const defaultToken = face.endsWith(' Token') && !MTG.CARD_CATALOG?.[face] && !MTG.DEFS?.[face];\n" +
+    "  const tokenType = defaultToken ? face.slice(0, -6) : face;\n" +
+    "  const imageFace = MTG.CARD_IMAGE_PATHS[face] ? face : tokenType === 'Phyrexian Germ' && !MTG.CARD_IMAGE_PATHS[tokenType] ? 'Germ' : tokenType;\n" +
+    "  const local = variant === 'art'\n" +
+    "    ? MTG.CARD_ART_PATHS[imageFace] || MTG.CARD_IMAGE_PATHS[imageFace]\n" +
+    "    : MTG.CARD_IMAGE_PATHS[imageFace];\n" +
+    "  if (local === MTG.CARD_IMAGE_PLACEHOLDER && MTG.CARD_IMAGE_MISSING.includes(face)) {\n" +
+    "    return MTG.cardImageAPIURL(face);\n" +
+    "  }\n" +
+    "  if (local) return local;\n" +
+    "  const catalog = MTG.CARD_CATALOG && MTG.CARD_CATALOG[face];\n" +
+    "  if (catalog && catalog.engineBatch && catalog.scryfallId) {\n" +
+    "    return MTG.cardImageAPIURLById(catalog.scryfallId, variant);\n" +
+    "  }\n" +
+    "  return MTG.CARD_IMAGE_PLACEHOLDER;\n" +
+    "};\n";
 }
 
 async function main() {

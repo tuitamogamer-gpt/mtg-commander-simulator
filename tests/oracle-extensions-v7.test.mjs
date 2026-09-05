@@ -707,7 +707,7 @@ for(const role of ['human','ai']){
   assert.equal(await game.castSpell(a,spell,{from:'hand'}),true);assert.equal(game.stack.at(-1).targets[0],target);await game.move(two,'hand');await settle(game);assert.equal(target.zone,'graveyard');assert.equal(spell.zone,'graveyard');assert.equal(one.zone,'battlefield');
  });
  test(`v7 ${role}: Lander and Mutagen use real paid sacrifice abilities`,async()=>{
-  for(const name of ['Lander','Mutagen']){const ctx=context(role),{game,a}=ctx,host=put(game,a,'Grizzly Bears');await cast(ctx,name);const token=game.bf().find(card=>card.isToken&&card.name===name);assert.ok(token);assert.equal(token.is('Creature'),false);
+  for(const name of ['Lander','Mutagen']){const ctx=context(role),{game,a}=ctx,host=put(game,a,'Grizzly Bears');await cast(ctx,name);const token=game.bf().find(card=>card.isToken&&card.name===name+' Token');assert.ok(token);assert.equal(token.is('Creature'),false);
    game.phase='combat';game.step='begin';assert.equal(game.activatableList(a).some(row=>row.card===token),name==='Lander');game.phase='main1';game.step='main';
    const row=game.activatableList(a).find(row=>row.card===token),prior=game.bf().filter(card=>card.is('Land')).length;assert.ok(row);assert.equal(await game.activateAbility(a,row),true);assert.equal(token.zone,'ceased');assert.equal(game.stack.length,1);await settle(game);
    if(name==='Mutagen')assert.equal(host.plus1(),1);else{const lands=game.bf().filter(card=>card.is('Land'));assert.equal(lands.length,prior+1);assert.equal(lands.at(-1).tapped,true);}
@@ -869,7 +869,7 @@ for(const role of ['human','ai']){
  test(`v7 ${role}: mobilize resolves without its source and sacrifices only the original controlled tokens`,async()=>{
   const {game,a,b}=context(role),source=put(game,a,'V7 Mobilizer');source.attacking=b;game.combat={attackers:[source]};
   await game.emit('attacks',{card:source,player:a,defender:b});await game.flushTriggers();await game.move(source,'exile');await settle(game);
-  const tokens=game.creatures(a).filter(card=>card.name==='Warrior');assert.equal(tokens.length,2);assert.ok(tokens.every(card=>card.tapped&&card.attacking===b));
+  const tokens=game.creatures(a).filter(card=>card.name==='Warrior Token');assert.equal(tokens.length,2);assert.ok(tokens.every(card=>card.tapped&&card.attacking===b));
   tokens[0].ctrl=b;await game.emit('endStep',{player:a});await settle(game);assert.equal(tokens[0].zone,'battlefield');assert.notEqual(tokens[1].zone,'battlefield');
  });
  test(`v7 ${role}: blitz grants haste before ETB, death draw uses Stack, and blink resets the payment`,async()=>{
@@ -1012,7 +1012,7 @@ for(const role of ['human','ai']){
     if(name==='Gravpack Monoist')await game.sacrifice(a,source);
     else if(name==='Melded Moxite')assert.equal(await game.activateAbility(a,game.activatableList(a).find(row=>row.card===source)),true);
     else {put(game,a,'Grizzly Bears').tapped=true;put(game,a,'Grizzly Bears').tapped=true;await game.emit('endStep',{player:a});}
-    await settle(game);const token=game.creatures(a).find(card=>card.isToken);assert.ok(token,name);assert.equal(token.name,'Robot');assert.equal(token.is('Artifact'),true);assert.equal(token.hasSub('Robot'),true);assert.equal(token.hasSub('artifact'),false);assert.equal(token.power,2);assert.equal(token.toughness,2);assert.equal(token.tapped,true);
+    await settle(game);const token=game.creatures(a).find(card=>card.isToken);assert.ok(token,name);assert.equal(token.name,'Robot Token');assert.equal(token.is('Artifact'),true);assert.equal(token.hasSub('Robot'),true);assert.equal(token.hasSub('artifact'),false);assert.equal(token.power,2);assert.equal(token.toughness,2);assert.equal(token.tapped,true);
   }
  });
  test(`v7 ${role}: numbered casts count spells before the watcher entered and freeze their types`,async()=>{

@@ -152,7 +152,7 @@ export async function fireV8Event(MTG,ctx,source,operation,h){
     assert.ok(origin&&recipient,'v8 damage event has both objects');
     if(event==='combatDamageToPlayer'){
       origin.attacking=recipient;origin.sick=false;origin.blockedBy=[];origin.wasBlocked=false;
-      if(!(origin.power>0)&&origin!==source){origin.def.power=String(n);game.recalc();}
+      if(origin!==source&&!origin.def.oracleImplementation&&f.target?.stat!=='power'){origin.def.power=String(n);game.recalc();}
       ctx.eventAmount=origin.power;game.combat={attackers:[origin],defenders:new Map()};await game.combatDamage(origin.ctrl,'normal');
     }else await game.damageAny(origin,recipient,n,{combat:!!f.combat,deferSBA:true});
   }else if(event==='attacks'){

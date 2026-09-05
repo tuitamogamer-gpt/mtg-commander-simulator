@@ -1219,14 +1219,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Darksteel Reactor'] = {
     kws: ['indestructible'],
-    // "When ~ has twenty or more charge counters, you win." To je STATE trigger:
-    // mora opaliti čim counteri pređu 20, bez obzira odakle su došli (Inspirit
-    // dodaje 2 po combatu). Ranije se provjeravalo samo u vlastitom upkeepu, pa
-    // je pobjeda kasnila ceo krug ili izostala.
+    // External charge counters trigger this ability too. CR603.8 keeps one
+    // instance outstanding and gives every player the normal response window.
     winAtCharge: 20,
     triggers: [{
+      on: 'state', desc: 'Win the game', stateTest: (g, self) => (self.counters.charge || 0) >= 20,
+      run: async ctx => {
+        for (const player of ctx.g.players) if (player !== ctx.you) await ctx.g.playerLoses(player, 'Darksteel Reactor');
+      },
+    }, {
       on: 'upkeep', desc: 'Charge counter', filter: (g, self, d) => d.player === self.ctrl, opt: true,
-      run: async ctx => { ctx.g.addCounters(ctx.src, 'charge', 1); },
+      run: async ctx => { if(ctx.src.zone==='battlefield'&&ctx.src.zoneVersion===ctx.sourceZoneVersion)ctx.g.addCounters(ctx.src, 'charge', 1); },
     }],
   };
   SC['Empowered Autogenerator'] = {

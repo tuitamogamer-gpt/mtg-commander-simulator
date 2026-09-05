@@ -141,8 +141,8 @@ test('one sacrificed land drives Gitrog, Titania, Scouring Swarm, Juri, Mazirek 
   assert.equal(opponent.life, 38);
   assert.equal(world.hand.length, handBefore + 1, 'Gitrog draws once for the single land event');
   assert.ok(juri.counters['+1/+1'] >= 2, 'Juri and Mazirek both add a counter to Juri');
-  assert.equal(game.bf().some(card => card.isToken && card.name === 'Elemental' && card.power >= 5), true);
-  assert.equal(game.bf().some(card => card.isToken && card.name === 'Insect' && card.tapped && card.kw('flying')), true);
+  assert.equal(game.bf().some(card => card.isToken && card.name === 'Elemental Token' && card.power >= 5), true);
+  assert.equal(game.bf().some(card => card.isToken && card.name === 'Insect Token' && card.tapped && card.kw('flying')), true);
   assert.equal(gitrog.zone, 'battlefield');
   assert.equal(hearthhull.zone, 'battlefield');
 });
@@ -195,7 +195,7 @@ test('X effects create exact tokens, move selected lands across zones, and prese
   });
   assert.equal(ring.zone, 'graveyard');
   assert.equal(hammer.zone, 'graveyard');
-  assert.equal(game.bf().filter(card => card.isToken && card.name === 'Pest').length, 4);
+  assert.equal(game.bf().filter(card => card.isToken && card.name === 'Pest Token').length, 4);
 
   const handLand = inZone(world, 'Forest', 'hand');
   const graveLand = inZone(world, 'Mountain', 'graveyard');
@@ -211,7 +211,7 @@ test('X effects create exact tokens, move selected lands across zones, and prese
   inZone(world, 'Forest', 'graveyard');
   inZone(world, 'Mountain', 'graveyard');
   await MTG.DEFS['Formless Genesis'].resolve({ g: game, src: null, you: world });
-  const shapeshifter = game.bf().find(card => card.isToken && card.name === 'Shapeshifter');
+  const shapeshifter = game.bf().find(card => card.isToken && card.name === 'Shapeshifter Token');
   assert.ok(shapeshifter);
   assert.equal(shapeshifter.power, world.graveyard.filter(card => card.is('Land')).length);
   assert.equal(shapeshifter.kw('deathtouch'), true);
@@ -239,7 +239,7 @@ test('Courtyard, Hatchery and typed fetch lands execute their full token/life/se
   assert.equal(world.pool.B, 1);
   await game.sacrifice(world, hatchery);
   await resolveAll(game);
-  assert.equal(game.bf().filter(card => card.isToken && card.name === 'Insect' && card.kw('flying')).length, 1);
+  assert.equal(game.bf().filter(card => card.isToken && card.name === 'Insect Token' && card.kw('flying')).length, 1);
 
   const valley = permanent(game, world, 'Mountain Valley');
   const mountain = inZone(world, 'Mountain', 'library');

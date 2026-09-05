@@ -326,7 +326,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   define('Saruman, the White Hand', {
     statics: [{ apply: (g, self, battlefield) => {
-      for (const card of battlefield) if (card.ctrl === self.ctrl && isOrcOrGoblin(card)) card.cur.wardCost = { mana: '{2}' };
+      for (const card of battlefield) if (card.ctrl === self.ctrl && isOrcOrGoblin(card)) g.grantWard(card, { mana: '{2}' });
     } }],
     triggers: [{
       on: 'castNonCreature', desc: 'Amass Orcs by mana value', filter: (g, self, data) => data.player === self.ctrl,

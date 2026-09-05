@@ -93,7 +93,7 @@ test("T'Challa makes tapped Vibranium on entry and attack, and its mana only pay
   await resolveAll(game);
   await game.emit('attacks', { card: tchalla, player: wakanda, defender: game.players[1] });
   await resolveAll(game);
-  const vibranium = game.bf().filter(card => card.name === 'Vibranium');
+  const vibranium = game.bf().filter(card => card.name === 'Vibranium Token');
   assert.equal(vibranium.length, 2);
   assert.equal(vibranium.every(card => card.tapped && card.kw('indestructible')), true);
   vibranium[0].tapped = false;

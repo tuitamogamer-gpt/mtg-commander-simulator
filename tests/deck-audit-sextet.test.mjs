@@ -411,19 +411,15 @@ test('hideaway "play" za land troši land drop i bez dropa nije dostupan', async
 // ==================== FAMILY MATTERS ====================
 
 test('Combat Celebrant se može exertovati ponovo u kasnijem potezu', async () => {
-  const { game, players: [me] } = rulesGame([
-    (g, q) => q.aiHint?.kind === 'optTrigger' ? 'yes' : defaultDecision(g, q),
-  ]);
+  const { game, players: [me,opponent] } = rulesGame();
   const celebrant = permanent(game, me, 'Combat Celebrant');
-
-  await game.emit('attacks', { card: celebrant });
-  await resolveAll(game);
+  const decide=me.controller.decide.bind(me.controller);me.controller.decide=async(g,q)=>q.type==='attackers'?[{card:celebrant,target:opponent}]:decide(g,q);
+  game.priorityRound=async()=>resolveAll(game);
+  await game.combatPhase(me);
   assert.equal(game._extraCombats, 1, 'prvi exert mora dati extra combat');
-
-  game.turnNo += 1;
-  celebrant.tapped = false;
-  await game.emit('attacks', { card: celebrant });
-  await resolveAll(game);
+  game.untap(celebrant);await game.combatPhase(me);
+  assert.equal(game._extraCombats, 1, 'isti objekt se ne smije ponovo exertovati istog poteza');
+  game.turnNo += 1;game.untap(celebrant);await game.combatPhase(me);
   assert.equal(game._extraCombats, 2, 'exert se smije ponoviti u novom potezu');
 });
 

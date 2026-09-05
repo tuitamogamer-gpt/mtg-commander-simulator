@@ -1227,7 +1227,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     statics: [{
       apply: (g, self, bf) => {
         for (const c of bf) {
-          if (c.ctrl === self.ctrl && (c.hasSub('Beast') || c.hasSub('Bird')) && !c.cur.wardCost) c.cur.wardCost = { mana: '{1}' };
+          if (c.ctrl === self.ctrl && (c.hasSub('Beast') || c.hasSub('Bird'))) g.grantWard(c, { mana: '{1}' });
         }
       },
     }],
@@ -1674,7 +1674,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!host) return;
         host.cur.basePower = 0; host.cur.baseToughness = 4;
         host.cur.kw.clear();
-        host.cur.subtypes = ['Treefolk'];
+        host.cur.subtypes = host.cur.subtypes.filter(type => !MTG.CREATURE_SUBTYPES.has(type)).concat('Treefolk');
         host.cur.allCreatureTypes = false;
         host.cur.allCreatureTypesFromOtherEffects = false;
         host.cur.suppressPrintedChangeling = true;

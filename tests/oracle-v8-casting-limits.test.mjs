@@ -40,7 +40,7 @@ for(const role of ['human','ai']){
   assert.equal(game.bf().filter(card=>card.isToken&&card.hasSub('Ninja')).length,sources,'each paid source sees the real attack exactly once');
  });
  test(`${role}: attacked-player history survives removal, excludes a planeswalker and another defender`,async()=>{
-  for(const destination of ['player','walker','other']){const f=context(M,role,2),{game,a,b}=f,attacker=put(M,game,b,'Shivan Dragon'),host=put(M,game,a,'Grizzly Bears'),spell=put(M,game,a,'Defiant Stand','hand');fund(a);const target=destination==='player'?a:destination==='other'?f.others[1]:put(M,game,a,'Tezzeret, Betrayer of Flesh');declare(b,attacker,target);game.turnPlayer=b;let checked=false;
+  for(const destination of ['player','walker','other']){const f=context(M,role,2),{game,a,b}=f,attacker=put(M,game,b,'Shivan Dragon'),host=put(M,game,a,'Grizzly Bears'),spell=put(M,game,a,'Defiant Stand','hand');fund(a);const target=destination==='player'?a:destination==='other'?f.others[1]:await cast(f,'Tezzeret, Betrayer of Flesh');declare(b,attacker,target);game.turnPlayer=b;let checked=false;
    game.priorityRound=async()=>{if(game.step!=='attackers')return;checked=true;await game.move(attacker,'hand');const before=pool(a);assert.equal(game.canCastTiming(a,spell),destination==='player');assert.equal(await inWindow(game,a,spell,{from:'hand',quickTargets:[host]}),destination==='player');if(destination==='player'){await settle(game);assert.equal(host.power,3);assert.equal(host.toughness,5);}else assert.equal(pool(a),before);};
    await game.combatPhase(b);assert.equal(checked,true);
   }

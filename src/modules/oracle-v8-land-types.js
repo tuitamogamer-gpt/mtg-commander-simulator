@@ -1,27 +1,40 @@
-// Land types confer intrinsic mana in layer four; layer-six ability removal
-// can subsequently remove it, just like a printed basic land's ability.
-((MTG) => {
-  const colors = { Plains: 'W', Island: 'U', Swamp: 'B', Mountain: 'R', Forest: 'G' };
-  const mana = Object.fromEntries(Object.entries(colors).map(([type, color]) => [type, { key: 'intrinsic-' + type, label: '{T}: Add {' + color + '}.', cost: { tap: true }, produce: [{ [color]: 1 }], intrinsicLandType: type }]));
-  function compile(operation, helpers) {
-    if (operation.retain !== true || !Array.isArray(operation.types) || !operation.types.length || operation.types.some(type => !colors[type])) throw new Error('Unsupported basic land type operation');
-    return { phase: 1, oracleOperation: operation, apply(game, source, bf) {
-      const cards = operation.attached ? bf.filter(card => card.iid === source.attachedTo) : bf.filter(card => operation.filters.some(filter => helpers.target(filter).filter(game, card, source.ctrl, source)));
-      for (const card of cards) if (card.is('Land')) card.cur.subtypes = [...new Set(card.cur.subtypes.concat(operation.types))];
-    } };
-  }
-  function addIntrinsicMana(bf) {
-    for (const card of bf) if (card.is('Land')) {
-      const printed = card.cur.abilitiesDisabled ? [] : [card.def.mana].flat().filter(Boolean);
-      for (const type of new Set(card.cur.subtypes)) if (mana[type]) {
-        const color = colors[type];
-        // Basic and dual land scripts already expose the same intrinsic
-        // choices. Avoid multiplying equivalent payment branches.
-        const alreadyPrinted = printed.some(ability => Object.keys(ability).every(key => ['cost', 'produce', 'possibleProduce', 'label', 'key'].includes(key)) &&
-          ability.cost?.tap && Object.keys(ability.cost).length === 1 && Array.isArray(ability.produce) && ability.produce.some(output => output[color] === 1 && Object.keys(output).length === 1));
-        if (!alreadyPrinted) card.cur.extraMana.push(mana[type]);
-      }
-    }
-  }
-  MTG.OracleV8LandTypes = { compile, addIntrinsicMana, actions: new Set(), run() { throw new Error('Unsupported basic land type action'); } };
-})(globalThis.MTG || (globalThis.MTG = {}));
+// CR305.6-7: type-setting removes printed abilities and other LAND types in
+// layer four; abilities granted by other effects are still applied in layer six.
+((M)=>{
+ const colors={Plains:'W',Island:'U',Swamp:'B',Mountain:'R',Forest:'G'};
+ const landSubtypes=new Set(['Barnyard','Cave','Cloud','Desert','Forest','Gate','Island','Lair','Locus','Mine','Mountain','Omenpath','Plains','Planet','Power-Plant','Sphere','Swamp','Tower','Town',"Ulamog's","Urza's"]);
+ const mana=Object.fromEntries(Object.entries(colors).map(([type,color])=>[type,{key:'intrinsic-'+type,label:'{T}: Add {'+color+'}.',cost:{tap:true},produce:[{[color]:1}],intrinsicLandType:type}]));
+ function validate(change){if(typeof change.retain!=='boolean'||!Array.isArray(change.types)||!change.types.length||new Set(change.types).size!==change.types.length||change.types.some(type=>!colors[type]))throw new Error('Invalid basic land type change');}
+ function change(card,effect){if(!card?.cur||!card.is('Land'))return;validate(effect);if(!effect.retain){card.cur.subtypes=card.cur.subtypes.filter(type=>!landSubtypes.has(type));card.cur.oracleLandTypeAbilitiesRemoved=true;}card.cur.subtypes=[...new Set(card.cur.subtypes.concat(effect.types))];}
+ function compile(operation,helpers){validate(operation);if(operation.kind!=='v8-land-types'||operation.attached!==undefined&&operation.attached!==true||Object.keys(operation).some(key=>!['kind','types','retain','attached','filters','contract'].includes(key))||operation.contract!=='continuous-basic-land-types'||(operation.attached?!!operation.filters:!Array.isArray(operation.filters)||!operation.filters.length))throw new Error('Invalid land type static');
+  const affects=(game,source,card)=>card.is('Land')&&(operation.attached?card.iid===source.attachedTo:operation.filters.some(filter=>helpers.target(filter).filter(game,card,source.ctrl,source)));
+  return {phase:1,oracleOperation:operation,oracleBasicLandTypes:true,affects,apply(game,source,bf){for(const card of bf)if(affects(game,source,card))change(card,operation);}};
+ }
+ function records(game,bf){game.untilEffects=game.untilEffects.filter(effect=>!effect.untilSource||game.battlefield.some(card=>card.iid===effect.untilSource.iid&&card.zoneVersion===effect.untilSource.version));return game.untilEffects.filter(effect=>effect.kind==='oracleLandTypes'&&bf.some(card=>card.iid===effect.iid&&card.zoneVersion===effect.zoneVersion));}
+ function hasReplacements(game,bf){return records(game,bf).some(row=>!row.retain)||bf.some(card=>(card.def.statics||[]).some(row=>row.oracleBasicLandTypes&&!row.oracleOperation.retain));}
+ function *typeRows(game,rows,bf){const pending=rows.slice().sort((a,b)=>a.timestamp-b.timestamp);
+  const landStatics=row=>(row.def?.statics||[]).filter(s=>s.oracleBasicLandTypes);
+  const removes=(row,source)=>row.kind==='oracleLandTypes'?!row.retain&&row.iid===source.iid&&row.zoneVersion===source.zoneVersion:landStatics(row).some(s=>!s.oracleOperation.retain&&s.affects(game,row,source));
+  while(pending.length){const independent=pending.filter(row=>!landStatics(row).length||!pending.some(other=>other!==row&&removes(other,row)));const row=(independent.length?independent:pending)[0];pending.splice(pending.indexOf(row),1);yield row;}
+ }
+ function stripPrinted(bf,abilityLayers){for(const card of bf)if(card.cur.oracleLandTypeAbilitiesRemoved){card.cur.abilitiesDisabled=true;card.cur.wardCost=null;card.cur.allCreatureTypes=false;card.cur.suppressPrintedChangeling=true;abilityLayers?.suppressPrinted(card);}}
+ function addIntrinsicMana(bf){for(const card of bf)if(card.is('Land')){const printed=card.cur.abilitiesDisabled?[]:[card.def.mana].flat().filter(Boolean);for(const type of new Set(card.cur.subtypes))if(mana[type]){const color=colors[type],alreadyPrinted=printed.some(ability=>Object.keys(ability).every(key=>['cost','produce','possibleProduce','label','key'].includes(key))&&ability.cost?.tap&&Object.keys(ability.cost).length===1&&Array.isArray(ability.produce)&&ability.produce.some(output=>output[color]===1&&Object.keys(output).length===1));if(!alreadyPrinted)card.cur.extraMana.push(mana[type]);}}}
+ async function run(ctx,effect,h){validate(effect);if(effect.action!=='set-basic-land-types-v8'||Object.keys(effect).some(key=>!['action','target','types','retain','duration','choose'].includes(key))||!['eot','object','until-source-leaves','while-source-battlefield'].includes(effect.duration)||effect.choose!==undefined&&effect.choose!==true)throw new Error('Invalid basic land type effect');const cards=[...new Set(h.subjects(ctx,effect.target))].filter(card=>card.zone==='battlefield'&&!card.phasedOut&&card.is('Land'));if(!cards.length)return;let types=effect.types;
+  if(effect.choose){const choice=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Choose a basic land type',options:types.map(type=>({key:type,label:type})),aiHint:{kind:'basicLandType',cards,types}});if(!types.includes(choice))throw new Error('Invalid chosen basic land type');types=[choice];}
+  const duration={};if(effect.duration==='while-source-battlefield'){duration.sourceDuration=M.OracleV8Untap.capture(ctx,'battlefield');if(!M.OracleV8Untap.sourceValid(ctx.g,duration.sourceDuration))return;}if(effect.duration==='until-source-leaves'){duration.untilSource={iid:ctx.src.iid,version:ctx.sourceZoneVersion};if(!ctx.g.battlefield.some(card=>card.iid===duration.untilSource.iid&&card.zoneVersion===duration.untilSource.version))return;}
+  const timestamp=ctx.g.nextOracleTimestamp();for(const card of cards)ctx.g.untilEffects.push({kind:'oracleLandTypes',iid:card.iid,zoneVersion:card.zoneVersion,timestamp,types:types.slice(),retain:effect.retain,expires:effect.duration,...duration});ctx.g.recalc();
+ }
+ function entryDefinition(game,card,definition){if(!card.is('Land'))return definition;const replaced=game.bf().some(source=>!source.cur?.abilitiesDisabled&&(source.def.statics||[]).some(rule=>rule.oracleBasicLandTypes&&!rule.oracleOperation.retain&&rule.affects(game,source,card)));if(!replaced)return definition;
+  const copy={...definition};for(const key of ['asEnters','entersTapped','etbCounters','oracleEntryCounters','oracleCreatureEntryUpgrade','saga'])delete copy[key];return copy;
+ }
+ const integer=(value,min=0)=>Number.isSafeInteger(value)&&value>=min;
+ function isPortable(effect){
+  if(!effect||effect.kind!=='oracleLandTypes'||Object.keys(effect).some(key=>!['kind','iid','zoneVersion','timestamp','expires','types','retain','sourceDuration','untilSource'].includes(key))||!integer(effect.iid,1)||!integer(effect.zoneVersion)||!integer(effect.timestamp,1)||effect.timestamp>M.MAX_RESTORED_TIMESTAMP||!['eot','object','until-source-leaves','while-source-battlefield'].includes(effect.expires))return false;
+  try{validate(effect);}catch{return false;}
+  if(effect.expires==='until-source-leaves')return !effect.sourceDuration&&!!effect.untilSource&&Object.keys(effect.untilSource).length===2&&integer(effect.untilSource.iid,1)&&integer(effect.untilSource.version);
+  if(effect.expires==='while-source-battlefield'){const d=effect.sourceDuration;return !effect.untilSource&&!!d&&Object.keys(d).every(key=>['sourceIid','sourceVersion','mode','phaseEpoch','untapEpoch','controlEpoch','controller'].includes(key))&&d.mode==='battlefield'&&integer(d.sourceIid,1)&&integer(d.sourceVersion)&&integer(d.phaseEpoch)&&['untapEpoch','controlEpoch'].every(key=>d[key]===undefined||integer(d[key]))&&(d.controller===undefined||d.controller instanceof M.Player);}
+  return effect.sourceDuration===undefined&&effect.untilSource===undefined;
+ }
+ function portableRecord(effect){if(!isPortable(effect))throw new Error('Invalid saved land type effect');const out={kind:'oracleLandTypes',iid:effect.iid,zoneVersion:effect.zoneVersion,timestamp:effect.timestamp,expires:effect.expires,types:effect.types.slice(),retain:effect.retain};if(effect.untilSource)out.untilSource={...effect.untilSource};if(effect.sourceDuration){const d=effect.sourceDuration;out.sourceDuration={sourceIid:d.sourceIid,sourceVersion:d.sourceVersion,mode:d.mode,phaseEpoch:d.phaseEpoch};}return out;}
+ M.OracleV8LandTypes={isPortable,portableRecord,compile,addIntrinsicMana,records,hasReplacements,typeRows,change,stripPrinted,entryDefinition,actions:new Set(['set-basic-land-types-v8']),run};
+})(globalThis.MTG||={});

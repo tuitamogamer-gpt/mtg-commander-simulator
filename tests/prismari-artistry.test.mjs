@@ -129,7 +129,7 @@ test('Brudiclad dopušta izbor noncreature tokena i pretvara baš sve ostale tok
   await resolveAll(game);
   const tokens = game.bf().filter(card => card.ctrl === prismari && card.isToken);
   assert.equal(tokens.length, 4);
-  assert.equal(tokens.every(card => card.name === 'Treasure' && card.is('Artifact') && !card.is('Creature')), true);
+  assert.equal(tokens.every(card => card.name === 'Treasure Token' && card.is('Artifact') && !card.is('Creature')), true);
 });
 
 test('Muddle zaključava metu na triggeru, kopira pune karakteristike i ne bira fallback', async () => {

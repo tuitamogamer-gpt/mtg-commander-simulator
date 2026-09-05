@@ -1,0 +1,281 @@
+[
+  {
+    "id": "f9337bbe-e092-469d-8122-77f92e233306",
+    "oracle_id": "13a85c9f-f653-4d90-bea6-94022ee82527",
+    "name": "Opal Avenger",
+    "layout": "normal",
+    "mana_cost": "{2}{W}",
+    "type_line": "Enchantment",
+    "oracle_text": "When you have 10 or less life, if this permanent is an enchantment, it becomes a 3/5 Soldier creature.",
+    "color_identity": [
+      "W"
+    ],
+    "keywords": []
+  },
+  {
+    "id": "6c8c30e2-e751-4481-9a46-413c52bbff90",
+    "oracle_id": "26eb7ee3-c0b6-4be0-bc80-92952f55a6f9",
+    "name": "Emperor Crocodile",
+    "layout": "normal",
+    "mana_cost": "{3}{G}",
+    "type_line": "Creature — Crocodile",
+    "oracle_text": "When you control no other creatures, sacrifice this creature.",
+    "power": "5",
+    "toughness": "5",
+    "color_identity": [
+      "G"
+    ],
+    "keywords": []
+  },
+  {
+    "id": "6fbdf30e-effe-4008-ba9d-2157f6d21f55",
+    "oracle_id": "293c6f8f-9e6b-4267-a15d-1d5ce95fb5b4",
+    "name": "Deadly Designs",
+    "layout": "normal",
+    "mana_cost": "{1}{B}",
+    "type_line": "Enchantment",
+    "oracle_text": "{2}: Put a plot counter on this enchantment. Any player may activate this ability.\nWhen there are five or more plot counters on this enchantment, sacrifice it. If you do, destroy up to two target creatures.",
+    "color_identity": [
+      "B"
+    ],
+    "keywords": []
+  },
+  {
+    "id": "b9d67b5c-ab20-456e-8ff5-7521be8273b2",
+    "oracle_id": "49d44e89-b94e-43f7-a996-f50651df9264",
+    "name": "Barbarian Outcast",
+    "layout": "normal",
+    "mana_cost": "{1}{R}",
+    "type_line": "Creature — Human Barbarian Beast",
+    "oracle_text": "When you control no Swamps, sacrifice this creature.",
+    "power": "2",
+    "toughness": "2",
+    "color_identity": [
+      "R"
+    ],
+    "keywords": []
+  },
+  {
+    "id": "2b827094-fb2c-46db-b898-02e0c308601f",
+    "oracle_id": "69556f6c-c05b-4902-bac7-012f0ed81b75",
+    "name": "Merchant Ship",
+    "layout": "normal",
+    "mana_cost": "{U}",
+    "type_line": "Creature — Human",
+    "oracle_text": "This creature can't attack unless defending player controls an Island.\nWhenever this creature attacks and isn't blocked, you gain 2 life.\nWhen you control no Islands, sacrifice this creature.",
+    "power": "0",
+    "toughness": "2",
+    "color_identity": [
+      "U"
+    ],
+    "keywords": []
+  },
+  {
+    "id": "89503bf6-d720-4fd5-b2cf-fc1197bf0f16",
+    "oracle_id": "8353f834-678a-4fa1-857a-8bfdfb8d6378",
+    "name": "Lurebound Scarecrow",
+    "layout": "normal",
+    "mana_cost": "{3}",
+    "type_line": "Artifact Creature — Scarecrow",
+    "oracle_text": "As this creature enters, choose a color.\nWhen you control no permanents of the chosen color, sacrifice this creature.",
+    "power": "4",
+    "toughness": "4",
+    "color_identity": [],
+    "keywords": []
+  },
+  {
+    "id": "ac2e32d0-f172-4934-9d73-1bc2ab86586e",
+    "oracle_id": "88929373-b2c8-4a81-a809-fed87fd5b0d7",
+    "name": "Dandân",
+    "layout": "normal",
+    "mana_cost": "{U}{U}",
+    "type_line": "Creature — Fish",
+    "oracle_text": "This creature can't attack unless defending player controls an Island.\nWhen you control no Islands, sacrifice this creature.",
+    "power": "4",
+    "toughness": "1",
+    "color_identity": [
+      "U"
+    ],
+    "keywords": []
+  },
+  {
+    "id": "2bed19fa-e497-48de-8459-030e60fdc9a8",
+    "oracle_id": "909e1bff-237a-4259-9c0f-419185681782",
+    "name": "Tethered Griffin",
+    "layout": "normal",
+    "mana_cost": "{W}",
+    "type_line": "Creature — Griffin",
+    "oracle_text": "Flying\nWhen you control no enchantments, sacrifice this creature.",
+    "power": "2",
+    "toughness": "3",
+    "color_identity": [
+      "W"
+    ],
+    "keywords": [
+      "Flying"
+    ]
+  },
+  {
+    "id": "2958de76-a5ec-4e14-a025-4fe0e84c8b4b",
+    "oracle_id": "9a9877b5-9f75-4c83-b11b-f006aecb075b",
+    "name": "Bog Serpent",
+    "layout": "normal",
+    "mana_cost": "{5}{B}",
+    "type_line": "Creature — Serpent",
+    "oracle_text": "This creature can't attack unless defending player controls a Swamp.\nWhen you control no Swamps, sacrifice this creature.",
+    "power": "5",
+    "toughness": "5",
+    "color_identity": [
+      "B"
+    ],
+    "keywords": []
+  },
+  {
+    "id": "f16dac30-52d2-4b87-90b4-4bc7f8f729ee",
+    "oracle_id": "aa1152cb-255f-43fa-81f5-430304ce4d98",
+    "name": "Slipstream Serpent",
+    "layout": "normal",
+    "mana_cost": "{7}{U}",
+    "type_line": "Creature — Serpent",
+    "oracle_text": "This creature can't attack unless defending player controls an Island.\nWhen you control no Islands, sacrifice this creature.\nMorph {5}{U} (You may cast this card face down as a 2/2 creature for {3}. Turn it face up any time for its morph cost.)",
+    "power": "6",
+    "toughness": "6",
+    "color_identity": [
+      "U"
+    ],
+    "keywords": [
+      "Morph"
+    ]
+  },
+  {
+    "id": "84f18188-70fa-433e-a114-2f1dd49388ed",
+    "oracle_id": "bb217f12-532f-4833-a27a-99e290aa47d0",
+    "name": "Island Fish Jasconius",
+    "layout": "normal",
+    "mana_cost": "{4}{U}{U}{U}",
+    "type_line": "Creature — Fish",
+    "oracle_text": "This creature doesn't untap during your untap step.\nAt the beginning of your upkeep, you may pay {U}{U}{U}. If you do, untap this creature.\nThis creature can't attack unless defending player controls an Island.\nWhen you control no Islands, sacrifice this creature.",
+    "power": "6",
+    "toughness": "8",
+    "color_identity": [
+      "U"
+    ],
+    "keywords": []
+  },
+  {
+    "id": "c5f37e36-c004-4b89-a668-5cd984c59019",
+    "oracle_id": "bf7710cb-70cb-42fb-b840-cc4f385daa7a",
+    "name": "Covetous Dragon",
+    "layout": "normal",
+    "mana_cost": "{4}{R}",
+    "type_line": "Creature — Dragon",
+    "oracle_text": "Flying\nWhen you control no artifacts, sacrifice this creature.",
+    "power": "6",
+    "toughness": "5",
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [
+      "Flying"
+    ]
+  },
+  {
+    "id": "4f91724c-0e3b-4289-9af6-9de489d811eb",
+    "oracle_id": "c6b3f924-806d-47d3-b044-72b48470196c",
+    "name": "Pirate Ship",
+    "layout": "normal",
+    "mana_cost": "{4}{U}",
+    "type_line": "Creature — Human Pirate",
+    "oracle_text": "This creature can't attack unless defending player controls an Island.\n{T}: This creature deals 1 damage to any target.\nWhen you control no Islands, sacrifice this creature.",
+    "power": "4",
+    "toughness": "3",
+    "color_identity": [
+      "U"
+    ],
+    "keywords": []
+  },
+  {
+    "id": "80f74884-9b82-419d-9e97-c947a6b7d09f",
+    "oracle_id": "d5129531-e4b6-454e-9c67-dae925c8f2ee",
+    "name": "Manta Ray",
+    "layout": "normal",
+    "mana_cost": "{1}{U}{U}",
+    "type_line": "Creature — Fish",
+    "oracle_text": "This creature can't attack unless defending player controls an Island.\nThis creature can't be blocked except by blue creatures.\nWhen you control no Islands, sacrifice this creature.",
+    "power": "3",
+    "toughness": "3",
+    "color_identity": [
+      "U"
+    ],
+    "keywords": []
+  },
+  {
+    "id": "258a9cdd-c626-404e-b82d-01091f11f107",
+    "oracle_id": "dfbbfbe1-d6c1-4b5b-8d09-949d70b9ff42",
+    "name": "Task Mage Assembly",
+    "layout": "normal",
+    "mana_cost": "{2}{R}",
+    "type_line": "Enchantment",
+    "oracle_text": "When there are no creatures on the battlefield, sacrifice this enchantment.\n{2}: This enchantment deals 1 damage to target creature. Any player may activate this ability but only as a sorcery.",
+    "color_identity": [
+      "R"
+    ],
+    "keywords": []
+  },
+  {
+    "id": "97d082d8-f401-47ad-845c-77776ee647ba",
+    "oracle_id": "e9e5e17a-95fc-41b7-af4f-aec4802960a0",
+    "name": "Lurking Jackals",
+    "layout": "normal",
+    "mana_cost": "{B}",
+    "type_line": "Enchantment",
+    "oracle_text": "When an opponent has 10 or less life, if this permanent is an enchantment, it becomes a 3/2 Jackal creature.",
+    "color_identity": [
+      "B"
+    ],
+    "keywords": []
+  },
+  {
+    "id": "046f6b76-5f17-4728-aa34-72b7eff1d4c9",
+    "oracle_id": "f2c8814b-581b-483b-a7ae-d3d7b962aec1",
+    "name": "Gorilla Pack",
+    "layout": "normal",
+    "mana_cost": "{2}{G}",
+    "type_line": "Creature — Ape",
+    "oracle_text": "This creature can't attack unless defending player controls a Forest.\nWhen you control no Forests, sacrifice this creature.",
+    "power": "3",
+    "toughness": "3",
+    "color_identity": [
+      "G"
+    ],
+    "keywords": []
+  },
+  {
+    "id": "6e2c0a63-5128-408a-bf95-2489b92817a9",
+    "oracle_id": "fe6337dc-df02-4baa-9fe0-b14e8d34186a",
+    "name": "Synod Centurion",
+    "layout": "normal",
+    "mana_cost": "{4}",
+    "type_line": "Artifact Creature — Construct",
+    "oracle_text": "When you control no other artifacts, sacrifice this creature.",
+    "power": "4",
+    "toughness": "4",
+    "color_identity": [],
+    "keywords": []
+  },
+  {
+    "id": "3bf81a39-0a6e-4253-81eb-a24f48253343",
+    "oracle_id": "ff35e480-8ea2-47bb-bb2a-24cefe9c2139",
+    "name": "Ronom Serpent",
+    "layout": "normal",
+    "mana_cost": "{5}{U}",
+    "type_line": "Snow Creature — Serpent",
+    "oracle_text": "This creature can't attack unless defending player controls a snow land.\nWhen you control no snow lands, sacrifice this creature.",
+    "power": "5",
+    "toughness": "6",
+    "color_identity": [
+      "U"
+    ],
+    "keywords": []
+  }
+]

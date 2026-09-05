@@ -265,6 +265,12 @@ try {
     if (observed.pending === 'main') {
       const action = observed.lands[0] || observed.casts[0];
       if (action) {
+        // The normal auto-pass UI can resolve an unopposed own spell between
+        // frames. Use the player's real HOLD control for visible Stack proof.
+        if (!observed.lands.length && action.cohort && !screenshots.has('07-human-cohort-stack')) {
+          const hold = page.locator('.topbtns').getByRole('button', { name: 'HOLD', exact: true });
+          if (!await hold.evaluate(button => button.classList.contains('armed'))) await hold.click();
+        }
         const card = page.getByRole('button', { name: `${action.name}. Playable now. Open card actions.`, exact: true }).first();
         await card.click({ timeout: 5000 });
         clicked = await clickButton(observed.lands.length ? /^Play land$/ : /^Cast(?: |$)/);

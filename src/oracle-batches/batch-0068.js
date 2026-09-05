@@ -6082,21 +6082,23 @@ MTG.registerOracleBatch({
       "implementation": [
         {
           "kind": "spell-generic",
+          "targets": [],
+          "optional": false,
           "effects": [
             {
               "action": "token-inline",
               "who": "you",
               "n": "X",
               "token": {
-                "name": "Forest Dryad land",
+                "name": "Forest Dryad",
                 "super": [],
                 "types": [
+                  "Land",
                   "Creature"
                 ],
                 "subtypes": [
                   "Forest",
-                  "Dryad",
-                  "land"
+                  "Dryad"
                 ],
                 "power": "1",
                 "toughness": "1",
@@ -6107,8 +6109,6 @@ MTG.registerOracleBatch({
               }
             }
           ],
-          "targets": [],
-          "optional": false,
           "contract": "spell-generic-effect"
         }
       ],

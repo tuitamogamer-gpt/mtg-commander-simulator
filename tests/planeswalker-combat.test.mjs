@@ -228,7 +228,7 @@ test('Elspeth i Garruk pokrivaju tokene, masovno uništenje, draw i embleme', as
   assert.equal(game.creatures(hero)[0].kw('trample'), true);
 });
 
-test('Kaya +1, složeni -2 i -6 poštuju tokene i commander replacement', async () => {
+test('Kaya +1, složeni -2 i -6 broje stvarni exile prije commander SBA', async () => {
   const { game, players: [hero, opponent] } = rulesGame();
   const kaya = permanent(game, hero, 'Kaya, Geist Hunter', { loyalty: 8 });
   const [token] = await game.makeTokens('spiritW', hero, { noReplace: true });
@@ -252,9 +252,11 @@ test('Kaya +1, složeni -2 i -6 poštuju tokene i commander replacement', async 
   const spiritBefore = game.creatures(hero).filter(card => card.isToken && card.hasSub('Spirit')).length;
   await pwAbility('Kaya, Geist Hunter', -6).run({ g: game, src: kaya, you: hero, targets: [] });
   const spiritAfter = game.creatures(hero).filter(card => card.isToken && card.hasSub('Spirit')).length;
+  assert.equal(commander.zone, 'exile', 'komander stvarno ulazi u exile tokom sposobnosti');
+  await game.checkSBA();
   assert.equal(commander.zone, 'command');
   assert.equal(normal.zone, 'exile');
-  assert.equal(spiritAfter - spiritBefore, 4, 'samo jedna karta je egzilana, zatim je dvije Kaya -2 udvostruče x4');
+  assert.equal(spiritAfter - spiritBefore, 8, 'obje karte su egzilane, zatim ih dvije Kaya -2 udvostruče x4');
 });
 
 test('Liliana sva tri loyalty moda ispravno barataju -1/-1 counterima i grobljem', async () => {

@@ -1,0 +1,609 @@
+[
+  {
+    "id": "3ca11057-e50a-4817-924a-5bb504d0780f",
+    "oracle_id": "0dd95516-893d-477e-a38c-3cc37c6e7ae0",
+    "name": "Bile Blight",
+    "type_line": "Instant",
+    "layout": "normal",
+    "mana_cost": "{B}{B}",
+    "oracle_text": "Target creature and all other creatures with the same name as that creature get -3/-3 until end of turn.",
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    }
+  },
+  {
+    "id": "04367e72-3f8c-4cba-8bdf-5a1ba9c9f01f",
+    "oracle_id": "359db1e6-bed9-412f-9e7c-f827ff6f2229",
+    "name": "Echoing Courage",
+    "type_line": "Instant",
+    "layout": "normal",
+    "mana_cost": "{1}{G}",
+    "oracle_text": "Target creature and all other creatures with the same name as that creature get +2/+2 until end of turn.",
+    "color_identity": [
+      "G"
+    ],
+    "keywords": [],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "legal",
+      "tlr": "legal"
+    }
+  },
+  {
+    "id": "0c070f12-0342-48d5-ab0e-4fc4701c3669",
+    "oracle_id": "562f7f99-ee67-4a14-b5e2-1a4ae710726d",
+    "name": "Wake of Destruction",
+    "type_line": "Sorcery",
+    "layout": "normal",
+    "mana_cost": "{3}{R}{R}{R}",
+    "oracle_text": "Destroy target land and all other lands with the same name as that land.",
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "not_legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "legal",
+      "predh": "legal",
+      "tlr": "not_legal"
+    }
+  },
+  {
+    "id": "39eb0e67-f989-4430-b2d6-b8b647f0b7ca",
+    "oracle_id": "591fe685-767e-4e6e-905e-cc8b423caa19",
+    "name": "Echoing Return",
+    "type_line": "Sorcery",
+    "layout": "normal",
+    "mana_cost": "{B}",
+    "oracle_text": "Return target creature card and all other cards with the same name as that card from your graveyard to your hand.",
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    }
+  },
+  {
+    "id": "00bca3e9-43c9-4647-8259-00580c0457ea",
+    "oracle_id": "6e7f8e25-49a9-49a0-9bf4-129439344550",
+    "name": "Homing Lightning",
+    "type_line": "Instant",
+    "layout": "normal",
+    "mana_cost": "{2}{R}{R}",
+    "oracle_text": "Homing Lightning deals 4 damage to target creature and each other creature with the same name as that creature.",
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    }
+  },
+  {
+    "id": "f8e688e7-8350-4b78-bd49-a6ffdedad556",
+    "oracle_id": "a1e46cc7-47da-4165-8c6b-f1cd2aa79aa5",
+    "name": "Echoing Decay",
+    "type_line": "Instant",
+    "layout": "normal",
+    "mana_cost": "{1}{B}",
+    "oracle_text": "Target creature and all other creatures with the same name as that creature get -2/-2 until end of turn.",
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "legal",
+      "tlr": "legal"
+    }
+  },
+  {
+    "id": "be464d88-8933-46e8-97b0-3be05f1976a3",
+    "oracle_id": "a5656dab-5ce6-48fd-9eae-2c06969bb8df",
+    "name": "Rat King, Verminister",
+    "type_line": "Legendary Creature — Rat Avatar",
+    "layout": "normal",
+    "mana_cost": "{1}{B}",
+    "oracle_text": "Disappear — At the beginning of your end step, if a permanent left the battlefield under your control this turn, create a 1/1 black Rat creature token and put a +1/+1 counter on Rat King.\n{T}, Sacrifice three Rats: Return target creature card and all other cards with the same name as that card from your graveyard to the battlefield tapped.",
+    "power": "1",
+    "toughness": "1",
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [
+      "Disappear"
+    ],
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    }
+  },
+  {
+    "id": "a2d4152d-c128-453c-86f5-f2ebcfd48b98",
+    "oracle_id": "b9019332-2f02-48d9-be0a-a2b41b79e136",
+    "name": "Sever the Bloodline",
+    "type_line": "Sorcery",
+    "layout": "normal",
+    "mana_cost": "{3}{B}",
+    "oracle_text": "Exile target creature and all other creatures with the same name as that creature.\nFlashback {5}{B}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [
+      "Flashback"
+    ],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    }
+  },
+  {
+    "id": "060e278c-dc34-4a94-9b15-6e9ffb2a1aee",
+    "oracle_id": "d0bc217b-1149-4a33-a4a1-29e07597dc41",
+    "name": "Echoing Calm",
+    "type_line": "Instant",
+    "layout": "normal",
+    "mana_cost": "{1}{W}",
+    "oracle_text": "Destroy target enchantment and all other enchantments with the same name as that enchantment.",
+    "color_identity": [
+      "W"
+    ],
+    "keywords": [],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "legal",
+      "tlr": "legal"
+    }
+  },
+  {
+    "id": "190ac2fe-532d-4d7e-9d74-07ae6850aac8",
+    "oracle_id": "d63adbed-07d3-44e4-83f8-1cbdfc186df4",
+    "name": "Izzet Staticaster",
+    "type_line": "Creature — Human Wizard",
+    "layout": "normal",
+    "mana_cost": "{1}{U}{R}",
+    "oracle_text": "Flash (You may cast this spell any time you could cast an instant.)\nHaste\n{T}: This creature deals 1 damage to target creature and each other creature with the same name as that creature.",
+    "power": "0",
+    "toughness": "3",
+    "color_identity": [
+      "R",
+      "U"
+    ],
+    "keywords": [
+      "Haste",
+      "Flash"
+    ],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    }
+  },
+  {
+    "id": "94faea39-4540-4adc-b9bd-78fefd09ecdf",
+    "oracle_id": "dc29cb25-57f5-4cac-9764-efa644b41296",
+    "name": "Legions to Ashes",
+    "type_line": "Sorcery",
+    "layout": "normal",
+    "mana_cost": "{1}{W}{B}",
+    "oracle_text": "Exile target nonland permanent an opponent controls and all tokens that player controls with the same name as that permanent.",
+    "color_identity": [
+      "B",
+      "W"
+    ],
+    "keywords": [],
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    }
+  },
+  {
+    "id": "90665426-118e-4f0b-8222-1b516678a2f5",
+    "oracle_id": "dcc82c14-d632-4333-be35-4a206a10b184",
+    "name": "Cylian Sunsinger",
+    "type_line": "Creature — Elf Shaman",
+    "layout": "normal",
+    "mana_cost": "{1}{G}",
+    "oracle_text": "{R}{G}{W}: This creature and each other creature with the same name as it get +3/+3 until end of turn.",
+    "power": "2",
+    "toughness": "2",
+    "color_identity": [
+      "G",
+      "R",
+      "W"
+    ],
+    "keywords": [],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "legal",
+      "tlr": "legal"
+    }
+  },
+  {
+    "id": "01f842c8-cd6c-4f4d-9aa8-417a92b37867",
+    "oracle_id": "e04ca2dc-873e-4d80-b1d7-4873ffdb3af5",
+    "name": "Echoing Ruin",
+    "type_line": "Sorcery",
+    "layout": "normal",
+    "mana_cost": "{1}{R}",
+    "oracle_text": "Destroy target artifact and all other artifacts with the same name as that artifact.",
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "legal",
+      "tlr": "legal"
+    }
+  },
+  {
+    "id": "5d987d26-c8e8-4edf-8ac0-6a2980265710",
+    "oracle_id": "ef100544-3e6d-4661-a1d1-8b02e58c059c",
+    "name": "Echoing Truth",
+    "type_line": "Instant",
+    "layout": "normal",
+    "mana_cost": "{1}{U}",
+    "oracle_text": "Return target nonland permanent and all other permanents with the same name as that permanent to their owners' hands.",
+    "color_identity": [
+      "U"
+    ],
+    "keywords": [],
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "legal",
+      "tlr": "legal"
+    }
+  }
+]

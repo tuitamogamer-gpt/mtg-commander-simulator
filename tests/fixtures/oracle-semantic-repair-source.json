@@ -1,0 +1,1216 @@
+[
+  {
+    "object": "card",
+    "id": "1c95f8b8-faba-4412-8d8f-093e2ec903f0",
+    "oracle_id": "3cc79d36-1a24-4395-8ad1-915a65db8a60",
+    "multiverse_ids": [
+      583754
+    ],
+    "mtgo_id": 104958,
+    "arena_id": 82655,
+    "tcgplayer_id": 452655,
+    "cardmarket_id": 683330,
+    "name": "Awaken the Woods",
+    "lang": "en",
+    "released_at": "2022-11-18",
+    "uri": "https://api.scryfall.com/cards/1c95f8b8-faba-4412-8d8f-093e2ec903f0",
+    "scryfall_uri": "https://scryfall.com/card/bro/170/awaken-the-woods?utm_source=api",
+    "layout": "normal",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T05:20:50Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/1/c/1c95f8b8-faba-4412-8d8f-093e2ec903f0.jpg?1783920050",
+      "normal": "https://cards.scryfall.io/normal/front/1/c/1c95f8b8-faba-4412-8d8f-093e2ec903f0.jpg?1783920050",
+      "large": "https://cards.scryfall.io/large/front/1/c/1c95f8b8-faba-4412-8d8f-093e2ec903f0.jpg?1783920050",
+      "png": "https://cards.scryfall.io/png/front/1/c/1c95f8b8-faba-4412-8d8f-093e2ec903f0.png?1783920050",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/1/c/1c95f8b8-faba-4412-8d8f-093e2ec903f0.jpg?1783920050",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/1/c/1c95f8b8-faba-4412-8d8f-093e2ec903f0.jpg?1783920050",
+      "thumb": "https://cards.scryfall.io/thumb/front/1/c/1c95f8b8-faba-4412-8d8f-093e2ec903f0.webp?1783920050",
+      "grid": "https://cards.scryfall.io/grid/front/1/c/1c95f8b8-faba-4412-8d8f-093e2ec903f0.webp?1783920050",
+      "display": "https://cards.scryfall.io/display/front/1/c/1c95f8b8-faba-4412-8d8f-093e2ec903f0.webp?1783920050",
+      "art": "https://cards.scryfall.io/art/front/1/c/1c95f8b8-faba-4412-8d8f-093e2ec903f0.webp?1783920050",
+      "crop": "https://cards.scryfall.io/crop/front/1/c/1c95f8b8-faba-4412-8d8f-093e2ec903f0.webp?1783920050"
+    },
+    "mana_cost": "{X}{G}{G}",
+    "cmc": 2,
+    "type_line": "Sorcery",
+    "oracle_text": "Create X 1/1 green Forest Dryad land creature tokens. (They're affected by summoning sickness.)",
+    "colors": [
+      "G"
+    ],
+    "color_identity": [
+      "G"
+    ],
+    "keywords": [],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "d661aa8e-46fd-4f47-ade7-99c9142f3733",
+        "component": "combo_piece",
+        "name": "Awaken the Woods",
+        "type_line": "Sorcery",
+        "uri": "https://api.scryfall.com/cards/d661aa8e-46fd-4f47-ade7-99c9142f3733"
+      },
+      {
+        "object": "related_card",
+        "id": "74de70f2-93b6-4fc5-8c4d-464f880d3c54",
+        "component": "token",
+        "name": "Forest Dryad",
+        "type_line": "Token Land Creature — Forest Dryad",
+        "uri": "https://api.scryfall.com/cards/74de70f2-93b6-4fc5-8c4d-464f880d3c54"
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "4219a14e-6701-4ddd-a185-21dc054ab19b",
+    "set": "bro",
+    "set_name": "The Brothers' War",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/4219a14e-6701-4ddd-a185-21dc054ab19b",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Abro&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/bro?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/1c95f8b8-faba-4412-8d8f-093e2ec903f0/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A3cc79d36-1a24-4395-8ad1-915a65db8a60&unique=prints",
+    "collector_number": "170",
+    "digital": false,
+    "rarity": "mythic",
+    "flavor_text": "\"We expected the Argothians to stand their ground. We didn't expect the ground itself to stand.\"\n—Myrel, Shield of Argive",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Bryan Sola",
+    "artist_ids": [
+      "e6879299-a28b-48bc-8db1-9cafcf36de09"
+    ],
+    "illustration_id": "5ce89ff9-ca55-434c-9e0d-56d3c982cdd9",
+    "border_color": "black",
+    "frame": "2015",
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": true,
+    "edhrec_rank": 1319,
+    "preview": {
+      "source": "spieletipps",
+      "source_uri": "https://www.spieletipps.de/n_53915/",
+      "previewed_at": "2022-11-02"
+    },
+    "prices": {
+      "usd": "14.71",
+      "usd_foil": "19.95",
+      "usd_etched": null,
+      "eur": "12.65",
+      "eur_foil": "11.55",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=583754&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DAwaken%2Bthe%2BWoods",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DAwaken%2Bthe%2BWoods",
+      "edhrec": "https://edhrec.com/route/?cc=Awaken+the+Woods"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F452655%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=683330&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/104958?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "75c38cc9-07de-46d4-8195-f04b2b7e0fee",
+    "oracle_id": "470c16c5-b078-47f5-89b0-42991e1f7157",
+    "multiverse_ids": [],
+    "resource_id": "A69D6FD3EF361D36494191796A5FF75D11A036A23B3E6BBB5368730FD2D26D38",
+    "mtgo_id": 143063,
+    "arena_id": 96799,
+    "tcgplayer_id": 638904,
+    "cardmarket_id": 830502,
+    "name": "Sami, Ship's Engineer",
+    "lang": "en",
+    "released_at": "2025-08-01",
+    "uri": "https://api.scryfall.com/cards/75c38cc9-07de-46d4-8195-f04b2b7e0fee",
+    "scryfall_uri": "https://scryfall.com/card/eoe/225/sami-ships-engineer?utm_source=api",
+    "layout": "normal",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T01:25:24Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/7/5/75c38cc9-07de-46d4-8195-f04b2b7e0fee.jpg?1783905924",
+      "normal": "https://cards.scryfall.io/normal/front/7/5/75c38cc9-07de-46d4-8195-f04b2b7e0fee.jpg?1783905924",
+      "large": "https://cards.scryfall.io/large/front/7/5/75c38cc9-07de-46d4-8195-f04b2b7e0fee.jpg?1783905924",
+      "png": "https://cards.scryfall.io/png/front/7/5/75c38cc9-07de-46d4-8195-f04b2b7e0fee.png?1783905924",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/7/5/75c38cc9-07de-46d4-8195-f04b2b7e0fee.jpg?1783905924",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/7/5/75c38cc9-07de-46d4-8195-f04b2b7e0fee.jpg?1783905924",
+      "thumb": "https://cards.scryfall.io/thumb/front/7/5/75c38cc9-07de-46d4-8195-f04b2b7e0fee.webp?1783905924",
+      "grid": "https://cards.scryfall.io/grid/front/7/5/75c38cc9-07de-46d4-8195-f04b2b7e0fee.webp?1783905924",
+      "display": "https://cards.scryfall.io/display/front/7/5/75c38cc9-07de-46d4-8195-f04b2b7e0fee.webp?1783905924",
+      "art": "https://cards.scryfall.io/art/front/7/5/75c38cc9-07de-46d4-8195-f04b2b7e0fee.webp?1783905924",
+      "crop": "https://cards.scryfall.io/crop/front/7/5/75c38cc9-07de-46d4-8195-f04b2b7e0fee.webp?1783905924"
+    },
+    "mana_cost": "{2}{R}{W}",
+    "cmc": 4,
+    "type_line": "Legendary Creature — Human Artificer",
+    "oracle_text": "At the beginning of your end step, if you control two or more tapped creatures, create a tapped 2/2 colorless Robot artifact creature token.",
+    "power": "2",
+    "toughness": "4",
+    "colors": [
+      "R",
+      "W"
+    ],
+    "color_identity": [
+      "R",
+      "W"
+    ],
+    "keywords": [],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "c46f9a07-005c-44b7-8057-b2f00b274dd6",
+        "component": "token",
+        "name": "Robot",
+        "type_line": "Token Artifact Creature — Robot",
+        "uri": "https://api.scryfall.com/cards/c46f9a07-005c-44b7-8057-b2f00b274dd6"
+      },
+      {
+        "object": "related_card",
+        "id": "75c38cc9-07de-46d4-8195-f04b2b7e0fee",
+        "component": "combo_piece",
+        "name": "Sami, Ship's Engineer",
+        "type_line": "Legendary Creature — Human Artificer",
+        "uri": "https://api.scryfall.com/cards/75c38cc9-07de-46d4-8195-f04b2b7e0fee"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "452951cf-378b-4472-b7fe-572fe2af2ac0",
+    "set": "eoe",
+    "set_name": "Edge of Eternities",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/452951cf-378b-4472-b7fe-572fe2af2ac0",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aeoe&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/eoe?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/75c38cc9-07de-46d4-8195-f04b2b7e0fee/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A470c16c5-b078-47f5-89b0-42991e1f7157&unique=prints",
+    "collector_number": "225",
+    "digital": false,
+    "rarity": "uncommon",
+    "flavor_text": "Whenever Sami was down on their luck, they returned to an old comfort: the clinks and clanks of tinkering.",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Zara Alfonso",
+    "artist_ids": [
+      "329a7971-c37e-47f7-9143-58dc929420a7"
+    ],
+    "illustration_id": "d7a21c80-7157-4965-b6d0-d1f6ba0aec33",
+    "border_color": "black",
+    "frame": "2015",
+    "frame_effects": [
+      "legendary"
+    ],
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 13097,
+    "preview": {
+      "source": "Wizards of the Coast",
+      "source_uri": "https://magic.wizards.com/en/news/feature/collecting-edge-of-eternities",
+      "previewed_at": "2025-06-20"
+    },
+    "prices": {
+      "usd": "0.21",
+      "usd_foil": "0.22",
+      "usd_etched": null,
+      "eur": "0.04",
+      "eur_foil": "0.16",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DSami%252C%2BShip%2527s%2BEngineer",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DSami%252C%2BShip%2527s%2BEngineer",
+      "edhrec": "https://edhrec.com/route/?cc=Sami%2C+Ship%27s+Engineer"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F638904%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=830502&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/143063?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "0cb84193-9648-46e5-a34d-c12cc3f1d7f2",
+    "oracle_id": "52fa7e9b-36d9-409c-8981-6f8dfd8bb031",
+    "multiverse_ids": [
+      426812
+    ],
+    "mtgo_id": 63822,
+    "mtgo_foil_id": 63823,
+    "tcgplayer_id": 130061,
+    "cardmarket_id": 296797,
+    "name": "Stir the Sands",
+    "lang": "en",
+    "released_at": "2017-04-28",
+    "uri": "https://api.scryfall.com/cards/0cb84193-9648-46e5-a34d-c12cc3f1d7f2",
+    "scryfall_uri": "https://scryfall.com/card/akh/110/stir-the-sands?utm_source=api",
+    "layout": "normal",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T09:54:59Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/0/c/0cb84193-9648-46e5-a34d-c12cc3f1d7f2.jpg?1783936499",
+      "normal": "https://cards.scryfall.io/normal/front/0/c/0cb84193-9648-46e5-a34d-c12cc3f1d7f2.jpg?1783936499",
+      "large": "https://cards.scryfall.io/large/front/0/c/0cb84193-9648-46e5-a34d-c12cc3f1d7f2.jpg?1783936499",
+      "png": "https://cards.scryfall.io/png/front/0/c/0cb84193-9648-46e5-a34d-c12cc3f1d7f2.png?1783936499",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/0/c/0cb84193-9648-46e5-a34d-c12cc3f1d7f2.jpg?1783936499",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/0/c/0cb84193-9648-46e5-a34d-c12cc3f1d7f2.jpg?1783936499",
+      "thumb": "https://cards.scryfall.io/thumb/front/0/c/0cb84193-9648-46e5-a34d-c12cc3f1d7f2.webp?1783936499",
+      "grid": "https://cards.scryfall.io/grid/front/0/c/0cb84193-9648-46e5-a34d-c12cc3f1d7f2.webp?1783936499",
+      "display": "https://cards.scryfall.io/display/front/0/c/0cb84193-9648-46e5-a34d-c12cc3f1d7f2.webp?1783936499",
+      "art": "https://cards.scryfall.io/art/front/0/c/0cb84193-9648-46e5-a34d-c12cc3f1d7f2.webp?1783936499",
+      "crop": "https://cards.scryfall.io/crop/front/0/c/0cb84193-9648-46e5-a34d-c12cc3f1d7f2.webp?1783936499"
+    },
+    "mana_cost": "{4}{B}{B}",
+    "cmc": 6,
+    "type_line": "Sorcery",
+    "oracle_text": "Create three 2/2 black Zombie creature tokens.\nCycling {3}{B} ({3}{B}, Discard this card: Draw a card.)\nWhen you cycle this card, create a 2/2 black Zombie creature token.",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [
+      "Cycling"
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "0cb84193-9648-46e5-a34d-c12cc3f1d7f2",
+        "component": "combo_piece",
+        "name": "Stir the Sands",
+        "type_line": "Sorcery",
+        "uri": "https://api.scryfall.com/cards/0cb84193-9648-46e5-a34d-c12cc3f1d7f2"
+      },
+      {
+        "object": "related_card",
+        "id": "b5bd6905-79be-4d2c-a343-f6e6a181b3e6",
+        "component": "token",
+        "name": "Zombie",
+        "type_line": "Token Creature — Zombie",
+        "uri": "https://api.scryfall.com/cards/b5bd6905-79be-4d2c-a343-f6e6a181b3e6"
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "not_legal"
+    },
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "02d1c536-68bc-4208-9b65-7741ef1f9da8",
+    "set": "akh",
+    "set_name": "Amonkhet",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/02d1c536-68bc-4208-9b65-7741ef1f9da8",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aakh&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/akh?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/0cb84193-9648-46e5-a34d-c12cc3f1d7f2/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A52fa7e9b-36d9-409c-8981-6f8dfd8bb031&unique=prints",
+    "collector_number": "110",
+    "digital": false,
+    "rarity": "uncommon",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "David Gaillet",
+    "artist_ids": [
+      "3496c5b4-57bf-4e5e-8bac-a1e05a911a2d"
+    ],
+    "illustration_id": "1fec0cfc-374d-42be-ba12-be2ef7394aaa",
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 22915,
+    "penny_rank": 8890,
+    "prices": {
+      "usd": "0.22",
+      "usd_foil": "0.51",
+      "usd_etched": null,
+      "eur": "0.12",
+      "eur_foil": "0.24",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=426812&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DStir%2Bthe%2BSands",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DStir%2Bthe%2BSands",
+      "edhrec": "https://edhrec.com/route/?cc=Stir+the+Sands"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F130061%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=296797&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/63822?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "34fb2206-241a-46c6-9f48-af72119ee8bd",
+    "oracle_id": "6874be51-623d-4eaf-a67a-2fcbb9a8ceca",
+    "multiverse_ids": [],
+    "name": "Tempt with Bunnies",
+    "lang": "en",
+    "released_at": "2026-11-09",
+    "uri": "https://api.scryfall.com/cards/34fb2206-241a-46c6-9f48-af72119ee8bd",
+    "scryfall_uri": "https://scryfall.com/card/plst/BLC-13/tempt-with-bunnies?utm_source=api",
+    "layout": "normal",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-08-25T17:02:19Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/3/4/34fb2206-241a-46c6-9f48-af72119ee8bd.jpg?1787677339",
+      "normal": "https://cards.scryfall.io/normal/front/3/4/34fb2206-241a-46c6-9f48-af72119ee8bd.jpg?1787677339",
+      "large": "https://cards.scryfall.io/large/front/3/4/34fb2206-241a-46c6-9f48-af72119ee8bd.jpg?1787677339",
+      "png": "https://cards.scryfall.io/png/front/3/4/34fb2206-241a-46c6-9f48-af72119ee8bd.png?1787677339",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/3/4/34fb2206-241a-46c6-9f48-af72119ee8bd.jpg?1787677339",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/3/4/34fb2206-241a-46c6-9f48-af72119ee8bd.jpg?1787677339",
+      "thumb": "https://cards.scryfall.io/thumb/front/3/4/34fb2206-241a-46c6-9f48-af72119ee8bd.webp?1787677339",
+      "grid": "https://cards.scryfall.io/grid/front/3/4/34fb2206-241a-46c6-9f48-af72119ee8bd.webp?1787677339",
+      "display": "https://cards.scryfall.io/display/front/3/4/34fb2206-241a-46c6-9f48-af72119ee8bd.webp?1787677339",
+      "art": "https://cards.scryfall.io/art/front/3/4/34fb2206-241a-46c6-9f48-af72119ee8bd.webp?1787677339",
+      "crop": "https://cards.scryfall.io/crop/front/3/4/34fb2206-241a-46c6-9f48-af72119ee8bd.webp?1787677339"
+    },
+    "mana_cost": "{2}{W}",
+    "cmc": 3,
+    "type_line": "Sorcery",
+    "oracle_text": "Tempting Offer — Draw a card and create a 1/1 white Rabbit creature token. Then each opponent may draw a card and create a 1/1 white Rabbit creature token. For each opponent who does, you draw a card and you create a 1/1 white Rabbit creature token.",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "W"
+    ],
+    "keywords": [
+      "Tempting offer"
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "34fb2206-241a-46c6-9f48-af72119ee8bd",
+        "component": "combo_piece",
+        "name": "Tempt with Bunnies",
+        "type_line": "Sorcery",
+        "uri": "https://api.scryfall.com/cards/34fb2206-241a-46c6-9f48-af72119ee8bd"
+      },
+      {
+        "object": "related_card",
+        "id": "63ae4f9c-ad6e-4d6a-89f1-653916bf5373",
+        "component": "token",
+        "name": "Rabbit",
+        "type_line": "Token Creature — Rabbit",
+        "uri": "https://api.scryfall.com/cards/63ae4f9c-ad6e-4d6a-89f1-653916bf5373"
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "not_legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": false,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": true,
+    "variation": false,
+    "set_id": "67e47ba2-b019-4181-9005-fe9fc021de44",
+    "set": "plst",
+    "set_name": "The List",
+    "set_type": "masters",
+    "set_uri": "https://api.scryfall.com/sets/67e47ba2-b019-4181-9005-fe9fc021de44",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aplst&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/plst?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/34fb2206-241a-46c6-9f48-af72119ee8bd/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A6874be51-623d-4eaf-a67a-2fcbb9a8ceca&unique=prints",
+    "collector_number": "BLC-13",
+    "digital": false,
+    "rarity": "rare",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Ben Wootten",
+    "artist_ids": [
+      "31cdca96-ecde-4245-bfb6-653929d57d9c"
+    ],
+    "illustration_id": "df8ce53b-fef8-41b9-84b8-2fa435a45b8d",
+    "border_color": "black",
+    "frame": "2015",
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": false,
+    "story_spotlight": false,
+    "edhrec_rank": 1946,
+    "prices": {
+      "usd": null,
+      "usd_foil": null,
+      "usd_etched": null,
+      "eur": null,
+      "eur_foil": null,
+      "tix": null
+    },
+    "related_uris": {
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DTempt%2Bwith%2BBunnies",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DTempt%2Bwith%2BBunnies",
+      "edhrec": "https://edhrec.com/route/?cc=Tempt+with+Bunnies"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fmagic%2Fproduct%3FproductLineName%3Dmagic%26q%3DTempt%2Bwith%2BBunnies%26view%3Dgrid",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products/Search?referrer=scryfall&searchString=Tempt+with+Bunnies&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards?affiliate_id=scryfall&data%5Bsearch%5D=Tempt+with+Bunnies&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a",
+    "oracle_id": "86e0e718-82b5-4c99-9837-1b4d8729a27e",
+    "multiverse_ids": [],
+    "resource_id": "AC8DBA9EB50A15A90831EBB6487FD37947CD2401C6441DDDC8635309CA8A7DE1",
+    "mtgo_id": 142899,
+    "arena_id": 96717,
+    "tcgplayer_id": 643632,
+    "cardmarket_id": 835359,
+    "name": "Melded Moxite",
+    "lang": "en",
+    "released_at": "2025-08-01",
+    "uri": "https://api.scryfall.com/cards/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a",
+    "scryfall_uri": "https://scryfall.com/card/eoe/143/melded-moxite?utm_source=api",
+    "layout": "normal",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T01:25:52Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/4/7/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a.jpg?1783905952",
+      "normal": "https://cards.scryfall.io/normal/front/4/7/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a.jpg?1783905952",
+      "large": "https://cards.scryfall.io/large/front/4/7/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a.jpg?1783905952",
+      "png": "https://cards.scryfall.io/png/front/4/7/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a.png?1783905952",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/4/7/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a.jpg?1783905952",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/4/7/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a.jpg?1783905952",
+      "thumb": "https://cards.scryfall.io/thumb/front/4/7/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a.webp?1783905952",
+      "grid": "https://cards.scryfall.io/grid/front/4/7/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a.webp?1783905952",
+      "display": "https://cards.scryfall.io/display/front/4/7/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a.webp?1783905952",
+      "art": "https://cards.scryfall.io/art/front/4/7/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a.webp?1783905952",
+      "crop": "https://cards.scryfall.io/crop/front/4/7/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a.webp?1783905952"
+    },
+    "mana_cost": "{1}{R}",
+    "cmc": 2,
+    "type_line": "Artifact",
+    "oracle_text": "When this artifact enters, you may discard a card. If you do, draw two cards.\n{3}, Sacrifice this artifact: Create a tapped 2/2 colorless Robot artifact creature token.",
+    "colors": [
+      "R"
+    ],
+    "color_identity": [
+      "R"
+    ],
+    "keywords": [],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "c46f9a07-005c-44b7-8057-b2f00b274dd6",
+        "component": "token",
+        "name": "Robot",
+        "type_line": "Token Artifact Creature — Robot",
+        "uri": "https://api.scryfall.com/cards/c46f9a07-005c-44b7-8057-b2f00b274dd6"
+      },
+      {
+        "object": "related_card",
+        "id": "474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a",
+        "component": "combo_piece",
+        "name": "Melded Moxite",
+        "type_line": "Artifact",
+        "uri": "https://api.scryfall.com/cards/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "452951cf-378b-4472-b7fe-572fe2af2ac0",
+    "set": "eoe",
+    "set_name": "Edge of Eternities",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/452951cf-378b-4472-b7fe-572fe2af2ac0",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aeoe&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/eoe?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/474c067f-eb24-4ae8-b4c0-f6f8e24cdb2a/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A86e0e718-82b5-4c99-9837-1b4d8729a27e&unique=prints",
+    "collector_number": "143",
+    "digital": false,
+    "rarity": "common",
+    "flavor_text": "Only the most skilled matter shapers can imbue moxite with other raw energies, but the rewards are well worth the dangers.",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Alexandr Leskinen",
+    "artist_ids": [
+      "f7341fb0-cf38-4391-af7e-fb3f024d4eef"
+    ],
+    "illustration_id": "90006ed6-d7cc-46a2-8ea4-d7613fe133ec",
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 9261,
+    "preview": {
+      "source": "Wizards of the Coast",
+      "source_uri": "https://www.facebook.com/MagicTheGathering",
+      "previewed_at": "2025-07-14"
+    },
+    "prices": {
+      "usd": "0.23",
+      "usd_foil": "0.33",
+      "usd_etched": null,
+      "eur": "0.17",
+      "eur_foil": "0.33",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DMelded%2BMoxite",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DMelded%2BMoxite",
+      "edhrec": "https://edhrec.com/route/?cc=Melded+Moxite"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F643632%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=835359&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/142899?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "2a968f01-36ef-4cf6-b1db-630c9cde2064",
+    "oracle_id": "9c009b3f-6580-4ab8-84e8-d4cf7a456a02",
+    "multiverse_ids": [],
+    "resource_id": "FD86CEBE5417249174E9AA026D2AA7843343D12F44BB3D4BF1999D492E92130E",
+    "mtgo_id": 142821,
+    "arena_id": 96678,
+    "tcgplayer_id": 644741,
+    "cardmarket_id": 836801,
+    "name": "Gravpack Monoist",
+    "lang": "en",
+    "released_at": "2025-08-01",
+    "uri": "https://api.scryfall.com/cards/2a968f01-36ef-4cf6-b1db-630c9cde2064",
+    "scryfall_uri": "https://scryfall.com/card/eoe/104/gravpack-monoist?utm_source=api",
+    "layout": "normal",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T01:26:05Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/2/a/2a968f01-36ef-4cf6-b1db-630c9cde2064.jpg?1783905965",
+      "normal": "https://cards.scryfall.io/normal/front/2/a/2a968f01-36ef-4cf6-b1db-630c9cde2064.jpg?1783905965",
+      "large": "https://cards.scryfall.io/large/front/2/a/2a968f01-36ef-4cf6-b1db-630c9cde2064.jpg?1783905965",
+      "png": "https://cards.scryfall.io/png/front/2/a/2a968f01-36ef-4cf6-b1db-630c9cde2064.png?1783905965",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/2/a/2a968f01-36ef-4cf6-b1db-630c9cde2064.jpg?1783905965",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/2/a/2a968f01-36ef-4cf6-b1db-630c9cde2064.jpg?1783905965",
+      "thumb": "https://cards.scryfall.io/thumb/front/2/a/2a968f01-36ef-4cf6-b1db-630c9cde2064.webp?1783905965",
+      "grid": "https://cards.scryfall.io/grid/front/2/a/2a968f01-36ef-4cf6-b1db-630c9cde2064.webp?1783905965",
+      "display": "https://cards.scryfall.io/display/front/2/a/2a968f01-36ef-4cf6-b1db-630c9cde2064.webp?1783905965",
+      "art": "https://cards.scryfall.io/art/front/2/a/2a968f01-36ef-4cf6-b1db-630c9cde2064.webp?1783905965",
+      "crop": "https://cards.scryfall.io/crop/front/2/a/2a968f01-36ef-4cf6-b1db-630c9cde2064.webp?1783905965"
+    },
+    "mana_cost": "{2}{B}",
+    "cmc": 3,
+    "type_line": "Creature — Human Scout",
+    "oracle_text": "Flying\nWhen this creature dies, create a tapped 2/2 colorless Robot artifact creature token.",
+    "power": "2",
+    "toughness": "1",
+    "colors": [
+      "B"
+    ],
+    "color_identity": [
+      "B"
+    ],
+    "keywords": [
+      "Flying"
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "c46f9a07-005c-44b7-8057-b2f00b274dd6",
+        "component": "token",
+        "name": "Robot",
+        "type_line": "Token Artifact Creature — Robot",
+        "uri": "https://api.scryfall.com/cards/c46f9a07-005c-44b7-8057-b2f00b274dd6"
+      },
+      {
+        "object": "related_card",
+        "id": "2a968f01-36ef-4cf6-b1db-630c9cde2064",
+        "component": "combo_piece",
+        "name": "Gravpack Monoist",
+        "type_line": "Creature — Human Scout",
+        "uri": "https://api.scryfall.com/cards/2a968f01-36ef-4cf6-b1db-630c9cde2064"
+      }
+    ],
+    "legalities": {
+      "standard": "legal",
+      "future": "legal",
+      "historic": "legal",
+      "timeless": "legal",
+      "gladiator": "legal",
+      "pioneer": "legal",
+      "modern": "legal",
+      "legacy": "legal",
+      "pauper": "legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "legal",
+      "brawl": "legal",
+      "competitivebrawl": "legal",
+      "alchemy": "legal",
+      "paupercommander": "legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "arena",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "452951cf-378b-4472-b7fe-572fe2af2ac0",
+    "set": "eoe",
+    "set_name": "Edge of Eternities",
+    "set_type": "expansion",
+    "set_uri": "https://api.scryfall.com/sets/452951cf-378b-4472-b7fe-572fe2af2ac0",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aeoe&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/eoe?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/2a968f01-36ef-4cf6-b1db-630c9cde2064/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A9c009b3f-6580-4ab8-84e8-d4cf7a456a02&unique=prints",
+    "collector_number": "104",
+    "digital": false,
+    "rarity": "common",
+    "flavor_text": "Her food stores will run out before her fuel, leaving only her mechan gravpack to carry her remains to the Next Eternity.",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Edgar Sánchez Hidalgo",
+    "artist_ids": [
+      "cd897b75-a7b0-4902-8dc4-b1fda5303ec8"
+    ],
+    "illustration_id": "0aac2018-eed1-41d1-92bb-4f6fe62a80f9",
+    "border_color": "black",
+    "frame": "2015",
+    "full_art": false,
+    "textless": false,
+    "booster": true,
+    "story_spotlight": false,
+    "edhrec_rank": 20934,
+    "prices": {
+      "usd": "0.13",
+      "usd_foil": "0.17",
+      "usd_etched": null,
+      "eur": "0.04",
+      "eur_foil": "0.05",
+      "tix": "0.03"
+    },
+    "related_uris": {
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DGravpack%2BMonoist",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DGravpack%2BMonoist",
+      "edhrec": "https://edhrec.com/route/?cc=Gravpack+Monoist"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F644741%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=836801&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/142821?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "e63ba7e6-87a9-49ef-bddc-60543edfd726",
+    "oracle_id": "ca9f9017-c952-4e89-b284-02396e6be0af",
+    "multiverse_ids": [
+      658331
+    ],
+    "mtgo_id": 125153,
+    "tcgplayer_id": 545114,
+    "cardmarket_id": 764501,
+    "name": "Sand Scout",
+    "lang": "en",
+    "released_at": "2024-04-19",
+    "uri": "https://api.scryfall.com/cards/e63ba7e6-87a9-49ef-bddc-60543edfd726",
+    "scryfall_uri": "https://scryfall.com/card/otc/11/sand-scout?utm_source=api",
+    "layout": "normal",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T03:06:11Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/e/6/e63ba7e6-87a9-49ef-bddc-60543edfd726.jpg?1783911971",
+      "normal": "https://cards.scryfall.io/normal/front/e/6/e63ba7e6-87a9-49ef-bddc-60543edfd726.jpg?1783911971",
+      "large": "https://cards.scryfall.io/large/front/e/6/e63ba7e6-87a9-49ef-bddc-60543edfd726.jpg?1783911971",
+      "png": "https://cards.scryfall.io/png/front/e/6/e63ba7e6-87a9-49ef-bddc-60543edfd726.png?1783911971",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/e/6/e63ba7e6-87a9-49ef-bddc-60543edfd726.jpg?1783911971",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/e/6/e63ba7e6-87a9-49ef-bddc-60543edfd726.jpg?1783911971",
+      "thumb": "https://cards.scryfall.io/thumb/front/e/6/e63ba7e6-87a9-49ef-bddc-60543edfd726.webp?1783911971",
+      "grid": "https://cards.scryfall.io/grid/front/e/6/e63ba7e6-87a9-49ef-bddc-60543edfd726.webp?1783911971",
+      "display": "https://cards.scryfall.io/display/front/e/6/e63ba7e6-87a9-49ef-bddc-60543edfd726.webp?1783911971",
+      "art": "https://cards.scryfall.io/art/front/e/6/e63ba7e6-87a9-49ef-bddc-60543edfd726.webp?1783911971",
+      "crop": "https://cards.scryfall.io/crop/front/e/6/e63ba7e6-87a9-49ef-bddc-60543edfd726.webp?1783911971"
+    },
+    "mana_cost": "{1}{W}",
+    "cmc": 2,
+    "type_line": "Creature — Human Scout",
+    "oracle_text": "When this creature enters, if an opponent controls more lands than you, search your library for a Desert card, put it onto the battlefield tapped, then shuffle.\nWhenever one or more land cards are put into your graveyard from anywhere, create a 1/1 red, green, and white Sand Warrior creature token. This ability triggers only once each turn.",
+    "power": "2",
+    "toughness": "2",
+    "colors": [
+      "W"
+    ],
+    "color_identity": [
+      "W"
+    ],
+    "keywords": [],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "f3e51b4d-3859-48c2-a409-0fc096a6d484",
+        "component": "token",
+        "name": "Sand Warrior",
+        "type_line": "Token Creature — Sand Warrior",
+        "uri": "https://api.scryfall.com/cards/f3e51b4d-3859-48c2-a409-0fc096a6d484"
+      },
+      {
+        "object": "related_card",
+        "id": "5dd3a550-de5c-4f4f-a55f-07c84d8c45f8",
+        "component": "combo_piece",
+        "name": "Sand Scout",
+        "type_line": "Creature — Human Scout",
+        "uri": "https://api.scryfall.com/cards/5dd3a550-de5c-4f4f-a55f-07c84d8c45f8"
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "not_legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": false,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "d6548798-0c10-4509-b71a-2d8b1d14665a",
+    "set": "otc",
+    "set_name": "Outlaws of Thunder Junction Commander",
+    "set_type": "commander",
+    "set_uri": "https://api.scryfall.com/sets/d6548798-0c10-4509-b71a-2d8b1d14665a",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aotc&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/otc?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/e63ba7e6-87a9-49ef-bddc-60543edfd726/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Aca9f9017-c952-4e89-b284-02396e6be0af&unique=prints",
+    "collector_number": "11",
+    "digital": false,
+    "rarity": "rare",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Olena Richards",
+    "artist_ids": [
+      "fad4282c-49d1-4b5b-be1d-713369fc8bc8"
+    ],
+    "illustration_id": "26a27073-37ca-4136-9cf5-70ba650e5c12",
+    "border_color": "black",
+    "frame": "2015",
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": false,
+    "story_spotlight": false,
+    "edhrec_rank": 5087,
+    "prices": {
+      "usd": "5.09",
+      "usd_foil": null,
+      "usd_etched": null,
+      "eur": "6.96",
+      "eur_foil": null,
+      "tix": "18.32"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=658331&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DSand%2BScout",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DSand%2BScout",
+      "edhrec": "https://edhrec.com/route/?cc=Sand+Scout"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F545114%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=764501&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/125153?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  },
+  {
+    "object": "card",
+    "id": "a5b765f3-e59e-4af1-bac5-e50797f8629f",
+    "oracle_id": "f99f4b52-21ae-47a2-8ae6-b0aa7386723a",
+    "multiverse_ids": [
+      586469
+    ],
+    "mtgo_id": 105214,
+    "tcgplayer_id": 453132,
+    "cardmarket_id": 683484,
+    "name": "Staff of Titania",
+    "lang": "en",
+    "released_at": "2022-11-18",
+    "uri": "https://api.scryfall.com/cards/a5b765f3-e59e-4af1-bac5-e50797f8629f",
+    "scryfall_uri": "https://scryfall.com/card/brc/27/staff-of-titania?utm_source=api",
+    "layout": "normal",
+    "highres_image": true,
+    "image_status": "highres_scan",
+    "image_updated_at": "2026-07-13T05:15:13Z",
+    "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/a/5/a5b765f3-e59e-4af1-bac5-e50797f8629f.jpg?1783919713",
+      "normal": "https://cards.scryfall.io/normal/front/a/5/a5b765f3-e59e-4af1-bac5-e50797f8629f.jpg?1783919713",
+      "large": "https://cards.scryfall.io/large/front/a/5/a5b765f3-e59e-4af1-bac5-e50797f8629f.jpg?1783919713",
+      "png": "https://cards.scryfall.io/png/front/a/5/a5b765f3-e59e-4af1-bac5-e50797f8629f.png?1783919713",
+      "art_crop": "https://cards.scryfall.io/art_crop/front/a/5/a5b765f3-e59e-4af1-bac5-e50797f8629f.jpg?1783919713",
+      "border_crop": "https://cards.scryfall.io/border_crop/front/a/5/a5b765f3-e59e-4af1-bac5-e50797f8629f.jpg?1783919713",
+      "thumb": "https://cards.scryfall.io/thumb/front/a/5/a5b765f3-e59e-4af1-bac5-e50797f8629f.webp?1783919713",
+      "grid": "https://cards.scryfall.io/grid/front/a/5/a5b765f3-e59e-4af1-bac5-e50797f8629f.webp?1783919713",
+      "display": "https://cards.scryfall.io/display/front/a/5/a5b765f3-e59e-4af1-bac5-e50797f8629f.webp?1783919713",
+      "art": "https://cards.scryfall.io/art/front/a/5/a5b765f3-e59e-4af1-bac5-e50797f8629f.webp?1783919713",
+      "crop": "https://cards.scryfall.io/crop/front/a/5/a5b765f3-e59e-4af1-bac5-e50797f8629f.webp?1783919713"
+    },
+    "mana_cost": "{2}",
+    "cmc": 2,
+    "type_line": "Artifact — Equipment",
+    "oracle_text": "Equipped creature gets +X/+X, where X is the number of Forests you control.\nWhenever equipped creature attacks, create a 1/1 green Forest Dryad land creature token. (It's affected by summoning sickness.)\nEquip {3}",
+    "colors": [],
+    "color_identity": [],
+    "keywords": [
+      "Equip"
+    ],
+    "all_parts": [
+      {
+        "object": "related_card",
+        "id": "74de70f2-93b6-4fc5-8c4d-464f880d3c54",
+        "component": "token",
+        "name": "Forest Dryad",
+        "type_line": "Token Land Creature — Forest Dryad",
+        "uri": "https://api.scryfall.com/cards/74de70f2-93b6-4fc5-8c4d-464f880d3c54"
+      },
+      {
+        "object": "related_card",
+        "id": "d8bbb5b4-9530-4164-a478-9c489507c995",
+        "component": "combo_piece",
+        "name": "Staff of Titania",
+        "type_line": "Artifact — Equipment",
+        "uri": "https://api.scryfall.com/cards/d8bbb5b4-9530-4164-a478-9c489507c995"
+      }
+    ],
+    "legalities": {
+      "standard": "not_legal",
+      "future": "not_legal",
+      "historic": "not_legal",
+      "timeless": "not_legal",
+      "gladiator": "not_legal",
+      "pioneer": "not_legal",
+      "modern": "not_legal",
+      "legacy": "legal",
+      "pauper": "not_legal",
+      "vintage": "legal",
+      "penny": "not_legal",
+      "commander": "legal",
+      "oathbreaker": "legal",
+      "standardbrawl": "not_legal",
+      "brawl": "not_legal",
+      "competitivebrawl": "not_legal",
+      "alchemy": "not_legal",
+      "paupercommander": "not_legal",
+      "duel": "legal",
+      "oldschool": "not_legal",
+      "premodern": "not_legal",
+      "predh": "not_legal",
+      "tlr": "legal"
+    },
+    "games": [
+      "paper",
+      "mtgo"
+    ],
+    "reserved": false,
+    "game_changer": false,
+    "foil": true,
+    "nonfoil": true,
+    "finishes": [
+      "nonfoil",
+      "foil"
+    ],
+    "oversized": false,
+    "promo": false,
+    "reprint": false,
+    "variation": false,
+    "set_id": "81d56780-1efc-4487-9803-43d634ca13d0",
+    "set": "brc",
+    "set_name": "The Brothers' War Commander",
+    "set_type": "commander",
+    "set_uri": "https://api.scryfall.com/sets/81d56780-1efc-4487-9803-43d634ca13d0",
+    "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Abrc&unique=prints",
+    "scryfall_set_uri": "https://scryfall.com/sets/brc?utm_source=api",
+    "rulings_uri": "https://api.scryfall.com/cards/a5b765f3-e59e-4af1-bac5-e50797f8629f/rulings",
+    "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Af99f4b52-21ae-47a2-8ae6-b0aa7386723a&unique=prints",
+    "collector_number": "27",
+    "digital": false,
+    "rarity": "rare",
+    "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+    "artist": "Samuel Perin",
+    "artist_ids": [
+      "1037066e-f63a-42dc-9850-9d14b6cfe436"
+    ],
+    "illustration_id": "24d7effa-0fbf-4b8a-b487-691fbed1c820",
+    "border_color": "black",
+    "frame": "2015",
+    "security_stamp": "oval",
+    "full_art": false,
+    "textless": false,
+    "booster": false,
+    "story_spotlight": false,
+    "edhrec_rank": 4329,
+    "preview": {
+      "source": "Wizards of the Coast",
+      "source_uri": "https://www.youtube.com/watch?v=xP8VuVCNkdk",
+      "previewed_at": "2022-11-03"
+    },
+    "prices": {
+      "usd": "7.38",
+      "usd_foil": "6.65",
+      "usd_etched": null,
+      "eur": "4.48",
+      "eur_foil": "6.44",
+      "tix": "3.36"
+    },
+    "related_uris": {
+      "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=586469&printed=false",
+      "tcgplayer_infinite_articles": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Farticles&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Farticles%3FproductLineName%3Dmagic%26q%3DStaff%2Bof%2BTitania",
+      "tcgplayer_infinite_decks": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&trafcat=tcgplayer.com%2Fsearch%2Fdecks&u=https%3A%2F%2Fwww.tcgplayer.com%2Fsearch%2Fdecks%3FproductLineName%3Dmagic%26q%3DStaff%2Bof%2BTitania",
+      "edhrec": "https://edhrec.com/route/?cc=Staff+of+Titania"
+    },
+    "purchase_uris": {
+      "tcgplayer": "https://partner.tcgplayer.com/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F453132%3Fpage%3D1",
+      "cardmarket": "https://www.cardmarket.com/en/Magic/Products?idProduct=683484&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+      "cardhoarder": "https://www.cardhoarder.com/cards/105214?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+    }
+  }
+]

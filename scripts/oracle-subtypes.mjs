@@ -1,3 +1,4 @@
+import {ORACLE_CREATURE_TYPES} from './oracle-creature-types.mjs';
 // Canonical subtype spellings from Commander-legal paper cards in the pinned
 // 2026-08-30 Scryfall Oracle snapshot, plus Blinkmoth and Llama from animation
 // text (creature types in Wizards CR 205.3m, 2026-06-19). Gameplay checks use
@@ -501,3 +502,5 @@ export const ORACLE_SUBTYPE_TYPES = {
   "Vehicle": "artifact",
   "Vibranium": "artifact",
 };
+
+for(const type of ORACLE_CREATURE_TYPES)ORACLE_SUBTYPES.add(type);

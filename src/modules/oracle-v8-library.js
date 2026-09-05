@@ -152,14 +152,15 @@
         effect.placements.some(item => !['hand', 'graveyard', 'battlefield', 'top'].includes(item.destination) ||
           !['number', 'string'].includes(typeof item.n) || typeof item.n === 'string' && !['all', 'rest'].includes(item.n) ||
           item.destination === 'top' && ![0, 2].includes(item.offset || 0))) throw new Error('Unknown library search placement');
-    if (!effect.unrestricted && !effect.filter || effect.unrestricted && effect.filter) throw new Error('Unknown library search filter');
+    const named=Array.isArray(effect.names)&&effect.names.length>0&&effect.names.every(name=>typeof name==='string'&&name.trim()===name&&name.length>0);
+    if(effect.names!==undefined&&!named||Number(!!effect.unrestricted)+Number(!!effect.filter)+Number(!!named)!==1) throw new Error('Unknown library search filter');
     if(effect.optionalSearch){
       const answer=await chooser.controller.decide(ctx.g,{type:'chooseOption',player:chooser,prompt:'Search your library?',options:[{key:'yes',label:'Search'},{key:'no',label:'Decline'}],aiHint:{kind:'confirm'}});
       if(!['yes','no'].includes(answer))throw new Error('Invalid optional search choice');
       if(answer==='no')return null;
     }
     const predicate = effect.filter && helpers.target({...effect.filter, zone: 'graveyard', controller: 'any'}, [], 0, ctx.data).filter;
-    let candidates = owner.library.filter(card => !predicate || predicate(ctx.g, card, effect.ownerSearch?owner:ctx.you, ctx.src));
+    let candidates = owner.library.filter(card => (!named||effect.names.includes(card.name))&&(!predicate || predicate(ctx.g, card, effect.ownerSearch?owner:ctx.you, ctx.src)));
     if (effect.differentNames) {
       const names = new Set(); candidates = candidates.filter(card => !names.has(card.name) && names.add(card.name));
     }

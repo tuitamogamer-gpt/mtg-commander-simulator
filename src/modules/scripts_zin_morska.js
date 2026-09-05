@@ -139,20 +139,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Cloudblazer'] = {
     triggers: [{ on: 'etb', filter: etbSelf, desc: '2 life + 2 cards', run: async ctx => { await ctx.g.gainLife(ctx.you, 2); await ctx.g.draw(ctx.you, 2); } }],
   };
-  SC['Combat Celebrant'] = {
-    triggers: [{
-      on: 'attacks', filter: attacksSelf, opt: true, desc: 'Exert: extra combat',
-      onlyIf: (g, self) => self.meta._exertedTurn !== g.turnNo,
+  SC['Combat Celebrant'] = MTG.OracleV8Exert.native({
+    condition: (g,self) => self.meta.oracleLastExertedTurn !== g.turnNo,
+    score: (g,self,player) => g.creatures(player).some(card=>card!==self&&!card.sick) ? 5 : 1,
+    trigger: {
+      desc: 'Exert: extra combat',
       run: async ctx => {
         const g = ctx.g;
-        ctx.src.meta._exertedTurn = g.turnNo;
-        ctx.src.meta.noUntapOnce = true;
-        for (const c of g.creatures(ctx.you)) if (c !== ctx.src && c.tapped) { c.tapped = false; c.meta._untapExtra = false; }
+        for (const c of g.creatures(ctx.you)) if (c !== ctx.src || c.zoneVersion !== ctx.sourceZoneVersion) g.untap(c);
         g.scheduleAdditionalCombat();
         g.lg('Combat Celebrant: EXERT — additional combat phase!');
       },
-    }],
-  };
+    },
+  });
   SC['Curiosity Crafter'] = {
     noMaxHand: true,
     triggers: [{
@@ -326,16 +325,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', filter: etbSelf, opt: true, desc: 'Flicker',
       targets: [{
-        what: 'creature', prompt: 'Your non-Angel creature', upTo: true,
+        what: 'creature', prompt: 'Your non-Angel creature',
         filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl === ctrl && !c.hasSub('Angel'),
         aiHint: { goal: 'protect' },
       }],
       run: async ctx => {
         const t = ctx.targets[0];
-        if (!t || t.isToken) return;
+        if (!t) return;
         const owner = t.owner;
         await ctx.g.move(t, 'exile');
-        if (t.zone === 'exile') {
+        if (!t.isToken && t.zone === 'exile') {
           owner.exile.splice(owner.exile.indexOf(t), 1);
           t.zone = 'nowhere';
           await ctx.g.move(t, 'battlefield', { ctrl: ctx.you });

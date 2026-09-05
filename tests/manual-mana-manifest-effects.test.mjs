@@ -191,7 +191,7 @@ test('Black Market Connections pravi bezbojnog 3/2 Shapeshiftera sa stvarnim cha
   game.recalc();
   const trigger = market.def.triggers.find(entry => entry.on === 'precombatMain');
   await trigger.run({ g: game, src: market, you: player, data: { player } });
-  const token = game.creatures(player).find(card => card.isToken && card.name === 'Shapeshifter');
+  const token = game.creatures(player).find(card => card.isToken && card.name === 'Shapeshifter Token');
 
   assert.ok(token);
   assert.equal(token.power, 3);

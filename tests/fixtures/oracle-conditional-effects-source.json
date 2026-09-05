@@ -1,0 +1,379 @@
+[
+  {
+    "id": "b93cbaad-8ed8-4a1d-b95a-20a616dfedc9",
+    "oracle_id": "0c4277ec-aa12-41f5-8896-c83cfc754d6e",
+    "name": "Tragedy Feaster",
+    "layout": "normal",
+    "mana_cost": "{2}{B}{B}",
+    "type_line": "Creature — Demon",
+    "oracle_text": "Trample\nWard—Discard a card.\nInfusion — At the beginning of your end step, sacrifice a permanent unless you gained life this turn.",
+    "power": "7",
+    "toughness": "6",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "98392aac-2c1c-4cff-ad14-0e2f51439012",
+    "oracle_id": "12c57ebe-35a7-4cb3-936b-99c148a3cfed",
+    "name": "Chakra Meditation",
+    "layout": "normal",
+    "mana_cost": "{2}{U}",
+    "type_line": "Enchantment",
+    "oracle_text": "When this enchantment enters, return up to one target instant or sorcery card from your graveyard to your hand.\nWhenever you cast an instant or sorcery spell, draw a card. Then discard a card unless there are three or more Lesson cards in your graveyard.",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "23676697-2b84-4e9f-9e38-4fd58085a698",
+    "oracle_id": "296dee6b-6ec1-4ea4-8dc3-23080dd37646",
+    "name": "Hunger of the Howlpack",
+    "layout": "normal",
+    "mana_cost": "{G}",
+    "type_line": "Instant",
+    "oracle_text": "Put a +1/+1 counter on target creature.\nMorbid — Put three +1/+1 counters on that creature instead if a creature died this turn.",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "9b081723-41a1-4139-88ee-01c0238e50c3",
+    "oracle_id": "3a68915d-3e8b-4ede-bdd9-6c138ca63220",
+    "name": "Regal Sliver",
+    "layout": "normal",
+    "mana_cost": "{3}{W}",
+    "type_line": "Creature — Sliver",
+    "oracle_text": "Sliver creatures you control have \"When this creature enters, Slivers you control get +1/+1 until end of turn if you're the monarch. Otherwise, you become the monarch.\"",
+    "power": "3",
+    "toughness": "3",
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "7b14d897-c056-43e6-972c-d4e23c7f484f",
+    "oracle_id": "3ceac6ce-acde-42ab-b79d-ff153074d2d8",
+    "name": "The Spot's Portal",
+    "layout": "normal",
+    "mana_cost": "{2}{B}",
+    "type_line": "Instant",
+    "oracle_text": "Put target creature on the bottom of its owner's library. You lose 2 life unless you control a Villain.",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "b804cb9c-349e-4143-a372-cf65470d5b46",
+    "oracle_id": "3dda8d3d-89e2-4600-be8d-9b76b4f36e33",
+    "name": "Mindwrack Demon",
+    "layout": "normal",
+    "mana_cost": "{2}{B}{B}",
+    "type_line": "Creature — Demon",
+    "oracle_text": "Flying, trample\nWhen this creature enters, mill four cards.\nDelirium — At the beginning of your upkeep, you lose 4 life unless there are four or more card types among cards in your graveyard.",
+    "power": "4",
+    "toughness": "5",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "d0fc130e-57ed-40a7-a9ba-d689e7dc3698",
+    "oracle_id": "41907508-9ffc-4e01-969a-4f9c35cdf548",
+    "name": "Sphinx Sovereign",
+    "layout": "normal",
+    "mana_cost": "{4}{W}{U}{U}{B}",
+    "type_line": "Artifact Creature — Sphinx",
+    "oracle_text": "Flying\nAt the beginning of your end step, you gain 3 life if this creature is untapped. Otherwise, each opponent loses 3 life.",
+    "power": "6",
+    "toughness": "6",
+    "color_identity": [
+      "B",
+      "U",
+      "W"
+    ]
+  },
+  {
+    "id": "532c5b14-75cf-4e4c-9b80-2d56a86e2844",
+    "oracle_id": "45ef5ea9-70a6-4999-8778-6a11cb97d28e",
+    "name": "Gravelighter",
+    "layout": "normal",
+    "mana_cost": "{2}{B}",
+    "type_line": "Creature — Spirit",
+    "oracle_text": "Flying\nWhen this creature enters, draw a card if a creature died this turn. Otherwise, each player sacrifices a creature of their choice.",
+    "power": "2",
+    "toughness": "2",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "623cc141-0f75-4e67-b852-6c144d98e619",
+    "oracle_id": "52ad1a31-3ad8-4ead-ba77-675cad7e4a14",
+    "name": "Thermal Blast",
+    "layout": "normal",
+    "mana_cost": "{4}{R}",
+    "type_line": "Instant",
+    "oracle_text": "Thermal Blast deals 3 damage to target creature.\nThreshold — Thermal Blast deals 5 damage instead if there are seven or more cards in your graveyard.",
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "5a274689-82f1-488a-baf8-cd8ef3477b72",
+    "oracle_id": "563a8e37-b90e-4ea1-9366-8502b403e13e",
+    "name": "Might Beyond Reason",
+    "layout": "normal",
+    "mana_cost": "{3}{G}",
+    "type_line": "Instant",
+    "oracle_text": "Put two +1/+1 counters on target creature.\nDelirium — Put three +1/+1 counters on that creature instead if there are four or more card types among cards in your graveyard.",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "347d883c-84ab-4547-813b-f4385366fbce",
+    "oracle_id": "6944092f-22c6-4b65-840d-8c1b70883127",
+    "name": "Tainted Indulgence",
+    "layout": "normal",
+    "mana_cost": "{U}{B}",
+    "type_line": "Instant",
+    "oracle_text": "Draw two cards. Then discard a card unless there are five or more mana values among cards in your graveyard.",
+    "color_identity": [
+      "B",
+      "U"
+    ]
+  },
+  {
+    "id": "162f3fb8-75b7-4cd7-9d6c-27dd76197aa5",
+    "oracle_id": "6dd887be-484b-4ecc-8c02-8cce7e43ec89",
+    "name": "Reaver Drone",
+    "layout": "normal",
+    "mana_cost": "{B}",
+    "type_line": "Creature — Eldrazi Drone",
+    "oracle_text": "Devoid (This card has no color.)\nAt the beginning of your upkeep, you lose 1 life unless you control another colorless creature.",
+    "power": "2",
+    "toughness": "1",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "40c202f1-6e0d-42f4-a41e-e0be3362d585",
+    "oracle_id": "6de67fad-0d01-443d-9ae0-4126ae903069",
+    "name": "HYDRA Troopers",
+    "layout": "normal",
+    "mana_cost": "{2}{B}",
+    "type_line": "Creature — Human Soldier Villain",
+    "oracle_text": "When this creature enters, create a tapped 2/1 black Villain creature token with menace if there are two or more creature cards in your graveyard. Otherwise, mill two cards. (Put the top two cards of your library into your graveyard.)",
+    "power": "3",
+    "toughness": "2",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "c6e466d1-943d-41e6-a47d-c9d951ca4262",
+    "oracle_id": "7cd8b017-8d59-4b55-bb9a-8d8e492ef1ac",
+    "name": "Moon-Circuit Hacker",
+    "layout": "normal",
+    "mana_cost": "{1}{U}",
+    "type_line": "Enchantment Creature — Human Ninja",
+    "oracle_text": "Ninjutsu {U} ({U}, Return an unblocked attacker you control to hand: Put this card onto the battlefield from your hand tapped and attacking.)\nWhenever this creature deals combat damage to a player, you may draw a card. If you do, discard a card unless this creature entered this turn.",
+    "power": "2",
+    "toughness": "1",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "ce7e1e9b-ad7f-4f4c-bdb5-2ccb6f147037",
+    "oracle_id": "90109cb4-1e16-4d54-9332-b5fb1e71042c",
+    "name": "Ravenous Necrotitan",
+    "layout": "normal",
+    "mana_cost": "{2}{B}{B}",
+    "type_line": "Creature — Phyrexian Horror",
+    "oracle_text": "Corrupted — When this creature enters, sacrifice a creature unless an opponent has three or more poison counters.",
+    "power": "6",
+    "toughness": "6",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "0453be94-e59b-48f1-a488-7a9fd96a627e",
+    "oracle_id": "934e2634-4b1c-4d92-b4d6-9241620f3770",
+    "name": "Splitskin Doll",
+    "layout": "normal",
+    "mana_cost": "{1}{W}",
+    "type_line": "Artifact Creature — Toy",
+    "oracle_text": "When this creature enters, draw a card. Then discard a card unless you control another creature with power 2 or less.",
+    "power": "2",
+    "toughness": "1",
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "b1f083c3-d7b0-4d3d-8551-af52c7883d83",
+    "oracle_id": "97bff952-3bc8-41d0-b03f-5c76f3c7e0a3",
+    "name": "Firecannon Blast",
+    "layout": "normal",
+    "mana_cost": "{1}{R}{R}",
+    "type_line": "Sorcery",
+    "oracle_text": "Firecannon Blast deals 3 damage to target creature.\nRaid — Firecannon Blast deals 6 damage instead if you attacked this turn.",
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "cae61a9d-39fc-4c25-adec-d578d57c2903",
+    "oracle_id": "a1180796-6e26-4b45-9263-130620d702e5",
+    "name": "Predator's Howl",
+    "layout": "normal",
+    "mana_cost": "{3}{G}",
+    "type_line": "Instant",
+    "oracle_text": "Create a 2/2 green Wolf creature token.\nMorbid — Create three 2/2 green Wolf creature tokens instead if a creature died this turn.",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "a54a371e-fb82-41f1-892c-975f932b668e",
+    "oracle_id": "ab48147c-0bd7-4875-8e11-0e26185453dd",
+    "name": "Cackling Flames",
+    "layout": "normal",
+    "mana_cost": "{3}{R}",
+    "type_line": "Instant",
+    "oracle_text": "Cackling Flames deals 3 damage to any target.\nHellbent — Cackling Flames deals 5 damage instead if you have no cards in hand.",
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "4e879386-b1f8-4f2a-9820-6e1291746f88",
+    "oracle_id": "b23cba46-6ed2-442d-bc39-7c4933f6b083",
+    "name": "Unholy Heat",
+    "layout": "normal",
+    "mana_cost": "{R}",
+    "type_line": "Instant",
+    "oracle_text": "Unholy Heat deals 2 damage to target creature or planeswalker.\nDelirium — Unholy Heat deals 6 damage instead if there are four or more card types among cards in your graveyard.",
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "70f43c17-7022-4052-86b8-90b74382b7bf",
+    "oracle_id": "c0cc881c-b63b-44dd-8157-67680c65fc3d",
+    "name": "Chandra's Triumph",
+    "layout": "normal",
+    "mana_cost": "{1}{R}",
+    "type_line": "Instant",
+    "oracle_text": "Chandra's Triumph deals 3 damage to target creature or planeswalker an opponent controls. Chandra's Triumph deals 5 damage instead if you control a Chandra planeswalker.",
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "d5bf8cf0-419a-4dc9-9342-aad55c1af05a",
+    "oracle_id": "c15cad77-e70f-42cc-a9f5-50e1fd8c9c96",
+    "name": "Shoreline Looter",
+    "layout": "normal",
+    "mana_cost": "{1}{U}",
+    "type_line": "Creature — Rat Rogue",
+    "oracle_text": "This creature can't be blocked.\nThreshold — Whenever this creature deals combat damage to a player, draw a card. Then discard a card unless there are seven or more cards in your graveyard.",
+    "power": "1",
+    "toughness": "1",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "f447eb83-c805-4ba8-b9f2-0add092f6795",
+    "oracle_id": "cffcd887-660c-4646-9333-bcc8549f6609",
+    "name": "Fathom Fleet Boarder",
+    "layout": "normal",
+    "mana_cost": "{2}{B}",
+    "type_line": "Creature — Orc Pirate",
+    "oracle_text": "When this creature enters, you lose 2 life unless you control another Pirate.",
+    "power": "3",
+    "toughness": "3",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "94fa0577-f02a-4d24-835b-fef8d849b37a",
+    "oracle_id": "d12e374d-ed09-4d5e-bb7a-6c7d9ea80a1e",
+    "name": "Brimstone Volley",
+    "layout": "normal",
+    "mana_cost": "{2}{R}",
+    "type_line": "Instant",
+    "oracle_text": "Brimstone Volley deals 3 damage to any target.\nMorbid — Brimstone Volley deals 5 damage instead if a creature died this turn.",
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "0cf8cb1e-314a-4894-82df-f9812825f52e",
+    "oracle_id": "d211c03a-03cd-40c5-b7c8-ada352fd01a6",
+    "name": "Galvanic Blast",
+    "layout": "normal",
+    "mana_cost": "{R}",
+    "type_line": "Instant",
+    "oracle_text": "Galvanic Blast deals 2 damage to any target.\nMetalcraft — Galvanic Blast deals 4 damage instead if you control three or more artifacts.",
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "0c947c96-b4a5-4c3b-aacb-85ee0bf3afda",
+    "oracle_id": "dc261758-0982-4b7d-9986-042c03cc8366",
+    "name": "Vampire Lacerator",
+    "layout": "normal",
+    "mana_cost": "{B}",
+    "type_line": "Creature — Vampire Warrior",
+    "oracle_text": "At the beginning of your upkeep, you lose 1 life unless an opponent has 10 or less life.",
+    "power": "2",
+    "toughness": "2",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "a1939b5d-e24f-4e4b-b4c5-8bdb232d8926",
+    "oracle_id": "e1e5ad8c-d425-44ad-a8f6-e9290667f6f5",
+    "name": "Bellowing Saddlebrute",
+    "layout": "normal",
+    "mana_cost": "{3}{B}",
+    "type_line": "Creature — Orc Warrior",
+    "oracle_text": "Raid — When this creature enters, you lose 4 life unless you attacked this turn.",
+    "power": "4",
+    "toughness": "5",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "6bf084fe-7762-49c5-974a-cdecc10666b3",
+    "oracle_id": "ed7300f4-831a-4ba4-b5e6-ceba8d079eaa",
+    "name": "Cosmos Elixir",
+    "layout": "normal",
+    "mana_cost": "{4}",
+    "type_line": "Artifact",
+    "oracle_text": "At the beginning of your end step, draw a card if your life total is greater than your starting life total. Otherwise, you gain 2 life.",
+    "color_identity": []
+  },
+  {
+    "id": "52f7c53d-0b53-400f-aa67-967547f3e394",
+    "oracle_id": "f70f1f2e-7277-4bc9-b0bb-b44a1da2c62f",
+    "name": "Feed the Clan",
+    "layout": "normal",
+    "mana_cost": "{1}{G}",
+    "type_line": "Instant",
+    "oracle_text": "You gain 5 life.\nFerocious — You gain 10 life instead if you control a creature with power 4 or greater.",
+    "color_identity": [
+      "G"
+    ]
+  }
+]

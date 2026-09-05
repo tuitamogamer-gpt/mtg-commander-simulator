@@ -1,3 +1,4 @@
+import {printedTokenName} from './helpers/oracle-token-name.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadEngine } from './helpers/load-engine.mjs';
@@ -1120,11 +1121,13 @@ test('svih 51 novih legalnih commander kandidata prolazi command zone, tax, povr
           : await game.destroy(card);
         assert.notEqual(removed, false,
           `${entry.raw.name}/${role}: commander can change zones through a rules-legal removal effect`);
+        assert.ok(['graveyard','exile'].includes(card.zone), `${entry.raw.name}/${role}: the commander actually enters the destination before its SBA choice`);
+        await game.checkSBA();
         while (game.pendingTriggers.length || game.stack.length) {
           await game.flushTriggers();
           if (game.stack.length) await game.resolveTop();
         }
-        assert.equal(card.zone, 'command', `${entry.raw.name}/${role}: owner chooses command zone replacement`);
+        assert.equal(card.zone, 'command', `${entry.raw.name}/${role}: owner chooses command zone as a state-based action`);
         const usedCommanderChoice = role === 'human'
           ? humanState.trace.includes('chooseOption')
           : (game.aiDecisionLog || []).some(decision => /Command zone/i.test(String(decision.chosen)) && !decision.fallback);
@@ -1857,7 +1860,7 @@ test('svaki keyword token sva 22 kreatora radi funkcionalno nakon human i AI ETB
     const operation = entry.implementation.find(candidate =>
       candidate.kind === 'etb-token' && (candidate.token?.keywords || []).length);
     const tokens = context.game.bf().filter(candidate => candidate.isToken && candidate.ctrl === context.player &&
-      candidate.name === operation.token.name);
+      candidate.name === printedTokenName(operation.token));
     assert.equal(tokens.length, operation.n, `${entry.raw.name}/${role}: exact keyword-token count`);
     for (const token of tokens) {
       assert.equal(token.power, Number(operation.token.power), `${entry.raw.name}/${role}: token power`);

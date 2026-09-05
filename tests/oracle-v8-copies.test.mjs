@@ -233,14 +233,14 @@ test('v8 copies replacement-created Squirrels keep their own copiable identity a
   await cast(ctx, 'Artifact'); const squirrel = tokens(game).find(card => card.hasSub('Squirrel'));
   assert.ok(squirrel); assert.equal(squirrel.mv, 0); assert.equal(squirrel.isCopyOf, null);
   const copied = (await game.copyPermanentToken(squirrel, a, {noReplace: true}))[0];
-  assert.equal(copied.name, 'Squirrel'); assert.equal(copied.power, 1); assert.equal(copied.hasSub('Squirrel'), true);
+  assert.equal(copied.name, 'Squirrel Token'); assert.equal(copied.power, 1); assert.equal(copied.hasSub('Squirrel'), true);
 });
 
 test('v8 copies Academy Manufactor replaces a copied Treasure with three predefined token definitions', async () => {
   const ctx = context(), {game, a} = ctx; put(game, a, 'Academy Manufactor');
   const treasureCreature = put(game, a, creature('Treasure Creature', {types: ['Artifact', 'Creature'], subtypes: ['Treasure']})); target(ctx, treasureCreature);
   await cast(ctx, 'Artifact'); const made = tokens(game); assert.equal(made.length, 3);
-  assert.deepEqual(Array.from(made, card => card.name).sort(), ['Clue', 'Food', 'Treasure']);
+  assert.deepEqual(Array.from(made, card => card.name).sort(), ['Clue Token', 'Food Token', 'Treasure Token']);
   for (const token of made) {assert.equal(token.isCopyOf, null); assert.equal(token.mv, 0); assert.equal(token.is('Creature'), false);}
 });
 
@@ -319,11 +319,11 @@ test('v8 copies a granted self-exile trigger belongs to the permanent, not the o
 for (const role of ['human', 'ai']) test(`Esix ${role}: the first token event is consumed even without another creature`, async () => {
   const ctx = context(role), {game, a, b} = ctx, esix = put(game, a, 'Esix, Fractal Bloom');
   const first = await game.makeTokens('clue', a);
-  assert.equal(first[0].name, 'Clue'); assert.equal(esix.meta._esixTurn, game.turnNo);
+  assert.equal(first[0].name, 'Clue Token'); assert.equal(esix.meta._esixTurn, game.turnNo);
   assert.equal(ctx.trace.filter(row => row.query.aiHint?.kind === 'esixCopy').length, 0);
   const model = put(game, b, creature('Esix Later Model'));
   const second = await game.makeTokens('clue', a);
-  assert.equal(second[0].name, 'Clue', 'a later legal model does not reopen the first creation event');
+  assert.equal(second[0].name, 'Clue Token', 'a later legal model does not reopen the first creation event');
   assert.equal(ctx.trace.filter(row => row.query.aiHint?.kind === 'esixCopy').length, 0);
   game.turnNo++;
   const nextTurn = await game.makeTokens('clue', a);
@@ -337,7 +337,7 @@ test('Esix ignores zero-token events and token creation outside its controller t
   assert.equal((await game.makeTokens('clue', a, {n: 0})).length, 0);
   assert.equal(esix.meta._esixTurn, undefined);
   game.turnPlayer = b;
-  assert.equal((await game.makeTokens('clue', a))[0].name, 'Clue');
+  assert.equal((await game.makeTokens('clue', a))[0].name, 'Clue Token');
   assert.equal(esix.meta._esixTurn, undefined);
   game.turnPlayer = a; game.turnNo++;
   assert.equal((await game.makeTokens('clue', a))[0].name, model.name);
@@ -347,10 +347,10 @@ test('Esix ignores zero-token events and token creation outside its controller t
 test('Esix declining the first optional copy consumes the event for that turn', async () => {
   const ctx = context(), {game, a, b} = ctx, esix = put(game, a, 'Esix, Fractal Bloom');
   put(game, b, creature('Esix Declined Model')); ctx.state.cards = () => [];
-  assert.equal((await game.makeTokens('clue', a))[0].name, 'Clue');
+  assert.equal((await game.makeTokens('clue', a))[0].name, 'Clue Token');
   assert.equal(esix.meta._esixTurn, game.turnNo);
   delete ctx.state.cards;
-  assert.equal((await game.makeTokens('clue', a))[0].name, 'Clue');
+  assert.equal((await game.makeTokens('clue', a))[0].name, 'Clue Token');
   assert.equal(ctx.trace.filter(row => row.query.aiHint?.kind === 'esixCopy').length, 1);
 });
 

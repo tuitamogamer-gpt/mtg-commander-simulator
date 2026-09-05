@@ -145,7 +145,9 @@ test('Storm copies of Aura permanent spells resolve as attached Aura tokens', as
   const aura = cardIn(player, def('Storm Aura', {
     types: ['Enchantment'], subtypes: ['Aura'], power: undefined, toughness: undefined,
     storm: true,
-    targets: [{ what: 'creature', filter: (g, target) => target.zone === 'battlefield' && target.ctrl === player }],
+    // A copied Aura retains its Enchant restriction independently of spell targeting.
+    auraTarget: [{ what: 'creature', filter: (g, target) => target.zone === 'battlefield' && target.is('Creature') && target.ctrl === player }],
+    targets: [{ what: 'creature', filter: (g, target) => target.zone === 'battlefield' && target.is('Creature') && target.ctrl === player }],
   }), 'hand');
   assert.equal(await game.castSpell(player, setup), true);
   await game.resolveTop();
@@ -157,7 +159,11 @@ test('Storm copies of Aura permanent spells resolve as attached Aura tokens', as
   await game.resolveTop();
   const attached = game.bf().filter(card => card.name === 'Storm Aura' && card.attachedTo === host.iid);
   assert.equal(attached.length, 2);
-  assert.ok(attached.some(card => card.isToken));
+  assert.ok(attached.includes(aura), 'the physical original remains attached');
+  const copy = attached.find(card => card.isToken);
+  assert.ok(copy, 'the copied permanent spell becomes an Aura token');
+  assert.equal(copy.isCopyOf.name, aura.name);
+  assert.deepEqual(Array.from(host.attachments).sort((a, b) => a - b), Array.from(attached, card => card.iid).sort((a, b) => a - b));
 });
 
 test('a battlefield flashback grant uses printed mana costs, exiles on resolution, and makes spells uncounterable', async () => {

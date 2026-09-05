@@ -212,7 +212,10 @@ test('Dragonlord Atarka locks divided damage and Glorybringer uses a real exert 
   const target = permanent(game, opponent, 'Dragonmaster Outcast');
   const glory = permanent(game, temur, 'Glorybringer');
   await game.emit('attacks', { card: glory, player: temur, defender: opponent }); await resolveAll(game);
-  assert.equal(glory.meta.noUntapOnce, true); assert.notEqual(target.zone, 'battlefield');
+  assert.equal(glory.meta.oracleExertedBy, undefined, 'the attack event alone cannot retroactively choose an exert cost');
+  const prior=temur.controller.decide.bind(temur.controller);temur.controller.decide=async(g,q)=>q.type==='attackers'?[{card:glory,target:opponent}]:prior(g,q);
+  game.priorityRound=async()=>resolveAll(game);await game.combatPhase(temur);
+  assert.ok(glory.meta.oracleExertedBy.includes(temur.idx)); assert.notEqual(target.zone, 'battlefield');
 });
 
 test('copy and control effects preserve their exact duration and Dragon-copy exceptions', async () => {

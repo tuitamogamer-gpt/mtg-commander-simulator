@@ -154,7 +154,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Reclamation Sage'] = {
     triggers: [{
       on: 'etb', desc: 'Destroy art/ench', filter: etbSelf, opt: true,
-      targets: [T.permanent((g, c) => c.is('Artifact') || c.is('Enchantment'), { prompt: 'Destroy', upTo: true, aiHint: { goal: 'removal' } })],
+      targets: [T.permanent((g, c) => c.is('Artifact') || c.is('Enchantment'), { prompt: 'Destroy', aiHint: { goal: 'removal' } })],
       run: async ctx => { if (ctx.targets[0]) await ctx.g.destroy(ctx.targets[0]); },
     }],
   };

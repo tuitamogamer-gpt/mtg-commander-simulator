@@ -1,0 +1,1210 @@
+{
+  "schemaVersion": 1,
+  "id": "token-forms-2026-09-05",
+  "source": {
+    "bulkUpdatedAt": "2026-08-30T09:01:56.964+00:00",
+    "bulkSha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528"
+  },
+  "note": "Eight explicit semantic repairs; printed source, original selection metadata, identifiers, and catalog membership are preserved. Older compiler5 imports are recompiled with compiler8 only for the listed repaired rows.",
+  "repairs": [
+    {
+      "batch": "oracle-0054",
+      "oracleId": "9c009b3f-6580-4ab8-84e8-d4cf7a456a02",
+      "name": "Gravpack Monoist",
+      "reason": "Artifact is a card type, not a Robot subtype.",
+      "sourceOracleSha256": "e1f95e0d5f4c8b02083ab1e6a18adff5a110a10b10b52d65f1b6a816c08b65ad",
+      "originalCompilerVersion": 5,
+      "repairCompilerVersion": 8,
+      "before": {
+        "semanticClass": "creature-template",
+        "implementedKeywords": [
+          "flying"
+        ],
+        "implementation": [
+          {
+            "kind": "generic-trigger",
+            "event": "dies",
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 1,
+                "tapped": true,
+                "token": {
+                  "name": "Robot artifact",
+                  "power": "2",
+                  "toughness": "2",
+                  "subtypes": [
+                    "Robot",
+                    "artifact"
+                  ],
+                  "colors": [],
+                  "types": [
+                    "Creature"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "generic-trigger-effect",
+            "eventFilter": "self"
+          }
+        ],
+        "oracleContracts": [
+          "generic-trigger-effect"
+        ],
+        "rulesCore": "Flying\nWhen this creature dies, create a tapped 2/2 colorless Robot artifact creature token."
+      },
+      "after": {
+        "semanticClass": "creature-template",
+        "implementedKeywords": [
+          "flying"
+        ],
+        "implementation": [
+          {
+            "kind": "generic-trigger",
+            "event": "dies",
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 1,
+                "tapped": true,
+                "token": {
+                  "name": "Robot",
+                  "power": "2",
+                  "toughness": "2",
+                  "subtypes": [
+                    "Robot"
+                  ],
+                  "colors": [],
+                  "types": [
+                    "Creature",
+                    "Artifact"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "generic-trigger-effect",
+            "eventFilter": "self"
+          }
+        ],
+        "oracleContracts": [
+          "generic-trigger-effect"
+        ],
+        "rulesCore": "Flying\nWhen this creature dies, create a tapped 2/2 colorless Robot artifact creature token."
+      },
+      "beforeSha256": "d0954e01e2bce09307f3db06251526449dd5eed4ff4d78e801eb5d7742513434",
+      "afterSha256": "f90bf3c2eca77ae4a94a3955c0a2e265c99038fceadaf4c1fd6595fec799bcdd"
+    },
+    {
+      "batch": "oracle-0057",
+      "oracleId": "86e0e718-82b5-4c99-9837-1b4d8729a27e",
+      "name": "Melded Moxite",
+      "reason": "Artifact is a card type, not a Robot subtype.",
+      "sourceOracleSha256": "3a71ee83d618c82a569f94a62ed5df1041026f48c047fc68ffd51ec29ab2d6c7",
+      "originalCompilerVersion": 5,
+      "repairCompilerVersion": 8,
+      "before": {
+        "semanticClass": "artifact-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "generic-trigger",
+            "event": "etb",
+            "effects": [
+              {
+                "action": "optional-payment",
+                "payment": {
+                  "discard": 1
+                },
+                "effects": [
+                  {
+                    "action": "draw",
+                    "who": "you",
+                    "n": 2
+                  }
+                ]
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "generic-trigger-effect",
+            "eventFilter": "self"
+          },
+          {
+            "kind": "generic-ability",
+            "cost": {
+              "mana": "{3}",
+              "sacSelf": true
+            },
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 1,
+                "tapped": true,
+                "token": {
+                  "name": "Robot artifact",
+                  "power": "2",
+                  "toughness": "2",
+                  "subtypes": [
+                    "Robot",
+                    "artifact"
+                  ],
+                  "colors": [],
+                  "types": [
+                    "Creature"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "targets": [],
+            "sorceryOnly": false,
+            "contract": "generic-activated-effect",
+            "onceEachTurn": false
+          }
+        ],
+        "oracleContracts": [
+          "generic-trigger-effect",
+          "generic-activated-effect"
+        ],
+        "rulesCore": "When this artifact enters, you may discard a card. If you do, draw two cards.\n{3}, Sacrifice this artifact: Create a tapped 2/2 colorless Robot artifact creature token."
+      },
+      "after": {
+        "semanticClass": "artifact-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "generic-trigger",
+            "event": "etb",
+            "effects": [
+              {
+                "action": "optional-payment",
+                "payment": {
+                  "discard": 1
+                },
+                "effects": [
+                  {
+                    "action": "draw",
+                    "who": "you",
+                    "n": 2
+                  }
+                ]
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "generic-trigger-effect",
+            "eventFilter": "self"
+          },
+          {
+            "kind": "generic-ability",
+            "cost": {
+              "mana": "{3}",
+              "sacSelf": true
+            },
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 1,
+                "tapped": true,
+                "token": {
+                  "name": "Robot",
+                  "power": "2",
+                  "toughness": "2",
+                  "subtypes": [
+                    "Robot"
+                  ],
+                  "colors": [],
+                  "types": [
+                    "Creature",
+                    "Artifact"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "targets": [],
+            "sorceryOnly": false,
+            "contract": "generic-activated-effect",
+            "onceEachTurn": false
+          }
+        ],
+        "oracleContracts": [
+          "generic-trigger-effect",
+          "generic-activated-effect"
+        ],
+        "rulesCore": "When this artifact enters, you may discard a card. If you do, draw two cards.\n{3}, Sacrifice this artifact: Create a tapped 2/2 colorless Robot artifact creature token."
+      },
+      "beforeSha256": "d7f12f52813f276f5d2f6fc5f1d0dd2fce4498832ed05784a0054b5c4c6cc751",
+      "afterSha256": "09ee279d580702d62c415295d2799f52554c4f5b02a27c881c07a872c8f6747e"
+    },
+    {
+      "batch": "oracle-0061",
+      "oracleId": "470c16c5-b078-47f5-89b0-42991e1f7157",
+      "name": "Sami, Ship's Engineer",
+      "reason": "Artifact is a card type, not a Robot subtype.",
+      "sourceOracleSha256": "9223cf2e877a4af0d51cb6c6737d0d2b343d0620df8e9f74982e414a35ae46f4",
+      "originalCompilerVersion": 5,
+      "repairCompilerVersion": 8,
+      "before": {
+        "semanticClass": "creature-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "generic-trigger",
+            "event": "endStep",
+            "eventFilter": "your-end-step",
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 1,
+                "tapped": true,
+                "token": {
+                  "name": "Robot artifact",
+                  "power": "2",
+                  "toughness": "2",
+                  "subtypes": [
+                    "Robot",
+                    "artifact"
+                  ],
+                  "colors": [],
+                  "types": [
+                    "Creature"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "condition": {
+              "kind": "filtered-permanent-count",
+              "min": 2,
+              "what": "creature",
+              "tapped": true
+            },
+            "contract": "generic-trigger-effect"
+          }
+        ],
+        "oracleContracts": [
+          "generic-trigger-effect"
+        ],
+        "rulesCore": "At the beginning of your end step, if you control two or more tapped creatures, create a tapped 2/2 colorless Robot artifact creature token."
+      },
+      "after": {
+        "semanticClass": "creature-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "generic-trigger",
+            "event": "endStep",
+            "eventFilter": "your-end-step",
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 1,
+                "tapped": true,
+                "token": {
+                  "name": "Robot",
+                  "power": "2",
+                  "toughness": "2",
+                  "subtypes": [
+                    "Robot"
+                  ],
+                  "colors": [],
+                  "types": [
+                    "Creature",
+                    "Artifact"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "condition": {
+              "kind": "filtered-permanent-count",
+              "min": 2,
+              "what": "creature",
+              "tapped": true
+            },
+            "contract": "generic-trigger-effect"
+          }
+        ],
+        "oracleContracts": [
+          "generic-trigger-effect"
+        ],
+        "rulesCore": "At the beginning of your end step, if you control two or more tapped creatures, create a tapped 2/2 colorless Robot artifact creature token."
+      },
+      "beforeSha256": "97022f3fcc53270d5a6ce441850750379a8a72c634690b2378374d0070192613",
+      "afterSha256": "fc6d7863b8920c18f85d02962298b01b2bafefbc5d0120d2f6a4c3cda60f0d9f"
+    },
+    {
+      "batch": "oracle-0063",
+      "oracleId": "52fa7e9b-36d9-409c-8981-6f8dfd8bb031",
+      "name": "Stir the Sands",
+      "reason": "Cycling and the separate cycling trigger must not become token subtypes.",
+      "sourceOracleSha256": "c2ab18e1eaed4efcf5f27d682118bf87c66c298be7a4cde5003a3bcec3a969aa",
+      "originalCompilerVersion": 5,
+      "repairCompilerVersion": 8,
+      "before": {
+        "semanticClass": "spell-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "cycling",
+            "cost": "{3}{B}",
+            "contract": "cycling-ability"
+          },
+          {
+            "kind": "spell-generic",
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 3,
+                "token": {
+                  "name": "Zombie creature tokens. When you cycle this card, create a 2/2 Zombie",
+                  "super": [],
+                  "types": [
+                    "Creature"
+                  ],
+                  "subtypes": [
+                    "Zombie",
+                    "creature",
+                    "tokens.",
+                    "When",
+                    "you",
+                    "cycle",
+                    "this",
+                    "card,",
+                    "create",
+                    "a",
+                    "2/2",
+                    "Zombie"
+                  ],
+                  "power": "2",
+                  "toughness": "2",
+                  "colors": [
+                    "B",
+                    "B"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "spell-generic-effect"
+          }
+        ],
+        "oracleContracts": [
+          "cycling-ability",
+          "spell-generic-effect"
+        ],
+        "rulesCore": "Create three 2/2 black Zombie creature tokens.\nCycling {3}{B}\nWhen you cycle this card, create a 2/2 black Zombie creature token."
+      },
+      "after": {
+        "semanticClass": "spell-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "spell-token",
+            "n": 3,
+            "token": {
+              "name": "Zombie",
+              "super": [],
+              "types": [
+                "Creature"
+              ],
+              "subtypes": [
+                "Zombie"
+              ],
+              "power": "2",
+              "toughness": "2",
+              "colors": [
+                "B"
+              ],
+              "keywords": []
+            },
+            "contract": "spell-token-creation"
+          },
+          {
+            "kind": "cycling",
+            "cost": "{3}{B}",
+            "contract": "cycling-ability"
+          },
+          {
+            "kind": "generic-trigger",
+            "event": "cycled",
+            "eventFilter": "self",
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 1,
+                "token": {
+                  "name": "Zombie",
+                  "super": [],
+                  "types": [
+                    "Creature"
+                  ],
+                  "subtypes": [
+                    "Zombie"
+                  ],
+                  "power": "2",
+                  "toughness": "2",
+                  "colors": [
+                    "B"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "zone": "cycling-source",
+            "contract": "generic-trigger-effect"
+          }
+        ],
+        "oracleContracts": [
+          "spell-token-creation",
+          "cycling-ability",
+          "generic-trigger-effect"
+        ],
+        "rulesCore": "Create three 2/2 black Zombie creature tokens.\nCycling {3}{B}\nWhen you cycle this card, create a 2/2 black Zombie creature token."
+      },
+      "beforeSha256": "f11597d65763dd74ece6623ab8aeb1c628836efdf8cc22a30dc2e1b896f02acf",
+      "afterSha256": "c52d0cf891ccc0ab3a9284ef8058a675ae6ff2f396c851556ad66c327d17e205"
+    },
+    {
+      "batch": "oracle-0068",
+      "oracleId": "3cc79d36-1a24-4395-8ad1-915a65db8a60",
+      "name": "Awaken the Woods",
+      "reason": "Forest Dryad tokens are both Lands and Creatures.",
+      "sourceOracleSha256": "9825317315adafe1f832d52d15f3c0998101d7ff885b007e4704207e51330174",
+      "originalCompilerVersion": 6,
+      "repairCompilerVersion": 8,
+      "before": {
+        "semanticClass": "spell-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "spell-generic",
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": "X",
+                "token": {
+                  "name": "Forest Dryad land",
+                  "super": [],
+                  "types": [
+                    "Creature"
+                  ],
+                  "subtypes": [
+                    "Forest",
+                    "Dryad",
+                    "land"
+                  ],
+                  "power": "1",
+                  "toughness": "1",
+                  "colors": [
+                    "G"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "spell-generic-effect"
+          }
+        ],
+        "oracleContracts": [
+          "spell-generic-effect"
+        ],
+        "rulesCore": "Create X 1/1 green Forest Dryad land creature tokens."
+      },
+      "after": {
+        "semanticClass": "spell-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "spell-generic",
+            "targets": [],
+            "optional": false,
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": "X",
+                "token": {
+                  "name": "Forest Dryad",
+                  "super": [],
+                  "types": [
+                    "Land",
+                    "Creature"
+                  ],
+                  "subtypes": [
+                    "Forest",
+                    "Dryad"
+                  ],
+                  "power": "1",
+                  "toughness": "1",
+                  "colors": [
+                    "G"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "contract": "spell-generic-effect"
+          }
+        ],
+        "oracleContracts": [
+          "spell-generic-effect"
+        ],
+        "rulesCore": "Create X 1/1 green Forest Dryad land creature tokens."
+      },
+      "beforeSha256": "3ec0ced9583539c70ca97c63a55736e0ae480a3536d5a0dbb0917a8cf9215b30",
+      "afterSha256": "6ba4fcbf6321800c69dd81a4690248458b573d69120aadab9a6fc92a0d689ccb"
+    },
+    {
+      "batch": "oracle-0141",
+      "oracleId": "ca9f9017-c952-4e89-b284-02396e6be0af",
+      "name": "Sand Scout",
+      "reason": "Red, green, and white are token colors, not subtypes.",
+      "sourceOracleSha256": "6588d1aecd6877be6cd897d1c57e8c36e80c3e0001f8fa2d1dd2d4db88ab473f",
+      "originalCompilerVersion": 8,
+      "repairCompilerVersion": 8,
+      "before": {
+        "semanticClass": "creature-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "generic-trigger",
+            "event": "etb",
+            "effects": [
+              {
+                "action": "search-library",
+                "what": "card",
+                "filter": {
+                  "what": "card",
+                  "zone": "graveyard",
+                  "subtype": "Desert",
+                  "controller": "you",
+                  "min": 1
+                },
+                "n": 1,
+                "maxMv": null,
+                "destination": "battlefield",
+                "tapped": true,
+                "reveal": false
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "generic-trigger-effect",
+            "eventFilter": "self",
+            "condition": {
+              "kind": "opponent-comparison",
+              "count": {
+                "kind": "count",
+                "zone": "battlefield",
+                "what": "permanent",
+                "filters": [
+                  {
+                    "what": "land",
+                    "zone": "battlefield",
+                    "controller": "you",
+                    "min": 1
+                  }
+                ],
+                "controller": "you"
+              },
+              "comparison": "greater",
+              "each": false
+            }
+          },
+          {
+            "kind": "generic-trigger",
+            "event": "cardsToGraveyard",
+            "eventFilter": {
+              "kind": "graveyard-batch",
+              "target": {
+                "what": "land",
+                "zone": "graveyard",
+                "controller": "you",
+                "min": 1
+              }
+            },
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 1,
+                "token": {
+                  "name": "red, green, Sand Warrior",
+                  "super": [],
+                  "types": [
+                    "Creature"
+                  ],
+                  "subtypes": [
+                    "red,",
+                    "green,",
+                    "Sand",
+                    "Warrior"
+                  ],
+                  "power": "1",
+                  "toughness": "1",
+                  "colors": [
+                    "W"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "generic-trigger-effect",
+            "onceEachTurn": true,
+            "onceGroup": "Whenever one or more land cards are put into your graveyard from anywhere, create a 1/1 red, green, and white Sand Warrior creature token. This ability triggers only once each turn."
+          }
+        ],
+        "oracleContracts": [
+          "generic-trigger-effect"
+        ],
+        "rulesCore": "When this creature enters, if an opponent controls more lands than you, search your library for a Desert card, put it onto the battlefield tapped, then shuffle.\nWhenever one or more land cards are put into your graveyard from anywhere, create a 1/1 red, green, and white Sand Warrior creature token. This ability triggers only once each turn."
+      },
+      "after": {
+        "semanticClass": "creature-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "generic-trigger",
+            "event": "etb",
+            "effects": [
+              {
+                "action": "search-library",
+                "what": "card",
+                "filter": {
+                  "what": "card",
+                  "zone": "graveyard",
+                  "subtype": "Desert",
+                  "controller": "you",
+                  "min": 1
+                },
+                "n": 1,
+                "maxMv": null,
+                "destination": "battlefield",
+                "tapped": true,
+                "reveal": false
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "generic-trigger-effect",
+            "eventFilter": "self",
+            "condition": {
+              "kind": "opponent-comparison",
+              "count": {
+                "kind": "count",
+                "zone": "battlefield",
+                "what": "permanent",
+                "filters": [
+                  {
+                    "what": "land",
+                    "zone": "battlefield",
+                    "controller": "you",
+                    "min": 1
+                  }
+                ],
+                "controller": "you"
+              },
+              "comparison": "greater",
+              "each": false
+            }
+          },
+          {
+            "kind": "generic-trigger",
+            "event": "cardsToGraveyard",
+            "eventFilter": {
+              "kind": "graveyard-batch",
+              "target": {
+                "what": "land",
+                "zone": "graveyard",
+                "controller": "you",
+                "min": 1
+              }
+            },
+            "targets": [],
+            "optional": false,
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 1,
+                "token": {
+                  "name": "Sand Warrior",
+                  "super": [],
+                  "types": [
+                    "Creature"
+                  ],
+                  "subtypes": [
+                    "Sand",
+                    "Warrior"
+                  ],
+                  "power": "1",
+                  "toughness": "1",
+                  "colors": [
+                    "R",
+                    "G",
+                    "W"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "contract": "generic-trigger-effect",
+            "onceEachTurn": true,
+            "onceGroup": "Whenever one or more land cards are put into your graveyard from anywhere, create a 1/1 red, green, and white Sand Warrior creature token. This ability triggers only once each turn."
+          }
+        ],
+        "oracleContracts": [
+          "generic-trigger-effect"
+        ],
+        "rulesCore": "When this creature enters, if an opponent controls more lands than you, search your library for a Desert card, put it onto the battlefield tapped, then shuffle.\nWhenever one or more land cards are put into your graveyard from anywhere, create a 1/1 red, green, and white Sand Warrior creature token. This ability triggers only once each turn."
+      },
+      "beforeSha256": "ae7454be99be3ccf50955e6d434fa53bb7c79d771828e7fd3a1af5ee3b18fe4c",
+      "afterSha256": "6fdfdc2b875a4fa7cc587ff70cf3038516fbe64803fa751317094b061b832ac2"
+    },
+    {
+      "batch": "oracle-0143",
+      "oracleId": "f99f4b52-21ae-47a2-8ae6-b0aa7386723a",
+      "name": "Staff of Titania",
+      "reason": "Forest Dryad tokens are both Lands and Creatures.",
+      "sourceOracleSha256": "d0dd8495e06cd09aa703faf08aa00da087dd7b9e7a0c253dc40f9490edc7a1f0",
+      "originalCompilerVersion": 8,
+      "repairCompilerVersion": 8,
+      "before": {
+        "semanticClass": "equipment-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "attachment-grant",
+            "power": 1,
+            "toughness": 1,
+            "multiplier": {
+              "kind": "count",
+              "zone": "battlefield",
+              "what": "permanent",
+              "filters": [
+                {
+                  "what": "land",
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "min": 1,
+                  "subtype": "Forest"
+                }
+              ],
+              "controller": "you"
+            },
+            "keywords": [],
+            "contract": "attachment-continuous-effect"
+          },
+          {
+            "kind": "generic-trigger",
+            "event": "attacks",
+            "eventFilter": {
+              "kind": "attached-object"
+            },
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 1,
+                "token": {
+                  "name": "Forest Dryad land",
+                  "super": [],
+                  "types": [
+                    "Creature"
+                  ],
+                  "subtypes": [
+                    "Forest",
+                    "Dryad",
+                    "land"
+                  ],
+                  "power": "1",
+                  "toughness": "1",
+                  "colors": [
+                    "G"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "generic-trigger-effect"
+          },
+          {
+            "kind": "equipment-equip",
+            "cost": "{3}",
+            "contract": "equipment-attach-ability"
+          }
+        ],
+        "oracleContracts": [
+          "attachment-continuous-effect",
+          "generic-trigger-effect",
+          "equipment-attach-ability"
+        ],
+        "rulesCore": "Equipped creature gets +X/+X, where X is the number of Forests you control.\nWhenever equipped creature attacks, create a 1/1 green Forest Dryad land creature token.\nEquip {3}"
+      },
+      "after": {
+        "semanticClass": "equipment-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "attachment-grant",
+            "power": 1,
+            "toughness": 1,
+            "multiplier": {
+              "kind": "count",
+              "zone": "battlefield",
+              "what": "permanent",
+              "filters": [
+                {
+                  "what": "land",
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "min": 1,
+                  "subtype": "Forest"
+                }
+              ],
+              "controller": "you"
+            },
+            "keywords": [],
+            "contract": "attachment-continuous-effect"
+          },
+          {
+            "kind": "generic-trigger",
+            "event": "attacks",
+            "eventFilter": {
+              "kind": "attached-object"
+            },
+            "targets": [],
+            "optional": false,
+            "effects": [
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 1,
+                "token": {
+                  "name": "Forest Dryad",
+                  "super": [],
+                  "types": [
+                    "Land",
+                    "Creature"
+                  ],
+                  "subtypes": [
+                    "Forest",
+                    "Dryad"
+                  ],
+                  "power": "1",
+                  "toughness": "1",
+                  "colors": [
+                    "G"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "contract": "generic-trigger-effect"
+          },
+          {
+            "kind": "equipment-equip",
+            "cost": "{3}",
+            "contract": "equipment-attach-ability"
+          }
+        ],
+        "oracleContracts": [
+          "attachment-continuous-effect",
+          "generic-trigger-effect",
+          "equipment-attach-ability"
+        ],
+        "rulesCore": "Equipped creature gets +X/+X, where X is the number of Forests you control.\nWhenever equipped creature attacks, create a 1/1 green Forest Dryad land creature token.\nEquip {3}"
+      },
+      "beforeSha256": "a881f6cbdc685942d5df134e18ed5b81ced4299c839811edb3fb2f89ca021e00",
+      "afterSha256": "be84a0156fac7edcde67497802f485f44de426ef8281e0b80c17dbc9c6e1435f"
+    },
+    {
+      "batch": "oracle-0144",
+      "oracleId": "6874be51-623d-4eaf-a67a-2fcbb9a8ceca",
+      "name": "Tempt with Bunnies",
+      "reason": "Opponents choose the offer and all accepted offers grant the printed reward.",
+      "sourceOracleSha256": "4633730f0119f7e260fcc5f27507db367146c4d16536337af12694fdf6a15f15",
+      "originalCompilerVersion": 8,
+      "repairCompilerVersion": 8,
+      "before": {
+        "semanticClass": "spell-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "spell-generic",
+            "effects": [
+              {
+                "action": "draw",
+                "who": "you",
+                "n": 1
+              },
+              {
+                "action": "token-inline",
+                "who": "you",
+                "n": 1,
+                "token": {
+                  "name": "Rabbit creature token. Then each opponent may draw a card. Create a 1/1 Rabbit creature token. For each opponent who does, you draw a card. You create a 1/1 Rabbit",
+                  "super": [],
+                  "types": [
+                    "Creature"
+                  ],
+                  "subtypes": [
+                    "Rabbit",
+                    "creature",
+                    "token.",
+                    "Then",
+                    "each",
+                    "opponent",
+                    "may",
+                    "draw",
+                    "a",
+                    "card.",
+                    "Create",
+                    "a",
+                    "1/1",
+                    "Rabbit",
+                    "creature",
+                    "token.",
+                    "For",
+                    "each",
+                    "opponent",
+                    "who",
+                    "does,",
+                    "you",
+                    "draw",
+                    "a",
+                    "card.",
+                    "You",
+                    "create",
+                    "a",
+                    "1/1",
+                    "Rabbit"
+                  ],
+                  "power": "1",
+                  "toughness": "1",
+                  "colors": [
+                    "W",
+                    "W",
+                    "W"
+                  ],
+                  "keywords": []
+                }
+              }
+            ],
+            "targets": [],
+            "optional": false,
+            "contract": "spell-generic-effect"
+          }
+        ],
+        "oracleContracts": [
+          "spell-generic-effect"
+        ],
+        "rulesCore": "Draw a card and create a 1/1 white Rabbit creature token. Then each opponent may draw a card and create a 1/1 white Rabbit creature token. For each opponent who does, you draw a card and you create a 1/1 white Rabbit creature token."
+      },
+      "after": {
+        "semanticClass": "spell-template",
+        "implementedKeywords": [],
+        "implementation": [
+          {
+            "kind": "spell-generic",
+            "targets": [],
+            "optional": false,
+            "effects": [
+              {
+                "action": "tempting-offer-v8",
+                "effects": [
+                  {
+                    "action": "draw",
+                    "who": "you",
+                    "n": 1
+                  },
+                  {
+                    "action": "token-inline",
+                    "who": "you",
+                    "n": 1,
+                    "token": {
+                      "name": "Rabbit",
+                      "super": [],
+                      "types": [
+                        "Creature"
+                      ],
+                      "subtypes": [
+                        "Rabbit"
+                      ],
+                      "power": "1",
+                      "toughness": "1",
+                      "colors": [
+                        "W"
+                      ],
+                      "keywords": []
+                    }
+                  }
+                ],
+                "offered": [
+                  {
+                    "action": "draw",
+                    "who": "you",
+                    "n": 1
+                  },
+                  {
+                    "action": "token-inline",
+                    "who": "you",
+                    "n": 1,
+                    "token": {
+                      "name": "Rabbit",
+                      "super": [],
+                      "types": [
+                        "Creature"
+                      ],
+                      "subtypes": [
+                        "Rabbit"
+                      ],
+                      "power": "1",
+                      "toughness": "1",
+                      "colors": [
+                        "W"
+                      ],
+                      "keywords": []
+                    }
+                  }
+                ],
+                "reward": [
+                  {
+                    "action": "draw",
+                    "who": "you",
+                    "n": 1
+                  },
+                  {
+                    "action": "token-inline",
+                    "who": "you",
+                    "n": 1,
+                    "token": {
+                      "name": "Rabbit",
+                      "super": [],
+                      "types": [
+                        "Creature"
+                      ],
+                      "subtypes": [
+                        "Rabbit"
+                      ],
+                      "power": "1",
+                      "toughness": "1",
+                      "colors": [
+                        "W"
+                      ],
+                      "keywords": []
+                    }
+                  }
+                ]
+              }
+            ],
+            "contract": "spell-generic-effect"
+          }
+        ],
+        "oracleContracts": [
+          "spell-generic-effect"
+        ],
+        "rulesCore": "Draw a card and create a 1/1 white Rabbit creature token. Then each opponent may draw a card and create a 1/1 white Rabbit creature token. For each opponent who does, you draw a card and you create a 1/1 white Rabbit creature token."
+      },
+      "beforeSha256": "48ed68bda467f829249f83d4f655c59a65215faff38499f275619455bfaf6536",
+      "afterSha256": "7125b1e948af4c314669b5abedaddc12e26e643ef9fb02e76659b1bc7f6d232f"
+    }
+  ],
+  "files": [
+    {
+      "report": "reports/oracle-import/batch-0054.json",
+      "reportBeforeSha256": "fe3b20902d9d0716c37f66b24fa9363776dd420bc59e6a9542adf1738a4c6ad6",
+      "reportAfterSha256": "8da7bdeb09e2cca3c3e1aac5e1a34b4afde9925151bf745ece87cbaba10677d0",
+      "module": "src/oracle-batches/batch-0054.js",
+      "moduleBeforeSha256": "75c2737c3773a8899f83bdd37a29ac690d2c5bdc42e3c0ca2e60faa9676b87c9",
+      "moduleAfterSha256": "6231ddd5d7dcfeae8787ad4da67126fc8be71b86877abfbba09dff90946212e9"
+    },
+    {
+      "report": "reports/oracle-import/batch-0057.json",
+      "reportBeforeSha256": "11493c60b5740cd11582f23e577f2d9402032a299cc8f10367eb7a168ff9be5c",
+      "reportAfterSha256": "ad841c58df1231ceac76f7a48058f7cdafdc4f2b227ff2ede6dce580d1de3986",
+      "module": "src/oracle-batches/batch-0057.js",
+      "moduleBeforeSha256": "c7eba83301f55bce12b2917557b8b9ef83224ca3f2a83ae1c0fdc1b96512776b",
+      "moduleAfterSha256": "201a2fc3800e519df593db1d74945c37c51d4c097fec25084a25653062e9b153"
+    },
+    {
+      "report": "reports/oracle-import/batch-0061.json",
+      "reportBeforeSha256": "e5c458b71201fa8bac1c800fa5ed61e37d79caea2d28d41ee5993f97c2d0345f",
+      "reportAfterSha256": "b4edcb4159dbda07251e668f8b20d624625a8e8356c25939ce25feaa069398f9",
+      "module": "src/oracle-batches/batch-0061.js",
+      "moduleBeforeSha256": "f43ecf98b98d7a6a0b5f1fc9fea5b545c112afae49c4d76f78b3addb64753065",
+      "moduleAfterSha256": "e10eb1a1a5b4216e8d34117cd0de3332e610a647a16c3a43a371166b03461081"
+    },
+    {
+      "report": "reports/oracle-import/batch-0063.json",
+      "reportBeforeSha256": "9c898eab24c9b268a7590d31669bd220ece03039ae5fc37e08070eef131b0293",
+      "reportAfterSha256": "1134d8dc1f78496d8b88a5f214bd742b266209d45ce48c43c47ef59e72e27c1f",
+      "module": "src/oracle-batches/batch-0063.js",
+      "moduleBeforeSha256": "15127ca3fb3a4c161d4ed5d981fa2b1433e6f4e56bf7baa6dcdb3f88ef523f06",
+      "moduleAfterSha256": "3060bef1cf915e6af2bcfba743c34ad78c8f565aeac885dd87f13259ccb24344"
+    },
+    {
+      "report": "reports/oracle-import/batch-0068.json",
+      "reportBeforeSha256": "e88154580fc889e5fa810c02e16019980e2040abb31cefc9f6c4739a3575a62d",
+      "reportAfterSha256": "02f42a713982bb0f6bee0bf00501fe58cc5838d514b10fdd5474fbcaee049c5f",
+      "module": "src/oracle-batches/batch-0068.js",
+      "moduleBeforeSha256": "86d4175095817b8416c0d061111367ae6219b4fb58d6d2dd077bb4c2d05f6999",
+      "moduleAfterSha256": "744975fb0ca5063d1fd91f9f9929b8e3704b3e113718c32a99c7db61b1ed92be"
+    },
+    {
+      "report": "reports/oracle-import/batch-0141.json",
+      "reportBeforeSha256": "53cbc0af4adbf1ae82e18a2faf57c8d0e6130a1e42aaa20c4bb031d8daba65b0",
+      "reportAfterSha256": "302822df6e359fee0012c15d546e2f29f5c28abd8278ad0c3f7df9e40424badc",
+      "module": "src/oracle-batches/batch-0141.js",
+      "moduleBeforeSha256": "26c48afa8e9509b1092ed99f19bf59b61eb47fb1f9d9b0083ca02d92b91a02af",
+      "moduleAfterSha256": "c59648d6c741161794217cb776ac443fc78184256b3f8dfdc9e4c4f1915e646c"
+    },
+    {
+      "report": "reports/oracle-import/batch-0143.json",
+      "reportBeforeSha256": "693868784d7fbff472f4fe52b414fa29efa10740b17879e4e5e38aa5f5b44131",
+      "reportAfterSha256": "4bef4ddb67a877c9a45184be712da35089582ac71ed8b86391482a6bee5d57c7",
+      "module": "src/oracle-batches/batch-0143.js",
+      "moduleBeforeSha256": "983b2f2e95699466546dd0c4d4214121bfcaebe6947ceda799c5d9b376d0cc89",
+      "moduleAfterSha256": "76aaa22b69d321cf8aec45ff14e43015b20eaf4792b8b5326d2b94bdddb151fb"
+    },
+    {
+      "report": "reports/oracle-import/batch-0144.json",
+      "reportBeforeSha256": "b7cfee51365e309e7d33ad41d76a4dea951adc7d12e91f872193ddfdbaefc975",
+      "reportAfterSha256": "6d0111f75ee909fe379e2d60658b6e342e4af190ee1a3e334534664b3cff3ab6",
+      "module": "src/oracle-batches/batch-0144.js",
+      "moduleBeforeSha256": "92a83e821cfcdb943b1cc7fd689c7aa2dd7e3d54ea29fb65d38e081702659efe",
+      "moduleAfterSha256": "9e5177ac9c5bec10e2228e2c8d4e2387a250749e73ec68e68ad293350d3355f0"
+    }
+  ]
+}

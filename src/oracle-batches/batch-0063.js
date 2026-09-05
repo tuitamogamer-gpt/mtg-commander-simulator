@@ -2014,41 +2014,52 @@ MTG.registerOracleBatch({
       "implementedKeywords": [],
       "implementation": [
         {
+          "kind": "spell-token",
+          "n": 3,
+          "token": {
+            "name": "Zombie",
+            "super": [],
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Zombie"
+            ],
+            "power": "2",
+            "toughness": "2",
+            "colors": [
+              "B"
+            ],
+            "keywords": []
+          },
+          "contract": "spell-token-creation"
+        },
+        {
           "kind": "cycling",
           "cost": "{3}{B}",
           "contract": "cycling-ability"
         },
         {
-          "kind": "spell-generic",
+          "kind": "generic-trigger",
+          "event": "cycled",
+          "eventFilter": "self",
           "effects": [
             {
               "action": "token-inline",
               "who": "you",
-              "n": 3,
+              "n": 1,
               "token": {
-                "name": "Zombie creature tokens. When you cycle this card, create a 2/2 Zombie",
+                "name": "Zombie",
                 "super": [],
                 "types": [
                   "Creature"
                 ],
                 "subtypes": [
-                  "Zombie",
-                  "creature",
-                  "tokens.",
-                  "When",
-                  "you",
-                  "cycle",
-                  "this",
-                  "card,",
-                  "create",
-                  "a",
-                  "2/2",
                   "Zombie"
                 ],
                 "power": "2",
                 "toughness": "2",
                 "colors": [
-                  "B",
                   "B"
                 ],
                 "keywords": []
@@ -2057,12 +2068,14 @@ MTG.registerOracleBatch({
           ],
           "targets": [],
           "optional": false,
-          "contract": "spell-generic-effect"
+          "zone": "cycling-source",
+          "contract": "generic-trigger-effect"
         }
       ],
       "oracleContracts": [
+        "spell-token-creation",
         "cycling-ability",
-        "spell-generic-effect"
+        "generic-trigger-effect"
       ],
       "rulesCore": "Create three 2/2 black Zombie creature tokens.\nCycling {3}{B}\nWhen you cycle this card, create a 2/2 black Zombie creature token.",
       "raw": {

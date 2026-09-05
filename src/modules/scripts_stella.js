@@ -676,7 +676,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Winged Boots'] = {
     equip: '{1}',
-    attachGrant: (g, self, host) => { host.cur.kw.add('flying'); host.cur.wardCost = { mana: '{4}' }; },
+    attachGrant: (g, self, host) => { host.cur.kw.add('flying'); g.grantWard(host, { mana: '{4}' }); },
   };
   SC['Arcane Bombardment'] = {
     triggers: [{

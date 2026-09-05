@@ -495,7 +495,7 @@ test('Fantasticar sacrifice is optional and creates four flying hasty Constructs
   await game.emit('cast', { player: fantastic, card: spells[3], nthNonCreature: 4 });
   await resolveAll(game);
   assert.equal(car.zone, 'graveyard');
-  const constructs = game.creatures(fantastic).filter(card => card.isToken && card.name === 'Construct');
+  const constructs = game.creatures(fantastic).filter(card => card.isToken && card.name === 'Construct Token');
   assert.equal(constructs.length, 4);
   assert.equal(constructs.every(card => card.kw('flying') && card.kw('haste')), true);
 });

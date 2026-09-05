@@ -337,7 +337,7 @@ test('Sylvan Offering sa X=0 ipak pravi oba izbora i pokušava napraviti oba 0/0
   assert.equal(opponentChoices, 2);
   assert.equal(calls.filter(call => call.name === 'Treefolk').length, 2);
   assert.equal(calls.filter(call => call.name === 'elfWarrior' && call.n === 0).length, 2);
-  assert.equal(game.bf().some(card => card.name === 'Treefolk'), false, '0/0 Treefolk umiru kroz SBA');
+  assert.equal(game.bf().some(card => card.name === 'Treefolk Token'), false, '0/0 Treefolk umiru kroz SBA');
 });
 
 test('Shark cycling, Rose Room pay X i Mycosynth Gardens target-MV X koriste isti legalni mana sloj', async () => {
@@ -350,7 +350,7 @@ test('Shark cycling, Rose Room pay X i Mycosynth Gardens target-MV X koriste ist
     const entry = game.activatableList(caster).find(item => item.card === typhoon && item.cycling);
     assert.ok(entry);
     assert.equal(await game.activateAbility(caster, entry), true);
-    const shark = game.bf().find(card => card.ctrl === caster && card.name === 'Shark');
+    const shark = game.bf().find(card => card.ctrl === caster && card.name === 'Shark Token');
     assert.ok(shark);
     assert.equal(shark.power, 3);
     assert.equal(shark.toughness, 3);

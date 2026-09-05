@@ -56,6 +56,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function tokenFace(def) {
     return {
       name: def.name,
+      ...(def.rulesNoName ? {rulesNoName:true} : {}),
       types: (def.types || []).slice(),
       subtypes: (def.subtypes || []).slice(),
       super: (def.super || []).slice(),
@@ -69,12 +70,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   // Every card is written as "what it is" plus "how it sits on the table".
   function captureCard(card) {
-    const identity = { name: card.def && card.def.name };
+    const identity = { name: (card.faceDown && !card.isToken ? card.meta.faceDownDef : card.def)?.name };
     if (card.isToken) {
       identity.token = tokenKeyOf(card.def);
       // A token copy of a real card keeps that card's name; anything else that
       // is not a catalog token is not portable.
-      identity.copyOf = card.isCopyOf && card.isCopyOf.name || null;
+      identity.copyOf = !card.def.rulesNoName && card.isCopyOf && card.isCopyOf.name || null;
       if (!identity.token && !identity.copyOf && !MTG.DEFS[identity.name]) identity.face = tokenFace(card.def);
     } else {
       assert(MTG.DEFS[identity.name], `card ${identity.name || '?'} is not in this build.`);
@@ -193,14 +194,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return game.untilEffects.filter(effect => isPlainBasePT(effect) && versions.get(effect.iid) === effect.zoneVersion);
   }
 
+  const isPlainLandTypes=effect=>!!MTG.OracleV8LandTypes?.isPortable(effect);
+  const captureLandTypes=effect=>MTG.OracleV8LandTypes.portableRecord(effect);
+  function currentLandTypeEffects(game){const versions=new Map(game.battlefield.map(card=>[card.iid,card.zoneVersion]));return game.untilEffects.filter(effect=>isPlainLandTypes(effect)&&versions.get(effect.iid)===effect.zoneVersion);}
+
   MTG.gameStateSnapshotBlockers = function (game) {
     const blockers = [];
     if (!game || !Array.isArray(game.players) || !game.players.length) return ['no game'];
     if (game.stack.length) blockers.push(`${game.stack.length} object(s) on the stack`);
     if (game.pendingTriggers.length) blockers.push(`${game.pendingTriggers.length} waiting trigger(s)`);
-    const lasting = game.untilEffects.filter(effect => !isPlainGoad(effect) && !isPlainBasePT(effect));
+    const lasting = game.untilEffects.filter(effect => !isPlainGoad(effect) && !isPlainBasePT(effect) && !isPlainLandTypes(effect));
     if (lasting.length) blockers.push(`${lasting.length} lasting effect(s)`);
     if (currentBasePTEffects(game).length > MAX_BASE_PT_EFFECTS) blockers.push('too many base power/toughness effects');
+    if (currentLandTypeEffects(game).length > MAX_BASE_PT_EFFECTS) blockers.push('too many land type effects');
     if (game.delayed.length) blockers.push(`${game.delayed.length} delayed trigger(s)`);
     const emblems = game.players.reduce((sum, player) => sum + (player.emblems || []).length, 0);
     if (emblems) blockers.push(`${emblems} emblem(s)`);
@@ -222,6 +228,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
   };
 
+  // This turn's damage record uses exact iid:zoneVersion pairs. A plain JSON
+  // representation preserves the established shared damage-history module's
+  // Map/Set semantics across checkpoints, including departed sources.
+  function captureDamageHistory(game) {
+    const history = game.oracleDamageHistory;
+    if (history?.turn !== game.turnNo) return null;
+    return { turn: history.turn, bySource: [...history.bySource].map(([source, targets]) => [source, [...targets]]) };
+  }
+  function validDamageHistory(history, turn) {
+    if (history === undefined || history === null) return true;
+    const identity = value => typeof value === 'string' && /^(0|[1-9]\d*):(0|[1-9]\d*)$/.test(value) && value.split(':').every(part => Number.isSafeInteger(Number(part)));
+    return history.turn === turn && Number.isSafeInteger(turn) && Array.isArray(history.bySource) &&
+      history.bySource.every(row => Array.isArray(row) && row.length === 2 && identity(row[0]) && Array.isArray(row[1]) && row[1].every(identity) && new Set(row[1]).size === row[1].length) &&
+      new Set(history.bySource.map(row => row[0])).size === history.bySource.length;
+  }
+
   function captureGameStateUnsafe(game) {
     const blockers = MTG.gameStateSnapshotBlockers(game);
     if (blockers.length) return null;
@@ -235,6 +257,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return {
       format: FORMAT,
       turnNo: game.turnNo,
+      damageHistory: captureDamageHistory(game),
       phase: game.phase,
       step: game.step,
       turnPlayer: game.turnPlayer ? game.turnPlayer.idx : 0,
@@ -251,6 +274,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       diplomacy: game.diplomacy ? JSON.parse(JSON.stringify(game.diplomacy)) : null,
       goads: game.untilEffects.filter(isPlainGoad).map(captureGoad),
       basePTEffects: currentBasePTEffects(game).map(captureBasePT),
+      landTypeEffects: currentLandTypeEffects(game).map(captureLandTypes),
       cards,
     };
   }
@@ -273,6 +297,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     assert(Array.isArray(snapshot.players) && snapshot.players.length === game.players.length,
       'the saved table has a different number of seats.');
     assert(snapshot.players.every(player=>player.counters===undefined||player.counters&&Number.isSafeInteger(player.counters.energy??0)&&(player.counters.energy??0)>=0), 'invalid player energy counters.');
+    assert(validDamageHistory(snapshot.damageHistory, snapshot.turnNo), 'invalid damage history.');
+    const landTypeEffects=snapshot.landTypeEffects??[];
+    assert(Array.isArray(landTypeEffects)&&landTypeEffects.length<=MAX_BASE_PT_EFFECTS&&landTypeEffects.every(isPlainLandTypes),'invalid land type effects.');
     const basePTEffects = snapshot.basePTEffects === undefined ? [] : snapshot.basePTEffects;
     assert(Array.isArray(basePTEffects) && basePTEffects.length <= MAX_BASE_PT_EFFECTS && basePTEffects.every(isPlainBasePT),
       'invalid base power/toughness effects.');
@@ -293,6 +320,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     game.untilEffects.length = 0;
     game.delayed.length = 0;
     game.diedThisTurn.length = 0;
+    game.oracleDamageHistory = snapshot.damageHistory ? {
+      turn: snapshot.damageHistory.turn,
+      bySource: new Map(snapshot.damageHistory.bySource.map(([source, targets]) => [source, new Set(targets)])),
+    } : undefined;
     if (snapshot.diplomacy) game.diplomacy = JSON.parse(JSON.stringify(snapshot.diplomacy));
     for (const goad of snapshot.goads || []) {
       game.untilEffects.push({
@@ -328,6 +359,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (entry.oracleFace) card.oracleFace = entry.oracleFace;
       card.oracleTransformCount = Number(entry.oracleTransformCount) || 0;
       card.meta = Object.assign({}, entry.meta);
+      if (card.faceDown && !card.isToken) {
+        card.meta.faceDownDef = MTG.DEFS[entry.name];
+        card.def = game.faceDownCreatureDef(card.meta.faceDownKind || 'manifest');
+      }
       if (entry.isToken && entry.copyOf && MTG.DEFS[entry.copyOf]) card.isCopyOf = MTG.DEFS[entry.copyOf];
       byIid.set(card.iid, card);
       if (entry.zone === 'battlefield') game.battlefield.push(card);
@@ -336,6 +371,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         owner[entry.zone].push(card);
       }
     }
+
+    for(const effect of landTypeEffects){const card=byIid.get(effect.iid);if(card?.zone==='battlefield'&&card.zoneVersion===effect.zoneVersion)game.untilEffects.push(captureLandTypes(effect));}
 
     for (const effect of basePTEffects) {
       const card = byIid.get(effect.iid);
@@ -422,6 +459,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       goads: game.untilEffects.filter(isPlainGoad).map(effect =>
         [effect.iid, effect.expires, effect.notPlayer ? effect.notPlayer.idx : '', effect.whoTurn ? effect.whoTurn.idx : ''].join('|')).sort(),
       basePTEffects: currentBasePTEffects(game).map(captureBasePT),
+      landTypeEffects: currentLandTypeEffects(game).map(captureLandTypes),
       agreements: (game.diplomacy && game.diplomacy.contracts || []).map(contract =>
         [contract.id, contract.status, contract.clauses.map(clause => `${clause.type}:${clause.state}`).join(',')].join('|')).sort(),
     });

@@ -384,7 +384,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ward: { mana: '{2}' },
     cdaPower: (g, self) => g.bf().filter(card => card.ctrl === self.ctrl && card.is('Artifact')).length,
     statics: [{ apply: (g, self, bf) => {
-      for (const card of bf) if (card !== self && card.ctrl === self.ctrl && card.is('Artifact')) card.cur.wardCost = { mana: '{2}' };
+      for (const card of bf) if (card !== self && card.ctrl === self.ctrl && card.is('Artifact')) g.grantWard(card, { mana: '{2}' });
     } }],
   };
 

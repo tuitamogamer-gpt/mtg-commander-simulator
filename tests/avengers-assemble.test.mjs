@@ -423,6 +423,9 @@ test('Thor increases only damage from another source currently controlled by Tho
 test('Love on the Battlefield delayed combat-damage permission expires at end of that combat', async () => {
   const { game, players: [avengers, opponent] } = rulesGame([], 2);
   const love = permanent(game, avengers, 'Love on the Battlefield');
+  // The mandatory attack-trigger draw must not eliminate this fixture's
+  // player before the combat-duration permission can be observed.
+  const draw = inZone(avengers, 'Plains', 'library');
   const one = permanent(game, avengers, 'Ant-Man, Elusive Avenger');
   const two = permanent(game, avengers, 'Black Widow, Agile Avenger');
   one.attacking = opponent;
@@ -430,6 +433,8 @@ test('Love on the Battlefield delayed combat-damage permission expires at end of
   game.combat = { attackers: [one, two], defenders: new Map() };
   await game.emit('attackersDeclared', { player: avengers, attackers: [one, two] });
   await resolveAll(game);
+  assert.equal(draw.zone, 'hand');
+  assert.equal(avengers.lost, false);
   assert.ok(game.delayed.some(entry => entry.name === 'Love on the Battlefield'));
   await game.endCombatStep(avengers);
   assert.equal(game.delayed.some(entry => entry.name === 'Love on the Battlefield'), false);

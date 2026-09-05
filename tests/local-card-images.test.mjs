@@ -22,7 +22,11 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
 
   assert.equal(typeof MTG.cardImageURL, 'function');
   assert.equal(typeof MTG.cardImageAPIURL, 'function');
-  assert.deepEqual([...expected].filter(name => !MTG.CARD_IMAGE_PATHS[name]), []);
+  for(const name of expected){
+    const image=MTG.cardImageURL(name);
+    if(MTG.CARD_IMAGE_MISSING.includes(name))assert.match(image,/^https:\/\/api\.scryfall\.com\//);
+    else{assert.notEqual(image,MTG.CARD_IMAGE_PLACEHOLDER,name+': canonical card or token name retains its local art');assert.match(image,/^\.\/assets\/cards\/.+\.webp$/);}
+  }
   assert.deepEqual([...commanders].filter(name => !MTG.CARD_ART_PATHS[name]), []);
   assert.equal(Object.keys(MTG.CARD_IMAGE_PATHS).length, expected.size);
   assert.deepEqual(

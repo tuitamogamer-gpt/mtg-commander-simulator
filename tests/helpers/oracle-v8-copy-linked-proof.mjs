@@ -185,6 +185,7 @@ function assertCopyValues(actual, model, mod, label) {
   if (mod.types) assert.deepEqual(Array.from(def.types), Array.from(mod.types), label + ': replacement card types');
   for (const subtype of [...(mod.addSubtypes || []), ...(mod.creatureSubtypes || [])]) assert.ok(def.subtypes.includes(subtype), label + ': copy subtype exception');
   if (mod.colors) assert.deepEqual(Array.from(def.colorsOverride), Array.from(mod.colors), label + ': color exception');
+  if(mod.addColors)for(const color of mod.addColors)assert.ok(def.colorsOverride.includes(color),label+': additive copy color '+color);
   for (const keyword of [...(original.kws || []), ...(mod.keywords || [])]) assert.ok(def.kws.includes(keyword), label + ': copied or added keyword ' + keyword);
   for (const operation of mod.operations || []) {
     if (operation.kind === 'mana-source') assert.ok(def.mana?.length, label + ': copiable mana ability');
@@ -242,7 +243,7 @@ export async function assertCopyLinkedEffect(MTG, context, entry, effect, label,
     if (row.n) assert.ok(models.length, label + ': a positive copiable subject was present');
     const assigned = new Set();
     for (const model of models) for (const controller of controllers) {
-      const copies = made.filter(snapshot => !assigned.has(snapshot) && snapshot.definition.name === model.definition.name && snapshot.controller === controller).slice(0, row.n);
+      const copies = made.filter(snapshot => !assigned.has(snapshot) && snapshot.definition.name === (effect.modifications?.name || model.definition.name) && snapshot.controller === controller).slice(0, row.n);
       assert.equal(copies.length, row.n, label + ': copies of each source for each controller');
       for (const copy of copies) {
         assigned.add(copy);

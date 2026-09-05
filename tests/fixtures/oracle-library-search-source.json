@@ -1,0 +1,347 @@
+[
+  {
+    "name": "Nature's Rhythm",
+    "id": "1397d904-c51d-451e-8505-7f3118acc1f6",
+    "oracle_id": "0259f063-3e3f-4e07-9066-f748d4819829",
+    "oracle_text": "Search your library for a creature card with mana value X or less, put it onto the battlefield, then shuffle.\nHarmonize {X}{G}{G}{G}{G} (You may cast this card from your graveyard for its harmonize cost. You may tap a creature you control to reduce that cost by an amount of generic mana equal to its power. Then exile this spell.)",
+    "type_line": "Sorcery",
+    "mana_cost": "{X}{G}{G}",
+    "layout": "normal",
+    "keywords": [
+      "Harmonize"
+    ],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "name": "Dragonstorm Forecaster",
+    "id": "75ec7a31-1893-493c-926b-dc3a8a770e72",
+    "oracle_id": "02de8fa3-ac8d-47e5-b137-d5a0b7d8e951",
+    "oracle_text": "{2}, {T}: Search your library for a card named Dragonstorm Globe or Boulderborn Dragon, reveal it, put it into your hand, then shuffle.",
+    "type_line": "Creature — Human Scout",
+    "mana_cost": "{U}",
+    "layout": "normal",
+    "keywords": [],
+    "power": "0",
+    "toughness": "3",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "name": "Lifespinner",
+    "id": "c6a83083-f7c6-4ddf-aee9-538a1778697d",
+    "oracle_id": "0fb26acd-891d-471d-98d8-73c6f940052b",
+    "oracle_text": "{T}, Sacrifice three Spirits: Search your library for a legendary Spirit permanent card, put it onto the battlefield, then shuffle.",
+    "type_line": "Creature — Spirit",
+    "mana_cost": "{3}{G}",
+    "layout": "normal",
+    "keywords": [],
+    "power": "3",
+    "toughness": "3",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "name": "Reach the Horizon",
+    "id": "c25960e0-5779-4e20-89f3-03950ad9d91c",
+    "oracle_id": "14bc29ee-4f84-4e62-8ede-5741b99414c9",
+    "oracle_text": "Search your library for up to two basic land cards and/or Town cards with different names, put them onto the battlefield tapped, then shuffle.",
+    "type_line": "Sorcery",
+    "mana_cost": "{3}{G}",
+    "layout": "normal",
+    "keywords": [],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "name": "Whir of Invention",
+    "id": "0279fd3c-9252-4958-9d7a-5f33aa25907e",
+    "oracle_id": "152b91c9-cc07-4ca8-944f-9bc2242a2283",
+    "oracle_text": "Improvise (Your artifacts can help cast this spell. Each artifact you tap after you're done activating mana abilities pays for {1}.)\nSearch your library for an artifact card with mana value X or less, put it onto the battlefield, then shuffle.",
+    "type_line": "Instant",
+    "mana_cost": "{X}{U}{U}{U}",
+    "layout": "normal",
+    "keywords": [
+      "Improvise"
+    ],
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "name": "Wargate",
+    "id": "8f4fe11d-c404-489a-b17f-34f33b1597e8",
+    "oracle_id": "26f39abe-ea0b-400d-b11c-03ee4cf50915",
+    "oracle_text": "Search your library for a permanent card with mana value X or less, put it onto the battlefield, then shuffle.",
+    "type_line": "Sorcery",
+    "mana_cost": "{X}{G}{W}{U}",
+    "layout": "normal",
+    "keywords": [],
+    "color_identity": [
+      "G",
+      "U",
+      "W"
+    ]
+  },
+  {
+    "name": "Prismatic Undercurrents",
+    "id": "bb7490f2-1425-495f-b7d4-2f1e0df7490e",
+    "oracle_id": "27a3aa64-1de7-4b0c-af23-52886e7d258a",
+    "oracle_text": "Vivid — When this enchantment enters, search your library for up to X basic land cards, where X is the number of colors among permanents you control. Reveal those cards, put them into your hand, then shuffle.\nYou may play an additional land on each of your turns.",
+    "type_line": "Enchantment",
+    "mana_cost": "{3}{G}",
+    "layout": "normal",
+    "keywords": [
+      "Vivid"
+    ],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "name": "Renowned Weaponsmith",
+    "id": "5a397298-9d7d-495f-983a-1683291a7b9f",
+    "oracle_id": "40c1375b-1d15-4525-894a-16b7a0ac02b4",
+    "oracle_text": "{T}: Add {C}{C}. Spend this mana only to cast artifact spells or activate abilities of artifacts.\n{U}, {T}: Search your library for a card named Heart-Piercer Bow or Vial of Dragonfire, reveal it, put it into your hand, then shuffle.",
+    "type_line": "Creature — Human Artificer",
+    "mana_cost": "{1}{U}",
+    "layout": "normal",
+    "keywords": [],
+    "power": "1",
+    "toughness": "3",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "name": "Rocco, Cabaretti Caterer",
+    "id": "b6cf8b35-2a81-40fd-b383-becb81bef806",
+    "oracle_id": "41c765a4-a9c9-4169-a9f1-74ededeb793c",
+    "oracle_text": "When Rocco enters, if you cast it, you may search your library for a creature card with mana value X or less, put it onto the battlefield, then shuffle.",
+    "type_line": "Legendary Creature — Elf Druid",
+    "mana_cost": "{X}{R}{G}{W}",
+    "layout": "normal",
+    "keywords": [],
+    "power": "3",
+    "toughness": "1",
+    "color_identity": [
+      "G",
+      "R",
+      "W"
+    ]
+  },
+  {
+    "name": "Reshape",
+    "id": "8f8a8f14-bced-4388-b263-5e70431b191f",
+    "oracle_id": "42a3855d-25ab-45b3-9e5d-9a0f3da35a05",
+    "oracle_text": "As an additional cost to cast this spell, sacrifice an artifact.\nSearch your library for an artifact card with mana value X or less, put it onto the battlefield, then shuffle.",
+    "type_line": "Sorcery",
+    "mana_cost": "{X}{U}{U}",
+    "layout": "normal",
+    "keywords": [],
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "name": "Fiend Artisan",
+    "id": "6cd9d800-6d31-42e2-87d2-772db0ff95ed",
+    "oracle_id": "43b8456a-3333-4936-a09c-324327619c36",
+    "oracle_text": "This creature gets +1/+1 for each creature card in your graveyard.\n{X}{B/G}, {T}, Sacrifice another creature: Search your library for a creature card with mana value X or less, put it onto the battlefield, then shuffle. Activate only as a sorcery.",
+    "type_line": "Creature — Nightmare",
+    "mana_cost": "{B/G}{B/G}",
+    "layout": "normal",
+    "keywords": [],
+    "power": "1",
+    "toughness": "1",
+    "color_identity": [
+      "B",
+      "G"
+    ]
+  },
+  {
+    "name": "Chord of Calling",
+    "id": "b18fe7e0-8344-40cc-b242-83f01c6be7a6",
+    "oracle_id": "6789a170-f2c5-4fc0-8a45-2b2361e67410",
+    "oracle_text": "Convoke (Your creatures can help cast this spell. Each creature you tap while casting this spell pays for {1} or one mana of that creature's color.)\nSearch your library for a creature card with mana value X or less, put it onto the battlefield, then shuffle.",
+    "type_line": "Instant",
+    "mana_cost": "{X}{G}{G}{G}",
+    "layout": "normal",
+    "keywords": [
+      "Convoke"
+    ],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "name": "Citanul Flute",
+    "id": "5e3e0dff-d9f0-4222-a308-e86581c440cc",
+    "oracle_id": "6b8183bb-20c4-4d45-b944-508a6a874bb3",
+    "oracle_text": "{X}, {T}: Search your library for a creature card with mana value X or less, reveal it, put it into your hand, then shuffle.",
+    "type_line": "Artifact",
+    "mana_cost": "{5}",
+    "layout": "normal",
+    "keywords": [],
+    "color_identity": []
+  },
+  {
+    "name": "Lin Sivvi, Defiant Hero",
+    "id": "e574e522-2632-4cd4-8545-c582ac3b641f",
+    "oracle_id": "6c3847b6-9bfb-49b5-8f1a-bdb40e6900f1",
+    "oracle_text": "{X}, {T}: Search your library for a Rebel permanent card with mana value X or less, put it onto the battlefield, then shuffle.\n{3}: Put target Rebel card from your graveyard on the bottom of your library.",
+    "type_line": "Legendary Creature — Human Rebel",
+    "mana_cost": "{1}{W}{W}",
+    "layout": "normal",
+    "keywords": [],
+    "power": "1",
+    "toughness": "3",
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "name": "Transit Mage",
+    "id": "6727169f-c33a-4ca5-889d-a63bcfc5a3f0",
+    "oracle_id": "991efbf1-299d-4892-aeab-8ff9827f7168",
+    "oracle_text": "When this creature enters, you may search your library for an artifact card with mana value 4 or 5, reveal it, put it into your hand, then shuffle.",
+    "type_line": "Creature — Human Wizard",
+    "mana_cost": "{2}{U}",
+    "layout": "normal",
+    "keywords": [],
+    "power": "2",
+    "toughness": "2",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "name": "Bogbrew Witch",
+    "id": "6ce1aa49-fe00-4390-8c4b-d1203cc337cd",
+    "oracle_id": "ad138184-ab2d-407a-9f9c-94b0675be19d",
+    "oracle_text": "{2}, {T}: Search your library for a card named Festering Newt or Bubbling Cauldron, put it onto the battlefield tapped, then shuffle.",
+    "type_line": "Creature — Human Wizard",
+    "mana_cost": "{3}{B}",
+    "layout": "normal",
+    "keywords": [],
+    "power": "1",
+    "toughness": "3",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "name": "Legion Conquistador",
+    "id": "ba197b31-97b8-447e-b8fd-3eefd5ccdc72",
+    "oracle_id": "b20671e6-d740-4ef6-b408-bf8a0465c0da",
+    "oracle_text": "When this creature enters, you may search your library for any number of cards named Legion Conquistador, reveal them, put them into your hand, then shuffle.",
+    "type_line": "Creature — Vampire Soldier",
+    "mana_cost": "{2}{W}",
+    "layout": "normal",
+    "keywords": [],
+    "power": "2",
+    "toughness": "2",
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "name": "Rampant Rejuvenator",
+    "id": "16b06b17-f256-428f-9bed-f115af270f27",
+    "oracle_id": "b5f5d6e3-e72e-40a5-a5c7-410617b6f933",
+    "oracle_text": "This creature enters with two +1/+1 counters on it.\nWhen this creature dies, search your library for up to X basic land cards, where X is this creature's power, put them onto the battlefield, then shuffle.",
+    "type_line": "Creature — Plant Hydra",
+    "mana_cost": "{3}{G}",
+    "layout": "normal",
+    "keywords": [],
+    "power": "0",
+    "toughness": "0",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "name": "Navigation Orb",
+    "id": "d512a77e-2435-4695-9408-df8e17dd1fbd",
+    "oracle_id": "ba7a46f1-c2a5-42d3-93eb-4dcea7186e5e",
+    "oracle_text": "{2}, {T}, Sacrifice this artifact: Search your library for up to two basic land cards and/or Gate cards, reveal those cards, put one onto the battlefield tapped and the other into your hand, then shuffle.",
+    "type_line": "Artifact",
+    "mana_cost": "{3}",
+    "layout": "normal",
+    "keywords": [],
+    "color_identity": []
+  },
+  {
+    "name": "Gathering Throng",
+    "id": "290347b9-d3cc-4882-8da6-9d8b8677f276",
+    "oracle_id": "bbd340ce-cf06-43df-a060-be80bc46e985",
+    "oracle_text": "When this creature enters, you may search your library for any number of cards named Gathering Throng, reveal them, put them into your hand, then shuffle.",
+    "type_line": "Creature — Human Citizen",
+    "mana_cost": "{2}{W}",
+    "layout": "normal",
+    "keywords": [],
+    "power": "3",
+    "toughness": "1",
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "name": "Uncage the Menagerie",
+    "id": "bc4aa918-53b9-4177-a859-f5a8eff09fe5",
+    "oracle_id": "d2043685-f091-444f-9c35-d238afa24d7b",
+    "oracle_text": "Search your library for up to X creature cards with different names that each have mana value X, reveal them, put them into your hand, then shuffle.",
+    "type_line": "Sorcery",
+    "mana_cost": "{X}{G}{G}",
+    "layout": "normal",
+    "keywords": [],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "name": "Boundless Realms",
+    "id": "e3c3cf16-ba81-4558-b1a6-79942a02f629",
+    "oracle_id": "e6acafb7-856f-4125-a908-a620635b8ba3",
+    "oracle_text": "Search your library for up to X basic land cards, where X is the number of lands you control, put them onto the battlefield tapped, then shuffle.",
+    "type_line": "Sorcery",
+    "mana_cost": "{6}{G}",
+    "layout": "normal",
+    "keywords": [],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "name": "Harvest Season",
+    "id": "326b5fad-bb8d-4019-84a8-1a319a14962e",
+    "oracle_id": "ec6d52f9-1c8f-48da-951c-be8d7813c7be",
+    "oracle_text": "Search your library for up to X basic land cards, where X is the number of tapped creatures you control, put those cards onto the battlefield tapped, then shuffle.",
+    "type_line": "Sorcery",
+    "mana_cost": "{2}{G}",
+    "layout": "normal",
+    "keywords": [],
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "name": "Battalion Foot Soldier",
+    "id": "1db6393a-88b0-4973-9832-1482f69917ff",
+    "oracle_id": "f6f39a85-28b9-49f3-ab90-2ff99169de42",
+    "oracle_text": "When this creature enters, you may search your library for any number of cards named Battalion Foot Soldier, reveal them, put them into your hand, then shuffle.",
+    "type_line": "Creature — Human Soldier",
+    "mana_cost": "{2}{W}",
+    "layout": "normal",
+    "keywords": [],
+    "power": "2",
+    "toughness": "2",
+    "color_identity": [
+      "W"
+    ]
+  }
+]

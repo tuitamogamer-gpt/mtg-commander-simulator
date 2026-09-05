@@ -174,6 +174,10 @@ test('simultaneous leave uses every pre-event Dauthi replacement source and then
   // Array order is deliberately hostile: both replacement sources are
   // represented as leaving before the other objects in the same event.
   await game.destroyMany([firstVoid, secondVoid, ordinary, staying, returning]);
+  assert.equal(returning.zone, 'exile', 'the commander actually enters the replaced destination first');
+  assert.equal(returning.counters.void, 1);
+  assert.equal(commanderDestinations.size, 0, 'the commander choice waits for the next SBA check');
+  await game.checkSBA();
 
   for (const card of [firstVoid, secondVoid, ordinary, staying]) {
     assert.equal(card.zone, 'exile', `${card.name} is replaced to exile`);

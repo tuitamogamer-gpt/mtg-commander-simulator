@@ -312,6 +312,7 @@ MTG.CARD_IMAGE_PATHS = Object.freeze({
   "Curse of Conformity": "./assets/cards/curse-of-conformity-9ad1ce8058.webp",
   "Curse of Opulence": "./assets/cards/curse-of-opulence-88a2aa2469.webp",
   "Curse of the Swine": "./assets/cards/curse-of-the-swine-a7ae19730c.webp",
+  "Cursed": "./assets/cards/wicked-cursed-4fb5ce87ee.webp",
   "Cursed Mirror": "./assets/cards/cursed-mirror-ff5273de1e.webp",
   "Curtains' Call": "./assets/cards/curtains-call-b8941c7239.webp",
   "Custodi Soulbinders": "./assets/cards/custodi-soulbinders-3889e83e43.webp",
@@ -756,6 +757,7 @@ MTG.CARD_IMAGE_PATHS = Object.freeze({
   "Jungle Shrine": "./assets/cards/jungle-shrine-b4134ec414.webp",
   "Juniper Order Ranger": "./assets/cards/juniper-order-ranger-6cfd0736fd.webp",
   "Junji, the Midnight Sky": "./assets/cards/junji-the-midnight-sky-f4a9646d53.webp",
+  "Junk Token": "./assets/cards/junk-0c3e0e040c.webp",
   "Junk Winder": "./assets/cards/junk-winder-a36ba68ca4.webp",
   "Juri, Master of the Revue": "./assets/cards/juri-master-of-the-revue-c4eb724af5.webp",
   "Kaervek the Merciless": "./assets/cards/kaervek-the-merciless-d9e04609e2.webp",
@@ -933,6 +935,7 @@ MTG.CARD_IMAGE_PATHS = Object.freeze({
   "Monastery Mentor": "./assets/cards/monastery-mentor-bcde390248.webp",
   "Monk": "./assets/cards/monk-a670c8d297.webp",
   "Monologue Tax": "./assets/cards/monologue-tax-eb882df6f5.webp",
+  "Monster": "./assets/cards/monster-sorcerer-6cf2481c7d.webp",
   "Moogle": "./assets/cards/moogle-392ac6b88a.webp",
   "Moonsilver Key": "./assets/cards/moonsilver-key-bc39ecebec.webp",
   "Moonstone Eulogist": "./assets/cards/moonstone-eulogist-300f0c8769.webp",
@@ -1197,6 +1200,7 @@ MTG.CARD_IMAGE_PATHS = Object.freeze({
   "Rose Room Treasurer": "./assets/cards/rose-room-treasurer-49f14be3ee.webp",
   "Rousing Refrain": "./assets/cards/rousing-refrain-358e010540.webp",
   "Rowdy Research": "./assets/cards/rowdy-research-f44f5c9117.webp",
+  "Royal": "./assets/cards/royal-young-hero-c345a8376d.webp",
   "Royal Talon Fighter Jet": "./assets/cards/royal-talon-fighter-jet-67a8959525.webp",
   "Rugged Prairie": "./assets/cards/rugged-prairie-e1fb360906.webp",
   "Ruinous Intrusion": "./assets/cards/ruinous-intrusion-35d246a933.webp",
@@ -1313,6 +1317,7 @@ MTG.CARD_IMAGE_PATHS = Object.freeze({
   "Somberwald Sage": "./assets/cards/somberwald-sage-ab5f460892.webp",
   "Song of Eärendil": "./assets/cards/song-of-earendil-cffa00a1c5.webp",
   "Sophia, Dogged Detective": "./assets/cards/sophia-dogged-detective-9c93246611.webp",
+  "Sorcerer": "./assets/cards/monster-sorcerer-6cf2481c7d.webp",
   "Soul of Windgrace": "./assets/cards/soul-of-windgrace-6a450bbadf.webp",
   "Soul Snuffers": "./assets/cards/soul-snuffers-f7f4b1ae0c.webp",
   "Soul-Guide Lantern": "./assets/cards/soul-guide-lantern-aae6f944e8.webp",
@@ -1591,6 +1596,7 @@ MTG.CARD_IMAGE_PATHS = Object.freeze({
   "Vindicate": "./assets/cards/vindicate-27274ae6fe.webp",
   "Vineglimmer Snarl": "./assets/cards/vineglimmer-snarl-78dadeb285.webp",
   "Viridescent Bog": "./assets/cards/viridescent-bog-22b8d8c883.webp",
+  "Virtuous": "./assets/cards/monster-virtuous-28ebee436f.webp",
   "Viscera Seer": "./assets/cards/viscera-seer-a30066ef24.webp",
   "Vision, Synthezoid Avenger": "./assets/cards/vision-synthezoid-avenger-c79d449426.webp",
   "Void Rend": "./assets/cards/void-rend-5c10c2d2ee.webp",
@@ -1629,6 +1635,7 @@ MTG.CARD_IMAGE_PATHS = Object.freeze({
   "Whirlwing Stormbrood": "./assets/cards/whirlwing-stormbrood-93ebb5aeb6.webp",
   "Whispersilk Cloak": "./assets/cards/whispersilk-cloak-612b780050.webp",
   "White Auracite": "./assets/cards/white-auracite-ad5f0988fa.webp",
+  "Wicked": "./assets/cards/wicked-cursed-4fb5ce87ee.webp",
   "Wickerbough Elder": "./assets/cards/wickerbough-elder-a0d42609c3.webp",
   "Wickersmith's Tools": "./assets/cards/wickersmith-s-tools-779b976003.webp",
   "Wild Beastmaster": "./assets/cards/wild-beastmaster-5acfd021d1.webp",
@@ -1670,6 +1677,7 @@ MTG.CARD_IMAGE_PATHS = Object.freeze({
   "Yavimaya Bloomsage": "./assets/cards/yavimaya-bloomsage-34e28b7d07.webp",
   "Yavimaya Coast": "./assets/cards/yavimaya-coast-2445887053.webp",
   "Yavimaya Elder": "./assets/cards/yavimaya-elder-419cfe50b0.webp",
+  "Young Hero": "./assets/cards/royal-young-hero-c345a8376d.webp",
   "Young Pyromancer": "./assets/cards/young-pyromancer-4224a5c800.webp",
   "Yuffie, Materia Hunter": "./assets/cards/yuffie-materia-hunter-f46dda7fc2.webp",
   "Zack Fair": "./assets/cards/zack-fair-aa65af17cc.webp",
@@ -1751,9 +1759,12 @@ MTG.cardImageAPIURLById = function (id, variant) {
 
 MTG.cardImageURL = function (name, variant) {
   const face = String(name || '').split(' // ')[0];
+  const defaultToken = face.endsWith(' Token') && !MTG.CARD_CATALOG?.[face] && !MTG.DEFS?.[face];
+  const tokenType = defaultToken ? face.slice(0, -6) : face;
+  const imageFace = MTG.CARD_IMAGE_PATHS[face] ? face : tokenType === 'Phyrexian Germ' && !MTG.CARD_IMAGE_PATHS[tokenType] ? 'Germ' : tokenType;
   const local = variant === 'art'
-    ? MTG.CARD_ART_PATHS[face] || MTG.CARD_IMAGE_PATHS[face]
-    : MTG.CARD_IMAGE_PATHS[face];
+    ? MTG.CARD_ART_PATHS[imageFace] || MTG.CARD_IMAGE_PATHS[imageFace]
+    : MTG.CARD_IMAGE_PATHS[imageFace];
   if (local === MTG.CARD_IMAGE_PLACEHOLDER && MTG.CARD_IMAGE_MISSING.includes(face)) {
     return MTG.cardImageAPIURL(face);
   }

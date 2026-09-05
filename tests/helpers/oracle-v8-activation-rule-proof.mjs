@@ -23,7 +23,9 @@ export function captureActivationRuleCost(MTG,ctx,cost,source,compiled) {
   }
   const adjustment=cost?.manaAdjustment;if(!adjustment)return null;
   const printed=MTG.parseCost(cost.mana),units=adjustment.count?countValue(ctx,source,adjustment.count):1;
-  const raw=compiled.cost.mana(ctx.game,source);
+  const mana=typeof compiled.cost==='function'?compiled.cost:compiled.cost.mana;
+  assert.equal(typeof mana,'function',source.name+': adjusted activation has an executable mana cost');
+  const raw=mana(ctx.game,source);
   assert.equal(raw.generic,Math.max(0,printed.generic+adjustment.amount*units),source.name+': printed adjustment uses the actual count or satisfied condition');
   assert.deepEqual(raw.pips,printed.pips,source.name+': generic adjustment preserves printed colored symbols');
   const payable=ctx.game.abilityManaCost(ctx.a,source,raw,{ability:compiled});

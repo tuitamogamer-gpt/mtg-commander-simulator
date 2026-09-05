@@ -1820,7 +1820,7 @@ for (const role of ['human', 'ai']) test(`v8 activated cost ${role}: exert is pa
   const seen = []; const emit = game.emit;
   game.emit = async function(event, data) { if (event === 'exerted') seen.push(data); return emit.call(this, event, data); };
   await activate(ctx, source);
-  assert.equal(source.tapped, true); assert.equal(source.meta.noUntapOnce, true);
+  assert.equal(source.tapped, true); assert.equal(source.meta.oracleExertedBy?.includes(a.idx), true);
   assert.equal(seen.length, 1); assert.equal(seen[0].card, source); assert.equal(seen[0].player, a);
   const token = game.creatures(a).find(card => card.isToken && card.hasSub('Warrior'));
   assert.ok(token); assert.equal(token.kw('vigilance'), true);
@@ -1830,7 +1830,7 @@ for (const role of ['human', 'ai']) test(`v8 activated cost ${role}: a source-na
   const ctx = context(role), { game, a } = ctx; fill(game, a, 1);
   const source = put(game, a, 'V8 Effects Activation Named Exert'), land = put(game, a, 'Plains');
   await activate(ctx, source);
-  assert.equal(source.tapped, true); assert.equal(source.meta.noUntapOnce, true);
+  assert.equal(source.tapped, true); assert.equal(source.meta.oracleExertedBy?.includes(a.idx), true);
   assert.equal(land.tapped, true); assert.equal(a.hand.length, 1);
 });
 
@@ -1843,7 +1843,7 @@ for (const role of ['human', 'ai']) test(`v8 activated cost ${role}: exert remai
   assert.equal([].concat(source.def.mana || []).length, 1);
   assert.equal((source.def.abilities || []).length, 0, 'the mana ability must not use the Stack');
   assert.equal(await game.castSpell(a, spell, { from: 'hand' }), true);
-  assert.equal(source.tapped, true); assert.equal(source.meta.noUntapOnce, true);
+  assert.equal(source.tapped, true); assert.equal(source.meta.oracleExertedBy?.includes(a.idx), true);
   assert.equal(seen.length, 1); assert.equal(seen[0].card, source); assert.equal(seen[0].player, a);
   assert.equal(Object.values(a.pool).reduce((sum, n) => sum + n, 0), 0);
   await settle(game); assert.equal(spell.zone, 'battlefield');
@@ -1852,8 +1852,8 @@ for (const role of ['human', 'ai']) test(`v8 activated cost ${role}: exert remai
 test('v8 activated exert cost skips exactly the next controller untap step', async () => {
   const ctx = context(), { game, a } = ctx;
   const source = put(game, a, 'V8 Effects Activation Exert Cost'); await activate(ctx, source);
-  await untapStep(game, a); assert.equal(source.tapped, true); assert.equal(source.meta.noUntapOnce, false);
-  await untapStep(game, a); assert.equal(source.tapped, false); assert.equal(source.meta.noUntapOnce, false);
+  await untapStep(game, a); assert.equal(source.tapped, true); assert.equal(!!source.meta.oracleExertedBy?.includes(a.idx), false);
+  await untapStep(game, a); assert.equal(source.tapped, false); assert.equal(!!source.meta.oracleExertedBy?.includes(a.idx), false);
 });
 
 test('v8 activated exert cost never installs its marker when mana becomes stale', async () => {
@@ -1862,7 +1862,7 @@ test('v8 activated exert cost never installs its marker when mana becomes stale'
   const action = game.activatableList(a).find(row => row.card === source); assert.ok(action);
   land.tapped = true;
   assert.equal(await game.activateAbility(a, action), false);
-  assert.equal(source.tapped, false); assert.equal(!!source.meta.noUntapOnce, false); assert.equal(a.hand.length, 0);
+  assert.equal(source.tapped, false); assert.equal(!!!!source.meta.oracleExertedBy?.includes(a.idx), false); assert.equal(a.hand.length, 0);
 });
 
 test('v8 activated exert grammar rejects nonself, untapped, noncreature, and unconsumed variants', () => {
@@ -1983,7 +1983,7 @@ test('v8 effect parser rejects incomplete instructions and unsupported semantic 
     'Put a +1/+1 counter on target creature, then do something unknown.',
     'Search your library for a basic land card, put that card onto the battlefield tapped.',
     'Search your library for an unknown card quality, put that card into your hand, then shuffle.',
-    'Search your library for a card named Alpha or Beta, put that card into your hand, then shuffle.',
+    'Search your library for a card named Alpha or Beta, put that card into your hand and onto the battlefield, then shuffle.',
     'Search your library for a card named Elf, reveal it, exile it, put it into your hand, then shuffle.',
     'You draw a card and you lose 1 life unless an opponent dances.',
     'Target creature deals damage to itself equal to its power. Ignore all rules.',

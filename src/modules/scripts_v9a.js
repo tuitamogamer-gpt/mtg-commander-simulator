@@ -358,7 +358,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => { E.pumpUntilEOT(ctx.g, ctx.src, ctx.data.mv || 0, 0); },
       },
       {
-        on: 'attacks', desc: 'Copy an instant or sorcery from the graveyard', filter: (g, self, d) => d.card === self, opt: true,
+        on: 'attacks', desc: 'Copy an instant or sorcery from the graveyard', filter: (g, self, d) => d.card === self,
         targets: [{
           zone: 'graveyard', what: 'card', upTo: true,
           prompt: 'Exile up to one instant/sorcery from your graveyard',

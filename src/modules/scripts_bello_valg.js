@@ -261,28 +261,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         },
       },
       {
-        on: 'expend6', filter: (g, self, d) => d.player === self.ctrl, desc: 'Steal an artifact', opt: true,
-        targets: [T.permanent((g, c, ctrl) => c.is('Artifact') && c.ctrl !== ctrl, { prompt: 'Artifact', upTo: true, aiHint: { goal: 'steal' } })],
+        on: 'expend6', filter: (g, self, d) => d.player === self.ctrl, desc: 'Steal an artifact',
+        targets: [T.permanent((g, c, ctrl) => c.is('Artifact'), { prompt: 'Artifact', upTo: true, aiHint: { goal: 'steal' } })],
         run: async ctx => {
           const t = ctx.targets[0];
           if (!t) return;
-          ctx.src.meta.stolen = ctx.src.meta.stolen || [];
-          ctx.src.meta.stolen.push({ iid: t.iid, orig: t.ctrl.idx });
-          t.ctrl = ctx.you;
-          ctx.g.lg(`${ctx.you.name} takes control of ${t.name}!`);
+          MTG.OracleV8Control.gainWhile(ctx,t);
           ctx.g.recalc();
         },
       },
-      {
-        on: 'lto', filter: (g, self, d) => d.card === self, desc: 'Return the stolen artifact',
-        run: async ctx => {
-          for (const s of ctx.src.meta.stolen || []) {
-            const c = ctx.g.byIid(s.iid);
-            if (c && c.zone === 'battlefield') { c.ctrl = ctx.g.players[s.orig]; }
-          }
-          ctx.g.recalc();
-        },
-      },
+
     ],
   };
   SC['Rampaging Baloths'] = {

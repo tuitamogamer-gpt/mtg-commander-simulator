@@ -1080,6 +1080,20 @@ export function extensionLine(card, line, helpers = {}) {
     return null;
   }
 
+  const cycleSelf=/^When you cycle this card, (.+)$/.exec(line);
+  if(cycleSelf){
+    let body=cycleSelf[1],optional=/^you may /.test(body);
+    if(optional)body=body.slice(8);
+    body=body.replace(/^(?:have it deal|it deals) /,card.name+' deals ')
+      .replace(/^have (target .+?) (get|gain) /,(_,target,verb)=>target+' '+(verb==='get'?'gets':'gains')+' ');
+    const parsed=trigger(card,'cycled','self',body,helpers,{zone:'cycling-source'});
+    // A cycling trigger has its own Stack object. Paid cycling X and a
+    // reference to the discarded source need explicit captures before they
+    // can be admitted through this standalone form.
+    if(parsed&&!/"X"|"event-card|"event-player|"self"/.test(JSON.stringify(parsed.effects)))return {...parsed,...(optional?{optional:true}:{})};
+    return null;
+  }
+
   // A card arriving in a graveyard is a new object. "From anywhere" also
   // includes the engine's battlefield-to-graveyard `dies` route.
   const graveArrival = /^(?:When|Whenever) (?:a|an) (.+? cards?) (?:is|are) put into (your|an opponent's|a player's) graveyard from (anywhere|your library|their library|a library), (.+)$/.exec(line);

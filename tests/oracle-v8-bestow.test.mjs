@@ -213,3 +213,32 @@ test('v8 Bestow preserves commander tax, X payment, zone reset and permission ty
   assert.equal(await forged.game.castSpell(forged.a, forgedCard, {from: 'hand', alt: {bestow: true, altCostStr: '{2}{G}'}}), false);
   assert.equal(forgedCard.zone, 'hand'); assert.equal(JSON.stringify(forged.a.pool), JSON.stringify(pool)); assert.equal(forgedHost.zone, 'battlefield');
 });
+
+for (const role of ['human', 'ai']) test(`v8 Bestow ${role}: copied Aura spells retain their announced attachment without token-creation replacements`, async () => {
+  const {game, a} = context(role);
+  for (const name of ['Chatterfang, Squirrel General', 'Parallel Lives']) {
+    const source = put(game, a, name, 'hand'); fund(a);
+    assert.equal(await game.castSpell(a, source, {from: 'hand'}), true); await settle(game);
+  }
+  const source = put(game, a, 'V8 Bestow Dryad', 'hand'); fund(a);
+  const row = bestowOption(game, a, source), count = a.turnState.tokensCreated;
+  assert.equal(await game.castSpell(a, source, {from: row.from, alt: row.alt}), true);
+  const original = game.stack.at(-1), host = original.targets[0];
+  await game.copySpell(original, a, {mayNewTargets: false});
+  await settle(game);
+  const copies = game.bf().filter(card => card.isToken);
+  assert.equal(copies.length, 1);
+  assert.equal(copies[0].name, source.name); assert.equal(copies[0].hasSub('Aura'), true);
+  assert.equal(copies[0].is('Creature'), false); assert.equal(copies[0].attachedTo, host.iid);
+  assert.equal(a.turnState.tokensCreated, count);
+});
+
+test('an ordinary Aura permanent copy chooses a legal attachment when no attachment was prescribed', async () => {
+  const {game, a} = context(), host = put(game, a, fixture('Untargeted Aura copy host'));
+  const aura = put(game, a, 'Rancor', 'hand'); fund(a);
+  assert.equal(await game.castSpell(a, aura, {from: 'hand'}), true); await settle(game);
+  assert.equal(aura.attachedTo, host.iid);
+  const [copy] = await game.copyPermanentToken(aura, a); await settle(game);
+  assert.ok(copy); assert.equal(copy.isToken, true); assert.equal(copy.attachedTo, host.iid);
+  assert.equal(host.power, 6, 'both real Rancor Auras grant their printed bonus');
+});

@@ -44,7 +44,7 @@ export function assertActivatedCost(context, cost, source, before, trace, label)
   if (cost?.exertSelf) {
     assert.equal(cost.tap, true, `${label}: supported exert cost is paired with the tap symbol`);
     assert.equal(source.tapped, true, `${label}: exert source pays the printed tap cost`);
-    assert.equal(source.meta.noUntapOnce, true, `${label}: exert marks exactly the next untap`);
+    assert.ok(source.meta.oracleExertedBy?.includes(a.idx), `${label}: exert skips the payer's next untap step`);
   }
 }
 
@@ -52,7 +52,7 @@ export function assertActivatedManaCost(operation, source, before, chosen, label
   if (operation.activationCost?.exertSelf) {
     assert.equal(operation.activationCost.tap, true, `${label}: mana exert requires the tap symbol`);
     assert.equal(source.tapped, true, `${label}: mana source taps while producing mana`);
-    assert.equal(source.meta.noUntapOnce, true, `${label}: mana-source exert marks the next untap`);
+    assert.ok(source.meta.oracleExertedBy?.includes(source.ctrl.idx), `${label}: mana-source exert records the activating player`);
   }
   if (operation.storageCounterMana) {
     const kind = operation.storageCounterMana.kind;

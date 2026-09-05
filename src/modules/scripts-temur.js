@@ -342,18 +342,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filter: (g, self, data) => data.card === self && !!self.castMeta && self.castMeta.kicked,
       run: async ctx => { await ctx.g.makeTokens('temurKarox44', ctx.you); } }],
   };
-  SC.Glorybringer = {
-    triggers: [{ on: 'attacks', desc: 'Exert Glorybringer', filter: attacksSelf, opt: true,
-      run: async ctx => {
-        ctx.src.meta.noUntapOnce = true;
-        ctx.g.queueTrigger({
-          src: ctx.src, ctrl: ctx.you, name: 'Exert — 4 damage',
-          targets: [T.creature({ prompt: 'Opponent non-Dragon creature',
-            filter: (g, card, ctrl) => card.ctrl !== ctrl && !isDragon(card), aiHint: { goal: 'removal', n: 4 } })],
-          run: async reflexive => { if (reflexive.targets[0]) await reflexive.g.damageCreature(reflexive.src, reflexive.targets[0], 4); },
-        });
-      } }],
-  };
+  SC.Glorybringer = MTG.OracleV8Exert.native({
+    score: (g,self,player) => g.creatures().some(card=>card.ctrl!==player&&!isDragon(card)) ? 5 : 0,
+    trigger: {
+      desc: 'Exert — 4 damage',
+      targets: [T.creature({ prompt: 'Opponent non-Dragon creature',
+        filter: (g, card, ctrl) => card.ctrl !== ctrl && !isDragon(card), aiHint: { goal: 'removal', n: 4 } })],
+      run: async ctx => { if (ctx.targets[0]) await ctx.g.damageCreature(ctx.src, ctx.targets[0], 4); },
+    },
+  });
   SC['Harbinger of the Hunt'] = {
     abilities: [{
       label: '1 damage to each creature without flying', cost: { mana: '{2}{R}' },

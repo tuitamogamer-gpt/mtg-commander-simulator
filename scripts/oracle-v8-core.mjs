@@ -1110,6 +1110,7 @@ export function baseEffect(card, line, helpers) {
     const keywords=m[7]?helpers.keywordList(m[7]):[];
     if(!keywords) return null;
     const words=m[5].toLowerCase().trim().split(/\s+/), colors={white:'W',blue:'U',black:'B',red:'R',green:'G'};
+    if(!m[6].split(' ').every(type=>ORACLE_SUBTYPES.has(type)))return null;
     return result([{action:'token-inline',who:'you',n:amount(m[1]),tapped:!!m[2],token:{name:m[6],power:m[3],toughness:m[4],subtypes:m[6].split(' '),colors:words.filter(w=>colors[w]).map(w=>colors[w]),types:[...(words.includes('artifact')?['Artifact']:[]),...(words.includes('enchantment')?['Enchantment']:[]),'Creature'],keywords}}]);
   }
   m=/^(?:look at|reveal) the top (one|two|three|four|five|six|seven|eight|nine|ten|\d+) cards? of your library\. You may (?:reveal (a|an) (.+?) card from among them and put it into your hand|put (a|an) (.+?) card from among them into your hand)\. Put the rest (?:on the bottom of your library in (any|a random) order|into your graveyard)$/i.exec(text);
@@ -1580,6 +1581,10 @@ export function baseCondition(text) {
   let extended;
   const conditions=text.split(/ and /).map(part=>part.trim());
   if(conditions.length>1){const parsed=conditions.map(extensionCondition);if(parsed.every(Boolean))return {kind:'all',conditions:parsed};}
+  // Token presence predates token-only targeting. Keep that exact condition
+  // descriptor when newer target grammar also recognizes the same noun.
+  const tokenPresence=/^you (?:have|control) (?:a|an|another) (token)$/i.exec(text);
+  if(tokenPresence)return {kind:'has-permanent',what:tokenPresence[1],other:/another /i.test(text)};
   extended=new RegExp('^you control (?:('+NUM+') or more |(?:a|an|another) )(.+)$').exec(text);
   if(extended){const noun=extended[2].replace(/\b(creatures|artifacts|lands|enchantments|permanents)\b/g,word=>word.slice(0,-1)),other=/^other /.test(noun)||/^you control another /.test(text),target=extensionTarget('target '+noun.replace(/^other /,'')+' you control');if(target)return {kind:'count-comparison',count:{kind:'count',zone:'battlefield',what:'permanent',filters:[target],other},min:extended[1]?amount(extended[1]):1};}
   extended=new RegExp('^there (?:are ('+NUM+') or more|is (?:a|an)) (.+?) in your graveyard$').exec(text);

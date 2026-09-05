@@ -56,7 +56,7 @@ test('Last Resort can add recovery tokens and known permanents directly', () => 
   game.applyLastResortAction(host, { type: 'addPermanent', playerSeat: 1, name: 'Sol Ring' });
 
   const cards = game.battlefield.filter(card => card.ctrl === guest);
-  assert.equal(cards.filter(card => card.name === 'Treasure' && card.isToken).length, 2);
+  assert.equal(cards.filter(card => card.name === 'Treasure Token' && card.isToken).length, 2);
   assert.equal(cards.find(card => card.name === 'Bug Fixer').kw('flying'), true);
   assert.equal(cards.find(card => card.name === 'Sol Ring').isToken, false);
   assert.equal(guest.turnState.tokensCreated, 0);

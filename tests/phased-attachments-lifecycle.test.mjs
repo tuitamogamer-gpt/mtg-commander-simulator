@@ -59,6 +59,32 @@ async function protectAttachment(ctx, name) {
   return { host, attachment };
 }
 for (const role of ['human', 'ai']) {
+  for (const effect of ['Wake the Past', 'Assault Formation']) test(`${role}: ${effect}'s actual temporary permission expires during cleanup while its creature is phased`, async () => {
+    const ctx = setup(role), {game, a, b, put, state} = ctx;
+    const host = put(effect === 'Wake the Past' ? 'Myr Retriever' : 'Wall of Omens', a, effect === 'Wake the Past' ? 'graveyard' : 'battlefield');
+    const formation = effect === 'Assault Formation' ? put(effect) : null;
+    for (const player of [a, b]) for (let n = 0; n < 10; n++) put('Forest', player, 'library');
+    state.targets = [host]; let played = false;
+    game.mainPhase = async () => {
+      if (played) return; played = true;
+      if (formation) {
+        a.pool.G = 1;
+        const ability = game.activatableList(a).find(entry => entry.card === formation && entry.ability?.label === 'Defender can attack');
+        assert.ok(ability); assert.equal(await game.activateAbility(a, ability), true); await settle(ctx);
+        assert.equal(a.pool.G, 0); assert.equal(host.meta.canAttackDefender, true);
+      } else {
+        await cast(ctx, effect); await settle(ctx); assert.equal(host.zone, 'battlefield'); assert.equal(host.kw('haste'), true);
+      }
+      await cast(ctx, 'Clever Concealment'); await settle(ctx); assert.equal(host.phasedOut, true);
+    };
+    game.combatPhase = async () => {}; await game.runTurn(); assert.equal(played, true);
+    assert.equal(host.phasedOut, true);
+    assert.equal(!!host.meta[formation ? 'canAttackDefender' : 'tempHaste'], false, 'printed this-turn permission expires on the absent object');
+    await untapStep(game, a); await game.checkSBA();
+    assert.equal(host.zone, 'battlefield'); assert.equal(host.phasedOut, false);
+    if (formation) {assert.equal(host.kw('defender'), true); assert.equal(game.canAttackAtAll(host), false);}
+    else assert.equal(host.kw('haste'), false);
+  });
   test(`${role}: real cleanup removes damage while phased and Giant Growth expires, so the returning creature survives`, async () => {
     const ctx = setup(role), {game, a, b, put, state} = ctx, host = put('Grizzly Bears');
     for (const player of [a, b]) for (let n = 0; n < 10; n++) put('Forest', player, 'library');

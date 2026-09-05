@@ -448,7 +448,7 @@ test('Moxite plaća X uklanjanjem izabranih countera i stavlja isti X na cilj', 
   assert.equal(target.counters.charge, 2);
 });
 
-test('Darksteel Reactor upkeep je opcionalan, ali 20 charge odmah završava partiju', async () => {
+test('Darksteel Reactor upkeep je opcionalan, a 20 charge stavlja zaseban win trigger na Stack', async () => {
   let offers = 0;
   const { game, players: [counter] } = rulesGame({
     chooseOption: (g, q) => q.aiHint?.kind === 'optTrigger' ? (++offers === 1 ? 'no' : 'yes') : q.options[0]?.key,
@@ -459,8 +459,15 @@ test('Darksteel Reactor upkeep je opcionalan, ali 20 charge odmah završava part
   await resolveAll(game);
   assert.equal(reactor.counters.charge, 19);
   await game.emit('upkeep', { player: counter });
-  await resolveAll(game);
+  await game.flushTriggers();
+  await game.resolveTop();
   assert.equal(offers, 2);
+  assert.equal(reactor.counters.charge, 20);
+  assert.equal(game.gameOver, false, 'players can respond to the separate state trigger');
+  assert.equal(game.stack.length, 1);
+  assert.equal(game.stack[0].kind, 'trigger');
+  assert.equal(game.stack[0].srcCard, reactor);
+  await game.resolveTop();
   assert.equal(game.gameOver, true);
   assert.equal(game.winner, counter);
 });

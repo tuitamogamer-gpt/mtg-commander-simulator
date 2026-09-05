@@ -25,6 +25,7 @@ function add(game, owner, name, zone = 'battlefield') {
 }
 
 async function settle(game) {
+  await game.checkSBA();
   for (let n = 0; n < 60 && (game.pendingTriggers.length || game.stack.length); n++) {
     await game.flushTriggers();
     if (game.stack.length) await game.resolveTop();

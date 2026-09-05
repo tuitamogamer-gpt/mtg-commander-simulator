@@ -1,0 +1,467 @@
+[
+  {
+    "id": "62cab0be-589c-42a0-a297-1faaec46c73f",
+    "oracle_id": "0b085c90-95df-4823-ba67-9eb398b1ec94",
+    "name": "Raka Sanctuary",
+    "layout": "normal",
+    "mana_cost": "{2}{R}",
+    "type_line": "Enchantment",
+    "oracle_text": "At the beginning of your upkeep, if you control a white or blue permanent, this enchantment deals 1 damage to target creature. If you control a white permanent and a blue permanent, this enchantment deals 3 damage instead.",
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "9423318a-c5a8-48d2-92f5-280d15a050a6",
+    "oracle_id": "128170ed-c86a-4f02-9244-28197be90c10",
+    "name": "Frost Bite",
+    "layout": "normal",
+    "mana_cost": "{R}",
+    "type_line": "Snow Instant",
+    "oracle_text": "Frost Bite deals 2 damage to target creature or planeswalker. If you control three or more snow permanents, it deals 3 damage instead.",
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "83b5b110-c430-4ffe-9fc1-8e6987f52d1e",
+    "oracle_id": "1e94e647-9150-4b22-aa9f-d195f64fb20a",
+    "name": "Slaying Fire",
+    "layout": "normal",
+    "mana_cost": "{2}{R}",
+    "type_line": "Instant",
+    "oracle_text": "Slaying Fire deals 3 damage to any target.\nAdamant — If at least three red mana was spent to cast this spell, it deals 4 damage instead.",
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "5a0bf165-d7eb-4ae6-b30a-4e9fd55f401d",
+    "oracle_id": "2586a59d-8501-4c22-9d69-f4bf91de7024",
+    "name": "Necra Sanctuary",
+    "layout": "normal",
+    "mana_cost": "{2}{B}",
+    "type_line": "Enchantment",
+    "oracle_text": "At the beginning of your upkeep, if you control a green or white permanent, target player loses 1 life. If you control a green permanent and a white permanent, that player loses 3 life instead.",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "724fd1ea-05ad-497c-9989-825ada48e684",
+    "oracle_id": "275d0b90-a8d6-4388-b7db-34615287f532",
+    "name": "Precognitive Perception",
+    "layout": "normal",
+    "mana_cost": "{3}{U}{U}",
+    "type_line": "Instant",
+    "oracle_text": "Draw three cards.\nAddendum — If you cast this spell during your main phase, instead scry 3, then draw three cards.",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "5b81a589-44bf-4441-9079-1ae66d067519",
+    "oracle_id": "27c84ad1-1491-459b-bf8a-0146062084dc",
+    "name": "Fiery Impulse",
+    "layout": "normal",
+    "mana_cost": "{R}",
+    "type_line": "Instant",
+    "oracle_text": "Fiery Impulse deals 2 damage to target creature.\nSpell mastery — If there are two or more instant and/or sorcery cards in your graveyard, Fiery Impulse deals 3 damage instead.",
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "08b7224b-adb9-4c31-b0bb-1c498f2922fb",
+    "oracle_id": "2b34b361-7b0e-4464-874c-ceb501bc5ecc",
+    "name": "Careful Consideration",
+    "layout": "normal",
+    "mana_cost": "{2}{U}{U}",
+    "type_line": "Instant",
+    "oracle_text": "Target player draws four cards, then discards three cards. If you cast this spell during your main phase, instead that player draws four cards, then discards two cards.",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "db67c59e-a9fb-4580-a8cc-ac5ef6c07440",
+    "oracle_id": "2ef797ef-c05f-4309-85c7-1bd151dac3fa",
+    "name": "Far Wanderings",
+    "layout": "normal",
+    "mana_cost": "{2}{G}",
+    "type_line": "Sorcery",
+    "oracle_text": "Search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.\nThreshold — If there are seven or more cards in your graveyard, instead search your library for up to three basic land cards, put them onto the battlefield tapped, then shuffle.",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "32cec6f3-295a-45e3-8466-e35fb043a596",
+    "oracle_id": "45c4e67c-e452-41c5-8baa-050819a1321f",
+    "name": "Ceta Sanctuary",
+    "layout": "normal",
+    "mana_cost": "{2}{U}",
+    "type_line": "Enchantment",
+    "oracle_text": "At the beginning of your upkeep, if you control a red or green permanent, draw a card, then discard a card. If you control a red permanent and a green permanent, instead draw two cards, then discard a card.",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "9d1599bb-4f43-4ab3-985a-8be5219f2195",
+    "oracle_id": "51f17fe1-1cf7-4362-b9a2-8ec225d41b03",
+    "name": "Ana Sanctuary",
+    "layout": "normal",
+    "mana_cost": "{2}{G}",
+    "type_line": "Enchantment",
+    "oracle_text": "At the beginning of your upkeep, if you control a blue or black permanent, target creature gets +1/+1 until end of turn. If you control a blue permanent and a black permanent, that creature gets +5/+5 until end of turn instead.",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "afb73190-b9bd-4744-a011-a37cd9c0148d",
+    "oracle_id": "526f520e-b4bb-4215-9c6b-afc298744f06",
+    "name": "Plunder the Trollshaws",
+    "layout": "normal",
+    "mana_cost": "{1}{U}",
+    "type_line": "Instant",
+    "oracle_text": "Draw a card. If this spell was cast from a graveyard, draw two cards instead.\nFlashback {3}{U} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "9b022ba8-07b6-4993-99c8-89c6dcb19e60",
+    "oracle_id": "55c7ce94-3cd3-42f3-9dd8-0c118fa626c8",
+    "name": "Secrets of the Key",
+    "layout": "normal",
+    "mana_cost": "{U}",
+    "type_line": "Instant",
+    "oracle_text": "Investigate. If this spell was cast from a graveyard, investigate twice instead. (Create a Clue token. It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")\nFlashback {3}{U}",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "c59b2ab3-c5e3-4599-9af0-3fa7a9544b97",
+    "oracle_id": "616c7f45-5295-4b8c-a828-ff3a5ba4d917",
+    "name": "Increasing Savagery",
+    "layout": "normal",
+    "mana_cost": "{2}{G}{G}",
+    "type_line": "Sorcery",
+    "oracle_text": "Put five +1/+1 counters on target creature. If this spell was cast from a graveyard, put ten +1/+1 counters on that creature instead.\nFlashback {5}{G}{G} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "5deb0185-62b3-474b-83a1-25473fdae4fa",
+    "oracle_id": "652e71a9-e46f-41b3-8695-76b3606b1955",
+    "name": "Court of Ambition",
+    "layout": "normal",
+    "mana_cost": "{2}{B}{B}",
+    "type_line": "Enchantment",
+    "oracle_text": "When this enchantment enters, you become the monarch.\nAt the beginning of your upkeep, each opponent loses 3 life unless they discard a card. If you're the monarch, instead each opponent loses 6 life unless they discard two cards.",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "cd4dbf80-187b-40e3-9e0b-526f78d9a34e",
+    "oracle_id": "736017e2-bc33-49e8-812d-1639443fdb51",
+    "name": "Entish Restoration",
+    "layout": "normal",
+    "mana_cost": "{2}{G}",
+    "type_line": "Instant",
+    "oracle_text": "Sacrifice a land. Search your library for up to two basic land cards, put them onto the battlefield tapped, then shuffle. If you control a creature with power 4 or greater, instead search your library for up to three basic land cards, put them onto the battlefield tapped, then shuffle.",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "b7ddfdb5-3981-4954-af5f-2459d22ec575",
+    "oracle_id": "75c626fb-9dfc-4a94-b59f-f0e45c7b2f56",
+    "name": "Dega Sanctuary",
+    "layout": "normal",
+    "mana_cost": "{2}{W}",
+    "type_line": "Enchantment",
+    "oracle_text": "At the beginning of your upkeep, if you control a black or red permanent, you gain 2 life. If you control a black permanent and a red permanent, you gain 4 life instead.",
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "0c786c28-1085-4b3e-9164-5fa3adfa5010",
+    "oracle_id": "7a5ff4d4-27b7-47d4-ba88-970c63c4e3fb",
+    "name": "Increasing Devotion",
+    "layout": "normal",
+    "mana_cost": "{3}{W}{W}",
+    "type_line": "Sorcery",
+    "oracle_text": "Create five 1/1 white Human creature tokens. If this spell was cast from a graveyard, create ten of those tokens instead.\nFlashback {7}{W}{W} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "d8293903-4604-4516-866e-27a306b6fd7c",
+    "oracle_id": "8afe3d28-be3e-416c-9457-8a2af85b2eec",
+    "name": "Ritual of Hope",
+    "layout": "normal",
+    "mana_cost": "{1}{W}",
+    "type_line": "Instant",
+    "oracle_text": "Creatures you control get +1/+1 until end of turn.\nCoven — If you control three or more creatures with different powers, creatures you control get +2/+1 until end of turn instead.",
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "a19440e2-855f-4f60-a443-b99500394611",
+    "oracle_id": "8bba7c7d-6110-4d7f-8b28-3c5b9d3448df",
+    "name": "Huatli's Spurring",
+    "layout": "normal",
+    "mana_cost": "{R}",
+    "type_line": "Instant",
+    "oracle_text": "Target creature gets +2/+0 until end of turn. If you control a Huatli planeswalker, that creature gets +4/+0 until end of turn instead.",
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "ea630ba1-22f9-4a10-bdc6-0d03128214f4",
+    "oracle_id": "aa854d50-444c-49d9-bfb1-5476b33c1c0b",
+    "name": "Scute Swarm",
+    "layout": "normal",
+    "mana_cost": "{2}{G}",
+    "type_line": "Creature — Insect",
+    "oracle_text": "Landfall — Whenever a land you control enters, create a 1/1 green Insect creature token. If you control six or more lands, create a token that's a copy of this creature instead.",
+    "power": "1",
+    "toughness": "1",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "84628a1e-17d4-4037-9b53-6ac123746ed7",
+    "oracle_id": "ae198ce9-097b-4204-b599-12bdb36f5195",
+    "name": "Summary Judgment",
+    "layout": "normal",
+    "mana_cost": "{1}{W}",
+    "type_line": "Instant",
+    "oracle_text": "Summary Judgment deals 3 damage to target tapped creature.\nAddendum — If you cast this spell during your main phase, it deals 5 damage instead.",
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "ed0c7c36-2b15-463b-a023-683972303a0a",
+    "oracle_id": "b50a6db0-16ce-4e98-afbd-ec37e1653e7c",
+    "name": "Might of Old Krosa",
+    "layout": "normal",
+    "mana_cost": "{G}",
+    "type_line": "Instant",
+    "oracle_text": "Target creature gets +2/+2 until end of turn. If you cast this spell during your main phase, that creature gets +4/+4 until end of turn instead.",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "b33c91d2-020e-45a1-aef6-187484a7cb51",
+    "oracle_id": "b7d7c131-b628-4b35-b40b-1087589ebdd0",
+    "name": "Andúril, Narsil Reforged",
+    "layout": "normal",
+    "mana_cost": "{2}",
+    "type_line": "Legendary Artifact — Equipment",
+    "oracle_text": "Ascend (If you control ten or more permanents, you get the city's blessing for the rest of the game.)\nWhenever equipped creature attacks, put a +1/+1 counter on each creature you control. If you have the city's blessing, put two +1/+1 counters on each creature you control instead.\nEquip {3}",
+    "color_identity": []
+  },
+  {
+    "id": "2be041f3-482d-40f3-a525-39e3d6890c56",
+    "oracle_id": "b9a0977a-6364-4358-bab1-112898a1b942",
+    "name": "Haunting Hymn",
+    "layout": "normal",
+    "mana_cost": "{4}{B}{B}",
+    "type_line": "Instant",
+    "oracle_text": "Target player discards two cards. If you cast this spell during your main phase, that player discards four cards instead.",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "e89dd05a-e21e-4252-ba18-9f3329c6d4dd",
+    "oracle_id": "be0c9947-3e7c-4b53-b87c-ff16ffd668ea",
+    "name": "Slimy Piper",
+    "layout": "normal",
+    "mana_cost": "{1}{G}",
+    "type_line": "Creature — Fungus Bard",
+    "oracle_text": "Whenever this creature attacks, it gets +1/+1 until end of turn. If you control four or more creatures, it gets +2/+2 and gains indestructible until end of turn instead. (Damage and effects that say \"destroy\" don't destroy it.)",
+    "power": "2",
+    "toughness": "1",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "40f0ecf7-f49e-46ff-aa5b-9ff5361b72c5",
+    "oracle_id": "bf3a0585-3976-4078-8beb-6afa79f97027",
+    "name": "Genemorph Imago",
+    "layout": "normal",
+    "mana_cost": "{G}{U}",
+    "type_line": "Creature — Insect Druid",
+    "oracle_text": "Flying\nLandfall — Whenever a land you control enters, target creature has base power and toughness 3/3 until end of turn. If you control six or more lands, that creature has base power and toughness 6/6 until end of turn instead.",
+    "power": "1",
+    "toughness": "3",
+    "color_identity": [
+      "G",
+      "U"
+    ]
+  },
+  {
+    "id": "4924f177-5ee2-4d3f-9603-4b9aef4dac09",
+    "oracle_id": "bfcffe67-7db6-41bb-bfcc-400cbb8c8a9c",
+    "name": "Jace's Triumph",
+    "layout": "normal",
+    "mana_cost": "{2}{U}",
+    "type_line": "Sorcery",
+    "oracle_text": "Draw two cards. If you control a Jace planeswalker, draw three cards instead.",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "899ecd7a-bfd6-42a4-8cb2-18bac40b4401",
+    "oracle_id": "c0dda0d0-1fae-4777-ba86-9fe7990bf3a8",
+    "name": "Secrets of the Golden City",
+    "layout": "normal",
+    "mana_cost": "{1}{U}{U}",
+    "type_line": "Sorcery",
+    "oracle_text": "Ascend (If you control ten or more permanents, you get the city's blessing for the rest of the game.)\nDraw two cards. If you have the city's blessing, draw three cards instead.",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "8b52f14c-e6b9-4ad0-8515-6644b201e2ea",
+    "oracle_id": "c8110200-209e-423a-96b7-81a3ac32447c",
+    "name": "The Destined White Mage",
+    "layout": "normal",
+    "mana_cost": "{2}{W}",
+    "type_line": "Legendary Creature — Human Cleric",
+    "oracle_text": "Lifelink\n{W}, {T}: Another target creature you control gains lifelink until end of turn.\nWhenever you gain life, put a +1/+1 counter on target creature you control. If you have a full party, put three +1/+1 counters on that creature instead.",
+    "power": "2",
+    "toughness": "3",
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "77b459cb-994c-430d-b0a6-59a8dd20adbd",
+    "oracle_id": "c9dd2bf5-32e0-47f7-9a49-501c262d745b",
+    "name": "Traverse the Ulvenwald",
+    "layout": "normal",
+    "mana_cost": "{G}",
+    "type_line": "Sorcery",
+    "oracle_text": "Search your library for a basic land card, reveal it, put it into your hand, then shuffle.\nDelirium — If there are four or more card types among cards in your graveyard, instead search your library for a creature or land card, reveal it, put it into your hand, then shuffle.",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "7eacfeec-a341-45bc-bf95-e3df0094505a",
+    "oracle_id": "dd886509-7455-4c8f-976f-0f5fafcb97be",
+    "name": "Tezzeret's Simulacrum",
+    "layout": "normal",
+    "mana_cost": "{3}",
+    "type_line": "Artifact Creature — Golem",
+    "oracle_text": "{T}: Target opponent loses 1 life. If you control a Tezzeret planeswalker, that player loses 3 life instead.",
+    "power": "2",
+    "toughness": "3",
+    "color_identity": []
+  },
+  {
+    "id": "ff0a769c-6602-4f6f-a388-f5aa15fb3c90",
+    "oracle_id": "e45a1c99-a020-49ab-8971-35c6bcd096c8",
+    "name": "Pride of Conquerors",
+    "layout": "normal",
+    "mana_cost": "{1}{W}",
+    "type_line": "Instant",
+    "oracle_text": "Ascend (If you control ten or more permanents, you get the city's blessing for the rest of the game.)\nCreatures you control get +1/+1 until end of turn. If you have the city's blessing, those creatures get +2/+2 until end of turn instead.",
+    "color_identity": [
+      "W"
+    ]
+  },
+  {
+    "id": "0c45d98d-b8bd-409d-bce9-d7d73be735a9",
+    "oracle_id": "e7871b4d-a408-4377-beee-6b1d3c7dd57d",
+    "name": "Winds of Qal Sisma",
+    "layout": "normal",
+    "mana_cost": "{1}{G}",
+    "type_line": "Instant",
+    "oracle_text": "Prevent all combat damage that would be dealt this turn.\nFerocious — If you control a creature with power 4 or greater, instead prevent all combat damage that would be dealt this turn by creatures your opponents control.",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "cbba90d0-c45e-4ef1-ba0e-a2160533e27f",
+    "oracle_id": "ef2aa67a-9531-495c-85c7-7f745bc19ce1",
+    "name": "The Destined Black Mage",
+    "layout": "normal",
+    "mana_cost": "{2}{B}",
+    "type_line": "Legendary Creature — Human Wizard",
+    "oracle_text": "Deathtouch\n{B}, {T}: Another target creature you control gains deathtouch until end of turn.\nWhenever you cast a noncreature spell, The Destined Black Mage deals 1 damage to each opponent. If you have a full party, it deals 3 damage to each opponent instead.",
+    "power": "3",
+    "toughness": "2",
+    "color_identity": [
+      "B"
+    ]
+  },
+  {
+    "id": "dabae267-54fa-4e6d-8f7d-15152fe37397",
+    "oracle_id": "f2b4f37b-270b-4746-83b3-51ff88ee3491",
+    "name": "Sulfurous Blast",
+    "layout": "normal",
+    "mana_cost": "{2}{R}{R}",
+    "type_line": "Instant",
+    "oracle_text": "Sulfurous Blast deals 2 damage to each creature and each player. If you cast this spell during your main phase, Sulfurous Blast deals 3 damage to each creature and each player instead.",
+    "color_identity": [
+      "R"
+    ]
+  },
+  {
+    "id": "052be93c-1970-4d05-a3d1-e87a6e51c423",
+    "oracle_id": "f6abd7e5-8c52-4b36-98c5-a4df8b5b6863",
+    "name": "For the Family",
+    "layout": "normal",
+    "mana_cost": "{G}",
+    "type_line": "Instant",
+    "oracle_text": "Target creature gets +2/+2 until end of turn. If you control four or more creatures, that creature gets +4/+4 until end of turn instead.",
+    "color_identity": [
+      "G"
+    ]
+  },
+  {
+    "id": "3a86f499-a2d4-47f1-9fc1-b543e5ad5c82",
+    "oracle_id": "f7a8066e-f8a4-4202-8825-0327d11e58c3",
+    "name": "Kumena's Awakening",
+    "layout": "normal",
+    "mana_cost": "{2}{U}{U}",
+    "type_line": "Enchantment",
+    "oracle_text": "Ascend (If you control ten or more permanents, you get the city's blessing for the rest of the game.)\nAt the beginning of your upkeep, each player draws a card. If you have the city's blessing, instead only you draw a card.",
+    "color_identity": [
+      "U"
+    ]
+  },
+  {
+    "id": "81bd1cd0-fa8c-4e93-aebe-dfde70ac002b",
+    "oracle_id": "ff45677d-977e-4ef5-859c-52393ed71a6c",
+    "name": "Gather the Townsfolk",
+    "layout": "normal",
+    "mana_cost": "{1}{W}",
+    "type_line": "Sorcery",
+    "oracle_text": "Create two 1/1 white Human creature tokens.\nFateful hour — If you have 5 or less life, create five of those tokens instead.",
+    "color_identity": [
+      "W"
+    ]
+  }
+]

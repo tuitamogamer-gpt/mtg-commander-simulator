@@ -9,11 +9,12 @@
 
   function modifiedDefinition(base, mod, helpers) {
     const def = {...base, types: [...(base.types || [])], subtypes: [...(base.subtypes || [])], super: [...(base.super || [])], kws: [...(base.kws || [])]};
-    if (mod.name) def.name = mod.name;
+    if (mod.name) {def.name = mod.name; delete def.rulesNoName;}
     def.super = [...new Set([...def.super, ...(mod.addSuper || [])])];
     if (mod.power !== undefined) {def.power = String(mod.power); delete def.cdaPower; delete def.oracleCharacteristicPT;}
     if (mod.toughness !== undefined) {def.toughness = String(mod.toughness); delete def.cdaToughness; delete def.oracleCharacteristicPT;}
     if (mod.colors) def.colorsOverride = mod.colors.slice();
+    if (mod.addColors) def.colorsOverride = [...new Set([...(def.colorsOverride || M.colorsOfCost(def.cost || '')), ...mod.addColors])];
     if (mod.types) {
       def.types = mod.types.slice();
       def.subtypes = def.subtypes.filter(type => def.types.includes('Artifact') && artifactTypes.has(type) || def.types.includes('Enchantment') && enchantmentTypes.has(type));
@@ -183,6 +184,7 @@
         ...(effect.attacking ? {chooseAttacking: (game, token) => game.chooseAttackingDestination(player, null, token, ctx.src.name)} : {}),
       }));
     });
+    ctx._oracleCreatedTokens = made.map(card => ({card, zoneVersion:card.zoneVersion}));
     if (effect.hasteUntilNextTurn && made.length) {
       const entries = made.map(card => ({iid: card.iid, zoneVersion: card.zoneVersion}));
       ctx.g.untilEffects.push({kind: 'copyHasteUntilNextTurn', expires: 'untilTurnOf', whoTurn: ctx.you,
@@ -195,13 +197,14 @@
       ctx.g.recalc();
     }
     if (effect.delayed && made.length) {
-      const entries = made.map(card => ({card, zoneVersion: card.zoneVersion, controller: card.ctrl}));
+      const entries = made.map(card => ({iid:card.iid, zoneVersion:card.zoneVersion}));
+      const controller=ctx.you.idx;
       ctx.g.delayed.push({on: effect.delayed.on, src: ctx.src, ctrl: ctx.you, name: 'Copied tokens — ' + effect.delayed.action,
-        ...(effect.delayed.your ? {filter: (game, data) => data?.player === ctx.you} : {}),
+        ...(effect.delayed.your ? {filter: (game, data) => data?.player?.idx === controller} : {}),
         run: async delayedCtx => {
-          const live = entries.filter(entry => entry.card.zone === 'battlefield' && entry.card.zoneVersion === entry.zoneVersion);
-          if (effect.delayed.action === 'exile') await delayedCtx.g.exileMany(live.map(entry => entry.card));
-          else for (const player of players) await delayedCtx.g.sacrificeMany(player, live.filter(entry => entry.controller === player && entry.card.ctrl === player).map(entry => entry.card));
+          const live = entries.flatMap(entry => {const card=delayedCtx.g.byIid(entry.iid);return card?.zone==='battlefield'&&card.zoneVersion===entry.zoneVersion?[card]:[];});
+          if (effect.delayed.action === 'exile') await delayedCtx.g.exileMany(live);
+          else await delayedCtx.g.sacrificeMany(delayedCtx.you, live.filter(card=>card.ctrl===delayedCtx.you));
         }});
     }
   }

@@ -3,7 +3,7 @@ export function stageOracleCounterCost(MTG,ctx,cost,source,h){
  const info=cost?.oracleCounterPayment;if(!info)return[];
  const existing=Object.keys(source.counters).find(kind=>(source.counters[kind]||0)>0&&(!info.kinds||info.kinds.includes(kind)));
  const kind=info.kinds?.[0]||existing||'charge',cards=[];
- if(info.self){source.counters[kind]=Math.max(info.n,source.counters[kind]||0);cards.push(source);}
+ if(info.self){source.counters[kind]=Math.max(typeof info.n==='string'?3:info.n,source.counters[kind]||0);cards.push(source);}
  else{
   const amount=info.among?info.n:1;
   for(let i=0;i<amount;i++){
@@ -13,11 +13,13 @@ export function stageOracleCounterCost(MTG,ctx,cost,source,h){
  }
  ctx.game.recalc();return cards;
 }
-export function assertOracleCounterCost(ctx,cost,source,before,label){
+export function assertOracleCounterCost(ctx,cost,source,before,label,trace=[]){
  const info=cost?.oracleCounterPayment;if(!info)return;
  const stack=ctx.game.stack.find(so=>so.srcCard===source&&so.ctx?.oracleCounterPayment),rows=stack?.ctx.oracleCounterPayment;
  assert.ok(rows?.length,label+': actual counter payment is recorded on the ability Stack object');
- assert.equal(rows.reduce((n,row)=>n+row.n,0),info.n,label+': exact number of counters paid');
+ const expected=info.n==='all'?before.cards.get(source).counters[info.kinds[0]]:typeof info.n==='string'?Number(trace.find(row=>row.query.type==='chooseX'&&row.query.aiHint?.counterPayment)?.result):info.n;
+ assert.equal(rows.reduce((n,row)=>n+row.n,0),expected,label+': exact announced number of counters paid');
+ if(typeof info.n==='string'){assert.equal(stack.ctx.x,expected,label+': same announced X retained on Stack');ctx.oracleCounterPaidAmount=expected;}
  if(!info.among)assert.equal(new Set(rows.map(row=>row.iid)).size,1,label+': all counters are removed from one permanent');
  for(const row of rows){
   const card=ctx.game.byIid(row.iid),old=before.cards.get(card);assert.ok(old,label+': selected counter object has a prior snapshot');

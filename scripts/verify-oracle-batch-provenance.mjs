@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createImportPlan, fetchOracleCardsFromGzip, moduleSource } from './import-oracle-batch.mjs';
 import { extractRawData } from './source-audit.mjs';
+import {verifyOracleSemanticRepairs} from './oracle-semantic-repairs.mjs';
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const batchId = sequence => `oracle-${String(sequence).padStart(4, '0')}`;
@@ -51,7 +52,7 @@ function catalogHash(rows) {
 // The CLI first hashes the compressed pinned source before calling this.
 export function verifyOracleBatchProvenance({
   sourceCards, bulk, reports, manualReports = [], legacyCards = {}, state,
-  runtimeSources, appSource, first = 27, last = 46, batchSize = 100,
+  runtimeSources, appSource, repairManifests = [], reportSources = new Map(), first = 27, last = 46, batchSize = 100,
   expectedCards = (last - first + 1) * batchSize,
 }) {
   assert.ok(Number.isInteger(first) && first > 0 && Number.isInteger(last) && last >= first,
@@ -61,6 +62,7 @@ export function verifyOracleBatchProvenance({
   assert.match(bulk.sha256 || '', /^[a-f0-9]{64}$/, 'verified pinned source SHA-256 is required');
   assert.equal(bulk.type, 'oracle_cards');
   assert.ok(bulk.id && bulk.updated_at, 'pinned bulk metadata is required');
+  const semanticRepairs=verifyOracleSemanticRepairs({manifests:repairManifests,sourceCards,bulk,reports,runtimeSources,reportSources});
 
   const allReports = [...reports].sort((left, right) => left.sequence - right.sequence);
   unique(allReports.map(report => report.id), 'generic report ids');
@@ -136,11 +138,15 @@ export function verifyOracleBatchProvenance({
     // historical ready/deferred queue statistics are not current semantics.
     // Every row still runs through the production importer's complete raw,
     // catalog, legality, keyword, Oracle-contract and implementation compiler.
+    const migrated=new Map(report.cards.map(row=>[row.oracleId,semanticRepairs.get(report.id+'/'+row.oracleId)])
+      .filter(([,entry])=>entry&&entry.repair.repairCompilerVersion!==report.selectionPolicy.compilerVersion));
+    const originalCompilerCards=originalCards.filter(card=>!migrated.has(card.oracle_id));
+    assert.ok(originalCompilerCards.length,report.id+': original compiler cohort remains explicit');
     let compiled;
     try {
       compiled = createImportPlan({
-        cards: originalCards, bulk, baseNames: new Set(), sequence: report.sequence,
-        limit: report.cards.length, generatedAt: report.generatedAt,
+        cards: originalCompilerCards, bulk, baseNames: new Set(), sequence: report.sequence,
+        limit: originalCompilerCards.length, generatedAt: report.generatedAt,
         compilerVersion: report.selectionPolicy.compilerVersion,
       }).report;
     } catch (error) {
@@ -149,7 +155,12 @@ export function verifyOracleBatchProvenance({
     for (const field of ['schemaVersion', 'id', 'sequence', 'generatedAt', 'source', 'selectionPolicy']) {
       assert.deepEqual(report[field], normalized(compiled[field]), `${report.id}: ${field} provenance`);
     }
-    const expectedRows = normalized(compiled.cards);
+    let expectedRows = normalized(compiled.cards);
+    if(migrated.size){
+      const ordinary=new Map(expectedRows.map(row=>[row.oracleId,row]));
+      assert.deepEqual(expectedRows.map(row=>row.oracleId),report.cards.filter(row=>!migrated.has(row.oracleId)).map(row=>row.oracleId),report.id+': unaffected original cohort order');
+      expectedRows=report.cards.map(row=>({...ordinary.get(row.oracleId)||migrated.get(row.oracleId).expectedRow,position:row.position}));
+    }
     report.cards.forEach((row, index) => {
       const semanticRow=sourceSemanticRow(row);
       assert.deepEqual(semanticRow, expectedRows[index], `${report.id}/${row.raw.name}: full normalized source/compiler row`);
@@ -158,7 +169,7 @@ export function verifyOracleBatchProvenance({
     for (const [field, expected] of Object.entries({
       oracleRows: sourceCards.length, paperCards: paperCards.length,
       commanderLegalCards: commanderLegalCards.length, legacyEngineCards: Object.keys(legacyCards).length,
-      selected: report.cards.length, selectedBySemanticClass: compiled.catalogSummary.selectedBySemanticClass,
+      selected: report.cards.length, selectedBySemanticClass: expectedRows.reduce((counts,row)=>(counts[row.semanticClass]=(counts[row.semanticClass]||0)+1,counts),{}),
     })) assert.deepEqual(report.catalogSummary[field], expected, `${report.id}: ${field} summary`);
     const runtime = runtimeSources.get(report.id);
     assert.equal(typeof runtime, 'string', `${report.id}: runtime module exists`);
@@ -178,6 +189,7 @@ export function verifyOracleBatchProvenance({
     normalizedCohortSha256: sha256(JSON.stringify(canonical(selected.map(report => ({ id: report.id, cards: report.cards }))))),
     historicalQueueStatisticsReplayed: false,
     semanticCompatibilityNormalizations,
+    semanticRepairs:[...semanticRepairs.values()].map(({manifestId,repair})=>({manifestId,batch:repair.batch,oracleId:repair.oracleId,name:repair.name,originalCompilerVersion:repair.originalCompilerVersion,repairCompilerVersion:repair.repairCompilerVersion,beforeSha256:repair.beforeSha256,afterSha256:repair.afterSha256})),
     batchResults,
   };
 }
@@ -220,16 +232,20 @@ export async function runProvenanceVerification(args = process.argv.slice(2)) {
   const { bulk, cards } = await fetchOracleCardsFromGzip(options.sourceFile, {
     type: source.bulkType, id: source.bulkId, updated_at: source.bulkUpdatedAt, description: source.bulkDescription,
   }, options.sourceSha256);
-  const runtimeSources = new Map(reports.filter(report => report.sequence >= options.first && report.sequence <= options.last)
+  const repairDirectory=path.join(reportDir,'repairs');
+  const repairFiles=fs.existsSync(repairDirectory)?fs.readdirSync(repairDirectory).filter(file=>file.endsWith('.json')).sort():[];
+  const repairManifests=repairFiles.map(file=>JSON.parse(fs.readFileSync(path.join(repairDirectory,file),'utf8')));
+  const runtimeSources = new Map(reports
     .map(report => [report.id, fs.readFileSync(path.join(workspaceRoot, 'src', 'oracle-batches', `${batchFile(report.sequence)}.js`), 'utf8')]));
   const result = verifyOracleBatchProvenance({
-    sourceCards: cards, bulk, reports, manualReports, runtimeSources,
+    sourceCards: cards, bulk, reports, manualReports, runtimeSources,repairManifests,
+    reportSources:new Map(reports.map(report=>[report.id,fs.readFileSync(path.join(reportDir,`${batchFile(report.sequence)}.json`),'utf8')])),
     legacyCards: extractRawData(fs.readFileSync(path.join(workspaceRoot, 'src', 'data.js'), 'utf8')).cards,
     state: JSON.parse(fs.readFileSync(path.join(reportDir, 'state.json'), 'utf8')),
     appSource: fs.readFileSync(path.join(workspaceRoot, 'src', 'app.js'), 'utf8'),
     first: options.first, last: options.last, expectedCards: options.expectedCards,
   });
-  result.compilerFiles = Object.fromEntries(['scripts/import-oracle-batch.mjs', 'scripts/oracle-spell-v4.mjs', 'scripts/oracle-extensions-v5.mjs', 'scripts/oracle-extensions-v6.mjs', 'scripts/oracle-extensions-v7.mjs', 'scripts/oracle-extensions-v8.mjs', 'scripts/oracle-v8-core.mjs', 'scripts/oracle-v8-effects.mjs', 'scripts/oracle-v8-permanents.mjs', 'scripts/oracle-v8-ability-loss.mjs', 'scripts/oracle-v8-combat.mjs', 'scripts/oracle-v8-faces.mjs', 'scripts/oracle-v8-levels.mjs', 'scripts/oracle-v8-linked.mjs', 'scripts/oracle-v8-copies.mjs', 'scripts/oracle-v8-stack-copy.mjs','scripts/oracle-v8-target-quantities.mjs','scripts/oracle-v8-target-predicates.mjs','scripts/oracle-v8-attached-effects.mjs', 'scripts/oracle-v8-results.mjs', 'scripts/oracle-v8-batch-triggers.mjs', 'scripts/oracle-v8-observation-triggers.mjs', 'scripts/oracle-v8-control.mjs', 'scripts/oracle-v8-library.mjs', 'scripts/oracle-v8-multizone-search.mjs', 'scripts/oracle-v8-entwine.mjs', 'scripts/oracle-v8-splice.mjs', 'scripts/oracle-v8-costs.mjs', 'scripts/oracle-v8-additional-costs.mjs', 'scripts/oracle-v8-alternative-costs.mjs', 'scripts/oracle-v8-timing.mjs', 'scripts/oracle-v8-prevention.mjs', 'scripts/oracle-v8-activation-rules.mjs', 'scripts/oracle-v8-public-abilities.mjs', 'scripts/oracle-v8-keyword-costs.mjs', 'scripts/oracle-v8-forecast.mjs', 'scripts/oracle-v8-turns.mjs', 'scripts/oracle-v8-untap.mjs', 'scripts/oracle-v8-delayed-triggers.mjs', 'scripts/oracle-v8-damage-events.mjs', 'scripts/oracle-v8-coins.mjs', 'scripts/oracle-v8-clash.mjs', 'scripts/oracle-v8-combat-costs.mjs', 'scripts/oracle-v8-casting-choices.mjs', 'scripts/oracle-v8-awaken.mjs', 'scripts/oracle-v8-morph-costs.mjs', 'scripts/oracle-v8-equip-costs.mjs', 'scripts/oracle-v8-upkeep-costs.mjs', 'scripts/oracle-v8-keyword-payments.mjs', 'scripts/oracle-v8-encore.mjs', 'scripts/oracle-v8-miracle.mjs', 'scripts/oracle-v8-zone-keyword-costs.mjs', 'scripts/oracle-v8-counter-costs.mjs', 'scripts/oracle-v8-play-permissions.mjs', 'scripts/oracle-v8-revealed.mjs', 'scripts/oracle-v8-energy.mjs', 'scripts/oracle-v8-hand-size.mjs', 'scripts/oracle-v8-cast-events.mjs', 'scripts/oracle-v8-casting-rules.mjs', 'scripts/oracle-v8-counts.mjs', 'scripts/oracle-v8-mayhem.mjs', 'scripts/oracle-v8-scope-effects.mjs', 'scripts/oracle-v8-combat-restrictions.mjs', 'scripts/oracle-v8-mana-extensions.mjs', 'scripts/oracle-v8-characteristics.mjs', 'scripts/oracle-v8-activation-prohibitions.mjs', 'scripts/oracle-v8-activation-suffixes.mjs', 'scripts/oracle-v8-kicker-replacements.mjs', 'scripts/oracle-v8-land-types.mjs', 'scripts/oracle-v8-divided-damage.mjs', 'scripts/oracle-v8-counter-effects.mjs', 'scripts/oracle-v8-combat-keywords.mjs', 'scripts/oracle-v8-phasing.mjs', 'scripts/oracle-v8-casting-limits.mjs', 'scripts/oracle-flavor-words.json', 'scripts/oracle-subtypes.mjs']
+  result.compilerFiles = Object.fromEntries(['scripts/import-oracle-batch.mjs', 'scripts/source-audit.mjs', 'scripts/oracle-v8-name-groups.mjs', 'scripts/oracle-v8-name-search.mjs', 'scripts/oracle-semantic-repairs.mjs', 'scripts/oracle-spell-v4.mjs', 'scripts/oracle-extensions-v5.mjs', 'scripts/oracle-extensions-v6.mjs', 'scripts/oracle-extensions-v7.mjs', 'scripts/oracle-extensions-v8.mjs', 'scripts/oracle-v8-core.mjs', 'scripts/oracle-v8-effects.mjs', 'scripts/oracle-v8-permanents.mjs', 'scripts/oracle-v8-ability-loss.mjs', 'scripts/oracle-v8-combat.mjs', 'scripts/oracle-v8-faces.mjs', 'scripts/oracle-v8-levels.mjs', 'scripts/oracle-v8-linked.mjs', 'scripts/oracle-v8-copies.mjs', 'scripts/oracle-v8-token-forms.mjs', 'scripts/oracle-v8-stack-copy.mjs','scripts/oracle-v8-target-quantities.mjs','scripts/oracle-v8-target-predicates.mjs','scripts/oracle-v8-attached-effects.mjs', 'scripts/oracle-v8-results.mjs', 'scripts/oracle-v8-batch-triggers.mjs', 'scripts/oracle-v8-observation-triggers.mjs', 'scripts/oracle-v8-control.mjs', 'scripts/oracle-v8-library.mjs', 'scripts/oracle-v8-multizone-search.mjs', 'scripts/oracle-v8-entwine.mjs', 'scripts/oracle-v8-splice.mjs', 'scripts/oracle-v8-costs.mjs', 'scripts/oracle-v8-additional-costs.mjs', 'scripts/oracle-v8-alternative-costs.mjs', 'scripts/oracle-v8-timing.mjs', 'scripts/oracle-v8-prevention.mjs', 'scripts/oracle-v8-activation-rules.mjs', 'scripts/oracle-v8-public-abilities.mjs', 'scripts/oracle-v8-keyword-costs.mjs', 'scripts/oracle-v8-forecast.mjs', 'scripts/oracle-v8-turns.mjs', 'scripts/oracle-v8-untap.mjs', 'scripts/oracle-v8-delayed-triggers.mjs', 'scripts/oracle-v8-delayed-objects.mjs', 'scripts/oracle-v8-damage-events.mjs', 'scripts/oracle-v8-coins.mjs', 'scripts/oracle-v8-clash.mjs', 'scripts/oracle-v8-combat-costs.mjs', 'scripts/oracle-v8-casting-choices.mjs', 'scripts/oracle-v8-awaken.mjs', 'scripts/oracle-v8-morph-costs.mjs', 'scripts/oracle-v8-equip-costs.mjs', 'scripts/oracle-v8-upkeep-costs.mjs', 'scripts/oracle-v8-keyword-payments.mjs', 'scripts/oracle-v8-encore.mjs', 'scripts/oracle-v8-miracle.mjs', 'scripts/oracle-v8-zone-keyword-costs.mjs', 'scripts/oracle-v8-counter-costs.mjs', 'scripts/oracle-v8-variable-counter-costs.mjs', 'scripts/oracle-v8-play-permissions.mjs', 'scripts/oracle-v8-revealed.mjs', 'scripts/oracle-v8-energy.mjs', 'scripts/oracle-v8-hand-size.mjs', 'scripts/oracle-v8-cast-events.mjs', 'scripts/oracle-v8-casting-rules.mjs', 'scripts/oracle-v8-counts.mjs', 'scripts/oracle-v8-mayhem.mjs', 'scripts/oracle-v8-scope-effects.mjs', 'scripts/oracle-v8-combat-restrictions.mjs', 'scripts/oracle-v8-mana-extensions.mjs', 'scripts/oracle-v8-characteristics.mjs', 'scripts/oracle-v8-activation-prohibitions.mjs', 'scripts/oracle-v8-activation-suffixes.mjs', 'scripts/oracle-v8-hand-activations.mjs', 'scripts/oracle-v8-conditional-effects.mjs', 'scripts/oracle-v8-kicker-replacements.mjs', 'scripts/oracle-v8-land-types.mjs', 'scripts/oracle-v8-divided-damage.mjs', 'scripts/oracle-v8-counter-effects.mjs', 'scripts/oracle-v8-counter-transfers.mjs', 'scripts/oracle-v8-state-triggers.mjs', 'scripts/oracle-v8-zone-replacements.mjs', 'scripts/oracle-v8-entry-counters.mjs', 'scripts/oracle-v8-draw-replacements.mjs', 'scripts/oracle-v8-exert.mjs', 'scripts/oracle-v8-exploit.mjs', 'scripts/oracle-v8-soulbond.mjs', 'scripts/oracle-v8-creature-upgrades.mjs', 'scripts/oracle-v8-predefined-tokens.mjs', 'scripts/oracle-v8-source-durations.mjs', 'scripts/oracle-v8-combat-keywords.mjs', 'scripts/oracle-v8-phasing.mjs', 'scripts/oracle-v8-casting-limits.mjs', 'scripts/oracle-flavor-words.json', 'scripts/oracle-subtypes.mjs', 'scripts/oracle-creature-types.mjs']
     .map(file => [file, sha256(fs.readFileSync(path.join(workspaceRoot, file)))]));
   result.compilerSha256 = sha256(Object.entries(result.compilerFiles).map(([file, digest]) => `${file}\t${digest}`).join('\n'));
   return result;

@@ -1630,6 +1630,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (q.type === 'chooseCards') {
       const allRanked = (q.from || []).slice().sort((a, b) => choiceCardValue(game, player, b, q) - choiceCardValue(game, player, a, q) || a.iid - b.iid);
       const ranked = allRanked.slice(0, Math.max(config.targetLimit, q.min || 0, q.max || 1));
+      if(q.aiHint?.kind==='oracleNameSearch'){const picks=[];for(const card of allRanked)if(picks.length<(q.max??1)&&(!q.aiHint.canPayRemaining||q.aiHint.canPayRemaining([...picks,card])))picks.push(card);actions.push({kind:'chooseCards',picks});}
       if (q.aiHint && q.aiHint.kind === 'genesisWave') {
         const picks = ranked.filter(card => !((card.def.super || []).includes('Legendary') &&
           game.bf().some(existing => existing.ctrl === player && existing.name === card.name)));
@@ -2006,13 +2007,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function wardTargetAdjustment(game, player, target, q) {
-    const ward = wardOf(target);
-    if (!ward || target.ctrl === player) return 0;
+    const wards = target instanceof U.CardInst && target.cur
+      ? [wardOf(target), ...(target.cur.extraWards || [])].filter(Boolean) : [];
+    if (!wards.length || target.ctrl === player) return 0;
     if (q && q.so && q.so.kind === 'spell' && (q.so.card || q.src) && MTG.isUncounterable &&
       MTG.isUncounterable(game, Object.assign({ card: q.src, ctrl: player }, q.so))) return 0;
-    const reserved = reservedManaFor(game, player, q);
-    if (!canPayWard(game, player, ward, reserved)) return -1000;
-    return -wardPrice(game, player, ward);
+    let reserved = reservedManaFor(game, player, q), price = 0;
+    for (const ward of wards) {
+      if (!canPayWard(game, player, ward, reserved)) return -1000;
+      reserved += wardManaAmount(ward);
+      price += wardPrice(game, player, ward);
+    }
+    return -price;
   }
   MTG.botWardTargetAdjustment = wardTargetAdjustment;
 
@@ -2051,6 +2057,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function targetValue(game, player, target, q) {
+    if(q.aiHint?.oracleNameGroup){
+      const aiHint={...q.aiHint};delete aiHint.oracleNameGroup;
+      const value=MTG.OracleV8NameGroups.targetValue(game,player,target,q,card=>baseTargetValue(game,player,card,{...q,aiHint}));
+      return value>0?value+wardTargetAdjustment(game,player,target,{...q,aiHint}):value;
+    }
     const base = baseTargetValue(game, player, target, q);
     // Nema smisla plaćati ward za metu koju ionako ne želimo pogoditi.
     if (base <= 0) return base;
@@ -2124,6 +2135,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return threat * 0.45 + lethal + friendly;
     }
     if (target instanceof U.CardInst) {
+      if (hint === 'counterTransferDonor'||hint === 'counterTransferRecipient')return MTG.OracleV8CounterTransfers.targetValue(player,target,q);
       if (hint === 'oracleBasePT') return oracleBasePTTargetValue(game, player, target, q);
       const value = permanentGameValue(game, target, player);
       const hostile = target.ctrl !== player;
@@ -2211,6 +2223,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (target.tapped) return -1000;
         return hostile ? value : -value * 1.8;
       }
+      if(hint==='steal')return hostile?value*2+4:-value-4;
       if (hint === 'untap') {
         if (!target.tapped) return -1000;
         return hostile ? -value : value;
@@ -2272,10 +2285,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function choiceCardValue(game, player, card, q) {
+    if(q.aiHint?.exploitSource)return MTG.OracleV8Exploit.value(game,player,q.aiHint.exploitSource,q.aiHint.sourceVersion,card);
     if (!(card instanceof U.CardInst)) return 0;
     const hint = q.aiHint && q.aiHint.kind || '';
     // Processing exile may choose an opponent's face-down card, but it does
     // not grant permission to inspect its identity before that choice.
+    if(hint==='oracleNameExile')return card.owner===player?-cardDefinitionValue(card.def):cardDefinitionValue(card.def)+1;
     if (hint === 'oracleProcessExile') return card.faceDown ? 0 : -cardDefinitionValue(card.def);
     const value = cardDefinitionValue(card.def) + (card.commander ? 8 : 0);
     if (hint === 'crew') return -permanentGameValue(game, card, player);
@@ -4070,7 +4085,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
-      if(hintKind==='combatAsUnblocked'){
+      if(hintKind==='exertAttack'){
+        breakdown.choice=action.value===MTG.OracleV8Exert.choose(game,player,q)?10:0;
+      } else if(hintKind==='exploit'){
+        breakdown.choice=action.value===MTG.OracleV8Exploit.choose(game,player,q)?10:0;
+      } else if(hintKind==='tapUntap'){
+        const target=q.aiHint.target,desired=target?.ctrl===player?'untap':'tap',unchanged=target?.tapped===(desired==='tap');
+        const picked=unchanged&&(q.options||[]).some(row=>row.key==='none')?'none':desired;
+        breakdown.choice=action.value===picked?10:0;
+      } else if(hintKind==='combatAsUnblocked'){
         const {card,blockers=[],amount=0,defender}=q.aiHint;
         const defendingPlayer=defender instanceof MTG.Player;
         const lethal=defendingPlayer ? card?.kw('infect') ? (defender.poison||0)+amount>=10
@@ -4083,6 +4106,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           remaining-=Math.min(remaining,need);
         }
         breakdown.choice=action.value==='yes'?(lethal?1000:amount*(card?.kw('infect')?3:0.8)):removal;
+      } else if(hintKind==='entryCounterOpponent'){
+        breakdown.choice=-20*game.bf().filter(card=>card.ctrl.idx===Number(action.value)&&card.is('Creature')).length;
+      } else if(hintKind==='drawReplacementOptional'){
+        const accept=q.aiHint.mode==='skip'?!player.library.length:(q.aiHint.source?.counters.study||0)<3&&player.hand.length>2;
+        breakdown.choice=action.value===(accept?'yes':'no')?10:0;
       } else if(hintKind==='damagePreventionSource'){
         breakdown.choice=U.OracleV8SourcePrevention.threat(game,player,action.option?.card);
       } else if(hintKind==='oracleLibraryChoice'){
@@ -4174,7 +4202,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         breakdown.choice = demand * 2.2 + Math.max(0, 2 - (player.pool[color] || 0)) * 0.6;
       } else if (hintKind === 'dredge') {
         breakdown.choice = action.option && action.option.card
-          ? choiceCardValue(game, player, action.option.card, q || {}) + Number(action.option.card.def.dredge || 0) * 0.35
+          ? choiceCardValue(game, player, action.option.card, q || {}) + Number(action.option.card.def.dredge?.n ?? action.option.card.def.dredge ?? 0) * 0.35
           : 0;
       } else if (hintKind === 'quinjetMode') {
         const handHero = player.hand.filter(card => card.is('Creature') && card.hasSub('Hero'))

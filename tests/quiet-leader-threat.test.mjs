@@ -122,50 +122,50 @@ test('a persona that deliberately lets the leader run keeps doing so', async () 
     `the Opportunist still pecks at the wounded instead (${JSON.stringify(opportunist)})`);
 });
 
-test('over full games a winner without a board is no longer the least threatening player', { timeout: 900_000 }, async () => {
+test('full games retain a meaningful public life-lead threat with a quiet board', { timeout: 900_000 }, async () => {
   const names = Object.keys(MTG.DECKS).filter(name => !MTG.DECKS[name].custom);
-  const quietWinner = [], everyoneElse = [];
+  let quietLeadSamples = 0, decisions = 0;
   for (let index = 0; index < 8; index++) {
     const picks = [0, 1, 2, 3].map(offset => names[(index * 5 + offset * 3) % names.length]);
     const game = MTG.newGame({
       humanDeck: picks[0], aiDecks: picks.slice(1), aiStyles: ['balanced', 'balanced', 'balanced'],
-      difficulty: 'normal', seed: 4200 + index, maxTurns: 45, paced: false,
+      difficulty: 'normal', seed: 4200 + index, maxTurns: 200, paced: false,
     });
-    const samples = [];
     const previous = game.onEvent;
     game.onEvent = event => {
+      if (event.type === 'aiDecision') {
+        decisions++;
+        assert.equal(event.decision.fallback, false, `seed ${4200 + index}: no fallback`);
+      }
       if (event.type === 'phase' && game.phase === 'main1' && game.turnNo >= 8) {
         const observer = game.players.find(player => player !== game.turnPlayer && !player.lost);
         if (observer) {
           const view = MTG.createBotPlayerView(game, observer.idx);
-          samples.push(game.players.filter(player => !player.lost && player !== observer).map(player => ({
-            player, threat: MTG.assessPlayerThreat(view, observer.idx, player.idx),
-          })));
+          for (const player of view.players.filter(row => !row.lost && row.id !== observer.idx)) {
+            const others = view.players.filter(row => !row.lost && row.id !== player.id);
+            const tableLife = others.reduce((sum, row) => sum + row.life, 0) / others.length;
+            const threat = MTG.assessPlayerThreat(view, observer.idx, player.id);
+            if (threat.boardPower >= 8 || player.life - tableLife < 10) continue;
+            // Compare the same public position with only this player's life lead
+            // removed. A future winner need not be the biggest current threat,
+            // and scores from unrelated games do not form a valid comparison.
+            const levelLifeView = { ...view, players: view.players.map(row => row.id === player.id
+              ? { ...row, life: tableLife } : row) };
+            const withoutLead = MTG.assessPlayerThreat(levelLifeView, observer.idx, player.id);
+            assert.ok(threat.lifeLead > 0);
+            assert.ok(threat.totalScore >= withoutLead.totalScore + 5,
+              `seed ${4200 + index}: a ten-point public life lead matters with a quiet board`);
+            quietLeadSamples++;
+          }
         }
       }
       return previous && previous(event);
     };
     await game.start();
-    if (!game.winner) continue;
-    const late = samples.slice(-6).flat();
-    const of = who => {
-      const rows = late.filter(row => row.player === who);
-      return rows.length ? rows.reduce((sum, row) => sum + row.threat.totalScore, 0) / rows.length : null;
-    };
-    const board = who => {
-      const rows = late.filter(row => row.player === who);
-      return rows.length ? rows.reduce((sum, row) => sum + row.threat.boardPower, 0) / rows.length : null;
-    };
-    const winnerScore = of(game.winner);
-    if (winnerScore !== null && board(game.winner) < 8) quietWinner.push(winnerScore);
-    for (const player of game.players) {
-      if (player === game.winner) continue;
-      const score = of(player);
-      if (score !== null) everyoneElse.push(score);
-    }
+    assert.ok(game.gameOver && game.winner, `seed ${4200 + index}: completed with a winner`);
+    assert.ok(game.turnNo < game.maxTurns, `seed ${4200 + index}: natural completion`);
+    assert.equal(game.pendingTriggers.length, 0);
   }
-  const mean = list => list.reduce((sum, value) => sum + value, 0) / Math.max(1, list.length);
-  if (!quietWinner.length) return; // no board-less winner in this sample
-  assert.ok(mean(quietWinner) > mean(everyoneElse),
-    `a winner with no board outranks the rest of the table (${mean(quietWinner).toFixed(1)} vs ${mean(everyoneElse).toFixed(1)}, was 30.6 vs 36.0)`);
+  assert.ok(quietLeadSamples > 0, 'full games exercised a quiet player with a substantial life lead');
+  assert.ok(decisions > 0, 'actual AI decisions were observed');
 });

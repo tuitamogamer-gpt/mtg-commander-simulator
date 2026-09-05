@@ -1336,8 +1336,8 @@ for (const role of ['human', 'ai']) {
     const made = await ctx.game.makeTokens('beast33', ctx.a);
     const choices = ctx.decisions.filter(row => row.query.aiHint?.kind === 'tokenReplacementOrder');
     assert.equal(choices.length, 1);
-    assert.equal(made.filter(card => card.name === 'Beast').length, 2);
-    assert.equal(made.filter(card => card.name === 'Food').length, chosenSource(choices[0]) === 'V8 Token Food' ? 2 : 1);
+    assert.equal(made.filter(card => card.name === 'Beast Token').length, 2);
+    assert.equal(made.filter(card => card.name === 'Food Token').length, chosenSource(choices[0]) === 'V8 Token Food' ? 2 : 1);
     assert.equal((await ctx.game.makeTokens('beast33', ctx.b)).length, 1);
     put(ctx.game, ctx.a, 'Donatello, the Brains');
     assert.equal((await ctx.game.makeTokens('beast33', ctx.a, {n: 0})).length, 0, 'an additional-token effect cannot turn zero into an event');
@@ -1350,14 +1350,14 @@ for (const role of ['human', 'ai']) {
     put(ctx.game, ctx.a, 'Academy Manufactor');
     put(ctx.game, ctx.a, 'V8 Token Food');
     const made = await ctx.game.makeTokens('beast33', ctx.a);
-    assert.deepEqual(Array.from(made, card => card.name).sort(), ['Beast', 'Clue', 'Food', 'Treasure']);
+    assert.deepEqual(Array.from(made, card => card.name).sort(), ['Beast Token', 'Clue Token', 'Food Token', 'Treasure Token']);
     assert.equal(ctx.decisions.some(row => row.query.aiHint?.kind === 'tokenReplacementOrder'), false, 'Manufactor is offered only after there is a Food to replace');
     await settle(ctx.game);
     const other = context(role);
     put(other.game, other.a, 'Divine Visitation');
     put(other.game, other.a, 'Chatterfang, Squirrel General');
     const transformed = await other.game.makeTokens('treasure', other.a);
-    assert.deepEqual(Array.from(transformed, card => card.name).sort(), ['Angel', 'Treasure'], 'Visitation becomes applicable to the added Squirrel');
+    assert.deepEqual(Array.from(transformed, card => card.name).sort(), ['Angel Token', 'Treasure Token'], 'Visitation becomes applicable to the added Squirrel');
     await settle(other.game);
   });
 

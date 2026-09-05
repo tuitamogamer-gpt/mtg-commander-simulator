@@ -9,6 +9,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   // TOKENS
   // ============================================================
+  MTG.tokenDefinitionForCreation = function (def) {
+    const subtypes = (def.subtypes || []).join(' ');
+    // CR 111.4: default names are fixed when the token is created. A copied
+    // name or an explicitly specified name is a separate characteristic.
+    if (def.explicitTokenName || def.name !== subtypes && !def.defaultTokenName) return def;
+    return {...def, name: (subtypes ? subtypes + ' ' : '') + 'Token'};
+  };
   const tok = (name, cost, types, subtypes, p, t, extra) => Object.assign({
     name, cost: cost || null, types, subtypes: subtypes || [], super: [],
     power: p !== undefined ? String(p) : undefined, toughness: t !== undefined ? String(t) : undefined,
@@ -109,6 +116,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // starim putem. Nijedno ime tokena se ne poklapa sa pravom kartom u setu.
   // ============================================================
   MTG.TOKEN_IMG = {
+    "Cursed": "6929750f-cf08-4e3e-83b0-076e1f6fa8e0",
+    "Wicked": "6929750f-cf08-4e3e-83b0-076e1f6fa8e0",
+    "Monster": "6b8a810b-8538-41c3-a792-dbd1a1845faa",
+    "Sorcerer": "6b8a810b-8538-41c3-a792-dbd1a1845faa",
+    "Royal": "cff8ef48-2988-4d21-837e-01f1459e07c5",
+    "Young Hero": "cff8ef48-2988-4d21-837e-01f1459e07c5",
+    "Virtuous": "27927100-2587-4e05-9957-eb183d46c1f0",
+    "Junk Token": "62c4a6f6-6425-4c0c-b35a-880fcab42aad",
     'Squirrel': 'tmsh/14', 'Saproling': 'tsoc/18', 'Rat': 'plst/TWOE-7', 'Pest': 'tsos/9',
     'Goat': 'tmsc/22', 'Wolf': 'thob/9', 'Beast': 'tmsc/27', 'Cat': 'tsoc/2', 'Devil': 'tdsc/7',
     'Drake': 'tfdn/8', 'Bird Illusion': 'totc/4', 'Bird': 'tmsc/21', 'Elemental': 'tsoc/20',
@@ -538,38 +553,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   MTG.buildDefs = function (rawCards, scripts, options = {}) {
-    // Skup stvarnih tipova stvorenja iz baze — koristi ga CardInst.hasSub da
-    // "svaki tip stvorenja" (changeling, Maskwood Nexus) ne obuhvati i
-    // Aura/Equipment/Vehicle i slične ne-creature podtipove.
-    // Karte tipa "Kindred Enchantment — Treefolk Aura" nose i jedno i drugo, pa
-    // se podtipovi koji se pojavljuju na ne-stvorenjima oduzimaju.
-    if (options.registerTypes !== false) {
-      const creature = new Set(), other = new Set();
-      const collectSubtypes = (definition, includeKindred = false) => {
-        const t = definition.types || [];
-        const isCre = t.includes('Creature') || includeKindred && (t.includes('Kindred') || t.includes('Tribal'));
-        for (const s of MTG.normalizeSubtypes(definition.subtypes)) (isCre ? creature : other).add(s);
-      };
-      for (const raw of Object.values(rawCards)) collectSubtypes(raw, true);
-      for (const script of Object.values(scripts || {})) {
-        for (const face of script.oracleFaces?.faces || []) collectSubtypes(face.def, true);
-      }
-      // Token-only creature types (for example Spawn) are still creature
-      // types for Changeling. Include both named and inline Oracle tokens,
-      // while noncreature token subtypes stay outside the creature vocabulary.
-      for (const token of Object.values(MTG.TOKENS || {})) collectSubtypes(token);
-      const collectInlineTokens = value => {
-        if (!value || typeof value !== 'object') return;
-        if (value.token && Array.isArray(value.token.types)) collectSubtypes(value.token);
-        for (const child of Object.values(value)) collectInlineTokens(child);
-      };
-      for (const script of Object.values(scripts || {})) collectInlineTokens(script.oracleImplementation);
-      for (const s of other) creature.delete(s);
-      // CR 205.3m (2026-06-19): these are creature types even when the
-      // catalog uses them only in animation text, rather than a type line.
-      for (const subtype of ['Blinkmoth', 'Llama']) creature.add(subtype);
-      MTG.CREATURE_SUBTYPES = creature;
-    }
+    // CR 205.3m includes token-only types and excludes land/artifact types.
+    if (options.registerTypes !== false) MTG.CREATURE_SUBTYPES = new Set(MTG.RULES_CREATURE_TYPES);
     const defs = {};
     for (const [name, raw] of Object.entries(rawCards)) {
       if (scripts[name]?.oracleFaces) {
@@ -644,6 +629,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // implementiraju kao triger ostaju mrtvi (Dragon Elemental ima prowess u
     // kws, ali bez ovoga nikad ne dobije +1/+1).
     for (const t of Object.values(MTG.TOKENS || {})) {
+      if (t === MTG.TOKENS.germ) t.defaultTokenName = true;
+      Object.assign(t, MTG.tokenDefinitionForCreation(t));
       if ((t.kws || []).includes('prowess') && !(t.triggers || []).some(x => x.desc === 'Prowess')) {
         t.triggers = (t.triggers || []).concat([{
           on: 'castNonCreature', desc: 'Prowess',

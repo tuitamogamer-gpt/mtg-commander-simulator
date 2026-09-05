@@ -97,7 +97,8 @@ test('Sultai Arisen is a 100-card Teval deck and all 57 intake cards use exact O
 });
 
 test('Living Death exiles graveyard creatures in batches, sacrifices the battlefield as one event, then returns only its exiled set', async () => {
-  const { game, players: [sultai, opponent] } = rulesGame();
+  const { game, players: [sultai, opponent] } = rulesGame([undefined, (g,q) =>
+    q.aiHint?.kind === 'optTrigger' && q.aiHint.src.name === 'Noxious Gearhulk' ? 'no' : defaultDecision(g,q)]);
   const teval = permanent(game, sultai, 'Teval, the Balanced Scale');
   const ownBoard = permanent(game, sultai, 'Skull Prophet');
   const enemyBoard = permanent(game, opponent, 'Hedron Crab');
@@ -137,7 +138,7 @@ test('Living Death exiles graveyard creatures in batches, sacrifices the battlef
   assert.equal(enemyBoard.zone, 'graveyard');
   assert.equal(teval.zone, 'graveyard');
   assert.equal(nonCreature.zone, 'hand', 'the returned Timeless Witness may recur it after Living Death has finished');
-  assert.equal(game.bf().filter(card => card.isToken && card.name === 'Zombie Druid').length, 1,
+  assert.equal(game.bf().filter(card => card.isToken && card.name === 'Zombie Druid Token').length, 1,
     'two own creatures leaving together are one Teval trigger');
 });
 
@@ -197,14 +198,15 @@ test('shared dredge, eternalize, cards-left batch, and graveyard-entry batch pat
   const second = inZone(sultai, 'Swamp', 'graveyard');
   await game.moveGraveyardBatch([first, second], 'hand');
   await resolveAll(game);
-  assert.equal(game.bf().filter(card => card.isToken && card.name === 'Zombie Druid').length, 1);
+  assert.equal(game.bf().filter(card => card.isToken && card.name === 'Zombie Druid Token').length, 1);
   assert.equal(sultai.hand.length >= 3, true, 'Judgment draw mode resolves once for the batch');
   assert.equal(teval.zone, 'battlefield');
   assert.equal(judgment.zone, 'battlefield');
 });
 
 test('Kotis pays three other graveyard cards and casts one real creature spell only once during the turn', async () => {
-  const { game, players: [sultai] } = rulesGame();
+  const { game, players: [sultai] } = rulesGame([(g,q) =>
+    q.aiHint?.kind === 'optTrigger' && q.aiHint.src.name === 'Noxious Gearhulk' ? 'no' : defaultDecision(g,q)]);
   const kotis = permanent(game, sultai, 'Kotis, Sibsig Champion');
   const creature = inZone(sultai, 'Noxious Gearhulk', 'graveyard');
   const fodder = [inZone(sultai, 'Forest', 'graveyard'), inZone(sultai, 'Swamp', 'graveyard'), inZone(sultai, 'Life from the Loam', 'graveyard')];
@@ -366,12 +368,12 @@ test('Sultai history, graveyard-cast batches, and Wonder static continuously fol
   inZone(sultai, 'Forest', 'library');
   inZone(sultai, 'Swamp', 'library');
   const welcome = inZone(sultai, 'Welcome the Dead', 'hand');
-  const zombiesBeforeWelcome = game.creatures(sultai).filter(card => card.isToken && card.name === 'Zombie Druid').length;
+  const zombiesBeforeWelcome = game.creatures(sultai).filter(card => card.isToken && card.name === 'Zombie Druid Token').length;
   sultai.pool.B = 1;
   sultai.pool.C = 8;
   assert.equal(await game.castSpell(sultai, welcome), true);
   await resolveAll(game);
-  assert.equal(game.creatures(sultai).filter(card => card.isToken && card.name === 'Zombie Druid').length - zombiesBeforeWelcome, 3,
+  assert.equal(game.creatures(sultai).filter(card => card.isToken && card.name === 'Zombie Druid Token').length - zombiesBeforeWelcome, 3,
     'Welcome counts two earlier cards plus its own resolution discard');
 
   const spell = inZone(sultai, 'Life from the Loam', 'graveyard');
@@ -393,10 +395,10 @@ test('Sultai history, graveyard-cast batches, and Wonder static continuously fol
   };
   const cast = game.castableList(sultai).find(entry => entry.card === spell && entry.from === 'graveyard');
   assert.ok(cast);
-  const zombiesBeforeCast = game.creatures(sultai).filter(card => card.isToken && card.name === 'Zombie Druid').length;
+  const zombiesBeforeCast = game.creatures(sultai).filter(card => card.isToken && card.name === 'Zombie Druid Token').length;
   assert.equal(await game.castSpell(sultai, spell, { from: cast.from, alt: cast.alt }), true);
   assert.equal(batches, 1, 'a graveyard spell emits one cardsLeftGraveyard batch');
   await resolveAll(game);
-  assert.equal(game.creatures(sultai).filter(card => card.isToken && card.name === 'Zombie Druid').length - zombiesBeforeCast, 1,
+  assert.equal(game.creatures(sultai).filter(card => card.isToken && card.name === 'Zombie Druid Token').length - zombiesBeforeCast, 1,
     'Teval triggers once for the single graveyard-leave event');
 });

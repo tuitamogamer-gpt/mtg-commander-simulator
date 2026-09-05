@@ -60,7 +60,7 @@ test('Slaughter the Strong skips seats with no creatures and still sacrifices th
   await MTG.SCRIPTS['Slaughter the Strong'].resolve({ g: game, you: me, src: null });
   assert.ok(!prompts.includes('chooseCards'), 'a seat with no creatures is not asked what to keep');
   const left = game.battlefield.filter(card => card.ctrl === rival && card.is('Creature')).map(card => card.name);
-  assert.equal(left.join(','), 'Squirrel', 'the 1/1 stays, the 9/9 is sacrificed');
+  assert.equal(left.join(','), 'Squirrel Token', 'the 1/1 stays, the 9/9 is sacrificed');
 });
 
 test('the prompt bar names reveals and counts legal options in the singular', () => {

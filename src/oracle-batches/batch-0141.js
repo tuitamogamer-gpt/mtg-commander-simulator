@@ -2683,34 +2683,34 @@ MTG.registerOracleBatch({
               "min": 1
             }
           },
+          "targets": [],
+          "optional": false,
           "effects": [
             {
               "action": "token-inline",
               "who": "you",
               "n": 1,
               "token": {
-                "name": "red, green, Sand Warrior",
+                "name": "Sand Warrior",
                 "super": [],
                 "types": [
                   "Creature"
                 ],
                 "subtypes": [
-                  "red,",
-                  "green,",
                   "Sand",
                   "Warrior"
                 ],
                 "power": "1",
                 "toughness": "1",
                 "colors": [
+                  "R",
+                  "G",
                   "W"
                 ],
                 "keywords": []
               }
             }
           ],
-          "targets": [],
-          "optional": false,
           "contract": "generic-trigger-effect",
           "onceEachTurn": true,
           "onceGroup": "Whenever one or more land cards are put into your graveyard from anywhere, create a 1/1 red, green, and white Sand Warrior creature token. This ability triggers only once each turn."

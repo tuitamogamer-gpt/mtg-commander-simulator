@@ -31,13 +31,13 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     for(const card of new Set(cards))if(card.zone==='battlefield')game.untilEffects.push({...effect,kind:'oracleAbilityLoss',iid:card.iid,zoneVersion:card.zoneVersion,timestamp,expires:effect.temporary?'eot':'object'});
     game.recalc();
   }
-  function begin(game,bf){
+  function begin(game,bf,force=false){
     const records=game.untilEffects.filter(row=>row.kind==='oracleAbilityLoss'&&bf.some(card=>card.iid===row.iid&&card.zoneVersion===row.zoneVersion));
     const statics=bf.flatMap(source=>(source.def.statics||[]).filter(row=>row.oracleAbilityLoss).map(descriptor=>({source,descriptor,timestamp:source.timestamp})));
-    if(!records.length&&!statics.length&&!bf.some(card=>(card.def.statics||[]).some(row=>row.oracleLegacyAbilityLoss)))return null;
+    if(!force&&!records.length&&!statics.length&&!bf.some(card=>(card.def.statics||[]).some(row=>row.oracleLegacyAbilityLoss)))return null;
     let timestamp=0,applied=false;
     const states=new Map();
-    const arrayKeys=['extraAbilities','extraTriggers','extraMana','protectionFrom'];
+    const arrayKeys=['extraAbilities','extraTriggers','extraMana','extraWards','protectionFrom'];
     for(const card of bf){
       const cur=card.cur,kw=cur.kw,stamps=new Map([...kw].map(key=>[key,-Infinity])),removed=new Map(),grants=new Map();
       const add=kw.add,del=kw.delete,clear=kw.clear;
@@ -83,7 +83,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
       for(const row of rows)if(!row.descriptor||row.descriptor.applied?.has(row.source.cur))at(row.timestamp,()=>{for(const card of row.cards)for(const keyword of row.effect.keywords||[])card.cur.kw.add(keyword);});
     }
     function finish(){for(const [card,state]of states){for(const key of ['add','delete','clear'])delete card.cur.kw[key];for(const list of state.arrays)delete list.push;for(const key of state.flags)Object.defineProperty(card.cur,key,{value:card.cur[key],writable:true,configurable:true,enumerable:true});}}
-    return {at,apply,finish,records};
+    return {at,apply,finish,records,suppressPrinted(card){const state=states.get(card);for(const [key,stamp]of state?.stamps||[])if(stamp===-Infinity)state.del.call(card.cur.kw,key);}};
   }
   MTG.OracleV8AbilityLoss={compile,add,begin,change};
 })();

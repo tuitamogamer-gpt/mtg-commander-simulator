@@ -209,7 +209,7 @@ test('Aligned Heart accumulates rally counters and its created Monk tokens have 
   await game.emit('castSecond', { player: jeskai, isInstantSorcery: true, so: { targets: [] } });
   await resolveAll(game);
   assert.equal(heart.counters.rally, 2);
-  const monks = game.creatures(jeskai).filter(card => card.isToken && card.name === 'Monk');
+  const monks = game.creatures(jeskai).filter(card => card.isToken && card.name === 'Monk Token');
   assert.equal(monks.length, 3);
   await game.emit('castNonCreature', { player: jeskai, isInstantSorcery: true });
   await resolveAll(game);
@@ -443,14 +443,14 @@ test('creature triggers cover Elsha, Mentor, Mangara, Bibliophile, and Caldera P
 
   await game.emit('combatDamageToPlayer', { card: elsha, player: opponent, n: 3 });
   await resolveAll(game);
-  assert.equal(game.creatures(jeskai).filter(card => card.name === 'Monk').length, 3);
+  assert.equal(game.creatures(jeskai).filter(card => card.name === 'Monk Token').length, 3);
 
   const handBefore = jeskai.hand.length;
   await game.emit('castNonCreature', { player: jeskai, isInstantSorcery: true });
   await game.emit('cast', { player: jeskai, isInstantSorcery: true, so: { targets: [opponent, pyremaw] } });
   await game.emit('castIS', { player: jeskai, isInstantSorcery: true, so: { targets: [] } });
   await resolveAll(game);
-  assert.equal(game.creatures(jeskai).filter(card => card.name === 'Monk').length, 4);
+  assert.equal(game.creatures(jeskai).filter(card => card.name === 'Monk Token').length, 4);
   assert.equal(jeskai.hand.length, handBefore + 2);
   assert.equal(pyremaw.counters['+1/+1'], 1);
   assert.equal(opponent.life, 36);

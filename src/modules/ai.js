@@ -964,11 +964,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const min = q.min !== undefined ? q.min : 1;
       const max = q.max || 1;
       const pick = (sorted) => sorted.slice(0, Math.max(min, Math.min(max, sorted.length)));
+      if(q.aiHint?.oracleNameGroup){
+        const beneficial=/buff|protect|recur/.test(goal),destroy=q.aiHint.oracleNameGroup.effect.action==='destroy';
+        const score=card=>destroy&&card.kw('indestructible')?0:Math.max(1,this.permThreat(g,card))*((card.ctrl===p)===beneficial?1:-1);
+        const ranked=cands.map(card=>({card,value:MTG.OracleV8NameGroups.targetValue(g,p,card,q,score)})).sort((a,b)=>b.value-a.value||a.card.iid-b.card.iid);
+        return ranked.filter((row,index)=>index<min||row.value>0).slice(0,max).map(row=>row.card);
+      }
       const byThreatDesc = cands.filter(x => x instanceof MTG.CardInst).sort((a, b) => this.permThreat(g, b) - this.permThreat(g, a));
       const enemyPerms = byThreatDesc.filter(x => x.ctrl !== p);
       const myPerms = byThreatDesc.filter(x => x.ctrl === p);
       const oppPlayers = cands.filter(x => x instanceof MTG.Player && x !== p);
       switch (goal) {
+        case 'counterTransferDonor': case 'counterTransferRecipient': return cands.slice().sort((a,b)=>MTG.OracleV8CounterTransfers.targetValue(p,b,q)-MTG.OracleV8CounterTransfers.targetValue(p,a,q)||a.iid-b.iid).slice(0,Math.max(min,Math.min(max,cands.length)));
         case 'oracleBasePT': {
           const scored = cands.map(card => ({card, value: MTG.oracleBasePTTargetValue(g, p, card, q)}))
             .sort((a,b) => b.value - a.value || a.card.iid - b.card.iid);
@@ -1141,6 +1148,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     chooseCards(g, q) {
+      if(q.aiHint?.exploitSource)return (q.from||[]).slice().sort((a,b)=>MTG.OracleV8Exploit.value(g,this.p,q.aiHint.exploitSource,q.aiHint.sourceVersion,b)-MTG.OracleV8Exploit.value(g,this.p,q.aiHint.exploitSource,q.aiHint.sourceVersion,a)||a.iid-b.iid).slice(0,q.min||1);
       const kind = q.aiHint && q.aiHint.kind || 'generic';
       const from = q.from || [];
       const min = q.min !== undefined ? q.min : 1;
@@ -1210,6 +1218,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (cheap.length) return [cheap[0]];
           return this.p.life < 10 && byThreatAsc.length ? [byThreatAsc[0]] : [];
         }
+        case 'oracleNameSearch': {const picks=[];for(const card of byValDesc)if(picks.length<max&&(!q.aiHint.canPayRemaining||q.aiHint.canPayRemaining([...picks,card])))picks.push(card);return picks;}
+        case 'oracleNameExile': return byValDesc.filter(card=>card.owner!==this.p).slice(0,max);
         case 'bestCard': case 'reunion': case 'reanimate': {
           return byValDesc.slice(0, Math.max(min, Math.min(max, 1) || 1)).slice(0, max);
         }
@@ -1343,6 +1353,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const kind = q.aiHint && q.aiHint.kind || '';
       const keys = q.options.map(o => o.key);
       switch (kind) {
+        case 'exertAttack': return MTG.OracleV8Exert.choose(g,this.p,q);
+        case 'exploit': return MTG.OracleV8Exploit.choose(g,this.p,q);
+        case 'tapUntap': { const target=q.aiHint.target,desired=target?.ctrl===this.p?'untap':'tap';return target?.tapped===(desired==='tap')&&keys.includes('none')?'none':desired; }
+        case 'entryCounterOpponent': return q.options.slice().sort((a,b)=>g.bf().filter(card=>card.ctrl.idx===Number(a.key)&&card.is('Creature')).length-g.bf().filter(card=>card.ctrl.idx===Number(b.key)&&card.is('Creature')).length)[0]?.key;
         case 'damagePreventionSource': return q.options.slice().sort((a,b)=>MTG.OracleV8SourcePrevention.threat(g,this.p,b.card)-MTG.OracleV8SourcePrevention.threat(g,this.p,a.card))[0]?.key;
         case 'dredge': {
           const offered = q.options.filter(option => option.card);

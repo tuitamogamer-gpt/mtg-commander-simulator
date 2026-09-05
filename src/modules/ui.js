@@ -3022,8 +3022,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (c.faceDown && visual.derived !== 'ward') continue;
         if (!MTG.cardHasVisualAbility(c, keyword, visual)) continue;
         const counterN = c.counters && c.counters[keyword] || 0;
-        const ward = visual.derived === 'ward' && c.cur && c.cur.wardCost;
-        const wardDetail = ward && (ward.mana || (ward.life ? `pay ${ward.life} life` : ward.blight ? `Blight ${ward.blight}` : ''));
+        const wards = visual.derived === 'ward' && c.cur
+          ? [c.cur.wardCost, ...(c.cur.extraWards || [])].filter(Boolean) : [];
+        const wardDetail = wards.map(ward => ward.mana || (ward.life ? `pay ${ward.life} life` : ward.blight ? `Blight ${ward.blight}` : '')).filter(Boolean).join(', ');
         const title = `${visual.label}${wardDetail ? ` — ${wardDetail}` : ''}${counterN ? ` — ${counterN} ${keyword} counter${counterN === 1 ? '' : 's'}` : ''}`;
         badges.push(`<span class="keywordbadge tone-${visual.tone}" data-keyword="${esc(keyword)}" title="${esc(title)}" aria-label="${esc(title)}">${U.icon(visual.icon)}${counterN > 1 ? `<b>${counterN}</b>` : ''}</span>`);
       }

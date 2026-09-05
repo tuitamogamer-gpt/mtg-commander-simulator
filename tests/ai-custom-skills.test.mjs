@@ -203,11 +203,21 @@ test('custom skill completes a deterministic real four-player game without fallb
   for (let run = 0; run < 2; run++) {
     const game = MTG.newGame({ humanDeck: 'Squirreled Away', aiDecks: ['The Fantastic Four', 'Counter Intelligence', 'Elven Council'],
       aiStyles: [key, 'passive', 'balanced'], difficulty: 'normal', seed: 82711, maxTurns: 200, paced: false });
+    // The production debug log retains only the last 160 decisions. Observe
+    // the real decision events so an eliminated bot's earlier choices and any
+    // earlier fallback remain part of this whole-game proof.
+    const decisions = [], onEvent = game.onEvent;
+    game.onEvent = event => {
+      onEvent(event);
+      if (event.type === 'aiDecision') decisions.push(event.decision);
+    };
     await game.start();
     assert.equal(game.gameOver, true); assert.ok(game.winner); assert.ok(game.turnNo < 200);
     assert.equal(game.pendingTriggers.length, 0);
-    assert.equal(game.aiDecisionLog.some(entry => entry.fallback), false);
-    assert.ok(game.aiDecisionLog.some(entry => entry.skill === key && entry.mode));
+    assert.ok(decisions.length > 0, 'the real game produced observed AI decisions');
+    assert.equal(decisions.some(entry => entry.fallback), false);
+    assert.ok(decisions.some(entry => entry.skill === key && entry.mode),
+      'the custom policy executed during the game, including before its player was eliminated');
     summaries.push([game.winner.name, game.turnNo, game.players.map(p => [p.name, p.life, p.lost])]);
   }
   assert.deepEqual(summaries[0], summaries[1]);

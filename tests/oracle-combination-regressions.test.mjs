@@ -118,7 +118,7 @@ test('actual Clowning Around resolves exact tokens and d6 threshold for human an
       assert.equal(await game.castSpell(player, spell, { from: 'hand', alt: { free: true } }), true);
       await game.resolveTop();
 
-      const clowns = game.creatures(player).filter(card => card.isToken && card.name === 'Clown Robot');
+      const clowns = game.creatures(player).filter(card => card.isToken && card.name === 'Clown Robot Token');
       assert.equal(clowns.length, roll === 0 ? 3 : 2, `${role}: threshold result creates the exact count`);
       for (const token of clowns) {
         assert.equal(token.is('Artifact'), true);

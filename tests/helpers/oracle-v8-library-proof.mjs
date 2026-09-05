@@ -54,6 +54,12 @@ function amount(value, engine, context, before) {
   if (typeof value === 'number') return Math.max(0, value);
   if (value === 'X') return Math.max(0, engine.x ?? engine.src?.castMeta?.x ?? 0);
   if (value?.kind === 'sum') return value.values.reduce((sum, child) => sum + amount(child, engine, context, before), 0);
+  if(['source-stat','explicit-source-stat'].includes(value?.kind)){
+    const source=engine.src,version=engine.sourceZoneVersion??engine.oracleSourceCapture?.zoneVersion;
+    const observed=source.zone==='battlefield'&&(version===undefined||source.zoneVersion===version)?before?.cards.get(source)||source:engine.data?.card===source&&engine.data.snap?engine.data.snap:source.battlefieldLKI?.get(version);
+    assert.ok(observed,'source stat amount uses the actual live or last battlefield object');
+    return Math.max(0,Number(observed[value.stat])||0)*(value.multiply??1);
+  }
   if(value?.kind==='source-counters'){
     const source=engine.src,version=engine.sourceZoneVersion??engine.oracleSourceCapture?.zoneVersion;
     const observed=source.zone==='battlefield'&&(version===undefined||source.zoneVersion===version)
@@ -206,7 +212,7 @@ export function installLibraryProof(MTG, context, helpers) {
       states: new Map(library.map(card => [card, snapshot(card)])),
     };
     const row = {kind: 'search', effect, source: engine.src, you: engine.you, owner, chooser, execution,
-      x: engine.x ?? engine.src?.castMeta?.x ?? 0, before, expectedOwners: expectedOwners(engine, effect),
+      x: engine.x ?? engine.src?.castMeta?.x ?? 0, before, countBefore:proof.helpers?.genericProofSnapshot?.(current,owner.library), expectedOwners: expectedOwners(engine, effect),
       otherPlayers: new Map(engine.g.players.filter(player => player !== owner).map(player => [player, {
         library: Array.from(player.library), hand: Array.from(player.hand), graveyard: Array.from(player.graveyard), exile: Array.from(player.exile),
       }])), queryStart: proof.queries.length, revealStart: proof.reveals.length, shuffleStart: proof.shuffles.length,
@@ -261,7 +267,7 @@ export function stageLibraryEffect(MTG, context, effect, helpers) {
       ['hand', 'graveyard', 'battlefield', 'top'].includes(placement.destination) &&
       (typeof placement.n === 'number' || ['all', 'rest'].includes(placement.n)) &&
       (placement.destination !== 'top' || [0, 2].includes(placement.offset || 0))), 'library search uses only closed placements');
-    assert.equal(!!effect.unrestricted, !effect.filter, 'library search has exactly one closed candidate domain');
+    assert.equal(Number(!!effect.unrestricted)+Number(!!effect.filter)+Number(Array.isArray(effect.names)&&effect.names.length>0),1, 'library search has exactly one closed candidate domain');
     if (effect.n !== 'all') stageCount(MTG, context, effect.n, helpers);
     const owners=effect.ownerSearch?context.game.players:[context.a];
     if(effect.ownerSearch){
@@ -280,7 +286,7 @@ export function stageLibraryEffect(MTG, context, effect, helpers) {
         const location = card.owner.graveyard.indexOf(card); assert.ok(location >= 0);
         card.owner.graveyard.splice(location, 1); card.zone = 'library'; owner.library.push(card);
       } else {
-        card = new MTG.CardInst(helpers.fixtureDefinition('Library unrestricted search ' + index, index % 2 ? ['Instant'] : ['Creature'], {
+        card = new MTG.CardInst(helpers.fixtureDefinition(effect.names?.[index%effect.names.length]||'Library unrestricted search ' + index, effect.names?['Creature']:index % 2 ? ['Instant'] : ['Creature'], {
           cost: '{' + (index + 1) + '}', power: '2', toughness: '3',
         }), owner);
         card.zone = 'library'; owner.library.push(card);
@@ -380,12 +386,12 @@ function assertLibrarySearch(context, effect, label) {
 function assertLibrarySearchRow(context, row, effect, label) {
   assert.equal(row.chooser, effect.chooser === 'owner' ? row.owner : row.you, label + ': printed search chooser owns every decision');
   const relative = {...context, a: row.you};
-  let candidates = row.before.library.filter(card => !effect.filter ||
-    matchesTarget(row.before.states.get(card), resolveFilter(effect.filter, row.x), relative, row.source));
+  let candidates = row.before.library.filter(card => (!effect.names||effect.names.includes(row.before.states.get(card).name))&&(!effect.filter ||
+    matchesTarget(row.before.states.get(card), resolveFilter(effect.filter, row.x), relative, row.source)));
   if (effect.differentNames) {
     const names = new Set(); candidates = candidates.filter(card => !names.has(card.name) && names.add(card.name));
   }
-  const requested = effect.n === 'all' ? candidates.length : Math.max(0, Math.floor(amount(effect.n, row.engine, context, null)));
+  const requested = effect.n === 'all' ? candidates.length : Math.max(0, Math.floor(amount(effect.n, row.engine, context, row.countBefore)));
   const maximum = Math.min(candidates.length, requested), minimum = effect.upTo || !effect.unrestricted ? 0 : maximum;
   const searchQueries = row.queries.filter(record => record.query.type === 'chooseCards' && record.query.search === true);
   assert.equal(searchQueries.length, maximum ? 1 : 0, label + ': one real hidden-library search decision when candidates exist');

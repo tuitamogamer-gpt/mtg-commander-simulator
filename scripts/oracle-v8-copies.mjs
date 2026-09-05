@@ -28,19 +28,26 @@ function clauses(text) {
 
 export function modifications(card, text, helpers, allowRetainedAbility = false) {
   if (!text) return {};
+  // A surrounding death observer may bind "it" to its event card before
+  // reaching this parser. Within copy exceptions the pronoun always describes
+  // the resulting copy, including every clause after a literal name.
+  text=text.replace(/\bthat (?:creature|artifact|enchantment|land|permanent|card)'s /g,"it's ")
+    .replace(/\bthat (?:creature|artifact|enchantment|land|permanent|card) (?=has |is |isn't )/g,'it ');
   const parts = clauses(text); if (!parts) return null;
   const mod = {};
   for (let part of parts) {
     part = part.replace(/^(?:the tokens|the token|they|it|he|she) /i, '').replace(/^(?:it's|they're|he's|she's) /i, 'is ');
     const renamed = /^(?:its|his|her) name is (.+)$/.exec(part);
-    if (renamed) {if (renamed[1] !== card.name) return null; mod.name = card.name; continue;}
+    if (renamed) {if (!renamed[1].trim() || /[.\n]/.test(renamed[1]) || renamed[1] !== card.name && (!/^[A-Z][A-Za-z0-9' -]*(?:, [A-Z][A-Za-z0-9' -]*)*$/.test(renamed[1]) || /\b(?:then|until|unless|if|when|whenever|otherwise)\b/i.test(renamed[1]))) return null; mod.name = renamed[1]; continue;}
     if (/^(?:is|are) legendary in addition to (?:its|their|his|her) other types$/.test(part)) {mod.addSuper = ['Legendary']; continue;}
     if (/^(?:isn't|aren't|is not|are not) legendary$/i.test(part)) {mod.nonlegendary = true; continue;}
-    let match = /^(?:is|are) (?:an? |each )?(.+?) in addition to (?:its|their) other (?:creature )?types$/i.exec(part);
+    let match = /^(?:is|are) (?:an? |each )?(.+?) in addition to (?:its|their) other (?:colors and |creature )?types$/i.exec(part);
     if (match) {
-      const words = match[1].split(' '), pt = /^\d+\/\d+$/.test(words[0]) ? words.shift().split('/').map(Number) : null;
+      const words = match[1].replace(/\b(artifacts|enchantments|creatures|lands|planeswalkers)\b/g,word=>word.slice(0,-1)).split(' '), pt = /^\d+\/\d+$/.test(words[0]) ? words.shift().split('/').map(Number) : null;
       if (pt) {mod.power = pt[0]; mod.toughness = pt[1];}
-      const main = words.filter(word => MAIN_TYPES[word]), subs = words.filter(word => !MAIN_TYPES[word]);
+      const colorWords=words.filter(word=>Object.hasOwn(COLORS,word));
+      if(colorWords.length){if(!/other colors and types$/.test(part)||colorWords.includes('colorless'))return null;mod.addColors=colorWords.map(word=>COLORS[word]);}
+      const main = words.filter(word => MAIN_TYPES[word]), subs = words.filter(word => !MAIN_TYPES[word]&&!colorWords.includes(word)&&word!=='and');
       if (subs.some(word => !ORACLE_SUBTYPES.has(word))) return null;
       mod.addTypes = [...new Set([...(mod.addTypes || []), ...main.map(word => MAIN_TYPES[word])])];
       mod.addSubtypes = [...new Set([...(mod.addSubtypes || []), ...subs])];
@@ -77,6 +84,14 @@ export function modifications(card, text, helpers, allowRetainedAbility = false)
         mod.keywords = [...(mod.keywords || []), ...keywords];
         (mod.operations ||= []).push(operation); continue;
       }
+      const mixed=match[1].split(/,? and |, /);
+      if(mixed.length>1&&mixed.some(word=>/^(?:myriad|dethrone|changeling)$/.test(word))){
+        const ordinary=mixed.filter(word=>!/^(?:myriad|dethrone|changeling)$/.test(word));
+        const keywords=ordinary.flatMap(word=>helpers.keywordList?.(word)||[null]);if(keywords.includes(null))return null;
+        mod.keywords=[...(mod.keywords||[]),...keywords];
+        for(const mechanic of mixed.filter(word=>/^(?:myriad|dethrone|changeling)$/.test(word)))(mod.operations||=[]).push({kind:'mechanic-'+mechanic,contract:'mechanic-'+mechanic});
+        continue;
+      }
       const keywords = helpers.keywordList?.(match[1]);
       if (keywords) {mod.keywords = [...(mod.keywords || []), ...keywords]; continue;}
       if (/^(?:myriad|dethrone|changeling)$/.test(match[1])) {
@@ -93,6 +108,7 @@ export function modifications(card, text, helpers, allowRetainedAbility = false)
 }
 
 function source(card, phrase, helpers) {
+  phrase=phrase.replace(/ in (your|a|an opponent's) graveyard$/, ' from $1 graveyard');
   if (new RegExp('^' + selfPattern(card) + '$', 'i').test(phrase) || /^it$/i.test(phrase)) return {target: 'self'};
   if (/^that (?:creature|artifact|enchantment|land|permanent|card|token)$/i.test(phrase) || phrase.startsWith('that ') && ORACLE_SUBTYPES.has(phrase.slice(5))) return {target: 'event-card'};
   if (/^(?:enchanted|equipped) (?:creature|artifact|enchantment|land|permanent)$/i.test(phrase)) return {target: 'attached-host'};
@@ -198,6 +214,12 @@ export function extensionEffect(card, line, helpers = {}) {
   let body = value.slice(0, -1), optional = false;
   if (/^you may /i.test(body)) {optional = true; body = body.replace(/^you may /i, '');}
   const result = (effect, targets = []) => ({effects: [effect], targets, optional});
+
+  const chosenCopy=/^Choose (target .+?)\. (Create .+?(?:a copy|copies) of )it(, except .+)?$/i.exec(body);
+  if(chosenCopy)return extensionEffect(card,chosenCopy[2]+chosenCopy[1]+(chosenCopy[3]||'')+'.',helpers);
+
+  const followCounters=/^(Create .+?\.) Put (one|two|three|four|five|six|seven|eight|nine|ten|\d+) (\+1\/\+1|-1\/-1) counters? on it$/i.exec(body);
+  if(followCounters){const created=extensionEffect(card,followCounters[1],helpers);if(created&&!created.optional&&created.effects.length===1)return {...created,effects:[...created.effects,{action:'counter',target:'created-tokens',counter:followCounters[3],n:number(followCounters[2])}]};return null;}
 
   const all = /^for each (.+?), (create .+)$/i.exec(body);
   if (all) {

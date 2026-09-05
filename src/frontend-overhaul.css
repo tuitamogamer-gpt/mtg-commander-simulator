@@ -572,7 +572,7 @@ body.reduced-motion *::after {
 }
 
 @media (max-width: 767px) {
-  #game.empty-hand { grid-template-rows: 76px 48px 108px minmax(158px, 1fr) auto 56px !important; }
+  #game[data-mobile-view="mine"].empty-hand { grid-template-rows: 76px 48px 108px minmax(158px, 1fr) auto 56px !important; }
   #game .turntimeline { min-height: 36px; padding: 4px 6px; grid-template-columns: 96px minmax(0, 1fr); gap: 5px; }
   #game .turntimelinehead { min-width: 0; gap: 5px; }
   #game .turntimelinehead > span { width: 23px; height: 23px; }
@@ -591,7 +591,7 @@ body.reduced-motion *::after {
 }
 
 @media (max-width: 767px) and (max-height: 700px) {
-  #game.empty-hand:has(.promptbar .btnrow .pbtn) { grid-template-rows: 76px 48px 96px minmax(112px, 1fr) 96px 54px !important; }
+  #game[data-mobile-view="mine"].empty-hand:has(.promptbar .btnrow .pbtn) { grid-template-rows: 76px 48px 96px minmax(112px, 1fr) 96px 54px !important; }
 }
 
 /* Local AI skill workshop; native dialog supplies focus trapping and Escape. */
@@ -1871,8 +1871,9 @@ body.high-contrast #game :is(.pbtn, .tbtn, .zbtn, .hcard, .bcard) { border-color
 #setup .returningplayer span { color: var(--ds-muted); font-size: 12px; }
 #setup .returningplayer button { min-height: 44px; padding: 0 14px; border: 1px solid var(--ds-line); background: var(--ds-panel); color: var(--ds-text); border-radius: 8px; font: 600 12px var(--ds-font-body); cursor: pointer; }
 
-/* Hand sorting changes presentation only; cards keep their engine order. */
-body.game-active #game .handwrap { position: relative; display: flex !important; padding-top: 6px !important; gap: 10px; }
+/* Hand sorting changes presentation only; cards keep their engine order.
+   Mobile Table/Stack must still hide this tray: those grids have no hand area. */
+body.game-active #game .handwrap { position: relative; display: flex; padding-top: 6px !important; gap: 10px; }
 body.game-active #game .handwrap.is-empty { padding-top: 5px !important; }
 body.game-active #game .handwrap::before { display: none; }
 #game .handtools { order: -1; flex: 0 0 110px; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 12px; }
