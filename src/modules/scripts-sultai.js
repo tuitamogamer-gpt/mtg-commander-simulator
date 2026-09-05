@@ -90,7 +90,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const card of owner[zone]) {
         const grant = card.meta && card.meta._kotisGrant;
         if (!grant || grant.sourceIid !== sourceIid) continue;
-        card.def = grant.baseDef;
+        MTG.removeNativeGraveyardGrant(card, 'kotis', sourceIid);
         delete card.meta._kotisGrant;
       }
     }
@@ -103,30 +103,55 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const card of player.graveyard) {
       if (!card.is('Creature') || player.graveyard.filter(other => other !== card).length < 3) continue;
       const baseDef = card.def;
+      const basePrepareTargets = MTG.nativeGraveyardBaseDefinition(baseDef).prepareTargets;
       const sourceIid = source.iid;
-      card.meta._kotisGrant = { sourceIid, baseDef };
+      card.meta._kotisGrant = { sourceIid };
       card.def = Object.assign({}, baseDef, {
+        _nativeGraveyardGrant: {kind: 'kotis', sourceIid, baseDef},
         flashback: { altCostStr: baseDef.cost, kotis: true, label: `Cast ${card.name} from your graveyard` },
         prepareTargets: async castCtx => {
-          if (baseDef.prepareTargets && await baseDef.prepareTargets(castCtx) === false) return false;
+          if (basePrepareTargets && await basePrepareTargets(castCtx) === false) return false;
           if (!castCtx.so.castOpts.kotis) return true;
           const live = castCtx.g.byIid(sourceIid);
           if (!live || live.zone !== 'battlefield' || live.ctrl !== castCtx.you ||
             live.meta._kotisCastTurn === castCtx.g.turnNo) return false;
+          const sourceVersion = live.zoneVersion, cardVersion = castCtx.src.zoneVersion;
           const pool = castCtx.you.graveyard.filter(other => other !== castCtx.src);
+          const versions = new Map(pool.map(card => [card, card.zoneVersion]));
           const picked = await chooseCards(castCtx.g, castCtx.you, pool, 3, 3,
             `Kotis: exile three other cards to cast ${castCtx.src.name}`, { kind: 'delve', card: castCtx.src });
-          if (picked.length !== 3) return false;
-          await castCtx.g.moveGraveyardBatch(picked, 'exile');
-          live.meta._kotisCastTurn = castCtx.g.turnNo;
-          castCtx.src.def = baseDef;
-          delete castCtx.src.meta._kotisGrant;
-          cleanupKotisGrants(castCtx.g, sourceIid);
+          if (picked.length !== 3 || new Set(picked).size !== 3 ||
+              picked.some(card => !pool.includes(card) || card.zone !== 'graveyard' || card.zoneVersion !== versions.get(card)) ||
+              live.zoneVersion !== sourceVersion || castCtx.src.zoneVersion !== cardVersion) return false;
+          // Announce this additional cost now; payment commits only after mana succeeds.
+          castCtx.so.kotisPayment = { sourceIid, sourceVersion, cardVersion, turn: castCtx.g.turnNo,
+            cards: picked.map(card => ({ iid: card.iid, version: card.zoneVersion })) };
           return true;
         },
       });
     }
   }
+
+  MTG.kotisCastPaymentCards = (game, player, card, so) => {
+    const plan = so.kotisPayment, source = plan && game.byIid(plan.sourceIid);
+    if (!plan || !source || source.zone !== 'battlefield' || source.phasedOut || source.ctrl !== player ||
+        source.cur?.abilitiesDisabled || source.zoneVersion !== plan.sourceVersion ||
+        source.meta._kotisCastTurn === game.turnNo || plan.turn !== game.turnNo || game.turnPlayer !== player ||
+        card.zone !== 'graveyard' || card.zoneVersion !== plan.cardVersion ||
+        card.meta._kotisGrant?.sourceIid !== plan.sourceIid || !card.def.flashback?.kotis ||
+        plan.cards.length !== 3 || new Set(plan.cards.map(row => row.iid)).size !== 3) return null;
+    const cards = plan.cards.map(row => game.byIid(row.iid));
+    return cards.every((chosen, index) => chosen && chosen !== card && chosen.zone === 'graveyard' &&
+      player.graveyard.includes(chosen) && chosen.zoneVersion === plan.cards[index].version) ? cards : null;
+  };
+  MTG.commitKotisCastPayment = async (ctx, cards) => {
+    const plan = ctx.so.kotisPayment, source = ctx.g.byIid(plan.sourceIid);
+    if (source && source.zoneVersion === plan.sourceVersion) source.meta._kotisCastTurn = plan.turn;
+    const grant = ctx.src.meta._kotisGrant;
+    if (grant?.sourceIid === plan.sourceIid) { MTG.removeNativeGraveyardGrant(ctx.src,'kotis',plan.sourceIid); delete ctx.src.meta._kotisGrant; }
+    cleanupKotisGrants(ctx.g, plan.sourceIid);
+    await ctx.g.moveGraveyardBatch(cards, 'exile');
+  };
 
   SC['Kotis, Sibsig Champion'] = {
     statics: [{ apply: (game, self) => { syncKotisGrants(game, self); } }],
@@ -143,9 +168,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC.Gravecrawler = {
     statics: [{ apply: (game, self) => { self.cur.cantBlock = true; } }],
-    flashback: { altCostStr: '{B}', label: 'Cast Gravecrawler from your graveyard' },
-    castCond: (game, player, card) => card.zone !== 'graveyard' || game.creatures(player).some(creature => creature.hasSub('Zombie')),
+    flashback: { gravecrawler: true, altCostStr: '{B}', label: 'Cast Gravecrawler from your graveyard' },
   };
+  // This prerequisite belongs to Gravecrawler's own permission. Another
+  // effect may independently allow the same card to be cast without a Zombie.
+  MTG.gravecrawlerCastAllowed = (game, player, card, castOpts = {}) =>
+    card.zone === 'graveyard' && player.graveyard.includes(card) && card.def.flashback?.gravecrawler &&
+    game.canCastTiming(player, card, castOpts) && game.creatures(player).some(creature => creature.hasSub('Zombie'));
 
   SC['Hedron Crab'] = { triggers: [{
     on: 'landfall', desc: 'Target player mills three', filter: (g, self, data) => data.card.ctrl === self.ctrl,

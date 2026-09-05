@@ -5,6 +5,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
 
+  // Native graveyard permissions can overlap. Follow the wrappers actually
+  // installed on the definition, not the order of independent scratch fields.
+  MTG.nativeGraveyardBaseDefinition = definition => {
+    while (definition?._nativeGraveyardGrant) definition = definition._nativeGraveyardGrant.baseDef;
+    return definition;
+  };
+  MTG.removeNativeGraveyardGrant = (card, kind, sourceIid) => {
+    const strip = definition => {
+      const grant = definition?._nativeGraveyardGrant;
+      if (!grant) return definition;
+      const baseDef = strip(grant.baseDef);
+      if (grant.kind === kind && grant.sourceIid === sourceIid) return baseDef;
+      return baseDef === grant.baseDef ? definition : {...definition,
+        _nativeGraveyardGrant: {...grant, baseDef}};
+    };
+    card.def = strip(card.def);
+  };
+
   let IID = 1;
   const continuousOwners = new WeakMap();
   // Resolving continuous effects receive their timestamp when created, even
@@ -966,6 +984,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (MTG.OracleV8Permanents?.isBestowed(card)) MTG.OracleV8Permanents.ceaseBestow(this, card);
       }
 
+      // A graveyard-only Kotis grant belongs to that zone object. Restore its
+      // printed definition before entry clears the grant's scratch metadata.
+      if (fromZone !== toZone && (card.meta._kotisGrant || card.meta._broodshipGrant)) {
+        card.def = MTG.nativeGraveyardBaseDefinition(card.def);
+        delete card.meta._kotisGrant;
+        delete card.meta._broodshipGrant;
+      }
       card.tapped = opts.tapped || false;
       card.damage = 0; card.deathtouched = false; card.regenShield = 0;
       card.attacking = null; card.blocking = null; card.blockedBy = [];
@@ -3132,6 +3157,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async emit(name, data) {
+      if(name==='cast')MTG.OracleV8Ripple?.onCast(this,data);
       MTG.StateTriggers?.settle(this);
       MTG.oracleV8RecordConditionEvent?.(this,name,data);
       if(this._damageEventQueue&&['dealtDamage','damageToPlayer','damagePrevented','shieldRemoved','lifeGain','lifeLost','countersPlaced','countersRemoved','plusAdded','m1Added','monarchChanged'].includes(name)){

@@ -772,6 +772,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return `Cast ${action.card.name}${action.alt && action.alt.label ? ` (${action.alt.label})` : ''}`;
     }
     if (action.kind === 'land') return `Play land ${action.card.name}`;
+    if (action.kind === 'activate' && action.entry.turnFaceUp && action.entry.card.faceDown) return 'Turn a face-down creature face up';
     if (action.kind === 'activate') return `Activate ${action.entry.card.name}${action.entry.label || action.entry.ability && action.entry.ability.label ? ` — ${action.entry.label || action.entry.ability.label}` : ''}`;
     if (action.kind === 'pass') return 'Pass priority';
     if (action.kind === 'done') return 'End action window';
@@ -2389,10 +2390,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Exiling cards for payment spends resources. Preserve a spell/ability's
     // selected targets when other legal fodder exists, without changing the
     // legal cost pool (a player may deliberately pay with their own target).
-    // The same legacy hint also labels optional delve discounts (min zero).
-    // Preserve that separate quantity decision; fixed exile costs must choose
-    // exactly min cards and should spend the least valuable legal objects.
-    if (hint === 'delve' && q.min > 0) return -value - ((q.aiHint.keepTargets||[]).includes(card) ? 10000 : 0);
+    // Delve's minimum comes from the remaining payable mana cost. Spend the
+    // least valuable legal cards, including when exiling is optional.
+    if (hint === 'delve') return -value - ((q.aiHint.keepTargets||[]).includes(card) ? 10000 : 0);
     if (/discard|sacCost|bounceCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) {
       if((q.aiHint?.keepTargets||[]).includes(card))return -10000-value;
       let discardScore = -value;
@@ -5212,18 +5212,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const elapsed = (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now()) - started;
     const threats = {};
     for (const row of view.players) threats[row.id] = MTG.assessPlayerThreat(view, player.idx, row.id).totalScore;
+    // Manifest dread looks at two private library cards. Neither the chosen
+    // identity nor the rejected alternative is public while this choice runs.
+    const privateManifestChoice = q?.aiHint?.kind === 'manifestDread';
+    const publicLabel = action => privateManifestChoice ? 'Choose a card to manifest' : actionLabel(action);
+    const publicReason = candidate => privateManifestChoice ? 'Choose one of the two privately viewed cards.'
+      : reasonFor(candidate.rootAction, candidate.breakdown, view, player.idx);
     const consideredActions = searched.slice(0, 5).map(candidate => ({
-      action: actionLabel(candidate.rootAction), score: round(candidate.score),
-      reason: reasonFor(candidate.rootAction, candidate.breakdown, view, player.idx),
+      action: publicLabel(candidate.rootAction), score: round(candidate.score),
+      reason: publicReason(candidate),
       scoreBreakdown: candidate.breakdown,
     }));
     const decision = {
       action: chosen.rootAction,
       score: round(chosen.score),
-      reason: reasonFor(chosen.rootAction, chosen.breakdown, view, player.idx),
+      reason: publicReason(chosen),
       consideredActions,
       log: {
-        chosen: actionLabel(chosen.rootAction), alternatives: consideredActions.slice(1), score: round(chosen.score),
+        chosen: publicLabel(chosen.rootAction), alternatives: consideredActions.slice(1), score: round(chosen.score),
         scoreBreakdown: chosen.breakdown, threatScores: threats, analyzedNodes: stats.nodes,
         reachedDepth: Math.max(stats.depth, chosen.depth || 0), tieBreak: selection.tieBreak, seed,
         decisionTimeMs: round(elapsed), fallback, difficulty,

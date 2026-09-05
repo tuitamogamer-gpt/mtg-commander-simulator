@@ -4770,6 +4770,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ov.appendChild(m);
       const visibleFaceDownDef = this.visibleFaceDownDef(card);
       const mayLookFaceDown = !!visibleFaceDownDef;
+      if (card.faceDown && card.zone === 'battlefield' && card.ctrl === this.me && mayLookFaceDown) m.classList.add('faceupsheet');
       const hiddenFaceDown = card.faceDown && !mayLookFaceDown;
       const shownDef = hiddenFaceDown
         ? { name: 'Face-down card', cost: null, super: [], types: ['Card'], subtypes: [], oracle: 'The identity of this card is unknown.' }
@@ -4842,7 +4843,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (a.ability) usedAbilities.add(a.ability);
           if (a.suspend) suspendActionOffered = true;
           const label = this.activationLabel(a);
-          const b = el('button', 'pbtn wide abilitybtn', (a.turnFaceUp ? '🃏 ' : a.manaAbility ? '⚡ ' : '⚙️ ') + esc(label));
+          const b = el('button', 'pbtn wide abilitybtn' + (a.turnFaceUp ? ' primary faceupaction' : ''), (a.turnFaceUp ? '🃏 ' : a.manaAbility ? '⚡ ' : '⚙️ ') + esc(label));
           b.onclick = () => { this.sheet = null; this.resolvePending({ kind: 'activate', entry: a }); };
           acts.appendChild(b);
         }
@@ -4861,6 +4862,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           b.disabled = true;
           acts.appendChild(b);
         }
+      }
+      if (card.faceDown && card.zone === 'battlefield' && card.ctrl === this.me && mayLookFaceDown) {
+        const costs = g.faceUpCosts?.(card) || [];
+        const offered = pd && ['main', 'priority'].includes(pd.q.type) ? pd.q.acts || [] : [];
+        const note = el('div', 'facedownsheet faceuphelp');
+        if (costs.length) {
+          note.textContent = 'Turn face up by paying one of the costs below when you have priority. This does not use the Stack.';
+          for (const option of costs) {
+            if (offered.some(a => a.card === card && a.turnFaceUp && a.faceUpCost === option.cost && a.faceUpKind === option.kind)) continue;
+            const reason = card.phasedOut ? 'phased out' : !pd || !['main', 'priority'].includes(pd.q.type)
+              ? 'wait until you have priority' : 'not enough mana or required payment';
+            const b = el('button', 'pbtn wide disabled abilitybtn faceupaction',
+              `🃏 Turn face up (${esc(option.kind)}: ${esc(option.label || option.cost)}) — ${reason}`);
+            b.disabled = true;
+            acts.appendChild(b);
+          }
+        } else {
+          note.textContent = !(shownDef.types || []).includes('Creature')
+            ? 'This is a noncreature card underneath. Manifest and cloak cannot turn it face up for its mana cost; it stays a 2/2.'
+            : !shownDef.cost ? 'This creature has no mana cost to pay. It cannot turn face up this way.'
+              : 'No turn-face-up action is currently available. Morph and disguise require their own face-up ability.';
+        }
+        acts.prepend(note);
       }
       if (suspendInHand && !suspendActionOffered) {
         const cost = U.costStr(U.parseCost(card.def.suspend.cost));

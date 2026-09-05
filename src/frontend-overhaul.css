@@ -973,6 +973,33 @@ body.game-active #game .utilitybutton { border-radius: 6px; }
 body.game-active #game .utilitylabel { font-size: 8.5px; letter-spacing: .16em; }
 
 /* ---------- Dialogs ---------- */
+/* A face-down card must keep its payment controls in the viewport even on
+   short screens. Card rules scroll independently of the action footer. */
+#game .sheet.faceupsheet {
+  display: grid;
+  grid-template-columns: minmax(0, 210px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 12px;
+  width: min(760px, calc(100 * var(--vwu) - 24px));
+  max-height: calc(100 * var(--dvhu) - 32px);
+  overflow: hidden;
+}
+#game .faceupsheet .sheetimg:not(.noimg) {
+  grid-column: 1;
+  width: 100%;
+  max-height: min(300px, calc(44 * var(--dvhu)));
+  object-fit: contain;
+  align-self: start;
+}
+#game .faceupsheet .sheetinfo { min-height: 0; min-width: 0; overflow-y: auto; }
+#game .faceupsheet .sheetacts { grid-column: 1 / -1; min-height: 0; max-height: calc(46 * var(--dvhu)); overflow-y: auto; gap: 8px; }
+#game .faceupsheet .sheetacts .pbtn { flex-shrink: 0; min-height: 44px; white-space: normal; }
+#game .faceupsheet .faceupaction:disabled { opacity: 1; color: var(--ds-copy); cursor: not-allowed; }
+#game .faceupsheet .faceuphelp { flex-shrink: 0; margin: 0; }
+@media (max-width: 600px) {
+  #game .sheet.faceupsheet { grid-template-columns: minmax(0, 96px) minmax(0, 1fr); gap: 10px; }
+}
+
 body.game-active #game .modal,
 body.game-active #game .sheet,
 .overlay > .modal,

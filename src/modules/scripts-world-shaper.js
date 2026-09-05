@@ -126,63 +126,96 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function liveBroodship(game, iid) {
     const source = game.byIid(iid);
-    return source && source.zone === 'battlefield' && source.name === 'Exploration Broodship' ? source : null;
+    return source && source.zone === 'battlefield' && !source.phasedOut && !source.cur?.abilitiesDisabled &&
+      source.name === 'Exploration Broodship' ? source : null;
   }
 
   function cleanupBroodshipGrants(game, sourceIid) {
     for (const card of broodshipGrantCards(game)) {
       const grant = card.meta && card.meta._broodshipGrant;
       if (!grant || grant.sourceIid !== sourceIid) continue;
-      card.def = grant.baseDef;
+      U.removeNativeGraveyardGrant(card, 'broodship', sourceIid);
       delete card.meta._broodshipGrant;
     }
   }
 
-  function broodshipSacrificeOptions(game, player, card, castOpts = {}, xVal = 0) {
-    const cost = game.spellCost(player, card, castOpts);
+  function broodshipSacrificeOptions(game, player, card, castOpts = {}, xVal = 0, manaCost, paymentOptions = {}) {
+    let cost = manaCost || game.spellCost(player, card, castOpts);
+    if (!castOpts.faceDownCast && !castOpts.adventure && game.castDefinition(card, castOpts).altCosts?.some(option => option.delve)) {
+      cost = {...cost, xReduction: (cost.xReduction || 0) + player.graveyard.filter(candidate => candidate !== card).length};
+    }
     return game.lands(player).filter(land => game.canSacrifice(land) &&
-      game.canPayMana(player, cost, { card }, { xVal, excludeCards: [land] }));
+      game.canPayMana(player, cost, { card, castOpts, xVal }, {...paymentOptions, xVal,
+        protectedSacrifices: [...(paymentOptions.protectedSacrifices || []), land]}));
   }
+  U.broodshipSacrificeOptions = broodshipSacrificeOptions;
+  U.broodshipCastAllowed = (game, player, card, castOpts = {}) => {
+    const grant = card.meta._broodshipGrant, source = grant && liveBroodship(game, grant.sourceIid);
+    return !!source && source.zoneVersion === grant.sourceVersion && source.ctrl === player &&
+      game.turnPlayer === player && (source.counters.charge || 0) >= 8 &&
+      source.meta._broodshipCastTurn !== game.turnNo && card.zone === 'graveyard' &&
+      player.graveyard.includes(card) && card.def.flashback?.broodship &&
+      game.canCastTiming(player, card, castOpts);
+  };
 
   function syncBroodshipGrants(game, source) {
     cleanupBroodshipGrants(game, source.iid);
-    if (source.zone !== 'battlefield' || (source.counters.charge || 0) < 8 ||
+    if (!liveBroodship(game, source.iid) || game.turnPlayer !== source.ctrl || (source.counters.charge || 0) < 8 ||
       source.meta._broodshipCastTurn === game.turnNo) return;
     const player = source.ctrl;
     for (const card of player.graveyard) {
       if (!isPermanent(card) || card.is('Land')) continue;
       const baseDef = card.def;
-      const baseCastCond = baseDef.castCond;
-      const basePrepareTargets = baseDef.prepareTargets;
+      const basePrepareTargets = U.nativeGraveyardBaseDefinition(baseDef).prepareTargets;
       const sourceIid = source.iid;
-      card.meta._broodshipGrant = { sourceIid, baseDef };
+      card.meta._broodshipGrant = { sourceIid, sourceVersion: source.zoneVersion };
       card.def = Object.assign({}, baseDef, {
+        _nativeGraveyardGrant: {kind: 'broodship', sourceIid, baseDef},
         flashback: { broodship: true, label: `Cast ${card.name} from graveyard — sacrifice a land` },
-        castCond: (g, p, candidate) => {
-          const live = liveBroodship(g, sourceIid);
-          return !!live && live.ctrl === p && (live.counters.charge || 0) >= 8 &&
-            live.meta._broodshipCastTurn !== g.turnNo && candidate.zone === 'graveyard' &&
-            (!baseCastCond || baseCastCond(g, p, candidate)) && broodshipSacrificeOptions(g, p, candidate).length > 0;
-        },
         prepareTargets: async castCtx => {
           if (basePrepareTargets && await basePrepareTargets(castCtx) === false) return false;
           if (!castCtx.so.castOpts.broodship) return true;
           const live = liveBroodship(castCtx.g, sourceIid);
-          if (!live || live.ctrl !== castCtx.you || live.meta._broodshipCastTurn === castCtx.g.turnNo) return false;
+          if (!live || !U.broodshipCastAllowed(castCtx.g, castCtx.you, castCtx.src, castCtx.so.castOpts)) return false;
+          const sourceVersion = live.zoneVersion, cardVersion = castCtx.src.zoneVersion;
           const pool = broodshipSacrificeOptions(castCtx.g, castCtx.you, castCtx.src,
-            castCtx.so.castOpts, castCtx.so.x || 0);
+            castCtx.so.castOpts, castCtx.so.x || 0, castCtx.manaCost);
+          const versions = new Map(pool.map(land => [land, land.zoneVersion]));
           const land = await chooseOne(castCtx.g, castCtx.you, pool,
             `Exploration Broodship: sacrifice a land to cast ${castCtx.src.name}`,
             { kind: 'sacCost', src: live });
-          if (!land || !await castCtx.g.sacrifice(castCtx.you, land)) return false;
-          live.meta._broodshipCastTurn = castCtx.g.turnNo;
-          castCtx.so.broodshipSacrificedLand = land.iid;
-          cleanupBroodshipGrants(castCtx.g, sourceIid);
+          if (!land || !pool.includes(land) || land.zoneVersion !== versions.get(land) ||
+              live.zoneVersion !== sourceVersion || castCtx.src.zoneVersion !== cardVersion) return false;
+          // Selection is reversible; consume the land and turn use only after
+          // the mana payment has succeeded with this land reserved.
+          castCtx.so.broodshipPayment = {sourceIid, sourceVersion, cardVersion, turn: castCtx.g.turnNo,
+            landIid: land.iid, landVersion: land.zoneVersion};
           return true;
         },
       });
     }
   }
+
+  U.broodshipCastPaymentLand = (game, player, card, so) => {
+    const plan = so.broodshipPayment, land = plan && game.byIid(plan.landIid);
+    if (!plan || !U.broodshipCastAllowed(game, player, card, so.castOpts) ||
+        card.zoneVersion !== plan.cardVersion || card.meta._broodshipGrant.sourceIid !== plan.sourceIid ||
+        card.meta._broodshipGrant.sourceVersion !== plan.sourceVersion || plan.turn !== game.turnNo ||
+        !land || land.zone !== 'battlefield' || land.zoneVersion !== plan.landVersion ||
+        land.ctrl !== player || !land.is('Land') || !game.canSacrifice(land)) return null;
+    return land;
+  };
+  U.commitBroodshipCastPayment = async (ctx, land) => {
+    const plan = ctx.so.broodshipPayment, source = ctx.g.byIid(plan.sourceIid);
+    if (source?.zoneVersion === plan.sourceVersion) source.meta._broodshipCastTurn = plan.turn;
+    const grant = ctx.src.meta._broodshipGrant;
+    if (grant?.sourceIid === plan.sourceIid) {U.removeNativeGraveyardGrant(ctx.src,'broodship',plan.sourceIid); delete ctx.src.meta._broodshipGrant;}
+    cleanupBroodshipGrants(ctx.g, plan.sourceIid);
+    ctx.so.broodshipSacrificedLand = land.iid;
+    ctx.so.sacdN = (ctx.so.sacdN || 0) + 1;
+    ctx.so.sacdSnaps.push(ctx.g.snapshot(land));
+    await ctx.g.sacrifice(ctx.you, land);
+  };
 
   SC['Hearthhull, the Worldseed'] = {
     canBeCommanderExtra: true,

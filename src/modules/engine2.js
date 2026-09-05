@@ -419,6 +419,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const tracked = entries.filter(entry => manaRestrictionAllows(game, entry, forSpell) &&
       (!generic || !entry.coloredOnly))
       .sort((a, b) => generic ? 0 : Number(!!b.coloredOnly) - Number(!!a.coloredOnly))[0];
+    const trackedTotal = entries.reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
+    const trackedColoredOnly = entries.filter(entry => entry.coloredOnly)
+      .reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
+    const untracked = Math.max(0, (player.pool[color] || 0) - trackedTotal);
+    const untrackedColoredOnly = Math.min(untracked, Math.max(0,
+      (player.coloredOnlyPool && player.coloredOnlyPool[color] || 0) - trackedColoredOnly));
+    // Final pip allocation reserves colored-only mana before generic-capable
+    // mana, including when the colored-only unit has no restriction metadata
+    // (Jegantha) and another unit does (Flamebraider). Keep execution aligned
+    // with that allocation instead of spending the tracked generic unit first.
+    if (!generic && untrackedColoredOnly > 0 && !tracked?.coloredOnly) {
+      player.pool[color]--;
+      player.coloredOnlyPool[color]--;
+      return true;
+    }
     if (tracked) {
       tracked.n--;
       player.pool[color]--;
@@ -426,13 +441,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.poolMeta = player.poolMeta.filter(entry => (Number(entry.n) || 0) > 0);
       return true;
     }
-
-    const trackedTotal = entries.reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
-    const trackedColoredOnly = entries.filter(entry => entry.coloredOnly)
-      .reduce((sum, entry) => sum + (Number(entry.n) || 0), 0);
-    const untracked = Math.max(0, (player.pool[color] || 0) - trackedTotal);
-    const untrackedColoredOnly = Math.min(untracked, Math.max(0,
-      (player.coloredOnlyPool && player.coloredOnlyPool[color] || 0) - trackedColoredOnly));
     if (untracked - (generic ? untrackedColoredOnly : 0) <= 0) return false;
     player.pool[color]--;
     if (!generic && untrackedColoredOnly > 0 && player.coloredOnlyPool) player.coloredOnlyPool[color]--;
@@ -2060,6 +2068,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (definition.castCond && !definition.castCond(this, p, faceView)) return;
       const castOpts = alt ? Object.assign({}, alt) : {};
       castOpts.from = from;
+      if (castOpts.gravecrawler && !MTG.gravecrawlerCastAllowed(this,p,card,castOpts)) return;
+      if (castOpts.broodship && !MTG.broodshipCastAllowed(this,p,card,castOpts)) return;
       if (!definition.cost && !castOpts.free && castOpts.altCostStr === undefined) return;
       const cost = this.spellCost(p, card, castOpts);
       if(definition.oracleCastingChoice&&!castOpts.faceDownCast&&!castOpts.adventure&&
@@ -2068,6 +2078,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const xVal = cost.x ? (castOpts.xFixed !== undefined ? castOpts.xFixed : 0) : 0;
       let targetPreviewX = xVal;
       const spellContext = { card, castOpts, xVal };
+      if (castOpts.broodship && !MTG.broodshipSacrificeOptions(this,p,card,castOpts,xVal,cost).length) return;
       if (cost.x && typeof definition.xValues === 'function') {
         const maxX = this.maxAffordableX(p, cost, card, { castOpts });
         const legalValues = this.legalXValues(p, card, castOpts, maxX);
@@ -2083,11 +2094,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const available=this.creatures(p).filter(creature=>creature!==card&&this.canSacrifice(creature));
         if(!available.some(creature=>this.canPayMana(p,{...cost,xReduction:(cost.xReduction||0)+Math.max(0,Number(creature.mv)||0)},spellContext,
           {xVal,protectedSacrifices:[creature]})))return;
-      } else if (alt && alt.delve) {
-        // delve: reduce generic by available gy cards
-        const avail = p.graveyard.length;
-        const c2 = Object.assign({}, cost, { generic: Math.max(0, cost.generic - avail) });
-        if (!this.canPayMana(p, c2, spellContext)) return;
+      } else if (canUseDelve(this, card, castOpts)) {
+        const avail = Math.max(0, p.graveyard.filter(candidate => candidate !== card).length - (castOpts.kotis ? 3 : 0));
+        const c2 = { ...cost, xReduction: (cost.xReduction || 0) + avail };
+        if (!this.canPayMana(p, c2, spellContext, { xVal })) return;
       } else if (alt && alt.harmonize) {
         const reduction = Math.max(0, ...this.creatures(p).filter(creature => !creature.tapped)
           .map(creature => Math.max(0, creature.power)));
@@ -2134,8 +2144,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         let playable = 0;
         for (const m of md.list) {
           const targets = modeTargetsFor(this, m, card, Object.assign({}, castOpts, { xVal }));
-          let ok = !targets.length || targets.every(s => s.upTo ||
-            this.legalTargets(s, card, p).length >= (s.count ?? 1));
+          let ok = this.canChooseTargets(targets, card, p, {x: xVal, so: {x: xVal, castOpts}});
           if (ok && m.tierCost) {
             const tier = U.parseCost(m.tierCost);
             const withTier = {
@@ -2579,7 +2588,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (face?.aftermath) {castOpts.flashback = true; castOpts.isAftermath = true;}
       if (castOpts.altCostStr === undefined) castOpts.altCostStr = this.oracleSplitPrintedCost(card, castOpts);
     }
+    if (castOpts.kotis) {
+      const grant = card.meta._kotisGrant, source = grant && this.byIid(grant.sourceIid);
+      if ((castOpts.from || card.zone) !== 'graveyard' || card.zone !== 'graveyard' ||
+          !d.flashback?.kotis || !source || source.zone !== 'battlefield' || source.phasedOut ||
+          source.ctrl !== p || source.cur?.abilitiesDisabled || this.turnPlayer !== p ||
+          source.meta._kotisCastTurn === this.turnNo) return false;
+    }
+    if (castOpts.gravecrawler && !MTG.gravecrawlerCastAllowed(this,p,card,castOpts)) return false;
+    if (castOpts.broodship && !MTG.broodshipCastAllowed(this,p,card,castOpts)) return false;
     const faceDownCast = !!castOpts.faceDownCast;
+    // Delve is a way to pay the final generic cost, including X, taxes and
+    // additional costs. It also works when another casting cost was chosen.
+    if (castOpts.delve && !canUseDelve(this, card, castOpts)) return false;
+    if (canUseDelve(this, card, castOpts)) castOpts.delve = true;
     const cost = this.spellCost(p, card, castOpts);
     let muldrothaType = null;
     if (castOpts.muldrotha) {
@@ -2730,8 +2752,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const opts2 = d.modes.list.map((m, i) => ({ mode: m, index: i }))
         .filter(({ mode: candidateMode }) => {
           const candidateTargets = modeTargetsFor(this, candidateMode, card, Object.assign({}, castOpts, { xVal }));
-          if (!candidateTargets.every(spec => spec.upTo ||
-            this.legalTargets(spec, card, p).length >= (spec.min ?? spec.count ?? 1))) return false;
+          if (!this.canChooseTargets(candidateTargets, card, p, {x: xVal, so: {x: xVal, castOpts}})) return false;
           if (candidateMode.tierCost) {
             const tier = U.parseCost(candidateMode.tierCost);
             return this.canPayMana(p, oracleAdditionalManaPreview({
@@ -2886,7 +2907,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const preparedChoiceKeys = [];
     if (typeof prepareTargets === 'function') {
       const keysBeforePrepare = new Set(Object.keys(so));
-      const prepared = await prepareTargets({ g: this, src: card, you: p, so, targets: so.targets });
+      const prepared = await prepareTargets({ g: this, src: card, you: p, so, targets: so.targets, manaCost: cost });
       if (prepared === false) return false;
       for (const key of Object.keys(so)) if (!keysBeforePrepare.has(key)) preparedChoiceKeys.push(key);
     }
@@ -3110,34 +3131,67 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!picked.length) return false;
       paidAddl.discarded = picked;
     }
-    // delve
+    const kotisExiled = castOpts.kotis ? MTG.kotisCastPaymentCards(this, p, card, so) : [];
+    if (!kotisExiled) return false;
+    const broodshipLand = castOpts.broodship ? MTG.broodshipCastPaymentLand(this,p,card,so) : null;
+    if (castOpts.broodship && (!broodshipLand || paidAddl.sacd.includes(broodshipLand))) return false;
+    const manaPaymentOptions = {
+      xVal, isSpell: true,
+      excludeCards: paidAddl.tapped.concat(harmonizeCreature ? [harmonizeCreature] : [], so.oracleCastingChoicePlan?.kind === 'tapPermanent' ? [so.oracleCastingChoicePlan.card] : []),
+      protectedSacrifices: paidAddl.sacd.concat(kotisExiled, broodshipLand ? [broodshipLand] : [], (so.oracleCostPlans || []).flatMap(plan => [...plan.sacrifices, ...(plan.returns || [])]), so.oracleCastingChoicePlan?.card ? [so.oracleCastingChoicePlan.card] : []),
+      reservedLife: paidAddl.life + (so.oracleCostPlans || []).reduce((sum, plan) => sum + plan.life, 0),
+    };
+    // Lock the selected graveyard objects before paying any resources.
+    const graveyardVersions = new Map(p.graveyard.map(candidate => [candidate, candidate.zoneVersion]));
+    const validExileSelection = (picked, available, min, max) => Array.isArray(picked) &&
+      picked.length >= min && picked.length <= max && new Set(picked).size === picked.length &&
+      picked.every(candidate => available.includes(candidate) && candidate.zone === 'graveyard' &&
+        p.graveyard.includes(candidate) && candidate.zoneVersion === graveyardVersions.get(candidate));
     let delveExiled = [];
     if (castOpts.delve) {
-      const avail = p.graveyard.filter(c => c !== card);
-      const maxDelve = Math.min(cost.generic, avail.length);
-      const picked = await p.controller.decide(this, {
-        type: 'chooseCards', from: avail, min: 0, max: maxDelve, prompt: `Delve: exile from the graveyard (up to ${maxDelve})`,
-        aiHint: { kind: 'delve', card },
-      });
-      delveExiled = picked;
-      cost.generic -= picked.length;
+      const avail = p.graveyard.filter(c => c !== card && !kotisExiled.includes(c));
+      const generic = Math.max(0, cost.generic + (cost.x || 0) * xVal - (cost.xReduction || 0));
+      const maxDelve = Math.min(generic, avail.length);
+      const canPayAfter = count => this.canPayMana(p,
+        { ...cost, xReduction: (cost.xReduction || 0) + count }, { card, castOpts, xVal }, manaPaymentOptions);
+      if (!canPayAfter(maxDelve)) return false;
+      let minDelve = 0, upper = maxDelve;
+      while (minDelve < upper) {
+        const mid = Math.floor((minDelve + upper) / 2);
+        if (canPayAfter(mid)) upper = mid; else minDelve = mid + 1;
+      }
+      if (maxDelve) {
+        const picked = await p.controller.decide(this, {
+          type: 'chooseCards', from: avail, min: minDelve, max: maxDelve,
+          prompt: `Delve: exile from the graveyard (${minDelve}–${maxDelve} cards; each pays for {1})`,
+          aiHint: { kind: 'delve', card, keepTargets: (so.targets || []).flat(Infinity),
+            canPayRemaining: picked => validExileSelection(picked, avail, minDelve, maxDelve) && canPayAfter(picked.length) },
+        });
+        if (!validExileSelection(picked, avail, minDelve, maxDelve)) return false;
+        delveExiled = picked;
+        cost.xReduction = (cost.xReduction || 0) + picked.length;
+      }
     }
     // escape exile cost — SAMO se bira ovdje. Stvarni egzil ide tek nakon što je
     // mana plaćena (CR 601.2h: ako plaćanje ne uspije, cijelo bacanje se poništava).
     let escapeExiled = [];
     if (castOpts.escape) {
-      const avail = p.graveyard.filter(c => c !== card);
+      const avail = p.graveyard.filter(c => c !== card && !delveExiled.includes(c) && !kotisExiled.includes(c));
       const need = castOpts.exileN || 0;
       if (avail.length < need) return false;
       const picked = await p.controller.decide(this, {
         type: 'chooseCards', from: avail, min: need, max: need, prompt: `Escape: exile ${need} cards`,
         aiHint: { kind: 'delve', card },
       });
-      if (picked.length < need) return false;
+      if (!validExileSelection(picked, avail, need, need)) return false;
       escapeExiled = picked;
     }
 
     // Recheck planned Oracle costs before any mana or cards are consumed.
+    if (!validExileSelection([...kotisExiled, ...delveExiled, ...escapeExiled], p.graveyard,
+      kotisExiled.length + delveExiled.length + escapeExiled.length, kotisExiled.length + delveExiled.length + escapeExiled.length)) return false;
+    if (castOpts.kotis && !MTG.kotisCastPaymentCards(this, p, card, so)) return false;
+    if (castOpts.broodship && MTG.broodshipCastPaymentLand(this,p,card,so) !== broodshipLand) return false;
     if (MTG.OracleV8CastingLimits && !MTG.OracleV8CastingLimits.allowed(this,p)) return false;
     if(so.oracleCastingChoicePlan&&!MTG.OracleV8CastingChoices.validate({g:this,you:p,src:card,so},d.oracleCastingChoice))return false;
     if(castOpts.foretell&&!foretellCastAllowed(this,p,card,castOpts))return false;
@@ -3150,16 +3204,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       oracleAlternative.cond&&!oracleAlternative.cond(this,p,card)))return false;
     if (so.oracleCostPlans && MTG.validateOracleAdditionalCostPlans &&
         !MTG.validateOracleAdditionalCostPlans({g:this,src:card,you:p,so,
-          reservedCards:[...paidAddl.sacd,...paidAddl.discarded,...delveExiled,...escapeExiled]})) return false;
+          reservedCards:[...paidAddl.sacd,...paidAddl.discarded,...kotisExiled,...delveExiled,...escapeExiled,...(broodshipLand?[broodshipLand]:[])]})) return false;
     // pay mana
     const paySpell = { card, castOpts, xVal };
     const hasAdditionalManaCost = cost.generic > 0 || cost.x > 0 || (cost.pips || []).length > 0;
     if (!castOpts.free || hasAdditionalManaCost) {
-      const ok = await this.payMana(p, cost, paySpell, {
-        xVal, isSpell: true, excludeCards: paidAddl.tapped.concat(harmonizeCreature ? [harmonizeCreature] : [],so.oracleCastingChoicePlan?.kind==='tapPermanent'?[so.oracleCastingChoicePlan.card]:[]),
-        protectedSacrifices: paidAddl.sacd.concat((so.oracleCostPlans || []).flatMap(plan => [...plan.sacrifices,...(plan.returns||[])]),so.oracleCastingChoicePlan?.card?[so.oracleCastingChoicePlan.card]:[]),
-        reservedLife: paidAddl.life + (so.oracleCostPlans || []).reduce((sum, plan) => sum + plan.life, 0),
-      });
+      const ok = await this.payMana(p, cost, paySpell, manaPaymentOptions);
       if (!ok) { this.lg(`${card.name}: mana nije plaćena.`); return false; }
       if (cost.lifeCost) await this.loseLife(p, cost.lifeCost, 'altcost');
     } else {
@@ -3211,6 +3261,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     so.additionalLifePaid = paidAddl.life;
     so.additionalBlightPaid = paidAddl.blightN;
     so.additionalCostChoice = paidAddl.choice;
+    if (castOpts.kotis) {
+      await MTG.commitKotisCastPayment({g:this,src:card,you:p,so}, kotisExiled);
+      // Kotis uses the graveyard Flashback offer path only as a permission
+      // adapter. Its paid spell has no Flashback exile replacement when it
+      // resolves, is countered, or is returned from the Stack.
+      delete castOpts.flashback;
+    }
+    if (castOpts.broodship) {
+      await MTG.commitBroodshipCastPayment({g:this,src:card,you:p,so},broodshipLand);
+      delete castOpts.flashback;
+    }
+    if (castOpts.gravecrawler) delete castOpts.flashback;
     await this.moveGraveyardBatch(delveExiled, 'exile');
     await this.moveGraveyardBatch(escapeExiled, 'exile');
 
@@ -3477,14 +3539,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     })).sort((a,b)=>a-b);
   };
 
+  function canUseDelve(game, card, castOpts = {}) {
+    return !!card && !castOpts.faceDownCast && !castOpts.adventure &&
+      !!game.castDefinition(card, castOpts).altCosts?.some(option => option.delve);
+  }
+
   G.maxAffordableX = function (p, cost, card, opts = {}) {
     if (!cost || !(cost.x > 0)) return 0;
     const manaOpts = Object.assign({}, opts);
     delete manaOpts.castOpts;
     delete manaOpts.forSpell;
     const forSpell = opts.forSpell || { card, castOpts: opts.castOpts || {}, xVal: 0 };
-    const canPay = x => this.canPayMana(p, cost, Object.assign({}, forSpell, { xVal: x }),
-      Object.assign({}, manaOpts, { xVal: x }));
+    const delve = !forSpell.isAbility && (opts.castOpts || opts.forSpell?.castOpts) && canUseDelve(this, card, forSpell.castOpts || {})
+      ? Math.max(0, p.graveyard.filter(candidate => candidate !== card).length - (forSpell.castOpts?.kotis ? 3 : 0)) : 0;
+    const previewCost = delve ? { ...cost, xReduction: (cost.xReduction || 0) + delve } : cost;
+    const canPay = x => forSpell.castOpts?.broodship
+      ? MTG.broodshipSacrificeOptions(this,p,card,forSpell.castOpts,x,cost,manaOpts).length > 0
+      : this.canPayMana(p, previewCost, Object.assign({}, forSpell, { xVal: x }),
+        Object.assign({}, manaOpts, { xVal: x }));
     if (!canPay(0)) return 0;
 
     // Affordability is monotonic in X. Exponential search removes the old,
@@ -5825,14 +5897,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       return true;
     });
-    if (!casts.length && !acts.length) {
-      // Ljudski igrač svejedno dobija prozor kad protivnik odigra kartu: vidi
-      // šta je bačeno na stacku i sam klikne Proceed. Botovi tu nemaju šta da
-      // biraju, pa njima i dalje kratimo put.
-      const top = this.stack[this.stack.length - 1];
-      const showToHuman = !p.isAI && top && top.ctrl !== p && top.kind === 'spell';
-      if (!showToHuman) return { kind: 'pass' };
-    }
+    // Human controllers apply HOLD and Full control before their automatic
+    // pass policy. Even an empty-action window must reach that policy.
+    if (p.isAI && !casts.length && !acts.length) return { kind: 'pass' };
     return p.controller.decide(this, {
       type: 'priority', player: p, casts, acts,
       stack: this.stack, phase: this.phase,

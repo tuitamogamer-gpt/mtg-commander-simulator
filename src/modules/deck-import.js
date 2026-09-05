@@ -225,6 +225,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'casting-cost-modifiers-v8': { mechanics: ['casting cost modifiers'], path: 'check every printed condition and live count → combine exact reductions → choose targets → pay the adjusted cost → Stack' },
     'casting-restriction-v8': { mechanics: ['casting restrictions'], path: 'reject an unmet printed casting restriction → satisfy it → recheck before payment → cast through Stack' },
     'state-trigger-v8': { mechanics: ['state triggers'], path: 'observe the current state → queue one trigger per source ability while pending → resolve through Stack → check the state again' },
+    'ripple-cast-chain': { mechanics: ['ripple'], path: 'cast and pay → resolve Ripple → reveal the locked top cohort → optionally cast same-name spells → order the remainder on the bottom → place subsequent triggers' },
     'soulbond-pairing': { mechanics: ['soulbond'], path: 'resolve the printed entry trigger → choose an unpaired creature → retain the pair while both exact creatures stay under one controller' },
     'entry-counter-replacement': { mechanics: ['entry counters'], path: 'prepare the printed entry choice → inspect paid cast and public state → apply the exact counters as the permanent enters' },
     'creature-upgrade-status': { mechanics: ['monstrosity','tribute'], path: 'pay the printed activation or resolve the entry choice → exact counters and incarnation-bound status → respondable triggered consequence' },

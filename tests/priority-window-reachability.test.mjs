@@ -237,7 +237,7 @@ test('protivnikova sposobnost uperena u mene otvara prozor, ostale ne prave buku
   const aimedTrigger = await scenario({ kind: 'trigger', targetsMe: true, answerInHand: true });
   assert.ok(aimedTrigger && aimedTrigger.stops, 'isto vrijedi za okinutu sposobnost');
   const nothingToDo = await scenario({ kind: 'ability', targetsMe: true, answerInHand: false });
-  assert.equal(nothingToDo, null, 'bez ijednog odgovora nema razloga za zaustavljanje');
+  assert.equal(nothingToDo?.stops ?? false, false, 'bez ijednog odgovora nema razloga za zaustavljanje');
   const elsewhere = await scenario({ kind: 'ability', targetsMe: false, answerInHand: true });
   assert.ok(elsewhere && !elsewhere.stops, 'sposobnost koja me ne dira ne smije prekidati igru');
 });

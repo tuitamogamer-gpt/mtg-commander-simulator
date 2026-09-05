@@ -16,6 +16,7 @@
     "serve": "python3 -m http.server 8000 --bind 127.0.0.1",
     "test:server": "node --test tests/vercel-multiplayer-server.test.mjs",
     "test": "node --test tests/*.test.mjs",
+    "test:mechanics": "node --test tests/*.test.mjs",
     "test:baseline": "node --test tests/baseline.test.mjs"
   },
   "engines": {

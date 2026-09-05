@@ -1,3 +1,5 @@
+import * as ripple from './oracle-v8-ripple.mjs';
+import * as namedCounts from './oracle-v8-named-counts.mjs';
 import * as nameSearch from './oracle-v8-name-search.mjs';
 import * as sourceDurations from './oracle-v8-source-durations.mjs';
 // Additive v8 grammar. Each clause must be fully consumed by an exact parser.
@@ -280,6 +282,7 @@ export function unsupportedPresence(result){
   return walk(result.implementation);
 }
 export function extensionCondition(text) {
+ const named=namedCounts.extensionCondition(text);if(named)return named;
   const turn=turns.extensionCondition(text);if(turn)return turn;
   const opponentCount=new RegExp('^an opponent controls ('+NUM+') or more (.+)$').exec(text);
   if(opponentCount){
@@ -347,6 +350,7 @@ export function extensionCost(text, card = null) {
   return Object.keys(cost).length ? cost : null;
 }
 export function modifierOperation(card, line, helpers = {}) {
+ const rippling=ripple.extensionLine(card,line);if(rippling)return rippling;
   const combatRule = combatRestrictions.modifierOperation(card, line, helpersFor(helpers, card));
   if (combatRule) return combatRule;
   // Strive and Harmonize are printed cost modifiers whose whole behaviour the
@@ -405,6 +409,7 @@ function helpersFor(helpers, card = null) {
   return { ...helpers, target: extensionTarget, count: extensionCount, value:core.extensionValue, condition: extensionCondition, cost: text => extensionCost(text, card), normalizeOperations:normalizeManaOperations, line: (card,line)=>extensionLine(card,line,helpers) };
 }
 export function extensionEffect(card, line, helpers) {
+ const named=namedCounts.extensionEffect(card,line,helpersFor(helpers,card));if(named)return named;
   const namedSearch=nameSearch.extensionEffect(card,line,helpersFor(helpers,card));if(namedSearch)return namedSearch;
   if(/^(.+)\. If ([^,.]+), instead (.+)\.$/.test(line))return conditionalEffects.extensionEffect(card,line,helpersFor(helpers,card));
   if(/\. That creature can't attack or block for as long as you control /.test(line)){const bound=sourceDurations.extensionEffect(card,line,helpersFor(helpers,card));if(bound)return bound;}
@@ -439,6 +444,8 @@ export function linkedEffect(card, line, helpers) { return linked.extensionEffec
 export function libraryEffect(card,line,helpers){return library.extensionEffect(card,line,helpersFor(helpers, card));}
 export function resolutionCostEffect(card,line,helpers){return effects.resolutionCostEffect(card,line,helpersFor(helpers, card));}
 export function extensionLine(card, line, helpers) {
+ const rippling=ripple.extensionLine(card,line);if(rippling)return rippling;
+ const named=namedCounts.extensionLine(card,line,helpersFor(helpers,card));if(named)return named;
   const namedSearch=nameSearch.extensionLine(card,line,helpersFor(helpers,card));if(namedSearch)return namedSearch;
   const variablePayment=variableCounterCosts.extensionLine(card,line,helpersFor(helpers,card));if(variablePayment)return variablePayment;
   const context = helpersFor(helpers, card);

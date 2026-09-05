@@ -588,7 +588,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return null;
   }
 
+  function captureAttachedHost(ctx) {
+    const sourceVersion = ctx.sourceZoneVersion ?? ctx.oracleSourceCapture?.zoneVersion;
+    const live = sameBattlefieldSource(ctx), sourceHistory = ctx.src.battlefieldLKI?.get(sourceVersion);
+    const iid = live ? ctx.src.attachedTo : sourceHistory?.attachedTo || ctx.sourceMeta?._lastAttachedTo || ctx.sourceAttachedTo;
+    const subject = ctx.g.byIid(iid);
+    if (!subject) return null;
+    let zoneVersion = live ? subject.zoneVersion : sourceHistory?.attachedTo ? sourceHistory.attachedHostVersion : null;
+    if (zoneVersion === null || zoneVersion === undefined) {
+      // A departing host detaches its Aura before moving that Aura. Its own
+      // departure snapshot retains the actual attachment and both identities.
+      const history = [...(subject.battlefieldLKI?.values() || [])].reverse().find(snapshot =>
+        snapshot.attachedSources?.some(entry => entry.card === ctx.src && entry.snap.zoneVersion === sourceVersion));
+      zoneVersion = history?.zoneVersion ?? ctx.sourceAttachedToZoneVersion;
+    }
+    const current = subject.zone === 'battlefield' && subject.zoneVersion === zoneVersion;
+    const controller = current ? subject.ctrl : subject.battlefieldLKI?.get(zoneVersion)?.ctrl;
+    return controller ? {subject, zoneVersion, controller} : null;
+  }
+
   function genericEffectSubjects(ctx, reference) {
+    if(reference==='attached-host-controller'){
+      const captured=ctx._oracleAttachedHost;
+      if(!captured)return [];
+      const {subject,zoneVersion,controller}=captured;
+      return [subject.zone==='battlefield'&&subject.zoneVersion===zoneVersion?subject.ctrl:subject.battlefieldLKI?.get(zoneVersion)?.ctrl||controller];
+    }
     if(reference==='unless-player')return ctx.oracleUnlessPlayer?[ctx.oracleUnlessPlayer]:[];
     if(reference==='attached-host'){
       const live=sameBattlefieldSource(ctx),version=ctx.sourceZoneVersion??ctx.oracleSourceCapture?.zoneVersion;
@@ -803,6 +828,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   async function runGenericEffect(ctx, effect) {
+    if(MTG.OracleV8NamedCounts.actions.has(effect.action))return MTG.OracleV8NamedCounts.run(ctx,effect,{subjects:genericEffectSubjects,effect:runGenericEffect});
     if(['source-controlled','source-controlled-tapped'].includes(effect.duration)){
       const duration=MTG.OracleV8Untap.capture(ctx,effect.duration==='source-controlled-tapped'?'controlled-tapped':'controlled');
       if(!MTG.OracleV8Untap.sourceValid(ctx.g,duration))return;
@@ -1706,6 +1732,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   async function runGenericEffects(ctx, effects) {
     const previous = ctx._oracleCreatedTokens;
     const previousControllers=ctx._oracleTargetControllers;
+    const previousAttachedHost=ctx._oracleAttachedHost;
+    if((effects||[]).some(effect=>effect.target==='attached-host-controller'))ctx._oracleAttachedHost=captureAttachedHost(ctx);
     if(!previousControllers)ctx._oracleTargetControllers=(ctx.targets||[]).map(selected=>[selected].flat().filter(Boolean).map(subject=>({subject,controller:subject.ctrl,zoneVersion:subject.zoneVersion,stats:{power:subject.power,toughness:subject.toughness,mv:subject.mv}})));
     ctx._oracleCreatedTokens = [];
     try {
@@ -1716,6 +1744,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (previous === undefined) delete ctx._oracleCreatedTokens;
       else ctx._oracleCreatedTokens = previous;
       if(!previousControllers)delete ctx._oracleTargetControllers;
+      if(previousAttachedHost===undefined)delete ctx._oracleAttachedHost;
+      else ctx._oracleAttachedHost=previousAttachedHost;
     }
   }
 
@@ -1802,6 +1832,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         defender: data?.defender || data?.attacker?.attacking || v8Bindings?.eventCard?.attacking || source.attacking || null,
         eventPlayer:v8Bindings?v8Bindings.eventPlayer:operation.eventFilter==='self-unblocked'?(source.attacking instanceof MTG.Player?source.attacking:source.attacking?.ctrl):data?.player,
         eventCard,
+        eventRulesNames: MTG.OracleV8NameGroups.names(data?.so||eventCard),
         eventController: v8Bindings?v8Bindings.eventController:data?.snap?.ctrl||eventCard?.ctrl,
         eventCardZoneVersion:v8Bindings?.eventVersion??eventCard?.zoneVersion,
         eventAmount:v8Bindings?.eventAmount,eventSnap:v8Bindings?.eventSnap,
@@ -2132,6 +2163,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function genericCondition(game,self,condition,p=self.ctrl,evidence) {
+    if(MTG.OracleV8NamedCounts.conditions.has(condition?.kind))return MTG.OracleV8NamedCounts.condition(game,self,condition,p,evidence);
     if(['casting-window-v8','casting-spell-history-v8'].includes(condition?.kind))return MTG.OracleV8CastingLimits.condition(game,self,condition,p);
     if(condition?.kind==='creature-upgrade-state-v8')return MTG.OracleV8CreatureUpgrades.condition(game,self,condition,p,evidence);
     if(condition?.kind==='activation-state-v8')return MTG.OracleV8ActivationSuffixes.condition(game,self,condition,p);
@@ -2700,6 +2732,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const declaredAttachmentGrants = (entry.implementation || [])
       .filter(operation => operation.kind === 'attachment-grant');
     for (const operation of (entry.implementation || []).flatMap(operation=>operation.kind==='casting-cost-modifiers-v8'?operation.modifiers:[operation])) {
+      if(MTG.OracleV8Ripple?.apply(script,operation))continue;
       if(MTG.OracleV8Exert?.apply(script,operation,{trigger:compileGenericTrigger,score:genericAbilityAiScore}))continue;
       MTG.OracleV8Exploit?.apply(script,operation,{score:genericAbilityAiScore,target:genericTargetSpec});
       if(MTG.OracleV8HandSize?.apply(script,operation))continue;
@@ -3010,7 +3043,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         continue;
       }
       if (operation.kind === 'generic-trigger') {
-        for(const event of Array.isArray(operation.event)?operation.event:[operation.event])triggers.push(compileGenericTrigger({...operation,event}));
+        // Batch 0167's frozen descriptor bound "that land's controller" to
+        // the ore-counter event's card (the Aura). Correct only this verified
+        // printed clause and exact old shape; keep provenance unchanged.
+        const mineOracle = "Enchant land\nThis Aura enters with three ore counters on it.\nAt the beginning of your upkeep and whenever enchanted land becomes tapped, remove an ore counter from this Aura.\nWhen the last ore counter is removed from this Aura, destroy enchanted land and this Aura deals 2 damage to that land's controller.";
+        const mineTrigger = {kind:'generic-trigger',event:'countersRemoved',eventFilter:{kind:'v8-event',subject:'self',counter:'ore',zeroRemaining:true},effects:[{action:'destroy',target:'attached-host'},{action:'damage',target:'event-card-controller',n:2}],targets:[],optional:false,contract:'generic-trigger-effect'};
+        const repaired = entry.oracleId==='a6bfa03e-6317-4550-960b-fbd2a30e521f' && entry.raw.oracle===mineOracle && JSON.stringify(operation)===JSON.stringify(mineTrigger);
+        const runtimeOperation = repaired ? {...operation,effects:[operation.effects[0],{...operation.effects[1],target:'attached-host-controller'}]} : operation;
+        if(repaired)script.oracleRuntimeRepairs=['orcish-mine-attached-controller'];
+        for(const event of Array.isArray(runtimeOperation.event)?runtimeOperation.event:[runtimeOperation.event])triggers.push(compileGenericTrigger({...runtimeOperation,event}));
         continue;
       }
       if (operation.kind === 'generic-ability') {

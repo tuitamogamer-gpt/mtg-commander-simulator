@@ -1,3 +1,5 @@
+import {rippleProof}from'./helpers/oracle-ripple-proof.mjs';
+import {isNamedCountOperation,namedCountProof} from './helpers/oracle-named-count-proof.mjs';
 import {soulbondProof}from'./helpers/oracle-soulbond-proof.mjs';
 import {installNameSearchProof,assertNameSearch} from './helpers/oracle-name-search-proof.mjs';
 import {creatureUpgradeProof,activateUpgrade}from'./helpers/oracle-creature-upgrade-proof.mjs';
@@ -2165,6 +2167,11 @@ async function genericRuntimeOperationProof(MTG, entry, operation, role) {
     chooseCards: (game, query) => {
       const min = query.min || 0;
       const max = query.max ?? Math.max(1, min);
+      // This fixture proves the resolving effect. Preserve its staged
+      // graveyard witnesses when optional Delve is offered during the cast;
+      // the separate mechanic-delve proof exercises graveyard payment.
+      if (query.aiHint?.kind === 'delve' && query.prompt?.startsWith('Delve:')) return query.from.slice()
+        .sort((a, b) => Number(wantedCards.includes(a)) - Number(wantedCards.includes(b))).slice(0, min);
       if(query.aiHint?.exploitSource&&query.from.includes(context.exploitDonor))return [context.exploitDonor];
       const chosen = wantedCards.filter(card => query.from.includes(card)).slice(0, max);
       for (const card of query.from) {
@@ -3776,6 +3783,8 @@ async function attachmentOperationProof(MTG,entry,op,role){
 }
 
 async function operationProof(MTG, entry, operation, role = 'human') {
+  if(operation.kind==='ripple-v8')return rippleProof(MTG,entry,operation,role,v8Helpers());
+  if(isNamedCountOperation(operation))return namedCountProof(MTG,entry,operation,role,v8Helpers());
   if(operation.kind==='exert-attack-v8'){
     const body=operation.body||{targets:[],effects:[],optional:false};
     const exertAttackIndex=entry.implementation.filter(row=>row.kind==='exert-attack-v8').indexOf(operation);

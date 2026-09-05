@@ -735,9 +735,10 @@ for (const role of ROLES) {
         .filter(entry => entry.card === hidden && entry.turnFaceUp);
       assert.equal(actions.length, 1, `${name}: exactly one matching special action is payable`);
       if (role === 'ai') {
+        const beforeDecisions = context.game.aiDecisionLog?.length || 0;
         await context.game.mainPhase(context.player);
-        assert.ok((context.game.aiDecisionLog || []).some(decision =>
-          String(decision.chosen || '').includes(`XR ${name === 'XR Morph' ? 'Morph' : 'Disguise'}`)),
+        assert.ok((context.game.aiDecisionLog || []).slice(beforeDecisions).some(decision =>
+          decision.chosen === 'Turn a face-down creature face up'),
         `${name}: the real local AI chooses the matching turn-face-up action`);
       } else {
         assert.equal(await context.game.activateAbility(context.player, actions[0]), true);
