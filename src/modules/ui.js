@@ -536,10 +536,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       requestAnimationFrame(() => { this.renderQueued = false; this.render(); });
     }
 
-    // Arena se često ponovo iscrta dok bot sekvencijalno rješava akcije. Safari
-    // kratko pokaže praznu sliku ako se isti <img> ukloni i odmah napravi novi,
-    // čak i kada je URL već u cacheu. Sačuvaj postojeće media čvorove po izvoru
-    // i vrati ih u novi prikaz da dekodirana slika ostane na ekranu bez bljeska.
+    // When an interactive subtree changes, keep its decoded art. Stable
+    // regions stay connected; this pool belongs only to the replaced region
+    // so image reuse cannot pull a picture out of an unchanged card.
     captureRenderedImages(root) {
       const pool = new Map();
       for (const image of root.querySelectorAll('img[src]')) {
@@ -755,7 +754,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (sourceCard && sourceCard.name) {
           const image = el('img');
           image.src = imgURL(sourceCard.name);
-          image.onerror = () => MTG.imgFail(image);
+          image.onerror = event => MTG.imgFail(event.currentTarget);
           sourceBox.appendChild(image);
         }
         const copyLabel = so.isCopy ? `SPELL COPY #${so.copyIndex || '?'}` : (so.kind || 'effect').toUpperCase();
@@ -787,7 +786,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         } else if (targetCard) {
           const image = el('img');
           image.src = hidden ? MTG.BLANK_PX : imgURL(targetCard.name);
-          image.onerror = () => MTG.imgFail(image);
+          image.onerror = event => MTG.imgFail(event.currentTarget);
           targetBox.appendChild(image);
         } else targetBox.appendChild(el('div', 'stackflowplayer', '<b>◇</b><span>STACK</span>'));
         const info = el('div', 'stackflowtargetinfo');
@@ -817,19 +816,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const g = this.game;
       if (!g) return;
       if (this.fatalError || g.gameOver) this.closeCommandPalette?.();
-      const root = $('#game');
-      if (!root) return;
+      const liveRoot = $('#game');
+      if (!liveRoot) return;
+      // Compose offscreen, including Command Table, before touching the arena.
+      const root = liveRoot.cloneNode(false);
       // Završni rezultat je jedina blokirajuća informacija nakon kraja meča.
       // Commander intro, Monarch banner ili activity notice sa pobjedničkog
       // poteza ne smiju ga još nekoliko sekundi prekrivati iznad #game roota.
       if (g.gameOver) this.clearGameOverTransients();
-      const renderedImages = this.captureRenderedImages(root);
       // set of my cards with available activations (for ⚙ badges)
       this.actable = new Set();
       if (this.pending && (this.pending.q.type === 'main' || this.pending.q.type === 'priority')) {
         for (const a of (this.pending.q.acts || [])) this.actable.add(a.card.iid);
       }
-      root.innerHTML = '';
       root.dataset.phase = g.phase || 'idle';
       root.classList.toggle('human-turn', g.turnPlayer === this.me);
       root.classList.toggle('ai-turn', !!(g.turnPlayer && g.turnPlayer.isAI));
@@ -899,28 +898,37 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         root.appendChild(this.renderEliminated(g));
       }
       if (this.fatalError) root.appendChild(this.renderFatalRecovery(g));
+      this.renderCommandTable?.(g, root);
       U.localizeTree(root);
-      this.reuseRenderedImages(root, renderedImages);
-      root.querySelectorAll('.overlay, .quickmenuov').forEach(overlay => {
-        const dialog = overlay.querySelector('.modal, .sheet, .quickmenu');
-        if (dialog) U.enhanceDialog(overlay, dialog);
-      });
-      // The arena is rebuilt on every state change. Entrance motion belongs
+      // Entrance motion belongs
       // to a surface's first appearance only: a dialog, prompt bar or popup
       // that shows the same content as in the previous rebuild is marked
       // settled and keeps still instead of fading in again.
       const settledKeys = new Set();
-      root.querySelectorAll('.overlay, .quickmenuov, .modal, .sheet, .promptbar, .stackpop').forEach(node => {
+      root.querySelectorAll('.overlay, .quickmenuov, .modal, .sheet, .promptbar, .stackpop, .actionstage').forEach(node => {
         const heading = node.querySelector('h1, h2, h3, .mtitle, .sheettitle, .ptext, .stagetitle');
         const key = `${node.className}|${((heading || node).textContent || '').trim().slice(0, 96)}`;
         if (this.settledKeys && this.settledKeys.has(key)) node.classList.add('settled');
         settledKeys.add(key);
       });
       this.settledKeys = settledKeys;
-      // Looping animations (castable breathing, threat pulses) read this
-      // negative delay so a rebuild continues the loop instead of restarting it.
-      root.style.setProperty('--fx-phase', `-${Math.round(performance.now() % 3600000)}ms`);
-      this.fitBattlefieldLanes(root);
+      // Keep the phase stable on retained nodes; changing the inherited delay
+      // on every render would jump their running animations.
+      if (!this._arenaRenderContext) root.style.setProperty('--fx-phase', `-${Math.round(performance.now() % 3600000)}ms`);
+      const context = [g, this.me, this.pending, this.pending?.q, this.react, this.arenaDragEnabled, this.handSort];
+      const previous = this._arenaRenderContext;
+      U.commitArenaRender(liveRoot, root, {
+        sameGame: !!previous && previous[0] === g && previous[1] === this.me,
+        retain: !!previous && context.every((value, index) => previous[index] === value),
+        captureImages: node => this.captureRenderedImages(node),
+        reuseImages: (node, images) => this.reuseRenderedImages(node, images),
+      });
+      this._arenaRenderContext = context;
+      liveRoot.querySelectorAll('.overlay, .quickmenuov').forEach(overlay => {
+        const dialog = overlay.querySelector('.modal, .sheet, .quickmenu');
+        if (dialog) U.enhanceDialog(overlay, dialog);
+      });
+      this.fitBattlefieldLanes(liveRoot);
       this.initLaneFit();
       this.syncZoneEffects(g);
     }
@@ -1033,7 +1041,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!card.faceDown) {
           const img = el('img');
           img.src = imgURL(card.name);
-          img.onerror = () => MTG.imgFail(img);
+          img.onerror = event => MTG.imgFail(event.currentTarget);
           item.appendChild(img);
         }
         fan.appendChild(item);
@@ -1077,7 +1085,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         item.style.setProperty('--i', String(i));
         const img = el('img');
         img.src = imgURL(name);
-        img.onerror = () => MTG.imgFail(img);
+        img.onerror = event => MTG.imgFail(event.currentTarget);
         item.appendChild(img);
         fan.appendChild(item);
       }
@@ -1337,7 +1345,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const img = el('img');
         img.loading = 'lazy';
         img.src = imgURL(card.name);
-        img.onerror = () => MTG.imgFail(img);
+        img.onerror = event => MTG.imgFail(event.currentTarget);
         it.appendChild(img);
         const info = el('div', 'stackpopinfo');
         info.appendChild(el('div', 'stackpopname', esc(card.name)));
@@ -1406,7 +1414,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const img = el('img');
           img.loading = 'lazy';
           img.src = imgURL(so.card.name);
-          img.onerror = () => MTG.imgFail(img);
+          img.onerror = event => MTG.imgFail(event.currentTarget);
           main.appendChild(img);
         }
         const info = el('div', 'stackpopinfo');
@@ -2515,6 +2523,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           topCard.type = 'button';
           topCard.dataset.testid = 'opponent-library-top';
           topCard.dataset.cname = libraryTop.name;
+          topCard.dataset.iid = String(libraryTop.iid);
           topCard.textContent = `Top: ${libraryTop.name}`;
           topCard.title = `${p.name}'s publicly revealed library top: ${libraryTop.name}`;
           topCard.setAttribute('aria-label', `${p.name}'s revealed library top: ${libraryTop.name}. Open card details.`);
@@ -2583,7 +2592,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const setScale = (v) => {
         this.oppScale = Math.max(0.6, Math.min(2, Math.round(v * 20) / 20));
         localStorage.setItem('mtgOppS', String(this.oppScale));
-        wrap.style.setProperty('--opp-scale', String(this.oppScale));
+        $('#game .oppswrap')?.style.setProperty('--opp-scale', String(this.oppScale));
         val.textContent = Math.round(this.oppScale * 100) + '%';
         this.fitBattlefieldLanes();
       };
@@ -2600,7 +2609,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         setScale(1);
         this.oppHeight = 42;
         localStorage.setItem('mtgOppH', '42');
-        wrap.style.setProperty('--opp-h', 'calc(42 * var(--dvhu))');
+        $('#game .oppswrap')?.style.setProperty('--opp-h', 'calc(42 * var(--dvhu))');
         this.fitBattlefieldLanes();
       };
       bar.appendChild(el('div', '', 'AI table'));
@@ -2619,7 +2628,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const cy = e2.touches ? e2.touches[0].clientY : e2.clientY;
           const dvh = ((cy - startY) / window.innerHeight) * 100;
           this.oppHeight = Math.max(14, Math.min(74, Math.round(startH + dvh)));
-          wrap.style.setProperty('--opp-h', `calc(${this.oppHeight} * var(--dvhu))`);
+          $('#game .oppswrap')?.style.setProperty('--opp-h', `calc(${this.oppHeight} * var(--dvhu))`);
           this.fitBattlefieldLanes();
           if (e2.cancelable) e2.preventDefault();
         };
@@ -2745,6 +2754,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (card.tapped ? ' tapped' : '') + (equipment ? ' equipment' : ' aura'));
       this.registerArenaDropTarget(item, { kind: 'entity', value: card });
       item.dataset.cname = card.name;
+      item.dataset.iid = String(card.iid);
       item.title = `${card.name}: ${equipment ? 'equipped' : 'attached'} to ${host.name}`;
       item.innerHTML = `<img loading="lazy" src="${imgURL(card.name)}" onerror="MTG.imgFail(this)">
         <span><small>${equipment ? 'EQUIPMENT' : 'AURA'}</small><b>${esc(card.name.split(' // ')[0])}</b></span>`;
@@ -2837,6 +2847,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const [name, lands] of Object.entries(groups)) {
         const untapped = lands.filter(l => !l.tapped).length;
         const lc = el('div', 'landstack' + (untapped === 0 ? ' tapped' : ''));
+        lc.dataset.iid = String(lands[0].iid);
         this.registerArenaDropTarget(lc, { kind: 'entity', value: lands[0] });
         const cols = (lands[0].def.producesColors || []).map(c => `<span class="dot" style="background:${COLHEX[c]}"></span>`).join('');
         lc.innerHTML = `<div class="lname">${esc(name)}</div><div>${cols}</div><div class="lcount">${untapped}/${lands.length}</div>`;
@@ -2930,6 +2941,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         topCard.type = 'button';
         topCard.dataset.testid = 'library-top-peek';
         topCard.dataset.cname = libraryTop.name;
+        topCard.dataset.iid = String(libraryTop.iid);
         topCard.title = `${libraryTop.name} · ${status.toLowerCase()} · revealed by ${sourceNames.join(', ')}`;
         topCard.setAttribute('aria-label', `Top of library: ${libraryTop.name}. ${status}. Revealed by ${sourceNames.join(', ')}. Open card details.`);
         topCard.innerHTML = `
@@ -2949,6 +2961,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const czRow = el('div', 'czrow');
         for (const cmd of me.command) {
           const cz = el('div', 'czcard');
+          cz.dataset.iid = String(cmd.iid);
           const castEntry = this.pending && this.pending.q.casts && this.pending.q.casts.find(e => e.card === cmd);
           const cost = this.game.spellCost(me, cmd, {});
           cz.innerHTML = `
@@ -3174,7 +3187,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         tray.appendChild(el('div','exiletraytitle',miracleCards.length?'Revealed cards — Miracle / Forecast':'Forecast — revealed until upkeep ends'));
         const list=el('div','exiletraylist');
         for(const card of forecastCards){
-          const item=el('button','exiletraycard');item.dataset.cname=card.name;
+          const item=el('button','exiletraycard');item.dataset.cname=card.name;item.dataset.iid=String(card.iid);
           item.title=`${card.name} — revealed in ${card.owner.name}'s hand`;
           item.innerHTML=`<img loading="lazy" src="${imgURL(card.name)}" onerror="MTG.imgFail(this)"><span><b>${esc(card.name)}</b><small>${esc(card.owner.name)} · ${miracleCards.includes(card)?'Miracle':'Forecast'}</small></span>`;
           item.onclick=()=>{this.sheet={card};this.render();};list.appendChild(item);
@@ -3207,6 +3220,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                   : 'for a limited time';
             const item = el('button', 'exiletraycard' + (now ? ' castable' : ''));
             item.dataset.cname = c.name;
+            item.dataset.iid = String(c.iid);
             item.title = `${c.name}: playable from exile ${until}${meta.freePlay ? ' · FREE' : ''}`;
             item.innerHTML = `
               <img loading="lazy" src="${imgURL(c.name)}" onerror="MTG.imgFail(this)">
@@ -3239,6 +3253,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 : 'no counters · remains here only if it could not be cast';
           const item = el('button', 'suspendtraycard' + (castPending ? ' casting' : ''));
           item.dataset.cname = c.name;
+          item.dataset.iid = String(c.iid);
           item.title = `${c.name}: ${count} time counter${count === 1 ? '' : 's'} · ${status}`;
           item.innerHTML = `
             <img loading="lazy" src="${imgURL(c.name)}" onerror="MTG.imgFail(this)">
@@ -3264,6 +3279,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ${suspendTag}
           <div class="mname">${esc(c.name.split(' // ')[0])}</div>`;
         d.dataset.cname = c.name;
+        d.dataset.iid = String(c.iid);
         let arenaSource = null;
         if (this.arenaDragEnabled && pd && ['main', 'priority'].includes(pd.q.type)) {
           const castEntries = (pd.q.casts || []).filter(entry => entry.card === c);
@@ -4204,7 +4220,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         image.loading = 'lazy';
         image.alt = name;
         image.src = hidden ? MTG.BLANK_PX : imgURL(name);
-        image.onerror = () => MTG.imgFail(image);
+        image.onerror = event => MTG.imgFail(event.currentTarget);
         thumb.appendChild(image);
         art.appendChild(thumb);
       }
@@ -4778,7 +4794,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const shownName = shownDef.name;
       const img = el('img', 'sheetimg');
       img.src = card.faceDown && !mayLookFaceDown ? MTG.BLANK_PX : imgURL(shownName, true);
-      img.onerror = () => img.classList.add('noimg');
+      img.onerror = event => event.currentTarget.classList.add('noimg');
       m.appendChild(img);
       const info = el('div', 'sheetinfo');
       const useCurrentCharacteristics = card.zone === 'battlefield' && card.cur && !hiddenFaceDown;
@@ -5578,7 +5594,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
         const image = document.createElement('img');
         image.src = reaction.portrait;
         image.alt = `${reaction.personaName} portrait`;
-        image.onerror = () => MTG.imgFail(image);
+        image.onerror = event => MTG.imgFail(event.currentTarget);
         portrait.appendChild(image);
         portrait.appendChild(el('span', '', esc(reaction.archetype || 'Signature AI')));
 
@@ -5965,7 +5981,7 @@ Sorceries and creatures can normally be cast only during your main phase. Instan
       if (source && source.name) {
         const image = el('img');
         image.src = imgURL(source.name);
-        image.onerror = () => MTG.imgFail(image);
+        image.onerror = event => MTG.imgFail(event.currentTarget);
         notice.appendChild(image);
       }
       const info = el('div', 'spellcopynoticeinfo');

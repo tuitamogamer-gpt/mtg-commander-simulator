@@ -188,8 +188,8 @@ test('Arena re-zones Station Spacecraft from support to creatures using current 
 test('Arena keeps decoded card images and ambient AI state stable across bot renders', () => {
   assert.match(ui, /captureRenderedImages\(root\)/);
   assert.match(ui, /reuseRenderedImages\(root, pool\)/);
-  assert.match(ui, /const renderedImages = this\.captureRenderedImages\(root\);/);
-  assert.match(ui, /this\.reuseRenderedImages\(root, renderedImages\);/);
+  assert.match(ui, /const root = liveRoot\.cloneNode\(false\);/);
+  assert.match(ui, /U\.commitArenaRender\(liveRoot, root,/);
   assert.match(ui, /fresh\.replaceWith\(existing\);/);
   assert.match(css, /#game\.ai-turn \.opprow\.active,[\s\S]*?animation: none;[\s\S]*?filter: brightness\(1\.045\);/);
   assert.match(css, /#game\.ai-turn \.stackempty span \{[\s\S]*?animation: none;/);

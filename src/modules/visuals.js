@@ -67,7 +67,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!title.id) title.id = `dialog-title-${Math.random().toString(36).slice(2, 9)}`;
       dialog.setAttribute('aria-labelledby', title.id);
     } else dialog.setAttribute('aria-label', options.label || 'Dialog');
-    const returnFocus = options.returnFocus || (document.activeElement instanceof HTMLElement ? document.activeElement : null);
+    const returnFocus = options.returnFocus || overlay._dialogReturnFocus || (document.activeElement instanceof HTMLElement ? document.activeElement : null);
+    overlay._dialogReturnFocus = returnFocus;
     const focusable = () => [...dialog.querySelectorAll(
       'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
     )].filter(node => !node.hidden && node.getAttribute('aria-hidden') !== 'true');
@@ -88,7 +89,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const observer = new MutationObserver(() => {
         if (overlay.isConnected) return;
         observer.disconnect();
-        if (returnFocus.isConnected) returnFocus.focus({ preventScroll: true });
+        if (!overlay._dialogReplaced && returnFocus.isConnected) returnFocus.focus({ preventScroll: true });
       });
       observer.observe(document.body, { childList: true, subtree: true });
     }

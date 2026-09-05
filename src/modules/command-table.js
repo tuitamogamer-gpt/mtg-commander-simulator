@@ -35,11 +35,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     element.alt = ''; element.loading = 'lazy';
     // Commander identity is public. Never derive art from hand/library contents.
     element.src = commander ? U.cardImageURL(commander.name, 'art') : U.BLANK_PX;
-    element.onerror = () => U.imgFail(element);
+    element.onerror = event => U.imgFail(event.currentTarget);
     return element;
   };
-  const scrollNodes = root => [...root.querySelectorAll('.hand, .myboard, .oppstrip, .boardlanecards, .ct-decision-content')];
-  const scrollKey = element => `${element.closest('[data-player-id]')?.dataset.playerId || element.closest('.myboard') && 'you' || ''}/${element.className}/${element.closest('.boardlane')?.className || ''}`;
 
   P.renderCommandSeats = function (game, focus) {
     const ribbon = node('nav', 'ct-seat-ribbon');
@@ -118,6 +116,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const commander = commanders(this.me)[0];
       if (commander) {
         const inspect = button('ct-inspect-commander', undefined, () => { this.sheet = { card: commander }; this.render(); });
+        inspect.dataset.iid = String(commander.iid);
         inspect.setAttribute('aria-label', `Inspect ${commander.name}`);
         inspect.append(portrait(this.me));
         heading.append(inspect);
@@ -220,14 +219,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       try { saved = localStorage.getItem('mtgCommandTableView'); } catch { /* Default remains usable. */ }
       this.commandTableView = saved === 'focus' ? 'focus' : 'table';
     }
-    const scroll = new Map(scrollNodes(root).map(element => [scrollKey(element), [element.scrollLeft, element.scrollTop]]));
     if (decisionsShowingTable.has(this.pending?.q.type)) this.collapsed?.clear();
     root.classList.add('command-table');
     originalRender.call(this);
-    this.renderCommandTable(this.game, root);
-    for (const element of scrollNodes(root)) {
-      const position = scroll.get(scrollKey(element));
-      if (position) { element.scrollLeft = position[0]; element.scrollTop = position[1]; }
-    }
   };
 })();

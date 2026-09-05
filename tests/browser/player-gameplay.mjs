@@ -12,10 +12,13 @@ app.use(express.static(fileURLToPath(new URL('../../', import.meta.url))));
 const server = app.listen(0, '127.0.0.1');
 await once(server, 'listening');
 const base = process.env.GAME_URL || `http://127.0.0.1:${server.address().port}`;
-const out = 'output/web-game/player-gameplay';
+const out = process.env.PLAYER_GAMEPLAY_QA_OUTPUT || 'output/web-game/player-gameplay';
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+const page = await browser.newPage({ viewport: {
+  width: Number(process.env.ARENA_VIEWPORT_WIDTH || 1440),
+  height: Number(process.env.ARENA_VIEWPORT_HEIGHT || 1000),
+} });
 page.setDefaultTimeout(8000);
 const errors = [], requests = [], seen = new Set();
 let iterations = 0, lands = 0, spells = 0, attacks = 0, stale = 0, previous = '';

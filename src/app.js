@@ -281,6 +281,7 @@ import './modules/multiplayer-ui.js';
 import './modules/save-game.js';
 import './modules/save-state.js';
 import './modules/loader.js';
+import './modules/arena-render.js';
 import './modules/ui.js';
 import './modules/player-tools.js';
 import './modules/arena-tools.js';
