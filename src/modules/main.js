@@ -185,63 +185,57 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     const page = bootPage || el('main', 'mainmenu');
     page.id = 'landing-top';
+    page.setAttribute('aria-label', 'Commander Simulator');
     page.tabIndex = -1;
     page.inert = false;
     if (!bootPage) page.innerHTML = `
-      <a class="mainmenu-skip" href="#primary-actions">Skip to play options</a>
-      <header class="mainmenu-nav">
-        <a class="mainmenu-brand" href="#landing-top" aria-label="Commander Simulator home">
-          <span class="menumark" aria-hidden="true"></span>
-          <span><b>COMMANDER</b><small>SIMULATOR</small></span>
-        </a>
-        <nav class="mainmenu-navlinks" aria-label="Explore Commander Simulator">
-          <a href="#your-library">My Library</a>
-          <a href="#how-it-works">How it works</a>
-          <a href="#ways-to-play">Ways to play</a>
-        </nav>
-        <div class="mainmenu-navtools">
-          <div class="mainmenu-mana" role="img" aria-label="White, blue, black, red, green, and colorless mana">
-            ${['W', 'U', 'B', 'R', 'G', 'C'].map(color => `<img src="./assets/mana/${color}.svg" alt="">`).join('')}
-          </div>
-          <button type="button" class="mainmenu-guide" data-menu-action="tour" aria-label="Open first-game guide">${U.icon('info')}<span>Guide</span></button>
+    <a class="mainmenu-skip" href="#primary-actions">Skip to play options</a>
+    <header class="mainmenu-nav">
+      <a class="mainmenu-brand" href="#landing-top" aria-label="Commander Simulator home">
+        <span class="menumark" aria-hidden="true"></span>
+        <span><b>COMMANDER</b><small>SIMULATOR</small></span>
+      </a>
+      <nav class="mainmenu-navlinks" aria-label="Explore Commander Simulator">
+        <a href="#the-table">The table</a>
+        <a href="#how-it-works">How to play</a>
+        <a href="#your-library">My Library</a>
+      </nav>
+      <div class="mainmenu-navtools">
+        <button type="button" class="mainmenu-guide" data-menu-action="tour" aria-label="Open first-game guide"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-info"></use></svg><span>Guide</span></button>
+      </div>
+    </header>
+    <section class="mainmenu-hero" aria-labelledby="mainmenu-title">
+      <div class="mainmenu-hero-copy">
+        <span class="mainmenu-kicker">COMMANDER, AT YOUR PACE</span>
+        <h1 id="mainmenu-title">Four seats.<br><em>Your next move.</em></h1>
+        <p>Find your commander. Build your pod. Choose from ${nDecks} complete decks and play against local AI, or bring your friends to a private table.</p>
+        <div id="primary-actions" class="mainmenu-actions" tabindex="-1">
+          <button type="button" class="mainmenu-primary" data-menu-action="solo"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-player"></use></svg><span><b>Start a solo table</b><small>You + three local AI opponents</small></span></button>
+          <button type="button" class="mainmenu-secondary" data-menu-action="live"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-deals"></use></svg><span><b>Create a Live table</b><small>A private pod for 2-4 friends</small></span></button>
         </div>
-      </header>
-
-      <section class="mainmenu-hero" aria-labelledby="mainmenu-title">
-        <div class="mainmenu-hero-copy">
-          <span class="mainmenu-kicker">Play instantly. Save when you sign in.</span>
-          <h1 id="mainmenu-title">Your Commander table is ready.</h1>
-          <p>Choose from ${nDecks} complete decks. Learn your commander against local AI, or bring your friends to a private Live table.</p>
-          <div id="primary-actions" class="mainmenu-actions" tabindex="-1">
-            <button type="button" class="mainmenu-primary" data-menu-action="solo">${U.icon('player')}<span><b>Start a solo table</b><small>You + three local AI opponents</small></span></button>
-            <button type="button" class="mainmenu-secondary" data-menu-action="live">${U.icon('deals')}<span><b>Create a Live table</b><small>A private pod for 2-4 friends</small></span></button>
-          </div>
-          <ul class="mainmenu-trust" aria-label="What you need to play">
-            <li><span aria-hidden="true">✓</span>Account optional</li>
-            <li><span aria-hidden="true">✓</span>Runs in your browser</li>
-            <li><span aria-hidden="true">✓</span>Local rules and AI</li>
-          </ul>
-        </div>
-        <div class="mainmenu-visual" role="group" aria-label="Featured Commander decks">
-          <div class="mainmenu-warroom" aria-hidden="true"></div>
-          <div class="mainmenu-cardfan">${featuredCards}</div>
-          <div class="mainmenu-table-note"><span>${U.icon('stack')}</span><div><small>VISIBLE RULES FLOW</small><b>Priority, stack, combat, choices</b></div></div>
-        </div>
-      </section>
-
-      <section id="your-library" class="mainmenu-library-entry" aria-labelledby="library-entry-title">
-        <div class="mainmenu-library-copy">
-          <span>YOUR DECK LIBRARY</span>
-          <h2 id="library-entry-title">Bring your own deck.</h2>
-          <p>Paste a decklist, check engine support, and save it for your next solo table.</p>
-        </div>
-        <ol class="mainmenu-library-steps" aria-label="Deck import steps">
-          <li><span>01</span>Paste</li><li><span>02</span>Check</li><li><span>03</span>Play</li>
-        </ol>
-        <button type="button" class="mainmenu-import-action" data-menu-action="import">${U.icon('cards')}<span><b>Import your decklist here</b><small>Open My Library</small></span><span aria-hidden="true">↗</span></button>
-      </section>
-
-      `;
+        <ul class="mainmenu-trust" aria-label="What you need to play">
+          <li><span aria-hidden="true">✓</span>Account optional</li>
+          <li><span aria-hidden="true">✓</span>Runs in your browser</li>
+          <li><span aria-hidden="true">✓</span>Free to play</li>
+        </ul>
+      </div>
+      <div class="mainmenu-visual" role="group" aria-label="Featured Commander decks">
+        <div class="mainmenu-visual-head"><span>FIND YOUR COMMANDER</span><div class="mainmenu-mana" role="img" aria-label="White, blue, black, red, green, and colorless mana"><img src="./assets/mana/W.svg" alt=""><img src="./assets/mana/U.svg" alt=""><img src="./assets/mana/B.svg" alt=""><img src="./assets/mana/R.svg" alt=""><img src="./assets/mana/G.svg" alt=""><img src="./assets/mana/C.svg" alt=""></div></div>
+        <div class="mainmenu-cardfan">${featuredCards}</div>
+        <div class="mainmenu-visual-foot"><div><b>Every deck has a story.</b><small>Find the one you want to play.</small></div><button type="button" data-menu-action="solo" aria-label="Explore all ${nDecks} Commander decks">Explore decks <span aria-hidden="true">↗</span></button></div>
+      </div>
+    </section>
+    <section id="your-library" class="mainmenu-library-entry" aria-labelledby="library-entry-title">
+      <div class="mainmenu-library-copy">
+        <span>MY LIBRARY</span>
+        <h2 id="library-entry-title">Already have a deck?</h2>
+        <p>Paste a decklist, check engine support, and save it for your next solo table.</p>
+      </div>
+      <ol class="mainmenu-library-steps" aria-label="Deck import steps">
+        <li><span>01</span>Paste</li><li><span>02</span>Check</li><li><span>03</span>Play</li>
+      </ol>
+      <button type="button" class="mainmenu-import-action" data-menu-action="import"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-cards"></use></svg><span><b>Import your decklist here</b><small>Open My Library</small></span><span aria-hidden="true">↗</span></button>
+    </section>`;
     if (bootPage) {
       page.classList.remove('mainmenu-boot');
       // The public entry disables these while loading the engine for import.
@@ -254,55 +248,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (live && !live.querySelector('.gameicon')) live.insertAdjacentHTML('afterbegin', U.icon('deals'));
       const importDeck = page.querySelector('.mainmenu-import-action');
       if (importDeck && !importDeck.querySelector('.gameicon')) importDeck.insertAdjacentHTML('afterbegin', U.icon('cards'));
-      const tableNote = page.querySelector('.mainmenu-table-note > span');
-      if (tableNote && !tableNote.querySelector('.gameicon')) tableNote.innerHTML = U.icon('stack');
     }
-    if (!page.querySelector('.mainmenu-proof')) page.insertAdjacentHTML('beforeend', `
-
-      <section class="mainmenu-proof" aria-label="Product details">
-        <div class="mainmenu-proof-stat"><strong>${nDecks}</strong><span><b>Complete decks</b><small>Curated commanders and strategies</small></span></div>
-        <div class="mainmenu-proof-stat"><strong>4</strong><span><b>Real seats</b><small>A full multiplayer pod</small></span></div>
-        <div class="mainmenu-proof-stat"><strong>Local</strong><span><b>Deterministic AI</b><small>No external model API</small></span></div>
-        <div class="mainmenu-livecheck" data-live-state="checking" role="status" aria-live="polite"><i aria-hidden="true"></i><span><b>Checking Live rooms</b><small>Solo play is always available</small></span></div>
-      </section>
-
-      <section id="how-it-works" class="mainmenu-path" aria-labelledby="first-pod-title">
-        <div class="mainmenu-path-copy">
-          <span>THE FULL GAME, MADE READABLE</span>
-          <h2 id="first-pod-title">From deck choice to opening hand.</h2>
-          <p>Commander Simulator clears away table clutter while keeping the decisions that make the format interesting.</p>
-          <ul class="mainmenu-decision-tags" aria-label="Visible game decisions"><li>Priority</li><li>Stack</li><li>Targets</li><li>Combat</li></ul>
-          <button type="button" data-menu-action="tour">See the first-game guide</button>
-        </div>
-        <ol class="mainmenu-path-steps">
-          <li><span>${U.icon('cards')}</span><div><b>Pick a deck</b><p>Filter by color or playstyle, then open its guide and signature cards.</p></div></li>
-          <li><span>${U.icon('player')}</span><div><b>Build the pod</b><p>Choose bot decks, personalities, difficulty, and optional Politics.</p></div></li>
-          <li><span>${U.icon('stack')}</span><div><b>Play the decisions</b><p>Proceed prompts, priority windows, targets, and combat stay visible.</p></div></li>
-        </ol>
-      </section>
-
-      <section id="ways-to-play" class="mainmenu-modes" aria-label="Ways to play">
-        <article class="mainmenu-mode solo">
-          <span aria-hidden="true">01</span>
-          <div><small>PLAY AT YOUR PACE</small><h2>Solo Commander</h2><p>Build a complete four-player table around the deck you want to learn.</p><ul class="mainmenu-mode-points"><li>Three local AI opponents</li><li>Adjustable stops and personalities</li><li>Seeded games you can replay</li></ul></div>
-          <button type="button" data-menu-action="solo">Choose a solo deck</button>
-        </article>
-        <article class="mainmenu-mode live">
-          <span aria-hidden="true">02</span>
-          <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Open a private room for two, three, or four real players with no bot seats.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>Account optional; no public lobby</li><li>Up to four human seats</li></ul></div>
-          <button type="button" data-menu-action="live">Configure a Live table</button>
-        </article>
-      </section>
-
-      <section class="mainmenu-final-cta" aria-labelledby="final-cta-title">
-        <div><span>YOUR NEXT POD</span><h2 id="final-cta-title">Pick a deck. We will set the table.</h2><p>Start solo now, or invite up to three friends to a private Live room.</p></div>
-        <div class="mainmenu-final-actions"><button type="button" class="mainmenu-primary" data-menu-action="solo">Start solo</button><button type="button" class="mainmenu-secondary" data-menu-action="live">Create Live table</button></div>
-      </section>
-
-      <footer class="mainmenu-footer">
-        <div><b>COMMANDER SIMULATOR</b><span>Free, browser-based fan project. Card data and images are provided through Scryfall.</span><a href="#landing-top">Back to top</a></div>
-        <p>Commander Simulator is unofficial Fan Content permitted under the <a href="https://company.wizards.com/en/legal/fancontentpolicy" target="_blank" rel="noreferrer">Fan Content Policy</a>. Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC.</p>
-      </footer>`);
+    if (!page.querySelector('.mainmenu-proof')) page.insertAdjacentHTML('beforeend', U.landingDetailsMarkup(nDecks));
+    U.bindLandingPreview(page);
     if (!bootPage) root.appendChild(page);
 
     const openGuide = (continueMode = null) => {
@@ -1569,7 +1517,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const seatMarkup = seats.map(([number, name, deck, styleKey]) => {
         const style = styleKey && MTG.AI_STYLES[styleKey];
         const styleName = style ? style.label : styleKey === 'random' ? 'Random style' : '';
-        return `<div><i>${number}</i><span><b>${esc(name)}</b><small>${esc(deck)}</small></span>${styleName ? `<em class="reviewstyle" title="${escAttr(style?.description || STYLE_DESC[styleKey] || styleName)}">${style && style.portrait ? `<img src="${style.portrait}" alt="" onerror="MTG.imgFail(this)">` : `<strong aria-hidden="true">${style ? style.icon : '🎲'}</strong>`}<b>${esc(styleName)}</b></em>` : ''}</div>`;
+        const human = number === '01';
+        const selected = MTG.DECKS[deck];
+        const commandNames = human ? state.commanders : selected && !state.aiRandomCommanders ? [selected.commander] : [];
+        const lead = commandNames[0];
+        const colors = (MTG.DECK_META[deck] || {}).colors || selected?.colors || [];
+        // Use the official card-art resolver, including imported commanders.
+        const art = lead ? `<img class="ct-review-art" src="${artURL(lead)}" alt="${escAttr(lead)}" onerror="MTG.imgFail(this)">`
+          : `<div class="ct-review-art ct-review-random">${U.icon('cards')}<span>${selected ? 'Commander chosen at start' : state.mode === 'online' ? 'Chooses after joining' : 'A surprise at the table'}</span></div>`;
+        return `<article class="ct-review-seat${human ? ' is-human' : ''}">
+          ${art}<span class="ct-review-number">${number}</span>
+          <div class="ct-review-copy"><small>${esc(name)}</small><b>${esc(commandNames.map(value => value.split(',')[0]).join(' + ') || (selected ? 'Random commander' : deck))}</b><span>${esc(deck)}</span>
+            <div class="ct-review-colors">${colors.filter(color => ['W', 'U', 'B', 'R', 'G', 'C'].includes(color)).map(color => `<img src="./assets/mana/${color}.svg" alt="{${color}}">`).join('')}</div>
+            ${styleName ? `<em class="reviewstyle" title="${escAttr(style?.description || STYLE_DESC[styleKey] || styleName)}">${style?.portrait ? `<img src="${style.portrait}" alt="" onerror="MTG.imgFail(this)">` : ''}<b>${esc(styleName)}</b></em>` : ''}
+          </div>
+          ${state.mode !== 'online' || human ? `<button type="button" class="ct-review-change" data-change-seat="${number}" aria-label="Change ${escAttr(name)} deck">Change</button>` : ''}
+        </article>`;
       }).join('');
       reviewStage.innerHTML = `
         <div class="reviewhead"><span>Step 3 of 3</span><h2 id="setup-review-title">Review your table</h2><p>Everything below is public at the start of the game. You can go back without losing your choices.</p></div>
@@ -1577,9 +1540,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <img src="${state.deck ? commanderImg(state.deck) : MTG.BLANK_PX}" alt="" onerror="MTG.imgFail(this)">
           <div><small>YOUR DECK</small><b>${esc(state.deck || 'Not selected')}</b><span>${esc((state.commanders || []).join(' + ') || 'Choose a commander')}</span></div>
         </div>
-        <div class="reviewseats">${seatMarkup}</div>
+        <div class="reviewseats ct-review-seats" style="--ct-seats:${seats.length}">${seatMarkup}</div>
         <dl class="reviewrules">
-          <div><dt>Mode</dt><dd>${state.mode === 'online' ? `${state.livePlayers} human players · no bots` : `Solo + ${state.ai} local AI V2`}</dd></div>
+          <div><dt>Mode</dt><dd>${state.mode === 'online' ? `${state.livePlayers} human players · no bots` : `Solo + ${state.ai} local AI`}</dd></div>
           ${state.mode === 'solo' ? `<div><dt>Difficulty</dt><dd>${esc(state.difficulty)}</dd></div>` : ''}
           <div><dt>Politics</dt><dd>${state.diplomacyEnabled ? 'Enabled after round 3' : 'Off'}</dd></div>
           <div><dt>Commander damage</dt><dd>${state.sumPartnerDamage ? 'House rule: combined' : 'Official: tracked separately'}</dd></div>
@@ -1603,6 +1566,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       reviewStage.querySelector('.reviewback').onclick = () => setSetupStage('pod');
       reviewStage.querySelector('.reviewstart').onclick = launchSelectedTable;
+      reviewStage.querySelectorAll('[data-change-seat]').forEach(button => {
+        button.onclick = () => {
+          const seat = Number(button.dataset.changeSeat) - 1;
+          setSetupStage(seat === 0 ? 'deck' : 'pod');
+          requestAnimationFrame(() => {
+            const control = seat === 0 ? left.querySelector('.decksearch input') : right.querySelectorAll('.botfields .deckselect')[seat - 1];
+            control?.focus();
+          });
+        };
+      });
     };
 
     const mobileBar = el('div', 'setupmobilebar');

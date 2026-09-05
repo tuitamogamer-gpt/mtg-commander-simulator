@@ -284,4 +284,6 @@ import './modules/loader.js';
 import './modules/ui.js';
 import './modules/player-tools.js';
 import './modules/arena-tools.js';
+import './modules/command-table.js';
+import './modules/landing.js';
 import './modules/main.js';

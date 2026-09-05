@@ -5,6 +5,7 @@ import test from 'node:test';
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const index = read('../index.html');
 const publicEntry = read('../src/public-entry.js');
+const landing = read('../src/modules/landing.js');
 const main = read('../src/modules/main.js');
 const ui = read('../src/modules/ui.js');
 const css = read('../src/public-menu.css');
@@ -24,12 +25,12 @@ test('public home is the default entry and exposes clear Solo, Live, import, gui
   assert.match(index, /class="mainmenu mainmenu-boot"[^>]*>[\s\S]*?class="mainmenu-skip"/);
   assert.match(main, /if \(!bootPage\) page\.innerHTML = `[\s\S]*?class="mainmenu-skip"/);
   assert.match(index, /class="mainmenu-navlinks" aria-label="Explore Commander Simulator"/);
-  assert.match(publicEntry, /id="how-it-works"/);
+  assert.match(landing, /id="how-it-works"/);
   assert.match(index, /viewport-fit=cover/);
   assert.doesNotMatch(index, /id="desktop-only"/);
   assert.match(index, /type="module" src="\.\/src\/public-entry\.js"/);
   assert.doesNotMatch(index, /type="module" src="\.\/src\/(?:app|data)\.js"/);
-  assert.match(index, /rel="preload" as="image" href="\.\/assets\/backgrounds\/commander-war-room\.webp" type="image\/webp" fetchpriority="high"/);
+  assert.match(index, /rel="preload" as="image" href="\.\/assets\/menu\/galadriel-elven-queen\.webp" type="image\/webp" fetchpriority="high"/);
   assert.match(main, /function renderMainMenu\(\)/);
   assert.match(main, /renderMainMenu\(\);[\s\S]*const smoke = initialParams/);
   assert.match(main, /data-menu-action="solo"/);
@@ -124,21 +125,23 @@ test('public menu is responsive, motion-safe, and uses real game artwork', () =>
   assert.doesNotMatch(css, /addEventListener\(['"]scroll/);
 });
 
-test('cold and warm landing menus keep the same public content and accessibility contract', () => {
-  for (const source of [publicEntry, main]) {
-    assert.match(source, /THE FULL GAME, MADE READABLE/);
-    assert.match(source, /Three local AI opponents/);
-    assert.match(source, /Account optional; no public lobby/);
-    assert.match(source, /Pick a deck\. We will set the table\./);
-    assert.match(source, /class="mainmenu-livecheck"[^>]*role="status" aria-live="polite"/);
-    assert.match(source, /id="ways-to-play"/);
+test('cold and warm landing menus share public sections and the same accessibility contract', () => {
+  assert.match(publicEntry, /MTG\.landingDetailsMarkup\(\)/);
+  assert.match(main, /U\.landingDetailsMarkup\(nDecks\)/);
+  assert.match(publicEntry, /MTG\.bindLandingPreview\(page\)/);
+  assert.match(main, /U\.bindLandingPreview\(page\)/);
+  assert.match(landing, /THE FULL GAME, MADE READABLE/);
+  assert.match(landing, /Three local AI opponents/);
+  assert.match(landing, /Account optional; no public lobby/);
+  assert.match(landing, /Pick a deck\. We will set the table\./);
+  assert.match(landing, /class="mainmenu-livecheck"[^>]*role="status" aria-live="polite"/);
+  assert.match(landing, /id="ways-to-play"/);
+  for (const source of [index, main]) {
+    assert.match(source, /Four seats\.<br><em>Your next move\.<\/em>/);
+    assert.match(source, /class="mainmenu-trust"/);
     assert.match(source, /data-menu-action="solo"/);
     assert.match(source, /data-menu-action="live"/);
   }
-  assert.match(index, /Play instantly\. Save when you sign in\./);
-  assert.match(main, /Play instantly\. Save when you sign in\./);
-  assert.match(index, /class="mainmenu-trust"/);
-  assert.match(main, /class="mainmenu-trust"/);
 });
 
 test('share previews and the official fan-project notice are present', () => {
@@ -146,8 +149,8 @@ test('share previews and the official fan-project notice are present', () => {
   assert.match(index, /property="og:title"/);
   assert.match(index, /property="og:image" content="https:\/\/mtg-commander-simulator\.vercel\.app\/assets\/backgrounds\/commander-war-room\.jpg"/);
   assert.match(index, /name="twitter:card" content="summary_large_image"/);
-  assert.match(main, /unofficial Fan Content permitted under the/);
-  assert.match(main, /company\.wizards\.com\/en\/legal\/fancontentpolicy/);
+  assert.match(landing, /unofficial Fan Content permitted under the/);
+  assert.match(landing, /company\.wizards\.com\/en\/legal\/fancontentpolicy/);
   assert.match(publicGuide, /Fan project notice/);
 });
 

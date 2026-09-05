@@ -57,6 +57,12 @@ async function waitForShell() {
   await page.waitForFunction(() => document.querySelector('#setup')?.getAttribute('aria-busy') !== 'true' && !window.MTGAccount?.loading);
 }
 
+async function openPod() {
+  await page.locator('.decksearch input').fill('Quick Draw');
+  await page.locator('.deckcard:visible').click();
+  await page.locator('.deckspotlightcontinue').click();
+}
+
 async function installScenario(mode) {
   return page.evaluate(modeName => {
     const oldUI = window._ui;
@@ -205,6 +211,7 @@ try {
   await waitForShell();
   await page.locator('[data-menu-action="solo"]').first().click();
   await waitForApp();
+  await openPod();
   await page.locator('.advancedrules summary').click();
   const toggle = page.locator('.arenadragsetup input');
   assert.equal(await toggle.isChecked(), false, 'Arena drag defaults off');
@@ -217,6 +224,7 @@ try {
   await waitForShell();
   await page.locator('[data-menu-action="solo"]').first().click();
   await waitForApp();
+  await openPod();
   await page.locator('.advancedrules summary').click();
   assert.equal(await page.locator('.arenadragsetup input').isChecked(), true, 'toggle persists across reload');
   results.push({ scenario: 'sticky-toggle', defaultOff: true, persisted: true });

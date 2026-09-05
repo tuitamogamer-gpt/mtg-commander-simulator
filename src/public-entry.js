@@ -3,57 +3,15 @@
 'use strict';
 import './account.js';
 import './modules/player-tools.js';
+import './modules/landing.js';
 
 const root = document.querySelector('#setup');
 const page = root && root.querySelector('.mainmenu');
 
 if (!root || !page) throw new Error('Commander Simulator entry shell is missing.');
 
-const detailsMarkup = `
-  <section class="mainmenu-proof" aria-label="Product details">
-    <div class="mainmenu-proof-stat"><strong>27</strong><span><b>Complete decks</b><small>Curated commanders and strategies</small></span></div>
-    <div class="mainmenu-proof-stat"><strong>4</strong><span><b>Real seats</b><small>A full multiplayer pod</small></span></div>
-    <div class="mainmenu-proof-stat"><strong>Local</strong><span><b>Deterministic AI</b><small>No external model API</small></span></div>
-    <div class="mainmenu-livecheck" data-live-state="checking" role="status" aria-live="polite"><i aria-hidden="true"></i><span><b>Checking Live rooms</b><small>Solo play is always available</small></span></div>
-  </section>
-
-  <section id="how-it-works" class="mainmenu-path" aria-labelledby="first-pod-title">
-    <div class="mainmenu-path-copy">
-      <span>THE FULL GAME, MADE READABLE</span>
-      <h2 id="first-pod-title">From deck choice to opening hand.</h2>
-      <p>Commander Simulator clears away table clutter while keeping the decisions that make the format interesting.</p>
-      <ul class="mainmenu-decision-tags" aria-label="Visible game decisions"><li>Priority</li><li>Stack</li><li>Targets</li><li>Combat</li></ul>
-      <button type="button" data-menu-action="tour">See the first-game guide</button>
-    </div>
-    <ol class="mainmenu-path-steps">
-      <li><span aria-hidden="true"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-cards"></use></svg></span><div><b>Pick a deck</b><p>Filter by color or playstyle, then open its guide and signature cards.</p></div></li>
-      <li><span aria-hidden="true"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-player"></use></svg></span><div><b>Build the pod</b><p>Choose bot decks, personalities, difficulty, and optional Politics.</p></div></li>
-      <li><span aria-hidden="true"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-stack"></use></svg></span><div><b>Play the decisions</b><p>Proceed prompts, priority windows, targets, and combat stay visible.</p></div></li>
-    </ol>
-  </section>
-
-  <section id="ways-to-play" class="mainmenu-modes" aria-label="Ways to play">
-    <article class="mainmenu-mode solo">
-            <div><small>PLAY AT YOUR PACE</small><h2>Solo Commander</h2><p>Build a complete four-player table around the deck you want to learn.</p><ul class="mainmenu-mode-points"><li>Three local AI opponents</li><li>Adjustable stops and personalities</li><li>Seeded games you can replay</li></ul></div>
-      <button type="button" data-menu-action="solo">Start a solo table</button>
-    </article>
-    <article class="mainmenu-mode live">
-            <div><small>PRIVATE TABLE</small><h2>Commander Live</h2><p>Open a private room for two, three, or four real players with no bot seats.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>Account optional; no public lobby</li><li>Up to four human seats</li></ul></div>
-      <button type="button" data-menu-action="live">Create a Live table</button>
-    </article>
-  </section>
-
-  <section class="mainmenu-final-cta" aria-labelledby="final-cta-title">
-    <div><h2 id="final-cta-title">Pick a deck. We will set the table.</h2><p>Start solo now, or invite up to three friends to a private Live room.</p></div>
-    <div class="mainmenu-final-actions"><button type="button" class="mainmenu-primary" data-menu-action="solo">Start a solo table</button><button type="button" class="mainmenu-secondary" data-menu-action="live">Create a Live table</button></div>
-  </section>
-
-  <footer class="mainmenu-footer">
-    <div><b>COMMANDER SIMULATOR</b><span>Free, browser-based fan project. Card data and images are provided through Scryfall.</span><a href="#landing-top">Back to top</a></div>
-    <p>Commander Simulator is unofficial Fan Content permitted under the <a href="https://company.wizards.com/en/legal/fancontentpolicy" target="_blank" rel="noreferrer">Fan Content Policy</a>. Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC.</p>
-  </footer>`;
-
-if (!page.querySelector('.mainmenu-proof')) page.insertAdjacentHTML('beforeend', detailsMarkup);
+if (!page.querySelector('.mainmenu-proof')) page.insertAdjacentHTML('beforeend', MTG.landingDetailsMarkup());
+MTG.bindLandingPreview(page);
 MTG.renderRecentShelf(page, async deck => {
   await loadGame('solo');
   MTG.showSetup?.({ mode: 'solo', deck });

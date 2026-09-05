@@ -9,7 +9,7 @@ The interface should feel like a calm Commander war room: dark, tactile and info
 Every event belongs to exactly one level:
 
 1. **NOW** — a legal decision, required response or hard pause. One blocking surface at a time, with a visible primary action.
-2. **REVIEW** — a spell, ability, combat result or public deal the human must acknowledge. One centered review with one `Proceed` path.
+2. **REVIEW** — a spell, ability, combat result or public deal the human must acknowledge. One review with one `Proceed` path. Spell responses use the decision rail; required reveals, combat and public-deal reviews use their named dialog.
 3. **ACTIVITY** — passive state changes and AI actions. These go to the public timeline and log; short notices may appear, but never form a wall over the battlefield.
 
 Stack review, Diplomacy hard pauses and explicit `Proceed` checkpoints are never demoted to passive notifications.
@@ -61,11 +61,27 @@ Motion explains entry, focus or state change. It does not run as ambient decorat
 
 ## CSS architecture
 
-`design-system.css` owns new tokens and shared primitives in cascade layers. Existing `styles.css` and `client-v3.css` remain the legacy compatibility layer while the interface is migrated. `frontend-overhaul.css` is the temporary unlayered exception sheet loaded last; each rule there should either introduce an approved frontend behavior or bridge a legacy `!important` declaration. New one-off styling must not be added to `styles.css`.
+`design-system.css` owns new tokens and shared primitives in cascade layers. Existing `styles.css` and `client-v3.css` remain the legacy compatibility layer while the interface is migrated. `frontend-overhaul.css` bridges older declarations; `command-table.css` follows it and owns the scoped Command Table composition. New one-off styling must not be added to `styles.css`.
 
 ## JavaScript architecture
 
 Stay with vanilla JavaScript. Reusable presentation belongs in small factories or UI methods: stage navigation, dialog enhancement, public timeline rows, diagnostics and recovery. Do not move rules, legality or AI strategy into DOM code.
+
+## Command Table landing
+
+- `command-landing.css` owns the scoped home composition, using the same fonts, obsidian surfaces, ember actions, and compact borders as the arena and seat review. It loads with the public shell; design tokens are render-blocking to keep the first paint styled.
+- `index.html` and the runtime home retain matching hero/navigation/library markup. `modules/landing.js` supplies shared lower sections and the Table/Focus image preview to both public entry and runtime home. This module must stay independent of the engine and deck catalog.
+- The preview uses labeled screenshots of the real interface with Scryfall imagery; phones receive the actual mobile capture. Preview controls change only the image and its explanation. They never load or mutate a game.
+- Navigation, Solo, Live, guide, import, account, recent-deck, and keyboard paths retain their original destinations and behavior. Home content must remain consistent after returning from setup.
+
+## Command Table frontend (2026-09-05)
+
+- `command-table.js` composes the existing public battlefield, hand and engine-backed decisions. `command-table.css` owns its responsive layout after the legacy compatibility sheets.
+- Desktop has three opponent zones, the human battlefield and hand, and a stable decision rail. The Table/Focus preference persists on the device. Target selection and combat assignment show all opponents even when Focus is selected.
+- Phones keep opponent summaries visible, with a selected public battlefield and the existing Mine / Table / Stack / Politics destinations at the bottom. Full-table navigation exposes every opponent. Crowded zones scroll at readable card sizes.
+- Required Stack review remains an explicit hard pause with its original Proceed/respond callbacks, presented in the desktop rail or the mobile decision tray. Reveal, combat and other required dialogs retain their existing engine semantics and accessible dismissal rules.
+- All card and commander images must come from Scryfall, including existing local copies. This applies to the main menu, player portraits, review seats and every game zone. Generated concept images are reference material only and must never replace any card or commander illustration.
+- Scroll position is presentation state and survives ordinary arena renders. No opponent hand identity or library ordering is added to the new presentation model.
 
 ## Player tools
 

@@ -208,7 +208,13 @@ try {
   }
   check('Every opponent seat is scrollable and public battlefield cards remain clickable');
 
-  for (const [width, height] of [[820, 1180], [1440, 1000]]) {
+  await page.setViewportSize({ width: 820, height: 1180 });
+  for (const view of ['table', 'stack', 'mine']) {
+    await switchView(view);
+    await assertPhoneLayout(`tablet-${view}-820`);
+  }
+  await screenshot('arena-820');
+  for (const [width, height] of [[1024, 900], [1440, 1000]]) {
     await page.setViewportSize({ width, height });
     for (const lastMobileView of ['table', 'stack', 'mine']) {
       // Resize from each phone destination so desktop cannot inherit a hidden hand.
@@ -217,15 +223,15 @@ try {
       await page.setViewportSize({ width, height });
       const layout = await captureLayout(`desktop-from-${lastMobileView}-${width}`);
       assert.equal(layout.tabs.display, 'none', 'Phone navigation is hidden on desktop');
-      // Desktop reserves a narrow utility rail beside the arena column.
+      // Desktop reserves a decision rail beside the battlefield and hand.
       assertUsable(layout, 'topbar', width - 80);
-      assertUsable(layout, 'hand', width - 80);
-      assertUsable(layout, 'board', width - 80);
+      assertUsable(layout, 'hand', width - 340);
+      assertUsable(layout, 'board', width - 360);
       assert.ok(layout.scrollWidth <= width + 1);
     }
     await screenshot(`arena-${width}`);
   }
-  check('820px tablet and 1440px desktop retain visible hand and battlefield after resizing from every phone view');
+  check('820px tablet retains focused navigation; 1024/1440px desktop restores hand and battlefield from every phone view');
   assert.deepEqual(errors, []);
   assert.deepEqual(failedRequests, []);
   writeFileSync(`${output}/state.json`, await page.evaluate(() => window.render_game_to_text()));

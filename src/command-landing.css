@@ -1,0 +1,231 @@
+/* Command Table home. The .mainmenu scope wins over the legacy bridges,
+   while the blocking stylesheet keeps the initial shell in the same layout. */
+#setup[data-app-view="home"] .mainmenu {
+  --menu-width: min(calc(100% - 80px), 1240px);
+  background: radial-gradient(ellipse at 78% 5%, rgba(var(--ds-accent-rgb), .065), transparent 28%), var(--ds-table);
+}
+#setup[data-app-view="home"] .mainmenu .mainmenu-nav { min-height: 80px; gap: 28px; border-color: var(--ds-line-soft); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-navlinks { display: flex; gap: 32px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-navlinks a { color: var(--ds-copy); font-size: 12px; letter-spacing: 0; text-transform: none; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-navtools { gap: 10px; }
+#setup[data-app-view="home"] .mainmenu :is(.mainmenu-guide, .mainmenu-account) { border-color: var(--ds-line); border-radius: 6px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-brand small { color: var(--ds-muted); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-hero { padding: 64px 0 48px; gap: 48px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-hero-copy { animation: none; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-kicker { display: flex; align-items: center; gap: 10px; font: 600 10px/1.5 var(--ds-font-mono); letter-spacing: .12em; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-kicker::before { content: ''; width: 18px; height: 2px; background: var(--ds-accent); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-hero h1 { margin: 24px 0; font: 650 clamp(46px, 5 * var(--vwu), 68px)/1.02 var(--ds-font-display); letter-spacing: -.045em; text-wrap: initial; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-hero h1 em { color: var(--ds-accent-bright); font-style: normal; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-hero-copy > p { max-width: 47ch; color: var(--ds-copy); font-size: 16px; line-height: 1.7; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-actions { margin-top: 30px; grid-template-columns: 1.08fr 1fr; gap: 10px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-actions button { min-height: 76px; padding: 14px; gap: 10px; border-radius: 7px; box-shadow: none; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-actions .gameicon { width: 19px; height: 19px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-actions b { font-size: 13px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-actions small { font-size: 11px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-primary { background: var(--ds-accent); border-color: var(--ds-accent); color: var(--ds-accent-ink); box-shadow: none; border-radius: 7px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-primary:hover { background: var(--ds-accent-bright); border-color: var(--ds-accent-bright); }
+#setup[data-app-view="home"] .mainmenu :is(.mainmenu-secondary, .mainmenu-import-action) { background: var(--ds-panel-raised); color: var(--ds-text); border: 1px solid var(--ds-line); box-shadow: none; border-radius: 7px; }
+#setup[data-app-view="home"] .mainmenu :is(.mainmenu-secondary, .mainmenu-import-action):hover { background: var(--ds-panel-raised); border-color: var(--ds-accent); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-trust { gap: 16px; margin-top: 19px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-trust li { font: 500 10px/1.4 var(--ds-font-body); color: var(--ds-muted); text-transform: none; letter-spacing: 0; }
+
+/* Original Scryfall card faces, with no saturation or illustration changes. */
+#setup[data-app-view="home"] .mainmenu .mainmenu-visual { position: relative; min-height: 0; padding: 0; overflow: hidden; filter: none; background: radial-gradient(ellipse at 50% 48%, rgba(var(--ds-accent-rgb), .1), transparent 65%), var(--ds-panel); border: 1px solid var(--ds-line); border-radius: 10px; animation: none; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-visual-head { min-height: 52px; margin: 0 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--ds-line-soft); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-visual-head > span { color: var(--ds-muted); font: 500 9px/1.4 var(--ds-font-mono); letter-spacing: .08em; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-mana { display: flex; gap: 6px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-mana img { width: 16px; height: 16px; filter: none; opacity: .8; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-cardfan { height: clamp(260px, 25 * var(--vwu), 330px); min-height: 0; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-card { width: 32%; max-width: 185px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-card img { border-radius: 9px; object-fit: contain; aspect-ratio: 300 / 418; height: auto; box-shadow: 0 12px 28px rgba(var(--ds-table-rgb), .7); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-card.card-1 { top: 51px; left: 7%; transform: rotate(-10deg); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-card.card-2 { top: 23px; left: 50%; transform: translateX(-50%); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-card.card-3 { top: 51px; right: 7%; transform: rotate(10deg); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-visual-foot { position: relative; min-height: 72px; margin: 0 22px; padding: 13px 0; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-top: 1px solid var(--ds-line-soft); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-visual-foot > div { display: grid; gap: 5px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-visual-foot b { font-size: 12px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-visual-foot small { color: var(--ds-muted); font-size: 11px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-visual-foot button { min-height: 44px; padding: 0 0 0 12px; flex: none; background: transparent; border: 0; color: var(--ds-accent-bright); font: 600 11px var(--ds-font-body); cursor: pointer; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-visual-foot button span { margin-left: 8px; }
+
+#setup[data-app-view="home"] .mainmenu .returningplayer { width: var(--menu-width); margin: 0 auto 24px; padding: 16px 0; background: transparent; border-color: var(--ds-line-soft); border-radius: 0; }
+#setup[data-app-view="home"] .mainmenu .returningplayer b { font-size: 14px; }
+#setup[data-app-view="home"] .mainmenu .returningplayer button { min-height: 44px; border-radius: 6px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-library-entry { padding: 24px 28px; margin-bottom: 32px; gap: 30px; background: var(--ds-panel); border: 1px solid var(--ds-line); border-radius: 8px; animation: none; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-library-copy > span { color: var(--ds-muted); font: 500 9px var(--ds-font-mono); letter-spacing: .13em; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-library-copy h2 { font-size: 25px; font-weight: 600; letter-spacing: -.03em; margin: 8px 0; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-library-copy p { font-size: 13px; color: var(--ds-copy); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-library-steps { gap: 20px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-library-steps li { gap: 7px; color: var(--ds-copy); font-size: 12px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-library-steps li span { color: var(--ds-accent); font: 500 10px var(--ds-font-mono); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-import-action { min-height: 62px; padding: 12px 16px; gap: 12px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-import-action :is(.gameicon, span:last-child) { color: var(--ds-accent-bright); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-import-action small { color: var(--ds-muted); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-import-action b { font-size: 12px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-proof { min-height: 90px; border: 0; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-proof > div { padding: 12px 24px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-proof > div:first-child { padding-left: 0; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-proof-stat strong { color: var(--ds-text); font: 600 28px/1 var(--ds-font-mono); letter-spacing: -.06em; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-proof-stat b { color: var(--ds-copy); font-size: 12px; }
+#setup[data-app-view="home"] .mainmenu :is(.mainmenu-proof-stat, .mainmenu-livecheck) small { color: var(--ds-muted); font-size: 11px; }
+
+/* Honest screenshots of the running interface; controls change the preview. */
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview { width: var(--menu-width); margin: 82px auto 0; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-section-head { display: grid; grid-template-columns: 1.3fr 1fr; gap: 50px; align-items: end; margin-bottom: 28px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-eyebrow { color: var(--ds-accent-bright); font: 500 10px var(--ds-font-mono); letter-spacing: .1em; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-section-head h2 { max-width: 520px; margin: 14px 0 0; color: var(--ds-text); font: 600 clamp(30px, 3.1 * var(--vwu), 42px)/1.06 var(--ds-font-display); letter-spacing: -.035em; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-section-head p { max-width: 43ch; margin: 0; color: var(--ds-copy); font-size: 14px; line-height: 1.65; justify-self: end; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-frame { margin: 0; overflow: hidden; border: 1px solid var(--ds-line); border-radius: 10px; background: var(--ds-panel); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 61px; padding: 8px 18px; border-bottom: 1px solid var(--ds-line); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-bar > span { display: flex; align-items: center; gap: 10px; color: var(--ds-copy); font: 500 10px var(--ds-font-mono); letter-spacing: .04em; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-bar i { display: block; width: 6px; height: 6px; background: var(--ds-accent); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-bar small { margin-left: 10px; color: var(--ds-muted); font: 500 11px var(--ds-font-body); letter-spacing: 0; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-controls { display: flex; gap: 4px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-controls button { min-width: 72px; min-height: 44px; padding: 0 14px; color: var(--ds-copy); background: transparent; border: 1px solid transparent; border-radius: 6px; font: 600 12px var(--ds-font-body); cursor: pointer; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-controls button[aria-pressed="true"] { color: var(--ds-accent-bright); background: rgba(var(--ds-accent-rgb), .1); border-color: rgba(var(--ds-accent-rgb), .4); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-controls button:hover { border-color: var(--ds-accent); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-frame picture { display: block; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-frame img { display: block; width: 100%; height: auto; aspect-ratio: 1440 / 1024; object-fit: contain; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-frame figcaption { display: flex; justify-content: space-between; gap: 24px; min-height: 55px; padding: 16px 20px; color: var(--ds-copy); border-top: 1px solid var(--ds-line); font-size: 12px; line-height: 1.5; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-frame figcaption > span:last-child { flex: none; color: var(--ds-muted); font-size: 10px; }
+#setup[data-app-view="home"] .mainmenu :is(.mainmenu-preview-bar .mainmenu-preview-phone-label, .mainmenu-preview-mobile-caption) { display: none; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; padding: 26px 0; border-bottom: 1px solid var(--ds-line-soft); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-notes p { display: grid; align-content: start; gap: 8px; margin: 0; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-notes b { font-size: 13px; color: var(--ds-text); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-preview-notes span { color: var(--ds-muted); font-size: 12px; line-height: 1.6; }
+
+#setup[data-app-view="home"] .mainmenu .mainmenu-path { margin-top: 78px; padding: 0; gap: 80px; background: transparent; border: 0; border-radius: 0; animation: none; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-path-copy > span { font: 500 10px var(--ds-font-mono); letter-spacing: .08em; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-path h2 { color: var(--ds-text); font: 600 clamp(30px, 3.3 * var(--vwu), 42px)/1.08 var(--ds-font-display); letter-spacing: -.035em; margin: 18px 0; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-path-copy p { color: var(--ds-copy); font-size: 14px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-path-copy button { font-size: 12px; margin-top: 14px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-path-copy button span { margin-left: 12px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-path-steps li { min-height: 116px; padding: 22px 0 22px 55px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-path-steps li > span { width: 34px; height: 34px; color: var(--ds-accent); background: transparent; border: 0; border-radius: 0; font: 500 14px var(--ds-font-mono); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-path-steps li b { font-size: 16px; color: var(--ds-text); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-path-steps li p { color: var(--ds-muted); font-size: 13px; line-height: 1.6; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-modes { margin-top: 72px; gap: 20px; animation: none; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-mode { position: relative; display: flex; flex-direction: column; gap: 24px; padding: 32px; background: var(--ds-panel); border: 1px solid var(--ds-line); border-radius: 8px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-mode > span { width: auto; height: auto; display: block; color: var(--ds-accent); background: transparent; border: 0; border-radius: 0; font: 500 10px var(--ds-font-mono); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-mode > div { flex: 1; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-mode small { color: var(--ds-muted); font: 500 9px var(--ds-font-mono); letter-spacing: .08em; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-mode h2 { font-size: clamp(27px, 2.6 * var(--vwu), 34px); color: var(--ds-text); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-mode p { min-height: 3.2em; color: var(--ds-copy); font-size: 14px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-mode-points { gap: 9px; margin-top: 22px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-mode-points li { color: var(--ds-muted); font-size: 12px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-mode button { align-self: start; display: flex; align-items: center; justify-content: space-between; min-height: 46px; width: 100%; margin: 0; padding: 0 14px; color: var(--ds-copy); border: 1px solid var(--ds-line); border-radius: 6px; background: var(--ds-panel-raised); font-size: 12px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-mode button:hover { color: var(--ds-accent-bright); border-color: var(--ds-accent); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-final-cta { margin-top: 40px; padding: 40px 0; background: transparent; border: 0; border-top: 1px solid var(--ds-line); border-radius: 0; animation: none; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-final-cta > div > span { font: 500 10px var(--ds-font-mono); letter-spacing: .08em; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-final-cta h2 { max-width: 610px; color: var(--ds-text); font-size: 34px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-final-cta p { color: var(--ds-muted); font-size: 13px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-final-actions { flex-direction: column; min-width: 210px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-final-actions button { min-height: 48px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-footer { margin-top: 0; padding: 30px 0; grid-template-columns: .8fr 1.2fr; gap: 60px; }
+#setup[data-app-view="home"] .mainmenu .mainmenu-footer :is(span, p) { font-size: 11px; color: var(--ds-muted); }
+#setup[data-app-view="home"] .mainmenu .mainmenu-footer a { color: var(--ds-accent-soft); }
+
+@media (max-width: 1100px) {
+  #setup[data-app-view="home"] .mainmenu { --menu-width: calc(100% - 48px); }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-nav { gap: 18px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-navlinks { gap: 24px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-hero { gap: 28px; padding-top: 44px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-hero h1 { font-size: clamp(44px, 4.9 * var(--vwu), 55px); }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions { grid-template-columns: 1fr; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions button { min-height: 60px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions span { display: flex; flex: 1; align-items: center; justify-content: space-between; gap: 14px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions small { max-width: 110px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-library-entry { grid-template-columns: 1fr auto; padding: 22px; gap: 20px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-library-steps { display: none; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-proof { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 0; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-proof > div { padding: 10px 24px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-proof > div:nth-child(odd) { padding-left: 0; border-left: 0; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-path { gap: 40px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-section-head { gap: 30px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-preview-frame figcaption { flex-direction: column; gap: 6px; }
+}
+@media (max-width: 900px) {
+  #setup[data-app-view="home"] .mainmenu .mainmenu-nav { grid-template-columns: 1fr auto; min-height: 72px; gap: 4px 20px; padding-bottom: 0; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-navlinks { grid-row: 2; grid-column: 1 / -1; justify-content: flex-start; gap: 30px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-navtools { grid-column: 2; grid-row: 1; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-hero { padding-top: 40px; gap: 32px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-hero h1 { font-size: clamp(38px, 5 * var(--vwu), 48px); }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-hero-copy > p { font-size: 14px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions span { display: grid; gap: 3px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions small { max-width: none; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-cardfan { height: 250px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-visual-head { margin: 0 16px; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 12px 0; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-visual-foot { margin: 0 16px; flex-wrap: wrap; gap: 8px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-visual-foot button { padding-left: 0; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-path { grid-template-columns: 1fr 1.1fr; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-mode { padding: 24px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-final-cta { align-items: flex-start; flex-direction: column; gap: 20px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-final-actions { flex-direction: row; }
+}
+@media (max-width: 600px) {
+  #setup[data-app-view="home"] .mainmenu { --menu-width: calc(100% - 32px); }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-nav { padding-top: max(8px, env(safe-area-inset-top)); gap: 4px 12px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-brand { gap: 10px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-brand b { font-size: 12px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-navtools { gap: 6px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-guide { width: 44px; padding: 0; justify-content: center; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-guide span { display: none; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-navlinks { justify-content: space-between; gap: 12px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-navlinks a { font-size: 12px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-hero { grid-template-columns: 1fr; padding: 34px 0 28px; gap: 28px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-hero h1 { margin: 20px 0; font-size: clamp(42px, 10.5 * var(--vwu), 61px); }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-kicker { font-size: 9px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-hero-copy > p { max-width: none; font-size: 14px; line-height: 1.65; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions { margin-top: 24px; gap: 8px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions button { min-height: 64px; padding: 13px 16px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions span { display: grid; gap: 4px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions b { font-size: 14px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-actions small { font-size: 12px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-trust { gap: 12px; margin-top: 16px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-trust li { font-size: 10px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-visual-head { justify-content: space-between; flex-wrap: nowrap; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-mana { gap: 4px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-mana img { width: 14px; height: 14px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-cardfan { height: clamp(240px, 59 * var(--vwu), 340px); }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-visual-foot { flex-wrap: nowrap; min-height: 73px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-visual-foot b { font-size: 11px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-visual-foot small { font-size: 10px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-library-entry { grid-template-columns: 1fr; margin-bottom: 28px; padding: 22px; gap: 18px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-library-steps { display: flex; gap: 28px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-library-steps li { display: flex; align-items: center; gap: 8px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-import-action { width: 100%; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-proof { gap: 18px 0; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-proof > div { flex-direction: column; align-items: flex-start; gap: 10px; padding: 6px 0 6px 20px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-proof > div:last-child { flex-direction: row; align-items: center; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-proof-stat strong { font-size: 26px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-preview { margin-top: 56px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-section-head { grid-template-columns: 1fr; gap: 16px; margin-bottom: 22px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-section-head h2 { font-size: 34px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-section-head p { max-width: none; justify-self: start; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-preview-frame { max-width: 390px; margin: 0 auto; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-preview-frame img { aspect-ratio: 390 / 844; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-preview-bar { min-height: 48px; padding: 12px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-preview-bar > span { font-size: 9px; }
+  #setup[data-app-view="home"] .mainmenu :is(.mainmenu-preview-bar small, .mainmenu-preview-controls, .mainmenu-preview-caption) { display: none; }
+  #setup[data-app-view="home"] .mainmenu :is(.mainmenu-preview-bar .mainmenu-preview-phone-label, .mainmenu-preview-mobile-caption) { display: block; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-preview-frame figcaption { padding: 14px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-preview-notes { grid-template-columns: 1fr; gap: 20px; padding: 24px 0; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-preview-notes p { gap: 6px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-path { margin-top: 52px; grid-template-columns: 1fr; gap: 14px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-path-steps li { min-height: 114px; padding-left: 48px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-modes { grid-template-columns: 1fr; margin-top: 44px; gap: 14px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-mode { padding: 24px; gap: 20px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-mode h2 { font-size: 29px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-final-cta { padding: 28px 0; gap: 20px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-final-cta h2 { font-size: 30px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-final-actions { width: 100%; flex-direction: column; gap: 8px; }
+  #setup[data-app-view="home"] .mainmenu .mainmenu-footer { grid-template-columns: 1fr; gap: 20px; }
+}
+@media (hover: hover) and (pointer: fine) {
+  body:not(.reduced-motion) #setup[data-app-view="home"] .mainmenu .mainmenu-cardfan .mainmenu-card.card-1:hover { transform: rotate(-7deg) translateY(-5px); }
+  body:not(.reduced-motion) #setup[data-app-view="home"] .mainmenu .mainmenu-cardfan .mainmenu-card.card-2:hover { transform: translateX(-50%) translateY(-5px); }
+  body:not(.reduced-motion) #setup[data-app-view="home"] .mainmenu .mainmenu-cardfan .mainmenu-card.card-3:hover { transform: rotate(7deg) translateY(-5px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #setup[data-app-view="home"] .mainmenu :is(button, .mainmenu-card) { transition: none; }
+}

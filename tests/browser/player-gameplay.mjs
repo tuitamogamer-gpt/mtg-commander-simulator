@@ -35,7 +35,8 @@ async function clickIf(selector) {
 try {
   await page.goto(base);
   await page.locator('[data-menu-action="solo"]').first().click();
-  await page.waitForSelector('.deckentry');
+  // The landing shell lazy-loads the complete local card catalog on first use.
+  await page.waitForSelector('.deckentry', { timeout: 30000 });
   await page.locator('.decksearch input').fill('Abzan Armor');
   await page.locator('.deckcard:visible').click();
   await page.locator('.deckspotlightcontinue').click();
