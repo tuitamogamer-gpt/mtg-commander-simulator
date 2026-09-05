@@ -154,10 +154,6 @@ function safeSend(ws, payload) {
   ws.send(JSON.stringify(payload));
 }
 
-function roomPlayerIds(state) {
-  return state.seats.map(seat => seat.playerId).filter(Boolean);
-}
-
 function assignConnection(state, playerId, connectionId) {
   let seat = state.seats.find(item => item.playerId === playerId);
   if (!seat) {
@@ -205,11 +201,18 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
 
   const sendState = (client, state) => {
     if (!client.playerId) return;
+    const seat = state.seats.find(item => item.playerId === client.playerId);
+    if (!seat || seat.connectionId !== client.connectionId) {
+      // A reconnect replaces the old transport. Never send a private view to
+      // a superseded socket, including one attached to a different instance.
+      client.ws.close(4001, 'This seat reconnected in another connection.');
+      return;
+    }
     safeSend(client.ws, {
       type: 'state',
       status: 'playing',
-      seats: roomPlayerIds(state),
-      you: client.playerId,
+      // playerId is the anonymous seat's reconnect capability. It must stay
+      // server-side; the filtered view already contains public seat numbers.
       view: viewFor(state, client.playerId),
     });
   };
@@ -263,8 +266,12 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
     const handleJoin = async message => {
       const playerId = cleanPlayerId(message.playerId);
       if (!playerId) throw new Error('Invalid player identity.');
-      client.playerId = playerId;
-      return commit(room, state => {
+      if (client.playerId && client.playerId !== playerId) throw new Error('A connection cannot change its player identity.');
+      const joined = await commit(room, state => {
+        if (ws.readyState !== WebSocket.OPEN) throw new Error('This connection is closed.');
+        if (client.playerId && state?.seats.find(item => item.playerId === playerId)?.connectionId !== client.connectionId) {
+          throw new Error('This connection no longer owns the seat. Open a new connection to reconnect.');
+        }
         if (!state) {
           if (!client.mayCreate) throw new Error('This private room does not exist or expired.');
           state = setup([playerId], { playerCount });
@@ -274,6 +281,18 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
         assignConnection(state, playerId, client.connectionId);
         return state;
       });
+      // Bind only after the join has been accepted and stored. A failed join
+      // must not subscribe the socket to later private room broadcasts.
+      client.playerId = playerId;
+      if (ws.readyState === WebSocket.OPEN) sendState(client, joined);
+      else {
+        await commit(room, state => {
+          const seat = state?.seats.find(item => item.playerId === playerId);
+          if (!seat || seat.connectionId !== client.connectionId) return null;
+          return applyAction(state, playerId, { type: 'presence', connected: false });
+        });
+      }
+      return joined;
     };
 
     const handleAction = async message => {
@@ -282,7 +301,10 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
         throw new Error('Invalid room action.');
       }
       return commit(room, state => {
+        if (ws.readyState !== WebSocket.OPEN) throw new Error('This connection is closed.');
         if (!state) throw new Error('This private room expired.');
+        const seat = state.seats.find(item => item.playerId === client.playerId);
+        if (!seat || seat.connectionId !== client.connectionId) throw new Error('This connection no longer owns the seat. Reconnect to continue.');
         const result = validateAction(state, client.playerId, message.action);
         if (!result || result.ok !== true) throw new Error(result && result.error || 'The room rejected the action.');
         return applyAction(state, client.playerId, message.action);

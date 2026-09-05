@@ -12,6 +12,7 @@ const PROTOCOL_VERSION = 2;
 const MIN_HUMAN_SEATS = 2;
 const MAX_HUMAN_SEATS = 4;
 const MAX_SYNC_BYTES = 2_000_000;
+const MAX_DECK_RECORD_BYTES = 16_000;
 const HUMAN_NAMES = ['Host', 'Player 2', 'Player 3', 'Player 4'];
 
 const clone = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));
@@ -37,9 +38,46 @@ function seatRecord(seat) {
     connected: false,
     ready: false,
     deckId: null,
+    // Only canonical list data crosses the room; the host supplies and checks
+    // the executable card definitions before constructing the game.
+    deckRecord: null,
     commanderNames: [],
     aiStyle: null,
   };
+}
+
+function cleanDeckRecord(value) {
+  const validText = (text, max) => typeof text === 'string' && text.length > 0 &&
+    text.length <= max && text === text.trim() && !/[\u0000-\u001f\u007f]/.test(text);
+  const nameKey = name => name.normalize('NFKC').replace(/[\u2018\u2019\u02bc]/g, "'")
+    .replace(/[\u2013\u2014]/g, '-').replace(/\s+/g, ' ').toLocaleLowerCase('en-US');
+  if (!isObject(value) || value.schema !== 'commander-deck/v1' ||
+      !validText(value.id, 85) || !/^deck-[a-z0-9-]{8,80}$/.test(value.id) ||
+      !validText(value.name, 80) || !Array.isArray(value.commanders) ||
+      value.commanders.length < 1 || value.commanders.length > 2 ||
+      !value.commanders.every(name => validText(name, 160)) ||
+      new Set(value.commanders.map(nameKey)).size !== value.commanders.length ||
+      !Array.isArray(value.cards) || value.cards.length < 1 || value.cards.length > 100) return null;
+  const seen = new Set();
+  const cards = [];
+  let total = 0;
+  for (const row of value.cards) {
+    if (!isObject(row) || !validText(row.name, 160) || !Number.isSafeInteger(row.n) ||
+        row.n < 1 || row.n > 100 || !['Commander', 'Main'].includes(row.section)) return null;
+    const key = nameKey(row.name);
+    if (seen.has(key)) return null;
+    seen.add(key);
+    total += row.n;
+    cards.push({ name: row.name, n: row.n, section: row.section });
+  }
+  if (total !== 100 || value.commanders.some(name =>
+    !cards.some(row => row.name === name && row.n === 1 && row.section === 'Commander')) ||
+    cards.some(row => row.section === 'Commander' && !value.commanders.includes(row.name))) return null;
+  const record = { schema: value.schema, id: value.id, name: value.name, commanders: value.commanders.slice(), cards };
+  try {
+    const bytes = encodeURIComponent(JSON.stringify(record)).replace(/%[A-F\d]{2}|./g, 'x').length;
+    return bytes <= MAX_DECK_RECORD_BYTES ? record : null;
+  } catch { return null; }
 }
 
 export function setup(playerIds = [], options = {}) {
@@ -192,6 +230,11 @@ function validateRoomAction(state, action, playerId) {
       return { ok: false, error: 'Seat cannot be configured now.' };
     }
     if (!cleanText(action.deckId, 120)) return { ok: false, error: 'Choose a deck.' };
+    if (action.deckRecord !== undefined && action.deckRecord !== null) {
+      const record = cleanDeckRecord(action.deckRecord);
+      if (!record) return { ok: false, error: 'That imported decklist could not be read.' };
+      if (record.name !== cleanText(action.deckId, 120)) return { ok: false, error: 'The decklist does not match the chosen deck.' };
+    }
     if (action.commanderNames !== undefined &&
       (!Array.isArray(action.commanderNames) || action.commanderNames.length > 2)) {
       return { ok: false, error: 'Choose one commander or a legal partner pair.' };
@@ -322,6 +365,7 @@ export function applyAction(state, playerId, action) {
     seat.connected = true;
   } else if (type === 'configure') {
     seat.deckId = cleanText(action.deckId, 120);
+    seat.deckRecord = cleanDeckRecord(action.deckRecord);
     seat.commanderNames = (action.commanderNames || [])
       .map(name => cleanText(name, 160)).filter(Boolean).slice(0, 2);
     seat.name = cleanText(action.name || seat.name, 32);
@@ -406,6 +450,8 @@ export function viewFor(state, playerId) {
       connected: item.connected,
       ready: item.ready,
       deckId: item.deckId,
+      deckImported: !!item.deckRecord,
+      deckRecord: seatIndex === 0 || item.seat === seatIndex ? clone(item.deckRecord) : null,
       commanderNames: item.commanderNames,
       aiStyle: item.aiStyle,
     })),

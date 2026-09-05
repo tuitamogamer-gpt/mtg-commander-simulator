@@ -58,26 +58,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const MAX_DECK_RECORD_BYTES = 16_000;
 
   function cleanDeckRecord(value) {
-    if (!isObject(value)) return null;
-    // The limits mirror the library's own record shape, so a list that survives
-    // the room is a list the host can actually validate.
-    const cards = Array.isArray(value.cards) ? value.cards.slice(0, 100) : [];
-    const record = {
-      schema: cleanText(value.schema, 60) || 'commander-deck/v1',
-      id: cleanText(value.id, 85),
-      name: cleanText(value.name, 80),
-      commanders: (Array.isArray(value.commanders) ? value.commanders : [])
-        .map(name => cleanText(name, 160)).filter(Boolean).slice(0, 2),
-      cards: cards.map(entry => ({
-        name: cleanText(entry && entry.name, 160),
-        n: Number.isSafeInteger(entry && entry.n) ? Math.max(0, Math.min(99, entry.n)) : 0,
-        section: cleanText(entry && entry.section, 24),
-      })).filter(entry => entry.name && entry.n > 0),
-    };
-    if (!record.name || !record.cards.length) return null;
-    return byteSize(record) <= MAX_DECK_RECORD_BYTES ? record : null;
+    const validText = (text, max) => typeof text === 'string' && text.length > 0 &&
+      text.length <= max && text === text.trim() && !/[\u0000-\u001f\u007f]/.test(text);
+    const nameKey = name => name.normalize('NFKC').replace(/[\u2018\u2019\u02bc]/g, "'")
+      .replace(/[\u2013\u2014]/g, '-').replace(/\s+/g, ' ').toLocaleLowerCase('en-US');
+    if (!isObject(value) || value.schema !== 'commander-deck/v1' ||
+        !validText(value.id, 85) || !/^deck-[a-z0-9-]{8,80}$/.test(value.id) ||
+        !validText(value.name, 80) || !Array.isArray(value.commanders) ||
+        value.commanders.length < 1 || value.commanders.length > 2 ||
+        !value.commanders.every(name => validText(name, 160)) ||
+        new Set(value.commanders.map(nameKey)).size !== value.commanders.length ||
+        !Array.isArray(value.cards) || value.cards.length < 1 || value.cards.length > 100) return null;
+    const seen = new Set();
+    const cards = [];
+    let total = 0;
+    for (const row of value.cards) {
+      if (!isObject(row) || !validText(row.name, 160) || !Number.isSafeInteger(row.n) ||
+          row.n < 1 || row.n > 100 || !['Commander', 'Main'].includes(row.section)) return null;
+      const key = nameKey(row.name);
+      if (seen.has(key)) return null;
+      seen.add(key);
+      total += row.n;
+      cards.push({ name: row.name, n: row.n, section: row.section });
+    }
+    if (total !== 100 || value.commanders.some(name =>
+      !cards.some(row => row.name === name && row.n === 1 && row.section === 'Commander')) ||
+      cards.some(row => row.section === 'Commander' && !value.commanders.includes(row.name))) return null;
+    const record = { schema: value.schema, id: value.id, name: value.name, commanders: value.commanders.slice(), cards };
+    try {
+      const bytes = encodeURIComponent(JSON.stringify(record)).replace(/%[A-F\d]{2}|./g, 'x').length;
+      return bytes <= MAX_DECK_RECORD_BYTES ? record : null;
+    } catch { return null; }
   }
-
   function setup(playerIds = [], options = {}) {
     const playerCount = cleanPlayerCount(options.playerCount);
     const ids = Array.isArray(playerIds) ? playerIds.filter(Boolean).slice(0, playerCount) : [];
@@ -653,6 +665,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const bridge = {
       current: () => latest,
+      waitUntilRunning: () => waitFor(next => next && next.phase === 'running' &&
+        next.seats.every(seat => seat.connected)),
       setManualActionHandler(handler) {
         manualHandler = typeof handler === 'function' ? handler : null;
         processManualAction(latest);
@@ -666,9 +680,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       async requestDecision(payload) {
         if (payload.game) await bridge.syncGame(payload.game);
-        await roomClient.dispatch({ type: 'decisionRequest', decision: payload.descriptor });
+        // A guest disconnect pauses the room while the host engine survives.
+        // Keep its pending controller decision alive until the host resumes.
+        for (;;) {
+          await bridge.waitUntilRunning();
+          try {
+            await roomClient.dispatch({ type: 'decisionRequest', decision: payload.descriptor });
+            break;
+          } catch (error) {
+            // Presence may change between the ready view and server validation.
+            // Retry only an explicitly rejected request while visibly paused;
+            // transport errors could have committed and must not be replayed.
+            if (latest?.phase !== 'paused' || !/Only the active host can request a decision|Decision must target a connected remote human seat/.test(error?.message || '')) throw error;
+          }
+        }
         const view = await waitFor(next => next && next.lastDecision && next.lastDecision.id === payload.id);
         const response = clone(view.lastDecision.response);
+        await bridge.waitUntilRunning();
         await roomClient.dispatch({ type: 'decisionAck', decisionId: payload.id });
         return response;
       },
@@ -781,18 +809,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const nextUrl = `${location.pathname}?${params.toString()}`;
     if (location.search !== `?${params.toString()}`) history.replaceState(null, '', nextUrl);
 
-    let playerId = sessionStorage.getItem('commander-live-player-id');
+    // A fresh per-room capability replaces the legacy global identifier, which
+    // older servers included in public envelopes. Never reuse that old value.
+    const identityKey = `commander-live-player-id:v2:${room.toLowerCase()}`;
+    let playerId = sessionStorage.getItem(identityKey);
     if (!playerId) {
       playerId = `p-${crypto.randomUUID()}`;
-      sessionStorage.setItem('commander-live-player-id', playerId);
+      sessionStorage.setItem(identityKey, playerId);
     }
     const shareUrl = onlineRoomShareUrl(location.href, room, playerCount);
     const base = location.pathname.replace(/\/+$/, '');
     const websocketOrigin = `${location.protocol === 'https:' ? 'wss://' : 'ws://'}${location.host}`;
-    const isVercel = /(^|\.)vercel\.app$/i.test(location.hostname);
-    const socketUrl = isVercel
-      ? `${websocketOrigin}/api/ws?room=${encodeURIComponent(room)}${options.create ? `&create=1&players=${playerCount}` : ''}`
-      : `${websocketOrigin}${base}/ws/${encodeURIComponent(room)}`;
+    const isHiggsfield = /(^|\.)higgsfield\.(?:ai|app)$/i.test(location.hostname);
+    const socketUrl = isHiggsfield
+      ? `${websocketOrigin}${base}/ws/${encodeURIComponent(room)}`
+      : `${websocketOrigin}/api/ws?room=${encodeURIComponent(room)}${options.create ? `&create=1&players=${playerCount}` : ''}`;
     const listeners = new Set();
     const queue = [];
     let socket = null;
@@ -881,10 +912,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         if (message.type === 'state') acceptState(message);
       };
-      socket.onclose = () => {
+      socket.onclose = event => {
         open = false;
         kernelState = null;
+        if (event.code === 4001) stopped = true;
         rejectInflight(new Error('Room connection closed before the action was confirmed.'));
+        if (stopped) {
+          while (queue.length) queue.shift().reject(new Error('This seat reconnected in another connection.'));
+        }
         if (!stopped) reconnectTimer = setTimeout(connect, 1500);
       };
       socket.onerror = () => {};
@@ -910,6 +945,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return () => listeners.delete(listener);
       },
       dispatch(action) {
+        if (stopped) return Promise.reject(new Error('This live connection is closed. Reopen the room to connect.'));
         return new Promise((resolve, reject) => {
           queue.push({ action: clone(action), resolve, reject, baseRevision: -1 });
           pump();
@@ -934,7 +970,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.onlineHostBridge = onlineHostBridge;
   MTG.createOnlineSmokeRoomClient = createOnlineSmokeRoomClient;
   MTG.onlineRoomShareUrl = onlineRoomShareUrl;
-  if (typeof location !== 'undefined' && /(^|\.)(?:higgsfield\.(?:ai|app)|vercel\.app)$/i.test(location.hostname)) {
+  if (typeof location !== 'undefined') {
     MTG.createHiggsfieldRoomClient = createHiggsfieldRoomClient;
   }
 })();

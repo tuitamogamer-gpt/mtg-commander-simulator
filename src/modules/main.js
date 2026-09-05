@@ -1985,6 +1985,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const human = ui.controllerFor(p);
         return {
           async decide(game, request) {
+            if (state.onlineBridge?.waitUntilRunning) await state.onlineBridge.waitUntilRunning();
             // A checkpoint replays the recorded decisions against a fresh game.
             // When the rules engine or the AI changed since the save, a recorded
             // answer can stop matching the question it now receives. That must
@@ -2025,6 +2026,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               queueAccountSave({ immediate: true });
             }
             const result = await human.decide(game, request);
+            // A guest may disconnect while the host is choosing. Preserve the
+            // choice, but do not advance the engine until the host resumes.
+            if (state.onlineBridge?.waitUntilRunning) await state.onlineBridge.waitUntilRunning();
             recordedTimeline.push({ kind: 'decision', ...MTG.recordSaveDecision(request, p, result) });
             queueAccountSave();
             return result;

@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "inventoryAsOfImportState": "2026-09-05T16:33:38.988Z",
+  "source": {
+    "provider": "Scryfall",
+    "endpoint": "https://api.scryfall.com/bulk-data",
+    "bulkType": "oracle_cards",
+    "bulkId": "27bf3214-1271-490b-bdfe-c0be6c23d02e",
+    "bulkUpdatedAt": "2026-08-30T09:01:56.964+00:00",
+    "bulkDescription": "A JSON file containing one Scryfall card object for each Oracle ID on Scryfall. The chosen sets for the cards are an attempt to return the most up-to-date recognizable version of the card.",
+    "bulkSha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+    "compressedBytes": 24531992
+  },
+  "comparisonUniverse": {
+    "filter": "games includes 'paper' AND legalities.commander equals 'legal'",
+    "unit": "distinct Oracle ID",
+    "sourceRows": 38627,
+    "paperRows": 36495,
+    "oracleIds": 30784
+  },
+  "counts": {
+    "runtimeDefinitions": 19484,
+    "genericOracleCards": 17800,
+    "genericBatches": 178,
+    "manualOracleCards": 58,
+    "legacyDefinitions": 1626,
+    "deckImportEligibleDefinitions": 19438,
+    "deckImportRestrictedDefinitions": 46,
+    "representedUniverseOracleIds": 19463,
+    "remainingUniverseOracleIds": 11321,
+    "parserEligibleUnimported": 2,
+    "deferred": 11319,
+    "runtimeEntriesWithoutSnapshotMatch": 17,
+    "runtimeEntriesOutsideComparisonUniverse": 2
+  },
+  "remainingByReason": {
+    "adventure-needs-complete-face-semantics": 44,
+    "backup-grant-needs-semantics": 2,
+    "backup-other-rules-unsupported": 2,
+    "complex-layout": 137,
+    "conflicting-hand-abilities": 1,
+    "double-faced-card-needs-complete-back-semantics": 28,
+    "double-faced-card-needs-complete-front-semantics": 253,
+    "double-faced-card-needs-face-transition-semantics": 84,
+    "dynamic-power-toughness": 39,
+    "event-stat-condition-needs-binding": 1,
+    "land-needs-explicit-semantics": 165,
+    "leveler-band-needs-complete-semantics": 2,
+    "library-selected-reference-needs-binding": 1,
+    "mana-ability-needs-explicit-semantics": 16,
+    "noncreature-needs-explicit-semantics": 2500,
+    "oracle-needs-explicit-semantics": 5045,
+    "overload-body-needs-complete-semantics": 11,
+    "reminder-only-oracle": 1,
+    "requires-import-and-executable-proof": 2,
+    "saga-chapter-needs-complete-semantics": 126,
+    "saga-other-rules-unsupported": 2,
+    "spell-needs-explicit-semantics": 2630,
+    "split-needs-complete-face-semantics": 38,
+    "transform-land-face-transition-needs-proof": 8,
+    "unbound-X": 2,
+    "unbound-event-amount": 17,
+    "unbound-event-reference": 33,
+    "unbound-sacrificed-stat": 3,
+    "unbound-target-X": 8,
+    "unbound-target-damage-source": 25,
+    "unsupported-adventure-face-types": 17,
+    "unsupported-backup-suffix": 1,
+    "unsupported-loyalty-value": 1,
+    "unsupported-mana-cost": 49,
+    "unsupported-split-faces": 27
+  },
+  "parserEligibleUnimportedNames": [
+    "Zuo Ci, the Mocking Sage",
+    "Zurgo's Vanguard"
+  ],
+  "runtimeNamesWithoutSnapshotMatch": [
+    "Aggro Amalgam",
+    "Awesome Android",
+    "Black Panther's Claws",
+    "Franklin's Finality",
+    "Heralds of the Shredder",
+    "Humongous Fungus",
+    "Lady Loki's Manifestation",
+    "Loki's Double",
+    "Marauding Mutagen",
+    "Orbital Vibranium Bomb",
+    "Panther Idol",
+    "Skybreaker, Sword of Bashenga",
+    "Slash Clone",
+    "The Five Arrive",
+    "The Watcher's Warning",
+    "Vibranium Dynamo",
+    "Wakandan War Panther"
+  ],
+  "runtimeNamesOutsideComparisonUniverse": [
+    {
+      "name": "Library of Leng",
+      "sourceName": "Library of Leng",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Plea for Power",
+      "sourceName": "Plea for Power",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    }
+  ],
+  "multipleRuntimeNamesForOneOracleId": [
+    {
+      "oracleId": "cb3072c7-393c-43d9-a2c9-f918bd0fd7be",
+      "sourceName": "Double Jump // Flying Kick",
+      "runtimeNames": [
+        "Double Jump",
+        "Double Jump // Flying Kick"
+      ]
+    },
+    {
+      "oracleId": "7bc3f92f-68a2-4934-afc4-89f6d0e8cf98",
+      "sourceName": "Dusk // Dawn",
+      "runtimeNames": [
+        "Dusk",
+        "Dusk // Dawn"
+      ]
+    }
+  ],
+  "runtimeNamesRestrictedFromDeckImport": [
+    "Agitator Ant",
+    "Ancient Stone Idol",
+    "Anya, Merciless Angel",
+    "Bloodthirsty Blade",
+    "Boros Garrison",
+    "Boros Reckoner",
+    "Comeuppance",
+    "Darien, King of Kjeldor",
+    "Deflecting Palm",
+    "Disrupt Decorum",
+    "Duelist's Heritage",
+    "Feather, Radiant Arbiter",
+    "Fiendish Duo",
+    "Frontier Warmonger",
+    "Gideon's Sacrifice",
+    "Gisela, Blade of Goldnight",
+    "Havoc Eater",
+    "Hot Pursuit",
+    "Immortal Obligation",
+    "Kazuul, Tyrant of the Cliffs",
+    "Keeper of the Accord",
+    "Kher Keep",
+    "Labyrinth of Skophos",
+    "Loran of the Third Path",
+    "Martial Impetus",
+    "Mob Verdict",
+    "Needle Spires",
+    "Nelly Borca, Impulsive Accuser",
+    "Otherworldly Escort",
+    "Prisoner's Dilemma",
+    "Redemption Arc",
+    "Rite of the Raging Storm",
+    "Seal of Cleansing",
+    "Selfless Squire",
+    "Sevinne's Reclamation",
+    "Smuggler's Share",
+    "Soul Snare",
+    "Spectacular Showdown",
+    "Stalking Leonin",
+    "Take the Bait",
+    "Trouble in Pairs",
+    "Vow of Duty",
+    "Vow of Lightning",
+    "War Room",
+    "Windborn Muse",
+    "Winds of Rath"
+  ],
+  "classifierVersion": 8,
+  "classifierFilesSha256": "0fd0aaea732e5dcd878fb54f88ae9c0ef4c765f34ae1e7a0f12496a979903f46",
+  "inputFilesSha256": "4b531ae75cc6866f0cb4b00cc2bbbc9085dd6569aabbfde17f4f29482dcf8e13",
+  "artifactSha256": {
+    "docs/catalog/imported-cards.csv": "47bfba00db0cbf8dc5ddaf7e07a68a6ba06fb87baa91cdb6b2d06931484f4304",
+    "docs/catalog/remaining-cards.csv": "3c0ac13d9baa4837cf53a5db664c55fd3a21251be3c3d3101299168799539501"
+  },
+  "notes": [
+    "Names and face names associate legacy definitions with the pinned feed; these associations do not verify exact Oracle semantics or every face.",
+    "Represented Oracle IDs include runtime face aliases and import-restricted legacy cards. Consult deck_import_eligible for actual arbitrary-deck availability.",
+    "engine_status values are project catalog markers, not a promise of exhaustive Magic rules or multiplayer correctness.",
+    "A parser-eligible unimported card still requires a recorded import, executable human/local-AI proof and release checks.",
+    "The comparison does not cover later cards, later legality changes, or source objects excluded by the explicit paper/Commander filter."
+  ]
+}

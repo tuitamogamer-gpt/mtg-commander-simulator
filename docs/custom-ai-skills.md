@@ -1,6 +1,6 @@
 # Custom opponent skills
 
-Open **Solo → choose a deck → Pod → Upload / manage custom AI skills**.
+Open **Solo → choose a deck → Build this pod → Pod → Upload / manage custom AI skills**. For help choosing a base, read [AI archetypes and custom opponents](ai-archetypes.md).
 
 1. Expand **Instructions & creation prompt**. Download a JSON template based on any built-in style, or copy the creation prompt into your own AI assistant. Replace `[DESCRIBE YOUR STYLE HERE]` with the opponent you want.
 2. Upload the resulting `.json` file, drop it onto the upload area, or paste its contents. File imports are checked automatically; after editing, click **Check skill**.

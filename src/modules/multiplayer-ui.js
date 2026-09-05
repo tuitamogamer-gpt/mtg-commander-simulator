@@ -213,8 +213,41 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await this.perform({ type: 'manualAction', action: { type: 'setPause', value: next } });
       };
       if (recoveryOpen) shell.insertBefore(this.renderRemoteLastResort(view, game), shell.querySelector('.online-decision-stage'));
-      shell.querySelector('.online-decision-stage').appendChild(this.renderDecision(view.pendingDecision));
+      shell.querySelector('.online-decision-stage').appendChild(view.phase === 'paused'
+        ? el('div', 'online-decision waiting', '<div><small>TABLE PAUSED</small><b>Waiting for the host to resume</b><span>Your seat and pending decision are preserved while players reconnect.</span></div>')
+        : this.renderDecision(view.pendingDecision));
       return shell;
+    }
+
+    renderHostReconnect(view) {
+      // The host's lobby is hidden while the full Arena is mounted. Keep the
+      // reconnect control in the document's top layer so it remains reachable.
+      if (!this.started || view?.you !== 0 || view.phase !== 'paused' || !window._game) {
+        if (this.reconnectDialog) {
+          this.reconnectDialog.close();
+          this.reconnectDialog.remove();
+          this.reconnectDialog = null;
+        }
+        return;
+      }
+      if (!this.reconnectDialog) {
+        const dialog = el('dialog', 'modal online-reconnect-dialog', '<h2 id="online-reconnect-title">Live game paused</h2><p class="online-reconnect-status" role="status" aria-live="polite"></p><p>The current game and player decisions are preserved. Keep this host tab open.</p><div class="btnrow"><button type="button" class="pbtn primary online-resume">Resume live game</button></div><p class="online-reconnect-error" role="alert"></p>');
+        dialog.setAttribute('aria-labelledby', 'online-reconnect-title');
+        Object.assign(dialog.style, { margin: 'auto', width: 'min(90vw, 540px)', color: 'inherit', borderRadius: '16px' });
+        dialog.addEventListener('cancel', event => event.preventDefault());
+        dialog.querySelector('.online-resume').onclick = () => this.perform({ type: 'resume' });
+        document.body.appendChild(dialog);
+        this.reconnectDialog = dialog;
+        dialog.showModal();
+      }
+      const disconnected = view.seats.filter(seat => !seat.connected);
+      this.reconnectDialog.querySelector('.online-reconnect-status').textContent = disconnected.length
+        ? `Waiting for ${disconnected.map(seat => seat.name).join(', ')} to reconnect.`
+        : 'Everyone is connected. Resume when your table is ready.';
+      const resume = this.reconnectDialog.querySelector('.online-resume');
+      resume.disabled = this.busy || disconnected.length > 0;
+      resume.textContent = this.busy ? 'Resuming…' : 'Resume live game';
+      this.reconnectDialog.querySelector('.online-reconnect-error').textContent = this.error || '';
     }
 
     renderRemoteLastResort(view, game) {
@@ -357,6 +390,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     render() {
+      this.renderHostReconnect(this.view);
       if (!this.root) return;
       this.root.innerHTML = '';
       if (!this.view) {
