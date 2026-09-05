@@ -40,7 +40,7 @@ The selector also includes five named policies under **Command Zone signatures**
 | **Olivia — Saboteur Instigator** | `olivia` | Probe safe attacks, redirect pressure, disrupt the public leader and exploit an opening. |
 | **Josh — Defensive Value** | `josh` | Develop mana and repeatable card advantage, hold interaction, favor short precise deals and win from a stronger resource position. |
 
-Political preferences operate within the game's available rules. Enable **Diplomacy & Politics** in Advanced rules if you want structured public deals; that feature unlocks after every player completes their third turn. A custom skill based on a signature inherits its policy, while displaying its own name and icon.
+Political preferences operate within the game's available rules. Enable **Diplomacy & Politics** in Advanced rules for structured public deals in a Solo pod with at least three players. Ordinary offers unlock once every active player has started their third turn; contextual bargains around supported public votes can occur earlier. The [Diplomacy & Politics guide in the README](../README.md#diplomacy--politics) explains offers, counteroffers, review pauses, emergency deals, and optional campaign tie-breaks. Signature styles also work with Politics off. A custom skill based on a signature inherits its policy, while displaying its own name and icon.
 
 **Random style** assigns a built-in personality, revealed during the game. Saved custom skills do not join that pool, so installing a file does not change an unrelated seeded Random-style setup.
 
