@@ -179,7 +179,7 @@
   ],
   "classifierVersion": 8,
   "classifierFilesSha256": "0fd0aaea732e5dcd878fb54f88ae9c0ef4c765f34ae1e7a0f12496a979903f46",
-  "inputFilesSha256": "4b531ae75cc6866f0cb4b00cc2bbbc9085dd6569aabbfde17f4f29482dcf8e13",
+  "inputFilesSha256": "ed7debc81a11eb2929a233ad5e3a9c611f804d3d754034a510244baf40d5f567",
   "artifactSha256": {
     "docs/catalog/imported-cards.csv": "47bfba00db0cbf8dc5ddaf7e07a68a6ba06fb87baa91cdb6b2d06931484f4304",
     "docs/catalog/remaining-cards.csv": "3c0ac13d9baa4837cf53a5db664c55fd3a21251be3c3d3101299168799539501"

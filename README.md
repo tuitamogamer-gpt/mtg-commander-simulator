@@ -4,7 +4,7 @@ A browser Commander table with local AI opponents, private multiplayer, and your
 
 **[Play Commander Simulator](https://mtg-commander-simulator.vercel.app/)** · [Import a deck](docs/deck-import.md) · [Card catalog](docs/card-catalog.md) · [Deployment](docs/deployment.md)
 
-![Commander Simulator table artwork](assets/backgrounds/commander-war-room.jpg)
+![Commander Simulator Command Table interface](assets/menu/command-table-preview.jpg)
 
 ## What you can play
 
@@ -27,6 +27,8 @@ Accounts are optional. Guests can play immediately and retain imported lists in 
 5. **HOLD** arms a stop at the next priority window; **Proceed** advances a presented action or review. Important spells and combat decisions wait for your input. Click controls remain available alongside optional drag controls.
 
 The arena includes card inspection, searchable zones, a game log, combat assignments, priority settings, and desktop/mobile table views. Optional Last Resort/Judge controls and Politics house rules are explained in the game; their use can change a match beyond ordinary automated rules handling.
+
+Solo players and Live hosts use the **Command Table** interface. **Table** shows the opponents together; **Focus** gives a selected opponent more room. The decision panel keeps the current action visible, and target/combat choices reveal the relevant players. Live guests use the separate remote player view. The landing-page Table/Focus preview shows screenshots of the interface; it does not start a game.
 
 ## Import your deck
 
@@ -65,8 +67,9 @@ The frontend uses native browser ES modules and bundled data. There is no produc
 
 | Area | Main files | Responsibility |
 | --- | --- | --- |
-| Public entry | `index.html`, `src/public-entry.js` | Landing page and guide; load the heavy game modules when needed. |
+| Public entry | `index.html`, `src/public-entry.js`, `src/modules/landing.js` | Landing page, interface preview, and guide; load the heavy game modules when needed. |
 | Rules and table | `src/modules/engine2.js`, `src/modules/ui.js`, `src/modules/main.js` | Legal decisions, stack resolution, combat, setup, and game presentation. |
+| Command Table | `src/modules/command-table.js`, `src/command-table.css`, `src/command-landing.css` | Table/Focus presentation, player seats, decision panel, and matching landing design. |
 | Card data | `src/data.js`, `src/modules/oracle-catalog.js`, `src/oracle-batches/` | Built-in decks, card definitions, Oracle batches, and catalog metadata. |
 | Deck import | `src/modules/deck-import.js` | Parse and validate lists; manage saved deck records. |
 | Local AI | `src/modules/ai-*`, `src/modules/ai-skill-ui.js` | Deck strategy, decisions, and custom skill workshop. |

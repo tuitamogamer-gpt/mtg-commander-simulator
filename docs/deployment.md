@@ -14,6 +14,21 @@ deployment report does not establish that a newer revision is live.
 | Live room service (`api/ws.js`, `logic.js`) | Node.js HTTP/WebSocket server | Redis over its native connection URL, with pub/sub and room locks |
 | Accounts (`api/account.js`) | Node.js HTTP handler | Upstash-compatible Redis REST API |
 
+```mermaid
+flowchart LR
+  Static["Vercel static client"] --> Solo["Solo browser: rules + local AI"]
+  Static --> Host["Live host browser: rules + full game state"]
+  Static --> Guests["Live guest browsers: private player views"]
+  Host <-->|"WSS /api/ws"| Rooms["Node room service"]
+  Guests <-->|"WSS /api/ws"| Rooms
+  Rooms <-->|"native Redis + pub/sub"| Redis[("Redis storage")]
+  Solo -->|"optional HTTPS /api/account"| Accounts["Account API"]
+  Accounts <-->|"Redis REST"| Redis
+```
+
+All browsers can use the optional account API for libraries and favorites. The
+Solo arrow also includes private Save & Continue; Live uses its room state.
+
 There is no application build step, external AI inference service, or Supabase
 integration. `index.html` loads the source modules directly. The static client can
 run without either backend; accounts and internet multiplayer need their respective

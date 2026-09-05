@@ -4,7 +4,7 @@ This page describes the current implementation. It is a technical data inventory
 
 ## Playing without an account
 
-Guest Solo play does not require registration or an external AI service. The browser stores preferences, guest imported decks, custom AI skills, and saved pod presets on the current website origin. Clearing site data or using another browser/device can remove or hide these records.
+Guest Solo play does not require registration or an external AI service. The browser stores preferences (including the Command Table's Table/Focus view), guest imported decks, custom AI skills, and saved pod presets on the current website origin. Clearing site data or using another browser/device can remove or hide these records.
 
 A different domain is a different browser storage origin. Moving the website does not automatically move guest libraries or custom skills. Keep original decklist text and skill JSON files so you can import them again. An account library and a guest library are separate; signing in does not silently merge the guest library into the account.
 

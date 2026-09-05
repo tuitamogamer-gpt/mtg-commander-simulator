@@ -3,8 +3,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {semanticClass} from '../scripts/import-oracle-batch.mjs';
 import {fixtureEngine,context,put,paidCast} from './helpers/oracle-v8-fixtures.mjs';
-const source=JSON.parse(fs.readFileSync(new URL('../output/oracle-next3000-0127/remaining-source.json',import.meta.url)));
+// The six source records and their pinned archive provenance travel with a
+// clean clone; this suite must not depend on the ignored import workspace.
+const source=JSON.parse(fs.readFileSync(new URL('./fixtures/oracle-selected-hand-source.json',import.meta.url))).cards;
 const names=['Contagious Vorrac','Blossom Prancer','Pulsar Squadron Ace','Rosecot Knight','Chrome Courier','Town Greeter'];
+assert.deepEqual(source.map(card=>card.name).sort(),names.toSorted(),'source fixture must contain each of the six exact names once');
 const fixtureName=name=>'Selected-Hand Fixture '+name;
 const M=fixtureEngine([...source.filter(c=>names.includes(c.name)).map(c=>[fixtureName(c.name),c.oracle_text.replaceAll(c.name,fixtureName(c.name)),c.type_line,'{G}']),['Result Spacecraft','','Artifact — Spacecraft'],['Result Town','','Land — Town'],['Result Artifact','','Artifact']]);
 for(const role of ['human','ai']){
