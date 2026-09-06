@@ -99,7 +99,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         event.stopPropagation(); this.zoneBrowse = { player, zone: 'graveyard' }; this.render();
       });
       details.setAttribute('aria-label', `${player.name}: open graveyard, ${player.graveyard.length} cards`);
-      head.querySelector('.oppmeta')?.append(details);
+      const metadata = head.querySelector('.oppmeta');
+      const commanderState = head.querySelector('.oppcmd');
+      metadata?.append(details);
+      // Zone counts and commander state share a wrapping row, so long states
+      // such as "battlefield / battlefield" never paint over the graveyard link.
+      if (metadata && commanderState) metadata.append(commanderState);
       const landCount = row.querySelector('.oppLands');
       if (landCount) {
         const lands = game.lands(player).filter(card => !card.is('Creature'));
@@ -151,8 +156,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       summary.append(node('b', '', source), node('span', '', targets.length ? ` → ${targets.join(', ')}` : ' · no targets'));
       stage.querySelector('.actionstageinfo')?.prepend(summary);
       const actions = stage.querySelector('.actionstagebuttons');
+      const cardReview = stage.querySelector('.actionstage');
+      const reviewBody = node('div', 'ct-review-body');
+      reviewBody.append(stage.querySelector('.actionstageart'), stage.querySelector('.actionstageinfo'));
+      cardReview.append(reviewBody);
       // Keep the original engine callbacks and the review's explicit Proceed.
-      if (actions) stage.querySelector('.actionstage').append(actions);
+      if (actions) cardReview.append(actions);
     } else if (popup) content.append(popup);
     else if (game.stack.length) {
       const top = game.stack[game.stack.length - 1];
