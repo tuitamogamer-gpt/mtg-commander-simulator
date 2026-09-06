@@ -1,0 +1,37 @@
+{
+  "source": "Scryfall original Commander 2014 token printings",
+  "format": "WebP",
+  "video": false,
+  "images": [
+    {
+      "name": "Kor Soldier",
+      "scryfallId": "d9c95045-e806-4933-94a4-cb52ae1a215b",
+      "set": "tc14",
+      "collectorNumber": "4",
+      "source": "https://scryfall.com/card/tc14/4/kor-soldier?utm_source=api",
+      "imageSource": "https://cards.scryfall.io/normal/front/d/9/d9c95045-e806-4933-94a4-cb52ae1a215b.jpg?1783938800",
+      "file": "assets/cards/kor-soldier-c14516d5bd.webp",
+      "sha256": "98c4c0089bd200f0d24db7dd4306b4c81bf1d441ab8f6c263b36b2295b748c50"
+    },
+    {
+      "name": "Elf Druid",
+      "scryfallId": "01b1f130-2e12-4e57-876b-fc81619ff01f",
+      "set": "tc14",
+      "collectorNumber": "23",
+      "source": "https://scryfall.com/card/tc14/23/elf-druid?utm_source=api",
+      "imageSource": "https://cards.scryfall.io/normal/front/0/1/01b1f130-2e12-4e57-876b-fc81619ff01f.jpg?1783938794",
+      "file": "assets/cards/elf-druid-402055f11b.webp",
+      "sha256": "44d58bdb58027a97f7ad8c8e2aea6036930be3892a5a1f3942960d0239e5fd81"
+    },
+    {
+      "name": "Stoneforged Blade",
+      "scryfallId": "59a00cac-53ae-46ad-8468-e6d1db40b266",
+      "set": "tc14",
+      "collectorNumber": "30",
+      "source": "https://scryfall.com/card/tc14/30/stoneforged-blade?utm_source=api",
+      "imageSource": "https://cards.scryfall.io/normal/front/5/9/59a00cac-53ae-46ad-8468-e6d1db40b266.jpg?1783938792",
+      "file": "assets/cards/stoneforged-blade-59a01b825b.webp",
+      "sha256": "b2b632fb71a925c49e019c521e1ddadc7f39f1eebd82d35755af0a8c00d166b7"
+    }
+  ]
+}

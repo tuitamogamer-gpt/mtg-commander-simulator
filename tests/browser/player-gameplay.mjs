@@ -86,6 +86,12 @@ try {
       continue;
     }
     if (s.type === 'attackers') {
+      // The interface requires an explicit defender before assigning a group.
+      if (!await page.locator('.attackalloclane.focused').count()) {
+        const players = page.locator('.attackalloclane.player');
+        const defender = await players.count() ? players.first() : page.locator('.attackalloclane').first();
+        if (await defender.count()) { await defender.click(); continue; }
+      }
       const available = page.locator('.attackpoolcard:not(.assigned):not(.cantfocus)');
       if (await available.count()) { await available.first().click(); continue; }
       if (await clickIf('.attackallocmodal .pbtn.primary:not(:disabled):visible')) { attacks++; continue; }

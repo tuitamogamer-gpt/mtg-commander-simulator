@@ -166,11 +166,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         button.type = 'button';
         if (card) {
           button.dataset.cardId = String(card.iid);
-          const img = node('img', '');
-          img.src = U.cardImageURL(card.name, 'art');
-          img.alt = '';
-          img.onerror = () => U.imgFail(img);
-          button.appendChild(img);
+          button.insertAdjacentHTML('beforeend', U.cardArtHTML(card));
         } else button.appendChild(node('span', 'commandresulticon', '↗'));
         const copy = node('span', 'commandresultcopy');
         copy.append(node('b', '', label), node('small', '', detail));

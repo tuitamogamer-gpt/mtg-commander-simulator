@@ -25,7 +25,10 @@ test('the complete pinned legacy card set remains represented exactly once in th
   const c21Names=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-c21-2026-09-06/intake.json',import.meta.url),'utf8')).newNames;
   assert.equal(c21Names.length,80);
   assert.deepEqual(intersection(c21Names,starterNames),[]);
-  const legacyNames = Object.keys(legacyRaw.cards || {}).filter(name=>!starterNames.includes(name)&&!c21Names.includes(name));
+  const c14Names=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-c14-2026-09-06/intake.json',import.meta.url),'utf8')).newNames;
+  assert.equal(c14Names.length,65);
+  assert.deepEqual(intersection(c14Names,[...starterNames,...c21Names]),[]);
+  const legacyNames = Object.keys(legacyRaw.cards || {}).filter(name=>!starterNames.includes(name)&&!c21Names.includes(name)&&!c14Names.includes(name));
   const legacyNameSet = new Set(legacyNames);
   const digest = createHash('sha256').update([...legacyNames].sort().join('\n')).digest('hex');
 
@@ -33,7 +36,7 @@ test('the complete pinned legacy card set remains represented exactly once in th
   assert.equal(legacyNameSet.size, LEGACY_CARD_COUNT, 'legacy raw names are unique');
   assert.equal(digest, LEGACY_NAME_DIGEST, 'pinned legacy card-name identity');
 
-  for (const name of [...legacyNames,...starterNames,...c21Names]) {
+  for (const name of [...legacyNames,...starterNames,...c21Names,...c14Names]) {
     const raw = legacyRaw.cards[name];
     const catalog = MTG.CARD_CATALOG[name];
     assert.ok(catalog, `${name}: present in MTG.CARD_CATALOG`);
@@ -60,11 +63,13 @@ test('the complete pinned legacy card set remains represented exactly once in th
   assert.deepEqual(intersection(starterNames,[...legacyNames,...genericNames,...sauronNames]),[], 'Starter additions reuse all existing names without duplication');
   assert.deepEqual(intersection(genericNames, sauronNames), [], 'generic Oracle and Sauron names are disjoint');
 
+  assert.deepEqual(intersection(c14Names,[...legacyNames,...genericNames,...sauronNames]),[], 'C14 additions are disjoint from all existing catalog definitions');
+
   const runtimeNames = Object.keys(MTG.RAW_DATA.cards || {});
   const catalogNames = Object.keys(MTG.CARD_CATALOG || {});
-  const expectedRuntimeUnion = [...legacyNames, ...starterNames, ...c21Names, ...genericNames, ...sauronNames];
+  const expectedRuntimeUnion = [...legacyNames, ...starterNames, ...c21Names, ...c14Names, ...genericNames, ...sauronNames];
   assert.deepEqual(sortedUnique(runtimeNames), sortedUnique(expectedRuntimeUnion),
-    'runtime raw cards are exactly legacy plus Starter and C21 additions plus generic Oracle plus Sauron');
+    'runtime raw cards are exactly legacy plus Starter, C21 and C14 additions plus generic Oracle plus Sauron');
   assert.deepEqual(sortedUnique(catalogNames), sortedUnique(runtimeNames),
     'MTG.CARD_CATALOG is the exact runtime raw-card set');
 

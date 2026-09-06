@@ -3165,6 +3165,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       picked.length >= min && picked.length <= max && new Set(picked).size === picked.length &&
       picked.every(candidate => available.includes(candidate) && candidate.zone === 'graveyard' &&
         p.graveyard.includes(candidate) && candidate.zoneVersion === graveyardVersions.get(candidate));
+    let additionalExiled=[];
+    if(d.additionalExileGraveyardX&&!faceDownCast){
+      const available=p.graveyard.filter(c=>c!==card&&!kotisExiled.includes(c));
+      additionalExiled=await MTG.C14.choose(this,p,available,xVal,xVal,card.name+': exile '+xVal+' graveyard cards as a cost','delve');
+      if(!validExileSelection(additionalExiled,available,xVal,xVal))return false;
+    }
     let delveExiled = [];
     if (castOpts.delve) {
       const avail = p.graveyard.filter(c => c !== card && !kotisExiled.includes(c));
@@ -3207,8 +3213,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // Recheck planned Oracle costs before any mana or cards are consumed.
     if(castOpts.starterPermission && !MTG.StarterCasting.validate({g:this,src:card,you:p,so}))return false;
-    if (!validExileSelection([...kotisExiled, ...delveExiled, ...escapeExiled], p.graveyard,
-      kotisExiled.length + delveExiled.length + escapeExiled.length, kotisExiled.length + delveExiled.length + escapeExiled.length)) return false;
+    if (!validExileSelection([...kotisExiled, ...delveExiled, ...escapeExiled, ...additionalExiled], p.graveyard,
+      kotisExiled.length + delveExiled.length + escapeExiled.length + additionalExiled.length, kotisExiled.length + delveExiled.length + escapeExiled.length + additionalExiled.length)) return false;
     if (castOpts.kotis && !MTG.kotisCastPaymentCards(this, p, card, so)) return false;
     if (castOpts.broodship && MTG.broodshipCastPaymentLand(this,p,card,so) !== broodshipLand) return false;
     if (MTG.OracleV8CastingLimits && !MTG.OracleV8CastingLimits.allowed(this,p)) return false;
@@ -3223,7 +3229,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       oracleAlternative.cond&&!oracleAlternative.cond(this,p,card)))return false;
     if (so.oracleCostPlans && MTG.validateOracleAdditionalCostPlans &&
         !MTG.validateOracleAdditionalCostPlans({g:this,src:card,you:p,so,
-          reservedCards:[...paidAddl.sacd,...paidAddl.discarded,...kotisExiled,...delveExiled,...escapeExiled,...(broodshipLand?[broodshipLand]:[])]})) return false;
+          reservedCards:[...paidAddl.sacd,...paidAddl.discarded,...kotisExiled,...delveExiled,...escapeExiled,...additionalExiled,...(broodshipLand?[broodshipLand]:[])]})) return false;
     // pay mana
     const paySpell = { card, castOpts, xVal };
     const hasAdditionalManaCost = cost.generic > 0 || cost.x > 0 || (cost.pips || []).length > 0;
@@ -3293,6 +3299,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (castOpts.gravecrawler) delete castOpts.flashback;
     if(castOpts.starterPermission)MTG.StarterCasting.commit({g:this,src:card,you:p,so});
+    await this.moveGraveyardBatch(additionalExiled, 'exile');
     await this.moveGraveyardBatch(delveExiled, 'exile');
     await this.moveGraveyardBatch(escapeExiled, 'exile');
 
@@ -4360,7 +4367,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const offerAbility=(c,a,ai,flags={})=>{
         if (a.manaAbilityOnly) return;
-        if (a.sorcery && (this.turnPlayer !== p || this.stack.length || (this.phase !== 'main1' && this.phase !== 'main2'))) return;
+        if (a.sorcery && !this.c14LoyaltyInstant?.(p,c,a) && (this.turnPlayer !== p || this.stack.length || (this.phase !== 'main1' && this.phase !== 'main2'))) return;
         if (a.cond && !a.cond(this, c, p)) return;
         if (a.oncePerTurn && c.meta['_ab_' + ai] === this.turnNo) return;
         if (a.oncePerObject && c.meta['_abo_' + ai] === c.zoneVersion) return;
@@ -4543,7 +4550,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (c.ctrl === p || c.cur && (c.cur.abilitiesDisabled || c.cur.activationDisabled)) continue;
       const abs = c.def.opponentAbilities || [];
       abs.forEach((a, ai) => {
-        if (a.sorcery && (this.turnPlayer !== p || this.stack.length || (this.phase !== 'main1' && this.phase !== 'main2'))) return;
+        if (a.sorcery && !this.c14LoyaltyInstant?.(p,c,a) && (this.turnPlayer !== p || this.stack.length || (this.phase !== 'main1' && this.phase !== 'main2'))) return;
         if (a.cond && !a.cond(this, c, p)) return;
         const cost = a.cost || {};
         if (cost.mana && !this.canPayMana(p, U.parseCost(typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana))) return;
@@ -4624,7 +4631,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (grantSource) a = grantSource.def.grantsGraveyardAbility.make(this, grantSource, c, p);
       }
       if (!a) continue;
-      if (a.sorcery && (this.turnPlayer !== p || this.stack.length || (this.phase !== 'main1' && this.phase !== 'main2'))) continue;
+      if (a.sorcery && !this.c14LoyaltyInstant?.(p,c,a) && (this.turnPlayer !== p || this.stack.length || (this.phase !== 'main1' && this.phase !== 'main2'))) continue;
       if (a.cond && !a.cond(this, c, p)) continue;
       if (a.sacArtifacts && this.bf().filter(x => x.ctrl === p && x.is('Artifact')).length < a.sacArtifacts) continue;
       const gyTargets=typeof a.targets==='function'?a.targets(this,c,{player:p}):a.targets;
@@ -5142,7 +5149,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!a || c.cur?.activationDisabled || (publicActivation&&!this.bf().includes(c)) || (!entry.opponentAbility && (c.zone !== 'battlefield' || !publicActivation&&c.ctrl !== p ||
         !(c.cur?.abilitiesDisabled?[]:c.def.abilities || []).concat(c.cur?.extraAbilities || []).includes(a))) ||
         (entry.opponentAbility && (c.zone !== 'battlefield' || c.ctrl === p || !(c.def.opponentAbilities || []).includes(a))) ||
-        (a.sorcery && (this.turnPlayer !== p || this.stack.length ||
+        (a.sorcery && !this.c14LoyaltyInstant?.(p,c,a) && (this.turnPlayer !== p || this.stack.length ||
         !['main1', 'main2'].includes(this.phase))) ||
         (a.cond && !a.cond(this, c, p)) ||
         (a.oncePerTurn && c.meta['_ab_' + entry.idx] === this.turnNo) ||
@@ -5567,6 +5574,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ...(a.modes?{mode:ctx.mode}:{}),
       targetIdentities: ctx.targetIdentities,
     };
+    MTG.C14?.targetStackObjects.set(ctx,so);
     this.lg(`${U.playerVerb(p, 'activate', 'activates')}: ${c.name}${a.label ? ' — ' + a.label : ''}.`, 'activate');
     await this.pace(p.isAI ? 800 : 0);
     await this.emit('abilityActivated', {
@@ -6108,6 +6116,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.untilEffects = this.untilEffects.filter(e => !(e.expires === 'untilTurnOf' && e.whoTurn === p) && !(e.expires === 'yourNext' && e.ctrl === p));
     this.recalc();
     const untapped=[];
+    if(p.c14SkipUntaps>0){p.c14SkipUntaps--;p.skipUntapOnce=true;}
     if (!p.skipUntapOnce) {
       this.phaseDuringUntap(p);
       const keepTapped=new Set();

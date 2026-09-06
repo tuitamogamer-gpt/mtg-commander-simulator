@@ -1949,13 +1949,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               goal === 'debuff' || goal === 'discard') return hostile;
           return true;
         });
-        if (!useful) return -8;
+        // Adding loyalty is useful even when an optional target is declined.
+        if (!useful && !((spec.upTo || spec.min === 0) && operation.loyalty > 0)) return -8;
       }
 
       let score = 0;
       for (const effect of operation.effects || []) {
-        const n = effect.n === 'X' ? 2 : Math.max(1, Number(effect.n) || 1);
-        if (effect.action === 'draw') score += 2.5 * n;
+        // Loyalty finishers such as Ajani's Cats and Garruk's Wurms/draw
+        // depend on public board quantities; treating their X as one makes
+        // the bot hoard loyalty even when the ultimate is far more valuable.
+        const publicLoyaltyCount = operation.loyalty !== undefined &&
+          (['life-total', 'max-stat'].includes(effect.n?.kind) ||
+            effect.n?.kind === 'count' && effect.n.zone === 'battlefield');
+        const n = publicLoyaltyCount ? Math.max(0, genericAmount(effect.n,
+          {g: game, src: source, you: player, sourceZoneVersion: source.zoneVersion, targets: []}))
+          : effect.n === 'X' ? 2 : Math.max(1, Number(effect.n) || 1);
+        if (effect.action === 'draw') {
+          if (publicLoyaltyCount && effect.who === 'you' && n > player.library.length) return -100;
+          score += 2.5 * n;
+        }
         else if (effect.action === 'destroy' || effect.action === 'exile') score += 5;
         else if (effect.action === 'damage' || effect.action === 'lose-life') score += 1.4 * n;
         else if (effect.action === 'bounce' || effect.action === 'move-to-hand') score += 3.5;

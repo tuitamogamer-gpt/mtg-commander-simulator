@@ -18,6 +18,10 @@ function browserHarness() {
         tagName, className: '', innerHTML: '', children: [], dataset: {}, attributes: {},
         style: { setProperty() {} },
         appendChild(child) { this.children.push(child); return child; },
+        insertAdjacentHTML(position, html) {
+          assert.equal(position, 'beforeend');
+          this.children.push({ innerHTML: html, children: [] });
+        },
         setAttribute(key, value) { this.attributes[key] = value; },
       };
       node.classList = {

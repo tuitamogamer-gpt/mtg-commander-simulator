@@ -23,6 +23,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+      "Forged in Stone": {"icon":"⚒️","colors":["W"],"style":"Equipment and resilient armies","blurb":"Nahiri forges Equipment, raises Kor Soldiers, and rebuilds a resilient white army.","set":"Commander (2014)"},
+      "Peer Through Time": {"icon":"⌛","colors":["U"],"style":"Mana engines and blue control","blurb":"Teferi untaps powerful mana sources and uses blue card advantage to keep large threats coming.","set":"Commander (2014)"},
+      "Sworn to Darkness": {"icon":"👹","colors":["B"],"style":"Demons, sacrifice and life drain","blurb":"Ob Nixilis builds a Demon army while black mana engines, sacrifice and life drain wear down the table.","set":"Commander (2014)"},
+      "Built from Scratch": {"icon":"🔩","colors":["R"],"style":"Artifact sacrifice and reanimation","blurb":"Daretti turns discarded machines into battlefield threats and rebuilds after every exchange.","set":"Commander (2014)"},
+      "Guided by Nature": {"icon":"🌳","colors":["G"],"style":"Elves, mana and overwhelming combat","blurb":"Freyalise grows an Elf mana engine that turns into a large army and powerful green finishers.","set":"Commander (2014)"},
       "Lorehold Legacies": {"icon":"⚒️","colors":["R","W"],"style":"Artifact recursion and copies","blurb":"Osgir rebuilds fallen artifacts as pairs of tokens, turning discarded relics into mana and massive constructs.","set":"Commander (2021)"},
       "Prismari Performance": {"icon":"🎼","colors":["U","R"],"style":"Big spells and magecraft","blurb":"Zaffai rewards large instants, sorceries, and copies with Elementals and bursts of damage.","set":"Commander (2021)"},
       "Quantum Quandrix": {"icon":"🌀","colors":["G","U"],"style":"Token copies and counters","blurb":"Adrix and Nev double token production, building Fractals, copies, and growing armies.","set":"Commander (2021)"},

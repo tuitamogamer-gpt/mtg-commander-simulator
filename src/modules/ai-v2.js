@@ -198,6 +198,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+    "Forged in Stone": {"archetype":"Equipment and resilient armies","length":"long","tags":["artifacts","tokens","graveyard"],"commanderImportance":1.5},
+    "Peer Through Time": {"archetype":"Mana engines and blue control","length":"long","tags":["control","ramp"],"commanderImportance":1.5},
+    "Sworn to Darkness": {"archetype":"Demons, sacrifice and life drain","length":"long","tags":["graveyard","sacrifice","lifegain"],"commanderImportance":1.5},
+    "Built from Scratch": {"archetype":"Artifact sacrifice and reanimation","length":"long","tags":["artifacts","graveyard","sacrifice"],"commanderImportance":1.5},
+    "Guided by Nature": {"archetype":"Elves, mana and overwhelming combat","length":"long","tags":["tribal","tokens","ramp"],"commanderImportance":1.5},
     "Lorehold Legacies": {"archetype":"Artifact recursion and copies","length":"long","tags":["artifacts","graveyard","tokens"],"commanderImportance":1.55},
     "Prismari Performance": {"archetype":"Big spells and magecraft","length":"long","tags":["spellslinger","tokens"],"commanderImportance":1.4},
     "Quantum Quandrix": {"archetype":"Token copies and counters","length":"long","tags":["tokens","counters"],"commanderImportance":1.5},
@@ -1746,8 +1751,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return `s:${target && target.name || ''}:${target && target.ctrl && target.ctrl.idx}`;
   }
 
+  // Evaluate only public, already-reached loss conditions. Removing a
+  // Persecutor can end the game; removing an opponent's can also lose it.
+  function persecutorExitValue(game, card, perspective) {
+    if (!card?.def.c14Persecutor || card.zone !== 'battlefield' || card.phasedOut || card.cur?.abilitiesDisabled) return 0;
+    const remaining = game.bf().filter(c => c !== card && c.def.c14Persecutor && !c.cur?.abilitiesDisabled);
+    const wouldLose = p => p.life <= 0 || p.poison >= 10 || p.deckedOut || Object.values(p.commanderDamage || {}).some(n => n >= 21);
+    const eliminated = game.alivePlayers().filter(p => p !== card.ctrl && wouldLose(p) && !remaining.some(c => c.ctrl !== p));
+    if (eliminated.includes(perspective)) return -1000;
+    return eliminated.length ? 100 * eliminated.length + (game.alivePlayers().every(p => p === perspective || eliminated.includes(p)) ? 700 : 0) : 0;
+  }
+  MTG.persecutorExitValue = persecutorExitValue;
+
   function permanentGameValue(game, card, perspective) {
     if (!(card instanceof U.CardInst)) return 0;
+    const release = persecutorExitValue(game, card, perspective);
+    if (release) return card.ctrl === perspective ? -release : release;
     const profile = MTG.getDeckAIProfile(card.ctrl && (card.ctrl.deckName || card.ctrl.deck && card.ctrl.deck.name));
     const sem = inferCardSemantics(card.def);
     let value = Math.max(0, card.power || 0) * 0.8 + Math.max(0, card.toughness || 0) * 0.28 + card.mv * 0.2;
@@ -2240,26 +2259,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return hostile ? -value : value;
       }
       if (hint === 'buff' && q.aiHint && q.aiHint.untilEOT) {
-        if (hostile) return -100;
+        // An unhelpful friendly target must still outrank gifting the buff.
+        if (hostile) return -1000 - value;
         const power = Number(q.aiHint.power || 0);
         const toughness = Number(q.aiHint.toughness || 0);
         const keywords = (q.aiHint.keywords || []).map(keyword => String(keyword).toLowerCase());
-        const addsKeyword = keywords.some(keyword => !target.kw(keyword));
-        const hasteMatters = keywords.includes('haste') && target.sick && !target.tapped &&
+        const addsKeyword = keywords.some(keyword => keyword !== 'haste' && !target.kw(keyword));
+        const hasteMatters = keywords.includes('haste') && !target.kw('haste') && target.sick && !target.tapped &&
           game.turnPlayer === player && game.phase === 'main1';
         const statChange = power !== 0 || toughness !== 0;
         const inCombat = !!target.attacking || target.blocking !== null &&
           target.blocking !== undefined && target.blocking !== false;
         const canAttackNow = game.turnPlayer === player && game.phase === 'main1' && !target.tapped &&
-          (!target.sick || target.kw('haste') || hasteMatters) && !target.cur.cantAttack;
+          (!target.sick || target.kw('haste') || hasteMatters) && game.canAttackAtAll(target);
         const top = game.stack[game.stack.length - 1];
         const respondingToHostileTarget = top && top.ctrl !== player &&
           (top.targets || []).flat().includes(target);
-        if (!statChange && !addsKeyword) return -1000;
+        if (!statChange && !addsKeyword && !hasteMatters) return -100;
         if (!inCombat && !canAttackNow && !respondingToHostileTarget) return -100;
-        if (!statChange && keywords.length && !hasteMatters &&
+        if (!statChange && !inCombat && !canAttackNow && !hasteMatters &&
           !keywords.some(keyword => ['indestructible', 'hexproof', 'shroud'].includes(keyword))) return -100;
-        return value + Math.max(0, power) * 1.5 + Math.max(0, toughness) + (addsKeyword ? 2 : 0);
+        const strikeDamage = (canAttackNow || inCombat) && keywords.includes('double strike') &&
+          !target.kw('double strike') ? Math.max(0, game.dmgAmount(target, 'normal')) : 0;
+        return value + Math.max(0, power) * 1.5 + Math.max(0, toughness) +
+          (addsKeyword || hasteMatters ? 2 : 0) + strikeDamage;
       }
       if (hint === 'removal' && q.aiHint && q.aiHint.removalKind === 'destroy' &&
         hostile && indestructibleStopsDestroy(target)) {
@@ -2405,6 +2428,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (hint === 'delve') return -value - ((q.aiHint.keepTargets||[]).includes(card) ? 10000 : 0);
     if (/discard|sacCost|bounceCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) {
       if((q.aiHint?.keepTargets||[]).includes(card))return -10000-value;
+      const release = persecutorExitValue(game,card,player);
+      if (release && /sac|bounce/i.test(hint + ' ' + (q.prompt || ''))) return release;
       let discardScore = -value;
       if (MTG.getAIBaseStyle(player.aiStyle) === 'josh') {
         const sem = inferCardSemantics(card.def);
@@ -3289,13 +3314,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         .filter(spec => ['removal', 'damage', 'bounce', 'debuff'].includes(spec.aiHint?.goal));
     }
     if (!specs || !specs.length) return null;
-    const candidates = game.legalTargets(specs[0], card, player).filter(target => target instanceof U.CardInst && target.ctrl !== player);
+    const candidates = game.legalTargets(specs[0], card, player).filter(target => target instanceof U.CardInst && (target.ctrl !== player || persecutorExitValue(game,target,player)>0));
     if (!candidates.length) return null;
     const compiledDamage = (card.def.oracleImplementation || []).find(operation =>
       operation.kind === 'spell-damage' && operation.what !== 'each opponent');
     const compiledDestroy = specs[0].aiHint && specs[0].aiHint.removalKind === 'destroy';
     const best = candidates.map(target => {
-      let score = permanentGameValue(game, target, player);
+      let score = permanentGameValue(game, target, player) * (target.ctrl === player ? -1 : 1);
       if (compiledDestroy && indestructibleStopsDestroy(target)) score = Number.NEGATIVE_INFINITY;
       if (compiledDamage && target.is('Creature') && damageProtectionSaves(target)) {
         // A damage spell cannot claim a lethal-removal bonus against a shield,
@@ -4040,12 +4065,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         breakdown.threat += best * 0.75;
         if (best < 3) breakdown.timing -= 5;
       }
-      // "Prijateljski" ciljane sposobnosti (protect/buff/untap) nikad ne
-      // aktiviraj kad su jedine legalne mete protivničke — poklanjaš vrijednost.
-      if (ability && ability.targets && ability.targets.some(spec => spec.aiHint && /^(protect|buff|pump|untap)$/.test(String(spec.aiHint.goal || '')))) {
-        const candidates = game.legalTargets(ability.targets[0], card, player);
-        if (!candidates.some(target => target instanceof U.CardInst && target.ctrl === player)) breakdown.base -= 40;
+      // Score the actual benefit for each target slot, including timing and
+      // redundant keywords. Optional empty targets can still grow loyalty.
+      for (const spec of Array.isArray(ability?.targets) ? ability.targets : []) {
+        if (!/^(protect|buff|pump|untap)$/.test(String(spec.aiHint?.goal || ''))) continue;
+        const candidates = game.legalTargets(spec, card, player);
+        const best = Math.max(0, ...candidates.map(target => targetValue(game, player, target,
+          {src: card, spec, aiHint: spec.aiHint})));
+        const optional = spec.upTo || spec.min === 0;
+        if (!best && !(optional && ability.loyalty > 0)) breakdown.safety -= 60;
+        else if (ability.loyalty !== undefined) breakdown.synergy += Math.min(12, best * 0.55);
       }
+      if (ability?.loyalty !== undefined) breakdown.resources += ability.loyalty > 0
+        ? Math.min(4, ability.loyalty * 0.8) : -Math.min(4, -ability.loyalty * 0.35);
       if (q && q.type === 'priority') {
         const top = game.stack[game.stack.length - 1];
         if (top && top.ctrl === player) breakdown.timing -= 45;

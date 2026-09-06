@@ -865,6 +865,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Player departure removes owned objects separately (CR 800.4).
       if (card.zone === 'battlefield' && card.phasedOut) return card;
       const fromZone = card.zone;
+      if(toZone==='battlefield'&&fromZone!=='battlefield'&&MTG.C14){const entry=await MTG.C14.entry(this,card,opts);opts=entry.opts;toZone=entry.toZone||toZone;}
       const oracleFace = MTG.OracleV8Faces?.moveFace(card, toZone, opts);
       if (oracleFace === false) return card;
       const wasBattlefield = fromZone === 'battlefield';
@@ -916,7 +917,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           iid: card.iid, zoneVersion: card.zoneVersion, timestamp: snap.timestamp, def:snap.def, copyEpoch:snap.copyEpoch, copying:snap.copying,
           oracleFaces:snap.oracleFaces,oracleFace:snap.oracleFace,attachedTo:snap.attachedTo,attachedHostVersion:snap.attachedHostVersion,
           power: snap.power, toughness: snap.toughness,
-          enteredTurn:snap.enteredTurn,attackedTurn:snap.attackedTurn,renowned:snap.renowned,attachedSources:snap.attachedSources,
+          enteredTurn:snap.enteredTurn,attackedTurn:snap.attackedTurn,renowned:snap.renowned,attachedSources:snap.attachedSources,attachments:snap.attachments,
           name:snap.name,types:snap.types.slice(),subtypes:snap.subtypes.slice(),super:snap.super.slice(),colors:snap.colors.slice(),kw:snap.kw.slice(),
           counters:{...snap.counters},isToken:snap.isToken,commander:snap.commander,mv:snap.mv,ctrl:snap.ctrl,owner:snap.owner,
           changeling:!!snap.changeling,
@@ -1155,6 +1156,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (this._graveyardLeaveBatch) this._graveyardLeaveBatch.push({ card, to: toZone, snap });
         else await this.emit('cardsLeftGraveyard', { cards: [card], snapshots:[snap], to: toZone });
       }
+      if(toZone==='graveyard'&&fromZone!=='graveyard'&&card.zone==='graveyard')await this.emit('c14EnteredGraveyard',{card,version:card.zoneVersion});
       if(toZone==='exile'&&fromZone!=='exile')await MTG.C21Rules?.exile(this,card,fromZone);
       await this.returnOracleExiles();
       this.recalc();
@@ -1352,6 +1354,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async handleETB(card, opts) {
+      if(card.castMeta?.alt?.suspend)card.meta.c14SuspendHaste=card.ctrl.idx;
+      if(opts.c14EntryCopy){MTG.OracleV8Copies.applyCopy(this,card,opts.c14EntryCopy);this.recalc();}
       let d = card.def;
       const entryMinusCounters = [];
       const entryPlusCounters = [];
@@ -3426,6 +3430,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         damageDivision: ctx.damageDivision
           ? ctx.damageDivision.map(entry => Object.assign({}, entry)) : null,
       };
+      MTG.C14?.targetStackObjects.set(ctx,so);
       this.stack.push(so);
       this.queueWardTriggers(so, ctx);
       this.note('stack', {});
@@ -3469,7 +3474,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (spec.what === 'player' || spec.what === 'opponent') {
         for (const p of this.alivePlayers()) {
           if (spec.what === 'opponent' && p === ctrl) continue;
-          if (spec.filter && !spec.filter(this, p, ctrl)) continue;
+          if (spec.filter && !spec.filter(this, p, ctrl, src)) continue;
           if (!checkProt(p)) continue;
           out.push(p);
         }
@@ -3591,7 +3596,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (cands.length < min) return false;
         if (max === 0) { ctx.targets.push([]); continue; }
         const targetHint=spec.aiHint?.goal==='counterTransferRecipient'?{...spec.aiHint,counterTransferSource:spec.aiHint.counterSourceTarget==='self'?src:[ctx.targets[spec.aiHint.counterSourceTarget]].flat()[0]}:spec.aiHint;
-        const decision = await (ctx.decisionPlayer||ctrl).controller.decide(this, {
+        const decisionPlayer=spec.chooseByOpponent?await MTG.E.chooseOpponent(this,ctrl,{source:src,prompt:'Choose an opponent to choose '+(spec.prompt||'this target')}):(ctx.decisionPlayer||ctrl);
+        if(!decisionPlayer)return false;
+        const decision = await decisionPlayer.controller.decide(this, {
           type: 'chooseTargets', spec, candidates: cands, min: Math.min(min, cands.length), max,
           src, so: ctx.so || null, prompt: spec.prompt || 'Izaberi metu',
           // Arena-style drag may suggest one exact target, but legality remains
@@ -3636,7 +3643,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const isInstantSorcery = isSpell && this.isInstantSorcerySpell(ctx.so);
       for (const t of ctx.suppressTargetEvents?[]:targetedNow) await this.emit('targeted', {
         card: t, byPlayer: ctrl, src, isSpell, isInstantSorcery,
-        isActivatedAbility, isTriggeredAbility, ability: ctx.ability || null, so: ctx.so || null,
+        isActivatedAbility, isTriggeredAbility, ability: ctx.ability || null, so: ctx.so || null, targetContext:ctx,
       });
       return true;
     }
@@ -3802,7 +3809,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 if (dmg >= 21) { dead = true; why = 'commander damage (21+)'; }
               }
             }
-            if (dead) { await this.playerLoses(p, why); any = true; }
+            if (dead && (!this.canLoseGame || this.canLoseGame(p))) { await this.playerLoses(p, why); any = true; }
           }
           if (this.gameOver) return;
           if (await this.performPermanentStateBasedActions()) any = true;
@@ -3963,7 +3970,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async playerLoses(p, why) {
-      if (p.lost) return;
+      if (p.lost || this.canLoseGame && !this.canLoseGame(p) && !/conced|quit/i.test(why||'')) return;
       p.lost = true;
       this.lg(`☠️ ${U.playerVerb(p, 'lose', 'loses')} (${why}).`, 'lose');
       // `this.battlefield` instead of `bf()`: a phased-out permanent must leave

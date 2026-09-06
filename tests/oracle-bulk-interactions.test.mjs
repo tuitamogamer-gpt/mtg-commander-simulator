@@ -587,6 +587,10 @@ function stageGenericTarget(MTG, context, target, index, effect = null) {
   }
   if (target.attacking || target.attackingOrBlocking || target.controller === 'defending-player') card.attacking = a;
   if (target.blocking) card.blocking = 1;
+  // Prove haste on a newly arrived creature that can benefit from it. A ready
+  // witness made the AI proof depend on arbitrary choices between useless buffs.
+  if (effect?.action === 'pump' && effect.keywords?.includes('haste') && zone === 'battlefield' &&
+      types.includes('Creature') && !card.attacking && !card.blocking) card.sick = true;
   if (target.stat && target.stat!=='mv') {
     card.def[target.stat] = String(target.threshold);
     game.recalc();

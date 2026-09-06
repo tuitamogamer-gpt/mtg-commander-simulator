@@ -37,7 +37,7 @@ function showLoading(mode) {
   veil.className = 'mainmenu-loadveil';
   veil.setAttribute('role', 'status');
   veil.setAttribute('aria-live', 'polite');
-  veil.innerHTML = `<div><i aria-hidden="true"></i><span>OPENING THE TABLE</span><h2>${mode === 'online' ? 'Preparing Commander Live.' : mode === 'import' ? 'Loading the decklist importer.' : 'Loading all 37 decks.'}</h2><p>The complete rules engine stays in this browser. This first load can take a moment.</p></div>`;
+  veil.innerHTML = `<div><i aria-hidden="true"></i><span>OPENING THE TABLE</span><h2>${mode === 'online' ? 'Preparing Commander Live.' : mode === 'import' ? 'Loading the decklist importer.' : 'Loading all 42 decks.'}</h2><p>The complete rules engine stays in this browser. This first load can take a moment.</p></div>`;
   root.appendChild(veil);
   page.inert = true;
   root.setAttribute('aria-busy', 'true');
@@ -204,7 +204,7 @@ if (localStaticHost) {
 
 window.render_game_to_text = () => JSON.stringify({
   mode: 'menu',
-  deckCount: 37,
+  deckCount: 42,
   actions: ['Start a solo table', 'Create a Live table', 'Import your decklist here', 'Guide'],
   onboardingOpen: !!page.querySelector('.mainmenu-onboarding'),
   account: globalThis.MTGAccount?.user ? {

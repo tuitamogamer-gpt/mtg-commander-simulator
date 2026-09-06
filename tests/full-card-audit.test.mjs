@@ -55,8 +55,8 @@ test('svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putan
   const active = new Set(Object.values(MTG.DECKS).flatMap(deck => deck.cards.map(entry => entry.name)));
   const raw = new Set(Object.keys(MTG.RAW_DATA.cards));
   const oracleBatchCards = new Set((MTG.ORACLE_BATCHES || []).flatMap(batch => batch.cards.map(entry => entry.raw.name)));
-  assert.equal(active.size, 2002);
-  assert.equal(raw.size, 1767 + oracleBatchCards.size);
+  assert.equal(active.size, 2218);
+  assert.equal(raw.size, 1832 + oracleBatchCards.size);
 
   for (const name of raw) {
     const def = MTG.DEFS[name];

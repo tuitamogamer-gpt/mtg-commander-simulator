@@ -414,7 +414,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }, {
     on: 'upkeep', desc: 'Twenty artifacts win',
     filter: (g, self, data) => data.player === self.ctrl && g.bf().filter(card => card.ctrl === self.ctrl && card.is('Artifact')).length >= 20,
-    run: async ctx => { ctx.g.gameOver = true; ctx.g.winner = ctx.you; ctx.g.lg(`${ctx.you.name} wins with Hellkite Tyrant!`); },
+    run: async ctx => { if(ctx.g.canWinGame&&!ctx.g.canWinGame(ctx.you))return;ctx.g.gameOver = true; ctx.g.winner = ctx.you; ctx.g.lg(`${ctx.you.name} wins with Hellkite Tyrant!`); },
   }] };
 
   SC['Summon: Kujata'] = {

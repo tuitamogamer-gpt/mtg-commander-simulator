@@ -30,7 +30,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const attr of fresh.attributes) if (old.getAttribute(attr.name) !== attr.value) old.setAttribute(attr.name, attr.value);
     old._arenaDropTarget = fresh._arenaDropTarget;
   };
-  const scrollSelector = '.hand, .myboard, .oppsouter, .oppswrap, .oppstrip, .boardlanecards, .oppresourcecards, .manaartifactstrip, .landstrip, .ct-decision-content, .actionstageinfo, .sidebar, .sidelog, .overlay, .modal, .sheet, .quickmenu';
+  const scrollSelector = '.hand, .myboard, .oppsouter, .oppswrap, .oppstrip, .boardlanecards, .oppresourcecards, .manaartifactstrip, .landstrip, .ct-decision-content, .actionstageinfo, .sidebar, .sidelog, .overlay, .modal, .attackalloclanes, .attackpool, .sheet, .quickmenu';
   const path = (node, root) => {
     const parts = [];
     while (node && node !== root) {

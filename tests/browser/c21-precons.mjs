@@ -18,9 +18,9 @@ try{
     page.setDefaultTimeout(10000);page.on('pageerror',e=>errors.push({deck:deck.name,width,error:e.message}));
     page.on('console',m=>{if(m.type()==='error')errors.push({deck:deck.name,width,error:m.text()});});
     await page.addInitScript(()=>{localStorage.setItem('mtgOnboardingComplete','1');localStorage.setItem('mtgReducedMotion','1');localStorage.setItem('mtgManaMode','auto');});
-    await page.goto(base);assert.equal(await page.evaluate(()=>JSON.parse(render_game_to_text()).deckCount),37);
+    await page.goto(base);assert.equal(await page.evaluate(()=>JSON.parse(render_game_to_text()).deckCount),42);
     await page.locator('[data-menu-action="solo"]').first().click();await page.waitForSelector('.deckentry',{timeout:30000});
-    assert.equal(await page.evaluate(()=>Object.keys(MTG.DECKS).length),37);
+    assert.equal(await page.evaluate(()=>Object.keys(MTG.DECKS).length),42);
     await page.locator('.decksearch input').fill(deck.name);await page.locator('.deckcard:visible').click();
     assert.ok((await page.locator('.deckspotlight').innerText()).includes(deck.commander));
     await page.waitForFunction(()=>[...document.querySelectorAll('.deckspotlight img')].every(img=>img.complete&&img.naturalWidth>0));
