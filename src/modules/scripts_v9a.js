@@ -1855,9 +1855,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Sacrifice a Desert: exile all graveyards',
       cost: { tap: true, mana: '{2}', sac: (g, permanent) => permanent.hasSub('Desert') },
       run: async ctx => {
-        for (const q of ctx.g.players) {
-          while (q.graveyard.length) { const c = q.graveyard.pop(); c.zone = 'exile'; q.exile.push(c); }
-        }
+        await ctx.g.moveGraveyardBatch(ctx.g.players.flatMap(q => q.graveyard), 'exile');
         ctx.g.lg('Scavenger Grounds: all graveyards exiled!');
       },
       aiScore: (g, c, p) => E.eachOpp(g, p).some(o => o.graveyard.length > 10) ? 3 : 0.1,

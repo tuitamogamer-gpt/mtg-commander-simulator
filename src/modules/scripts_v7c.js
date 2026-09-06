@@ -315,10 +315,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         on: 'dies', desc: 'Exile + hit counter', filter: (g, self, d) => d.snap.ctrl !== self.ctrl && d.snap.types.includes('Creature'),
         run: async ctx => {
           const c = ctx.data.card;
-          if (c.zone === 'graveyard' && !c.isToken) {
-            c.owner.graveyard.splice(c.owner.graveyard.indexOf(c), 1);
-            c.zone = 'exile'; c.owner.exile.push(c);
-            c.counters = c.counters || {}; ctx.g.addCounters(c, 'hit', 1);
+          // Follow only the graveyard object created by this death. A prior
+          // reanimation and second death is a different object (CR 400.7).
+          if (c.zone === 'graveyard' && c.zoneVersion === ctx.data.snap.zoneVersion + 1 && !c.isToken) {
+            await ctx.g.move(c, 'exile');
+            ctx.g.addCounters(c, 'hit', 1);
             ctx.g.lg(`Mari exiles ${c.name} (hit counter).`);
           }
         },

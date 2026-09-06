@@ -1664,9 +1664,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
     resolve: async ctx => {
       for (const c of ctx.g.bf().filter(c => c.is('Creature')).slice()) await ctx.g.exileCard(c);
-      for (const q of ctx.g.players) {
-        while (q.graveyard.length) { const c = q.graveyard.pop(); c.zone = 'exile'; q.exile.push(c); }
-      }
+      await ctx.g.moveGraveyardBatch(ctx.g.players.flatMap(q => q.graveyard), 'exile');
       const card = ctx.src;
       if (card.zone === 'stack' || card.zone === 'graveyard') {
         ctx.g.remove(card); card.zone = 'library'; ctx.you.library.unshift(card);

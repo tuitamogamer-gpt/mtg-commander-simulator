@@ -1389,9 +1389,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         label: "Sac: exile opponents' graveyards", cost: { tap: true, sacSelf: true },
         run: async ctx => {
-          for (const o of E.eachOpp(ctx.g, ctx.you)) {
-            while (o.graveyard.length) { const c = o.graveyard.pop(); c.zone = 'exile'; o.exile.push(c); }
-          }
+          await ctx.g.moveGraveyardBatch(E.eachOpp(ctx.g, ctx.you).flatMap(o => o.graveyard), 'exile');
           ctx.g.lg("Soul-Guide Lantern: opponents' graveyards exiled.");
         },
         aiScore: (g, c, p) => E.eachOpp(g, p).some(o => o.graveyard.length > 8) ? 4 : 0.3,
