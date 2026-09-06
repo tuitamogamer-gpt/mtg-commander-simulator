@@ -116,6 +116,12 @@ The source picker is for **human spell payments that need additional sources**. 
 
 **Automatic mana is separate from automatic priority passing.** It pays for an action you chose; it does not choose your spell, dismiss required decisions, or disable **HOLD**. Hybrid, two-brid, and Phyrexian symbols can still ask you how to pay when multiple legal options exist—for example **Pay {W}**, **Pay {2}**, or **Pay 2 life**—in either mana mode. Use **MENU → Priority stops** to configure response windows independently.
 
+### Commander bounce and recasting
+
+When an effect returns a commander to its owner's hand, its owner chooses **Hand** or **Command zone**. This also applies to mass bounce, including **Cyclonic Rift** cast for its overload cost. Solo AI prioritizes **Hand** on Easy, Normal, and Hard so it can cast the commander again without commander tax.
+
+Commander tax adds **{2} for each previous cast from the command zone**, and applies only when casting from that zone. Casting from hand does not pay or increase that tax, and does not reset the count for future command-zone casts. For example, a commander with a printed cost of three mana and three previous command-zone casts costs three mana from hand or nine from the command zone, before other cost adjustments.
+
 ## Import your deck
 
 Build or edit your list in a deck builder such as Moxfield, then copy its **plain-text export**. On the home screen, choose **Import your decklist here**, paste the list, and press **Check decklist**. Once validation passes, choose **Save to My Library** and select the saved deck to continue through Deck → Pod → Review.

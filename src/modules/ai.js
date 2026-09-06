@@ -1353,6 +1353,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const kind = q.aiHint && q.aiHint.kind || '';
       const keys = q.options.map(o => o.key);
       switch (kind) {
+        case 'commanderZone': return q.aiHint.toZone === 'hand' ? 'stay' : 'cz';
         case 'exertAttack': return MTG.OracleV8Exert.choose(g,this.p,q);
         case 'exploit': return MTG.OracleV8Exploit.choose(g,this.p,q);
         case 'tapUntap': { const target=q.aiHint.target,desired=target?.ctrl===this.p?'untap':'tap';return target?.tapped===(desired==='tap')&&keys.includes('none')?'none':desired; }
