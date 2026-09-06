@@ -1329,10 +1329,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         } else if (mode === 2) {
           const mine = ctx.targets[ti++], theirs = ctx.targets[ti++];
           if (mine && theirs && mine.zone === 'battlefield' && theirs.zone === 'battlefield') {
-            const minePower = Math.max(0, mine.power), theirPower = Math.max(0, theirs.power);
-            await ctx.g.damageCreature(mine, theirs, minePower, { deferSBA: true });
-            await ctx.g.damageCreature(theirs, mine, theirPower, { deferSBA: true });
-            await ctx.g.checkSBA();
+            await ctx.g.fight(mine,theirs);
           }
         }
       }

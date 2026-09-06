@@ -3385,6 +3385,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (typeof prepareTargets === 'function') {
         const prepared = await prepareTargets(ctx);
         if (prepared === false) return;
+        targetSpecs=ctx.boundTargetSpecs||targetSpecs;
       }
       ctx.targetIdentities = this.captureTargetIdentities(ctx.targets);
       // Crime se počini čim trigger cilja protivnika, njegov permanent, spell
@@ -3580,7 +3581,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (cands.length < min) return false;
         if (max === 0) { ctx.targets.push([]); continue; }
         const targetHint=spec.aiHint?.goal==='counterTransferRecipient'?{...spec.aiHint,counterTransferSource:spec.aiHint.counterSourceTarget==='self'?src:[ctx.targets[spec.aiHint.counterSourceTarget]].flat()[0]}:spec.aiHint;
-        const decision = await ctrl.controller.decide(this, {
+        const decision = await (ctx.decisionPlayer||ctrl).controller.decide(this, {
           type: 'chooseTargets', spec, candidates: cands, min: Math.min(min, cands.length), max,
           src, so: ctx.so || null, prompt: spec.prompt || 'Izaberi metu',
           // Arena-style drag may suggest one exact target, but legality remains
@@ -3623,7 +3624,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const isActivatedAbility = !!ctx.isActivatedAbility;
       const isTriggeredAbility = !isSpell && !isActivatedAbility;
       const isInstantSorcery = isSpell && this.isInstantSorcerySpell(ctx.so);
-      for (const t of targetedNow) await this.emit('targeted', {
+      for (const t of ctx.suppressTargetEvents?[]:targetedNow) await this.emit('targeted', {
         card: t, byPlayer: ctrl, src, isSpell, isInstantSorcery,
         isActivatedAbility, isTriggeredAbility, ability: ctx.ability || null, so: ctx.so || null,
       });

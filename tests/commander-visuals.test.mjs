@@ -8,12 +8,15 @@ import { loadEngine } from './helpers/load-engine.mjs';
 const MTG = loadEngine();
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-test('svaki default main commander ima zaseban cinematic asset', () => {
+test('postojeći cinematic asseti ostaju dostupni; pet Starter precona koristi slike bez novih videa', () => {
   const defaults = Object.values(MTG.DECKS).flatMap(deck => MTG.defaultCommanders(deck, MTG.DEFS));
-  assert.equal(new Set(defaults).size, 28);
+  assert.equal(new Set(defaults).size, 33);
   assert.equal(Object.keys(MTG.COMMANDER_INTROS).length, 28);
   for (const name of defaults) {
     const asset = MTG.COMMANDER_INTROS[name];
+    if(['Isperia, Supreme Judge','Gisa and Geralf','Kardur, Doomscourge','Atarka, World Render','Emmara, Soul of the Accord'].includes(name)){
+      assert.equal(asset,undefined,`${name}: no Starter commander video`);continue;
+    }
     assert.ok(asset, `${name} nema cinematic mapiranje`);
     assert.match(asset, /^\.\/assets\/commander-intros\/[a-z0-9-]+\.mp4$/);
     const file = path.join(root, asset.slice(2));
@@ -36,13 +39,13 @@ test('Turtle Power default je Leonardo plus Michelangelo kao legalan partner duo
   assert.equal(player.library.some(card => pair.includes(card.name)), false);
 });
 
-test('only the 27 predefined decks receive commander videos, including both Turtle partners', () => {
+test('32 predefined decks use available videos or a still image; custom decks never inherit videos', () => {
   const predefined = Object.values(MTG.DECKS).filter(deck => !deck.custom && !deck.imported);
-  assert.equal(predefined.length, 27);
+  assert.equal(predefined.length, 32);
   for (const deck of predefined) {
     for (const name of MTG.defaultCommanders(deck, MTG.DEFS)) {
-      assert.equal(MTG.commanderIntroForDeck(deck, name), MTG.COMMANDER_INTROS[name], `${deck.name}: ${name}`);
-      assert.equal(MTG.commanderIntroForDeck({ ...deck }, name), MTG.COMMANDER_INTROS[name]);
+      assert.equal(MTG.commanderIntroForDeck(deck, name), MTG.COMMANDER_INTROS[name]||null, `${deck.name}: ${name}`);
+      assert.equal(MTG.commanderIntroForDeck({ ...deck }, name), MTG.COMMANDER_INTROS[name]||null);
       assert.equal(MTG.commanderIntroForDeck({ ...deck, custom: true }, name), null);
       assert.equal(MTG.commanderIntroForDeck({ ...deck, imported: true }, name), null);
     }

@@ -14,6 +14,7 @@ const ACTIVE_X_SPELLS = [
   'Biomass Mutation',
   "Black Sun's Zenith",
   'Champions from Beyond',
+  'Clan Defiance',
   "Commander's Insight",
   'Curse of the Swine',
   'Disorder in the Court',
@@ -40,7 +41,9 @@ const ACTIVE_X_SPELLS = [
   'Kurbis, Harvest Celebrant',
   'Lattice Library',
   'Lifeblood Hydra',
+  'Magmaquake',
   'Mana Bloom',
+  'March of the Multitudes',
   'Martial Coup',
   'Mikaeus, the Lunarch',
   'Nova Flame',
@@ -49,11 +52,13 @@ const ACTIVE_X_SPELLS = [
   'Primal Might',
   'Primo, the Unbounded',
   'Primordial Hydra',
+  'Profane Command',
   'Pull from Tomorrow',
   'Royal Talon Fighter Jet',
   'Shellshock',
   'Silkguard',
   'Slash Clone',
+  "Sphinx's Revelation",
   'Springleaf Parade',
   'Starstorm',
   'Steelbane Hydra',
@@ -66,6 +71,7 @@ const ACTIVE_X_SPELLS = [
   "Tyvar's Stand",
   'Universal Surveillance',
   'West Coast Expansion',
+  "White Sun's Zenith",
   "Worldsoul's Rage",
   'Zenith Festival',
 ].sort();
@@ -146,7 +152,7 @@ async function resolveAll(game) {
   assert.ok(guard < 180, 'X trigger/stack petlja se nije smirila');
 }
 
-test('inventar pokriva sva 63 aktivna X spella i sve dodatne X-mana putanje', () => {
+test('inventar pokriva svih 69 aktivnih X spellova i sve dodatne X-mana putanje', () => {
   const active = [...new Set(Object.values(MTG.DECKS).flatMap(deck => deck.cards.map(entry => entry.name)))]
     .filter(name => MTG.parseCost(MTG.DEFS[name].cost || '').x > 0)
     .sort();

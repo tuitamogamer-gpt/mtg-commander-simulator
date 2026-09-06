@@ -1317,8 +1317,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(effect.action==='fight') {
       const a=subjects[0], b=genericEffectSubjects(ctx,effect.otherTarget)[0];
       if(!a?.is('Creature')||a.zone!=='battlefield'||!b?.is('Creature')||b.zone!=='battlefield')return;
-      const powerA=Math.max(0,a.power),powerB=Math.max(0,b.power);
-      ctx._oracleDamageDealt=await ctx.g.damageBatch([{src:a,target:b,n:powerA},{src:b,target:a,n:powerB}],{deferSBA:true});
+      ctx._oracleDamageDealt=await ctx.g.fight(a,b,{deferSBA:true});
       return;
     }
     if(effect.action==='bite') {

@@ -1,0 +1,331 @@
+{
+  "completedOn": "2026-09-06",
+  "status": "local-complete",
+  "scope": {
+    "newDecks": 5,
+    "activeDecks": 32,
+    "createdVideos": 0,
+    "commit": false,
+    "push": false,
+    "deploy": false
+  },
+  "sources": {
+    "moxfieldIndex": "https://moxfield.com/decks/public?q=eyJmb3JtYXQiOiJjb21tYW5kZXJQcmVjb25zIn0%3D",
+    "observedIndexRecords": 193,
+    "indexOwner": "WizardsOfTheCoast",
+    "indexTitles": "As displayed in the source UI, including visible truncation. Collector and Anthology editions are retained.",
+    "decks": [
+      {
+        "name": "First Flight",
+        "commander": "Isperia, Supreme Judge",
+        "total": 100,
+        "unique": 72,
+        "url": "https://moxfield.com/decks/4aWzNrYbU0utRRc4VP2y_g",
+        "export": "first-flight.txt",
+        "sha256": "82996f5067d676efc354794a8cef5a5faac9465c3ef5df2a142a1d14061e8dd3"
+      },
+      {
+        "name": "Grave Danger",
+        "commander": "Gisa and Geralf",
+        "total": 100,
+        "unique": 71,
+        "url": "https://moxfield.com/decks/C69lZxaCm0mccIVMd6ZAMg",
+        "export": "grave-danger.txt",
+        "sha256": "bf84959460001e26f072d791523b373b1a18153e51585e97a6e0d5bc807c997c"
+      },
+      {
+        "name": "Chaos Incarnate",
+        "commander": "Kardur, Doomscourge",
+        "total": 100,
+        "unique": 73,
+        "url": "https://moxfield.com/decks/y48MuxOOF0-B5kxdP7zNsw",
+        "export": "chaos-incarnate.txt",
+        "sha256": "494ba41e5aea25671384894de681708e8fa5500d0cb6cc6c76b77415e69eeaba"
+      },
+      {
+        "name": "Draconic Destruction",
+        "commander": "Atarka, World Render",
+        "total": 100,
+        "unique": 72,
+        "url": "https://moxfield.com/decks/vKenUyAq5Eaneqf1Dazp1w",
+        "export": "draconic-destruction.txt",
+        "sha256": "be8a1342b4f2195824adbf7b9d7b73fc9772911fb4711c763f1e34713bf86e8f"
+      },
+      {
+        "name": "Token Triumph",
+        "commander": "Emmara, Soul of the Accord",
+        "total": 100,
+        "unique": 73,
+        "url": "https://moxfield.com/decks/s-gC4gfPC0eVReuXm2Eo7w",
+        "export": "token-triumph.txt",
+        "sha256": "97dbb8c630aabf76cfd168a8bbf62ef51a6196ab8ac5b154a15743695d1f61b1"
+      }
+    ],
+    "sha256": {
+      "chaos-incarnate.txt": "494ba41e5aea25671384894de681708e8fa5500d0cb6cc6c76b77415e69eeaba",
+      "draconic-destruction.txt": "be8a1342b4f2195824adbf7b9d7b73fc9772911fb4711c763f1e34713bf86e8f",
+      "first-flight.txt": "82996f5067d676efc354794a8cef5a5faac9465c3ef5df2a142a1d14061e8dd3",
+      "grave-danger.txt": "bf84959460001e26f072d791523b373b1a18153e51585e97a6e0d5bc807c997c",
+      "moxfield-index.tsv": "afb27c2e6a261513aa9bb21421f0e5b4c5d46c79af4a84b3fab66ef0e8e22f74",
+      "oracle.json": "b7de24395931a747ff23103dc7f28f259cba42ac55054c8eec49dfa1eaeb0014",
+      "token-triumph.txt": "97dbb8c630aabf76cfd168a8bbf62ef51a6196ab8ac5b154a15743695d1f61b1"
+    }
+  },
+  "catalog": {
+    "before": 19484,
+    "after": 19545,
+    "eligibleForDeckImport": 19502,
+    "distinctBatchCards": 337,
+    "reused": 276,
+    "new": 61,
+    "oldBaseCardObjectsUnchanged": 1626,
+    "oldRawDeckListsUnchanged": 28,
+    "localBatchCardImages": 337,
+    "existingOracleTextDifferences": [
+      {
+        "name": "Soul Snare",
+        "source": "{W}, Sacrifice this enchantment: Exile target creature that's attacking you or a planeswalker you control.",
+        "runtime": "{W}, Sacrifice Soul Snare: Exile target creature that's attacking you or a planeswalker you control."
+      },
+      {
+        "name": "Steel Hellkite",
+        "source": "Flying\n{2}: This creature gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn.",
+        "runtime": "Flying\n{2}: Steel Hellkite gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by Steel Hellkite this turn. Activate only once each turn."
+      }
+    ]
+  },
+  "verification": {
+    "fullSuite": {
+      "tests": 7215,
+      "pass": 7215,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 1068763.787625
+    },
+    "filesUnchangedDuringFullSuite": 907,
+    "newCardBehaviorTests": 38,
+    "newNamesWithExecutedAssertions": 61,
+    "combinedPlaneswalkerXAndNewCardTests": 56,
+    "wholeDeckGames": {
+      "passed": 32,
+      "players": 4,
+      "naturalWinner": true,
+      "turnLimitReached": false,
+      "pendingTriggers": 0
+    },
+    "browser": {
+      "passed": 10,
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "width": 390,
+          "height": 844
+        }
+      ],
+      "errors": [],
+      "cases": [
+        {
+          "deck": "First Flight",
+          "width": 1440,
+          "opponent": "Grave Danger",
+          "cards": 100,
+          "commander": "Isperia, Supreme Judge",
+          "manaSpent": 6,
+          "stackObserved": true,
+          "pendingTriggers": 0,
+          "stackRemaining": 0,
+          "aiFallback": false,
+          "horizontalOverflow": false
+        },
+        {
+          "deck": "Grave Danger",
+          "width": 1440,
+          "opponent": "Chaos Incarnate",
+          "cards": 100,
+          "commander": "Gisa and Geralf",
+          "manaSpent": 4,
+          "stackObserved": true,
+          "pendingTriggers": 0,
+          "stackRemaining": 0,
+          "aiFallback": false,
+          "horizontalOverflow": false
+        },
+        {
+          "deck": "Chaos Incarnate",
+          "width": 1440,
+          "opponent": "Draconic Destruction",
+          "cards": 100,
+          "commander": "Kardur, Doomscourge",
+          "manaSpent": 4,
+          "stackObserved": true,
+          "pendingTriggers": 0,
+          "stackRemaining": 0,
+          "aiFallback": false,
+          "horizontalOverflow": false
+        },
+        {
+          "deck": "Draconic Destruction",
+          "width": 1440,
+          "opponent": "Token Triumph",
+          "cards": 100,
+          "commander": "Atarka, World Render",
+          "manaSpent": 7,
+          "stackObserved": true,
+          "pendingTriggers": 0,
+          "stackRemaining": 0,
+          "aiFallback": false,
+          "horizontalOverflow": false
+        },
+        {
+          "deck": "Token Triumph",
+          "width": 1440,
+          "opponent": "First Flight",
+          "cards": 100,
+          "commander": "Emmara, Soul of the Accord",
+          "manaSpent": 2,
+          "stackObserved": true,
+          "pendingTriggers": 0,
+          "stackRemaining": 0,
+          "aiFallback": false,
+          "horizontalOverflow": false
+        },
+        {
+          "deck": "First Flight",
+          "width": 390,
+          "opponent": "Grave Danger",
+          "cards": 100,
+          "commander": "Isperia, Supreme Judge",
+          "manaSpent": 6,
+          "stackObserved": true,
+          "pendingTriggers": 0,
+          "stackRemaining": 0,
+          "aiFallback": false,
+          "horizontalOverflow": false
+        },
+        {
+          "deck": "Grave Danger",
+          "width": 390,
+          "opponent": "Chaos Incarnate",
+          "cards": 100,
+          "commander": "Gisa and Geralf",
+          "manaSpent": 4,
+          "stackObserved": true,
+          "pendingTriggers": 0,
+          "stackRemaining": 0,
+          "aiFallback": false,
+          "horizontalOverflow": false
+        },
+        {
+          "deck": "Chaos Incarnate",
+          "width": 390,
+          "opponent": "Draconic Destruction",
+          "cards": 100,
+          "commander": "Kardur, Doomscourge",
+          "manaSpent": 4,
+          "stackObserved": true,
+          "pendingTriggers": 0,
+          "stackRemaining": 0,
+          "aiFallback": false,
+          "horizontalOverflow": false
+        },
+        {
+          "deck": "Draconic Destruction",
+          "width": 390,
+          "opponent": "Token Triumph",
+          "cards": 100,
+          "commander": "Atarka, World Render",
+          "manaSpent": 7,
+          "stackObserved": true,
+          "pendingTriggers": 0,
+          "stackRemaining": 0,
+          "aiFallback": false,
+          "horizontalOverflow": false
+        },
+        {
+          "deck": "Token Triumph",
+          "width": 390,
+          "opponent": "First Flight",
+          "cards": 100,
+          "commander": "Emmara, Soul of the Accord",
+          "manaSpent": 2,
+          "stackObserved": true,
+          "pendingTriggers": 0,
+          "stackRemaining": 0,
+          "aiFallback": false,
+          "horizontalOverflow": false
+        }
+      ]
+    },
+    "fullHumanGame": {
+      "humanDeck": "Grave Danger",
+      "aiDeck": "Draconic Destruction",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "iterations": 132,
+      "lands": 6,
+      "spells": 9,
+      "attacks": 2,
+      "decisions": [
+        "mulligan",
+        "main",
+        "priority",
+        "attackers",
+        "combatReview",
+        "chooseTargets",
+        "blockers"
+      ],
+      "errors": [],
+      "requests": [],
+      "endingTurn": 16,
+      "winner": "Draconic Destruction",
+      "rematchPassed": true
+    },
+    "skillClient": {
+      "evidence": "output/precon-starter-2026-09-06/skill-final/",
+      "scope": "Initial Solo action opens the first-game guide; 32 decks reported by render_game_to_text.",
+      "pageOrConsoleErrors": 0
+    },
+    "certification": {
+      "decks": 32,
+      "cardDeckChecks": 2708,
+      "passedCardDeckChecks": 2708,
+      "failedCardDeckChecks": 0,
+      "uniqueCards": 1808,
+      "uniquePassed": 1808,
+      "uniqueFailed": 0,
+      "rawCards": 19545,
+      "rawPassed": 19545,
+      "rawFailed": 0,
+      "inactiveRawCards": 17737,
+      "inactiveRawPassed": 17737,
+      "inactiveRawFailed": 0,
+      "oracleBatchCards": 17858
+    },
+    "syntax": "PASS",
+    "sourceAudit": {
+      "status": "PASS",
+      "duplicateScriptRegistrations": 0,
+      "simplifiedCards": 0
+    },
+    "postSuiteChange": {
+      "file": "scripts/certify-cards.mjs",
+      "scope": "Two generated Markdown sentences corrected: Oracle batch cards may now be active precon cards. No certification logic changed.",
+      "verifiedBy": [
+        "npm run check",
+        "npm run certify:strict"
+      ]
+    },
+    "evidenceDirectory": "output/precon-starter-2026-09-06/"
+  },
+  "limits": [
+    "Local validation; no production deployment performed.",
+    "Browser coverage is Chromium: all five selector/paid-commander paths on desktop and phone plus one complete human match and rematch.",
+    "The complete CSV catalog export remains the explicitly dated 5 September snapshot; this report and exact source lists document the newer 61 definitions."
+  ]
+}

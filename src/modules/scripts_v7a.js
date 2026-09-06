@@ -811,10 +811,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         else {
           const target = ctx.targets[0];
           if (ctx.src.is('Creature') && ctx.g.bf().includes(target) && target.is('Creature')) {
-            await ctx.g.damageBatch([
-              { src: ctx.src, target, n: ctx.src.power },
-              { src: target, target: ctx.src, n: target.power },
-            ]);
+            await ctx.g.fight(ctx.src,target);
           }
         }
       },

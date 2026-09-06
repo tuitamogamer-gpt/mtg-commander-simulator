@@ -23,6 +23,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+      'First Flight': {icon:'🦅',colors:['W','U'],style:'Flying and control',blurb:'Isperia protects the skies with flying creatures, card draw, and timely answers.',set:'Starter Commander Decks (2022)'},
+      'Grave Danger': {icon:'🧟',colors:['U','B'],style:'Zombies and graveyard',blurb:'Gisa and Geralf fill the graveyard and cast returning Zombies to rebuild the horde.',set:'Starter Commander Decks (2022)'},
+      'Chaos Incarnate': {icon:'🔥',colors:['B','R'],style:'Forced combat and sacrifice',blurb:'Kardur sends opposing armies into combat while demons, sacrifice, and damage wear down the table.',set:'Starter Commander Decks (2022)'},
+      'Draconic Destruction': {icon:'🐉',colors:['R','G'],style:'Dragons and ramp',blurb:'Atarka leads a flight of Dragons into double-strike attacks, backed by ramp and powerful combat triggers.',set:'Starter Commander Decks (2022)'},
+      'Token Triumph': {icon:'🌱',colors:['G','W'],style:'Tokens and convoke',blurb:'Emmara creates Soldiers as she taps, growing a wide army with convoke, counters, and creature boosts.',set:'Starter Commander Decks (2022)'},
       'Squirreled Away': { icon: '🐿️', colors: ['B', 'G'], style: 'Tokens and sacrifice', blurb: 'Squirrels, Food, and sacrifice synergies build wide boards and drain the table.', set: 'Bloomburrow Commander (2024)' },
       'Animated Army': { icon: '🥁', colors: ['R', 'G'], style: 'Animated artifacts', blurb: 'Bello turns artifacts and enchantments into a hasty 4/4 army.', set: 'Bloomburrow Commander (2024)' },
       'Family Matters': { icon: '🐭', colors: ['U', 'R', 'W'], style: 'Offspring and fliers', blurb: 'Zinnia gives offspring to every creature, filling the skies with small copies.', set: 'Bloomburrow Commander (2024)' },

@@ -20,7 +20,9 @@ function intersection(left, right) {
 test('the complete pinned legacy card set remains represented exactly once in the runtime catalog', () => {
   const legacyRaw = extractRawData(fs.readFileSync(new URL('../src/data.js', import.meta.url), 'utf8'));
   const MTG = loadEngine();
-  const legacyNames = Object.keys(legacyRaw.cards || {});
+  const starterNames=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-starter-2026-09-06/intake.json',import.meta.url),'utf8')).newNames;
+  assert.equal(starterNames.length,61);
+  const legacyNames = Object.keys(legacyRaw.cards || {}).filter(name=>!starterNames.includes(name));
   const legacyNameSet = new Set(legacyNames);
   const digest = createHash('sha256').update([...legacyNames].sort().join('\n')).digest('hex');
 
@@ -28,7 +30,7 @@ test('the complete pinned legacy card set remains represented exactly once in th
   assert.equal(legacyNameSet.size, LEGACY_CARD_COUNT, 'legacy raw names are unique');
   assert.equal(digest, LEGACY_NAME_DIGEST, 'pinned legacy card-name identity');
 
-  for (const name of legacyNames) {
+  for (const name of [...legacyNames,...starterNames]) {
     const raw = legacyRaw.cards[name];
     const catalog = MTG.CARD_CATALOG[name];
     assert.ok(catalog, `${name}: present in MTG.CARD_CATALOG`);
@@ -52,13 +54,14 @@ test('the complete pinned legacy card set remains represented exactly once in th
   assert.equal(new Set(sauronNames).size, sauronNames.length, 'Sauron reservation names are unique');
   assert.deepEqual(intersection(legacyNames, genericNames), [], 'legacy and generic Oracle names are disjoint');
   assert.deepEqual(intersection(legacyNames, sauronNames), [], 'legacy and Sauron names are disjoint');
+  assert.deepEqual(intersection(starterNames,[...legacyNames,...genericNames,...sauronNames]),[], 'Starter additions reuse all existing names without duplication');
   assert.deepEqual(intersection(genericNames, sauronNames), [], 'generic Oracle and Sauron names are disjoint');
 
   const runtimeNames = Object.keys(MTG.RAW_DATA.cards || {});
   const catalogNames = Object.keys(MTG.CARD_CATALOG || {});
-  const expectedRuntimeUnion = [...legacyNames, ...genericNames, ...sauronNames];
+  const expectedRuntimeUnion = [...legacyNames, ...starterNames, ...genericNames, ...sauronNames];
   assert.deepEqual(sortedUnique(runtimeNames), sortedUnique(expectedRuntimeUnion),
-    'runtime raw cards are exactly legacy plus generic Oracle plus Sauron');
+    'runtime raw cards are exactly legacy plus Starter additions plus generic Oracle plus Sauron');
   assert.deepEqual(sortedUnique(catalogNames), sortedUnique(runtimeNames),
     'MTG.CARD_CATALOG is the exact runtime raw-card set');
 

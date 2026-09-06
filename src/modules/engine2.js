@@ -1690,8 +1690,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.emptyPool = function () {
     for (const p of this.players) {
       for (const col of Object.keys(p.pool)) {
-        const combatMana=this.combat?(p.poolMeta||[]).filter(entry=>entry.persist==='combat'&&entry.color===col).reduce((sum,entry)=>sum+Math.max(0,Number(entry.n)||0),0):0;
-        const keep = ((p.persistMana && p.persistMana[col]) || 0)+combatMana;
+        const retainedMana=(p.poolMeta||[]).filter(entry=>(entry.persist==='eot'||this.combat&&entry.persist==='combat')&&entry.color===col).reduce((sum,entry)=>sum+Math.max(0,Number(entry.n)||0),0);
+        const keep = ((p.persistMana && p.persistMana[col]) || 0)+retainedMana;
         p.pool[col] = Math.min(p.pool[col], keep);
         if (p.coloredOnlyPool) p.coloredOnlyPool[col] = Math.min(p.coloredOnlyPool[col] || 0, p.pool[col]);
       }
@@ -1712,7 +1712,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   G.expirePersistentMana = function () {
-    for (const player of this.players) player.persistMana = {};
+    for (const player of this.players) {player.persistMana = {};player.poolMeta=(player.poolMeta||[]).filter(entry=>entry.persist!=='eot');}
   };
 
   G.artifactAbilityDiscountAmount = function (p) {
@@ -1758,6 +1758,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   G.markAbilityActivated = function (p, source, viaConvoke, context = {}) {
+    if(source?.zone === 'graveyard')p.turnState.starterGraveActivity = true;
     if (!viaConvoke && source && source.is && source.is('Artifact')) {
       p.turnState.artifactAbilitiesActivated = (p.turnState.artifactAbilitiesActivated || 0) + 1;
     }
@@ -1907,6 +1908,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       generic+=cost.targetCostAdjustment;
     }
     // one-shot reductions (Kaza)
+    cost.starterTargetTax = this.starterTargetTax?.(p, card, castOpts) || 0;
+    generic += cost.starterTargetTax;
     if (p.tempReductions) {
       for (const r of p.tempReductions) {
         if (r.filter(this, card)) generic += r.delta;
@@ -2162,6 +2165,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       out.push({ card, from, alt: alt || null });
     };
     for(const entry of MTG.OracleV8PlayPermissions?.offers(this,p)||[])consider(entry.card,entry.from,entry.alt);
+    for(const entry of MTG.StarterCasting?.offers(this,p)||[])consider(entry.card,entry.from,entry.alt);
     for (const card of p.hand) {
       if (card.oracleFaces) continue;
       consider(card, 'hand');
@@ -2510,6 +2514,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       castOpts.name = selected.name;
     }
     const d = this.castDefinition(card, castOpts);
+    if(castOpts.starterPermission && !MTG.StarterCasting?.allowed(this,p,card,castOpts))return false;
     // Recheck ordinary paid casts after the UI/AI offer was produced. In
     // particular, conditional flash can disappear before the action executes.
     // Legacy effect-driven free casts and explicit alternative permissions
@@ -2891,6 +2896,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // each target at proposal time so blink/leave-and-return cannot turn the
     // newly created object into the original spell's target.
     so.targetIdentities = this.captureTargetIdentities(so.targets);
+    if(this.starterTargetTax){
+      const confirmed=this.starterTargetTax(p,card,{...castOpts,targets:so.targets});
+      const net=cost.generic-(cost.xReduction||0)+confirmed-(cost.starterTargetTax||0);
+      cost.generic=Math.max(0,net);cost.xReduction=Math.max(0,-net);cost.starterTargetTax=confirmed;
+    }
     if(d.selfTargetCostAdjust){
       // Availability may use any legal qualifying target. Payment must use
       // only the targets actually chosen, after optional costs were proposed.
@@ -2964,6 +2974,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ? {...(baseAdditionalCost||{}),sacLand:(baseAdditionalCost?.sacLand||0)+d.entwine.cost.n,aiKind:'entwine'}
       : baseAdditionalCost;
     const paidAddl = { sacd: [], tapped: [], discarded: [], life: 0, blightCard: null, blightN: 0, choice: null };
+    if(castOpts.starterPermission && !await MTG.StarterCasting.prepare({g:this,src:card,you:p,so},paidAddl))return false;
     if (ac) {
       if (ac.sacCreature || ac.sacArtifactOrCreature || ac.sacAnyCreatures || ac.sacCreaturesEqualTargets || ac.sacLand) {
         const pool = this.bf().filter(c => c.ctrl === p &&
@@ -3188,6 +3199,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     // Recheck planned Oracle costs before any mana or cards are consumed.
+    if(castOpts.starterPermission && !MTG.StarterCasting.validate({g:this,src:card,you:p,so}))return false;
     if (!validExileSelection([...kotisExiled, ...delveExiled, ...escapeExiled], p.graveyard,
       kotisExiled.length + delveExiled.length + escapeExiled.length, kotisExiled.length + delveExiled.length + escapeExiled.length)) return false;
     if (castOpts.kotis && !MTG.kotisCastPaymentCards(this, p, card, so)) return false;
@@ -3273,6 +3285,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       delete castOpts.flashback;
     }
     if (castOpts.gravecrawler) delete castOpts.flashback;
+    if(castOpts.starterPermission)MTG.StarterCasting.commit({g:this,src:card,you:p,so});
     await this.moveGraveyardBatch(delveExiled, 'exile');
     await this.moveGraveyardBatch(escapeExiled, 'exile');
 
@@ -3305,6 +3318,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(castOpts.oracleImmediateCast!==undefined&&castOpts.oracleExileOnGraveyard)card.meta.exileIfStackLeaves=true;
     if (card.oracleFaces && !faceDownCast) MTG.OracleV8Faces.setFace(card, castOpts.oracleFace);
     if (fromZone === 'graveyard') {
+      p.turnState.starterGraveActivity = true;
       await this.emit('cardLeftGraveyard', { card, to: 'stack' });
       if (this._graveyardLeaveBatch) this._graveyardLeaveBatch.push({ card, to: 'stack',snap:graveyardLeaveSnapshot });
       else await this.emit('cardsLeftGraveyard', { cards: [card], snapshots:[graveyardLeaveSnapshot], destinations: ['stack'], to: 'stack' });
@@ -4382,7 +4396,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (cost.sac && this.bf().filter(x => x.ctrl === p && (!(cost.sacOther||cost.sacSelf) || x !== c) && cost.sac(this, x, c) && this.canSacrifice(x)).length < sacNeed) return;
         if (cost.life && p.life <= cost.life) return;
         if (cost.discard) {
-          const discardN = typeof cost.discard === 'object' ? (cost.discard.n || 1) : cost.discard;
+          const discardN = cost.discard === 'all' ? p.hand.length : typeof cost.discard === 'object' ? (cost.discard.n || 1) : cost.discard;
           const discardFilter = typeof cost.discard === 'object' ? cost.discard.filter : null;
           if (p.hand.filter(card => !discardFilter || discardFilter(this, card, c, p)).length < discardN) return;
         }
@@ -5230,12 +5244,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for(const [key,zone,kind]of [['discard','hand','addlDiscard'],['exileFromGY','graveyard','delve']])if(cost[key]){
       const info=cost[key],configured=typeof info==='object'?info.n:info;
       if(configured==='X')continue;
-      const n=configured||1,filter=typeof info==='object'?info.filter:null;
-      if(!Number.isInteger(n)||n<1)return false;
+      const n=configured==='all'?p[zone].length:configured||1,filter=typeof info==='object'?info.filter:null;
+      if(!Number.isInteger(n)||n<0||n===0&&configured!=='all')return false;
       const pool=p[zone].filter(card=>!filter||filter(this,card,c,p));
       if(pool.length<n)return false;
       rememberCostPool(pool);
-      const picked=await p.controller.decide(this,{type:'chooseCards',from:pool,min:n,max:n,
+      const picked=configured==='all'?pool.slice():await p.controller.decide(this,{type:'chooseCards',from:pool,min:n,max:n,
         prompt:key==='discard'?'Odbaci:':'Exile from graveyard:',aiHint:{kind,card:c,keepTargets:(ctx.targets||[]).flat(Infinity)}});
       if(!Array.isArray(picked)||picked.length!==n||new Set(picked).size!==n||picked.some(card=>!pool.includes(card)||!currentCostObject(card)))return false;
       if(key==='discard')plannedDiscard=picked;else plannedExile=picked;
@@ -5474,7 +5488,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (plannedDiscard) {
       await this.discard(p,plannedDiscard,{noReplacement:true});
     } else if (cost.discard) {
-      const discardN = typeof cost.discard === 'object' ? (cost.discard.n || 1) : cost.discard;
+      const discardN = cost.discard === 'all' ? p.hand.length : typeof cost.discard === 'object' ? (cost.discard.n || 1) : cost.discard;
       const discardFilter = typeof cost.discard === 'object' ? cost.discard.filter : null;
       const discardPool = p.hand.filter(card => !discardFilter || discardFilter(this, card, c, p));
       if (discardPool.length < discardN) return false;
@@ -6808,6 +6822,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // goadera nije prečica za ispunjavanje tog zahtjeva.
   G.legalDeclarationAttackTargets = function (c) {
     const targets = this.legalAttackTargets(c);
+    const starter=MTG.StarterCombat?.targets(this,c,targets);if(starter)return starter;
     const encore=MTG.OracleV8Encore?.declarationTargets(this,c,targets);if(encore)return encore;
     if (!this.isForcedAttackOther(c)) return targets;
     const except = this.forcedVictimException(c);
@@ -6826,6 +6841,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   G.isForcedToAttack = function (c) {
+    if(MTG.StarterCombat?.forced(this,c))return true;
     if(MTG.OracleV8Encore?.forced(this,c))return true;
     if (c.cur && c.cur.mustAttack) return true;
     if (c.def.mustAttack && !(c.cur && c.cur.abilitiesDisabled)) return true;

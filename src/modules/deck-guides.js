@@ -3,6 +3,16 @@
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   MTG.DECK_GUIDE_ROUTES = Object.freeze({
+    fliers: [
+      {label:'Early game',title:'Develop your air force',text:'Build mana and play inexpensive fliers while keeping enough blockers to protect your life total.'},
+      {label:'Midgame',title:'Keep the skies open',text:'Use card draw and timely answers to keep flying attackers ahead of opposing defenses.'},
+      {label:'Endgame',title:'Finish above the ground',text:'Protect your strongest fliers and choose an attack that leaves a safe defense against the remaining players.'},
+    ],
+    dragons: [
+      {label:'Early game',title:'Ramp toward Dragons',text:'Develop green mana and acceleration so expensive Dragons arrive while you can still defend yourself.'},
+      {label:'Midgame',title:'Build a threatening flight',text:'Choose Dragons whose entry and attack triggers improve the board immediately.'},
+      {label:'Endgame',title:'Attack with double strike',text:'Land Atarka before declaring attackers, then use flying and double strike to turn the Dragon army into a finish.'},
+    ],
     goWide: [
       { label: 'Early game', title: 'Seed the board', text: 'Develop mana and cheap bodies. Your small pieces matter more as a group than alone.' },
       { label: 'Midgame', title: 'Multiply the army', text: 'Layer token makers and payoffs, but keep enough material back to recover from a wipe.' },
@@ -66,6 +76,46 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.DECK_GUIDES = Object.freeze({
+    'First Flight': {
+      route:'fliers',pace:'FLYING MIDRANGE',complexity:'Approachable',
+      theme:'A flying fleet backed by Isperia’s defensive card draw.',
+      plan:'Develop mana and small fliers, then land Isperia while keeping an answer available. Attack through the air and use sweepers when the ground gets crowded.',
+      mulligan:'Keep three lands with both colors, a mana rock or early flier, and an answer.',
+      tip:'Isperia draws once for each creature attacking you or your planeswalker. Leave flying blockers when you need that deterrent.',
+      keys:['Sephara, Sky\'s Blade','Thunderclap Wyvern','Windreader Sphinx'],
+    },
+    'Grave Danger': {
+      route:'graveyard',pace:'ZOMBIE RECURSION',complexity:'Intermediate',
+      theme:'Gisa and Geralf turn fallen Zombies into another turn of development.',
+      plan:'Build mana, mill cards, and cast a Zombie from your graveyard on each of your turns. Use tribal boosts and mass reanimation to rebuild after removal.',
+      mulligan:'Keep both colors, an early Zombie or mana rock, and a way to draw or fill the graveyard.',
+      tip:'Gisa and Geralf allow one Zombie creature cast during each of your turns. You still pay its cost and follow normal timing.',
+      keys:['Diregraf Captain','Grimoire of the Dead','Army of the Damned'],
+    },
+    'Chaos Incarnate': {
+      route:'groupSlug',pace:'COMBAT AND SACRIFICE',complexity:'Intermediate',
+      theme:'Kardur encourages opponents to attack each other while your finishers drain the table.',
+      plan:'Develop mana and defensive creatures, then cast Kardur when opposing boards are ready to attack. Follow the trades with sacrifice effects, reanimation, and large flying threats.',
+      mulligan:'Keep black and red mana, an early play or mana rock, and interaction.',
+      tip:'Kardur’s attack requirement lasts until your next turn and also affects creatures opponents play during that time.',
+      keys:['Archfiend of Depravity','Rakshasa Debaser','Fiery Confluence'],
+    },
+    'Draconic Destruction': {
+      route:'dragons',pace:'DRAGON RAMP',complexity:'Approachable',
+      theme:'Ramp into Dragons and turn Atarka’s double strike into decisive flying attacks.',
+      plan:'Prioritize green mana and ramp, then cast Dragons with useful entry or attack triggers. Protect the board long enough for Atarka to give attacking Dragons double strike.',
+      mulligan:'Keep three lands, green mana, ramp, and a Dragon you can cast after developing.',
+      tip:'Atarka must be on the battlefield when a Dragon attacks to trigger. Savage Ventmaw’s attack mana remains available through your second main phase.',
+      keys:['Savage Ventmaw','Drakuseth, Maw of Flames','Dragon Tempest'],
+    },
+    'Token Triumph': {
+      route:'goWide',pace:'TOKENS AND CONVOKE',complexity:'Approachable',
+      theme:'Emmara turns tapping into Soldiers, supported by convoke and team boosts.',
+      plan:'Develop mana and token makers, tap Emmara for attacks or convoke, and build several bodies before using a team boost. Keep enough cards to rebuild after a sweeper.',
+      mulligan:'Keep green and white mana, an early creature or token maker, and a payoff for a wide board.',
+      tip:'Convoke can tap a creature with summoning sickness. Tapping Emmara this way still creates a lifelink Soldier.',
+      keys:['Trostani Discordant','Felidar Retreat','Slate of Ancestry'],
+    },
     'Abzan Armor': {
       route: 'defenders', pace: 'FORTRESS MIDRANGE', complexity: 'Approachable',
       theme: 'A living fortress where walls stop early attacks, then hit with their toughness.',

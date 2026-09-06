@@ -20,6 +20,7 @@ test('svaki deck može završiti jednu determinističku četveroigračku smoke p
   const MTG = loadEngine();
   const decks = Object.keys(MTG.DECKS);
   for (let index = 0; index < decks.length; index++) {
+    if(process.env.HEADLESS_PROGRESS)console.log(`Deck smoke ${index+1}/${decks.length}: ${decks[index]}`);
     const opponents = [1, 2, 3].map(offset => decks[(index + offset) % decks.length]);
     const game = MTG.newGame({
       humanDeck: decks[index],
@@ -35,5 +36,6 @@ test('svaki deck može završiti jednu determinističku četveroigračku smoke p
     assert.ok(game.winner, `${decks[index]}: nema pobjednika u smoke partiji`);
     assert.ok(game.turnNo < game.maxTurns, `${decks[index]}: dostignut je vještački turn limit`);
     assert.equal(game.pendingTriggers.length, 0, `${decks[index]}: ostali pending triggeri`);
+    if(process.env.HEADLESS_PROGRESS)console.log(`Finished ${decks[index]}: turn ${game.turnNo}, winner ${game.winner.name}`);
   }
 });

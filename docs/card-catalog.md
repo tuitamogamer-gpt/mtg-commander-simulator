@@ -2,6 +2,8 @@
 
 This inventory is generated from the application runtime and the pinned Scryfall Oracle feed. It describes the repository's card catalog, not a promise that every Magic card or interaction is implemented.
 
+**Snapshot date: 5 September 2026.** The tables and CSV files below retain that export. The subsequent [five Starter precons](../reports/decks/precon-starter-2026-09-06/README.md) add 61 definitions and reuse 276 existing ones. The current local runtime has 19,545 definitions, 19,502 eligible for deck import and 32 built-in decks. Consult that import report and its exact source lists alongside this older export when planning the next batch.
+
 ## Download the complete lists
 
 - [Imported/runtime cards](catalog/imported-cards.csv): every runtime definition, its source batch, engine marker, and whether arbitrary deck import permits it.
@@ -10,7 +12,7 @@ This inventory is generated from the application runtime and the pinned Scryfall
 
 CSV files are UTF-8, sorted by card name without locale-specific collation, and use quoted fields. Counts are unique runtime names or unique Oracle IDs as indicated; they are not counts of printings, deck copies, or test cases.
 
-## Current inventory
+## Exported inventory snapshot
 
 Last recorded import: **2026-09-05T16:33:38.988Z**.
 

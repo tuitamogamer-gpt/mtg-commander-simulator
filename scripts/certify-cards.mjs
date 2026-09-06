@@ -158,9 +158,9 @@ md.push(`Aktivni deckovi: **${report.totals.decks}** · stvarno jedinstvenih kar
 md.push('');
 md.push(`Jedinstvene karte — PASS: **${report.totals.uniquePassed}** · FAIL: **${report.totals.uniqueFailed}** · card/deck pojave — PASS: **${report.totals.passedCardDeckChecks}** · FAIL: **${report.totals.failedCardDeckChecks}**`);
 md.push('');
-md.push(`Cijela raw baza — PASS: **${report.totals.rawPassed}/${report.totals.rawCards}** · FAIL: **${report.totals.rawFailed}**. Izvan aktivnih fiksnih deckova je **${report.totals.inactiveRawCards}** karata, uključujući **${report.totals.oracleBatchCards}** certifikovanih Oracle batch karata.`);
+md.push(`Cijela raw baza — PASS: **${report.totals.rawPassed}/${report.totals.rawCards}** · FAIL: **${report.totals.rawFailed}**. Izvan aktivnih fiksnih deckova je **${report.totals.inactiveRawCards}** karata. Cijeli katalog sadrži **${report.totals.oracleBatchCards}** certifikovanih Oracle batch karata.`);
 md.push('');
-md.push('`Blame Game` je namjerno izbačen iz proizvoda. Oracle batch karte su dostupne engine-u i budućem katalogu, ali još nisu dio nekog ugrađenog 100-card decka.');
+md.push('`Blame Game` je namjerno izbačen iz proizvoda. Oracle batch karte su dostupne engine-u i mogu se ponovo koristiti u ugrađenim i uvezenim deckovima. Aktivnost svake karte određuje stvarni sastav ugrađenih lista.');
 for (const deck of decks) {
   md.push('');
   md.push(`## ${deck.name}`);

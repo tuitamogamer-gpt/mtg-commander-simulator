@@ -198,6 +198,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+    'First Flight': {archetype:'Flying midrange and control',length:'long',tags:['tribal'],commanderImportance:1.2},
+    'Grave Danger': {archetype:'Zombie graveyard recursion',length:'long',tags:['tribal','graveyard','death-triggers'],commanderImportance:1.45},
+    'Chaos Incarnate': {archetype:'Forced combat and attrition',length:'medium',tags:['death-triggers','sacrifice','graveyard'],commanderImportance:1.35},
+    'Draconic Destruction': {archetype:'Dragon ramp and combat',length:'medium',tags:['tribal'],commanderImportance:1.45},
+    'Token Triumph': {archetype:'Token convoke go-wide',length:'medium',tags:['tokens','lifegain'],commanderImportance:1.35},
     'Abzan Armor': { archetype: 'Toughness midrange', length: 'long', tags: ['counters', 'tribal'], commanderImportance: 1.35 },
     'Animated Army': { archetype: 'Artifact/enchantment animation', length: 'medium', tags: ['artifacts', 'enchantments'], commanderImportance: 1.55 },
     'Avengers Assemble': { archetype: 'Hero counters go-wide', length: 'medium', tags: ['tribal', 'counters', 'tokens'], commanderImportance: 1.25 },

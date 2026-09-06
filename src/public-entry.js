@@ -1,4 +1,4 @@
-// Lightweight public entry. The rules engine and 27 complete deck lists load
+// Lightweight public entry. The rules engine and complete deck lists load
 // only after a player asks to enter setup or opens a shared game URL.
 'use strict';
 import './account.js';
@@ -37,7 +37,7 @@ function showLoading(mode) {
   veil.className = 'mainmenu-loadveil';
   veil.setAttribute('role', 'status');
   veil.setAttribute('aria-live', 'polite');
-  veil.innerHTML = `<div><i aria-hidden="true"></i><span>OPENING THE TABLE</span><h2>${mode === 'online' ? 'Preparing Commander Live.' : mode === 'import' ? 'Loading the decklist importer.' : 'Loading all 27 decks.'}</h2><p>The complete rules engine stays in this browser. This first load can take a moment.</p></div>`;
+  veil.innerHTML = `<div><i aria-hidden="true"></i><span>OPENING THE TABLE</span><h2>${mode === 'online' ? 'Preparing Commander Live.' : mode === 'import' ? 'Loading the decklist importer.' : 'Loading all 32 decks.'}</h2><p>The complete rules engine stays in this browser. This first load can take a moment.</p></div>`;
   root.appendChild(veil);
   page.inert = true;
   root.setAttribute('aria-busy', 'true');
@@ -87,7 +87,7 @@ function hideLoading() {
 
 globalThis.MTGAccount?.setGameLoader(async save => {
   // Continue from the profile: the veil must never outlive the attempt. A
-  // checkpoint that no longer restores used to leave "Loading all 27 decks."
+  // checkpoint that no longer restores used to leave the deck loading message
   // on screen with the page inert, hiding the real error.
   try {
     await loadGame(null);
@@ -204,7 +204,7 @@ if (localStaticHost) {
 
 window.render_game_to_text = () => JSON.stringify({
   mode: 'menu',
-  deckCount: 27,
+  deckCount: 32,
   actions: ['Start a solo table', 'Create a Live table', 'Import your decklist here', 'Guide'],
   onboardingOpen: !!page.querySelector('.mainmenu-onboarding'),
   account: globalThis.MTGAccount?.user ? {

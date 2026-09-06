@@ -159,10 +159,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           g.lg(`${a.name} fights Grotham!`);
           // CR 701.14: both creatures deal their pre-fight power, including
           // when the first damage result places -1/-1 counters on the other.
-          await g.damageBatch([
-            { src: gro, target: a, n: gro.power },
-            { src: a, target: gro, n: a.power },
-          ]);
+          await g.fight(gro,a);
         },
       },
       {
@@ -359,10 +356,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => {
           const a = ctx.targets[0], b = ctx.targets[1];
           if (a.zone !== 'battlefield' || b.zone !== 'battlefield') return;
-          const aPower = a.power, bPower = b.power;
-          await ctx.g.damageCreature(a, b, aPower, { deferSBA: true });
-          await ctx.g.damageCreature(b, a, bPower, { deferSBA: true });
-          await ctx.g.checkSBA();
+          await ctx.g.fight(a,b);
         },
       },
     ],
@@ -790,10 +784,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const a = ctx.src, b = ctx.targets[0];
         if (!ctx.g.bf().includes(a) || !ctx.g.bf().includes(b) || !a.is('Creature') || !b.is('Creature') ||
             ctx.sourceZoneVersion != null && a.zoneVersion !== ctx.sourceZoneVersion) return;
-        await ctx.g.damageBatch([
-          { src: a, target: b, n: a.power },
-          { src: b, target: a, n: b.power },
-        ]);
+        await ctx.g.fight(a,b);
       },
     }],
   };

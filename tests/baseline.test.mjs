@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { auditSource, extractMainScript, extractRawData, readSource } from '../scripts/source-audit.mjs';
+import {loadEngine} from './helpers/load-engine.mjs';
 
 const source = readSource();
 const raw = extractRawData(source);
@@ -18,15 +19,16 @@ test('svaka karta ugrađenih deckova ima raw definiciju', () => {
   for (const deck of report.deckRows) assert.deepEqual(deck.missingDefinitions, [], deck.name);
 });
 
-test('commander svakog decka postoji u listi i raw bazi', () => {
+test('commander svakog decka postoji u listi i kompletnom katalogu, uključujući Oracle batch karte', () => {
+  const MTG=loadEngine();
   for (const deck of raw.decks) {
     assert.ok(deck.cards.some(card => card.name === deck.commander), `${deck.name}: commander nije u decku`);
-    assert.ok(raw.cards[deck.commander], `${deck.name}: commander nema raw definiciju`);
+    assert.ok(MTG.RAW_DATA.cards[deck.commander]&&MTG.DEFS[deck.commander], `${deck.name}: commander nema definiciju u katalogu`);
   }
 });
 
-test('raw snapshot čuva 28 deckova, a proizvod koristi certifikovani set od 27', () => {
-  assert.equal(raw.decks.length, 28);
-  assert.equal(report.deckRows.length, 27);
+test('raw snapshot čuva 33 decka, a proizvod koristi certifikovani set od 32', () => {
+  assert.equal(raw.decks.length, 33);
+  assert.equal(report.deckRows.length, 32);
   assert.deepEqual(report.excludedDeckRows.map(deck => deck.name), ['Blame Game']);
 });

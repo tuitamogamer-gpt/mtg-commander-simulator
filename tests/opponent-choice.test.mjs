@@ -74,7 +74,9 @@ test('centralni netargetirani izbor prikazuje svakog živog protivnika i poštuj
 test('svaki aktivni oracle target-opponent put ima stvarni target spec', () => {
   const targetOpponentCards = Object.entries(MTG.DEFS)
     .filter(([, def]) => /target opponents?\b/i.test(def.oracle || ''));
-  const intentionalRandom = new Set(['Vial Smasher the Fierce']);
+  // Explosion creates reflexive triggers whose legal targets are selected at
+  // random when they enter the Stack; starter-precons.test.mjs executes them.
+  const intentionalRandom = new Set(['Vial Smasher the Fierce','Explosion of Riches']);
   const { game, players: [controller] } = choiceFixture();
 
   for (const [canonicalName, def] of targetOpponentCards) {

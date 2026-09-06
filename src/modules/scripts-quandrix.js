@@ -218,7 +218,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Decisive Denial'] = { modes: { pick: 1, list: [
     { label: 'Fight', targets: [T.yourCreature({ prompt: 'Your creature for the fight', aiHint: { goal: 'fightMine' } }), T.oppCreature({ prompt: "Opponent's creature for the fight", aiHint: { goal: 'removal' } })] },
     { label: 'Counter noncreature unless its controller pays {3}', targets: [T.spell((g, so) => so.card && !so.card.is('Creature'), { prompt: 'Noncreature spell', aiHint: { goal: 'counter' } })] },
-  ] }, resolve: async ctx => { if (ctx.mode[0] === 0) { const a = ctx.targets[0], b = ctx.targets[1]; if (a && b) { await ctx.g.damageCreature(a, b, a.power, { deferSBA: true }); await ctx.g.damageCreature(b, a, b.power, { deferSBA: true }); await ctx.g.checkSBA(); } } else await taxCounter(ctx, ctx.targets[0], 3); } };
+  ] }, resolve: async ctx => { if (ctx.mode[0] === 0) { const a = ctx.targets[0], b = ctx.targets[1]; if (a && b) await ctx.g.fight(a,b); } else await taxCounter(ctx, ctx.targets[0], 3); } };
   SC['Quandrix Charm'] = { modes: { pick: 1, list: [
     { label: 'Counter unless its controller pays {2}', targets: [T.spell(null, { prompt: 'Spell', aiHint: { goal: 'counter' } })] },
     { label: 'Destroy enchantment', targets: [T.permanent((g, c) => c.is('Enchantment'), { prompt: 'Enchantment', aiHint: { goal: 'removal' } })] },
@@ -260,7 +260,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const lands = shown.filter(c => c.is('Land')), rest = shown.filter(c => !c.is('Land')), entered = []; for (const c of lands) { c.zone = 'nowhere'; await ctx.g.move(c, 'battlefield', { ctrl: ctx.you, tapped: true }); if (c.zone === 'battlefield') entered.push(c); }
     U.shuffle(rest, ctx.g.rnd); for (const c of rest) { c.zone = 'library'; ctx.you.library.unshift(c); } if (ctx.you.graveyard.filter(c => c.is('Instant') || c.is('Sorcery')).length >= 2) for (const c of entered) c.tapped = false; ctx.g.recalc(); } };
   SC['Primal Might'] = { xCost: true, targets: [T.yourCreature({ prompt: 'Your creature for pump/fight', aiHint: { goal: 'fightMine' } }), T.oppCreature({ upTo: true, prompt: "Up to one opponent's creature", aiHint: { goal: 'removal' } })],
-    resolve: async ctx => { const a = ctx.targets[0], b = ctx.targets[1]; if (!a) return; E.pumpUntilEOT(ctx.g, a, ctx.x || 0, ctx.x || 0); if (b) { await ctx.g.damageCreature(a, b, a.power, { deferSBA: true }); await ctx.g.damageCreature(b, a, b.power, { deferSBA: true }); await ctx.g.checkSBA(); } } };
+    resolve: async ctx => { const a = ctx.targets[0], b = ctx.targets[1]; if (!a) return; E.pumpUntilEOT(ctx.g, a, ctx.x || 0, ctx.x || 0); if (b) await ctx.g.fight(a,b); } };
   SC['Entrancing Melody'] = { xCost: true, xValues: g => [...new Set(g.creatures().map(c => c.mv))], targets: (g, c, o) => [T.creature({ filter: (g2, x) => x.zone === 'battlefield' && x.is('Creature') && x.mv === (o.xVal || 0), prompt: `Creature MV=${o.xVal || 0}`, aiHint: { goal: 'steal' } })],
     resolve: async ctx => { const c = ctx.targets[0]; if (c?.zone === 'battlefield') { c.ctrl = ctx.you; c.sick = true; c.attacking = null; c.blocking = null; ctx.g.recalc(); } } };
   SC['Expansion Algorithm'] = { xCost: true, resolve: async ctx => { for (let i = 0; i < (ctx.x || 0); i++) await E.proliferate(ctx.g, ctx.you); } };

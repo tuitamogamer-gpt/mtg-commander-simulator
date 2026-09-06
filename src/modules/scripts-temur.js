@@ -39,10 +39,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const fight = async (g, first, second) => {
     if (!first || !second || first.zone !== 'battlefield' || second.zone !== 'battlefield' ||
       !first.is('Creature') || !second.is('Creature')) return;
-    const firstPower = first.power, secondPower = second.power;
-    await g.damageCreature(first, second, firstPower, { deferSBA: true });
-    await g.damageCreature(second, first, secondPower, { deferSBA: true });
-    await g.checkSBA();
+    await g.fight(first,second);
   };
   const setBaseUntilEOT = (g, card, power, toughness, kws, addSubtypes) => {
     const iid = card.iid, timestamp = card.timestamp;

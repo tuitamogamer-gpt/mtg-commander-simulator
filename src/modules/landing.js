@@ -3,9 +3,9 @@
 'use strict';
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function (U) {
-  U.landingDetailsMarkup = (deckCount = 27) => `
+  U.landingDetailsMarkup = (deckCount = 32) => `
     <section class="mainmenu-proof" aria-label="Product details">
-      <div class="mainmenu-proof-stat"><strong>${Number(deckCount) || 27}</strong><span><b>Complete decks</b><small>Find your playstyle</small></span></div>
+      <div class="mainmenu-proof-stat"><strong>${Number(deckCount) || 32}</strong><span><b>Complete decks</b><small>Find your playstyle</small></span></div>
       <div class="mainmenu-proof-stat"><strong>4</strong><span><b>Seats at the table</b><small>The full Commander pod</small></span></div>
       <div class="mainmenu-proof-stat"><strong>Local</strong><span><b>AI opponents</b><small>Play at your own pace</small></span></div>
       <div class="mainmenu-livecheck" data-live-state="checking" role="status" aria-live="polite"><i aria-hidden="true"></i><span><b>Checking Live rooms</b><small>Solo play is always available</small></span></div>

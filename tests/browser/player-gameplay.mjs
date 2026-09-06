@@ -40,11 +40,11 @@ try {
   await page.locator('[data-menu-action="solo"]').first().click();
   // The landing shell lazy-loads the complete local card catalog on first use.
   await page.waitForSelector('.deckentry', { timeout: 30000 });
-  await page.locator('.decksearch input').fill('Abzan Armor');
+  await page.locator('.decksearch input').fill(process.env.PLAYER_HUMAN_DECK || 'Abzan Armor');
   await page.locator('.deckcard:visible').click();
   await page.locator('.deckspotlightcontinue').click();
   await page.locator('[data-pod-preset="learn"]').click();
-  await page.locator('.botfields .deckselect').selectOption('Turtle Power');
+  await page.locator('.botfields .deckselect').selectOption(process.env.PLAYER_AI_DECK || 'Turtle Power');
   await page.locator('.setupnext').click();
   // Pin only seed generation. Every gameplay decision still uses the real UI.
   await page.evaluate(() => { window.__qaRandom = Math.random; Math.random = () => 11081 / 1e9; });

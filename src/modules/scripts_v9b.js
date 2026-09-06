@@ -2184,10 +2184,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         },
       });
       if (!a) return;
-      await ctx.g.damageBatch([
-        { src: a, target: b, n: Math.max(0, a.power) },
-        { src: b, target: a, n: Math.max(0, b.power) },
-      ]);
+      await ctx.g.fight(a,b);
     },
   };
   SC['Generous Gift'] = {
