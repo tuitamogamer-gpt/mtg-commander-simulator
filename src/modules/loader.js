@@ -23,6 +23,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+      "Lorehold Legacies": {"icon":"⚒️","colors":["R","W"],"style":"Artifact recursion and copies","blurb":"Osgir rebuilds fallen artifacts as pairs of tokens, turning discarded relics into mana and massive constructs.","set":"Commander (2021)"},
+      "Prismari Performance": {"icon":"🎼","colors":["U","R"],"style":"Big spells and magecraft","blurb":"Zaffai rewards large instants, sorceries, and copies with Elementals and bursts of damage.","set":"Commander (2021)"},
+      "Quantum Quandrix": {"icon":"🌀","colors":["G","U"],"style":"Token copies and counters","blurb":"Adrix and Nev double token production, building Fractals, copies, and growing armies.","set":"Commander (2021)"},
+      "Silverquill Statement": {"icon":"🪶","colors":["W","B"],"style":"Political combat and counters","blurb":"Breena rewards carefully chosen attacks with cards and counters while protective threats discourage retaliation.","set":"Commander (2021)"},
+      "Witherbloom Witchcraft": {"icon":"🌿","colors":["B","G"],"style":"Life gain and growing creatures","blurb":"Willowdusk converts life gained or lost into counters, backed by Food, lifelink, and graveyard recovery.","set":"Commander (2021)"},
       'First Flight': {icon:'🦅',colors:['W','U'],style:'Flying and control',blurb:'Isperia protects the skies with flying creatures, card draw, and timely answers.',set:'Starter Commander Decks (2022)'},
       'Grave Danger': {icon:'🧟',colors:['U','B'],style:'Zombies and graveyard',blurb:'Gisa and Geralf fill the graveyard and cast returning Zombies to rebuild the horde.',set:'Starter Commander Decks (2022)'},
       'Chaos Incarnate': {icon:'🔥',colors:['B','R'],style:'Forced combat and sacrifice',blurb:'Kardur sends opposing armies into combat while demons, sacrifice, and damage wear down the table.',set:'Starter Commander Decks (2022)'},

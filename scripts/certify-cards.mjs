@@ -30,7 +30,8 @@ function activatedPaths(def) {
   const mana = Array.isArray(def.mana) ? def.mana.length : def.mana ? 1 : 0;
   return mana + (def.abilities || []).length + (def.opponentAbilities || []).length +
     (def.handAbility ? 1 : 0) + (def.gyAbility ? 1 : 0) + (def.cycling ? 1 : 0) +
-    (def.equip !== undefined ? 1 : 0) + (def.grantMana ? 1 : 0);
+    (def.equip !== undefined ? 1 : 0) + (def.grantMana ? 1 : 0) +
+    (def.statics || []).filter(rule => rule.grantsSelfActivatedAbility && typeof rule.apply === 'function').length;
 }
 
 function issuesFor(name) {

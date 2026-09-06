@@ -1155,6 +1155,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (this._graveyardLeaveBatch) this._graveyardLeaveBatch.push({ card, to: toZone, snap });
         else await this.emit('cardsLeftGraveyard', { cards: [card], snapshots:[snap], to: toZone });
       }
+      if(toZone==='exile'&&fromZone!=='exile')await MTG.C21Rules?.exile(this,card,fromZone);
       await this.returnOracleExiles();
       this.recalc();
       return card;
@@ -1306,7 +1307,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await this.emit('lto', { card, snap });
       if (died) {
         this.turnPlayer && (snap.ctrl.turnState.creaturesDiedUnder += snap.types.includes('Creature') ? 1 : 0);
-        await this.emit('dies', { card, snap });
+        await this.emit('dies', { card, snap, graveyardZoneVersion: card.zoneVersion });
         // Persist/undying su stvarne dies-triggered sposobnosti. Karta ostaje u
         // groblju dok protivnici dobiju priority; vraća se tek na rezoluciji.
         const d = card.def;
@@ -1388,6 +1389,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // affected controller chooses their order when several apply.
       await MTG.oracleV8ApplyEntryState(this, card);
       const additionalEntryCounters = {...opts.additionalCounters};
+      const c21EntryBonus = MTG.C21Rules?.entryCounters(this,card) || 0;
+      if(c21EntryBonus)additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+c21EntryBonus;
       const tributeCounters = await MTG.OracleV8CreatureUpgrades?.entry(this, card) || 0;
       if (tributeCounters) additionalEntryCounters['+1/+1'] = (additionalEntryCounters['+1/+1'] || 0) + tributeCounters;
       if (d.oracleEntryCounters) {
@@ -1601,6 +1604,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               run: async (g, current) => current.concat(current.slice()),
             });
           }
+          for(const effect of this.untilEffects.filter(e=>e.kind==='c21TokenController'&&e.who!==ctrl&&!e.who.lost&&!used.has(e)))pending.push({key:effect,src:effect.sourceCard,redirectTo:effect.who,run:async(g,defs)=>defs});
           if (!pending.length) break;
           let index = 0;
           if (pending.length > 1 && ctrl.controller && ctrl.controller.decide) {
@@ -1622,6 +1626,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const result = await r.run(this, defs, ctrl, r.src);
           if (!Array.isArray(result)) throw new Error('Invalid token replacement result');
           defs = result;
+          if(r.redirectTo)ctrl=r.redirectTo;
         }
       }
       const made = [];
@@ -2302,6 +2307,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               data.n = 0;
               if (consume) { const index = this.untilEffects.indexOf(effect); if (index >= 0) this.untilEffects.splice(index, 1); }
               await prevented(amount);
+              if(effect.c21Inkshield&&amount>0)await this.makeTokens(MTG.C21.inkling,effect.who,{n:amount});
               if (reflectDamage) await reflect(effect, amount, onlyCreatures);
             }});
           } else if (effect.kind === 'oracleDamagePrevention' && effect.run(this, data) < data.n) {
@@ -2315,6 +2321,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             }});
           }
         }
+        if(data.target instanceof Player&&preventionAllowed&&this.isProtectedFrom(data.target,src))add({key:'c21PlayerProtection:'+data.target.idx,apply:async()=>{const amount=data.n;data.n=0;await prevented(amount);}});
         if (!(data.target instanceof Player)) {
           const permanent = data.target;
           if (preventionAllowed && this.isProtectedFrom(permanent, src)) add({
@@ -2964,6 +2971,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const card=bf.find(card=>card.iid===effect.iid&&card.zoneVersion===effect.zoneVersion);
         if(card){
           // Some exchanges set toughness alone; preserve the other characteristic.
+          if(effect.c21LoyaltyPT){card.cur.basePower=card.counters.loyalty||0;card.cur.baseToughness=card.counters.loyalty||0;}
           if(effect.power!==undefined)card.cur.basePower=effect.power;
           if(effect.toughness!==undefined)card.cur.baseToughness=effect.toughness;
           // Animation abilities were applied with their timestamp above. A
@@ -3157,6 +3165,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async emit(name, data) {
+      MTG.C21Rules?.event(this,name,data||{});
       if(name==='cast')MTG.OracleV8Ripple?.onCast(this,data);
       MTG.StateTriggers?.settle(this);
       MTG.oracleV8RecordConditionEvent?.(this,name,data);
@@ -3443,6 +3452,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // player target
           const p = c;
           if (spec.what === 'opponent' && p === ctrl) return false;
+          if(this.isProtectedFrom(p,src))return false;
           for (const b of this.bf()) {
             if (b.def.playerHexproof && !b.cur.abilitiesDisabled && b.ctrl === p && ctrl !== p) return false;
           }

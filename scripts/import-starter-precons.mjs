@@ -16,7 +16,7 @@ export const starterSourceDir=path.resolve(path.dirname(fileURLToPath(import.met
 export function parseMoxfieldExport(text){
   const cards=[];
   for(const line of text.trim().split(/\r?\n/)){
-    const match=/^(\d+) (.+) \(([A-Z0-9]+)\) (\S+)(?: \*E\*)?$/.exec(line);
+    const match=/^(\d+) (.+) \(([A-Z0-9]+)\) (\S+)(?: \*[EF]\*)?$/.exec(line);
     if(!match)throw Error('Invalid Moxfield export line: '+line);
     const n=Number(match[1]),name=match[2],existing=cards.find(c=>c.name===name);
     if(!Number.isSafeInteger(n)||n<1)throw Error('Invalid card quantity');

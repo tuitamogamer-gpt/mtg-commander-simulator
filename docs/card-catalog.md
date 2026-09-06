@@ -2,7 +2,7 @@
 
 This inventory is generated from the application runtime and the pinned Scryfall Oracle feed. It describes the repository's card catalog, not a promise that every Magic card or interaction is implemented.
 
-**Snapshot date: 5 September 2026.** The tables and CSV files below retain that export. The subsequent [five Starter precons](../reports/decks/precon-starter-2026-09-06/README.md) add 61 definitions and reuse 276 existing ones. The current local runtime has 19,545 definitions, 19,502 eligible for deck import and 32 built-in decks. Consult that import report and its exact source lists alongside this older export when planning the next batch.
+**Snapshot date: 5 September 2026.** The tables and CSV files below retain that export. The subsequent [five Starter precons](../reports/decks/precon-starter-2026-09-06/README.md) add 61 definitions and reuse 276 existing ones. The following [Commander 2021 batch](../reports/decks/precon-c21-2026-09-06/README.md) adds 80 definitions and reuses 277. The current local runtime has 19,625 definitions, 19,589 eligible for deck import and 37 built-in decks. Seven existing definitions become importable through their newly active C21 deck coverage. Consult both import reports and their exact source lists alongside this older export when planning the next batch.
 
 ## Download the complete lists
 

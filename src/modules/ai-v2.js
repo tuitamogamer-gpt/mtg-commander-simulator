@@ -198,6 +198,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+    "Lorehold Legacies": {"archetype":"Artifact recursion and copies","length":"long","tags":["artifacts","graveyard","tokens"],"commanderImportance":1.55},
+    "Prismari Performance": {"archetype":"Big spells and magecraft","length":"long","tags":["spellslinger","tokens"],"commanderImportance":1.4},
+    "Quantum Quandrix": {"archetype":"Token copies and counters","length":"long","tags":["tokens","counters"],"commanderImportance":1.5},
+    "Silverquill Statement": {"archetype":"Political combat and counters","length":"long","tags":["politics","counters","tokens"],"commanderImportance":1.4},
+    "Witherbloom Witchcraft": {"archetype":"Life gain and growing creatures","length":"long","tags":["lifegain","counters","graveyard"],"commanderImportance":1.5},
     'First Flight': {archetype:'Flying midrange and control',length:'long',tags:['tribal'],commanderImportance:1.2},
     'Grave Danger': {archetype:'Zombie graveyard recursion',length:'long',tags:['tribal','graveyard','death-triggers'],commanderImportance:1.45},
     'Chaos Incarnate': {archetype:'Forced combat and attrition',length:'medium',tags:['death-triggers','sacrifice','graveyard'],commanderImportance:1.35},

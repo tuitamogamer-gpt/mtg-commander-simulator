@@ -32,7 +32,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   E.goad = function (g, c, byPlayer) {
     if (!c || c.zone !== 'battlefield') return;
-    g.untilEffects.push({ kind: 'goadCard', iid: c.iid, notPlayer: byPlayer, expires: 'untilTurnOf', whoTurn: byPlayer });
+    g.untilEffects.push({ kind: 'goadCard', iid: c.iid, zoneVersion:c.zoneVersion, notPlayer: byPlayer, expires: 'untilTurnOf', whoTurn: byPlayer });
     g.lg(`😤 ${c.name} is GOADED (must attack, can't attack ${byPlayer.name}).`);
   };
   E.suspect = function (g, c) {
@@ -325,34 +325,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         on: 'damagePrevented', desc: '+1/+1 for prevented damage',
         filter: (g, self, d) => d.target === self.ctrl && d.n > 0,
-        run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', ctx.data.n); },
+        run: async ctx => { if(ctx.src.zone==='battlefield'&&(ctx.sourceZoneVersion==null||ctx.src.zoneVersion===ctx.sourceZoneVersion))ctx.g.addCounters(ctx.src, '+1/+1', ctx.data.n); },
       },
     ],
   };
   SC['Stalking Leonin'] = {
-    triggers: [{
-      on: 'etb', filter: etbSelf, desc: 'Secret choice',
-      run: async ctx => {
-        const chosen = await E.chooseOpponent(ctx.g, ctx.you, {
-          prompt: 'Stalking Leonin — secretly choose an opponent', goal: 'threat',
-        });
-        if (chosen) ctx.src.meta.chosen = chosen.idx;
-      },
-    }],
-    abilities: [{
-      label: 'Exile an attacker (chosen player)', cost: {},
-      cond: (g, c, p) => !c.meta._used && g.combat && g.combat.attackers.some(a => a.attacking === p && a.ctrl.idx === c.meta.chosen),
-      run: async ctx => {
-        const g = ctx.g;
-        const cands = g.combat ? g.combat.attackers.filter(a => a.attacking === ctx.you && a.ctrl.idx === ctx.src.meta.chosen) : [];
-        if (!cands.length) return;
-        ctx.src.meta._used = true;
-        const pick = await ctx.you.controller.decide(g, {
-          type: 'chooseTargets', candidates: cands, min: 1, max: 1, prompt: 'Exile an attacker', aiHint: { goal: 'removal' },
-        });
-        if (pick.length) await g.exileCard(pick[0]);
-      },
-    }],
+    triggers: [{on:'etb',filter:etbSelf,desc:'Secretly choose an opponent',run:async ctx=>{
+      const opponents=E.eachOpp(ctx.g,ctx.you);if(!opponents.length)return;
+      const chosen=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Stalking Leonin: secretly choose an opponent',
+        options:opponents.map(p=>({key:String(p.idx),label:p.name})),aiHint:{kind:'choosePlayer',secret:true}});
+      if(!opponents.some(p=>String(p.idx)===String(chosen)))throw Error('Invalid secret opponent');
+      (ctx.sourceMeta||ctx.src.meta).chosen=Number(chosen);
+    }}],
+    abilities:[{label:'Reveal chosen player: exile an attacker',cost:{},oncePerObject:true,revealChosenPlayer:'chosen',
+      cond:(g,c)=>Number.isInteger(c.meta.chosen),
+      targets:[T.creature({filter:(g,c,p)=>c.attacking===p,prompt:'Creature attacking you',aiHint:{goal:'removal'}})],
+      run:async ctx=>{const c=ctx.targets[0];if(c.ctrl.idx===ctx.c21Revealed)await ctx.g.move(c,'exile');},aiScore:()=>5}],
   };
   SC['Steel Hellkite'] = {
     abilities: [
@@ -621,8 +609,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }],
       run: async ctx => {
         await ctx.g.attach(ctx.src, ctx.targets[0]);
-        ctx.targets[0].meta.goadedBy = [ctx.you];
-        ctx.g.lg(`${ctx.targets[0].name} bears Bloodthirsty Blade — permanently goaded.`);
+        ctx.g.lg(`${ctx.targets[0].name} bears Bloodthirsty Blade and is goaded while equipped.`);
       },
     }],
   };
@@ -685,17 +672,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC["Duelist's Heritage"] = {
-    triggers: [{
-      on: 'attackersDeclared', opt: true, desc: 'Double strike',
-      filter: (g, self, d) => d.attackers.length > 0,
-      run: async ctx => {
-        const pick = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseTargets', candidates: ctx.data.attackers.filter(a => a.zone === 'battlefield'), min: 0, max: 1,
-          prompt: 'Double strike to attacker:', aiHint: { goal: 'duelist' },
-        });
-        if (pick.length) E.grantUntilEOT(ctx.g, pick[0], ['double strike']);
-      },
-    }],
+    triggers:[{on:'attackersDeclared',opt:true,desc:'Double strike',filter:(g,c,d)=>d.attackers.length>0,
+      targets:[T.creature({filter:(g,c)=>!!c.attacking,prompt:'Attacking creature',aiHint:{goal:'duelist'}})],
+      run:ctx=>E.grantUntilEOT(ctx.g,ctx.targets[0],['double strike'])}],
   };
   SC['Ghostly Prison'] = { attackTax: 2 };
   SC['Hot Pursuit'] = {
@@ -746,8 +725,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   const impetus = (buff, extra) => ({
     auraTarget: [{
-      what: 'creature', prompt: "Opponent's creature",
-      filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl !== ctrl,
+      what: 'creature', prompt: "Enchant creature",
+      filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') ,
       aiHint: { goal: 'goadTarget' },
     }],
     attachGrant: (g, self, host) => { host.cur.power += buff[0]; host.cur.toughness += buff[1]; host.cur.goadedBy = (host.cur.goadedBy || []).concat([self.ctrl]); },

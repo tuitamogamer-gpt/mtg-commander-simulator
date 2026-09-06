@@ -16,6 +16,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const sources = g.bf().filter(c => c.ctrl === player && c.def.starterGisa && !c.cur?.abilitiesDisabled &&
       c.meta.starterGisaCastTurn !== g.turnNo && g.turnPlayer === player);
     for (const card of player.graveyard) {
+      if(player.c21JayaEmblem&&(card.is('Instant')||card.is('Sorcery')))add(card,'jaya',{oracleExileOnGraveyard:true,label:'Jaya emblem: cast from your graveyard'});
       if (card.hasSub('Zombie')) {
         if (card.is('Creature')) for (const source of sources) add(card, 'gisa', {
           starterSource: source.iid, starterSourceVersion: source.zoneVersion, label: 'Gisa and Geralf: cast a Zombie'});

@@ -1,0 +1,59 @@
+{
+  "beforeEligible": 19502,
+  "afterEligible": 19589,
+  "newlyEligibleExisting": [
+    "Bloodthirsty Blade",
+    "Boros Garrison",
+    "Duelist's Heritage",
+    "Martial Impetus",
+    "Selfless Squire",
+    "Stalking Leonin",
+    "Windborn Muse"
+  ],
+  "oracleMatched": 351,
+  "oracleMismatches": [
+    {
+      "name": "Bloodthirsty Blade",
+      "runtime": "Equipped creature gets +2/+0 and is goaded. (It attacks each combat if able and attacks a player other than you if able.)\n{1}: Attach Bloodthirsty Blade to target creature an opponent controls. Activate only as a sorcery.",
+      "source": "Equipped creature gets +2/+0 and is goaded. (It attacks each combat if able and attacks a player other than you if able.)\n{1}: Attach this Equipment to target creature an opponent controls. Activate only as a sorcery."
+    },
+    {
+      "name": "Boros Garrison",
+      "runtime": "Boros Garrison enters tapped.\nWhen Boros Garrison enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "source": "This land enters tapped.\nWhen this land enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}."
+    },
+    {
+      "name": "Selfless Squire",
+      "runtime": "Flash\nWhen Selfless Squire enters, prevent all damage that would be dealt to you this turn.\nWhenever damage that would be dealt to you is prevented, put that many +1/+1 counters on Selfless Squire.",
+      "source": "Flash\nWhen this creature enters, prevent all damage that would be dealt to you this turn.\nWhenever damage that would be dealt to you is prevented, put that many +1/+1 counters on this creature."
+    },
+    {
+      "name": "Soul Snare",
+      "runtime": "{W}, Sacrifice Soul Snare: Exile target creature that's attacking you or a planeswalker you control.",
+      "source": "{W}, Sacrifice this enchantment: Exile target creature that's attacking you or a planeswalker you control."
+    },
+    {
+      "name": "Stalking Leonin",
+      "runtime": "When Stalking Leonin enters, secretly choose an opponent.\nReveal the player you chose: Exile target creature that's attacking you if it's controlled by the chosen player. Activate only once.",
+      "source": "When this creature enters, secretly choose an opponent.\nReveal the player you chose: Exile target creature that's attacking you if it's controlled by the chosen player. Activate only once."
+    },
+    {
+      "name": "Steel Hellkite",
+      "runtime": "Flying\n{2}: Steel Hellkite gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by Steel Hellkite this turn. Activate only once each turn.",
+      "source": "Flying\n{2}: This creature gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn."
+    }
+  ],
+  "unchangedExistingRawDefinitions": 1687,
+  "changedExistingRawDefinitions": [],
+  "changedExistingDecks": [],
+  "newRawDefinitions": 80,
+  "oracleEquivalentSelfReferences": [
+    "Bloodthirsty Blade",
+    "Boros Garrison",
+    "Selfless Squire",
+    "Soul Snare",
+    "Stalking Leonin",
+    "Steel Hellkite"
+  ],
+  "oracleFullyAccountedFor": 357
+}
