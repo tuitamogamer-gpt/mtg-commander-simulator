@@ -148,6 +148,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     overlay.onclick = event => { if (event.target === overlay) dismiss(); };
     const commands = [
       ['Arena settings', 'Display, pacing, and accessibility', () => { ui.quickMenuOpen = true; ui.render(); }],
+      ['Music & sound', 'Fantasy lo-fi, volume, and mute', () => { ui.quickMenuOpen = 'audio'; ui.render(); }],
       ['Arena background', 'Mana colors, scenes, and brightness', () => { ui.quickMenuOpen = 'backgrounds'; ui.render(); }],
       ['Game log', 'Review every public event', () => ui.openUtility('log')],
       ['Stack and table', 'Stack, commander damage, and threat', () => ui.openUtility('table')],

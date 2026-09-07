@@ -299,6 +299,8 @@ import './modules/loader.js';
 import './modules/arena-render.js';
 import './modules/ui.js';
 import './modules/player-tools.js';
+import './modules/game-audio.js';
+import './modules/game-audio-ui.js';
 import './modules/arena-tools.js';
 import './modules/command-table.js';
 import './modules/landing.js';

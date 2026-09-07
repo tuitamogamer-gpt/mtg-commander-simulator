@@ -2009,6 +2009,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
       },
       onEvent: (e) => {
+        MTG.audio?.handle(e, gameRef, { replay: replayingSave || !!ui.accountReplay });
         if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ YOUR TURN' : `Turn ${g.turnNo}: ${e.p.name}`, e.p === ui.me);
         if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
         if (e.type === 'effectNotice') ui.showEffectNotice(e.text, e.kind, e);
@@ -2223,6 +2224,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (resumeSave) g.speedFactor = 0;
     window._game = g;
     window._ui = ui;
+    MTG.audio?.attach(g);
+    void MTG.audio?.unlock();
     ui.render();
     if (accountCheckpointEnabled && !resumeSave && globalThis.MTGAccount?.user) queueAccountSave({ immediate: true });
     if (resumeSave) {
@@ -4658,6 +4661,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     })();
     return {
       mode: g.gameOver ? 'gameover' : 'game',
+      audio: MTG.audio?.status() || null,
       account: {
         signedIn: !!globalThis.MTGAccount?.user,
         saveStatus: ui?.accountSaveStatus?.state || null,

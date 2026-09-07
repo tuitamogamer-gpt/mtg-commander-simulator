@@ -3378,6 +3378,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     this.stack.push(so);
     if (this.diplomacyRecordRemovalAttempt) this.diplomacyRecordRemovalAttempt(p, card, so.targets);
+    this.note('cardPlayed', { card, player: p, kind: 'spell' });
     this.note('stack', {});
     this.lg(`${U.playerVerb(p, 'cast', 'casts')} ${card.name}${xVal ? ` (X=${xVal})` : ''}${castOpts.free ? ' (free)' : ''}${so.from === 'command' ? ' from the command zone' : ''}.`, 'cast');
     await this.pace(p.isAI ? 1000 : 150);
@@ -6066,6 +6067,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.lg(`${U.playerVerb(p, 'play', 'plays')} a land: ${landName}.`, 'land');
     await this.pace(p.isAI ? 700 : 0);
     await this.move(card, 'battlefield', { ctrl: p, ...(oracleFace ? {oracleFace} : {}) });
+    this.note('cardPlayed', { card, player: p, kind: 'land' });
     await this.emit('landPlayed', { player: p, card, from: fromZone });
     await this.flushTriggers();
     return true;
@@ -6570,7 +6572,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const dp = c.attacking instanceof MTG.Player ? c.attacking : (c.attacking && c.attacking.ctrl);
       if (dp) { dp.lastAttackers = dp.lastAttackers || new Set(); dp.lastAttackers.add(p); }
     }
-    this.note('combat', {});
+    this.note('combat', { kind: 'attackersDeclared', count: attackers.length });
     await this.pace(p.isAI ? 1200 : 250);
     await this.reviewCombatWithHuman({ attackingPlayer: p, attackers: attackers.slice() });
     if (this.gameOver) { this.combat = null; return; }

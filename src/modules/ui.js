@@ -2273,6 +2273,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderQuickMenu(g) {
       if (!this.quickMenuOpen) return null;
       if (this.quickMenuOpen === 'backgrounds') return this.renderArenaBackgrounds();
+      if (this.quickMenuOpen === 'audio') return this.renderAudioSettings();
       const overlay = el('div', 'quickmenuov');
       const panel = el('div', 'quickmenu');
       const head = el('div', 'quickmenuhead', '<div><span>Game menu</span><h2>Arena controls</h2></div>');
@@ -2303,6 +2304,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const mode = MTG.PRIO_MODES.find(item => item.key === (this.prioMode || 'end')) || MTG.PRIO_MODES[0];
       action('Priority stops', mode.label, () => { this.quickMenuOpen = false; this.showStops = true; this.render(); });
       section('Display & accessibility');
+      action('Music & sound', MTG.audio?.preferences.muted ? 'Muted' : 'Fantasy lo-fi · volume & effects', () => {
+        this.quickMenuOpen = 'audio'; this.render();
+      }).classList.add('audiosettingsopen');
       action('Arena background', U.ARENA_BACKGROUNDS.find(item => item.id === this.arenaBackground)?.label || 'Commander table', () => {
         this.quickMenuOpen = 'backgrounds'; this.render();
       }).classList.add('arenabackgroundopen');
