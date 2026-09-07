@@ -22,18 +22,9 @@ MUSIC = [
     ('ember-sanctum', 'Ember Sanctum', 'Muted nylon guitar, warm low felt piano, soft hand percussion, dark velvet synth pads, restrained downtempo beat, deep round bass; A minor with suspended and ninth chords, 74 BPM. Quiet embers in an ancient stone sanctuary, contemplative rather than frightening.'),
 ]
 SFX = [
-    ('card', 1.0, 'One crisp tactile paper playing card sliding quickly through air and landing flat on a felt-covered wooden tabletop. Short dry paper flick, soft woody tap. Single action at the very beginning, short natural decay.'),
     ('summon', 2.8, 'Single warm fantasy summoning portal opening, a low rounded magical swell blooming into delicate shimmering chimes and a soft bass arrival. Powerful but elegant, short game ability stinger.'),
-    ('attack', 1.0, 'One short sword air swoosh before a fantasy melee attack, fast clean swish, no impact yet. Dry and concise.'),
-    ('impact', 1.0, 'One solid short fantasy melee hit: dull leather and wooden shield impact with a subtle metallic edge. Punchy, rounded, no blood, no voice, no sustained noise. Attack starts immediately.'),
     ('heavy-impact', 1.8, 'One heavy fantasy creature impact against a stone shield: deep compact thump, low stone crunch, brief metallic rattle and low bass tail. Large hit with a clear immediate transient, controlled dynamics.'),
-    ('bolt', 1.5, 'Single arcane energy projectile: quick electric magical zap and sparkling compact impact, bright but soft high frequencies, short clean decay. Fantasy spell shot, no realistic gun.'),
     ('explosion', 2.8, 'One large fantasy fire spell detonation, immediate rounded bass impact followed by a short rushing fire burst and falling ember crackle. Compact cinematic magical explosion, no piercing frequencies, no long rumble.'),
-    ('ward', 1.4, 'Single magical shield deflects an incoming hit: soft resonant glass ping, short airy ripple, gentle protective shimmer. Crisp and restrained, immediate action.'),
-    ('counterspell', 1.8, 'Single arcane spell cancellation: a quick reverse magical suction suddenly closes into a soft crystal snap and falling tiny glass tones. Concise magical negation, no explosion.'),
-    ('portal', 1.8, 'Single small ethereal portal whoosh, airy reverse swell and soft crystalline disappearance. Fantasy exile or teleport effect, short and clean.'),
-    ('death', 1.4, 'Single fantasy game creature vanishing into ash: soft dark wooden crack, low compact puff and dry granular dust settling, a short low magical tail. No voices, no gore.'),
-    ('heal', 1.8, 'Single gentle fantasy restoration chime, three ascending warm bell tones with a soft shimmering halo. Short elegant magical healing effect.'),
     ('victory', 3.5, 'Very short original fantasy victory stinger, warm harp arpeggio and three resolving celesta chords with a gentle low orchestral swell. Restrained and satisfying, no bombastic fanfare.'),
 ]
 jobs = []

@@ -1059,3 +1059,8 @@ Ajani/Atarka verification completed locally: whole suite7514/7515PASS,1Oracle pr
 
 
 Combined release authorized on 6 September: user requested all three sessions together. C14 precons, Ajani/planeswalker decisions and explicit attack destinations, and custom token presentation are included. Final merged suite7511/7515 PASS on927 unchanged source inputs,4missing-DOM-method test-double errors;corrected complete marked-damage file7/7 PASS with all effect assertions retained,0outstanding failures and0runtime changes after full run;42 natural deck games;syntax/audit/strict19690 definitions and3468 deck checks PASS;dependency vulnerabilities0. Browser54/54 across C14, Chromium/WebKit planeswalkers, custom tokens and Ob emblem;390px game125iterations/30turns/rematch PASS. The validated browser driver now explicitly selects a defender. Target main/origin and existing canonical Vercel application; publication proof is recorded in output/release-all-2026-09-06/release.json after deployment.
+
+
+## 2026-09-07 — Milestone audio only
+
+User feedback after audio release 48dce46: remove land/card sounds and keep only milestone effects. Removed nine routine MP3s and their generator/manifest entries. Music remains selectable; effects now mark only commander/powerhouse arrivals, actual 10+ damage, board wipes affecting 3+ cards, and game end. Ordinary card plays, attacks, small hits, prevention, counters and removal are silent. Coalescing retains one simultaneous cue and repeated cues have a 2.5-second cooldown. Menu copy and existing test expectations now describe this policy. No tests were run, following the prior explicit commit/push/deploy-without-tests instruction; this correction uses the same main/Vercel release target.

@@ -46,7 +46,7 @@ try {
     }
     await page.locator('#audio-music').fill('16'); await page.locator('#audio-effects').fill('35');
     await click(page.locator('.audiopreview')); await page.waitForTimeout(180);
-    assert.equal(await page.evaluate(() => MTG.audio.history.at(-1)?.id), 'card');
+    assert.equal(await page.evaluate(() => MTG.audio.history.at(-1)?.id), 'summon');
     await click(page.locator('.audiomute'));
     await page.waitForFunction(() => MTG.audio.preferences.muted, null, { timeout: 5000 });
     assert.equal(await page.locator('.audiopreview').isDisabled(), true);
@@ -87,19 +87,20 @@ try {
       MTG.audio.musicBus.disconnect(analyser);
       return { result, outputRms };
     }, manifest.tracks);
-    assert.equal(media.result.length, 16);
+    assert.equal(media.result.length, 7);
     for (const item of media.result) { assert.ok(item.duration > .1 && item.peak > .015 && item.peak < .99, JSON.stringify(item)); }
     assert.ok(media.outputRms > .0001, 'The browser audio graph produces sound');
     writeFileSync(`${out}/${width}-media.json`, JSON.stringify(media, null, 2));
-    check(`${width}: all 16 MP3s decode, non-silent output, conservative peaks`);
+    check(`${width}: all 7 MP3s decode, non-silent output, conservative peaks`);
     // Exercise the production onEvent callback through a normal human land play.
     const land = await page.evaluate(() => _ui.pending.q.lands[0].iid);
+    const beforeLand = await page.evaluate(() => MTG.audio.history.length);
     await click(page.locator(`.hand [data-iid="${land}"]`).first());
     await click(page.locator('.sheetacts button').filter({ hasText: /^Play/ }).first());
     await page.waitForTimeout(250);
     assert.equal(await page.evaluate(id => _game.byIid(id).zone, land), 'battlefield');
-    assert.equal(await page.evaluate(() => MTG.audio.history.at(-1).id), 'card');
-    check(`${width}: normal human land action reaches the production audio callback`);
+    assert.equal(await page.evaluate(() => MTG.audio.history.length), beforeLand);
+    check(`${width}: normal human land action stays silent through the production callback`);
 
     await page.evaluate(() => {
       const ui = new MTG.UI();
@@ -174,7 +175,8 @@ try {
     assert.equal(final.done, true); assert.equal(final.paid, 6); assert.equal(final.aiPaid, 6); assert.equal(final.aiZone, 'battlefield');
     assert.equal(final.combatLife, 34); assert.equal(final.preventedLife, 34);
     assert.equal(stackSeen, true); assert.equal(reviewSeen, true); assert.equal(final.fallback, false);
-    for (const id of ['card', 'summon', 'attack', 'heavy-impact', 'ward', 'explosion', 'portal']) assert.ok(final.cues.some(cue => cue.id === id), id);
+    for (const id of ['summon', 'explosion']) assert.ok(final.cues.some(cue => cue.id === id), id);
+    assert.ok(final.cues.every(cue => ['summon', 'explosion'].includes(cue.id)), 'Routine combat, prevention and exile stay silent');
     await page.screenshot({ path: `${out}/${width}-gameplay.png` });
     writeFileSync(`${out}/${width}-gameplay.json`, JSON.stringify(final, null, 2));
     writeFileSync(`${out}/${width}-state.json`, await page.evaluate(() => render_game_to_text()));

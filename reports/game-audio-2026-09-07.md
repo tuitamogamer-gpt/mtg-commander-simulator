@@ -1,5 +1,17 @@
 # Commander music and sound — 7 September 2026
 
+Follow-up revision: the user requested removal of routine land/card sounds and
+all other everyday effects. The current assets retain three instrumentals and
+four effects, used only for commander/powerhouse arrivals, actual 10+ damage,
+board wipes affecting at least three cards, and game end. Repeated cues have a
+2.5-second cooldown and simultaneous milestones coalesce to one sound. Nine
+routine MP3s were removed from the manifest, generator and deployed assets.
+Existing test expectations were updated but no tests were run for this revision,
+per the user's instruction. The validation and sixteen-file inventory below
+describe the original implementation before this change.
+
+## Original implementation record
+
 Implemented locally. Open **Menu → Music & sound**, or Find → Music & sound.
 
 Three original Higgsfield/Sonilo instrumentals provide a quiet fantasy lo-fi

@@ -8,8 +8,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     { id: 'astral-library', name: 'Astral Library', detail: 'Dusty keys · glass chimes · 68 BPM', tone: 'astral' },
     { id: 'ember-sanctum', name: 'Ember Sanctum', detail: 'Nylon guitar · warm embers · 74 BPM', tone: 'ember' },
   ].map(Object.freeze));
-  const EFFECTS = new Set(['card', 'summon', 'attack', 'impact', 'heavy-impact', 'bolt', 'explosion',
-    'ward', 'counterspell', 'portal', 'death', 'heal', 'victory']);
+  const EFFECTS = new Set(['summon', 'heavy-impact', 'explosion', 'victory']);
   const level = (value, fallback) => typeof value === 'number' && Number.isFinite(value)
     ? Math.max(0, Math.min(100, Math.round(value))) : fallback;
   U.normalizeAudioPreferences = raw => ({
@@ -20,27 +19,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // must not influence a sound, even on the controller's own device.
   U.audioCuesForEvent = event => {
     if (!event) return [];
-    if (event.type === 'cardPlayed') return [{ id: 'card', rate: event.kind === 'land' ? 0.88 : 1 }];
-    if (event.type === 'battlefieldArrival') return event.card?.faceDown ? [] : [{ id: 'summon', priority: 3 }];
-    if (event.type === 'combat' && event.kind === 'attackersDeclared' && event.count > 0) return [{ id: 'attack' }];
+    // Routine card plays, attacks, removal and small effects are silent.
+    if (event.type === 'battlefieldArrival') return !event.card || event.card.faceDown ||
+      !['commander', 'powerhouse'].includes(event.kind) ? [] : [{ id: 'summon', priority: 3 }];
     if (event.type === 'gameover') return [{ id: 'victory', priority: 4 }];
-    if (event.type === 'effectNotice' && event.kind === 'spellCopy') return [{ id: 'bolt', volume: 0.55 }];
     if (event.type !== 'gameEffect') return [];
     const amount = Number(event.amount) || 0;
-    if (event.kind === 'damage' && amount > 0) {
-      if (event.combat) return [{ id: amount >= 6 ? 'heavy-impact' : 'impact', priority: amount >= 6 ? 2 : 1 }];
-      const source = event.source;
-      const colors = source && !source.faceDown ? source.colors || source.cur?.colors || [] : [];
-      return [{ id: amount >= 10 || (amount >= 5 && colors.includes('R')) ? 'explosion' : 'bolt', priority: amount >= 5 ? 3 : 1 }];
+    if (event.kind === 'damage' && amount >= 10) {
+      return [{ id: event.combat ? 'heavy-impact' : 'explosion', priority: 3 }];
     }
-    if (event.kind === 'boardWipe' && (event.count > 0 || event.cards?.length)) return [{ id: 'explosion', priority: 4 }];
-    if (event.kind === 'counterspell') return [{ id: 'counterspell', priority: 3 }];
-    if (event.kind === 'damagePrevented' || (event.kind === 'keyword' && event.state === 'prevented')) return [{ id: 'ward', priority: 2 }];
-    if (event.kind === 'zoneMove' && event.fromZone === 'battlefield') return [{
-      id: event.toZone === 'graveyard' ? 'death' : 'portal', volume: 0.65,
-    }];
-    if (event.kind === 'combatStrike') return [{ id: 'attack', volume: 0.7 }];
-    if (event.kind === 'proliferate' && event.count > 0) return [{ id: 'heal', volume: 0.7 }];
+    if (event.kind === 'boardWipe' && (event.count ?? event.cards?.length ?? 0) >= 3) return [{ id: 'explosion', priority: 4 }];
     return [];
   };
 
@@ -182,8 +170,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     enqueue(cue) {
       if (!EFFECTS.has(cue.id) || !this.canPlay()) return;
       const now = this.env.performance.now();
-      // Coalesce simultaneous combat/removal events; never queue a storm backlog.
-      const gap = cue.id === 'card' ? 75 : cue.id === 'explosion' ? 800 : 220;
+      // Even milestone effects remain sparse during copies and large combats.
+      const gap = 2500;
       if (now - (this.recent.get(cue.id) ?? -Infinity) < gap) return;
       this.pending.set(cue.id, cue);
       if (this.batchTimer) return;
@@ -191,14 +179,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.batchTimer = null;
         const cues = [...this.pending.values()].sort((a, b) => (b.priority || 0) - (a.priority || 0));
         this.pending.clear();
-        const big = cues.some(item => item.id === 'explosion');
-        for (const item of cues.filter(item => !big || !['death', 'impact', 'heavy-impact', 'bolt'].includes(item.id)).slice(0, 3)) {
+        for (const item of cues.slice(0, 1)) {
           this.recent.set(item.id, this.env.performance.now()); void this.play(item);
         }
       }, 45);
     }
     async play(cue) {
-      if (!this.canPlay()) return;
+      if (!EFFECTS.has(cue.id) || !this.canPlay()) return;
       const game = this.game, epoch = this.effectsEpoch || 0, requested = this.env.performance.now();
       try {
         const buffer = await this.load('sfx/' + cue.id);
@@ -229,7 +216,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const source of this.voices) { try { source.stop(); } catch { /* Already ended. */ } }
     }
     async preview() {
-      await this.unlock(); this.error = ''; this.enqueue({ id: 'card' });
+      await this.unlock(); this.error = ''; this.enqueue({ id: 'summon', priority: 3 });
     }
     dispose() {
       this.attach(null); this.listeners.clear();

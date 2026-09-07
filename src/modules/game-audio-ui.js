@@ -39,7 +39,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     body.appendChild(tracks);
     const controls = node('div', 'audiolevels');
     const sliders = {};
-    for (const [key, label] of [['music', 'Music volume'], ['effects', 'Effects volume']]) {
+    for (const [key, label] of [['music', 'Music volume'], ['effects', 'Milestone effects volume']]) {
       const row = node('div', 'audiolevel'), title = node('label', '', label), output = node('output', '');
       const input = node('input', ''); input.type = 'range'; input.id = 'audio-' + key;
       input.min = '0'; input.max = '100'; input.step = '1'; input.value = String(audio.preferences[key]);
@@ -52,7 +52,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const preview = node('button', 'pbtn audiopreview', 'Test effects'); preview.type = 'button';
     preview.onclick = () => { void audio.preview(); };
     actions.append(mute, preview); body.append(controls, actions, status);
-    body.appendChild(node('p', 'audiohint', 'Music loops softly. Combat and spell sounds follow the action. Audio pauses in background tabs.'));
+    body.appendChild(node('p', 'audiohint', 'Music loops softly. Effects mark major arrivals, 10+ damage, board wipes and the end of a game. Everyday card plays are silent.'));
     const footer = node('footer', 'audiofooter');
     const back = node('button', 'pbtn', '← Arena controls'); back.type = 'button';
     back.onclick = () => { ui.quickMenuOpen = true; ui.render(); document.querySelector('.audiosettingsopen')?.focus({ preventScroll: true }); };
