@@ -1326,6 +1326,120 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return { assignments, outcome, score };
   }
 
+  function isStationAbility(entry) {
+    return !!(entry.card.def.stationCreatureAt && entry.ability?.cost?.tapCreature);
+  }
+
+  // Evaluate Station as a plan to unlock a printed tier, including all of its
+  // tap payments. Extra charge alone is not a payoff. Only public battlefield
+  // information enters this forecast; opponents untap before our next turn.
+  function stationDefense(game, player, blockers) {
+    let position = { life: player.life, poison: player.poison || 0,
+      commanderDamage: { ...player.commanderDamage }, freshTurn: true };
+    let danger = 0;
+    const seat = game.players.indexOf(player);
+    const ordered = game.players.slice(seat + 1).concat(game.players.slice(0, seat));
+    for (const opponent of ordered.filter(p => !p.lost && p !== player)) {
+      const attackers = game.creatures(opponent).filter(card => !card.cur.cantAttack &&
+        game.canAttackAtAll(card) && game.canAttackTarget(card, player) &&
+        !(card.tapped && (card.counters.stun > 0 || card.def.doesntUntap || card.cur.cantUntap)));
+      if (!attackers.length) continue;
+      const { outcome } = survivalBlocks(game, player, attackers, blockers, position);
+      position = { life: outcome.life, poison: outcome.poison,
+        commanderDamage: outcome.commanderDamage, freshTurn: true };
+      danger = Math.max(danger, combatDanger(outcome));
+      blockers = blockers.filter(card => !outcome.dead.has(card) && !outcome.removed.has(card));
+      if (outcome.lethal) break;
+    }
+    return danger + Math.max(0, player.life - position.life) * (player.life <= 12 ? 3 : 1.2);
+  }
+
+  MTG.stationPlan = function (game, source, player, pool = null) {
+    const charge = Number(source.counters.charge || 0);
+    const finalTier = source.def.stationCreatureAt;
+    const tiers = [...new Set([...String(source.def.oracle || '').matchAll(/^(\d+)\+\s*\|/gm)]
+      .map(match => Number(match[1])).concat(finalTier))].sort((a, b) => a - b);
+    const target = tiers.find(n => n > charge);
+    const candidates = (pool || game.creatures(player)).filter(card => card !== source &&
+      card.zone === 'battlefield' && card.ctrl === player && !card.tapped && card.power > 0);
+    const idle = { score: -30, picks: [], target: target || null };
+    if (!candidates.length) return idle;
+
+    // Kilo's tap trigger is a concrete exception to the cap: proliferate can
+    // win immediately even when the Spacecraft needs no more charge.
+    const kilo = candidates.find(card => card.name === 'Kilo, Apogee Mind' && !card.cur.abilitiesDisabled);
+    const proliferations = game.bf().some(card => card.ctrl === player &&
+      card.name === 'Tekuthal, Inquiry Dominus' && !card.cur.abilitiesDisabled) ? 2 : 1;
+    if (kilo && game.bf().some(card => card.ctrl === player && card.name === 'Darksteel Reactor' &&
+      !card.cur.abilitiesDisabled && card.counters.charge > 0 && card.counters.charge < 20 &&
+      card.counters.charge + proliferations >= 20)) return { score: 30, picks: [kilo], target: 'win' };
+    if (!target) return idle;
+
+    const need = target - charge;
+    const gain = card => card.power + (card === kilo ?
+      (charge > 0 ? proliferations : 0) + (card.counters['+1/+1'] > 0 ? proliferations : 0) : 0);
+    const tapCosts = new Map();
+    const tapCost = card => {
+      if (tapCosts.has(card)) return tapCosts.get(card);
+      const attackReady = game.phase === 'main1' && (!card.sick || card.kw('haste')) &&
+        game.canAttackAtAll(card);
+      const lethalAttack = attackReady && player.opponents(game).some(opponent => {
+        if (!game.canAttackTarget(card, opponent)) return false;
+        const blockers = game.creatures(opponent).filter(c => !c.tapped);
+        return survivalBlocks(game, opponent, [card], blockers).outcome.lethal;
+      });
+      const cost = 0.6 + Math.max(0, card.power) * (attackReady ? 0.9 : 0.12) +
+        Math.max(0, card.toughness) * 0.08 +
+        (card.def.mana || (card.def.abilities || []).some(a => a.cost?.tap) ? 1.5 : 0) +
+        (lethalAttack ? 100 : 0);
+      tapCosts.set(card, cost);
+      return cost;
+    };
+    const ranked = candidates.slice().sort((a, b) => tapCost(a) - tapCost(b) || a.iid - b.iid);
+    // Bounded subset search retains cheap combinations and every sufficient
+    // singleton, including large pilots on a wide token board.
+    let beam = [{ picks: [], gain: 0, cost: 0 }];
+    const complete = ranked.filter(card => gain(card) >= need)
+      .map(card => ({ picks: [card], gain: gain(card), cost: tapCost(card) }));
+    for (const card of ranked.slice(0, 16)) {
+      const next = beam.map(plan => ({ picks: [...plan.picks, card],
+        gain: plan.gain + gain(card), cost: plan.cost + tapCost(card) }));
+      complete.push(...next.filter(plan => plan.gain >= need));
+      beam = beam.concat(next.filter(plan => plan.gain < need))
+        .sort((a, b) => (a.cost - a.gain * 0.6) - (b.cost - b.gain * 0.6))
+        .slice(0, 32);
+    }
+    const blockers = game.creatures(player).filter(card => !card.tapped && !card.cur.cantBlock);
+    const before = stationDefense(game, player, blockers);
+    const plans = complete.length ? complete : game.phase === 'main2'
+      ? ranked.map(card => ({ picks: [card], gain: gain(card), cost: tapCost(card) })) : [];
+    let best = idle;
+    const cheapPlans = plans.sort((a, b) => a.cost - b.cost ||
+      Math.max(0, a.gain - need) - Math.max(0, b.gain - need)).slice(0, 12);
+    for (const plan of cheapPlans) {
+      let remaining = blockers.filter(card => !plan.picks.includes(card));
+      if (charge + plan.gain >= finalTier && !source.is('Creature') && !source.tapped && !source.cur.cantBlock) {
+        // A read-only projected body credits the blocker Station unlocks.
+        // Do not recalc/mutate the live board while evaluating an AI choice.
+        const body = Object.create(source);
+        body.cur = { ...source.cur, types: [...source.cur.types, 'Creature'], kw: new Set(source.cur.kw) };
+        const tierText = String(source.def.oracle || '').split(`${finalTier}+ |`)[1] || '';
+        for (const keyword of ['flying', 'reach', 'first strike', 'double strike', 'deathtouch', 'indestructible']) {
+          if (new RegExp(`\\b${keyword}\\b`, 'i').test(tierText.split('\n')[0])) body.cur.kw.add(keyword);
+        }
+        remaining = [...remaining, body];
+      }
+      const after = stationDefense(game, player, remaining);
+      const exposure = Math.max(0, after - before);
+      if (!remaining.length && blockers.length && after > before) continue;
+      const reaches = plan.gain >= need;
+      const score = (reaches ? 10 + (target === finalTier ? 4 : 0) : 2 + plan.gain / need * 3) -
+        plan.cost - exposure - Math.max(0, plan.gain - need) * 0.12;
+      if (score > Math.max(0, best.score)) best = { score, picks: plan.picks, target };
+    }
+    return best;
+  };
+
   function attackPlanSurvival(game, player, assignments) {
     const opponents = player.opponents(game);
     const dead = new Set(), removed = new Set(), eliminated = new Set();
@@ -1611,6 +1725,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // ponovnog crewovanja već animiranog Vehiclea. Bez ovog AI-only filtera
         // bi svaki novi untapped creature plaćao isti Crew još jednom.
         if (entry.crew && (entry.card.is('Creature') || entry.card.meta.crewedTurn === game.turnNo)) continue;
+        if (isStationAbility(entry) && MTG.stationPlan(game, entry.card, player).score <= 0) continue;
         actions.push({ kind: 'activate', entry });
       }
       if (q.type === 'main') {
@@ -1644,6 +1759,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const maxTargets = affordableStriveTargets(game, player, q, Math.min(q.max ?? 1, ranked.length));
       for (const picks of combinations(ranked, q.min || 0, maxTargets, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseTargets', picks });
     } else if (q.type === 'chooseCards') {
+      if (q.aiHint?.kind === 'stationTap' && q.aiHint.src?.def.stationCreatureAt) {
+        const plan = MTG.stationPlan(game, q.aiHint.src, player, q.from);
+        // Use the payment that made the activation worthwhile. Difficulty
+        // noise must not replace it with a needed defender or oversized body.
+        if (plan.picks.length) return [{ kind: 'chooseCards', picks: [plan.picks[0]] }];
+      }
       const allRanked = (q.from || []).slice().sort((a, b) => choiceCardValue(game, player, b, q) - choiceCardValue(game, player, a, q) || a.iid - b.iid);
       const ranked = allRanked.slice(0, Math.max(config.targetLimit, q.min || 0, q.max || 1));
       if(q.aiHint?.kind==='oracleNameSearch'){const picks=[];for(const card of allRanked)if(picks.length<(q.max??1)&&(!q.aiHint.canPayRemaining||q.aiHint.canPayRemaining([...picks,card])))picks.push(card);actions.push({kind:'chooseCards',picks});}
@@ -2204,7 +2325,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (hint === 'chargeCounter') {
         if (hostile || !target.is('Artifact')) return -100;
         if (target.name === 'Darksteel Reactor') return 120 + (target.counters.charge || 0) * 2;
-        if (target.def.stationCreatureAt) return 90 - Math.max(0, target.def.stationCreatureAt - (target.counters.charge || 0));
+        if (target.def.stationCreatureAt) return (target.counters.charge || 0) < target.def.stationCreatureAt
+          ? 90 - (target.def.stationCreatureAt - (target.counters.charge || 0)) : 10 + value;
         return 12 + (target.counters.charge || 0);
       }
       if (hint === 'depthshaker') {
@@ -4531,8 +4653,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         breakdown.choice = action.value === 'Artifact' ? 12 : action.value === 'Creature' ? 3 : 1;
       } else if (hintKind === 'inspiritCounter') {
         const target = q.aiHint && q.aiHint.target;
-        const wantsCharge = target && (target.name === 'Darksteel Reactor' || target.def.stationCreatureAt ||
-          target.def.winAtCharge || Object.prototype.hasOwnProperty.call(target.counters || {}, 'charge'));
+        const wantsCharge = target && (target.def.stationCreatureAt
+          ? (target.counters.charge || 0) < target.def.stationCreatureAt
+          : target.name === 'Darksteel Reactor' || target.def.winAtCharge ||
+            Object.prototype.hasOwnProperty.call(target.counters || {}, 'charge'));
         breakdown.choice = action.value === (wantsCharge ? 'c' : 'p') ? 12 : -3;
       } else if (hintKind === 'counterCostKind') {
         breakdown.choice = ['-1/-1', '-0/-1', 'stun', 'finality', 'doom', 'bounty'].includes(action.value) ? 10 : 0;

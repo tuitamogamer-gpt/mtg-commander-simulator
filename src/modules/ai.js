@@ -1048,7 +1048,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'chargeCounter': {
           const score = card => {
             if (card.name === 'Darksteel Reactor') return 100 + (card.counters.charge || 0);
-            if (card.def.stationCreatureAt) return 80 - Math.max(0, card.def.stationCreatureAt - (card.counters.charge || 0));
+            if (card.def.stationCreatureAt) return (card.counters.charge || 0) < card.def.stationCreatureAt
+              ? 80 - (card.def.stationCreatureAt - (card.counters.charge || 0)) : 10 + this.permThreat(g, card);
             if (card.is('Artifact')) return 10 + (card.counters.charge || 0);
             return 0;
           };
@@ -1306,6 +1307,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             amount > 0 && this.counterRemovalScore(card, counterKind, amount) > 0)).slice(0, max);
         }
         case 'stationTap': {
+          if (q.aiHint.src?.def.stationCreatureAt && MTG.stationPlan) {
+            const plan = MTG.stationPlan(g, q.aiHint.src, this.p, from);
+            if (plan.picks.length) return [plan.picks[0]];
+          }
           // tapuj NAJJAČE slobodno stvorenje koje nije potrebno za napad (najviše charge-a)
           const sorted = from.slice().sort((a, b) => Math.max(0, b.power) - Math.max(0, a.power));
           return [sorted[0]];
@@ -1502,8 +1507,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'optTrigger': return 'yes';
         case 'inspiritCounter': {
           const target = q.aiHint && q.aiHint.target;
-          const wantsCharge = target && (target.name === 'Darksteel Reactor' || target.def.stationCreatureAt ||
-            target.def.winAtCharge || Object.prototype.hasOwnProperty.call(target.counters || {}, 'charge'));
+          const wantsCharge = target && (target.def.stationCreatureAt
+            ? (target.counters.charge || 0) < target.def.stationCreatureAt
+            : target.name === 'Darksteel Reactor' || target.def.winAtCharge ||
+              Object.prototype.hasOwnProperty.call(target.counters || {}, 'charge'));
           return wantsCharge && keys.includes('c') ? 'c' : (keys.includes('p') ? 'p' : keys[0]);
         }
         case 'cloudKey': return keys.includes('Artifact') ? 'Artifact' : keys[0];

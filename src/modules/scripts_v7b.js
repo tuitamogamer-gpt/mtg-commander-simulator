@@ -781,12 +781,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (n > 0) ctx.g.addCounters(ctx.src, 'charge', n);
       ctx.g.lg(`${ctx.src.name}: station +${n} charge (total ${ctx.src.counters['charge'] || 0}).`);
     },
-    aiScore: (g, c, p) => {
-      const th = c.def.stationCreatureAt || 8;
-      if ((c.counters['charge'] || 0) >= th) return 0.2;
-      const spare = g.creatures(p).filter(x => !x.tapped && x.power > 0 && !x.sick);
-      return spare.length && g.phase === 'main2' ? 6 : (spare.length > 2 ? 4 : 0.5);
-    },
+    aiScore: (g, c, p) => U.stationPlan(g, c, p).score,
   }, extra || {});
   E.stationAbility = stationAbility;
 

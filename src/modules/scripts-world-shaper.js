@@ -92,8 +92,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ? Math.max(0, ctx.tappedCre.power) : Math.max(0, ctx.stationPower || 0);
         if (n) ctx.g.addCounters(ctx.src, 'charge', n);
       },
-      aiScore: (game, source, player) => game.phase === 'main2' &&
-        game.creatures(player).some(card => card !== source && !card.tapped && card.power > 0) ? 5 : 0.5,
+      aiScore: (game, source, player) => U.stationPlan(game, source, player).score,
     }, extra);
   }
 
