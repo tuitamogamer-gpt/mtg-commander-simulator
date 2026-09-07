@@ -1778,7 +1778,9 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
 .onlineseat {
   position: relative;
   display: grid;
-  grid-template-rows: auto auto minmax(230px, 1fr) auto auto;
+  grid-template-rows: auto auto 160px;
+  grid-auto-rows: min-content;
+  align-content: start;
   gap: 10px;
   min-width: 0;
   padding: 14px;
@@ -1794,8 +1796,8 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
 .onlineseatstatus i { width: 5px; height: 5px; }
 .onlineseat.waiting .onlineseatstatus { color: #8b877f; }
 .onlineseat.waiting .onlineseatstatus i { background: #68665f; box-shadow: none; }
-.onlineseat > img { width: 100%; min-height: 230px; height: 100%; object-fit: cover; border-radius: 6px; filter: saturate(.8) contrast(1.05); }
-.onlineseatempty { display: grid; min-height: 230px; place-items: center; color: rgba(var(--ds-accent-rgb), .35); font: 54px/1 var(--ds-font-display); border: 1px dashed rgba(var(--ds-accent-rgb), .2); border-radius: 6px; }
+.onlineseat > img { width: 100%; min-height: 0; height: 160px; object-fit: cover; border-radius: 6px; filter: saturate(.8) contrast(1.05); }
+.onlineseatempty { display: grid; min-height: 160px; place-items: center; color: rgba(var(--ds-accent-rgb), .35); font: 54px/1 var(--ds-font-display); border: 1px dashed rgba(var(--ds-accent-rgb), .2); border-radius: 6px; }
 .onlineseatcopy { display: grid; gap: 3px; min-width: 0; }
 .onlineseatcopy b { overflow: hidden; color: #f0e7d5; font: 20px/1.15 var(--ds-font-display); text-overflow: ellipsis; white-space: nowrap; }
 .onlineseatcopy span { overflow: hidden; color: #aba496; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
@@ -2178,4 +2180,36 @@ body:has(#game.last-resort-active .overlay) > .toastmsg {
   #game .oppswrap.active-ai-turn[data-opponent-count="1"] {
     grid-template-columns: minmax(0, 1fr) !important;
   }
+}
+
+/* Live decisions stay in reach before the board on short and touch screens. */
+.online-decision-stage { position: sticky; top: 0; z-index: 8; margin-bottom: 12px; }
+.online-decision-stage .online-decision { position: static; margin-top: 0; max-height: 42dvh; overflow-y: auto; background: var(--ds-panel); }
+.online-seat-kind { width: 100%; min-height: 44px; margin-top: 10px; padding: 8px; color: var(--ds-text); background: var(--ds-panel); border: 1px solid var(--ds-accent); }
+.online-seat-count { display: flex; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 620px) {
+  #setup:has(.online-remote-game), #setup:has(.online-lobby) { padding: 0 !important; }
+  .online-remote-game, .online-lobby { padding: 12px; }
+  .online-game-head { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+  .online-game-head b { font-size: 17px; }
+  .online-game-head .online-room-state { display: none; }
+  .online-player-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .online-remote-board, .online-own-hand, .online-battlefield, .online-stack { min-width: 0; }
+  .online-choice { min-height: 44px; min-width: 0; }
+  .online-decision-choices { gap: 8px; }
+  .online-decision-choices select { min-width: 0; max-width: 100%; }
+  .online-lobby-head { grid-template-columns: 1fr; gap: 12px; }
+  .online-invite { flex-wrap: wrap; }
+  .online-seats { grid-template-columns: minmax(0, 1fr); }
+}
+/* Native macOS select styling ignores the room controls' minimum height. */
+.online-deck-select, .online-seat-kind {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 44px;
+  padding-right: 30px;
+  font: 600 12px var(--ds-font-body);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23bca172' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
 }

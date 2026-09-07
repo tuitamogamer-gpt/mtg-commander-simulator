@@ -158,7 +158,7 @@ function assignConnection(state, playerId, connectionId) {
   let seat = state.seats.find(item => item.playerId === playerId);
   if (!seat) {
     if (state.phase !== 'lobby') throw new Error('The game already started.');
-    seat = state.seats.find(item => !item.playerId);
+    seat = state.seats.find(item => item.kind === 'human' && !item.playerId);
     if (!seat) throw new Error(`This ${state.seats.length}-player room is full.`);
     seat.playerId = playerId;
   }
@@ -211,6 +211,7 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
     safeSend(client.ws, {
       type: 'state',
       status: 'playing',
+      actionAcks: true,
       // playerId is the anonymous seat's reconnect capability. It must stay
       // server-side; the filtered view already contains public seat numbers.
       view: viewFor(state, client.playerId),
@@ -327,7 +328,18 @@ export function createCommanderLiveServer({ store = createRoomStoreFromEnv() } =
         let message;
         try { message = JSON.parse(String(data)); } catch { throw new Error('Invalid JSON message.'); }
         if (message.type === 'join') return handleJoin(message);
-        if (message.type === 'action') return handleAction(message);
+        if (message.type === 'action') {
+          const requestId = typeof message.requestId === 'string' ? message.requestId.slice(0, 100) : null;
+          try {
+            await handleAction(message);
+            // A room broadcast may include another player's newer revision.
+            // Confirm this exact action independently of broadcast ordering.
+            if (requestId) safeSend(ws, { type: 'actionAck', requestId });
+          } catch (error) {
+            safeSend(ws, { type: 'error', requestId, error: error.message || String(error) });
+          }
+          return;
+        }
         throw new Error('Unsupported room message.');
       }).catch(error => safeSend(ws, { type: 'error', error: error.message || String(error) }));
     });

@@ -84,6 +84,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async perform(action) {
+      if (this.busy) return;
       this.busy = true;
       this.error = '';
       this.render();
@@ -104,19 +105,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const deck = MTG.DECKS[seat.deckId];
       card.innerHTML = `
         <div class="onlineseatnum">0${seat.seat + 1}</div>
-        <div class="onlineseatstatus"><i></i>${seat.connected ? 'CONNECTED' : 'WAITING'}</div>
+        <div class="onlineseatstatus"><i></i>${seat.kind === 'bot' ? 'LOCAL AI' : seat.connected ? 'CONNECTED' : 'WAITING'}</div>
         ${deck ? `<img src="${artURL(deck.commander)}" alt="${esc(deck.commander)}" onerror="MTG.imgFail(this)">` : '<div class="onlineseatempty">+</div>'}
         <div class="onlineseatcopy"><small>${esc(seat.role)}</small><b>${esc(seat.name)}</b><span>${seat.deckId ? esc(seat.deckId) : 'No deck selected'}${seat.deckImported ? ' <em class="onlineseatimported">imported list</em>' : ''}</span></div>`;
       const unavailable = new Set(view.seats.filter(item => item.seat !== seat.seat).map(item => item.deckId).filter(Boolean));
-      if (mine && view.phase === 'lobby') {
+      if (view.you === 0 && seat.seat !== 0 && !seat.occupied && view.phase === 'lobby') {
+        const kind = el('select', 'online-seat-kind');
+        kind.setAttribute('aria-label', `Seat ${seat.seat + 1} type`);
+        kind.innerHTML = `<option value="human"${seat.kind === 'human' ? ' selected' : ''}>Human player</option><option value="bot"${seat.kind === 'bot' ? ' selected' : ''}>Local AI bot</option>`;
+        kind.disabled = this.busy;
+        kind.onchange = () => this.perform({ type: 'configureSeat', seat: seat.seat, kind: kind.value });
+        card.appendChild(kind);
+      }
+      if ((mine || view.you === 0 && seat.kind === 'bot') && view.phase === 'lobby') {
         const select = el('select', 'online-deck-select');
         select.setAttribute('aria-label', `${seat.name} deck`);
+        select.disabled = this.busy;
         select.innerHTML = `<option value="">Choose deck</option>${deckOptions(seat.deckId, unavailable)}`;
         select.onchange = () => {
           const deckId = select.value;
           if (!deckId) return;
           const commanders = MTG.defaultCommanders(MTG.DECKS[deckId], MTG.DEFS);
-          this.perform(configureAction(deckId, { commanderNames: commanders, name: seat.name, ready: true }));
+          this.perform(configureAction(deckId, { commanderNames: commanders, name: seat.name, ready: true, seat: seat.seat }));
         };
         card.appendChild(select);
       }
@@ -127,6 +137,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const shell = el('main', 'online-lobby');
       const share = this.client.shareUrl || location.href;
       const playerCount = view.settings && view.settings.playerCount || view.seats.length;
+      const humanCount = view.seats.filter(seat => seat.kind === 'human').length;
+      const botCount = playerCount - humanCount;
+      const openSeats = view.seats.filter(seat => seat.kind === 'human' && !seat.occupied).length;
       const readySeats = view.seats.filter(seat => seat.connected && seat.ready);
       const waiting = view.seats.filter(seat => !seat.connected || !seat.ready).map(seat => seat.name);
       const status = readySeats.length === playerCount
@@ -139,13 +152,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       shell.innerHTML = `
         <header class="online-lobby-head">
           <button type="button" class="online-back">← Back</button>
-          <div><span>COMMANDER LIVE · ${playerCount} HUMAN SEATS</span><h1>${view.you === 0 ? 'Your table is open.' : 'You joined the table.'}</h1><p>${playerCount} live players. No bots. One private Commander table.</p></div>
+          <div><span>COMMANDER LIVE · ${playerCount} SEATS</span><h1>${view.you === 0 ? 'Your table is open.' : 'You joined the table.'}</h1><p>${humanCount} human${humanCount === 1 ? '' : 's'} + ${botCount} bot${botCount === 1 ? '' : 's'}. One private Commander table.</p></div>
           <div class="online-room-state"><i></i>${view.phase === 'paused' ? 'PAUSED' : 'ROOM ONLINE'}</div>
         </header>
-        ${view.you === 0 ? `<section class="online-invite"><div><small>PRIVATE INVITE LINK · ${playerCount - 1} OPEN SEAT${playerCount === 2 ? '' : 'S'}</small><b>${esc(share)}</b></div><button type="button" class="online-copy">Copy invite link</button></section>` : ''}
+        ${view.you === 0 ? `<section class="online-invite"><div><small>PRIVATE INVITE LINK · ${openSeats} OPEN HUMAN SEAT${openSeats === 1 ? '' : 'S'}</small><b>${esc(share)}</b></div><button type="button" class="online-copy">Copy invite link</button></section>` : ''}
         <section class="online-seats" aria-label="Commander seats"></section>
         <footer class="online-lobby-actions">
-          <div><small>TABLE STATUS</small><b>${esc(status)}</b><span>Every human seat must use a different deck.</span></div>
+          <div><small>TABLE STATUS</small><b>${esc(status)}</b><span>Choose human or bot for each open seat. Every seat needs a different deck.</span></div>
         </footer>`;
       shell.querySelector('.online-back').onclick = () => this.onBack && this.onBack();
       const copy = shell.querySelector('.online-copy');
@@ -157,6 +170,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       view.seats.forEach(seat => seatsRoot.appendChild(this.seatCard(seat, view)));
       const actions = shell.querySelector('.online-lobby-actions');
       if (view.you === 0) {
+        if (view.phase === 'lobby') {
+          const resize = el('div', 'online-seat-count');
+          if (playerCount < 4) {
+            const add = el('button', 'online-choice', 'Add seat');
+            add.disabled = this.busy;
+            add.onclick = () => this.perform({ type: 'resizeRoom', playerCount: playerCount + 1 });
+            resize.appendChild(add);
+          }
+          if (playerCount > 2 && !view.seats.at(-1).occupied) {
+            const remove = el('button', 'online-choice', 'Remove last seat');
+            remove.disabled = this.busy;
+            remove.onclick = () => this.perform({ type: 'resizeRoom', playerCount: playerCount - 1 });
+            resize.appendChild(remove);
+          }
+          actions.appendChild(resize);
+        }
         const ready = view.seats.every(seat => seat.connected && seat.ready && seat.deckId) &&
           new Set(view.seats.map(seat => seat.deckId)).size === playerCount;
         if (view.phase === 'paused') {
@@ -192,12 +221,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const recoveryOpen = this.lastResortOpen || !!game.lastResortPaused;
       shell.innerHTML = `
         <header class="online-game-head"><div><span>COMMANDER LIVE · PLAYER ${Number(view.you) + 1}</span><b>${esc(active ? active.name : 'Table')} ${game.phase ? `· ${esc(game.phase)}` : ''}</b></div><div class="online-game-tools"><button type="button" class="online-last-resort-toggle${recoveryOpen ? ' active' : ''}">🛠️ ${recoveryOpen ? 'FINISH RECOVERY' : 'LAST RESORT'}</button><div class="online-room-state"><i></i>${view.phase === 'paused' ? 'PAUSED — RECONNECTING' : recoveryOpen ? 'RECOVERY PAUSE' : 'LIVE'}</div></div></header>
+        <section class="online-decision-stage" aria-label="Your game controls"></section>
         <section class="online-player-strip"></section>
         <section class="online-remote-board"><div class="online-battlefield"><div class="online-section-title">Battlefield <span>${game.battlefield.length} permanents</span></div><div class="online-card-row battlefield"></div></div><div class="online-stack"><div class="online-section-title">The Stack <span>${game.stack.length}</span></div><div class="online-stack-list"></div></div></section>
         <section class="online-own-hand"><div class="online-section-title">Your hand <span>${(mine && mine.hand || []).length} cards</span></div><div class="online-card-row hand"></div></section>
-        <section class="online-decision-stage"></section>`;
+        `;
       const strip = shell.querySelector('.online-player-strip');
-      game.players.forEach(player => strip.appendChild(el('article', `online-player ${player.seat === game.activeSeat ? 'active' : ''} ${player.lost ? 'lost' : ''}`, `<small>SEAT 0${player.seat + 1} · HUMAN</small><b>${esc(player.name)}</b><span>${esc(player.deckId || '')}</span><strong>${player.life} <em>LIFE</em></strong><i>${player.handCount} cards · ${player.libraryCount} library</i>`)));
+      game.players.forEach(player => strip.appendChild(el('article', `online-player ${player.seat === game.activeSeat ? 'active' : ''} ${player.lost ? 'lost' : ''}`, `<small>SEAT 0${player.seat + 1} · ${player.isAI ? 'BOT' : 'HUMAN'}</small><b>${esc(player.name)}</b><span>${esc(player.deckId || '')}</span><strong>${player.life} <em>LIFE</em></strong><i>${player.handCount} cards · ${player.libraryCount} library</i>`)));
       const battlefield = shell.querySelector('.online-card-row.battlefield');
       game.battlefield.forEach(card => battlefield.appendChild(this.remoteCard(card)));
       const hand = shell.querySelector('.online-card-row.hand');
@@ -262,7 +292,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const option = el('option', '', `${player.name} · ${player.life} life${player.isAI ? ' · AI' : ''}`);
         option.value = String(player.seat); option.selected = player.seat === selected.seat; select.appendChild(option);
       });
-      select.onchange = () => { this.lastResortPlayerSeat = Number(select.value); this.render(); };
+      select.onchange = () => { this.lastResortPlayerSeat = Number(select.value); this.render(true); };
       controls.appendChild(select);
       const send = action => this.perform({ type: 'manualAction', action });
       const actionButton = (label, run) => { const button = el('button', 'online-choice', label); button.onclick = run; controls.appendChild(button); };
@@ -326,9 +356,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (!this.decisionState || this.decisionState.id !== decision.id) this.decisionState = { id: decision.id, selected: [], assignments: [], number: decision.min ?? 0 };
       const state = this.decisionState;
-      stage.innerHTML = `<div class="online-decision-head"><small>YOUR DECISION · ${esc(decision.type)}</small><h2>${esc(decision.prompt || 'Choose an action')}</h2></div>`;
+      stage.innerHTML = `<div class="online-decision-head"><small>YOUR DECISION · ${esc(decision.type)}</small><h2>${esc(decision.prompt || ({ mulligan: 'Keep this hand or take a mulligan', main: 'Your main phase', priority: 'Respond or pass priority' })[decision.type] || 'Choose an action')}</h2></div>`;
       const choices = el('div', 'online-decision-choices');
-      const submit = response => this.perform({ type: 'decisionResponse', decisionId: decision.id, response });
+      const submit = response => !this.busy && this.perform({ type: 'decisionResponse', decisionId: decision.id, response });
       if (decision.legal.kind === 'ack') {
         const button = el('button', 'online-choice primary', 'Proceed'); button.onclick = () => submit('ok'); choices.appendChild(button);
       } else if (decision.legal.kind === 'boolean') {
@@ -350,7 +380,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           button.onclick = () => {
             const index = state.selected.indexOf(option.token);
             if (index >= 0) state.selected.splice(index, 1); else if (state.selected.length < decision.legal.max) state.selected.push(option.token);
-            this.render();
+            this.render(true);
           };
           choices.appendChild(button);
         });
@@ -364,7 +394,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!selectLeft.value || !selectRight.value) return;
           state.assignments = state.assignments.filter(item => item.left !== selectLeft.value);
           state.assignments.push({ left: selectLeft.value, right: selectRight.value });
-          this.render();
+          this.render(true);
         };
         choices.appendChild(selectLeft); choices.appendChild(selectRight); choices.appendChild(add);
         state.assignments.forEach(item => choices.appendChild(el('div', 'online-assignment', `${esc(item.left)} → ${esc(item.right)}`)));
@@ -377,7 +407,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           button.onclick = () => {
             const from = onTop ? state.scry.top : state.scry.bottom;
             const to = onTop ? state.scry.bottom : state.scry.top;
-            from.splice(from.indexOf(item.token), 1); to.push(item.token); this.render();
+            from.splice(from.indexOf(item.token), 1); to.push(item.token); this.render(true);
           };
           choices.appendChild(button);
         });
@@ -385,21 +415,41 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } else if (decision.legal.kind === 'mana') {
         const auto = el('button', 'online-choice primary', 'Use automatic mana'); auto.onclick = () => submit({ auto: true }); choices.appendChild(auto);
       }
+      choices.querySelectorAll('button, input, select').forEach(control => { if (this.busy) control.disabled = true; });
       stage.appendChild(choices);
       return stage;
     }
 
-    render() {
+    render(force = false) {
       this.renderHostReconnect(this.view);
       if (!this.root) return;
-      this.root.innerHTML = '';
+      const previousStage = this.root.querySelector('.online-decision-stage');
+      const focusedControl = previousStage?.contains(document.activeElement) ? document.activeElement : null;
+      const decisionKey = JSON.stringify([this.view?.pendingDecision, this.view?.phase, this.busy]);
+      const retainStage = !force && previousStage && this.decisionKey === decisionKey;
+      const scrollRows = [...this.root.querySelectorAll('.online-card-row')].map(row => row.scrollLeft);
+      this.decisionKey = decisionKey;
+      if (!retainStage) this.root.innerHTML = '';
       if (!this.view) {
         this.root.appendChild(el('main', 'online-lobby loading', '<div class="online-waiting-game"><i></i><h1>Opening your private table…</h1></div>'));
         return;
       }
       const content = this.view.phase === 'lobby' ? this.renderLobby(this.view) : this.view.you !== 0 ? this.renderGame(this.view) : this.renderLobby(this.view);
       if (this.error) content.prepend(el('div', 'online-error', esc(this.error)));
-      this.root.appendChild(content);
+      if (retainStage) {
+        // Keep the decision attached to the document throughout the update.
+        // Safari can cancel an in-progress click if its target is detached,
+        // even when the same node is immediately reinserted.
+        const shell = previousStage.parentElement;
+        for (const child of [...shell.children]) if (child !== previousStage) child.remove();
+        let beforeStage = true;
+        for (const child of [...content.children]) {
+          if (child.classList.contains('online-decision-stage')) { beforeStage = false; continue; }
+          shell.insertBefore(child, beforeStage ? previousStage : null);
+        }
+      } else this.root.appendChild(content);
+      if (retainStage && focusedControl) focusedControl.focus({ preventScroll: true });
+      this.root.querySelectorAll('.online-card-row').forEach((row, index) => { row.scrollLeft = scrollRows[index] || 0; });
     }
   }
 

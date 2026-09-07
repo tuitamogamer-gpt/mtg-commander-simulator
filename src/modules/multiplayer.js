@@ -204,7 +204,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (type === 'join') {
       if (state.phase !== 'lobby') return { ok: false, error: 'The game already started.' };
       if (seat) return { ok: true };
-      if (!state.seats.some(item => !item.playerId))
+      if (!state.seats.some(item => item.kind === 'human' && !item.playerId))
         return { ok: false, error: `This ${state.seats.length}-player room is full.` };
       return { ok: true };
     }
@@ -213,8 +213,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return { ok: true };
     }
     if (!seat) return { ok: false, error: 'Join the room first.' };
+    if (type === 'resizeRoom') {
+      if (state.phase !== 'lobby' || seat.seat !== 0) return { ok: false, error: 'Only the host changes seats in the lobby.' };
+      if (!Number.isInteger(action.playerCount) || action.playerCount < 2 || action.playerCount > 4)
+        return { ok: false, error: 'Choose two to four total seats.' };
+      if (state.seats.slice(action.playerCount).some(item => item.playerId))
+        return { ok: false, error: 'An occupied human seat cannot be removed.' };
+      return { ok: true };
+    }
+    if (type === 'configureSeat') {
+      const target = state.seats[action.seat];
+      if (state.phase !== 'lobby' || seat.seat !== 0 || !Number.isInteger(action.seat) || !target || target.seat === 0 || target.playerId)
+        return { ok: false, error: 'Only the host changes unoccupied seats in the lobby.' };
+      if (!['human', 'bot'].includes(action.kind)) return { ok: false, error: 'Choose a human or a bot.' };
+      return { ok: true };
+    }
     if (type === 'configure') {
-      if (state.phase !== 'lobby' || seat.kind !== 'human') return { ok: false, error: 'Seat cannot be configured now.' };
+      const target = action.seat === undefined ? seat : state.seats[action.seat];
+      if (state.phase !== 'lobby' || !target || !(target.seat === seat.seat || (seat.seat === 0 && target.kind === 'bot'))) return { ok: false, error: 'Seat cannot be configured now.' };
       if (!cleanText(action.deckId, 120)) return { ok: false, error: 'Choose a deck.' };
       if (action.deckRecord !== undefined && action.deckRecord !== null) {
         const record = cleanDeckRecord(action.deckRecord);
@@ -232,9 +248,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (type === 'start') {
       if (state.phase !== 'lobby' || seat.seat !== 0) return { ok: false, error: 'Only the host starts the game.' };
-      if (!state.seats.every(item => item.playerId && item.connected && item.ready))
-        return { ok: false, error: `All ${state.seats.length} human players must be connected and ready.` };
-      if (!uniqueDecksReady(state)) return { ok: false, error: 'Every human seat needs a different deck.' };
+      if (!state.seats.every(item => (item.kind === 'bot' || item.playerId) && item.connected && item.ready))
+        return { ok: false, error: `All ${state.seats.length} seats must be ready; human players must be connected.` };
+      if (!uniqueDecksReady(state)) return { ok: false, error: 'Every seat needs a different deck.' };
       if (!Number.isSafeInteger(action.seed) || action.seed < 0) return { ok: false, error: 'Invalid deterministic seed.' };
       return { ok: true };
     }
@@ -245,7 +261,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (type === 'sync') {
       if (seat.seat !== 0 || !['running', 'paused'].includes(state.phase)) return { ok: false, error: 'Only the host can synchronize the game.' };
       if (!isObject(action.views) || byteSize(action.views) > MAX_SYNC_BYTES) return { ok: false, error: 'Invalid or oversized game views.' };
-      if (!state.seats.every(item => String(item.seat) in action.views)) return { ok: false, error: 'Every human view is required.' };
+      if (!state.seats.filter(item => item.kind === 'human').every(item => String(item.seat) in action.views)) return { ok: false, error: 'Every human view is required.' };
       return { ok: true };
     }
     if (type === 'decisionRequest') {
@@ -253,7 +269,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (state.pendingDecision || !isObject(action.decision) || cleanText(action.decision.id, 100) === '')
         return { ok: false, error: 'Invalid or overlapping decision.' };
       const targetSeat = state.seats[action.decision.seat];
-      if (!targetSeat || targetSeat.seat === 0 || !targetSeat.connected || !isObject(action.decision.legal))
+      if (!targetSeat || targetSeat.kind !== 'human' || targetSeat.seat === 0 || !targetSeat.connected || !isObject(action.decision.legal))
         return { ok: false, error: 'Decision must target a connected remote human seat.' };
       if (byteSize(action.decision) > 500_000) return { ok: false, error: 'Decision payload is too large.' };
       return { ok: true };
@@ -311,19 +327,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let seat = seatFor(next, playerId);
     if (type === 'join') {
       if (!seat) {
-        seat = next.seats.find(item => !item.playerId);
+        seat = next.seats.find(item => item.kind === 'human' && !item.playerId);
         seat.playerId = String(playerId);
         seat.connected = true;
         seat.name = cleanText(action.name || HUMAN_NAMES[seat.seat], 32);
       }
     } else if (type === 'reconnect') {
       seat.connected = true;
+    } else if (type === 'resizeRoom') {
+      next.seats = Array.from({ length: action.playerCount }, (_, index) => next.seats[index] || seatRecord(index));
+      next.settings.playerCount = action.playerCount;
+      next.views = Object.fromEntries(next.seats.filter(item => item.kind === 'human').map(item => [item.seat, null]));
+    } else if (type === 'configureSeat') {
+      const target = seatRecord(action.seat);
+      if (action.kind === 'bot') Object.assign(target, { kind: 'bot', role: 'bot', name: `Bot ${action.seat + 1}`, connected: true, aiStyle: 'balanced' });
+      next.seats[action.seat] = target;
     } else if (type === 'configure') {
-      seat.deckId = cleanText(action.deckId, 120);
-      seat.deckRecord = cleanDeckRecord(action.deckRecord);
-      seat.commanderNames = (action.commanderNames || []).map(name => cleanText(name, 160)).filter(Boolean).slice(0, 2);
-      seat.name = cleanText(action.name || seat.name, 32);
-      seat.ready = action.ready !== false;
+      const target = action.seat === undefined ? seat : next.seats[action.seat];
+      target.deckId = cleanText(action.deckId, 120);
+      target.deckRecord = cleanDeckRecord(action.deckRecord);
+      target.commanderNames = (action.commanderNames || []).map(name => cleanText(name, 160)).filter(Boolean).slice(0, 2);
+      target.name = cleanText(action.name || target.name, 32);
+      target.ready = action.ready !== false;
     } else if (type === 'configureSettings') {
       next.settings.sumPartnerDamage = action.sumPartnerDamage;
     } else if (type === 'start') {
@@ -337,7 +362,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         next.pause = { reason: 'player-disconnected', seat: seat.seat };
       }
     } else if (type === 'sync') {
-      next.views = Object.fromEntries(next.seats.map(item => [item.seat, clone(action.views[item.seat] ?? action.views[String(item.seat)])]));
+      next.views = Object.fromEntries(next.seats.filter(item => item.kind === 'human').map(item => [item.seat, clone(action.views[item.seat] ?? action.views[String(item.seat)])]));
     } else if (type === 'decisionRequest') {
       next.pendingDecision = clone(action.decision);
       next.lastDecision = null;
@@ -390,7 +415,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       you: seatIndex,
       seats: state.seats.map(item => ({
         seat: item.seat, kind: item.kind, role: item.role, name: item.name,
-        connected: item.connected, ready: item.ready, deckId: item.deckId,
+        occupied: !!item.playerId, connected: item.connected, ready: item.ready, deckId: item.deckId,
         // Everyone sees that a seat brought an imported deck; only the host,
         // who has to build it, and its own player receive the list itself.
         deckImported: !!item.deckRecord,
@@ -665,6 +690,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     const bridge = {
       current: () => latest,
+      gateController(controller) {
+        const gated = Object.create(controller);
+        gated.decide = async (game, question) => {
+          await bridge.waitUntilRunning();
+          const answer = await controller.decide(game, question);
+          await bridge.waitUntilRunning();
+          return answer;
+        };
+        return gated;
+      },
       waitUntilRunning: () => waitFor(next => next && next.phase === 'running' &&
         next.seats.every(seat => seat.connected)),
       setManualActionHandler(handler) {
@@ -673,8 +708,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       async syncGame(game) {
         const humans = game.players.filter(player => !player.isAI).sort((a, b) => a.onlineSeat - b.onlineSeat);
-        if (humans.length < MIN_HUMAN_SEATS || humans.length > MAX_HUMAN_SEATS || humans[0]?.onlineSeat !== 0)
-          throw new Error('Online game must contain two to four human seats led by the Host.');
+        if (humans.length < 1 || humans.length > MAX_HUMAN_SEATS || humans[0]?.onlineSeat !== 0)
+          throw new Error('Online game must contain a human Host and at most four human seats.');
         const views = Object.fromEntries(humans.map(player => [player.onlineSeat, gameViewFor(game, player)]));
         await roomClient.dispatch({ type: 'sync', views });
       },
@@ -834,6 +869,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let reconnectTimer = null;
     let reconnectQueued = false;
     let stopped = false;
+    let actionSerial = 0;
+    let actionAcks = false;
 
     const waitingView = message => {
       const ids = Array.isArray(message.seats) ? message.seats : [];
@@ -862,7 +899,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         kernelState.status !== 'playing' || !kernelState.view) return;
       inflight = queue.shift();
       inflight.baseRevision = Number.isInteger(latest && latest.revision) ? latest.revision : -1;
-      socket.send(JSON.stringify({ type: 'action', action: inflight.action }));
+      inflight.requestId = `action:${++actionSerial}`;
+      socket.send(JSON.stringify({ type: 'action', requestId: inflight.requestId, action: inflight.action }));
     };
     const rejectInflight = error => {
       if (!inflight) return;
@@ -884,11 +922,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
     };
     const acceptState = message => {
+      if (message.actionAcks) actionAcks = true;
+      // Redis notifications and direct replies can arrive out of order.
+      if (latest && message.view && message.view.revision < latest.revision) return;
       kernelState = message;
       latest = message.view ? clone(message.view) : waitingView(message);
       emit();
-      if (inflight && message.view && Number.isInteger(message.view.revision) &&
-        message.view.revision > inflight.baseRevision) {
+      if (!actionAcks && inflight && message.view && Number.isInteger(message.view.revision) &&
+        message.view.revision > inflight.baseRevision &&
+        message.view.lastEvent?.type === inflight.action.type && message.view.lastEvent?.seat === message.view.you) {
         const completed = inflight;
         inflight = null;
         completed.resolve(latest);
@@ -906,7 +948,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       socket.onmessage = event => {
         let message;
         try { message = JSON.parse(event.data); } catch { return; }
+        if (message.type === 'actionAck') {
+          if (inflight && message.requestId === inflight.requestId) {
+            const completed = inflight;
+            inflight = null;
+            completed.resolve(latest);
+            pump();
+          }
+          return;
+        }
         if (message.type === 'error') {
+          if (message.requestId && message.requestId !== inflight?.requestId) return;
           rejectInflight(new Error(message.error || 'The live room rejected the action.'));
           return;
         }

@@ -225,8 +225,24 @@ function validateRoomAction(state, action, playerId) {
     return { ok: true };
   }
   if (!seat) return { ok: false, error: 'Join the room first.' };
+  if (type === 'resizeRoom') {
+    if (state.phase !== 'lobby' || seat.seat !== 0) return { ok: false, error: 'Only the host changes seats in the lobby.' };
+    if (!Number.isInteger(action.playerCount) || action.playerCount < 2 || action.playerCount > 4)
+      return { ok: false, error: 'Choose two to four total seats.' };
+    if (state.seats.slice(action.playerCount).some(item => item.playerId))
+      return { ok: false, error: 'An occupied human seat cannot be removed.' };
+    return { ok: true };
+  }
+  if (type === 'configureSeat') {
+    const target = state.seats[action.seat];
+    if (state.phase !== 'lobby' || seat.seat !== 0 || !Number.isInteger(action.seat) || !target || target.seat === 0 || target.playerId)
+      return { ok: false, error: 'Only the host changes unoccupied seats in the lobby.' };
+    if (!['human', 'bot'].includes(action.kind)) return { ok: false, error: 'Choose a human or a bot.' };
+    return { ok: true };
+  }
   if (type === 'configure') {
-    if (state.phase !== 'lobby' || seat.kind !== 'human') {
+    const target = action.seat === undefined ? seat : state.seats[action.seat];
+    if (state.phase !== 'lobby' || !target || !(target.seat === seat.seat || (seat.seat === 0 && target.kind === 'bot'))) {
       return { ok: false, error: 'Seat cannot be configured now.' };
     }
     if (!cleanText(action.deckId, 120)) return { ok: false, error: 'Choose a deck.' };
@@ -250,10 +266,10 @@ function validateRoomAction(state, action, playerId) {
     if (state.phase !== 'lobby' || seat.seat !== 0) {
       return { ok: false, error: 'Only the host starts the game.' };
     }
-    if (!state.seats.every(item => item.playerId && item.connected && item.ready)) {
-      return { ok: false, error: `All ${state.seats.length} human players must be connected and ready.` };
+    if (!state.seats.every(item => (item.kind === 'bot' || item.playerId) && item.connected && item.ready)) {
+      return { ok: false, error: `All ${state.seats.length} seats must be ready; human players must be connected.` };
     }
-    if (!uniqueDecksReady(state)) return { ok: false, error: 'Every human seat needs a different deck.' };
+    if (!uniqueDecksReady(state)) return { ok: false, error: 'Every seat needs a different deck.' };
     if (!Number.isSafeInteger(action.seed) || action.seed < 0) {
       return { ok: false, error: 'Invalid deterministic seed.' };
     }
@@ -270,7 +286,7 @@ function validateRoomAction(state, action, playerId) {
     if (!isObject(action.views) || byteSize(action.views) > MAX_SYNC_BYTES) {
       return { ok: false, error: 'Invalid or oversized game views.' };
     }
-    if (!state.seats.every(item => String(item.seat) in action.views)) {
+    if (!state.seats.filter(item => item.kind === 'human').every(item => String(item.seat) in action.views)) {
       return { ok: false, error: 'Every human view is required.' };
     }
     return { ok: true };
@@ -283,7 +299,7 @@ function validateRoomAction(state, action, playerId) {
       return { ok: false, error: 'Invalid or overlapping decision.' };
     }
     const targetSeat = state.seats[action.decision.seat];
-    if (!targetSeat || targetSeat.seat === 0 || !targetSeat.connected || !isObject(action.decision.legal)) {
+    if (!targetSeat || targetSeat.kind !== 'human' || targetSeat.seat === 0 || !targetSeat.connected || !isObject(action.decision.legal)) {
       return { ok: false, error: 'Decision must target a connected remote human seat.' };
     }
     if (byteSize(action.decision) > 500_000) {
@@ -363,13 +379,22 @@ export function applyAction(state, playerId, action) {
     seat.connected = true;
   } else if (type === 'reconnect') {
     seat.connected = true;
+  } else if (type === 'resizeRoom') {
+    next.seats = Array.from({ length: action.playerCount }, (_, index) => next.seats[index] || seatRecord(index));
+    next.settings.playerCount = action.playerCount;
+    next.views = Object.fromEntries(next.seats.filter(item => item.kind === 'human').map(item => [item.seat, null]));
+  } else if (type === 'configureSeat') {
+    const target = seatRecord(action.seat);
+    if (action.kind === 'bot') Object.assign(target, { kind: 'bot', role: 'bot', name: `Bot ${action.seat + 1}`, connected: true, aiStyle: 'balanced' });
+    next.seats[action.seat] = target;
   } else if (type === 'configure') {
-    seat.deckId = cleanText(action.deckId, 120);
-    seat.deckRecord = cleanDeckRecord(action.deckRecord);
-    seat.commanderNames = (action.commanderNames || [])
+    const target = action.seat === undefined ? seat : next.seats[action.seat];
+    target.deckId = cleanText(action.deckId, 120);
+    target.deckRecord = cleanDeckRecord(action.deckRecord);
+    target.commanderNames = (action.commanderNames || [])
       .map(name => cleanText(name, 160)).filter(Boolean).slice(0, 2);
-    seat.name = cleanText(action.name || seat.name, 32);
-    seat.ready = action.ready !== false;
+    target.name = cleanText(action.name || target.name, 32);
+    target.ready = action.ready !== false;
   } else if (type === 'configureSettings') {
     next.settings.sumPartnerDamage = action.sumPartnerDamage;
   } else if (type === 'start') {
@@ -383,7 +408,7 @@ export function applyAction(state, playerId, action) {
       next.pause = { reason: 'player-disconnected', seat: seat.seat };
     }
   } else if (type === 'sync') {
-    next.views = Object.fromEntries(next.seats.map(item => [
+    next.views = Object.fromEntries(next.seats.filter(item => item.kind === 'human').map(item => [
       item.seat, clone(action.views[item.seat] ?? action.views[String(item.seat)]),
     ]));
   } else if (type === 'decisionRequest') {
@@ -447,7 +472,7 @@ export function viewFor(state, playerId) {
       kind: item.kind,
       role: item.role,
       name: item.name,
-      connected: item.connected,
+      occupied: !!item.playerId, connected: item.connected,
       ready: item.ready,
       deckId: item.deckId,
       deckImported: !!item.deckRecord,

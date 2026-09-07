@@ -355,7 +355,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.newGame = function (opts) {
     // opts: {humanDeck, aiDecks:[names], aiStyles:[keys], seed, onEvent, humanController, difficulty, maxTurns,
     //        humanCommanders:[names], remoteHumans?:[{deck,name,commanders,controller}], aiRandomCommanders:bool,
-    //        diplomacyEnabled:bool}. Online Commander supplies one to three remote humans and no AI decks.
+    //        diplomacyEnabled:bool}. Online Commander supplies remote humans and local AI in any supported seat combination.
     const customSkills = MTG.validateAISkillSetup(opts.aiStyles || [], opts.aiCustomSkills || MTG.snapshotAISkills(opts.aiStyles));
     customSkills.forEach(MTG.registerAISkill);
     const g = new MTG.Game({
@@ -375,7 +375,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ? opts.remoteHumans.slice(0, 3)
       : opts.remoteHuman ? [opts.remoteHuman] : [];
     const remotePlayers = remoteSpecs.map((remote, index) => {
-      const seat = index + 1;
+      const seat = remote.onlineSeat ?? index + 1;
       if (!remote.deck || !MTG.DECKS[remote.deck]) throw new Error(`Online Player ${seat + 1} needs a valid deck.`);
       if (!remote.controller) throw new Error(`Online Player ${seat + 1} needs a remote controller.`);
       const player = g.addPlayer(remote.name || `Player ${seat + 1}`, MTG.DECKS[remote.deck], null, false);
@@ -389,8 +389,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const styles = [];
     for (let botIndex = 0; botIndex < opts.aiDecks.length; botIndex++) {
       const dk = opts.aiDecks[botIndex];
-      const q = g.addPlayer(names[botIndex + 1] + '', MTG.DECKS[dk], null, true);
-      q.onlineSeat = botIndex + remotePlayers.length + 1;
+      const q = g.addPlayer(opts.aiNames?.[botIndex] || names[botIndex + 1] + '', MTG.DECKS[dk], null, true);
+      q.onlineSeat = opts.aiSeats?.[botIndex] ?? botIndex + remotePlayers.length + 1;
+      if (opts.aiCommanders?.[botIndex]?.length) q.chosenCommanders = opts.aiCommanders[botIndex].slice(0, 2);
       let st = (opts.aiStyles && opts.aiStyles[botIndex]) || 'random';
       q.requestedAIStyle = st;
       if (st === 'random') st = styleKeys.length ? styleKeys[Math.floor(g.rnd() * styleKeys.length)] : 'balanced';

@@ -1110,11 +1110,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       <div class="matchtypecopy"><span>Match type</span><b>Choose how you enter the pod</b></div>
       <div class="matchtypechoices">
         <button type="button" class="matchtypebtn${state.mode === 'solo' ? ' selected' : ''}" data-mode="solo"><strong>Solo table</strong><small>You + 1-3 AI V2 bots</small></button>
-        <button type="button" class="matchtypebtn live${state.mode === 'online' ? ' selected' : ''}" data-mode="online"><strong><i></i> Live players</strong><small>2–4 humans · no bots</small></button>
+        <button type="button" class="matchtypebtn live${state.mode === 'online' ? ' selected' : ''}" data-mode="online"><strong><i></i> Live players</strong><small>2–4 seats · humans + bots</small></button>
       </div>`;
     right.appendChild(matchType);
     const livePlayerRow = el('div', 'liveplayercount');
-    livePlayerRow.innerHTML = '<span><b>Human seats</b><small>Choose before the private link is generated</small></span><div class="liveplayerchoices"></div>';
+    livePlayerRow.innerHTML = '<span><b>Total seats</b><small>Choose humans or bots in the lobby</small></span><div class="liveplayerchoices"></div>';
     for (const count of [2, 3, 4]) {
       const button = el('button', `pbtn choice${count === state.livePlayers ? ' selected' : ''}`, `${count} players`);
       button.type = 'button';
@@ -1123,7 +1123,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         state.livePlayers = count;
         livePlayerRow.querySelectorAll('[data-live-players]').forEach(item => item.classList.toggle('selected', item === button));
         updateStartLabel();
-        opponentsLabel.innerHTML = `<i>Live pod</i> ${count} human seats <em>Players 2–${count} choose after joining</em>`;
+        opponentsLabel.innerHTML = `<i>Live pod</i> ${count} total seats <em>Add humans or bots in the lobby</em>`;
       };
       livePlayerRow.querySelector('.liveplayerchoices').appendChild(button);
     }
@@ -1208,7 +1208,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const deckNames = Object.keys(MTG.DECKS).filter(name => !MTG.DECKS[name].custom).sort((a, b) => a.localeCompare(b));
       // Decks the player imported are offered to bots too, but only while the
       // list is ready in My Library — a broken or removed list must never be
-      // dealt to a seat. Online rooms have no bots, so the mode is excluded.
+      // dealt to a seat. Online bot decks are configured in the lobby.
       const importedDeckNames = state.mode === 'online' ? [] : (MTG.getImportedDeckLibrary?.() || { entries: [] })
         .entries.filter(entry => entry.ready && MTG.DECKS[entry.name]?.custom)
         .map(entry => entry.name).sort((a, b) => a.localeCompare(b));
@@ -1476,11 +1476,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       difficultyLabel.hidden = state.mode === 'online';
       diffRow.hidden = state.mode === 'online';
       opponentsLabel.innerHTML = state.mode === 'online'
-        ? `<i>Live pod</i> ${state.livePlayers} human seats <em>Players 2–${state.livePlayers} choose after joining</em>`
+        ? `<i>Live pod</i> ${state.livePlayers} total seats <em>Add humans or bots in the lobby</em>`
         : '<i>Pod</i> Opponents <em>Choose each AI deck</em>';
       diplomacyRow.hidden = state.mode === 'online';
       advancedSummaryCopy.textContent = state.mode === 'online'
-        ? 'Commander damage and Arena controls for this human table'
+        ? 'Commander damage and Arena controls for this live table'
         : 'Commander options, Arena controls, politics and difficulty';
       if (state.mode === 'online') {
         state.diplomacyEnabled = false;
@@ -1542,7 +1542,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         </div>
         <div class="reviewseats ct-review-seats" style="--ct-seats:${seats.length}">${seatMarkup}</div>
         <dl class="reviewrules">
-          <div><dt>Mode</dt><dd>${state.mode === 'online' ? `${state.livePlayers} human players · no bots` : `Solo + ${state.ai} local AI`}</dd></div>
+          <div><dt>Mode</dt><dd>${state.mode === 'online' ? `${state.livePlayers} seats · configure humans and bots in the lobby` : `Solo + ${state.ai} local AI`}</dd></div>
           ${state.mode === 'solo' ? `<div><dt>Difficulty</dt><dd>${esc(state.difficulty)}</dd></div>` : ''}
           <div><dt>Politics</dt><dd>${state.diplomacyEnabled ? 'Enabled after round 3' : 'Off'}</dd></div>
           <div><dt>Commander damage</dt><dd>${state.sumPartnerDamage ? 'House rule: combined' : 'Official: tracked separately'}</dd></div>
@@ -1906,7 +1906,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const remoteHumans = Array.isArray(state.remoteHumans)
       ? state.remoteHumans
       : state.remoteHuman ? [state.remoteHuman] : [];
-    const aiDecks = remoteHumans.length ? [] : MTG.selectAIDecks(state.deck, state.ai, state.aiDecks, rnd);
+    const aiDecks = state.onlineBridge ? state.aiDecks.slice() : MTG.selectAIDecks(state.deck, state.ai, state.aiDecks, rnd);
 
     const ui = new MTG.UI();
     if (typeof state.arenaDragEnabled === 'boolean') ui.arenaDragEnabled = state.arenaDragEnabled;
@@ -1918,16 +1918,27 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let queueAccountSave = () => {};
     let completeAccountMatch = () => {};
     let onlineSyncQueued = false;
+    let onlineSyncDirty = false;
     const queueOnlineSync = () => {
-      if (!state.onlineBridge || !gameRef || onlineSyncQueued) return;
+      if (!state.onlineBridge || !gameRef) return;
+      onlineSyncDirty = true;
+      if (onlineSyncQueued) return;
       onlineSyncQueued = true;
-      queueMicrotask(() => {
-        onlineSyncQueued = false;
-        state.onlineBridge.syncGame(gameRef).then(() => ui.clearSyncError()).catch(error => {
+      // Bot turns can emit dozens of events together. Publish the latest table
+      // without filling the socket queue ahead of a human decision response.
+      setTimeout(async () => {
+        onlineSyncDirty = false;
+        try {
+          await state.onlineBridge.syncGame(gameRef);
+          ui.clearSyncError();
+        } catch (error) {
           console.error(error);
           ui.setSyncError(`Live sync paused: ${error.message}`, queueOnlineSync);
-        });
-      });
+        } finally {
+          onlineSyncQueued = false;
+          if (onlineSyncDirty) queueOnlineSync();
+        }
+      }, 200);
     };
     document.body.classList.add('game-active');
     $('#setup').style.display = 'none';
@@ -1936,6 +1947,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const g = MTG.newGame({
       humanDeck: state.deck,
       aiDecks,
+      aiSeats: state.aiSeats,
+      aiNames: state.aiNames,
+      aiCommanders: state.aiCommanders,
       aiStyles: state.aiStyles.slice(0, state.ai),
       aiCustomSkills: resumeSave?.setup.aiCustomSkills || MTG.snapshotAISkills(state.aiStyles.slice(0, state.ai)),
       humanCommanders: (state.commanders && state.commanders.length) ? state.commanders : undefined,
@@ -2033,7 +2047,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     gameRef = g;
     const actualAIPlayers = g.players.filter(player => player.isAI)
       .sort((a, b) => (a.onlineSeat ?? a.idx) - (b.onlineSeat ?? b.idx));
-    saveSetup = remoteHumans.length ? null : {
+    if (state.onlineBridge) {
+      for (const player of actualAIPlayers) player.controller = state.onlineBridge.gateController(player.controller);
+    }
+    saveSetup = state.onlineBridge ? null : {
       deck: state.deck,
       commanders: ui.me.commanders.map(card => card.name),
       ai: aiDecks.length,
@@ -4422,38 +4439,43 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const seats = roomView.seats || [];
     const host = seats.find(seat => seat.seat === 0);
     const humans = seats.filter(seat => seat.kind === 'human').sort((a, b) => a.seat - b.seat);
-    if (!host || humans.length < 2 || humans.length > 4 || humans.length !== seats.length)
-      throw new Error('Live Commander requires two to four human players and no bots.');
+    const bots = seats.filter(seat => seat.kind === 'bot').sort((a, b) => a.seat - b.seat);
+    if (!host || host.kind !== 'human' || humans.length < 1 || seats.length < 2 || seats.length > 4 || humans.length + bots.length !== seats.length)
+      throw new Error('Live Commander requires a human host and two to four total seats.');
     // Every seat's deck is built on this machine. A guest playing an imported
     // list sends the list with their seat; the host registers it here so the
     // engine can build the same deck it would build for its owner.
     const ownLibrary = new Set((MTG.getImportedDeckLibrary?.() || { entries: [] }).entries
       .filter(entry => entry.ready).map(entry => entry.name));
-    for (const seat of humans) {
+    for (const seat of seats) {
       if (!seat.deckRecord) continue;
       const seatName = seat.name || `Player ${seat.seat + 1}`;
       // The host's own saved lists are never overwritten by a guest's list of
       // the same name; the guest renames their deck instead.
-      if (seat.seat !== 0 && ownLibrary.has(seat.deckRecord.name))
+      if (seat.kind === 'human' && seat.seat !== 0 && ownLibrary.has(seat.deckRecord.name))
         throw new Error(`${seatName} sent a deck named ${seat.deckRecord.name}, which is also in your My Library. Ask them to rename their list.`);
       const adopted = MTG.adoptImportedDeckRecord(seat.deckRecord);
       if (!adopted.ok) throw new Error(`${seatName} sent an imported deck that cannot be built: ${adopted.error}`);
     }
-    const missing = humans.filter(seat => !MTG.DECKS[seat.deckId]);
+    const missing = seats.filter(seat => !MTG.DECKS[seat.deckId]);
     if (missing.length) throw new Error(`No deck named ${missing[0].deckId} is available on the host.`);
     const bridge = MTG.onlineHostBridge(roomClient);
     return startGame({
       deck: host.deckId,
       commanders: host.commanderNames,
       remoteHumans: humans.slice(1).map(human => ({
+        onlineSeat: human.seat,
         deck: human.deckId,
         name: human.name || `Player ${human.seat + 1}`,
         commanders: human.commanderNames,
         controller: player => MTG.remoteControllerFor(player, bridge),
       })),
-      ai: 0,
-      aiDecks: [],
-      aiStyles: [],
+      ai: bots.length,
+      aiDecks: bots.map(bot => bot.deckId),
+      aiSeats: bots.map(bot => bot.seat),
+      aiNames: bots.map(bot => bot.name),
+      aiCommanders: bots.map(bot => bot.commanderNames),
+      aiStyles: bots.map(bot => bot.aiStyle || 'balanced'),
       aiRandomCommanders: false,
       sumPartnerDamage: !!roomView.settings.sumPartnerDamage,
       diplomacyEnabled: false,
