@@ -4,6 +4,10 @@ A browser Commander table with local AI opponents, private multiplayer, animated
 
 **[Play Commander Simulator](https://mtg-commander-simulator.vercel.app/)** · [Import a deck](docs/deck-import.md) · [Card catalog](docs/card-catalog.md) · [Deployment](docs/deployment.md)
 
+> **Napomena / Disclaimer:** Multiplayer mod sa živim igračem je trenutno u testnoj fazi. Molim za strpljenje.
+>
+> Kompletna pažnja je posvećena isključivo borbi protiv AI protivnika.
+
 ![Commander Simulator Command Table interface](assets/menu/command-table-preview.jpg)
 
 **Explore:** [Game modes](#what-you-can-play) · [Precons and commander videos](#42-precon-decks-and-commander-video-animations) · [First game](#your-first-game) · [Automatic and manual mana](#automatic-and-manual-mana) · [Deck import](#import-your-deck) · [AI and Command Zone styles](#ai-archetypes-and-custom-skills) · [Diplomacy & Politics](#diplomacy--politics) · [Judge and recovery](#judge-and-last-resort-recovery) · [Run locally](#run-locally) · [Hosting and Live](#vercel-and-multiplayer) · [Saves and help](#saves-privacy-and-troubleshooting) · [Current limits](#current-limits)
@@ -327,6 +331,12 @@ The archive is `dist/commander-simulator-public.zip`. It includes the client, lo
 - Browser-local guest lists, skills, and pod presets do not automatically follow you to another device or domain.
 - Account password reset/change, email verification, and self-service account deletion are not implemented. See [account behavior](docs/data-and-accounts.md) for current retention and recovery limits.
 - Passing tests covers the documented scenarios; a large imported catalog does not establish exhaustive multiplayer interaction coverage.
+
+## AI tools used for this project
+
+- Claude Fable 5.1
+- ChatGPT 5.6 Soul
+- ChatGPT 6 Astra
 
 ## Fan project notice
 
