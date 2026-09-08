@@ -279,6 +279,9 @@ test('lice-nadolje stvorenje se može okrenuti licem gore u stvarnom prozoru', {
     for (const win of windows) {
       const { game, me, permanent, controllers } = table(win);
       for (let index = 0; index < 12; index++) permanent(me, 'Island');
+      // Gift of Doom's printed morph cost sacrifices another creature.
+      // Provide that cost before checking whether its action opens a window.
+      permanent(me, 'Grizzly Bears');
       const card = new MTG.CardInst(MTG.DEFS[name], me);
       card.ctrl = me;
       card.zone = 'battlefield';

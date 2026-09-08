@@ -1,0 +1,184 @@
+{
+  "baseCommit": "decdf93ee28e101442a9ed253b81a031d626d5d1",
+  "before": {
+    "definitions": 20002,
+    "eligible": 19974,
+    "selectableDecks": 62,
+    "nativeDefinitions": 2144,
+    "activeUnique": 2935,
+    "cardDeckChecks": 5117
+  },
+  "after": {
+    "definitions": 20151,
+    "eligible": 20126,
+    "selectableDecks": 70,
+    "nativeDefinitions": 2293,
+    "activeUnique": 3225,
+    "cardDeckChecks": 5789
+  },
+  "newCards": 149,
+  "reusedCards": 398,
+  "physicalCards": 800,
+  "uniqueSourceCards": 547,
+  "newlyEligibleReused": [
+    "Agitator Ant",
+    "Frontier Warmonger",
+    "Sevinne's Reclamation"
+  ],
+  "preservation": {
+    "existingRawDefinitions": 2144,
+    "existingDeckRecords": 63,
+    "oldCardsEqual": true,
+    "oldDecksEqual": true,
+    "oracleBatchFilesUnchanged": true,
+    "oldImagesUnchanged": true,
+    "commanderVideosUnchanged": true,
+    "imageMappings": {
+      "CARD_IMAGE_PATHS": 3059,
+      "CARD_ART_PATHS": 62
+    }
+  },
+  "oracleWordingDifferences": [
+    {
+      "name": "Bloodthirsty Blade",
+      "runtime": "Equipped creature gets +2/+0 and is goaded. (It attacks each combat if able and attacks a player other than you if able.)\n{1}: Attach Bloodthirsty Blade to target creature an opponent controls. Activate only as a sorcery.",
+      "source": "Equipped creature gets +2/+0 and is goaded. (It attacks each combat if able and attacks a player other than you if able.)\n{1}: Attach this Equipment to target creature an opponent controls. Activate only as a sorcery."
+    },
+    {
+      "name": "Boros Garrison",
+      "runtime": "Boros Garrison enters tapped.\nWhen Boros Garrison enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "source": "This land enters tapped.\nWhen this land enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}."
+    }
+  ],
+  "printedFieldDifferences": [
+    {
+      "name": "Dusk // Dawn",
+      "field": "cost",
+      "runtime": "{2}{W}{W}{3}{W}{W}",
+      "source": "{2}{W}{W} // {3}{W}{W}"
+    },
+    {
+      "name": "Farm // Market",
+      "field": "cost",
+      "runtime": "{2}{W}{2}{U}",
+      "source": "{2}{W} // {2}{U}"
+    },
+    {
+      "name": "Find // Finality",
+      "field": "cost",
+      "runtime": "{B/G}{B/G}{4}{B}{G}",
+      "source": "{B/G}{B/G} // {4}{B}{G}"
+    },
+    {
+      "name": "Refuse // Cooperate",
+      "field": "cost",
+      "runtime": "{3}{R}{2}{U}",
+      "source": "{3}{R} // {2}{U}"
+    },
+    {
+      "name": "Tezzeret's Gambit",
+      "field": "cost",
+      "runtime": "{3}{UP}",
+      "source": "{3}{U/P}"
+    }
+  ],
+  "sources": [
+    {
+      "name": "Mystic Intellect",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/decks-commander-2019-edition-2019-08-08",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/MysticIntellect_C19.json",
+      "moxfield": "https://moxfield.com/decks/HQVV0USd-ECJa_7kyXdsnw",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "391a2d57f8a0a5af8e061c773751660a8ef52377a43fa10ec9b0fe6cad355e7a",
+      "officialHtmlSha256": "ff6b25664bb7a38f5571a2f91f0bebeab5ab17be90001a1abc97dd363690b515",
+      "export": "mystic-intellect.txt",
+      "sha256": "f2afb5d2376924c99b71a09c7a7ca36427ede6fb1d4faab0df8308cdf4c4f903"
+    },
+    {
+      "name": "Faceless Menace",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/decks-commander-2019-edition-2019-08-08",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/FacelessMenace_C19.json",
+      "moxfield": "https://moxfield.com/decks/gBEKby17r0OMidKZzGZfYQ",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "b040699cf09650cde423a282216099e5113c49f8e3547cd6abc325fa47e75064",
+      "officialHtmlSha256": "ff6b25664bb7a38f5571a2f91f0bebeab5ab17be90001a1abc97dd363690b515",
+      "export": "faceless-menace.txt",
+      "sha256": "f41574dc57dedab362256566c2c50815cb0bb2412f33f4562fcf354ebf055b1e"
+    },
+    {
+      "name": "Timeless Wisdom",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/timeless-wisdom-2020-04-06",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/TimelessWisdom_C20.json",
+      "moxfield": "https://moxfield.com/decks/FoYllHo-K0WwAeO4uX5uLg",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "b38b0f5a1b6571de739524ccc1b28a1aaf43f5016c01c72e9426435a5635a872",
+      "officialHtmlSha256": "edd315219bd470c83f51a192856d12ab04663b509ec38705004db9142c170da6",
+      "export": "timeless-wisdom.txt",
+      "sha256": "bbba05787103fcd08807af34152e205d68741cf9852efba220886ffd7b3b8e9f"
+    },
+    {
+      "name": "Enhanced Evolution",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/enhanced-evolution-2020-04-06",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/EnhancedEvolution_C20.json",
+      "moxfield": "https://moxfield.com/decks/LWso_KepWEGAF8XjYQuH9Q",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "24fcfedc79642f2b785ad317bce790b0b2548a91061821439bba7f89afb08859",
+      "officialHtmlSha256": "82f5d6fe167bc1360c739d79a447e6001ffeb758641a29ff3f485a8309f754ad",
+      "export": "enhanced-evolution.txt",
+      "sha256": "6c8dfbc954975ad0d3df413b4f8fcfc8691cd0dd9ed587d6332b60ce922bd236"
+    },
+    {
+      "name": "Ruthless Regiment",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/ruthless-regiment-2020-04-06",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/RuthlessRegiment_C20.json",
+      "moxfield": "https://moxfield.com/decks/7a4bmlDVbEeIlvXYrlTIIA",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "93e4962a81c547808f752d5f2e8c1a12cb785db773a3a0736a4b2f40f2d010ce",
+      "officialHtmlSha256": "19ad85e1187ff81ac9407045d8c7428bc1af526e35fdabf084b8ae378982e376",
+      "export": "ruthless-regiment.txt",
+      "sha256": "46158da78f7de7eb7e0c317e826343254e73ef7011689907eff5f34f378eda07"
+    },
+    {
+      "name": "Arcane Maelstrom",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/arcane-maelstrom-2020-04-06",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/ArcaneMaelstrom_C20.json",
+      "moxfield": "https://moxfield.com/decks/tNJbhqMb_U-azRDNGIBooA",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "7061d65f306788df7a332f06cd867f1bc10c45d164af33a373792c72abffed44",
+      "officialHtmlSha256": "eee91b8d9c121f1c05d25005d46d21d78f944aeee340e6acdfaa49f3fb61fdda",
+      "export": "arcane-maelstrom.txt",
+      "sha256": "e69a831d70e6427ca8397617bd41587c0c681273b34a80fde3e9322dd4a20068"
+    },
+    {
+      "name": "Symbiotic Swarm",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/symbiotic-swarm-2020-04-06",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/SymbioticSwarm_C20.json",
+      "moxfield": "https://moxfield.com/decks/VdxcZ7n6skOrhuElFAa5bg",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "ea3ce7908e5af535554d4e06b3d225343f53a3a6547325ff67665eddf9ae50b1",
+      "officialHtmlSha256": "3a77207335fd43b59b62f2f72693422d11e44f2423398ca610ee4a8e860cb891",
+      "export": "symbiotic-swarm.txt",
+      "sha256": "d6cf5a04434881d09562d075231da89dae3e89657d2bd14ee77d4badca34fa6f"
+    },
+    {
+      "name": "Sneak Attack",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/card-preview/zendikar-rising-commander-decklists-2020-09-09",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/SneakAttack_ZNC.json",
+      "moxfield": "https://moxfield.com/decks/xaAqhJektkCFh_HAR8cBMg",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "03e3c27b78f6ee8df6358e14fa3060a4ac3b785dd37e90b2cd710760471ce1ac",
+      "officialHtmlSha256": "e7d8853f0fa19b40b5083343e8f8773152ab33463637ff9bbe19e4a9cf0ca320",
+      "export": "sneak-attack.txt",
+      "sha256": "ff824ba2f7473ee33a83f2c0865a6487c5b1c6d92160c740ef6f7a462fe283a3"
+    }
+  ],
+  "runtimeSmokeSha256": "43f05b9e93a82b3cb72324560769b9b294540e5e451f57453f97c0ea2fc59938"
+}

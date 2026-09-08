@@ -23,6 +23,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+    "Mystic Intellect": {"icon": "📜", "colors": ["W", "U", "R"], "style": "Flashback and spell copies", "blurb": "Sevinne copies your first instant or sorcery cast from the graveyard each turn.", "set": "Commander (2019)"},
+    "Faceless Menace": {"icon": "🎭", "colors": ["B", "G", "U"], "style": "Morph and hidden creatures", "blurb": "Kadena discounts your first face-down creature spell each turn and draws when a face-down creature enters.", "set": "Commander (2019)"},
+    "Timeless Wisdom": {"icon": "🪽", "colors": ["W", "U", "R"], "style": "Cycling and token value", "blurb": "Gavi makes your first cycling cost each turn free and rewards your second draw with a Dinosaur Cat.", "set": "Commander (2020)"},
+    "Enhanced Evolution": {"icon": "🧬", "colors": ["B", "G", "U"], "style": "Mutate and creature recursion", "blurb": "Otrimi combines mutate abilities with trample and returns mutate creatures after a combat hit.", "set": "Commander (2020)"},
+    "Ruthless Regiment": {"icon": "🛡️", "colors": ["R", "W", "B"], "style": "Humans and attack pressure", "blurb": "Jirina recruits Humans based on her command-zone casts and gives your other Humans +2/+0.", "set": "Commander (2020)"},
+    "Arcane Maelstrom": {"icon": "🌩️", "colors": ["G", "U", "R"], "style": "Instants and spell copies", "blurb": "A tapped Kalamax copies your first instant each turn and grows whenever you copy an instant.", "set": "Commander (2020)"},
+    "Symbiotic Swarm": {"icon": "🪲", "colors": ["W", "B", "G"], "style": "Graveyard and keyword counters", "blurb": "Kathril turns creature keywords in your graveyard into counters and grows for the counters actually placed.", "set": "Commander (2020)"},
+    "Sneak Attack": {"icon": "🗡️", "colors": ["U", "B"], "style": "Rogues and combat milling", "blurb": "Anowon boosts other Rogues and turns Rogue combat damage into milling and potential card draw.", "set": "Zendikar Rising Commander (2020)"},
+
     "Draconic Domination": {"icon": "🐉", "colors": ["B", "G", "R", "U", "W"], "style": "Dragons And Eminence", "blurb": "The Ur-Dragon reduces Dragon costs from the command zone and rewards a full flight with cards and a free permanent.", "set": "Commander (2017)"},
     "Vampiric Bloodlust": {"icon": "🦇", "colors": ["B", "R", "W"], "style": "Vampire Swarm", "blurb": "Edgar creates a Vampire for each other Vampire spell, then grows the whole tribe when he attacks.", "set": "Commander (2017)"},
     "Feline Ferocity": {"icon": "🐈", "colors": ["G", "W"], "style": "Cats And Equipment", "blurb": "Arahbo boosts a Cat before combat and can turn another attacking Cat into a trampling threat.", "set": "Commander (2017)"},

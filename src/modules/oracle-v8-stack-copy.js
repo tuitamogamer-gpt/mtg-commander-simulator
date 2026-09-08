@@ -39,7 +39,7 @@
   const n=helpers.amount(effect.n,ctx);if(!Number.isInteger(n)||n<0)throw new Error('Invalid Stack copy amount');
   for(const object of objects.filter(Boolean)){
    if(!ctx.g.stack.includes(object))continue;
-   if(object.kind==='spell'&&effect.kind!=='ability')for(let i=0;i<n;i++)await ctx.g.copySpell(object,ctx.you,{mayNewTargets:effect.retarget,copySource:ctx.src,...(effect.modifications?{oracleDefinition:M.OracleV8Copies.modifiedDefinition(object.oracleDefinition||object.card.def,effect.modifications,{})}:{})});
+   if(object.kind==='spell'&&effect.kind!=='ability')await ctx.g.copySpells(object,ctx.you,n,{mayNewTargets:effect.retarget,copySource:ctx.src,...(effect.modifications?{oracleDefinition:M.OracleV8Copies.modifiedDefinition(object.oracleDefinition||object.card.def,effect.modifications,{})}:{})});
    else if(['ability','trigger'].includes(object.kind)&&effect.kind!=='spell')for(let i=0;i<n;i++)await ctx.g.copyStackAbility(object,ctx.you,{mayNewTargets:effect.retarget});
   }
  }

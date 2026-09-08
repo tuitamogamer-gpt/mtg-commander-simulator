@@ -198,6 +198,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+    "Mystic Intellect": {"archetype": "Flashback and spell copies", "length": "long", "tags": ["graveyard", "spellslinger", "control"], "commanderImportance": 1.5},
+    "Faceless Menace": {"archetype": "Morph and hidden creatures", "length": "long", "tags": ["control", "ramp", "combat"], "commanderImportance": 1.5},
+    "Timeless Wisdom": {"archetype": "Cycling and token value", "length": "long", "tags": ["spellslinger", "tokens", "control"], "commanderImportance": 1.5},
+    "Enhanced Evolution": {"archetype": "Mutate and creature recursion", "length": "long", "tags": ["combat", "ramp", "graveyard"], "commanderImportance": 1.5},
+    "Ruthless Regiment": {"archetype": "Humans and attack pressure", "length": "long", "tags": ["tribal", "tokens", "combat"], "commanderImportance": 1.5},
+    "Arcane Maelstrom": {"archetype": "Instants and spell copies", "length": "long", "tags": ["spellslinger", "control", "combat"], "commanderImportance": 1.5},
+    "Symbiotic Swarm": {"archetype": "Graveyard and keyword counters", "length": "long", "tags": ["graveyard", "counters", "combat"], "commanderImportance": 1.5},
+    "Sneak Attack": {"archetype": "Rogues and combat milling", "length": "long", "tags": ["tribal", "combat", "graveyard"], "commanderImportance": 1.5},
+
     "Draconic Domination": {"archetype": "Dragons And Eminence", "length": "long", "tags": ["tribal", "ramp", "combat"], "commanderImportance": 1.5},
     "Vampiric Bloodlust": {"archetype": "Vampire Swarm", "length": "long", "tags": ["tribal", "tokens", "lifegain"], "commanderImportance": 1.5},
     "Feline Ferocity": {"archetype": "Cats And Equipment", "length": "long", "tags": ["tribal", "artifacts", "combat"], "commanderImportance": 1.5},
@@ -4192,7 +4201,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (entry.crew) breakdown.combat += phase === 'main1' ? 2.5 : -0.5;
       if (entry.cycling) breakdown.resources += player.hand.length < 4 ? 1.5 : 0.4;
-      if(entry.cycling)for(const payment of card.def.cycling?.oracleAdditionalCosts||[]){
+      if(entry.cycling)for(const payment of game.cyclingDefinition(player,card,entry)?.oracleAdditionalCosts||[]){
         if(payment.kind==='payLife')breakdown.safety-=player.life<=payment.amount.value?10000:payment.amount.value*(player.life<10?2:0.15);
         if(payment.kind==='sacrifice'&&payment.object?.types?.includes('Land')&&game.lands(player).length<=payment.quantity.min+2)breakdown.resources-=8;
       }
@@ -4271,7 +4280,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
-      if(hintKind==='exertAttack'){
+      if(hintKind==='mutateOrder'){
+        const {definition,host}=q.aiHint,def=action.value==='over'?definition:MTG.C1920.snapshotCopy(host);
+        breakdown.choice=(Number(def.power)||0)*1.2+(Number(def.toughness)||0);
+      } else if(hintKind==='exertAttack'){
         breakdown.choice=action.value===MTG.OracleV8Exert.choose(game,player,q)?10:0;
       } else if(hintKind==='exploit'){
         breakdown.choice=action.value===MTG.OracleV8Exploit.choose(game,player,q)?10:0;
@@ -5120,7 +5132,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const actor=action.entry.c1719IgnoreArbiter?clone.players[action.entry.c1719ActingPlayer]:card.ctrl;
       const entry = clone.activatableList(actor).find(candidate => candidate.card.iid === card.iid &&
         candidate.idx === action.entry.idx && !!candidate.equip === !!action.entry.equip && !!candidate.crew === !!action.entry.crew &&
-        !!candidate.cycling === !!action.entry.cycling && !!candidate.plot === !!action.entry.plot && !!candidate.foretell === !!action.entry.foretell &&
+        !!candidate.cycling === !!action.entry.cycling && candidate.cyclingId === action.entry.cyclingId && !!candidate.plot === !!action.entry.plot && !!candidate.foretell === !!action.entry.foretell &&
         !!candidate.ninjutsu === !!action.entry.ninjutsu && !!candidate.c1719IgnoreArbiter===!!action.entry.c1719IgnoreArbiter &&
         !!candidate.suspend === !!action.entry.suspend && !!candidate.handAbility === !!action.entry.handAbility && !!candidate.gyAbility === !!action.entry.gyAbility &&
         !!candidate.turnFaceUp === !!action.entry.turnFaceUp && !!candidate.manaAbility === !!action.entry.manaAbility);

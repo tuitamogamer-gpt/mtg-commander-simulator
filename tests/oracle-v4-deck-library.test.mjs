@@ -71,7 +71,7 @@ test('a 100-card deck made only from batches 0027-0046 imports, persists, and re
   unsupported.id = 'deck-v4-unsupported-mutation';
   unsupported.name = 'Oracle V4 Unsupported Mutation';
   const replaceIndex = unsupported.cards.findIndex(row => row.name !== 'Sliver Hivelord');
-  unsupported.cards[replaceIndex] = { ...unsupported.cards[replaceIndex], name: 'Agitator Ant' };
+  unsupported.cards[replaceIndex] = { ...unsupported.cards[replaceIndex], name: 'Boros Reckoner' };
   assert.equal(MTG.validateImportedDeckRecord(unsupported).ok, false);
   assert.throws(() => MTG.upsertGuestImportedDeck(unsupported, { storage }), /certified|supported/i);
   assert.equal(storage.getItem(MTG.IMPORTED_LIBRARY_KEY), savedPayload,

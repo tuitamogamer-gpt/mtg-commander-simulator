@@ -46,6 +46,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!hidden && card.def.mana) def.mana = data(card.def.mana) || true;
     const current = publicBody ? data(card.cur) : null;
     const publicMeta = hidden ? {} : Object.fromEntries(metaKeys.filter(k => meta[k] !== undefined).map(k => [k, data(meta[k])]));
+    if(card.mutateState){publicMeta.c1920Mutations=meta.c1920Mutations||0;publicMeta.mutateComponents=U.Mutate.present(card,viewer);}
     if (card.faceDown && mayLook) {
       publicMeta.faceDownDef = data(meta.faceDownDef || card.def);
       publicMeta.revealedTo = [viewer.idx];
@@ -133,7 +134,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         emblems: data(player.emblems || []), cityBlessing: !!player.cityBlessing, noMaxHandForever: !!player.noMaxHandForever,
         ringLevel: player.ringLevel || 0,
         libraryTop: visibleTop, libraryTopSources: topSources.map(token),
-        libraryTopPermitted: !!top && topSources.some(source => typeof source.def.playTop === 'function' && source.def.playTop(game, source, top, player)),
+        libraryTopPermitted: !!top && (U.C1920?.elshaTop(game,player,top)||topSources.some(source => typeof source.def.playTop === 'function' && source.def.playTop(game, source, top, player))),
         statusEffects: U.UI ? U.UI.prototype.playerStatusEffects.call({ poisonCount: U.UI.prototype.poisonCount }, game, player) : [],
       };
     });

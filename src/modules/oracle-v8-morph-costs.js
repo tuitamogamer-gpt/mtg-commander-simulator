@@ -5,7 +5,7 @@
     Object.keys(operation).some(key=>!['kind','label','revealColor','costs','contract'].includes(key))||
     typeof operation.label!=='string'||!operation.label||Boolean(operation.revealColor)===Boolean(operation.costs))throw new Error('Invalid Morph payment');
   if(operation.revealColor&&!['W','U','B','R','G'].includes(operation.revealColor))throw new Error('Invalid Morph reveal');
-  if(operation.costs&&(operation.costs.length!==1||!['discard','payLife','returnPermanent'].includes(operation.costs[0].kind)))throw new Error('Unsupported Morph cost');
+  if(operation.costs&&(operation.costs.length!==1||!['discard','payLife','returnPermanent','sacrifice'].includes(operation.costs[0].kind)))throw new Error('Unsupported Morph cost');
   const payment={...operation,...(operation.costs?{compiled:MTG.compileOracleAdditionalCosts(operation.costs)}:{})};
   script.morph='{0}';script.oracleMorphPayment=payment;
  }

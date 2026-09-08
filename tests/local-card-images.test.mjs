@@ -18,6 +18,8 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
     expected.add(faceName(deck.commander));
     for (const card of deck.cards || []) expected.add(faceName(card.name));
   }
+  const importedFaces=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-c19-c20-znc-2026-09-08/oracle.json',import.meta.url))).cards.flatMap(r=>r.faces||[]);
+  for(const face of importedFaces)expected.add(face.name);
   for(const name of [...expected]){const back=MTG.DEFS[name]?.c1719FlipBack?.name;if(back)expected.add(back);}
   for (const token of Object.values(MTG.TOKENS || {})) if (token && token.name) {
     expected.add(faceName(token.name));
@@ -34,7 +36,11 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
     else{assert.notEqual(image,MTG.CARD_IMAGE_PLACEHOLDER,name+': canonical card or token name retains its local art');assert.match(image,/^\.\/assets\/cards\/.+\.webp$/);}
   }
   assert.deepEqual([...commanders].filter(name => !MTG.CARD_ART_PATHS[name]), []);
-  assert.equal(Object.keys(MTG.CARD_IMAGE_PATHS).length, expected.size);
+  // Canonical token names may share an existing type alias (for example
+  // Dinosaur Cat and Dinosaur Cat Token). Compare the actual manifest keys.
+  const expectedKeys = new Set([...expected].map(name =>
+    MTG.CARD_IMAGE_PATHS[name] ? name : name.replace(/ Token$/, '')));
+  assert.deepEqual(Object.keys(MTG.CARD_IMAGE_PATHS).sort(), [...expectedKeys].sort());
   assert.deepEqual(
     Object.entries(MTG.CARD_IMAGE_PATHS).filter(([, asset]) => asset === MTG.CARD_IMAGE_PLACEHOLDER).map(([name]) => name).sort(),
     [...MTG.CARD_IMAGE_MISSING].sort(),

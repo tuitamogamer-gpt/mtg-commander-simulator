@@ -461,7 +461,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (entry.turnFaceUp || entry.manaAbility) return entry.label || 'Activate';
       if (entry.handAbility) return (def.handAbility && def.handAbility.label) || 'Ability from your hand';
       if (entry.gyAbility) return ((entry.gyAbilityOverride || def.gyAbility) || {}).label || 'Ability from your graveyard';
-      if (entry.cycling) return 'Cycling';
+      if (entry.cycling) return entry.label || 'Cycling';
       if (entry.plot) return `Plot ${U.costStr(U.parseCost(def.plot))}`;
       if (entry.foretell) return 'Foretell {2}';
       if (entry.ninjutsu) return `Ninjutsu ${entry.ninjutsuCost || ''}`.trim();
@@ -2931,10 +2931,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (pendingMain.lands || []).includes(libraryTop) ||
         (pendingMain.casts || []).some(entry => entry.card === libraryTop)
       ));
-      const libraryTopPermitted = g.onlinePresentation ? !!me.presentation.libraryTopPermitted : !!(libraryTop && libraryTopSources.some(source => {
+      const libraryTopPermitted = g.onlinePresentation ? !!me.presentation.libraryTopPermitted : !!(libraryTop && (MTG.C1920?.elshaTop(g,me,libraryTop)||libraryTopSources.some(source => {
         if (typeof source.def.playTop !== 'function') return false;
         try { return source.def.playTop(g, source, libraryTop, me); } catch { return false; }
-      }));
+      })));
       const info = el('div', 'meinfo');
       info.dataset.playerId = String(me.idx);
       if (g.monarch === me) info.classList.add('monarch');
@@ -3149,6 +3149,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const crewed = (c.hasSub('Vehicle') && c.meta.crewedTurn === g.turnNo)
         ? '<div class="crewtag" title="Crewed this turn">CREW</div>' : '';
       const att = c.attachments.length ? `<div class="att">🔗${c.attachments.length}</div>` : '';
+      const merged = c.mutateState ? MTG.Mutate.present(c,this.me) : c.meta.mutateComponents || [];
+      const mutateTag = merged.length ? `<div class="mutatetag" title="${escAttr(merged.map(r=>r.name).join(' + '))}">MUTATE · ${merged.length}</div>` : '';
       const tok = c.isToken ? `<div class="toktag">TOKEN</div>` : '';
       const landCreatureTag = landCreature ? '<div class="landcreaturetag">LAND CREATURE</div>' : '';
       const fd = c.faceDown ? `<div class="facedowntag">${mayLookFaceDown ? 'FACE-DOWN · ' + esc(faceName.split(' // ')[0]) : 'FACE-DOWN'}</div>` : '';
@@ -3158,7 +3160,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       d.innerHTML = `
         ${cardArtHTML(c.faceDown && mayLookFaceDown ? shownFaceDownDef : c, '', c.faceDown && !mayLookFaceDown)}
         <div class="mname">${esc(c.faceDown ? 'Face-down creature' : c.name.split(' // ')[0])}</div>
-        ${combatStats}${cnt}${minusCounter}${oc}${crewed}${att}${tok}${landCreatureTag}${fd}${stackN}${keywordBadges}
+        ${combatStats}${cnt}${minusCounter}${oc}${crewed}${att}${tok}${landCreatureTag}${fd}${stackN}${keywordBadges}${mutateTag}
         ${badges.length ? `<div class="badge">${badges.join('')}</div>` : ''}`;
       d.dataset.cname = mayLookFaceDown ? faceName : c.name;
       let accessibleName = c.faceDown && !mayLookFaceDown

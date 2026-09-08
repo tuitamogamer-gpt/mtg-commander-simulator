@@ -21,8 +21,11 @@
   }
  }
  function available(game){return !game.bf().some(card=>card.def.oracleCyclingProhibited&&!card.cur.abilitiesDisabled);}
- M.Game.prototype.cyclingManaCost=function(player,card){
-  const d=card.def.cycling,parsed=M.parseCost(typeof d.cost==='function'?d.cost(this,card):d.cost),generic=parsed.generic;
+ M.Game.prototype.cyclingOptions=function(player,card){return card.def.cycling?[{cyclingId:'printed',definition:card.def.cycling}]:[];};
+ M.Game.prototype.cyclingDefinition=function(player,card,entry={}){return this.cyclingOptions(player,card).find(row=>row.cyclingId===(entry.cyclingId||'printed'))?.definition;};
+ M.Game.prototype.cyclingManaCost=function(player,card,entry={}){
+  const d=this.cyclingDefinition(player,card,entry);if(!d)return null;
+  const parsed=M.parseCost(typeof d.cost==='function'?d.cost(this,card):d.cost),generic=parsed.generic;
   const discount=this.bf().filter(source=>source.ctrl===player&&!source.cur.abilitiesDisabled).reduce((sum,source)=>sum+(source.def.oracleCyclingReduction||0),0);
   parsed.generic=Math.max(0,generic-discount);parsed.xReduction=(parsed.xReduction||0)+Math.max(0,discount-generic);return parsed;
  };

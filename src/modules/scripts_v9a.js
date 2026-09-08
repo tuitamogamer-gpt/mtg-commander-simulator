@@ -282,9 +282,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         const others = ctx.g.creatures(caster).filter(c => c !== ctx.src &&
           (!targetSpec || ctx.g.legalTargets(targetSpec, ctx.data.so.card, caster).includes(c)));
-        for (const c of others) {
-          await ctx.g.copySpell(ctx.data.so, caster, { mayNewTargets: true, forceTarget: c });
-        }
+        await ctx.g.copySpellBatch(ctx.data.so, caster, others.map(c => ({ mayNewTargets: true, forceTarget: c })));
         ctx.g.lg(`Mirrorwing Dragon: ${others.length} copies.`);
       },
     }],

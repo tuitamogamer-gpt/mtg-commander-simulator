@@ -39,7 +39,7 @@
       const cards = await subjects(ctx, effect, helpers);
       if (!helpers.sameSource(ctx) || !cards.length) return;
       const duration = {source: ctx.src, sourceZoneVersion: ctx.sourceZoneVersion ?? ctx.src.zoneVersion,
-        cards: cards.map(card => ({card, zoneVersion: card.zoneVersion + 1}))};
+        cards: cards.flatMap(card => MTG.Mutate?.follow(card)||[{card, zoneVersion: card.zoneVersion + 1}])};
       (ctx.g.oracleExileDurations ||= []).push(duration);
       await ctx.g.exileMany(cards);
       return;
@@ -51,7 +51,7 @@
       // battlefield incarnation, never the source object's current zoneVersion.
       const record = {source: ctx.src, sourceIid: ctx.sourceIid ?? ctx.src.iid,
         sourceZoneVersion: ctx.sourceZoneVersion ?? ctx.src.zoneVersion, link: effect.link, lifetime: abilityLifetime(ctx),
-        cards: cards.map(card => ({card, zoneVersion: card.zoneVersion + 1}))};
+        cards: cards.flatMap(card => MTG.Mutate?.follow(card)||[{card, zoneVersion: card.zoneVersion + 1}])};
       (ctx.g.oracleLinkedExiles ||= []).push(record);
       if (effect.from === 'graveyard') await ctx.g.moveGraveyardBatch(cards, 'exile');
       else await ctx.g.exileMany(cards);

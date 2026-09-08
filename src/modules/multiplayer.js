@@ -503,6 +503,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       hidden,
       tapped: card.zone === 'battlefield' ? !!card.tapped : undefined,
       faceDown: !!card.faceDown,
+      mutateComponents: MTG.Mutate?.present(card,viewer),
       power: publicPermanent ? card.power : undefined,
       toughness: publicPermanent ? card.toughness : undefined,
       counters: (publicPermanent || !hidden) && card.counters ? clone(card.counters) : undefined,

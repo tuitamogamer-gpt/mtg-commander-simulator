@@ -67,7 +67,10 @@ test('Abort cast during target selection preserves the card, mana, stack, and ca
     decide: async (_game, question) => {
       if (question.type === 'chooseTargets') {
         targetQuestion = question;
-        return { kind: 'cancel' };
+        const saved=MTG.recordSaveDecision(question,human,{kind:'cancel'});
+        assert.equal(saved.response.kind,'cancel');
+        assert.throws(()=>MTG.restoreSaveDecision({...question,cancelable:false},human,saved),/can no longer be cancelled/);
+        return MTG.restoreSaveDecision(question,human,saved);
       }
       return null;
     },

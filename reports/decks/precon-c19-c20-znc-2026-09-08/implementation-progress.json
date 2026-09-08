@@ -1,0 +1,23 @@
+{
+  "status": "completed-locally",
+  "baseCommit": "decdf93ee28e101442a9ed253b81a031d626d5d1",
+  "selection": [
+    "Mystic Intellect",
+    "Faceless Menace",
+    "Timeless Wisdom",
+    "Enhanced Evolution",
+    "Ruthless Regiment",
+    "Arcane Maelstrom",
+    "Symbiotic Swarm",
+    "Sneak Attack"
+  ],
+  "legalityPolicy": "User explicitly requested all original cards regardless of legality. Legality is informational, engine and deck-structure validation remains required.",
+  "sourceCards": 547,
+  "newCards": 149,
+  "reusedCards": 398,
+  "registeredCandidateScripts": 149,
+  "missingNativeScripts": [],
+  "remainingWork": [],
+  "verification": "See qa.json: 1811/1811 final affected tests, 56-card Oracle copy proof, 298/298 native runtime executions, 32 desktop/mobile scenarios, 7 Live checks, natural mobile game/rematch, 8/8 final deck games.",
+  "publication": "Previous ten released at decdf93; current eight remain local."
+}

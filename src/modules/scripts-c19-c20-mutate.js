@@ -1,0 +1,22 @@
+'use strict';
+var MTG=globalThis.MTG||(globalThis.MTG={});
+(function(){
+ const M=MTG,SC=M.SCRIPTS,C=M.C1920,T=M.T;
+ const count=ctx=>(C.same(ctx)?ctx.src.meta:ctx.sourceMeta)?.c1920Mutations||0;
+ const mutate=(cost,run,extra={})=>({mutate:cost,altCosts:[{mutate:true,altCostStr:cost,label:'Mutate '+cost}],triggers:[{on:'mutated',filter:(g,c,d)=>d.card===c,desc:'When this creature mutates',run,...extra}]});
+ SC['Archipelagore']=mutate('{5}{U}',async ctx=>{for(const c of C.flat(ctx.targets)){ctx.g.tap(c);c.meta.noUntapOnce=true;}},{targets:(g,c)=>[T.creature({count:c.meta.c1920Mutations||0,min:0,upTo:true,aiHint:{goal:'tap'}})]});
+ SC['Auspicious Starrix']=mutate('{5}{G}',async ctx=>{const n=count(ctx),permanents=[];while(permanents.length<n&&ctx.you.library.length){const c=ctx.you.library.at(-1);await ctx.g.move(c,'exile');if(c.zone==='exile'&&C.permanent(ctx.g,c))permanents.push(c);}await ctx.g.withBattlefieldEntryBatch(async()=>{for(const c of permanents)if(c.zone==='exile')await ctx.g.putPermanentOntoBattlefield(c,ctx.you);});});
+ SC['Boneyard Lurker']=mutate('{2}{B/G}{B/G}',ctx=>ctx.targets[0]&&ctx.g.move(ctx.targets[0],'hand'),{targets:[C.grave((g,c,p)=>c.owner===p&&C.permanent(g,c))]});
+ SC['Cavern Whisperer']=mutate('{3}{B}',async ctx=>{const choices=[];for(const p of ctx.g.apnapFrom(ctx.g.turnPlayer).filter(p=>p!==ctx.you&&!p.lost)){const cards=await C.choose(ctx.g,p,p.hand,Math.min(1,p.hand.length),1,'Cavern Whisperer: discard a card','discard');choices.push({p,cards});}for(const{p,cards}of choices)await ctx.g.discard(p,cards);});
+ SC['Chittering Harvester']=mutate('{4}{B}',ctx=>C.sacrificeAcross(ctx,ctx.you.opponents(ctx.g),p=>ctx.g.creatures(p)));
+ SC['Dreamtail Heron']=mutate('{3}{U}',ctx=>ctx.g.draw(ctx.you,1,ctx.src));
+ SC['Glowstone Recluse']=mutate('{3}{G}',ctx=>C.same(ctx)&&ctx.g.addCounters(ctx.src,'+1/+1',2,false,ctx.you));
+ SC['Insatiable Hemophage']=mutate('{2}{B}',async ctx=>{const n=count(ctx);await ctx.g.loseLifeOpponents(ctx.src,ctx.you,n,ctx.src.name);await ctx.g.gainLife(ctx.you,n,ctx.src);});
+ SC['Migratory Greathorn']=mutate('{2}{G}',ctx=>C.search(ctx,ctx.you,C.basic,1,'battlefield',true));
+ SC['Mindleecher']=mutate('{4}{B}',async ctx=>{for(const p of ctx.you.opponents(ctx.g)){const c=p.library.at(-1);if(!c)continue;await ctx.g.move(c,'exile',{exileFaceDown:true,exileLookers:[ctx.you.idx]});if(c.zone==='exile')C.playGrant(ctx,c,{label:'Mindleecher: play the exiled card'});}});
+ SC['Pouncing Shoreshark']=mutate('{3}{U}',ctx=>ctx.targets[0]&&ctx.g.move(ctx.targets[0],'hand'),{opt:true,targets:[T.creature({filter:(g,c,p)=>c.ctrl!==p,aiHint:{goal:'bounce'}})]});
+ SC['Sawtusk Demolisher']=mutate('{3}{G}',async ctx=>{const c=ctx.targets[0];if(!c)return;const p=c.ctrl;await ctx.g.destroy(c);await ctx.g.makeTokens(C.beast(ctx),p);},{targets:[T.permanent((g,c)=>!c.is('Creature'),{aiHint:{goal:'destroy'}})]});
+ SC['Souvenir Snatcher']=mutate('{5}{U}',ctx=>ctx.targets[0]&&C.control(ctx.g,ctx.targets[0],ctx.you,false),{targets:[T.permanent((g,c)=>c.is('Artifact')&&!c.is('Creature'),{aiHint:{goal:'steal'}})]});
+ SC['Trumpeting Gnarr']=mutate('{3}{G/U}{G/U}',ctx=>ctx.g.makeTokens(C.beast(ctx),ctx.you));
+ SC['Otrimi, the Ever-Playful']={mutate:'{1}{B}{G}{U}',altCosts:[{mutate:true,altCostStr:'{1}{B}{G}{U}',label:'Mutate {1}{B}{G}{U}'}],triggers:[{on:'damageToPlayer',filter:(g,c,d)=>d.src===c&&d.combat,desc:'Return a creature card with mutate from your graveyard',targets:[C.grave((g,c,p)=>c.owner===p&&c.is('Creature')&&!!c.def.mutate)],run:ctx=>ctx.targets[0]&&ctx.g.move(ctx.targets[0],'hand')}]};
+})();

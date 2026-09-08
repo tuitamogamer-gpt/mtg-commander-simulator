@@ -147,3 +147,5 @@ test('localization does not consume word fragments, apostrophes, or English spac
   ]) assert.equal(MTG.uiText(text), text);
   assert.equal(MTG.uiText('⚔️ Životi: 40; napadači: 2.'), '⚔️ Life: 40; attackers: 2.');
 });
+
+test('UI translation preserves asset paths and URLs containing ordinary language words',()=>{for(const path of ['./assets/cards/cleansing-nova-edb80180ed.webp','https://example.com/nova/karte','data:image/svg+xml;base64,bm92YQ=='])assert.equal(MTG.uiText(path),path);});

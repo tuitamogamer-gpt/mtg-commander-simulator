@@ -156,7 +156,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!picked.length) return;
         const paid = await ctx.g.payMana(ctx.you, { generic: picked.length * 2, x: 0, pips: [] });
         if (!paid) return;
-        for (const creature of picked) await ctx.g.copySpell(so, ctx.you, { forceTarget: creature });
+        await ctx.g.copySpellBatch(so, ctx.you, picked.map(creature => ({ forceTarget: creature })));
       },
     }],
   };

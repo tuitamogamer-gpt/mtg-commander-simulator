@@ -90,10 +90,10 @@ test('unsupported, malformed and built-in-collision decks never mutate storage o
   const unsupported = structuredClone(baseline);
   unsupported.id = 'deck-unsupported-card';
   unsupported.name = 'Unsupported Library Deck';
-  unsupported.cards = unsupported.cards.map(row => row.name === 'Sol Ring' ? { ...row, name: 'Agitator Ant' } : row);
+  unsupported.cards = unsupported.cards.map(row => row.name === 'Sol Ring' ? { ...row, name: 'Boros Reckoner' } : row);
   const unsupportedValidation = MTG.validateImportedDeckRecord(unsupported);
   assert.equal(unsupportedValidation.ok, false);
-  assert.ok(unsupportedValidation.errors.some(error => error.code === 'engine-unsupported' && error.card === 'Agitator Ant'));
+  assert.ok(unsupportedValidation.errors.some(error => error.code === 'engine-unsupported' && error.card === 'Boros Reckoner'));
   assert.throws(() => MTG.upsertGuestImportedDeck(unsupported, { storage }), /certified|supported/i);
   assert.equal(storage.getItem(MTG.IMPORTED_LIBRARY_KEY), before);
   assert.equal(MTG.DECKS[unsupported.name], undefined);

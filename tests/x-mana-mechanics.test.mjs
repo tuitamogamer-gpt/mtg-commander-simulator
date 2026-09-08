@@ -5,6 +5,20 @@ import { loadEngine } from './helpers/load-engine.mjs';
 const MTG = loadEngine();
 
 const ACTIVE_X_SPELLS = [
+  'Capricopian',
+  'Commune with Lava',
+  'Cryptic Trilobite',
+  "Devil's Play",
+  'Genesis Hydra',
+  'Hooded Hydra',
+  'Hungering Hydra',
+  'Mind Spring',
+  'Nissa, Steward of Elements',
+  'Open into Wonder',
+  'Strength of the Tajuru',
+  'Unexpectedly Absent',
+  'Vastwood Hydra',
+  'Villainous Wealth',
   'Entreat the Angels',
   'Entreat the Dead',
   'Full Flowering',
@@ -178,7 +192,7 @@ async function resolveAll(game) {
   assert.ok(guard < 180, 'X trigger/stack petlja se nije smirila');
 }
 
-test('inventar pokriva svih 95 aktivnih X spella i sve dodatne X-mana putanje', () => {
+test('inventar pokriva svih 109 aktivnih X spella i sve dodatne X-mana putanje', () => {
   const active = [...new Set(Object.values(MTG.DECKS).flatMap(deck => deck.cards.map(entry => entry.name)))]
     .filter(name => MTG.parseCost(MTG.DEFS[name].cost || '').x > 0)
     .sort();
@@ -191,7 +205,7 @@ test('inventar pokriva svih 95 aktivnih X spella i sve dodatne X-mana putanje', 
       assert.equal(typeof def.resolve, 'function', `${name}: X spell mora imati resolver`);
     } else {
       assert.ok(
-        def.etbCounters || def.triggers?.length || typeof def.asEnters === 'function',
+        def.etbCounters || def.triggers?.length || typeof def.asEnters === 'function' || def.loyalty === 'X',
         `${name}: X permanent mora koristiti X pri ulasku/triggeru`,
       );
     }

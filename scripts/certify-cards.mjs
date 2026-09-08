@@ -69,7 +69,7 @@ function issuesFor(name) {
     // older imports wrapped the same costs in brackets ("[+1]:"). Accept
     // both forms so certification measures abilities, not typography.
     const oracleLoyalty = oracle.split('\n').filter(line =>
-      /^\s*(?:\[[+−-]?\d+\]|[+−-]?\d+):/.test(line)).length;
+      /^\s*(?:\[[+−-]?(?:\d+|X)\]|[+−-]?(?:\d+|X)):/.test(line)).length;
     const scriptedLoyalty = (def.abilities || []).filter(ability => ability.loyalty !== undefined).length;
     if (oracleLoyalty !== scriptedLoyalty) issues.push(`Planeswalker ima ${oracleLoyalty} Oracle loyalty sposobnosti, skriptovano ${scriptedLoyalty}`);
   }

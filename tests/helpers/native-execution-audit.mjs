@@ -80,6 +80,7 @@ export async function auditNativeCard(MTG, name, role) {
   if (name === 'Volcanic Offering') extra('Command Tower', opponent, 'battlefield', 'Opponent nonbasic land for both independently chosen destroy targets.');
   if (name === 'Grip of Phyresis') extra('Behemoth Sledge', opponent, 'battlefield', 'Opponent Equipment for the actual control-and-attach spell.');
   if (name === 'New Blood') extra('Falkenrath Noble',player,'battlefield','Untapped Vampire for the mandatory additional tap cost.');
+  if (name === 'Runic Repetition') extra('Faithless Looting', player, 'exile', 'Exiled card with flashback for the mandatory target.');
   if (name === 'Despark') extra('Colossal Dreadmaw', opponent, 'battlefield', 'Permanent with mana value at least 4.');
   if (name === 'Victimize') extra('Llanowar Elves', player, 'graveyard', 'Second creature card in your graveyard.');
   if (name === 'Back in Town') extra('Ragavan, Nimble Pilferer', player, 'graveyard', 'Pirate outlaw in your graveyard.');
@@ -88,19 +89,19 @@ export async function auditNativeCard(MTG, name, role) {
   game.recalc();
   const subject = put(MTG, game, player, name, 'hand');
   const oracle = subject.def.oracle || '';
-  const incomingSpell = /counter target (?:\w+ )*spell/i.test(oracle) ||
-    ((subject.is('Instant') || subject.is('Sorcery')) && /\btarget (?:[a-z/-]+(?:,)? ){0,7}spell\b/i.test(oracle));
+  const incomingSpell = (subject.is('Instant') || subject.is('Sorcery')) && (/counter target (?:\w+ )*spell/i.test(oracle) || /\btarget (?:[a-z/-]+(?:,)? ){0,7}spell\b/i.test(oracle));
   if (incomingSpell) {
-    const spell = put(MTG, game, opponent, 'Lightning Bolt', 'hand');
+    const spellOwner = name === 'Increasing Vengeance' ? player : opponent;
+    const spell = put(MTG, game, spellOwner, 'Lightning Bolt', 'hand');
     const controller = opponent.controller;
     opponent.controller = { decide: async (g, q) => q.type === 'chooseTargets'
       ? q.candidates.filter(card => card.zone === 'battlefield' && card.ctrl === player).slice(0, q.min ?? 1)
       : controller.decide(g, q) };
     game.turnPlayer = opponent;
-    assert.equal(await game.castSpell(opponent, spell, { from: 'hand' }), true, 'Incoming Lightning Bolt is actually cast');
+    assert.equal(await game.castSpell(spellOwner, spell, { from: 'hand' }), true, 'Incoming Lightning Bolt is actually cast');
     opponent.controller = controller;
     game.turnPlayer = player;
-    prerequisites.push('Actual opponent Lightning Bolt targets a permanent you control.');
+    prerequisites.push('Actual '+(spellOwner===player?'own':'opponent')+' Lightning Bolt supplies a Stack target.');
   }
   const complete = async (action, manaSpent, transitions = 0) => {
     transitions += await settle(game);
@@ -145,7 +146,7 @@ export async function auditNativeCard(MTG, name, role) {
     if (!accepted) return { name, role, status: 'choice-gap', reason: 'Offered action declined or lacked prerequisites after the fixed controller choices.', queryTypes: [...new Set(trace)] };
     return complete(land ? 'play-land' : 'cast', beforeMana - Object.values(player.pool).reduce((a, b) => a + b, 0));
   };
-  if (['Take the Bait', 'Wake the Dead', 'Mirror Match', 'Cauldron Dance'].includes(name)) {
+  if (['Take the Bait', 'Wake the Dead', 'Mirror Match', 'Cauldron Dance', 'Mandate of Peace', 'Spinal Embrace'].includes(name)) {
     let result, attempted = false;
     const controller = opponent.controller;
     opponent.controller = { decide: async (g, q) => q.type === 'attackers'

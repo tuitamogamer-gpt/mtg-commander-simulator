@@ -1159,6 +1159,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // A transforming permanent keeps its physical identity and swaps to its
       // other printed face. Leaving the battlefield resets it to the front.
       if(!sameBattlefieldSource(ctx))return;
+      if(ctx.src.mutateState){await MTG.Mutate.transform(ctx.g,ctx.src);return;}
       const faces=MTG.OracleV8Faces?.physical(ctx.src);
       if(!faces||faces.faces.length!==2)return;
       const next=ctx.src.oracleFace==='back'?'front':'back';
@@ -1415,7 +1416,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return;
     }
     if(effect.action==='blink') {
-      const departing=subjects.filter(card=>card.zone==='battlefield').map(card=>({iid:card.iid,version:card.zoneVersion+1,owner:card.owner.idx}));
+      const departing=subjects.filter(card=>card.zone==='battlefield').flatMap(card=>(MTG.Mutate?.follow(card)||[{card,zoneVersion:card.zoneVersion+1}]).map(r=>({iid:r.card.iid,version:r.zoneVersion,owner:r.card.owner.idx})));
       await ctx.g.exileMany(subjects,{noCmdReplace:!effect.delayed});
       const captured=departing.filter(row=>{const card=ctx.g.byIid(row.iid);return card?.zone==='exile'&&card.zoneVersion===row.version&&!card.isToken;});
       if(!captured.length)return;
@@ -3741,7 +3742,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         oracleText: raw.oracle || '',
         colorIdentity: metadata.colorIdentity || (MTG.cardColorIdentity && def ? MTG.cardColorIdentity(def) : raw._ci || []),
         keywords: metadata.keywords || [],
-        commanderLegality: metadata.commanderLegality || null,
+        commanderLegality: metadata.commanderLegality || raw._commanderLegality || null,
         set: metadata.set || null,
         setName: metadata.setName || null,
         collectorNumber: metadata.collectorNumber || null,

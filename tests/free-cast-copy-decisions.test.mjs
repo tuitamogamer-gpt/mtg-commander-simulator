@@ -63,13 +63,8 @@ test('free cast keeps X at zero while printed Storm and Cascade still trigger', 
   }));
   player.turnState.spellsCast = 2;
   let cascades = 0;
-  let stormCopies = 0;
+  const stormCopies = () => game.stack.filter(so => so.isCopy && so.card === spell).length;
   game.doCascade = async () => { cascades++; };
-  const copySpell = game.copySpell.bind(game);
-  game.copySpell = async (...args) => {
-    stormCopies++;
-    return copySpell(...args);
-  };
 
   assert.equal(await game.castSpell(player, spell, { from: 'hand', free: true, xVal: 9 }), true);
 
@@ -78,10 +73,10 @@ test('free cast keeps X at zero while printed Storm and Cascade still trigger', 
   assert.equal(originals[0].x, 0, 'CR 107.3b still forces X=0');
   assert.equal(game.stack.filter(item => item.kind === 'trigger').length, 2,
     'printed Storm and Cascade are separately respondable cast triggers');
-  assert.equal(stormCopies, 0, 'Storm does not create copies inline during the cast');
+  assert.equal(stormCopies(), 0, 'Storm does not create copies inline during the cast');
   assert.equal(cascades, 0, 'Cascade does not inspect the library inline during the cast');
   while (game.stack.some(item => item.kind === 'trigger')) await game.resolveTop();
-  assert.equal(stormCopies, 2, 'Storm counts both spells cast before the free spell at trigger resolution');
+  assert.equal(stormCopies(), 2, 'Storm counts both spells cast before the free spell at trigger resolution');
   assert.equal(cascades, 1, 'printed Cascade triggers even when the mana cost was not paid');
 });
 

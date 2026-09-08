@@ -28,7 +28,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     const specs=original.targetSpecs||(original.kind==='spell'?ctx.g.spellTargetSpecs(original.card,original.castOpts||{},original.ctrl):[]);
     const slot=(original.targets||original.ctx.targets).findIndex(t=>[t].flat().filter(Boolean).length);
     const candidates=ctx.g.legalTargets(specs[slot],source,ctx.you).filter(t=>t!==targets[0]&&(t instanceof M.Player||t.zone==='battlefield'));
-    for(const target of candidates)if(original.kind==='spell')await ctx.g.copySpell(original,ctx.you,{forceTarget:target});else await ctx.g.copyStackAbility(original,ctx.you,{forceTarget:target});
+    if(original.kind==='spell')await ctx.g.copySpellBatch(original,ctx.you,candidates.map(target=>({forceTarget:target})));else for(const target of candidates)await ctx.g.copyStackAbility(original,ctx.you,{forceTarget:target});
   },{filter:(g,c,d)=>d.card===c&&c.castMeta?.from==='hand',targets:[{zone:'stack',what:'stack',filter:(g,so)=>singleTarget(so)}]})]};
   SC['Charmbreaker Devils']={triggers:[{on:'upkeep',filter:own,desc:'Return a random instant or sorcery',run:async ctx=>{
     const pool=ctx.you.graveyard.filter(isIS);if(pool.length)await ctx.g.move(pool[Math.floor(ctx.g.rnd()*pool.length)],'hand');

@@ -106,10 +106,10 @@ test('import odbija pogrešnu veličinu, duplikat, off-color, lažnog commandera
   assert.ok(unknown.errors.some(error => error.code === 'unknown-card'));
   assert.ok(unknown.errors.some(error => error.code === 'interaction-unsupported') === false);
 
-  const excludedLegacy = MTG.importCommanderDeck(deckText('Ashling, the Limitless', ['Agitator Ant']));
-  assert.ok(excludedLegacy.errors.some(error => error.code === 'engine-unsupported' && error.card === 'Agitator Ant'));
-  assert.equal(MTG.CARD_CATALOG['Agitator Ant'].engineStatus, 'certified-legacy', 'legacy definition remains available to engine scripts');
-  assert.equal(MTG.CARD_CATALOG['Agitator Ant'].deckImportEligible, false, 'excluded deck presence is not import certification');
+  const excludedLegacy = MTG.importCommanderDeck(deckText('Ashling, the Limitless', ['Boros Reckoner']));
+  assert.ok(excludedLegacy.errors.some(error => error.code === 'engine-unsupported' && error.card === 'Boros Reckoner'));
+  assert.equal(MTG.CARD_CATALOG['Boros Reckoner'].engineStatus, 'certified-legacy', 'legacy definition remains available to engine scripts');
+  assert.equal(MTG.CARD_CATALOG['Boros Reckoner'].deckImportEligible, false, 'excluded deck presence is not import certification');
 });
 
 test('arbitrary imported combination deck završava determinističku lokal-AI partiju bez zaostalih triggera', { timeout: 30_000 }, async () => {

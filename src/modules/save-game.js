@@ -43,6 +43,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function portableResponse(q, player, result) {
+    if (q.cancelable && result?.kind === 'cancel') return {kind:'cancel'};
     if (ACK_TYPES.has(q.type)) return { kind: 'ack' };
     if (q.type === 'mulligan') return { kind: 'boolean', value: !!result };
     if (q.type === 'chooseOption') return { kind: 'option', value: String(result) };
@@ -92,6 +93,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function restoreResponse(q, player, record) {
     const response = record.response || {};
+    if (response.kind === 'cancel') { assert(q.cancelable, 'this decision can no longer be cancelled.'); return {kind:'cancel'}; }
     if (response.kind === 'ack') return null;
     if (response.kind === 'boolean' || response.kind === 'option' || response.kind === 'number' || response.kind === 'primitive') return response.value;
     if (response.kind === 'options') {

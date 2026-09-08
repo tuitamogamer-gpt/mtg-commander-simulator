@@ -200,11 +200,11 @@ for (const name of walkers) for (const [index, ability] of M.DEFS[name].abilitie
     await g.makeTokens({name: 'Soldier', types: ['Creature'], subtypes: ['Soldier'], power: '1', toughness: '1', kws: []}, bot);
     const walker = put(bot, name, 'hand');
     for (const color of ['W', 'U', 'B', 'R', 'G', 'C']) bot.pool[color] = 30;
-    assert.equal(await g.castSpell(bot, walker, {from: 'hand'}), true);
+    assert.equal(await g.castSpell(bot, walker, {from: 'hand',xVal:4}), true);
     assert.equal(walker.zone, 'battlefield');
     assert.ok(walker.counters.loyalty > 0);
     assert.ok(walker.castMeta.manaSpent > 0);
-    walker.counters.loyalty = Math.max(20, -ability.loyalty + 1);
+    walker.counters.loyalty = Math.max(20, typeof ability.loyalty==='number'?-ability.loyalty+1:20);
     g.phase = 'end';
     assert.equal(g.activatableList(bot).some(e => e.card === walker), false);
     g.phase = 'main1'; g.turnPlayer = human;
@@ -213,15 +213,15 @@ for (const name of walkers) for (const [index, ability] of M.DEFS[name].abilitie
     if (ability.loyalty < 0) {
       walker.counters.loyalty = -ability.loyalty - 1;
       assert.equal(g.activatableList(bot).some(e => e.card === walker && e.idx === index), false);
-      walker.counters.loyalty = Math.max(20, -ability.loyalty + 1);
+      walker.counters.loyalty = Math.max(20, typeof ability.loyalty==='number'?-ability.loyalty+1:20);
     }
     const before = walker.counters.loyalty;
-    let paid = null, onStack = false;
+    let paid = null, paidX=0, onStack = false;
     const priority = g.priorityRound.bind(g);
     g.priorityRound = async player => {
       const object = g.stack.find(so => so.kind === 'ability' && so.srcCard === walker);
       if (object && !onStack) {
-        paid = walker.counters.loyalty; onStack = true;
+        paid = walker.counters.loyalty||0;paidX=object.ctx.x||0; onStack = true;
         assert.equal(object.ctx.ability, ability);
         assert.equal(g.activatableList(bot).some(e => e.card === walker), false);
       }
@@ -231,7 +231,7 @@ for (const name of walkers) for (const [index, ability] of M.DEFS[name].abilitie
     assert.ok(entry, 'supported loyalty path must be actually activatable');
     assert.equal(await g.activateAbility(bot, entry), true);
     assert.equal(onStack, true);
-    assert.equal(paid, before + ability.loyalty, 'loyalty is a cost paid before resolution');
+    assert.equal(paid, before+(ability.loyalty==='-X'?-paidX:ability.loyalty), 'loyalty is a cost paid before resolution');
     assert.equal(g.stack.length, 0); assert.equal(g.pendingTriggers.length, 0);
     assert.equal(g.activatableList(bot).some(e => e.card === walker), false);
     assert.equal(g.log.some(row => /AI V2 fallback/.test(row.msg)), false);

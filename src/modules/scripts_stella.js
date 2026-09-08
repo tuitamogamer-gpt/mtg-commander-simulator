@@ -112,7 +112,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             const so = c2.data.so;
             if (!c2.g.stack.includes(so)) return;
             const n = you.commanderCasts;
-            for (let i = 0; i < n; i++) await c2.g.copySpell(so, you, { mayNewTargets: true });
+            await c2.g.copySpells(so, you, n, { mayNewTargets: true });
           },
         });
         ctx.g.lg('The next instant or sorcery is copied for each previous commander cast.');
@@ -408,8 +408,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!ok || x < 10) continue;
         const original = g.stack.find(so => so.kind === 'spell' && so.card === card);
         if (!original) continue;
-        await g.copySpell(original, p, { mayNewTargets: true });
-        await g.copySpell(original, p, { mayNewTargets: true });
+        await g.copySpells(original, p, 2, { mayNewTargets: true });
       }
     },
   };

@@ -34,7 +34,10 @@ test('the complete pinned legacy card set remains represented exactly once in th
   const c1719Names=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-c17-c19-2026-09-08/intake.json',import.meta.url),'utf8')).newNames;
   assert.equal(c1719Names.length,170);
   assert.deepEqual(intersection(c1719Names,[...starterNames,...c21Names,...c14Names,...c1516Names]),[]);
-  const legacyNames = Object.keys(legacyRaw.cards || {}).filter(name=>!starterNames.includes(name)&&!c21Names.includes(name)&&!c14Names.includes(name)&&!c1516Names.includes(name)&&!c1719Names.includes(name));
+  const c1920Names=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-c19-c20-znc-2026-09-08/intake.json',import.meta.url),'utf8')).newNames;
+  assert.equal(c1920Names.length,149);
+  assert.deepEqual(intersection(c1920Names,[...starterNames,...c21Names,...c14Names,...c1516Names,...c1719Names]),[]);
+  const legacyNames = Object.keys(legacyRaw.cards || {}).filter(name=>!starterNames.includes(name)&&!c21Names.includes(name)&&!c14Names.includes(name)&&!c1516Names.includes(name)&&!c1719Names.includes(name)&&!c1920Names.includes(name));
   const legacyNameSet = new Set(legacyNames);
   const digest = createHash('sha256').update([...legacyNames].sort().join('\n')).digest('hex');
 
@@ -42,7 +45,7 @@ test('the complete pinned legacy card set remains represented exactly once in th
   assert.equal(legacyNameSet.size, LEGACY_CARD_COUNT, 'legacy raw names are unique');
   assert.equal(digest, LEGACY_NAME_DIGEST, 'pinned legacy card-name identity');
 
-  for (const name of [...legacyNames,...starterNames,...c21Names,...c14Names,...c1516Names,...c1719Names]) {
+  for (const name of [...legacyNames,...starterNames,...c21Names,...c14Names,...c1516Names,...c1719Names,...c1920Names]) {
     const raw = legacyRaw.cards[name];
     const catalog = MTG.CARD_CATALOG[name];
     assert.ok(catalog, `${name}: present in MTG.CARD_CATALOG`);
@@ -76,9 +79,9 @@ test('the complete pinned legacy card set remains represented exactly once in th
   assert.deepEqual(intersection(c1719Names,[...legacyNames,...genericNames,...sauronNames]),[], 'C17-C19 additions reuse every existing name');
   const runtimeNames = Object.keys(MTG.RAW_DATA.cards || {});
   const catalogNames = Object.keys(MTG.CARD_CATALOG || {});
-  const expectedRuntimeUnion = [...legacyNames, ...starterNames, ...c21Names, ...c14Names, ...c1516Names, ...c1719Names, ...genericNames, ...sauronNames];
+  const expectedRuntimeUnion = [...legacyNames, ...starterNames, ...c21Names, ...c14Names, ...c1516Names, ...c1719Names, ...c1920Names, ...genericNames, ...sauronNames];
   assert.deepEqual(sortedUnique(runtimeNames), sortedUnique(expectedRuntimeUnion),
-    'runtime raw cards are exactly legacy plus Starter, C21, C14, C15/C16 and C17-C19 additions plus generic Oracle plus Sauron');
+    'runtime raw cards are exactly legacy plus Starter, C21, C14, C15/C16, C17-C19 and C19-C20/ZNC additions plus generic Oracle plus Sauron');
   assert.deepEqual(sortedUnique(catalogNames), sortedUnique(runtimeNames),
     'MTG.CARD_CATALOG is the exact runtime raw-card set');
 

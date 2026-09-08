@@ -1,6 +1,6 @@
 # Commander Simulator
 
-A browser Commander table with local AI opponents, private multiplayer, animated commanders, and your own imported decks. Pick one of 62 ready-to-play precon decks or bring a supported list, choose the personalities around the table, and play through the stack, priority, combat, triggered abilities, and optional political negotiations at your own pace.
+A browser Commander table with local AI opponents, private multiplayer, animated commanders, and your own imported decks. Pick one of 70 ready-to-play precon decks or bring a supported list, choose the personalities around the table, and play through the stack, priority, combat, triggered abilities, and optional political negotiations at your own pace.
 
 **[Play Commander Simulator](https://mtg-commander-simulator.vercel.app/)** · [Import a deck](docs/deck-import.md) · [Card catalog](docs/card-catalog.md) · [Deployment](docs/deployment.md)
 
@@ -10,7 +10,7 @@ A browser Commander table with local AI opponents, private multiplayer, animated
 
 ![Commander Simulator Command Table interface](assets/menu/command-table-preview.jpg)
 
-**Explore:** [Game modes](#what-you-can-play) · [Precons and commander videos](#62-precon-decks-and-commander-video-animations) · [First game](#your-first-game) · [Automatic and manual mana](#automatic-and-manual-mana) · [Deck import](#import-your-deck) · [AI and Command Zone styles](#ai-archetypes-and-custom-skills) · [Diplomacy & Politics](#diplomacy--politics) · [Judge and recovery](#judge-and-last-resort-recovery) · [Run locally](#run-locally) · [Hosting and Live](#vercel-and-multiplayer) · [Saves and help](#saves-privacy-and-troubleshooting) · [Current limits](#current-limits)
+**Explore:** [Game modes](#what-you-can-play) · [Precons and commander videos](#70-precon-decks-and-commander-video-animations) · [First game](#your-first-game) · [Automatic and manual mana](#automatic-and-manual-mana) · [Deck import](#import-your-deck) · [AI and Command Zone styles](#ai-archetypes-and-custom-skills) · [Diplomacy & Politics](#diplomacy--politics) · [Judge and recovery](#judge-and-last-resort-recovery) · [Run locally](#run-locally) · [Hosting and Live](#vercel-and-multiplayer) · [Saves and help](#saves-privacy-and-troubleshooting) · [Current limits](#current-limits)
 
 ## What you can play
 
@@ -20,15 +20,15 @@ A browser Commander table with local AI opponents, private multiplayer, animated
 | Commander Live | Invite friends to a private table of two to four human players. The host runs the game engine; the room server synchronizes decisions and sends each guest their own view. Keep the host's game tab open. |
 | Imported decks | Paste a Commander decklist, check it against the supported catalog, and save it to My Library. Ready lists can be used by you, Solo opponents, and Live players. |
 
-There are **62 built-in 100-card decks**. As of **8 September 2026**, the engine catalog contains **20,002 card definitions**, of which **19,974 are eligible for deck import**. These figures describe this repository's supported catalog, not every Magic card. The [Commander 2017–2019 import report](reports/decks/precon-c17-c19-2026-09-08/README.md) records the latest ten decks, 493 reused cards, 170 new definitions, source provenance and validation evidence. The preceding [Commander 2015/2016 batch](reports/decks/precon-c15-c16-2026-09-08/README.md) added ten decks and 142 definitions. The preceding [Commander 2014 batch](reports/decks/precon-c14-2026-09-06/README.md) added five decks and 65 definitions. The preceding [Commander 2021 batch](reports/decks/precon-c21-2026-09-06/README.md) added five decks and 80 definitions. The previous [Starter batch](reports/decks/precon-starter-2026-09-06/README.md) added five decks and 61 definitions. The [generated inventory and remaining-card lists](docs/card-catalog.md) retain their explicitly dated 5 September source snapshot.
+There are **70 built-in 100-card decks**. As of **8 September 2026**, the engine catalog contains **20,151 card definitions**, of which **20,126 are eligible for deck import**. These figures describe this repository's supported catalog, not every Magic card. The [Commander 2019–2020 and ZNC import report](reports/decks/precon-c19-c20-znc-2026-09-08/README.md) records the latest eight decks, 398 reused cards, 149 new definitions, source provenance and validation evidence. Original cards are retained regardless of banlist status, including Dockside Extortionist. The preceding [Commander 2017–2019 import report](reports/decks/precon-c17-c19-2026-09-08/README.md) records ten decks, 493 reused cards, 170 new definitions, source provenance and validation evidence. The preceding [Commander 2015/2016 batch](reports/decks/precon-c15-c16-2026-09-08/README.md) added ten decks and 142 definitions. The preceding [Commander 2014 batch](reports/decks/precon-c14-2026-09-06/README.md) added five decks and 65 definitions. The preceding [Commander 2021 batch](reports/decks/precon-c21-2026-09-06/README.md) added five decks and 80 definitions. The previous [Starter batch](reports/decks/precon-starter-2026-09-06/README.md) added five decks and 61 definitions. The [generated inventory and remaining-card lists](docs/card-catalog.md) retain their explicitly dated 5 September source snapshot.
 
 Accounts are optional. Guests can play immediately and retain imported lists in their current browser. Signing in adds a private Solo checkpoint, synced imported decks and favorites, lifetime statistics, and recent match results. Custom AI skills and saved pod presets remain local to the browser.
 
-## 62 precon decks and commander video animations
+## 70 precon decks and commander video animations
 
-The built-in library contains **62 precon decks, each with 100 cards**. Choose a deck to open its **Deck Spotlight**: a commander preview, color identity, strategy, pace and complexity, mana curve, card-type breakdown, key cards, opening-hand advice, and a route through the early, middle, and late game. You can keep browsing before committing to a pod.
+The built-in library contains **70 precon decks, each with 100 cards**. Choose a deck to open its **Deck Spotlight**: a commander preview, color identity, strategy, pace and complexity, mana curve, card-type breakdown, key cards, opening-hand advice, and a route through the early, middle, and late game. You can keep browsing before committing to a pod.
 
-**There are 28 dedicated commander videos across the original 27 decks.** Turtle Power has two default partner commanders, **Leonardo, the Balance** and **Michelangelo, the Heart**, and each has its own clip. The twenty-five Starter Commander, Commander 2021, Commander 2014, Commander 2015 and Commander 2016 decks added on 6–8 September use original commander art; these batches add no commander videos.
+**There are 28 dedicated commander videos across the original 27 decks.** Turtle Power has two default partner commanders, **Leonardo, the Balance** and **Michelangelo, the Heart**, and each has its own clip. The other forty-three precons added on 6–8 September use original commander art; these batches add no commander videos.
 
 - **In Deck Spotlight:** the commander video plays as a muted, looping preview alongside the card art and deck guide.
 - **On battlefield entry:** in the Solo arena and Live host view, a supported precon commander receives a short **COMMANDER ENTERS** video announcement. This happens when the commander reaches the battlefield, so putting a spell on the Stack does not by itself trigger the entrance. The announcement has a **Skip** button and closes automatically. Remote Live guests use the synchronized card-based view without these entry clips.
@@ -36,10 +36,18 @@ The built-in library contains **62 precon decks, each with 100 cards**. Choose a
 - **Imported decks:** use ordinary commander card art and a battlefield highlight. They do not inherit a precon's cinematic, even when they use the same commander. Video coverage refers to the predefined decks' default commanders, not every alternate commander in the catalog.
 
 <details>
-<summary>Explore all 62 precon decks and their default commanders</summary>
+<summary>Explore all 70 precon decks and their default commanders</summary>
 
 | Built-in deck | Default commander(s) |
 | --- | --- |
+| Mystic Intellect | Sevinne, the Chronoclasm |
+| Faceless Menace | Kadena, Slinking Sorcerer |
+| Timeless Wisdom | Gavi, Nest Warden |
+| Enhanced Evolution | Otrimi, the Ever-Playful |
+| Ruthless Regiment | Jirina Kudro |
+| Arcane Maelstrom | Kalamax, the Stormsire |
+| Symbiotic Swarm | Kathril, Aspect Warper |
+| Sneak Attack | Anowon, the Ruin Thief |
 | Draconic Domination | The Ur-Dragon |
 | Vampiric Bloodlust | Edgar Markov |
 | Feline Ferocity | Arahbo, Roar of the World |

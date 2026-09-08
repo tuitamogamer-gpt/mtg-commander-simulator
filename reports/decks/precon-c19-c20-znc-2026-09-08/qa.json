@@ -1,0 +1,557 @@
+{
+  "status": "completed-locally",
+  "date": "2026-09-08",
+  "baseCommit": "decdf93ee28e101442a9ed253b81a031d626d5d1",
+  "previousRelease": {
+    "commit": "decdf93ee28e101442a9ed253b81a031d626d5d1",
+    "state": "READY",
+    "evidence": "output/precon-c17-c19-release-2026-09-08/release.json",
+    "canonical": "https://mtg-commander-simulator.vercel.app/"
+  },
+  "publication": {
+    "currentBatchCommitted": false,
+    "currentBatchPushed": false,
+    "currentBatchDeployed": false
+  },
+  "scope": {
+    "decks": 8,
+    "physicalCards": 800,
+    "uniqueSourceCards": 547,
+    "newNativeCards": 149,
+    "reusedCards": 398,
+    "legalityPolicy": "Original cards retained regardless of Commander legality; ban status is informational. Structure, color identity and engine eligibility remain enforced.",
+    "retainedBannedCards": [
+      "Dockside Extortionist"
+    ],
+    "runtime": {
+      "definitions": 20151,
+      "eligible": 20126,
+      "selectableDecks": 70,
+      "nativeDefinitions": 2293,
+      "activeUnique": 3225,
+      "cardDeckChecks": 5789
+    }
+  },
+  "fullSuite": {
+    "log": "output/precon-c19-c20-znc-2026-09-08/full-tests-final.log",
+    "sha256": "ccef965e6caf269e70279327323fe02534aa8075c6a172aa621dfaf1c9d8325c",
+    "tests": 8808,
+    "pass": 8785,
+    "fail": 23,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 1723777.822291,
+    "command": "node --test --test-concurrency=4 tests/*.test.mjs",
+    "frozenInputs": false,
+    "finalTreeRun": false,
+    "note": "The complete suite ran while browser-discovered fixes were being applied. No exact full-run starting hash manifest was captured. Its 23 failures are preserved below; every affected complete test file was rerun, except the Oracle aggregate which reran all 56 failing card names and all their operations. The full suite was not repeated after corrections.",
+    "failures": [
+      {
+        "name": "unsupported, malformed and built-in-collision decks never mutate storage or runtime",
+        "file": "tests/imported-deck-library.test.mjs",
+        "resolution": "Agitator Ant is now certified through an active precon. The unsupported-card fixture now uses the still-excluded Boros Reckoner.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "the complete pinned legacy card set remains represented exactly once in the runtime catalog",
+        "file": "tests/legacy-card-catalog-integrity.test.mjs",
+        "resolution": "Added the explicit 149-card native cohort while preserving the pinned original legacy digest and all earlier cohorts.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "runtime card art uses local WebP except the explicit API fallback list",
+        "file": "tests/local-card-images.test.mjs",
+        "resolution": "Added canonical Faerie Rogue and Hydra token aliases to original token artwork. The exact manifest assertion handles shared canonical token aliases and includes source card faces.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "svaka generička Oracle karta i svaki deklarisani keyword imaju izvršni dokaz",
+        "file": "tests/oracle-bulk-interactions.test.mjs",
+        "resolution": "The proof recorder intercepted single-copy calls but missed the new simultaneous copy batch path. It now records and resolves every returned batch copy. All 116 failed execution contexts belong to the 56-card rerun; 216 invariant games pass.",
+        "resolvedBy": "copy-proof-final.log: all 56 affected Oracle names, both controller roles and every declared operation",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "v7 human: group combat effects lock recipients and expire at end of combat",
+        "file": "tests/oracle-extensions-v7.test.mjs",
+        "resolution": "Removed the premature null-combat return from endCombatStep so scheduled end-of-combat effects still resolve when invoked independently. The actual combat-phase guard still respects Mandate of Peace.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "v7 human: combat duration ends after end-of-combat priority",
+        "file": "tests/oracle-extensions-v7.test.mjs",
+        "resolution": "Removed the premature null-combat return from endCombatStep so scheduled end-of-combat effects still resolve when invoked independently. The actual combat-phase guard still respects Mandate of Peace.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "v7 ai: group combat effects lock recipients and expire at end of combat",
+        "file": "tests/oracle-extensions-v7.test.mjs",
+        "resolution": "Removed the premature null-combat return from endCombatStep so scheduled end-of-combat effects still resolve when invoked independently. The actual combat-phase guard still respects Mandate of Peace.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "v7 ai: combat duration ends after end-of-combat priority",
+        "file": "tests/oracle-extensions-v7.test.mjs",
+        "resolution": "Removed the premature null-combat return from endCombatStep so scheduled end-of-combat effects still resolve when invoked independently. The actual combat-phase guard still respects Mandate of Peace.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "a 100-card deck made only from batches 0027-0046 imports, persists, and reloads without another paste",
+        "file": "tests/oracle-v4-deck-library.test.mjs",
+        "resolution": "Agitator Ant is now certified through an active precon. The unsupported-card fixture now uses the still-excluded Boros Reckoner.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "v8 delayed effects human: self destruction and clockwork counters wait for combat end",
+        "file": "tests/oracle-v8-effects.test.mjs",
+        "resolution": "Same endCombatStep regression: scheduled destruction, sacrifice and counter effects now execute and expire at combat end.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "v8 delayed effects human: sacrifice cannot remove a created token now controlled by an opponent",
+        "file": "tests/oracle-v8-effects.test.mjs",
+        "resolution": "Same endCombatStep regression: scheduled destruction, sacrifice and counter effects now execute and expire at combat end.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "v8 delayed effects ai: self destruction and clockwork counters wait for combat end",
+        "file": "tests/oracle-v8-effects.test.mjs",
+        "resolution": "Same endCombatStep regression: scheduled destruction, sacrifice and counter effects now execute and expire at combat end.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "v8 delayed effects ai: sacrifice cannot remove a created token now controlled by an opponent",
+        "file": "tests/oracle-v8-effects.test.mjs",
+        "resolution": "Same endCombatStep regression: scheduled destruction, sacrifice and counter effects now execute and expire at combat end.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "svih 29 deck/planeswalker parova ima svih 86 loyalty putanja",
+        "file": "tests/planeswalker-combat.test.mjs",
+        "resolution": "Expanded the active inventory from 29 deck/planeswalker pairs and 86 loyalty paths to 36 pairs and 107 paths.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "Chandra, Flamecaller \\#3 human: paid entry, legal loyalty window, Stack resolution and once-per-turn",
+        "file": "tests/planeswalker-decisions.test.mjs",
+        "resolution": "Fixtures now cast Nissa with a real X value, supply numeric loyalty for activation fixtures, and verify selected -X payment even when state-based actions remove the source.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "Chandra, Flamecaller \\#3 AI: paid entry, legal loyalty window, Stack resolution and once-per-turn",
+        "file": "tests/planeswalker-decisions.test.mjs",
+        "resolution": "Fixtures now cast Nissa with a real X value, supply numeric loyalty for activation fixtures, and verify selected -X payment even when state-based actions remove the source.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "Nissa, Steward of Elements \\#1 human: paid entry, legal loyalty window, Stack resolution and once-per-turn",
+        "file": "tests/planeswalker-decisions.test.mjs",
+        "resolution": "Fixtures now cast Nissa with a real X value, supply numeric loyalty for activation fixtures, and verify selected -X payment even when state-based actions remove the source.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "Nissa, Steward of Elements \\#2 human: paid entry, legal loyalty window, Stack resolution and once-per-turn",
+        "file": "tests/planeswalker-decisions.test.mjs",
+        "resolution": "Fixtures now cast Nissa with a real X value, supply numeric loyalty for activation fixtures, and verify selected -X payment even when state-based actions remove the source.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "Nissa, Steward of Elements \\#3 human: paid entry, legal loyalty window, Stack resolution and once-per-turn",
+        "file": "tests/planeswalker-decisions.test.mjs",
+        "resolution": "Fixtures now cast Nissa with a real X value, supply numeric loyalty for activation fixtures, and verify selected -X payment even when state-based actions remove the source.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "lice-nadolje stvorenje se može okrenuti licem gore u stvarnom prozoru",
+        "file": "tests/priority-window-reachability.test.mjs",
+        "resolution": "Gift of Doom requires another creature as its printed nonmana morph cost. The reachability fixture now supplies that cost; dedicated tests also prove the action is unavailable without it.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "every active deck has complete setup metadata and real mana-symbol colors",
+        "file": "tests/responsive-client-v3.test.mjs",
+        "resolution": "Added the original 2020 release year to Sneak Attack setup metadata.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "Shredder pravi nonlegendary kopije i žrtvuje ih na kraju combata umjesto egzila",
+        "file": "tests/turtle-power.test.mjs",
+        "resolution": "Same endCombatStep regression: Shredder copies are sacrificed at combat end.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      },
+      {
+        "name": "inventar pokriva svih 95 aktivnih X spella i sve dodatne X-mana putanje",
+        "file": "tests/x-mana-mechanics.test.mjs",
+        "resolution": "Expanded the X-spell inventory from 95 to 109 and recognizes printed X starting loyalty; dedicated paid Nissa entry tests assert the actual counters.",
+        "resolvedBy": "final-regressions.log: complete affected test file",
+        "status": "passed-on-rerun"
+      }
+    ]
+  },
+  "finalAffectedSuite": {
+    "log": "output/precon-c19-c20-znc-2026-09-08/final-regressions.log",
+    "sha256": "2ca6c8c6cf6e8b55c058e69f3a41c938d59470cd7b0705e9de53ecbfa86202bc",
+    "tests": 1811,
+    "pass": 1811,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 32038.280459,
+    "fileCount": 29,
+    "files": [
+      "tests/c19-c20-casting.test.mjs",
+      "tests/c19-c20-combat.test.mjs",
+      "tests/c19-c20-common-board.test.mjs",
+      "tests/c19-c20-copies.test.mjs",
+      "tests/c19-c20-counters-inheritance.test.mjs",
+      "tests/c19-c20-creatures.test.mjs",
+      "tests/c19-c20-cycling.test.mjs",
+      "tests/c19-c20-end-combat.test.mjs",
+      "tests/c19-c20-morph.test.mjs",
+      "tests/c19-c20-mutate.test.mjs",
+      "tests/c19-c20-permanents.test.mjs",
+      "tests/c19-c20-planeswalkers.test.mjs",
+      "tests/c19-c20-protection.test.mjs",
+      "tests/c19-c20-spells.test.mjs",
+      "tests/commander-visuals.test.mjs",
+      "tests/decklist-import.test.mjs",
+      "tests/imported-deck-library.test.mjs",
+      "tests/instant-removal-abort.test.mjs",
+      "tests/legacy-card-catalog-integrity.test.mjs",
+      "tests/local-card-images.test.mjs",
+      "tests/oracle-extensions-v7.test.mjs",
+      "tests/oracle-v4-deck-library.test.mjs",
+      "tests/oracle-v8-effects.test.mjs",
+      "tests/planeswalker-combat.test.mjs",
+      "tests/planeswalker-decisions.test.mjs",
+      "tests/priority-window-reachability.test.mjs",
+      "tests/responsive-client-v3.test.mjs",
+      "tests/turtle-power.test.mjs",
+      "tests/x-mana-mechanics.test.mjs"
+    ],
+    "inputsUnchanged": true,
+    "dedicatedNativeTestFiles": 14
+  },
+  "finalOracleCopyProof": {
+    "log": "output/precon-c19-c20-znc-2026-09-08/copy-proof-final.log",
+    "sha256": "d73f8b484bbda69c6838cce0e0050d15c196c6ddf9fc2a4361c02b4025e012b7",
+    "tests": 1,
+    "pass": 1,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 2727.805542,
+    "filterNames": 56,
+    "previouslyFailedExecutionContexts": 116,
+    "invariantGames": 216,
+    "report": "output/precon-c19-c20-znc-2026-09-08/copy-proof-final.json",
+    "allSelectedCardsPassed": true
+  },
+  "browserFixRegressions": {
+    "log": "output/precon-c19-c20-znc-2026-09-08/browser-fixes-regression.log",
+    "sha256": "275e4fe67f5f650ad5e5bff2bff60b1a47bf7a8a46ac414d6c77dedf07c84abc",
+    "tests": 16,
+    "pass": 16,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 584072.857667,
+    "scope": [
+      "instant-removal-abort",
+      "save-continue",
+      "ui-english"
+    ],
+    "note": "Real browser findings: retain valid portable Abort-cast decisions; do not translate asset URL strings."
+  },
+  "nativeRuntimeSmoke": {
+    "passed": 298,
+    "expected": 298,
+    "cards": 149,
+    "roles": [
+      "human",
+      "local-ai"
+    ],
+    "report": "runtime-smoke.json",
+    "scope": "Paid cast/entry and prerequisite/choice/state-invariant checks; dedicated tests separately assert semantics."
+  },
+  "browser": {
+    "selectorOpeningAndPaidCommanderCast": 16,
+    "commanderMechanicCases": 16,
+    "widths": [
+      1440,
+      390
+    ],
+    "errors": 0,
+    "overflow": 0,
+    "reports": [
+      "output/precon-c19-c20-znc-2026-09-08/browser/result.json",
+      "output/precon-c19-c20-znc-2026-09-08/abilities/result.json"
+    ],
+    "controlledFixtures": "Every selector/pod/review/opening is normal UI flow. Follow-on paid casts and commander mechanic cases use explicit prepared boards in the browser scripts.",
+    "live": {
+      "ok": true,
+      "browserName": "chromium",
+      "botSeats": [
+        1,
+        3
+      ],
+      "checks": [
+        "2 humans + 2 bots configured through lobby and old invite",
+        "all opening controls visible at 1365×768 and correct local AI seats instantiated",
+        "guest-2 private controls retain focus across sync and play Forest",
+        "guest pays mana, casts Sol Ring onto shared Stack, all humans pass and resolution reaches battlefield",
+        "mixed-table guest reload and host resume preserve the human seat",
+        "every configured local bot independently plays a land",
+        "no browser page or console errors"
+      ],
+      "errors": []
+    },
+    "naturalMobileMatch": {
+      "iterations": 298,
+      "lands": 7,
+      "spells": 11,
+      "attacks": 6,
+      "decisions": [
+        "mulligan",
+        "main",
+        "priority",
+        "chooseOption",
+        "attackers",
+        "combatReview",
+        "cardReveal",
+        "chooseTargets",
+        "blockers",
+        "orderTriggers",
+        "effectReview",
+        "threatAlert"
+      ],
+      "errors": [],
+      "requests": [],
+      "width": 390,
+      "humanDeck": "Sneak Attack",
+      "opponentDeck": "Ruthless Regiment",
+      "turns": 22,
+      "winner": "AI Dragon",
+      "rematchPassed": true,
+      "rematchEvidence": "output/precon-c19-c20-znc-2026-09-08/natural-game/rematch.png"
+    },
+    "skillClient": {
+      "unmodifiedClient": true,
+      "mode": "menu",
+      "deckCount": 70,
+      "errors": 0
+    },
+    "visuallyInspected": [
+      "Faceless Menace mobile selector",
+      "Symbiotic Swarm desktop selector",
+      "Otrimi merged creature on mobile",
+      "Gavi Dinosaur Cat token on desktop",
+      "Natural mobile match result",
+      "Mobile rematch opening hand",
+      "Standard skill client landing screen"
+    ],
+    "timing": "Browser runs preceded the final endCombatStep fix, token aliases and Sneak Attack year metadata. Complete affected unit files and all eight deck games were verified afterward."
+  },
+  "headlessGames": {
+    "fullSuiteAllActiveDecks": 70,
+    "fullSuiteAllFinishedNaturally": true,
+    "finalNewDeckGames": {
+      "passed": 8,
+      "expected": 8,
+      "rows": [
+        {
+          "name": "Mystic Intellect",
+          "opponents": [
+            "Faceless Menace",
+            "Timeless Wisdom",
+            "Enhanced Evolution"
+          ],
+          "seed": 11143,
+          "turns": 66,
+          "winner": "You",
+          "passed": true
+        },
+        {
+          "name": "Faceless Menace",
+          "opponents": [
+            "Timeless Wisdom",
+            "Enhanced Evolution",
+            "Ruthless Regiment"
+          ],
+          "seed": 11144,
+          "turns": 49,
+          "winner": "AI Dragon",
+          "passed": true
+        },
+        {
+          "name": "Timeless Wisdom",
+          "opponents": [
+            "Enhanced Evolution",
+            "Ruthless Regiment",
+            "Arcane Maelstrom"
+          ],
+          "seed": 11145,
+          "turns": 43,
+          "winner": "AI Raven",
+          "passed": true
+        },
+        {
+          "name": "Enhanced Evolution",
+          "opponents": [
+            "Ruthless Regiment",
+            "Arcane Maelstrom",
+            "Symbiotic Swarm"
+          ],
+          "seed": 11146,
+          "turns": 53,
+          "winner": "AI Raven",
+          "passed": true
+        },
+        {
+          "name": "Ruthless Regiment",
+          "opponents": [
+            "Arcane Maelstrom",
+            "Symbiotic Swarm",
+            "Sneak Attack"
+          ],
+          "seed": 11147,
+          "turns": 66,
+          "winner": "AI Wolf",
+          "passed": true
+        },
+        {
+          "name": "Arcane Maelstrom",
+          "opponents": [
+            "Symbiotic Swarm",
+            "Sneak Attack",
+            "Abzan Armor"
+          ],
+          "seed": 11148,
+          "turns": 53,
+          "winner": "AI Raven",
+          "passed": true
+        },
+        {
+          "name": "Symbiotic Swarm",
+          "opponents": [
+            "Sneak Attack",
+            "Abzan Armor",
+            "Animated Army"
+          ],
+          "seed": 11149,
+          "turns": 30,
+          "winner": "AI Dragon",
+          "passed": true
+        },
+        {
+          "name": "Sneak Attack",
+          "opponents": [
+            "Abzan Armor",
+            "Animated Army",
+            "Avengers Assemble"
+          ],
+          "seed": 11150,
+          "turns": 40,
+          "winner": "AI Wolf",
+          "passed": true
+        }
+      ]
+    },
+    "assertions": [
+      "natural winner before turn cap",
+      "no pending triggers",
+      "no logged AI fallback or fatal error",
+      "state invariants",
+      "stable recalculation"
+    ]
+  },
+  "gates": {
+    "syntax": "passed",
+    "sourceAudit": "passed",
+    "strictCertification": {
+      "definitions": 20151,
+      "cardDeckChecks": 5789,
+      "fail": 0
+    },
+    "sourcePreservation": "passed",
+    "idempotence": {
+      "before": "9241020aa846f8de2a5f73b28ba87920622e65f0fd577a49f5498758623584d2",
+      "after": "9241020aa846f8de2a5f73b28ba87920622e65f0fd577a49f5498758623584d2",
+      "unchanged": true
+    },
+    "dependencyVulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "gitDiffCheck": "passed"
+  },
+  "assets": {
+    "addedWebPFiles": 307,
+    "tokenVariants": 6,
+    "commanderCrops": 8,
+    "cardImageKeys": 3360,
+    "commanderArtKeys": 70,
+    "canonicalAliases": {
+      "Faerie Rogue Token": "Oona Faerie Rogue",
+      "Hydra Token": "C20 Hydra"
+    },
+    "priorMappingsAndFilesPreserved": true,
+    "newVideos": 0
+  },
+  "limitations": [
+    "Native registration, strict certification and controlled execution are complementary checks, not exhaustive proof of every possible card combination.",
+    "Merged mutate graphs and lasting linked permissions that cannot yet be serialized portably retain the preceding safe save checkpoint; they are not silently discarded.",
+    "No new commander intro videos were generated."
+  ],
+  "knownOutstandingFailures": [],
+  "evidenceSha256": {
+    "output/precon-c19-c20-znc-2026-09-08/browser/result.json": "464693050c29504235c5ff046c3d27f234f54eb27c6f85e2c2428e92d7a8a5ed",
+    "output/precon-c19-c20-znc-2026-09-08/abilities/result.json": "b4c949c38c1f7af1fa752dac4767f1c36df102ea3b5f8406fbe7c27f7a90cc8b",
+    "output/precon-c19-c20-znc-2026-09-08/live/result.json": "aafa238f0df395af2101190388c3a44ee4e344ded6e09829e693e06702a24b68",
+    "output/precon-c19-c20-znc-2026-09-08/natural-game/result.json": "255e16098c9a9dd689c4a836d71305f2611e601a90c3d4215b3bc6174d98fac9",
+    "output/precon-c19-c20-znc-2026-09-08/natural-game/complete-state.json": "a312a1ae0bd8061579b03c8bd475fbb214b413e399145f33eb8bf430046a2007",
+    "output/precon-c19-c20-znc-2026-09-08/natural-game/complete.png": "115a2c0d05c3ad54f6c3cbcc0ba95f43ecb34edad8edfa6393faed757ff3c250",
+    "output/precon-c19-c20-znc-2026-09-08/natural-game/rematch.png": "976506ed87f707be7cacd8073d4bb1b35845b76df3e0cf5a4baa0571ea0ae3f0",
+    "output/precon-c19-c20-znc-2026-09-08/skill-client/state-0.json": "9099749ec3b280a7890ed5ddab678068605b099b4bce93242053f3b1895155e8",
+    "output/precon-c19-c20-znc-2026-09-08/skill-client/shot-0.png": "52d902b57b09f1bec2f306883473e5281c2a7e0474251a4b38e3be1ae7358276",
+    "output/precon-c19-c20-znc-2026-09-08/final-deck-games.json": "3e93984eab1c016817914191f8e06a4d3ed4871e30c708e440c5e15cc90d4616",
+    "output/precon-c19-c20-znc-2026-09-08/final-deck-games.mjs": "4a4c733ca8f32b939826acaaad2550af58d72ead26b45a04308c8125a2c1be6f",
+    "output/precon-c19-c20-znc-2026-09-08/copy-proof-final.json": "61b550e60ea7cc9d28a082f17e4cd8110c2bc731237a9e0be1ec8283cd5b32f1",
+    "output/precon-c19-c20-znc-2026-09-08/copy-proof-names.json": "f630d21ae354bb26df74b2e9347e22cadfe1fbbb517d147b6227928d2740f6e1",
+    "output/precon-c19-c20-znc-2026-09-08/dependency-audit.json": "429bb48c8f31bae9eb80bb3c2a6608a7a44a5dfaad8926d781aa6d931f3716d5",
+    "output/precon-c19-c20-znc-2026-09-08/syntax-final.log": "af61a5a0f431fdf0548b9ef8083d20bc9051c3705c52834ce251779736ce8490",
+    "output/precon-c19-c20-znc-2026-09-08/audit-final.log": "29474ff1870f94525a1411ae145e7f0ac8631e5bf1f69c5eba170dfeb0c55be5",
+    "output/precon-c19-c20-znc-2026-09-08/strict-final.log": "e35be2721194b964b381ba01280cf344dbf8463722528d1f8adeea71c9bd9b17",
+    "output/precon-c19-c20-znc-2026-09-08/source-validation-final.log": "7002de4da90ae65cb06dab42e8b932c70c418f9ffbfd045da55e8c44ec88e2c6",
+    "output/precon-c19-c20-znc-2026-09-08/browser-fixes-regression.log": "275e4fe67f5f650ad5e5bff2bff60b1a47bf7a8a46ac414d6c77dedf07c84abc"
+  }
+}

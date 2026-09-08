@@ -523,7 +523,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         errors.push(issue('engine-unsupported', `${entry.name} is not semantically certified for gameplay.`, entry.name));
       }
       if (catalog && catalog.commanderLegality && catalog.commanderLegality !== 'legal') {
-        errors.push(issue('commander-legality', `${entry.name} is ${catalog.commanderLegality} in Commander.`, entry.name));
+        warnings.push(issue('commander-legality', `${entry.name} is ${catalog.commanderLegality} in Commander; the simulator preserves the original list.`, entry.name));
       }
     }
 

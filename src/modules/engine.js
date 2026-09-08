@@ -139,7 +139,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     kw(k) {
       return this.zone === 'battlefield' && this.cur
         ? this.cur.kw.has(k)
-        : (this.def.kws || []).includes(k);
+        : (MTG.C1920?.intrinsicKeywords(this.def) || this.def.kws || []).includes(k);
     }
     get name() { return this.def.name; }
     get power() {
@@ -843,7 +843,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // All applicable zone replacements see the same proposed event. The
       // affected player chooses the order (CR 616); changing its destination
       // can make the other replacements inapplicable.
-      const zoneReplacement = await MTG.OracleV8ZoneReplacements.apply(this, card, toZone, snap, opts);
+      const zoneReplacement = opts.c1920ZoneReplacement || await MTG.OracleV8ZoneReplacements.apply(this, card, toZone, snap, opts);
       toZone = zoneReplacement.toZone; opts = zoneReplacement.opts;
       const voidReplacement = zoneReplacement.voidReplacement;
 
@@ -875,7 +875,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!card.battlefieldLKI) card.battlefieldLKI = new Map();
         card.battlefieldLKI.set(card.zoneVersion, {
           iid: card.iid, zoneVersion: card.zoneVersion, timestamp: snap.timestamp, def:snap.def, copyEpoch:snap.copyEpoch, copying:snap.copying,
-          oracleFaces:snap.oracleFaces,oracleFace:snap.oracleFace,attachedTo:snap.attachedTo,attachedHostVersion:snap.attachedHostVersion,
+          mutateComponents:snap.mutateComponents,oracleFaces:snap.oracleFaces,oracleFace:snap.oracleFace,attachedTo:snap.attachedTo,attachedHostVersion:snap.attachedHostVersion,
           power: snap.power, toughness: snap.toughness,
           enteredTurn:snap.enteredTurn,attackedTurn:snap.attackedTurn,renowned:snap.renowned,attachedSources:snap.attachedSources,attachments:snap.attachments,
           name:snap.name,types:snap.types.slice(),subtypes:snap.subtypes.slice(),super:snap.super.slice(),colors:snap.colors.slice(),kw:snap.kw.slice(),
@@ -1036,6 +1036,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         let enteredAttachedTo = null;
         if (opts.attachTo instanceof CardInst && opts.attachTo.zone === 'battlefield') {
           enteredAttachedTo = opts.attachTo;
+          if(card.def.asAttach&&!card.cur?.abilitiesDisabled)await card.def.asAttach(this,card,enteredAttachedTo);
           card.attachedTo = enteredAttachedTo.iid;
           if (!enteredAttachedTo.attachments.includes(card.iid)) enteredAttachedTo.attachments.push(card.iid);
           if (card.def.onAttach) card.def.onAttach(this, card, enteredAttachedTo);
@@ -1089,6 +1090,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         for (const owner of zoneReplacement.shuffleOwners) MTG.shuffle(owner.library, this.rnd);
         if(toZone==='exile')for(const r of zoneReplacement.c1719Slimes||[])if(r.card.zone==='battlefield'&&r.card.zoneVersion===r.version)this.addCounters(r.card,'+1/+1',r.n,false,r.ctrl);
+        if(toZone==='exile'&&zoneReplacement.c1920Blood)card.counters.blood=(card.counters.blood||0)+1;
         if (voidReplacement && toZone === 'exile') {
           card.counters.void = (card.counters.void || 0) + 1;
           card.meta.voidExiledBy = voidReplacement.ctrl;
@@ -1275,16 +1277,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await this.emit('dies', { card, snap, graveyardZoneVersion: card.zoneVersion });
         // Persist/undying su stvarne dies-triggered sposobnosti. Karta ostaje u
         // groblju dok protivnici dobiju priority; vraća se tek na rezoluciji.
-        const d = card.def;
-        if (snap.types.includes('Creature') && card.zone === 'graveyard') {
+        const d = snap.def;
+        if (snap.types.includes('Creature') && (card.zone === 'graveyard'||snap.mutateComponents?.some(r=>r.card.zone==='graveyard'))) {
           // CardInst se namjerno ponovo koristi kroz zone, ali svaka promjena
           // zone predstavlja novi Magic objekat. Persist/Undying smiju vratiti
           // samo objekat koji je ovim dies događajem stigao u groblje, ne istu
           // fizičku kartu nakon graveyard -> druga zona -> graveyard putanje.
           const graveyardZoneVersion = card.zoneVersion;
           const deathData = { card, snap, graveyardZoneVersion };
-          const isOriginalGraveyardObject = (source, data) => source === data.card &&
-            source.zone === 'graveyard' && source.zoneVersion === data.graveyardZoneVersion;
+          const isOriginalGraveyardObject = (source, data) => source === data.card && (MTG.Mutate ? MTG.Mutate.deathObjects(data).length>0 : source.zone === 'graveyard' && source.zoneVersion === data.graveyardZoneVersion);
+          const returnDead = (ctx, opts) => MTG.Mutate ? MTG.Mutate.moveDeath(ctx,'battlefield',opts) : ctx.g.move(ctx.src,'battlefield',opts);
           if (d.undying && !snap.abilitiesDisabled && !snap.plus1) {
             this.queueTrigger({
               src: card, ctrl: snap.ctrl, name: 'Undying', data: deathData,
@@ -1292,7 +1294,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               run: async ctx => {
                 if (!isOriginalGraveyardObject(ctx.src, ctx.data)) return;
                 ctx.g.lg(`${ctx.src.name} se vraća (undying).`);
-                await ctx.g.move(ctx.src, 'battlefield', {
+                await returnDead(ctx, {
                   ctrl: snap.owner, additionalCounters: { '+1/+1': 1 }, additionalCounterBy: snap.owner,
                 });
               },
@@ -1304,7 +1306,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               run: async ctx => {
                 if (!isOriginalGraveyardObject(ctx.src, ctx.data)) return;
                 ctx.g.lg(`${ctx.src.name} se vraća (persist).`);
-                await ctx.g.move(ctx.src, 'battlefield', {
+                await returnDead(ctx, {
                   ctrl: snap.owner,
                   additionalCounters: { '-1/-1': 1 },
                   additionalCounterBy: snap.owner,
@@ -1356,6 +1358,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // affected controller chooses their order when several apply.
       await MTG.oracleV8ApplyEntryState(this, card);
       const additionalEntryCounters = {...opts.additionalCounters};
+      if(card.is('Creature'))for(const source of this.bf())if(source!==card&&source.ctrl===card.ctrl&&!source.cur?.abilitiesDisabled&&source.def.c1920Tayam)additionalEntryCounters.vigilance=(additionalEntryCounters.vigilance||0)+1;
       const bloodthirst=MTG.C1719?.bloodthirstCounters(this,card)||0;
       if(bloodthirst)additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+bloodthirst;
       const c21EntryBonus = MTG.C21Rules?.entryCounters(this,card) || 0;
@@ -1428,7 +1431,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       }
       if (d.loyalty && card.is('Planeswalker')) {
-        card.counters['loyalty'] = parseInt(d.loyalty, 10) + (card.meta.additionalLoyaltyCounters || 0);
+        card.counters['loyalty'] = (d.loyalty==='X' ? card.castMeta?.x||0 : parseInt(d.loyalty, 10)) + (card.meta.additionalLoyaltyCounters || 0);
         if (d.compleated && card.castMeta && card.castMeta.phyrexianLifePaid > 0) {
           card.counters['loyalty'] = Math.max(0, card.counters['loyalty'] - 2);
         }
@@ -1782,6 +1785,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       delete card.meta.faceDownKind;
       card.faceDown = false;
       if (selected.kind === 'megamorph') this.addCounters(card, '+1/+1', 1, false, player);
+      if (original.asTurnFaceUp) {
+        this.recalc();
+        await original.asTurnFaceUp(this, card);
+      }
       this.recalc();
       this.lg(`${player.name} turns ${card.name} face up.`, 'effect');
       this.notifyEffect(`🃏 ${card.name} was turned face up.`, { kind: 'faceUp', card, player }, false);
@@ -2069,7 +2076,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.recordDamageResult(src, p, n, opts);
       this.lg(`${src ? src.name : 'Source'} deals ${n} damage to ${p.name}.`, 'dmg');
       if (opts.combat && src && src.commander) {
-        p.commanderDamage[src.iid] = (p.commanderDamage[src.iid] || 0) + n;
+        for(const iid of src.mutateState?src.mutateState.components.filter(r=>r.commander).map(r=>r.card.iid):[src.iid])p.commanderDamage[iid] = (p.commanderDamage[iid] || 0) + n;
       }
       if (opts.combat && src && src.ctrl && src.ctrl.turnState) {
         src.ctrl.turnState.combatDamageHits.push({ card: src, ctrl: src.ctrl, player: p, n });
@@ -2391,7 +2398,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             });
             if (choice === 'top') destination = 'library';
           }
-          await this.move(c, destination);
+          await this.move(c, destination, {cycling:!!opts.cycling});
           if (madness && destination === 'exile' && c.zone === 'exile') {
             const version = c.zoneVersion, owner = c.owner;
             this.queueTrigger({src:c,ctrl:owner,name:`Madness ${madness}`,run:async ctx=>{
@@ -2777,6 +2784,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const card of cards) {
         if (card.zone !== 'battlefield') continue;
         const snap = this.snapshot(card), wasPhased = card.phasedOut;
+        MTG.Mutate?.departed(this,card);
         if (!card.battlefieldLKI) card.battlefieldLKI = new Map();
         card.battlefieldLKI.set(card.zoneVersion, snap);
         this.lastResortDetach(card); this.removeFromCombat(card); this.remove(card);
@@ -3485,6 +3493,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } else if (zone === 'stack') {
         for (const so of this.stack) {
           if (!spec.filter || spec.filter(this, so, ctrl, src)) out.push(so);
+        }
+      } else if (zone === 'exile') {
+        for (const p of this.players) for (const c of p.exile) {
+          // Face-down exiled cards have no public characteristics.
+          if (c.faceDown || spec.filter && !spec.filter(this, c, ctrl, src)) continue;
+          out.push(c);
         }
       }
       return finish();

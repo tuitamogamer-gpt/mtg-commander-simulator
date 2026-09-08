@@ -1202,6 +1202,8 @@ const UI_ENGLISH_COMPILED_RULES = [
 const UI_ENGLISH_CACHE = new Map();
 MTG.uiText = function (value) {
   const source = String(value ?? '');
+  // Asset paths and URLs are identifiers; prose translation must not rewrite them.
+  if (/^(?:https?:\/\/|data:|blob:|\.{0,2}\/)/.test(source)) return source;
   if (UI_ENGLISH_CACHE.has(source)) return UI_ENGLISH_CACHE.get(source);
   let text = source;
   for (const [pattern, replacement] of UI_ENGLISH_COMPILED_RULES) text = text.replace(pattern, replacement);

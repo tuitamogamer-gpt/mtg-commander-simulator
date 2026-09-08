@@ -1934,7 +1934,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filter: (g, self, d) => d.card === self && d.player === self.ctrl && self.ctrl.commanderCasts > 0,
       run: async ctx => {
         const original = ctx.data.so;
-        for (let i = 0; i < ctx.you.commanderCasts; i++) await ctx.g.copySpell(original, ctx.you, {});
+        await ctx.g.copySpells(original, ctx.you, ctx.you.commanderCasts, {});
       },
     }, {
       on: 'etb', desc: 'Destroy art/ench', filter: etbSelf,

@@ -24,11 +24,11 @@ export function installStackCopyProof(MTG,context,operation,h){
   }
   return cast.call(this,player,card,opts);
  };
- for(const method of ['copySpell','copyStackAbility']){
+ for(const method of ['copySpellBatch','copyStackAbility']){
   const copy=game[method];game[method]=async function(original,controller,opts){
    const active=state.active,before={x:original.x,mode:original.mode?Array.from(original.mode):null,pool:pool(controller),castEvents:state.events.filter(row=>row.name==='cast').length,sourceZone:original.card?.zone,targets:(original.targets||original.ctx?.targets||[]).map(target=>Array.isArray(target)?target.length:target?1:0)};
    const result=await copy.call(this,original,controller,opts);
-   if(active&&result){const row={original,copy:result,controller,before,targetCounts:(result.targets||result.ctx?.targets||[]).map(target=>Array.isArray(target)?target.length:target?1:0),afterPool:pool(controller),castEvents:state.events.filter(row=>row.name==='cast').length};active.copies.push(row);state.copies.set(result,row);}
+   for(const made of method==='copySpellBatch'?result||[]:[result])if(active&&made){const row={original,copy:made,controller,before,targetCounts:(made.targets||made.ctx?.targets||[]).map(target=>Array.isArray(target)?target.length:target?1:0),afterPool:pool(controller),castEvents:state.events.filter(row=>row.name==='cast').length};active.copies.push(row);state.copies.set(made,row);}
    return result;
   };
  }
