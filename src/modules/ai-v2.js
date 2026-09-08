@@ -198,6 +198,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+    "Land's Wrath": {"archetype": "Landfall and animated lands", "length": "long", "tags": ["lands", "ramp", "counters"], "commanderImportance": 1.5},
+    "Arm for Battle": {"archetype": "Equipment and commander attacks", "length": "long", "tags": ["artifacts", "combat", "voltron"], "commanderImportance": 1.5},
+    "Reap the Tides": {"archetype": "Extra lands and sea monsters", "length": "long", "tags": ["lands", "ramp", "combat"], "commanderImportance": 1.5},
+    "Phantom Premonition": {"archetype": "Foretell and blink", "length": "long", "tags": ["control", "tokens", "blink"], "commanderImportance": 1.5},
+    "Elven Empire": {"archetype": "Elf tokens and life drain", "length": "long", "tags": ["tribal", "tokens", "ramp"], "commanderImportance": 1.5},
+
     "Mystic Intellect": {"archetype": "Flashback and spell copies", "length": "long", "tags": ["graveyard", "spellslinger", "control"], "commanderImportance": 1.5},
     "Faceless Menace": {"archetype": "Morph and hidden creatures", "length": "long", "tags": ["control", "ramp", "combat"], "commanderImportance": 1.5},
     "Timeless Wisdom": {"archetype": "Cycling and token value", "length": "long", "tags": ["spellslinger", "tokens", "control"], "commanderImportance": 1.5},

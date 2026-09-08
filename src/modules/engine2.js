@@ -1960,11 +1960,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function foretellAvailable(game,player,card) {
     return card.owner===player&&card.zone==='exile'&&player.exile.includes(card)&&card.faceDown===true&&
       card.meta?.foretold===true&&card.meta.foretoldTurn<game.turnNo&&
-      card.meta.foretoldZoneVersion===card.zoneVersion&&!!card.def.foretell;
+      card.meta.foretoldZoneVersion===card.zoneVersion&&game.foretellChoices(card).length>0;
   }
   function foretellCastAllowed(game,player,card,option) {
-    const printed=typeof card.def.foretell==='string'?{cost:card.def.foretell}:card.def.foretell;
-    return foretellAvailable(game,player,card)&&option.foretoldZoneVersion===card.zoneVersion&&
+    const printed=game.foretellDefinition(card,option);
+    return !!printed&&foretellAvailable(game,player,card)&&option.foretoldZoneVersion===card.zoneVersion&&
       (option.from||card.zone)==='exile'&&option.altCostStr===printed.cost&&!option.free&&
       option.speed===printed.speed&&game.canCastTiming(player,card,{speed:printed.speed});
   }
@@ -2081,6 +2081,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const option of this.oracleSplitCastingOptions(card, from, alt || {})) consider(card, from, option);
         return;
       }
+      if (alt?.foretell && alt.zkForetellGranted) {const permission = this.foretellDefinition(card, alt); if (!permission) return; alt = {...alt, altCostStr: permission.cost};}
       const definition = this.castDefinition(card, alt || {});
       const faceView = alt?.bestow ? MTG.OracleV8Permanents.bestowCastView(card)
         : card.oracleFaces && alt?.oracleFace ? MTG.OracleV8Faces.view(card, alt.oracleFace) : card;
@@ -2188,6 +2189,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const card of p.hand) {
       if (card.oracleFaces) continue;
       consider(card, 'hand');
+      if (card.def.zkTimely) consider(card, 'hand', {zkCommanderWard: true, label: 'Timely Ward: flash targeting a commander'});
       // Marshland Bloodcaster daje OPCIONI alternativni trošak. Normalna
       // ponuda ostaje dostupna, a druga eksplicitno kaže da se plaća životom.
       if (p.bloodcasterAlternative && p.bloodcasterAlternative.turn === this.turnNo && p.life > card.mv) {
@@ -2282,8 +2284,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (card.oracleFaces) continue;
       if (card.meta && card.meta.plotted && card.meta.plottedTurn<this.turnNo) consider(card, 'exile', { free: true, plotPlay: true, speed: 'sorcery' });
       if (foretellAvailable(this,p,card)) {
-        const foretell = typeof card.def.foretell === 'string' ? { cost: card.def.foretell } : card.def.foretell;
-        consider(card, 'exile', {
+        for (const foretell of this.foretellChoices(card)) consider(card, 'exile', {
+          ...(foretell.zkForetellGranted ? {zkForetellGranted: true} : {}),
           foretell: true,
           foretoldZoneVersion:card.zoneVersion,
           altCostStr: foretell.cost,
@@ -3338,7 +3340,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // move card to stack
     this.remove(card);
     const fromZone = card.zone;
-    if(fromZone==='exile'&&card.meta)for(const key of ['foretold','foretoldTurn','foretoldZoneVersion'])delete card.meta[key];
+    so.zkWasForetold = fromZone==='exile' && card.meta?.foretold===true && card.meta.foretoldZoneVersion===card.zoneVersion;
+    if(fromZone==='exile'&&card.meta)for(const key of ['zkForetell','foretold','foretoldTurn','foretoldZoneVersion'])delete card.meta[key];
     if (castOpts.consumeExilePermission && card.meta) {
       for (const key of ['playableBy', 'playableUntil', 'playableUntilOwnTurn', 'freePlay', 'anyColor', 'exileAfterPlay', 'spellsOnly']) {
         delete card.meta[key];
@@ -3375,6 +3378,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     card.castMeta = {
       wasCast:true, castBy:p.idx, convokedCount:so.convokedCards.length,
+      zkWasForetold:!!so.zkWasForetold,
       c1920Delve,
       c1719DragonRevealed:!!d.c1719Orator&&so.oracleCastingChoicePaid?.kind==='revealHand',
       c1719ControlledDragon:!!d.c1719Orator&&this.bf().some(c=>c.ctrl===p&&c.hasSub('Dragon')),
@@ -4629,7 +4633,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const hasOwnTurnPriority = this.turnPlayer === p && (instantOnly ||
         (!this.stack.length && (this.phase === 'main1' || this.phase === 'main2')));
       if (d.foretell && hasOwnTurnPriority) {
-        if (this.canPayMana(p, U.parseCost('{2}'))) out.push({ card: c, foretell: true });
+        if (this.canPayMana(p, U.parseCost(this.foretellActionCost(p)), {card: c, foretellAction: true, isAbility: true})) out.push({ card: c, foretell: true, foretellCost: this.foretellActionCost(p) });
       }
       if (d.ninjutsu && this.combat && ['blockers', 'firstStrike', 'damage', 'endCombat'].includes(this.step)) {
         const attackers = this.combat.attackers.filter(attacker => attacker.ctrl === p && attacker.zone === 'battlefield' &&
@@ -4926,13 +4930,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const hasActionWindow = this.priorityState ? this.priorityState.holder === p : hasMainAction;
       if (c.zone !== 'hand' || c.owner!==p || !c.def.foretell || this.turnPlayer !== p || !hasActionWindow) return false;
       const sourceVersion=c.zoneVersion;
-      const ok = await this.payMana(p, U.parseCost('{2}'));
-      if (!ok) return false;
+      if (!await this.payMana(p, U.parseCost(this.foretellActionCost(p)), {card:c, foretellAction:true, isAbility:true})) return false;
       if(c.zone!=='hand'||c.zoneVersion!==sourceVersion||!p.hand.includes(c))return false;
-      this.remove(c); c.zone = 'exile'; p.exile.push(c);
-      c.zoneVersion=(c.zoneVersion||0)+1;
-      c.faceDown = true;
-      c.meta = Object.assign({}, c.meta, { foretold: true, foretoldTurn: this.turnNo,foretoldZoneVersion:c.zoneVersion });
+      if (!await this.zkForetellFromHand(p,c)) return false;
       this.lg(`${U.playerVerb(p, 'foretell', 'foretells')} a card.`);
       return true;
     }
@@ -6226,7 +6226,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const eligible=stepCards.filter(card=>card.ctrl===p&&!card.meta.noUntapOnce&&!card.def.doesntUntap&&!card.cur?.cantUntap&&!MTG.OracleV8Exert.preventsUntap(card,p));
       const seedbornControllers=new Set(stepCards.filter(card=>card.ctrl!==p&&card.def.untapAllOthersTurns&&!card.cur?.abilitiesDisabled).map(card=>card.ctrl));
       const clockControllers=new Set(stepCards.filter(card=>card.ctrl!==p&&card.def.c1719UntapArtifacts&&!card.cur?.abilitiesDisabled).map(card=>card.ctrl));
-      const otherEligible=stepCards.filter(card=>(seedbornControllers.has(card.ctrl)||clockControllers.has(card.ctrl)&&card.is('Artifact')||card.ctrl!==p&&card.def.c21UntapOthers&&!card.cur?.abilitiesDisabled)&&!MTG.OracleV8Exert.preventsUntap(card,p));
+      const otherEligible=stepCards.filter(card=>(seedbornControllers.has(card.ctrl)||clockControllers.has(card.ctrl)&&card.is('Artifact')||MTG.ZK.otherUntap(this,card,p,stepCards)||card.ctrl!==p&&card.def.c21UntapOthers&&!card.cur?.abilitiesDisabled)&&!MTG.OracleV8Exert.preventsUntap(card,p));
       // Make all optional choices before changing the simultaneous untap event.
       for(const card of eligible)if(card.tapped&&card.cur?.optionalUntap){
         if(MTG.oracleV8ShouldUntap&&!await MTG.oracleV8ShouldUntap(this,p,card))keepTapped.add(card);

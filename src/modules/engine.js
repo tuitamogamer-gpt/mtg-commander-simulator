@@ -862,7 +862,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Suspend is status of the particular card object in exile, not a
       // perpetual property of the physical CardInst. Once that object leaves
       // exile, a later return is a new object and is no longer suspended.
-      if(fromZone==='exile'&&toZone!=='exile'&&card.meta){delete card.meta.plotted;delete card.meta.plottedTurn;delete card.meta.adventureExiled;}
+      if(fromZone==='exile'&&toZone!=='exile'&&card.meta){delete card.meta.zkForetell;delete card.meta.foretold;delete card.meta.foretoldTurn;delete card.meta.foretoldZoneVersion;delete card.meta.plotted;delete card.meta.plottedTurn;delete card.meta.adventureExiled;}
       if (fromZone === 'exile' && toZone !== 'exile' && card.meta &&
           Object.prototype.hasOwnProperty.call(card.meta, 'suspended')) {
         delete card.meta.suspended;
@@ -985,6 +985,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const owner of zoneReplacement.shuffleOwners) MTG.shuffle(owner.library, this.rnd);
         if(toZone==='exile')for(const r of zoneReplacement.c1719Slimes||[])if(r.card.zone==='battlefield'&&r.card.zoneVersion===r.version)this.addCounters(r.card,'+1/+1',r.n,false,r.ctrl);
         card.zone = 'ceased';
+        await MTG.ZK.exiled(this,card,fromZone,toZone,snap,opts);
         if (wasBattlefield) {
           if (toZone === 'graveyard') { this.diedThisTurn.push(snap); await this.fireLeaveAndDie(card, snap, true); }
           else await this.fireLeaveAndDie(card, snap, false);
@@ -1091,6 +1092,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const owner of zoneReplacement.shuffleOwners) MTG.shuffle(owner.library, this.rnd);
         if(toZone==='exile')for(const r of zoneReplacement.c1719Slimes||[])if(r.card.zone==='battlefield'&&r.card.zoneVersion===r.version)this.addCounters(r.card,'+1/+1',r.n,false,r.ctrl);
         if(toZone==='exile'&&zoneReplacement.c1920Blood)card.counters.blood=(card.counters.blood||0)+1;
+        await MTG.ZK.exiled(this,card,fromZone,toZone,snap,opts);
         if (voidReplacement && toZone === 'exile') {
           card.counters.void = (card.counters.void || 0) + 1;
           card.meta.voidExiledBy = voidReplacement.ctrl;
@@ -3102,7 +3104,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const found = [];
       const seen = new Map();
       const consider = (card, zoneOK, ctrlOverride) => {
-        const history=['dies','lto','sacrificed','exploited'].includes(name)?(data.card===card?data.snap:(this._simultaneousLeaveSources||[]).find(entry=>entry.card===card)?.snap||(data.snap?.attachedSources||[]).find(entry=>entry.card===card)?.snap):null;
+        const history=['dies','lto','sacrificed','exploited','zkExiled'].includes(name)?(data.card===card?data.snap:(this._simultaneousLeaveSources||[]).find(entry=>entry.card===card)?.snap||(data.snap?.attachedSources||[]).find(entry=>entry.card===card)?.snap):null;
         const disabled=history?history.abilitiesDisabled:card.cur?.abilitiesDisabled;
         const trigs=(disabled?[]:(history?.def || card.def).triggers||[]).concat(history?history.extraTriggers||[]:card.cur?.extraTriggers||[]);
         for (const t of trigs) {
@@ -3125,7 +3127,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (name === 'cycled' && data.card) consider(data.card, z => z === 'cycling-source', data.player);
       // Fizička reprezentacija simultanog leave/dies događaja pomjera karte
       // jednu po jednu. Izvori iz cijelog batcha ipak ostaju dostupni preko LKI.
-      if (name === 'dies' || name === 'lto' || name === 'sacrificed') {
+      if (name === 'dies' || name === 'lto' || name === 'sacrificed' || name === 'zkExiled') {
         for (const entry of (this._simultaneousLeaveSources || [])) {
           consider(entry.card, z => z === 'battlefield', entry.ctrl);
         }

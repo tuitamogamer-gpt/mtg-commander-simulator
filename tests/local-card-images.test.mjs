@@ -19,6 +19,7 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
     for (const card of deck.cards || []) expected.add(faceName(card.name));
   }
   const importedFaces=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-c19-c20-znc-2026-09-08/oracle.json',import.meta.url))).cards.flatMap(r=>r.faces||[]);
+  importedFaces.push(...JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-znc-cmr-khc-2026-09-08/oracle.json',import.meta.url))).cards.flatMap(r=>r.faces||[]));
   for(const face of importedFaces)expected.add(face.name);
   for(const name of [...expected]){const back=MTG.DEFS[name]?.c1719FlipBack?.name;if(back)expected.add(back);}
   for (const token of Object.values(MTG.TOKENS || {})) if (token && token.name) {

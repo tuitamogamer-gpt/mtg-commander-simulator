@@ -27,7 +27,7 @@
       return {toZone:destination,opts,voidReplacement:null,shuffleOwners:[]};
     }
     const used=new Set(),rows=sources(game),shuffleOwners=new Set(),c1719Slimes=[];
-    let to=destination,toBottom=!!opts.toBottom,voidReplacement=null,noCmdReplace=!!opts.noCmdReplace,c1920Blood=false;
+    let to=destination,toBottom=!!opts.toBottom,voidReplacement=null,noCmdReplace=!!opts.noCmdReplace,c1920Blood=false,zkCosmic=null;
     const own=from==='battlefield'?rows.find(row=>row.card===card):{card,ctrl:card.owner,snap};
     while(true){
       const candidates=[];
@@ -36,6 +36,7 @@
       if(from==='battlefield'&&to!=='exile'&&card.meta.unearth)add('unearth','Unearth — exile',()=>{to='exile';noCmdReplace=true;});
       if(from==='battlefield'&&to==='graveyard'&&(snap.counters.finality||0)>0)add('finality','Finality counter — exile',()=>{to='exile';});
       if(from==='battlefield'&&to==='graveyard')for(const [i,effect]of game.untilEffects.entries())if(effect.kind==='oracleDeathExile'&&(effect.locked?.some(row=>row.iid===card.iid&&row.version===card.zoneVersion)||effect.scope&&snap.types.includes('Creature')&&(effect.scope==='all'||snap.ctrl.idx!==effect.controller)))add('temporary:'+i,'Exile this permanent',()=>{to='exile';});
+      if(from==='battlefield'&&to==='graveyard')for(const [i,effect] of game.untilEffects.entries())if(effect.kind==='zkCosmic'&&effect.who===snap.ctrl)add('zkCosmic:'+i,'Cosmic Intervention — exile and return next end step',()=>{to='exile';zkCosmic=effect;});
       if(to==='graveyard'){
         for(const row of rows){
           if(from==='battlefield'&&snap.types.includes('Creature')&&!card.isToken&&(row.snap?.def||row.card.def).c1920Rayami)add('rayami:'+row.card.iid,row.card.name+' — exile with a blood counter',()=>{to='exile';c1920Blood=true;});
@@ -64,7 +65,7 @@
       used.add(selected.key);await selected.run();
     }
     if(from==='stack'&&to!=='stack')delete card.meta.exileIfStackLeaves;
-    return {toZone:to,opts:{...opts,toBottom,noCmdReplace},voidReplacement,c1719Slimes,c1920Blood,shuffleOwners:[...shuffleOwners]};
+    return {toZone:to,opts:{...opts,toBottom,noCmdReplace,...(zkCosmic?{zkCosmic}:{})},voidReplacement,c1719Slimes,c1920Blood,shuffleOwners:[...shuffleOwners]};
   }
   function compile(operation){
     const allowed=['kind','scope','from','to','placement','reveal','creatureOnly','contract'];

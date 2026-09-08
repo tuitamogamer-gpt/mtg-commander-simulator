@@ -1,0 +1,335 @@
+{
+  "date": "2026-09-08",
+  "status": "completed-local",
+  "request": "Import 5 sljedećih",
+  "baseCommit": "721f859202c7f3f5259f50b77e138874daa74bfa",
+  "sources": {
+    "originalDecks": 5,
+    "physicalCards": 500,
+    "uniqueNames": 333,
+    "reusedDefinitions": 291,
+    "newNativeDefinitions": 42,
+    "exactOfficialAndMTGJSONAgreement": true,
+    "directMoxfieldExport": false
+  },
+  "fullSuite": {
+    "command": "node --test --test-concurrency=4 tests/*.test.mjs",
+    "tests": 8871,
+    "pass": 8868,
+    "fail": 3,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "log": "output/precon-znc-cmr-khc-2026-09-08/full-suite.log",
+    "sha256": "85a884ca3c0156da25155c927fc4c0157df9f747cae377992772038323eaffcb",
+    "failedCases": [
+      "svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putanju",
+      "svaka karta koju igrač baci pita razumljiva pitanja i ne ruši partiju",
+      "inventar pokriva svih 109 aktivnih X spella i sve dodatne X-mana putanje"
+    ],
+    "finalTreeFullRerun": false,
+    "startingManifestAvailable": false,
+    "limitation": "This diagnostic full run began before the final UI labels, face-down exile checkpoint fix and exile-attribution refinements and Slinn Voda kicker correction. Two inventory checks failed against old expectations; both complete corrected files are included in the final affected run. The player-facing sweep found only the Slinn Voda kicker defect, whose fix is verified in paid human/AI tests and the same question inspector rerun for all 42 new cards. Do not describe this as a fully passing complete-suite run for the final tree."
+  },
+  "reconciledFailures": [
+    {
+      "case": "svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putanju",
+      "cause": "The active unique-card assertion still expected 3,225 after this import expanded the supported deck set to 3,372.",
+      "fix": "Update the exact inventory expectation to 3,372; preserve the per-card definition assertions.",
+      "verification": "tests/full-card-audit.test.mjs is included in final-affected-tests.log and passes."
+    },
+    {
+      "case": "svaka karta koju igrač baci pita razumljiva pitanja i ne ruši partiju",
+      "cause": "Slinn Voda used a string kicker descriptor, producing an undefined prompt and omitting the extra mana charge.",
+      "fix": "Use the required kicker cost object with {1}{U}.",
+      "verification": "The human and local-AI semantic cases choose the displayed kicker option and pay ten total mana. The original readable-question inspector is replayed for all 42 new cards and their available abilities; it passes. The complete 20,193-card sweep is not repeated."
+    },
+    {
+      "case": "inventar pokriva svih 109 aktivnih X spella i sve dodatne X-mana putanje",
+      "cause": "The exact X-spell inventory omitted Jaya’s Immolating Inferno and Stumpsquall Hydra.",
+      "fix": "Add both names, retaining the full exact-name assertion and updating 109 to 111.",
+      "verification": "The complete tests/x-mana-mechanics.test.mjs file is included in the final affected run and passes."
+    }
+  ],
+  "finalAffected": {
+    "command": "node --test --test-concurrency=4 tests/znc-khc-*.test.mjs tests/x-mana-mechanics.test.mjs tests/full-card-audit.test.mjs tests/hidden-exile-views.test.mjs tests/oracle-v8-faces.test.mjs tests/oracle-v8-zone-costs.test.mjs tests/save-state.test.mjs tests/save-continue.test.mjs tests/c19-c20-morph.test.mjs tests/c17-c19-casting.test.mjs tests/oracle-v8-zone-keyword-costs.test.mjs tests/multiplayer-parity.test.mjs tests/multiplayer-imported-decks.test.mjs tests/multiplayer-mixed.test.mjs tests/commander-visuals.test.mjs tests/local-card-images.test.mjs",
+    "tests": 251,
+    "pass": 251,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "log": "output/precon-znc-cmr-khc-2026-09-08/final-affected-tests.log",
+    "sha256": "39b233d493e7de43cc8133677da8a2b1a4d9bfde8e406c50f1514e67500b7071",
+    "failedCases": [],
+    "unchangedInputs": 1071
+  },
+  "meaningfulFixes": [
+    "Ranar first-foretell payment and persistent granted foretell options",
+    "Ranar and Hero batch exile with old source/controller identity",
+    "Cosmic Intervention replacement ordering and exact delayed returns",
+    "Exile attribution excludes costs and state-based actions and preserves the resolving effect controller",
+    "Elf semantics include Kindred permanents where required",
+    "Stumpsquall Hydra includes noncreature commanders",
+    "Restoring face-down exile does not turn its definition into a manifested creature",
+    "Foretell UI names the available cost and Valkyrie grant"
+  ],
+  "playerFacingReplay": {
+    "tests": 4,
+    "pass": 4,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "log": "output/precon-znc-cmr-khc-2026-09-08/player-facing-new-cards.log",
+    "sha256": "12a2f16316fd4e8200179c097c5cafdfce71bc0b845904cb1a929aad8437cd30",
+    "failedCases": [],
+    "questionCounts": [
+      {
+        "scope": "42 new cards",
+        "cast": 42,
+        "questions": 114
+      },
+      {
+        "scope": "Available activations among the 42 new cards",
+        "activations": 3
+      }
+    ],
+    "scope": "42 new cards plus the existing inspector’s two defensive regression cases; default complete-catalog test file is unchanged."
+  },
+  "runtimeSmoke": {
+    "cards": 42,
+    "counts": {
+      "runtime-smoke-pass": 84,
+      "prerequisite-gap": 0,
+      "choice-gap": 0,
+      "error": 0
+    },
+    "artifact": "reports/decks/precon-znc-cmr-khc-2026-09-08/runtime-smoke.json",
+    "limitation": "Common-board cast/land and entry-trigger smoke, with explicitly reported card-specific prerequisites and Ancestral Vision Suspend/upkeep smoke. Activated abilities, all modes and card-specific semantic correctness require dedicated tests. Gaps are not passing coverage."
+  },
+  "browser": {
+    "selectorAndPaidCommander": 10,
+    "commanderMechanics": 10,
+    "widths": [
+      1440,
+      390
+    ],
+    "preparedFollowOnBoards": true,
+    "errors": [],
+    "mixedLive": {
+      "checks": [
+        "2 humans + 2 bots configured through lobby and old invite",
+        "all opening controls visible at 1365×768 and correct local AI seats instantiated",
+        "guest-2 private controls retain focus across sync and play Forest",
+        "guest pays mana, casts Sol Ring onto shared Stack, all humans pass and resolution reaches battlefield",
+        "mixed-table guest reload and host resume preserve the human seat",
+        "every configured local bot independently plays a land",
+        "no browser page or console errors"
+      ],
+      "humans": 2,
+      "bots": 2,
+      "errors": []
+    },
+    "naturalMobileGame": {
+      "human": "Elven Empire",
+      "opponent": "Reap the Tides",
+      "turns": 24,
+      "iterations": 188,
+      "lands": 6,
+      "spells": 14,
+      "attacks": 9,
+      "decisions": [
+        "mulligan",
+        "main",
+        "priority",
+        "attackers",
+        "combatReview",
+        "chooseTargets",
+        "chooseOption",
+        "blockers",
+        "cardReveal",
+        "chooseCards"
+      ],
+      "rematchPassed": true,
+      "errors": [],
+      "requests": []
+    }
+  },
+  "finalAIGames": {
+    "passed": 5,
+    "expected": 5,
+    "rows": [
+      {
+        "name": "Land's Wrath",
+        "opponents": [
+          "Arm for Battle",
+          "Reap the Tides",
+          "Phantom Premonition"
+        ],
+        "seed": 11151,
+        "turns": 34,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Arm for Battle",
+        "opponents": [
+          "Reap the Tides",
+          "Phantom Premonition",
+          "Elven Empire"
+        ],
+        "seed": 11152,
+        "turns": 48,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Reap the Tides",
+        "opponents": [
+          "Phantom Premonition",
+          "Elven Empire",
+          "Abzan Armor"
+        ],
+        "seed": 11153,
+        "turns": 59,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Phantom Premonition",
+        "opponents": [
+          "Elven Empire",
+          "Abzan Armor",
+          "Animated Army"
+        ],
+        "seed": 11154,
+        "turns": 48,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Elven Empire",
+        "opponents": [
+          "Abzan Armor",
+          "Animated Army",
+          "Avengers Assemble"
+        ],
+        "seed": 11155,
+        "turns": 37,
+        "winner": "You",
+        "passed": true
+      }
+    ]
+  },
+  "strictCertification": {
+    "definitions": 20193,
+    "activeUnique": 3372,
+    "cardDeckChecks": 6172,
+    "failures": 0
+  },
+  "dependencyAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "preservation": {
+    "existingRawDefinitions": 2293,
+    "existingDeckRecords": 71,
+    "oldCardsEqual": true,
+    "oldDecksEqual": true,
+    "oracleBatchFilesUnchanged": true,
+    "oldImagesUnchanged": true,
+    "commanderVideosUnchanged": true,
+    "imageMappings": {
+      "CARD_IMAGE_PATHS": 3360,
+      "CARD_ART_PATHS": 70
+    }
+  },
+  "idempotence": {
+    "command": "node scripts/import-znc-cmr-khc-precons.mjs --write",
+    "beforeSha256": "51379578dacbf601c052482e8ce5bb8b016564962f02f95140de86b206a3502d",
+    "afterSha256": "51379578dacbf601c052482e8ce5bb8b016564962f02f95140de86b206a3502d",
+    "unchanged": true
+  },
+  "evidence": [
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/check.log",
+      "sha256": "a2395e640f2e23e1d8ed21916d799f0ab4e6d96bc6674abba74841ddc024b70c"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/audit.log",
+      "sha256": "4694c9c61652d1007b5a411c840894cac81b71a86c75eb481c0bca03b5d3879a"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/certify.log",
+      "sha256": "a0fd710dfdcf0b44b25351dd620bfcf719a541b92e3a2d1d7b2853661e51bcf4"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/dependencies.json",
+      "sha256": "429bb48c8f31bae9eb80bb3c2a6608a7a44a5dfaad8926d781aa6d931f3716d5"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/preservation.log",
+      "sha256": "f8d1794421d0d00a10d2abfc465d7fc4075ab3c07500ce4d81cdc8417858a71f"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/native-smoke.log",
+      "sha256": "d7857dc13b8994273897cc00f80fccd805c4943eec49d079207875ed2bd4fce3"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/browser.log",
+      "sha256": "01e03bee6ca0ae8deb5bd533765f288c9dcc27773d3aebf0e0e433c139b43ad2"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/abilities.log",
+      "sha256": "b4e6047d52554140fc44c3336687943d7ceda4c0abe1951e280d9317f6183670"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/gameplay.log",
+      "sha256": "63e9b17d0ae80fe6497acd674ba857b9fb4ce66b8692c4cb18bd09a406c2feb1"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/live.log",
+      "sha256": "6b8712e3c0e74dbc4134130529138c87aef574dfd38c42c3ff8c264ac828d8a5"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/final-deck-games.log",
+      "sha256": "58c83af32a2d9d39f026b52913b40e3840764a8d1ba7dd96fdd5fd2e7bdf9201"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/final-deck-games.json",
+      "sha256": "78614f59d71f5b7a7476bf1b87ba485767e9d48cee482262b530c61152df473f"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/skill.log",
+      "sha256": "bac274a2ceb1d1df8b5d7333f62c478008e5744716483559d6bb815e1b3ceb19"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/skill-final/state-0.json",
+      "sha256": "884986414c3644059f616e7b9c2c3acce4bdb774f431a29115f63d9d7c64f9fb"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/idempotence.log",
+      "sha256": "9878c195c428632540e8635c1adf3f776ece43b0fee0e56bcedaba5143b88956"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/player-facing-new-cards.mjs",
+      "sha256": "e38a0256f3b0aa6cda8f8546577b1710d03f02a0a8cf9ce2b2fd48d70e769241"
+    },
+    {
+      "path": "output/precon-znc-cmr-khc-2026-09-08/player-facing-new-cards.log",
+      "sha256": "12a2f16316fd4e8200179c097c5cafdfce71bc0b845904cb1a929aad8437cd30"
+    }
+  ],
+  "publication": {
+    "requested": true,
+    "request": "Push commit deploy",
+    "statusAtCapture": "Authorized for release after completed local verification; commit and deployment evidence recorded separately.",
+    "releaseEvidence": "output/precon-znc-cmr-khc-release-2026-09-08/release.json"
+  },
+  "outstandingKnownFailures": []
+}

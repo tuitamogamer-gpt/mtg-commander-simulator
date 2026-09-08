@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import {sourceDir} from '../../scripts/import-znc-cmr-khc-precons.mjs';
+import {M} from './c21-fixtures.mjs';
+export * from './c21-fixtures.mjs';
+const oracle=JSON.parse(fs.readFileSync(sourceDir+'/oracle.json'));
+const cards={...M.RAW_DATA.cards};
+for(const r of oracle.cards)if(!M.resolveDeckCardName(r.requestedName)&&M.SCRIPTS[r.requestedName])cards[r.requestedName]={...r.raw,_oracleId:r.oracleId,_scryfallId:r.scryfallId,_layout:r.layout,_commanderLegality:r.commanderLegality};
+M.initData({...M.RAW_DATA,cards});
+export const target=(f,...chosen)=>{f.decide=(p,q)=>q.type==='chooseTargets'?q.candidates.filter(c=>chosen.includes(c)).slice(0,q.max):undefined;};
+export const tokens=(f,p=f.a)=>f.game.creatures(p).filter(c=>c.isToken);

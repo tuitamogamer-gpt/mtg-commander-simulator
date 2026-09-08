@@ -1,0 +1,6 @@
+{
+  "command": "node scripts/import-znc-cmr-khc-precons.mjs --write",
+  "beforeSha256": "51379578dacbf601c052482e8ce5bb8b016564962f02f95140de86b206a3502d",
+  "afterSha256": "51379578dacbf601c052482e8ce5bb8b016564962f02f95140de86b206a3502d",
+  "unchanged": true
+}

@@ -1,0 +1,135 @@
+{
+  "baseCommit": "721f859202c7f3f5259f50b77e138874daa74bfa",
+  "before": {
+    "definitions": 20151,
+    "eligible": 20126,
+    "selectableDecks": 70,
+    "nativeDefinitions": 2293,
+    "activeUnique": 3225,
+    "cardDeckChecks": 5789
+  },
+  "after": {
+    "definitions": 20193,
+    "eligible": 20170,
+    "selectableDecks": 75,
+    "nativeDefinitions": 2335,
+    "activeUnique": 3372,
+    "cardDeckChecks": 6172
+  },
+  "newCards": 42,
+  "reusedCards": 291,
+  "physicalCards": 500,
+  "uniqueSourceCards": 333,
+  "newlyEligibleReused": [
+    "Deflecting Palm",
+    "Needle Spires"
+  ],
+  "preservation": {
+    "existingRawDefinitions": 2293,
+    "existingDeckRecords": 71,
+    "oldCardsEqual": true,
+    "oldDecksEqual": true,
+    "oracleBatchFilesUnchanged": true,
+    "oldImagesUnchanged": true,
+    "commanderVideosUnchanged": true,
+    "imageMappings": {
+      "CARD_IMAGE_PATHS": 3360,
+      "CARD_ART_PATHS": 70
+    }
+  },
+  "oracleWordingDifferences": [
+    {
+      "name": "Beanstalk Giant",
+      "runtime": "Beanstalk Giant's power and toughness are each equal to the number of lands you control.",
+      "source": "Beanstalk Giant: Beanstalk Giant's power and toughness are each equal to the number of lands you control.\nFertile Footsteps: Search your library for a basic land card, put it onto the battlefield, then shuffle. (Then exile this card. You may cast the creature later from exile.)"
+    },
+    {
+      "name": "Boros Garrison",
+      "runtime": "Boros Garrison enters tapped.\nWhen Boros Garrison enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "source": "This land enters tapped.\nWhen this land enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}."
+    }
+  ],
+  "printedFieldDifferences": [
+    {
+      "name": "Response // Resurgence",
+      "field": "cost",
+      "runtime": "{R/W}{R/W}{3}{R}{W}",
+      "source": "{R/W}{R/W} // {3}{R}{W}"
+    },
+    {
+      "name": "Struggle // Survive",
+      "field": "cost",
+      "runtime": "{2}{R}{1}{G}",
+      "source": "{2}{R} // {1}{G}"
+    },
+    {
+      "name": "Wear // Tear",
+      "field": "cost",
+      "runtime": "{1}{R}{W}",
+      "source": "{1}{R} // {W}"
+    }
+  ],
+  "sources": [
+    {
+      "name": "Land's Wrath",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/card-preview/zendikar-rising-commander-decklists-2020-09-09",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/LandSWrath_ZNC.json",
+      "moxfield": "https://moxfield.com/decks/hxxwZ5fXHEWBIKbY3HEpxQ",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "41e8c9c42f947f0f24e5e0e640079941efa337bd8860394c65b4e5f8e7a6a78b",
+      "officialHtmlSha256": "e7d8853f0fa19b40b5083343e8f8773152ab33463637ff9bbe19e4a9cf0ca320",
+      "export": "land-s-wrath.txt",
+      "sha256": "a2c2709669c14b269b532ecdeb145d971382a4cb81e66567735a767abba4be36"
+    },
+    {
+      "name": "Arm for Battle",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/commander-legends-commander-decklists-2020-11-05",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/ArmForBattle_CMR.json",
+      "moxfield": "https://moxfield.com/decks/B5nugPBRnkWIookZqo9N4g",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "811b6c89f9ecdae136b0369b5f59eb1a591749ad6863a4e865f112aed0145bfd",
+      "officialHtmlSha256": "95fd410f18842dec6b7bfdd8a2d51ef1caa57da9fe2befb632e1962dbdc6fb35",
+      "export": "arm-for-battle.txt",
+      "sha256": "2b1894bea067173bf382d630f3a4c0b44aae237de3f204a0e210ba4e326e04fb"
+    },
+    {
+      "name": "Reap the Tides",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/commander-legends-commander-decklists-2020-11-05",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/ReapTheTides_CMR.json",
+      "moxfield": "https://moxfield.com/decks/K3C1rLmFKE-14OeUeHxdYQ",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "12191bdb83e18861f13bcc8e0326d46e5c5cab2c73d59b8be3ebc251e25b74ec",
+      "officialHtmlSha256": "95fd410f18842dec6b7bfdd8a2d51ef1caa57da9fe2befb632e1962dbdc6fb35",
+      "export": "reap-the-tides.txt",
+      "sha256": "b9e74f77c1c7e300692296735c0037c99a755ea8e9d8c2cc1b3c5f378971096a"
+    },
+    {
+      "name": "Phantom Premonition",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/card-preview/kaldheim-commander-decklists-2021-01-20",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/PhantomPremonition_KHC.json",
+      "moxfield": "https://moxfield.com/decks/Go1B3kYCPk6ckaI7hPdShw",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "6927a53cad775b7cc29026b28ccc12732f997261f1a8fdf6ff47851d8d843bb3",
+      "officialHtmlSha256": "64a0172a82cbbbf8361a63adb84f96202b1fac4f8771eba5d0fab24726f16190",
+      "export": "phantom-premonition.txt",
+      "sha256": "112769b838bbcede55aae09bc6fcffcae447363b313ebfa636a3bff43240bb2b"
+    },
+    {
+      "name": "Elven Empire",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/card-preview/kaldheim-commander-decklists-2021-01-20",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/ElvenEmpire_KHC.json",
+      "moxfield": "https://moxfield.com/decks/diwSjxSEw0O9MDyJU9EYkg",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "2a7bb94ee734692ff8b908fa4f50225d442609f29a2354de17e0df7716ecaa52",
+      "officialHtmlSha256": "64a0172a82cbbbf8361a63adb84f96202b1fac4f8771eba5d0fab24726f16190",
+      "export": "elven-empire.txt",
+      "sha256": "d0f2378f13959af458456f2dfae8242d9789290e9b32904511a9026cc6db75ff"
+    }
+  ],
+  "runtimeSmokeSha256": "6c200174d7d1b88138c1e0ede786812f66d6061bcf6ad57f9e5d935f11a9e14a"
+}

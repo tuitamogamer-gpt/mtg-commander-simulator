@@ -1,0 +1,1640 @@
+{
+  "retrievedOn": "2026-09-08",
+  "selection": "After Sneak Attack: Land’s Wrath (ZNC), both Commander Legends lists, and both Kaldheim Commander lists, using the pinned index order within each release. Preserve every original card regardless of legality. No substitutions or alternate-edition duplicates.",
+  "moxfieldAccess": "The pinned index supplies queue links. These are verified Wizards / MTGJSON lists, not direct Moxfield exports.",
+  "normalization": "Flip and Adventure cards retain their front names; split cards retain their combined names. Full Scryfall faces are preserved in oracle.json.",
+  "decks": [
+    {
+      "name": "Land's Wrath",
+      "commander": "Obuun, Mul Daya Ancestor",
+      "set": "ZNC",
+      "moxfield": "hxxwZ5fXHEWBIKbY3HEpxQ",
+      "slug": "land-s-wrath",
+      "cards": [
+        {
+          "name": "Obuun, Mul Daya Ancestor",
+          "n": 1
+        },
+        {
+          "name": "Admonition Angel",
+          "n": 1
+        },
+        {
+          "name": "Trove Warden",
+          "n": 1
+        },
+        {
+          "name": "Geode Rager",
+          "n": 1
+        },
+        {
+          "name": "Emeria Angel",
+          "n": 1
+        },
+        {
+          "name": "Emeria Shepherd",
+          "n": 1
+        },
+        {
+          "name": "Sun Titan",
+          "n": 1
+        },
+        {
+          "name": "Multani, Yavimaya's Avatar",
+          "n": 1
+        },
+        {
+          "name": "Rampaging Baloths",
+          "n": 1
+        },
+        {
+          "name": "Sylvan Advocate",
+          "n": 1
+        },
+        {
+          "name": "Waker of the Wilds",
+          "n": 1
+        },
+        {
+          "name": "Living Twister",
+          "n": 1
+        },
+        {
+          "name": "Mina and Denn, Wildborn",
+          "n": 1
+        },
+        {
+          "name": "Omnath, Locus of Rage",
+          "n": 1
+        },
+        {
+          "name": "Abzan Falconer",
+          "n": 1
+        },
+        {
+          "name": "Elite Scaleguard",
+          "n": 1
+        },
+        {
+          "name": "Kor Cartographer",
+          "n": 1
+        },
+        {
+          "name": "Acidic Slime",
+          "n": 1
+        },
+        {
+          "name": "Armorcraft Judge",
+          "n": 1
+        },
+        {
+          "name": "Elvish Rejuvenator",
+          "n": 1
+        },
+        {
+          "name": "Embodiment of Insight",
+          "n": 1
+        },
+        {
+          "name": "Evolution Sage",
+          "n": 1
+        },
+        {
+          "name": "Fertilid",
+          "n": 1
+        },
+        {
+          "name": "Keeper of Fables",
+          "n": 1
+        },
+        {
+          "name": "Satyr Wayfinder",
+          "n": 1
+        },
+        {
+          "name": "Sporemound",
+          "n": 1
+        },
+        {
+          "name": "Springbloom Druid",
+          "n": 1
+        },
+        {
+          "name": "Tuskguard Captain",
+          "n": 1
+        },
+        {
+          "name": "Yavimaya Elder",
+          "n": 1
+        },
+        {
+          "name": "Sandstone Oracle",
+          "n": 1
+        },
+        {
+          "name": "Scaretiller",
+          "n": 1
+        },
+        {
+          "name": "Murasa Rootgrazer",
+          "n": 1
+        },
+        {
+          "name": "Hour of Revelation",
+          "n": 1
+        },
+        {
+          "name": "Planar Outburst",
+          "n": 1
+        },
+        {
+          "name": "Nissa's Renewal",
+          "n": 1
+        },
+        {
+          "name": "Beanstalk Giant",
+          "n": 1
+        },
+        {
+          "name": "Circuitous Route",
+          "n": 1
+        },
+        {
+          "name": "Far Wanderings",
+          "n": 1
+        },
+        {
+          "name": "Harmonize",
+          "n": 1
+        },
+        {
+          "name": "Kodama's Reach",
+          "n": 1
+        },
+        {
+          "name": "Ground Assault",
+          "n": 1
+        },
+        {
+          "name": "Treacherous Terrain",
+          "n": 1
+        },
+        {
+          "name": "Return of the Wildspeaker",
+          "n": 1
+        },
+        {
+          "name": "Condemn",
+          "n": 1
+        },
+        {
+          "name": "Crush Contraband",
+          "n": 1
+        },
+        {
+          "name": "Harrow",
+          "n": 1
+        },
+        {
+          "name": "Inspiring Call",
+          "n": 1
+        },
+        {
+          "name": "Naya Charm",
+          "n": 1
+        },
+        {
+          "name": "Sylvan Reclamation",
+          "n": 1
+        },
+        {
+          "name": "Roiling Regrowth",
+          "n": 1
+        },
+        {
+          "name": "Seer's Sundial",
+          "n": 1
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Together Forever",
+          "n": 1
+        },
+        {
+          "name": "Abundance",
+          "n": 1
+        },
+        {
+          "name": "The Mending of Dominaria",
+          "n": 1
+        },
+        {
+          "name": "Rites of Flourishing",
+          "n": 1
+        },
+        {
+          "name": "Banishing Light",
+          "n": 1
+        },
+        {
+          "name": "Retreat to Emeria",
+          "n": 1
+        },
+        {
+          "name": "Khalni Heart Expedition",
+          "n": 1
+        },
+        {
+          "name": "Retreat to Kazandu",
+          "n": 1
+        },
+        {
+          "name": "Zendikar's Roil",
+          "n": 1
+        },
+        {
+          "name": "Needle Spires",
+          "n": 1
+        },
+        {
+          "name": "Blighted Woodland",
+          "n": 1
+        },
+        {
+          "name": "Boros Garrison",
+          "n": 1
+        },
+        {
+          "name": "Boros Guildgate",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Cryptic Caves",
+          "n": 1
+        },
+        {
+          "name": "Evolving Wilds",
+          "n": 1
+        },
+        {
+          "name": "Gruul Guildgate",
+          "n": 1
+        },
+        {
+          "name": "Gruul Turf",
+          "n": 1
+        },
+        {
+          "name": "Jungle Shrine",
+          "n": 1
+        },
+        {
+          "name": "Krosan Verge",
+          "n": 1
+        },
+        {
+          "name": "Myriad Landscape",
+          "n": 1
+        },
+        {
+          "name": "Naya Panorama",
+          "n": 1
+        },
+        {
+          "name": "Selesnya Guildgate",
+          "n": 1
+        },
+        {
+          "name": "Selesnya Sanctuary",
+          "n": 1
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1
+        },
+        {
+          "name": "Plains",
+          "n": 7
+        },
+        {
+          "name": "Mountain",
+          "n": 4
+        },
+        {
+          "name": "Forest",
+          "n": 10
+        },
+        {
+          "name": "Struggle // Survive",
+          "n": 1
+        }
+      ],
+      "source": {
+        "provider": "Wizards decklist independently verified against MTGJSON",
+        "official": "https://magic.wizards.com/en/news/card-preview/zendikar-rising-commander-decklists-2020-09-09",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/LandSWrath_ZNC.json",
+        "moxfield": "https://moxfield.com/decks/hxxwZ5fXHEWBIKbY3HEpxQ",
+        "mtgjsonSnapshot": "2026-09-08",
+        "mtgjsonSha256": "41e8c9c42f947f0f24e5e0e640079941efa337bd8860394c65b4e5f8e7a6a78b",
+        "officialHtmlSha256": "e7d8853f0fa19b40b5083343e8f8773152ab33463637ff9bbe19e4a9cf0ca320",
+        "export": "land-s-wrath.txt",
+        "sha256": "a2c2709669c14b269b532ecdeb145d971382a4cb81e66567735a767abba4be36"
+      }
+    },
+    {
+      "name": "Arm for Battle",
+      "commander": "Wyleth, Soul of Steel",
+      "set": "CMR",
+      "moxfield": "B5nugPBRnkWIookZqo9N4g",
+      "slug": "arm-for-battle",
+      "cards": [
+        {
+          "name": "Wyleth, Soul of Steel",
+          "n": 1
+        },
+        {
+          "name": "Oreskos Explorer",
+          "n": 1
+        },
+        {
+          "name": "Relic Seeker",
+          "n": 1
+        },
+        {
+          "name": "Sram, Senior Edificer",
+          "n": 1
+        },
+        {
+          "name": "Brass Squire",
+          "n": 1
+        },
+        {
+          "name": "Danitha Capashen, Paragon",
+          "n": 1
+        },
+        {
+          "name": "Dualcaster Mage",
+          "n": 1
+        },
+        {
+          "name": "Flickerwisp",
+          "n": 1
+        },
+        {
+          "name": "Ironclad Slayer",
+          "n": 1
+        },
+        {
+          "name": "Kor Cartographer",
+          "n": 1
+        },
+        {
+          "name": "Odric, Lunarch Marshal",
+          "n": 1
+        },
+        {
+          "name": "Tiana, Ship's Caretaker",
+          "n": 1
+        },
+        {
+          "name": "Condemn",
+          "n": 1
+        },
+        {
+          "name": "Expedite",
+          "n": 1
+        },
+        {
+          "name": "Swords to Plowshares",
+          "n": 1
+        },
+        {
+          "name": "Abrade",
+          "n": 1
+        },
+        {
+          "name": "Boros Charm",
+          "n": 1
+        },
+        {
+          "name": "Comet Storm",
+          "n": 1
+        },
+        {
+          "name": "Dawn Charm",
+          "n": 1
+        },
+        {
+          "name": "Deflecting Palm",
+          "n": 1
+        },
+        {
+          "name": "Disenchant",
+          "n": 1
+        },
+        {
+          "name": "Fists of Flame",
+          "n": 1
+        },
+        {
+          "name": "Temur Battle Rage",
+          "n": 1
+        },
+        {
+          "name": "Valorous Stance",
+          "n": 1
+        },
+        {
+          "name": "Generous Gift",
+          "n": 1
+        },
+        {
+          "name": "Unbreakable Formation",
+          "n": 1
+        },
+        {
+          "name": "Volcanic Fallout",
+          "n": 1
+        },
+        {
+          "name": "Wear // Tear",
+          "n": 1
+        },
+        {
+          "name": "White Sun's Zenith",
+          "n": 1
+        },
+        {
+          "name": "Master Warcraft",
+          "n": 1
+        },
+        {
+          "name": "Return to Dust",
+          "n": 1
+        },
+        {
+          "name": "Wild Ricochet",
+          "n": 1
+        },
+        {
+          "name": "Word of Seizing",
+          "n": 1
+        },
+        {
+          "name": "Response // Resurgence",
+          "n": 1
+        },
+        {
+          "name": "Jaya's Immolating Inferno",
+          "n": 1
+        },
+        {
+          "name": "Martial Coup",
+          "n": 1
+        },
+        {
+          "name": "Relentless Assault",
+          "n": 1
+        },
+        {
+          "name": "Winds of Rath",
+          "n": 1
+        },
+        {
+          "name": "Bonesplitter",
+          "n": 1
+        },
+        {
+          "name": "Explorer's Scope",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Blackblade Reforged",
+          "n": 1
+        },
+        {
+          "name": "Blazing Sunsteel",
+          "n": 1
+        },
+        {
+          "name": "Boros Signet",
+          "n": 1
+        },
+        {
+          "name": "Hero's Blade",
+          "n": 1
+        },
+        {
+          "name": "Mask of Avacyn",
+          "n": 1
+        },
+        {
+          "name": "Ring of Thune",
+          "n": 1
+        },
+        {
+          "name": "Ring of Valkas",
+          "n": 1
+        },
+        {
+          "name": "Swiftfoot Boots",
+          "n": 1
+        },
+        {
+          "name": "Fireshrieker",
+          "n": 1
+        },
+        {
+          "name": "Haunted Cloak",
+          "n": 1
+        },
+        {
+          "name": "Loxodon Warhammer",
+          "n": 1
+        },
+        {
+          "name": "Sunforger",
+          "n": 1
+        },
+        {
+          "name": "Sword of Vengeance",
+          "n": 1
+        },
+        {
+          "name": "Sigarda's Aid",
+          "n": 1
+        },
+        {
+          "name": "Spirit Mantle",
+          "n": 1
+        },
+        {
+          "name": "Timely Ward",
+          "n": 1
+        },
+        {
+          "name": "Unquestioned Authority",
+          "n": 1
+        },
+        {
+          "name": "Faith Unbroken",
+          "n": 1
+        },
+        {
+          "name": "On Serra's Wings",
+          "n": 1
+        },
+        {
+          "name": "Boros Garrison",
+          "n": 1
+        },
+        {
+          "name": "Boros Guildgate",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Encroaching Wastes",
+          "n": 1
+        },
+        {
+          "name": "Evolving Wilds",
+          "n": 1
+        },
+        {
+          "name": "Forgotten Cave",
+          "n": 1
+        },
+        {
+          "name": "Memorial to War",
+          "n": 1
+        },
+        {
+          "name": "Mountain",
+          "n": 9
+        },
+        {
+          "name": "Myriad Landscape",
+          "n": 1
+        },
+        {
+          "name": "Plains",
+          "n": 14
+        },
+        {
+          "name": "Rogue's Passage",
+          "n": 1
+        },
+        {
+          "name": "Rupture Spire",
+          "n": 1
+        },
+        {
+          "name": "Secluded Steppe",
+          "n": 1
+        },
+        {
+          "name": "Slayers' Stronghold",
+          "n": 1
+        },
+        {
+          "name": "Stone Quarry",
+          "n": 1
+        },
+        {
+          "name": "Sunhome, Fortress of the Legion",
+          "n": 1
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1
+        },
+        {
+          "name": "Transguild Promenade",
+          "n": 1
+        },
+        {
+          "name": "Wind-Scarred Crag",
+          "n": 1
+        }
+      ],
+      "source": {
+        "provider": "Wizards decklist independently verified against MTGJSON",
+        "official": "https://magic.wizards.com/en/news/feature/commander-legends-commander-decklists-2020-11-05",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/ArmForBattle_CMR.json",
+        "moxfield": "https://moxfield.com/decks/B5nugPBRnkWIookZqo9N4g",
+        "mtgjsonSnapshot": "2026-09-08",
+        "mtgjsonSha256": "811b6c89f9ecdae136b0369b5f59eb1a591749ad6863a4e865f112aed0145bfd",
+        "officialHtmlSha256": "95fd410f18842dec6b7bfdd8a2d51ef1caa57da9fe2befb632e1962dbdc6fb35",
+        "export": "arm-for-battle.txt",
+        "sha256": "2b1894bea067173bf382d630f3a4c0b44aae237de3f204a0e210ba4e326e04fb"
+      }
+    },
+    {
+      "name": "Reap the Tides",
+      "commander": "Aesi, Tyrant of Gyre Strait",
+      "set": "CMR",
+      "moxfield": "K3C1rLmFKE-14OeUeHxdYQ",
+      "slug": "reap-the-tides",
+      "cards": [
+        {
+          "name": "Aesi, Tyrant of Gyre Strait",
+          "n": 1
+        },
+        {
+          "name": "Coiling Oracle",
+          "n": 1
+        },
+        {
+          "name": "Eternal Witness",
+          "n": 1
+        },
+        {
+          "name": "Ramunap Excavator",
+          "n": 1
+        },
+        {
+          "name": "Reclamation Sage",
+          "n": 1
+        },
+        {
+          "name": "Stumpsquall Hydra",
+          "n": 1
+        },
+        {
+          "name": "Yavimaya Elder",
+          "n": 1
+        },
+        {
+          "name": "Fathom Mage",
+          "n": 1
+        },
+        {
+          "name": "Sharktocrab",
+          "n": 1
+        },
+        {
+          "name": "Wickerbough Elder",
+          "n": 1
+        },
+        {
+          "name": "Acidic Slime",
+          "n": 1
+        },
+        {
+          "name": "Meloku the Clouded Mirror",
+          "n": 1
+        },
+        {
+          "name": "Mulldrifter",
+          "n": 1
+        },
+        {
+          "name": "Murkfiend Liege",
+          "n": 1
+        },
+        {
+          "name": "Sporemound",
+          "n": 1
+        },
+        {
+          "name": "Rampaging Baloths",
+          "n": 1
+        },
+        {
+          "name": "Shipbreaker Kraken",
+          "n": 1
+        },
+        {
+          "name": "Avenger of Zendikar",
+          "n": 1
+        },
+        {
+          "name": "Meteor Golem",
+          "n": 1
+        },
+        {
+          "name": "Molimo, Maro-Sorcerer",
+          "n": 1
+        },
+        {
+          "name": "Nezahal, Primal Tide",
+          "n": 1
+        },
+        {
+          "name": "Scourge of Fleets",
+          "n": 1
+        },
+        {
+          "name": "Simic Sky Swallower",
+          "n": 1
+        },
+        {
+          "name": "Sphinx of Uthuun",
+          "n": 1
+        },
+        {
+          "name": "Trench Behemoth",
+          "n": 1
+        },
+        {
+          "name": "Tromokratis",
+          "n": 1
+        },
+        {
+          "name": "Verdant Sun's Avatar",
+          "n": 1
+        },
+        {
+          "name": "Elder Deep-Fiend",
+          "n": 1
+        },
+        {
+          "name": "Slinn Voda, the Rising Deep",
+          "n": 1
+        },
+        {
+          "name": "Stormtide Leviathan",
+          "n": 1
+        },
+        {
+          "name": "Terastodon",
+          "n": 1
+        },
+        {
+          "name": "Arcane Denial",
+          "n": 1
+        },
+        {
+          "name": "Counterspell",
+          "n": 1
+        },
+        {
+          "name": "Growth Spiral",
+          "n": 1
+        },
+        {
+          "name": "Into the Roil",
+          "n": 1
+        },
+        {
+          "name": "Peel from Reality",
+          "n": 1
+        },
+        {
+          "name": "Simic Charm",
+          "n": 1
+        },
+        {
+          "name": "Beast Within",
+          "n": 1
+        },
+        {
+          "name": "Fact or Fiction",
+          "n": 1
+        },
+        {
+          "name": "Explore",
+          "n": 1
+        },
+        {
+          "name": "Rampant Growth",
+          "n": 1
+        },
+        {
+          "name": "Compulsive Research",
+          "n": 1
+        },
+        {
+          "name": "Cultivate",
+          "n": 1
+        },
+        {
+          "name": "Kodama's Reach",
+          "n": 1
+        },
+        {
+          "name": "Search for Tomorrow",
+          "n": 1
+        },
+        {
+          "name": "Harmonize",
+          "n": 1
+        },
+        {
+          "name": "Whelming Wave",
+          "n": 1
+        },
+        {
+          "name": "Urban Evolution",
+          "n": 1
+        },
+        {
+          "name": "Spitting Image",
+          "n": 1
+        },
+        {
+          "name": "Ior Ruin Expedition",
+          "n": 1
+        },
+        {
+          "name": "Khalni Heart Expedition",
+          "n": 1
+        },
+        {
+          "name": "Retreat to Kazandu",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Simic Signet",
+          "n": 1
+        },
+        {
+          "name": "Swiftfoot Boots",
+          "n": 1
+        },
+        {
+          "name": "Seer's Sundial",
+          "n": 1
+        },
+        {
+          "name": "Blighted Woodland",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Coral Atoll",
+          "n": 1
+        },
+        {
+          "name": "Evolving Wilds",
+          "n": 1
+        },
+        {
+          "name": "Forest",
+          "n": 15
+        },
+        {
+          "name": "Island",
+          "n": 15
+        },
+        {
+          "name": "Jungle Basin",
+          "n": 1
+        },
+        {
+          "name": "Memorial to Genius",
+          "n": 1
+        },
+        {
+          "name": "Reliquary Tower",
+          "n": 1
+        },
+        {
+          "name": "Simic Growth Chamber",
+          "n": 1
+        },
+        {
+          "name": "Simic Guildgate",
+          "n": 1
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1
+        },
+        {
+          "name": "Thornwood Falls",
+          "n": 1
+        },
+        {
+          "name": "Vivid Creek",
+          "n": 1
+        },
+        {
+          "name": "Vivid Grove",
+          "n": 1
+        },
+        {
+          "name": "Woodland Stream",
+          "n": 1
+        }
+      ],
+      "source": {
+        "provider": "Wizards decklist independently verified against MTGJSON",
+        "official": "https://magic.wizards.com/en/news/feature/commander-legends-commander-decklists-2020-11-05",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/ReapTheTides_CMR.json",
+        "moxfield": "https://moxfield.com/decks/K3C1rLmFKE-14OeUeHxdYQ",
+        "mtgjsonSnapshot": "2026-09-08",
+        "mtgjsonSha256": "12191bdb83e18861f13bcc8e0326d46e5c5cab2c73d59b8be3ebc251e25b74ec",
+        "officialHtmlSha256": "95fd410f18842dec6b7bfdd8a2d51ef1caa57da9fe2befb632e1962dbdc6fb35",
+        "export": "reap-the-tides.txt",
+        "sha256": "b9e74f77c1c7e300692296735c0037c99a755ea8e9d8c2cc1b3c5f378971096a"
+      }
+    },
+    {
+      "name": "Phantom Premonition",
+      "commander": "Ranar the Ever-Watchful",
+      "set": "KHC",
+      "moxfield": "Go1B3kYCPk6ckaI7hPdShw",
+      "slug": "phantom-premonition",
+      "cards": [
+        {
+          "name": "Ranar the Ever-Watchful",
+          "n": 1
+        },
+        {
+          "name": "Angel of Finality",
+          "n": 1
+        },
+        {
+          "name": "Angel of Serenity",
+          "n": 1
+        },
+        {
+          "name": "Arcane Artisan",
+          "n": 1
+        },
+        {
+          "name": "Brago, King Eternal",
+          "n": 1
+        },
+        {
+          "name": "Burnished Hart",
+          "n": 1
+        },
+        {
+          "name": "Cloudblazer",
+          "n": 1
+        },
+        {
+          "name": "Cloudgoat Ranger",
+          "n": 1
+        },
+        {
+          "name": "Empyrean Eagle",
+          "n": 1
+        },
+        {
+          "name": "Ethereal Valkyrie",
+          "n": 1
+        },
+        {
+          "name": "Evangel of Heliod",
+          "n": 1
+        },
+        {
+          "name": "Flickerwisp",
+          "n": 1
+        },
+        {
+          "name": "Geist-Honored Monk",
+          "n": 1
+        },
+        {
+          "name": "Goldnight Commander",
+          "n": 1
+        },
+        {
+          "name": "Hero of Bretagard",
+          "n": 1
+        },
+        {
+          "name": "Inspired Sphinx",
+          "n": 1
+        },
+        {
+          "name": "Kor Cartographer",
+          "n": 1
+        },
+        {
+          "name": "Meteor Golem",
+          "n": 1
+        },
+        {
+          "name": "Mist Raven",
+          "n": 1
+        },
+        {
+          "name": "Mistmeadow Witch",
+          "n": 1
+        },
+        {
+          "name": "Mulldrifter",
+          "n": 1
+        },
+        {
+          "name": "Restoration Angel",
+          "n": 1
+        },
+        {
+          "name": "Sage of the Beyond",
+          "n": 1
+        },
+        {
+          "name": "Sea Gate Oracle",
+          "n": 1
+        },
+        {
+          "name": "Soulherder",
+          "n": 1
+        },
+        {
+          "name": "Stoic Farmer",
+          "n": 1
+        },
+        {
+          "name": "Sun Titan",
+          "n": 1
+        },
+        {
+          "name": "Surtland Elementalist",
+          "n": 1
+        },
+        {
+          "name": "Thunderclap Wyvern",
+          "n": 1
+        },
+        {
+          "name": "Vega, the Watcher",
+          "n": 1
+        },
+        {
+          "name": "Wall of Omens",
+          "n": 1
+        },
+        {
+          "name": "Whirler Rogue",
+          "n": 1
+        },
+        {
+          "name": "Behold the Multiverse",
+          "n": 1
+        },
+        {
+          "name": "Cosmic Intervention",
+          "n": 1
+        },
+        {
+          "name": "Eerie Interlude",
+          "n": 1
+        },
+        {
+          "name": "Ghostly Flicker",
+          "n": 1
+        },
+        {
+          "name": "Iron Verdict",
+          "n": 1
+        },
+        {
+          "name": "Momentary Blink",
+          "n": 1
+        },
+        {
+          "name": "Return to Dust",
+          "n": 1
+        },
+        {
+          "name": "Saw It Coming",
+          "n": 1
+        },
+        {
+          "name": "Synthetic Destiny",
+          "n": 1
+        },
+        {
+          "name": "Warhorn Blast",
+          "n": 1
+        },
+        {
+          "name": "Cleansing Nova",
+          "n": 1
+        },
+        {
+          "name": "Curse of the Swine",
+          "n": 1
+        },
+        {
+          "name": "Migratory Route",
+          "n": 1
+        },
+        {
+          "name": "Ravenform",
+          "n": 1
+        },
+        {
+          "name": "Spectral Deluge",
+          "n": 1
+        },
+        {
+          "name": "Storm Herd",
+          "n": 1
+        },
+        {
+          "name": "Tales of the Ancestors",
+          "n": 1
+        },
+        {
+          "name": "Windfall",
+          "n": 1
+        },
+        {
+          "name": "Banishing Light",
+          "n": 1
+        },
+        {
+          "name": "Day of the Dragons",
+          "n": 1
+        },
+        {
+          "name": "Ghostly Prison",
+          "n": 1
+        },
+        {
+          "name": "Marshal's Anthem",
+          "n": 1
+        },
+        {
+          "name": "Niko Defies Destiny",
+          "n": 1
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1
+        },
+        {
+          "name": "Azorius Signet",
+          "n": 1
+        },
+        {
+          "name": "Commander's Sphere",
+          "n": 1
+        },
+        {
+          "name": "Marble Diamond",
+          "n": 1
+        },
+        {
+          "name": "Mind Stone",
+          "n": 1
+        },
+        {
+          "name": "Replicating Ring",
+          "n": 1
+        },
+        {
+          "name": "Sky Diamond",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Swiftfoot Boots",
+          "n": 1
+        },
+        {
+          "name": "Azorius Chancery",
+          "n": 1
+        },
+        {
+          "name": "Azorius Guildgate",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Cryptic Caves",
+          "n": 1
+        },
+        {
+          "name": "Gates of Istfell",
+          "n": 1
+        },
+        {
+          "name": "Glacial Floodplain",
+          "n": 1
+        },
+        {
+          "name": "Island",
+          "n": 12
+        },
+        {
+          "name": "Meandering River",
+          "n": 1
+        },
+        {
+          "name": "Myriad Landscape",
+          "n": 1
+        },
+        {
+          "name": "Opal Palace",
+          "n": 1
+        },
+        {
+          "name": "Plains",
+          "n": 13
+        },
+        {
+          "name": "Sejiri Refuge",
+          "n": 1
+        },
+        {
+          "name": "Tranquil Cove",
+          "n": 1
+        }
+      ],
+      "source": {
+        "provider": "Wizards decklist independently verified against MTGJSON",
+        "official": "https://magic.wizards.com/en/news/card-preview/kaldheim-commander-decklists-2021-01-20",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/PhantomPremonition_KHC.json",
+        "moxfield": "https://moxfield.com/decks/Go1B3kYCPk6ckaI7hPdShw",
+        "mtgjsonSnapshot": "2026-09-08",
+        "mtgjsonSha256": "6927a53cad775b7cc29026b28ccc12732f997261f1a8fdf6ff47851d8d843bb3",
+        "officialHtmlSha256": "64a0172a82cbbbf8361a63adb84f96202b1fac4f8771eba5d0fab24726f16190",
+        "export": "phantom-premonition.txt",
+        "sha256": "112769b838bbcede55aae09bc6fcffcae447363b313ebfa636a3bff43240bb2b"
+      }
+    },
+    {
+      "name": "Elven Empire",
+      "commander": "Lathril, Blade of the Elves",
+      "set": "KHC",
+      "moxfield": "diwSjxSEw0O9MDyJU9EYkg",
+      "slug": "elven-empire",
+      "cards": [
+        {
+          "name": "Lathril, Blade of the Elves",
+          "n": 1
+        },
+        {
+          "name": "Abomination of Llanowar",
+          "n": 1
+        },
+        {
+          "name": "Beast Whisperer",
+          "n": 1
+        },
+        {
+          "name": "Canopy Tactician",
+          "n": 1
+        },
+        {
+          "name": "Cultivator of Blades",
+          "n": 1
+        },
+        {
+          "name": "Dwynen, Gilt-Leaf Daen",
+          "n": 1
+        },
+        {
+          "name": "Elderfang Ritualist",
+          "n": 1
+        },
+        {
+          "name": "Elvish Archdruid",
+          "n": 1
+        },
+        {
+          "name": "Elvish Mystic",
+          "n": 1
+        },
+        {
+          "name": "Elvish Rejuvenator",
+          "n": 1
+        },
+        {
+          "name": "End-Raze Forerunners",
+          "n": 1
+        },
+        {
+          "name": "Eyeblight Cullers",
+          "n": 1
+        },
+        {
+          "name": "Farhaven Elf",
+          "n": 1
+        },
+        {
+          "name": "Golgari Findbroker",
+          "n": 1
+        },
+        {
+          "name": "Harald, King of Skemfar",
+          "n": 1
+        },
+        {
+          "name": "Imperious Perfect",
+          "n": 1
+        },
+        {
+          "name": "Jagged-Scar Archers",
+          "n": 1
+        },
+        {
+          "name": "Jaspera Sentinel",
+          "n": 1
+        },
+        {
+          "name": "Llanowar Tribe",
+          "n": 1
+        },
+        {
+          "name": "Lys Alana Huntmaster",
+          "n": 1
+        },
+        {
+          "name": "Lys Alana Scarblade",
+          "n": 1
+        },
+        {
+          "name": "Marwyn, the Nurturer",
+          "n": 1
+        },
+        {
+          "name": "Masked Admirers",
+          "n": 1
+        },
+        {
+          "name": "Miara, Thorn of the Glade",
+          "n": 1
+        },
+        {
+          "name": "Nullmage Shepherd",
+          "n": 1
+        },
+        {
+          "name": "Numa, Joraga Chieftain",
+          "n": 1
+        },
+        {
+          "name": "Poison-Tip Archer",
+          "n": 1
+        },
+        {
+          "name": "Reclamation Sage",
+          "n": 1
+        },
+        {
+          "name": "Rhys the Exiled",
+          "n": 1
+        },
+        {
+          "name": "Ruthless Winnower",
+          "n": 1
+        },
+        {
+          "name": "Shaman of the Pack",
+          "n": 1
+        },
+        {
+          "name": "Skemfar Shadowsage",
+          "n": 1
+        },
+        {
+          "name": "Springbloom Druid",
+          "n": 1
+        },
+        {
+          "name": "Sylvan Messenger",
+          "n": 1
+        },
+        {
+          "name": "Timberwatch Elf",
+          "n": 1
+        },
+        {
+          "name": "Twinblade Assassins",
+          "n": 1
+        },
+        {
+          "name": "Voice of Many",
+          "n": 1
+        },
+        {
+          "name": "Voice of the Woods",
+          "n": 1
+        },
+        {
+          "name": "Wirewood Channeler",
+          "n": 1
+        },
+        {
+          "name": "Wolverine Riders",
+          "n": 1
+        },
+        {
+          "name": "Wood Elves",
+          "n": 1
+        },
+        {
+          "name": "Elven Ambush",
+          "n": 1
+        },
+        {
+          "name": "Poison the Cup",
+          "n": 1
+        },
+        {
+          "name": "Putrefy",
+          "n": 1
+        },
+        {
+          "name": "Tergrid's Shadow",
+          "n": 1
+        },
+        {
+          "name": "Ambition's Cost",
+          "n": 1
+        },
+        {
+          "name": "Bounty of Skemfar",
+          "n": 1
+        },
+        {
+          "name": "Casualties of War",
+          "n": 1
+        },
+        {
+          "name": "Eyeblight Massacre",
+          "n": 1
+        },
+        {
+          "name": "Elvish Promenade",
+          "n": 1
+        },
+        {
+          "name": "Harvest Season",
+          "n": 1
+        },
+        {
+          "name": "Pact of the Serpent",
+          "n": 1
+        },
+        {
+          "name": "Return Upon the Tide",
+          "n": 1
+        },
+        {
+          "name": "Roots of Wisdom",
+          "n": 1
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1
+        },
+        {
+          "name": "Serpent's Soul-Jar",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Binding the Old Gods",
+          "n": 1
+        },
+        {
+          "name": "Crown of Skemfar",
+          "n": 1
+        },
+        {
+          "name": "Elderfang Venom",
+          "n": 1
+        },
+        {
+          "name": "Pride of the Perfect",
+          "n": 1
+        },
+        {
+          "name": "Prowess of the Fair",
+          "n": 1
+        },
+        {
+          "name": "Moldervine Reclamation",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Forest",
+          "n": 16
+        },
+        {
+          "name": "Foul Orchard",
+          "n": 1
+        },
+        {
+          "name": "Golgari Guildgate",
+          "n": 1
+        },
+        {
+          "name": "Golgari Rot Farm",
+          "n": 1
+        },
+        {
+          "name": "Jungle Hollow",
+          "n": 1
+        },
+        {
+          "name": "Myriad Landscape",
+          "n": 1
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1
+        },
+        {
+          "name": "Skemfar Elderhall",
+          "n": 1
+        },
+        {
+          "name": "Swamp",
+          "n": 13
+        }
+      ],
+      "source": {
+        "provider": "Wizards decklist independently verified against MTGJSON",
+        "official": "https://magic.wizards.com/en/news/card-preview/kaldheim-commander-decklists-2021-01-20",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/ElvenEmpire_KHC.json",
+        "moxfield": "https://moxfield.com/decks/diwSjxSEw0O9MDyJU9EYkg",
+        "mtgjsonSnapshot": "2026-09-08",
+        "mtgjsonSha256": "2a7bb94ee734692ff8b908fa4f50225d442609f29a2354de17e0df7716ecaa52",
+        "officialHtmlSha256": "64a0172a82cbbbf8361a63adb84f96202b1fac4f8771eba5d0fab24726f16190",
+        "export": "elven-empire.txt",
+        "sha256": "d0f2378f13959af458456f2dfae8242d9789290e9b32904511a9026cc6db75ff"
+      }
+    }
+  ]
+}

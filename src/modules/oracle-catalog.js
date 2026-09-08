@@ -1535,7 +1535,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return;
     }
     if (effect.action === 'exile') {
-      for (const subject of subjects) await ctx.g.exileCard(subject);
+      await ctx.g.withZKExileBatch(async () => {for (const subject of subjects) await ctx.g.exileCard(subject);});
       return;
     }
     if (effect.action === 'bounce' || effect.action === 'move-to-hand') {

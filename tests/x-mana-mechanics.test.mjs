@@ -5,6 +5,8 @@ import { loadEngine } from './helpers/load-engine.mjs';
 const MTG = loadEngine();
 
 const ACTIVE_X_SPELLS = [
+  "Jaya's Immolating Inferno",
+  'Stumpsquall Hydra',
   'Capricopian',
   'Commune with Lava',
   'Cryptic Trilobite',
@@ -192,7 +194,7 @@ async function resolveAll(game) {
   assert.ok(guard < 180, 'X trigger/stack petlja se nije smirila');
 }
 
-test('inventar pokriva svih 109 aktivnih X spella i sve dodatne X-mana putanje', () => {
+test('inventar pokriva svih 111 aktivnih X spella i sve dodatne X-mana putanje', () => {
   const active = [...new Set(Object.values(MTG.DECKS).flatMap(deck => deck.cards.map(entry => entry.name)))]
     .filter(name => MTG.parseCost(MTG.DEFS[name].cost || '').x > 0)
     .sort();

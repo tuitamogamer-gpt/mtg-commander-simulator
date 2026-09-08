@@ -216,6 +216,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if ((game._additionalPhases || []).length) blockers.push('a scheduled additional phase');
     if ((game.extraTurns || []).length || game._extraTurnAnchor) blockers.push('a scheduled extra turn');
     if(MTG.C1719?.snapshotBlockers)blockers.push(...MTG.C1719.snapshotBlockers(game));
+    if(MTG.ZK?.snapshotBlockers)blockers.push(...MTG.ZK.snapshotBlockers(game));
     if(MTG.C1920?.snapshotBlockers)blockers.push(...MTG.C1920.snapshotBlockers(game));
     if (MTG.C1516?.snapshotBlockers) blockers.push(...MTG.C1516.snapshotBlockers(game));
     return blockers;
@@ -371,7 +372,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (entry.oracleFace) card.oracleFace = entry.oracleFace;
       card.oracleTransformCount = Number(entry.oracleTransformCount) || 0;
       card.meta = Object.assign({}, entry.meta);
-      if (card.faceDown && !card.isToken) {
+      if (card.faceDown && card.zone === 'battlefield' && !card.isToken) {
         card.meta.faceDownDef = MTG.DEFS[entry.name];
         card.def = game.faceDownCreatureDef(card.meta.faceDownKind || 'manifest');
       }

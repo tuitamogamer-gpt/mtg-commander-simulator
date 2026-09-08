@@ -463,7 +463,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (entry.gyAbility) return ((entry.gyAbilityOverride || def.gyAbility) || {}).label || 'Ability from your graveyard';
       if (entry.cycling) return entry.label || 'Cycling';
       if (entry.plot) return `Plot ${U.costStr(U.parseCost(def.plot))}`;
-      if (entry.foretell) return 'Foretell {2}';
+      if (entry.foretell) return 'Foretell ' + (entry.foretellCost || '{2}');
       if (entry.ninjutsu) return `Ninjutsu ${entry.ninjutsuCost || ''}`.trim();
       if (entry.suspend) return `Suspend ${U.costStr(U.parseCost(def.suspend.cost))} — exile with ${def.suspend.n} time counters`;
       if (entry.equip !== undefined) return `Equip ${U.costStr(U.parseCost(def.equip))}`;
@@ -4944,7 +4944,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           let label = e.alt ? (e.alt.adventure ? `Adventure: ${e.alt.name} ${U.costStr(U.parseCost(e.alt.cost || ''))}` : (e.alt.label || 'Alternative cost')) : `Cast ${U.costStr(cost)}`;
           if (e.from === 'command') label += ' (commander)';
           if (e.from === 'graveyard') label += ' (from graveyard)';
-          if (e.from === 'exile') label = 'Play from exile' + (e.alt && e.alt.free ? ' (free)' : '');
+          if (e.from === 'exile') label = e.alt?.foretell
+            ? `Play from exile · Foretell ${U.costStr(cost)}${e.alt.zkForetellGranted ? ' (Ethereal Valkyrie)' : ''}`
+            : 'Play from exile' + (e.alt && e.alt.free ? ' (free)' : '');
           const b = el('button', 'pbtn primary wide', esc(label));
           b.onclick = () => { this.sheet = null; this.resolvePending({ kind: 'cast', card, alt: e.alt, from: e.from }); };
           acts.appendChild(b);

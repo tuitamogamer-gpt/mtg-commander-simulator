@@ -1,0 +1,179 @@
+{
+  "meta": {
+    "Land's Wrath": {
+      "icon": "🌋",
+      "colors": [
+        "R",
+        "G",
+        "W"
+      ],
+      "style": "Landfall and animated lands",
+      "blurb": "Obuun grows your creatures with landfall and animates a land for combat.",
+      "set": "Zendikar Rising Commander (2020)"
+    },
+    "Arm for Battle": {
+      "icon": "⚔️",
+      "colors": [
+        "R",
+        "W"
+      ],
+      "style": "Equipment and commander attacks",
+      "blurb": "Wyleth turns each attached Aura and Equipment into a card whenever he attacks.",
+      "set": "Commander Legends (2020)"
+    },
+    "Reap the Tides": {
+      "icon": "🌊",
+      "colors": [
+        "G",
+        "U"
+      ],
+      "style": "Extra lands and sea monsters",
+      "blurb": "Aesi allows an extra land each turn and draws a card whenever your land enters.",
+      "set": "Commander Legends (2020)"
+    },
+    "Phantom Premonition": {
+      "icon": "👻",
+      "colors": [
+        "W",
+        "U"
+      ],
+      "style": "Foretell and blink",
+      "blurb": "Ranar discounts your first foretell action each turn and creates Spirits from qualifying exile events.",
+      "set": "Kaldheim Commander (2021)"
+    },
+    "Elven Empire": {
+      "icon": "🌿",
+      "colors": [
+        "B",
+        "G"
+      ],
+      "style": "Elf tokens and life drain",
+      "blurb": "Lathril makes Elf Warriors from combat damage and taps an Elf army to drain the table.",
+      "set": "Kaldheim Commander (2021)"
+    }
+  },
+  "guides": {
+    "Land's Wrath": {
+      "route": "lands",
+      "pace": "LANDFALL AND COUNTERS",
+      "complexity": "Intermediate",
+      "theme": "Obuun grows your creatures with landfall and animates a land for combat.",
+      "plan": "Ramp, make repeated land drops, and put counters on Obuun before animating a land.",
+      "mulligan": "Keep three lands, early ramp, and a landfall payoff.",
+      "tip": "Obuun uses his power when the combat trigger resolves. A land that becomes a creature can still tap for mana.",
+      "keys": [
+        "Emeria Shepherd",
+        "Trove Warden",
+        "Geode Rager"
+      ]
+    },
+    "Arm for Battle": {
+      "route": "equipment",
+      "pace": "EQUIPMENT AND CARD DRAW",
+      "complexity": "Intermediate",
+      "theme": "Wyleth turns each attached Aura and Equipment into a card whenever he attacks.",
+      "plan": "Equip Wyleth, protect him through combat, and use each attack to refill your hand.",
+      "mulligan": "Keep two or three lands, a cheap Equipment, and a protection spell.",
+      "tip": "Wyleth draws when he attacks; he does not need to deal combat damage.",
+      "keys": [
+        "Timely Ward",
+        "Blazing Sunsteel",
+        "Sunforger"
+      ]
+    },
+    "Reap the Tides": {
+      "route": "bigCreatures",
+      "pace": "LAND RAMP AND SEA MONSTERS",
+      "complexity": "Intermediate",
+      "theme": "Aesi allows an extra land each turn and draws a card whenever your land enters.",
+      "plan": "Build your mana with extra lands, then deploy sea monsters and bounce opposing creatures.",
+      "mulligan": "Keep three lands and early ramp or an inexpensive creature that replaces itself.",
+      "tip": "Aesi permits one additional land play; lands put onto the battlefield by effects do not use that allowance.",
+      "keys": [
+        "Trench Behemoth",
+        "Stumpsquall Hydra",
+        "Whelming Wave"
+      ]
+    },
+    "Phantom Premonition": {
+      "route": "fliers",
+      "pace": "FORETELL AND BLINK",
+      "complexity": "Intermediate",
+      "theme": "Ranar discounts your first foretell action each turn and creates Spirits from qualifying exile events.",
+      "plan": "Set aside foretell spells, reuse creature entry abilities, and build a flying Spirit army.",
+      "mulligan": "Keep two or three lands, a mana rock, and a foretell or blink play.",
+      "tip": "Foretelling sets a card aside; it may be cast for its foretell cost only after that turn ends.",
+      "keys": [
+        "Ethereal Valkyrie",
+        "Cosmic Intervention",
+        "Soulherder"
+      ]
+    },
+    "Elven Empire": {
+      "route": "typal",
+      "pace": "ELVES AND LIFE DRAIN",
+      "complexity": "Intermediate",
+      "theme": "Lathril makes Elf Warriors from combat damage and taps an Elf army to drain the table.",
+      "plan": "Develop mana Elves, attack with Lathril, and preserve enough untapped Elves for her drain ability.",
+      "mulligan": "Keep two or three lands, a mana Elf, and an Elf payoff or card draw spell.",
+      "tip": "Lathril taps herself plus ten other untapped Elves. The ten supporting Elves may have summoning sickness.",
+      "keys": [
+        "Marwyn, the Nurturer",
+        "Pact of the Serpent",
+        "Serpent's Soul-Jar"
+      ]
+    }
+  },
+  "profiles": {
+    "Land's Wrath": {
+      "archetype": "Landfall and animated lands",
+      "length": "long",
+      "tags": [
+        "lands",
+        "ramp",
+        "counters"
+      ],
+      "commanderImportance": 1.5
+    },
+    "Arm for Battle": {
+      "archetype": "Equipment and commander attacks",
+      "length": "long",
+      "tags": [
+        "artifacts",
+        "combat",
+        "voltron"
+      ],
+      "commanderImportance": 1.5
+    },
+    "Reap the Tides": {
+      "archetype": "Extra lands and sea monsters",
+      "length": "long",
+      "tags": [
+        "lands",
+        "ramp",
+        "combat"
+      ],
+      "commanderImportance": 1.5
+    },
+    "Phantom Premonition": {
+      "archetype": "Foretell and blink",
+      "length": "long",
+      "tags": [
+        "control",
+        "tokens",
+        "blink"
+      ],
+      "commanderImportance": 1.5
+    },
+    "Elven Empire": {
+      "archetype": "Elf tokens and life drain",
+      "length": "long",
+      "tags": [
+        "tribal",
+        "tokens",
+        "ramp"
+      ],
+      "commanderImportance": 1.5
+    }
+  }
+}

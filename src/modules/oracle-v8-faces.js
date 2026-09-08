@@ -141,9 +141,8 @@
         if (meta.playableCondition && !meta.playableCondition(game, player, candidate)) continue;
         if (meta.needsOppLost && !game.alivePlayers().some(other => other !== player && other.turnState.lifeLost > 0)) continue;
         if (mine && meta.plotted && meta.plottedTurn < game.turnNo) offer({free: true, plotPlay: true, speed: 'sorcery'});
-        if (mine && meta.foretold && meta.foretoldTurn < game.turnNo && def.foretell) {
-          const foretell = typeof def.foretell === 'string' ? {cost: def.foretell} : def.foretell;
-          offer({foretell: true, altCostStr: foretell.cost, ...(foretell.speed ? {speed: foretell.speed} : {})});
+        if (mine && meta.foretold && meta.foretoldTurn < game.turnNo && meta.foretoldZoneVersion === card.zoneVersion && card.faceDown) {
+          for (const foretell of game.foretellChoices(card, {oracleFace: face.key})) offer({foretell: true, foretoldZoneVersion: card.zoneVersion, ...(foretell.zkForetellGranted ? {zkForetellGranted: true} : {}), altCostStr: foretell.cost, ...(foretell.speed ? {speed: foretell.speed} : {})});
         }
         if (game.hasExilePlayPermission(player, card)) offer({consumeExilePermission: true, ...(meta.freePlay ? {free: true} : {}), ...(meta.anyColor ? {asThoughAnyColor: true} : {}), ...(meta.exileAfterPlay ? {exileAfter: true} : {})});
       } else if (from === 'library' && mine && player.library.at(-1) === card && game.bf().some(source => source.ctrl === player && !source.cur?.abilitiesDisabled && source.def.playTop?.(game, source, candidate, player))) offer({fromTop: true});

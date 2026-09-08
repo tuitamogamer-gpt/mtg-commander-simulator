@@ -23,6 +23,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+    "Land's Wrath": {"icon": "🌋", "colors": ["R", "G", "W"], "style": "Landfall and animated lands", "blurb": "Obuun grows your creatures with landfall and animates a land for combat.", "set": "Zendikar Rising Commander (2020)"},
+    "Arm for Battle": {"icon": "⚔️", "colors": ["R", "W"], "style": "Equipment and commander attacks", "blurb": "Wyleth turns each attached Aura and Equipment into a card whenever he attacks.", "set": "Commander Legends (2020)"},
+    "Reap the Tides": {"icon": "🌊", "colors": ["G", "U"], "style": "Extra lands and sea monsters", "blurb": "Aesi allows an extra land each turn and draws a card whenever your land enters.", "set": "Commander Legends (2020)"},
+    "Phantom Premonition": {"icon": "👻", "colors": ["W", "U"], "style": "Foretell and blink", "blurb": "Ranar discounts your first foretell action each turn and creates Spirits from qualifying exile events.", "set": "Kaldheim Commander (2021)"},
+    "Elven Empire": {"icon": "🌿", "colors": ["B", "G"], "style": "Elf tokens and life drain", "blurb": "Lathril makes Elf Warriors from combat damage and taps an Elf army to drain the table.", "set": "Kaldheim Commander (2021)"},
+
     "Mystic Intellect": {"icon": "📜", "colors": ["W", "U", "R"], "style": "Flashback and spell copies", "blurb": "Sevinne copies your first instant or sorcery cast from the graveyard each turn.", "set": "Commander (2019)"},
     "Faceless Menace": {"icon": "🎭", "colors": ["B", "G", "U"], "style": "Morph and hidden creatures", "blurb": "Kadena discounts your first face-down creature spell each turn and draws when a face-down creature enters.", "set": "Commander (2019)"},
     "Timeless Wisdom": {"icon": "🪽", "colors": ["W", "U", "R"], "style": "Cycling and token value", "blurb": "Gavi makes your first cycling cost each turn free and rewards your second draw with a Dinosaur Cat.", "set": "Commander (2020)"},
