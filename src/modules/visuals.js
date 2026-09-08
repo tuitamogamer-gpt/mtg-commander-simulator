@@ -43,13 +43,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     forestwalk: Object.freeze({ icon: 'forestwalk', label: 'Forestwalk', tone: 'green' }),
     myriad: Object.freeze({ icon: 'myriad', label: 'Myriad', tone: 'cyan' }),
     skulk: Object.freeze({ icon: 'skulk', label: 'Skulk', tone: 'silver' }),
+    unblockable: Object.freeze({ icon: 'skulk', label: "Can't be blocked", tone: 'cyan', derived: 'unblockable' }),
   });
 
-  // Ward lives in cur.wardCost rather than cur.kw.  Keeping this lookup next
-  // to the visual registry makes battlefield badges and the card sheet agree.
+  // Some abilities use derived fields rather than cur.kw. Keep battlefield
+  // badges and the card sheet aligned with those current characteristics.
   MTG.cardHasVisualAbility = function cardHasVisualAbility(card, keyword, visual) {
     if (!card || !card.cur) return false;
     if (visual && visual.derived === 'ward') return !!card.cur.wardCost || !!card.cur.extraWards?.length;
+    if (visual && visual.derived === 'unblockable') return !!card.cur.unblockable;
     if (keyword === 'hexproof' && card.cur.hexproof) return true;
     if (keyword === 'shroud' && card.cur.shroud) return true;
     return card.kw(keyword);

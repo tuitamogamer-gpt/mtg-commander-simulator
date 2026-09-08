@@ -48,6 +48,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const colorNames = { W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green' };
     const colorLabel = colors.length ? colors.map(color => colorNames[color]).join(' / ') : 'Colorless';
     const keywords = [...(current?.kw || def.kws || [])].map(keyword => U.KEYWORD_VISUALS?.[keyword]?.label || U.cap(keyword));
+    if (current?.unblockable) keywords.push("Can't be blocked");
     const type = subtypes.join(' ') || types.join(' ') || 'Token';
     const pt = types.includes('Creature') ? `${card.power ?? def.power ?? 0}/${card.toughness ?? def.toughness ?? 0}` : '';
     const printedRules = def.oracle || '';
@@ -4170,16 +4171,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return ov;
       }
       if (q.type === 'scry') {
+        const surveil = !!q.surveil;
+        const otherZone = surveil ? 'GRAVEYARD' : 'BOTTOM';
         pd.scryState = pd.scryState || q.cards.map(() => 'top');
         pd.scryOrder = pd.scryOrder || q.cards.slice();
-        m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Scry') + ': click to switch top/bottom'));
-        m.appendChild(el('div', 'orderhint', 'Arrows change the order. TOP: the first card is drawn first. BOTTOM: the first card is deepest.'));
+        m.appendChild(el('div', 'mtitle', esc(q.prompt || (surveil ? 'Surveil' : 'Scry')) + (surveil ? ': click to switch top/graveyard' : ': click to switch top/bottom')));
+        m.appendChild(el('div', 'orderhint', surveil
+          ? 'Choose any number of cards for your graveyard. Arrows order the cards kept on TOP; the first is drawn first.'
+          : 'Arrows change the order. TOP: the first card is drawn first. BOTTOM: the first card is deepest.'));
         const grid = el('div', 'cardgrid');
         pd.scryOrder.forEach((c, orderIndex) => {
           const i = q.cards.indexOf(c);
           const cc = this.bigCardEl(c);
           cc.classList.add(pd.scryState[i] === 'top' ? 'scrytop' : 'scrybottom');
-          cc.appendChild(el('div', 'scrylabel', pd.scryState[i] === 'top' ? 'TOP' : 'BOTTOM'));
+          cc.appendChild(el('div', 'scrylabel', pd.scryState[i] === 'top' ? 'TOP' : otherZone));
           cc.onclick = () => { pd.scryState[i] = pd.scryState[i] === 'top' ? 'bottom' : 'top'; this.render(); };
           const controls = el('div', 'triggerordercontrols');
           const left = btn('←', event => {
@@ -4444,7 +4449,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const mine = assignedTo(a);
         const outcome = this.blockOutcome(g, a, mine, assignments);
         const lane = el('div', 'blocklane' + (pd.mode === a ? ' sel' : ''));
-        const kws = KW.filter(k => a.kw(k)).join(' · ');
+        const kws = KW.filter(k => a.kw(k)).concat(a.cur.unblockable ? ["Can't be blocked"] : []).join(' · ');
         const hitTarget = a.attacking === me ? 'YOU' : (a.attacking && a.attacking.name ? a.attacking.name : 'you');
         let outcomeText;
         if (!mine.length) {
@@ -4464,6 +4469,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             <span>${a.power}/${a.toughness}${kws ? ' · ' + esc(kws) : ''}</span>
             <div class="blockassigned">${mine.length
               ? mine.map(b => `<span class="blockchip" data-biid="${b.iid}">🛡 ${esc(b.name)} <i>×</i></span>`).join('')
+              : a.cur.unblockable ? '<span class="blocknone">This creature can’t be blocked.</span>'
               : '<span class="blocknone">no blockers — click this row, then a blocker below</span>'}</div>
             <div class="blockoutcome">${outcomeText}</div>
           </div>`;
@@ -4480,7 +4486,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       m.appendChild(lanes);
 
       m.appendChild(el('div', 'mtitle small blockyourstitle',
-        pd.mode ? `Your untapped creatures — click to block <b>${esc(pd.mode.name)}</b>:` : 'Your untapped creatures:'));
+        pd.mode?.cur.unblockable ? `<b>${esc(pd.mode.name)}</b> can’t be blocked.`
+          : pd.mode ? `Your untapped creatures — click to block <b>${esc(pd.mode.name)}</b>:` : 'Your untapped creatures:'));
       const row = el('div', 'blockcandidates');
       for (const b of q.potential) {
         const assigned = this.blockTargets(b, pd);
@@ -4847,7 +4854,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.render(); return;
       }
       if (assigned.length >= capacity) { this.toast(`${b.name} cannot block another creature this combat.`); return; }
-      if (!this.game.canBlock(b, a)) { this.toast('Cannot block because of flying or another restriction.'); return; }
+      if (!this.game.canBlock(b, a)) {
+        this.toast(a.cur.unblockable ? `${a.name} can’t be blocked.` : 'Cannot block because of flying or another restriction.');
+        return;
+      }
       if (this.blockAssignments(pd).filter(pair => pair.attacker === a).length >= this.game.blockerBounds(a).max) {this.toast(`${a.name} cannot be blocked by another creature.`); return;}
       pd.assigns.set(b, capacity === 1 ? a : assigned.concat(a));
       this.render();
