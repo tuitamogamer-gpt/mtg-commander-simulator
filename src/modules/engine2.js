@@ -6371,10 +6371,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       if (!act || act.kind === 'done') break;
       const ok = await this.performAction(p, act);
-      if (ok === false && act.kind === 'cast') failed.add(keyOf(act));
+      if (p.isAI && ok === false && act.kind === 'cast') failed.add(keyOf(act));
       // Aktivacija koja tiho pukne (npr. loyalty već potrošen) isto ne smije
       // vrtiti guard petlju do isteka — ne nudi se ponovo u istoj fazi.
-      if (ok === false && act.kind === 'activate' && act.entry) failed.add(actKeyOf(act.entry));
+      if (p.isAI && ok === false && act.kind === 'activate' && act.entry) failed.add(actKeyOf(act.entry));
       // after each action, give others a priority window via stack (castSpell already does)
       if (this.gameOver) return;
     }

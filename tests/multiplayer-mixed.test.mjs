@@ -92,7 +92,7 @@ function transportHarness(actionAcks) {
   let socket;
   class FakeSocket {
     constructor() { socket = this; this.sent = []; }
-    send(value) { this.sent.push(JSON.parse(value)); }
+    send(value) { const packet = JSON.parse(value); this.sent.push(packet); this.onSend?.(packet); }
     receive(value) { this.onmessage({ data: JSON.stringify(value) }); }
     close() {}
   }
@@ -107,7 +107,7 @@ function transportHarness(actionAcks) {
   const client = context.MTG.createHiggsfieldRoomClient({ create: true });
   socket.onopen();
   const state = (revision, type, seat = 0) => socket.receive({ type: 'state', status: 'playing', actionAcks,
-    view: { revision, you: 0, phase: 'running', seats: [{ seat: 0, connected: true }], lastEvent: { type, seat } } });
+    view: { protocolVersion: context.MTG.ONLINE_PROTOCOL_VERSION, revision, you: 0, phase: 'running', seats: [{ seat: 0, connected: true }], lastEvent: { type, seat } } });
   state(1, 'connected');
   return { socket, client, state };
 }
@@ -152,4 +152,17 @@ test('local bots wait for the room to resume before deciding and before returnin
   assert.equal(returned, false);
   emit({ phase: 'running', seats: [{ connected: true }, { connected: true }] });
   assert.equal(await decision, 'computed-move');
+});
+
+test('rapid automatic decisions stay below the server message limit without dropping or reordering actions', async () => {
+  const { socket, client } = transportHarness(true);
+  const sent = [];
+  socket.onSend = packet => {
+    sent.push({ at: Date.now(), index: packet.action.index });
+    queueMicrotask(() => socket.receive({ type: 'actionAck', requestId: packet.requestId }));
+  };
+  await Promise.all(Array.from({ length: 12 }, (_, index) => client.dispatch({ type: 'decisionAck', index })));
+  assert.deepEqual(sent.map(row => row.index), Array.from({ length: 12 }, (_, index) => index));
+  assert.ok(sent.at(-1).at - sent[0].at >= 1100, 'automatic traffic must fit below ten messages per second');
+  client.close();
 });

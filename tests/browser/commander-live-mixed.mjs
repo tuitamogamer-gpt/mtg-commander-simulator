@@ -119,45 +119,45 @@ try {
     if (!kept.has('host') && await clickVisible(host, /^Keep ✓$/)) kept.add('host');
     for (const guest of guests) if (!kept.has(guest.name) && latest(guest.name)?.pendingDecision?.type === 'mulligan') {
       // No Playwright auto-scroll: prove the user can see the controls on arrival.
-      const box = await guest.page.getByRole('button', { name: 'Keep', exact: true }).boundingBox();
+      const box = await guest.page.getByRole('button', { name: 'Keep ✓', exact: true }).boundingBox();
       assert.ok(box.y >= 0 && box.y + box.height <= 768, `${guest.name} Keep outside MacBook viewport: ${JSON.stringify(box)}`);
       await guest.page.screenshot({ path: `${out}/02-${guest.name}-keep.png` });
-      if (await clickVisible(guest.page, /^Keep$/, '.online-decision-stage')) kept.add(guest.name);
+      if (await clickVisible(guest.page, /^Keep ✓$/)) kept.add(guest.name);
     }
     return kept.size === guests.length + 1;
   }, 'all human opening decisions', 60000);
   assert.deepEqual(await host.evaluate(() => _game.players.filter(p => p.isAI).map(p => p.onlineSeat).sort()), botSeats);
   check('all opening controls visible at 1365×768 and correct local AI seats instantiated');
 
-  const advance = async (hold = null) => {
+  const advance = async (hold = null, holdPhase = null) => {
     const hostChoice = await host.evaluate(() => ({ type: _ui.pending?.q.type, min: _ui.pending?.q.min, selected: _ui.pending?.sel.length }));
     if (hostChoice.type === 'chooseCards') {
       if (hostChoice.selected < hostChoice.min) await host.locator('.modal .cardgrid > :not(.selected)').first().click();
       await clickVisible(host, /^Confirm/, 'body');
     }
     await clickVisible(host, /^(Continue|End turn|Proceed|No attacks|No blocks)/);
-    for (const guest of guests) if (guest !== hold) {
-      const decision = latest(guest.name)?.pendingDecision;
-      if (decision?.legal.kind === 'tokens') {
-        for (let index = 0; index < decision.legal.min; index++) await guest.page.locator('.online-decision-choices .online-choice:not(.selected):not(.primary)').first().click();
-        await clickVisible(guest.page, /^Confirm/, '.online-decision-stage');
+    for (const guest of guests) {
+      const decision = await guest.page.evaluate(() => _ui.pending?.q && { type: _ui.pending.q.type, phase: _ui.game.phase });
+      if (guest === hold && decision?.type === 'main' && (!holdPhase || decision.phase === holdPhase)) continue;
+      if (decision?.type === 'chooseCards' || decision?.type === 'bottomCards') {
+        const count = await guest.page.evaluate(() => Math.max(0, (_ui.pending.q.min ?? _ui.pending.q.n ?? 0) - _ui.pending.sel.length));
+        for (let index = 0; index < count; index++) await guest.page.locator('.modal .cardgrid > :not(.selected)').first().click();
+        await clickVisible(guest.page, /^Confirm/);
       }
-      await clickVisible(guest.page, /^(Continue|Pass priority|Proceed|Declare none)$/, '.online-decision-stage');
-    }
-    if (hold && latest(hold.name)?.pendingDecision?.type !== 'main') {
-      await clickVisible(hold.page, /^(Pass priority|Proceed|Declare none)$/, '.online-decision-stage');
+      await clickVisible(guest.page, /^(Continue|End turn|Proceed|No attacks|No blocks)/);
     }
   };
   for (const guest of guests) {
     await until(async () => {
-      if (latest(guest.name)?.pendingDecision?.type === 'main') return true;
+      if (await guest.page.evaluate(() => _ui.pending?.q.type === 'main')) return true;
       await advance(guest);
       return false;
     }, `${guest.name} main decision`, 90000);
     const view = latest(guest.name);
     assert.ok(view.gameView.players.filter(p => p.seat !== guest.seat).every(p => !('hand' in p)));
     await guest.page.evaluate(() => window.scrollTo(0, 0));
-    const land = guest.page.getByRole('button', { name: /^Play Forest/ }).first();
+    await guest.page.locator('.hcard[data-cname="Forest"]').first().click();
+    const land = guest.page.locator('.sheetacts').getByRole('button', { name: /Play land/ }).first();
     const box = await land.boundingBox();
     assert.ok(box.y >= 0 && box.y + box.height <= 768, 'land action immediately visible');
     // Ensure this action is not replaced by a public sync while focused.
@@ -178,8 +178,8 @@ try {
   if (guests.length) {
     const guest = guests[0];
     await until(async () => {
-      if (latest(guest.name)?.pendingDecision?.type === 'main') return true;
-      await advance(guest); return false;
+      if (await guest.page.evaluate(() => _ui.pending?.q.type === 'main' && _ui.game.phase === 'main1')) return true;
+      await advance(guest, 'main1'); return false;
     }, 'guest main for paid cast', 90000);
     // Controlled fixture: expose the existing Sol Ring, then refresh through the next real decision.
     await host.evaluate(async seat => {
@@ -187,12 +187,13 @@ try {
       const ring = p.library.find(c => c.name === 'Sol Ring');
       if (ring) await _game.move(ring, 'hand');
     }, guest.seat);
-    await clickVisible(guest.page, /^Continue$/, '.online-decision-stage');
+    await clickVisible(guest.page, /^(Continue|End turn)/);
     await until(async () => {
-      if (latest(guest.name)?.pendingDecision?.actions?.some(a => a.label.startsWith('Cast Sol Ring'))) return true;
+      if (await guest.page.evaluate(() => _ui.pending?.q.type === 'main' && _ui.pending.q.casts.some(c => c.card.name === 'Sol Ring'))) return true;
       await advance(guest); return false;
     }, 'guest legal Sol Ring cast', 90000);
-    await guest.page.getByRole('button', { name: /^Cast Sol Ring/ }).click();
+    await guest.page.locator('.hcard[data-cname="Sol Ring"]').click();
+    await guest.page.locator('.sheetacts').getByRole('button', { name: /^Cast/ }).click();
     await until(() => latest(guest.name)?.gameView?.stack.some(c => c.name === 'Sol Ring'), 'Sol Ring on shared Stack');
     await until(async () => {
       if (latest(guest.name)?.gameView?.battlefield.some(c => c.controllerSeat === guest.seat && c.name === 'Sol Ring')) return true;

@@ -568,91 +568,51 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this._human === undefined) this._human = this.players.find(p => !p.isAI) || null;
       return this._human;
     }
-    // je li meta ljudski igrač ili njegov permanent?
-    hitsHuman(targets) {
-      const hu = this.human();
-      if (!hu) return false;
-      for (const t of (targets || []).flat()) {
-        if (!t) continue;
-        if (t === hu) return true;
-        if (t.ctrl === hu || (t.owner === hu && t.zone !== 'battlefield')) return true;
-      }
-      return false;
-    }
-    // koje od meta pripadaju ljudskom igraču (permanent, karta, spell na stacku, on sam)
+    // Reviews are controller decisions for every living human seat. Sequential
+    // delivery preserves the engine's single blocking decision and APNAP flow.
+    reviewHumans() { return this.players.filter(player => !player.isAI && !player.lost && player.controller); }
+    hitsHuman(targets) { return this.humanTargets(targets).length > 0; }
     humanTargets(targets) {
-      const hu = this.human();
-      if (!hu) return [];
-      const out = [];
-      for (const t of (targets || []).flat()) {
-        if (!t) continue;
-        if (t === hu) { out.push(t); continue; }
-        if (t.ctrl === hu) { out.push(t); continue; }          // permanent ILI spell na stacku
-        if (t.owner === hu && t.zone && t.zone !== 'battlefield') out.push(t);
-      }
-      return out;
+      const humans = new Set(this.players.filter(player => !player.isAI && !player.lost));
+      return (targets || []).flat().filter(target => target &&
+        (humans.has(target) || humans.has(target.ctrl) || target.zone !== 'battlefield' && humans.has(target.owner)));
     }
-
-    // PAUZA + prikaz karte: bot je uperio removal/counter/exile… u mene
     async alertHuman(payload) {
-      const hu = this.human();
       this.note('threat', payload);
-      if (!this.paced || !hu || !hu.controller || this.gameOver) {
-        await this.pace(payload.ms || 1200);
-        return null;
+      if (!this.paced || this.gameOver) { await this.pace(payload.ms || 1200); return null; }
+      const targets = (payload.targets || []).flat();
+      for (const player of this.reviewHumans()) {
+        if (targets.length && !targets.some(target => target === player || target?.ctrl === player || target?.owner === player)) continue;
+        await player.controller.decide(this, { ...payload, type: 'threatAlert', player });
       }
-      const ans = await hu.controller.decide(this, Object.assign({ type: 'threatAlert', player: hu }, payload));
-      return ans;
+      return null;
     }
-
-    // Pokaži ljudskom igraču na sredini ekrana ono što NIJE prošlo kroz stack —
-    // tokene i permanente koji uđu bez bacanja (reanimacija, "put onto the
-    // battlefield"…) — pa čekaj njegov Proceed. Landovi se preskaču.
     async revealToHuman(payload) {
-      const hu = this.human();
-      if (!this.paced || !hu || !hu.controller || this.gameOver) return null;
-      if (payload.ctrl === hu) return null;          // vlastite poteze ne prekidamo
-      const cards = (payload.cards || []).filter(c => c && (payload.includeLands || !c.is('Land')));
+      if (!this.paced || this.gameOver) return null;
+      const cards = (payload.cards || []).filter(card => card && (payload.includeLands || !card.is('Land')));
       if (!cards.length) return null;
-      return hu.controller.decide(this, Object.assign({}, payload, { type: 'cardReveal', player: hu, cards }));
+      for (const player of this.reviewHumans()) {
+        if (payload.kind === 'look' ? player !== payload.ctrl : player === payload.ctrl) continue;
+        await player.controller.decide(this, { ...payload, type: 'cardReveal', player, cards });
+      }
+      return null;
     }
-
-    // Svaki stvarno proglašeni napad dobija blokirajući pregled za čovjeka,
-    // čak i kad nijedan napadač ne ide na njega. Ovo je UX checkpoint, ne
-    // priority prozor, pa ne mijenja redoslijed ni Commander pravila.
     async reviewCombatWithHuman(payload) {
-      const hu = this.human();
-      if (!this.paced || !hu || !hu.controller || this.gameOver) return null;
-      const attackers = (payload && payload.attackers || []).filter(Boolean);
-      if (!attackers.length) return null;
-      return hu.controller.decide(this, Object.assign({}, payload, {
-        type: 'combatReview', player: hu, attackers,
-      }));
+      const attackers = (payload?.attackers || []).filter(Boolean);
+      if (!this.paced || this.gameOver || !attackers.length) return null;
+      for (const player of this.reviewHumans()) await player.controller.decide(this, { ...payload, type: 'combatReview', player, attackers });
+      return null;
     }
-
-    // Globalni efekti bez pojedinačne mete lako nestanu između stacka i tri
-    // odvojena life-log reda. Prije primjene pokaži jedan zajednički pregled i
-    // sačekaj ljudski Proceed. Ovo je samo UX checkpoint: ne otvara priority i
-    // ne mijenja način na koji se prevention/replacement efekti razrješavaju.
     async reviewGlobalEffectWithHuman(payload) {
-      const hu = this.human();
-      const targets = (payload && payload.targets || []).filter(p => p && !p.lost);
-      if (!this.paced || !hu || !hu.controller || this.gameOver || !targets.length) return null;
-      return hu.controller.decide(this, Object.assign({}, payload, {
-        type: 'effectReview', player: hu, targets,
-      }));
+      const targets = (payload?.targets || []).filter(player => player && !player.lost);
+      if (!this.paced || this.gameOver || !targets.length) return null;
+      for (const player of this.reviewHumans()) await player.controller.decide(this, { ...payload, type: 'effectReview', player, targets });
+      return null;
     }
-
-    // Diplomacy is a table event, not background AI bookkeeping. Every offer
-    // therefore enters the same blocking human-controller path as combat and
-    // global-effect reviews. Incoming offers wait for Accept/Decline; resolved
-    // human or bot-to-bot negotiations wait for an explicit Proceed.
     async reviewDiplomacyWithHuman(payload) {
-      const hu = this.human();
-      if (!hu || hu.lost || !hu.controller || this.gameOver) return null;
-      return hu.controller.decide(this, Object.assign({}, payload, {
-        type: 'diplomacyReview', player: hu,
-      }));
+      if (this.gameOver) return null;
+      for (const player of this.reviewHumans()) await player.controller.decide(this, { ...payload, type: 'diplomacyReview', player });
+      return null;
     }
 
     // istakni AI akciju usmjerenu na igrača i daj mu vremena da je pročita

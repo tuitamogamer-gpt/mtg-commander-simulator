@@ -98,17 +98,23 @@ try {
   let hostKept = false, guestKept = false;
   await until(async () => {
     if (!hostKept) hostKept = await clickVisible(host, /^Keep ✓$/);
-    if (!guestKept) guestKept = await clickVisible(guest, /^Keep$/, '.online-decision-stage');
+    if (!guestKept) guestKept = await clickVisible(guest, /^Keep ✓$/);
     return hostKept && guestKept;
   }, 'host and guest opening-hand Keep actions', 60000);
   assert.equal(await host.evaluate(name => _game.players.some(player => player.deckName === name && !player.isAI), guestDeck), true);
   assert.equal(await host.evaluate(() => _game.players.filter(player => player.isAI).length), 0);
-  check('host starts the actual imported-deck engine and both humans keep opening hands');
+  for (const page of [host, guest]) {
+    assert.equal(await page.locator('#game .arenaheader').count(), 1);
+    assert.equal(await page.locator('#game .ct-decision-rail').count(), 1);
+    assert.equal(await page.locator('.online-remote-game').count(), 0);
+    assert.equal(await page.evaluate(() => _ui.game.onlinePresentation), true);
+  }
+  check('host and guest use the same full Arena and private presentation model');
 
   await until(async () => {
     if (latest('guest')?.pendingDecision?.type === 'main') return true;
     await clickVisible(host, /^(Continue|End turn|Proceed|No attacks|No blocks)/);
-    await clickVisible(guest, /^(Pass priority|Proceed|Declare none)$/, '.online-decision-stage');
+    await clickVisible(guest, /^(Continue|End turn|Proceed|No attacks|No blocks)/);
     return false;
   }, 'guest receives a real main-phase decision', 60000);
   const guestView = latest('guest');
@@ -120,7 +126,8 @@ try {
     assert.equal(message.view.seats.some(seat => 'playerId' in seat || 'connectionId' in seat), false);
   }
   const landsBefore = guestView.gameView.battlefield.filter(card => card.controllerSeat === guestView.you && card.types.includes('Land')).length;
-  await guest.locator('.online-decision-stage').getByRole('button', { name: /^Play Forest/ }).first().click();
+  await guest.locator('.hcard[data-cname="Forest"]').first().click();
+  await guest.locator('.sheetacts').getByRole('button', { name: 'Play land', exact: true }).click();
   await until(() => (latest('guest')?.gameView?.battlefield || []).filter(card => card.controllerSeat === guestView.you && card.types.includes('Land')).length === landsBefore + 1, 'guest Forest resolves to the shared battlefield');
   await guest.screenshot({ path: `${out}/03-guest-played-land.png` });
   check('private guest decision crosses WebSockets and plays an imported Forest on the host battlefield');
@@ -144,7 +151,7 @@ try {
     return false;
   }, 'guest pending decision is available after resume');
   const resumedDecision = latest('guest').pendingDecision.id;
-  assert.equal(await clickVisible(guest, /^(Continue|Pass priority|Proceed|Declare none)$/, '.online-decision-stage'), true);
+  assert.equal(await clickVisible(guest, /^(Continue|End turn|Proceed|No attacks|No blocks)/), true);
   await until(() => frames.get('host').some(message => message.view?.lastDecision?.id === resumedDecision), 'host accepts guest response after reconnect');
   await guest.screenshot({ path: `${out}/04-guest-reconnected.png` });
   check('guest reload restores the same private seat and imported deck; host resumes and accepts the next decision');

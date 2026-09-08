@@ -5,7 +5,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 // copied into the generated Higgsfield `app/src/logic.js` without carrying DOM
 // state, controllers, or hidden cards across the network boundary.
 (function () {
-  const PROTOCOL_VERSION = 3;
+  const PROTOCOL_VERSION = 4;
   const MIN_HUMAN_SEATS = 2;
   const MAX_HUMAN_SEATS = 4;
   const MAX_SYNC_BYTES = 2_000_000;
@@ -114,6 +114,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       views,
       pendingDecision: null,
       lastDecision: null,
+      pendingPreview: null,
+      lastPreview: null,
       pendingManualAction: null,
       lastManualAction: null,
       pause: null,
@@ -135,6 +137,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   function validateLegalResponse(legal, response) {
     if (!legal || !legal.kind) return { ok: false, error: 'Missing legal response contract.' };
+    if (legal.cancelable && response && response.kind === 'cancel') return { ok: true };
     const allowed = new Set((legal.tokens || []).map(String));
     const min = Number.isInteger(legal.min) ? legal.min : 0;
     const max = Number.isInteger(legal.max) ? legal.max : Math.max(min, allowed.size);
@@ -149,8 +152,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (Number.isFinite(legal.max) && response > legal.max) return { ok: false, error: 'Number is above maximum.' };
       return { ok: true };
     }
-    if (legal.kind === 'token') return allowed.has(String(response))
-      ? { ok: true } : { ok: false, error: 'Choice is not legal.' };
+    if (legal.kind === 'token') {
+      if (isObject(response)) return allowed.has(response.action) && legal.directTargets?.[response.action]?.includes(response.quickTarget)
+        ? { ok: true } : { ok: false, error: 'That action-target pair is not legal.' };
+      return allowed.has(String(response)) ? { ok: true } : { ok: false, error: 'Choice is not legal.' };
+    }
     if (legal.kind === 'tokens') {
       if (!Array.isArray(response) || response.length < min || response.length > max)
         return { ok: false, error: `Choose between ${min} and ${max}.` };
@@ -166,12 +172,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const right = new Set((legal.right || []).map(String));
       const pairs = Array.isArray(legal.pairs) ? new Set(legal.pairs.map(String)) : null;
       const usedLeft = new Set();
+      const counts = new Map(), usedPairs = new Set();
       for (const item of response) {
         if (!isObject(item) || !left.has(String(item.left)) || !right.has(String(item.right)))
           return { ok: false, error: 'Assignment contains an illegal reference.' };
         if (pairs && !pairs.has(`${item.left}|${item.right}`))
           return { ok: false, error: 'That card cannot be assigned to that target.' };
-        if (usedLeft.has(String(item.left))) return { ok: false, error: 'A card can only be assigned once.' };
+        const pair = `${item.left}|${item.right}`;
+        const count = (counts.get(String(item.left)) || 0) + 1;
+        if (usedPairs.has(pair) || count > (legal.capacity?.[item.left] ?? 1)) return { ok: false, error: 'This assignment exceeds the card capacity.' };
+        usedPairs.add(pair); counts.set(String(item.left), count);
         usedLeft.add(String(item.left));
       }
       for (const token of legal.required || []) if (!usedLeft.has(String(token)))
@@ -275,6 +285,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return { ok: true };
     }
     if (type === 'decisionResponse') {
+      if (state.phase !== 'running') return { ok: false, error: 'The table is paused.' };
+      if (action.manaMode !== undefined && !['auto', 'manual'].includes(action.manaMode)) return { ok: false, error: 'Invalid mana preference.' };
       if (!state.pendingDecision || seat.seat !== state.pendingDecision.seat) return { ok: false, error: 'No decision is waiting for this seat.' };
       if (String(action.decisionId) !== state.pendingDecision.id) return { ok: false, error: 'Stale decision response.' };
       return validateLegalResponse(state.pendingDecision.legal, action.response);
@@ -283,6 +295,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (seat.seat !== 0 || !state.lastDecision || String(action.decisionId) !== state.lastDecision.id)
         return { ok: false, error: 'No matching decision to acknowledge.' };
       return { ok: true };
+    }
+    if (type === 'decisionPreview') {
+      const decision = state.pendingDecision;
+      if (state.phase !== 'running' || !decision || decision.seat !== seat.seat || decision.id !== action.decisionId)
+        return { ok: false, error: 'That decision is no longer active.' };
+      if (!['chooseManaSources', 'blockers'].includes(decision.type) || !cleanText(action.previewId, 100) || byteSize(action.response) > 20_000)
+        return { ok: false, error: 'Invalid decision preview.' };
+      return validateLegalResponse(decision.legal, action.response);
+    }
+    if (type === 'previewAck') {
+      if (seat.seat !== 0 || !state.pendingPreview || state.pendingPreview.id !== action.previewId)
+        return { ok: false, error: 'Stale decision preview.' };
+      return isObject(action.result) && byteSize(action.result) < 100_000 ? { ok: true } : { ok: false, error: 'Invalid preview result.' };
     }
     if (type === 'manualAction') {
       if (state.phase !== 'running' || state.pendingManualAction) return { ok: false, error: 'A Last Resort correction is already pending.' };
@@ -295,7 +320,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const integerFields = ['playerSeat', 'direction', 'count'];
       for (const field of integerFields) if (manual[field] !== undefined && !Number.isInteger(manual[field]))
         return { ok: false, error: `Invalid Last Resort ${field}.` };
-      if (manual.value !== undefined && manualType !== 'setPause' && !Number.isInteger(manual.value))
+      if (manualType === 'setTapped' && typeof manual.value !== 'boolean') return { ok: false, error: 'Invalid tap state.' };
+      if (manual.value !== undefined && !['setPause', 'setTapped'].includes(manualType) && !Number.isInteger(manual.value))
         return { ok: false, error: 'Invalid Last Resort value.' };
       if (manual.playerSeat !== undefined && (manual.playerSeat < 0 || manual.playerSeat > 3)) return { ok: false, error: 'Invalid player seat.' };
       if (manual.cardToken !== undefined && !/^c:-?\d+$/.test(String(manual.cardToken))) return { ok: false, error: 'Invalid public card reference.' };
@@ -366,11 +392,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (type === 'decisionRequest') {
       next.pendingDecision = clone(action.decision);
       next.lastDecision = null;
+      next.pendingPreview = null; next.lastPreview = null;
     } else if (type === 'decisionResponse') {
-      next.lastDecision = { id: next.pendingDecision.id, response: clone(action.response), seat: seat.seat };
+      next.lastDecision = { id: next.pendingDecision.id, response: clone(action.response), seat: seat.seat, manaMode: action.manaMode || 'auto' };
+      next.pendingPreview = null; next.lastPreview = null;
       next.pendingDecision = null;
     } else if (type === 'decisionAck') {
       next.lastDecision = null;
+    } else if (type === 'decisionPreview') {
+      next.pendingPreview = { id: action.previewId, decisionId: action.decisionId, seat: seat.seat, response: clone(action.response) };
+      next.lastPreview = null;
+    } else if (type === 'previewAck') {
+      next.lastPreview = { ...next.pendingPreview, result: clone(action.result) };
+      next.pendingPreview = null;
     } else if (type === 'manualAction') {
       next.pendingManualAction = {
         id: `last-resort:${next.revision + 1}:${seat.seat}`,
@@ -422,9 +456,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         deckRecord: seatIndex === 0 || item.seat === seatIndex ? clone(item.deckRecord) : null,
         commanderNames: item.commanderNames, aiStyle: item.aiStyle,
       })),
-      settings: clone(state.settings),
+      settings: { ...clone(state.settings), seed: seatIndex === 0 ? state.settings.seed : null },
       gameView: seatIndex !== null ? clone(state.views[seatIndex]) : null,
       pendingDecision: state.pendingDecision && state.pendingDecision.seat === seatIndex ? clone(state.pendingDecision) : null,
+      pendingPreview: seatIndex === 0 ? clone(state.pendingPreview) : null,
+      lastPreview: state.lastPreview && state.lastPreview.seat === seatIndex ? clone(state.lastPreview) : null,
       lastDecision: seatIndex === 0 ? clone(state.lastDecision) : null,
       pendingManualAction: seatIndex === 0 ? clone(state.pendingManualAction) : null,
       lastManualAction: state.lastManualAction && state.lastManualAction.seat === seatIndex ? clone(state.lastManualAction) : null,
@@ -441,11 +477,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (value instanceof MTG.Player || (Number.isInteger(value.idx) && Array.isArray(value.hand))) return playerToken(value);
     if (Number.isInteger(value.iid)) return cardToken(value);
     const stackIndex = game && Array.isArray(game.stack) ? game.stack.indexOf(value) : -1;
-    return stackIndex >= 0 ? `s:${stackIndex}` : null;
+    return stackIndex >= 0 ? (MTG.onlineStackToken ? MTG.onlineStackToken(value) : `s:${stackIndex}`) : null;
   }
 
   function publicCard(card, viewer) {
     if (!card) return null;
+    if (MTG.onlineCardPresentation) return MTG.onlineCardPresentation(card, viewer);
     const owner = card.owner || card.ctrl;
     const meta = card.meta || {};
     // Owning an exiled card does not grant permission to inspect it (CR 406.3).
@@ -476,6 +513,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function gameViewFor(game, viewer) {
+    if (MTG.onlineArenaView) return MTG.onlineArenaView(game, viewer);
     const players = (game.players || []).map(player => ({
       seat: player.onlineSeat ?? player.idx,
       name: player.name,
@@ -599,20 +637,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       legal = { kind: 'token', tokens: actions.map(action => action.token) };
     }
     descriptor.legal = legal;
-    return descriptor;
+    return MTG.completeOnlineDecision ? MTG.completeOnlineDecision(game, q, player, descriptor) : descriptor;
   }
 
   function tokenValue(token, game) {
     const text = String(token);
     if (text.startsWith('c:')) return game.byIid(Number(text.slice(2)));
     if (text.startsWith('p:')) return game.players.find(player => player.idx === Number(text.slice(2))) || null;
-    if (text.startsWith('s:')) return game.stack[Number(text.slice(2))] || null;
+    if (text.startsWith('s:')) return (MTG.onlineStackToken ? game.stack.find(item => MTG.onlineStackToken(item) === text) : game.stack[Number(text.slice(2))]) || null;
     return null;
   }
 
   function hydrateDecision(game, q, descriptor, response) {
     const verdict = validateLegalResponse(descriptor.legal, response);
     if (!verdict.ok) throw new Error(verdict.error);
+    if (descriptor.legal.cancelable && response?.kind === 'cancel') return { kind: 'cancel' };
+    MTG.checkOnlineDecisionObjects?.(game, descriptor, response);
     switch (q.type) {
       case 'threatAlert': case 'cardReveal': case 'combatReview': case 'effectReview': case 'manualResolve': case 'diplomacyReview': return null;
       case 'mulligan': return response;
@@ -628,9 +668,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       case 'main': case 'priority': {
         if (response === 'pass') return { kind: 'pass' };
         if (response === 'done') return { kind: 'done' };
-        const [kind, rawIndex] = String(response).split(':');
+        const [kind, rawIndex] = String(response?.action || response).split(':');
         const index = Number(rawIndex);
-        if (kind === 'cast') { const entry = q.casts[index]; return { kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from }; }
+        if (kind === 'cast') { const entry = q.casts[index]; return { kind: 'cast', card: entry.card, alt: entry.alt, from: entry.from, ...(response?.quickTarget ? { quickTarget: tokenValue(response.quickTarget, game) } : {}) }; }
         if (kind === 'act') return { kind: 'activate', entry: q.acts[index] };
         if (kind === 'land') return { kind: 'land', card: q.lands[index] };
         return q.type === 'priority' ? { kind: 'pass' } : { kind: 'done' };
@@ -644,16 +684,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let serial = 0;
     return {
       async decide(game, q) {
-        const id = `${game.turnNo}:${game.phase}:${player.onlineSeat ?? player.idx}:${++serial}`;
-        const descriptor = decisionDescriptor(game, q, player, id);
-        const response = await transport.requestDecision({
-          id,
-          seat: player.onlineSeat ?? player.idx,
-          descriptor,
-          view: gameViewFor(game, player),
-          game,
-        });
-        return hydrateDecision(game, q, descriptor, response);
+        let error = '';
+        for (;;) {
+          const id = `${game.turnNo}:${game.phase}:${player.onlineSeat ?? player.idx}:${++serial}`;
+          const descriptor = decisionDescriptor(game, q, player, id);
+          if (error) descriptor.error = error;
+          const response = await transport.requestDecision({ id, seat: player.onlineSeat ?? player.idx,
+            descriptor, question: q, view: gameViewFor(game, player), game });
+          try { return hydrateDecision(game, q, descriptor, response); }
+          catch (rejected) {
+            if (!MTG.refreshOnlineQuestion) throw rejected;
+            error = rejected.message;
+            q = MTG.refreshOnlineQuestion(game, q, player, descriptor);
+          }
+        }
       },
     };
   }
@@ -665,6 +709,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const waiters = new Set();
     let manualHandler = null;
     let manualProcessing = null;
+    let activeRequest = null, previewProcessing = null;
+    const processPreview = view => {
+      const request = view?.pendingPreview;
+      if (!request || request.id === previewProcessing || request.decisionId !== activeRequest?.id) return;
+      previewProcessing = request.id;
+      const result = MTG.onlineDecisionPreview(activeRequest.game, activeRequest.question, activeRequest.descriptor, request.response);
+      roomClient.dispatch({ type: 'previewAck', previewId: request.id, result }).catch(error => {
+        if (latest?.pendingPreview?.id === request.id) console.error(error);
+      }).finally(() => { if (previewProcessing === request.id) previewProcessing = null; });
+    };
     const processManualAction = view => {
       const request = view && view.pendingManualAction;
       if (!request || !manualHandler || manualProcessing === request.id) return;
@@ -678,6 +732,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     roomClient.subscribe(view => {
       latest = view;
       processManualAction(view);
+      processPreview(view);
       for (const waiter of [...waiters]) {
         if (!waiter.match(view)) continue;
         waiters.delete(waiter);
@@ -689,6 +744,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return new Promise(resolve => waiters.add({ match, resolve }));
     };
     const bridge = {
+      client: roomClient,
       current: () => latest,
       gateController(controller) {
         const gated = Object.create(controller);
@@ -714,6 +770,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await roomClient.dispatch({ type: 'sync', views });
       },
       async requestDecision(payload) {
+        activeRequest = payload;
         if (payload.game) await bridge.syncGame(payload.game);
         // A guest disconnect pauses the room while the host engine survives.
         // Keep its pending controller decision alive until the host resumes.
@@ -731,8 +788,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         const view = await waitFor(next => next && next.lastDecision && next.lastDecision.id === payload.id);
         const response = clone(view.lastDecision.response);
+        const player = payload.game?.players.find(player => (player.onlineSeat ?? player.idx) === payload.seat);
+        if (player) player.manualMana = view.lastDecision.manaMode === 'manual';
         await bridge.waitUntilRunning();
         await roomClient.dispatch({ type: 'decisionAck', decisionId: payload.id });
+        activeRequest = null;
         return response;
       },
       async setPresence(connected) {
@@ -871,6 +931,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     let stopped = false;
     let actionSerial = 0;
     let actionAcks = false;
+    let nextSendAt = 0, pumpTimer = null;
 
     const waitingView = message => {
       const ids = Array.isArray(message.seats) ? message.seats : [];
@@ -897,7 +958,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const pump = () => {
       if (!open || inflight || !queue.length || !kernelState ||
         kernelState.status !== 'playing' || !kernelState.view) return;
+      // Shared human priority can complete immediately on every browser.
+      // Keep that legitimate traffic below the room's 600 messages/minute
+      // limit without dropping or reordering any decisions or snapshots.
+      const delay = nextSendAt - Date.now();
+      if (delay > 0) {
+        if (!pumpTimer) pumpTimer = setTimeout(() => { pumpTimer = null; pump(); }, delay);
+        return;
+      }
       inflight = queue.shift();
+      nextSendAt = Date.now() + 125;
       inflight.baseRevision = Number.isInteger(latest && latest.revision) ? latest.revision : -1;
       inflight.requestId = `action:${++actionSerial}`;
       socket.send(JSON.stringify({ type: 'action', requestId: inflight.requestId, action: inflight.action }));
@@ -927,6 +997,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (latest && message.view && message.view.revision < latest.revision) return;
       kernelState = message;
       latest = message.view ? clone(message.view) : waitingView(message);
+      if (latest.protocolVersion !== PROTOCOL_VERSION) {
+        stopped = true;
+        latest = { ...latest, protocolMismatch: true };
+        emit();
+        rejectInflight(new Error('This room uses a different game version. Reload all players before starting a new room.'));
+        socket.close();
+        return;
+      }
       emit();
       if (!actionAcks && inflight && message.view && Number.isInteger(message.view.revision) &&
         message.view.revision > inflight.baseRevision &&
@@ -968,6 +1046,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         open = false;
         kernelState = null;
         if (event.code === 4001) stopped = true;
+        if (latest && ['running', 'paused'].includes(latest.phase)) {
+          latest = { ...latest, phase: 'paused', pause: { reason: 'connection-lost', seat: latest.you } };
+          emit();
+        }
         rejectInflight(new Error('Room connection closed before the action was confirmed.'));
         if (stopped) {
           while (queue.length) queue.shift().reject(new Error('This seat reconnected in another connection.'));
@@ -1006,6 +1088,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       close() {
         stopped = true;
         if (reconnectTimer) clearTimeout(reconnectTimer);
+        if (pumpTimer) clearTimeout(pumpTimer);
         window.removeEventListener('pagehide', disconnectPresence);
         if (socket) socket.close();
       },

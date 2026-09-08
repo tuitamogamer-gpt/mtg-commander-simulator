@@ -13,7 +13,20 @@ test('custom-deck Judge is a game-menu action and never an extra main-phase acti
   const menu = ui.slice(ui.indexOf('    renderQuickMenu(g)'), ui.indexOf('    renderLastResortConfirm()'));
   const mainPhase = ui.slice(ui.indexOf("        case 'main':"), ui.indexOf("        case 'priority':"));
   assert.match(menu, /action\('Judge', 'Manual card actions'/);
-  assert.match(menu, /this\.quickMenuOpen = false;\s*this\.showJudge = true;/);
+  const handler = menu.match(/const judge = action\('Judge', 'Manual card actions', \(\) => \{([\s\S]*?)\n        \}\);/)[1];
+  const openJudge = new Function('canUseJudge', handler);
+  for (const liveSession of [false, true]) {
+    const recovery = [];
+    const state = { liveSession, quickMenuOpen: true, showJudge: false, render() {}, setLastResortActive: (...args) => recovery.push(args) };
+    openJudge.call(state, () => false);
+    assert.equal(state.quickMenuOpen, true, 'unsafe decision points keep the menu unchanged');
+    assert.equal(state.showJudge, false);
+    assert.equal(recovery.length, 0);
+    openJudge.call(state, () => true);
+    assert.equal(state.quickMenuOpen, false, 'opening Judge closes the menu');
+    assert.equal(state.showJudge, !liveSession, 'Solo opens its local Judge');
+    assert.deepEqual(recovery, liveSession ? [[true, true]] : [], 'Live opens authoritative recovery');
+  }
   assert.match(menu, /const canUseJudge = \(\) => \['main', 'manualResolve'\]\.includes\(this\.pending\?\.q\.type\)/);
   assert.match(menu, /if \(!canUseJudge\(\)\) return;/, 'recheck the safe decision point when clicked');
   assert.match(menu, /judge\.disabled = !canUseJudge\(\)/);

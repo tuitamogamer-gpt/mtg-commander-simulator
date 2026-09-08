@@ -386,3 +386,7 @@ body.game-active #game.command-table .ct-decision-rail .promptbar { display: blo
 @media (prefers-reduced-motion: reduce) {
   #game.command-table *, #setup .ct-review-seat { animation: none !important; transition: none !important; }
 }
+
+/* Shared Live Arena transport status stays readable without covering decisions. */
+#game .live-arena-status { position: fixed; top: 4px; left: 50%; transform: translateX(-50%); max-width: min(90%, 700px); padding: 8px 14px; border: 1px solid var(--ds-accent); border-radius: 8px; background: var(--ds-dialog); color: var(--ds-text); font: 12px var(--ds-font-body); z-index: 3000; }
+#game .live-arena-status[hidden] { display: none; }

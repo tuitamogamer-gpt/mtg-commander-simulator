@@ -55,8 +55,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.started = false;
       this.busy = false;
       this.error = '';
-      this.decisionState = null;
-      this.lastResortOpen = false;
       this.lastResortPlayerSeat = 1;
       this.unsubscribe = client.subscribe(view => {
         this.view = view;
@@ -205,50 +203,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return shell;
     }
 
-    renderGame(view) {
-      const game = view.gameView;
-      const shell = el('main', 'online-remote-game');
-      shell.dataset.onlineView = 'remote-game';
-      shell.dataset.playerCount = String(view.settings && view.settings.playerCount || view.seats.length);
-      shell.dataset.you = String(view.you);
-      shell.dataset.phase = view.phase;
-      if (!game) {
-        shell.innerHTML = '<div class="online-waiting-game"><i></i><h1>Synchronizing the table…</h1><p>The host is preparing the Commander engine.</p></div>';
-        return shell;
-      }
-      const active = game.players.find(player => player.seat === game.activeSeat);
-      const mine = game.players.find(player => player.seat === view.you);
-      const recoveryOpen = this.lastResortOpen || !!game.lastResortPaused;
-      shell.innerHTML = `
-        <header class="online-game-head"><div><span>COMMANDER LIVE · PLAYER ${Number(view.you) + 1}</span><b>${esc(active ? active.name : 'Table')} ${game.phase ? `· ${esc(game.phase)}` : ''}</b></div><div class="online-game-tools"><button type="button" class="online-last-resort-toggle${recoveryOpen ? ' active' : ''}">🛠️ ${recoveryOpen ? 'FINISH RECOVERY' : 'LAST RESORT'}</button><div class="online-room-state"><i></i>${view.phase === 'paused' ? 'PAUSED — RECONNECTING' : recoveryOpen ? 'RECOVERY PAUSE' : 'LIVE'}</div></div></header>
-        <section class="online-decision-stage" aria-label="Your game controls"></section>
-        <section class="online-player-strip"></section>
-        <section class="online-remote-board"><div class="online-battlefield"><div class="online-section-title">Battlefield <span>${game.battlefield.length} permanents</span></div><div class="online-card-row battlefield"></div></div><div class="online-stack"><div class="online-section-title">The Stack <span>${game.stack.length}</span></div><div class="online-stack-list"></div></div></section>
-        <section class="online-own-hand"><div class="online-section-title">Your hand <span>${(mine && mine.hand || []).length} cards</span></div><div class="online-card-row hand"></div></section>
-        `;
-      const strip = shell.querySelector('.online-player-strip');
-      game.players.forEach(player => strip.appendChild(el('article', `online-player ${player.seat === game.activeSeat ? 'active' : ''} ${player.lost ? 'lost' : ''}`, `<small>SEAT 0${player.seat + 1} · ${player.isAI ? 'BOT' : 'HUMAN'}</small><b>${esc(player.name)}</b><span>${esc(player.deckId || '')}</span><strong>${player.life} <em>LIFE</em></strong><i>${player.handCount} cards · ${player.libraryCount} library</i>`)));
-      const battlefield = shell.querySelector('.online-card-row.battlefield');
-      game.battlefield.forEach(card => battlefield.appendChild(this.remoteCard(card)));
-      const hand = shell.querySelector('.online-card-row.hand');
-      (mine && mine.hand || []).forEach(card => hand.appendChild(this.remoteCard(card)));
-      const stack = shell.querySelector('.online-stack-list');
-      if (!game.stack.length) stack.appendChild(el('div', 'online-empty-stack', 'Stack is empty'));
-      game.stack.slice().reverse().forEach(item => stack.appendChild(el('article', 'online-stack-item', `<small>${esc(item.kind)}</small><b>${esc(item.name)}</b><span>Seat 0${Number(item.controllerSeat) + 1}</span>`)));
-      const toggleRecovery = shell.querySelector('.online-last-resort-toggle');
-      toggleRecovery.onclick = async () => {
-        if (!recoveryOpen && !window.confirm('Enable Last Resort? This pauses the host engine and exposes only public-state corrections. Other hands, libraries, and face-down identities remain hidden.')) return;
-        const next = !recoveryOpen;
-        this.lastResortOpen = next;
-        await this.perform({ type: 'manualAction', action: { type: 'setPause', value: next } });
-      };
-      if (recoveryOpen) shell.insertBefore(this.renderRemoteLastResort(view, game), shell.querySelector('.online-decision-stage'));
-      shell.querySelector('.online-decision-stage').appendChild(view.phase === 'paused'
-        ? el('div', 'online-decision waiting', '<div><small>TABLE PAUSED</small><b>Waiting for the host to resume</b><span>Your seat and pending decision are preserved while players reconnect.</span></div>')
-        : this.renderDecision(view.pendingDecision));
-      return shell;
-    }
-
     renderHostReconnect(view) {
       // The host's lobby is hidden while the full Arena is mounted. Keep the
       // reconnect control in the document's top layer so it remains reachable.
@@ -280,177 +234,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.reconnectDialog.querySelector('.online-reconnect-error').textContent = this.error || '';
     }
 
-    renderRemoteLastResort(view, game) {
-      const panel = el('section', 'online-last-resort');
-      panel.innerHTML = '<div class="online-last-resort-head"><div><small>GAME PAUSED · PUBLIC STATE ONLY</small><b>Last Resort</b><span>Every correction is validated by the host and written to the public log.</span></div><em>Hidden hands, libraries and face-down identities stay locked.</em></div>';
-      const players = game.players.filter(player => !player.lost);
-      if (!players.some(player => player.seat === Number(this.lastResortPlayerSeat))) this.lastResortPlayerSeat = view.you;
-      const selected = players.find(player => player.seat === Number(this.lastResortPlayerSeat)) || players[0];
-      const controls = el('div', 'online-last-resort-controls');
-      const select = el('select', 'online-last-resort-player');
-      players.forEach(player => {
-        const option = el('option', '', `${player.name} · ${player.life} life${player.isAI ? ' · AI' : ''}`);
-        option.value = String(player.seat); option.selected = player.seat === selected.seat; select.appendChild(option);
-      });
-      select.onchange = () => { this.lastResortPlayerSeat = Number(select.value); this.render(true); };
-      controls.appendChild(select);
-      const send = action => this.perform({ type: 'manualAction', action });
-      const actionButton = (label, run) => { const button = el('button', 'online-choice', label); button.onclick = run; controls.appendChild(button); };
-      const publicCards = game.battlefield.concat(...players.flatMap(player => ['graveyard', 'exile', 'command'].flatMap(zone => player[zone] || [])))
-        .filter(card => card && !card.hidden);
-      const chooseCard = promptText => {
-        if (!publicCards.length) return null;
-        const preview = publicCards.slice(0, 60).map(card => `${card.token} · ${card.name} · ${card.zone}`).join('\n');
-        const answer = window.prompt(`${promptText}\n\n${preview}`, publicCards[0].token);
-        return publicCards.find(card => card.token === answer || card.name === answer) || null;
-      };
-      actionButton(`❤️ Set life · ${selected.life}`, () => {
-        const value = Number(window.prompt(`${selected.name}: exact life total`, String(selected.life)));
-        if (Number.isInteger(value)) send({ type: 'setLife', playerSeat: selected.seat, value });
-      });
-      actionButton('🔮 Set mana…', () => {
-        const color = String(window.prompt('Mana color (W/U/B/R/G/C)', 'G') || '').toUpperCase();
-        const value = Number(window.prompt(`Exact {${color}} amount`, String(selected.manaPool && selected.manaPool[color] || 0)));
-        if (Number.isInteger(value)) send({ type: 'setMana', playerSeat: selected.seat, color, value });
-      });
-      actionButton('◆ Set card counter…', () => {
-        const card = chooseCard('Public card token or exact name'); if (!card) return;
-        const counter = window.prompt('Counter name', '+1/+1'); if (!counter) return;
-        const value = Number(window.prompt('Exact counter amount', String(card.counters && card.counters[counter] || 0)));
-        if (Number.isInteger(value)) send({ type: 'setCounter', cardToken: card.token, counter, value });
-      });
-      actionButton('🔄 Tap / untap…', () => {
-        const card = chooseCard('Battlefield card token or exact name'); if (card && card.zone === 'battlefield') send({ type: 'setTapped', cardToken: card.token, value: !card.tapped });
-      });
-      actionButton('🤝 Give control to selected…', () => {
-        const card = chooseCard('Battlefield card token or exact name'); if (card) send({ type: 'setController', cardToken: card.token, playerSeat: selected.seat });
-      });
-      actionButton('← Reorder left…', () => { const card = chooseCard('Battlefield card'); if (card) send({ type: 'reorder', cardToken: card.token, direction: -1 }); });
-      actionButton('Reorder right… →', () => { const card = chooseCard('Battlefield card'); if (card) send({ type: 'reorder', cardToken: card.token, direction: 1 }); });
-      actionButton('🗂️ Move public card…', () => {
-        const card = chooseCard('Public card token or exact name'); if (!card) return;
-        const toZone = String(window.prompt('Destination: battlefield / graveyard / exile / command / hand', 'battlefield') || '').toLowerCase();
-        send({ type: 'moveCard', cardToken: card.token, toZone, playerSeat: selected.seat });
-      });
-      actionButton('💎 Add Treasure', () => send({ type: 'createToken', playerSeat: selected.seat, tokenKey: 'treasure', count: 1 }));
-      actionButton('➕ Add token…', () => { const tokenKey = window.prompt('Token key', 'drake'); if (tokenKey) send({ type: 'createToken', playerSeat: selected.seat, tokenKey, count: 1 }); });
-      actionButton('➕ Add permanent…', () => { const name = window.prompt('Exact permanent card name', 'Sol Ring'); if (name) send({ type: 'addPermanent', playerSeat: selected.seat, name }); });
-      panel.appendChild(controls);
-      if (view.lastManualAction) panel.appendChild(el('div', `online-last-resort-result ${view.lastManualAction.ok ? 'ok' : 'error'}`, esc(view.lastManualAction.message || (view.lastManualAction.ok ? 'Correction applied.' : 'Correction rejected.'))));
-      return panel;
-    }
-
-    remoteCard(card) {
-      const node = el('article', `online-remote-card ${card.hidden ? 'hidden' : ''} ${card.tapped ? 'tapped' : ''}`);
-      node.innerHTML = card.hidden
-        ? '<div class="online-card-back">COMMANDER</div><b>Hidden card</b>'
-        : `<img src="${artURL(card.name)}" alt="${esc(card.name)}" onerror="MTG.imgFail(this)"><b>${esc(card.name)}</b>${card.power !== undefined ? `<span>${card.power}/${card.toughness}</span>` : ''}`;
-      return node;
-    }
-
-    renderDecision(decision) {
-      const stage = el('div', `online-decision ${decision ? 'active' : 'waiting'}`);
-      if (!decision) {
-        stage.innerHTML = '<div><i></i><small>TABLE RUNNING</small><b>Waiting for your next decision</b><span>You can inspect the public board and your hand while another player acts.</span></div>';
-        return stage;
-      }
-      if (!this.decisionState || this.decisionState.id !== decision.id) this.decisionState = { id: decision.id, selected: [], assignments: [], number: decision.min ?? 0 };
-      const state = this.decisionState;
-      stage.innerHTML = `<div class="online-decision-head"><small>YOUR DECISION · ${esc(decision.type)}</small><h2>${esc(decision.prompt || ({ mulligan: 'Keep this hand or take a mulligan', main: 'Your main phase', priority: 'Respond or pass priority' })[decision.type] || 'Choose an action')}</h2></div>`;
-      const choices = el('div', 'online-decision-choices');
-      const submit = response => !this.busy && this.perform({ type: 'decisionResponse', decisionId: decision.id, response });
-      if (decision.legal.kind === 'ack') {
-        const button = el('button', 'online-choice primary', 'Proceed'); button.onclick = () => submit('ok'); choices.appendChild(button);
-      } else if (decision.legal.kind === 'boolean') {
-        [['Keep', false], ['Mulligan', true]].forEach(([label, value]) => { const button = el('button', `online-choice ${value ? '' : 'primary'}`, label); button.onclick = () => submit(value); choices.appendChild(button); });
-      } else if (decision.legal.kind === 'token') {
-        (decision.options || decision.actions || []).forEach(option => {
-          const button = el('button', `online-choice ${option.kind === 'pass' || option.kind === 'done' ? 'primary' : ''}`, `<b>${esc(option.label)}</b>${option.card ? `<span>${esc(option.card.name)}</span>` : ''}`);
-          button.onclick = () => submit(option.token); choices.appendChild(button);
-        });
-      } else if (decision.legal.kind === 'number') {
-        const row = el('div', 'online-number-choice');
-        const input = document.createElement('input'); input.type = 'number'; input.min = String(decision.min); input.max = String(decision.max); input.value = String(state.number);
-        input.oninput = () => { state.number = Number(input.value); };
-        const button = el('button', 'online-choice primary', 'Confirm number'); button.onclick = () => submit(state.number);
-        row.appendChild(input); row.appendChild(button); choices.appendChild(row);
-      } else if (decision.legal.kind === 'tokens') {
-        (decision.choices || decision.options || []).forEach(option => {
-          const button = el('button', `online-choice ${state.selected.includes(option.token) ? 'selected' : ''}`, esc(option.label || option.name));
-          button.onclick = () => {
-            const index = state.selected.indexOf(option.token);
-            if (index >= 0) state.selected.splice(index, 1); else if (state.selected.length < decision.legal.max) state.selected.push(option.token);
-            this.render(true);
-          };
-          choices.appendChild(button);
-        });
-        const confirm = el('button', 'online-choice primary', `Confirm (${state.selected.length})`);
-        confirm.disabled = state.selected.length < decision.legal.min || state.selected.length > decision.legal.max;
-        confirm.onclick = () => submit(state.selected.slice()); choices.appendChild(confirm);
-      } else if (decision.legal.kind === 'assignments') {
-        const selectLeft = document.createElement('select'); selectLeft.innerHTML = '<option value="">Choose card</option>' + (decision.left || []).map(item => `<option value="${esc(item.token)}">${esc(item.name)}</option>`).join('');
-        const selectRight = document.createElement('select'); selectRight.innerHTML = '<option value="">Choose target</option>' + (decision.right || []).map(item => `<option value="${esc(item.token)}">${esc(item.name)}</option>`).join('');
-        const add = el('button', 'online-choice', 'Add assignment'); add.onclick = () => {
-          if (!selectLeft.value || !selectRight.value) return;
-          state.assignments = state.assignments.filter(item => item.left !== selectLeft.value);
-          state.assignments.push({ left: selectLeft.value, right: selectRight.value });
-          this.render(true);
-        };
-        choices.appendChild(selectLeft); choices.appendChild(selectRight); choices.appendChild(add);
-        state.assignments.forEach(item => choices.appendChild(el('div', 'online-assignment', `${esc(item.left)} → ${esc(item.right)}`)));
-        const confirm = el('button', 'online-choice primary', state.assignments.length ? 'Confirm assignments' : 'Declare none'); confirm.onclick = () => submit(state.assignments.slice()); choices.appendChild(confirm);
-      } else if (decision.legal.kind === 'scry') {
-        state.scry = state.scry || { top: (decision.choices || []).map(item => item.token), bottom: [] };
-        (decision.choices || []).forEach(item => {
-          const onTop = state.scry.top.includes(item.token);
-          const button = el('button', `online-choice ${onTop ? 'selected' : ''}`, `${esc(item.name)} · ${onTop ? 'TOP' : 'BOTTOM'}`);
-          button.onclick = () => {
-            const from = onTop ? state.scry.top : state.scry.bottom;
-            const to = onTop ? state.scry.bottom : state.scry.top;
-            from.splice(from.indexOf(item.token), 1); to.push(item.token); this.render(true);
-          };
-          choices.appendChild(button);
-        });
-        const confirm = el('button', 'online-choice primary', 'Confirm scry'); confirm.onclick = () => submit({ top: state.scry.top.slice(), bottom: state.scry.bottom.slice() }); choices.appendChild(confirm);
-      } else if (decision.legal.kind === 'mana') {
-        const auto = el('button', 'online-choice primary', 'Use automatic mana'); auto.onclick = () => submit({ auto: true }); choices.appendChild(auto);
-      }
-      choices.querySelectorAll('button, input, select').forEach(control => { if (this.busy) control.disabled = true; });
-      stage.appendChild(choices);
-      return stage;
-    }
-
-    render(force = false) {
+    render() {
       this.renderHostReconnect(this.view);
       if (!this.root) return;
-      const previousStage = this.root.querySelector('.online-decision-stage');
-      const focusedControl = previousStage?.contains(document.activeElement) ? document.activeElement : null;
-      const decisionKey = JSON.stringify([this.view?.pendingDecision, this.view?.phase, this.busy]);
-      const retainStage = !force && previousStage && this.decisionKey === decisionKey;
-      const scrollRows = [...this.root.querySelectorAll('.online-card-row')].map(row => row.scrollLeft);
-      this.decisionKey = decisionKey;
-      if (!retainStage) this.root.innerHTML = '';
+      if (this.view?.protocolMismatch) {
+        this.root.textContent = 'The room uses another game version. Reload all players and create a new room.';
+        return;
+      }
+      if (this.view && this.view.you !== 0 && this.view.phase !== 'lobby') {
+        if (this.view.gameView) {
+          if (!this.arena) {
+            this.root.replaceChildren();
+            this.arena = MTG.createOnlineArena({ client: this.client });
+          }
+        } else this.root.innerHTML = '<main class="online-lobby"><div class="online-waiting-game"><h1>Synchronizing the table…</h1></div></main>';
+        return;
+      }
+      if (this.started && this.view?.you === 0 && window._game) return;
+      this.root.replaceChildren();
       if (!this.view) {
         this.root.appendChild(el('main', 'online-lobby loading', '<div class="online-waiting-game"><i></i><h1>Opening your private table…</h1></div>'));
         return;
       }
-      const content = this.view.phase === 'lobby' ? this.renderLobby(this.view) : this.view.you !== 0 ? this.renderGame(this.view) : this.renderLobby(this.view);
+      const content = this.renderLobby(this.view);
       if (this.error) content.prepend(el('div', 'online-error', esc(this.error)));
-      if (retainStage) {
-        // Keep the decision attached to the document throughout the update.
-        // Safari can cancel an in-progress click if its target is detached,
-        // even when the same node is immediately reinserted.
-        const shell = previousStage.parentElement;
-        for (const child of [...shell.children]) if (child !== previousStage) child.remove();
-        let beforeStage = true;
-        for (const child of [...content.children]) {
-          if (child.classList.contains('online-decision-stage')) { beforeStage = false; continue; }
-          shell.insertBefore(child, beforeStage ? previousStage : null);
-        }
-      } else this.root.appendChild(content);
-      if (retainStage && focusedControl) focusedControl.focus({ preventScroll: true });
-      this.root.querySelectorAll('.online-card-row').forEach((row, index) => { row.scrollLeft = scrollRows[index] || 0; });
+      this.root.appendChild(content);
     }
+
   }
 
   MTG.mountOnlineLobby = async options => {

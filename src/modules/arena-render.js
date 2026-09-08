@@ -25,6 +25,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const next = fresh.querySelectorAll('input, select, option')[index];
       return control.value === next.value && control.checked === next.checked && control.selected === next.selected;
     });
+  const sameDialog = (old, fresh) => {
+    const normalize = node => {
+      const copy = node.cloneNode(true);
+      copy.removeAttribute('data-dialog-enhanced');
+      for (const element of [copy, ...copy.querySelectorAll('*')]) {
+        element.classList.remove('settled');
+        if (element.id.startsWith('dialog-title-')) element.removeAttribute('id');
+        if (element.matches('.modal, .sheet, .quickmenu')) for (const attribute of ['role', 'aria-modal', 'aria-labelledby', 'aria-label', 'tabindex']) element.removeAttribute(attribute);
+      }
+      return copy;
+    };
+    return same(normalize(old), normalize(fresh));
+  };
   const attributes = (old, fresh) => {
     for (const attr of [...old.attributes]) if (!fresh.hasAttribute(attr.name)) old.removeAttribute(attr.name);
     for (const attr of fresh.attributes) if (old.getAttribute(attr.name) !== attr.value) old.setAttribute(attr.name, attr.value);
@@ -63,6 +76,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             old.onerror = next.onerror; old.onload = next.onload;
             result = old;
           } else if (options.retain && next.closest(stableAreas) && same(old, next)) result = old;
+          else if (options.retain && options.live && old.matches('.overlay, .quickmenuov') && sameDialog(old, next)) result = old;
+          else if (options.retain && options.live && old.closest('.lastresortoverlay') && old.matches('button') && same(old, next)) result = old;
+          else if (options.retain && options.live && old.matches('.lastresortoverlay, .lastresortsheet, .lastresortgrid, .lastresorttokens, .lastresortfoot')) {
+            // Recovery callbacks refer to stable player objects and the live
+            // UI, never to generated child controls. Patch status/labels while
+            // keeping unchanged buttons connected through pointer-up/click.
+            patch(old, next);
+            result = old;
+          }
           else if (options.sameGame && shells.has(next.classList[0])) {
             attributes(old, next);
             patch(old, next);

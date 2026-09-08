@@ -1913,6 +1913,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (resumeSave?.setup.manaMode === 'manual' || resumeSave?.setup.manaMode === 'auto') ui.manaMode = resumeSave.setup.manaMode;
     if (resumeSave?.setup.prioMode) ui.prioMode = resumeSave.setup.prioMode;
     let gameRef = null;
+    let liveArena = null;
     let saveSetup = null;
     let saveTimer = null;
     let queueAccountSave = () => {};
@@ -1959,7 +1960,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       diplomacyEnabled: state.diplomacyEnabled,
       seed,
       difficulty: state.difficulty,
-      humanName: 'You',
+      humanName: state.onlineBridge ? state.humanName || 'Host' : 'You',
       maxTurns: 200,
       // Save replay must preserve the exact interactive decision graph: paced
       // mode also controls reveal/Proceed checkpoints and full local-AI search,
@@ -1968,6 +1969,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       paced: true,
       humanController: (p) => {
         ui.me = p;
+        if (state.onlineBridge) return { decide: (game, question) => liveArena.decide(game, question, p) };
         p.manualMana = ui.manaMode === 'manual';
         const human = ui.controllerFor(p);
         return {
@@ -2023,6 +2025,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
       },
       onEvent: (e) => {
+        if (state.onlineBridge) { liveArena?.publishEvent(e); queueOnlineSync(); return; }
         MTG.audio?.handle(e, gameRef, { replay: replayingSave || !!ui.accountReplay });
         if (e.type === 'turn' && e.p) ui.showBanner(e.p === ui.me ? '⭐ YOUR TURN' : `Turn ${g.turnNo}: ${e.p.name}`, e.p === ui.me);
         if (e.type === 'spotlight') ui.showSpot(e.text, e.kind);
@@ -2241,7 +2244,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (resumeSave) g.speedFactor = 0;
     window._game = g;
     window._ui = ui;
-    MTG.audio?.attach(g);
+    if (state.onlineBridge) {
+      liveArena = MTG.createOnlineArena({ client: state.onlineBridge.client, ui, authority: g, bridge: state.onlineBridge });
+    }
+    MTG.audio?.attach(ui.game);
     void MTG.audio?.unlock();
     ui.render();
     if (accountCheckpointEnabled && !resumeSave && globalThis.MTGAccount?.user) queueAccountSave({ immediate: true });
@@ -4462,6 +4468,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const bridge = MTG.onlineHostBridge(roomClient);
     return startGame({
       deck: host.deckId,
+      humanName: host.name || 'Host',
       commanders: host.commanderNames,
       remoteHumans: humans.slice(1).map(human => ({
         onlineSeat: human.seat,
@@ -4488,8 +4495,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Stabilan, semantički prikaz trenutno vidljivog stanja. Koriste ga desktop
   // smoke-testovi i card-by-card scenariji; ne sadrži skrivene biblioteke AI-a.
   MTG.renderGameState = function () {
-    const g = window._game;
     const ui = window._ui;
+    const g = ui?.liveSession ? ui.game : window._game;
     if (!g) {
       const setup = document.querySelector('#setup');
       const online = setup && setup.querySelector('[data-online-view]');

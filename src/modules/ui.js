@@ -237,6 +237,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!entry || !entry.card || !this.game) return null;
       const g = this.game, card = entry.card;
       const source = { kind: 'cast', card, entry, directTargets: [] };
+      if (g.onlinePresentation) { source.directTargets = entry.onlineTargets || []; return source; }
       try {
         const castOpts = { ...(entry.alt || {}) };
         if (entry.from !== undefined && castOpts.from === undefined) castOpts.from = entry.from;
@@ -509,7 +510,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // ručni HOLD: staje tačno jednom, u bilo kom modu
         if (this.holdNext) { this.holdNext = false; this._forceStop = true; return undefined; }
         const mode = this.prioMode || 'auto';
-        if (MTG.autoPassPolicy(mode, g, q, this.me)) return { kind: 'pass' };
+        if (q.autoPass ? q.autoPass[mode] : MTG.autoPassPolicy(mode, g, q, this.me)) return { kind: 'pass' };
       }
       return undefined;
     }
@@ -677,6 +678,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // card/player metadata used by the rules engine and never exposes secret
     // choices such as Stalking Leonin's hidden opponent.
     playerStatusEffects(g, p) {
+      if (g.onlinePresentation) return p.presentation.statusEffects || [];
       const effects = [];
       const seen = new Set();
       const add = effect => {
@@ -953,11 +955,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Keep the phase stable on retained nodes; changing the inherited delay
       // on every render would jump their running animations.
       if (!this._arenaRenderContext) root.style.setProperty('--fx-phase', `-${Math.round(performance.now() % 3600000)}ms`);
-      const context = [g, this.me, this.pending, this.pending?.q, this.react, this.arenaDragEnabled, this.handSort];
+      const context = [g, this.me, this.pending, this.pending?.q, this.react, this.arenaDragEnabled, this.handSort, this.sheet?.card, this.playerSheet, this.zoneBrowse, this.showJudge, this.lastResortPlayerSeat];
       const previous = this._arenaRenderContext;
       U.commitArenaRender(liveRoot, root, {
         sameGame: !!previous && previous[0] === g && previous[1] === this.me,
         retain: !!previous && context.every((value, index) => previous[index] === value),
+        live: !!this.liveSession,
         captureImages: node => this.captureRenderedImages(node),
         reuseImages: (node, images) => this.reuseRenderedImages(node, images),
       });
@@ -1589,7 +1592,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (diplomacyEnabled || this.showThreat || this.utilityDrawerOpen) {
       const tp = el('div', 'threatpanel');
       tp.appendChild(el('div', 'sidetitle', '🎯 Threat: who is most dangerous?'));
-      const table = MTG.threatTable ? MTG.threatTable(g) : [];
+      const table = g.onlinePresentation ? (g.snapshot.threat || []).map(row => ({ p: g.players.find(player => player.onlineSeat === row.seat), score: row.score })) : MTG.threatTable ? MTG.threatTable(g) : [];
       const max = Math.max(1, ...table.map(t => t.score));
       const min = Math.min(...table.map(t => t.score), max);
       table.forEach((t, i) => {
@@ -2387,6 +2390,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const judge = action('Judge', 'Manual card actions', () => {
           if (!canUseJudge()) return;
           this.quickMenuOpen = false;
+          if (this.liveSession) { this.setLastResortActive(true, true); return; }
           this.showJudge = true;
           this.render();
         });
@@ -2492,6 +2496,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     libraryTopSources(g, player) {
+      if (g.onlinePresentation) return (player.presentation.libraryTopSources || []).map(id => g.ref(id)).filter(Boolean);
       return g.bf().filter(source => source.ctrl === player && !source.cur?.abilitiesDisabled &&
         (source.def.revealAllTop || player === this.me && source.def.revealOwnTop));
     }
@@ -2643,14 +2648,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         $('#game .oppswrap')?.style.setProperty('--opp-h', 'calc(42 * var(--dvhu))');
         this.fitBattlefieldLanes();
       };
-      bar.appendChild(el('div', '', 'AI table'));
+      bar.appendChild(el('div', '', 'Opponents'));
       bar.appendChild(el('div', 'zspacer'));
       bar.appendChild(minus); bar.appendChild(val); bar.appendChild(plus); bar.appendChild(reset);
       outer.appendChild(bar);
 
       // --- hvatište: povlačenjem se mijenja visina zone protivnika ---
       const grip = el('div', 'oppresize');
-      grip.title = 'Drag to change the AI battlefield height';
+      grip.title = 'Drag to change the opponents battlefield height';
       const startDrag = (ev) => {
         const startY = ev.touches ? ev.touches[0].clientY : ev.clientY;
         const startH = this.oppHeight;
@@ -2916,7 +2921,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (pendingMain.lands || []).includes(libraryTop) ||
         (pendingMain.casts || []).some(entry => entry.card === libraryTop)
       ));
-      const libraryTopPermitted = !!(libraryTop && libraryTopSources.some(source => {
+      const libraryTopPermitted = g.onlinePresentation ? !!me.presentation.libraryTopPermitted : !!(libraryTop && libraryTopSources.some(source => {
         if (typeof source.def.playTop !== 'function') return false;
         try { return source.def.playTop(g, source, libraryTop, me); } catch { return false; }
       }));
@@ -3466,7 +3471,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         case 'manualResolve': {
           bar.appendChild(el('div', 'ptext', `⚒️ <b>${esc(q.card.name)}</b>: perform the effect manually, then confirm`));
           const row = el('div', 'btnrow');
-          row.appendChild(btn('⚒️ Open Judge panel', () => { this.showJudge = true; this.render(); }, 'primary'));
+          row.appendChild(btn('⚒️ Open Judge panel', () => { if (this.liveSession) this.setLastResortActive(true, true); else { this.showJudge = true; this.render(); } }, 'primary'));
           row.appendChild(btn('Done ✔', () => this.resolvePending(true)));
           bar.appendChild(row);
           break;
@@ -3847,8 +3852,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           list.appendChild(row);
         }
         m.appendChild(list);
-        const valid = g.manualManaSelectionSolution(q.player, q.cost, q.forSpell, pd.sel, q.opts || {});
-        m.appendChild(el('div', 'manavalid ' + (valid ? 'ok' : 'bad'), valid
+        const preview = g.onlinePresentation ? g.session.preview({ cards: pd.sel }) : null;
+        const valid = preview ? preview.valid : g.manualManaSelectionSolution(q.player, q.cost, q.forSpell, pd.sel, q.opts || {});
+        m.appendChild(el('div', 'manavalid ' + (preview?.pending ? 'pending' : valid ? 'ok' : 'bad'), preview?.pending
+          ? 'Checking selected mana sources…' : valid
           ? `✓ This selection pays the cost with ${pd.sel.length} source${pd.sel.length === 1 ? '' : 's'}.`
           : '⚠ This selection cannot pay the cost exactly yet.'));
         const actions = el('div', 'btnrow');
@@ -4369,6 +4376,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // bloka. Ispod su svi tvoji slobodni blokeri. Klik na lane → klik na
     // blokera. "Show battlefield" privremeno skloni prozor i vrati stari tok.
     blockOutcome(g, attacker, blockers, assignments = blockers.map(blocker => ({blocker, attacker}))) {
+      if (g.onlinePresentation) {
+        const outcome = g.session.preview(assignments).outcomes?.[`c:${attacker.iid}`];
+        if (outcome) return { ...outcome, dying: outcome.dying.map(id => g.ref(id)).filter(Boolean) };
+      }
       const assignedDamage = blocker => g.assignBlockerDamage(blocker, assignments.filter(pair => pair.blocker === blocker).map(pair => pair.attacker), g.dmgAmount(blocker, 'normal')).find(row => row.attacker === attacker)?.n || 0;
       const totalBlockPow = blockers.reduce((sum, blocker) => sum + assignedDamage(blocker), 0);
       const attackerDies = !attacker.kw('indestructible') && blockers.length > 0 && (
@@ -4931,7 +4942,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // show unavailable abilities greyed-out, so igrač vidi šta karta može
         if (card.zone === 'battlefield' && card.ctrl === this.me && card.def.abilities) {
           for (const ab of card.def.abilities) {
-            if (usedAbilities.has(ab) || !ab.label) continue;
+            if (usedAbilities.has(ab) || !ab.label || g.onlinePresentation && (q.acts || []).some(entry => entry.card === card && entry.ability?.label === ab.label)) continue;
             const b = el('button', 'pbtn wide disabled abilitybtn', `⚙️ ${esc(ab.label)}: unavailable now`);
             b.disabled = true;
             acts.appendChild(b);
@@ -5189,6 +5200,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     renderJudge(g) {
+      if (g.onlinePresentation) return this.renderLastResort(g);
       if (this.lastResortActive && !(this.pending && this.pending.q.type === 'manualResolve')) {
         return this.renderLastResort(g);
       }
@@ -5310,6 +5322,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const head = el('div', 'lastresorthead');
       head.innerHTML = '<span>\u{1F6E0}\uFE0F</span><div><small>GAME PAUSED \u00B7 RECOVERY MODE</small><h2>Last Resort</h2><p>Direct public-state correction. Normal triggers are not fired.</p></div>';
       sheet.appendChild(head);
+      if (g.onlinePresentation && this.pending?.q.type === 'manualResolve') {
+        const card = this.pending.q.card;
+        sheet.appendChild(el('div', 'mtitle', esc(card.name)));
+        sheet.appendChild(el('div', 'soracle', esc(card.def.oracle || '').replace(/\n/g, '<br>')));
+        sheet.appendChild(el('div', 'importnote', 'Apply the card instructions, finish recovery, then confirm Done on the card decision.'));
+      }
       sheet.appendChild(el('div', 'lastresortprivacy', '<b>HIDDEN INFORMATION STAYS LOCKED</b><span>No bot/Player 2 hand, library, or opponent face-down identity is available here.</span>'));
       if (this.lastResortStatus) sheet.appendChild(el('div', `lastresortstatus ${this.lastResortStatus.ok ? 'ok' : 'error'}`, esc(this.lastResortStatus.text)));
 

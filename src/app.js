@@ -304,4 +304,6 @@ import './modules/game-audio-ui.js';
 import './modules/arena-tools.js';
 import './modules/command-table.js';
 import './modules/landing.js';
+import './modules/multiplayer-presentation.js';
+import './modules/multiplayer-arena.js';
 import './modules/main.js';
