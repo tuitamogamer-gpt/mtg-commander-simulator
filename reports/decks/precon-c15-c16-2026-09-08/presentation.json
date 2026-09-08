@@ -1,0 +1,357 @@
+{
+  "metadata": {
+    "Call the Spirits": {
+      "icon": "👻",
+      "colors": [
+        "W",
+        "B"
+      ],
+      "style": "Enchantments, experience and Spirits",
+      "blurb": "Daxos turns each enchantment spell into lasting experience and an army of growing Spirits.",
+      "set": "Commander (2015)"
+    },
+    "Seize Control": {
+      "icon": "🧪",
+      "colors": [
+        "U",
+        "R"
+      ],
+      "style": "Cost reduction and copied spells",
+      "blurb": "Mizzix makes large instants and sorceries affordable as your experience grows.",
+      "set": "Commander (2015)"
+    },
+    "Plunder the Graves": {
+      "icon": "🍄",
+      "colors": [
+        "B",
+        "G"
+      ],
+      "style": "Sacrifice and graveyard recursion",
+      "blurb": "Meren builds experience from fallen creatures and brings them back at your end step.",
+      "set": "Commander (2015)"
+    },
+    "Wade into Battle": {
+      "icon": "⚔️",
+      "colors": [
+        "R",
+        "W"
+      ],
+      "style": "Large creatures and double strike",
+      "blurb": "Kalemne gains experience from expensive creatures and becomes a vigilant double-strike threat.",
+      "set": "Commander (2015)"
+    },
+    "Swell the Host": {
+      "icon": "🌊",
+      "colors": [
+        "G",
+        "U"
+      ],
+      "style": "Creature entries and experience counters",
+      "blurb": "Ezuri rewards small creatures, then places your accumulated experience on another creature before combat.",
+      "set": "Commander (2015)"
+    },
+    "Entropic Uprising": {
+      "icon": "🌀",
+      "colors": [
+        "U",
+        "B",
+        "R",
+        "G"
+      ],
+      "style": "Four-color cascade and wheels",
+      "blurb": "Yidris turns a successful combat hit into cascade for spells you cast from your hand that turn.",
+      "set": "Commander (2016)"
+    },
+    "Open Hostility": {
+      "icon": "🦏",
+      "colors": [
+        "B",
+        "R",
+        "G",
+        "W"
+      ],
+      "style": "Combat pressure across opponents",
+      "blurb": "Saskia chooses a player as she enters and sends extra creature damage toward that player.",
+      "set": "Commander (2016)"
+    },
+    "Stalwart Unity": {
+      "icon": "🏛️",
+      "colors": [
+        "R",
+        "G",
+        "W",
+        "U"
+      ],
+      "style": "Shared draws and protected development",
+      "blurb": "Kynaios and Tiro help every player develop while your defenses buy time to use the extra resources.",
+      "set": "Commander (2016)"
+    },
+    "Breed Lethality": {
+      "icon": "☣️",
+      "colors": [
+        "W",
+        "U",
+        "B",
+        "G"
+      ],
+      "style": "Growing counters and evasive threats",
+      "blurb": "Atraxa proliferates at your end step while the deck spreads counters across an expanding board.",
+      "set": "Commander (2016)"
+    },
+    "Invent Superiority": {
+      "icon": "⚙️",
+      "colors": [
+        "W",
+        "U",
+        "B",
+        "R"
+      ],
+      "style": "Artifacts, Thopters and recursion",
+      "blurb": "Breya makes Thopters and converts spare artifacts into damage, removal or life.",
+      "set": "Commander (2016)"
+    }
+  },
+  "guides": {
+    "Call the Spirits": {
+      "route": "goWide",
+      "pace": "ENCHANTMENT TOKENS",
+      "complexity": "Intermediate",
+      "theme": "Daxos turns each enchantment spell into lasting experience and an army of growing Spirits.",
+      "plan": "Develop mana and protective enchantments, build experience, then create Spirits while leaving mana for interaction.",
+      "mulligan": "Keep three lands, a mana rock and an inexpensive enchantment.",
+      "tip": "Experience counters stay with you when Daxos leaves. Spirit size follows their controller’s experience total.",
+      "keys": [
+        "Mesa Enchantress",
+        "Grasp of Fate",
+        "Doomwake Giant"
+      ]
+    },
+    "Seize Control": {
+      "route": "spells",
+      "pace": "SPELLS AND EXPERIENCE",
+      "complexity": "Advanced",
+      "theme": "Mizzix makes large instants and sorceries affordable as your experience grows.",
+      "plan": "Cast increasingly large spells, protect Mizzix and turn card draw into a decisive chain of damage and copies.",
+      "mulligan": "Keep three lands, early interaction and a draw spell or mana rock.",
+      "tip": "Experience reduces generic mana only. Choose X before paying; the spell’s mana value includes X on the Stack.",
+      "keys": [
+        "Mizzix's Mastery",
+        "Melek, Izzet Paragon",
+        "Blue Sun's Zenith"
+      ]
+    },
+    "Plunder the Graves": {
+      "route": "graveyard",
+      "pace": "CREATURE RECURSION",
+      "complexity": "Intermediate",
+      "theme": "Meren builds experience from fallen creatures and brings them back at your end step.",
+      "plan": "Trade creatures for value, reuse their entry abilities and let experience turn end-step returns into battlefield advantage.",
+      "mulligan": "Keep three lands, an early creature and ramp or a sacrifice outlet.",
+      "tip": "Meren returns a creature directly only when its mana value is no greater than your experience. Otherwise it returns to hand.",
+      "keys": [
+        "Sakura-Tribe Elder",
+        "Skullwinder",
+        "Victimize"
+      ]
+    },
+    "Wade into Battle": {
+      "route": "bigCreatures",
+      "pace": "GIANTS AND EQUIPMENT",
+      "complexity": "Intermediate",
+      "theme": "Kalemne gains experience from expensive creatures and becomes a vigilant double-strike threat.",
+      "plan": "Ramp into large creatures, keep blockers while Kalemne attacks and use Equipment or removal to clear a finishing swing.",
+      "mulligan": "Keep three lands, a mana rock and a creature you can cast before the late game.",
+      "tip": "A creature spell with mana value five or more earns experience even if that spell is countered.",
+      "keys": [
+        "Blade of Selves",
+        "Urza's Incubator",
+        "Thundercloud Shaman"
+      ]
+    },
+    "Swell the Host": {
+      "route": "counters",
+      "pace": "SMALL CREATURES, BIG COUNTERS",
+      "complexity": "Intermediate",
+      "theme": "Ezuri rewards small creatures, then places your accumulated experience on another creature before combat.",
+      "plan": "Build a board of low-power creatures, protect Ezuri and put counters where evasion or other abilities make them matter.",
+      "mulligan": "Keep two or three lands, early creatures and a draw or protection spell.",
+      "tip": "Ezuri’s combat trigger must target another creature. It uses your experience total when it resolves.",
+      "keys": [
+        "Cold-Eyed Selkie",
+        "Kaseto, Orochi Archmage",
+        "Great Oak Guardian"
+      ]
+    },
+    "Entropic Uprising": {
+      "route": "spells",
+      "pace": "COMBAT INTO CASCADE",
+      "complexity": "Advanced",
+      "theme": "Yidris turns a successful combat hit into cascade for spells you cast from your hand that turn.",
+      "plan": "Fix all four colors, connect with Yidris and cast from hand in your second main phase to collect cascade value.",
+      "mulligan": "Keep three lands with several colors, a fixing spell and an early play.",
+      "tip": "Yidris must deal combat damage to a player first. The cascade grant applies to later hand casts that turn.",
+      "keys": [
+        "Bloodbraid Elf",
+        "Whispering Madness",
+        "Cruel Entertainment"
+      ]
+    },
+    "Open Hostility": {
+      "route": "bigCreatures",
+      "pace": "FOUR-COLOR AGGRESSION",
+      "complexity": "Intermediate",
+      "theme": "Saskia chooses a player as she enters and sends extra creature damage toward that player.",
+      "plan": "Fix your colors, build an attacking board and choose the player you want to pressure through attacks on the rest of the table.",
+      "mulligan": "Keep three lands, fixing and two early creatures.",
+      "tip": "Saskia’s extra damage is dealt by the original creature and is not combat damage. The chosen player may also be the original defender.",
+      "keys": [
+        "Brutal Hordechief",
+        "Tymna the Weaver",
+        "Crackling Doom"
+      ]
+    },
+    "Stalwart Unity": {
+      "route": "politics",
+      "pace": "SHARED RESOURCES AND DEFENSE",
+      "complexity": "Advanced",
+      "theme": "Kynaios and Tiro help every player develop while your defenses buy time to use the extra resources.",
+      "plan": "Fix your colors, encourage development and protect yourself with taxes and selective removal before committing finishers.",
+      "mulligan": "Keep three lands, color fixing and a defensive or draw engine.",
+      "tip": "You always draw first at your end step. Each opponent who declines to put a land onto the battlefield draws afterward.",
+      "keys": [
+        "Rites of Flourishing",
+        "Sphere of Safety",
+        "Reverse the Sands"
+      ]
+    },
+    "Breed Lethality": {
+      "route": "counters",
+      "pace": "COUNTERS AND PROLIFERATE",
+      "complexity": "Intermediate",
+      "theme": "Atraxa proliferates at your end step while the deck spreads counters across an expanding board.",
+      "plan": "Fix four colors, put counters on useful creatures and protect your board so each end step adds lasting growth.",
+      "mulligan": "Keep three lands, early fixing and a creature or engine that starts with counters.",
+      "tip": "Proliferate adds one counter of each kind already present on each chosen permanent or player. Choose carefully.",
+      "keys": [
+        "Reyhan, Last of the Abzan",
+        "Corpsejack Menace",
+        "Deepglow Skate"
+      ]
+    },
+    "Invent Superiority": {
+      "route": "artifacts",
+      "pace": "ARTIFACT SACRIFICE AND REUSE",
+      "complexity": "Advanced",
+      "theme": "Breya makes Thopters and converts spare artifacts into damage, removal or life.",
+      "plan": "Develop artifact mana, protect your useful machines and recycle expendable artifacts into Breya activations or graveyard returns.",
+      "mulligan": "Keep three lands, a mana artifact and an inexpensive artifact or recursion spell.",
+      "tip": "Breya’s ability costs two mana and two artifacts. Tokens can pay the sacrifice cost, and Breya can sacrifice herself.",
+      "keys": [
+        "Silas Renn, Seeker Adept",
+        "Daretti, Scrap Savant",
+        "Open the Vaults"
+      ]
+    }
+  },
+  "aiProfiles": {
+    "Call the Spirits": {
+      "archetype": "Enchantments, experience and Spirits",
+      "length": "long",
+      "tags": [
+        "enchantments",
+        "tokens",
+        "counters"
+      ],
+      "commanderImportance": 1.5
+    },
+    "Seize Control": {
+      "archetype": "Cost reduction and copied spells",
+      "length": "long",
+      "tags": [
+        "spellslinger",
+        "control"
+      ],
+      "commanderImportance": 1.5
+    },
+    "Plunder the Graves": {
+      "archetype": "Sacrifice and graveyard recursion",
+      "length": "long",
+      "tags": [
+        "graveyard",
+        "sacrifice",
+        "death-triggers"
+      ],
+      "commanderImportance": 1.5
+    },
+    "Wade into Battle": {
+      "archetype": "Large creatures and double strike",
+      "length": "long",
+      "tags": [
+        "combat",
+        "ramp",
+        "artifacts"
+      ],
+      "commanderImportance": 1.5
+    },
+    "Swell the Host": {
+      "archetype": "Creature entries and experience counters",
+      "length": "long",
+      "tags": [
+        "counters",
+        "tokens",
+        "ramp"
+      ],
+      "commanderImportance": 1.5
+    },
+    "Entropic Uprising": {
+      "archetype": "Four-color cascade and wheels",
+      "length": "long",
+      "tags": [
+        "spellslinger",
+        "combat",
+        "ramp"
+      ],
+      "commanderImportance": 1.5
+    },
+    "Open Hostility": {
+      "archetype": "Combat pressure across opponents",
+      "length": "long",
+      "tags": [
+        "combat",
+        "tokens",
+        "lifegain"
+      ],
+      "commanderImportance": 1.5
+    },
+    "Stalwart Unity": {
+      "archetype": "Shared draws and protected development",
+      "length": "long",
+      "tags": [
+        "politics",
+        "control",
+        "ramp"
+      ],
+      "commanderImportance": 1.5
+    },
+    "Breed Lethality": {
+      "archetype": "Growing counters and evasive threats",
+      "length": "long",
+      "tags": [
+        "counters",
+        "ramp",
+        "combat"
+      ],
+      "commanderImportance": 1.5
+    },
+    "Invent Superiority": {
+      "archetype": "Artifacts, Thopters and recursion",
+      "length": "long",
+      "tags": [
+        "artifacts",
+        "graveyard",
+        "sacrifice"
+      ],
+      "commanderImportance": 1.5
+    }
+  }
+}

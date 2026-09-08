@@ -1060,7 +1060,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const beneficial = new Set(['+1/+1', 'loyalty', 'charge', 'indestructible', 'shield', 'lore', 'quest', 'acorn', 'soul', 'hour', 'level', 'oil']);
           const harmful = new Set(['-1/-1', '-0/-1', 'stun', 'finality', 'doom', 'bounty']);
           return cands.filter(subject => {
-            if (subject instanceof MTG.Player) return subject===p?!(subject.poison||0)&&(subject.counters?.energy||0)>0:(subject.poison||0)>0;
+            if (subject instanceof MTG.Player) return subject===p?!(subject.poison||0)&&((subject.counters?.energy||0)>0||(subject.counters?.experience||0)>0):(subject.poison||0)>0;
             const kinds = Object.keys(subject.counters).filter(kind => (subject.counters[kind] || 0) > 0);
             const good = kinds.some(kind => beneficial.has(kind));
             const bad = kinds.some(kind => harmful.has(kind));

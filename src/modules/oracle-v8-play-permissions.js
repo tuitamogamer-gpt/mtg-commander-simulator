@@ -35,9 +35,9 @@
   try{
    const choices=ctx.g.castableList(ctx.you).filter(entry=>entry.alt?.oracleImmediateCast===id),from=[...new Set(choices.map(entry=>entry.card))];
    if(!from.length)return null;
-   const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseCards',player:ctx.you,from,min:0,max:1,
-    prompt:'You may cast one of these cards'+(effect.free?' without paying its mana cost':''),aiHint:{kind:'recur'}});
-   if(!Array.isArray(answer)||answer.length>1||answer.some(card=>!from.includes(card)))throw new Error('Invalid immediate cast selection');
+   const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseCards',player:ctx.you,from,min:effect.mandatory?1:0,max:1,
+    prompt:(effect.mandatory?'Cast this card':'You may cast one of these cards')+(effect.free?' without paying its mana cost':''),aiHint:{kind:'recur'}});
+   if(!Array.isArray(answer)||effect.mandatory&&answer.length!==1||answer.length>1||answer.some(card=>!from.includes(card)))throw new Error('Invalid immediate cast selection');
    if(!answer.length)return null;
    const card=answer[0];frame.entries=frame.entries.filter(entry=>entry.card===card);
    const selected=choices.filter(entry=>entry.card===card);

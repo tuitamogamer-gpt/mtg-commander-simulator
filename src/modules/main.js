@@ -4599,7 +4599,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         try { styleMode = MTG.getAIStyleMode(g, p); } catch (error) { styleMode = null; }
       }
       return {
-        name: p.name, deck: p.deckName, life: p.life, poison: Number(p.poison) || 0, lost: !!p.lost, isAI: !!p.isAI,
+        name: p.name, deck: p.deckName, life: p.life, poison: Number(p.poison) || 0, counters: {...p.counters}, lost: !!p.lost, isAI: !!p.isAI,
         aiStyle: style ? p.aiStyle : undefined,
         aiStyleLabel: style ? style.label : undefined,
         aiSkill: skill ? skill.id : undefined,
@@ -4768,7 +4768,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             selectionKind: pending.spec && pending.spec.what === 'proliferate' ? 'proliferate choice' : 'target',
             adds: pending.spec && pending.spec.what === 'proliferate'
               ? (target instanceof MTG.Player
-                ? [...((target.poison||0)>0?['+1 poison']:[]),...((target.counters?.energy||0)>0?['+1 energy']:[])]
+                ? [...((target.poison||0)>0?['+1 poison']:[]),...Object.keys(target.counters||{}).filter(kind=>target.counters[kind]>0).map(kind=>'+1 '+kind)]
                 : Object.entries(target.counters || {}).filter(([, amount]) => amount > 0).map(([kind]) => `+1 ${kind}`))
               : undefined,
           })) : undefined,

@@ -198,6 +198,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+      "Call the Spirits": {"archetype":"Enchantments, experience and Spirits","length":"long","tags":["enchantments","tokens","counters"],"commanderImportance":1.5},
+      "Seize Control": {"archetype":"Cost reduction and copied spells","length":"long","tags":["spellslinger","control"],"commanderImportance":1.5},
+      "Plunder the Graves": {"archetype":"Sacrifice and graveyard recursion","length":"long","tags":["graveyard","sacrifice","death-triggers"],"commanderImportance":1.5},
+      "Wade into Battle": {"archetype":"Large creatures and double strike","length":"long","tags":["combat","ramp","artifacts"],"commanderImportance":1.5},
+      "Swell the Host": {"archetype":"Creature entries and experience counters","length":"long","tags":["counters","tokens","ramp"],"commanderImportance":1.5},
+      "Entropic Uprising": {"archetype":"Four-color cascade and wheels","length":"long","tags":["spellslinger","combat","ramp"],"commanderImportance":1.5},
+      "Open Hostility": {"archetype":"Combat pressure across opponents","length":"long","tags":["combat","tokens","lifegain"],"commanderImportance":1.5},
+      "Stalwart Unity": {"archetype":"Shared draws and protected development","length":"long","tags":["politics","control","ramp"],"commanderImportance":1.5},
+      "Breed Lethality": {"archetype":"Growing counters and evasive threats","length":"long","tags":["counters","ramp","combat"],"commanderImportance":1.5},
+      "Invent Superiority": {"archetype":"Artifacts, Thopters and recursion","length":"long","tags":["artifacts","graveyard","sacrifice"],"commanderImportance":1.5},
     "Forged in Stone": {"archetype":"Equipment and resilient armies","length":"long","tags":["artifacts","tokens","graveyard"],"commanderImportance":1.5},
     "Peer Through Time": {"archetype":"Mana engines and blue control","length":"long","tags":["control","ramp"],"commanderImportance":1.5},
     "Sworn to Darkness": {"archetype":"Demons, sacrifice and life drain","length":"long","tags":["graveyard","sacrifice","lifegain"],"commanderImportance":1.5},
@@ -2248,7 +2258,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (target instanceof U.CardInst && avoidedCopyTargets.includes(target.iid)) return -1000;
     const hint = q.aiHint && q.aiHint.goal || '';
     if (target instanceof U.Player) {
-      if (hint === 'proliferate') {const poison=target.poison||0,energy=target.counters?.energy||0;return target===player?(poison?(-12-poison*3):(energy?8:-100)):(poison?8+poison*2:0)-(energy?8:0);}
+      if (hint === 'proliferate') {const poison=target.poison||0,benefit=(target.counters?.energy||0)+(target.counters?.experience||0);return target===player?(poison?(-12-poison*3):(benefit?8:-100)):(poison?8+poison*2:0)-(benefit?8:0);}
       if (hint === 'drawSelf') return target === player ? 100 : -100;
       if (hint === 'discard') {
         if (target === player) return -1000;

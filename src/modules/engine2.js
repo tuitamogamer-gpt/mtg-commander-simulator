@@ -2422,7 +2422,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // but it is not cast and did not itself spend mana, tap/convoked creatures,
   // use Treasures, or acquire later stack state such as countered/ward data.
   const COPIABLE_SPELL_CHOICE_KEYS = [
-    'quality', 'lifestreamX',
+    'quality', 'lifestreamX', 'c1516RevealMV',
     'striveTargets', 'counterDistribution', 'damageDivision',
     'squadN', 'sacdN', 'sacdSnaps', 'additionalTapped', 'harmonizeCreature', 'discardedCards',
     'additionalLifePaid', 'additionalBlightPaid', 'additionalCostChoice',
@@ -2723,6 +2723,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if(this.canPayMana(p,oracleAdditionalManaPreview(comb,cost),{card},{xVal}))low=k;else high=k;
       }
       maxN=low;
+      if(d.multikickerMax)maxN=Math.min(maxN,Math.max(0,d.multikickerMax(this,card,p)));
       if (maxN > 0) {
         paidTimes = await p.controller.decide(this, {
           type: 'chooseX', min: 0, max: maxN, card,
@@ -2858,7 +2859,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
 
     // targets
-    let specs = this.spellTargetSpecs(card, castOpts, p);
+    // Keep internal target-count announcements out of validated casting permissions.
+    let specs = this.spellTargetSpecs(card, {...castOpts,c1516X:xVal,c1516Kicks:paidTimes}, p);
     if (specs) {
       if (mode && d.modes) {
         specs = [];
@@ -3230,6 +3232,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (so.oracleCostPlans && MTG.validateOracleAdditionalCostPlans &&
         !MTG.validateOracleAdditionalCostPlans({g:this,src:card,you:p,so,
           reservedCards:[...paidAddl.sacd,...paidAddl.discarded,...kotisExiled,...delveExiled,...escapeExiled,...additionalExiled,...(broodshipLand?[broodshipLand]:[])]})) return false;
+    if(d.c1516RevealCreature&&(!MTG.C1516.current(so.c1516Reveal)||!p.hand.includes(so.c1516Reveal.card)||paidAddl.discarded.includes(so.c1516Reveal.card)))return false;
     // pay mana
     const paySpell = { card, castOpts, xVal };
     const hasAdditionalManaCost = cost.generic > 0 || cost.x > 0 || (cost.pips || []).length > 0;
@@ -3267,6 +3270,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       p.sunburstGrant = null;
     }
 
+    // Revealing is paid only after every choice and mana payment succeeds.
+    if(d.c1516RevealCreature)await this.revealToHuman({cards:[so.c1516Reveal.card],ctrl:p,source:card,kind:'additionalCost'});
     // pay additional
     so.sacdN = paidAddl.sacd.length;
     so.sacdSnaps = paidAddl.sacd.map(c => this.snapshot(c));
@@ -3493,6 +3498,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // cascade (own keyword, granted next-spell effects, battlefield grants like Wildsear/Rain of Riches)
     let cascades = 0;
+    if(so.from==='hand')cascades+=p.turnState.c1516Cascades||0;
     if (!faceDownCast && d.cascade) cascades += d.cascade === true ? 1 : Math.max(0, Number(d.cascade) || 0);
     if (p.nextCascade && p.nextCascade.length) {
       const idx = p.nextCascade.findIndex(f => f(this, card, castData));
@@ -4354,7 +4360,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const pool = this.bf().filter(card => card.ctrl === p &&
         (!(cost.sacOther || cost.sacSelf) || card !== source) && this.canSacrifice(card) &&
         (cost.sacCreature ? card.is('Creature') : cost.sac(this, card, source)));
-      const need = cost.sacN === 'X' ? 1 : cost.sacN || 1;
+      const need = cost.c1516TargetSacrifice ? 0 : cost.sacN === 'X' ? 1 : cost.sacN || 1;
       const visit = (start, picks) => {
         // Reserving additional sacrifices cannot restore lost mana options.
         // Prune impossible partial sets before exploring their combinations.
@@ -4413,7 +4419,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // sacN: cijena može tražiti VIŠE žrtava (Olivia: "Sacrifice two
         // Treasures"). Sa jednim dostupnim permanentom ability ne smije ni
         // biti ponuđen — inače igrač upadne u chooseCards prozor bez izlaza.
-        const sacNeed = cost.sacN === 'X' ? 1 : (cost.sacN || 1);
+        const sacNeed = cost.c1516TargetSacrifice ? 0 : cost.sacN === 'X' ? 1 : (cost.sacN || 1);
         if (cost.sacCreature && this.creatures(p).filter(x => (!(cost.sacOther||cost.sacSelf) || x !== c) && this.canSacrifice(x)).length < sacNeed) return;
         if (cost.sac && this.bf().filter(x => x.ctrl === p && (!(cost.sacOther||cost.sacSelf) || x !== c) && cost.sac(this, x, c) && this.canSacrifice(x)).length < sacNeed) return;
         if (cost.life && p.life <= cost.life) return;
@@ -4584,7 +4590,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // to be cast from hand. This includes an instant during another
       // player's turn and while another object is already on the stack.
       if (d.suspend && this.canCastTiming(p, c, null)) {
-        if (this.canPayMana(p, U.parseCost(d.suspend.cost))) out.push({ card: c, suspend: true });
+        if (this.canPayMana(p, U.parseCost(d.suspend.cost), undefined, {xVal:d.c1516SuspendX?1:0})) out.push({ card: c, suspend: true });
       }
       // Foretell is a special action during any priority window on your turn.
       // `instantOnly` is supplied by askPriorityAction; the second branch is
@@ -4935,11 +4941,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (this.phase === 'main1' || this.phase === 'main2');
       const hasActionWindow = this.priorityState ? this.priorityState.holder === p : hasMainAction;
       if (c.zone !== 'hand' || !hasActionWindow || !this.canCastTiming(p, c, null)) return false;
-      const ok = await this.payMana(p, U.parseCost(c.def.suspend.cost));
+      const suspendCost=U.parseCost(c.def.suspend.cost),version=c.zoneVersion;
+      const n=c.def.c1516SuspendX?await p.controller.decide(this,{type:'chooseX',min:1,max:this.maxAffordableX(p,suspendCost,c),prompt:c.name+': choose positive X for suspend',aiHint:{kind:'chooseX',card:c}}):c.def.suspend.n;
+      if(!Number.isInteger(n)||n<1||c.zone!=='hand'||c.zoneVersion!==version)return false;
+      const ok = await this.payMana(p, suspendCost, {card:c,isAbility:true,xVal:n}, {xVal:n});
       if (!ok) return false;
-      this.remove(c); c.zone = 'exile'; p.exile.push(c);
-      c.meta = { suspended: c.def.suspend.n };
-      this.lg(`${U.playerVerb(p, 'suspend', 'suspends')} ${c.name} (${c.def.suspend.n}).`);
+      await this.move(c,'exile');
+      c.meta.suspended=n;
+      if(c.def.c1516SuspendX)c.counters.time=n;
+      this.lg(`${U.playerVerb(p, 'suspend', 'suspends')} ${c.name} (${n}).`);
       return true;
     }
     if (entry.equip) {
@@ -5155,7 +5165,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (a.cond && !a.cond(this, c, p)) ||
         (a.oncePerTurn && c.meta['_ab_' + entry.idx] === this.turnNo) ||
         (a.oncePerObject && c.meta['_abo_' + entry.idx] === c.zoneVersion)) return false;
-    const cost = a.cost || {};
+    const cost = {...a.cost};
     if (cost.mill && p.library.length < cost.mill) return false;
     if(cost.energy&&(p.counters?.energy||0)<cost.energy)return false;
     if (cost.discardRandom && p.hand.length < cost.discardRandom) return false;
@@ -5218,6 +5228,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ctx.targetIdentities = this.captureTargetIdentities(ctx.targets);
     let tapPermanents=[];
     if (a.prepareTargets && await a.prepareTargets(ctx) === false) return false;
+    if(cost.c1516TargetSacrifice){cost.sacN=ctx.targets.flat(Infinity).filter(Boolean).length;ctx.x=cost.sacN;}
+    if(cost.c1516Unattach&&!c.attachedTo)return false;
     let returnPermanents=[];
     const costVersions=new Map();
     const rememberCostPool=pool=>{for(const card of pool)if(!costVersions.has(card))costVersions.set(card,{zone:card.zone,version:card.zoneVersion});};
@@ -5409,7 +5421,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (cost.sacCreature ? x.is('Creature') : cost.sac(this, x, c)) &&
         (!(cost.sacOther||cost.sacSelf) || x !== c) && !returnPermanents.includes(x) && this.canSacrifice(x));
       rememberCostPool(pool);
-      const nsac = cost.sacN === 'X' ? null : (cost.sacN || 1);
+      const nsac = cost.c1516TargetSacrifice ? cost.sacN : cost.sacN === 'X' ? null : (cost.sacN || 1);
       const canPayRemaining = picks => !resolvedManaCost || this.canPayMana(p, resolvedManaCost,
         {card: c, isAbility: true}, {xVal: nsac === null ? picks.length : ctx.x || 0,
           reservedEnergy: cost.energy || 0, artifactAbilityAlreadyUsed: c.is('Artifact'),
@@ -5433,6 +5445,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(c.zone!=='battlefield'||c.zoneVersion!==ctx.sourceZoneVersion||(!entry.opponentAbility&&!publicActivation&&c.ctrl!==p))return false;
     if(publicActivation&&(!this.bf().includes(c)||c.cur?.activationDisabled||!(c.cur?.abilitiesDisabled?[]:c.def.abilities||[]).concat(c.cur?.extraAbilities||[]).includes(a)))return false;
     if(cost.tap&&(c.tapped||c.is('Creature')&&c.sick&&!c.kw('haste')&&!MTG.C21Rules?.abilityHaste(this,c)))return false;
+    if(cost.c1516Unattach&&!c.attachedTo)return false;
     if(cost.sacSelf&&!this.canSacrifice(c))return false;
     const destructive=[...(cost.sacSelf?[c]:[]),...(sacPicked||[]),...returnPermanents,...(plannedDiscard||[]),...(plannedExile||[])];
     if(new Set(destructive).size!==destructive.length)return false;
@@ -5489,6 +5502,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (cost.life) await this.loseLife(p, cost.life, 'cost');
     if (cost.mill) await this.mill(p, cost.mill);
+    if(cost.c1516Unattach)MTG.C1516.detach(this,c);
     if (cost.returnSelf) {
       if (c.zone !== 'battlefield' || c.ctrl !== p) return false;
       await this.move(c, 'hand');
@@ -6056,7 +6070,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (fromZone === 'graveyard') {
       const hasOpenTypePermission = !(p.turnState.gravePermanentTypesUsed || []).includes('Land') &&
         this.bf().some(source => source.ctrl === p && source.def.grantsGraveyardPermanentTypes);
-      const hasGeneralPermission = this.bf().some(source => source.ctrl === p && !source.cur.abilitiesDisabled && source.def.playLandsFromGraveyard);
+      const hasGeneralPermission = p.c1516MagusTurn===this.turnNo || this.bf().some(source => source.ctrl === p && !source.cur.abilitiesDisabled && source.def.playLandsFromGraveyard);
       if (!hasOpenTypePermission && !hasGeneralPermission) return false;
       if (hasOpenTypePermission && !hasGeneralPermission) p.turnState.gravePermanentTypesUsed.push('Land');
     }
@@ -6089,6 +6103,33 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.winner = alive[0] || null;
       this.note('gameover', { winner: this.winner });
     }
+  };
+
+  G.queueSuspendCast = function(c,p,version=c.zoneVersion){
+          this.queueTrigger({
+            src: c,
+            ctrl: p,
+            name: `${c.name} — Suspend: cast`,
+            // Adding a new time counter in response does not undo the fact
+            // that the last counter was removed; the cast trigger only cares
+            // that this card is still in exile when it resolves.
+            onlyIf: () => c.zone === 'exile' && c.zoneVersion === version,
+            run: async castCtx => {
+              if (c.zone !== 'exile' || c.zoneVersion !== version) return;
+              // Suspend ignores normal timing, but it does not bypass effects
+              // that prohibit this player from casting spells. castSpell then
+              // remains authoritative for targets, modes and other legal
+              // choices; if it returns false, the card simply stays exiled.
+              const castProhibited =
+                (p.cantCastUntilTurnStart && p.turnsStarted < p.cantCastUntilTurnStart) ||
+                (p.turnState && p.turnState.cantCastAdditional) ||
+                castCtx.g.bf().some(source => locksOpponentsOnControllersTurn(castCtx.g, source, p));
+              const cast = !castProhibited && await castCtx.g.castSpell(p, c, {
+                alt: { free: true, suspend: true }, from: 'exile',
+              });
+              if (!cast) castCtx.g.lg(`${p.name} cannot cast ${c.name}; it remains in exile with no time counters.`);
+            },
+          });
   };
 
   G.runTurn = async function () {
@@ -6165,33 +6206,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async removeCtx => {
           if (c.zone !== 'exile' || c.zoneVersion !== suspendedZoneVersion ||
               !c.meta || c.meta.suspended <= 0) return;
+          if(c.def.c1516SuspendX){removeCtx.g.removeCounters(c,'time',1);return;}
           c.meta.suspended--;
           removeCtx.g.lg(`${c.name}: suspend ${c.meta.suspended} remaining.`);
           if (c.meta.suspended !== 0) return;
-          removeCtx.g.queueTrigger({
-            src: c,
-            ctrl: p,
-            name: `${c.name} — Suspend: cast`,
-            // Adding a new time counter in response does not undo the fact
-            // that the last counter was removed; the cast trigger only cares
-            // that this card is still in exile when it resolves.
-            onlyIf: () => c.zone === 'exile' && c.zoneVersion === suspendedZoneVersion,
-            run: async castCtx => {
-              if (c.zone !== 'exile' || c.zoneVersion !== suspendedZoneVersion) return;
-              // Suspend ignores normal timing, but it does not bypass effects
-              // that prohibit this player from casting spells. castSpell then
-              // remains authoritative for targets, modes and other legal
-              // choices; if it returns false, the card simply stays exiled.
-              const castProhibited =
-                (p.cantCastUntilTurnStart && p.turnsStarted < p.cantCastUntilTurnStart) ||
-                (p.turnState && p.turnState.cantCastAdditional) ||
-                castCtx.g.bf().some(source => locksOpponentsOnControllersTurn(castCtx.g, source, p));
-              const cast = !castProhibited && await castCtx.g.castSpell(p, c, {
-                alt: { free: true, suspend: true }, from: 'exile',
-              });
-              if (!cast) castCtx.g.lg(`${p.name} cannot cast ${c.name}; it remains in exile with no time counters.`);
-            },
-          });
+          removeCtx.g.queueSuspendCast(c,p,suspendedZoneVersion);
         },
       });
     }

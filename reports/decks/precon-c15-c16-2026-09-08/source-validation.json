@@ -1,0 +1,199 @@
+{
+  "baseCommit": "3617270dc4c31def09b0db5477a6f44cc1bc1ee7",
+  "before": {
+    "definitions": 19690,
+    "eligible": 19655,
+    "selectableDecks": 42,
+    "nativeDefinitions": 1832,
+    "activeUnique": 2218,
+    "cardDeckChecks": 3468
+  },
+  "after": {
+    "definitions": 19832,
+    "eligible": 19801,
+    "selectableDecks": 52,
+    "nativeDefinitions": 1974,
+    "activeUnique": 2567,
+    "cardDeckChecks": 4277
+  },
+  "newCards": 142,
+  "reusedCards": 474,
+  "physicalCards": 1000,
+  "uniqueSourceCards": 616,
+  "newlyEligibleReused": [
+    "Anya, Merciless Angel",
+    "Gisela, Blade of Goldnight",
+    "Rite of the Raging Storm",
+    "Seal of Cleansing"
+  ],
+  "preservation": {
+    "existingRawDefinitions": 1832,
+    "existingDeckRecords": 43,
+    "oldCardsEqual": true,
+    "oldDecksEqual": true,
+    "oracleBatchFilesUnchanged": true,
+    "oldImagesUnchanged": true,
+    "commanderVideosUnchanged": true
+  },
+  "oracleWordingDifferences": [
+    {
+      "name": "Anya, Merciless Angel",
+      "runtime": "Flying\nAnya, Merciless Angel gets +3/+3 for each opponent whose life total is less than half their starting life total.\nAs long as an opponent's life total is less than half their starting life total, Anya has indestructible.",
+      "source": "Flying\nAnya gets +3/+3 for each opponent whose life total is less than half their starting life total.\nAs long as an opponent's life total is less than half their starting life total, Anya has indestructible."
+    },
+    {
+      "name": "Boros Garrison",
+      "runtime": "Boros Garrison enters tapped.\nWhen Boros Garrison enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "source": "This land enters tapped.\nWhen this land enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}."
+    }
+  ],
+  "printedFieldDifferences": [
+    {
+      "name": "Everlasting Torment",
+      "field": "cost",
+      "runtime": "{2}{BR}",
+      "source": "{2}{B/R}"
+    },
+    {
+      "name": "Order // Chaos",
+      "field": "cost",
+      "runtime": "{3}{W}{2}{R}",
+      "source": "{3}{W} // {2}{R}"
+    },
+    {
+      "name": "Tezzeret's Gambit",
+      "field": "cost",
+      "runtime": "{3}{UP}",
+      "source": "{3}{U/P}"
+    },
+    {
+      "name": "Trial // Error",
+      "field": "cost",
+      "runtime": "{W}{U}{U}{B}",
+      "source": "{W}{U} // {U}{B}"
+    }
+  ],
+  "sources": [
+    {
+      "name": "Call the Spirits",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/commander-2015-edition-decklists-2015-11-06",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/CallTheSpirits_C15.json",
+      "moxfield": "https://moxfield.com/decks/qmDIgeU_VUijh2qAsWEe1g",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "285220b939ff040e385c4a2881ab0cd5904ef3ecdbe2da8509d449c74d91c1a6",
+      "officialHtmlSha256": "f96a142dc809514e317095e88b4be5ee90f0947b26cd85c7d897ec52b8c85c48",
+      "export": "call-the-spirits.txt",
+      "sha256": "eacd900dc1dfbfd8770eae1a225f1f5e4b119622927e3ffbcff71e04f102056c"
+    },
+    {
+      "name": "Seize Control",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/commander-2015-edition-decklists-2015-11-06",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/SeizeControl_C15.json",
+      "moxfield": "https://moxfield.com/decks/qfOr1nvopUeSE7VOvrWx-A",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "2ca6f37e3dd02f79b1e703ddadbd0fef30bd0648e1fef8345feafc2a3c6137ff",
+      "officialHtmlSha256": "f96a142dc809514e317095e88b4be5ee90f0947b26cd85c7d897ec52b8c85c48",
+      "export": "seize-control.txt",
+      "sha256": "a1357fdd4695bd06b3c5b466ff63775f86ea15c56d2877fdf3097808b9658aa7"
+    },
+    {
+      "name": "Plunder the Graves",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/commander-2015-edition-decklists-2015-11-06",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/PlunderTheGraves_C15.json",
+      "moxfield": "https://moxfield.com/decks/EK6p0em0TEiKr4lVHSgWnA",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "b02e552b34c2d34062464ab04b406d35390ae44ccbc2e8c271360465b02e9816",
+      "officialHtmlSha256": "f96a142dc809514e317095e88b4be5ee90f0947b26cd85c7d897ec52b8c85c48",
+      "export": "plunder-the-graves.txt",
+      "sha256": "45f819ffa94d3f038022b2e2670d1acdfaa6a3d7f25129cb8c9306250b7b9c02"
+    },
+    {
+      "name": "Wade into Battle",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/commander-2015-edition-decklists-2015-11-06",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/WadeIntoBattle_C15.json",
+      "moxfield": "https://moxfield.com/decks/mxn1Iad46kSGT5NR6N_3_g",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "a6087ffec7024a3e3a322878b5816bc017e417671386ca42920d4b3d04b06ef3",
+      "officialHtmlSha256": "f96a142dc809514e317095e88b4be5ee90f0947b26cd85c7d897ec52b8c85c48",
+      "export": "wade-into-battle.txt",
+      "sha256": "3ac26ad2c5921867ce0568f35edd21d82acbe3e6bf99ee2441f2e7bc61966d26"
+    },
+    {
+      "name": "Swell the Host",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/commander-2015-edition-decklists-2015-11-06",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/SwellTheHost_C15.json",
+      "moxfield": "https://moxfield.com/decks/m0KtPnA--U2IjyoF_oPP8Q",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "7a158f7140e7dcab0040636cc55382ccfc9d3e48ea1b66b6b468f68c319e6cec",
+      "officialHtmlSha256": "f96a142dc809514e317095e88b4be5ee90f0947b26cd85c7d897ec52b8c85c48",
+      "export": "swell-the-host.txt",
+      "sha256": "ecbbc507a7996c71e8a69cd5562ec8aa3c569c699e7f4db44e0b098284cd38c2"
+    },
+    {
+      "name": "Entropic Uprising",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/commander-2016-edition-decklists-2016-10-28",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/EntropicUprising_C16.json",
+      "moxfield": "https://moxfield.com/decks/LZNyKWehuEqouICSnbziFA",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "c382bdb0580a37f4e437bcd3bf8ae28f391b998897e10103e188033603b4ef58",
+      "officialHtmlSha256": "6bf7244193df216c6c1cec28e923eb022777ce6e59f959da8d1db06e1282d4d8",
+      "export": "entropic-uprising.txt",
+      "sha256": "3b3609a10bebbe41714f659af0a3601d2770591aa40d9cbab5908edb8a91458a"
+    },
+    {
+      "name": "Open Hostility",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/commander-2016-edition-decklists-2016-10-28",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/OpenHostility_C16.json",
+      "moxfield": "https://moxfield.com/decks/eX6IyOAU70CFfkW0G6TYyw",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "bc79801013f673fb09121153a5bf4e8d9064f240c6726f14c700149589be5f87",
+      "officialHtmlSha256": "6bf7244193df216c6c1cec28e923eb022777ce6e59f959da8d1db06e1282d4d8",
+      "export": "open-hostility.txt",
+      "sha256": "fb4e832affc98aff90612b74fc439e32b3f5f0d46b6c0d8ac973297ac86c793a"
+    },
+    {
+      "name": "Stalwart Unity",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/commander-2016-edition-decklists-2016-10-28",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/StalwartUnity_C16.json",
+      "moxfield": "https://moxfield.com/decks/F1sBofALcku8lucubWf4oQ",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "41fc2342cf2c843b9b6cd55c29bb85985830fd0f869662586dede97163d3be7b",
+      "officialHtmlSha256": "6bf7244193df216c6c1cec28e923eb022777ce6e59f959da8d1db06e1282d4d8",
+      "export": "stalwart-unity.txt",
+      "sha256": "5f5086bcbb1e70951a3c5247422f6e8e930c1fd145750b5dac408e7b761d51f4"
+    },
+    {
+      "name": "Breed Lethality",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/commander-2016-edition-decklists-2016-10-28",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/BreedLethality_C16.json",
+      "moxfield": "https://moxfield.com/decks/ycs0QP5BTkWbs7hXNcTUdw",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "381e9dc07a7c780f1d7675d60a66a49b44b1f0b2177fbf0d4c4bf42b7e39d1e1",
+      "officialHtmlSha256": "6bf7244193df216c6c1cec28e923eb022777ce6e59f959da8d1db06e1282d4d8",
+      "export": "breed-lethality.txt",
+      "sha256": "633fa697533af0f25318603841824555e9a7f55ca09a5548d77af00756cfeb1d"
+    },
+    {
+      "name": "Invent Superiority",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/commander-2016-edition-decklists-2016-10-28",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/InventSuperiority_C16.json",
+      "moxfield": "https://moxfield.com/decks/jU5ihzvK8ES7TOlRlw87og",
+      "mtgjsonSnapshot": "2026-09-07",
+      "mtgjsonSha256": "b405bdc64c935cffc1259397ab09dc53461f5bc06f775a7194d035068ac3b1fa",
+      "officialHtmlSha256": "6bf7244193df216c6c1cec28e923eb022777ce6e59f959da8d1db06e1282d4d8",
+      "export": "invent-superiority.txt",
+      "sha256": "320be7aafd4d533619e7dbf24730eb0ce120d0aaff6fc9c6e38de8337c6d2dcb"
+    }
+  ],
+  "runtimeSmokeSha256": "a6a30fd118277ea83a06c884ffeb44b82163eade31b5869377d9576a520e8332"
+}

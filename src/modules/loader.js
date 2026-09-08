@@ -23,6 +23,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+      "Call the Spirits": {"icon":"👻","colors":["W","B"],"style":"Enchantments, experience and Spirits","blurb":"Daxos turns each enchantment spell into lasting experience and an army of growing Spirits.","set":"Commander (2015)"},
+      "Seize Control": {"icon":"🧪","colors":["U","R"],"style":"Cost reduction and copied spells","blurb":"Mizzix makes large instants and sorceries affordable as your experience grows.","set":"Commander (2015)"},
+      "Plunder the Graves": {"icon":"🍄","colors":["B","G"],"style":"Sacrifice and graveyard recursion","blurb":"Meren builds experience from fallen creatures and brings them back at your end step.","set":"Commander (2015)"},
+      "Wade into Battle": {"icon":"⚔️","colors":["R","W"],"style":"Large creatures and double strike","blurb":"Kalemne gains experience from expensive creatures and becomes a vigilant double-strike threat.","set":"Commander (2015)"},
+      "Swell the Host": {"icon":"🌊","colors":["G","U"],"style":"Creature entries and experience counters","blurb":"Ezuri rewards small creatures, then places your accumulated experience on another creature before combat.","set":"Commander (2015)"},
+      "Entropic Uprising": {"icon":"🌀","colors":["U","B","R","G"],"style":"Four-color cascade and wheels","blurb":"Yidris turns a successful combat hit into cascade for spells you cast from your hand that turn.","set":"Commander (2016)"},
+      "Open Hostility": {"icon":"🦏","colors":["B","R","G","W"],"style":"Combat pressure across opponents","blurb":"Saskia chooses a player as she enters and sends extra creature damage toward that player.","set":"Commander (2016)"},
+      "Stalwart Unity": {"icon":"🏛️","colors":["R","G","W","U"],"style":"Shared draws and protected development","blurb":"Kynaios and Tiro help every player develop while your defenses buy time to use the extra resources.","set":"Commander (2016)"},
+      "Breed Lethality": {"icon":"☣️","colors":["W","U","B","G"],"style":"Growing counters and evasive threats","blurb":"Atraxa proliferates at your end step while the deck spreads counters across an expanding board.","set":"Commander (2016)"},
+      "Invent Superiority": {"icon":"⚙️","colors":["W","U","B","R"],"style":"Artifacts, Thopters and recursion","blurb":"Breya makes Thopters and converts spare artifacts into damage, removal or life.","set":"Commander (2016)"},
       "Forged in Stone": {"icon":"⚒️","colors":["W"],"style":"Equipment and resilient armies","blurb":"Nahiri forges Equipment, raises Kor Soldiers, and rebuilds a resilient white army.","set":"Commander (2014)"},
       "Peer Through Time": {"icon":"⌛","colors":["U"],"style":"Mana engines and blue control","blurb":"Teferi untaps powerful mana sources and uses blue card advantage to keep large threats coming.","set":"Commander (2014)"},
       "Sworn to Darkness": {"icon":"👹","colors":["B"],"style":"Demons, sacrifice and life drain","blurb":"Ob Nixilis builds a Demon army while black mana engines, sacrifice and life drain wear down the table.","set":"Commander (2014)"},

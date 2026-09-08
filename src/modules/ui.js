@@ -38,7 +38,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const name = hidden ? 'Face-down card' : (typeof card === 'string' ? card : card?.name) || '?';
     const def = card?.def || card || {};
     const token = !hidden && !card?.faceDown && (card?.isToken || def.isTokenDef);
-    const url = hidden ? U.BLANK_PX : imgURL(name);
+    const url = hidden ? U.BLANK_PX : imgURL(token && def.tokenImageName || name);
     const image = `<img loading="lazy" class="${escAttr(imageClass)}" src="${escAttr(url)}" alt="${escAttr(name)}" ${token ? 'data-token-art onerror="MTG.tokenArtFailed(this)"' : 'onerror="MTG.imgFail(this)"'}>`;
     if (!token) return image;
     const current = card.zone === 'battlefield' ? card.cur : null;
@@ -480,7 +480,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     controllerFor(p) {
       const ui = this;
-      return {
+      const controller = {
         decide(g, q) {
           return new Promise(resolve => {
             // auto-handling for smoothness
@@ -496,6 +496,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           });
         },
       };
+      MTG.C1516?.uiControllers.set(controller,ui);
+      MTG.C1516?.uiControllers.set(p,ui);
+      return controller;
     }
 
     autoAnswer(g, q) {
@@ -673,6 +676,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return n?`<span class="poisonbadge energybadge" role="img" aria-label="${n} energy counters" title="${n} energy counters"><span aria-hidden="true">ϟ</span><b>${n}</b><small>ENERGY</small></span>`:'';
     }
 
+    experienceBadge(p) {
+      const n=p?.counters?.experience||0;
+      return n?`<span class="poisonbadge energybadge experiencebadge" role="img" aria-label="${n} experience counters" title="${n} experience counters"><span aria-hidden="true">✦</span><b>${n}</b><small>EXPERIENCE</small></span>`:'';
+    }
+
     // Public, currently relevant player state that would otherwise be easy to
     // lose in the game log. Keep this presentation-only: it reads the same
     // card/player metadata used by the rules engine and never exposes secret
@@ -690,6 +698,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const words = value => String(value || '').replace(/[_-]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
 
       if(p.counters?.energy)add({key:'energy',kind:'counter',icon:'ϟ',label:'Energy counters',detail:`${p.counters.energy} energy available to spend.`,duration:'Counters remain until an effect removes them.'});
+      if(p.counters?.experience)add({key:'experience',kind:'counter',icon:'✦',label:'Experience counters',detail:`${p.counters.experience} experience counters.`,duration:'Remain when your commander leaves the battlefield.'});
       const poison = this.poisonCount(p);
       if (poison) add({
         key: 'poison', kind: 'counter', icon: '☠', label: 'Poison counters',
@@ -2547,7 +2556,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span class="oppname">${isMonarch ? `<i class="seatcrown" aria-label="Monarch">${U.icon('crown')}</i> ` : ''}${U.icon('player', 'oppidentityicon')} ${esc(p.name)}</span>
           ${isActiveAi ? '<span class="activeaitag">ACTIVE TURN</span>' : ''}
           ${styleMeta ? `<span class="personachip${styleMeta.portrait ? ' hasportrait' : ''}" title="Style: ${escAttr(styleMeta.label)}">${styleMeta.portrait ? `<img src="${styleMeta.portrait}" alt="" onerror="MTG.imgFail(this)">` : styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
-          <span class="playerlifetotals"><span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${p.life}❤</span>${this.poisonBadge(p)}${this.energyBadge(p)}</span>
+          <span class="playerlifetotals"><span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${p.life}❤</span>${this.poisonBadge(p)}${this.energyBadge(p)}${this.experienceBadge(p)}</span>
           <span class="oppmeta">${U.icon('cards')}${p.hand.length} ${U.icon('library')}${p.library.length}${statusEffects.length ? ` <button type="button" class="playereffectsbadge" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}</span>
           <span class="oppcmd" title="${esc(cmdTitle)}">${U.icon('crown')}${esc(cmdState)}</span>
           <button class="tbtn small" type="button" aria-label="Open ${esc(p.name)} player details" title="Open ${esc(p.name)} player details">${U.icon('info')}</button>`;
@@ -2930,7 +2939,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (g.monarch === me) info.classList.add('monarch');
       const statusEffects = this.playerStatusEffects(g, me);
       if (statusEffects.length) info.classList.add('has-effects');
-      info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="playerlifetotals"><div class="melife" role="button" tabindex="0" aria-label="You: ${me.life} life. Open player details." title="Open your player details">${me.life}<small>life</small></div>${this.poisonBadge(me)}${this.energyBadge(me)}</div>
+      info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="playerlifetotals"><div class="melife" role="button" tabindex="0" aria-label="You: ${me.life} life. Open player details." title="Open your player details">${me.life}<small>life</small></div>${this.poisonBadge(me)}${this.energyBadge(me)}${this.experienceBadge(me)}</div>
         ${g.monarch === me ? `<div class="memonarch"><span>${U.icon('crown')}</span><b>MONARCH</b></div>` : ''}
         ${statusEffects.length ? `<button type="button" class="playereffectsbadge mine" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}
         <div class="manapool">${poolStr}</div>
@@ -3641,7 +3650,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           pd.sel.forEach((target, index) => {
             const additions = proliferate
               ? (target instanceof MTG.Player
-                ? [...((target.poison||0)>0?['+1 poison']:[]),...((target.counters?.energy||0)>0?['+1 energy']:[])].join(' · ')||'no counters'
+                ? [...((target.poison||0)>0?['+1 poison']:[]),...Object.keys(target.counters||{}).filter(kind=>target.counters[kind]>0).map(kind=>'+1 '+kind)].join(' · ')||'no counters'
                 : Object.entries(target.counters || {}).filter(([, n]) => n > 0).map(([kind]) => `+1 ${kind}`).join(' · '))
               : '';
             const chip = el('button', `targetpickchip${proliferate ? ' proliferatechoice' : ''}`,

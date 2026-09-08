@@ -20,7 +20,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const catBeast = token('Cat Beast', ['Cat', 'Beast'], 2, 2, ['W']);
   const dragon = token('Dragon', ['Dragon'], 5, 5, ['R'], ['flying']);
   const choose = async (g, player, pool, min, max, prompt, hint = 'bestPermanent') => {
-    if (!pool.length) return [];
+    if (!pool.length || max === 0) return [];
     const answer = await player.controller.decide(g, {type: 'chooseCards', player, from: pool,
       min: Math.min(min, pool.length), max: Math.min(max, pool.length), prompt, aiHint: {kind: hint}});
     if (!Array.isArray(answer) || new Set(answer).size !== answer.length ||

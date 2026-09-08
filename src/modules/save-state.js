@@ -124,7 +124,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       life: player.life,
       startingLife: player.startingLife,
       poison: Number(player.poison) || 0,
-      counters: {energy: Number(player.counters?.energy) || 0},
+      counters: {energy: Number(player.counters?.energy) || 0, ...(player.counters?.experience ? {experience: player.counters.experience} : {})},
       lost: !!player.lost,
       landsPlayed: Number(player.landsPlayed) || 0,
       maxLands: Number(player.maxLands) || 1,
@@ -212,6 +212,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (emblems) blockers.push(`${emblems} emblem(s)`);
     if ((game._additionalPhases || []).length) blockers.push('a scheduled additional phase');
     if ((game.extraTurns || []).length || game._extraTurnAnchor) blockers.push('a scheduled extra turn');
+    if (MTG.C1516?.snapshotBlockers) blockers.push(...MTG.C1516.snapshotBlockers(game));
     return blockers;
   };
 
@@ -297,6 +298,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     assert(Array.isArray(snapshot.players) && snapshot.players.length === game.players.length,
       'the saved table has a different number of seats.');
     assert(snapshot.players.every(player=>player.counters===undefined||player.counters&&Number.isSafeInteger(player.counters.energy??0)&&(player.counters.energy??0)>=0), 'invalid player energy counters.');
+    assert(snapshot.players.every(player=>Number.isSafeInteger(player.counters?.experience??0)&&(player.counters?.experience??0)>=0), 'invalid player experience counters.');
     assert(validDamageHistory(snapshot.damageHistory, snapshot.turnNo), 'invalid damage history.');
     const landTypeEffects=snapshot.landTypeEffects??[];
     assert(Array.isArray(landTypeEffects)&&landTypeEffects.length<=MAX_BASE_PT_EFFECTS&&landTypeEffects.every(isPlainLandTypes),'invalid land type effects.');
@@ -384,7 +386,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.life = saved.life;
       player.startingLife = saved.startingLife;
       player.poison = saved.poison;
-      player.counters = {energy: saved.counters?.energy || 0};
+      player.counters = {energy: saved.counters?.energy || 0, ...(saved.counters?.experience ? {experience: saved.counters.experience} : {})};
       player.lost = saved.lost;
       player.landsPlayed = saved.landsPlayed;
       player.maxLands = saved.maxLands;
@@ -445,7 +447,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       active: game.turnPlayer ? game.turnPlayer.idx : null,
       monarch: game.monarch ? game.monarch.idx : null,
       players: game.players.map(player => ({
-        idx: player.idx, life: player.life, poison: player.poison || 0, energy: player.counters?.energy || 0, lost: !!player.lost,
+        idx: player.idx, life: player.life, poison: player.poison || 0, energy: player.counters?.energy || 0, experience: player.counters?.experience || 0, lost: !!player.lost,
         commanderDamage: Object.entries(player.commanderDamage || {}).sort(),
         zones: ['library', 'hand', 'graveyard', 'exile', 'command'].map(zone =>
           player[zone].map(card => `${card.name}#${card.iid}`).sort().join(',')),

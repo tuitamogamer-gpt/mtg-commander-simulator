@@ -267,7 +267,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this._controllerWrapped && this._controllerWrapped.raw === raw) return this._controllerWrapped.wrapper;
       const player = this;
       const wrapper = Object.create(raw);
-      wrapper.decide = async (game, question) => MTG.normalizeDecision(question, await raw.decide(game, question), game, player);
+      wrapper.decide = async (game, question) => MTG.normalizeDecision(question, await (game.c1516Decide ? game.c1516Decide(player,question,raw) : raw.decide(game, question)), game, player);
       this._controllerWrapped = { raw, wrapper };
       return wrapper;
     }
@@ -932,7 +932,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               a.attachedTo = null;
               // A simultaneous departure already includes its attached Auras;
               // their own move must keep the instruction's destination.
-              if (a.hasSub('Aura')&&!(this._simultaneousLeaveSources||[]).some(entry=>entry.card===a)) await this.move(a, 'graveyard');
+              if (a.hasSub('Aura')&&!opts.deferAuraStateActions&&!(this._simultaneousLeaveSources||[]).some(entry=>entry.card===a)) await this.move(a, 'graveyard');
             }
           }
         }
@@ -2220,7 +2220,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await this.damageAny(reflectionSource, recipient, amount, {combat: false, deferSBA: true});
       };
       while (data.n > 0) {
-        const preventionAllowed = !this.bf().some(card => !card.cur?.abilitiesDisabled && card.def.damageCantBePrevented);
+        const preventionAllowed = !opts.cantBePrevented && !this.bf().some(card => !card.cur?.abilitiesDisabled && card.def.damageCantBePrevented);
         const candidates = [];
         const add = entry => { if (!used.has(entry.key)) candidates.push(entry); };
         for (const r of this.replacers('damage')) {
@@ -2434,14 +2434,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return !!card && card.zone === 'battlefield' && !card.phasedOut && !(card.cur && card.cur.cantSacrifice);
     }
 
-    async sacrifice(p, card) {
+    async sacrifice(p, card, opts = {}) {
       if (!this.canSacrifice(card)) {
         if (card && card.zone === 'battlefield') this.lg(`${card.name} ne može biti žrtvovan.`);
         return false;
       }
       this.lg(`${U.playerVerb(p, 'sacrifice', 'sacrifices')} ${card.name}.`, 'sac');
       const snap=this.snapshot(card);
-      await this.move(card, 'graveyard');
+      await this.move(card, 'graveyard', opts);
       await this.emit('sacrificed', { player: p, card, snap });
       return true;
     }

@@ -18,7 +18,12 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
     expected.add(faceName(deck.commander));
     for (const card of deck.cards || []) expected.add(faceName(card.name));
   }
-  for (const token of Object.values(MTG.TOKENS || {})) if (token && token.name) expected.add(faceName(token.name));
+  for (const token of Object.values(MTG.TOKENS || {})) if (token && token.name) {
+    expected.add(faceName(token.name));
+    if(token.tokenImageName)expected.add(token.tokenImageName);
+  }
+  assert.notEqual(MTG.cardImageURL(MTG.TOKENS.c1516DaxosSpirit.tokenImageName),MTG.cardImageURL('Spirit'));
+
 
   assert.equal(typeof MTG.cardImageURL, 'function');
   assert.equal(typeof MTG.cardImageAPIURL, 'function');
