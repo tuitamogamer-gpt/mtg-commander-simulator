@@ -20,6 +20,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const catBeast = token('Cat Beast', ['Cat', 'Beast'], 2, 2, ['W']);
   const dragon = token('Dragon', ['Dragon'], 5, 5, ['R'], ['flying']);
   const choose = async (g, player, pool, min, max, prompt, hint = 'bestPermanent') => {
+    const librarySearch=hint==='searchLand'||/\bsearch\b/i.test(prompt||'');
+    if(librarySearch&&g.canSearchLibrary&&!g.canSearchLibrary(player))pool=pool.filter(c=>c.zone!=='library');
     if (!pool.length || max === 0) return [];
     const answer = await player.controller.decide(g, {type: 'chooseCards', player, from: pool,
       min: Math.min(min, pool.length), max: Math.min(max, pool.length), prompt, aiHint: {kind: hint}});
@@ -211,7 +213,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Reign of the Pit'] = {resolve: async ctx => {
     const rows = await sacrificeAcross(ctx, ctx.g.alivePlayers(), p => ctx.g.creatures(p));
     const n = Math.max(0, rows.reduce((sum, row) => sum + row.snap.power, 0));
-    await ctx.g.makeTokens(token('Demon', ['Demon'], n, n, ['B'], ['flying']), ctx.you);
+    await ctx.g.makeTokens(token(MTG.c1719TextType(ctx,'Demon'), [MTG.c1719TextType(ctx,'Demon')], n, n, ['B'], ['flying']), ctx.you);
   }};
   SC['Thundermaw Hellkite'] = {triggers: [enterTrigger('Damage and tap opposing fliers', async ctx => {
     const cards = ctx.g.creatures().filter(c => c.ctrl !== ctx.you && c.kw('flying'));

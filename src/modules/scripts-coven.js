@@ -117,8 +117,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           counts.set(type, (counts.get(type) || 0) + Math.max(1, c.power) + 1);
         }
       }
-      const allTypes = [...(MTG.CREATURE_SUBTYPES || new Set(['Human']))];
-      if (!allTypes.includes('Human')) allTypes.push('Human');
+      const allTypes = [...(MTG.CREATURE_SUBTYPES || new Set([MTG.c1719TextType(g,'Human')]))];
+      if (!allTypes.includes(MTG.c1719TextType(g,'Human'))) allTypes.push(MTG.c1719TextType(g,'Human'));
       const types = allTypes.sort((a, b) => (counts.get(b) || 0) - (counts.get(a) || 0) || a.localeCompare(b));
       const picked = await card.ctrl.controller.decide(g, {
         type: 'chooseOption', prompt: `${card.name}: choose a creature type for protection`,
@@ -134,7 +134,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const chosen = self.meta.chosenType;
         if (!chosen) return;
         for (const card of battlefield) {
-          if (card.ctrl !== self.ctrl || !card.hasSub('Human')) continue;
+          if (card.ctrl !== self.ctrl || !card.hasSub(MTG.c1719TextType(g,'Human'))) continue;
           card.cur.protectionFrom.push((g2, source) =>
             source.is && source.is('Creature') && source.hasSub && source.hasSub(chosen));
         }
@@ -335,14 +335,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Kyler, Sigardian Emissary'] = {
     triggers: [{
       on: 'etb', desc: 'Counter for a Human',
-      filter: (g, self, d) => d.card !== self && d.card.ctrl === self.ctrl && d.card.hasSub('Human'),
+      filter: (g, self, d) => d.card !== self && d.card.ctrl === self.ctrl && d.card.hasSub(MTG.c1719TextType(g,'Human')),
       run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', 1); },
     }],
     statics: [{
       apply: (g, self, bf) => {
         const n = Object.values(self.counters).reduce((s, v) => s + Math.max(0, v), 0);
         if (!n) return;
-        for (const c of bf) if (c.ctrl === self.ctrl && c !== self && c.hasSub('Human')) { c.cur.power += n; c.cur.toughness += n; }
+        for (const c of bf) if (c.ctrl === self.ctrl && c !== self && c.hasSub(MTG.c1719TextType(g,'Human'))) { c.cur.power += n; c.cur.toughness += n; }
       },
     }],
   };
@@ -350,7 +350,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Heronblade Elite'] = {
     triggers: [{
       on: 'etb', desc: 'Counter for a Human',
-      filter: (g, self, d) => d.card !== self && d.card.ctrl === self.ctrl && d.card.hasSub('Human'),
+      filter: (g, self, d) => d.card !== self && d.card.ctrl === self.ctrl && d.card.hasSub(MTG.c1719TextType(g,'Human')),
       run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', 1); },
     }],
     mana: { cost: { tap: true }, produce: (g, c) => { const n = Math.max(0, c.power); return n ? ['W', 'U', 'B', 'R', 'G'].map(col => ({ [col]: n })) : []; } },
@@ -392,13 +392,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const c = info.card;
       if (!c.def.types.includes('Creature')) return 0;
       const subs = c.def.subtypes || [];
-      if (!subs.includes('Angel') && !subs.includes('Human')) return 0;
+      if (!subs.includes(MTG.c1719TextType(g,'Angel')) && !subs.includes(MTG.c1719TextType(g,'Human'))) return 0;
       return -(self.counters['+1/+1'] || 0);
     }],
   };
 
   SC['Dearly Departed'] = {
-    graveyardEtbCounters: (g, self, card) => card.ctrl === self.owner && card.hasSub('Human') && card.is('Creature') ? 1 : 0,
+    graveyardEtbCounters: (g, self, card) => card.ctrl === self.owner && card.hasSub(MTG.c1719TextType(g,'Human')) && card.is('Creature') ? 1 : 0,
   };
 
   SC["Death's Presence"] = {
@@ -552,7 +552,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Heron\'s Grace Champion'] = {
     triggers: [{
       on: 'etb', desc: 'Humans get +1/+1 and lifelink', filter: etbSelf,
-      run: async ctx => { for (const c of ctx.g.creatures(ctx.you)) if (c !== ctx.src && c.hasSub('Human')) E.pumpUntilEOT(ctx.g, c, 1, 1, ['lifelink']); },
+      run: async ctx => { for (const c of ctx.g.creatures(ctx.you)) if (c !== ctx.src && c.hasSub(MTG.c1719TextType(ctx,'Human'))) E.pumpUntilEOT(ctx.g, c, 1, 1, ['lifelink']); },
     }],
   };
   SC['Knight of the White Orchid'] = {
@@ -621,7 +621,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Sacrifice: search for an artifact/land', cost: { mana: '{1}', tap: true, sacSelf: true },
       run: async ctx => {
-        const cands = ctx.you.library.filter(c => (c.is('Land') && (c.def.super || []).includes('Basic')) || (c.is('Artifact') && c.def.mana));
+        const cands = (ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library).filter(c => (c.is('Land') && (c.def.super || []).includes('Basic')) || (c.is('Artifact') && c.def.mana));
         if (!cands.length) return;
         const pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: cands, min: 1, max: 1, prompt: 'To hand:', aiHint: { kind: 'tutor' } });
         const c = pick[0]; if (!c) return;
@@ -653,8 +653,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', desc: 'Exile Zombies, return Humans', filter: etbSelf,
       run: async ctx => {
-        for (const c of ctx.g.bf().filter(x => x.hasSub('Zombie')).slice()) await ctx.g.exileCard(c);
-        for (const c of ctx.you.graveyard.filter(x => x.is('Creature') && x.hasSub('Human')).slice()) await E.reanimate(ctx.g, ctx.you, c);
+        for (const c of ctx.g.bf().filter(x => x.hasSub(MTG.c1719TextType(ctx,'Zombie'))).slice()) await ctx.g.exileCard(c);
+        for (const c of ctx.you.graveyard.filter(x => x.is('Creature') && x.hasSub(MTG.c1719TextType(ctx,'Human'))).slice()) await E.reanimate(ctx.g, ctx.you, c);
       },
     }],
   };
@@ -695,7 +695,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Sigarda, Heron\'s Grace'] = {
     playerHexproof: true,
-    statics: [{ apply: (g, self, bf) => { for (const c of bf) if (c.ctrl === self.ctrl && c.hasSub('Human')) c.cur.hexproof = true; } }],
+    statics: [{ apply: (g, self, bf) => { for (const c of bf) if (c.ctrl === self.ctrl && c.hasSub(MTG.c1719TextType(g,'Human'))) c.cur.hexproof = true; } }],
     abilities: [{
       label: 'Exile from graveyard: 1/1 Human', cost: { mana: '{2}', exileFromGY: 1 },
       run: async ctx => { await ctx.g.makeTokens('humanSoldier', ctx.you); },

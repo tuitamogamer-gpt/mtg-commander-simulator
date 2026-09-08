@@ -1,0 +1,575 @@
+{
+  "status": "complete",
+  "baseCommit": "1662ff20b52941d5202eee6540e4a45532e2a6cd",
+  "preservedConcurrentCommit": "9f9806f6db432003f24eca4e9f576a61b2c98596",
+  "runtimeReleaseStatus": "local-only",
+  "node": "v22.22.3",
+  "fullSuite": {
+    "command": "node --test --test-concurrency=4 tests/*.test.mjs",
+    "log": "output/precon-c17-c19-2026-09-08/full-suite.log",
+    "tests": 8077,
+    "suites": 0,
+    "pass": 8074,
+    "fail": 3,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 1336643.477,
+    "logSha256": "241991fb5ff5f6e13aef2747acf571b984ddaae79c2106005a936861816770b1",
+    "inputs": "tested-inputs.json",
+    "sourceDriftDuringRun": [],
+    "sourceFiles": 936,
+    "failures": [
+      {
+        "test": "player-facing-cards: Predict naming choice",
+        "cause": "The audit treated the exact printed name Nema Siltlurker as an untranslated prompt.",
+        "fix": "Preserve exact catalog names while still checking translated prompts.",
+        "resolution": "Entire affected test file passes in post-suite-fixes.log"
+      },
+      {
+        "test": "quandrix-unlimited: prepared Channel mana",
+        "cause": "The Treasure Nabber mana wrapper dereferenced the null card on a Channel mana source.",
+        "fix": "Only inspect and emit artifact tap events when the mana source has a card.",
+        "resolution": "Entire affected test file passes in post-suite-fixes.log"
+      },
+      {
+        "test": "x-mana-mechanics: inventory",
+        "cause": "The pinned 88-name list omitted seven X spells now active in the new decks.",
+        "fix": "Update the explicit inventory to all 95 active X spells, retaining semantic checks.",
+        "resolution": "Entire affected test file passes in post-suite-fixes.log"
+      }
+    ],
+    "finalCodeRerun": false
+  },
+  "focused": {
+    "tests": 367,
+    "pass": 367,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "preservedArt": {
+    "tests": 24,
+    "pass": 24,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "archfiendFix": {
+    "tests": 42,
+    "pass": 42,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "oracleReferencePilot": {
+    "tests": 1,
+    "pass": 1,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "runtimeSmoke": {
+    "runtime-smoke-pass": 340,
+    "prerequisite-gap": 0,
+    "choice-gap": 0,
+    "error": 0
+  },
+  "browser": {
+    "browser": {
+      "cases": 20,
+      "errors": []
+    },
+    "abilities": {
+      "cases": 20,
+      "errors": []
+    },
+    "text-ui": {
+      "cases": 2,
+      "errors": []
+    }
+  },
+  "mobile": {
+    "iterations": 199,
+    "lands": 5,
+    "spells": 7,
+    "attacks": 6,
+    "decisions": [
+      "mulligan",
+      "main",
+      "chooseTargets",
+      "chooseCards",
+      "attackers",
+      "combatReview",
+      "cardReveal",
+      "priority",
+      "threatAlert",
+      "effectReview",
+      "blockers"
+    ],
+    "errors": [],
+    "requests": []
+  },
+  "live": {
+    "passed": 7,
+    "errors": [],
+    "log": "output/precon-c17-c19-2026-09-08/live.log"
+  },
+  "images": {
+    "newFiles": 386,
+    "cardFacesAndAliases": 369,
+    "tokenFaces": 7,
+    "commanderCrops": 10,
+    "sourceNamesWithLocalImages": 663
+  },
+  "dependencyAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "diagnostics": [
+    {
+      "log": "full-suite-sandbox-attempt.log",
+      "result": "Interrupted: local server tests required socket permission."
+    },
+    {
+      "log": "full-suite-regression-attempt.log",
+      "result": "Interrupted after recording inventory assertion failures, compiled descriptor identity regressions and a concurrent keyword visual expectation. These were fixed before the final run."
+    },
+    {
+      "log": "lifetime-before.log",
+      "result": "2/4 passed before correcting the controller snapshot; the corrected Archfiend and reanimation package passes 42/42."
+    },
+    {
+      "log": "regression-fixes.log",
+      "result": "50/51 passed before completing the expected union in the legacy inventory assertion; final-focused.log includes the corrected inventory."
+    }
+  ],
+  "gates": {
+    "syntax": "pass",
+    "strictCertification": {
+      "definitions": 20002,
+      "activeUnique": 2935,
+      "cardDeckChecks": 5117,
+      "fail": 0
+    },
+    "sourcePreservation": "pass",
+    "idempotence": "pass",
+    "deckAudit": {
+      "decks": 62,
+      "duplicateRegistrations": 0,
+      "simplified": 0,
+      "status": "pass"
+    },
+    "diffCheck": "pass",
+    "finalSnapshotSyntax": "pass",
+    "finalSnapshotAudit": "pass",
+    "finalSnapshotStrictCertification": "pass",
+    "finalSnapshotSourcePreservation": "pass"
+  },
+  "limitations": [
+    "Controlled cast/entry smoke and dedicated semantics are distinct evidence; no exhaustive claim about all Magic interactions.",
+    "Browser commander cases use controlled follow-on boards after the normal opening flow; the separate mobile match starts normally.",
+    "The batch has no direct Moxfield API export and adds no commander videos.",
+    "The complete suite passed 8074/8077 before three bounded fixes. All affected files and related mana/new-card regressions then passed 442/442. The complete 8077-test suite was not repeated after those fixes."
+  ],
+  "preservation": {
+    "baseCommit": "1662ff20b52941d5202eee6540e4a45532e2a6cd",
+    "imageMappings": {
+      "CARD_IMAGE_PATHS": {
+        "previous": 2683,
+        "current": 3059,
+        "changed": []
+      },
+      "CARD_ART_PATHS": {
+        "previous": 52,
+        "current": 62,
+        "changed": []
+      }
+    },
+    "suiteSourceHashes": {
+      "count": 936,
+      "changed": []
+    }
+  },
+  "dedicatedNewCardTests": 355,
+  "visualInspection": [
+    "selector at 390px",
+    "Arahbo combat at 1440px",
+    "Estrid Mask at 390px",
+    "Ghired populate at 390px",
+    "normal mobile game result",
+    "card-name choice and resolved board at 390px",
+    "62-deck landing through the standard game client"
+  ],
+  "reportValidation": {
+    "jsonAndLocalLinks": "pass",
+    "problems": []
+  },
+  "headless": {
+    "games": 62,
+    "results": [
+      {
+        "deck": "Abzan Armor",
+        "turn": 33,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Animated Army",
+        "turn": 30,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Avengers Assemble",
+        "turn": 49,
+        "winner": "AI Raven"
+      },
+      {
+        "deck": "Blight Curse",
+        "turn": 32,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Counter Intelligence",
+        "turn": 68,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Deep Clue Sea",
+        "turn": 44,
+        "winner": "You"
+      },
+      {
+        "deck": "Doom Prevails",
+        "turn": 30,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Elven Council",
+        "turn": 43,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Endless Punishment",
+        "turn": 32,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Family Matters",
+        "turn": 63,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Mardu Surge",
+        "turn": 65,
+        "winner": "You"
+      },
+      {
+        "deck": "Most Wanted",
+        "turn": 47,
+        "winner": "AI Raven"
+      },
+      {
+        "deck": "Prismari Artistry",
+        "turn": 43,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Quick Draw",
+        "turn": 71,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Squirreled Away",
+        "turn": 45,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "The Fantastic Four",
+        "turn": 73,
+        "winner": "You"
+      },
+      {
+        "deck": "Turtle Power",
+        "turn": 49,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Wakanda Forever",
+        "turn": 50,
+        "winner": "You"
+      },
+      {
+        "deck": "Scions & Spellcraft",
+        "turn": 73,
+        "winner": "You"
+      },
+      {
+        "deck": "Coven Counters",
+        "turn": 40,
+        "winner": "AI Raven"
+      },
+      {
+        "deck": "Quandrix Unlimited",
+        "turn": 35,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Dance of the Elements",
+        "turn": 36,
+        "winner": "AI Raven"
+      },
+      {
+        "deck": "World Shaper",
+        "turn": 25,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Limit Break",
+        "turn": 43,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Temur Roar",
+        "turn": 47,
+        "winner": "You"
+      },
+      {
+        "deck": "Sultai Arisen",
+        "turn": 42,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Jeskai Striker",
+        "turn": 65,
+        "winner": "AI Raven"
+      },
+      {
+        "deck": "First Flight",
+        "turn": 54,
+        "winner": "You"
+      },
+      {
+        "deck": "Grave Danger",
+        "turn": 35,
+        "winner": "AI Raven"
+      },
+      {
+        "deck": "Chaos Incarnate",
+        "turn": 46,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Draconic Destruction",
+        "turn": 39,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Token Triumph",
+        "turn": 65,
+        "winner": "You"
+      },
+      {
+        "deck": "Lorehold Legacies",
+        "turn": 33,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Prismari Performance",
+        "turn": 41,
+        "winner": "AI Raven"
+      },
+      {
+        "deck": "Quantum Quandrix",
+        "turn": 39,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Silverquill Statement",
+        "turn": 43,
+        "winner": "You"
+      },
+      {
+        "deck": "Witherbloom Witchcraft",
+        "turn": 75,
+        "winner": "You"
+      },
+      {
+        "deck": "Forged in Stone",
+        "turn": 60,
+        "winner": "You"
+      },
+      {
+        "deck": "Peer Through Time",
+        "turn": 55,
+        "winner": "You"
+      },
+      {
+        "deck": "Sworn to Darkness",
+        "turn": 81,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Built from Scratch",
+        "turn": 62,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Guided by Nature",
+        "turn": 61,
+        "winner": "AI Raven"
+      },
+      {
+        "deck": "Call the Spirits",
+        "turn": 53,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Seize Control",
+        "turn": 62,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Plunder the Graves",
+        "turn": 36,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Wade into Battle",
+        "turn": 45,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Swell the Host",
+        "turn": 43,
+        "winner": "You"
+      },
+      {
+        "deck": "Entropic Uprising",
+        "turn": 53,
+        "winner": "AI Raven"
+      },
+      {
+        "deck": "Open Hostility",
+        "turn": 36,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Stalwart Unity",
+        "turn": 57,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Breed Lethality",
+        "turn": 30,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Invent Superiority",
+        "turn": 48,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Draconic Domination",
+        "turn": 48,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Vampiric Bloodlust",
+        "turn": 44,
+        "winner": "AI Raven"
+      },
+      {
+        "deck": "Feline Ferocity",
+        "turn": 42,
+        "winner": "You"
+      },
+      {
+        "deck": "Arcane Wizardry",
+        "turn": 59,
+        "winner": "AI Wolf"
+      },
+      {
+        "deck": "Exquisite Invention",
+        "turn": 45,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Subjective Reality",
+        "turn": 44,
+        "winner": "AI Raven"
+      },
+      {
+        "deck": "Nature's Vengeance",
+        "turn": 54,
+        "winner": "AI Dragon"
+      },
+      {
+        "deck": "Adaptive Enchantment",
+        "turn": 37,
+        "winner": "You"
+      },
+      {
+        "deck": "Merciless Rage",
+        "turn": 51,
+        "winner": "You"
+      },
+      {
+        "deck": "Primal Genesis",
+        "turn": 50,
+        "winner": "You"
+      }
+    ],
+    "turnLimitFinishes": 0,
+    "pendingTriggers": 0
+  },
+  "postSuiteFixes": {
+    "command": "node --test --test-concurrency=4 tests/player-facing-cards.test.mjs tests/quandrix-unlimited.test.mjs tests/x-mana-mechanics.test.mjs tests/c17-c19-*.test.mjs tests/mana-*.test.mjs tests/manual-mana-manifest-effects.test.mjs tests/oracle-v8-mana-*.test.mjs",
+    "log": "output/precon-c17-c19-2026-09-08/post-suite-fixes.log",
+    "status": "pass",
+    "changedInputs": [
+      "src/modules/scripts-c17-c19-copies.js",
+      "tests/player-facing-cards.test.mjs",
+      "tests/x-mana-mechanics.test.mjs"
+    ],
+    "sourceDrift": [],
+    "onlyRuntimeChange": "scripts-c17-c19-copies.js: require a physical card before inspecting an artifact tapped for mana; Channel is an effect with no source card.",
+    "tests": 442,
+    "suites": 0,
+    "pass": 442,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 222507.916833,
+    "logSha256": "ebb27002c64b506db4855ca1642da480516f38767305f5a5874e95d5649cc51d"
+  },
+  "completedAt": "2026-09-08T12:42:02.556Z",
+  "currentHead": "9f9806f6db432003f24eca4e9f576a61b2c98596",
+  "outstandingFailures": 0,
+  "evidenceHashes": {
+    "output/precon-c17-c19-2026-09-08/full-suite.log": "241991fb5ff5f6e13aef2747acf571b984ddaae79c2106005a936861816770b1",
+    "output/precon-c17-c19-2026-09-08/post-suite-fixes.log": "ebb27002c64b506db4855ca1642da480516f38767305f5a5874e95d5649cc51d",
+    "output/precon-c17-c19-2026-09-08/check-final.log": "af61a5a0f431fdf0548b9ef8083d20bc9051c3705c52834ce251779736ce8490",
+    "output/precon-c17-c19-2026-09-08/audit-final.log": "88157d43528c21bebccdde27e73581f246f662acdb089f4c82c1272acc1f7d84",
+    "output/precon-c17-c19-2026-09-08/certify-final.log": "b8af7d4ed7d7ed52bdc73a0659591aa53775d90610c13ed190091d03932922ad",
+    "output/precon-c17-c19-2026-09-08/source-validation-final.log": "0c4131526ac161df16075043b8a9076e6c464aec98ca331e1f904ad27e3de04d",
+    "output/precon-c17-c19-2026-09-08/runtime-smoke-final.log": "da7bffe5554bfeb95c092eafce5784bbf5246e748c064b901d65bc49c8b2d0b7",
+    "output/precon-c17-c19-2026-09-08/browser/result.json": "18ed20245227ee9dec157b83a8be2151f2fef8096604d1f5a9a62831823fff17",
+    "output/precon-c17-c19-2026-09-08/abilities/result.json": "adff0e5ee9cc771c6f3e9347a970a63527dd561ef8abea7b68b7ca60b750e86d",
+    "output/precon-c17-c19-2026-09-08/text-ui/result.json": "af79a9a5d0a8bdffcffc81fc215b54c65e6b58bfef14a109ccc3bb724857bd92",
+    "output/precon-c17-c19-2026-09-08/mobile-game-final/result.json": "a2f0e075267cb7935c1b1384d27931baae52f91c978196692dd040f8b12418f3",
+    "output/precon-c17-c19-2026-09-08/live.log": "e05665b9c6539eeac64b995644c09f4f56405d708a0605d45f255c918e4452d5",
+    "output/precon-c17-c19-2026-09-08/dependency-audit.json": "429bb48c8f31bae9eb80bb3c2a6608a7a44a5dfaad8926d781aa6d931f3716d5"
+  },
+  "releaseAuthorization": {
+    "date": "2026-09-08",
+    "instruction": "Push commit deploy. Nakon toga 8 sljedećih",
+    "branch": "main",
+    "canonical": "https://mtg-commander-simulator.vercel.app/",
+    "evidence": "output/precon-c17-c19-release-2026-09-08"
+  }
+}

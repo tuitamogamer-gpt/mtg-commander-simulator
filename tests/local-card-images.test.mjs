@@ -18,6 +18,7 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
     expected.add(faceName(deck.commander));
     for (const card of deck.cards || []) expected.add(faceName(card.name));
   }
+  for(const name of [...expected]){const back=MTG.DEFS[name]?.c1719FlipBack?.name;if(back)expected.add(back);}
   for (const token of Object.values(MTG.TOKENS || {})) if (token && token.name) {
     expected.add(faceName(token.name));
     if(token.tokenImageName)expected.add(token.tokenImageName);

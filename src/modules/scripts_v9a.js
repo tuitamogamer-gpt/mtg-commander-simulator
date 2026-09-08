@@ -71,7 +71,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const c of g.creatures(p).concat(p.hand.filter(x => x.is('Creature')))) {
       for (const s of (c.cur ? c.cur.subtypes : c.def.subtypes)) counts[s] = (counts[s] || 0) + 1;
     }
-    return Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] || 'Hero';
+    return Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] || MTG.c1719TextType(g,'Hero');
   };
   E9.tempCopyAttacking = async (g, src, base, n, defender, you, copyOpts = {}) => {
     const made = [];
@@ -198,7 +198,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Harmonic Prodigy'] = {
     doubleTriggerFilter: (g, self, source) => source !== self && source.ctrl === self.ctrl &&
-      source.is('Creature') && (source.hasSub('Shaman') || source.hasSub('Wizard')),
+      source.is('Creature') && (source.hasSub(MTG.c1719TextType(g,'Shaman')) || source.hasSub(MTG.c1719TextType(g,'Wizard'))),
   };
   SC['Inspired Skypainter'] = {
     triggers: [
@@ -259,7 +259,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filter: (g, self, d) => d.player === self.ctrl && !d.isCreature && !d.card.is('Land'),
       run: async ctx => {
         const x = ctx.data.so && ctx.data.so.manaSpent || 0;
-        const def = Object.assign({}, TK.elementalUR, { name: 'Dragon Illusion', subtypes: ['Dragon', 'Illusion'], power: String(x), toughness: String(x), kws: ['flying', 'haste'], colorsOverride: ['R'] });
+        const def = Object.assign({}, TK.elementalUR, { name: 'Dragon Illusion', subtypes: [MTG.c1719TextType(ctx,'Dragon'), MTG.c1719TextType(ctx,'Illusion')], power: String(x), toughness: String(x), kws: ['flying', 'haste'], colorsOverride: ['R'] });
         const made = await ctx.g.makeTokens(def, ctx.you);
         E7.exileAtNextEnd(ctx.g, made, ctx.you);
       },
@@ -823,7 +823,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             const c = bf.find(x => x.iid === iid);
             if (!c) return;
             if (!c.cur.types.includes('Creature')) c.cur.types.push('Creature');
-            if (!c.cur.subtypes.includes('Elemental')) c.cur.subtypes.push('Elemental');
+            if (!c.cur.subtypes.includes(MTG.c1719TextType(g2,'Elemental'))) c.cur.subtypes.push(MTG.c1719TextType(g2,'Elemental'));
             c.cur.colors = ['U', 'R'];
             c.cur.basePower = 2; c.cur.baseToughness = 1;
             c.cur.power = 2 + (c.counters['+1/+1'] || 0) - (c.counters['-1/-1'] || 0);
@@ -877,7 +877,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   // AVENGERS ASSEMBLE (MSC) — commander: Captain America, Team Leader
   // ============================================================
-  const isHero = (c) => c.hasSub ? c.hasSub('Hero') : (c.def.subtypes || []).includes('Hero');
+  const isHero = (c) => c.hasSub ? c.hasSub(MTG.c1719TextType(c,'Hero')) : (c.def.subtypes || []).includes(MTG.c1719TextType(c,'Hero'));
   const isModified = (g, card, controller) => Object.values(card.counters || {}).some(value => value > 0) ||
     (card.attachments || []).some(iid => {
       const attachment = g.byIid(iid);
@@ -888,7 +888,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Captain America, Team Leader'] = {
     triggers: [{
       on: 'etb', desc: 'Hero bonus',
-      filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card !== self && d.card.is('Creature') && d.card.hasSub('Hero'),
+      filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card !== self && d.card.is('Creature') && d.card.hasSub(MTG.c1719TextType(g,'Hero')),
       run: async ctx => {
         const c = ctx.data.card;
         E.grantUntilEOT(ctx.g, c, ['vigilance', 'haste']);
@@ -945,12 +945,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Captain Marvel, Apex Avenger'] = {
     triggers: [{
       on: 'countersPlaced', desc: 'The same counters on Captain Marvel', opt: true,
-      filter: (g, self, d) => d.by === self.ctrl && d.card !== self && d.card.is('Creature') && !d.card.hasSub('Kree'),
+      filter: (g, self, d) => d.by === self.ctrl && d.card !== self && d.card.is('Creature') && !d.card.hasSub(MTG.c1719TextType(g,'Kree')),
       run: async ctx => { ctx.g.addCounters(ctx.src, ctx.data.kind, ctx.data.n || 1, false, ctx.you); },
     }],
   };
   SC['Director Nick Fury'] = {
-    costMods: [(g, self, q) => (q.player === self.ctrl && q.card.is('Creature') && (q.card.def.subtypes || []).includes('Hero')) ? -1 : 0],
+    costMods: [(g, self, q) => (q.player === self.ctrl && q.card.is('Creature') && (q.card.def.subtypes || []).includes(MTG.c1719TextType(g,'Hero'))) ? -1 : 0],
     triggers: [{
       on: 'attackersDeclared', desc: 'Search for a Hero', filter: (g, self, d) => d.player === self.ctrl && d.attackers.length > 0,
       run: async ctx => {
@@ -1191,13 +1191,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['She-Hulk, Wallbreaker'] = {
     statics: [{
       apply: (g, self, bf) => {
-        for (const c of bf) if (c.ctrl === self.ctrl && c !== self && c.is('Creature') && c.hasSub('Hero')) c.cur.kw.add('trample');
+        for (const c of bf) if (c.ctrl === self.ctrl && c !== self && c.is('Creature') && c.hasSub(MTG.c1719TextType(g,'Hero'))) c.cur.kw.add('trample');
       },
     }],
     triggers: [{
       // engine emituje 'becomesBlocked' sa {attacker, blockers}; 'blocked' ne postoji
       on: 'becomesBlocked', desc: 'Counters',
-      filter: (g, self, d) => d.attacker && d.attacker.ctrl === self.ctrl && d.attacker.hasSub('Hero'),
+      filter: (g, self, d) => d.attacker && d.attacker.ctrl === self.ctrl && d.attacker.hasSub(MTG.c1719TextType(g,'Hero')),
       run: async ctx => { ctx.g.addCounters(ctx.data.attacker, '+1/+1', (ctx.data.blockers || []).length || 1, false, ctx.you); },
     }],
   };
@@ -1242,7 +1242,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         on: 'etb', desc: 'Hero gains hexproof', filter: etbSelf,
         targets: [T.creature({
           prompt: 'Hero gains hexproof',
-          filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') && c.hasSub('Hero'),
+          filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') && c.hasSub(MTG.c1719TextType(g,'Hero')),
           aiHint: { goal: 'protect' },
         })],
         run: async ctx => { if (ctx.targets[0]) E.grantUntilEOT(ctx.g, ctx.targets[0], ['hexproof']); },
@@ -1317,7 +1317,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!target || target.zone !== 'graveyard') return;
         await ctx.g.move(target, 'battlefield', {
           ctrl: ctx.you,
-          additionalCounters: target.hasSub('Hero') ? { '+1/+1': 1 } : null,
+          additionalCounters: target.hasSub(MTG.c1719TextType(ctx,'Hero')) ? { '+1/+1': 1 } : null,
           additionalCounterBy: ctx.you,
         });
       },
@@ -1341,7 +1341,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!target || target.zone !== 'graveyard') return;
       await ctx.g.move(target, 'battlefield', {
         ctrl: ctx.you,
-        additionalCounters: target.hasSub('Hero') ? { '+1/+1': 2 } : null,
+        additionalCounters: target.hasSub(MTG.c1719TextType(ctx,'Hero')) ? { '+1/+1': 2 } : null,
         additionalCounterBy: ctx.you,
       });
     },
@@ -1695,7 +1695,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { cost: { tap: true }, produce: [{ C: 1 }] },
       {
         cost: { tap: true }, produce: [{ ANY: true, n: 1 }],
-        restrict: (g, forSpell) => forSpell && forSpell.card && (forSpell.card.def.subtypes || []).includes('Hero'),
+        restrict: (g, forSpell) => forSpell && forSpell.card && (forSpell.card.def.subtypes || []).includes(MTG.c1719TextType(g,'Hero')),
       },
     ],
     abilities: [{

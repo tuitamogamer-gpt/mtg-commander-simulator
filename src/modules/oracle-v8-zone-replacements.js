@@ -2,7 +2,7 @@
   const types=(card,snap)=>snap?.types||card.def.types;
   function sources(game){
     const rows=new Map();
-    const relevant=def=>def?.opponentGraveyardVoid||def?.oracleZoneReplacements?.length;
+    const relevant=def=>def?.opponentGraveyardVoid||def?.c1719Slime||def?.oracleZoneReplacements?.length;
     for(const card of game.bf())if(relevant(card.def))rows.set(card.iid,{card,ctrl:card.ctrl,snap:game.snapshot(card,false)});
     // A board wipe is one event: use the ability and controller immediately
     // before it, including a source already removed by an earlier loop item.
@@ -26,7 +26,7 @@
       if(from==='stack'&&destination!=='stack')delete card.meta.exileIfStackLeaves;
       return {toZone:destination,opts,voidReplacement:null,shuffleOwners:[]};
     }
-    const used=new Set(),rows=sources(game),shuffleOwners=new Set();
+    const used=new Set(),rows=sources(game),shuffleOwners=new Set(),c1719Slimes=[];
     let to=destination,toBottom=!!opts.toBottom,voidReplacement=null,noCmdReplace=!!opts.noCmdReplace;
     const own=from==='battlefield'?rows.find(row=>row.card===card):{card,ctrl:card.owner,snap};
     while(true){
@@ -38,6 +38,7 @@
       if(from==='battlefield'&&to==='graveyard')for(const [i,effect]of game.untilEffects.entries())if(effect.kind==='oracleDeathExile'&&(effect.locked?.some(row=>row.iid===card.iid&&row.version===card.zoneVersion)||effect.scope&&snap.types.includes('Creature')&&(effect.scope==='all'||snap.ctrl.idx!==effect.controller)))add('temporary:'+i,'Exile this permanent',()=>{to='exile';});
       if(to==='graveyard'){
         for(const row of rows){
+          if(from==='battlefield'&&snap.types.includes('Creature')&&snap.ctrl!==row.ctrl&&(row.snap?.def||row.card.def).c1719Slime)add('slime:'+row.card.iid,row.card.name+' — exile and add counters',()=>{to='exile';c1719Slimes.push({card:row.card,version:row.snap.zoneVersion,ctrl:row.ctrl,n:Math.max(0,snap.power)});});
           if(!card.isToken&&(row.snap?.def||row.card.def).opponentGraveyardVoid&&row.ctrl!==card.owner)add('void:'+row.card.iid,row.card.name+' — exile with a void counter',()=>{to='exile';voidReplacement={source:row.card,ctrl:row.ctrl};});
         }
         for(const row of [...rows,...(own&&!rows.includes(own)?[own]:[])])for(const [i,operation]of((row.snap?.def||row.card.def).oracleZoneReplacements||[]).entries()){
@@ -61,7 +62,7 @@
       used.add(selected.key);await selected.run();
     }
     if(from==='stack'&&to!=='stack')delete card.meta.exileIfStackLeaves;
-    return {toZone:to,opts:{...opts,toBottom,noCmdReplace},voidReplacement,shuffleOwners:[...shuffleOwners]};
+    return {toZone:to,opts:{...opts,toBottom,noCmdReplace},voidReplacement,c1719Slimes,shuffleOwners:[...shuffleOwners]};
   }
   function compile(operation){
     const allowed=['kind','scope','from','to','placement','reveal','creatureOnly','contract'];

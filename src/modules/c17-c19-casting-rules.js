@@ -1,0 +1,27 @@
+'use strict';
+var MTG=globalThis.MTG||(globalThis.MTG={});
+(function(){
+ const M=MTG,G=M.Game.prototype,C=M.C1719,S=M.StarterCasting;
+ const permanentTypes=['Artifact','Battle','Creature','Enchantment','Planeswalker','Instant','Sorcery'];
+ const liveSource=(g,r)=>{const c=g.byIid(r.source);return c?.zone==='battlefield'&&c.zoneVersion===r.sourceVersion&&(!r.sourceAbilities||!c.phasedOut&&!c.cur?.abilitiesDisabled)?c:null;};
+ function grant(ctx,c,opts={}){const r={id:++ctx.g.c1719PermissionId|| (ctx.g.c1719PermissionId=1),player:ctx.you.idx,card:c.iid,version:c.zoneVersion,zone:c.zone,...opts};(ctx.g.c1719Permissions||=[]).push(r);return r;}
+ function records(g,p,c,land=false){return (g.c1719Permissions||[]).filter(r=>(r.sourceController?liveSource(g,r)?.ctrl===p:r.player===p.idx)&&r.card===c.iid&&r.version===c.zoneVersion&&r.zone===c.zone&&c.owner[c.zone]?.includes(c)&&(r.turn===undefined||r.turn===g.turnNo)&&(!r.source||liveSource(g,r))&&(!land||!r.spellsOnly)&&(!r.oneSpellPerTurn||land||g.byIid(r.source)?.meta.c1719SpellTurns?.[p.idx]!==g.turnNo)&&(!r.group||land||permanentTypes.some(t=>c.is(t)&&!r.group.used.includes(t))));}
+ function offers(g,p){const out=[],add=(c,id,extra={})=>out.push({card:c,from:c.zone,alt:{starterPermission:'c1719',starterCardVersion:c.zoneVersion,c1719Id:id,...extra}});
+  for(const r of g.c1719GraveGrants||[])if(r.player===p.idx&&r.turn===g.turnNo&&!r.used)for(const c of p.graveyard)if(c.is('Creature'))add(c,'chainer:'+r.id,{label:'Chainer: cast a creature from your graveyard'});
+  for(const s of g.bf().filter(c=>c.ctrl===p&&C.live(c)&&c.def.c1719Kess&&c.meta.c1719SpellTurn!==g.turnNo&&g.turnPlayer===p))for(const c of p.graveyard)if(c.is('Instant')||c.is('Sorcery'))add(c,'kess:'+s.iid+':'+s.zoneVersion,{oracleExileOnGraveyard:true,label:'Kess: cast from your graveyard'});
+  for(const s of g.bf().filter(c=>C.live(c)&&c.ctrl===p&&c.def.c1719Kheru))for(const r of C.linked(C.linkState(s,'kheru')))if(!r.card.is('Land'))add(r.card,'kheru:'+s.iid+':'+s.zoneVersion,{label:'Kheru Mind-Eater: cast an exiled card'});
+  for(const owner of g.players)for(const c of owner.exile)if(!c.is('Land'))for(const r of records(g,p,c)){const types=r.group?permanentTypes.filter(t=>c.is(t)&&!r.group.used.includes(t)):[undefined];for(const type of types)add(c,r.id,{...(r.free?{free:true}:{}),...(r.anyColor?{asThoughAnyColor:true}:{}),...(type?{c1719Type:type}:{}),label:(type?'Augury ('+type+')':'Play the exiled card')});}
+  if(g.bf().some(c=>c.ctrl===p&&C.live(c)&&c.def.c1719Fist))for(const c of [...p.hand,...p.command])if(!c.is('Land'))add(c,'fist',{altCostStr:'{W}{U}{B}{R}{G}',label:'Fist of Suns: pay WUBRG'});
+  return out;
+ }
+ const previousOffers=S.offers,previousAllowed=S.allowed,previousCommit=S.commit,previousValidate=S.validate;
+ const withoutFist=a=>{if(!a.c1719Fist)return a;const out={...a};delete out.c1719Fist;delete out.altCostStr;return out;};
+ C.fistLive=(g,p)=>g.bf().some(c=>c.ctrl===p&&C.live(c)&&c.def.c1719Fist);
+ S.validate=ctx=>ctx.so.castOpts.starterPermission==='c1719'?S.allowed(ctx.g,ctx.you,ctx.src,ctx.so.castOpts):previousValidate({...ctx,so:{...ctx.so,castOpts:withoutFist(ctx.so.castOpts)}});
+ S.offers=(g,p)=>previousOffers(g,p).concat(offers(g,p));
+ S.allowed=function(g,p,c,a){if(a.c1719Fist){if(!C.fistLive(g,p)||a.altCostStr!=='{W}{U}{B}{R}{G}'||a.free)return false;a=withoutFist(a);}if(a.starterPermission!=='c1719')return previousAllowed(g,p,c,a);const row=offers(g,p).find(r=>r.card===c&&r.alt.c1719Id===a.c1719Id&&r.alt.c1719Type===a.c1719Type);if(!row||!g.canCastTiming(p,c,a))return false;const expected=row.alt,allowed=new Set([...Object.keys(expected),'from','xVal']);return Object.keys(a).every(k=>allowed.has(k)&&(k==='from'?a[k]===c.zone:k==='xVal'?Number.isInteger(a[k])&&a[k]>=0:a[k]===expected[k]));};
+ S.commit=function(ctx){const a=ctx.so.castOpts;if(a.starterPermission!=='c1719')return previousCommit(ctx);const id=String(a.c1719Id);if(id.startsWith('chainer:')){const r=(ctx.g.c1719GraveGrants||[]).find(r=>String(r.id)===id.slice(8));if(r)r.used=true;}else if(id.startsWith('kess:')){const s=ctx.g.byIid(Number(id.split(':')[1]));if(s)s.meta.c1719SpellTurn=ctx.g.turnNo;}else{const r=(ctx.g.c1719Permissions||[]).find(r=>r.id===a.c1719Id);if(r?.oneSpellPerTurn){const s=ctx.g.byIid(r.source);if(s)(s.meta.c1719SpellTurns||={})[ctx.you.idx]=ctx.g.turnNo;}if(r?.group)r.group.used.push(a.c1719Type);}};
+ const landList=G.playableLands;G.playableLands=function(p){const out=landList.call(this,p);if(p.landsPlayed>=this.landPlayLimit(p))return out;for(const owner of this.players)for(const c of owner.exile)if(c.is('Land')&&(records(this,p,c,true).length||this.bf().some(s=>s.ctrl===p&&C.live(s)&&s.def.c1719Kheru&&C.linked(C.linkState(s,'kheru')).some(r=>r.card===c))))out.push(c);return [...new Set(out.concat(M.OracleV8PlayPermissions.landOffers?.(this,p)||[]))];};
+ C.snapshotBlockers=g=>{const out=[];if((g.c1719Permissions||[]).some(r=>(r.turn===undefined||r.turn===g.turnNo)&&g.players.some(p=>p[r.zone]?.some(c=>c.iid===r.card&&c.zoneVersion===r.version)))||(g.c1719GraveGrants||[]).some(r=>r.turn===g.turnNo&&!r.used))out.push('C17-C19 play permissions');if(g.bf().some(c=>Object.values(c.meta.c1719Links||{}).some(rows=>rows.some(C.current))))out.push('C17-C19 linked exile');return out;};
+ Object.assign(C,{playGrant:grant,playRecords:records,playSource:(c,abilities=false)=>({source:c.iid,sourceVersion:c.zoneVersion,sourceAbilities:abilities,sourceController:abilities}),playTypes:permanentTypes});
+})();

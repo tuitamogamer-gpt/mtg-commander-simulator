@@ -4046,6 +4046,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           m.classList.add('cardchoicemodal');
           m.appendChild(decisionCards);
         }
+        if(q.searchableChoices){
+          const input=el('input');input.type='search';input.placeholder='Search card names';input.setAttribute('aria-label','Card name');
+          const list=el('div','searchchoices');const renderChoices=()=>{list.replaceChildren();const value=input.value.toLowerCase();for(const option of q.options.filter(o=>o.label.toLowerCase().includes(value)).slice(0,50))list.appendChild(btn(esc(option.label),()=>this.resolvePending(option.key),'wide'));};
+          input.addEventListener('input',renderChoices);m.appendChild(input);m.appendChild(list);renderChoices();return ov;
+        }
         for (const o of q.options) {
           const visualOption = this.renderVisualChoiceOption(o, () => this.resolvePending(o.key));
           if (visualOption) {

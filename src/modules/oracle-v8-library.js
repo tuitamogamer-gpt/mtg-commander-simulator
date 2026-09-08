@@ -160,7 +160,7 @@
       if(answer==='no')return null;
     }
     const predicate = effect.filter && helpers.target({...effect.filter, zone: 'graveyard', controller: 'any'}, [], 0, ctx.data).filter;
-    let candidates = owner.library.filter(card => (!named||effect.names.includes(card.name))&&(!predicate || predicate(ctx.g, card, effect.ownerSearch?owner:ctx.you, ctx.src)));
+    let candidates = (ctx.g.canSearchLibrary?.(chooser)===false?[]:owner.library).filter(card => (!named||effect.names.includes(card.name))&&(!predicate || predicate(ctx.g, card, effect.ownerSearch?owner:ctx.you, ctx.src)));
     if (effect.differentNames) {
       const names = new Set(); candidates = candidates.filter(card => !names.has(card.name) && names.add(card.name));
     }

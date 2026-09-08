@@ -19,12 +19,12 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   SC['Terastodon']={triggers:[enterTrigger('Destroy up to three noncreature permanents',async ctx=>{
     const targets=[ctx.targets[0]].flat().filter(Boolean).map(c=>({...row(c),ctrl:c.ctrl})),destroyed=[];
     await ctx.g.withGraveyardEntryBatch(async()=>{for(const r of targets)if(current(r)){await ctx.g.destroy(r.card);if(r.card.zone==='graveyard'&&r.card.zoneVersion===r.version+1)destroyed.push(r);}});
-    for(const r of destroyed)await ctx.g.makeTokens(token('Elephant',['Elephant'],3,3,['G']),r.ctrl);
+    for(const r of destroyed)await ctx.g.makeTokens(token(MTG.c1719TextType(ctx,'Elephant'),[MTG.c1719TextType(ctx,'Elephant')],3,3,['G']),r.ctrl);
   },{targets:[T.permanent((g,c)=>!c.is('Creature'),{upTo:true,min:0,count:3,aiHint:{goal:'destroy'}})]})]};
   SC['Master Biomancer']={c21Biomancer:true};
   SC["Ezuri's Predation"]={resolve:async ctx=>{
     const enemies=ctx.g.creatures().filter(c=>c.ctrl!==ctx.you).map(row);
-    const made=await ctx.g.makeTokens(token('Phyrexian Beast',['Phyrexian','Beast'],4,4,['G']),ctx.you,{n:enemies.length});
+    const made=await ctx.g.makeTokens(token('Phyrexian Beast',[MTG.c1719TextType(ctx,'Phyrexian'),MTG.c1719TextType(ctx,'Beast')],4,4,['G']),ctx.you,{n:enemies.length});
     const available=made.filter(c=>c.zone==='battlefield'&&c.is('Creature')),pairs=[];
     for(const r of enemies.filter(current))if(available.length){const [beast]=await choose(ctx.g,ctx.you,available,1,1,'Ezuri’s Predation: choose a Beast to fight '+r.card.name,'fight');available.splice(available.indexOf(beast),1);pairs.push([beast,r.card]);}
     const hits=[];

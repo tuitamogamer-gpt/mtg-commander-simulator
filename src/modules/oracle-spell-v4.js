@@ -649,7 +649,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (cost.kind === 'payLife') {
       const life = amountValue(cost.amount, ctx);
-      if (player.life < plan.life + life) return false;
+      if (player.life < plan.life + life || game.canPayLife&&!game.canPayLife(player,plan.life+life)) return false;
       plan.life += life;
       return true;
     }
@@ -723,7 +723,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (cost.kind === 'payLife') {
       const life = amountValue(cost.amount, ctx);
-      if (player.life < plan.life + life) return false;
+      if (player.life < plan.life + life || game.canPayLife&&!game.canPayLife(player,plan.life+life)) return false;
       plan.life += life;
       return true;
     }

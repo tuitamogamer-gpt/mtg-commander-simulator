@@ -57,7 +57,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       cond: (g, c) => !c.meta.transformed,
       run: async ctx => {
         ctx.src.meta.transformed = true;
-        ctx.src.meta.addedSubtypes = [...new Set([...(ctx.src.meta.addedSubtypes || []), 'Phyrexian'])];
+        ctx.src.meta.addedSubtypes = [...new Set([...(ctx.src.meta.addedSubtypes || []), MTG.c1719TextType(ctx,'Phyrexian')])];
         ctx.g.lg(`${ctx.src.name} transforms (P/T = number of +1/+1 counters).`);
         ctx.g.recalc();
       },
@@ -121,7 +121,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       E7.sacAtNextEnd(g, made, card.ctrl);
     }
   };
-  E7.isOutlaw = (c) => ['Assassin', 'Mercenary', 'Pirate', 'Rogue', 'Warlock'].some(s => c.hasSub ? c.hasSub(s) : (c.subtypes || []).includes(s));
+  E7.isOutlaw = (c) => [MTG.c1719TextType(c,'Assassin'), MTG.c1719TextType(c,'Mercenary'), MTG.c1719TextType(c,'Pirate'), MTG.c1719TextType(c,'Rogue'), MTG.c1719TextType(c,'Warlock')].some(s => c.hasSub ? c.hasSub(s) : (c.subtypes || []).includes(s));
   E7.discover = async (g, p, n, src) => {
     const exiled = [];
     let hit = null;
@@ -344,7 +344,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // ============================================================
   // TURTLE POWER (TMC) — commander: Heroes in a Half Shell
   // ============================================================
-  const MNT = (c) => ['Mutant', 'Ninja', 'Turtle'].some(s => c.hasSub(s));
+  const MNT = (c) => [MTG.c1719TextType(c,'Mutant'), MTG.c1719TextType(c,'Ninja'), MTG.c1719TextType(c,'Turtle')].some(s => c.hasSub(s));
   const partnerWith = otherName => ({
     on: 'etb', desc: `Partner with ${otherName}`, filter: etbSelf,
     targets: [T.player({ prompt: `Who may search for ${otherName}?`, aiHint: { goal: 'gift' } })],
@@ -441,7 +441,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { on: 'etb', desc: 'Ooze token', filter: etbSelf, run: async ctx => { await ctx.g.makeTokens('oozeG', ctx.you); } },
       {
         on: 'endStep', desc: '+1/+1 counter on Ooze', filter: (g, self, d) => d.player === self.ctrl,
-        run: async ctx => { for (const c of ctx.g.creatures(ctx.you)) if (c.hasSub('Ooze')) ctx.g.addCounters(c, '+1/+1', 1); },
+        run: async ctx => { for (const c of ctx.g.creatures(ctx.you)) if (c.hasSub(MTG.c1719TextType(ctx,'Ooze'))) ctx.g.addCounters(c, '+1/+1', 1); },
       },
     ],
     abilities: [{
@@ -516,7 +516,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           on: 'dies', once: false, expires: 'eot', name: 'Electric Seaweed', ctrl: ctx.you, src: source,
           filter: (g, d) => d.card.iid !== iid && d.snap.types.includes('Creature'),
           run: async c2 => {
-            for (const c of c2.g.bf().filter(x => x.is('Creature') && !x.hasSub('Wall')).slice()) {
+            for (const c of c2.g.bf().filter(x => x.is('Creature') && !x.hasSub(MTG.c1719TextType(ctx,'Wall'))).slice()) {
               await c2.g.damageCreature(source, c, 1, { deferSBA: true });
             }
           },
@@ -1461,7 +1461,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Mindblade Render'] = {
     triggers: [{
       on: 'combatDamageGroupToPlayer', desc: 'Warrior → card',
-      filter: (g, self, d) => d.player !== self.ctrl && d.cards.some(card => card.ctrl === self.ctrl && card.hasSub('Warrior')),
+      filter: (g, self, d) => d.player !== self.ctrl && d.cards.some(card => card.ctrl === self.ctrl && card.hasSub(MTG.c1719TextType(g,'Warrior'))),
       run: async ctx => { await ctx.g.draw(ctx.you, 1); await ctx.g.loseLife(ctx.you, 1, 'render'); },
     }],
   };
@@ -1471,7 +1471,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         on: 'attacks', desc: 'Tap Myr → +X', filter: (g, self, d) => d.card === self,
         run: async ctx => {
-          const myrs = ctx.g.creatures(ctx.you).filter(c => c.hasSub('Myr') && !c.tapped && c !== ctx.src);
+          const myrs = ctx.g.creatures(ctx.you).filter(c => c.hasSub(MTG.c1719TextType(ctx,'Myr')) && !c.tapped && c !== ctx.src);
           if (!myrs.length) return;
           const pick = await ctx.you.controller.decide(ctx.g, {
             type: 'chooseCards', from: myrs, min: 0, max: myrs.length, prompt: 'Tap Myr (+X/+0 and X damage)',
@@ -1521,9 +1521,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Ophiomancer'] = {
     triggers: [{
-      on: 'upkeep', desc: 'Snake', filter: (g, self) => !g.creatures(self.ctrl).some(c => c.hasSub('Snake')),
+      on: 'upkeep', desc: 'Snake', filter: (g, self) => !g.creatures(self.ctrl).some(c => c.hasSub(MTG.c1719TextType(g,'Snake'))),
       run: async ctx => {
-        if (!ctx.g.creatures(ctx.you).some(c => c.hasSub('Snake'))) await ctx.g.makeTokens('snakeB', ctx.you);
+        if (!ctx.g.creatures(ctx.you).some(c => c.hasSub(MTG.c1719TextType(ctx,'Snake')))) await ctx.g.makeTokens('snakeB', ctx.you);
       },
     }],
   };

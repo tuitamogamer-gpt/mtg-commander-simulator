@@ -10,7 +10,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   const needsOutlet=(g,p)=>g.creatures(p).some(c=>M.persecutorExitValue?.(g,c,p)>0);
   SC['Ob Nixilis of the Black Oath']={abilities:[
     loyalty(2,'Each opponent loses 1 life; gain that much life',async ctx=>{const n=await ctx.g.loseLifeOpponents(ctx.src,ctx.you,1,'Ob Nixilis');await ctx.g.gainLife(ctx.you,n);},{aiScore:(g,c,p)=>needsOutlet(g,p)?20:4}),
-    loyalty(-2,'Create a 5/5 flying Demon and lose 2 life',async ctx=>{await ctx.g.makeTokens(token('Demon',['Demon'],5,5,['B'],['flying']),ctx.you);await ctx.g.loseLife(ctx.you,2);},{aiScore:(g,c,p)=>needsOutlet(g,p)?-20:4}),
+    loyalty(-2,'Create a 5/5 flying Demon and lose 2 life',async ctx=>{await ctx.g.makeTokens(token(MTG.c1719TextType(ctx,'Demon'),[MTG.c1719TextType(ctx,'Demon')],5,5,['B'],['flying']),ctx.you);await ctx.g.loseLife(ctx.you,2);},{aiScore:(g,c,p)=>needsOutlet(g,p)?-20:4}),
     loyalty(-8,'Emblem: sacrifice creatures for life and cards',C.obEmblem,{aiScore:(g,c,p)=>needsOutlet(g,p)?30:6}),
   ]};
   SC['Abyssal Persecutor']={c14Persecutor:true};

@@ -61,7 +61,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   async function searchLands(game, player, n, predicate, opts = {}) {
     const found = [];
     for (let i = 0; i < n; i++) {
-      const pool = player.library.filter(card => card.is('Land') && (!predicate || predicate(card)));
+      const pool = (game.canSearchLibrary?.(player)===false?[]:player.library).filter(card => card.is('Land') && (!predicate || predicate(card)));
       if (!pool.length) break;
       const card = await chooseOne(game, player, pool, opts.prompt || 'Search for a land', { kind: 'searchBasic' }, true);
       if (!card) break;
@@ -738,7 +738,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     retrace: { altCostStr: '{2}{G}' }, changeling: true,
     resolve: async ctx => {
       const x = ctx.you.graveyard.filter(isLand).length;
-      const shapeshifter = token('Shapeshifter', ['Creature'], ['Shapeshifter'], x, x, {
+      const shapeshifter = token(MTG.c1719TextType(ctx,'Shapeshifter'), ['Creature'], [MTG.c1719TextType(ctx,'Shapeshifter')], x, x, {
         colorsOverride: [], changeling: true, kws: ['deathtouch'],
       });
       await ctx.g.makeTokens(shapeshifter, ctx.you);

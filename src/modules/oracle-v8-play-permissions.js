@@ -33,7 +33,8 @@
   const frame={id,player:ctx.you,source:ctx.src,free:effect.free,anyColor:base.asThoughAnyColor,filter,entries:cards.map(card=>({card,zone:card.zone,version:card.zoneVersion,alternatives:alternatives(ctx.g,card,base).map(alt=>effect.exileAfter&&effect.exileTypes?.some(type=>ctx.g.castHasType(card,alt,type))?{...alt,oracleExileOnGraveyard:true}:alt)}))};
   frames.set(ctx.g,frame);
   try{
-   const choices=ctx.g.castableList(ctx.you).filter(entry=>entry.alt?.oracleImmediateCast===id),from=[...new Set(choices.map(entry=>entry.card))];
+   frame.allowLand=!!effect.playLand;
+   const choices=ctx.g.castableList(ctx.you).filter(entry=>entry.alt?.oracleImmediateCast===id).concat(landOffers(ctx.g,ctx.you).map(card=>({card,from:card.zone,alt:{oracleImmediateLand:id}}))),from=[...new Set(choices.map(entry=>entry.card))];
    if(!from.length)return null;
    const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseCards',player:ctx.you,from,min:effect.mandatory?1:0,max:1,
     prompt:(effect.mandatory?'Cast this card':'You may cast one of these cards')+(effect.free?' without paying its mana cost':''),aiHint:{kind:'recur'}});
@@ -44,7 +45,7 @@
    const key=selected.length===1?'0':await ctx.you.controller.decide(ctx.g,{type:'chooseOption',player:ctx.you,prompt:'Choose a spell face',
     options:selected.map((entry,index)=>({key:String(index),label:entry.alt.label||entry.alt.name||card.name,face:entry.alt.oracleFace})),aiHint:{kind:'oracleSpellFace',card}});
    const index=Number(key);if(!Number.isInteger(index)||!selected[index])throw new Error('Invalid immediate cast face');
-   const choice=selected[index];if(!allowed(ctx.g,ctx.you,card,{...choice.alt,from:choice.from}))return null;
+   const choice=selected[index];if(choice.alt.oracleImmediateLand)return await ctx.g.playLand(ctx.you,card,choice.alt)?card:null;if(!allowed(ctx.g,ctx.you,card,{...choice.alt,from:choice.from}))return null;
    return await ctx.g.castSpell(ctx.you,card,{from:choice.from,alt:choice.alt})?card:null;
   }finally{if(prior)frames.set(ctx.g,prior);else frames.delete(ctx.g);}
  }
@@ -86,5 +87,7 @@
   else cards=helpers.subjects(ctx,effect.target).filter(card=>card.zone==='graveyard');
   return castOne(ctx,cards,effect,helpers);
  }
- M.OracleV8PlayPermissions={actions,run,offers,allowed,castOne};
+ function landOffers(g,p){const f=frames.get(g);return f?.allowLand&&f.player===p&&g.turnPlayer===p&&p.landsPlayed<g.landPlayLimit(p)?f.entries.filter(present).map(r=>r.card).filter(c=>c.is('Land')):[];}
+ function landAllowed(g,p,c,o){const f=frames.get(g);return !!f&&f.id===o.oracleImmediateLand&&landOffers(g,p).includes(c);}
+ M.OracleV8PlayPermissions={actions,run,offers,allowed,castOne,landOffers,landAllowed};
 })(globalThis.MTG||={});

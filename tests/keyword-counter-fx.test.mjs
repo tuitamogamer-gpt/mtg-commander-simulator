@@ -31,7 +31,7 @@ test('requested keyword visual map keeps every effect distinct', () => {
   assert.deepEqual(Object.keys(MTG.KEYWORD_VISUALS).sort(),
     ['deathtouch', 'defender', 'double strike', 'first strike', 'flash', 'flying', 'forestwalk',
       'haste', 'hexproof', 'indestructible', 'lifelink', 'menace', 'myriad', 'prowess', 'reach',
-      'shroud', 'skulk', 'trample', 'vigilance', 'ward', 'wither']);
+      'shroud', 'skulk', 'trample', 'unblockable', 'vigilance', 'ward', 'wither']);
   assert.equal(new Set(Object.values(MTG.KEYWORD_VISUALS).map(entry => entry.icon)).size, 21);
   const sprite = fs.readFileSync(path.join(root, 'assets/icons/game-ui.svg'), 'utf8');
   for (const visual of Object.values(MTG.KEYWORD_VISUALS)) {

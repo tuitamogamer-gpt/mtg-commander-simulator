@@ -79,6 +79,7 @@ export async function auditNativeCard(MTG, name, role) {
   if (['Entrancing Melody', 'Stolen by the Fae'].includes(name)) extra('Llanowar Elves', opponent, 'battlefield', 'Mana value 1 creature for the declared X=1.');
   if (name === 'Volcanic Offering') extra('Command Tower', opponent, 'battlefield', 'Opponent nonbasic land for both independently chosen destroy targets.');
   if (name === 'Grip of Phyresis') extra('Behemoth Sledge', opponent, 'battlefield', 'Opponent Equipment for the actual control-and-attach spell.');
+  if (name === 'New Blood') extra('Falkenrath Noble',player,'battlefield','Untapped Vampire for the mandatory additional tap cost.');
   if (name === 'Despark') extra('Colossal Dreadmaw', opponent, 'battlefield', 'Permanent with mana value at least 4.');
   if (name === 'Victimize') extra('Llanowar Elves', player, 'graveyard', 'Second creature card in your graveyard.');
   if (name === 'Back in Town') extra('Ragavan, Nimble Pilferer', player, 'graveyard', 'Pirate outlaw in your graveyard.');
@@ -144,7 +145,7 @@ export async function auditNativeCard(MTG, name, role) {
     if (!accepted) return { name, role, status: 'choice-gap', reason: 'Offered action declined or lacked prerequisites after the fixed controller choices.', queryTypes: [...new Set(trace)] };
     return complete(land ? 'play-land' : 'cast', beforeMana - Object.values(player.pool).reduce((a, b) => a + b, 0));
   };
-  if (['Take the Bait', 'Wake the Dead', 'Mirror Match'].includes(name)) {
+  if (['Take the Bait', 'Wake the Dead', 'Mirror Match', 'Cauldron Dance'].includes(name)) {
     let result, attempted = false;
     const controller = opponent.controller;
     opponent.controller = { decide: async (g, q) => q.type === 'attackers'

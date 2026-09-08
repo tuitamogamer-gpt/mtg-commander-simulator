@@ -133,7 +133,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Reduce the cost of your next instant or sorcery', cost: { tap: true },
       run: async ctx => {
-        const x = ctx.g.creatures(ctx.you).filter(c => c.hasSub('Wizard')).length;
+        const x = ctx.g.creatures(ctx.you).filter(c => c.hasSub(MTG.c1719TextType(ctx,'Wizard'))).length;
         if (!x) return;
         ctx.you.tempReductions = ctx.you.tempReductions || [];
         ctx.you.tempReductions.push({ filter: (g, c) => c.is('Instant') || c.is('Sorcery'), delta: -x, once: true });

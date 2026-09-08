@@ -6,7 +6,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const U = MTG, E = MTG.E, T = MTG.T, SC = MTG.SCRIPTS, TK = MTG.TOKENS, E7 = MTG.E7, E9 = MTG.E9;
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
   const etbSelf = (g, self, d) => d.card === self;
-  const isVillain = (c) => c.hasSub ? c.hasSub('Villain') : (c.def.subtypes || []).includes('Villain');
+  const isVillain = (c) => c.hasSub ? c.hasSub(MTG.c1719TextType(c,'Villain')) : (c.def.subtypes || []).includes(MTG.c1719TextType(c,'Villain'));
 
   async function chooseCreatureType(g, you, source, prompt) {
     const cards = [...new Set([
@@ -19,7 +19,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // (npr. Kindred Dominance), ali AI i dalje preferira sopstveni tribal.
       counts.set(type, (counts.get(type) || 0) + (card.ctrl === you || card.owner === you ? 1 : 0));
     }
-    if (!counts.size) counts.set('Villain', 1);
+    if (!counts.size) counts.set(MTG.c1719TextType(g,'Villain'), 1);
     const options = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(([type, n]) => ({ key: type, label: `${type} (${n})`, keepValue: n }));
     const picked = await you.controller.decide(g, {
@@ -77,10 +77,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     mayhem: { cost: '{4}{R}', speed: 'sorcery' },
   };
   SC['Baron Strucker, HYDRA Overlord'] = {
-    costMods: [(g, self, q) => (q.player === self.ctrl && q.card.is('Creature') && (q.card.def.subtypes || []).includes('Villain')) ? -1 : 0],
+    costMods: [(g, self, q) => (q.player === self.ctrl && q.card.is('Creature') && (q.card.def.subtypes || []).includes(MTG.c1719TextType(g,'Villain'))) ? -1 : 0],
     triggers: [{
       on: 'etb', desc: 'Connive (1×/turn)', oncePerTurn: true, opt: true,
-      filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card !== self && d.card.is('Creature') && d.card.hasSub('Villain'),
+      filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card !== self && d.card.is('Creature') && d.card.hasSub(MTG.c1719TextType(g,'Villain')),
       run: async ctx => { await ctx.g.connive(ctx.data.card); },
     }],
   };
@@ -233,7 +233,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'cast', desc: 'Chaos swap', oncePerTurn: true,
       filter: (g, self, d) => d.player === self.ctrl &&
-        (d.card.is('Instant') || d.card.is('Sorcery') || d.card.hasSub('Villain')),
+        (d.card.is('Instant') || d.card.is('Sorcery') || d.card.hasSub(MTG.c1719TextType(g,'Villain'))),
       run: async ctx => {
         const you = ctx.you, g = ctx.g;
         const original = ctx.data.card;
@@ -300,7 +300,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const target = ctx.targets[0];
           if (!target || !ctx.src.attacking) return;
           const made = await ctx.g.copyPermanentToken(target, ctx.you, {
-            tapped: true, attacking: ctx.src.attacking, nonlegendary: true, addSubtypes: ['Illusion'],
+            tapped: true, attacking: ctx.src.attacking, nonlegendary: true, addSubtypes: [MTG.c1719TextType(ctx,'Illusion')],
           });
           E7.sacAtNextEnd(ctx.g, made, ctx.you);
         },
@@ -315,7 +315,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Madame Hydra'] = {
     triggers: [{
       on: 'cast', desc: 'Villain token',
-      filter: (g, self, d) => d.player === self.ctrl && d.card.hasSub('Villain'),
+      filter: (g, self, d) => d.player === self.ctrl && d.card.hasSub(MTG.c1719TextType(g,'Villain')),
       run: async ctx => { await ctx.g.makeTokens('villainB', ctx.you); },
     }],
   };
@@ -352,7 +352,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Prowler, Clawed Thief'] = {
     triggers: [{
       on: 'etb', desc: 'Connive',
-      filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card !== self && d.card.is('Creature') && d.card.hasSub('Villain'),
+      filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card !== self && d.card.is('Creature') && d.card.hasSub(MTG.c1719TextType(g,'Villain')),
       run: async ctx => { await ctx.g.connive(ctx.src); },
     }],
   };
@@ -472,7 +472,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     statics: [{
       apply: (g, self, bf) => {
         for (const c of bf) {
-          if (c.ctrl === self.ctrl && c !== self && c.is('Creature') && c.hasSub('Villain')) {
+          if (c.ctrl === self.ctrl && c !== self && c.is('Creature') && c.hasSub(MTG.c1719TextType(g,'Villain'))) {
             c.cur.power += 2; c.cur.toughness += 2; c.cur.kw.add('flying'); c.cur.kw.add('haste');
           }
         }
@@ -517,7 +517,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Tombstone, Career Criminal'] = {
-    costMods: [(g, self, q) => (q.player === self.ctrl && q.card.is('Creature') && (q.card.def.subtypes || []).includes('Villain')) ? -1 : 0],
+    costMods: [(g, self, q) => (q.player === self.ctrl && q.card.is('Creature') && (q.card.def.subtypes || []).includes(MTG.c1719TextType(g,'Villain'))) ? -1 : 0],
     triggers: [{
       on: 'etb', desc: 'Villain from graveyard', filter: etbSelf,
       targets: [{
@@ -790,7 +790,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           expires: 'eot', kind: 'addVillain',
           apply: (g2, bf) => {
             const stolen = bf.find(card => card.iid === iid);
-            if (stolen && !stolen.cur.subtypes.includes('Villain')) stolen.cur.subtypes.push('Villain');
+            if (stolen && !stolen.cur.subtypes.includes(MTG.c1719TextType(g2,'Villain'))) stolen.cur.subtypes.push(MTG.c1719TextType(g2,'Villain'));
           },
         };
         ctx.g.untilEffects.push(villainEffect);
@@ -1033,12 +1033,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { cost: { tap: true }, produce: [{ C: 1 }] },
       {
         cost: { tap: true }, produce: [{ ANY: true, n: 1 }],
-        restrict: (g, forSpell) => forSpell && forSpell.card && (forSpell.card.def.subtypes || []).includes('Villain'),
+        restrict: (g, forSpell) => forSpell && forSpell.card && (forSpell.card.def.subtypes || []).includes(MTG.c1719TextType(g,'Villain')),
       },
     ],
     abilities: [{
       label: 'Villain connive', sorcery: true, cost: { tap: true, mana: '{3}' },
-      cond: (g, c, p) => g.creatures(p).some(x => x.hasSub('Villain')),
+      cond: (g, c, p) => g.creatures(p).some(x => x.hasSub(MTG.c1719TextType(g,'Villain'))),
       targets: [T.yourCreature({
         prompt: 'Target the Villain that connives',
         filter: (g, card, ctrl) => card.ctrl === ctrl && card.is('Creature') && isVillain(card),

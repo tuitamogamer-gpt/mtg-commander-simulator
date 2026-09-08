@@ -44,8 +44,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   const etbSelf = (g, self, data) => data.card === self;
   const isLegendary = card => !!card && ((card.cur && card.cur.super) || card.def.super || []).includes('Legendary');
-  const isArmy = card => !!card && card.is('Creature') && card.hasSub('Army');
-  const isOrcOrGoblin = card => !!card && (card.hasSub('Orc') || card.hasSub('Goblin'));
+  const isArmy = card => !!card && card.is('Creature') && card.hasSub(MTG.c1719TextType(card,'Army'));
+  const isOrcOrGoblin = card => !!card && (card.hasSub(MTG.c1719TextType(card,'Orc')) || card.hasSub(MTG.c1719TextType(card,'Goblin')));
   const ownISGrave = (prompt, upTo = false) => ({
     zone: 'graveyard', what: 'card', upTo, prompt,
     filter: (g, card, ctrl) => card.owner === ctrl && (card.is('Instant') || card.is('Sorcery')),
@@ -65,7 +65,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     power: '3', toughness: '3', oracle: 'Menace', colorsOverride: ['B'], kws: ['menace'], isTokenDef: true,
   };
 
-  E.amass = async function (game, player, n, kind = 'Orc') {
+  E.amass = async function (game, player, n, kind = MTG.c1719TextType(game,'Orc')) {
     let armies = game.creatures(player).filter(isArmy);
     let army = null;
     if (armies.length > 1) {
@@ -80,7 +80,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       army = made[0] || null;
     }
     if (!army) return null;
-    army.meta.addedSubtypes = [...new Set([...(army.meta.addedSubtypes || []), kind, 'Army'])];
+    army.meta.addedSubtypes = [...new Set([...(army.meta.addedSubtypes || []), kind, MTG.c1719TextType(game,'Army')])];
     game.recalc();
     if (n > 0) game.addCounters(army, '+1/+1', n, false, player);
     game.lg(`${U.playerVerb(player, 'amass', 'amasses')} ${kind}s ${n}.`);
@@ -147,7 +147,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'cast', desc: 'Opponent spell — amass Orcs 1',
       filter: (g, self, data) => data.player !== self.ctrl,
-      run: async ctx => { await E.amass(ctx.g, ctx.you, 1, 'Orc'); },
+      run: async ctx => { await E.amass(ctx.g, ctx.you, 1, MTG.c1719TextType(ctx,'Orc')); },
     }, {
       on: 'combatDamageToPlayer', desc: 'Army hit — the Ring tempts you',
       filter: (g, self, data) => data.card.ctrl === self.ctrl && isArmy(data.card),
@@ -214,7 +214,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', desc: 'Amass Orcs 2 and steal a smaller creature', filter: etbSelf,
       run: async ctx => {
-        const army = await E.amass(ctx.g, ctx.you, 2, 'Orc');
+        const army = await E.amass(ctx.g, ctx.you, 2, MTG.c1719TextType(ctx,'Orc'));
         if (!army) return;
         ctx.g.queueTrigger({
           src: ctx.src, ctrl: ctx.you, name: 'Grishnákh: gain control',
@@ -261,7 +261,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   define('Lord of the Nazgûl', {
     statics: [{ apply: (g, self, battlefield) => {
-      for (const card of battlefield) if (card.ctrl === self.ctrl && card.hasSub('Wraith')) {
+      for (const card of battlefield) if (card.ctrl === self.ctrl && card.hasSub(MTG.c1719TextType(g,'Wraith'))) {
         card.cur.protectionFrom.push((g2, source) => !!source && !!source.meta.ringBearer);
       }
     } }],
@@ -269,16 +269,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'castIS', desc: 'Create a Wraith', filter: (g, self, data) => data.player === self.ctrl,
       run: async ctx => {
         await ctx.g.makeTokens(wraithDef, ctx.you);
-        const wraiths = ctx.g.creatures(ctx.you).filter(card => card.hasSub('Wraith'));
+        const wraiths = ctx.g.creatures(ctx.you).filter(card => card.hasSub(MTG.c1719TextType(ctx,'Wraith')));
         if (wraiths.length >= 9) basePTUntilEOT(ctx.g,
-          (g, card) => card.ctrl === ctx.you && card.hasSub('Wraith'), 9, 9, 'nazgulNine');
+          (g, card) => card.ctrl === ctx.you && card.hasSub(MTG.c1719TextType(g,'Wraith')), 9, 9, 'nazgulNine');
       },
     }],
   });
 
   define('Mauhúr, Uruk-hai Captain', {
     plusCountersAdjust: (n, g, card, self) => card.ctrl === self.ctrl &&
-      (isArmy(card) || card.hasSub('Goblin') || card.hasSub('Orc')) ? n + 1 : n,
+      (isArmy(card) || card.hasSub(MTG.c1719TextType(g,'Goblin')) || card.hasSub(MTG.c1719TextType(g,'Orc'))) ? n + 1 : n,
   });
 
   define('Mirkwood Bats', {
@@ -330,7 +330,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } }],
     triggers: [{
       on: 'castNonCreature', desc: 'Amass Orcs by mana value', filter: (g, self, data) => data.player === self.ctrl,
-      run: async ctx => { await E.amass(ctx.g, ctx.you, ctx.data.mv || 0, 'Orc'); },
+      run: async ctx => { await E.amass(ctx.g, ctx.you, ctx.data.mv || 0, MTG.c1719TextType(ctx,'Orc')); },
     }],
   });
 
@@ -338,7 +338,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'cast', zone: 'stack', desc: 'Amass, mill, and reanimate', filter: (g, self, data) => data.card === self,
       run: async ctx => {
-        await E.amass(ctx.g, ctx.you, 5, 'Orc');
+        await E.amass(ctx.g, ctx.you, 5, MTG.c1719TextType(ctx,'Orc'));
         await ctx.g.mill(ctx.you, 5);
         const pool = ctx.you.graveyard.filter(card => card.is('Creature'));
         if (!pool.length) return;
@@ -368,7 +368,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await ctx.g.move(original, 'exile');
         if (original.zone !== 'exile') return;
         const def = Object.assign({}, original.def, {
-          power: '3', toughness: '3', subtypes: ['Wraith'], colorsOverride: ['B'],
+          power: '3', toughness: '3', subtypes: [MTG.c1719TextType(ctx,'Wraith')], colorsOverride: ['B'],
           kws: [...new Set([...(original.def.kws || []), 'menace'])],
         });
         const made = await ctx.g.makeTokens(def, ctx.you, { tapped: true, attacking: ctx.src.attacking });
@@ -400,7 +400,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!player) return;
         await ctx.g.mill(player, 3);
         const n = player.graveyard.filter(card => card.is('Instant') || card.is('Sorcery')).length;
-        await E.amass(ctx.g, ctx.you, n, 'Orc');
+        await E.amass(ctx.g, ctx.you, n, MTG.c1719TextType(ctx,'Orc'));
       },
     }],
   });
@@ -415,7 +415,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     targets: [T.permanent((g, card) => !card.is('Land'), { prompt: 'Target nonland permanent', aiHint: { goal: 'bounce' } })],
     resolve: async ctx => {
       if (ctx.targets[0]) await ctx.g.move(ctx.targets[0], 'hand');
-      await E.amass(ctx.g, ctx.you, 1, 'Zombie');
+      await E.amass(ctx.g, ctx.you, 1, MTG.c1719TextType(ctx,'Zombie'));
     },
   });
 
@@ -425,7 +425,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const dealt = ctx.targets[0] ? await ctx.g.damageCreature(ctx.src, ctx.targets[0], 4) : 0;
       if (dealt > 0) await ctx.g.gainLife(ctx.you, dealt, ctx.src);
       if (ctx.targets[1]) await ctx.g.mill(ctx.targets[1], 4);
-      await E.amass(ctx.g, ctx.you, 4, 'Zombie');
+      await E.amass(ctx.g, ctx.you, 4, MTG.c1719TextType(ctx,'Zombie'));
     },
   });
 
@@ -437,20 +437,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   define('Foray of Orcs', {
     resolve: async ctx => {
-      const army = await E.amass(ctx.g, ctx.you, 2, 'Orc');
+      const army = await E.amass(ctx.g, ctx.you, 2, MTG.c1719TextType(ctx,'Orc'));
       if (army) queueForayDamage(ctx.g, ctx.you, ctx.src, army);
     },
   });
 
   define('Honor the God-Pharaoh', {
     addlCost: { discard: 1 },
-    resolve: async ctx => { await ctx.g.draw(ctx.you, 2, ctx.src); await E.amass(ctx.g, ctx.you, 1, 'Zombie'); },
+    resolve: async ctx => { await ctx.g.draw(ctx.you, 2, ctx.src); await E.amass(ctx.g, ctx.you, 1, MTG.c1719TextType(ctx,'Zombie')); },
   });
 
   define('Invade the City', {
     resolve: async ctx => {
       const n = ctx.you.graveyard.filter(card => card.is('Instant') || card.is('Sorcery')).length;
-      await E.amass(ctx.g, ctx.you, n, 'Zombie');
+      await E.amass(ctx.g, ctx.you, n, MTG.c1719TextType(ctx,'Zombie'));
     },
   });
 
@@ -460,7 +460,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await ctx.g.destroyMany(ctx.g.bf().filter(card => card.is('Creature')), { noRegen: true, source: ctx.src });
       const opponent = ctx.targets[0];
       if (!opponent || opponent.lost) return;
-      const pool = opponent.library.filter(card => card.is('Creature'));
+      const pool = (ctx.g.canSearchLibrary?.(ctx.you)===false?[]:opponent.library).filter(card => card.is('Creature'));
       const picked = pool.length ? await ctx.you.controller.decide(ctx.g, {
         type: 'chooseCards', from: pool, min: 0, max: Math.min(3, pool.length),
         prompt: `Choose up to three creatures from ${opponent.name}'s library`, search: true,
@@ -483,7 +483,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       await E7.ringTempts(ctx.g, ctx.you);
       const colors = new Set(ctx.g.creatures(ctx.you).filter(isLegendary).flatMap(card => card.colors));
-      const pool = ctx.you.library.filter(card => card.colors.some(color => colors.has(color)));
+      const pool = (ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library).filter(card => card.colors.some(color => colors.has(color)));
       if (pool.length) {
         const picked = await ctx.you.controller.decide(ctx.g, {
           type: 'chooseCards', from: pool, min: 1, max: 1, prompt: 'Search for a card sharing a color with a legendary creature',
@@ -501,13 +501,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     targets: [ownISGrave('Up to one instant or sorcery for the top of your library', true)],
     resolve: async ctx => {
       if (ctx.targets[0]) await ctx.g.move(ctx.targets[0], 'library');
-      await E.amass(ctx.g, ctx.you, 2, 'Orc');
+      await E.amass(ctx.g, ctx.you, 2, MTG.c1719TextType(ctx,'Orc'));
     },
   });
 
   define('Widespread Brutality', {
     resolve: async ctx => {
-      const army = await E.amass(ctx.g, ctx.you, 2, 'Zombie');
+      const army = await E.amass(ctx.g, ctx.you, 2, MTG.c1719TextType(ctx,'Zombie'));
       if (!army) return;
       const power = army.power;
       for (const creature of ctx.g.creatures().filter(card => !isArmy(card)).slice()) {
@@ -530,7 +530,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   define('Commence the Endgame', {
     uncounterable: true,
-    resolve: async ctx => { await ctx.g.draw(ctx.you, 2, ctx.src); await E.amass(ctx.g, ctx.you, ctx.you.hand.length, 'Zombie'); },
+    resolve: async ctx => { await ctx.g.draw(ctx.you, 2, ctx.src); await E.amass(ctx.g, ctx.you, ctx.you.hand.length, MTG.c1719TextType(ctx,'Zombie')); },
   });
 
   define('Dark Ritual', {
@@ -548,7 +548,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   define('Lazotep Plating', {
     resolve: async ctx => {
-      await E.amass(ctx.g, ctx.you, 1, 'Zombie');
+      await E.amass(ctx.g, ctx.you, 1, MTG.c1719TextType(ctx,'Zombie'));
       E.pumpAllUntilEOT(ctx.g, (g, card) => card.ctrl === ctx.you, 0, 0, ['hexproof']);
       ctx.g.untilEffects.push({ expires: 'eot', kind: 'playerHexproof', who: ctx.you });
     },
@@ -578,7 +578,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         aiHint: { kind: 'keywordChoice', target, choices: ['indestructible', 'lifelink'] },
       });
       E.grantUntilEOT(ctx.g, target, [mode === 'lifelink' ? 'lifelink' : 'indestructible']);
-      await E.amass(ctx.g, ctx.you, 1, 'Orc');
+      await E.amass(ctx.g, ctx.you, 1, MTG.c1719TextType(ctx,'Orc'));
     },
   });
 
@@ -700,8 +700,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // Enchantments and Sagas
   define('Book of Mazarbul', {
     saga: [
-      { run: async ctx => { await E.amass(ctx.g, ctx.you, 1, 'Orc'); } },
-      { run: async ctx => { await E.amass(ctx.g, ctx.you, 2, 'Orc'); } },
+      { run: async ctx => { await E.amass(ctx.g, ctx.you, 1, MTG.c1719TextType(ctx,'Orc')); } },
+      { run: async ctx => { await E.amass(ctx.g, ctx.you, 2, MTG.c1719TextType(ctx,'Orc')); } },
       { run: async ctx => { E.pumpAllUntilEOT(ctx.g, (g, card) => card.ctrl === ctx.you, 1, 0, ['menace']); } },
     ],
     triggers: [],
@@ -729,21 +729,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   define('Dreadhorde Invasion', {
     triggers: [{
       on: 'upkeep', desc: 'Lose 1 life and amass Zombies 1', filter: (g, self, data) => data.player === self.ctrl,
-      run: async ctx => { await ctx.g.loseLife(ctx.you, 1, ctx.src.name); await E.amass(ctx.g, ctx.you, 1, 'Zombie'); },
+      run: async ctx => { await ctx.g.loseLife(ctx.you, 1, ctx.src.name); await E.amass(ctx.g, ctx.you, 1, MTG.c1719TextType(ctx,'Zombie')); },
     }, {
       on: 'attacks', desc: 'Large Zombie token gains lifelink',
-      filter: (g, self, data) => data.card.ctrl === self.ctrl && data.card.isToken && data.card.hasSub('Zombie') && data.card.power >= 6,
+      filter: (g, self, data) => data.card.ctrl === self.ctrl && data.card.isToken && data.card.hasSub(MTG.c1719TextType(g,'Zombie')) && data.card.power >= 6,
       run: async ctx => { E.grantUntilEOT(ctx.g, ctx.data.card, ['lifelink']); },
     }],
   });
 
   define('March from the Black Gate', {
     triggers: [{
-      on: 'etb', desc: 'Amass Orcs 1', filter: etbSelf, run: async ctx => { await E.amass(ctx.g, ctx.you, 1, 'Orc'); },
+      on: 'etb', desc: 'Amass Orcs 1', filter: etbSelf, run: async ctx => { await E.amass(ctx.g, ctx.you, 1, MTG.c1719TextType(ctx,'Orc')); },
     }, {
       on: 'attacks', desc: 'Army attacks — amass Orcs 1',
       filter: (g, self, data) => data.card.ctrl === self.ctrl && isArmy(data.card),
-      run: async ctx => { await E.amass(ctx.g, ctx.you, 1, 'Orc'); },
+      run: async ctx => { await E.amass(ctx.g, ctx.you, 1, MTG.c1719TextType(ctx,'Orc')); },
     }],
   });
 

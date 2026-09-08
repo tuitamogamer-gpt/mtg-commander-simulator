@@ -82,6 +82,10 @@ test('svaki aktivni oracle target-opponent put ima stvarni target spec', () => {
   for (const [canonicalName, def] of targetOpponentCards) {
     if (intentionalRandom.has(def.name)) continue;
     const script = MTG.SCRIPTS[canonicalName] || {};
+    // Vindictive Lich chooses a legal subset of modes before creating its
+    // distinct opponent specs. Paid entry/death and both controller paths
+    // are exercised in c17-c19-entry.test.mjs.
+    if(canonicalName==='Vindictive Lich'){assert.equal(typeof script.triggers[0].prepareTargets,'function');continue;}
     const specs = allTargetSpecs(script);
     if (typeof script.targets === 'function') {
       const targets = script.targets(game, card(controller, canonicalName), {}, controller);

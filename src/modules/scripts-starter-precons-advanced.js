@@ -44,12 +44,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     {label:'Return all creatures as black Zombies',cost:{tap:true,rmCounter:{kind:'study',n:3},sacSelf:true},
       run:async ctx=>{await reanimateMany(ctx,ctx.g.players.flatMap(p=>p.graveyard.filter(c=>c.is('Creature'))),card=>{
         ctx.g.untilEffects.push({kind:'oracleCharacteristics',iid:card.iid,zoneVersion:card.zoneVersion,
-          timestamp:ctx.g.nextOracleTimestamp(),expires:'object',colors:['B'],creatureType:'Zombie',retain:true});ctx.g.recalc();
+          timestamp:ctx.g.nextOracleTimestamp(),expires:'object',colors:['B'],creatureType:MTG.c1719TextType(ctx,'Zombie'),retain:true});ctx.g.recalc();
       });},aiScore:()=>12},
   ]};
   SC['Unbreathing Horde']={asEnters:async(g,self)=>{
-    g.addCounters(self,'+1/+1',g.bf().filter(c=>c!==self&&c.ctrl===self.ctrl&&c.hasSub('Zombie')).length+
-      self.ctrl.graveyard.filter(c=>c.hasSub('Zombie')).length);
+    g.addCounters(self,'+1/+1',g.bf().filter(c=>c!==self&&c.ctrl===self.ctrl&&c.hasSub(MTG.c1719TextType(g,'Zombie'))).length+
+      self.ctrl.graveyard.filter(c=>c.hasSub(MTG.c1719TextType(g,'Zombie'))).length);
   },replace:[{event:'damage',prevent:true,applies:(g,d,self)=>d.target===self,
     run:(g,d,self)=>{g.removeCounters(self,'+1/+1',1);return 0;}}]};
   SC['Slate of Ancestry']={abilities:[{label:'Discard your hand; draw for your creatures',cost:{mana:'{4}',tap:true,discard:'all'},
@@ -95,7 +95,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(row.card.zone==='battlefield'&&row.card.zoneVersion===row.version)next.g.addCounters(row.card,'+1/+1',2);
     }});
   }}]};
-  SC['Dragonkin Berserker']={abilityCostReduction:(g,self,{player,ability})=>player===self.ctrl&&ability?.boast?g.creatures(player).filter(c=>c.hasSub('Dragon')).length:0,
+  SC['Dragonkin Berserker']={abilityCostReduction:(g,self,{player,ability})=>player===self.ctrl&&ability?.boast?g.creatures(player).filter(c=>c.hasSub(MTG.c1719TextType(g,'Dragon'))).length:0,
     abilities:[{label:'Boast: create a flying Dragon',boast:true,oncePerTurn:true,cost:{mana:'{4}{R}'},
       cond:(g,c)=>c.meta.oracleCombatEventHistory?.turn===g.turnNo&&c.meta.oracleCombatEventHistory.version===c.zoneVersion&&c.meta.oracleCombatEventHistory.attacks>0,
       run:async ctx=>{await ctx.g.makeTokens(dragon,ctx.you);},aiScore:()=>6}]};
@@ -114,16 +114,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },{targets:[T.opponent()]}),
     loyalty(-2,'Destroy a tapped creature',async ctx=>{await ctx.g.destroy(ctx.targets[0]);},{targets:[T.creature({filter:(g,c)=>c.tapped,aiHint:{goal:'removal'}})]}),
     loyalty(0,'Become a 6/6 Human Soldier and prevent damage',async ctx=>{
-      animate(ctx,{power:6,toughness:6,subtypes:['Human','Soldier'],retainTypes:true,retainAllSubtypes:true});
+      animate(ctx,{power:6,toughness:6,subtypes:[MTG.c1719TextType(ctx,'Human'),MTG.c1719TextType(ctx,'Soldier')],retainTypes:true,retainAllSubtypes:true});
       if(same(ctx))ctx.g.untilEffects.push({kind:'preventToCreature',iid:ctx.src.iid,zoneVersion:ctx.src.zoneVersion,expires:'eot'});
     }),
   ]};
   SC['Liliana, Untouched by Death']={abilities:[
     loyalty(1,'Mill three; drain if a Zombie was milled',async ctx=>{
-      const cards=await ctx.g.mill(ctx.you,3);if(cards.some(c=>c.hasSub('Zombie'))){await ctx.g.loseLifeOpponents(ctx.src,ctx.you,2);await ctx.g.gainLife(ctx.you,2);}
+      const cards=await ctx.g.mill(ctx.you,3);if(cards.some(c=>c.hasSub(MTG.c1719TextType(ctx,'Zombie')))){await ctx.g.loseLifeOpponents(ctx.src,ctx.you,2);await ctx.g.gainLife(ctx.you,2);}
     }),
     loyalty(-2,'Creature gets -X/-X for your Zombies',async ctx=>{
-      const n=ctx.g.bf().filter(c=>c.ctrl===ctx.you&&c.hasSub('Zombie')).length;E.pumpUntilEOT(ctx.g,ctx.targets[0],-n,-n);
+      const n=ctx.g.bf().filter(c=>c.ctrl===ctx.you&&c.hasSub(MTG.c1719TextType(ctx,'Zombie'))).length;E.pumpUntilEOT(ctx.g,ctx.targets[0],-n,-n);
     },{targets:[T.creature({aiHint:{goal:'removal'}})]}),
     loyalty(-3,'Cast Zombie spells from your graveyard this turn',async ctx=>{ctx.you.starterLilianaCastTurn=ctx.g.turnNo;}),
   ]};
@@ -135,7 +135,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },{targets:[T.opponent()]}),
   ]};
   SC['Sarkhan, the Dragonspeaker']={abilities:[
-    loyalty(1,'Become a 4/4 red Dragon',async ctx=>{animate(ctx,{power:4,toughness:4,subtypes:['Dragon'],colors:['R'],keywords:['flying','indestructible','haste']});}),
+    loyalty(1,'Become a 4/4 red Dragon',async ctx=>{animate(ctx,{power:4,toughness:4,subtypes:[MTG.c1719TextType(ctx,'Dragon')],colors:['R'],keywords:['flying','indestructible','haste']});}),
     loyalty(-3,'Deal 4 damage to a creature',async ctx=>{await ctx.g.damageAny(ctx.src,ctx.targets[0],4);},{targets:[T.creature({aiHint:{goal:'damage'}})]}),
     loyalty(-6,'Draw-step and end-step emblem',async ctx=>{
       ctx.you.emblems.push({name:'Sarkhan emblem',triggers:[

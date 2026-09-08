@@ -23,6 +23,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+    "Draconic Domination": {"icon": "🐉", "colors": ["B", "G", "R", "U", "W"], "style": "Dragons And Eminence", "blurb": "The Ur-Dragon reduces Dragon costs from the command zone and rewards a full flight with cards and a free permanent.", "set": "Commander (2017)"},
+    "Vampiric Bloodlust": {"icon": "🦇", "colors": ["B", "R", "W"], "style": "Vampire Swarm", "blurb": "Edgar creates a Vampire for each other Vampire spell, then grows the whole tribe when he attacks.", "set": "Commander (2017)"},
+    "Feline Ferocity": {"icon": "🐈", "colors": ["G", "W"], "style": "Cats And Equipment", "blurb": "Arahbo boosts a Cat before combat and can turn another attacking Cat into a trampling threat.", "set": "Commander (2017)"},
+    "Arcane Wizardry": {"icon": "🧙", "colors": ["B", "R", "U"], "style": "Wizards And Copies", "blurb": "Inalla offers temporary Wizard copies whose entry abilities build value and whose bodies can attack immediately.", "set": "Commander (2017)"},
+    "Exquisite Invention": {"icon": "⚙️", "colors": ["R", "U"], "style": "Artifact Engines", "blurb": "Saheeli creates Servos and gives the next spell a discount based on your artifact count.", "set": "Commander (2018)"},
+    "Subjective Reality": {"icon": "🔮", "colors": ["B", "U", "W"], "style": "Top-Deck And Blink", "blurb": "Aminatou sets up the top of your library and blinks owned permanents to reuse their entry abilities.", "set": "Commander (2018)"},
+    "Nature's Vengeance": {"icon": "🌿", "colors": ["B", "G", "R"], "style": "Lands And Recursion", "blurb": "Lord Windgrace turns discarded lands into extra cards and brings lands back from the graveyard.", "set": "Commander (2018)"},
+    "Adaptive Enchantment": {"icon": "🎭", "colors": ["G", "U", "W"], "style": "Auras And Enchantments", "blurb": "Estrid protects permanents with Masks, untaps enchanted permanents and rebuilds enchantments from the graveyard.", "set": "Commander (2018)"},
+    "Merciless Rage": {"icon": "🔥", "colors": ["B", "R"], "style": "Madness And Discard", "blurb": "Anje discards and draws at speed, untapping whenever you discard a card with madness.", "set": "Commander (2019)"},
+    "Primal Genesis": {"icon": "🦏", "colors": ["G", "R", "W"], "style": "Populate And Attack", "blurb": "Ghired brings a trampling Rhino and populates an attacking token every time he attacks.", "set": "Commander (2019)"},
+
       "Call the Spirits": {"icon":"👻","colors":["W","B"],"style":"Enchantments, experience and Spirits","blurb":"Daxos turns each enchantment spell into lasting experience and an army of growing Spirits.","set":"Commander (2015)"},
       "Seize Control": {"icon":"🧪","colors":["U","R"],"style":"Cost reduction and copied spells","blurb":"Mizzix makes large instants and sorceries affordable as your experience grows.","set":"Commander (2015)"},
       "Plunder the Graves": {"icon":"🍄","colors":["B","G"],"style":"Sacrifice and graveyard recursion","blurb":"Meren builds experience from fallen creatures and brings them back at your end step.","set":"Commander (2015)"},

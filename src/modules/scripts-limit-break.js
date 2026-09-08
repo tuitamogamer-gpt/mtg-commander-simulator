@@ -195,7 +195,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'etb', desc: 'Recover non-Assassin historic', filter: etbSelf,
       targets: [{
         zone: 'graveyard', what: 'card', prompt: 'Non-Assassin historic card from your graveyard', aiHint: { goal: 'recursion' },
-        filter: (g, card, ctrl) => card.owner === ctrl && historic(card) && !card.hasSub('Assassin'),
+        filter: (g, card, ctrl) => card.owner === ctrl && historic(card) && !card.hasSub(MTG.c1719TextType(g,'Assassin')),
       }],
       run: async ctx => { if (ctx.targets[0]?.zone === 'graveyard') await ctx.g.move(ctx.targets[0], 'hand'); },
     }, {
@@ -317,7 +317,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         upTo: true, prompt: 'Equipment to attach', aiHint: { goal: 'equipBest' },
       }),
       T.yourCreature({ prompt: 'Rebel to equip', aiHint: { goal: 'buff' },
-        filter: (g, card, ctrl) => card.ctrl === ctrl && card.hasSub('Rebel') }),
+        filter: (g, card, ctrl) => card.ctrl === ctrl && card.hasSub(MTG.c1719TextType(g,'Rebel')) }),
     ],
     run: async ctx => { if (ctx.targets[0] && ctx.targets[1]) await ctx.g.attach(ctx.targets[0], ctx.targets[1]); },
   }] };
@@ -342,7 +342,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     on: 'beginCombat', desc: 'Soldier power', filter: (g, self, data) => data.player === self.ctrl,
     targets: [T.yourCreature({ prompt: 'Creature gets +X/+0', aiHint: { goal: 'buff' } })],
     run: async ctx => {
-      const n = ctx.g.creatures(ctx.you).filter(card => card.hasSub('Soldier')).length;
+      const n = ctx.g.creatures(ctx.you).filter(card => card.hasSub(MTG.c1719TextType(ctx,'Soldier'))).length;
       if (ctx.targets[0]) E.pumpUntilEOT(ctx.g, ctx.targets[0], n, 0);
     },
   }, {
@@ -672,7 +672,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         chosen.some(key => !options.some(option => option.key === key))) return false;
       ctx.programModes = [...new Set(chosen)];
       if (ctx.programModes.includes('counters')) {
-        const soldiers = ctx.g.creatures(ctx.you).filter(card => card.hasSub('Soldier'));
+        const soldiers = ctx.g.creatures(ctx.you).filter(card => card.hasSub(MTG.c1719TextType(ctx,'Soldier')));
         ctx.programSoldiers = await chooseCards(ctx.g, ctx.you, soldiers, 0, 2,
           'SOLDIER Military Program: up to two Soldiers', { kind: 'counterTargets', src: ctx.src });
       }
@@ -680,7 +680,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     run: async ctx => {
       if (ctx.programModes.includes('token')) await ctx.g.makeTokens(TK.limitSoldierW, ctx.you);
       if (ctx.programModes.includes('counters')) for (const card of ctx.programSoldiers || []) {
-        if (card.zone === 'battlefield' && card.ctrl === ctx.you && card.hasSub('Soldier')) {
+        if (card.zone === 'battlefield' && card.ctrl === ctx.you && card.hasSub(MTG.c1719TextType(ctx,'Soldier'))) {
           ctx.g.addCounters(card, '+1/+1', 1, false, ctx.you);
         }
       }

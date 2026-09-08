@@ -198,6 +198,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+    "Draconic Domination": {"archetype": "Dragons And Eminence", "length": "long", "tags": ["tribal", "ramp", "combat"], "commanderImportance": 1.5},
+    "Vampiric Bloodlust": {"archetype": "Vampire Swarm", "length": "long", "tags": ["tribal", "tokens", "lifegain"], "commanderImportance": 1.5},
+    "Feline Ferocity": {"archetype": "Cats And Equipment", "length": "long", "tags": ["tribal", "artifacts", "combat"], "commanderImportance": 1.5},
+    "Arcane Wizardry": {"archetype": "Wizards And Copies", "length": "long", "tags": ["tribal", "tokens", "control"], "commanderImportance": 1.5},
+    "Exquisite Invention": {"archetype": "Artifact Engines", "length": "long", "tags": ["artifacts", "tokens", "ramp"], "commanderImportance": 1.5},
+    "Subjective Reality": {"archetype": "Top-Deck And Blink", "length": "long", "tags": ["control", "spellslinger", "tokens"], "commanderImportance": 1.5},
+    "Nature's Vengeance": {"archetype": "Lands And Recursion", "length": "long", "tags": ["ramp", "graveyard", "tokens"], "commanderImportance": 1.5},
+    "Adaptive Enchantment": {"archetype": "Auras And Enchantments", "length": "long", "tags": ["enchantments", "ramp", "control"], "commanderImportance": 1.5},
+    "Merciless Rage": {"archetype": "Madness And Discard", "length": "long", "tags": ["graveyard", "spellslinger", "sacrifice"], "commanderImportance": 1.5},
+    "Primal Genesis": {"archetype": "Populate And Attack", "length": "long", "tags": ["tokens", "ramp", "combat"], "commanderImportance": 1.5},
+
       "Call the Spirits": {"archetype":"Enchantments, experience and Spirits","length":"long","tags":["enchantments","tokens","counters"],"commanderImportance":1.5},
       "Seize Control": {"archetype":"Cost reduction and copied spells","length":"long","tags":["spellslinger","control"],"commanderImportance":1.5},
       "Plunder the Graves": {"archetype":"Sacrifice and graveyard recursion","length":"long","tags":["graveyard","sacrifice","death-triggers"],"commanderImportance":1.5},
@@ -1795,7 +1806,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (picks) actions.push({kind:'chooseCards',picks});
       }
     } else if (q.type === 'chooseOption') {
-      for (const option of q.options || []) actions.push({ kind: 'chooseOption', value: option.key, option });
+      for (const option of q.aiHint?.kind==='cardName'?(q.options||[]).filter(o=>o.key==='Forest').slice(0,1):q.options || []) actions.push({ kind: 'chooseOption', value: option.key, option });
     } else if (q.type === 'chooseMulti') {
       const min = q.min ?? q.count ?? 1, max = q.max ?? q.count ?? min;
       const pickSets = q.repeats
@@ -4151,6 +4162,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const card = entry.card;
       const ability = entry.ability || (entry.handAbility&&card.def.handAbility?.oracleForecast?card.def.handAbility:null);
       breakdown.base = ability && ability.aiScore ? clamp(ability.aiScore(game, card, player), -30, 30) : 2.4;
+      if(entry.c1719IgnoreArbiter){const search=(q.casts||[]).some(e=>/search (?:your|their|target player's|a) library/i.test(e.card.def.oracle||'')&&(()=>{const cost=game.spellCost(player,e.card,{...e.alt,from:e.from});return game.canPayMana(player,{...cost,generic:cost.generic+2},{card:e.card,castOpts:e.alt||{}});})());breakdown.base=search?25:-100;}
       const selfStatLabel = /^([+-]\d+)\/([+-]\d+)$/.exec(String(
         entry.label || ability && ability.label || '',
       ).trim());
@@ -4283,8 +4295,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } else if(hintKind==='entryCounterOpponent'){
         breakdown.choice=-20*game.bf().filter(card=>card.ctrl.idx===Number(action.value)&&card.is('Creature')).length;
       } else if(hintKind==='drawReplacementOptional'){
-        const accept=q.aiHint.mode==='skip'?!player.library.length:(q.aiHint.source?.counters.study||0)<3&&player.hand.length>2;
+        const accept=q.aiHint.mode==='abundance'?true:q.aiHint.mode==='skip'?!player.library.length:(q.aiHint.source?.counters.study||0)<3&&player.hand.length>2;
         breakdown.choice=action.value===(accept?'yes':'no')?10:0;
+      } else if(hintKind==='abundance'){
+        const wantLand=game.lands(player).length<4&&player.hand.filter(card=>card.is('Land')).length<2;
+        breakdown.choice=action.value===(wantLand?'land':'nonland')?10:0;
       } else if(hintKind==='damagePreventionSource'){
         breakdown.choice=U.OracleV8SourcePrevention.threat(game,player,action.option?.card);
       } else if(hintKind==='oracleLibraryChoice'){
@@ -5102,10 +5117,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (action.kind === 'activate') {
       const card = clone.byIid(action.entry.card.iid);
       if (!card) return null;
-      const entry = clone.activatableList(card.ctrl).find(candidate => candidate.card.iid === card.iid &&
+      const actor=action.entry.c1719IgnoreArbiter?clone.players[action.entry.c1719ActingPlayer]:card.ctrl;
+      const entry = clone.activatableList(actor).find(candidate => candidate.card.iid === card.iid &&
         candidate.idx === action.entry.idx && !!candidate.equip === !!action.entry.equip && !!candidate.crew === !!action.entry.crew &&
         !!candidate.cycling === !!action.entry.cycling && !!candidate.plot === !!action.entry.plot && !!candidate.foretell === !!action.entry.foretell &&
-        !!candidate.ninjutsu === !!action.entry.ninjutsu &&
+        !!candidate.ninjutsu === !!action.entry.ninjutsu && !!candidate.c1719IgnoreArbiter===!!action.entry.c1719IgnoreArbiter &&
         !!candidate.suspend === !!action.entry.suspend && !!candidate.handAbility === !!action.entry.handAbility && !!candidate.gyAbility === !!action.entry.gyAbility &&
         !!candidate.turnFaceUp === !!action.entry.turnFaceUp && !!candidate.manaAbility === !!action.entry.manaAbility);
       return entry ? { kind: 'activate', entry } : null;

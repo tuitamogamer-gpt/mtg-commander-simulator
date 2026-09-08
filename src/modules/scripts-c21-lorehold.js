@@ -93,14 +93,14 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     for(const p of players)await ctx.g.discard(p,p.hand.slice());for(const p of players)await ctx.g.draw(p,7);
   }}]};
   SC['Triplicate Titan']={triggers:[{on:'dies',filter:selfEvent,desc:'Three Golem artifact tokens',run:async ctx=>{
-    await ctx.g.makeTokens(['flying','vigilance','trample'].map(kw=>artifactToken('Golem',['Golem'],3,3,[kw])),ctx.you);
+    await ctx.g.makeTokens(['flying','vigilance','trample'].map(kw=>artifactToken(MTG.c1719TextType(ctx,'Golem'),[MTG.c1719TextType(ctx,'Golem')],3,3,[kw])),ctx.you);
   }}]};
   SC['Duplicant']={triggers:[enterTrigger('Exile a nontoken creature',async ctx=>{
     const target=ctx.targets[0];await ctx.g.move(target,'exile');
     if(same(ctx)&&target.zone==='exile'){(ctx.src.meta.c21Imprint||=[]).push(row(target));ctx.g.recalc();}
   },{opt:true,targets:[T.creature({filter:(g,c)=>c.is('Creature')&&!c.isToken,aiHint:{goal:'exile'}})]})],statics:[{phase:1,apply(g,c){
     const r=(c.meta.c21Imprint||[]).filter(current).filter(r=>r.card.is('Creature')).at(-1);if(!r)return;
-    const snapshot=g.snapshot(r.card);c.cur.basePower=snapshot.power;c.cur.baseToughness=snapshot.toughness;c.cur.subtypes=[...new Set(['Shapeshifter',...snapshot.subtypes.filter(t=>M.CREATURE_SUBTYPES.has(t))])];
+    const snapshot=g.snapshot(r.card);c.cur.basePower=snapshot.power;c.cur.baseToughness=snapshot.toughness;c.cur.subtypes=[...new Set([MTG.c1719TextType(g,'Shapeshifter'),...snapshot.subtypes.filter(t=>M.CREATURE_SUBTYPES.has(t))])];
   }}]};
   SC['Scrap Trawler']={triggers:[{on:'lto',desc:'Return an artifact with lesser mana value',filter:(g,c,d)=>d.card.zone==='graveyard'&&d.snap.ctrl===controllerAt(g,c,d)&&d.snap.types.includes('Artifact'),
     targets:(game,self,data)=>[grave((g,c,p)=>c.owner===p&&c.is('Artifact')&&c.mv<data.snap.mv)],

@@ -93,7 +93,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.phasedOut = false;       // ostaje fizički na battlefieldu, ali ne postoji u igri
     }
     get isCopyOf(){return this._isCopyOf;}
-    set isCopyOf(value){this._isCopyOf=value;this.copyEpoch=(this.copyEpoch||0)+1;}
+    set isCopyOf(value){if(value?.c1719TextBase){if(this.def===value)this.def=value.c1719TextBase;value=value.c1719TextBase;}if(value?.c1719Unflipped){if(this.def===value)this.def=value.c1719Unflipped;value=value.c1719Unflipped;}this._isCopyOf=value;this.copyEpoch=(this.copyEpoch||0)+1;}
     is(type) {
       if(this.zone==='stack'&&this.castMeta?.alt?.bestow)return type==='Enchantment';
       if(this.zone==='stack'&&this.castMeta?.alt?.adventure&&this.def.adventure){
@@ -744,14 +744,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const alive = this.players.filter(x => !x.lost);
       let i = this.players.indexOf(p);
       for (let k = 1; k <= this.players.length; k++) {
-        const q = this.players[(i + k) % this.players.length];
+        const q = this.players[(i + k*(this.c1719TurnDirection||1)+this.players.length*this.players.length) % this.players.length];
         if (!q.lost) return q;
       }
       return p;
     }
     apnapFrom(p) {
       const out = []; let q = p;
-      do { if (!q.lost) out.push(q); q = this.players[(this.players.indexOf(q) + 1) % this.players.length]; }
+      do { if (!q.lost) out.push(q); q = this.players[(this.players.indexOf(q) + (this.c1719TurnDirection||1)+this.players.length) % this.players.length]; }
       while (q !== p);
       return out;
     }
@@ -983,6 +983,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
       if (card.isToken && toZone !== 'battlefield') {
         for (const owner of zoneReplacement.shuffleOwners) MTG.shuffle(owner.library, this.rnd);
+        if(toZone==='exile')for(const r of zoneReplacement.c1719Slimes||[])if(r.card.zone==='battlefield'&&r.card.zoneVersion===r.version)this.addCounters(r.card,'+1/+1',r.n,false,r.ctrl);
         card.zone = 'ceased';
         if (wasBattlefield) {
           if (toZone === 'graveyard') { this.diedThisTurn.push(snap); await this.fireLeaveAndDie(card, snap, true); }
@@ -1073,6 +1074,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       } else {
         card.ctrl = card.owner;
+        if(toZone==='exile'&&opts.exileFaceDown){card.faceDown=true;card.meta.revealedTo=Array.from(opts.exileLookers||[]);}
         const arr = card.owner[toZone];
         if (opts.toBottom) arr.unshift(card); else arr.push(card);
         // The opportunity belongs to this exact new object, not forever to
@@ -1086,6 +1088,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             returnName: returnSource ? returnSource.card.name : null};
         }
         for (const owner of zoneReplacement.shuffleOwners) MTG.shuffle(owner.library, this.rnd);
+        if(toZone==='exile')for(const r of zoneReplacement.c1719Slimes||[])if(r.card.zone==='battlefield'&&r.card.zoneVersion===r.version)this.addCounters(r.card,'+1/+1',r.n,false,r.ctrl);
         if (voidReplacement && toZone === 'exile') {
           card.counters.void = (card.counters.void || 0) + 1;
           card.meta.voidExiledBy = voidReplacement.ctrl;
@@ -1353,6 +1356,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // affected controller chooses their order when several apply.
       await MTG.oracleV8ApplyEntryState(this, card);
       const additionalEntryCounters = {...opts.additionalCounters};
+      const bloodthirst=MTG.C1719?.bloodthirstCounters(this,card)||0;
+      if(bloodthirst)additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+bloodthirst;
       const c21EntryBonus = MTG.C21Rules?.entryCounters(this,card) || 0;
       if(c21EntryBonus)additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+c21EntryBonus;
       const tributeCounters = await MTG.OracleV8CreatureUpgrades?.entry(this, card) || 0;
@@ -2472,6 +2477,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     async destroy(card, opts = {}) {
       if (card.zone !== 'battlefield' || card.phasedOut) return false;
+      if (MTG.C1719?.hasArmor(this,card)) {
+        const version=card.zoneVersion;
+        await this.destroyMany([card],opts);
+        return card.zone!=='battlefield'||card.zoneVersion!==version;
+      }
       if (card.kw('indestructible') && !opts.ignoreIndestructible) {
         this.lg(`${card.name} is indestructible — destroy is prevented.`);
         this.note('gameEffect', { kind: 'keyword', keyword: 'indestructible', state: 'prevented', card, target: card, source: opts.source || null });
@@ -2490,7 +2500,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.lg(`${card.name} se regeneriše.`);
         return false;
       }
-      await this.move(card, 'graveyard');
+      await this.move(card, 'graveyard', {deferAuraStateActions:!!opts.deferAuraStateActions});
       return true;
     }
 
@@ -2501,7 +2511,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // permanenata koji su bili zaštićeni u trenutku efekta.
       const unique = [...new Set(cards)].filter(card => card && card.zone === 'battlefield' && !card.phasedOut);
       const doomed = [];
-      for (const card of unique) {
+      if (unique.some(card=>MTG.C1719?.hasArmor(this,card))) {
+        const plan=await MTG.C1719.planDestruction(this,unique,opts);
+        doomed.push(...plan.doomed);
+        await MTG.C1719.applyDestructionPreventions(this,plan.actions);
+      } else for (const card of unique) {
         if (card.kw('indestructible') && !opts.ignoreIndestructible) {
           this.lg(`${card.name} is indestructible — destroy is prevented.`);
           this.note('gameEffect', { kind: 'keyword', keyword: 'indestructible', state: 'prevented', card, target: card, source: opts.source || null });
@@ -2535,7 +2549,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
       try {
         await this.withGraveyardEntryBatch(async () => {
-          for (const card of doomed) if (card.zone === 'battlefield') await this.move(card, 'graveyard', { suppressVisualEffect: visualBatch });
+          for (const card of doomed) if (card.zone === 'battlefield') await this.move(card, 'graveyard', { suppressVisualEffect: visualBatch, deferAuraStateActions:!!opts.deferAuraStateActions });
         });
       } finally {
         this._simultaneousLeaveSources = previous;
@@ -2812,6 +2826,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (controlExiles.length) {this.exileForDepartedControl(controlExiles); return;}
       // pass 0: base
       for (const c of bf) {
+        MTG.C1719?.flipDefinition?.(c);
+        MTG.C1719?.textDefinition?.(c);
         const d = c.def;
         if(d.oracleEchoCost&&c.meta.oracleEchoController!==c.ctrl){c.meta.oracleEchoController=c.ctrl;c.meta.oracleEchoPending=true;}
         const cur = {
@@ -3121,6 +3137,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const p of this.players) {
         for (const c of p.graveyard) consider(c, z => z === 'graveyard');
         for (const c of p.exile) consider(c, z => z === 'exile');
+        for (const c of p.command) consider(c, z => z === 'command');
       }
       // "When you cast this spell" — izvor je JOŠ na stacku, pa ga gornje petlje
       // ne vide. Bez ovoga Hydroid Krasis i slični nikad ne okinu.
@@ -3788,6 +3805,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const battlefield = this.bf();
       const moves = new Map(), preventions = [], counterPairs = [], detach = [], ceaseBestow = [];
       const deathtouchChecks = [];
+      const armorDestructions = [], armorPreventions = [];
       const commanderMoves = [];
       // CR 903.9a/704.6d: make all owners' choices against the same pass,
       // in APNAP order, before moving any selected commander. Declining
@@ -3817,7 +3835,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             if (card.kw('indestructible')) {
               // Marked damage remains until cleanup. Deathtouch only checks
               // damage since the previous SBA check (CR 704.5h).
-            } else if (card.regenShield > 0) preventions.push({card});
+            } else if (MTG.C1719?.hasArmor(this,card)) armorDestructions.push(card);
+            else if (card.regenShield > 0) preventions.push({card});
             else moves.set(card, 'graveyard');
           }
         }
@@ -3827,7 +3846,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const player = card.meta?.cursedPlayer;
           const host = card.attachedTo ? this.byIid(card.attachedTo) : null;
           const spec = card.meta?.oracleBestowTarget || card.def.auraTarget?.[0];
-          const legal = player instanceof Player ? !player.lost : host && host.zone === 'battlefield' &&
+          const legal = player instanceof Player ? !player.lost&&!this.isProtectedFrom(player,card) : host && host.zone === 'battlefield' &&
             (!spec?.filter || spec.filter(this, host, card.ctrl, card)) && !card.is('Creature') && !this.isProtectedFrom(host, card);
           if (!legal) {
             if (MTG.OracleV8Permanents?.isBestowed(card)) ceaseBestow.push(card);
@@ -3866,7 +3885,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         for (const card of list) if (card !== keep) moves.set(card, 'graveyard');
       }
-      const changes = moves.size || preventions.length || counterPairs.length || detach.length || ceaseBestow.length || commanderMoves.length;
+      if (armorDestructions.length) {
+        const plan=await MTG.C1719.planDestruction(this,armorDestructions.filter(c=>!moves.has(c)),{noShield:true});
+        for(const c of plan.doomed)moves.set(c,'graveyard');
+        armorPreventions.push(...plan.actions);
+      }
+      const changes = moves.size || preventions.length || armorPreventions.length || counterPairs.length || detach.length || ceaseBestow.length || commanderMoves.length;
       // An indestructible creature may have only a deathtouch marker to clear;
       // that does not cause another pass or erase its marked damage.
       if (!changes) { for (const card of deathtouchChecks) card.deathtouched = false; return false; }
@@ -3876,6 +3900,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const batch = moves.size ? battlefield.map(card => ({card, ctrl: card.ctrl, snap: this.snapshot(card)})) : null;
       if (batch) this._simultaneousLeaveSources = previous ? previous.concat(batch) : batch;
       try {
+        if(armorPreventions.length)await MTG.C1719.applyDestructionPreventions(this,armorPreventions);
         for (const {card, pairs} of counterPairs) {
           card.counters['+1/+1'] -= pairs; card.counters['-1/-1'] -= pairs;
         }

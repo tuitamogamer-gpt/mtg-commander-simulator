@@ -306,7 +306,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     statics: [{
       apply: (g, self, bf) => {
         for (const c of bf) {
-          if (c.ctrl === self.ctrl && c.is('Creature') && (c.hasSub('Assassin') || c.hasSub('Mercenary') || c.hasSub('Rogue'))) c.cur.kw.add('deathtouch');
+          if (c.ctrl === self.ctrl && c.is('Creature') && (c.hasSub(MTG.c1719TextType(g,'Assassin')) || c.hasSub(MTG.c1719TextType(g,'Mercenary')) || c.hasSub(MTG.c1719TextType(g,'Rogue')))) c.cur.kw.add('deathtouch');
         }
       },
     }],
@@ -326,7 +326,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       {
         on: 'combatDamageToPlayer', desc: 'Hit → card + 2 Treasures',
-        filter: (g, self, d) => d.card.ctrl === self.ctrl && (d.card.hasSub('Assassin') || d.card.hasSub('Mercenary') || d.card.hasSub('Rogue')),
+        filter: (g, self, d) => d.card.ctrl === self.ctrl && (d.card.hasSub(MTG.c1719TextType(g,'Assassin')) || d.card.hasSub(MTG.c1719TextType(g,'Mercenary')) || d.card.hasSub(MTG.c1719TextType(g,'Rogue'))),
         run: async ctx => {
           const victim = ctx.data.player;
           if (!victim) return;
@@ -434,7 +434,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
     statics: [{
       apply: (g, self, bf) => {
-        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature') && c.hasSub('Rat')) c.cur.kw.add('deathtouch');
+        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature') && c.hasSub(MTG.c1719TextType(g,'Rat'))) c.cur.kw.add('deathtouch');
       },
     }],
   };
@@ -535,7 +535,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               const x = bf.find(y => y.iid === iid);
               if (!x) return;
               if (!x.cur.types.includes('Creature')) x.cur.types.push('Creature');
-              x.cur.subtypes.push('Construct', 'Assassin');
+              x.cur.subtypes.push(MTG.c1719TextType(g2,'Construct'), MTG.c1719TextType(g2,'Assassin'));
               x.cur.basePower = 3; x.cur.baseToughness = 3;
             },
           });
@@ -871,7 +871,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const card of cards) for (const type of (card.cur ? card.cur.subtypes : card.def.subtypes || [])) {
       counts.set(type, (counts.get(type) || 0) + (card.ctrl === you || card.owner === you ? 1 : 0));
     }
-    if (!counts.size) counts.set('Elf', 1);
+    if (!counts.size) counts.set(MTG.c1719TextType(g,'Elf'), 1);
     const options = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(([type, n]) => ({ key: type, label: `${type} (${n})`, keepValue: n }));
     const picked = await you.controller.decide(g, {
@@ -924,7 +924,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Celeborn the Wise'] = {
     triggers: [
       {
-        on: 'attackersDeclared', desc: 'Scry 1', filter: (g, self, d) => d.player === self.ctrl && d.attackers.some(a => a.hasSub('Elf')),
+        on: 'attackersDeclared', desc: 'Scry 1', filter: (g, self, d) => d.player === self.ctrl && d.attackers.some(a => a.hasSub(MTG.c1719TextType(g,'Elf'))),
         run: async ctx => { await E.scry(ctx.g, ctx.you, 1); },
       },
       {
@@ -1036,13 +1036,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Elvish Archdruid'] = {
     statics: [{
       apply: (g, self, bf) => {
-        for (const c of bf) if (c.ctrl === self.ctrl && c !== self && c.hasSub('Elf')) { c.cur.power++; c.cur.toughness++; }
+        for (const c of bf) if (c.ctrl === self.ctrl && c !== self && c.hasSub(MTG.c1719TextType(g,'Elf'))) { c.cur.power++; c.cur.toughness++; }
       },
     }],
     mana: {
       cost: { tap: true },
       produce: (g, c, p) => {
-        const n = g.bf().filter(x => x.ctrl === p && x.hasSub('Elf')).length;
+        const n = g.bf().filter(x => x.ctrl === p && x.hasSub(MTG.c1719TextType(g,'Elf'))).length;
         return n > 0 ? [{ G: n }] : [];
       },
     },
@@ -1067,15 +1067,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Elvish Warmaster'] = {
     triggers: [{
       on: 'etb', desc: 'Elf token', oncePerTurn: true,
-      filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card !== self && d.card.hasSub('Elf'),
+      filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card !== self && d.card.hasSub(MTG.c1719TextType(g,'Elf')),
       run: async ctx => { await ctx.g.makeTokens('elfWarrior', ctx.you); },
     }],
     abilities: [{
       label: 'Elves +2/+2 deathtouch', cost: { mana: '{5}{G}{G}' },
       run: async ctx => {
-        for (const c of ctx.g.creatures(ctx.you)) if (c.hasSub('Elf')) E.pumpUntilEOT(ctx.g, c, 2, 2, ['deathtouch']);
+        for (const c of ctx.g.creatures(ctx.you)) if (c.hasSub(MTG.c1719TextType(ctx,'Elf'))) E.pumpUntilEOT(ctx.g, c, 2, 2, ['deathtouch']);
       },
-      aiScore: (g, c, p) => g.creatures(p).filter(x => x.hasSub('Elf')).length >= 4 && g.phase === 'main1' ? 6 : 0.5,
+      aiScore: (g, c, p) => g.creatures(p).filter(x => x.hasSub(MTG.c1719TextType(g,'Elf'))).length >= 4 && g.phase === 'main1' ? 6 : 0.5,
     }],
   };
   SC['Erestor of the Council'] = {
@@ -1143,7 +1143,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => {
         const n = ctx.src.counters['+1/+1'] || 0;
         if (!n) return;
-        for (const c of ctx.g.creatures(ctx.you)) if (c !== ctx.src && c.hasSub('Elf')) E.pumpUntilEOT(ctx.g, c, n, n, ['vigilance']);
+        for (const c of ctx.g.creatures(ctx.you)) if (c !== ctx.src && c.hasSub(MTG.c1719TextType(ctx,'Elf'))) E.pumpUntilEOT(ctx.g, c, n, n, ['vigilance']);
       },
       aiScore: (g, c, p) => (c.counters['+1/+1'] || 0) >= 3 && g.phase === 'main1' ? 6 : 0.5,
     }],
@@ -1174,13 +1174,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         on: 'etb', desc: 'Elf from graveyard', filter: etbSelf,
         targets: [{ zone: 'graveyard', what: 'card', prompt: 'Target Elf card from your graveyard',
-          filter: (g, card) => card.def.subtypes.includes('Elf'), aiHint: { goal: 'reanimate' } }],
+          filter: (g, card) => card.def.subtypes.includes(MTG.c1719TextType(g,'Elf')), aiHint: { goal: 'reanimate' } }],
         run: async ctx => { await elkReturn(ctx); },
       },
       {
         on: 'attacks', desc: 'Elf from graveyard', filter: (g, self, d) => d.card === self,
         targets: [{ zone: 'graveyard', what: 'card', prompt: 'Target Elf card from your graveyard',
-          filter: (g, card) => card.def.subtypes.includes('Elf'), aiHint: { goal: 'reanimate' } }],
+          filter: (g, card) => card.def.subtypes.includes(MTG.c1719TextType(g,'Elf')), aiHint: { goal: 'reanimate' } }],
         run: async ctx => { await elkReturn(ctx); },
       },
     ],
@@ -1228,7 +1228,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     statics: [{
       apply: (g, self, bf) => {
         for (const c of bf) {
-          if (c.ctrl === self.ctrl && (c.hasSub('Beast') || c.hasSub('Bird'))) g.grantWard(c, { mana: '{1}' });
+          if (c.ctrl === self.ctrl && (c.hasSub(MTG.c1719TextType(g,'Beast')) || c.hasSub(MTG.c1719TextType(g,'Bird')))) g.grantWard(c, { mana: '{1}' });
         }
       },
     }],
@@ -1249,7 +1249,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Search for a land to hand', cost: { mana: '{2}{G}', rmCounter: { kind: '+1/+1', n: 1 } },
       run: async ctx => {
-        const pool = ctx.you.library.filter(c => c.is('Land'));
+        const pool = (ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library).filter(c => c.is('Land'));
         if (!pool.length) return;
         const pick = await ctx.you.controller.decide(ctx.g, {
           type: 'chooseCards', from: pool, min: 0, max: 1, prompt: 'Land to hand', aiHint: { kind: 'searchBasic' }, search: true,
@@ -1564,7 +1564,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const o1 = await E.chooseOpponent(ctx.g, ctx.you, {
         prompt: 'Sylvan Offering — who gets the Treefolk?', goal: 'gift',
       });
-      const treeDef = Object.assign({}, TK.beast33, { name: 'Treefolk', subtypes: ['Treefolk'], power: String(x), toughness: String(x) });
+      const treeDef = Object.assign({}, TK.beast33, { name: MTG.c1719TextType(ctx,'Treefolk'), subtypes: [MTG.c1719TextType(ctx,'Treefolk')], power: String(x), toughness: String(x) });
       await ctx.g.makeTokens(treeDef, ctx.you);
       if (o1) await ctx.g.makeTokens(treeDef, o1);
       const o2 = await E.chooseOpponent(ctx.g, ctx.you, {
@@ -1595,7 +1595,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Lothlórien Blade'] = {
     equip: '{5}',
-    equipAlt: { filter: c => c.hasSub('Elf'), cost: '{2}' },
+    equipAlt: { filter: c => c.hasSub(MTG.c1719TextType(c,'Elf')), cost: '{2}' },
     triggers: [{
       on: 'attacks', desc: 'Damage to the defender',
       filter: (g, self, d) => {
@@ -1672,7 +1672,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (!host) return;
         host.cur.basePower = 0; host.cur.baseToughness = 4;
         host.cur.kw.clear();
-        host.cur.subtypes = host.cur.subtypes.filter(type => !MTG.CREATURE_SUBTYPES.has(type)).concat('Treefolk');
+        host.cur.subtypes = host.cur.subtypes.filter(type => !MTG.CREATURE_SUBTYPES.has(type)).concat(MTG.c1719TextType(g,'Treefolk'));
         host.cur.allCreatureTypes = false;
         host.cur.allCreatureTypesFromOtherEffects = false;
         host.cur.suppressPrintedChangeling = true;

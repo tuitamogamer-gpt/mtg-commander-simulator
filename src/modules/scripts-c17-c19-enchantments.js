@@ -1,0 +1,28 @@
+'use strict';
+var MTG=globalThis.MTG||(globalThis.MTG={});
+(function(){
+ const M=MTG,SC=M.SCRIPTS,T=M.T,C=M.C1719;
+ const umbra=(n,extra={})=>({umbraArmor:true,auraTarget:[T.creature()],attachGrant:(g,c,h)=>{h.cur.power+=n;h.cur.toughness+=n;},...extra});
+ SC['Abundance']={oracleDrawReplacements:[{kind:'draw-replacement-v8',contract:'ordered-draw-replacement',mode:'abundance',optional:true}]};
+ SC['Wild Growth']={auraTarget:[T.permanent((g,c)=>c.is('Land'))],c1719LandMana:{attached:true,fixed:{G:1}}};
+ SC['Overgrowth']={auraTarget:[T.permanent((g,c)=>c.is('Land'))],c1719LandMana:{attached:true,fixed:{G:2}}};
+ SC["Dawn's Reflection"]={auraTarget:[T.permanent((g,c)=>c.is('Land'))],c1719LandMana:{attached:true,any:2}};
+ SC["Mirari's Wake"]={c1719LandMana:{same:true},statics:[{apply:(g,c,bf)=>{for(const x of bf)if(x.ctrl===c.ctrl&&x.is('Creature')){x.cur.power++;x.cur.toughness++;}}}]};
+ SC['Zendikar Resurgent']={c1719LandMana:{same:true},triggers:[{on:'cast',filter:(g,c,d)=>d.player===c.ctrl&&g.castHasType(d.card,d.so?.castOpts||{},'Creature'),desc:'Draw for the creature spell',run:ctx=>C.draw(ctx,ctx.you,1)}]};
+ SC['Eel Umbra']=umbra(1);
+ SC['Bear Umbra']=umbra(2,{attachGrant:(g,c,h)=>{h.cur.power+=2;h.cur.toughness+=2;h.cur.extraTriggers.push({on:'attacks',filter:(g,c,d)=>d.card===c,desc:'Untap all your lands',run:ctx=>{for(const l of ctx.g.lands(ctx.you))ctx.g.untap(l);}});}});
+ SC['Snake Umbra']=umbra(1,{attachGrant:(g,c,h)=>{h.cur.power++;h.cur.toughness++;h.cur.extraTriggers.push({on:'damageToPlayer',filter:(g,c,d)=>d.src===c&&d.player!==c.ctrl,opt:true,desc:'Draw a card',run:ctx=>C.draw(ctx,ctx.you,1)});}});
+ SC['Octopus Umbra']={umbraArmor:true,auraTarget:[T.creature()],attachGrant:(g,c,h)=>{h.cur.extraTriggers.push({on:'attacks',filter:(g,c,d)=>d.card===c,opt:true,desc:'Tap a creature with power 8 or less',targets:[T.creature({filter:(g,c)=>c.power<=8,aiHint:{goal:'tap'}})],run:ctx=>ctx.targets[0]&&ctx.g.tap(ctx.targets[0])});},statics:[{phase:7,apply:(g,c)=>{const h=C.host(g,c);if(h?.zone==='battlefield'){h.cur.basePower=8;h.cur.baseToughness=8;}}}]};
+ SC['Archetype of Imagination']={statics:[{apply:(g,c,bf)=>{for(const x of bf)if(x.ctrl===c.ctrl&&x.is('Creature'))x.cur.kw.add('flying');}},{phase:5,apply:(g,c,bf)=>{for(const x of bf)if(x.ctrl!==c.ctrl&&x.is('Creature'))Set.prototype.delete.call(x.cur.kw,'flying');}}]};
+ SC['Dictate of Kruphix']={triggers:[{on:'drawStep',desc:'Draw an additional card',run:ctx=>C.draw(ctx,ctx.data.player,1)}]};
+ SC['Ground Seal']={c1719GroundSeal:true,triggers:[C.enterTrigger('Draw a card',ctx=>C.draw(ctx,ctx.you,1))]};
+ SC['Righteous Authority']={auraTarget:[T.creature()],attachGrant:(g,c,h)=>{h.cur.power+=h.ctrl.hand.length;h.cur.toughness+=h.ctrl.hand.length;},triggers:[{on:'drawStep',filter:(g,c,d)=>C.host(g,c)?.ctrl===d.player,desc:'The enchanted creature controller draws a card',run:ctx=>C.draw(ctx,ctx.data.player,1)}]};
+ const creatureAuras=(g,p)=>g.bf().filter(a=>a.ctrl===p&&a.hasSub('Aura')&&C.host(g,a)?.is('Creature')).length;
+ SC["Sage's Reverie"]={auraTarget:[T.creature()],attachGrant:(g,c,h)=>{const n=creatureAuras(g,c.ctrl);h.cur.power+=n;h.cur.toughness+=n;},triggers:[C.enterTrigger('Draw for Auras attached to creatures',ctx=>C.draw(ctx,ctx.you,creatureAuras(ctx.g,ctx.you)))]};
+ for(const [name,n,kw]of [['Vow of Flight',2,'flying'],['Vow of Wildness',3,'trample']])SC[name]={auraTarget:[T.creature()],attachGrant:(g,c,h)=>{h.cur.power+=n;h.cur.toughness+=n;h.cur.kw.add(kw);(h.cur.c14CannotAttack||=[]).push(c.ctrl);}};
+ const siegeEntry=async(g,c)=>{c.meta.c1719Siege=await C.option({g,src:c,you:c.ctrl},[{key:'khans',label:'Khans'},{key:'dragons',label:'Dragons'}],'choose Khans or Dragons');if(!['khans','dragons'].includes(c.meta.c1719Siege))throw Error('Invalid Siege choice');};
+ SC['Palace Siege']={asEnters:siegeEntry,triggers:[{on:'upkeep',filter:(g,c,d)=>C.own(g,c,d)&&c.meta.c1719Siege==='khans',desc:'Return a creature card to your hand',targets:[C.grave((g,c,p)=>c.owner===p&&c.is('Creature'))],run:ctx=>ctx.targets[0]&&ctx.g.move(ctx.targets[0],'hand')},{on:'upkeep',filter:(g,c,d)=>C.own(g,c,d)&&c.meta.c1719Siege==='dragons',desc:'Each opponent loses 2 life and you gain 2 life',run:async ctx=>{await ctx.g.loseLifeOpponents(ctx.src,ctx.you,2,ctx.src.name);await ctx.g.gainLife(ctx.you,2);}}]};
+ SC['Monastery Siege']={asEnters:siegeEntry,c1719SiegeTax:true,triggers:[{on:'drawStep',filter:(g,c,d)=>C.own(g,c,d)&&c.meta.c1719Siege==='khans',desc:'Draw a card, then discard a card',run:async ctx=>{await C.draw(ctx,ctx.you,1);const picked=await C.choose(ctx.g,ctx.you,ctx.you.hand,1,1,'Monastery Siege: discard a card','discard');await ctx.g.discard(ctx.you,picked);}}]};
+ SC['Finest Hour']={exalted:true,triggers:[{on:'attackersDeclared',filter:(g,c,d)=>d.player===c.ctrl&&d.attackers.length===1&&d.attackers[0].is('Creature')&&c.ctrl.turnState.combatPhaseCount===1,desc:'Untap the lone attacker and add a combat',prepareTargets:ctx=>{ctx.c1719Lone=C.row(ctx.data.attackers[0]);},run:ctx=>{if(C.current(ctx.c1719Lone))ctx.g.untap(ctx.c1719Lone.card);C.addCombat(ctx);}}]};
+ M.applyOracleMechanic(SC['Finest Hour'],{kind:'exalted'});
+})();

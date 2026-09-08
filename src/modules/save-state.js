@@ -70,7 +70,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   // Every card is written as "what it is" plus "how it sits on the table".
   function captureCard(card) {
-    const identity = { name: (card.faceDown && !card.isToken ? card.meta.faceDownDef : card.def)?.name };
+    const face=card.faceDown&&!card.isToken?card.meta.faceDownDef||card.def:card.def;
+    const identity = { name: (face?.c1719Unflipped||face)?.name };
     if (card.isToken) {
       identity.token = tokenKeyOf(card.def);
       // A token copy of a real card keeps that card's name; anything else that
@@ -143,6 +144,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Turn state is script-visible scratch too: it can hold card and player
       // references. Only the portable part is kept.
       turnState: plainMeta(player.turnState),
+      c1719PreviousTurnAttacks:(player.c1719PreviousTurnAttacks||[]).slice(),
+      c1719CurrentTurnAttacks:(player.c1719CurrentTurnAttacks||[]).slice(),
     };
   }
 
@@ -212,6 +215,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (emblems) blockers.push(`${emblems} emblem(s)`);
     if ((game._additionalPhases || []).length) blockers.push('a scheduled additional phase');
     if ((game.extraTurns || []).length || game._extraTurnAnchor) blockers.push('a scheduled extra turn');
+    if(MTG.C1719?.snapshotBlockers)blockers.push(...MTG.C1719.snapshotBlockers(game));
     if (MTG.C1516?.snapshotBlockers) blockers.push(...MTG.C1516.snapshotBlockers(game));
     return blockers;
   };
@@ -258,6 +262,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return {
       format: FORMAT,
       turnNo: game.turnNo,
+      c1719TurnDirection:game.c1719TurnDirection||1,
       damageHistory: captureDamageHistory(game),
       phase: game.phase,
       step: game.step,
@@ -311,6 +316,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       Number.isSafeInteger(card.timestamp) && card.timestamp >= 0 && card.timestamp <= MTG.MAX_RESTORED_TIMESTAMP),
       'invalid card timestamps.');
 
+    assert(snapshot.c1719TurnDirection===undefined||[1,-1].includes(snapshot.c1719TurnDirection),'invalid turn direction.');
+    for(const p of snapshot.players)for(const key of ['c1719PreviousTurnAttacks','c1719CurrentTurnAttacks'])assert(p[key]===undefined||Array.isArray(p[key])&&p[key].every(i=>Number.isInteger(i)&&i>=0&&i<snapshot.players.length),'invalid attack history.');
+    game.c1719TurnDirection=snapshot.c1719TurnDirection||1;
+    game.c1719Permissions=[];game.c1719GraveGrants=[];
     game.battlefield.length = 0;
     for (const player of game.players) {
       for (const zone of ['library', 'hand', 'graveyard', 'exile', 'command']) player[zone].length = 0;
@@ -403,6 +412,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.coloredOnlyPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
       player.poolMeta = [];
       player.turnState = Object.assign(player.freshTurnState(), saved.turnState || {});
+      player.c1719PreviousTurnAttacks=(saved.c1719PreviousTurnAttacks||[]).slice();
+      player.c1719CurrentTurnAttacks=(saved.c1719CurrentTurnAttacks||[]).slice();
     }
 
     game.turnNo = snapshot.turnNo;

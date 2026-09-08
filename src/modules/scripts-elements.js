@@ -19,7 +19,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     anyGraveyard: !!anyGraveyard, upTo: !!upTo,
     aiHint: { kind: 'gyRecur' },
   });
-  const chooseType = async (g, player, source, fallback = 'Elemental') => {
+  const chooseType = async (g, player, source, fallback = MTG.c1719TextType(g,'Elemental')) => {
     const counts = {};
     for (const card of g.creatures(player).concat(player.hand.filter(card => card.is('Creature')))) {
       for (const subtype of (card.cur ? card.cur.subtypes : card.def.subtypes || [])) {
@@ -90,12 +90,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Ashling, the Limitless'] = {
     grantAltCosts: {
       filter: (g, source, card, player) => player === source.ctrl && card.zone === 'hand' &&
-        isPermanentSpell(card) && card.hasSub('Elemental'),
+        isPermanentSpell(card) && card.hasSub(MTG.c1719TextType(g,'Elemental')),
       make: () => ({ label: 'Evoke {4}', altCostStr: '{4}', evoke: true }),
     },
     triggers: [{
       on: 'sacrificed', desc: 'Elemental echo',
-      filter: (g, self, data) => data.player === self.ctrl && !data.card.isToken && data.card.hasSub('Elemental'),
+      filter: (g, self, data) => data.player === self.ctrl && !data.card.isToken && data.card.hasSub(MTG.c1719TextType(g,'Elemental')),
       run: async ctx => {
         const made = await ctx.g.copyPermanentToken(ctx.data.card, ctx.you, { haste: true });
         if (!made.length) return;
@@ -123,7 +123,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   const elementalMana = {
     cost: { tap: true }, produce: [{ ANY: true, n: 2 }], restrictAbilities: true,
-    restrict: (g, action) => action && action.card && action.card.hasSub && action.card.hasSub('Elemental'),
+    restrict: (g, action) => action && action.card && action.card.hasSub && action.card.hasSub(MTG.c1719TextType(g,'Elemental')),
   };
   SC.Flamebraider = { mana: elementalMana };
   SC.Smokebraider = { mana: elementalMana };
@@ -133,7 +133,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'etb', desc: 'Look at top four', filter: etbSelf,
       run: async ctx => {
         const top = ctx.you.library.slice(-4);
-        const eligible = top.filter(card => card.hasSub('Elemental') || card.hasSub('Island') || card.hasSub('Mountain'));
+        const eligible = top.filter(card => card.hasSub(MTG.c1719TextType(ctx,'Elemental')) || card.hasSub('Island') || card.hasSub('Mountain'));
         const pick = eligible.length ? await ctx.you.controller.decide(ctx.g, {
           type: 'chooseCards', from: eligible, min: 0, max: 1,
           prompt: 'Eclipsed Flamekin: Elemental, Island, or Mountain to hand',
@@ -165,15 +165,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Incandescent Soulstoke'] = {
     statics: [{ apply: (g, self, bf) => {
-      for (const card of bf) if (card !== self && card.ctrl === self.ctrl && card.is('Creature') && card.hasSub('Elemental')) {
+      for (const card of bf) if (card !== self && card.ctrl === self.ctrl && card.is('Creature') && card.hasSub(MTG.c1719TextType(g,'Elemental'))) {
         card.cur.power += 1; card.cur.toughness += 1;
       }
     } }],
     abilities: [{
       label: 'Put an Elemental from hand', cost: { tap: true, mana: '{1}{R}' },
-      cond: (g, self, player) => player.hand.some(card => card.is('Creature') && card.hasSub('Elemental')),
+      cond: (g, self, player) => player.hand.some(card => card.is('Creature') && card.hasSub(MTG.c1719TextType(g,'Elemental'))),
       run: async ctx => {
-        const pool = ctx.you.hand.filter(card => card.is('Creature') && card.hasSub('Elemental'));
+        const pool = ctx.you.hand.filter(card => card.is('Creature') && card.hasSub(MTG.c1719TextType(ctx,'Elemental')));
         const pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: pool, min: 1, max: 1,
           prompt: 'Incandescent Soulstoke: Elemental to put onto the battlefield', aiHint: { kind: 'bestCard' } });
         if (!pick[0]) return;
@@ -190,7 +190,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Risen Reef'] = {
     triggers: [{
       on: 'etb', desc: 'Reef reveal',
-      filter: (g, self, data) => data.card.ctrl === self.ctrl && data.card.hasSub('Elemental'),
+      filter: (g, self, data) => data.card.ctrl === self.ctrl && data.card.hasSub(MTG.c1719TextType(g,'Elemental')),
       run: async ctx => {
         const top = ctx.you.library.at(-1); if (!top) return;
         if (top.is('Land')) {
@@ -230,10 +230,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', desc: 'Elemental damage', filter: etbSelf,
       targets: [{ what: 'any', prompt: 'Any target', aiHint: { goal: 'removal' } }],
-      run: async ctx => { if (ctx.targets[0]) await ctx.g.damageAny(ctx.src, ctx.targets[0], ctx.g.creatures(ctx.you).filter(card => card.hasSub('Elemental')).length); },
+      run: async ctx => { if (ctx.targets[0]) await ctx.g.damageAny(ctx.src, ctx.targets[0], ctx.g.creatures(ctx.you).filter(card => card.hasSub(MTG.c1719TextType(ctx,'Elemental'))).length); },
     }, {
       on: 'landfall', desc: 'Counter and draw', filter: (g, self, data) => data.card.ctrl === self.ctrl,
-      targets: [T.yourCreature({ prompt: '+1/+1 on an Elemental', filter: (g, card, ctrl) => card.zone === 'battlefield' && card.is('Creature') && card.ctrl === ctrl && card.hasSub('Elemental'), aiHint: { goal: 'buff' } })],
+      targets: [T.yourCreature({ prompt: '+1/+1 on an Elemental', filter: (g, card, ctrl) => card.zone === 'battlefield' && card.is('Creature') && card.ctrl === ctrl && card.hasSub(MTG.c1719TextType(g,'Elemental')), aiHint: { goal: 'buff' } })],
       run: async ctx => {
         if (ctx.targets[0]) ctx.g.addCounters(ctx.targets[0], '+1/+1', 1, false, ctx.you);
         if (ctx.g.lands(ctx.you).length >= 8) await ctx.g.draw(ctx.you, 1);
@@ -301,7 +301,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Horde of Notions'] = {
     abilities: [{
       label: 'Play Elemental from your graveyard', cost: { mana: '{W}{U}{B}{R}{G}' },
-      targets: [graveTarget('Target Elemental card in your graveyard', (g, card) => card.hasSub('Elemental'))],
+      targets: [graveTarget('Target Elemental card in your graveyard', (g, card) => card.hasSub(MTG.c1719TextType(g,'Elemental')))],
       run: async ctx => {
         const card = ctx.targets[0]; if (!card || card.zone !== 'graveyard' || card.owner !== ctx.you) return;
         await U.OracleV8PlayPermissions.castOne(ctx, [card], { free: true }, {});
@@ -320,7 +320,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Mass of Mysteries'] = {
     triggers: [{
       on: 'beginCombat', desc: 'Grant myriad', filter: (g, self, data) => data.player === self.ctrl,
-      targets: [T.yourCreature({ prompt: 'Another Elemental gets myriad', filter: (g, card, ctrl, source) => card.zone === 'battlefield' && card.is('Creature') && card.ctrl === ctrl && card !== source && card.hasSub('Elemental'), aiHint: { goal: 'buff' } })],
+      targets: [T.yourCreature({ prompt: 'Another Elemental gets myriad', filter: (g, card, ctrl, source) => card.zone === 'battlefield' && card.is('Creature') && card.ctrl === ctrl && card !== source && card.hasSub(MTG.c1719TextType(g,'Elemental')), aiHint: { goal: 'buff' } })],
       run: async ctx => { if (ctx.targets[0]) E.grantUntilEOT(ctx.g, ctx.targets[0], ['myriad']); },
     }],
   };
@@ -403,7 +403,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{ on: 'etb', desc: 'Plants', filter: etbSelf,
       run: async ctx => { await ctx.g.makeTokens('elementsPlant01', ctx.you, { n: ctx.g.lands(ctx.you).length }); } },
       { on: 'landfall', desc: 'Grow Plants', filter: (g, self, data) => data.card.ctrl === self.ctrl,
-        run: async ctx => { for (const plant of ctx.g.creatures(ctx.you).filter(card => card.hasSub('Plant'))) ctx.g.addCounters(plant, '+1/+1', 1, true, ctx.you); ctx.g.recalc(); } }],
+        run: async ctx => { for (const plant of ctx.g.creatures(ctx.you).filter(card => card.hasSub(MTG.c1719TextType(ctx,'Plant')))) ctx.g.addCounters(plant, '+1/+1', 1, true, ctx.you); ctx.g.recalc(); } }],
   };
   SC.Impulsivity = {
     gyAbility: encore('{7}{R}{R}'),
@@ -415,7 +415,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{ on: 'landfall', desc: '5/5 Elemental', filter: (g, self, data) => data.card.ctrl === self.ctrl,
       run: async ctx => { await ctx.g.makeTokens('elementsElemental55', ctx.you); } }, {
       on: 'dies', desc: 'Three damage', filter: (g, self, data) => data.snap.ctrl === self.ctrl && data.snap.types.includes('Creature') &&
-        (data.card === self || data.card.hasSub('Elemental')),
+        (data.card === self || data.card.hasSub(MTG.c1719TextType(g,'Elemental'))),
       targets: [{ what: 'any', prompt: 'Any target', aiHint: { goal: 'removal' } }],
       run: async ctx => { if (ctx.targets[0]) await ctx.g.damageAny(ctx.src, ctx.targets[0], 3); },
     }],
@@ -472,8 +472,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Return of the Wildspeaker'] = {
     modes: { pick: 1, list: [{ label: 'Draw cards' }, { label: 'Non-Humans +3/+3' }] },
     resolve: async ctx => {
-      if ((ctx.mode || [0])[0] === 0) await ctx.g.draw(ctx.you, Math.max(0, ...ctx.g.creatures(ctx.you).filter(card => !card.hasSub('Human')).map(card => card.power)));
-      else E.pumpAllUntilEOT(ctx.g, card => card.ctrl === ctx.you && card.is('Creature') && !card.hasSub('Human'), 3, 3);
+      if ((ctx.mode || [0])[0] === 0) await ctx.g.draw(ctx.you, Math.max(0, ...ctx.g.creatures(ctx.you).filter(card => !card.hasSub(MTG.c1719TextType(ctx,'Human'))).map(card => card.power)));
+      else E.pumpAllUntilEOT(ctx.g, card => card.ctrl === ctx.you && card.is('Creature') && !card.hasSub(MTG.c1719TextType(ctx,'Human')), 3, 3);
     },
   };
   SC['Kindred Summons'] = {
@@ -588,7 +588,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Flamekin Village'] = {
     producesColors: ['R'],
     asEnters: async (g, card) => {
-      const pool = card.ctrl.hand.filter(other => other !== card && other.hasSub('Elemental'));
+      const pool = card.ctrl.hand.filter(other => other !== card && other.hasSub(MTG.c1719TextType(g,'Elemental')));
       const reveal = pool.length ? await card.ctrl.controller.decide(g, { type: 'chooseCards', from: pool, min: 0, max: 1,
         prompt: 'Reveal an Elemental for Flamekin Village', aiHint: { kind: 'revealLand' } }) : [];
       card.meta.revealedElemental = !!reveal[0];
@@ -617,7 +617,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Primal Beyond'] = {
     producesColors: COLORS,
     asEnters: async (g, card) => {
-      const pool = card.ctrl.hand.filter(other => other !== card && other.hasSub('Elemental'));
+      const pool = card.ctrl.hand.filter(other => other !== card && other.hasSub(MTG.c1719TextType(g,'Elemental')));
       const reveal = pool.length ? await card.ctrl.controller.decide(g, { type: 'chooseCards', from: pool, min: 0, max: 1,
         prompt: 'Reveal an Elemental for Primal Beyond', aiHint: { kind: 'revealLand' } }) : [];
       card.meta.revealedElemental = !!reveal[0];
@@ -625,7 +625,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     entersTapped: (g, card) => !card.meta.revealedElemental,
     mana: [{ cost: { tap: true }, produce: [{ C: 1 }] }, {
       cost: { tap: true }, produce: [{ ANY: true, n: 1 }], restrictAbilities: true,
-      restrict: (g, action) => action && action.card && action.card.hasSub && action.card.hasSub('Elemental'),
+      restrict: (g, action) => action && action.card && action.card.hasSub && action.card.hasSub(MTG.c1719TextType(g,'Elemental')),
     }],
   };
 
@@ -643,7 +643,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!ashling) return result;
       const alt = { label: 'Evoke {4} (Ashling)', altCostStr: '{4}', evoke: true, ashlingEvoke: true };
       for (const card of player.hand) {
-        if (!isPermanentSpell(card) || !card.hasSub('Elemental') || result.some(entry => entry.card === card && entry.alt && entry.alt.ashlingEvoke)) continue;
+        if (!isPermanentSpell(card) || !card.hasSub(MTG.c1719TextType(player,'Elemental')) || result.some(entry => entry.card === card && entry.alt && entry.alt.ashlingEvoke)) continue;
         if (!this.canCastTiming(player, card, alt) || !this.canPayMana(player, U.parseCost('{4}'), { card })) continue;
         const specs = this.spellTargetSpecs(card, alt, player) || [];
         if (specs.some(spec => !spec.upTo && this.legalTargets(spec, card, player).length < (spec.count ?? 1))) continue;

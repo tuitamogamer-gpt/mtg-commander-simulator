@@ -90,7 +90,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   }};
   SC["Pyromancer's Goggles"]={mana:{manual:true,c21Goggles:true,restrict:()=>true,cost:{tap:true},produce:[{R:1}]}};
   SC['Metallurgic Summonings']={triggers:[{on:'cast',filter:castIS,desc:'Create a Construct equal to the spell mana value',run:async ctx=>{
-    const n=ctx.g.stackSpellManaValue(ctx.data.so);await ctx.g.makeTokens(artifactToken('Construct',['Construct'],n,n),ctx.you);
+    const n=ctx.g.stackSpellManaValue(ctx.data.so);await ctx.g.makeTokens(artifactToken(MTG.c1719TextType(ctx,'Construct'),[MTG.c1719TextType(ctx,'Construct')],n,n),ctx.you);
   }}],abilities:[{label:'Return all instants and sorceries from your graveyard',cost:{mana:'{3}{U}{U}',exileSelf:true},cond:(g,c,p)=>g.bf().filter(x=>x.ctrl===p&&x.is('Artifact')).length>=6,
     run:async ctx=>{for(const c of ctx.you.graveyard.filter(isIS))await ctx.g.move(c,'hand');},aiScore:()=>6}]};
 })();

@@ -1587,7 +1587,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (effect.action === 'search-library') {
       const type = effect.what.toLowerCase();
-      const candidates=ctx.you.library.filter(card => {
+      const candidates=(ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library).filter(card => {
         if(effect.name&&card.name!==effect.name)return false;
         if(effect.filter&&!genericResolutionTargetSpec(ctx,effect.filter,[],0).filter(ctx.g,card,ctx.you,ctx.src))return false;
         if (effect.maxMv !== null && card.mv > effect.maxMv) return false;
@@ -3652,6 +3652,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     return script;
   }
+
+  MTG.compileOracleTextDefinition=(base,implementation,raw)=>compileOracleScript({id:base.oracleBatch||'text-change'},{raw,implementation,oracleId:base.oracleId,semanticClass:base.semanticClass,implementedKeywords:base.implementedKeywords||[],oracleContracts:base.oracleContracts||[]});
 
   MTG.registerOracleBatch = function (batch) {
     if (!batch || !batch.id || !Array.isArray(batch.cards)) {

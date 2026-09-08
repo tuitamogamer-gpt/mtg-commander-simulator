@@ -67,7 +67,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     const milled=[];for(const p of ctx.g.apnapFrom(ctx.g.turnPlayer||ctx.you)){const cards=p.library.slice(-3);await ctx.g.mill(p,3);milled.push(...cards.filter(c=>c.zone==='graveyard').map(row));}
     const picked=await choose(ctx.g,ctx.you,milled.filter(r=>current(r)&&r.card.is('Creature')).map(r=>r.card),0,2,'Stitcher Geralf: exile up to two milled creatures','bestCard');
     let n=0;for(const c of picked){await ctx.g.move(c,'exile');if(c.zone==='exile')n+=c.power;}
-    await ctx.g.makeTokens(token('Zombie',['Zombie'],n,n,['U']),ctx.you);
+    await ctx.g.makeTokens(token(MTG.c1719TextType(ctx,'Zombie'),[MTG.c1719TextType(ctx,'Zombie')],n,n,['U']),ctx.you);
   },aiScore:()=>5}]};
   SC['Well of Ideas']={triggers:[enterTrigger('Draw two cards',ctx=>ctx.g.draw(ctx.you,2)),{
     on:'drawStep',desc:'Additional cards for the active player',run:ctx=>ctx.g.draw(ctx.data.player,ctx.data.player===ctx.you?2:1),

@@ -41,9 +41,9 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   }};
   SC['Wolfbriar Elemental']={multikicker:'{G}',triggers:[enterTrigger('Create Wolves for each multikicker payment',ctx=>ctx.g.makeTokens(wolf,ctx.you,{n:ctx.data.card.castMeta?.paidTimes||0}))]};
   SC["Wolfcaller's Howl"]={triggers:[{on:'upkeep',filter:(g,c,d)=>d.player===c.ctrl,desc:'Wolves for opponents with four or more cards',run:ctx=>ctx.g.makeTokens(wolf,ctx.you,{n:C.opponents(ctx).filter(p=>p.hand.length>=4).length})}]};
-  SC["Wren's Run Packmaster"]={abilities:[{label:'Create a 2/2 Wolf',cost:{mana:'{2}{G}'},run:ctx=>ctx.g.makeTokens(wolf,ctx.you),aiScore:()=>4}],statics:[{apply:(g,c,bf)=>{for(const x of bf)if(x.ctrl===c.ctrl&&x.hasSub('Wolf'))x.cur.kw.add('deathtouch');}}],triggers:[
+  SC["Wren's Run Packmaster"]={abilities:[{label:'Create a 2/2 Wolf',cost:{mana:'{2}{G}'},run:ctx=>ctx.g.makeTokens(wolf,ctx.you),aiScore:()=>4}],statics:[{apply:(g,c,bf)=>{for(const x of bf)if(x.ctrl===c.ctrl&&x.hasSub(MTG.c1719TextType(g,'Wolf')))x.cur.kw.add('deathtouch');}}],triggers:[
     enterTrigger('Champion another Elf or sacrifice this creature',async ctx=>{
-      const [elf]=await choose(ctx.g,ctx.you,ctx.g.bf().filter(c=>c!==ctx.src&&c.ctrl===ctx.you&&c.hasSub('Elf')),0,1,'Champion another Elf');
+      const [elf]=await choose(ctx.g,ctx.you,ctx.g.bf().filter(c=>c!==ctx.src&&c.ctrl===ctx.you&&c.hasSub(MTG.c1719TextType(ctx,'Elf'))),0,1,'Champion another Elf');
       if(!elf){if(same(ctx))await ctx.g.sacrifice(ctx.you,ctx.src);return;}
       await ctx.g.move(elf,'exile');if(elf.zone==='exile')(ctx.sourceMeta.c14Champion||=[]).push(row(elf));
     }),{on:'lto',filter:(g,c,d)=>d.card===c,desc:'Return the championed Elf',run:async ctx=>{

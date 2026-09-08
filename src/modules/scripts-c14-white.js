@@ -12,7 +12,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   M.TOKEN_IMG['Kor Soldier']='d9c95045-e806-4933-94a4-cb52ae1a215b';
   M.TOKEN_IMG['Stoneforged Blade']='59a00cac-53ae-46ad-8468-e6d1db40b266';
   SC['Nahiri, the Lithomancer']={abilities:[
-    loyalty(2,'Create a Kor Soldier and attach an Equipment',async ctx=>{const made=await ctx.g.makeTokens(token('Kor Soldier',['Kor','Soldier'],1,1,['W']),ctx.you);const kor=made[0];if(!kor)return;
+    loyalty(2,'Create a Kor Soldier and attach an Equipment',async ctx=>{const made=await ctx.g.makeTokens(token('Kor Soldier',[MTG.c1719TextType(ctx,'Kor'),MTG.c1719TextType(ctx,'Soldier')],1,1,['W']),ctx.you);const kor=made[0];if(!kor)return;
       const [equipment]=await choose(ctx.g,ctx.you,ctx.g.bf().filter(c=>c.ctrl===ctx.you&&c.hasSub('Equipment')&&!c.is('Creature')&&!ctx.g.isProtectedFrom(kor,c)),0,1,'Nahiri: attach an Equipment');if(equipment)await ctx.g.attach(equipment,kor);
     }),
     loyalty(-2,'Put an Equipment from hand or graveyard onto the battlefield',async ctx=>{const [c]=await choose(ctx.g,ctx.you,[...ctx.you.hand,...ctx.you.graveyard].filter(c=>c.hasSub('Equipment')),0,1,'Nahiri: put an Equipment onto the battlefield');if(c)await ctx.g.move(c,'battlefield',{ctrl:ctx.you});}),
@@ -31,20 +31,20 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
       C.control(ctx.g,host,ctx.data.player);ctx.g.untap(host);
     }}]};
   SC['Benevolent Offering']={resolve:async ctx=>{
-    const spirit=token('Spirit',['Spirit'],1,1,['W'],['flying']);await C.offering(ctx,p=>ctx.g.makeTokens(spirit,p,{n:3}),'choose an opponent to create Spirits');
+    const spirit=token(MTG.c1719TextType(ctx,'Spirit'),[MTG.c1719TextType(ctx,'Spirit')],1,1,['W'],['flying']);await C.offering(ctx,p=>ctx.g.makeTokens(spirit,p,{n:3}),'choose an opponent to create Spirits');
     const p=await C.choosePlayer(ctx,C.opponents(ctx),'choose an opponent to gain life');const entries=[ctx.you,...(p?[p]:[])].map(p=>({p,n:ctx.g.creatures(p).length*2}));for(const {p,n}of entries)await ctx.g.gainLife(p,n);
   }};
   SC['Celestial Crusader']={splitSecond:true,statics:[{apply:(g,c,bf)=>{for(const x of bf)if(x!==c&&x.is('Creature')&&x.colors.includes('W')){x.cur.power++;x.cur.toughness++;}}}]};
   SC['Containment Priest']={c14Priest:true};
   SC['Grand Abolisher']={c14Abolisher:true,oppCantCastYourTurn:(g,c)=>!c.cur?.abilitiesDisabled};
-  SC['Decree of Justice']={resolve:ctx=>ctx.g.makeTokens(token('Angel',['Angel'],4,4,['W'],['flying']),ctx.you,{n:ctx.x}),cycling:{cost:'{2}{W}'},triggers:[{
+  SC['Decree of Justice']={resolve:ctx=>ctx.g.makeTokens(token(MTG.c1719TextType(ctx,'Angel'),[MTG.c1719TextType(ctx,'Angel')],4,4,['W'],['flying']),ctx.you,{n:ctx.x}),cycling:{cost:'{2}{W}'},triggers:[{
     on:'cycled',zone:'cycling-source',filter:(g,c,d)=>d.card===c,desc:'Pay X to create X Soldiers',run:async ctx=>{
       const max=ctx.g.maxAffordableX(ctx.you,M.parseCost('{X}'),ctx.src);const n=await ctx.you.controller.decide(ctx.g,{type:'chooseX',min:0,max,card:ctx.src,prompt:'Decree of Justice: pay X for Soldiers',aiHint:{kind:'chooseX',card:ctx.src}});
       if(!Number.isInteger(n)||n<0||n>max)throw Error('Invalid cycling X');if(n&&await ctx.g.payMana(ctx.you,M.parseCost('{'+n+'}')))await ctx.g.makeTokens(soldier,ctx.you,{n});
     }}]};
   SC['Fell the Mighty']={targets:[T.creature()],resolve:ctx=>ctx.g.destroyMany(ctx.g.creatures().filter(c=>c.power>ctx.targets[0].power))};
   SC['Kemba, Kha Regent']={triggers:[{on:'upkeep',filter:(g,c,d)=>d.player===c.ctrl,desc:'Create Cats for attached Equipment',run:async ctx=>{
-    const snap=same(ctx)?ctx.g.snapshot(ctx.src):ctx.src.battlefieldLKI?.get(ctx.sourceZoneVersion);const n=(snap?.attachedSources||[]).filter(r=>r.snap.subtypes.includes('Equipment')).length;await ctx.g.makeTokens(token('Cat',['Cat'],2,2,['W']),ctx.you,{n});
+    const snap=same(ctx)?ctx.g.snapshot(ctx.src):ctx.src.battlefieldLKI?.get(ctx.sourceZoneVersion);const n=(snap?.attachedSources||[]).filter(r=>r.snap.subtypes.includes('Equipment')).length;await ctx.g.makeTokens(token(MTG.c1719TextType(ctx,'Cat'),[MTG.c1719TextType(ctx,'Cat')],2,2,['W']),ctx.you,{n});
   }}]};
   SC["Marshal's Anthem"]={multikicker:'{1}{W}',statics:[{apply:(g,c,bf)=>{for(const x of bf)if(x.ctrl===c.ctrl&&x.is('Creature')){x.cur.power++;x.cur.toughness++;}}}],triggers:[enterTrigger('Return creatures for each multikicker payment',async ctx=>{
     await ctx.g.withBattlefieldEntryBatch(async()=>{for(const c of flat(ctx.targets))await ctx.g.move(c,'battlefield',{ctrl:ctx.you});});

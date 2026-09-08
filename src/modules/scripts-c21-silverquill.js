@@ -9,7 +9,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   SC['Gideon, Champion of Justice']={abilities:[
     loyalty(1,'Add loyalty for an opponent’s creatures',ctx=>{if(same(ctx))ctx.g.addCounters(ctx.src,'loyalty',ctx.g.creatures(ctx.targets[0]).length,false,ctx.you);},{targets:[T.opponent()]}),
     loyalty(0,'Become an indestructible Human Soldier',async ctx=>{if(!same(ctx))return;
-      ctx.g.addOracleAnimation(ctx.src,{types:['Creature'],subtypes:['Human','Soldier'],retainTypes:true,retainAllSubtypes:true,keywords:['indestructible'],c21LoyaltyPT:true,temporary:true});
+      ctx.g.addOracleAnimation(ctx.src,{types:['Creature'],subtypes:[MTG.c1719TextType(ctx,'Human'),MTG.c1719TextType(ctx,'Soldier')],retainTypes:true,retainAllSubtypes:true,keywords:['indestructible'],c21LoyaltyPT:true,temporary:true});
       ctx.g.untilEffects.push({kind:'preventToCreature',iid:ctx.src.iid,zoneVersion:ctx.sourceZoneVersion,expires:'eot'});ctx.g.recalc();
     }),
     loyalty(-15,'Exile all other permanents',async ctx=>{await ctx.g.withC21ExileBatch(async()=>{for(const c of ctx.g.bf().slice())if(!(c===ctx.src&&same(ctx)))await ctx.g.move(c,'exile');});}),
@@ -68,7 +68,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     else await ctx.g.destroyMany(ctx.g.creatures().filter(c=>!(c===ctx.src&&same(ctx))));
   })]};
   SC['Teysa, Envoy of Ghosts']={kws:['vigilance'],statics:[{apply:(g,c)=>c.cur.protectionFrom.push((g,source)=>source.is('Creature'))}],triggers:[{on:'combatDamageToPlayer',filter:(g,c,d)=>d.player===c.ctrl&&d.card.is('Creature'),
-    desc:'Destroy the creature and create a Spirit',prepareTargets:ctx=>{ctx.c21Damager=row(ctx.data.card);},run:async ctx=>{const r=ctx.c21Damager;if(current(r)&&r.card.zone==='battlefield')await ctx.g.destroy(r.card);await ctx.g.makeTokens(token('Spirit',['Spirit'],1,1,['W','B'],['flying']),ctx.you);}}]};
+    desc:'Destroy the creature and create a Spirit',prepareTargets:ctx=>{ctx.c21Damager=row(ctx.data.card);},run:async ctx=>{const r=ctx.c21Damager;if(current(r)&&r.card.zone==='battlefield')await ctx.g.destroy(r.card);await ctx.g.makeTokens(token(MTG.c1719TextType(ctx,'Spirit'),[MTG.c1719TextType(ctx,'Spirit')],1,1,['W','B'],['flying']),ctx.you);}}]};
   SC['Oreskos Explorer']={triggers:[enterTrigger('Search for Plains for opponents with more lands',ctx=>search(ctx,ctx.you,c=>c.hasSub('Plains'),opponents(ctx).filter(p=>ctx.g.lands(p).length>ctx.g.lands(ctx.you).length).length))]};
   SC['Incarnation Technique']={demonstrate:true,resolve:async ctx=>{await ctx.g.mill(ctx.you,5);await reanimate(ctx,ctx.you);}};
   SC['Infernal Offering']={resolve:async ctx=>{

@@ -72,7 +72,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const original = card.def;
     card.meta.characteristicOriginalDef = original;
     card.def = Object.assign({}, original, {
-      subtypes: [...new Set([...(original.subtypes || []), 'Zombie'])],
+      subtypes: [...new Set([...(original.subtypes || []), MTG.c1719TextType(game,'Zombie')])],
       colorsOverride: [...new Set([...(card.colors || []), 'B'])],
     });
     game.recalc();
@@ -174,7 +174,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // effect may independently allow the same card to be cast without a Zombie.
   MTG.gravecrawlerCastAllowed = (game, player, card, castOpts = {}) =>
     card.zone === 'graveyard' && player.graveyard.includes(card) && card.def.flashback?.gravecrawler &&
-    game.canCastTiming(player, card, castOpts) && game.creatures(player).some(creature => creature.hasSub('Zombie'));
+    game.canCastTiming(player, card, castOpts) && game.creatures(player).some(creature => creature.hasSub(MTG.c1719TextType(game,'Zombie')));
 
   SC['Hedron Crab'] = { triggers: [{
     on: 'landfall', desc: 'Target player mills three', filter: (g, self, data) => data.card.ctrl === self.ctrl,
@@ -277,7 +277,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Amphin Mutineer'] = {
     triggers: [{
       on: 'etb', desc: 'Exile a non-Salamander creature', filter: etbSelf,
-      targets: [T.creature({ filter: (g, card) => card.zone === 'battlefield' && card.is('Creature') && !card.hasSub('Salamander'),
+      targets: [T.creature({ filter: (g, card) => card.zone === 'battlefield' && card.is('Creature') && !card.hasSub(MTG.c1719TextType(g,'Salamander')),
         upTo: true, prompt: 'Non-Salamander creature to exile', aiHint: { goal: 'removal' } })],
       run: async ctx => { const target = ctx.targets[0]; if (!target) return; const ctrl = target.ctrl; await ctx.g.move(target, 'exile'); await ctx.g.makeTokens(salamander, ctrl); },
     }],
@@ -419,7 +419,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           await ctx.g.discard(opponent, picked); await ctx.g.loseLife(opponent, 2, ctx.src.name);
         }
       } else {
-        const pool = ctx.g.players.flatMap(player => player.graveyard).filter(card => card.is('Creature') && !card.hasSub('Dragon'));
+        const pool = ctx.g.players.flatMap(player => player.graveyard).filter(card => card.is('Creature') && !card.hasSub(MTG.c1719TextType(ctx,'Dragon')));
         const card = await chooseOne(ctx.g, ctx.you, pool, 'Choose a non-Dragon creature to reanimate', { kind: 'gyRecur' });
         if (card) { await reanimate(ctx.g, ctx.you, card); await ctx.g.loseLife(ctx.you, 2, ctx.src.name); }
       }

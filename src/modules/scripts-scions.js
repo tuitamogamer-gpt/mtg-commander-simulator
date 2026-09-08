@@ -133,7 +133,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       run: async ctx => { await ctx.g.makeTokens('birdU', ctx.you); },
     }, {
       on: 'attackersDeclared', desc: 'Scry 2 for Birds',
-      filter: (g, self, d) => d.player === self.ctrl && d.attackers.some(a => a.hasSub('Bird')),
+      filter: (g, self, d) => d.player === self.ctrl && d.attackers.some(a => a.hasSub(MTG.c1719TextType(g,'Bird'))),
       run: async ctx => { await E.scry(ctx.g, ctx.you, 2); },
     }],
   };
@@ -150,7 +150,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         filter: (g, self, d) => d.player === self.ctrl,
         run: async ctx => {
           const opponents = new Set((ctx.you.turnState.combatDamageHits || [])
-            .filter(hit => hit.ctrl === ctx.you && (hit.card === ctx.src || hit.card.hasSub('Dragon')))
+            .filter(hit => hit.ctrl === ctx.you && (hit.card === ctx.src || hit.card.hasSub(MTG.c1719TextType(ctx,'Dragon'))))
             .map(hit => hit.player));
           const x = opponents.size;
           if (x) { await ctx.g.draw(ctx.you, x); await ctx.g.loseLife(ctx.you, x, 'Estinien'); }
@@ -298,7 +298,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
     resolve: async ctx => {
       const dragons = (ctx.mode || [0])[0] === 0;
-      await ctx.g.destroyMany(ctx.g.bf().filter(card => card.is('Creature') && card.hasSub('Dragon') === dragons));
+      await ctx.g.destroyMany(ctx.g.bf().filter(card => card.is('Creature') && card.hasSub(MTG.c1719TextType(ctx,'Dragon')) === dragons));
     },
   };
   SC['Into the Story'] = {
@@ -430,7 +430,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       prepareTargets: rememberEquippedHost,
       run: counterRememberedHost,
     }],
-    attachGrant: (g, self, host) => { addType(host, 'Wizard'); },
+    attachGrant: (g, self, host) => { addType(host, MTG.c1719TextType(g,'Wizard')); },
   };
 
   SC["Blue Mage's Cane"] = {
@@ -468,7 +468,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (use === 'yes') await ctx.g.castSpell(ctx.you, copy, { from: 'copy', alt });
       },
     }],
-    attachGrant: (g, self, host) => { host.cur.toughness += 2; addType(host, 'Wizard'); },
+    attachGrant: (g, self, host) => { host.cur.toughness += 2; addType(host, MTG.c1719TextType(g,'Wizard')); },
   };
 
   SC["Dancer's Chakrams"] = {
@@ -476,7 +476,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [jobSelect],
     attachGrant: (g, self, host) => {
       host.cur.power += 2; host.cur.toughness += 2; host.cur.kw.add('lifelink');
-      addType(host, 'Performer');
+      addType(host, MTG.c1719TextType(g,'Performer'));
       for (const c of g.bf()) {
         if (c.ctrl !== self.ctrl || c === host || !c.commander || !c.is('Creature')) continue;
         c.cur.power += 2; c.cur.toughness += 2; c.cur.kw.add('lifelink');
@@ -495,7 +495,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       })],
       run: async ctx => { if (ctx.targets[0]) ctx.targets[0].tapped = false; },
     }],
-    attachGrant: (g, self, host) => { host.cur.power += 1; addType(host, 'Cleric'); },
+    attachGrant: (g, self, host) => { host.cur.power += 1; addType(host, MTG.c1719TextType(g,'Cleric')); },
   };
 
   SC["Reaper's Scythe"] = {
@@ -511,7 +511,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     attachGrant: (g, self, host) => {
       const n = self.counters['soul'] || 0;
       host.cur.power += n; host.cur.toughness += n;
-      addType(host, 'Assassin');
+      addType(host, MTG.c1719TextType(g,'Assassin'));
     },
   };
 
@@ -573,7 +573,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await ctx.g.draw(ctx.you, 2);
       await ctx.g.loseLife(ctx.you, 2, 'Circle of Power');
       await ctx.g.makeTokens('wizard01', ctx.you);
-      for (const c of ctx.g.creatures(ctx.you)) if (c.hasSub('Wizard')) E.pumpUntilEOT(ctx.g, c, 1, 0, ['lifelink']);
+      for (const c of ctx.g.creatures(ctx.you)) if (c.hasSub(MTG.c1719TextType(ctx,'Wizard'))) E.pumpUntilEOT(ctx.g, c, 1, 0, ['lifelink']);
     },
   };
 
@@ -607,7 +607,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const host = self.attachedTo && g.byIid(self.attachedTo);
         if (!host || host.zone !== 'battlefield') return;
         host.cur.basePower = 4; host.cur.baseToughness = 2;
-        host.cur.colors = ['B']; host.cur.subtypes = ['Dragon'];
+        host.cur.colors = ['B']; host.cur.subtypes = [MTG.c1719TextType(g,'Dragon')];
       },
     }],
     attachGrant: (g, self, host) => {
@@ -723,7 +723,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { run: async ctx => { await ctx.g.makeTokens('moogle12', ctx.you, { n: 2 }); } },
       { run: async ctx => { ctx.src.meta.mogCopyThroughTurnsStarted = ctx.you.turnsStarted + 1; } },
       { run: async ctx => { ctx.src.meta.mogCopyThroughTurnsStarted = ctx.you.turnsStarted + 1; } },
-      { run: async ctx => { for (const c of ctx.g.creatures(ctx.you)) if (c !== ctx.src && c.hasSub('Moogle')) ctx.g.addCounters(c, '+1/+1', 2); } },
+      { run: async ctx => { for (const c of ctx.g.creatures(ctx.you)) if (c !== ctx.src && c.hasSub(MTG.c1719TextType(ctx,'Moogle'))) ctx.g.addCounters(c, '+1/+1', 2); } },
     ],
     triggers: [{
       on: 'castNonCreature', desc: 'II–III: copy a token',

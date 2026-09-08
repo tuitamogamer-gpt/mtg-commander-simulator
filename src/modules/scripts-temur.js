@@ -7,7 +7,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
   const etbSelf = (g, self, data) => data.card === self;
   const attacksSelf = (g, self, data) => data.card === self;
-  const isDragon = card => !!card && card.hasSub && card.hasSub('Dragon');
+  const isDragon = card => !!card && card.hasSub && card.hasSub(MTG.c1719TextType(card,'Dragon'));
   const ownDragon = (self, card) => !!card && card.ctrl === self.ctrl && isDragon(card);
   const tok = (name, subtypes, power, toughness, kws, colors, extra) => Object.assign({
     name, cost: null, super: [], types: ['Creature'], subtypes,
@@ -21,7 +21,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const graveTarget = (prompt, filter, opts) => Object.assign({
     zone: 'graveyard', what: 'card', prompt, filter, aiHint: { kind: 'gyRecur' },
   }, opts || {});
-  const chooseType = async (g, player, source, defaultType = 'Dragon') => {
+  const chooseType = async (g, player, source, defaultType = MTG.c1719TextType(g,'Dragon')) => {
     const counts = {};
     for (const card of g.creatures(player).concat(player.hand.filter(card => card.is('Creature')))) {
       for (const subtype of (card.cur ? card.cur.subtypes : card.def.subtypes || [])) counts[subtype] = (counts[subtype] || 0) + 1;
@@ -92,7 +92,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const base = target.isCopyOf || target.def;
     const def = Object.assign({}, base, {
       types: [...new Set([...(base.types || []), 'Creature'])],
-      subtypes: [...new Set([...(base.subtypes || []), 'Dragon'])],
+      subtypes: [...new Set([...(base.subtypes || []), MTG.c1719TextType(g,'Dragon')])],
       power: '4', toughness: '4', kws: [...new Set([...(base.kws || []), 'flying'])],
     });
     return g.makeTokens(def, player, { copyOf: def });
@@ -138,7 +138,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!card.meta.characteristicOriginalDef) card.meta.characteristicOriginalDef = card.def;
       const base = target.isCopyOf || target.def; card.isCopyOf = base;
       card.def = Object.assign({}, base, {
-        subtypes: [...new Set([...(base.subtypes || []), 'Dragon'])],
+        subtypes: [...new Set([...(base.subtypes || []), MTG.c1719TextType(g,'Dragon')])],
         kws: [...new Set([...(base.kws || []), 'flying'])],
       });
       if (base.asEnters && base !== card.meta.characteristicOriginalDef && (card.meta._frostkiteCopyDepth || 0) < 3) {
@@ -146,7 +146,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await base.asEnters(g, card);
       }
       card.def = Object.assign({}, card.def, {
-        subtypes: [...new Set([...(card.def.subtypes || []), 'Dragon'])],
+        subtypes: [...new Set([...(card.def.subtypes || []), MTG.c1719TextType(g,'Dragon')])],
         kws: [...new Set([...(card.def.kws || []), 'flying'])],
       });
       g.recalc();
@@ -168,7 +168,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     costMods: dragonDiscount.costMods,
     triggers: [{ on: 'attacks', desc: 'Become a 5/5 Dragon', filter: attacksSelf,
       onlyIf: (g, self) => g.creatures(self.ctrl).filter(isDragon).length >= 3,
-      run: async ctx => { setBaseUntilEOT(ctx.g, ctx.src, 5, 5, ['flying'], ['Dragon']); } }],
+      run: async ctx => { setBaseUntilEOT(ctx.g, ctx.src, 5, 5, ['flying'], [MTG.c1719TextType(ctx,'Dragon')]); } }],
   };
   SC['Sarkhan, Soul Aflame'] = {
     costMods: dragonDiscount.costMods,
@@ -226,7 +226,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'etb', desc: 'Seize a Human or artifact', filter: etbSelf,
       targets: [permanentTarget('Opponent Human or artifact', (g, card, ctrl) =>
-        card.ctrl !== ctrl && (card.is('Artifact') || card.hasSub('Human')))],
+        card.ctrl !== ctrl && (card.is('Artifact') || card.hasSub(MTG.c1719TextType(g,'Human'))))],
       run: async ctx => {
         const target = ctx.targets[0]; if (!target || target.zone !== 'battlefield') return;
         target.meta._opportunistic = { by: ctx.src.iid, original: target.ctrl, taker: ctx.you };

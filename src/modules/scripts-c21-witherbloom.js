@@ -13,7 +13,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   SC['Tivash, Gloom Summoner']={triggers:[{on:'endStep',filter:(g,c,d)=>own(g,c,d)&&gained(c.ctrl)>0,onlyIf:(g,c,d,ctx)=>gained(ctx.you)>0,
     desc:'Pay life gained this turn for a flying Demon',run:async ctx=>{const n=gained(ctx.you);if(ctx.you.life<n)return;
       if(await option(ctx,[{key:'yes',label:'Pay '+n+' life for a '+n+'/'+n+' Demon'},{key:'no',label:'Decline'}],'create a Demon',ctx.you,'optTrigger')==='yes'){
-        await ctx.g.loseLife(ctx.you,n,ctx.src.name);await ctx.g.makeTokens(token('Demon',['Demon'],n,n,['B'],['flying']),ctx.you);
+        await ctx.g.loseLife(ctx.you,n,ctx.src.name);await ctx.g.makeTokens(token(MTG.c1719TextType(ctx,'Demon'),[MTG.c1719TextType(ctx,'Demon')],n,n,['B'],['flying']),ctx.you);
       }
     }}]};
   SC['Sproutback Trudge']={c21EndStepCast:true,selfCostAdjust:(g,c,p)=>-gained(p),triggers:[{on:'endStep',zone:'graveyard',filter:(g,c,d)=>own(g,c,d)&&gained(c.ctrl)>0,

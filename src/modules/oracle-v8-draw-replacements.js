@@ -1,5 +1,5 @@
 ((M)=>{
- const staticShapes={multiply:['n','exceptFirst'],redirect:['opponents','exceptFirst'],skip:['optional'],'win-empty':[],'empty-hand':['n','loseLife'],'look-three':['rest'],'reveal-creatures':[],impulse:['n'],study:['optional']};
+ const staticShapes={multiply:['n','exceptFirst'],redirect:['opponents','exceptFirst'],skip:['optional'],'win-empty':[],'empty-hand':['n','loseLife'],'look-three':['rest'],'reveal-creatures':[],impulse:['n'],study:['optional'],abundance:['optional']};
  function compile(operation){
   const allowed=Object.hasOwn(staticShapes,operation.mode)?staticShapes[operation.mode]:null;
   if(operation.kind!=='draw-replacement-v8'||operation.contract!=='ordered-draw-replacement'||!allowed||Object.keys(operation).some(key=>!['kind','mode','contract',...allowed].includes(key)))throw new Error('Invalid draw replacement descriptor');
@@ -28,7 +28,7 @@
    const answer=await p.controller.decide(game,{type:'chooseOption',prompt:'Replace this draw with dredge?',options:[{key:'draw',label:'Draw a card'},{key:'dredge:'+row.src.iid,label:'Dredge '+row.operation.n+' — '+row.src.name,card:row.src}],aiHint:{kind:'dredge',player:p,cards:[row.src]}});
    if(!['draw','dredge:'+row.src.iid].includes(answer))throw new Error('Invalid dredge choice');return answer!=='draw';
   }
-  const answer=await p.controller.decide(game,{type:'chooseOption',prompt:row.src.name+': replace this draw?',options:[{key:'yes',label:row.operation.mode==='study'?'Add a study counter':'Skip this draw'},{key:'no',label:'Draw a card'}],aiHint:{kind:'drawReplacementOptional',mode:row.operation.mode,source:row.src}});
+  const answer=await p.controller.decide(game,{type:'chooseOption',prompt:row.src.name+': replace this draw?',options:[{key:'yes',label:row.operation.mode==='abundance'?'Choose land or nonland':row.operation.mode==='study'?'Add a study counter':'Skip this draw'},{key:'no',label:'Draw a card'}],aiHint:{kind:'drawReplacementOptional',mode:row.operation.mode,source:row.src}});
   if(!['yes','no'].includes(answer))throw new Error('Invalid optional draw replacement choice');return answer==='yes';
  }
  async function selectedCards(game,p,from,prompt){
@@ -49,7 +49,7 @@
   if(row.operation.optional&&!await optional(game,p,row))return unit(game,p,srcCard,opts,nextUsed,physicalDraw,root);
   const {operation:op,src,controller}=row;if(row.temporary&&!op.allTurn)row.temporary.consumed=true;
   if(op.mode==='multiply'||op.mode==='empty-hand'){
-   let n=0;for(let i=0;i<op.n;i++)n+=await unit(game,p,srcCard,opts,new Set(nextUsed),physicalDraw,root);
+   const n=await group(game,p,op.n,srcCard,opts,nextUsed,physicalDraw,root);
    if(op.loseLife&&!p.lost)await game.loseLife(p,op.loseLife,src);return n;
   }
   if(op.mode==='redirect')return controller&&!controller.lost?unit(game,controller,srcCard,opts,nextUsed,physicalDraw,root):0;
@@ -58,6 +58,13 @@
   if(op.mode==='win-empty'){for(const opponent of game.players)if(opponent!==p&&!opponent.lost)await game.playerLoses(opponent,src.name);return 0;}
   if(op.mode==='dredge'){
    await game.mill(p,op.n);if(src.zone==='graveyard')await game.move(src,'hand');await game.emit('dredged',{player:p,card:src,amount:op.n,srcCard});return 0;
+  }
+  if(op.mode==='abundance'){
+   const answer=await p.controller.decide(game,{type:'chooseOption',player:p,prompt:src.name+': choose land or nonland',options:[{key:'land',label:'Land'},{key:'nonland',label:'Nonland'}],aiHint:{kind:'abundance',player:p}});
+   if(!['land','nonland'].includes(answer))throw Error('Invalid Abundance choice');
+   const revealed=[];let found=null;for(const card of p.library.slice().reverse()){revealed.push(card);if(card.is('Land')===(answer==='land')){found=card;break;}}
+   if(revealed.length)await game.revealToHuman({cards:revealed,ctrl:p,kind:'reveal'});
+   if(found)await game.move(found,'hand');await bottom(game,p,revealed.filter(c=>c!==found));return 0;
   }
   if(op.mode==='look-three'||op.mode==='reveal-creatures'){
    const top=p.library.slice(-3).reverse();
@@ -83,8 +90,16 @@
   }
   throw new Error('Unsupported draw replacement mode');
  }
+ async function group(game,p,n,source,opts,used,physicalDraw,root){
+  // CR 121.2a: replace a multi-card instruction before choosing any
+  // single-card draw replacement. Carry used effects into every descendant.
+  if(n>1){const choices=game.bf().filter(c=>c.ctrl!==p&&!c.cur.abilitiesDisabled&&c.def.c1719Alms).map(src=>({src,key:'alms:'+src.iid+':'+src.zoneVersion,label:src.name,operation:{mode:'alms'}})).filter(r=>!used.has(r.key));
+   if(choices.length){const row=await game.chooseReplacement(p,choices,'draw',n),next=new Set([...used,row.key]);let drawn=0;for(const who of game.apnapFrom(game.turnPlayer||p).filter(w=>w===p||w===row.src.ctrl))drawn+=await unit(game,who,source,opts,new Set(next),physicalDraw,root);return drawn;}
+  }
+  let drawn=0;for(let i=0;i<n&&!p.lost&&!game.gameOver;i++)drawn+=await unit(game,p,source,opts,new Set(used),physicalDraw,root);return drawn;
+ }
  async function draw(game,p,n,source,opts,physicalDraw){
-  let drawn=0;for(let i=0;i<n&&!p.lost&&!game.gameOver;i++)drawn+=await unit(game,p,source,opts,new Set(),physicalDraw,p);return drawn;
+  return group(game,p,n,source,opts,new Set(),physicalDraw,p);
  }
  function run(ctx,effect,h){
   if(effect.action!=='next-draw-replacement-v8'||Object.keys(effect).some(key=>!['action','mode','who','allTurn'].includes(key))||!['redirect','gain-life','discard-opponents','bounce-each','bear'].includes(effect.mode)||(effect.mode==='redirect'?effect.who!==0||effect.allTurn!==true:effect.who!=='you'||effect.allTurn!==undefined))throw new Error('Invalid temporary draw replacement');

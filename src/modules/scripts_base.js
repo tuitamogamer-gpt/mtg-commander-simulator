@@ -232,14 +232,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   E.searchBasic = async function (g, p, opts = {}) {
     // opts: {n, toHandN, tapped, filter(def), prompt}
     const n = opts.n || 1;
-    const cands = p.library.filter(c => (c.cur, c.def.super || []).includes('Basic') && (!opts.filter || opts.filter(c.def)));
+    const cands = (g.canSearchLibrary?.(p)===false?[]:p.library).filter(c => (c.cur, c.def.super || []).includes('Basic') && (!opts.filter || opts.filter(c.def)));
     const uniq = [];
     const seen = new Set();
     for (const c of cands) if (!seen.has(c.name)) { seen.add(c.name); uniq.push(c); }
     if (!cands.length) { U.shuffle(p.library, g.rnd); return []; }
     const got = [];
     for (let i = 0; i < n; i++) {
-      const avail = p.library.filter(c => (c.def.super || []).includes('Basic') && (!opts.filter || opts.filter(c.def)));
+      const avail = (g.canSearchLibrary?.(p)===false?[]:p.library).filter(c => (c.def.super || []).includes('Basic') && (!opts.filter || opts.filter(c.def)));
       if (!avail.length) break;
       const picked = await p.controller.decide(g, {
         type: 'chooseCards', from: avail, min: 0, max: 1, prompt: opts.prompt || 'Search for a basic land',
@@ -263,7 +263,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   E.searchLandByName = async function (g, p, names, opts = {}) {
-    const avail = p.library.filter(c => c.is('Land') && (names.some(nm => c.name === nm || c.hasSub && c.def.subtypes.includes(nm))));
+    const avail = (g.canSearchLibrary?.(p)===false?[]:p.library).filter(c => c.is('Land') && (names.some(nm => c.name === nm || c.hasSub && c.def.subtypes.includes(nm))));
     if (!avail.length) { U.shuffle(p.library, g.rnd); return null; }
     const picked = await p.controller.decide(g, {
       type: 'chooseCards', from: avail, min: 0, max: 1, prompt: 'Search for a land', aiHint: { kind: 'searchBasic' }, search: true,

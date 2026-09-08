@@ -1,0 +1,10 @@
+'use strict';
+var MTG=globalThis.MTG||(globalThis.MTG={});
+(function(){
+ const M=MTG,SC=M.SCRIPTS,T=M.T,E=M.E,C=M.C1719;
+ const colorless={cost:{tap:true},produce:[{C:1}]};
+ SC['Forge of Heroes']={mana:colorless,abilities:[{label:'Add counters to a commander that entered this turn',cost:{tap:true},targets:[T.permanent((g,c)=>c.commander&&c.meta._enteredTurn===g.turnNo)],run:ctx=>{const c=ctx.targets[0];if(!c)return;if(c.is('Creature'))C.counters(ctx,c,1);if(c.is('Planeswalker'))ctx.g.addCounters(c,'loyalty',1,false,ctx.you);},aiScore:()=>3}]};
+ SC['Sanctum of Eternity']={mana:colorless,abilities:[{label:'Return a commander you own to your hand',cost:{mana:'{2}',tap:true},cond:(g,c,p)=>g.turnPlayer===p,targets:[T.permanent((g,c,p)=>c.owner===p&&c.commander)],run:ctx=>ctx.targets[0]&&ctx.g.move(ctx.targets[0],'hand'),aiScore:()=>2}]};
+ SC['Isolated Watchtower']={mana:colorless,abilities:[{label:'Scry 1 and optionally reveal a basic land to enter tapped',cost:{mana:'{2}',tap:true},cond:(g,c,p)=>p.opponents(g).some(o=>g.lands(o).length>=g.lands(p).length+2),run:async ctx=>{await E.scry(ctx.g,ctx.you,1);const c=ctx.you.library.at(-1);if(c&&await C.option(ctx,[{key:'yes',label:'Reveal '+c.name},{key:'no',label:'Decline'}],'reveal the top card')==='yes'){await ctx.g.revealToHuman({cards:[c],ctrl:ctx.you,kind:'reveal'});if(c.is('Land')&&c.def.super.includes('Basic'))await ctx.g.move(c,'battlefield',{ctrl:ctx.you,tapped:true});}},aiScore:()=>3}]};
+ SC['Crucible of the Spirit Dragon']={mana:[colorless,{manual:true,amountFlex:true,cost:{tap:true,removeManaCounters:{kind:'storage'}},produce:(g,c)=>[...Array.from({length:c.counters.storage||0},(_,i)=>({ANY:true,n:i+1})),{C:0}],restrictAbilities:true,restrict:(g,action)=>!!action?.card&&(action.isAbility?action.card.hasSub(MTG.c1719TextType(g,'Dragon')):(g.castDefinition(action.card,action.castOpts||{}).changeling||(g.castDefinition(action.card,action.castOpts||{}).subtypes||[]).includes(MTG.c1719TextType(g,'Dragon'))))}],abilities:[{label:'Put a storage counter on Crucible',cost:{mana:'{1}',tap:true},run:ctx=>{if(C.same(ctx))ctx.g.addCounters(ctx.src,'storage',1);},aiScore:()=>1}]};
+})();

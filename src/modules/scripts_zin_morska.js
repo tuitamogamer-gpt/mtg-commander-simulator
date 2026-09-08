@@ -113,7 +113,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Blade Splicer'] = {
     triggers: [{ on: 'etb', filter: etbSelf, desc: 'Golem', run: async ctx => { await ctx.g.makeTokens('golem33', ctx.you); } }],
     statics: [{
-      apply: (g, self, bf) => { for (const c of bf) if (c.ctrl === self.ctrl && c.hasSub('Golem')) c.cur.kw.add('first strike'); },
+      apply: (g, self, bf) => { for (const c of bf) if (c.ctrl === self.ctrl && c.hasSub(MTG.c1719TextType(g,'Golem'))) c.cur.kw.add('first strike'); },
     }],
   };
   SC["Boss's Chauffeur"] = {
@@ -326,7 +326,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'etb', filter: etbSelf, opt: true, desc: 'Flicker',
       targets: [{
         what: 'creature', prompt: 'Your non-Angel creature',
-        filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl === ctrl && !c.hasSub('Angel'),
+        filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl === ctrl && !c.hasSub(MTG.c1719TextType(g,'Angel')),
         aiHint: { goal: 'protect' },
       }],
       run: async ctx => {
@@ -409,7 +409,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Siege-Gang Commander'] = {
     triggers: [{ on: 'etb', filter: etbSelf, desc: '3 Goblins', run: async ctx => { await ctx.g.makeTokens('goblin', ctx.you, { n: 3 }); } }],
     abilities: [{
-      label: 'Sacrifice a Goblin: 2 damage', cost: { mana: '{1}{R}', sac: (g, x) => x.hasSub('Goblin') },
+      label: 'Sacrifice a Goblin: 2 damage', cost: { mana: '{1}{R}', sac: (g, x) => x.hasSub(MTG.c1719TextType(g,'Goblin')) },
       targets: [T.any({ prompt: '2 damage to:', aiHint: { goal: 'damage', n: 2 } })],
       run: async ctx => { await ctx.g.damageAny(ctx.src, ctx.targets[0], 2); },
     }],
@@ -580,7 +580,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               x.cur.basePower = 1; x.cur.baseToughness = 1;
               x.cur.power = 1 + (x.counters['+1/+1'] || 0); x.cur.toughness = 1 + (x.counters['+1/+1'] || 0);
               x.cur.kw.add('flying');
-              if (!x.cur.subtypes.includes('Spirit')) x.cur.subtypes.push('Spirit');
+              if (!x.cur.subtypes.includes(MTG.c1719TextType(g2,'Spirit'))) x.cur.subtypes.push(MTG.c1719TextType(g2,'Spirit'));
             },
           });
         }
@@ -666,7 +666,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Murmuration'] = {
     statics: [{
       apply: (g, self, bf) => {
-        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature') && c.hasSub('Bird')) { c.cur.power++; c.cur.toughness++; c.cur.kw.add('vigilance'); }
+        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature') && c.hasSub(MTG.c1719TextType(g,'Bird'))) { c.cur.power++; c.cur.toughness++; c.cur.kw.add('vigilance'); }
       },
     }],
     triggers: [{
@@ -734,7 +734,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         on: 'draw', desc: '+X/+X', filter: (g, self, d) => d.player === self.ctrl && d.player.turnState.drewThisTurn === 5,
         run: async ctx => {
           const x = ctx.you.hand.length;
-          E.pumpAllUntilEOT(ctx.g, (g, c) => c.ctrl === ctx.you && (c === ctx.src || c.hasSub('Drake')), x, x);
+          E.pumpAllUntilEOT(ctx.g, (g, c) => c.ctrl === ctx.you && (c === ctx.src || c.hasSub(MTG.c1719TextType(g,'Drake'))), x, x);
         },
       },
     ],
@@ -775,7 +775,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Detective of the Month'] = {
     statics: [{
       cond: (g, self) => self.ctrl.cityBlessing,
-      apply: (g, self, bf) => { for (const c of bf) if (c.ctrl === self.ctrl && c.hasSub('Detective')) c.cur.unblockable = true; },
+      apply: (g, self, bf) => { for (const c of bf) if (c.ctrl === self.ctrl && c.hasSub(MTG.c1719TextType(g,'Detective'))) c.cur.unblockable = true; },
     }],
     triggers: [{
       on: 'draw', desc: 'Detective token', filter: (g, self, d) => d.player === self.ctrl && d.player.turnState.drewThisTurn === 2,
@@ -928,7 +928,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [
       {
         label: 'Sacrifice another Serpent: tap a permanent and prevent its activated abilities',
-        cost: { sac: (g, x, self) => x.hasSub('Serpent') && x !== self, sacOther: true },
+        cost: { sac: (g, x, self) => x.hasSub(MTG.c1719TextType(g,'Serpent')) && x !== self, sacOther: true },
         targets: [T.permanent(null, { prompt: 'Tap and prevent activated abilities', aiHint: { goal: 'removal' } })],
         run: async ctx => {
           const target = ctx.targets[0];
@@ -945,7 +945,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       {
         label: 'Sacrifice another Serpent: Koma gains indestructible',
-        cost: { sac: (g, x, self) => x.hasSub('Serpent') && x !== self, sacOther: true },
+        cost: { sac: (g, x, self) => x.hasSub(MTG.c1719TextType(g,'Serpent')) && x !== self, sacOther: true },
         run: async ctx => { E.grantUntilEOT(ctx.g, ctx.src, ['indestructible']); },
       },
     ],
@@ -1074,14 +1074,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       { on: 'etb', filter: etbSelf, desc: 'Tiny', run: async ctx => { await ctx.g.makeTokens('tiny', ctx.you); } },
       {
         on: 'combatDamageToPlayer', desc: 'Food + investigate',
-        filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card.hasSub('Dog'),
+        filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card.hasSub(MTG.c1719TextType(g,'Dog')),
         run: async ctx => { await ctx.g.makeTokens('food', ctx.you); await E.investigate(ctx.g, ctx.you); },
       },
     ],
     abilities: [{
       label: 'Sacrifice an artifact token: +1/+1 to Dogs', cost: { mana: '{1}', sac: (g, x) => x.isToken && x.is('Artifact') },
       run: async ctx => {
-        for (const c of ctx.g.creatures(ctx.you)) if (c.hasSub('Dog')) ctx.g.addCounters(c, '+1/+1', 1, true);
+        for (const c of ctx.g.creatures(ctx.you)) if (c.hasSub(MTG.c1719TextType(ctx,'Dog'))) ctx.g.addCounters(c, '+1/+1', 1, true);
         ctx.g.recalc();
       },
     }],
@@ -1099,7 +1099,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 if (!c.cur.types.includes('Creature')) c.cur.types.push('Creature');
                 c.cur.basePower = 6; c.cur.baseToughness = 6;
                 c.cur.power = 6; c.cur.toughness = 6;
-                if (!c.cur.subtypes.includes('Plant')) c.cur.subtypes.push('Plant');
+                if (!c.cur.subtypes.includes(MTG.c1719TextType(g2,'Plant'))) c.cur.subtypes.push(MTG.c1719TextType(g2,'Plant'));
               }
             }
           },

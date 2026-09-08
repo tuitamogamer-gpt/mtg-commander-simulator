@@ -114,7 +114,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }],
       run: async ctx => {
         const t = ctx.targets[0];
-        const n = t.hasSub('Squirrel') ? 2 : 1;
+        const n = t.hasSub(MTG.c1719TextType(ctx,'Squirrel')) ? 2 : 1;
         await ctx.g.copyPermanentToken(t, ctx.you, { n });
       },
     }],
@@ -162,7 +162,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       priority: 2,
     }],
     abilities: [{
-      label: '{B}, sacrifice X Squirrels: +X/-X', cost: { mana: '{B}', sac: (g, x, self) => x.hasSub('Squirrel'), sacN: 'X' },
+      label: '{B}, sacrifice X Squirrels: +X/-X', cost: { mana: '{B}', sac: (g, x, self) => x.hasSub(MTG.c1719TextType(g,'Squirrel')), sacN: 'X' },
       targets: [T.creature({ prompt: 'Target for +X/-X', aiHint: { goal: 'removalOrBuff' } })],
       run: async ctx => { E.pumpUntilEOT(ctx.g, ctx.targets[0], ctx.x, -ctx.x); await ctx.g.checkSBA(); },
     }],
@@ -192,7 +192,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
     statics: [{
       apply: (g, self, bf) => {
-        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature') && c.hasSub('Squirrel')) { c.cur.power++; c.cur.toughness++; }
+        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature') && c.hasSub(MTG.c1719TextType(g,'Squirrel'))) { c.cur.power++; c.cur.toughness++; }
       },
     }],
   };
@@ -268,13 +268,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         on: 'etb', filter: etbSelf, desc: 'Counters',
         run: async ctx => {
-          const n = ctx.g.bf().filter(c => c.ctrl === ctx.you && c !== ctx.src && (c.hasSub('Squirrel') || c.hasSub('Food'))).length;
+          const n = ctx.g.bf().filter(c => c.ctrl === ctx.you && c !== ctx.src && (c.hasSub(MTG.c1719TextType(ctx,'Squirrel')) || c.hasSub('Food'))).length;
           if (n) ctx.g.addCounters(ctx.src, '+1/+1', n);
         },
       },
       {
         on: 'etb', desc: '+1/+1',
-        filter: (g, self, d) => d.card !== self && d.card.ctrl === self.ctrl && (d.card.hasSub('Squirrel') || d.card.hasSub('Food')),
+        filter: (g, self, d) => d.card !== self && d.card.ctrl === self.ctrl && (d.card.hasSub(MTG.c1719TextType(g,'Squirrel')) || d.card.hasSub('Food')),
         run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', 1); },
       },
     ],
@@ -461,7 +461,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Squirrel Sovereign'] = {
     statics: [{
       apply: (g, self, bf) => {
-        for (const c of bf) if (c !== self && c.ctrl === self.ctrl && c.is('Creature') && c.hasSub('Squirrel')) { c.cur.power++; c.cur.toughness++; }
+        for (const c of bf) if (c !== self && c.ctrl === self.ctrl && c.is('Creature') && c.hasSub(MTG.c1719TextType(g,'Squirrel'))) { c.cur.power++; c.cur.toughness++; }
       },
     }],
   };
@@ -469,12 +469,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     statics: [{
       apply: (g, self, bf) => {
         for (const squirrel of bf) {
-          if (squirrel.ctrl !== self.ctrl || !squirrel.is('Creature') || !squirrel.hasSub('Squirrel')) continue;
+          if (squirrel.ctrl !== self.ctrl || !squirrel.is('Creature') || !squirrel.hasSub(MTG.c1719TextType(g,'Squirrel'))) continue;
           squirrel.cur.extraAbilities.push({
             label: 'Tap: target Squirrel +2/+2 and trample', sorcery: true, cost: { tap: true },
             targets: [{
               what: 'creature', prompt: 'Squirrel target',
-              filter: (g2, card) => card.zone === 'battlefield' && card.is('Creature') && card.hasSub('Squirrel'),
+              filter: (g2, card) => card.zone === 'battlefield' && card.is('Creature') && card.hasSub(MTG.c1719TextType(g2,'Squirrel')),
               aiHint: { goal: 'buff' },
             }],
             run: async ctx => { if (ctx.targets[0]) E.pumpUntilEOT(ctx.g, ctx.targets[0], 2, 2, ['trample']); },
@@ -484,7 +484,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
     triggers: [{
       on: 'combatDamageGroupToPlayer', desc: 'Draw a card',
-      filter: (g, self, d) => (d.cards || []).some(card => card.ctrl === self.ctrl && card.hasSub('Squirrel')),
+      filter: (g, self, d) => (d.cards || []).some(card => card.ctrl === self.ctrl && card.hasSub(MTG.c1719TextType(g,'Squirrel'))),
       run: async ctx => { await ctx.g.draw(ctx.you, 1); },
     }],
   };
@@ -565,11 +565,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (picked.length) {
           const c = picked[0];
           g.remove(c); c.zone = 'hand'; p.hand.push(c);
-          if (c.def.subtypes.includes('Squirrel')) tookSquirrel = true;
+          if (c.def.subtypes.includes(MTG.c1719TextType(ctx,'Squirrel'))) tookSquirrel = true;
           g.lg(`${p.name} takes ${c.name} into hand.`);
         }
       }
-      if (tookSquirrel || g.creatures(p).some(c => c.hasSub('Squirrel'))) await g.makeTokens('food', p);
+      if (tookSquirrel || g.creatures(p).some(c => c.hasSub(MTG.c1719TextType(ctx,'Squirrel')))) await g.makeTokens('food', p);
     },
   };
   SC['Deadly Dispute'] = {
@@ -716,9 +716,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       const g = ctx.g;
       await g.makeTokens('squirrel', ctx.you, { n: 2 });
-      const rodents = g.creatures(ctx.you).filter(c => ['Insect', 'Rat', 'Spider', 'Squirrel'].some(s => c.hasSub(s))).length;
+      const rodents = g.creatures(ctx.you).filter(c => [MTG.c1719TextType(ctx,'Insect'), MTG.c1719TextType(ctx,'Rat'), MTG.c1719TextType(ctx,'Spider'), MTG.c1719TextType(ctx,'Squirrel')].some(s => c.hasSub(s))).length;
       if (rodents) {
-        E.pumpAllUntilEOT(g, (g2, c) => !['Insect', 'Rat', 'Spider', 'Squirrel'].some(s => c.hasSub(s)), -rodents, -rodents);
+        E.pumpAllUntilEOT(g, (g2, c) => ![MTG.c1719TextType(g2,'Insect'), MTG.c1719TextType(g2,'Rat'), MTG.c1719TextType(g2,'Spider'), MTG.c1719TextType(g2,'Squirrel')].some(s => c.hasSub(s)), -rodents, -rodents);
         await g.checkSBA();
       }
     },
@@ -740,7 +740,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       apply: (g, self, bf) => {
         const n = self.counters['acorn'] || 0;
         if (!n) return;
-        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature') && c.hasSub('Squirrel')) { c.cur.power += n; c.cur.toughness += n; }
+        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature') && c.hasSub(MTG.c1719TextType(g,'Squirrel'))) { c.cur.power += n; c.cur.toughness += n; }
       },
     }],
     abilities: [{
@@ -796,7 +796,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
     triggers: [{
       on: 'etb', opt: true, desc: 'Attach the sword',
-      filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card.is('Creature') && ['Hamster', 'Mouse', 'Rat', 'Squirrel'].some(s => d.card.hasSub(s)),
+      filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card.is('Creature') && [MTG.c1719TextType(g,'Hamster'), MTG.c1719TextType(g,'Mouse'), MTG.c1719TextType(g,'Rat'), MTG.c1719TextType(g,'Squirrel')].some(s => d.card.hasSub(s)),
       run: async ctx => { await ctx.g.attach(ctx.src, ctx.data.card); },
     }],
   };

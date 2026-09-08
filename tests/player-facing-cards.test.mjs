@@ -21,6 +21,8 @@ function unreadable(text) {
   // its own sentence (card reveals, combat reviews).
   if (!raw.trim()) return null;
   const shown = MTG.uiText(raw);
+  // Exact printed names such as Nema Siltlurker are not untranslated prompts.
+  if (MTG.DEFS[raw] && shown === raw) return null;
   if (INTERNALS.test(shown)) return `internals leak: ${shown.slice(0, 80)}`;
   if (DIACRITIC.test(shown) || BOSNIAN.test(shown)) return `not English: ${shown.slice(0, 80)}`;
   return null;

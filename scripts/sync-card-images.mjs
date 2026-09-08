@@ -205,7 +205,8 @@ async function main() {
   }
   // Runtime token names include the Oracle " Token" suffix; Scryfall token
   // print identifiers and the local image aliases use the creature/type name.
-  const tokenNames = new Set(Object.values(MTG.TOKENS || {}).map(token => token && token.name).filter(Boolean).map(name=>faceName(name).replace(/ Token$/,'')));
+  for(const name of [...activeNames]){const back=MTG.DEFS[name]?.c1719FlipBack?.name;if(back)activeNames.add(back);}
+  const tokenNames = new Set(Object.values(MTG.TOKENS || {}).flatMap(token => [token?.name,token?.tokenImageName]).filter(Boolean).map(name=>faceName(name).replace(/ Token$/,'')));
   const tokenPrints = new Map(Object.entries(MTG.TOKEN_IMG || {}).filter(([name]) => tokenNames.has(name)));
   const names = new Set([...activeNames, ...tokenNames]);
   const namedLookups = new Set([...names].filter(name => !tokenPrints.has(name)));

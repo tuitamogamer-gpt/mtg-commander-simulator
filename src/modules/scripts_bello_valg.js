@@ -22,7 +22,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const isEnch = c.is('Enchantment') && !c.hasSub('Aura');
           if ((isArt || isEnch) && c.mv >= 4) {
             c.cur.types.push('Creature');
-            if (!c.cur.subtypes.includes('Elemental')) c.cur.subtypes.push('Elemental');
+            if (!c.cur.subtypes.includes(MTG.c1719TextType(g,'Elemental'))) c.cur.subtypes.push(MTG.c1719TextType(g,'Elemental'));
             c.cur.basePower = 4; c.cur.baseToughness = 4;
             c.cur.kw.add('indestructible'); c.cur.kw.add('haste');
             c.cur.belloAnimated = true;
@@ -38,7 +38,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Brightcap Badger'] = {
     grantMana: {
-      filter: (g, x, self) => x.is('Creature') && (x.hasSub('Fungus') || x.hasSub('Saproling')),
+      filter: (g, x, self) => x.is('Creature') && (x.hasSub(MTG.c1719TextType(g,'Fungus')) || x.hasSub(MTG.c1719TextType(g,'Saproling'))),
       produce: [{ G: 1 }],
     },
     triggers: [{
@@ -179,7 +179,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Grumgully, the Generous'] = {
     replace: [{
       event: 'etbCounters', n: 1,
-      run: (g, card, src) => card.ctrl === src.ctrl && card !== src && !card.hasSub('Human'),
+      run: (g, card, src) => card.ctrl === src.ctrl && card !== src && !card.hasSub(MTG.c1719TextType(g,'Human')),
     }],
   };
   SC['Kodama of the East Tree'] = {
@@ -221,7 +221,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             c.cur.power = 3 + (c.counters['+1/+1'] || 0);
             c.cur.toughness = 3 + (c.counters['+1/+1'] || 0);
             c.cur.kw.add('haste');
-            if (!c.cur.subtypes.includes('Elemental')) c.cur.subtypes.push('Elemental');
+            if (!c.cur.subtypes.includes(MTG.c1719TextType(g2,'Elemental'))) c.cur.subtypes.push(MTG.c1719TextType(g2,'Elemental'));
           },
         });
         ctx.g.recalc();
@@ -296,7 +296,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     statics: [{
       cond: (g, self) => self.ctrl.cityBlessing,
       apply: (g, self, bf) => {
-        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature') && c.hasSub('Saproling')) { c.cur.power += 2; c.cur.toughness += 2; }
+        for (const c of bf) if (c.ctrl === self.ctrl && c.is('Creature') && c.hasSub(MTG.c1719TextType(g,'Saproling'))) { c.cur.power += 2; c.cur.toughness += 2; }
       },
     }],
   };
@@ -441,7 +441,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     crew: 3,
     statics: [{
       apply: (g, self, bf) => {
-        const n = bf.filter(c => c.ctrl === self.ctrl && c.is('Creature') && c.hasSub('Hamster')).length;
+        const n = bf.filter(c => c.ctrl === self.ctrl && c.is('Creature') && c.hasSub(MTG.c1719TextType(g,'Hamster'))).length;
         self.cur.power += n; self.cur.toughness += n;
       },
     }],
@@ -450,7 +450,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       targets: [T.any({ prompt: 'X damage to:', aiHint: { goal: 'damage' } })],
       run: async ctx => {
         await ctx.g.makeTokens('hamster', ctx.you, { n: 3 });
-        const x = ctx.g.creatures(ctx.you).filter(c => c.hasSub('Hamster')).length;
+        const x = ctx.g.creatures(ctx.you).filter(c => c.hasSub(MTG.c1719TextType(ctx,'Hamster'))).length;
         if (x && ctx.targets[0]) await ctx.g.damageAny(ctx.src, ctx.targets[0], x);
       },
     }],
@@ -1282,7 +1282,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       restrict: (g, forSpell) => {
         const card = forSpell && forSpell.card;
         if (!card) return false;
-        return card.is('Instant') || card.is('Sorcery') || card.def.subtypes.includes('Demon') || card.def.subtypes.includes('Spirit');
+        return card.is('Instant') || card.is('Sorcery') || card.def.subtypes.includes(MTG.c1719TextType(g,'Demon')) || card.def.subtypes.includes(MTG.c1719TextType(g,'Spirit'));
       },
     },
   };
