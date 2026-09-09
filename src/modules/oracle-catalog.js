@@ -1588,7 +1588,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (effect.action === 'search-library') {
       const type = effect.what.toLowerCase();
-      const candidates=(ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library).filter(card => {
+      const candidates=(ctx.g.searchableLibrary?ctx.g.searchableLibrary(ctx.you):(ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library)).filter(card => {
         if(effect.name&&card.name!==effect.name)return false;
         if(effect.filter&&!genericResolutionTargetSpec(ctx,effect.filter,[],0).filter(ctx.g,card,ctx.you,ctx.src))return false;
         if (effect.maxMv !== null && card.mv > effect.maxMv) return false;

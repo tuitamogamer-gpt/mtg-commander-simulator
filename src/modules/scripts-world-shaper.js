@@ -61,7 +61,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   async function searchLands(game, player, n, predicate, opts = {}) {
     const found = [];
     for (let i = 0; i < n; i++) {
-      const pool = (game.canSearchLibrary?.(player)===false?[]:player.library).filter(card => card.is('Land') && (!predicate || predicate(card)));
+      const pool = (game.searchableLibrary?game.searchableLibrary(player):(game.canSearchLibrary?.(player)===false?[]:player.library)).filter(card => card.is('Land') && (!predicate || predicate(card)));
       if (!pool.length) break;
       const card = await chooseOne(game, player, pool, opts.prompt || 'Search for a land', { kind: 'searchBasic' }, true);
       if (!card) break;

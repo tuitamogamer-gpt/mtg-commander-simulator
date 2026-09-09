@@ -436,6 +436,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (tracked) {
       MTG.C21Rules?.spent(game,player,forSpell,tracked);
+      MTG.CDK?.spent(game,player,forSpell,tracked);
       tracked.n--;
       player.pool[color]--;
       if (tracked.coloredOnly && player.coloredOnlyPool) player.coloredOnlyPool[color]--;
@@ -460,6 +461,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         manaRestrictionAllows(game, entry, forSpell) && (!generic || !entry.coloredOnly));
       if (!tracked) return false;
       MTG.C21Rules?.spent(game,player,forSpell,tracked);
+      MTG.CDK?.spent(game,player,forSpell,tracked);
       tracked.n--;
       player.pool[color]--;
       if (tracked.coloredOnly && player.coloredOnlyPool) player.coloredOnlyPool[color]--;
@@ -579,7 +581,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const grantedConvoke = !fd.convoke && forSpell.card.def.types.includes('Creature') &&
         (forSpell.card.def.super || []).includes('Legendary') &&
         this.bf().some(cc => cc.ctrl === p && cc.def.grantsConvokeLegendary);
-      if (fd.convoke || grantedConvoke) {
+      if (fd.convoke || grantedConvoke || MTG.CDK?.convoke?.(this,p,forSpell.card,forSpell.castOpts||{})) {
         for (const x of this.bf()) {
           if (x.ctrl !== p || x.tapped || !x.is('Creature')) continue;
           // Convoke nije aktivirana {T} sposobnost stvorenja; summoning
@@ -1625,7 +1627,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const [color, n] of Object.entries(actualProduced)) {
         if (!(Number(n) > 0)) continue;
         p.poolMeta.push({
-          color, n, restrict: s.m.restrict, source: c, c21Goggles:!!s.m.c21Goggles,
+          color, n, restrict: s.m.restrict, source: c, c21Goggles:!!s.m.c21Goggles, cdkBiophagus:!!s.m.cdkBiophagus,
           restrictAbilities: !!s.m.restrictAbilities,
           coloredOnly: !!s.m.coloredOnly, persist: !!s.m.persist,
         });
@@ -2070,6 +2072,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Bestow ' + card.def.bestowCost,
     } : null;
     const consider = (card, from, alt) => {
+      if(from==='exile'&&!alt?.free&&!alt?.cdkTlincalli&&this.castHasType(card,alt||{},'Creature'))for(const source of MTG.CDK?.hunters?.(this,p)||[])consider(card,from,{...alt,free:true,cdkTlincalli:source.iid,cdkTlincalliVersion:source.zoneVersion});
       if(!['hand','command'].includes(from)&&!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.VN?.henzie(this,p,card,alt||{}))consider(card,from,{...alt,blitz:true,vnBlitz:true,altCostStr:this.castDefinition(card,alt||{}).cost,label:'Henzie: blitz'});
       if(!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.AFC?.rooftopLive(this,p,card,alt||{}))consider(card,from,{...alt,afcRooftop:true,altCostStr:'{0}'});
       if(!['hand','command'].includes(from)&&!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.C1719?.fistLive(this,p))consider(card,from,{...alt,c1719Fist:true,altCostStr:'{W}{U}{B}{R}{G}'});
@@ -2936,6 +2939,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const net=cost.generic-(cost.xReduction||0)+confirmed-(cost.starterTargetTax||0);
       cost.generic=Math.max(0,net);cost.xReduction=Math.max(0,-net);cost.starterTargetTax=confirmed;
     }
+    if(MTG.CDK)cost.generic+=MTG.CDK.whaleCost(this,p,so.targets);
     if(d.selfTargetCostAdjust){
       // Availability may use any legal qualifying target. Payment must use
       // only the targets actually chosen, after optional costs were proposed.
@@ -3010,6 +3014,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       : baseAdditionalCost;
     const paidAddl = { sacd: [], tapped: [], discarded: [], life: 0, blightCard: null, blightN: 0, choice: null };
     if(d.c1719TapVampire||d.c1719VampireKicker&&kicked){const pool=this.bf().filter(c=>c.ctrl===p&&!c.tapped&&c.hasSub('Vampire'));const [v]=await MTG.C1719.choose(this,p,pool,1,1,card.name+': tap an untapped Vampire');if(!v)return false;so.c1719KickerVampire=MTG.C1719.row(v);paidAddl.tapped.push(v);}
+    if(MTG.CDK&&!await MTG.CDK.prepareCosts(this,p,card,so,paidAddl))return false;
     if(castOpts.starterPermission && !await MTG.StarterCasting.prepare({g:this,src:card,you:p,so},paidAddl))return false;
     if (ac) {
       if (ac.sacCreature || ac.sacArtifactOrCreature || ac.sacAnyCreatures || ac.sacCreaturesEqualTargets || ac.sacLand) {
@@ -3190,7 +3195,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       xVal, isSpell: true,
       excludeCards: paidAddl.tapped.concat(harmonizeCreature ? [harmonizeCreature] : [], so.oracleCastingChoicePlan?.kind === 'tapPermanent' ? [so.oracleCastingChoicePlan.card] : []),
       protectedSacrifices: paidAddl.sacd.concat(kotisExiled, broodshipLand ? [broodshipLand] : [], (so.oracleCostPlans || []).flatMap(plan => [...plan.sacrifices, ...(plan.returns || [])]), so.oracleCastingChoicePlan?.card ? [so.oracleCastingChoicePlan.card] : []),
-      reservedLife: paidAddl.life + (so.oracleCostPlans || []).reduce((sum, plan) => sum + plan.life, 0),
+      reservedCounters:so.cdkPlan?.counters||[],
+      reservedLife: (cost.lifeCost||0)+paidAddl.life + (so.oracleCostPlans || []).reduce((sum, plan) => sum + plan.life, 0),
     };
     // Lock the selected graveyard objects before paying any resources.
     const graveyardVersions = new Map(p.graveyard.map(candidate => [candidate, candidate.zoneVersion]));
@@ -3244,6 +3250,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       escapeExiled = picked;
     }
 
+    if(MTG.CDK&&!MTG.CDK.validateCosts(this,p,card,so))return false;
     // Recheck planned Oracle costs before any mana or cards are consumed.
     if(so.c1719KickerVampire&&(!MTG.C1719.current(so.c1719KickerVampire)||so.c1719KickerVampire.card.ctrl!==p||so.c1719KickerVampire.card.tapped||!so.c1719KickerVampire.card.hasSub('Vampire')))return false;
     if(castOpts.c1719Fist&&!MTG.C1719.fistLive(this,p))return false;
@@ -3277,10 +3284,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!castOpts.free || hasAdditionalManaCost) {
       const ok = await this.payMana(p, cost, paySpell, manaPaymentOptions);
       if (!ok) { this.lg(`${card.name}: mana nije plaćena.`); return false; }
-      if (cost.lifeCost) await this.loseLife(p, cost.lifeCost, 'altcost');
+
     } else {
       await this.trackSpentOnSpell(p, 0);
     }
+    if(cost.lifeCost&&!castOpts.bloodcaster)await this.loseLife(p,cost.lifeCost,'altcost');
     // A "next spell costs less" permission is consumed by that cast even if
     // a free base plus no generic additions leaves zero mana to physically
     // pay. Keep this after successful payment so failed casts consume nothing.
@@ -3311,6 +3319,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Revealing is paid only after every choice and mana payment succeeds.
     if(d.c1516RevealCreature)await this.revealToHuman({cards:[so.c1516Reveal.card],ctrl:p,source:card,kind:'additionalCost'});
     // pay additional
+    if(MTG.CDK)await MTG.CDK.commitCosts(this,p,card,so);
     so.sacdN = paidAddl.sacd.length;
     so.sacdSnaps = paidAddl.sacd.map(c => this.snapshot(c));
     so.additionalTapped = paidAddl.tapped.slice();
@@ -3389,7 +3398,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       p.turnState.gravePermanentTypesUsed.push(muldrothaType);
     }
     card.castMeta = {
-      wasCast:true, castBy:p.idx, convokedCount:so.convokedCards.length,
+      wasCast:true, castBy:p.idx, convokedCount:so.convokedCards.length, cdkExiled:so.cdkExiled,cdkBiophagus:paySpell.cdkBiophagus||0,
       afcGorexExiled:so.afcGorexExiled,
       vnEscapeExiled:d.vnSkyway?escapeExiled.map(c=>({iid:c.iid,version:c.zoneVersion})):undefined,
       zkWasForetold:!!so.zkWasForetold,
@@ -3548,8 +3557,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(so.from==='hand')cascades+=p.turnState.c1516Cascades||0;
     if (!faceDownCast && d.cascade) cascades += d.cascade === true ? 1 : Math.max(0, Number(d.cascade) || 0);
     if (p.nextCascade && p.nextCascade.length) {
-      const idx = p.nextCascade.findIndex(f => f(this, card, castData));
-      if (idx >= 0) { cascades++; p.nextCascade.splice(idx, 1); }
+      const matching=p.nextCascade.filter(f=>f(this,card,castData));
+      cascades+=matching.length;p.nextCascade=p.nextCascade.filter(f=>!matching.includes(f));
     }
     for (const c of this.bf()) {
       if (c.def.grantsCascade && c.ctrl === p && c.def.grantsCascade(this, c, card, castData, so)) cascades++;
@@ -3558,6 +3567,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // outer spell. Put every instance on the Stack so the cast events finish
     // while the original spell is still present and the table can respond
     // before cards are exiled or the hit is cast.
+    so.cdkHasCascade=cascades>0;
     for (let i = 0; i < cascades; i++) {
       this.queueTrigger({
         src: card, ctrl: p,
@@ -4403,7 +4413,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const options = {excludeCards: cost.tap || cost.rmCounter ? [source] : [],
         artifactAbilityAlreadyUsed: source.is('Artifact'), reservedEnergy: cost.energy || 0};
       const fixed = cost.sacSelf ? [source] : [];
-      const payable = picks => this.canPayMana(p, manaCost, {card: source, isAbility: true},
+      const payable = picks => this.canPayMana(p, manaCost, {card: source, isAbility: true, cdkCostHasX:!!manaCost.x},
         {...options, protectedSacrifices: fixed.concat(picks)});
       if (!cost.sacCreature && !cost.sac) return payable([]);
       const pool = this.bf().filter(card => card.ctrl === p &&
@@ -4435,6 +4445,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const cost = a.cost || {};
         if (cost.mill && p.library.length < cost.mill) return;
         if (cost.tap && (c.tapped)) return;
+        if(cost.untapSelf&&(!c.tapped||c.is('Creature')&&c.sick&&!c.kw('haste')))return;
         if (cost.tap && c.is('Creature') && c.sick && !c.kw('haste') && !MTG.C21Rules?.abilityHaste(this,c)) return;
         if (cost.tapHost) {
           const host = c.attachedTo ? this.byIid(c.attachedTo) : null;
@@ -5218,6 +5229,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (a.oncePerTurn && c.meta['_ab_' + (a.c1719UseKey||entry.idx)] === this.turnNo) ||
         (a.oncePerObject && c.meta['_abo_' + entry.idx] === c.zoneVersion)) return false;
     const cost = {...a.cost};
+    if(cost.untapSelf&&(!c.tapped||c.is('Creature')&&c.sick&&!c.kw('haste')))return false;
     if (cost.mill && p.library.length < cost.mill) return false;
     if(cost.energy&&(p.counters?.energy||0)<cost.energy)return false;
     if (cost.discardRandom && p.hand.length < cost.discardRandom) return false;
@@ -5246,6 +5258,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(!await MTG.OracleV8VariableCounterCosts.announce(paymentCtx,cost.oracleCounterPayment,a.targets))return false;
       ctx.x=paymentCtx.x;ctx.oracleVariableCounterSelection=paymentCtx.oracleVariableCounterSelection;
     }
+    if(a.cdkTapX){const pool=this.bf().filter(x=>x.ctrl===p&&!x.tapped&&(!cost.tap||x!==c)&&cost.tapPermanents.filter(this,x,c,p));const max=cost.mana?Math.min(pool.length,this.maxAffordableX(p,this.abilityManaCost(p,c,cost.mana,{ability:a}),c,{excludeCards:[c],forSpell:{card:c,isAbility:true,cdkCostHasX:true}})):pool.length;ctx.x=await p.controller.decide(this,{type:'chooseX',min:0,max,card:c,prompt:c.name+': choose X permanents to tap',aiHint:{kind:'chooseX',card:c}});if(!Number.isInteger(ctx.x)||ctx.x<0||ctx.x>max)return false;}
     if(a.loyalty==='-X'){
       const max=Math.max(0,c.counters.loyalty||0);
       const chosen=await p.controller.decide(this,{type:'chooseX',min:0,max,card:c,prompt:`Loyalty X for ${c.name}?`,aiHint:{kind:'chooseX',card:c}});
@@ -5254,7 +5267,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if(a.oracleTargetX&&ctx.x===undefined){
       const baseMana=this.abilityManaCost(p,c,cost.mana,{ability:a,targets:[]});
-      const maxX=this.maxAffordableX(p,baseMana,c,{artifactAbilityAlreadyUsed:c.is('Artifact'),excludeCards:cost.tap||cost.sacSelf?[c]:[]});
+      const maxX=this.maxAffordableX(p,baseMana,c,{forSpell:{card:c,isAbility:true,cdkCostHasX:!!baseMana.x},artifactAbilityAlreadyUsed:c.is('Artifact'),excludeCards:cost.tap||cost.sacSelf?[c]:[]});
       const preferredXValues=this.oraclePreferredTargetXValues(p,c,a.targets,maxX);
       const chosen=await p.controller.decide(this,{type:'chooseX',min:0,max:maxX,preferredXValues:preferredXValues||undefined,card:c,prompt:`X for ${c.name} — ${a.label||'ability'}?`,aiHint:{kind:'chooseX',card:c}});
       if(!Number.isInteger(Number(chosen))||Number(chosen)<0||Number(chosen)>maxX)return false;
@@ -5302,11 +5315,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       returnPermanents=chosen;
     }
     if(cost.tapPermanents){
-      const pool=this.bf().filter(x=>x.ctrl===p&&!x.tapped&&(!cost.tap||x!==c)&&cost.tapPermanents.filter(this,x,c,p)),n=cost.tapPermanents.n;
+      const pool=this.bf().filter(x=>x.ctrl===p&&!x.tapped&&(!cost.tap||x!==c)&&cost.tapPermanents.filter(this,x,c,p)),n=cost.tapPermanents.n==='X'?ctx.x:cost.tapPermanents.n;
       if(pool.length<n)return false;
       rememberCostPool(pool);
-      const chosen=await p.controller.decide(this,{type:'chooseCards',from:pool,min:n,max:n,prompt:`${c.name}: tap ${n} permanents as a cost`,aiHint:{kind:'tapCost'}});
-      if(!Array.isArray(chosen)||chosen.length!==n||new Set(chosen).size!==n||chosen.some(x=>!pool.includes(x)))return false;
+      const crewPower=cost.tapPermanents.totalPower;
+      const chosen=await p.controller.decide(this,{type:'chooseCards',from:pool,min:crewPower===undefined?n:Math.min(1,pool.length),max:crewPower===undefined?n:pool.length,prompt:crewPower===undefined?`${c.name}: tap ${n} permanents as a cost`:`Crew ${c.name} (${crewPower}): tap creatures`,aiHint:crewPower===undefined?{kind:'tapCost'}:{kind:'crew',card:c,need:crewPower}});
+      if(!Array.isArray(chosen)||new Set(chosen).size!==chosen.length||chosen.some(x=>!pool.includes(x))||(crewPower===undefined?chosen.length!==n:chosen.reduce((n,x)=>n+this.vehicleCrewPower(x),0)<crewPower))return false;
       tapPermanents=chosen;
     }
     // Some activated costs choose X independently of mana (Necropolis Fiend:
@@ -5523,6 +5537,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const manaExclude = (cost.tap || cost.rmCounter ? [c] : []).concat(tapPermanents);
       if (a.xCost&&ctx.x===undefined) {
         const maxX = this.maxAffordableX(p, mc, c, {
+          forSpell:{card:c,isAbility:true,cdkCostHasX:!!mc.x},
           artifactAbilityAlreadyUsed: c.is('Artifact'), excludeCards: manaExclude,
         });
         ctx.x = await p.controller.decide(this, {
@@ -5533,7 +5548,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // izvor sposobnosti se prosljeđuje da restrikcije mane mogu odlučiti
       // (Secluded Courtyard: „ili aktiviraj sposobnost stvorenja tog tipa")
-      const ok = await this.payMana(p, mc, { card: c, isAbility: true }, {
+      const abilityPayment={card:c,isAbility:true,cdkCostHasX:!!mc.x};
+      const ok = await this.payMana(p, mc, abilityPayment, {
         xVal: ctx.x || 0,
         reservedEnergy:cost.energy||0,
         artifactAbilityAlreadyUsed: c.is('Artifact'),
@@ -5542,6 +5558,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         reservedCounters:plannedCounters?MTG.OracleV8CounterCosts.reservations(plannedCounters):[],
       });
       if (!ok) { if (cost.tap) c.tapped = false; return false; }
+      ctx.cdkPhyLife=2*(abilityPayment.phyrexianLifePaid||0);
     }
     if(cost.energy&&!MTG.OracleV8Energy.spend(this,p,cost.energy,c))return false;
     if(a.c1719MistCost){await this.move(ctx.c1719MistCost.card,'exile');ctx.c1719MistCost.card.faceDown=false;ctx.c1719MistExile=MTG.C1719.row(ctx.c1719MistCost.card);}
@@ -5662,7 +5679,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.lg(`${U.playerVerb(p, 'activate', 'activates')}: ${c.name}${a.label ? ' — ' + a.label : ''}.`, 'activate');
     await this.pace(p.isAI ? 800 : 0);
     await this.emit('abilityActivated', {
-      player: p, card: c, isMana: false, ability: a, targets: ctx.targets, stackObject: so,
+      player: p, card: c, isMana: false, ability: a, targets: ctx.targets, stackObject: so, cdkLifePaid:(cost.life||0)+(ctx.cdkPhyLife||0),
     });
     // crime: ciljanje protivnika/njihovih stvari kroz ability
     {
@@ -6616,6 +6633,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.lg(`${c.name} must attack (${tgt.name}).`);
       }
     }
+    if(MTG.CDK?.requireSeekerAttack)await MTG.CDK.requireSeekerAttack(this,p,attackers,elig,forced);
     // Companion restrictions concern the complete declaration (CR 508.1c).
     // Forced attackers may need another otherwise optional creature; adding
     // companions fulfils the attack requirement without forcing an attack tax.

@@ -23,6 +23,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+    "Mind Flayarrrs": {"icon":"🦑","colors":["U","B"],"style":"Horrors, mill, and theft","blurb":"Horrors mill opponents on combat damage, then the Captain takes a milled artifact or creature.","set":"Commander Legends: Battle for Baldur’s Gate (2022)"},
+    "Party Time": {"icon":"🎲","colors":["W","B"],"style":"Full party and creature value","blurb":"Nalia casts party creatures from the top and rewards four distinct party members with counters and deathtouch.","set":"Commander Legends: Battle for Baldur’s Gate (2022)"},
+    "Draconic Dissent": {"icon":"🐲","colors":["U","R"],"style":"Dragons and forced combat","blurb":"Firkraag goads a creature for each player attacked by your Dragons and draws from required attackers connecting.","set":"Commander Legends: Battle for Baldur’s Gate (2022)"},
+    "Exit from Exile": {"icon":"🐺","colors":["R","G"],"style":"Exile casting and Wolves","blurb":"Faldorn creates Wolves when you cast from exile or a land enters from exile under your control.","set":"Commander Legends: Battle for Baldur’s Gate (2022)"},
+    "Painbow": {"icon":"🌈","colors":["W","U","B","R","G"],"style":"Five-color threats and counters","blurb":"Jared makes five-color Kavu and gives creatures counters equal to their number of colors.","set":"Dominaria United Commander (2022)"},
+    "Legends' Legacy": {"icon":"📜","colors":["W","B","R"],"style":"Legends and graveyard value","blurb":"Dihada protects legendary creatures, finds legends, and turns the other revealed cards into Treasures.","set":"Dominaria United Commander (2022)"},
+    "Tyranid Swarm": {"icon":"🧬","colors":["G","U","R"],"style":"Ravenous X creatures","blurb":"The Swarmlord grows with your command-zone casts and draws when your creatures with counters die.","set":"Warhammer 40,000 Commander (2022)"},
+    "The Ruinous Powers": {"icon":"☄️","colors":["U","B","R"],"style":"Life loss and cascade","blurb":"Abaddon gives qualifying spells from your hand cascade during your turn, based on opposing life lost.","set":"Warhammer 40,000 Commander (2022)"},
+    "Necron Dynasties": {"icon":"💀","colors":["B"],"style":"Artifact reanimation and unearth","blurb":"Szarekh fills your graveyard and returns an artifact creature or Vehicle milled by its attack.","set":"Warhammer 40,000 Commander (2022)"},
+    "Forces of the Imperium": {"icon":"⚜️","colors":["W","U","B"],"style":"Vigilant armies and squad","blurb":"Greyfax gives your other creatures +1/+0 and vigilance and can tap a threat while investigating.","set":"Warhammer 40,000 Commander (2022)"},
     "Vampiric Bloodline": {"icon": "🩸", "colors": ["B", "R"], "style": "Vampires and Blood", "blurb": "Strefan turns life loss into Blood and attacking Vampires.", "set": "Innistrad: Crimson Vow Commander (2021)"},
     "Spirit Squadron": {"icon": "👻", "colors": ["W", "U"], "style": "Spirits and flying tokens", "blurb": "Millicent discounts herself for your Spirits and replaces departing nontoken Spirits.", "set": "Innistrad: Crimson Vow Commander (2021)"},
     "Buckle Up": {"icon": "🚘", "colors": ["W", "U"], "style": "Vehicles and Pilots", "blurb": "Kotori gives your Vehicles crew 2 and helps an artifact creature race with lifelink.", "set": "Kamigawa: Neon Dynasty Commander (2022)"},

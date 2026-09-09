@@ -18,19 +18,20 @@
  function offers(game,player){
   const frame=frames.get(game);if(!frame||frame.player!==player)return [];
   return frame.entries.filter(present).flatMap(entry=>entry.alternatives.filter(alt=>!game.castHasType(entry.card,alt,'Land')&&
-   (!frame.filter||frame.filter(game,prospective(game,entry.card,alt,player),player,frame.source))).map(alt=>({card:entry.card,from:entry.zone,alt})));
+   (!alt.lifeCost||game.canPayLife(player,alt.lifeCost))&&(!frame.filter||frame.filter(game,prospective(game,entry.card,alt,player),player,frame.source))).map(alt=>({card:entry.card,from:entry.zone,alt})));
  }
  function allowed(game,player,card,options){
   const frame=frames.get(game);if(!frame||frame.player!==player||frame.id!==options.oracleImmediateCast)return false;
   if(options.free!==frame.free||options.asThoughAnyColor!==frame.anyColor||options.speed!=='instant'||options.faceDownCast||options.bestow||options.overloaded||options.oracleAlternativeCost)return false;
   return offers(game,player).some(entry=>entry.card===card&&entry.from===(options.from||card.zone)&&
-   ['oracleFace','adventure','splitHalf','splitFuse','altCostStr','flashback','isAftermath','oracleExileOnGraveyard'].every(key=>entry.alt[key]===options[key]));
+   ['oracleFace','adventure','splitHalf','splitFuse','altCostStr','flashback','isAftermath','oracleExileOnGraveyard','lifeCost'].every(key=>entry.alt[key]===options[key]));
  }
  async function castOne(ctx,cards,effect,helpers){
   effect={free:true,...effect};
   const prior=frames.get(ctx.g),id=nextId++,base={oracleImmediateCast:id,free:effect.free,speed:'instant',...(effect.anyColor?{asThoughAnyColor:true}:{}),...(effect.exileAfter&&!effect.exileTypes?{oracleExileOnGraveyard:true}:{})};
   const filter=effect.filter?helpers.target(effect.filter,[],0,{...ctx.data,oracleX:ctx.so?.x??ctx.x??0,oracleSourceCapture:ctx.oracleSourceCapture||{zoneVersion:ctx.sourceZoneVersion??ctx.src.zoneVersion}}).filter:null;
   const frame={id,player:ctx.you,source:ctx.src,free:effect.free,anyColor:base.asThoughAnyColor,filter,entries:cards.map(card=>({card,zone:card.zone,version:card.zoneVersion,alternatives:alternatives(ctx.g,card,base).map(alt=>effect.exileAfter&&effect.exileTypes?.some(type=>ctx.g.castHasType(card,alt,type))?{...alt,oracleExileOnGraveyard:true}:alt)}))};
+  if(effect.lifeManaValue)for(const entry of frame.entries)for(const alt of entry.alternatives)alt.lifeCost=ctx.g.stackSpellManaValue(prospective(ctx.g,entry.card,alt,ctx.you));
   frames.set(ctx.g,frame);
   try{
    frame.allowLand=!!effect.playLand;

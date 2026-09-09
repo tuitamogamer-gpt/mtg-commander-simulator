@@ -11,6 +11,7 @@
   const rows=[];const add=(key,source,operation,extra={})=>{if(!used.has(key))rows.push({key,src:source,label:source?.name||'Draw replacement',operation,...extra});};
   for(const card of game.bf()){
    if(card.cur?.abilitiesDisabled)continue;
+   if(card.ctrl===p&&card.def.cdkTombs&&!p.library.length)add('tombs:'+card.iid+':'+card.zoneVersion,card,{mode:'cdk-tombs'});
    if(card.ctrl===p&&card.def.drawDouble&&!firstDraw(game,p))add('double:'+card.iid+':'+card.zoneVersion,card,{mode:'multiply',n:2});
    if(card.ctrl===p&&card.def.drawWhileEmptyExtra&&!p.hand.length)add('empty:'+card.iid+':'+card.zoneVersion,card,{mode:'empty-hand',n:2});
    for(const [index,operation]of(card.def.oracleDrawReplacements||[]).entries()){
@@ -53,6 +54,7 @@
    if(op.loseLife&&!p.lost)await game.loseLife(p,op.loseLife,src);return n;
   }
   if(op.mode==='redirect')return controller&&!controller.lost?unit(game,controller,srcCard,opts,nextUsed,physicalDraw,root):0;
+  if(op.mode==='cdk-tombs'){const pool=p.graveyard.filter(c=>c.is('Creature'));if(pool.length){const[c]=await selectedCards(game,p,pool,'Out of the Tombs: return a creature');await game.putPermanentOntoBattlefield(c,p);}else await game.playerLoses(p,'Out of the Tombs');return 0;}
   if(op.mode==='skip')return 0;
   if(op.mode==='study'){if(src.zone==='battlefield'&&!src.phasedOut)game.addCounters(src,'study',1);return 0;}
   if(op.mode==='win-empty'){for(const opponent of game.players)if(opponent!==p&&!opponent.lost)await game.playerLoses(opponent,src.name);return 0;}

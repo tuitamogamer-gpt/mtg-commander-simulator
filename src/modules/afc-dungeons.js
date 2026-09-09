@@ -36,11 +36,11 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   }}
  };
  G.completeAFCDungeon=async function(p){const d=p.afcDungeon;if(!d)return;p.afcDungeon=null;p.afcCompletedDungeons=(p.afcCompletedDungeons||0)+1;this.lg(p.name+' completes '+dungeons[d.key].name+'.','info');await this.emit('dungeonCompleted',{player:p,key:d.key,id:d.id});};
- G.venture=async function(p,source=null){
+ G.venture=async function(p,source=null,undercity=false){
   let state=p.afcDungeon;
   if(state&&!dungeons[state.key].rooms[state.room].next.length){await this.completeAFCDungeon(p);state=null;}
   let roomKey;
-  if(!state){const key=await C.option({g:this,src:source||{name:'Venture into the dungeon'},you:p},Object.entries(dungeons).map(([key,d])=>({key,label:d.name})),'choose a dungeon');state=p.afcDungeon={id:(p.afcDungeonSerial=(p.afcDungeonSerial||0)+1),key,room:dungeons[key].start};roomKey=state.room;}
+  if(!state){const key=undercity?'undercity':await C.option({g:this,src:source||{name:'Venture into the dungeon'},you:p},Object.entries(dungeons).filter(([,d])=>!d.initiativeOnly).map(([key,d])=>({key,label:d.name})),'choose a dungeon');state=p.afcDungeon={id:(p.afcDungeonSerial=(p.afcDungeonSerial||0)+1),key,room:dungeons[key].start};roomKey=state.room;}
   else{const next=dungeons[state.key].rooms[state.room].next;roomKey=next.length===1?next[0]:await C.option({g:this,src:source||{name:'Venture into the dungeon'},you:p},next.map(key=>({key,label:dungeons[state.key].rooms[key].name})),'choose the next room');state.room=roomKey;}
   const dungeon=dungeons[state.key],r=dungeon.rooms[roomKey],n=1+this.bf().filter(c=>C.live(c)&&c.ctrl===p&&c.def.afcHama).length;
   this.lg(p.name+' enters '+dungeon.name+' — '+r.name+'.','info');this.note('dungeon',{player:p,dungeon:dungeon.name,room:r.name});

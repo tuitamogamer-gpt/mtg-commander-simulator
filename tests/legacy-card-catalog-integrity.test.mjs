@@ -46,7 +46,10 @@ test('the complete pinned legacy card set remains represented exactly once in th
   const vocNccNames=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-voc-ncc-2026-09-09/intake.json',import.meta.url),'utf8')).newNames;
   assert.equal(vocNccNames.length,165);
   assert.deepEqual(intersection(vocNccNames,[...starterNames,...c21Names,...c14Names,...c1516Names,...c1719Names,...c1920Names,...zncKhcNames,...afcMicNames]),[]);
-  const legacyNames = Object.keys(legacyRaw.cards || {}).filter(name=>!starterNames.includes(name)&&!c21Names.includes(name)&&!c14Names.includes(name)&&!c1516Names.includes(name)&&!c1719Names.includes(name)&&!c1920Names.includes(name)&&!zncKhcNames.includes(name)&&!afcMicNames.includes(name)&&!vocNccNames.includes(name));
+  const clbDmc40kNames=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-clb-dmc-40k-2026-09-09/intake.json',import.meta.url))).newNames;
+  assert.equal(clbDmc40kNames.length,188);
+  assert.deepEqual(intersection(clbDmc40kNames,[...starterNames,...c21Names,...c14Names,...c1516Names,...c1719Names,...c1920Names,...zncKhcNames,...afcMicNames,...vocNccNames]),[]);
+  const legacyNames = Object.keys(legacyRaw.cards || {}).filter(name=>!starterNames.includes(name)&&!c21Names.includes(name)&&!c14Names.includes(name)&&!c1516Names.includes(name)&&!c1719Names.includes(name)&&!c1920Names.includes(name)&&!zncKhcNames.includes(name)&&!afcMicNames.includes(name)&&!vocNccNames.includes(name)&&!clbDmc40kNames.includes(name));
   const legacyNameSet = new Set(legacyNames);
   const digest = createHash('sha256').update([...legacyNames].sort().join('\n')).digest('hex');
 
@@ -54,7 +57,7 @@ test('the complete pinned legacy card set remains represented exactly once in th
   assert.equal(legacyNameSet.size, LEGACY_CARD_COUNT, 'legacy raw names are unique');
   assert.equal(digest, LEGACY_NAME_DIGEST, 'pinned legacy card-name identity');
 
-  for (const name of [...legacyNames,...starterNames,...c21Names,...c14Names,...c1516Names,...c1719Names,...c1920Names,...zncKhcNames,...afcMicNames,...vocNccNames]) {
+  for (const name of [...legacyNames,...starterNames,...c21Names,...c14Names,...c1516Names,...c1719Names,...c1920Names,...zncKhcNames,...afcMicNames,...vocNccNames,...clbDmc40kNames]) {
     const raw = legacyRaw.cards[name];
     const catalog = MTG.CARD_CATALOG[name];
     assert.ok(catalog, `${name}: present in MTG.CARD_CATALOG`);
@@ -90,7 +93,7 @@ test('the complete pinned legacy card set remains represented exactly once in th
   assert.deepEqual(intersection(afcMicNames,[...legacyNames,...genericNames,...sauronNames]),[], 'AFC/MIC additions reuse every existing name');
   const runtimeNames = Object.keys(MTG.RAW_DATA.cards || {});
   const catalogNames = Object.keys(MTG.CARD_CATALOG || {});
-  const expectedRuntimeUnion = [...legacyNames, ...starterNames, ...c21Names, ...c14Names, ...c1516Names, ...c1719Names, ...c1920Names, ...zncKhcNames, ...afcMicNames, ...vocNccNames, ...genericNames, ...sauronNames];
+  const expectedRuntimeUnion = [...legacyNames, ...starterNames, ...c21Names, ...c14Names, ...c1516Names, ...c1719Names, ...c1920Names, ...zncKhcNames, ...afcMicNames, ...vocNccNames, ...clbDmc40kNames, ...genericNames, ...sauronNames];
   assert.deepEqual(sortedUnique(runtimeNames), sortedUnique(expectedRuntimeUnion),
     'runtime raw cards are exactly legacy plus Starter, C21, C14, C15/C16, C17-C19 C19-C20/ZNC ZNC/CMR/KHC and AFC/MIC additions plus generic Oracle plus Sauron');
   assert.deepEqual(sortedUnique(catalogNames), sortedUnique(runtimeNames),

@@ -76,7 +76,7 @@ test('svaki aktivni oracle target-opponent put ima stvarni target spec', () => {
     .filter(([, def]) => /target opponents?\b/i.test(def.oracle || ''));
   // Explosion creates reflexive triggers whose legal targets are selected at
   // random when they enter the Stack; starter-precons.test.mjs executes them.
-  const intentionalRandom = new Set(['Vial Smasher the Fierce','Explosion of Riches']);
+  const intentionalRandom = new Set(['Vial Smasher the Fierce','Explosion of Riches','Knight Rampager']);
   const { game, players: [controller] } = choiceFixture();
 
   for (const [canonicalName, def] of targetOpponentCards) {
@@ -87,6 +87,11 @@ test('svaki aktivni oracle target-opponent put ima stvarni target spec', () => {
     // are exercised in c17-c19-entry.test.mjs.
     if(canonicalName==='Vindictive Lich'){assert.equal(typeof script.triggers[0].prepareTargets,'function');continue;}
     const specs = allTargetSpecs(script);
+    if(canonicalName==='Passionate Archaeologist'){
+      const background=card(controller,canonicalName),commander=card(controller,'Faldorn, Dread Wolf Herald');commander.commander=true;
+      for(const c of [background,commander]){c.zone='battlefield';game.battlefield.push(c);}game.recalc();
+      specs.push(...commander.cur.extraTriggers.flatMap(trigger=>trigger.targets||[]));game.battlefield=[];game.recalc();
+    }
     if (typeof script.targets === 'function') {
       const targets = script.targets(game, card(controller, canonicalName), {}, controller);
       assert.ok(targets == null || Array.isArray(targets), canonicalName + ': target factory returns actual specs');

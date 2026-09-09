@@ -198,6 +198,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+    "Mind Flayarrrs": {"archetype":"Horrors, mill, and theft","length":"long","tags":["tribal","mill","control"],"commanderImportance":1.5},
+    "Party Time": {"archetype":"Full party and creature value","length":"long","tags":["tribal","counters","combat"],"commanderImportance":1.5},
+    "Draconic Dissent": {"archetype":"Dragons and forced combat","length":"long","tags":["politics","combat","control"],"commanderImportance":1.5},
+    "Exit from Exile": {"archetype":"Exile casting and Wolves","length":"long","tags":["exile","tokens","ramp"],"commanderImportance":1.5},
+    "Painbow": {"archetype":"Five-color threats and counters","length":"long","tags":["ramp","counters","value"],"commanderImportance":1.5},
+    "Legends' Legacy": {"archetype":"Legends and graveyard value","length":"long","tags":["legendary","graveyard","ramp"],"commanderImportance":1.5},
+    "Tyranid Swarm": {"archetype":"Ravenous X creatures","length":"long","tags":["counters","ramp","combat"],"commanderImportance":1.5},
+    "The Ruinous Powers": {"archetype":"Life loss and cascade","length":"long","tags":["spellslinger","combat","value"],"commanderImportance":1.5},
+    "Necron Dynasties": {"archetype":"Artifact reanimation and unearth","length":"long","tags":["artifacts","graveyard","reanimate"],"commanderImportance":1.5},
+    "Forces of the Imperium": {"archetype":"Vigilant armies and squad","length":"long","tags":["tokens","combat","artifacts"],"commanderImportance":1.5},
     "Vampiric Bloodline": {"archetype": "Vampires and Blood", "length": "long", "tags": ["tribal", "tokens", "combat"], "commanderImportance": 1.5},
     "Spirit Squadron": {"archetype": "Spirits and flying tokens", "length": "long", "tags": ["tribal", "tokens", "combat"], "commanderImportance": 1.5},
     "Buckle Up": {"archetype": "Vehicles and Pilots", "length": "long", "tags": ["artifacts", "combat", "value"], "commanderImportance": 1.5},

@@ -1,0 +1,150 @@
+{
+  "baseline": "22dcc14",
+  "passed": true,
+  "originalPhysicalCards": 1000,
+  "uniqueNames": 681,
+  "sourceLists": [
+    {
+      "name": "Mind Flayarrrs",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/feature/commander-legends-battle-for-baldurs-gate-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/MindFlayarrrs_CLB.json"
+      ],
+      "exportSha256": "17b3d7782b7c35b65aca78060737447ba3feeae91638b113e898c6af5d7502da"
+    },
+    {
+      "name": "Party Time",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/feature/commander-legends-battle-for-baldurs-gate-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/PartyTime_CLB.json"
+      ],
+      "exportSha256": "3de45b093557265325f86e4086399abdc2f97db8622f9fdc89650e941ef7c0e3"
+    },
+    {
+      "name": "Draconic Dissent",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/feature/commander-legends-battle-for-baldurs-gate-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/DraconicDissent_CLB.json"
+      ],
+      "exportSha256": "7392ca4fec38f80cd6650e4192bd8768d71138f945b700d35213d2655b35ba13"
+    },
+    {
+      "name": "Exit from Exile",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/feature/commander-legends-battle-for-baldurs-gate-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/ExitFromExile_CLB.json"
+      ],
+      "exportSha256": "ce60195579082aed46cde3f48852f70c15eb5311f29687d94e742828bc2286ab"
+    },
+    {
+      "name": "Painbow",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/feature/dominaria-united-commander-decklists-2022-08-19",
+        "https://mtgjson.com/api/v5/decks/Painbow_DMC.json"
+      ],
+      "exportSha256": "162b058f21723c1f3c94609b6702bfc049d1def8a893204632e81ddc4ab807a4"
+    },
+    {
+      "name": "Legends' Legacy",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/feature/dominaria-united-commander-decklists-2022-08-19",
+        "https://mtgjson.com/api/v5/decks/LegendsLegacy_DMC.json"
+      ],
+      "exportSha256": "b9fc273b9d211a5ff89016f01279e6ea87ceacb594fdf93266dd81128833bd39"
+    },
+    {
+      "name": "Tyranid Swarm",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/warhammer-40000-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/TyranidSwarm_40K.json"
+      ],
+      "exportSha256": "f8edb02c6ed40768b576ff8d79422b72f2f8f75ab89c54f86ff9f55755684a17"
+    },
+    {
+      "name": "The Ruinous Powers",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/warhammer-40000-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/TheRuinousPowers_40K.json"
+      ],
+      "exportSha256": "8033a144ad9e2823f3f04cd56fb6f4e0bd65db25d68cbd6251f823683854fa27"
+    },
+    {
+      "name": "Necron Dynasties",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/warhammer-40000-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/NecronDynasties_40K.json"
+      ],
+      "exportSha256": "0fdfb5b5ecb7b97016874d55cb4bae3dc9b35d6a1f7c6b0e33752674226bd357"
+    },
+    {
+      "name": "Forces of the Imperium",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/warhammer-40000-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/ForcesOfTheImperium_40K.json"
+      ],
+      "exportSha256": "cbc27fd9419d6fce663798276f6133fe5bc4b8446065d66d35e6e1c69b5c9367"
+    }
+  ],
+  "existingRawDefinitionsPreserved": 2592,
+  "existingRawDeckRecordsPreserved": 91,
+  "nativeRawDefinitions": 2780,
+  "existingImageMappingsPreserved": 3974,
+  "existingCommanderCropsPreserved": 91,
+  "existingTrackedAssetsUnchanged": true,
+  "addedWebPFiles": 394,
+  "allNewImageDigestsMatch": true,
+  "idempotentDataSha256": "cab045ccfd0e2216b49b0240cca3123fc6f5d2f90b7a42a8353ecf503ca276a4",
+  "retainedOracleDifferences": [
+    {
+      "name": "Beanstalk Giant // Fertile Footsteps",
+      "existingOracle": "Beanstalk Giant's power and toughness are each equal to the number of lands you control.",
+      "pinnedOracle": "Beanstalk Giant: Beanstalk Giant's power and toughness are each equal to the number of lands you control.\nFertile Footsteps: Search your library for a basic land card, put it onto the battlefield, then shuffle. (Then exile this card. You may cast the creature later from exile.)",
+      "preserved": true
+    },
+    {
+      "name": "Bloodthirsty Blade",
+      "existingOracle": "Equipped creature gets +2/+0 and is goaded. (It attacks each combat if able and attacks a player other than you if able.)\n{1}: Attach Bloodthirsty Blade to target creature an opponent controls. Activate only as a sorcery.",
+      "pinnedOracle": "Equipped creature gets +2/+0 and is goaded. (It attacks each combat if able and attacks a player other than you if able.)\n{1}: Attach this Equipment to target creature an opponent controls. Activate only as a sorcery.",
+      "preserved": true
+    },
+    {
+      "name": "Boros Garrison",
+      "existingOracle": "Boros Garrison enters tapped.\nWhen Boros Garrison enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "pinnedOracle": "This land enters tapped.\nWhen this land enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "preserved": true
+    },
+    {
+      "name": "Embereth Shieldbreaker // Battle Display",
+      "existingOracle": "",
+      "pinnedOracle": "Embereth Shieldbreaker: \nBattle Display: Destroy target artifact. (Then exile this card. You may cast the creature later from exile.)",
+      "preserved": true
+    },
+    {
+      "name": "Steel Hellkite",
+      "existingOracle": "Flying\n{2}: Steel Hellkite gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by Steel Hellkite this turn. Activate only once each turn.",
+      "pinnedOracle": "Flying\n{2}: This creature gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn.",
+      "preserved": true
+    },
+    {
+      "name": "Vengeful Ancestor",
+      "existingOracle": "Flying\nWhenever Vengeful Ancestor enters or attacks, goad target creature. (Until your next turn, that creature attacks each combat if able and attacks a player other than you if able.)\nWhenever a goaded creature attacks, it deals 1 damage to its controller.",
+      "pinnedOracle": "Flying\nWhenever this creature enters or attacks, goad target creature. (Until your next turn, that creature attacks each combat if able and attacks a player other than you if able.)\nWhenever a goaded creature attacks, it deals 1 damage to its controller.",
+      "preserved": true
+    }
+  ],
+  "current": {
+    "decks": 100,
+    "definitions": 20638,
+    "eligible": 20619
+  }
+}

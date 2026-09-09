@@ -688,6 +688,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // opening hands with one free mulligan (Commander), then London
       for (const p of this.players) await this.openingHand(p);
+      await MTG.CDK?.openingPermanents(this);
       this.turnPlayer = this.players[0];
       this.lg(`The game begins. Turn order: ${this.players.map(p => p.name).join(' → ')}.`);
       await this.runGame();
@@ -1357,12 +1358,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (opts.tapped) card.tapped = true;
       if(opts.afcZombie)MTG.AFC.zombify(this,card,opts.afcDecayed);
+      if(opts.cdkExileOnLeave)card.meta.unearth=true;
+      if(opts.cdkArtifact)this.addOracleAnimation(card,{types:['Artifact'],retainTypes:true,retainAllSubtypes:true});
       if(opts.afcWarlock){card.meta.addedSubtypes=[...new Set([...(card.meta.addedSubtypes||[]),'Warlock'])];this.recalc();}
       // Global entry-state replacements finish before ETB observers. The
       // affected controller chooses their order when several apply.
       await MTG.oracleV8ApplyEntryState(this, card);
       await MTG.VN?.riotEntry?.(this,card);
       const additionalEntryCounters = {...opts.additionalCounters};
+      if(card.castMeta?.cdkBiophagus&&card.is('Creature'))additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+card.castMeta.cdkBiophagus;
       if(card.meta.vnAdditionalPlus){additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+card.meta.vnAdditionalPlus;delete card.meta.vnAdditionalPlus;}
       if(card.is('Creature'))for(const source of this.bf())if(source!==card&&source.ctrl===card.ctrl&&!source.cur?.abilitiesDisabled&&source.def.c1920Tayam)additionalEntryCounters.vigilance=(additionalEntryCounters.vigilance||0)+1;
       const bloodthirst=MTG.C1719?.bloodthirstCounters(this,card)||0;
@@ -1916,7 +1920,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (n <= 0 || !this.canGainLife(p)) return 0;
       const used = new Set();
       while (n > 0) {
-        const candidates = this.replacers('lifegain').filter(r => r.ctrl === p && !used.has(r.key) && (!r.applies || r.applies(this, n, p, r.src)));
+        const candidates = this.replacers('lifegain').filter(r => (r.opponents?r.ctrl!==p:r.ctrl===p) && !used.has(r.key) && (!r.applies || r.applies(this, n, p, r.src)));
         if (!candidates.length) break;
         const selected = await this.chooseReplacement(p, candidates, 'lifegain', n);
         used.add(selected.key);
@@ -2240,7 +2244,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await this.damageAny(reflectionSource, recipient, amount, {combat: false, deferSBA: true});
       };
       while (data.n > 0) {
-        const preventionAllowed = !opts.cantBePrevented && !this.bf().some(card => !card.cur?.abilitiesDisabled && card.def.damageCantBePrevented);
+        const preventionAllowed = !opts.cantBePrevented && !this.untilEffects.some(e=>e.kind==='noDamagePrevention') && !this.bf().some(card => !card.cur?.abilitiesDisabled && card.def.damageCantBePrevented);
+        data.preventionAllowed=preventionAllowed;
         const candidates = [];
         const add = entry => { if (!used.has(entry.key)) candidates.push(entry); };
         for (const r of this.replacers('damage')) {
@@ -2774,7 +2779,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (r.event !== event) continue;
           if (r.cond && !r.cond(this, c)) continue;
           out.push({ ctrl: c.ctrl, src: c, run: r.run, applies: r.applies, oracleOperation: r.oracleOperation, label: r.label,
-            key: c.iid + ':' + c.zoneVersion + ':' + index, n: r.n, prevent: !!r.prevent, oraclePrevention:!!r.oraclePrevention, priority: r.priority || 0 });
+            key: c.iid + ':' + c.zoneVersion + ':' + index, n: r.n, prevent: !!r.prevent, oraclePrevention:!!r.oraclePrevention, opponents:!!r.opponents, priority: r.priority || 0 });
         }
       }
       out.sort((a, b) => a.priority - b.priority);
@@ -3889,7 +3894,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Legend choices belong to this same pre-action state, including when
       // one of the copies also has lethal damage or zero toughness.
       const legends = new Map();
-      for (const card of battlefield) if ((card.cur.super || []).includes('Legendary')) {
+      for (const card of battlefield) if ((card.cur.super || []).includes('Legendary') && !(card.isToken && battlefield.some(s => s.ctrl === card.ctrl && s.def.cdkCadric && !s.cur.abilitiesDisabled))) {
         const key = card.ctrl.idx + '|' + card.name;
         if (!legends.has(key)) legends.set(key, []);
         legends.get(key).push(card);

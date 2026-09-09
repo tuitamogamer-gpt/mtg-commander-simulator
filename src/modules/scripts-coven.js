@@ -621,7 +621,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Sacrifice: search for an artifact/land', cost: { mana: '{1}', tap: true, sacSelf: true },
       run: async ctx => {
-        const cands = (ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library).filter(c => (c.is('Land') && (c.def.super || []).includes('Basic')) || (c.is('Artifact') && c.def.mana));
+        const cands = (ctx.g.searchableLibrary?ctx.g.searchableLibrary(ctx.you):(ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library)).filter(c => (c.is('Land') && (c.def.super || []).includes('Basic')) || (c.is('Artifact') && c.def.mana));
         if (!cands.length) return;
         const pick = await ctx.you.controller.decide(ctx.g, { type: 'chooseCards', from: cands, min: 1, max: 1, prompt: 'To hand:', aiHint: { kind: 'tutor' } });
         const c = pick[0]; if (!c) return;

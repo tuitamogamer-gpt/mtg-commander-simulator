@@ -460,7 +460,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await ctx.g.destroyMany(ctx.g.bf().filter(card => card.is('Creature')), { noRegen: true, source: ctx.src });
       const opponent = ctx.targets[0];
       if (!opponent || opponent.lost) return;
-      const pool = (ctx.g.canSearchLibrary?.(ctx.you)===false?[]:opponent.library).filter(card => card.is('Creature'));
+      const pool = (ctx.g.searchableLibrary?ctx.g.searchableLibrary(ctx.you,opponent):(ctx.g.canSearchLibrary?.(ctx.you)===false?[]:opponent.library)).filter(card => card.is('Creature'));
       const picked = pool.length ? await ctx.you.controller.decide(ctx.g, {
         type: 'chooseCards', from: pool, min: 0, max: Math.min(3, pool.length),
         prompt: `Choose up to three creatures from ${opponent.name}'s library`, search: true,
@@ -483,7 +483,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       await E7.ringTempts(ctx.g, ctx.you);
       const colors = new Set(ctx.g.creatures(ctx.you).filter(isLegendary).flatMap(card => card.colors));
-      const pool = (ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library).filter(card => card.colors.some(color => colors.has(color)));
+      const pool = (ctx.g.searchableLibrary?ctx.g.searchableLibrary(ctx.you):(ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library)).filter(card => card.colors.some(color => colors.has(color)));
       if (pool.length) {
         const picked = await ctx.you.controller.decide(ctx.g, {
           type: 'chooseCards', from: pool, min: 1, max: 1, prompt: 'Search for a card sharing a color with a legendary creature',

@@ -565,7 +565,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         cost, noDraw: true,
         effect: async ctx => {
           const basicLand = /^basic land$/i.test(subtype);
-          const available = (ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library).filter(card => basicLand
+          const available = (ctx.g.searchableLibrary?ctx.g.searchableLibrary(ctx.you):(ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library)).filter(card => basicLand
             ? card.is('Land') && (card.def.super || []).includes('Basic')
             : card.hasSub(subtype));
           let chosen = [];

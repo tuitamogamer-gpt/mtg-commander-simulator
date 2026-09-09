@@ -55,8 +55,8 @@ test('svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putan
   const active = new Set(Object.values(MTG.DECKS).flatMap(deck => deck.cards.map(entry => entry.name)));
   const raw = new Set(Object.keys(MTG.RAW_DATA.cards));
   const oracleBatchCards = new Set((MTG.ORACLE_BATCHES || []).flatMap(batch => batch.cards.map(entry => entry.raw.name)));
-  assert.equal(active.size, 3811);
-  assert.equal(raw.size, 2592 + oracleBatchCards.size);
+  assert.equal(active.size, 4171);
+  assert.equal(raw.size, 2780 + oracleBatchCards.size);
 
   for (const name of raw) {
     const def = MTG.DEFS[name];
@@ -77,7 +77,7 @@ test('svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putan
     const mana = Array.isArray(def.mana) ? def.mana.length : def.mana ? 1 : 0;
     const paths = mana + (def.abilities || []).length + (def.opponentAbilities || []).length +
       (def.handAbility ? 1 : 0) + (def.gyAbility ? 1 : 0) + (def.cycling ? 1 : 0) +
-      (def.equip !== undefined ? 1 : 0) + (def.grantMana ? 1 : 0) +
+      (def.cdkSuspendedSacrifice ? 1 : 0) + (def.equip !== undefined ? 1 : 0) + (def.grantMana ? 1 : 0) +
       (def.statics || []).filter(rule => rule.grantsSelfActivatedAbility && typeof rule.apply === 'function').length;
     assert.ok(paths >= activated, `${name}: Oracle aktivacije ${activated}, putanje ${paths}`);
   }

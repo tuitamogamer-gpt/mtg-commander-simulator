@@ -22,6 +22,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const choose = async (g, player, pool, min, max, prompt, hint = 'bestPermanent') => {
     const librarySearch=hint==='searchLand'||/\bsearch\b/i.test(prompt||'');
     if(librarySearch&&g.canSearchLibrary&&!g.canSearchLibrary(player))pool=pool.filter(c=>c.zone!=='library');
+    if(librarySearch&&g.searchableLibrary)pool=pool.filter(c=>c.zone!=='library'||g.searchableLibrary(player,c.owner).includes(c));
     if (!pool.length || max === 0) return [];
     const answer = await player.controller.decide(g, {type: 'chooseCards', player, from: pool,
       min: Math.min(min, pool.length), max: Math.min(max, pool.length), prompt, aiHint: {kind: hint}});

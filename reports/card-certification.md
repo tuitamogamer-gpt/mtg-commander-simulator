@@ -1,12 +1,12 @@
 # Card-by-card certifikacija
 
-Generisano: 2026-09-09T13:25:07.793Z
+Generisano: 2026-09-09T15:34:03.578Z
 
-Aktivni deckovi: **90** · stvarno jedinstvenih karata: **3811** · card/deck provjere: **7395**
+Aktivni deckovi: **100** · stvarno jedinstvenih karata: **4171** · card/deck provjere: **8211**
 
-Jedinstvene karte — PASS: **3811** · FAIL: **0** · card/deck pojave — PASS: **7395** · FAIL: **0**
+Jedinstvene karte — PASS: **4171** · FAIL: **0** · card/deck pojave — PASS: **8211** · FAIL: **0**
 
-Cijela raw baza — PASS: **20450/20450** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **16639** karata. Cijeli katalog sadrži **17858** certifikovanih Oracle batch karata.
+Cijela raw baza — PASS: **20638/20638** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **16467** karata. Cijeli katalog sadrži **17858** certifikovanih Oracle batch karata.
 
 `Blame Game` je namjerno izbačen iz proizvoda. Oracle batch karte su dostupne engine-u i mogu se ponovo koristiti u ugrađenim i uvezenim deckovima. Aktivnost svake karte određuje stvarni sastav ugrađenih lista.
 
@@ -8035,6 +8035,892 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
 | PASS | Forest | Eksplicitna skripta i strukturna izvršna putanja postoje. |
 
+## Mind Flayarrrs
+
+Commander: **Captain N'ghathrod** · 100 karata · 82 jedinstvenih · PASS 82 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Captain N'ghathrod | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chasm Skulker | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Forgotten Creation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Grazilaxx, Illithid Scholar | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hullbreaker Horror | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mind Flayer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Overcharged Amalgam | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sludge Monster | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wharf Infiltrator | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dark Hatchling | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dross Harvester | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Guiltfeeder | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hunted Horror | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nighthowler | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nihilith | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sewer Nemesis | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Woe Strider | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Consuming Aberration | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nemesis of Reason | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Phyrexian Revoker | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Psychosis Crawler | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Spellskite | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dauthi Horror | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dusk Mangler | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Phyrexian Rager | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Plague Spitter | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ravenous Chupacabra | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fractured Sanity | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Crippling Fear | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hex | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | In Garruk's Wake | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Feed the Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Syphon Mind | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Extract from Darkness | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Pull from Tomorrow | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Curtains' Call | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Memory Plunder | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fact or Fiction | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Drown in the Loch | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mind Stone | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dimir Keyrune | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dimir Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Everflowing Chalice | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Herald's Horn | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Lightning Greaves | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mindcrank | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Dominance | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thought Vessel | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Leyline of Anticipation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Reflections of Littjara | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Black Market | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Choked Estuary | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Creeping Tar Pit | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Darkwater Catacombs | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Drownyard Temple | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exotic Orchard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nephalia Drownyard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | River of Tears | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sunken Hollow | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of Deceit | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ash Barrens | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dimir Aqueduct | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Myriad Landscape | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Path of Ancestry | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Port of Karfell | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rogue's Passage | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tainted Isle | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of the False God | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Island | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Zellix, Sanity Flayer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Haunted One | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Aboleth Spawn | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Endless Evil | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Grell Philosopher | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Psionic Ritual | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Brainstealer Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | From the Catacombs | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Uchuulon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
+## Party Time
+
+Commander: **Nalia de'Arnise** · 100 karata · 82 jedinstvenih · PASS 82 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Nalia de'Arnise | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Archpriest of Iona | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bygone Bishop | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Eight-and-a-Half-Tails | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Frontline Medic | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Galepowder Mage | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Glorious Protector | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Jazal Goldmane | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Magus of the Balance | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mikaeus, the Lunarch | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mirror Entity | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Order of Whiteclay | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Selfless Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Solemn Recruit | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Squad Commander | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bloodsoaked Champion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Butcher of Malakir | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Calculating Lich | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dire Fleet Ravager | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gonti, Lord of Luxury | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Grim Haruspex | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Grim Hireling | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mardu Strike Leader | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mindblade Render | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nighthawk Scavenger | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Pontiff of Blight | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Puppeteer Clique | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Felisa, Fang of Silverquill | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | High Priest of Penance | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Aven Mindcensor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Irregular Cohort | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mage's Attendant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mother of Runes | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Priest of Ancient Lore | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rumor Gatherer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Valiant Changeling | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Changeling Outcast | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Corpse Augur | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Malakir Blood-Priest | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Zulaport Cutthroat | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Austere Command | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dusk // Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sevinne's Reclamation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thwart the Grave | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Unbreakable Formation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Despark | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Maskwood Nexus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Orzhov Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Skullclamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Hierarchy | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Firja's Retribution | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Castle Locthwain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mutavault | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shambling Vent | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of Silence | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Vault of the Archangel | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | War Room | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Windbrisk Heights | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ash Barrens | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bojuka Bog | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mortuary Mire | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Myriad Landscape | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Orzhov Basilica | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Path of Ancestry | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Snowfield Sinkhole | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Starlit Sanctum | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tainted Field | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Plains | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Burakos, Party Leader | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Folk Hero | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Deep Gnome Terramancer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Harper Recruiter | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Seasoned Dungeoneer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Stick Together | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Black Market Connections | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Solemn Doomguide | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Multiclass Baldric | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Crib Swap | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
+## Draconic Dissent
+
+Commander: **Firkraag, Cunning Instigator** · 100 karata · 78 jedinstvenih · PASS 78 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Firkraag, Cunning Instigator | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Will Kenrith | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rowan Kenrith | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Keiga, the Tide Star | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Pursued Whale | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sly Instigator | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Agitator Ant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Avatar of Slaughter | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Brash Taunter | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chaos Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Drakuseth, Maw of Flames | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Geode Rager | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Goblin Spymaster | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Kazuul, Tyrant of the Cliffs | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ryusei, the Falling Star | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Territorial Hellkite | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thunder Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Vengeful Ancestor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Warmonger Hellkite | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Niv-Mizzet, Parun | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Solemn Simulacrum | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Steel Hellkite | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Stuffy Doll | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Burnished Hart | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sprite Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Aether Gale | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Curse of the Swine | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Blasphemous Act | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chain Reaction | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Disrupt Decorum | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Compulsive Research | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Domineering Will | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Reins of Power | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chaos Warp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Midnight Clock | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dragon's Hoard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mind Stone | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wayfarer's Bauble | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bloodthirsty Blade | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fellwar Stone | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hedron Archive | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Izzet Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Creativity | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dissipation Field | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | The Akroan War | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Psychic Impetus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shiny Impetus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Curse of Verbosity | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Propaganda | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Curse of Opulence | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Castle Vantress | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Desolate Lighthouse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Kher Keep | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of Epiphany | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wandering Fumarole | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ash Barrens | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Izzet Boilerworks | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Myriad Landscape | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Path of Ancestry | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Prismari Campus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Reliquary Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of the False God | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Terrain Generator | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Island | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Baeloth Barrityl, Entertainer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Clan Crafter | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Artificer Class | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Astral Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mocking Doppelganger | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bothersome Quasit | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Death Kiss | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Loot Dispute | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Spectacular Showdown | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Angler Turtle | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
+## Exit from Exile
+
+Commander: **Faldorn, Dread Wolf Herald** · 100 karata · 79 jedinstvenih · PASS 79 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Faldorn, Dread Wolf Herald | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Vivien, Champion of the Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Xenagos, the Reveler | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Aurora Phoenix | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bonecrusher Giant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dire Fleet Daredevil | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dream Pillager | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Etali, Primal Storm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Greater Gargadon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Izzet Chemister | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Laelia, the Blade Reforged | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tectonic Giant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Urabrask the Hidden | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wild-Magic Sorcerer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arasta of the Endless Web | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Battle Mammoth | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | End-Raze Forerunners | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hornet Queen | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Lovestruck Beast | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Managorger Hydra | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sweet-Gum Recluse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Embereth Shieldbreaker // Battle Display | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sakura-Tribe Elder | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bloodbraid Elf | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Grumgully, the Generous | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ignite the Future | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Jeska's Will | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mizzium Mortars | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ezuri's Predation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Escape to the Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nature's Lore | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Light Up the Stage | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Beanstalk Giant // Fertile Footsteps | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cultivate | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Explore | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Kodama's Reach | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Search for Tomorrow | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Terramorph | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Three Visits | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Return of the Wildspeaker | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Demon Bolt | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Beast Within | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Natural Reclamation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chaos Wand | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Outpost Siege | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Stolen Strategy | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Warstorm Surge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Primeval Bounty | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sandwurm Convergence | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Castle Embereth | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cinder Glade | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Game Trail | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Kessig Wolf Run | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mossfire Valley | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mosswort Bridge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Raging Ravine | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Spinerock Knoll | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of Abandon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ash Barrens | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Blighted Woodland | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gruul Turf | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Highland Forest | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Myriad Landscape | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of the False God | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Forest | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Durnan of the Yawning Portal | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Passionate Archaeologist | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Delayed Blast Fireball | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nalfeshnee | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Green Slime | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Journey to the Lost City | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tlincalli Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Venture Forth | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sarevok's Tome | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Volcanic Torrent | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
+## Painbow
+
+Commander: **Jared Carthalion** · 100 karata · 94 jedinstvenih · PASS 94 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Jared Carthalion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Archelos, Lagoon Mystic | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Atla Palani, Nest Tender | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Baleful Strix | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chromanticore | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Coiling Oracle | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | O-Kagachi, Vengeful Kami | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Faeburrow Elder | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fusion Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Zaxara, the Exemplary | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hero of Precinct One | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Illuna, Apex of Wishes | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Knight of New Alara | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Maelstrom Archangel | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nethroi, Apex of Death | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rienne, Angel of Rebirth | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Selvala, Explorer Returned | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Solemn Simulacrum | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Surrak Dragonclaw | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Transguild Courier | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Glint-Eye Nephilim | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Xyris, the Writhing Storm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cultivate | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Duneblast | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Explore | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Explosive Vegetation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Farseek | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Kodama's Reach | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Lavalanche | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Merciless Eviction | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Migration Path | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Painful Truths | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Radiant Flames | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Search for Tomorrow | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Time Wipe | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Abzan Charm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Beast Within | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Echoing Truth | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Growth Spiral | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Terminate | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Naya Charm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Path to Exile | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sultai Charm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sylvan Reclamation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Coalition Relic | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fellwar Stone | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Commander's Sphere | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Prophetic Prism | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Abundant Growth | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Maelstrom Nexus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Path to the World Tree | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bad River | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Sanctum | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Canopy Vista | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cascading Cataracts | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cinder Glade | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Crumbling Necropolis | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Crystal Quarry | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Evolving Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exotic Orchard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Flood Plain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Frontier Bivouac | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Grasslands | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Jungle Shrine | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Krosan Verge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mountain Valley | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Murmuring Bosk | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mystic Monastery | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nomad Outpost | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Opulent Palace | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Prairie Stream | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rocky Tar Pit | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sandsteppe Citadel | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Savage Lands | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Seaside Citadel | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Smoldering Marsh | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sunken Hollow | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Terramorphic Expanse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Jenson Carthalion, Druid Exile | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Two-Headed Hellkite | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tiller Engine | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Unite the Coalition | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fallaji Wayfarer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Iridian Maelstrom | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mana Cannons | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Primeval Spawn | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Obsidian Obelisk | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Forest | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Island | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Plains | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
+## Legends' Legacy
+
+Commander: **Dihada, Binder of Wills** · 100 karata · 87 jedinstvenih · PASS 87 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Dihada, Binder of Wills | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Adriana, Captain of the Guard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Alesha, Who Smiles at Death | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Anafenza, Kin-Tree Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arvad the Cursed | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ashling the Pilgrim | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bell Borca, Spectral Sergeant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Captain Lannery Storm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Kothophed, Soul Hoarder | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Drana, Liberator of Malakir | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Etali, Primal Storm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Garna, the Bloodflame | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Jazal Goldmane | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Josu Vess, Lich Knight | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Kari Zev, Skyship Raider | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Krenko, Tin Street Kingpin | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Neheb, Dreadhorde Champion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Odric, Lunarch Marshal | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tajic, Blade of the Legion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Teshar, Ancestor's Apostle | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Traxos, Scourge of Kroog | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Zetalpa, Primal Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Primevals' Glorious Rebirth | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Urza's Ruinous Blast | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Faithless Looting | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Kaya's Wrath | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Night's Whisper | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Read the Bones | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ambition's Cost | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bedevil | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Generous Gift | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hero's Downfall | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mortify | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thrill of Possibility | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Unbreakable Formation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wear // Tear | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Blackblade Reforged | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bontu's Monument | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Commander's Sphere | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fellwar Stone | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hazoret's Monument | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hedron Archive | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hero's Blade | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Heroes' Podium | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Honor-Worn Shaku | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Oketra's Monument | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sword of the Chosen | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tenza, Godo's Maul | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | The Circle of Loyalty | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Day of Destiny | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Battlefield Forge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bojuka Bog | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Boros Garrison | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dragonskull Summit | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Evolving Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Foreboding Ruins | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Geier Reach Sanitarium | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mikokoro, Center of the Sea | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mobilized District | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nomad Outpost | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Orzhov Basilica | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rakdos Carnarium | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Reliquary Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shivan Gorge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shizo, Death's Storehouse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Smoldering Marsh | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of Malice | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of Silence | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of Triumph | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Terramorphic Expanse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tyrite Sanctum | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Caves of Koilos | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shanid, Sleepers' Scourge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Zeriam, Golden Wind | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bladewing, Deathless Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cadric, Soul Kindler | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gerrard's Hourglass Pendant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Moira, Urborg Haunt | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | The Peregrine Dynamo | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Verrak, Warped Sengir | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | The Reaver Cleaver | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Plains | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
+## Tyranid Swarm
+
+Commander: **The Swarmlord** · 100 karata · 81 jedinstvenih · PASS 81 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | The Swarmlord | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hull Breach | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cultivate | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Explore | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Farseek | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rampant Growth | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Starstorm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Aetherize | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Inspiring Call | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Harrow | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Icon of Ancestry | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Herald's Horn | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Abundance | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Death's Presence | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hardened Scales | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bred for the Hunt | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | New Horizons | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Overgrowth | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cinder Glade | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exotic Orchard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Game Trail | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of Abandon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of Epiphany | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of Mystery | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ash Barrens | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Frontier Bivouac | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Unclaimed Territory | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cave of Temptation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Evolving Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Opal Palace | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Path of Ancestry | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rugged Highlands | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Terramorphic Expanse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thornwood Falls | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Island | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Forest | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Magus Lucea Kane | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Genestealer Patriarch | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exocrine | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | The Red Terror | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Screamer-Killer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Biophagus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bone Sabres | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Broodlord | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Clamavus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Haruspex | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hierophant Bio-Titan | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hormagaunt Horde | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Lictor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nexos | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Old One Eye | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sporocyst | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Termagant Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tervigon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Toxicrene | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tyrant Guard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Atalan Jackal | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Deathleaper, Terror Weapon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | The First Tyrannic War | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gargoyle Flock | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ghyrson Starn, Kelermorph | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Malanthrope | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mawloc | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ravener | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shadow in the Warp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tyranid Harridan | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tyranid Prime | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Winged Hive Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Zoanthrope | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Genestealer Locus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Acolyte Hybrid | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Aberrant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Purestrain Genestealer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tyranid Invasion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Trygon Prime | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Venomthrope | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Goliath Truck | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
+## The Ruinous Powers
+
+Commander: **Abaddon the Despoiler** · 100 karata · 79 jedinstvenih · PASS 79 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Abaddon the Despoiler | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Past in Flames | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Decree of Pain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Blasphemous Act | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Deny Reality | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chaos Warp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Reverberate | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bile Blight | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bituminous Blast | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Brainstorm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dark Ritual | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chromatic Lantern | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Assault Suit | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Creativity | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Dominance | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Indulgence | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Worn Powerstone | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Commander's Sphere | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wayfarer's Bauble | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Warstorm Surge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exotic Orchard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Foreboding Ruins | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sunken Hollow | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Barren Moor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Crumbling Necropolis | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Molten Slagheap | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of the False God | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dismal Backwater | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Evolving Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Forgotten Cave | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Path of Ancestry | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swiftwater Cliffs | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Terramorphic Expanse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Island | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Be'lakor, the Dark Master | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Lord of Change | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Blight Grenade | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Great Unclean One | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mandate of Abaddon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mortarion, Daemon Primarch | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nurgle's Conscription | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Plague Drone | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Poxwalkers | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sloppity Bilepiper | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tallyman of Nurgle | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Venomcrawler | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Aspiring Champion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bloodthirster | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dark Apostle | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Keeper of Secrets | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Khârn the Betrayer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Knight Rampager | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Let the Galaxy Burn | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Blood for the Blood God! | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chaos Defiler | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chaos Mutation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Drach'Nyen | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exalted Flamer of Tzeentch | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Helbrute | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | The Horus Heresy | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Kill! Maim! Burn! | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Lucius the Eternal | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Magnus the Red | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mutalith Vortex Beast | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Pink Horror | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | The Ruinous Powers | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tzaangor Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Heralds of Tzeentch | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nurgle's Rot | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bloodcrusher of Khorne | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chaos Terminator Lord | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Herald of Slaanesh | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Noise Marine | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Seeker of Slaanesh | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | The Lost and the Damned | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
+## Necron Dynasties
+
+Commander: **Szarekh, the Silent King** · 100 karata · 71 jedinstvenih · PASS 71 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Szarekh, the Silent King | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Beacon of Unrest | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Living Death | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mutilate | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dread Return | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Defile | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Darkness | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Go for the Throat | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Caged Sun | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Endless Atlas | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gilded Lotus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mystic Forge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sculpting Steel | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cranial Plating | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hedron Archive | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mask of Memory | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Commander's Sphere | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mind Stone | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thought Vessel | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Unstable Obelisk | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wayfarer's Bauble | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Barren Moor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Myriad Landscape | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Reliquary Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Desert of the Glorified | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Polluted Mire | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Vault of Whispers | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Imotekh the Stormlord | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Anrakyr the Traveller | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Biotransference | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chronomancer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cryptek | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Illuminor Szeras | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Lokhust Heavy Destroyer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Lychguard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Necron Deathmark | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Necron Overlord | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Out of the Tombs | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Royal Warden | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shard of the Nightbringer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shard of the Void Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Skorpekh Lord | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Technomancer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Their Name Is Death | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Their Number Is Legion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tomb Blade | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Trazyn the Infinite | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Triarch Stalker | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | The War in Heaven | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Canoptek Scarab Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Canoptek Spyder | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Canoptek Tomb Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Canoptek Wraith | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Convergence of Dominion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cryptothrall | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ghost Ark | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Necron Monolith | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Resurrection Orb | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sceptre of Eternal Glory | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tomb Fortress | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Flayed One | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hexmark Destroyer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Plasmancer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Psychomancer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sautekh Immortal | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Skorpekh Destroyer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Triarch Praetorian | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Night Scythe | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
+## Forces of the Imperium
+
+Commander: **Inquisitor Greyfax** · 100 karata · 83 jedinstvenih · PASS 83 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Inquisitor Greyfax | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bastion Protector | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Collective Effort | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Deploy to the Front | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fell the Mighty | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hour of Reckoning | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Launch the Fleet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Martial Coup | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Entrapment Maneuver | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Utter End | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swords to Plowshares | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mortify | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Everflowing Chalice | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mind Stone | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Skullclamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Dominance | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Hierarchy | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Progress | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Commander's Sphere | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Reconnaissance Mission | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Choked Estuary | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Darkwater Catacombs | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exotic Orchard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Port Town | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Prairie Stream | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Skycloud Expanse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sunken Hollow | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Sanctum | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ash Barrens | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Memorial to Glory | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dismal Backwater | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Evolving Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Path of Ancestry | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Scoured Barrens | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Terramorphic Expanse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tranquil Cove | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Island | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Plains | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Marneus Calgar | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Celestine, the Living Saint | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Defenders of Humanity | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | For the Emperor! | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Space Marine Devastator | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Triumph of Saint Katherine | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ultramarines Honour Guard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Vexilus Praetor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Zephyrim | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sister of Silence | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Vanguard Suppressor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arco-Flagellant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Primaris Eliminator | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Assault Intercessor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Belisarius Cawl | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Birth of the Imperium | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Callidus Assassin | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Commissar Severina Raine | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Company Commander | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cybernetica Datasmith | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Epistolary Librarian | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exterminatus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | The Flesh Is Weak | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Inquisitor Eisenhorn | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Neyam Shai Murad | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sister Hospitaller | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sister Repentia | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | The Golden Throne | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Inquisitorial Rosette | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Knight Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Reaver Titan | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Redemptor Dreadnought | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thunderhawk Gunship | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | And They Shall Know No Fear | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Grey Knight Paragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Space Marine Scout | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thunderwolf Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sicarian Infiltrator | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sanguinary Priest | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Deny the Witch | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Primaris Chaplain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
 ## Raw karte izvan aktivnih fiksnih deckova
 
 | Status | Karta | Nalaz |
@@ -8062,7 +8948,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Abbey Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abbey Matron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abbot of Keral Keep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Aberrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Aberrant Researcher // Perfected Form | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abhorrent Oculus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Abhorrent Overlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8443,7 +9328,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Anaba Bodyguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anaba Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anaconda | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Anafenza, Kin-Tree Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anafenza, the Foremost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anara, Wolvid Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anathemancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8673,13 +9557,11 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Archon of Justice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archon of Sun's Grace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archon of the Triumvirate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Archpriest of Iona | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archpriest of Shadows | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archway Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archway Commons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archweaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Archwing Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Arco-Flagellant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arctic Aven | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arctic Flats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arctic Foxes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8774,7 +9656,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Artisan of Forms | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Artisan's Sorrow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Artistic Refusal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Arvad the Cursed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arwen Undómiel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Arwen's Gift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Asari Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8830,12 +9711,10 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Assert Perfection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Assure // Assemble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Astonishing Spider-Man | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Astral Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Astral Steel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Astral Wingspan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Astrid Peth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | At Knifepoint | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Atalan Jackal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atarka Beastbreaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atarka Efreet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Atarka Pummeler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9005,7 +9884,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Backup Agent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Backwoods Survivalists | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bad Deal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Bad River | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Badlands Revival | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Baffling End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bag End Banquet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9157,7 +10035,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Battle Cry Goblin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Battle Hurda | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Battle Hymn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Battle Mammoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Battle Mastery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Battle Menu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Battle Plan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9195,7 +10072,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Bayou Groff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bazaar Krovod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bazaar Trademage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Be'lakor, the Dark Master | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beacon Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beacon Hawk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beaming Defiance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9317,7 +10193,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Bilbo, Retired Burglar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bilbo, Thief in the Night | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bilbo, Unexpected Adventurer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Bile Blight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bile Urchin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bile-Vial Boggart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bilious Skulldweller | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9429,7 +10304,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Blessing of Belzenlok | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blessing of Leeches | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blessing of the Nephilim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Blight Grenade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blight Herder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blight Keeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blight Mamba | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9512,7 +10386,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Blood Speaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Tithe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood Vassal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Blood for the Blood God! | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood-Chin Fanatic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood-Chin Rager | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Blood-Cursed Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9523,7 +10396,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Bloodcrazed Goblin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bloodcrazed Neonate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bloodcrazed Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Bloodcrusher of Khorne | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bloodcurdling Scream | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bloodfire Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bloodfire Dwarf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9670,7 +10542,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Bone Mask | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bone Picker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bone Pit Brute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Bone Sabres | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bone Saw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bone Shards | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bone Splinters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9689,7 +10560,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Bonethorn Valesk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boneyard Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bontu the Glorified | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Bontu's Monument | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Book Devourer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Book of Mazarbul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Boom // Bust | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10015,7 +10885,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Calciform Pools | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Calcite Snapper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Calculated Dismissal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Calculating Lich | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Caldaia Strongarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Caldera Hellion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Caldera Kavu | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10057,8 +10926,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Canker Abomination | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cankerbloom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Canonized in Blood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Canoptek Scarab Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Canoptek Spyder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Canopy Baloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Canopy Gorger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Canopy Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10140,7 +11007,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Cartouche of Solidarity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cartouche of Zeal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cascade Seer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Cascading Cataracts | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Casey Jones, Asphalt Hooligan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Casey Jones, Jury-Rig Justiciar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cast Down | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10150,10 +11016,8 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Castigate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Castle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Castle Doom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Castle Locthwain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Castle Raptors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Castle Sengir | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Castle Vantress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cat Burglar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cat Collector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cat Warriors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10199,7 +11063,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Cave People | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cave Sense | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cave Tiger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Cave of Temptation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cave of the Frost Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cave-In | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cavern Crawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10217,7 +11080,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Celestial Prism | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Celestial Purge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Celestial Unicorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Celestine, the Living Saint | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cement Shoes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cemetery Gate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cemetery Puca | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10316,7 +11178,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Chaos Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chaos Imps | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chaos Maw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Chaos Terminator Lord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chaosphere | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chaotic Goo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chaotic Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10403,7 +11264,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Chorus of the Tides | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chosen by Heliod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chosen of Markov // Markov's Servant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Chromanticore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chromatic Sphere | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chromatic Star | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chrome Cat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10416,7 +11276,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Chromescale Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chronic Flooding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chronicler of Heroes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Chronomancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chronomaton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chronozoa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chupacabra Echo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10469,11 +11328,9 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Claim the Firstborn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Claim the Precious | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clairvoyance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Clamavus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clammy Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clamor Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clamorous Ironclad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Clan Crafter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clan Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clandestine Meddler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Clarion Cathars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10651,7 +11508,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Commence the Endgame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Commencement of Festivities | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Commercial District | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Commissar Severina Raine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Common Bond | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Common Crook | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Commune with Beavers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10661,7 +11517,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Commune with Spirits | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Commune with the Gods | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Companion of the Trials | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Company Commander | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Comparative Analysis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Compassionate Healer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Compelling Argument | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11006,14 +11861,12 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Cryptic Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cryptolith Rite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cryptoplasm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Cryptothrall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cryptwailing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystacean | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystal Barricade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystal Dragon // Rob the Hoard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystal Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystal Grotto | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Crystal Quarry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystal Rod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystal Seer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Crystal Slipper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11151,7 +12004,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Dark Endurance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Favor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Fortress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Dark Hatchling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Heart of the Wood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Inquiry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Maze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11162,7 +12014,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Dark Prophecy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Remedy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Revenant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Dark Ritual | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Sphere | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Supplicant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Triumph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11173,7 +12024,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Darkling Stalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darklit Gargoyle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darkmoss Bridge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Darkness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darkness Descends | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darkslick Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darkslick Shores | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11213,7 +12063,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Dauthi Cutthroat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dauthi Embrace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dauthi Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Dauthi Horror | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dauthi Mindripper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dauthi Trapper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Davriel's Shadowfugue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11240,7 +12089,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Dawntreader Elk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dawnwing Marshal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Daxos, Blessed by the Sun | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Day of Destiny | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Day of Judgment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Daybreak Chaplain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Daybreak Charger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11321,7 +12169,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Deathgreeter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathknell Berserker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathknell Kami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Deathleaper, Terror Weapon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathless Ancient | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathless Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deathless Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11389,7 +12236,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Defender of Chaos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defender of Law | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defender of the Order | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Defenders of Humanity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defenestrate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defenestrated Phantom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defensive Stance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11403,7 +12249,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Defiant Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defiant Survivor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defibrillating Current | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Defile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defiling Daemogoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Definitely Not a Turtle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Defossilize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11433,7 +12278,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Demolish | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Demolisher Spawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Demolition Stomper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Demon Bolt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Demon Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Demon of Catastrophes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Demon of Death's Gate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11461,7 +12305,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Dense Canopy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deny Entry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deny Existence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Deny Reality | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deny the Divine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Depart the Realm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Departed Deckhand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11484,7 +12327,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Desert Cerodon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert Sandstorm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Desert of the Glorified | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert of the Indomitable | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert's Due | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert's Hold | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11645,7 +12487,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Dissension in the Ranks | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dissenter's Deliverance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dissipate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Dissipation Field | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dissolve | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Distemper of the Blood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Distinguished Conjurer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11904,7 +12745,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Drooling Groodion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dross Crocodile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dross Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Dross Harvester | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dross Hopper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dross Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dross Ripper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -12271,7 +13111,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Ember Weaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ember-Eye Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Embereth Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Embereth Shieldbreaker // Battle Display | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Embereth Skyblazer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Embereth Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Emberhorn Minotaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13021,7 +13860,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Flatman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flatten | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flay Essence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Flayed One | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flayer Drone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flayer Husk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flaying Tendrils | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13153,7 +13991,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Footlight Fiend | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Footsteps of the Goryo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | For the Common Good | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | For the Emperor! | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | For the Family | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foratog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foray of Orcs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13370,7 +14207,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Fury of the Horde | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Furyblade Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Furystoke Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Fusion Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fuss // Bother | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Future Flight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Futurist Forge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13404,7 +14240,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Galadriel, Gift-Giver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gale Force | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gale Swooper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Galepowder Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Galerider Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Galestrike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Galewind Moose | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13516,7 +14351,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Generous Visitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Genesis Chamber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Genesis Ultimatum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Genestealer Locus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Genghis Frog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Geology Enthusiast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Geomancer's Gambit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13764,7 +14598,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Glorious Charge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glorious Decay | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glorious Enforcer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Glorious Protector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glorious Sunrise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Glory Bearers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13981,7 +14814,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Goliath Beetle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goliath Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goliath Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Goliath Truck | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Goliath, Mass Manipulator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gollum the Abandoned | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gollum's Bite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14092,7 +14924,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Gray Slaad // Entropic Decay | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Graypelt Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grayscaled Gharial | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Grazilaxx, Illithid Scholar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grazing Gladehart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grazing Kelpie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grazing Whiptail | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14138,7 +14969,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Gretchen Titchwillow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grey Havens Navigator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grey Host Reinforcements | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Grey Knight Paragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Gridlock | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Grief Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14461,7 +15291,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Hazel's Nocturne | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hazerider Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hazoret's Favor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Hazoret's Monument | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hazy Homunculus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | He Who Hungers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Head of the Homestead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14580,12 +15409,10 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Herald of Kozilek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herald of Secret Streams | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herald of Serra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Herald of Slaanesh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herald of Torment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herald of the Dreadhorde | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herald of the Fair | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herald of the Sun | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Heralds of Tzeentch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herbal Poultice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hercules, Prince of Power | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Herd Baloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14605,19 +15432,16 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Hero of Iroas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hero of Leina Tower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hero of Oxid Ridge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Hero of Precinct One | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hero of the Dunes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hero of the Games | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hero of the Nyxborn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hero of the Pride | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hero of the Winds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hero's Demise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Hero's Downfall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Hero's Resolve | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heroes Remembered | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heroes for Hire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heroes of the Revel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Heroes' Podium | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heroes' Reunion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heroic Reinforcements | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Heron of Hope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14663,7 +15487,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | High-Speed Hoverbike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Highborn Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Highborn Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Highland Forest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Highland Game | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Highland Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Highland Weald | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14753,7 +15576,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Honor the Fallen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Honor the God-Pharaoh | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Honor's Reward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Honor-Worn Shaku | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Honorable Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Honored Crop-Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Honored Heirloom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14788,7 +15610,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Horizon Seed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Horizon Seeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Horizon Spellbomb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Hormagaunt Horde | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Horn of Gondor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Horn of Greed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Horn of Ramos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15017,7 +15838,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Immortal Phoenix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Immortus, Master of Eternity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Imodane's Recruiter // Train Troops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Imotekh the Stormlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Impact Tremors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Impale | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Impaler Shrike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15164,10 +15984,8 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Inquisition of Kozilek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Inquisitive Puppet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Inquisitor Exarch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Inquisitor Greyfax | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Inquisitor's Flail | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Inquisitor's Ox | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Inquisitorial Rosette | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Insatiable Gorgers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Insatiable Harpy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Insatiable Souleater | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15270,7 +16088,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Iridescent Blademaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iridescent Tiger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iridescent Vinelasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Iridian Maelstrom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Irini Sengir | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iroas's Blessing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Iroas's Champion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15668,7 +16485,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Khenra Eternal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Khenra Scrapper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Khenra Spellspear // Gitaxian Spellstalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Kher Keep | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kheru Bloodsucker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kheru Dreadmaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kiki-Jiki, Mirror Breaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15676,7 +16492,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Kiku, Night's Flower | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kill Shot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kill Switch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Kill! Maim! Burn! | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kill-Zone Acrobat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Killian, Decisive Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Killing Glare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15763,7 +16578,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Knight Errant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight Exemplar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight Luminary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Knight Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight Watch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of Cliffhaven | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15772,7 +16586,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Knight of Glory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of Infamy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of Meadowgrain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Knight of New Alara | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of New Benalia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of Obligation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of Old Benalia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16003,7 +16816,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Launch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Launch Mishap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Launch Party | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Launch the Fleet | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lava Axe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lava Coil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lava Dart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16268,7 +17080,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Lodestone Myr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lofty Dreams | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Logic Knot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Lokhust Heavy Destroyer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lone Missionary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lone Rider // It That Rides as One | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lone Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16297,7 +17108,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Lord Skitter's Butcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lord Skitter, Sewer King | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lord of Atlantis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Lord of Change | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lord of Shatterskull Pass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lord of the Nazgûl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lord of the Undead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16405,7 +17215,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Luxa River Shrine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Luxknight Breacher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Luxurious Libation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Lychguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lydia Frye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lyev Decree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Lyev Skyknight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16440,7 +17249,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Madblind Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Madcap Skills | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Madrush Cyclops | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Maelstrom Archangel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maelstrom Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maga, Traitor to Mortals | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magda, Brazen Outlaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16481,7 +17289,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Magnify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magnigoth Sentry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magnivore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Magnus the Red | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magus of the Bazaar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magus of the Candelabra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Magus of the Library | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16513,7 +17320,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Malach of the Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malachite Golem | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malachite Talisman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Malakir Blood-Priest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malakir Cullblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malakir Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malakir Soothsayer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16521,7 +17327,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Malamet Scythe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malamet Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malamet War Scribe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Malanthrope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malcator's Watcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malcolm, the Eyes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Malefic Scythe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16624,7 +17429,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Mardu Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mardu Shadowspear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mardu Skullhunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Mardu Strike Leader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mardu Warshrieker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mardu Woe-Reaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marionette Apprentice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16649,7 +17453,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Markov Retribution | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Markov Waltzer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Markov Warlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Marneus Calgar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maro | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marrow Bats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marrow Shards | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16740,7 +17543,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Maw of Kozilek | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maw of the Mire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maw of the Obzedat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Mawloc | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maximize Altitude | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maximize Velocity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maximum Overdrive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16785,7 +17587,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Meltstrider's Gear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Memnarch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Memorial Team Leader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Memorial to Glory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Memorial to Unity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Memory Drain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Memory Erosion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16942,7 +17743,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Mind Control | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Drain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Drill Assailant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Mind Flayer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Games | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Knives | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mind Over Matter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16959,7 +17759,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Mind's Eye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mindbreak Trap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mindclaw Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Mindcrank | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mindculling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mindeye Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mindful Biomancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17257,7 +18056,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Mortal Wound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mortal's Ardor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mortal's Resolve | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Mortarion, Daemon Primarch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mortarpod | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mortician Beetle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mortiphobia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17278,7 +18076,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Most Wanted | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mothdust Changeling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mother Bear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Mother of Runes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mothrider Patrol | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mothrider Samurai | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mountain Bandit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17344,7 +18141,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Mutant Town | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mutant Town Musicians | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mutant's Prey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Mutavault | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Muxus, Goblin Grandee | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Muzzle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mwonvuli Acid-Moss | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17447,7 +18243,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Natural End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Natural Obsolescence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Natural Order | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Natural Reclamation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Natural Selection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Natural Spring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Natural State | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17487,8 +18282,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Necromancer's Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necromantic Thirst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necromaster Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Necron Deathmark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Necron Monolith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necropede | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necropouncer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necrosavant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17518,7 +18311,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Nemata, Grove Guardian | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nemesis Trap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nemesis of Mortals | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Nephalia Drownyard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nephalia Moondrakes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nephalia Seakite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nephalia Smuggler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17562,7 +18354,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Neverwinter Dryad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | New Frontiers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | New Generation's Technique | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | New Horizons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | New Prahv Guildmage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | News Helicopter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nexus Wardens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17591,7 +18382,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Night Market Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Night Market Lookout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Night Revelers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Night Scythe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Night Terrors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Night of Souls' Betrayal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Night of the Sweets' Revenge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17690,7 +18480,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Noggle Ransacker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Noggle Robber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Noggle the Mind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Noise Marine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nomad Decoy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nomad Stadium | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nomadic Elf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17806,7 +18595,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Obsessive Skinner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Obsidian Acolyte | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Obsidian Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Obsidian Obelisk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Obstinate Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Obstinate Gargoyle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Obyra's Attendants // Desperate Parry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17858,7 +18646,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Oketra the True | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oketra's Attendant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Oketra's Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Oketra's Monument | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Okiba Salvage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Okiba-Gang Shinobi | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Okina Nightwatch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17872,7 +18659,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Old Flitterfang | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Old Ghastbark | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Old Gnawbone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Old One Eye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Old Rutstein | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Old Stickfingers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Old Thrush | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18059,7 +18845,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Ovalchase Daredevil | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ovalchase Dragster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Overbeing of Myth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Overcharged Amalgam | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Overcome | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Overflowing Insight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Overgrown Arch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18169,7 +18954,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Path of Bravery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Path of Peace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Path to Redemption | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Path to the World Tree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pathbreaker Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pathfinding Axejaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pathmaker Initiate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18436,7 +19220,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Plague Dogs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plague Mare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plague Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Plague Spitter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plague Stinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plague Wind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plague Witch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18455,7 +19238,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Plant Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plasma Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plasma Jockey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Plasmancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plated Crusher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plated Geopede | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Plated Onslaught | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18512,7 +19294,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Popular Egotist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Porcelain Legionnaire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pore Over the Pages | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Port of Karfell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Portable Hole | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Portcullis Vine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Portent of Betrayal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18542,7 +19323,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Powerstone Engineer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Powerstone Fracture | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Powerstone Shard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Poxwalkers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Practical Research | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prahv, Spires of Order | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prakhata Club Security | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18592,7 +19372,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Prideful Feastling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prideful Parent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pridemalkin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Priest of Ancient Lore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Priest of Fell Rites | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Priest of Gix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Priest of Iroas | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18613,12 +19392,9 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Primal Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primal Visitation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primalcrux | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Primaris Chaplain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Primaris Eliminator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primeval Herald | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primeval Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primeval Shambler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Primevals' Glorious Rebirth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primoc Escapee | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primordial Ooze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Primordial Pachyderm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18672,7 +19448,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Prophet of Distortion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prophet of the Peak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prophetic Flamespeaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Prophetic Prism | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prophetic Ravings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prosperity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prosperity Tycoon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18756,7 +19531,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Puppet's Verdict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Puppeteer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pure // Simple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Purestrain Genestealer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Purge the Profane | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Purify | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Purifying Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19069,7 +19843,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Ravenous Baboons | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ravenous Baloth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ravenous Bloodseeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Ravenous Chupacabra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ravenous Daggertooth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ravenous Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ravenous Gigamole | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19410,7 +20183,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Revenant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revenge of Ravens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revenge of the Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Reverberate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revered Dead | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revered Elder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Revered Unicorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19712,7 +20484,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Royal Falcon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Royal Treatment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Royal Trooper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Royal Warden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rubble Reading | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rubble Slinger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rubbleback Rhino | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19975,7 +20746,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Sangrophage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanguimancy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanguinary Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Sanguinary Priest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanguine Evangelist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanguine Glorifier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sanguine Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20036,7 +20806,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Sauron, the Dark Lord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sauron, the Lidless Eye | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sauron, the Necromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Sautekh Immortal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savaen Elves | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savage Beating | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Savage Conception | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20120,7 +20889,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Scepter of Dominance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scepter of Fugue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scepter of Insight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Sceptre of Eternal Glory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Schema Thief | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Schismotivate | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scholar of Athreos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20197,7 +20965,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Scrapyard Steelbreaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scrawling Crawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Scream Puff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Screamer-Killer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Screaming Fury | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Screaming Phantom | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Screaming Seahawk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20521,7 +21288,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Shambling Remains | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shambling Shell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shambling Suit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Shambling Vent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shameless Charlatan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shanna, Purifying Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shanodin Dryads | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20534,7 +21300,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Shapesharer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shard Volley | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shard of Broken Glass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Shard of the Nightbringer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shardless Agent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shardless Outlander | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shardmage's Rescue | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20644,7 +21409,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Shivan Phoenix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shivan Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shivan Zombie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Shizo, Death's Storehouse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shoal Kraken | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shock | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shock Brigade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20717,7 +21481,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Sibsig Host | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sibsig Icebreakers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sibsig Muckdraggers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Sicarian Infiltrator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sick and Tired | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sicken | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sickle Ripper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20862,8 +21625,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Siren of the Silent Song | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sisay's Ingenuity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sisay's Ring | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Sister Repentia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Sister of Silence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sisterhood of Karn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sisters of the Flame | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sivvi's Ruse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -20922,8 +21683,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Skizzik Surger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skola Grovedancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skophos Reaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Skorpekh Destroyer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Skorpekh Lord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skred | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skulking Fugitive | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skulking Ghost | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21165,7 +21924,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Snow-Covered Plains | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Snow-Covered Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Snow-Covered Wastes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Snowfield Sinkhole | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Snowhorn Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Snowmelt Stag | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Snowslope Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21308,8 +22066,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Sower of Chaos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sowing Mycospawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sowing Salt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Space Marine Devastator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Space Marine Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Space-Time Anomaly | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spaceshift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spara's Headquarters | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21349,7 +22105,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Species Gorger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Specimen Collector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spectacle Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Spectacular Showdown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spectacular Spider-Man | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spectacular Tactics | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Specter of the Fens | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21543,7 +22298,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Sporeback Wolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sporecap Spider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sporesower Thallid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Sporocyst | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sporogenesis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sporoloth Ancient | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spotcycle Scouter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21566,7 +22320,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Springmantle Cleric | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Springsage Ritual | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sprinting Warbrute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Sprite Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sprite Noble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sprout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sprout Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21578,7 +22331,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Spurred Wolverine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Spyglass Siren | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Squad Captain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Squad Commander | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Squad Rallier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Squadron Hawk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Squall Drifter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21663,7 +22415,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Starling, Aerial Ally | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starlit Angel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starlit Mantle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Starlit Sanctum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starlit Soothsayer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starnheim Aspirant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Starnheim Courser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21791,7 +22542,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Stoic Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stoke the Flames | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stolen Stark Tech | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Stolen Strategy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stomp and Howl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stomped by the Foot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Stomper Cub | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22167,7 +22917,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Sway of Illusion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sweatworks Brawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sweet Oblivion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Sweet-Gum Recluse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sweettooth Witch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swell of Courage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swell of Growth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22193,7 +22942,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Sword of Once and Future | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sword of Sinew and Steel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sword of Wealth and Power | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Sword of the Chosen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swordsman's Steel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swordsworn Cavalier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Swordwise Centaur | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22243,7 +22991,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Syr Ginger, the Meal Ender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Syr Vondam, the Lucent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Sythis, Harvest's Hand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Szarekh, the Silent King | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Séance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | TCRI Building | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | TVA Bureaucrat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22258,7 +23005,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Tainted Indulgence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tainted Observer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tainted Well | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Tajic, Blade of the Legion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tajic, Legion's Edge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tajuru Archer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tajuru Beastmaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22457,18 +23203,15 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Tenth District Veteran | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tenured Concocter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tenured Oilcaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Tenza, Godo's Maul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terashi's Cry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terashi's Grasp | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terashi's Verdict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Termagant Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terminal Agony | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terminal Moraine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Teroh's Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terra Eternal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terra Stomper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terrain Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Terrain Generator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terrarion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terravore | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terrian, World Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22486,7 +23229,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Terror Tide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terror of the Fairgrounds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terrus Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Tervigon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Test of Talents | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Testament Bearer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Testament of Faith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22540,7 +23282,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | The Cabbage Merchant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Cauldron of Eternity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Chase Is On | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | The Circle of Loyalty | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Crystal's Chosen | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Dawning Archaic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Destined Black Mage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22576,7 +23317,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | The Mouth of Sauron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Ooze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Prima Vista | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | The Red Terror | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Regalia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Ring Goes South | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Sackville-Bagginses | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22586,7 +23326,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | The Spirit Oasis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Spot's Portal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Surgical Bay | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | The Swarmlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Swarmweaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Terror of Serpent's Pass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Torment of Gollum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22602,7 +23341,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | The Wind Crystal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The Witch's Vanity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | The World Tree | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Their Name Is Death | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thelonite Monk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Themberchaud | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thermal Blast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22715,7 +23453,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Three Tree Rootweaver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Threnody Singer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thresher Lizard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Thrill of Possibility | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thrill of the Hunt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thrill-Kill Assassin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thrilling Discovery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22743,7 +23480,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Thud | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thumbscrews | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunder Brute | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Thunder Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunder Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunder Lasso | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunder Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22754,7 +23490,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Thunderblust | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunderbolt | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunderclap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Thunderhawk Gunship | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunderhead Gunner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunderhead Squadron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thunderheads | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22783,7 +23518,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Thunderstaff | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thundersteel Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thundertrap Trainer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Thunderwolf Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thwart | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thwart the Enemy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Thwip! | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22891,7 +23625,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Tolsimir Wolfblood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tomakul Honor Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tomakul Scrapsmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Tomb Fortress | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tomb Robber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tomb Trawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tomb of the Spirit Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23049,7 +23782,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Traveling Philosopher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Traverse the Ulvenwald | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Trawler Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Traxos, Scourge of Kroog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Treacherous Blessing | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Treacherous Werewolf | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Treachery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23230,7 +23962,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Two-Handed Axe // Sweeping Cleave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Two-Headed Cerberus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Two-Headed Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Two-Headed Hellkite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Two-Headed Hunter // Twice the Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Two-Headed Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Two-Headed Zombie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23241,21 +23972,16 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Tymaret, the Murder King | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tymora's Invoker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Typhoid Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Tyranid Harridan | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Tyranid Invasion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tyrannize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Tyrant Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tyrant of Kher Ridges | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tyrant's Machine | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tyrant's Scorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Tyrite Sanctum | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tyrox, Saurid Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tyrranax | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tyrranax Atrocity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tyrranax Rex | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tyvar, the Pummeler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ubul Sar Gatekeepers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Uchuulon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ugin's Conjurant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ugin's Construct | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ugin's Insight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23276,7 +24002,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Ultimate Price | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ultimecia, Temporal Threat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ultimo, Civilization's End | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Ultramarines Honour Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ultron Drone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ultron, Machine Overlord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ultros, Obnoxious Octopus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23436,7 +24161,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Updraft Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Uphill Battle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Uproot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Urabrask the Hidden | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Urabrask's Anointer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Urban Daggertooth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Urban Utopia | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23537,7 +24261,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Vampirism | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vandalize | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vanguard Seraph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Vanguard Suppressor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vanguard of Brimaz | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vanguard of the Restless | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vanguard of the Rose | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23572,7 +24295,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Vault Skirge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vault Skyward | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vault of Champions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Vault of Whispers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vaultbreaker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vaultguard Trooper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vayne's Treachery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23623,7 +24345,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Venom Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Venom's Hunger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Venom, Evil Unleashed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Venomcrawler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Venomized Cat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Venomous Brutalizer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Venomous Changeling | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23631,7 +24352,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Venomous Hierophant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Venomous Vines | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Venomspout Brackus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Venomthrope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Venser's Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Vent Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Venus, Torn Between Worlds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24029,7 +24749,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | War Machine, Legacy of Iron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | War Oracle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | War Priest of Thune | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | War Room | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | War Screecher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | War Squeak | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | War of the Last Alliance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24209,7 +24928,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Wetland Sambar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Whack | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Whalebone Glider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Wharf Infiltrator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Where Ancients Tread | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Whetstone | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Whetwheel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24344,7 +25062,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Wingblade Disciple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wingcrafter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winged Coatl | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Winged Hive Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winged Shepherd | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Winged Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Wingnut, Bat on the Belfry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24618,8 +25335,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Zephyr Spirit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zephyr Sprite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zephyr Winder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Zephyrim | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Zeriam, Golden Wind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhalfirin Commander | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhalfirin Decoy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhalfirin Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -24638,7 +25353,6 @@ Commander: **Kitt Kanto, Mayhem Diva** · 100 karata · 87 jedinstvenih · PASS 
 | PASS | Zimone, Paradox Sculptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zirilan of the Claw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zo-Zu the Punisher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Zoanthrope | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zodiac Dog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zodiac Goat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zodiac Horse | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |

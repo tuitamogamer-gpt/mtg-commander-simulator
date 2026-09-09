@@ -86,7 +86,7 @@ export async function auditNativeCard(MTG, name, role) {
   if (name === 'Victimize') extra('Llanowar Elves', player, 'graveyard', 'Second creature card in your graveyard.');
   if (name === 'Back in Town') extra('Ragavan, Nimble Pilferer', player, 'graveyard', 'Pirate outlaw in your graveyard.');
   if (name === 'Ultimate Nullification') extra('Aunt May', player, 'battlefield', 'Legendary creature for the actual additional sacrifice cost.');
-  if (name === "Jaya's Immolating Inferno") extra('Wyleth, Soul of Steel', player, 'battlefield', 'A controlled legendary creature permits this legendary sorcery.');
+  if (["Jaya's Immolating Inferno","Urza's Ruinous Blast"].includes(name)) extra('Wyleth, Soul of Steel', player, 'battlefield', 'A controlled legendary creature permits this legendary sorcery.');
   if (name === 'Rakdos, Lord of Riots') { await game.loseLife(opponent, 1, 'Native cast prerequisite'); prerequisites.push('Opponent actually lost life this turn.'); }
   game.recalc();
   const subject = put(MTG, game, player, name, 'hand');

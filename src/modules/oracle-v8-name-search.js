@@ -35,7 +35,7 @@
   if(!owner||owner.lost)return;
   const chooser=effect.owner==='event-controller'?owner:ctx.you;
   if(effect.optionalSearch){const answer=await chooser.controller.decide(ctx.g,{type:'chooseOption',player:chooser,prompt:'Search your library?',options:[{key:'yes',label:'Search'},{key:'no',label:'Decline'}],aiHint:{kind:'confirm'}});if(!['yes','no'].includes(answer))throw new Error('Invalid optional name-search choice');if(answer==='no')return;}
-  const locked=effect.zones.filter(zone=>zone!=='library'||ctx.g.canSearchLibrary?.(chooser)!==false).flatMap(zone=>owner[zone].map(card=>({card,zone,version:card.zoneVersion}))).filter(row=>M.OracleV8NameGroups.matches(names,M.OracleV8NameGroups.names(row.card))&&(!effect.permanent||permanent(row.card))&&(!effect.creature||row.card.is('Creature')));
+  const locked=effect.zones.filter(zone=>zone!=='library'||ctx.g.canSearchLibrary?.(chooser)!==false).flatMap(zone=>(zone==='library'&&ctx.g.searchableLibrary?ctx.g.searchableLibrary(chooser,owner):owner[zone]).map(card=>({card,zone,version:card.zoneVersion}))).filter(row=>M.OracleV8NameGroups.matches(names,M.OracleV8NameGroups.names(row.card))&&(!effect.permanent||permanent(row.card))&&(!effect.creature||row.card.is('Creature')));
   const present=row=>row.card.zone===row.zone&&row.card.zoneVersion===row.version&&owner[row.zone].includes(row.card);
   // CR701.23b: all matching public graveyard cards are mandatory, while
   // finding a stated quality in hand/library may fail to find any subset.

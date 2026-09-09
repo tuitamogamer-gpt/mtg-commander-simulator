@@ -25,6 +25,8 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
   for(const token of JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-afc-mic-2026-09-09/images.json',import.meta.url))).tokenVariants)expected.add(token.alias);
   importedFaces.push(...JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-voc-ncc-2026-09-09/oracle.json',import.meta.url))).cards.flatMap(r=>r.faces||[]));
   for(const token of JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-voc-ncc-2026-09-09/images.json',import.meta.url))).tokenVariants)expected.add(token.alias);
+  importedFaces.push(...JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-clb-dmc-40k-2026-09-09/oracle.json',import.meta.url))).cards.flatMap(r=>r.faces||[]));
+  for(const token of JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-clb-dmc-40k-2026-09-09/images.json',import.meta.url))).tokenVariants)expected.add(token.alias);
   for(const face of importedFaces)expected.add(face.name);
   for(const name of [...expected]){const back=MTG.DEFS[name]?.c1719FlipBack?.name;if(back)expected.add(back);}
   for (const token of Object.values(MTG.TOKENS || {})) if (token && token.name) {

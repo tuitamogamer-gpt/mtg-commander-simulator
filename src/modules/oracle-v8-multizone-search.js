@@ -23,7 +23,7 @@
     const zoneGroups=subsets(effect.zones);
     const scores=zoneGroups.map(zones=>chosenClauses.reduce((score,index)=>score+(zones.some(zone=>zone!=='library'&&owner[zone].some(card=>matches(card,index)))?5:zones.includes('library')?2:0),0)-zones.length/100);
     const zones=await choose(ctx,'zones',zoneGroups,scores,'Choose zones to search');
-    const locked=zones.filter(zone=>zone!=='library'||ctx.g.canSearchLibrary?.(owner)!==false).flatMap(zone=>owner[zone].map(card=>({card,zone,version:card.zoneVersion}))),claimed=new Set(),selected=[];
+    const locked=zones.filter(zone=>zone!=='library'||ctx.g.canSearchLibrary?.(owner)!==false).flatMap(zone=>(zone==='library'&&ctx.g.searchableLibrary?ctx.g.searchableLibrary(owner,owner):owner[zone]).map(card=>({card,zone,version:card.zoneVersion}))),claimed=new Set(),selected=[];
     const present=entry=>entry.card.owner===owner&&entry.card.zone===entry.zone&&entry.card.zoneVersion===entry.version&&owner[entry.zone].includes(entry.card);
     for(const index of chosenClauses){
       const eligible=locked.filter(entry=>present(entry)&&!claimed.has(entry.card)&&matches(entry.card,index));

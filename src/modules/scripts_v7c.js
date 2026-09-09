@@ -1249,7 +1249,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     abilities: [{
       label: 'Search for a land to hand', cost: { mana: '{2}{G}', rmCounter: { kind: '+1/+1', n: 1 } },
       run: async ctx => {
-        const pool = (ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library).filter(c => c.is('Land'));
+        const pool = (ctx.g.searchableLibrary?ctx.g.searchableLibrary(ctx.you):(ctx.g.canSearchLibrary?.(ctx.you)===false?[]:ctx.you.library)).filter(c => c.is('Land'));
         if (!pool.length) return;
         const pick = await ctx.you.controller.decide(ctx.g, {
           type: 'chooseCards', from: pool, min: 0, max: 1, prompt: 'Land to hand', aiHint: { kind: 'searchBasic' }, search: true,

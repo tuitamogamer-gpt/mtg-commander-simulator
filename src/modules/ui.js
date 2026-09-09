@@ -713,6 +713,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ? `Held since turn ${g.monarchSince.turn}` : 'Current table role',
         duration: 'Until another player takes the crown',
       });
+      if(g.initiative===p)add({key:'initiative',kind:'role',icon:'⚑',label:'Initiative',detail:'Venture into Undercity at the beginning of your upkeep.',duration:'An opponent takes it by dealing combat damage to you.'});
       if (p.afcDungeon) {
         const dungeon=MTG.AFC?.dungeons[p.afcDungeon.key],room=dungeon?.rooms[p.afcDungeon.room];
         if(dungeon&&room)add({key:'dungeon',kind:'role',icon:'🗝',label:dungeon.name,detail:'Current room: '+room.name,duration:'Venture to advance to the next room.'});

@@ -7,6 +7,7 @@ import {precons} from '../scripts/import-c15-c16-precons.mjs';
 import {precons as nextPrecons} from '../scripts/import-c17-c19-precons.mjs';
 import {precons as newestPrecons} from '../scripts/import-c19-c20-znc-precons.mjs';
 import {precons as zncKhcPrecons} from '../scripts/import-znc-cmr-khc-precons.mjs';
+import {precons as clbDmc40kPrecons} from '../scripts/import-clb-dmc-40k-precons.mjs';
 import {precons as vocNccPrecons} from '../scripts/import-voc-ncc-precons.mjs';
 import {precons as afcMicPrecons} from '../scripts/import-afc-mic-precons.mjs';
 import { loadEngine } from './helpers/load-engine.mjs';
@@ -16,11 +17,11 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 test('postojeći cinematic asseti ostaju dostupni; novi preconi koristi slike bez novih videa', () => {
   const defaults = Object.values(MTG.DECKS).flatMap(deck => MTG.defaultCommanders(deck, MTG.DEFS));
-  assert.equal(new Set(defaults).size, 92);
+  assert.equal(new Set(defaults).size, 102);
   assert.equal(Object.keys(MTG.COMMANDER_INTROS).length, 28);
   for (const name of defaults) {
     const asset = MTG.COMMANDER_INTROS[name];
-    if([...precons.concat(nextPrecons,newestPrecons,zncKhcPrecons,afcMicPrecons,vocNccPrecons).flatMap(d=>[d.commander,...(d.partner?[d.partner]:[])]),'Isperia, Supreme Judge','Gisa and Geralf','Kardur, Doomscourge','Atarka, World Render','Emmara, Soul of the Accord','Osgir, the Reconstructor','Zaffai, Thunder Conductor','Adrix and Nev, Twincasters','Breena, the Demagogue','Willowdusk, Essence Seer','Nahiri, the Lithomancer','Teferi, Temporal Archmage','Ob Nixilis of the Black Oath','Daretti, Scrap Savant',"Freyalise, Llanowar's Fury"].includes(name)){
+    if([...precons.concat(nextPrecons,newestPrecons,zncKhcPrecons,afcMicPrecons,vocNccPrecons,clbDmc40kPrecons).flatMap(d=>[d.commander,...(d.partner?[d.partner]:[])]),'Isperia, Supreme Judge','Gisa and Geralf','Kardur, Doomscourge','Atarka, World Render','Emmara, Soul of the Accord','Osgir, the Reconstructor','Zaffai, Thunder Conductor','Adrix and Nev, Twincasters','Breena, the Demagogue','Willowdusk, Essence Seer','Nahiri, the Lithomancer','Teferi, Temporal Archmage','Ob Nixilis of the Black Oath','Daretti, Scrap Savant',"Freyalise, Llanowar's Fury"].includes(name)){
       assert.equal(asset,undefined,`${name}: no new commander video`);continue;
     }
     assert.ok(asset, `${name} nema cinematic mapiranje`);
@@ -45,9 +46,9 @@ test('Turtle Power default je Leonardo plus Michelangelo kao legalan partner duo
   assert.equal(player.library.some(card => pair.includes(card.name)), false);
 });
 
-test('90 predefined decks use available videos or a still image; custom decks never inherit videos', () => {
+test('100 predefined decks use available videos or a still image; custom decks never inherit videos', () => {
   const predefined = Object.values(MTG.DECKS).filter(deck => !deck.custom && !deck.imported);
-  assert.equal(predefined.length, 90);
+  assert.equal(predefined.length, 100);
   for (const deck of predefined) {
     for (const name of MTG.defaultCommanders(deck, MTG.DEFS)) {
       assert.equal(MTG.commanderIntroForDeck(deck, name), MTG.COMMANDER_INTROS[name]||null, `${deck.name}: ${name}`);

@@ -1,0 +1,777 @@
+{
+  "date": "2026-09-09",
+  "baseCommit": "22dcc1432f8560eff0806145df24a2d62c3c68e1",
+  "scope": "Completed local import of ten exact original precons. No commit, push or deployment performed.",
+  "catalog": {
+    "selectableDecks": 100,
+    "definitions": 20638,
+    "eligible": 20619,
+    "nativeDefinitions": 2780,
+    "activeUnique": 4171,
+    "cardDeckChecks": 8211
+  },
+  "intake": {
+    "decks": 10,
+    "originalPhysicalCards": 1000,
+    "uniqueNames": 681,
+    "reused": 493,
+    "newNative": 188,
+    "previouslyDefinedNowEligible": [
+      "Kher Keep",
+      "Spectacular Showdown",
+      "War Room"
+    ]
+  },
+  "sources": {
+    "directMoxfieldImport": false,
+    "queue": "reports/decks/precon-starter-2026-09-06/moxfield-index.tsv",
+    "validation": "source-validation.json",
+    "oracle": "oracle.json",
+    "preservation": {
+      "baseline": "22dcc14",
+      "passed": true,
+      "originalPhysicalCards": 1000,
+      "uniqueNames": 681,
+      "sourceLists": [
+        {
+          "name": "Mind Flayarrrs",
+          "total": 100,
+          "independentSources": [
+            "https://magic.wizards.com/en/news/feature/commander-legends-battle-for-baldurs-gate-commander-decklists",
+            "https://mtgjson.com/api/v5/decks/MindFlayarrrs_CLB.json"
+          ],
+          "exportSha256": "17b3d7782b7c35b65aca78060737447ba3feeae91638b113e898c6af5d7502da"
+        },
+        {
+          "name": "Party Time",
+          "total": 100,
+          "independentSources": [
+            "https://magic.wizards.com/en/news/feature/commander-legends-battle-for-baldurs-gate-commander-decklists",
+            "https://mtgjson.com/api/v5/decks/PartyTime_CLB.json"
+          ],
+          "exportSha256": "3de45b093557265325f86e4086399abdc2f97db8622f9fdc89650e941ef7c0e3"
+        },
+        {
+          "name": "Draconic Dissent",
+          "total": 100,
+          "independentSources": [
+            "https://magic.wizards.com/en/news/feature/commander-legends-battle-for-baldurs-gate-commander-decklists",
+            "https://mtgjson.com/api/v5/decks/DraconicDissent_CLB.json"
+          ],
+          "exportSha256": "7392ca4fec38f80cd6650e4192bd8768d71138f945b700d35213d2655b35ba13"
+        },
+        {
+          "name": "Exit from Exile",
+          "total": 100,
+          "independentSources": [
+            "https://magic.wizards.com/en/news/feature/commander-legends-battle-for-baldurs-gate-commander-decklists",
+            "https://mtgjson.com/api/v5/decks/ExitFromExile_CLB.json"
+          ],
+          "exportSha256": "ce60195579082aed46cde3f48852f70c15eb5311f29687d94e742828bc2286ab"
+        },
+        {
+          "name": "Painbow",
+          "total": 100,
+          "independentSources": [
+            "https://magic.wizards.com/en/news/feature/dominaria-united-commander-decklists-2022-08-19",
+            "https://mtgjson.com/api/v5/decks/Painbow_DMC.json"
+          ],
+          "exportSha256": "162b058f21723c1f3c94609b6702bfc049d1def8a893204632e81ddc4ab807a4"
+        },
+        {
+          "name": "Legends' Legacy",
+          "total": 100,
+          "independentSources": [
+            "https://magic.wizards.com/en/news/feature/dominaria-united-commander-decklists-2022-08-19",
+            "https://mtgjson.com/api/v5/decks/LegendsLegacy_DMC.json"
+          ],
+          "exportSha256": "b9fc273b9d211a5ff89016f01279e6ea87ceacb594fdf93266dd81128833bd39"
+        },
+        {
+          "name": "Tyranid Swarm",
+          "total": 100,
+          "independentSources": [
+            "https://magic.wizards.com/en/news/announcements/warhammer-40000-commander-decklists",
+            "https://mtgjson.com/api/v5/decks/TyranidSwarm_40K.json"
+          ],
+          "exportSha256": "f8edb02c6ed40768b576ff8d79422b72f2f8f75ab89c54f86ff9f55755684a17"
+        },
+        {
+          "name": "The Ruinous Powers",
+          "total": 100,
+          "independentSources": [
+            "https://magic.wizards.com/en/news/announcements/warhammer-40000-commander-decklists",
+            "https://mtgjson.com/api/v5/decks/TheRuinousPowers_40K.json"
+          ],
+          "exportSha256": "8033a144ad9e2823f3f04cd56fb6f4e0bd65db25d68cbd6251f823683854fa27"
+        },
+        {
+          "name": "Necron Dynasties",
+          "total": 100,
+          "independentSources": [
+            "https://magic.wizards.com/en/news/announcements/warhammer-40000-commander-decklists",
+            "https://mtgjson.com/api/v5/decks/NecronDynasties_40K.json"
+          ],
+          "exportSha256": "0fdfb5b5ecb7b97016874d55cb4bae3dc9b35d6a1f7c6b0e33752674226bd357"
+        },
+        {
+          "name": "Forces of the Imperium",
+          "total": 100,
+          "independentSources": [
+            "https://magic.wizards.com/en/news/announcements/warhammer-40000-commander-decklists",
+            "https://mtgjson.com/api/v5/decks/ForcesOfTheImperium_40K.json"
+          ],
+          "exportSha256": "cbc27fd9419d6fce663798276f6133fe5bc4b8446065d66d35e6e1c69b5c9367"
+        }
+      ],
+      "existingRawDefinitionsPreserved": 2592,
+      "existingRawDeckRecordsPreserved": 91,
+      "nativeRawDefinitions": 2780,
+      "existingImageMappingsPreserved": 3974,
+      "existingCommanderCropsPreserved": 91,
+      "existingTrackedAssetsUnchanged": true,
+      "addedWebPFiles": 394,
+      "allNewImageDigestsMatch": true,
+      "idempotentDataSha256": "cab045ccfd0e2216b49b0240cca3123fc6f5d2f90b7a42a8353ecf503ca276a4",
+      "retainedOracleDifferences": [
+        {
+          "name": "Beanstalk Giant // Fertile Footsteps",
+          "existingOracle": "Beanstalk Giant's power and toughness are each equal to the number of lands you control.",
+          "pinnedOracle": "Beanstalk Giant: Beanstalk Giant's power and toughness are each equal to the number of lands you control.\nFertile Footsteps: Search your library for a basic land card, put it onto the battlefield, then shuffle. (Then exile this card. You may cast the creature later from exile.)",
+          "preserved": true
+        },
+        {
+          "name": "Bloodthirsty Blade",
+          "existingOracle": "Equipped creature gets +2/+0 and is goaded. (It attacks each combat if able and attacks a player other than you if able.)\n{1}: Attach Bloodthirsty Blade to target creature an opponent controls. Activate only as a sorcery.",
+          "pinnedOracle": "Equipped creature gets +2/+0 and is goaded. (It attacks each combat if able and attacks a player other than you if able.)\n{1}: Attach this Equipment to target creature an opponent controls. Activate only as a sorcery.",
+          "preserved": true
+        },
+        {
+          "name": "Boros Garrison",
+          "existingOracle": "Boros Garrison enters tapped.\nWhen Boros Garrison enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+          "pinnedOracle": "This land enters tapped.\nWhen this land enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+          "preserved": true
+        },
+        {
+          "name": "Embereth Shieldbreaker // Battle Display",
+          "existingOracle": "",
+          "pinnedOracle": "Embereth Shieldbreaker: \nBattle Display: Destroy target artifact. (Then exile this card. You may cast the creature later from exile.)",
+          "preserved": true
+        },
+        {
+          "name": "Steel Hellkite",
+          "existingOracle": "Flying\n{2}: Steel Hellkite gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by Steel Hellkite this turn. Activate only once each turn.",
+          "pinnedOracle": "Flying\n{2}: This creature gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn.",
+          "preserved": true
+        },
+        {
+          "name": "Vengeful Ancestor",
+          "existingOracle": "Flying\nWhenever Vengeful Ancestor enters or attacks, goad target creature. (Until your next turn, that creature attacks each combat if able and attacks a player other than you if able.)\nWhenever a goaded creature attacks, it deals 1 damage to its controller.",
+          "pinnedOracle": "Flying\nWhenever this creature enters or attacks, goad target creature. (Until your next turn, that creature attacks each combat if able and attacks a player other than you if able.)\nWhenever a goaded creature attacks, it deals 1 damage to its controller.",
+          "preserved": true
+        }
+      ],
+      "current": {
+        "decks": 100,
+        "definitions": 20638,
+        "eligible": 20619
+      }
+    }
+  },
+  "artwork": {
+    "addedWebP": 394,
+    "tokenVariants": 20,
+    "commanderCrops": 10,
+    "manifest": "images.json",
+    "existingAssetsUnchanged": true
+  },
+  "finalAffected": {
+    "log": "output/precon-clb-dmc-40k-2026-09-09/final-affected-test.log",
+    "tests": 823,
+    "pass": 823,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 79900.841334,
+    "resolvedFiles": [
+      "tests/ai-v2.test.mjs",
+      "tests/avengers-assemble.test.mjs",
+      "tests/baseline.test.mjs",
+      "tests/c17-c19-commanders.test.mjs",
+      "tests/commander-visuals.test.mjs",
+      "tests/fantastic-four.test.mjs",
+      "tests/full-card-audit.test.mjs",
+      "tests/clb-dmc-40k-precons.test.mjs",
+      "tests/clb-dmc-40k-rules.test.mjs",
+      "tests/jeskai-striker.test.mjs",
+      "tests/legacy-card-catalog-integrity.test.mjs",
+      "tests/local-card-images.test.mjs",
+      "tests/opponent-choice.test.mjs",
+      "tests/planeswalker-combat.test.mjs",
+      "tests/planeswalker-decisions.test.mjs",
+      "tests/prismari-artistry.test.mjs",
+      "tests/temur-roar.test.mjs",
+      "tests/x-mana-mechanics.test.mjs",
+      "tests/afc-dungeons.test.mjs",
+      "tests/oracle-v8-play-permissions.test.mjs",
+      "tests/mana-solver-backtracking.test.mjs",
+      "tests/mana-tap-cost.test.mjs",
+      "tests/mana-repeatable-filters.test.mjs",
+      "tests/c17-c19-text-search.test.mjs",
+      "tests/oracle-v8-library.test.mjs",
+      "tests/oracle-v8-multizone-search.test.mjs",
+      "tests/library-top-visibility.test.mjs",
+      "tests/divided-damage-targeting.test.mjs",
+      "tests/c19-c20-copies.test.mjs",
+      "tests/c19-c20-end-combat.test.mjs",
+      "tests/sba-simultaneous-audit.test.mjs",
+      "tests/save-state.test.mjs",
+      "tests/multiplayer-parity.test.mjs"
+    ],
+    "replayCommand": "node --test tests/ai-v2.test.mjs tests/avengers-assemble.test.mjs tests/baseline.test.mjs tests/c17-c19-commanders.test.mjs tests/commander-visuals.test.mjs tests/fantastic-four.test.mjs tests/full-card-audit.test.mjs tests/clb-dmc-40k-precons.test.mjs tests/clb-dmc-40k-rules.test.mjs tests/jeskai-striker.test.mjs tests/legacy-card-catalog-integrity.test.mjs tests/local-card-images.test.mjs tests/opponent-choice.test.mjs tests/planeswalker-combat.test.mjs tests/planeswalker-decisions.test.mjs tests/prismari-artistry.test.mjs tests/temur-roar.test.mjs tests/x-mana-mechanics.test.mjs tests/afc-dungeons.test.mjs tests/oracle-v8-play-permissions.test.mjs tests/mana-solver-backtracking.test.mjs tests/mana-tap-cost.test.mjs tests/mana-repeatable-filters.test.mjs tests/c17-c19-text-search.test.mjs tests/oracle-v8-library.test.mjs tests/oracle-v8-multizone-search.test.mjs tests/library-top-visibility.test.mjs tests/divided-damage-targeting.test.mjs tests/c19-c20-copies.test.mjs tests/c19-c20-end-combat.test.mjs tests/sba-simultaneous-audit.test.mjs tests/save-state.test.mjs tests/multiplayer-parity.test.mjs"
+  },
+  "finalSearchDraw": {
+    "log": "output/precon-clb-dmc-40k-2026-09-09/search-draw-final.log",
+    "tests": 196,
+    "pass": 196,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 3663.201583,
+    "command": "node --test tests/oracle-draw-replacement-source.test.mjs tests/oracle-name-search-source.test.mjs tests/oracle-v8-owner-search.test.mjs tests/oracle-zone-replacement-source.test.mjs"
+  },
+  "newNativeSemantics": {
+    "log": "output/precon-clb-dmc-40k-2026-09-09/rules-final.log",
+    "tests": 67,
+    "pass": 67,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 2852.087333,
+    "command": "node --test tests/clb-dmc-40k-rules.test.mjs",
+    "alsoIncludedInFinalAffected": true
+  },
+  "playerFacing": {
+    "log": "output/precon-clb-dmc-40k-2026-09-09/player-facing.log",
+    "tests": 4,
+    "pass": 4,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 173931.695417,
+    "command": "node --test tests/player-facing-cards.test.mjs"
+  },
+  "diagnosticFullSuite": {
+    "log": "output/precon-clb-dmc-40k-2026-09-09/full-test.log",
+    "tests": 9181,
+    "pass": 9159,
+    "fail": 22,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 1086078.57175,
+    "command": "node --test tests/*.test.mjs",
+    "reconciliation": [
+      {
+        "test": "297 - svih 90 aktivnih precona imaju popunjen stvarni AI profil",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/ai-v2.test.mjs:55:1'",
+        "error": "|-\n    Expected values to be strictly equal:\n    \n    100 !== 90\n    ",
+        "file": "tests/ai-v2.test.mjs",
+        "resolution": "Updated expected complete AI-profile inventory from 90 to 100 decks."
+      },
+      {
+        "test": "332 - Speed pays the real cost, locks a chosen haste target, and only haste creatures can block it",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/avengers-assemble.test.mjs:166:1'",
+        "error": "\"Cannot read properties of undefined (reading 'castOpts')\"",
+        "file": "tests/avengers-assemble.test.mjs",
+        "resolution": "Guarded the new cast-event integration against synthetic legacy events without a spell object/card. Complete affected legacy files pass without weakening their mechanic assertions."
+      },
+      {
+        "test": "355 - raw snapshot čuva 91 deckova, a proizvod koristi certifikovani set od 90",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/baseline.test.mjs:30:1'",
+        "error": "|-\n    Expected values to be strictly equal:\n    \n    101 !== 91\n    ",
+        "file": "tests/baseline.test.mjs",
+        "resolution": "Preserved all 91 original raw records and updated inventory to 101 raw / 100 selectable decks."
+      },
+      {
+        "test": "607 - Eminence stops when its source changes zones, even if it reaches another permitted zone",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/c17-c19-commanders.test.mjs:52:1'",
+        "error": "\"Cannot read properties of undefined (reading 'castOpts')\"",
+        "file": "tests/c17-c19-commanders.test.mjs",
+        "resolution": "Guarded the new cast-event integration against synthetic legacy events without a spell object/card. Complete affected legacy files pass without weakening their mechanic assertions."
+      },
+      {
+        "test": "1752 - postojeći cinematic asseti ostaju dostupni; novi preconi koristi slike bez novih videa",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/commander-visuals.test.mjs:17:1'",
+        "error": "|-\n    Expected values to be strictly equal:\n    \n    102 !== 92\n    ",
+        "file": "tests/commander-visuals.test.mjs",
+        "resolution": "Updated 102 default commander identities and 100 selectable decks; new decks use local still images and retain every previous video."
+      },
+      {
+        "test": "1754 - 90 predefined decks use available videos or a still image; custom decks never inherit videos",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/commander-visuals.test.mjs:48:1'",
+        "error": "|-\n    Expected values to be strictly equal:\n    \n    100 !== 90\n    ",
+        "file": "tests/commander-visuals.test.mjs",
+        "resolution": "Updated 102 default commander identities and 100 selectable decks; new decks use local still images and retain every previous video."
+      },
+      {
+        "test": "2066 - Fantasticar sacrifice is optional and creates four flying hasty Constructs only after a successful sacrifice",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/fantastic-four.test.mjs:487:1'",
+        "error": "\"Cannot read properties of undefined (reading 'castOpts')\"",
+        "file": "tests/fantastic-four.test.mjs",
+        "resolution": "Guarded the new cast-event integration against synthetic legacy events without a spell object/card. Complete affected legacy files pass without weakening their mechanic assertions."
+      },
+      {
+        "test": "2069 - The Watcher's Warning triggers for each opponent's first spell, not only the first opponent overall",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/fantastic-four.test.mjs:541:1'",
+        "error": "\"Cannot read properties of undefined (reading 'castOpts')\"",
+        "file": "tests/fantastic-four.test.mjs",
+        "resolution": "Guarded the new cast-event integration against synthetic legacy events without a spell object/card. Complete affected legacy files pass without weakening their mechanic assertions."
+      },
+      {
+        "test": "2094 - svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putanju",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/full-card-audit.test.mjs:53:1'",
+        "error": "|-\n    Expected values to be strictly equal:\n    \n    4171 !== 3811\n    ",
+        "file": "tests/full-card-audit.test.mjs",
+        "resolution": "Updated the active native inventory to 4171 unique cards and 2780 raw definitions; special suspended sacrifice activations count as implemented mechanics."
+      },
+      {
+        "test": "2154 - svaki deck može završiti jednu determinističku četveroigračku smoke partiju",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/headless-smoke.test.mjs:19:1'",
+        "error": "'E.explore is not a function'",
+        "file": "tests/headless-smoke.test.mjs",
+        "resolution": "Implemented the missing explore helper. Replayed all 13 deterministic four-player games whose four-seat composition includes a new deck, with the original seeds and extra invariant/fallback checks. The original all-decks test was not repeated on the final tree."
+      },
+      {
+        "test": "2203 - creature triggers cover Elsha, Mentor, Mangara, Bibliophile, and Caldera Pyremaw semantics",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/jeskai-striker.test.mjs:435:1'",
+        "error": "\"Cannot read properties of undefined (reading 'def')\"",
+        "file": "tests/jeskai-striker.test.mjs",
+        "resolution": "Guarded the new cast-event integration against synthetic legacy events without a spell object/card. Complete affected legacy files pass without weakening their mechanic assertions."
+      },
+      {
+        "test": "2267 - the complete pinned legacy card set remains represented exactly once in the runtime catalog",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/legacy-card-catalog-integrity.test.mjs:20:1'",
+        "error": "|-\n    pinned legacy raw-card count\n    \n    1814 !== 1626\n    ",
+        "file": "tests/legacy-card-catalog-integrity.test.mjs",
+        "resolution": "Kept the exact 1626-name legacy digest and excluded this batch's 188 new definitions only from that historical subset; the complete runtime union remains checked."
+      },
+      {
+        "test": "2292 - runtime card art uses local WebP except the explicit API fallback list",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/local-card-images.test.mjs:12:1'",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    ... Skipped lines\n    \n      [\n    +   '40K Astartes Warrior',\n    +   '40K Necron Warrior',\n    +   '40K Robot',\n    +   '40K Spawn',\n    +   '40K Tyranid Gargoyle',\n    +   '40K Tyranid Warrior',\n        'A Little Chat',\n        'AFC Dragon Spirit',\n        'AFC Goblin',\n        'AFC Illusion',\n        'AFC Skeleton',\n    ...\n        'Batroc the Leaper',\n    +   'Battle Display',\n        'Battle Mammoth',\n        'Battlefield Forge',\n        \"Battlemage's Bracers\",\n        'Baxter Building',\n        'Baxter, Fly in the Ointment',\n    ...\n        'Blowfly Infestation',\n    +   'Blue Horror',\n        \"Blue Mage's Cane\",\n        \"Blue Sun's Zenith\",\n        'Blustersquall',\n        'Boar',\n        'Body Count',\n    ...\n        'C20 Hydra',\n    +   'CLB Centaur',\n    +   'CLB Dragon',\n    +   'CLB Horror',\n    +   'CLB Wizard',\n        'Cabaretti Charm',\n        'Cabaretti Confluence',\n        'Cabaretti Courtyard',\n        'Cache Grab',\n        'Cackling Counterpart',\n    ...\n        \"Chemister's Insight\",\n    +   'Cherubael',\n        'Chief Engineer',\n        'Chief of the Foundry',\n        'Chimil, the Inner Sun',\n        'Chishiro, the Shattered Blade',\n        'Chittering Harvester',\n    ...\n        'Círdan the Shipwright',\n    +   'DMC Kavu',\n    +   'DMC Zombie Knight',\n        'Dakmor Salvage',\n        'Damnable Pact',\n        'Damning Verdict',\n        'Damocles Base, Sword of Kang',\n        'Dance of the Manse',\n    ...\n        'Healing Technique',\n    +   \"Heart's Desire\",\n        'Heart-Piercer Manticore',\n        'Heart-Shaped Herb',\n        'Hearthhull, the Worldseed',\n        'Heavenly Blademaster',\n        \"Hedonist's Trove\",\n    ...\n        'KHC Spirit',\n    +   'KHM Angel Warrior',\n        'Kabira Crossroads',\n        \"Kadena's Silencer\",\n        'Kadena, Slinking Sorcerer',\n        'Kaervek the Merciless',\n        'Kaima, the Fractured Calm',\n    ...\n        'Plague Spitter',\n    +   'Plaguebearer of Nurgle',\n        'Plaguecrafter',\n        'Plains',\n        'Planar Chaos',\n        'Planar Outburst',\n        'Planetary Annihilation',\n    ...\n        \"Raff Capashen, Ship's Mage\",\n    +   'Ragavan',\n        'Raging Ravine',\n        \"Raiders' Karve\",\n        'Rain of Riches',\n        'Rain of Thorns',\n        'Rain-Slicked Copse',\n    ...\n        'Retreat to Kazandu',\n    +   'Retrieve Prey',\n        'Retrofitter Foundry',\n        'Return Upon the Tide',\n        'Return of the Wildspeaker',\n        'Return to Dust',\n        'Return to Nature',\n    ...\n        'Stolen by the Fae',\n    +   'Stomp',\n        'Stone Quarry',\n        'Stonecoil Serpent',\n        'Stoneforged Blade',\n        'Stonehoof Chieftain',\n        'Stoneshock Giant',\n    ...\n        'West Coast Expansion',\n    +   'Whale Pirate',\n        'Wharf Infiltrator',\n        'Wheel of Fate',\n        'Whelming Wave',\n        'Whims of the Fates',\n        'Whipflare',\n    ...\n        'Xathrid Necromancer',\n    +   'Xenagos Satyr',\n        'Xenagos, the Reveler',\n        'Xyris, the Writhing Storm',\n        \"Y'shtola, Night's Blessed\",\n        'Yahenni, Undying Partisan',\n        'Yannik, Scavenging Sentinel',\n    ",
+        "file": "tests/local-card-images.test.mjs",
+        "resolution": "Added canonical token and Adventure-face aliases to the expected local-art inventory."
+      },
+      {
+        "test": "2571 - svaki aktivni oracle target-opponent put ima stvarni target spec",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/opponent-choice.test.mjs:74:1'",
+        "error": "'Knight Rampager: tekst traži target opponent, ali skripta nema player/opponent target'",
+        "file": "tests/opponent-choice.test.mjs",
+        "resolution": "Recognized Knight Rampager's intentional random target selection and extracted Passionate Archaeologist's commander-granted target trigger from a real battlefield fixture. Dedicated native tests resolve both mechanics."
+      },
+      {
+        "test": "8000 - svih 42 deck/planeswalker parova ima svih 125 loyalty putanja",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/planeswalker-combat.test.mjs:92:1'",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    ... Skipped lines\n    \n      [\n        [\n          'Animated Army',\n          'Domri, Anarch of Bolas'\n        ],\n    ...\n        ],\n    +   [\n    +     'Draconic Dissent',\n    +     'Will Kenrith'\n    +   ],\n    +   [\n    +     'Draconic Dissent',\n    +     'Rowan Kenrith'\n    +   ],\n    +   [\n    +     'Exit from Exile',\n    +     'Vivien, Champion of the Wilds'\n    +   ],\n    +   [\n    +     'Exit from Exile',\n    +     'Xenagos, the Reveler'\n    +   ],\n    +   [\n    +     'Painbow',\n    +     'Jared Carthalion'\n    +   ],\n    +   [\n    +     \"Legends' Legacy\",\n    +     'Dihada, Binder of Wills'\n    +   ]\n      ]\n    ",
+        "file": "tests/planeswalker-combat.test.mjs",
+        "resolution": "Expanded the inventory to 48 deck/planeswalker pairs and all 142 printed loyalty paths; Vivien has two loyalty abilities."
+      },
+      {
+        "test": "8258 - Jared Carthalion \\#3 human: paid entry, legal loyalty window, Stack resolution and once-per-turn",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/planeswalker-decisions.test.mjs:186:39'",
+        "error": "'supported loyalty path must be actually activatable'",
+        "file": "tests/planeswalker-decisions.test.mjs",
+        "resolution": "Supplied a multicolored graveyard card for Jared Carthalion's -6, making the real required target and paid human/AI activation legal."
+      },
+      {
+        "test": "8259 - Jared Carthalion \\#3 AI: paid entry, legal loyalty window, Stack resolution and once-per-turn",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/planeswalker-decisions.test.mjs:186:39'",
+        "error": "'supported loyalty path must be actually activatable'",
+        "file": "tests/planeswalker-decisions.test.mjs",
+        "resolution": "Supplied a multicolored graveyard card for Jared Carthalion's -6, making the real required target and paid human/AI activation legal."
+      },
+      {
+        "test": "8276 - svaka aktivirana sposobnost koju igrač koristi pita razumljiva pitanja",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/player-facing-cards.test.mjs:145:1'",
+        "error": "|-\n    nečitljiva ili slomljena pitanja (2):\n    Dark Apostle · throws while a player activates it · Cannot read properties of undefined (reading 'push')\n    Sloppity Bilepiper · throws while a player activates it · Cannot read properties of undefined (reading 'push')\n    + actual - expected\n    \n    + [\n    +   \"Dark Apostle · throws while a player activates it · Cannot read properties of undefined (reading 'push')\",\n    +   \"Sloppity Bilepiper · throws while a player activates it · Cannot read properties of undefined (reading 'push')\"\n    + ]\n    - []\n    ",
+        "file": "tests/player-facing-cards.test.mjs",
+        "resolution": "Initialized source-tracked next-spell cascade grants for Dark Apostle and Sloppity Bilepiper. All four complete player-facing inspector tests pass; dedicated expiry and multiple-grant tests also pass."
+      },
+      {
+        "test": "8319 - Veyran duplira magecraft, prowess i Manaform; Manaform koristi stvarno potrošenu manu",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/prismari-artistry.test.mjs:77:1'",
+        "error": "\"Cannot read properties of undefined (reading 'def')\"",
+        "file": "tests/prismari-artistry.test.mjs",
+        "resolution": "Guarded the new cast-event integration against synthetic legacy events without a spell object/card. Complete affected legacy files pass without weakening their mechanic assertions."
+      },
+      {
+        "test": "8686 - Dragon cost, cast, targeting, upkeep, landfall, and riot/monstrosity hooks execute",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/temur-roar.test.mjs:280:1'",
+        "error": "\"Cannot read properties of undefined (reading 'def')\"",
+        "file": "tests/temur-roar.test.mjs",
+        "resolution": "Guarded the new cast-event integration against synthetic legacy events without a spell object/card. Complete affected legacy files pass without weakening their mechanic assertions."
+      },
+      {
+        "test": "8687 - territorial, Broodcaller, Hammerhead, Keiga, and Frontier Siege choices use legal hooks",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/temur-roar.test.mjs:321:1'",
+        "error": "\"Cannot read properties of undefined (reading 'def')\"",
+        "file": "tests/temur-roar.test.mjs",
+        "resolution": "Guarded the new cast-event integration against synthetic legacy events without a spell object/card. Complete affected legacy files pass without weakening their mechanic assertions."
+      },
+      {
+        "test": "9054 - inventar pokriva svih 125 aktivnih X spella i sve dodatne X-mana putanje",
+        "location": "'/Users/borislavvukojevic/Downloads/mtg-commander-simulator/tests/x-mana-mechanics.test.mjs:211:1'",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    ... Skipped lines\n    \n      [\n    +   'Aberrant',\n        'Aggro Amalgam',\n        'Altered Ego',\n        \"Animist's Awakening\",\n        'Astral Cornucopia',\n        'Back in Town',\n    ...\n        \"Blue Sun's Zenith\",\n    +   'Broodlord',\n        'Capricopian',\n        'Champions from Beyond',\n        'Change of Plans',\n        'Clan Defiance',\n        'Comet Storm',\n    ...\n        'Decree of Justice',\n    +   'Defenders of Humanity',\n        \"Devil's Play\",\n        'Disorder in the Court',\n        'Distorting Wake',\n        \"Diviner's Portent\",\n        'Dominate',\n    ...\n        'Epic Experiment',\n    +   'Exocrine',\n        'Expansion Algorithm',\n        'Exsanguinate',\n        'Extract Brain',\n        'Finale of Promise',\n        'Finale of Revelation',\n    ...\n        'Hooded Hydra',\n    +   'Hormagaunt Horde',\n        'Hour of Eternity',\n        'Hungering Hydra',\n        'Hydroid Krasis',\n        'Ingenious Prodigy',\n        'Jacked Rabbit',\n    ...\n        'Lavalanche',\n    +   'Let the Galaxy Burn',\n        'Lifeblood Hydra',\n        'Magmaquake',\n        'Mana Bloom',\n        'March of the Multitudes',\n        'Martial Coup',\n    +   'Mawloc',\n        'Meteor Blast',\n        'Mikaeus, the Lunarch',\n        'Mind Spring',\n        'Muse Vortex',\n        'Neverwinter Hydra',\n    ...\n        'Pull from Tomorrow',\n    +   'Ravener',\n        'Read the Runes',\n        'Repeal',\n        'Reshape',\n        'Royal Talon Fighter Jet',\n        \"Saheeli's Directive\",\n    ...\n        \"Sphinx's Revelation\",\n    +   'Sporocyst',\n        'Springleaf Parade',\n        'Starstorm',\n        'Steelbane Hydra',\n        'Stolen by the Fae',\n        'Stonecoil Serpent',\n    ...\n        'Tempt with Vengeance',\n    +   'Termagant Swarm',\n    +   'Tervigon',\n        'The Goose Mother',\n    +   'Their Number Is Legion',\n    +   'Tyrant Guard',\n        \"Tyvar's Stand\",\n        'Unexpectedly Absent',\n        'Universal Surveillance',\n        'Vastwood Hydra',\n        'Villainous Wealth',\n    ...\n        'Zenith Festival',\n    +   'Zoanthrope'\n      ]\n    ",
+        "file": "tests/x-mana-mechanics.test.mjs",
+        "resolution": "Expanded the pinned active X-spell inventory by the 14 newly active names; all original paid casting/activation checks remain."
+      }
+    ],
+    "limitation": "This diagnostic began before final fixes. All 22 findings are reconciled by complete affected files, the complete player-facing inspectors, or the 13 affected deterministic games. A green rerun of the entire final repository suite is not claimed."
+  },
+  "runtimeSmoke": {
+    "cards": 188,
+    "passed": 376,
+    "failed": 0,
+    "command": "node scripts/smoke-clb-dmc-40k-precons.mjs",
+    "report": "runtime-smoke.json",
+    "limitation": "Paid human and AI execution on prepared boards is separate from detailed rule semantics."
+  },
+  "naturalGames": {
+    "passed": 13,
+    "expected": 13,
+    "rows": [
+      {
+        "name": "Bedecked Brokers",
+        "opponents": [
+          "Maestros Massacre",
+          "Cabaretti Cacophony",
+          "Mind Flayarrrs"
+        ],
+        "seed": 11168,
+        "turns": 47,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Maestros Massacre",
+        "opponents": [
+          "Cabaretti Cacophony",
+          "Mind Flayarrrs",
+          "Party Time"
+        ],
+        "seed": 11169,
+        "turns": 50,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Cabaretti Cacophony",
+        "opponents": [
+          "Mind Flayarrrs",
+          "Party Time",
+          "Draconic Dissent"
+        ],
+        "seed": 11170,
+        "turns": 32,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Mind Flayarrrs",
+        "opponents": [
+          "Party Time",
+          "Draconic Dissent",
+          "Exit from Exile"
+        ],
+        "seed": 11171,
+        "turns": 48,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Party Time",
+        "opponents": [
+          "Draconic Dissent",
+          "Exit from Exile",
+          "Painbow"
+        ],
+        "seed": 11172,
+        "turns": 53,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Draconic Dissent",
+        "opponents": [
+          "Exit from Exile",
+          "Painbow",
+          "Legends' Legacy"
+        ],
+        "seed": 11173,
+        "turns": 65,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Exit from Exile",
+        "opponents": [
+          "Painbow",
+          "Legends' Legacy",
+          "Tyranid Swarm"
+        ],
+        "seed": 11174,
+        "turns": 40,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Painbow",
+        "opponents": [
+          "Legends' Legacy",
+          "Tyranid Swarm",
+          "The Ruinous Powers"
+        ],
+        "seed": 11175,
+        "turns": 51,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Legends' Legacy",
+        "opponents": [
+          "Tyranid Swarm",
+          "The Ruinous Powers",
+          "Necron Dynasties"
+        ],
+        "seed": 11176,
+        "turns": 54,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Tyranid Swarm",
+        "opponents": [
+          "The Ruinous Powers",
+          "Necron Dynasties",
+          "Forces of the Imperium"
+        ],
+        "seed": 11177,
+        "turns": 52,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "The Ruinous Powers",
+        "opponents": [
+          "Necron Dynasties",
+          "Forces of the Imperium",
+          "Abzan Armor"
+        ],
+        "seed": 11178,
+        "turns": 59,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Necron Dynasties",
+        "opponents": [
+          "Forces of the Imperium",
+          "Abzan Armor",
+          "Animated Army"
+        ],
+        "seed": 11179,
+        "turns": 55,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Forces of the Imperium",
+        "opponents": [
+          "Abzan Armor",
+          "Animated Army",
+          "Avengers Assemble"
+        ],
+        "seed": 11180,
+        "turns": 52,
+        "winner": "AI Dragon",
+        "passed": true
+      }
+    ],
+    "command": "node scripts/smoke-clb-dmc-40k-games.mjs --affected-opponents",
+    "checks": [
+      "natural winner before 200-turn limit",
+      "no pending triggers",
+      "no AI or decision fallback",
+      "no runtime error logs",
+      "card-zone and controller invariants",
+      "stable recalculation"
+    ]
+  },
+  "browser": {
+    "engine": "Chromium using installed Chrome",
+    "selectorAndPaidCommanders": {
+      "passed": 20,
+      "viewports": [
+        1440,
+        390
+      ],
+      "report": "output/precon-clb-dmc-40k-2026-09-09/browser/result.json"
+    },
+    "paidNativeAbilities": {
+      "passed": 20,
+      "viewports": [
+        1440,
+        390
+      ],
+      "report": "output/precon-clb-dmc-40k-2026-09-09/abilities/result.json"
+    },
+    "capturedErrors": [],
+    "limitation": "The commander and ability checks prepare boards, then use actual costs, choices, Stack and UI controls. No exhaustive browser test of all cards or WebKit run is claimed."
+  },
+  "naturalMobileGame": {
+    "humanDeck": "Necron Dynasties",
+    "opponent": "Tyranid Swarm",
+    "width": 390,
+    "turn": 20,
+    "winner": "AI Dragon",
+    "rematchPassed": true,
+    "iterations": 199,
+    "lands": 10,
+    "spells": 11,
+    "attacks": 4,
+    "decisions": [
+      "mulligan",
+      "main",
+      "chooseCards",
+      "priority",
+      "chooseOption",
+      "attackers",
+      "combatReview",
+      "cardReveal",
+      "blockers"
+    ],
+    "errors": [],
+    "requests": [],
+    "report": "output/precon-clb-dmc-40k-2026-09-09/natural-game/result.json"
+  },
+  "mixedLocalLive": {
+    "ok": true,
+    "browserName": "chromium",
+    "botSeats": [
+      1,
+      3
+    ],
+    "checks": [
+      "2 humans + 2 bots configured through lobby and old invite",
+      "all opening controls visible at 1365×768 and correct local AI seats instantiated",
+      "guest-2 private controls retain focus across sync and play Forest",
+      "guest pays mana, casts Sol Ring onto shared Stack, all humans pass and resolution reaches battlefield",
+      "mixed-table guest reload and host resume preserve the human seat",
+      "every configured local bot independently plays a land",
+      "no browser page or console errors"
+    ],
+    "errors": [],
+    "guestDeck": "Private custom mono-green list with Dwynen, Forests and Sol Ring for deterministic real guest mana/casting checks. Host uses Necron Dynasties; bots use Tyranid Swarm and Forces of the Imperium.",
+    "report": "output/precon-clb-dmc-40k-2026-09-09/live/result.json"
+  },
+  "standardSkillClient": {
+    "iterations": 2,
+    "screensAndStateInspected": true,
+    "output": "output/precon-clb-dmc-40k-2026-09-09/standard-client"
+  },
+  "gates": {
+    "syntax": "PASS",
+    "sourceAudit": "PASS; zero duplicate SC registrations and zero simplified definitions",
+    "strictCertification": "PASS: 20638/20638 definitions and 8211/8211 active card/deck checks",
+    "sourceValidation": "PASS; all source lists, prior data/artwork preservation and importer idempotence",
+    "logs": [
+      "output/precon-clb-dmc-40k-2026-09-09/check-final.log",
+      "output/precon-clb-dmc-40k-2026-09-09/audit-final.log",
+      "output/precon-clb-dmc-40k-2026-09-09/certify-final.log",
+      "output/precon-clb-dmc-40k-2026-09-09/source-validation.log"
+    ]
+  },
+  "publication": {
+    "committed": false,
+    "pushed": false,
+    "deployed": false
+  },
+  "snapshot": {
+    "file": "tested-inputs.json",
+    "phase": "completion-after-checks",
+    "limitation": "This snapshot records the final source tree. Browser and diagnostic full-suite runs preceded some final rule fixes; it is not a claim that all historical runs started from these hashes.",
+    "count": 1151,
+    "unchangedAtCompletion": true
+  },
+  "rawEvidenceDigests": [
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/final-affected-test.log",
+      "sha256": "0359bf744035e0f502ebcc0a7024c8910b1f5d55e1e01a6e5af6fbb85546ed3b"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/search-draw-final.log",
+      "sha256": "0de42aac9dcb71290c79efbc3d3c3d15e8cb6ef9bbbe97bdefe464aea324bb46"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/rules-final.log",
+      "sha256": "f8465cb1d4726e21ea51d17e7463b92ffacec48bf479093aeee25daf8eeb3e66"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/player-facing.log",
+      "sha256": "91cb1479c506cb52ff61e5609d6a8e0d8deb4909260bb5a1797986e73566d756"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/full-test.log",
+      "sha256": "2d9acf70e5ba782cb6f5aab3bc9ad916f9ab3f428c8156d0668c30e56f2ace17"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/runtime-smoke-final.log",
+      "sha256": "867e16b08189483e2da4a183a99af95a4a941727ce7f625d52aa1d2dc0b0bfc6"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/final-affected-games.json",
+      "sha256": "363ec658d97c1279fce949fbc64efa87186dfae46efb6af1bfedbfa4e22ccd07"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/browser/result.json",
+      "sha256": "5e469a31982f5c0b2005d1c4918874688b8c106efc6f4f3fcbc287832ea92843"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/abilities/result.json",
+      "sha256": "9fc1f0caa6627b724d2ac43701a1f3bfb730efd45b3e491c032a4b652106280f"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/live/result.json",
+      "sha256": "aafa238f0df395af2101190388c3a44ee4e344ded6e09829e693e06702a24b68"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/natural-game/result.json",
+      "sha256": "a91663dca85945eae7f04df7959925ec5494a456e0c7c3da4b7e46f64511c731"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/natural-game/complete-state.json",
+      "sha256": "f11e21e72378c5a8555917281a6e8024a43d6165af5431c70d6151e22b70a1a6"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/standard-client/state-1.json",
+      "sha256": "11a0cbbc2b109dcd4ac428d4bebc22638387c8d02c8f6462758ef6a9d74cba02"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/check-final.log",
+      "sha256": "a2395e640f2e23e1d8ed21916d799f0ab4e6d96bc6674abba74841ddc024b70c"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/audit-final.log",
+      "sha256": "5fe520fb321a915aa7e033c476ada672e50030a5cafa12488efb9f0d74f9ec03"
+    },
+    {
+      "path": "output/precon-clb-dmc-40k-2026-09-09/certify-final.log",
+      "sha256": "cfb7ae49b65a03545afaa27ae50a541aeb9a86f63f651bd4e83f9531aa995258"
+    }
+  ]
+}
