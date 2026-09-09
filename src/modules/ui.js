@@ -467,7 +467,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (entry.ninjutsu) return `Ninjutsu ${entry.ninjutsuCost || ''}`.trim();
       if (entry.suspend) return `Suspend ${U.costStr(U.parseCost(def.suspend.cost))} — exile with ${def.suspend.n} time counters`;
       if (entry.equip !== undefined) return `Equip ${U.costStr(U.parseCost(def.equip))}`;
-      if (entry.crew) return `Crew ${def.crew}`;
+      if (entry.crew) {
+        const crew = this.game.vehicleCrewCost(card);
+        return crew === undefined ? 'Crew' : `Crew ${crew}`;
+      }
       return entry.label || (entry.ability && entry.ability.label) || 'Activate';
     }
 
@@ -4927,6 +4930,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           `<span class="sheetkeyword tone-${visual.tone}">${U.icon(visual.icon)}<b>${esc(visual.label)}</b>${(card.counters[keyword] || 0) ? `<small>${card.counters[keyword]} counter${card.counters[keyword] === 1 ? '' : 's'}</small>` : ''}</span>`).join('')
         : '';
       const markedDamage = this.markedDamageState(card);
+      const crew = useCurrentCharacteristics && card.hasSub('Vehicle') ? g.vehicleCrewCost(card) : undefined;
+      const crewState = crew === undefined ? '' : `<div class="animatedpermanentstate vehiclecrewstate">Current Crew ${crew}${shownDef.crew !== undefined && shownDef.crew !== crew ? ` · printed Crew ${shownDef.crew}` : ''}</div>`;
       info.innerHTML = `${card.faceDown ? `<div class="facedownsheet">🃏 ${faceDownLabel}${mayLookFaceDown ? ' · only you can see its identity' : ''}</div>` : ''}` +
         `${landCreature ? '<div class="animatedpermanentstate">LAND CREATURE · ACTIVE ON THE BATTLEFIELD</div>' : ''}` +
         suspendState +
@@ -4935,6 +4940,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ${card.is('Creature') && card.cur ? `<div class="spt">${card.power}/${card.toughness}${card.tapped ? ' · TAPPED' : ''}${Object.entries(card.counters).filter(([k, v]) => v > 0).map(([k, v]) => ` · ${v}×${k}`).join('')}</div>` : ''}
         ${markedDamage ? `<div class="smarkeddamage"><b>${markedDamage.amount} damage marked</b><span>${esc(markedDamage.detail)}</span></div>` : ''}
         ${sheetKeywords ? `<div class="sheetkeywords">${sheetKeywords}</div>` : ''}
+        ${crewState}
         <div class="soracle">${esc(shownDef.oracle || '').replace(/\n/g, '<br>')}</div>
         ${shownDef.simplified ? `<div class="simplified">⚠️ ${esc(shownDef.simplified)}</div>` : ''}`;
       m.appendChild(info);

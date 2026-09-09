@@ -218,7 +218,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     for (let i = 0; i < (q.acts || []).length; i++) {
       descriptor.ui.acts[i].onlineAction = `act:${i}`;
-      if (U.UI) descriptor.ui.acts[i].label = U.UI.prototype.activationLabel(q.acts[i]);
+      if (U.UI) descriptor.ui.acts[i].label = U.UI.prototype.activationLabel.call({ game }, q.acts[i]);
     }
     if (q.type === 'blockers') {
       descriptor.legal.capacity = Object.fromEntries((q.potential || []).map(card => [token(card), finite(game.blockerCapacity(card))]));
@@ -432,6 +432,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     castableList(player) { return player === this.viewer ? this.currentQuestion?.casts || [] : []; }
     hasExilePlayPermission(player, card) { return player === this.viewer && card.meta.playableBy === player; }
     faceUpCosts(card) { return card.presentation.faceUpCosts || []; }
+    vehicleCrewCost(card) { return U.Game.prototype.vehicleCrewCost.call(this, card); }
     legalDeclarationAttackTargets(card) { const d = this.currentQuestion?.onlineDecision; return (d?.legal.pairs || []).filter(pair => pair.startsWith(`c:${card.iid}|`)).map(pair => this.ref(pair.split('|')[1])); }
     legalAttackTargets(card) { return this.legalDeclarationAttackTargets(card); }
     canBlock(blocker, attacker) { return !!this.currentQuestion?.onlineDecision.legal.pairs?.includes(`c:${blocker.iid}|c:${attacker.iid}`); }
