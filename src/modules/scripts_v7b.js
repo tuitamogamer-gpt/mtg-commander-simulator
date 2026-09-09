@@ -868,7 +868,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
   };
   SC['Crystalline Crawler'] = {
-    etbCounters: { kind: '+1/+1', n: (g, card) => (card.meta._payColors || []).length },
+    etbCounters: { kind: '+1/+1', n: (g, card) => (card.castMeta?.paymentColors || []).length },
     mana: { cost: { rmCounter: { kind: '+1/+1', n: 1 } }, produce: [{ ANY: true, n: 1 }] },
     abilities: [{
       label: '+1/+1 counter', cost: { tap: true },
@@ -990,7 +990,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Etched Oracle'] = {
-    etbCounters: { kind: '+1/+1', n: (g, card) => Math.min(4, (card.meta._payColors || []).length) },
+    // Battlefield entry clears scratch meta; castMeta retains this cast's
+    // actual payment and is cleared for blink/reanimation and spell copies.
+    etbCounters: { kind: '+1/+1', n: (g, card) => Math.min(4, (card.castMeta?.paymentColors || []).length) },
     abilities: [{
       label: 'Remove 4: draw 3', cost: { mana: '{1}', rmCounter: { kind: '+1/+1', n: 4 } },
       targets: [T.player({ prompt: 'Player draws three', aiHint: { goal: 'drawSelf' } })],
@@ -1359,7 +1361,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ],
   };
   SC['Pentad Prism'] = {
-    etbCounters: { kind: 'charge', n: (g, card) => (card.meta._payColors || []).length },
+    etbCounters: { kind: 'charge', n: (g, card) => (card.castMeta?.paymentColors || []).length },
     mana: { cost: { rmCounter: { kind: 'charge', n: 1 } }, produce: [{ ANY: true, n: 1 }] },
   };
   SC['Solar Array'] = {
