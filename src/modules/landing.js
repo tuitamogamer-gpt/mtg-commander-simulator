@@ -21,10 +21,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       <div class="mainmenu-livecheck" data-live-state="checking" role="status" aria-live="polite"><i aria-hidden="true"></i><span><b>Checking Live rooms</b><small>Solo play is always available</small></span></div>
     </section>
 
+    <section class="mainmenu-collection" aria-labelledby="collection-title">
+      <header class="mainmenu-collection-head"><div><h2 id="collection-title">Find your kind<br>of powerful.</h2><p>A commander for every way you play.</p></div><button type="button" data-menu-action="solo">Explore all <span data-catalog-decks>${Number(deckCount)}</span> decks <span aria-hidden="true">↗</span></button></header>
+      <div class="mainmenu-deck-grid">
+        <button type="button" class="mainmenu-featured-deck" data-menu-action="solo" data-menu-deck="Elven Council" aria-label="Choose Elven Council, led by Galadriel, Elven-Queen">
+          <span class="mainmenu-deck-art"><img src="./assets/cards/art/galadriel-elven-queen-efb29b8818.webp" width="626" height="457" loading="lazy" decoding="async" alt="Galadriel, Elven-Queen"><span aria-hidden="true">↗</span></span>
+          <span class="mainmenu-deck-colors"><img src="./assets/mana/G.svg" alt="Green"><img src="./assets/mana/U.svg" alt="Blue"><span>ELVES &amp; POLITICS</span></span><b>Elven Council</b><span class="mainmenu-deck-description">Build your fellowship. Make the table choose.</span>
+        </button>
+        <button type="button" class="mainmenu-featured-deck" data-menu-action="solo" data-menu-deck="Planar Portal" aria-label="Choose Planar Portal, led by Prosper, Tome-Bound">
+          <span class="mainmenu-deck-art"><img src="./assets/cards/art/prosper-tome-bound-afb30a621f.webp" width="626" height="457" loading="lazy" decoding="async" alt="Prosper, Tome-Bound"><span aria-hidden="true">↗</span></span>
+          <span class="mainmenu-deck-colors"><img src="./assets/mana/B.svg" alt="Black"><img src="./assets/mana/R.svg" alt="Red"><span>EXILE &amp; TREASURE</span></span><b>Planar Portal</b><span class="mainmenu-deck-description">Turn the unknown into your next advantage.</span>
+        </button>
+        <button type="button" class="mainmenu-featured-deck" data-menu-action="solo" data-menu-deck="The Ruinous Powers" aria-label="Choose The Ruinous Powers, led by Abaddon the Despoiler">
+          <span class="mainmenu-deck-art"><img src="./assets/cards/art/abaddon-the-despoiler-b709a97527.webp" width="626" height="457" loading="lazy" decoding="async" alt="Abaddon the Despoiler"><span aria-hidden="true">↗</span></span>
+          <span class="mainmenu-deck-colors"><img src="./assets/mana/U.svg" alt="Blue"><img src="./assets/mana/B.svg" alt="Black"><img src="./assets/mana/R.svg" alt="Red"><span>CHAOS &amp; CASCADE</span></span><b>The Ruinous Powers</b><span class="mainmenu-deck-description">One spell. A chain reaction. Let chaos reign.</span>
+        </button>
+      </div>
+    </section>
+
     <section id="the-table" class="mainmenu-preview" aria-labelledby="table-preview-title">
       <header class="mainmenu-section-head">
-        <div><span class="mainmenu-eyebrow">INSIDE THE COMMAND TABLE</span><h2 id="table-preview-title">See the table. Find your next move.</h2></div>
-        <p>Track all four players, focus on an opponent, and keep the next decision within reach.</p>
+        <div><span class="mainmenu-eyebrow">THE TABLE IS YOURS</span><h2 id="table-preview-title">Big plays. The whole picture.</h2></div>
+        <p>Every opponent. Every response. A real Commander table, with room to think.</p>
       </header>
       <figure class="mainmenu-preview-frame">
         <div class="mainmenu-preview-bar"><span><i aria-hidden="true"></i>COMMAND TABLE <small>Interface preview</small></span><div class="mainmenu-preview-controls" role="group" aria-label="Choose an interface preview"><button type="button" data-table-preview="table" aria-pressed="true" aria-controls="table-preview-image">Table</button><button type="button" data-table-preview="focus" aria-pressed="false" aria-controls="table-preview-image">Focus</button></div><span class="mainmenu-preview-phone-label">MOBILE VIEW</span></div>
@@ -38,7 +56,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     </section>
 
     <section id="how-it-works" class="mainmenu-path" aria-labelledby="first-pod-title">
-      <div class="mainmenu-path-copy"><span>THE FULL GAME, MADE READABLE</span><h2 id="first-pod-title">From deck choice<br>to opening hand.</h2><p>Set up your pod in three steps. The first-game guide walks you through the decisions when you are ready.</p><button type="button" data-menu-action="tour">Open the first-game guide <span aria-hidden="true">↗</span></button></div>
+      <div class="mainmenu-path-copy"><span>THE FULL GAME, MADE READABLE</span><h2 id="first-pod-title">Three steps.<br>One unforgettable game.</h2><p>Set up your pod in three steps. The first-game guide walks you through the decisions when you are ready.</p><button type="button" data-menu-action="tour">Open the first-game guide <span aria-hidden="true">↗</span></button></div>
       <ol class="mainmenu-path-steps">
         <li><span aria-hidden="true">01</span><div><b>Find your commander</b><p>Browse colors and playstyles. Read the deck guide and see its signature cards.</p></div></li>
         <li><span aria-hidden="true">02</span><div><b>Build your pod</b><p>Choose opponents, decks, and difficulty. Review all four seats before you start.</p></div></li>
@@ -47,8 +65,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     </section>
 
     <section id="ways-to-play" class="mainmenu-modes" aria-label="Ways to play">
-      <article class="mainmenu-mode solo"><span aria-hidden="true">01 / SOLO</span><div><small>PLAY AT YOUR PACE</small><h2>A seat just for you.</h2><p>Learn a new deck or try a different line against a full pod of local AI opponents.</p><ul class="mainmenu-mode-points"><li>Three local AI opponents</li><li>Adjustable stops and personalities</li><li>Seeded games you can replay</li></ul></div><button type="button" data-menu-action="solo">Start a solo table <span aria-hidden="true">↗</span></button></article>
-      <article class="mainmenu-mode live"><span aria-hidden="true">02 / LIVE</span><div><small>BRING YOUR PLAYGROUP</small><h2>Your friends. Your table.</h2><p>Open a private room, share the invite link, and play with two to four human players.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>Account optional; no public lobby</li><li>Up to four human seats</li></ul></div><button type="button" data-menu-action="live">Create a Live table <span aria-hidden="true">↗</span></button></article>
+      <article class="mainmenu-mode solo"><span class="mainmenu-mode-symbol" aria-hidden="true"><svg class="gameicon"><use href="./assets/icons/game-ui.svg#icon-player"></use></svg></span><div><small>PLAY AT YOUR PACE</small><h2>Sharpen your game.</h2><p>Learn a new deck or try a different line against a full pod of local AI opponents.</p><ul class="mainmenu-mode-points"><li>Three local AI opponents</li><li>Adjustable stops and personalities</li><li>Seeded games you can replay</li></ul></div><button type="button" data-menu-action="solo">Start a solo table <span aria-hidden="true">↗</span></button></article>
+      <article class="mainmenu-mode live"><span class="mainmenu-mode-symbol" aria-hidden="true"><svg class="gameicon"><use href="./assets/icons/game-ui.svg#icon-deals"></use></svg></span><div><small>BRING YOUR PLAYGROUP</small><h2>Bring the rivalry.</h2><p>Open a private room, share the invite link, and play with two to four human players.</p><ul class="mainmenu-mode-points"><li>One invite link</li><li>Account optional; no public lobby</li><li>Up to four human seats</li></ul></div><button type="button" data-menu-action="live">Create a Live table <span aria-hidden="true">↗</span></button></article>
     </section>
 
     <section class="mainmenu-final-cta" aria-labelledby="final-cta-title"><div><span>TAKE YOUR SEAT</span><h2 id="final-cta-title">Pick a deck. We will set the table.</h2><p>Play instantly. Save when you sign in.</p></div><div class="mainmenu-final-actions"><button type="button" class="mainmenu-primary" data-menu-action="solo">Start a solo table <span aria-hidden="true">↗</span></button><button type="button" class="mainmenu-secondary" data-menu-action="live">Create a Live table</button></div></section>
@@ -56,6 +74,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     <footer class="mainmenu-footer"><div><b>COMMANDER SIMULATOR</b><span>Free, browser-based fan project. Card data and images are provided through Scryfall.</span><a href="#landing-top">Back to top ↑</a></div><p>Commander Simulator is unofficial Fan Content permitted under the <a href="https://company.wizards.com/en/legal/fancontentpolicy" target="_blank" rel="noreferrer">Fan Content Policy</a>. Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC.</p></footer>`;
 
   U.bindLandingPreview = page => {
+    document.body.classList.toggle('reduced-motion', U.readPreference('mtgReducedMotion', 0) === 1);
+    const hero = page.querySelector('.mainmenu-hero');
+    const proof = page.querySelector('.mainmenu-proof');
+    if (hero && proof && hero.nextElementSibling !== proof) hero.after(proof);
     const frame = page.querySelector('.mainmenu-preview-frame');
     if (!frame) return;
     const image = frame.querySelector('#table-preview-image');

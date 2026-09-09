@@ -42,7 +42,7 @@ test('public home is the default entry and exposes clear Solo, Live, import, gui
   assert.match(main, /function renderSetup\(options = \{\}\) \{[\s\S]*?root\.innerHTML = '';[\s\S]*?root\.removeAttribute\('aria-busy'\)/);
   assert.match(main, /const pendingSetupMode = window\.__mtgPendingSetupMode/);
   assert.match(main, /document\.readyState === 'loading'/);
-  assert.match(main, /renderSetup\(\{ mode: continueMode \|\| 'solo' \}\)/);
+  assert.match(main, /renderSetup\(\{ mode: continueMode \|\| 'solo', \.\.\.\(deck \? \{ deck \} : \{\}\) \}\)/);
   assert.match(main, /renderSetup\(\{ mode: 'online' \}\)/);
   assert.match(main, /head\.querySelector\('\.setuphome'\)\.onclick = \(\) => \{[\s\S]*?renderMainMenu\(\)/);
   assert.match(main, /mode: 'menu'/);
@@ -137,7 +137,7 @@ test('cold and warm landing menus share public sections and the same accessibili
   assert.match(landing, /class="mainmenu-livecheck"[^>]*role="status" aria-live="polite"/);
   assert.match(landing, /id="ways-to-play"/);
   for (const source of [index, main]) {
-    assert.match(source, /Four seats\.<br><em>Your next move\.<\/em>/);
+    assert.match(source, /Your deck\.<br><em>Your legend\.<\/em>/);
     assert.match(source, /class="mainmenu-trust"/);
     assert.match(source, /data-menu-action="solo"/);
     assert.match(source, /data-menu-action="live"/);

@@ -73,10 +73,12 @@ async function loadGame(mode = null) {
     if ((mode === 'solo' || mode === 'online') && document.querySelector('#setup')?.dataset.appView === 'home') {
       globalThis.MTG?.showSetup?.({ mode });
     }
+    return true;
   } catch (error) {
     console.error('Commander Simulator failed to load.', error);
     delete window.__mtgPendingSetupMode;
     showLoadError(veil, mode);
+    return false;
   }
 }
 
@@ -100,7 +102,7 @@ globalThis.MTGAccount?.setGameLoader(async save => {
   }
 });
 
-function openGuide(continueMode = null) {
+function openGuide(continueMode = null, deck = null) {
   page.querySelector('.mainmenu-onboarding')?.remove();
   document.body.classList.add('mainmenu-dialog-open');
   const overlay = document.createElement('div');
@@ -138,7 +140,9 @@ function openGuide(continueMode = null) {
     rememberOnboarding();
     overlay.remove();
     document.body.classList.remove('mainmenu-dialog-open');
-    void loadGame(continueMode || 'solo');
+    void loadGame(continueMode || 'solo').then(loaded => {
+      if (loaded && deck) MTG.showSetup?.({ mode: 'solo', deck });
+    });
   };
   overlay.onclick = event => { if (event.target === overlay) close(); };
   dialog.onkeydown = event => {
@@ -165,7 +169,13 @@ function openGuide(continueMode = null) {
 
 page.querySelectorAll('[data-menu-action="tour"]').forEach(button => { button.onclick = () => openGuide(); });
 page.querySelectorAll('[data-menu-action="solo"]').forEach(button => {
-  button.onclick = () => onboardingComplete() ? void loadGame('solo') : openGuide('solo');
+  button.onclick = () => {
+    const deck = button.dataset.menuDeck || null;
+    if (!onboardingComplete()) return openGuide('solo', deck);
+    void loadGame('solo').then(loaded => {
+      if (loaded && deck) MTG.showSetup?.({ mode: 'solo', deck });
+    });
+  };
 });
 page.querySelectorAll('[data-menu-action="live"]').forEach(button => { button.onclick = () => void loadGame('online'); });
 page.querySelectorAll('[data-menu-action="import"]').forEach(button => {
@@ -207,7 +217,7 @@ if (localStaticHost) {
 window.render_game_to_text = () => JSON.stringify({
   mode: 'menu',
   deckCount: MTG.landingCounts().decks,
-  actions: ['Start a solo table', 'Create a Live table', 'Import your decklist here', 'Guide'],
+  actions: ['Play solo', 'Play with friends', 'Import your decklist here', 'Guide'],
   onboardingOpen: !!page.querySelector('.mainmenu-onboarding'),
   account: globalThis.MTGAccount?.user ? {
     signedIn: true,

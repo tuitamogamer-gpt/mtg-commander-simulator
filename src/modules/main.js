@@ -206,12 +206,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     </header>
     <section class="mainmenu-hero" aria-labelledby="mainmenu-title">
       <div class="mainmenu-hero-copy">
-        <span class="mainmenu-kicker">COMMANDER, AT YOUR PACE</span>
-        <h1 id="mainmenu-title">Four seats.<br><em>Your next move.</em></h1>
-        <p>Find your commander. Build your pod. Choose from <span data-catalog-decks>${nDecks}</span> complete decks and play against local AI, or bring your friends to a private table.</p>
+        <span class="mainmenu-kicker">YOUR NEXT GREAT GAME STARTS HERE</span>
+        <h1 id="mainmenu-title">Your deck.<br><em>Your legend.</em></h1>
+        <p>Epic plays. Unlikely alliances. Take on the whole pod, solo or with friends. Your seat is waiting.</p>
         <div id="primary-actions" class="mainmenu-actions" tabindex="-1">
-          <button type="button" class="mainmenu-primary" data-menu-action="solo"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-player"></use></svg><span><b>Start a solo table</b><small>You + three local AI opponents</small></span></button>
-          <button type="button" class="mainmenu-secondary" data-menu-action="live"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-deals"></use></svg><span><b>Create a Live table</b><small>A private pod for 2-4 friends</small></span></button>
+          <button type="button" class="mainmenu-primary" data-menu-action="solo"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-player"></use></svg><span><b>Play solo</b><small>You + three AI opponents</small></span></button>
+          <button type="button" class="mainmenu-secondary" data-menu-action="live"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-deals"></use></svg><span><b>Play with friends</b><small>Your own private table</small></span></button>
         </div>
         <ul class="mainmenu-trust" aria-label="What you need to play">
           <li><span aria-hidden="true">✓</span>Account optional</li>
@@ -220,16 +220,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         </ul>
       </div>
       <div class="mainmenu-visual" role="group" aria-label="Featured Commander decks">
-        <div class="mainmenu-visual-head"><span>FIND YOUR COMMANDER</span><div class="mainmenu-mana" role="img" aria-label="White, blue, black, red, green, and colorless mana"><img src="./assets/mana/W.svg" alt=""><img src="./assets/mana/U.svg" alt=""><img src="./assets/mana/B.svg" alt=""><img src="./assets/mana/R.svg" alt=""><img src="./assets/mana/G.svg" alt=""><img src="./assets/mana/C.svg" alt=""></div></div>
+        <div class="mainmenu-visual-head"><span>A HUNDRED CARDS. ALL YOU.</span><div class="mainmenu-mana" role="img" aria-label="White, blue, black, red, green, and colorless mana"><img src="./assets/mana/W.svg" alt=""><img src="./assets/mana/U.svg" alt=""><img src="./assets/mana/B.svg" alt=""><img src="./assets/mana/R.svg" alt=""><img src="./assets/mana/G.svg" alt=""><img src="./assets/mana/C.svg" alt=""></div></div>
         <div class="mainmenu-cardfan">${featuredCards}</div>
-        <div class="mainmenu-visual-foot"><div><b>Every deck has a story.</b><small>Find the one you want to play.</small></div><button type="button" data-menu-action="solo" aria-label="Explore all ${nDecks} Commander decks">Explore decks <span aria-hidden="true">↗</span></button></div>
+        <div class="mainmenu-visual-foot"><div><b><span data-catalog-decks>${nDecks}</span> decks. Endless possibilities.</b><small>Find your kind of powerful.</small></div><button type="button" data-menu-action="solo" aria-label="Explore all ${nDecks} Commander decks">Explore decks <span aria-hidden="true">↗</span></button></div>
       </div>
     </section>
     <section id="your-library" class="mainmenu-library-entry" aria-labelledby="library-entry-title">
       <div class="mainmenu-library-copy">
         <span>MY LIBRARY</span>
-        <h2 id="library-entry-title">Already have a deck?</h2>
-        <p>Paste a decklist, check engine support, and save it for your next solo table.</p>
+        <h2 id="library-entry-title">Your deck deserves a table.</h2>
+        <p>Bring your own brew. Paste a decklist and see which cards are ready to play.</p>
       </div>
       <ol class="mainmenu-library-steps" aria-label="Deck import steps">
         <li><span>01</span>Paste</li><li><span>02</span>Check</li><li><span>03</span>Play</li>
@@ -254,7 +254,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     U.bindLandingPreview(page);
     if (!bootPage) root.appendChild(page);
 
-    const openGuide = (continueMode = null) => {
+    const openGuide = (continueMode = null, deck = null) => {
       root.querySelector('.mainmenu-onboarding')?.remove();
       document.body.classList.add('mainmenu-dialog-open');
       const overlay = el('div', 'mainmenu-onboarding');
@@ -282,7 +282,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         localStorage.setItem('mtgOnboardingComplete', '1');
         overlay.remove();
         document.body.classList.remove('mainmenu-dialog-open');
-        renderSetup({ mode: continueMode || 'solo' });
+        renderSetup({ mode: continueMode || 'solo', ...(deck ? { deck } : {}) });
       };
       overlay.onclick = event => { if (event.target === overlay) close(); };
       dialog.addEventListener('keydown', event => {
@@ -542,8 +542,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     page.querySelectorAll('[data-menu-action="tour"]').forEach(button => { button.onclick = () => openGuide(); });
     page.querySelectorAll('[data-menu-action="solo"]').forEach(button => {
       button.onclick = () => {
-        if (localStorage.getItem('mtgOnboardingComplete') === '1') renderSetup({ mode: 'solo' });
-        else openGuide('solo');
+        const deck = button.dataset.menuDeck || null;
+        if (localStorage.getItem('mtgOnboardingComplete') === '1') renderSetup({ mode: 'solo', ...(deck ? { deck } : {}) });
+        else openGuide('solo', deck);
       };
     });
     page.querySelectorAll('[data-menu-action="live"]').forEach(button => {
