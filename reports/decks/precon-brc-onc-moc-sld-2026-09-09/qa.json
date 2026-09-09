@@ -1,0 +1,299 @@
+{
+  "status": "verified",
+  "baseline": "db5d98b79174509660db9dd81e7cbafbbff2f58f",
+  "current": {
+    "decks": 110,
+    "definitions": 20777,
+    "importable": 20759
+  },
+  "nativeExecution": {
+    "humanAndAI": 278,
+    "errors": 0,
+    "prerequisiteGaps": 0,
+    "note": "Runtime smoke is not exhaustive semantic proof."
+  },
+  "isolatedRegression": {
+    "tests": 270,
+    "pass": 270,
+    "fail": 0,
+    "evidence": "final-all-affected.log",
+    "runtime": "Node 25.2.1",
+    "inputsUnchanged": 5989
+  },
+  "selectorAndPaidCommander": {
+    "pass": 20,
+    "errors": 0,
+    "widths": [
+      1440,
+      390
+    ]
+  },
+  "mechanicUI": {
+    "pass": 20,
+    "errors": 0,
+    "widths": [
+      1440,
+      390
+    ],
+    "note": "Controlled boards retain paid actions and normal UI choices. Interrupted harness runs resumed; final results cover all ten decks at both widths."
+  },
+  "naturalGames": [
+    {
+      "deck": "Mishra's Burnished Banner",
+      "opponent": "Urza's Iron Alliance",
+      "width": 1440,
+      "turns": 16,
+      "lands": 5,
+      "spells": 7,
+      "attacks": 4,
+      "rematch": true
+    },
+    {
+      "deck": "Growing Threat",
+      "opponent": "Divine Convocation",
+      "width": 390,
+      "turns": 22,
+      "lands": 7,
+      "spells": 10,
+      "attacks": 6,
+      "rematch": true
+    }
+  ],
+  "mixedLive": {
+    "humans": 2,
+    "localAI": 2,
+    "checks": 7,
+    "errors": 0,
+    "guestManaAndStack": true,
+    "guestReconnect": true,
+    "mobileReachability": true
+  },
+  "ixhelPrivatePresentation": {
+    "explicitLooker": "Sol Ring",
+    "owner": "Hidden card",
+    "otherOpponent": "Hidden card",
+    "passed": true
+  },
+  "skillClient": {
+    "unmodified": true,
+    "launcher": "output/precon-brc-onc-moc-sld-2026-09-09/skill-launch.html",
+    "gameStateCaptured": true,
+    "browserErrorFiles": 0,
+    "note": "Local launcher clicks the setup flow before the original client supplies keyboard input."
+  },
+  "finalNewDeckGames": {
+    "passed": 10,
+    "expected": 10,
+    "rows": [
+      {
+        "name": "Mishra's Burnished Banner",
+        "opponents": [
+          "Urza's Iron Alliance",
+          "Rebellion Rising",
+          "Corrupting Influence"
+        ],
+        "seed": 11181,
+        "turns": 39,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Urza's Iron Alliance",
+        "opponents": [
+          "Rebellion Rising",
+          "Corrupting Influence",
+          "Tinker Time"
+        ],
+        "seed": 11182,
+        "turns": 50,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Rebellion Rising",
+        "opponents": [
+          "Corrupting Influence",
+          "Tinker Time",
+          "Growing Threat"
+        ],
+        "seed": 11183,
+        "turns": 34,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Corrupting Influence",
+        "opponents": [
+          "Tinker Time",
+          "Growing Threat",
+          "Divine Convocation"
+        ],
+        "seed": 11184,
+        "turns": 33,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Tinker Time",
+        "opponents": [
+          "Growing Threat",
+          "Divine Convocation",
+          "Cavalry Charge"
+        ],
+        "seed": 11185,
+        "turns": 63,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Growing Threat",
+        "opponents": [
+          "Divine Convocation",
+          "Cavalry Charge",
+          "Call for Backup"
+        ],
+        "seed": 11186,
+        "turns": 52,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Divine Convocation",
+        "opponents": [
+          "Cavalry Charge",
+          "Call for Backup",
+          "From Cute to Brute"
+        ],
+        "seed": 11187,
+        "turns": 46,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Cavalry Charge",
+        "opponents": [
+          "Call for Backup",
+          "From Cute to Brute",
+          "Abzan Armor"
+        ],
+        "seed": 11188,
+        "turns": 37,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Call for Backup",
+        "opponents": [
+          "From Cute to Brute",
+          "Abzan Armor",
+          "Animated Army"
+        ],
+        "seed": 11189,
+        "turns": 48,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "From Cute to Brute",
+        "opponents": [
+          "Abzan Armor",
+          "Animated Army",
+          "Avengers Assemble"
+        ],
+        "seed": 11190,
+        "turns": 37,
+        "winner": "AI Wolf",
+        "passed": true
+      }
+    ]
+  },
+  "strictCertification": {
+    "decks": 110,
+    "unique": 4463,
+    "cardDeckChecks": 9066,
+    "rawDefinitions": 20777,
+    "fail": 0
+  },
+  "sourcePreservation": {
+    "passed": true,
+    "newWebP": 365,
+    "priorAssetsChanged": false
+  },
+  "syntax": "pass",
+  "audit": "pass",
+  "isolatedBrowser": {
+    "paidBrimaz": 2,
+    "backup": 2,
+    "errors": 0
+  },
+  "visualInspection": [
+    "mobile-game/complete.png",
+    "browser/from-cute-to-brute-390-battlefield.png",
+    "abilities/growing-threat-390-resolved.png",
+    "browser/mishra-s-burnished-banner-1440-select.png",
+    "live/01-mixed-lobby.png",
+    "skill-final/shot-0.png"
+  ],
+  "evidenceRoot": "output/precon-brc-onc-moc-sld-2026-09-09",
+  "publication": "Authorized; commit, remote SHA and deployment evidence recorded separately after publication.",
+  "newCardHumanQuestions": {
+    "scope": "Original human-question inspector restricted to the 139 pinned additions",
+    "successfulCasts": 135,
+    "questions": 367,
+    "activations": 33,
+    "errors": 0
+  },
+  "sigardaProof": {
+    "controllers": [
+      "human",
+      "local-ai"
+    ],
+    "operationRoutes": 4,
+    "nestedChecks": 20,
+    "passed": true,
+    "evidence": "sigarda-proof.log"
+  },
+  "fullSuite": {
+    "tests": 9292,
+    "pass": 9276,
+    "fail": 16,
+    "durationSeconds": 1308.243,
+    "diagnostic": true,
+    "frozenStart": false,
+    "finalTreeFullRerun": false,
+    "evidence": "full-tests.log",
+    "note": "This diagnostic run overlapped localized fixes and is not an exact final-tree pass. All 16 failures are reconciled by the final isolated 270-test run, the bounded original human-question inspector and Sigarda proof.",
+    "reconciliation": [
+      {
+        "failures": 7,
+        "cause": "Catalog, legacy union, planeswalker and X-spell inventory expectations",
+        "resolution": "Expanded inventories while retaining the pinned original legacy digest."
+      },
+      {
+        "failures": 1,
+        "cause": "Esika guide used the front name instead of its reused combined catalog identity",
+        "resolution": "Guide references the canonical physical card."
+      },
+      {
+        "failures": 1,
+        "cause": "Missing Powerstone artwork and canonical Phyrexian Mite alias",
+        "resolution": "Downloaded the linked Powerstone print and added the canonical token alias; image coverage passes."
+      },
+      {
+        "failures": 2,
+        "cause": "Kinnan mana upper-bound estimation assumed a land-only bonus descriptor",
+        "resolution": "Mana bounds accept Kinnan; all 139 new cards pass the original human-question inspector."
+      },
+      {
+        "failures": 4,
+        "cause": "Synthetic cast events omitted card or cast metadata",
+        "resolution": "BOM bookkeeping guards optional event data; complete Jeskai, Prismari and Temur files pass."
+      },
+      {
+        "failures": 1,
+        "cause": "Sigardas Aid attempted to attach the enchantment rather than the entering Equipment",
+        "resolution": "Use the captured Equipment and its object version; both controller proofs and leave/blink regressions pass."
+      }
+    ]
+  }
+}

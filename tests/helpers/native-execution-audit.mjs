@@ -89,7 +89,9 @@ export async function auditNativeCard(MTG, name, role) {
   if (["Jaya's Immolating Inferno","Urza's Ruinous Blast"].includes(name)) extra('Wyleth, Soul of Steel', player, 'battlefield', 'A controlled legendary creature permits this legendary sorcery.');
   if (name === 'Rakdos, Lord of Riots') { await game.loseLife(opponent, 1, 'Native cast prerequisite'); prerequisites.push('Opponent actually lost life this turn.'); }
   game.recalc();
-  const subject = put(MTG, game, player, name, 'hand');
+  if(name==='Cut Short'){game.tap(game.creatures(opponent)[0]);prerequisites.push('An opposing creature is tapped for the printed target restriction.');}
+  const subject = put(MTG, game, player, name, name==='Haakon, Stromgald Scourge'?'graveyard':'hand');
+  if(name==='Haakon, Stromgald Scourge')prerequisites.push('Haakon starts in the graveyard because its printed restriction forbids casting it anywhere else.');
   const oracle = subject.def.oracle || '';
   const incomingSpell = (subject.is('Instant') || subject.is('Sorcery')) && (/counter target (?:\w+ )*spell/i.test(oracle) || /\btarget (?:[a-z/-]+(?:,)? ){0,7}spell\b/i.test(oracle));
   if (incomingSpell) {

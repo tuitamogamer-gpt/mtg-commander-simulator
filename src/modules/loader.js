@@ -23,6 +23,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+    "Mishra's Burnished Banner": {"icon": "⚙️", "colors": ["U", "B", "R"], "style": "Artifact copies and sacrifice", "blurb": "Mishra turns a noncreature artifact into a temporary attacking Warform.", "set": "The Brothers’ War Commander (2022)"},
+    "Urza's Iron Alliance": {"icon": "🤖", "colors": ["W", "U", "B"], "style": "Artifact creatures and Constructs", "blurb": "Urza discounts himself for artifact creatures and creates growing Constructs at your end step.", "set": "The Brothers’ War Commander (2022)"},
+    "Rebellion Rising": {"icon": "☀️", "colors": ["R", "W"], "style": "Attacking tokens and exile cards", "blurb": "Neyali gives attacking tokens double strike and finds cards to play on turns you attack with a token.", "set": "Phyrexia: All Will Be One Commander (2023)"},
+    "Corrupting Influence": {"icon": "☣️", "colors": ["W", "B", "G"], "style": "Poison and proliferate", "blurb": "Ixhel spreads poison and steals cards from opponents with three or more poison counters.", "set": "Phyrexia: All Will Be One Commander (2023)"},
+    "Tinker Time": {"icon": "🔧", "colors": ["G", "U", "R"], "style": "Artifact token diversity", "blurb": "Gimbal creates Gremlins that grow with the number of differently named artifact tokens you control.", "set": "March of the Machine Commander (2023)"},
+    "Growing Threat": {"icon": "🥚", "colors": ["W", "B"], "style": "Incubate and proliferate", "blurb": "Brimaz incubates when you cast Phyrexians or artifacts and proliferates after a Phyrexian dies.", "set": "March of the Machine Commander (2023)"},
+    "Divine Convocation": {"icon": "🪽", "colors": ["U", "R", "W"], "style": "Convoke and creature tokens", "blurb": "Kasla rewards convoke spells with scrying and cards while flying tokens help pay for large spells.", "set": "March of the Machine Commander (2023)"},
+    "Cavalry Charge": {"icon": "🐎", "colors": ["W", "U", "B"], "style": "Knights and reanimation", "blurb": "Sidar filters your hand as Knights attack and returns a fallen Knight after combat damage.", "set": "March of the Machine Commander (2023)"},
+    "Call for Backup": {"icon": "🌸", "colors": ["R", "G", "W"], "style": "Backup and doubled counters", "blurb": "Bright-Palm shares backup and doubles counters on an attacker while restricting smaller blockers.", "set": "March of the Machine Commander (2023)"},
+    "From Cute to Brute": {"icon": "🌓", "colors": ["W", "U", "B", "R", "G"], "style": "Transforming legends and five colors", "blurb": "Esika helps legends produce mana, while the Prismatic Bridge finds creatures and planeswalkers.", "set": "Secret Lair Commander (2023)"},
+
     "Mind Flayarrrs": {"icon":"🦑","colors":["U","B"],"style":"Horrors, mill, and theft","blurb":"Horrors mill opponents on combat damage, then the Captain takes a milled artifact or creature.","set":"Commander Legends: Battle for Baldur’s Gate (2022)"},
     "Party Time": {"icon":"🎲","colors":["W","B"],"style":"Full party and creature value","blurb":"Nalia casts party creatures from the top and rewards four distinct party members with counters and deathtouch.","set":"Commander Legends: Battle for Baldur’s Gate (2022)"},
     "Draconic Dissent": {"icon":"🐲","colors":["U","R"],"style":"Dragons and forced combat","blurb":"Firkraag goads a creature for each player attacked by your Dragons and draws from required attackers connecting.","set":"Commander Legends: Battle for Baldur’s Gate (2022)"},

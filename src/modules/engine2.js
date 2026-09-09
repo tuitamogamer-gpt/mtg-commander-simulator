@@ -937,7 +937,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           : COLORS.concat('C').reduce((sum, color) =>
             sum + Math.max(0, Number(option[color]) || 0), 0);
         return Math.max(best, amount);
-      }, 0) + (source.c1719ManaBonuses||[]).reduce((n,c)=>{const r=c.def.c1719LandMana;return n+(r.any||r.fixed&&Object.values(r.fixed).reduce((a,b)=>a+b,0)||1);},0);
+      }, 0) + (source.c1719ManaBonuses||[]).reduce((n,c)=>{const r=c.def.c1719LandMana||{};return n+(r.any||r.fixed&&Object.values(r.fixed).reduce((a,b)=>a+b,0)||1);},0);
       const rawActivationMana = source.rawConsume
         ? Math.max(0, source.rawConsume.generic) +
           source.rawConsume.pips.filter(pip => !pip.includes('PHY')).length
@@ -1184,7 +1184,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           planAcc.some(step => step.src && step.src.card === s.card &&
             step.src.extraCost && step.src.extraCost.tap)) return null;
         let otherManaUpperBound=Infinity;
-        const bonusUpperBound=(s.c1719ManaBonuses||[]).reduce((n,c)=>{const r=c.def.c1719LandMana;return n+(r.any||r.fixed&&Object.values(r.fixed).reduce((a,b)=>a+b,0)||1);},0);
+        const bonusUpperBound=(s.c1719ManaBonuses||[]).reduce((n,c)=>{const r=c.def.c1719LandMana||{};return n+(r.any||r.fixed&&Object.values(r.fixed).reduce((a,b)=>a+b,0)||1);},0);
         if(bonusUpperBound){
           const future=ordinarySources.slice(nextOrdinaryIdx).concat(converterSources.filter((_,i)=>nextConverterMask&(1n<<BigInt(i))));
           const tapped=new Set(planAcc.filter(step=>step.src?.extraCost?.tap).map(step=>step.src.card));if(s.extraCost.tap)tapped.add(s.card);
@@ -1500,7 +1500,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     const c = s.card;
     const cost = s.extraCost;
-    const c1719ManaHooks=c?.is('Land')&&cost.tap&&!s.m?.viaConvoke?MTG.C1719Mana?.hooks(this,c,p)||[]:[];
+    const c1719ManaHooks=c&&cost.tap&&!s.m?.viaConvoke?MTG.C1719Mana?.hooks(this,c,p)||[]:[];
     if(c.cur?.activationDisabled||c.cur?.abilitiesDisabled&&!s.m?.viaConvoke&&!s.grantedBy&&!(c.cur.extraMana||[]).includes(s.m))return false;
     if(s.grantedBy&&(s.grantedBy.cur?.abilitiesDisabled||c.cur?.oracleAbilityLossTimestamp>s.grantedBy.timestamp))return false;
     const sourceZoneVersion=c.zoneVersion;
@@ -3385,7 +3385,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       delete card.meta.suspended;
     }
     card.zone = 'stack';
-    if((castOpts.oracleImmediateCast!==undefined||['jaya','c1719'].includes(castOpts.starterPermission))&&castOpts.oracleExileOnGraveyard)card.meta.exileIfStackLeaves=true;
+    if((castOpts.oracleImmediateCast!==undefined||['jaya','c1719','c1920'].includes(castOpts.starterPermission))&&castOpts.oracleExileOnGraveyard)card.meta.exileIfStackLeaves=true;
     if (card.oracleFaces && !faceDownCast) MTG.OracleV8Faces.setFace(card, castOpts.oracleFace);
     if (fromZone === 'graveyard') {
       p.turnState.starterGraveActivity = true;
@@ -3541,7 +3541,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // Demonstrate je stvarni cast trigger: ide na stack i kopira original tek
     // kada se rezolvira, pa protivnici mogu odgovoriti prije nastanka kopija.
-    if (!faceDownCast && d.demonstrate && !so.isCopy) {
+    if (!faceDownCast && d.demonstrate && (!so.isCopy||so.bomCastCopy)) {
       this.queueTrigger({
         src: card, ctrl: p, name: 'Demonstrate', data: { so },
         run: async triggerCtx => {
@@ -4222,7 +4222,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // Do not reuse card.castMeta: it contains payment bookkeeping from the
         // physical original. A spell copy carries only copiable cast choices.
         castMeta: {
-          wasCast:false,
+          wasCast:!!so.bomCastCopy,
           c1719DragonRevealed:!!d.c1719Orator&&so.oracleCastingChoicePaid?.kind==='revealHand',
           x: so.x,
           alt: Object.assign({}, so.castOpts || {}),
@@ -5637,6 +5637,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (plannedExile) {
       await this.moveGraveyardBatch(plannedExile,'exile');
+      ctx.exiledCost=plannedExile.filter(c=>c.zone==='exile').map(c=>({card:c,zone:c.zone,version:c.zoneVersion}));
     } else if (cost.exileFromGY) {
       const configured = typeof cost.exileFromGY === 'object' ? cost.exileFromGY.n : cost.exileFromGY;
       const exileN = configured === 'X' ? (ctx.x || 0) : (configured || 1);
@@ -5647,6 +5648,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       if (!Array.isArray(picked) || picked.length !== exileN || picked.some(card => !exilePool.includes(card))) return false;
       await this.moveGraveyardBatch(picked, 'exile');
+      ctx.exiledCost=picked.filter(c=>c.zone==='exile').map(c=>({card:c,zone:c.zone,version:c.zoneVersion}));
     }
     if (cost.counter === '-1/-1') await this.addM1(c, 1, p);
     else if (cost.counter) this.addCounters(c, cost.counter, 1, true, p);
@@ -5735,6 +5737,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(att.attachedTo!==host.iid)this.refreshOracleTimestamp(att);
     if (att.attachedTo) {
       const old = this.byIid(att.attachedTo);
+      if(old!==host)MTG.BOM?.unattached(this,att,old);
       if (old) old.attachments = old.attachments.filter(i => i !== att.iid);
     }
     att.attachedTo = host.iid;
@@ -6095,7 +6098,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   G.scheduleAdditionalPhases = function (kinds) {
     const phases = (kinds || []).map(kind => ({ kind, additional: true }))
-      .filter(entry => entry.kind === 'combat' || entry.kind === 'main');
+      .filter(entry => entry.kind === 'combat' || entry.kind === 'main' || entry.kind === 'beginning');
     if (!phases.length) return;
     if (!Array.isArray(this._additionalPhases)) this._additionalPhases = [];
     // A phase created "after this phase" happens before phases that were
@@ -6112,6 +6115,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.runAdditionalPhases = async function (p) {
     while (this._additionalPhases.length) {
       const next = this._additionalPhases.shift();
+      if(next.kind==='beginning'){await this.runBeginningPhase(p,{additional:true});if(this.gameOver)return;continue;}
       if (next.kind === 'combat') {
         this._extraCombats = Math.max(0, (this._extraCombats || 0) - 1);
         this.lg('⚔️ ADDITIONAL combat phase!', 'attack');
@@ -6223,31 +6227,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           });
   };
 
-  G.runTurn = async function () {
-    const p = this.turnPlayer;
-    if (this.diplomacyRefresh) this.diplomacyRefresh();
-    this.turnNo++;
-    p.turnsStarted++;
-    this.diedThisTurn = [];
-    this._trigsThisTurn = 0;
-    this._extraCombats = 0;
-    this._additionalPhases = [];
-    // Day/night style checks read the turn that just ended, so its per-player
-    // spell counts are carried forward before the fresh turn state replaces it.
-    for (const q of this.players) { q.lastTurnSpellsCast = q.turnState.spellsCast || 0; q.turnState = q.freshTurnState(); }
-    p.landsPlayed = 0; p.maxLands = 1;
-    // Ko me napao u SVOM prošlom potezu (Weathered Sentinels i sl.). Set se ne
-    // smije brisati na početku mog poteza — tada se baš i čita — nego se prebaci
-    // u prevAttackers, a novi se puni tokom ovog kruga.
-    p.prevAttackers = p.lastAttackers || new Set();
-    p.lastAttackers = new Set();
-    this.lg(`——— Turn ${this.turnNo}: ${p.name} ———`, 'turn');
-    this.note('turn', { p });
-    await this.pace(p.isAI ? 1000 : 500);
-
+  G.runBeginningPhase = async function(p,{additional=false}={}) {
+    if(!additional)await this.bomUpdateDayNight?.();
     // UNTAP
     this.phase = 'untap'; this.step = '';
-    this.untilEffects = this.untilEffects.filter(e => !(e.expires === 'untilTurnOf' && e.whoTurn === p) && !(e.expires === 'yourNext' && e.ctrl === p));
+    if(!additional)this.untilEffects = this.untilEffects.filter(e => !(e.expires === 'untilTurnOf' && e.whoTurn === p) && !(e.expires === 'yourNext' && e.ctrl === p));
     this.recalc();
     const untapped=[];
     if(p.c14SkipUntaps>0){p.c14SkipUntaps--;p.skipUntapOnce=true;}
@@ -6271,7 +6255,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if(this.untap(card,{deferEvent:true}))untapped.push(card);
       }
     } else p.skipUntapOnce = false;
-    for (const c of this.bf()) if (c.ctrl === p) { c.sick = false; c.meta.tempHaste = c.meta.tempHaste; }
+    if(!additional)for (const c of this.bf()) if (c.ctrl === p) { c.sick = false; c.meta.tempHaste = c.meta.tempHaste; }
     this.recalc();
     // Observe the completed simultaneous turn action. These triggers wait
     // until upkeep for the first priority window of the turn.
@@ -6319,7 +6303,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await this.pace(p.isAI ? 330 : 0);
     // CR 103.8: prvi igrač preskače prvo vučenje SAMO u partiji sa dva igrača.
     // U višeigračkoj partiji (pod od 3-4) niko ne preskače.
-    const skipsFirstDraw = this.players.length === 2 && this.turnNo === 1 && this.players.indexOf(p) === 0;
+    const skipsFirstDraw = !additional && this.players.length === 2 && this.turnNo === 1 && this.players.indexOf(p) === 0;
     if (p.lost) { /* CR 800.4e: potez se nastavlja, ali bez aktivnog igrača */ }
     else if (!skipsFirstDraw) {
       await this.draw(p, 1);
@@ -6330,6 +6314,34 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.emptyPool();
     }          // CR 500.4
     if (this.gameOver) return;
+
+  };
+
+  G.runTurn = async function () {
+    const p = this.turnPlayer;
+    if (this.diplomacyRefresh) this.diplomacyRefresh();
+    this.turnNo++;
+    p.turnsStarted++;
+    this.bomMonarchAtTurnStart=this.monarch?.idx??null;
+    this.diedThisTurn = [];
+    this._trigsThisTurn = 0;
+    this._extraCombats = 0;
+    this._additionalPhases = [];
+    // Day/night style checks read the turn that just ended, so its per-player
+    // spell counts are carried forward before the fresh turn state replaces it.
+    for (const q of this.players) { q.lastTurnSpellsCast = q.turnState.spellsCast || 0; q.turnState = q.freshTurnState(); }
+    p.landsPlayed = 0; p.maxLands = 1;
+    // Ko me napao u SVOM prošlom potezu (Weathered Sentinels i sl.). Set se ne
+    // smije brisati na početku mog poteza — tada se baš i čita — nego se prebaci
+    // u prevAttackers, a novi se puni tokom ovog kruga.
+    p.prevAttackers = p.lastAttackers || new Set();
+    p.lastAttackers = new Set();
+    this.lg(`——— Turn ${this.turnNo}: ${p.name} ———`, 'turn');
+    this.note('turn', { p });
+    await this.pace(p.isAI ? 1000 : 500);
+
+    await this.runBeginningPhase(p);
+    if(this.gameOver)return;
 
     await this.runAdditionalPhases(p);
     if(this.gameOver)return;
@@ -6642,10 +6654,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Check the complete cost before any tap triggers or mana payments. A
     // rejected declaration never briefly taps an illegal lone attacker.
     const attackTax = c => this.c21AttackTax(c,c.attacking);
+    const annexTax = c => this.bomAnnexTax?.(c,c.attacking)||0;
     const reserved = () => attackers.filter(card => !card.kw('vigilance'));
-    const totalTax = () => attackers.reduce((sum, card) => sum + attackTax(card), 0);
-    while (totalTax() && !this.canPayMana(p, {generic: totalTax(), x: 0, pips: []}, null, {excludeCards: reserved()})) {
-      const taxed = attackers.filter(card => attackTax(card) > 0).sort((a, b) => Number(forced.includes(a)) - Number(forced.includes(b)) || attackTax(b) - attackTax(a))[0];
+    const totalTax = () => ({generic:attackers.reduce((sum,card)=>sum+attackTax(card),0),x:0,pips:attackers.flatMap(card=>Array.from({length:annexTax(card)},()=>['W','PHY']))});
+    while ((totalTax().generic||totalTax().pips.length) && !this.canPayMana(p, totalTax(), null, {excludeCards: reserved()})) {
+      const taxed = attackers.filter(card => attackTax(card)+annexTax(card) > 0).sort((a, b) => Number(forced.includes(a)) - Number(forced.includes(b)) || attackTax(b) - attackTax(a))[0];
       if (!taxed) break;
       taxed.attacking = null; attackers.splice(attackers.indexOf(taxed), 1);
       this.pruneAttackCompanions(attackers);
@@ -6659,8 +6672,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const c of attackers.slice()) {
       // "can't attack you unless..." štiti igrača, ne njegov planeswalker.
       const tax = this.c21AttackTax(c,c.attacking);
-      if (tax > 0) {
-        const cost = { generic: tax, x: 0, pips: [] };
+      if (tax > 0 || annexTax(c)>0) {
+        const cost = { generic: tax, x: 0, pips: Array.from({length:annexTax(c)},()=>['W','PHY']) };
         const paid = this.canPayMana(p, cost, null, {excludeCards: reserved()}) && await this.payMana(p, cost, null, {excludeCards: reserved()});
         if (!paid) {
           this.lg(`${c.name} does not attack — the tax (${tax}) was not paid.`);
@@ -7073,7 +7086,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   G.completeAttackCompanions = function (cards, eligible, forced) {
     if (!cards.some(card => card.cur.attackGroupRestrictions?.length)) return;
-    const free = eligible.filter(card => this.legalDeclarationAttackTargets(card).some(target => this.c21AttackTax(card,target)===0));
+    const free = eligible.filter(card => this.legalDeclarationAttackTargets(card).some(target => this.c21AttackTax(card,target)===0&&!(this.bomAnnexTax?.(card,target)||0)));
     // Pruning a maximal candidate set reaches the greatest legal fixed point:
     // every supported companion predicate is monotone under adding creatures.
     const viable = free.slice();
@@ -7090,7 +7103,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.attackGroupLegal(reduced)) proposal.splice(proposal.indexOf(card), 1);
     }
     for (const card of proposal) if (!cards.includes(card)) {
-      card.attacking = this.legalDeclarationAttackTargets(card).find(target => this.c21AttackTax(card,target)===0);
+      card.attacking = this.legalDeclarationAttackTargets(card).find(target => this.c21AttackTax(card,target)===0&&!(this.bomAnnexTax?.(card,target)||0));
       cards.push(card);
     }
   };

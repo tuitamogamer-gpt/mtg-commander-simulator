@@ -110,7 +110,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   };
   const playableLands=G.playableLands;
   G.playableLands=function(p){const cards=playableLands.call(this,p);if(p.c1516MagusTurn===this.turnNo&&p.landsPlayed<this.landPlayLimit(p))for(const c of p.graveyard)if(c.is('Land')&&!cards.includes(c))cards.push(c);return cards;};
-  function detach(g,c){const h=g.byIid(c.attachedTo);if(h)h.attachments=h.attachments.filter(i=>i!==c.iid);c.attachedTo=null;g.recalc();}
+  function detach(g,c){const h=g.byIid(c.attachedTo);MTG.BOM?.unattached(g,c,h);if(h)h.attachments=h.attachments.filter(i=>i!==c.iid);c.attachedTo=null;g.recalc();}
   function snapshotBlockers(g){
     const blockers=[];
     if(g.c1516ActiveControl||(g.c1516TurnControls||[]).length)blockers.push('a controlled player turn');

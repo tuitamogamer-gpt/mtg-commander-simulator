@@ -1570,7 +1570,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return;
     }
     if (effect.action === 'attach-source') {
-      if (sameBattlefieldSource(ctx)) for (const subject of subjects) await ctx.g.attach(ctx.src, subject);
+      const eventCard=ctx.oracleSourceCapture?.eventCard||ctx.data?.card;
+      const useEvent=!ctx.src.hasSub('Equipment')&&!ctx.src.hasSub('Aura')&&eventCard?.hasSub('Equipment');
+      const attachment=useEvent?eventCard:ctx.src;
+      const version=ctx.oracleSourceCapture?.eventCardZoneVersion??ctx.eventCardZoneVersion;
+      if(useEvent?attachment.zone==='battlefield'&&attachment.zoneVersion===version:sameBattlefieldSource(ctx))for(const subject of subjects)await ctx.g.attach(attachment,subject);
       return;
     }
     if (effect.action === 'prevent-next') {

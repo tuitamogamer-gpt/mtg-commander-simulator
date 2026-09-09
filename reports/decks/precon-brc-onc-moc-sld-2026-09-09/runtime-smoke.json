@@ -1,0 +1,3184 @@
+{
+  "schema": "native-runtime-smoke/v1",
+  "cards": 139,
+  "results": [
+    {
+      "name": "Altar of the Pantheon",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Altar of the Pantheon",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Angel of Salvation",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 8,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Angel of Salvation",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 8,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Archangel Avacyn",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Archangel Avacyn",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Arlinn Kord",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Arlinn Kord",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Arlinn, the Pack's Hope",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Arlinn, the Pack's Hope",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Armix, Filigree Thrasher",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Armix, Filigree Thrasher",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Aryel, Knight of Windgrace",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Aryel, Knight of Windgrace",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Azor's Gateway",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Azor's Gateway",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Battle Screech",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Battle Screech",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Blast-Furnace Hellkite",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 9,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Blast-Furnace Hellkite",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 9,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Blight Titan",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Blight Titan",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Bloodline Pretender",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Bloodline Pretender",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Bone Shredder",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Bone Shredder",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Brimaz, Blight of Oreskos",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Brimaz, Blight of Oreskos",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Carrion Call",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Carrion Call",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Chandra, Fire of Kaladesh",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Chandra, Fire of Kaladesh",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Chant of Vitu-Ghazi",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 8,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Chant of Vitu-Ghazi",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 8,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Conclave Mentor",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Conclave Mentor",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Conclave Sledge-Captain",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 4,
+      "prerequisites": [],
+      "queryTypes": [
+        "orderTriggers",
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Conclave Sledge-Captain",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 4,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Conjurer's Mantle",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Conjurer's Mantle",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Contaminant Grafter",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Contaminant Grafter",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Cosima, God of the Voyage",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Cosima, God of the Voyage",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Culling Ritual",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Culling Ritual",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Cut Short",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [
+        "An opposing creature is tapped for the printed target restriction."
+      ],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Cut Short",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [
+        "An opposing creature is tapped for the printed target restriction."
+      ],
+      "queryTypes": []
+    },
+    {
+      "name": "Cutthroat Negotiator",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Cutthroat Negotiator",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Dennick, Pious Apprentice",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Dennick, Pious Apprentice",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Dowsing Dagger",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Dowsing Dagger",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Dromoka's Command",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 2,
+      "transitions": 2,
+      "prerequisites": [
+        "Actual opponent Lightning Bolt supplies a Stack target."
+      ],
+      "queryTypes": [
+        "chooseMulti",
+        "chooseTargets",
+        "chooseCards"
+      ]
+    },
+    {
+      "name": "Dromoka's Command",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 2,
+      "transitions": 2,
+      "prerequisites": [
+        "Actual opponent Lightning Bolt supplies a Stack target."
+      ],
+      "queryTypes": [
+        "chooseCards"
+      ]
+    },
+    {
+      "name": "Elbrus, the Binding Blade",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 7,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Elbrus, the Binding Blade",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 7,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Elspeth Tirel",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Elspeth Tirel",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Everquill Phoenix",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Everquill Phoenix",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Excise the Imperfect",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Excise the Imperfect",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Expand the Sphere",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "cardReveal",
+        "chooseCards"
+      ]
+    },
+    {
+      "name": "Expand the Sphere",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Farid, Enterprising Salvager",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Farid, Enterprising Salvager",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Feed the Infection",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Feed the Infection",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Filigree Vector",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Filigree Vector",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Finale of Glory",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Finale of Glory",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Flockchaser Phantom",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Flockchaser Phantom",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Fractured Powerstone",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Fractured Powerstone",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Garruk Relentless",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Garruk Relentless",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Geth's Summons",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Geth's Summons",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Gimbal, Gremlin Prodigy",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Gimbal, Gremlin Prodigy",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Glint Raker",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Glint Raker",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Glissa's Retriever",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Glissa's Retriever",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Goldwardens' Gambit",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 8,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Goldwardens' Gambit",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 8,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Grafted Exoskeleton",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Grafted Exoskeleton",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Haakon, Stromgald Scourge",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [
+        "Haakon starts in the graveyard because its printed restriction forbids casting it anywhere else."
+      ],
+      "queryTypes": []
+    },
+    {
+      "name": "Haakon, Stromgald Scourge",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [
+        "Haakon starts in the graveyard because its printed restriction forbids casting it anywhere else."
+      ],
+      "queryTypes": []
+    },
+    {
+      "name": "Hadana's Climb",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Hadana's Climb",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Hagra Mauling",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "play-land",
+      "zone": "battlefield",
+      "manaSpent": 0,
+      "transitions": 0,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Hagra Mauling",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "play-land",
+      "zone": "battlefield",
+      "manaSpent": 0,
+      "transitions": 0,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Hexplate Wallbreaker",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Hexplate Wallbreaker",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Ichor Elixir",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Ichor Elixir",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Ixhel, Scion of Atraxa",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Ixhel, Scion of Atraxa",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Jace, Vryn's Prodigy",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Jace, Vryn's Prodigy",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Journey to Eternity",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Journey to Eternity",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Joyful Stormsculptor",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Joyful Stormsculptor",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Kasla, the Broken Halo",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Kasla, the Broken Halo",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Kayla's Music Box",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Kayla's Music Box",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Kinnan, Bonder Prodigy",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Kinnan, Bonder Prodigy",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Knights of the Black Rose",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Knights of the Black Rose",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Kolvori, God of Kinship",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Kolvori, God of Kinship",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Kytheon, Hero of Akros",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 1,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Kytheon, Hero of Akros",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 1,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Legion's Landing",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 1,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Legion's Landing",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 1,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Liliana, Heretical Healer",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Liliana, Heretical Healer",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Lithoform Engine",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Lithoform Engine",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Ludevic, Necrogenius",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Ludevic, Necrogenius",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "March of Progress",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "March of Progress",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Mila, Crafty Companion",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Mila, Crafty Companion",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Mirror-Style Master",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Mirror-Style Master",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Mistmeadow Vanisher",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Mistmeadow Vanisher",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Moira and Teshar",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Moira and Teshar",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Muzzio, Visionary Architect",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Muzzio, Visionary Architect",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Neyali, Suns' Vanguard",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Neyali, Suns' Vanguard",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Nicol Bolas, the Ravager",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseCards"
+      ]
+    },
+    {
+      "name": "Nicol Bolas, the Ravager",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseCards"
+      ]
+    },
+    {
+      "name": "Nissa, Vastwood Seer",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseCards"
+      ]
+    },
+    {
+      "name": "Nissa, Vastwood Seer",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Norn's Annex",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Norn's Annex",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Norn's Choirmaster",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Norn's Choirmaster",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Norn's Decree",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Norn's Decree",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Noxious Assault",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Noxious Assault",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Otharri, Suns' Glory",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Otharri, Suns' Glory",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Padeem, Consul of Innovation",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Padeem, Consul of Innovation",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Pain Distributor",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Pain Distributor",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Path of the Animist",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseCards",
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Path of the Animist",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Path of the Enigma",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets",
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Path of the Enigma",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Path of the Ghosthunter",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Path of the Ghosthunter",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Path of the Pyromancer",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Path of the Pyromancer",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Path of the Schemer",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseCards",
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Path of the Schemer",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Phyresis Outbreak",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Phyresis Outbreak",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Phyrexian Atlas",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Phyrexian Atlas",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Phyrexian Scriptures",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Phyrexian Scriptures",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Phyrexian Swarmlord",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Phyrexian Swarmlord",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Plague Myr",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Plague Myr",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Plargg, Dean of Chaos",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Plargg, Dean of Chaos",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Rashmi and Ragavan",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Rashmi and Ragavan",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Relic of Progenitus",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 1,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Relic of Progenitus",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 1,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Rise and Shine",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Rise and Shine",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Roar of Resistance",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Roar of Resistance",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Saint Traft and Rem Karolus",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Saint Traft and Rem Karolus",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Sandsteppe War Riders",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Sandsteppe War Riders",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Sanwell, Avenger Ace",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Sanwell, Avenger Ace",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Scavenged Brawler",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Scavenged Brawler",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Scholar of New Horizons",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Scholar of New Horizons",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Search for Azcanta",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Search for Azcanta",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Semester's End",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Semester's End",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Shaile, Dean of Radiance",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Shaile, Dean of Radiance",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Shatter the Source",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption",
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Shatter the Source",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Sidar Jabari of Zhalfir",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Sidar Jabari of Zhalfir",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Sisay, Weatherlight Captain",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Sisay, Weatherlight Captain",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Slurrk, All-Ingesting",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Slurrk, All-Ingesting",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Smelting Vat",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Smelting Vat",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Spell Swindle",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [
+        "Actual opponent Lightning Bolt supplies a Stack target."
+      ],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Spell Swindle",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [
+        "Actual opponent Lightning Bolt supplies a Stack target."
+      ],
+      "queryTypes": []
+    },
+    {
+      "name": "Sphinx of the Second Sun",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 8,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Sphinx of the Second Sun",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 8,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Suture Priest",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Suture Priest",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Syr Elenora, the Discerning",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Syr Elenora, the Discerning",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Tawnos, Solemn Survivor",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Tawnos, Solemn Survivor",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Temporal Cleansing",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets",
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Temporal Cleansing",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Terisiare's Devastation",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Terisiare's Devastation",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Thaumatic Compass",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Thaumatic Compass",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Tovolar's Huntmaster",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Tovolar's Huntmaster",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Treasure Map",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Treasure Map",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Uncivil Unrest",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Uncivil Unrest",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Urza, Chief Artificer",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Urza, Chief Artificer",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Valakut Awakening",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "play-land",
+      "zone": "battlefield",
+      "manaSpent": 0,
+      "transitions": 0,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Valakut Awakening",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "play-land",
+      "zone": "battlefield",
+      "manaSpent": 0,
+      "transitions": 0,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Valentin, Dean of the Vein",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 1,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Valentin, Dean of the Vein",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 1,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Valki, God of Lies",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseCards"
+      ]
+    },
+    {
+      "name": "Valki, God of Lies",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Vanquisher's Banner",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseOption"
+      ]
+    },
+    {
+      "name": "Vanquisher's Banner",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Venerated Loxodon",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Venerated Loxodon",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Viridian Corrupter",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Viridian Corrupter",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Vishgraz, the Doomhive",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Vishgraz, the Doomhive",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Voldaren Pariah",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Voldaren Pariah",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 5,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Vraska's Fall",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseCards"
+      ]
+    },
+    {
+      "name": "Vraska's Fall",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseCards"
+      ]
+    },
+    {
+      "name": "Vulpine Harvester",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Vulpine Harvester",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Wand of the Worldsoul",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Wand of the Worldsoul",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 3,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Westvale Abbey",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "play-land",
+      "zone": "battlefield",
+      "manaSpent": 0,
+      "transitions": 0,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Westvale Abbey",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "play-land",
+      "zone": "battlefield",
+      "manaSpent": 0,
+      "transitions": 0,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Wildfire Awakener",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Wildfire Awakener",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 4,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Wire Surgeons",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Wire Surgeons",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Wondrous Crucible",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 7,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Wondrous Crucible",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 7,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Workshop Elders",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 7,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Workshop Elders",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 7,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Wreck Hunter",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": [
+        "chooseTargets"
+      ]
+    },
+    {
+      "name": "Wreck Hunter",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "battlefield",
+      "manaSpent": 2,
+      "transitions": 2,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Wurmquake",
+      "role": "human",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    },
+    {
+      "name": "Wurmquake",
+      "role": "ai",
+      "status": "runtime-smoke-pass",
+      "action": "cast",
+      "zone": "graveyard",
+      "manaSpent": 6,
+      "transitions": 1,
+      "prerequisites": [],
+      "queryTypes": []
+    }
+  ],
+  "counts": {
+    "runtime-smoke-pass": 278,
+    "prerequisite-gap": 0,
+    "choice-gap": 0,
+    "error": 0
+  },
+  "limitation": "Common-board cast/land and entry-trigger smoke, with explicitly reported card-specific prerequisites and Ancestral Vision Suspend/upkeep smoke. Activated abilities, all modes and card-specific semantic correctness require dedicated tests. Gaps are not passing coverage."
+}

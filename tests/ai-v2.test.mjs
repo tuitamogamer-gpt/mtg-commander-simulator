@@ -52,9 +52,9 @@ function actionWindow(game, player) {
   };
 }
 
-test('svih 100 aktivnih precona imaju popunjen stvarni AI profil', () => {
+test('svih 110 aktivnih precona imaju popunjen stvarni AI profil', () => {
   const profiles = MTG.DECK_AI_PROFILES;
-  assert.equal(Object.keys(profiles).length, 100);
+  assert.equal(Object.keys(profiles).length, 110);
   assert.deepEqual(Object.keys(profiles).sort(), Object.keys(MTG.DECKS).sort());
   for (const [deckId, profile] of Object.entries(profiles)) {
     assert.equal(profile.deckId, deckId);

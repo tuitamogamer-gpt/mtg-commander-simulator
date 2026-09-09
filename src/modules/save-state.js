@@ -39,6 +39,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function tokenKeyOf(def) {
+    if(def.bomTokenKey&&MTG.TOKENS[def.bomTokenKey])return def.bomTokenKey;
     for (const [key, candidate] of Object.entries(MTG.TOKENS || {})) if (candidate === def) return key;
     // Scripts also build tokens inline. A catalog token with the same printed
     // face is the same object for every purpose that matters here.
@@ -268,6 +269,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return {
       format: FORMAT,
       turnNo: game.turnNo,
+      bomDayNight:game.bomDayNight||null,bomPreviousActive:game.bomPreviousActive??null,bomMonarchAtTurnStart:game.bomMonarchAtTurnStart??null,
       c1719TurnDirection:game.c1719TurnDirection||1,
       damageHistory: captureDamageHistory(game),
       phase: game.phase,
@@ -428,6 +430,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     game.phase = snapshot.phase;
     game.step = snapshot.step;
     game.turnPlayer = game.players[snapshot.turnPlayer] || game.players[0];
+    game.bomDayNight=snapshot.bomDayNight||null;game.bomPreviousActive=snapshot.bomPreviousActive??null;game.bomMonarchAtTurnStart=snapshot.bomMonarchAtTurnStart??null;
     game.monarch = snapshot.monarch === null ? null : game.players[snapshot.monarch] || null;
     if (snapshot.initiative !== undefined) {
       game.initiative = snapshot.initiative === null ? null : game.players[snapshot.initiative] || null;

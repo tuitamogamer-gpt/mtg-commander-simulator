@@ -1341,7 +1341,7 @@ async function assertGenericEffectEvidence(MTG, context, entry, effect, source, 
       for(const card of selected){assert.equal(v5Matches(card,effect.what),true);assert.equal(card.zone,effect.destination||'hand');if(effect.filter)assert.equal(matchesTarget(card,effect.filter,context,source),true);}
       for(const card of top.filter(card=>!selected.includes(card)))assert.equal(card.zone,['graveyard','hand'].includes(effect.rest)?effect.rest:'library');
     }else assert.deepEqual(new Set(a.library.slice(-n)),new Set(top),`${label}: order preserves top cohort`);
-  }else if(action==='attach-source')assert.equal(source.attachedTo,subject.iid,`${label}: equipment attached`);
+  }else if(action==='attach-source'){const attachment=!source.hasSub('Equipment')&&!source.hasSub('Aura')&&context.eventCard?.hasSub('Equipment')?context.eventCard:source;assert.equal(attachment.attachedTo,subject.iid,`${label}: equipment attached`);}
   else if(action==='regenerate')assert.ok((subject.regenShield||0)>(oldSubject.regenShield||0),`${label}: regeneration shield`);
   else if(action==='unblockable-until-eot')assert.equal(subject.cur.unblockable,true,`${label}: unblockable state`);
   else if(action==='prevent-next')assert.ok(game.untilEffects.some(row=>row.kind==='oraclePreventNextAmount'&&row.target===subject&&row.remaining===n&&!!row.combat===!!effect.combat&&(row.direction||'to')===(effect.direction||'to')),`${label}: exact prevention shield`);

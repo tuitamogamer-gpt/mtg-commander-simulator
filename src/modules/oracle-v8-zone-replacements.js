@@ -2,7 +2,7 @@
   const types=(card,snap)=>snap?.types||card.def.types;
   function sources(game){
     const rows=new Map();
-    const relevant=def=>def?.opponentGraveyardVoid||def?.c1719Slime||def?.c1920Sarcophagus||def?.c1920Rayami||def?.afcLorcan||def?.oracleZoneReplacements?.length;
+    const relevant=def=>def?.opponentGraveyardVoid||def?.c1719Slime||def?.c1920Sarcophagus||def?.c1920Rayami||def?.afcLorcan||def?.bomValentin||def?.oracleZoneReplacements?.length;
     for(const card of game.bf())if(relevant(card.def))rows.set(card.iid,{card,ctrl:card.ctrl,snap:game.snapshot(card,false)});
     // A board wipe is one event: use the ability and controller immediately
     // before it, including a source already removed by an earlier loop item.
@@ -26,7 +26,7 @@
       if(from==='stack'&&destination!=='stack')delete card.meta.exileIfStackLeaves;
       return {toZone:destination,opts,voidReplacement:null,shuffleOwners:[]};
     }
-    const used=new Set(),rows=sources(game),shuffleOwners=new Set(),c1719Slimes=[];
+    const used=new Set(),rows=sources(game),shuffleOwners=new Set(),c1719Slimes=[],bomValentins=[];
     let to=destination,toBottom=!!opts.toBottom,voidReplacement=null,noCmdReplace=!!opts.noCmdReplace,c1920Blood=false,zkCosmic=null;
     const own=from==='battlefield'?rows.find(row=>row.card===card):{card,ctrl:card.owner,snap};
     while(true){
@@ -39,6 +39,7 @@
       if(from==='battlefield'&&to==='graveyard')for(const [i,effect] of game.untilEffects.entries())if(effect.kind==='zkCosmic'&&effect.who===snap.ctrl)add('zkCosmic:'+i,'Cosmic Intervention — exile and return next end step',()=>{to='exile';zkCosmic=effect;});
       if(to==='graveyard'){
         for(const row of rows){
+          if(from==='battlefield'&&!card.isToken&&snap.types.includes('Creature')&&snap.ctrl!==row.ctrl&&(row.snap?.def||row.card.def).bomValentin)add('valentin:'+row.card.iid,row.card.name+' — exile and you may pay for a Pest',()=>{to='exile';bomValentins.push(row);});
           if(from==='battlefield'&&snap.types.includes('Creature')&&snap.ctrl===row.ctrl&&(snap.changeling||snap.subtypes.includes('Warlock'))&&(row.snap?.def||row.card.def).afcLorcan)add('lorcan:'+row.card.iid,row.card.name+' — exile the Warlock',()=>{to='exile';});
           if(from==='battlefield'&&snap.types.includes('Creature')&&!card.isToken&&(row.snap?.def||row.card.def).c1920Rayami)add('rayami:'+row.card.iid,row.card.name+' — exile with a blood counter',()=>{to='exile';c1920Blood=true;});
           if(!opts.cycling&&!card.isToken&&card.owner===row.ctrl&&(row.snap?.def||row.card.def).c1920Sarcophagus&&M.C1920.hasCycling(game,card,snap))add('sarcophagus:'+row.card.iid,row.card.name+' — exile the uncycled card',()=>{to='exile';});
@@ -66,7 +67,7 @@
       used.add(selected.key);await selected.run();
     }
     if(from==='stack'&&to!=='stack')delete card.meta.exileIfStackLeaves;
-    return {toZone:to,opts:{...opts,toBottom,noCmdReplace,...(zkCosmic?{zkCosmic}:{})},voidReplacement,c1719Slimes,c1920Blood,shuffleOwners:[...shuffleOwners]};
+    return {toZone:to,opts:{...opts,toBottom,noCmdReplace,...(zkCosmic?{zkCosmic}:{})},voidReplacement,c1719Slimes,bomValentins,c1920Blood,shuffleOwners:[...shuffleOwners]};
   }
   function compile(operation){
     const allowed=['kind','scope','from','to','placement','reveal','creatureOnly','contract'];

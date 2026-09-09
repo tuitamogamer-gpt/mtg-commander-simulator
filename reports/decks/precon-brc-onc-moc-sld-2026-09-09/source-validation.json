@@ -1,0 +1,438 @@
+{
+  "baseline": "db5d98b",
+  "passed": true,
+  "originalPhysicalCards": 1000,
+  "uniqueNames": 642,
+  "sourceLists": [
+    {
+      "name": "Mishra's Burnished Banner",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/brothers-war-commander-decklists-2022-10-28",
+        "https://mtgjson.com/api/v5/decks/MishraSBurnishedBanner_BRC.json"
+      ],
+      "exportSha256": "dcbbc0d64bd7db42149b254895aef8a88ca52aa975b6bba89ee913a26fc13775"
+    },
+    {
+      "name": "Urza's Iron Alliance",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/brothers-war-commander-decklists-2022-10-28",
+        "https://mtgjson.com/api/v5/decks/UrzaSIronAlliance_BRC.json"
+      ],
+      "exportSha256": "1798f9ef5aa067203c3b432c7802a11ad1ed86052ee2a5601e145bfdc32a61f5"
+    },
+    {
+      "name": "Rebellion Rising",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/phyrexia-all-will-be-one-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/RebellionRising_ONC.json"
+      ],
+      "exportSha256": "729179fbbf53f22155ed6545d98c9c10435652932d0923f56155051289c630d3"
+    },
+    {
+      "name": "Corrupting Influence",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/phyrexia-all-will-be-one-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/CorruptingInfluence_ONC.json"
+      ],
+      "exportSha256": "afad2fd1787c7639c0c148f73ae03c60422f39ca647e8ae0b60f4d19496bcd49"
+    },
+    {
+      "name": "Tinker Time",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/march-of-the-machine-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/TinkerTime_MOC.json"
+      ],
+      "exportSha256": "c9aab5515b3b0f253cd549633810e871c41c53156a48f21521fd967d313b5820"
+    },
+    {
+      "name": "Growing Threat",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/march-of-the-machine-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/GrowingThreat_MOC.json"
+      ],
+      "exportSha256": "1baa069ba98eb471af5bc502b20dc21453997de9c84c15f7f48f675a02f01696"
+    },
+    {
+      "name": "Divine Convocation",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/march-of-the-machine-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/DivineConvocation_MOC.json"
+      ],
+      "exportSha256": "afe5628dd905ed3d777ed1ef118f52c9c487c7330b09a74b48c4b5b4ffd7bdbb"
+    },
+    {
+      "name": "Cavalry Charge",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/march-of-the-machine-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/CavalryCharge_MOC.json"
+      ],
+      "exportSha256": "6280460d5628fa57f42e1c63d19f211fe80d989fe8fb8e1595b7b894d4fd46d9"
+    },
+    {
+      "name": "Call for Backup",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/march-of-the-machine-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/CallForBackup_MOC.json"
+      ],
+      "exportSha256": "ed9a178df65f74696343b5f31a3db10458f6c1f00dd2c94d7a415a21eafbd56b"
+    },
+    {
+      "name": "From Cute to Brute",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/commander-returns-to-secret-lair-with-from-cute-to-brute",
+        "https://mtgjson.com/api/v5/decks/FromCuteToBrute_SLD.json"
+      ],
+      "exportSha256": "9929e39f6f28bd745df9b7d889661777d6a70464c93f70452a89d7d11449ad87"
+    }
+  ],
+  "existingRawDefinitionsPreserved": 2780,
+  "existingRawDeckRecordsPreserved": 101,
+  "nativeRawDefinitions": 2919,
+  "existingImageMappingsPreserved": 4358,
+  "existingCommanderCropsPreserved": 101,
+  "existingTrackedAssetsUnchanged": true,
+  "addedWebPFiles": 365,
+  "allNewImageDigestsMatch": true,
+  "idempotentDataSha256": "39dc507138bc911703e2e97c313305ba00365fae45d3f3e78c597b0106782d46",
+  "retainedOracleDifferences": [
+    {
+      "name": "Ancient Stone Idol",
+      "existingOracle": "Flash\nThis spell costs {1} less to cast for each attacking creature.\nTrample\nWhen Ancient Stone Idol dies, create a 6/12 colorless Construct artifact creature token with trample.",
+      "pinnedOracle": "Flash\nThis spell costs {1} less to cast for each attacking creature.\nTrample\nWhen this creature dies, create a 6/12 colorless Construct artifact creature token with trample.",
+      "preserved": true
+    },
+    {
+      "name": "Archangel Avacyn",
+      "existingOracle": "Flash\nFlying, vigilance\nWhen Archangel Avacyn enters, creatures you control gain indestructible until end of turn.\nWhen a non-Angel creature you control dies, transform Archangel Avacyn at the beginning of the next upkeep.",
+      "pinnedOracle": "Archangel Avacyn: Flash\nFlying, vigilance\nWhen Archangel Avacyn enters, creatures you control gain indestructible until end of turn.\nWhen a non-Angel creature you control dies, transform Archangel Avacyn at the beginning of the next upkeep.\nAvacyn, the Purifier: Flying\nWhen this creature transforms into Avacyn, the Purifier, it deals 3 damage to each other creature and each opponent.",
+      "preserved": true
+    },
+    {
+      "name": "Arlinn Kord",
+      "existingOracle": "+1: Until end of turn, up to one target creature gets +2/+2 and gains vigilance and haste.\n0: Create a 2/2 green Wolf creature token. Transform Arlinn Kord.",
+      "pinnedOracle": "Arlinn Kord: +1: Until end of turn, up to one target creature gets +2/+2 and gains vigilance and haste.\n0: Create a 2/2 green Wolf creature token. Transform Arlinn Kord.\nArlinn, Embraced by the Moon: +1: Creatures you control get +1/+1 and gain trample until end of turn.\n−1: Arlinn deals 3 damage to any target. Transform Arlinn.\n−6: You get an emblem with \"Creatures you control have haste and '{T}: This creature deals damage equal to its power to any target.'\"",
+      "preserved": true
+    },
+    {
+      "name": "Arlinn, the Pack's Hope",
+      "existingOracle": "Daybound (If a player casts no spells during their own turn, it becomes night next turn.)\n+1: Until your next turn, you may cast creature spells as though they had flash, and each creature you control enters with an additional +1/+1 counter on it.\n−3: Create two 2/2 green Wolf creature tokens.",
+      "pinnedOracle": "Arlinn, the Pack's Hope: Daybound (If a player casts no spells during their own turn, it becomes night next turn.)\n+1: Until your next turn, you may cast creature spells as though they had flash, and each creature you control enters with an additional +1/+1 counter on it.\n−3: Create two 2/2 green Wolf creature tokens.\nArlinn, the Moon's Fury: Nightbound (If a player casts at least two spells during their own turn, it becomes day next turn.)\n+2: Add {R}{G}.\n0: Until end of turn, Arlinn becomes a 5/5 Werewolf creature with trample, indestructible, and haste.",
+      "preserved": true
+    },
+    {
+      "name": "Azor's Gateway",
+      "existingOracle": "{1}, {T}: Draw a card, then exile a card from your hand. If cards with five or more different mana values are exiled with Azor's Gateway, you gain 5 life, untap Azor's Gateway, and transform it.",
+      "pinnedOracle": "Azor's Gateway: {1}, {T}: Draw a card, then exile a card from your hand. If cards with five or more different mana values are exiled with Azor's Gateway, you gain 5 life, untap Azor's Gateway, and transform it.\nSanctum of the Sun: (Transforms from Azor's Gateway.)\n{T}: Add X mana of any one color, where X is your life total.",
+      "preserved": true
+    },
+    {
+      "name": "Bala Ged Recovery // Bala Ged Sanctuary",
+      "existingOracle": "Return target card from your graveyard to your hand.",
+      "pinnedOracle": "Bala Ged Recovery: Return target card from your graveyard to your hand.\nBala Ged Sanctuary: This land enters tapped.\n{T}: Add {G}.",
+      "preserved": true
+    },
+    {
+      "name": "Barkchannel Pathway // Tidechannel Pathway",
+      "existingOracle": "{T}: Add {G}.",
+      "pinnedOracle": "Barkchannel Pathway: {T}: Add {G}.\nTidechannel Pathway: {T}: Add {U}.",
+      "preserved": true
+    },
+    {
+      "name": "Blightstep Pathway // Searstep Pathway",
+      "existingOracle": "{T}: Add {B}.",
+      "pinnedOracle": "Blightstep Pathway: {T}: Add {B}.\nSearstep Pathway: {T}: Add {R}.",
+      "preserved": true
+    },
+    {
+      "name": "Bloodline Keeper // Lord of Lineage",
+      "existingOracle": "Flying\n{T}: Create a 2/2 black Vampire creature token with flying.\n{B}: Transform this creature. Activate only if you control five or more Vampires.",
+      "pinnedOracle": "Bloodline Keeper: Flying\n{T}: Create a 2/2 black Vampire creature token with flying.\n{B}: Transform this creature. Activate only if you control five or more Vampires.\nLord of Lineage: Flying\nOther Vampire creatures you control get +2/+2.\n{T}: Create a 2/2 black Vampire creature token with flying.",
+      "preserved": true
+    },
+    {
+      "name": "Boros Garrison",
+      "existingOracle": "Boros Garrison enters tapped.\nWhen Boros Garrison enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "pinnedOracle": "This land enters tapped.\nWhen this land enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "preserved": true
+    },
+    {
+      "name": "Branchloft Pathway // Boulderloft Pathway",
+      "existingOracle": "{T}: Add {G}.",
+      "pinnedOracle": "Branchloft Pathway: {T}: Add {G}.\nBoulderloft Pathway: {T}: Add {W}.",
+      "preserved": true
+    },
+    {
+      "name": "Brightclimb Pathway // Grimclimb Pathway",
+      "existingOracle": "{T}: Add {W}.",
+      "pinnedOracle": "Brightclimb Pathway: {T}: Add {W}.\nGrimclimb Pathway: {T}: Add {B}.",
+      "preserved": true
+    },
+    {
+      "name": "Chandra, Fire of Kaladesh",
+      "existingOracle": "Whenever you cast a red spell, untap Chandra.\n{T}: Chandra deals 1 damage to target player or planeswalker. If Chandra has dealt 3 or more damage this turn, exile her, then return her to the battlefield transformed under her owner's control.",
+      "pinnedOracle": "Chandra, Fire of Kaladesh: Whenever you cast a red spell, untap Chandra.\n{T}: Chandra deals 1 damage to target player or planeswalker. If Chandra has dealt 3 or more damage this turn, exile her, then return her to the battlefield transformed under her owner's control.\nChandra, Roaring Flame: +1: Chandra deals 2 damage to target player or planeswalker.\n−2: Chandra deals 2 damage to target creature.\n−7: Chandra deals 6 damage to each opponent. Each player dealt damage this way gets an emblem with \"At the beginning of your upkeep, this emblem deals 3 damage to you.\"",
+      "preserved": true
+    },
+    {
+      "name": "Clearwater Pathway // Murkwater Pathway",
+      "existingOracle": "{T}: Add {U}.",
+      "pinnedOracle": "Clearwater Pathway: {T}: Add {U}.\nMurkwater Pathway: {T}: Add {B}.",
+      "preserved": true
+    },
+    {
+      "name": "Cosima, God of the Voyage",
+      "existingOracle": "At the beginning of your upkeep, you may exile Cosima. If you do, it gains \"Whenever a land you control enters, if Cosima is exiled, you may put a voyage counter on it. If you don't, return Cosima to the battlefield with X +1/+1 counters on it and draw X cards, where X is the number of voyage counters on it.\"",
+      "pinnedOracle": "Cosima, God of the Voyage: At the beginning of your upkeep, you may exile Cosima. If you do, it gains \"Whenever a land you control enters, if Cosima is exiled, you may put a voyage counter on it. If you don't, return Cosima to the battlefield with X +1/+1 counters on it and draw X cards, where X is the number of voyage counters on it.\"\nThe Omenkeel: Whenever a Vehicle you control deals combat damage to a player, that player exiles that many cards from the top of their library. You may play lands from among those cards for as long as they remain exiled.\nCrew 1",
+      "preserved": true
+    },
+    {
+      "name": "Cragcrown Pathway // Timbercrown Pathway",
+      "existingOracle": "{T}: Add {R}.",
+      "pinnedOracle": "Cragcrown Pathway: {T}: Add {R}.\nTimbercrown Pathway: {T}: Add {G}.",
+      "preserved": true
+    },
+    {
+      "name": "Darkbore Pathway // Slitherbore Pathway",
+      "existingOracle": "{T}: Add {B}.",
+      "pinnedOracle": "Darkbore Pathway: {T}: Add {B}.\nSlitherbore Pathway: {T}: Add {G}.",
+      "preserved": true
+    },
+    {
+      "name": "Dennick, Pious Apprentice",
+      "existingOracle": "Lifelink\nCards in graveyards can't be the targets of spells or abilities.\nDisturb {2}{W}{U} (You may cast this card from your graveyard transformed for its disturb cost.)",
+      "pinnedOracle": "Dennick, Pious Apprentice: Lifelink\nCards in graveyards can't be the targets of spells or abilities.\nDisturb {2}{W}{U} (You may cast this card from your graveyard transformed for its disturb cost.)\nDennick, Pious Apparition: Flying\nWhenever one or more creature cards are put into graveyards from anywhere, investigate. This ability triggers only once each turn. (Create a Clue token. It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")\nIf Dennick would be put into a graveyard from anywhere, exile it instead.",
+      "preserved": true
+    },
+    {
+      "name": "Dowsing Dagger",
+      "existingOracle": "When this Equipment enters, target opponent creates two 0/2 green Plant creature tokens with defender.\nEquipped creature gets +2/+1.\nWhenever equipped creature deals combat damage to a player, you may transform this Equipment.\nEquip {2}",
+      "pinnedOracle": "Dowsing Dagger: When this Equipment enters, target opponent creates two 0/2 green Plant creature tokens with defender.\nEquipped creature gets +2/+1.\nWhenever equipped creature deals combat damage to a player, you may transform this Equipment.\nEquip {2}\nLost Vale: (Transforms from Dowsing Dagger.)\n{T}: Add three mana of any one color.",
+      "preserved": true
+    },
+    {
+      "name": "Elbrus, the Binding Blade",
+      "existingOracle": "Equipped creature gets +1/+0.\nWhen equipped creature deals combat damage to a player, unattach Elbrus, then transform it.\nEquip {1}",
+      "pinnedOracle": "Elbrus, the Binding Blade: Equipped creature gets +1/+0.\nWhen equipped creature deals combat damage to a player, unattach Elbrus, then transform it.\nEquip {1}\nWithengar Unbound: Flying, intimidate, trample (A creature with intimidate can't be blocked except by artifact creatures and/or creatures that share a color with it.)\nWhenever a player loses the game, put thirteen +1/+1 counters on Withengar Unbound.",
+      "preserved": true
+    },
+    {
+      "name": "Esika, God of the Tree // The Prismatic Bridge",
+      "existingOracle": "Vigilance\n{T}: Add one mana of any color.\nOther legendary creatures you control have vigilance and \"{T}: Add one mana of any color.\"",
+      "pinnedOracle": "Esika, God of the Tree: Vigilance\n{T}: Add one mana of any color.\nOther legendary creatures you control have vigilance and \"{T}: Add one mana of any color.\"\nThe Prismatic Bridge: At the beginning of your upkeep, reveal cards from the top of your library until you reveal a creature or planeswalker card. Put that card onto the battlefield and the rest on the bottom of your library in a random order.",
+      "preserved": true
+    },
+    {
+      "name": "Foulmire Knight // Profane Insight",
+      "existingOracle": "Deathtouch",
+      "pinnedOracle": "Foulmire Knight: Deathtouch\nProfane Insight: You draw a card and you lose 1 life. (Then exile this card. You may cast the creature later from exile.)",
+      "preserved": true
+    },
+    {
+      "name": "Garruk Relentless",
+      "existingOracle": "When Garruk has two or fewer loyalty counters on him, transform him.\n0: Garruk deals 3 damage to target creature. That creature deals damage equal to its power to him.\n0: Create a 2/2 green Wolf creature token.",
+      "pinnedOracle": "Garruk Relentless: When Garruk has two or fewer loyalty counters on him, transform him.\n0: Garruk deals 3 damage to target creature. That creature deals damage equal to its power to him.\n0: Create a 2/2 green Wolf creature token.\nGarruk, the Veil-Cursed: +1: Create a 1/1 black Wolf creature token with deathtouch.\n−1: Sacrifice a creature. If you do, search your library for a creature card, reveal it, put it into your hand, then shuffle.\n−3: Creatures you control gain trample and get +X/+X until end of turn, where X is the number of creature cards in your graveyard.",
+      "preserved": true
+    },
+    {
+      "name": "Hadana's Climb",
+      "existingOracle": "At the beginning of combat on your turn, put a +1/+1 counter on target creature you control. Then if that creature has three or more +1/+1 counters on it, transform Hadana's Climb.",
+      "pinnedOracle": "Hadana's Climb: At the beginning of combat on your turn, put a +1/+1 counter on target creature you control. Then if that creature has three or more +1/+1 counters on it, transform Hadana's Climb.\nWinged Temple of Orazca: (Transforms from Hadana's Climb.)\n{T}: Add one mana of any color.\n{1}{G}{U}, {T}: Target creature you control gains flying and gets +X/+X until end of turn, where X is its power.",
+      "preserved": true
+    },
+    {
+      "name": "Hagra Mauling",
+      "existingOracle": "This spell costs {1} less to cast if an opponent controls no basic lands.\nDestroy target creature.",
+      "pinnedOracle": "Hagra Mauling: This spell costs {1} less to cast if an opponent controls no basic lands.\nDestroy target creature.\nHagra Broodpit: This land enters tapped.\n{T}: Add {B}.",
+      "preserved": true
+    },
+    {
+      "name": "Hengegate Pathway // Mistgate Pathway",
+      "existingOracle": "{T}: Add {W}.",
+      "pinnedOracle": "Hengegate Pathway: {T}: Add {W}.\nMistgate Pathway: {T}: Add {U}.",
+      "preserved": true
+    },
+    {
+      "name": "Jace, Vryn's Prodigy",
+      "existingOracle": "{T}: Draw a card, then discard a card. If there are five or more cards in your graveyard, exile Jace, then return him to the battlefield transformed under his owner's control.",
+      "pinnedOracle": "Jace, Vryn's Prodigy: {T}: Draw a card, then discard a card. If there are five or more cards in your graveyard, exile Jace, then return him to the battlefield transformed under his owner's control.\nJace, Telepath Unbound: +1: Up to one target creature gets -2/-0 until your next turn.\n−3: You may cast target instant or sorcery card from your graveyard this turn. If that spell would be put into your graveyard, exile it instead.\n−9: You get an emblem with \"Whenever you cast a spell, target opponent mills five cards.\"",
+      "preserved": true
+    },
+    {
+      "name": "Journey to Eternity",
+      "existingOracle": "Enchant creature you control\nWhen enchanted creature dies, return it to the battlefield under your control, then return this card to the battlefield transformed under your control.",
+      "pinnedOracle": "Journey to Eternity: Enchant creature you control\nWhen enchanted creature dies, return it to the battlefield under your control, then return this card to the battlefield transformed under your control.\nAtzal, Cave of Eternity: (Transforms from Journey to Eternity.)\n{T}: Add one mana of any color.\n{3}{B}{G}, {T}: Return target creature card from your graveyard to the battlefield.",
+      "preserved": true
+    },
+    {
+      "name": "Kolvori, God of Kinship",
+      "existingOracle": "As long as you control three or more legendary creatures, Kolvori gets +4/+2 and has vigilance.\n{1}{G}, {T}: Look at the top six cards of your library. You may reveal a legendary creature card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.",
+      "pinnedOracle": "Kolvori, God of Kinship: As long as you control three or more legendary creatures, Kolvori gets +4/+2 and has vigilance.\n{1}{G}, {T}: Look at the top six cards of your library. You may reveal a legendary creature card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.\nThe Ringhart Crest: As The Ringhart Crest enters, choose a creature type.\n{T}: Add {G}. Spend this mana only to cast a creature spell of the chosen type or a legendary creature spell.",
+      "preserved": true
+    },
+    {
+      "name": "Kytheon, Hero of Akros",
+      "existingOracle": "At end of combat, if Kytheon and at least two other creatures attacked this combat, exile Kytheon, then return him to the battlefield transformed under his owner's control.\n{2}{W}: Kytheon gains indestructible until end of turn.",
+      "pinnedOracle": "Kytheon, Hero of Akros: At end of combat, if Kytheon and at least two other creatures attacked this combat, exile Kytheon, then return him to the battlefield transformed under his owner's control.\n{2}{W}: Kytheon gains indestructible until end of turn.\nGideon, Battle-Forged: +2: Up to one target creature an opponent controls attacks Gideon during its controller's next turn if able.\n+1: Until your next turn, target creature gains indestructible. Untap that creature.\n0: Until end of turn, Gideon becomes a 4/4 Human Soldier creature with indestructible that's still a planeswalker. Prevent all damage that would be dealt to him this turn.",
+      "preserved": true
+    },
+    {
+      "name": "Legion's Landing",
+      "existingOracle": "When Legion's Landing enters, create a 1/1 white Vampire creature token with lifelink.\nWhen you attack with three or more creatures, transform Legion's Landing.",
+      "pinnedOracle": "Legion's Landing: When Legion's Landing enters, create a 1/1 white Vampire creature token with lifelink.\nWhen you attack with three or more creatures, transform Legion's Landing.\nAdanto, the First Fort: (Transforms from Legion's Landing.)\n{T}: Add {W}.\n{2}{W}, {T}: Create a 1/1 white Vampire creature token with lifelink.",
+      "preserved": true
+    },
+    {
+      "name": "Liliana, Heretical Healer",
+      "existingOracle": "Lifelink\nWhenever another nontoken creature you control dies, exile Liliana, Heretical Healer, then return her to the battlefield transformed under her owner's control. If you do, create a 2/2 black Zombie creature token.",
+      "pinnedOracle": "Liliana, Heretical Healer: Lifelink\nWhenever another nontoken creature you control dies, exile Liliana, Heretical Healer, then return her to the battlefield transformed under her owner's control. If you do, create a 2/2 black Zombie creature token.\nLiliana, Defiant Necromancer: +2: Each player discards a card.\n−X: Return target nonlegendary creature card with mana value X from your graveyard to the battlefield.\n−8: You get an emblem with \"Whenever a creature dies, return it to the battlefield under your control at the beginning of the next end step.\"",
+      "preserved": true
+    },
+    {
+      "name": "Ludevic, Necrogenius",
+      "existingOracle": "Whenever Ludevic enters or attacks, mill a card.\n{X}{U}{U}{B}{B}, Exile X creature cards from your graveyard: Transform Ludevic. X can't be 0. Activate only as a sorcery.",
+      "pinnedOracle": "Ludevic, Necrogenius: Whenever Ludevic enters or attacks, mill a card.\n{X}{U}{U}{B}{B}, Exile X creature cards from your graveyard: Transform Ludevic. X can't be 0. Activate only as a sorcery.\nOlag, Ludevic's Hubris: As this creature transforms into Olag, Ludevic's Hubris, it becomes a copy of a creature card exiled with it, except its name is Olag, Ludevic's Hubris, it's 4/4, and it's a legendary blue and black Zombie in addition to its other colors and types. Put a number of +1/+1 counters on Olag equal to the number of creature cards exiled with it.",
+      "preserved": true
+    },
+    {
+      "name": "Mila, Crafty Companion",
+      "existingOracle": "Whenever an opponent attacks one or more planeswalkers you control, put a loyalty counter on each planeswalker you control.\nWhenever a permanent you control becomes the target of a spell or ability an opponent controls, you may draw a card.",
+      "pinnedOracle": "Mila, Crafty Companion: Whenever an opponent attacks one or more planeswalkers you control, put a loyalty counter on each planeswalker you control.\nWhenever a permanent you control becomes the target of a spell or ability an opponent controls, you may draw a card.\nLukka, Wayward Bonder: +1: You may discard a card. If you do, draw a card. If a creature card was discarded this way, draw two cards instead.\n−2: Return target creature card from your graveyard to the battlefield. It gains haste. Exile it at the beginning of your next upkeep.\n−7: You get an emblem with \"Whenever a creature you control enters, it deals damage equal to its power to any target.\"",
+      "preserved": true
+    },
+    {
+      "name": "Murderous Rider",
+      "existingOracle": "Lifelink\nWhen this creature dies, put it on the bottom of its owner's library.",
+      "pinnedOracle": "Murderous Rider: Lifelink\nWhen this creature dies, put it on the bottom of its owner's library.\nSwift End: Destroy target creature or planeswalker. You lose 2 life. (Then exile this card. You may cast the creature later from exile.)",
+      "preserved": true
+    },
+    {
+      "name": "Needleverge Pathway // Pillarverge Pathway",
+      "existingOracle": "{T}: Add {R}.",
+      "pinnedOracle": "Needleverge Pathway: {T}: Add {R}.\nPillarverge Pathway: {T}: Add {W}.",
+      "preserved": true
+    },
+    {
+      "name": "Nicol Bolas, the Ravager",
+      "existingOracle": "Flying\nWhen Nicol Bolas enters, each opponent discards a card.\n{4}{U}{B}{R}: Exile Nicol Bolas, then return him to the battlefield transformed under his owner's control. Activate only as a sorcery.",
+      "pinnedOracle": "Nicol Bolas, the Ravager: Flying\nWhen Nicol Bolas enters, each opponent discards a card.\n{4}{U}{B}{R}: Exile Nicol Bolas, then return him to the battlefield transformed under his owner's control. Activate only as a sorcery.\nNicol Bolas, the Arisen: +2: Draw two cards.\n−3: Nicol Bolas deals 10 damage to target creature or planeswalker.\n−4: Put target creature or planeswalker card from a graveyard onto the battlefield under your control.\n−12: Exile all but the bottom card of target player's library.",
+      "preserved": true
+    },
+    {
+      "name": "Nissa, Vastwood Seer",
+      "existingOracle": "When Nissa enters, you may search your library for a basic Forest card, reveal it, put it into your hand, then shuffle.\nWhenever a land you control enters, if you control seven or more lands, exile Nissa, then return her to the battlefield transformed under her owner's control.",
+      "pinnedOracle": "Nissa, Vastwood Seer: When Nissa enters, you may search your library for a basic Forest card, reveal it, put it into your hand, then shuffle.\nWhenever a land you control enters, if you control seven or more lands, exile Nissa, then return her to the battlefield transformed under her owner's control.\nNissa, Sage Animist: +1: Reveal the top card of your library. If it's a land card, put it onto the battlefield. Otherwise, put it into your hand.\n−2: Create Ashaya, the Awoken World, a legendary 4/4 green Elemental creature token.\n−7: Untap up to six target lands. They become 6/6 Elemental creatures. They're still lands.",
+      "preserved": true
+    },
+    {
+      "name": "Ondu Inversion // Ondu Skyruins",
+      "existingOracle": "Destroy all nonland permanents.",
+      "pinnedOracle": "Ondu Inversion: Destroy all nonland permanents.\nOndu Skyruins: This land enters tapped.\n{T}: Add {W}.",
+      "preserved": true
+    },
+    {
+      "name": "Order of Midnight // Alter Fate",
+      "existingOracle": "Flying\nThis creature can't block.",
+      "pinnedOracle": "Order of Midnight: Flying\nThis creature can't block.\nAlter Fate: Return target creature card from your graveyard to your hand. (Then exile this card. You may cast the creature later from exile.)",
+      "preserved": true
+    },
+    {
+      "name": "Plargg, Dean of Chaos",
+      "existingOracle": "{T}, Discard a card: Draw a card.\n{4}{R}, {T}: Reveal cards from the top of your library until you reveal a nonlegendary, nonland card with mana value 3 or less. You may cast that card without paying its mana cost. Put all revealed cards not cast this way on the bottom of your library in a random order.",
+      "pinnedOracle": "Plargg, Dean of Chaos: {T}, Discard a card: Draw a card.\n{4}{R}, {T}: Reveal cards from the top of your library until you reveal a nonlegendary, nonland card with mana value 3 or less. You may cast that card without paying its mana cost. Put all revealed cards not cast this way on the bottom of your library in a random order.\nAugusta, Dean of Order: Other tapped creatures you control get +1/+0.\nOther untapped creatures you control get +0/+1.\nWhenever you attack, untap each creature you control, then tap any number of creatures you control.",
+      "preserved": true
+    },
+    {
+      "name": "Riverglide Pathway // Lavaglide Pathway",
+      "existingOracle": "{T}: Add {U}.",
+      "pinnedOracle": "Riverglide Pathway: {T}: Add {U}.\nLavaglide Pathway: {T}: Add {R}.",
+      "preserved": true
+    },
+    {
+      "name": "Search for Azcanta",
+      "existingOracle": "At the beginning of your upkeep, surveil 1. Then if you have seven or more cards in your graveyard, you may transform Search for Azcanta. (Look at the top card of your library. You may put that card into your graveyard.)",
+      "pinnedOracle": "Search for Azcanta: At the beginning of your upkeep, surveil 1. Then if you have seven or more cards in your graveyard, you may transform Search for Azcanta. (Look at the top card of your library. You may put that card into your graveyard.)\nAzcanta, the Sunken Ruin: (Transforms from Search for Azcanta.)\n{T}: Add {U}.\n{2}{U}, {T}: Look at the top four cards of your library. You may reveal a noncreature, nonland card from among them and put it into your hand. Put the rest on the bottom of your library in any order.",
+      "preserved": true
+    },
+    {
+      "name": "Shaile, Dean of Radiance",
+      "existingOracle": "Flying, vigilance\n{T}: Put a +1/+1 counter on each creature that entered the battlefield under your control this turn.",
+      "pinnedOracle": "Shaile, Dean of Radiance: Flying, vigilance\n{T}: Put a +1/+1 counter on each creature that entered the battlefield under your control this turn.\nEmbrose, Dean of Shadow: {T}: Put a +1/+1 counter on another target creature, then Embrose deals 2 damage to that creature.\nWhenever a creature you control with a +1/+1 counter on it dies, draw a card.",
+      "preserved": true
+    },
+    {
+      "name": "Smitten Swordmaster // Curry Favor",
+      "existingOracle": "Lifelink",
+      "pinnedOracle": "Smitten Swordmaster: Lifelink\nCurry Favor: You gain X life and each opponent loses X life, where X is the number of Knights you control.",
+      "preserved": true
+    },
+    {
+      "name": "Steel Hellkite",
+      "existingOracle": "Flying\n{2}: Steel Hellkite gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by Steel Hellkite this turn. Activate only once each turn.",
+      "pinnedOracle": "Flying\n{2}: This creature gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn.",
+      "preserved": true
+    },
+    {
+      "name": "Thaumatic Compass",
+      "existingOracle": "{3}, {T}: Search your library for a basic land card, reveal it, put it into your hand, then shuffle.\nAt the beginning of your end step, if you control seven or more lands, transform this artifact.",
+      "pinnedOracle": "Thaumatic Compass: {3}, {T}: Search your library for a basic land card, reveal it, put it into your hand, then shuffle.\nAt the beginning of your end step, if you control seven or more lands, transform this artifact.\nSpires of Orazca: (Transforms from Thaumatic Compass.)\n{T}: Add {C}.\n{T}: Untap target attacking creature an opponent controls and remove it from combat.",
+      "preserved": true
+    },
+    {
+      "name": "Tovolar's Huntmaster",
+      "existingOracle": "When this creature enters, create two 2/2 green Wolf creature tokens.\nDaybound (If a player casts no spells during their own turn, it becomes night next turn.)",
+      "pinnedOracle": "Tovolar's Huntmaster: When this creature enters, create two 2/2 green Wolf creature tokens.\nDaybound (If a player casts no spells during their own turn, it becomes night next turn.)\nTovolar's Packleader: Whenever this creature enters or attacks, create two 2/2 green Wolf creature tokens.\n{2}{G}{G}: Another target Wolf or Werewolf you control fights target creature you don't control.\nNightbound (If a player casts at least two spells during their own turn, it becomes day next turn.)",
+      "preserved": true
+    },
+    {
+      "name": "Treasure Map",
+      "existingOracle": "{1}, {T}: Scry 1. Put a landmark counter on this artifact. Then if there are three or more landmark counters on it, remove those counters, transform this artifact, and create three Treasure tokens. (They're artifacts with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+      "pinnedOracle": "Treasure Map: {1}, {T}: Scry 1. Put a landmark counter on this artifact. Then if there are three or more landmark counters on it, remove those counters, transform this artifact, and create three Treasure tokens. (They're artifacts with \"{T}, Sacrifice this token: Add one mana of any color.\")\nTreasure Cove: (Transforms from Treasure Map.)\n{T}: Add {C}.\n{T}, Sacrifice a Treasure: Draw a card.",
+      "preserved": true
+    },
+    {
+      "name": "Valakut Awakening",
+      "existingOracle": "Put any number of cards from your hand on the bottom of your library, then draw that many cards plus one.",
+      "pinnedOracle": "Valakut Awakening: Put any number of cards from your hand on the bottom of your library, then draw that many cards plus one.\nValakut Stoneforge: This land enters tapped.\n{T}: Add {R}.",
+      "preserved": true
+    },
+    {
+      "name": "Valentin, Dean of the Vein",
+      "existingOracle": "Menace, lifelink\nIf a nontoken creature an opponent controls would die, exile it instead. When you do, you may pay {2}. If you do, create a 1/1 black and green Pest creature token with \"When this token dies, you gain 1 life.\"",
+      "pinnedOracle": "Valentin, Dean of the Vein: Menace, lifelink\nIf a nontoken creature an opponent controls would die, exile it instead. When you do, you may pay {2}. If you do, create a 1/1 black and green Pest creature token with \"When this token dies, you gain 1 life.\"\nLisette, Dean of the Root: Whenever you gain life, you may pay {1}. If you do, put a +1/+1 counter on each creature you control and those creatures gain trample until end of turn.",
+      "preserved": true
+    },
+    {
+      "name": "Valki, God of Lies",
+      "existingOracle": "When Valki enters, each opponent reveals their hand. For each opponent, exile a creature card they revealed this way until Valki leaves the battlefield.\n{X}: Choose a creature card exiled with Valki with mana value X. Valki becomes a copy of that card.",
+      "pinnedOracle": "Valki, God of Lies: When Valki enters, each opponent reveals their hand. For each opponent, exile a creature card they revealed this way until Valki leaves the battlefield.\n{X}: Choose a creature card exiled with Valki with mana value X. Valki becomes a copy of that card.\nTibalt, Cosmic Impostor: As Tibalt enters, you get an emblem with \"You may play cards exiled with Tibalt, Cosmic Impostor, and you may spend mana as though it were mana of any color to cast those spells.\"\n+2: Exile the top card of each player's library.\n−3: Exile target artifact or creature.\n−8: Exile all graveyards. Add {R}{R}{R}.",
+      "preserved": true
+    },
+    {
+      "name": "Voldaren Pariah",
+      "existingOracle": "Flying\nSacrifice three other creatures: Transform this creature.\nMadness {B}{B}{B} (If you discard this card, discard it into exile. When you do, cast it for its madness cost or put it into your graveyard.)",
+      "pinnedOracle": "Voldaren Pariah: Flying\nSacrifice three other creatures: Transform this creature.\nMadness {B}{B}{B} (If you discard this card, discard it into exile. When you do, cast it for its madness cost or put it into your graveyard.)\nAbolisher of Bloodlines: Flying\nWhen this creature transforms into Abolisher of Bloodlines, target opponent sacrifices three creatures of their choice.",
+      "preserved": true
+    },
+    {
+      "name": "Westvale Abbey",
+      "existingOracle": "{T}: Add {C}.\n{5}, {T}, Pay 1 life: Create a 1/1 white and black Human Cleric creature token.\n{5}, {T}, Sacrifice five creatures: Transform this land, then untap it.",
+      "pinnedOracle": "Westvale Abbey: {T}: Add {C}.\n{5}, {T}, Pay 1 life: Create a 1/1 white and black Human Cleric creature token.\n{5}, {T}, Sacrifice five creatures: Transform this land, then untap it.\nOrmendahl, Profane Prince: Flying, lifelink, indestructible, haste",
+      "preserved": true
+    }
+  ],
+  "current": {
+    "decks": 110,
+    "definitions": 20777,
+    "eligible": 20759
+  }
+}

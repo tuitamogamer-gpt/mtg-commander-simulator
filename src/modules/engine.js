@@ -941,6 +941,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (card.attachedTo) {
           const host = this.byIid(card.attachedTo);
           if (host) host.attachments = host.attachments.filter(i => i !== card.iid);
+          MTG.BOM?.unattached(this,card,host,snap);
           card.attachedTo = null;
         }
         if (MTG.OracleV8Permanents?.isBestowed(card)) MTG.OracleV8Permanents.ceaseBestow(this, card);
@@ -1092,6 +1093,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         for (const owner of zoneReplacement.shuffleOwners) MTG.shuffle(owner.library, this.rnd);
         if(toZone==='exile')for(const r of zoneReplacement.c1719Slimes||[])if(r.card.zone==='battlefield'&&r.card.zoneVersion===r.version)this.addCounters(r.card,'+1/+1',r.n,false,r.ctrl);
+        if(toZone==='exile')for(const row of zoneReplacement.bomValentins||[])this.queueTrigger({src:row.card,ctrl:row.ctrl,sourceZoneVersion:row.snap.zoneVersion,sourceMeta:row.snap.sourceMeta,name:'Valentin: you may pay {2} to create a Pest',run:ctx=>MTG.BOM.valentinPest(ctx)});
         if(toZone==='exile'&&zoneReplacement.c1920Blood)card.counters.blood=(card.counters.blood||0)+1;
         await MTG.ZK.exiled(this,card,fromZone,toZone,snap,opts);
         if (voidReplacement && toZone === 'exile') {
@@ -1154,8 +1156,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(this._simultaneousLeaveSources?.length)return;
       const expired=(this.oracleExileDurations||[]).filter(row=>row.source.zone!=='battlefield'||row.source.zoneVersion!==row.sourceZoneVersion);
       this.oracleExileDurations=(this.oracleExileDurations||[]).filter(row=>!expired.includes(row));
-      const returning=[...new Set(expired.flatMap(row=>row.cards).filter(({card,zoneVersion})=>card.zone==='exile'&&card.zoneVersion===zoneVersion).map(row=>row.card))];
-      if(returning.length)await this.withBattlefieldEntryBatch(async()=>{for(const card of returning)await this.putPermanentOntoBattlefield(card,card.owner);});
+      const returning=expired.flatMap(row=>row.cards.map(entry=>({...entry,to:row.returnZone||'battlefield'}))).filter(({card,zoneVersion})=>card.zone==='exile'&&card.zoneVersion===zoneVersion);
+      if(returning.length)await this.withBattlefieldEntryBatch(async()=>{for(const {card,to} of returning)if(to==='battlefield')await this.putPermanentOntoBattlefield(card,card.owner);else await this.move(card,to);});
     }
 
     async withGraveyardEntryBatch(run) {
@@ -2305,6 +2307,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           } else if (effect.kind === 'oracleDamagePrevention' && effect.run(this, data) < data.n) {
             add({key: effect, label: 'Prevent damage', apply: async () => {
               const before = data.n; data.n = effect.run(this, data); await prevented(before - data.n);
+              if(effect.bomGainLife&&before>data.n)await this.gainLife(effect.bomGainLife,before-data.n,effect.sourceCard);
             }});
           } else if (effect.kind === 'oraclePreventNextAmount' && (effect.direction==='by'?effect.target?.iid===data.src?.iid:effect.target===data.target) && effect.zoneVersion === (effect.direction==='by'?data.src:data.target)?.zoneVersion && (!effect.combat||data.combat) && effect.remaining > 0) {
             add({key: effect, label: 'Prevent up to ' + effect.remaining + ' damage', apply: async () => {
@@ -3884,6 +3887,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             else moves.set(card, 'graveyard');
           }
         }
+        if(card.attachedTo&&!['Aura','Equipment','Fortification'].some(type=>subs.includes(type)))detach.push(card);
         if (subs.includes('Equipment') && card.attachedTo) {
           const host = this.byIid(card.attachedTo);
           if (card.is('Creature') || !host || host.zone !== 'battlefield' || !host.is('Creature') || this.isProtectedFrom(host, card)) detach.push(card);
@@ -3950,6 +3954,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const card of ceaseBestow) if (!moves.has(card)) MTG.OracleV8Permanents.ceaseBestow(this, card);
         for (const card of detach) {
           const host = this.byIid(card.attachedTo);
+          MTG.BOM?.unattached(this,card,host);
           if (host) host.attachments = host.attachments.filter(iid => iid !== card.iid);
           card.attachedTo = null;
         }
@@ -3989,6 +3994,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (p.lost || this.canLoseGame && !this.canLoseGame(p) && !/conced|quit/i.test(why||'')) return;
       p.lost = true;
       this.lg(`☠️ ${U.playerVerb(p, 'lose', 'loses')} (${why}).`, 'lose');
+      await this.emit('playerLost',{player:p});
       // `this.battlefield` instead of `bf()`: a phased-out permanent must leave
       // the game as well, not stay hidden in the battlefield array forever.
       for (const c of this.battlefield.filter(c => c.owner === p)) {
