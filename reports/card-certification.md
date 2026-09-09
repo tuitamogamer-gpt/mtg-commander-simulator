@@ -1,12 +1,12 @@
 # Card-by-card certifikacija
 
-Generisano: 2026-09-08T18:49:02.875Z
+Generisano: 2026-09-09T11:34:07.042Z
 
-Aktivni deckovi: **75** · stvarno jedinstvenih karata: **3372** · card/deck provjere: **6172**
+Aktivni deckovi: **80** · stvarno jedinstvenih karata: **3514** · card/deck provjere: **6570**
 
-Jedinstvene karte — PASS: **3372** · FAIL: **0** · card/deck pojave — PASS: **6172** · FAIL: **0**
+Jedinstvene karte — PASS: **3514** · FAIL: **0** · card/deck pojave — PASS: **6570** · FAIL: **0**
 
-Cijela raw baza — PASS: **20193/20193** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **16821** karata. Cijeli katalog sadrži **17858** certifikovanih Oracle batch karata.
+Cijela raw baza — PASS: **20285/20285** · FAIL: **0**. Izvan aktivnih fiksnih deckova je **16771** karata. Cijeli katalog sadrži **17858** certifikovanih Oracle batch karata.
 
 `Blame Game` je namjerno izbačen iz proizvoda. Oracle batch karte su dostupne engine-u i mogu se ponovo koristiti u ugrađenim i uvezenim deckovima. Aktivnost svake karte određuje stvarni sastav ugrađenih lista.
 
@@ -6707,6 +6707,439 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Skemfar Elderhall | Eksplicitna skripta i strukturna izvršna putanja postoje. |
 | PASS | Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
 
+## Planar Portal
+
+Commander: **Prosper, Tome-Bound** · 100 karata · 75 jedinstvenih · PASS 75 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Prosper, Tome-Bound | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chittering Witch | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fiend of the Shadows | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gonti, Lord of Luxury | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Marionette Master | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ogre Slumlord | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Piper of the Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Pontiff of Blight | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dark-Dweller Oracle | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dire Fleet Daredevil | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dream Pillager | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Etali, Primal Storm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Izzet Chemister | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tectonic Giant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Loyal Apprentice | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Consuming Vapors | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hex | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Apex of Power | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Disrupt Decorum | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ignite the Future | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Phthisis | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Light Up the Stage | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Throes of Chaos | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Vandalblast | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chaos Warp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Commune with Lava | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bedevil | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bituminous Blast | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rakdos Charm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Terminate | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chaos Wand | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Commander's Sphere | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fellwar Stone | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mind Stone | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Orazca Relic | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rakdos Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Indulgence | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Unstable Obelisk | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dead Man's Chest | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Theater of Horrors | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shiny Impetus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exotic Orchard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Foreboding Ruins | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shadowblood Ridge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Smoldering Marsh | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Spinerock Knoll | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bojuka Bog | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mortuary Mire | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rakdos Carnarium | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tainted Peak | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Zhalfirin Void | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Karazikar, the Eye Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bag of Devouring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Danse Macabre | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Death Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Grim Hireling | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hellish Rebuke | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Lorcan, Warlock Collector | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fiendlash | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Reckless Endeavor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Share the Spoils | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wild-Magic Sorcerer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fevered Suspicion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hurl Through Hell | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Warlock Class | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chaos Channeler | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | You Find Some Prisoners | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bucknard's Everfull Purse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ebony Fly | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Underdark Rift | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
+## Draconic Rage
+
+Commander: **Vrondiss, Rage of Ancients** · 100 karata · 75 jedinstvenih · PASS 75 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Vrondiss, Rage of Ancients | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bogardan Hellkite | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Demanding Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dragonmaster Outcast | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hoard-Smelter Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Opportunistic Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Scourge of Valkas | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shivan Hellkite | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Skyline Despot | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Skyship Stalker | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Taurean Mauler | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Terror of Mount Velus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thunderbreak Regent | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chameleon Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Atarka, World Render | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Anger | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dragonlord's Servant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Savage Ventmaw | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dragonspeaker Shaman | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chain Reaction | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rishkar's Expertise | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shamanic Revelation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rile | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cultivate | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Explore | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rampant Growth | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Magmaquake | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Spit Flame | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Decree of Savagery | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Kindred Summons | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Return of the Wildspeaker | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Beast Within | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Return to Nature | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dragon's Hoard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Commander's Sphere | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gruul Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Heirloom Blade | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gratuitous Violence | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Outpost Siege | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Warstorm Surge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Colossal Majesty | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Garruk's Uprising | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cinder Glade | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Crucible of the Spirit Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exotic Orchard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Game Trail | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Haven of the Spirit Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mossfire Valley | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mosswort Bridge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Desert | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gruul Turf | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Path of Ancestry | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mountain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Forest | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Klauth, Unrivaled Ancient | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Berserker's Frenzy | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Chaos Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Maddening Hex | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Vengeful Ancestor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bag of Tricks | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Druid of Purification | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Indomitable Might | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Neverwinter Hydra | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wild Endeavor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dragonborn Champion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Klauth's Will | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wulfgar of Icewind Dale | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Barbarian Class | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Earth-Cult Elemental | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Component Pouch | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sword of Hours | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Underdark Rift | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
+## Aura of Courage
+
+Commander: **Galea, Kindler of Hope** · 100 karata · 89 jedinstvenih · PASS 89 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Galea, Kindler of Hope | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Angel of Finality | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Puresteel Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Realm-Cloaked Giant // Cast Off | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sram, Senior Edificer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Prognostic Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cold-Eyed Selkie | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fleecemane Lion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Knight of Autumn | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Riverwise Augur | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Acidic Slime | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Paradise Druid | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Winds of Rath | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Serum Visions | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nature's Lore | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Heroic Intervention | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Valorous Stance | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Brainstorm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bant Charm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Argentum Armor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Basilisk Collar | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Masterwork of Ingenuity | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Moonsilver Spear | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sword of the Animist | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Behemoth Sledge | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Colossus Hammer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Explorer's Scope | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swiftfoot Boots | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Viridian Longbow | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Imprisoned in the Moon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Greater Good | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Verdant Embrace | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Angelic Gift | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gryff's Boon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Curse of Verbosity | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Eel Umbra | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Psychic Impetus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Abundant Growth | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fertile Ground | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Kenrith's Transformation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rancor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Utopia Sprawl | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wild Growth | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shielding Plax | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Canopy Vista | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exotic Orchard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fortified Village | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Lumbering Falls | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Port Town | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Prairie Stream | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Skycloud Expanse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sungrass Prairie | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Evolving Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Azorius Chancery | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bant Panorama | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Flood Plain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Grasslands | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Halimar Depths | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mishra's Factory | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Path of Ancestry | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Seaside Citadel | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Simic Growth Chamber | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Terramorphic Expanse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thriving Grove | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thriving Heath | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thriving Isle | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Vitu-Ghazi, the City-Tree | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Island | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Forest | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Plains | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Storvald, Frost Giant Jarl | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fey Steed | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Holy Avenger | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mantle of the Ancients | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Robe of Stars | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Valiant Endeavor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Diviner's Portent | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Netherese Puzzle-Ward | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Winged Boots | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Belt of Giant Strength | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Song of Inspiration | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Catti-brie of Mithral Hall | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ride the Avalanche | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Clay Golem | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ebony Fly | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sword of Hours | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
+## Dungeons of Death
+
+Commander: **Sefris of the Hidden Ways** · 100 karata · 84 jedinstvenih · PASS 84 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Sefris of the Hidden Ways | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cataclysmic Gearhulk | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Eternal Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Karmic Guide | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sun Titan | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sunblast Angel | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Champion of Wits | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Curator of Mysteries | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Phantasmal Image | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Doomed Necromancer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ashen Rider | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Baleful Strix | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hostage Taker | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Solemn Simulacrum | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ronom Unicorn | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wall of Omens | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Merfolk Looter | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mulldrifter | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Murder of Crows | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Plaguecrafter | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Reassembling Skeleton | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shriekmaw | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cloudblazer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Necrotic Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Obsessive Stitcher | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Burnished Hart | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Meteor Golem | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Necromantic Selection | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Unburial Rites | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Victimize | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Utter End | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swords to Plowshares | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Forbidden Alchemy | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Despark | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Vanish into Memory | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Commander's Sphere | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fellwar Stone | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wayfarer's Bauble | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Lightning Greaves | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Propaganda | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Choked Estuary | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Darkwater Catacombs | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exotic Orchard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Geier Reach Sanitarium | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | High Market | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nimbus Maze | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Port Town | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Prairie Stream | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sunken Hollow | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Evolving Wilds | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Sanctum | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Azorius Chancery | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dimir Aqueduct | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Esper Panorama | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Orzhov Basilica | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Terramorphic Expanse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thriving Heath | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thriving Isle | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thriving Moor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Plains | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Island | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Nihiloor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Immovable Rod | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Radiant Solar | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Revivify | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Thorough Investigation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Endeavor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Minn, Wily Illusionist | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Phantom Steed | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rod of Absorption | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Grave Endeavor | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Wand of Orcus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Extract Brain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Midnight Pathlighter | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Minimus Containment | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hama Pashar, Ruin Seeker | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dungeon Map | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bucknard's Everfull Purse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Clay Golem | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Component Pouch | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
+## Undead Unleashed
+
+Commander: **Wilhelt, the Rotcleaver** · 100 karata · 75 jedinstvenih · PASS 75 · FAIL 0
+
+| Status | Karta | Nalaz |
+|---|---|---|
+| PASS | Wilhelt, the Rotcleaver | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Liliana, Death's Majesty | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Forgotten Creation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Havengul Runebinder | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Stitcher Geralf | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Undead Alchemist | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Butcher of Malakir | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cemetery Reaper | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Death Baron | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Diregraf Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Eater of Hope | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gravespawn Sovereign | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Midnight Reaper | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Overseer of the Damned | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gisa and Geralf | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Eternal Skylord | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Corpse Augur | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Fleshbag Marauder | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Liliana's Devotee | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Lord of the Accursed | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Spark Reaper | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Undead Augur | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Diregraf Captain | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gleaming Overseer | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ruthless Deathfang | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hour of Eternity | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Army of the Damned | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dark Salvation | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dread Summons | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Zombie Apocalypse | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Distant Melody | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Feed the Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Syphon Flesh | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Aetherspouts | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Go for the Throat | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Arcane Signet | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Charcoal Diamond | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Commander's Sphere | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sky Diamond | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sol Ring | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Talisman of Dominance | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Rooftop Storm | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dreadhorde Invasion | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Endless Ranks of the Dead | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Liliana's Mastery | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Open the Graves | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Choked Estuary | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Darkwater Catacombs | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Exotic Orchard | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Sunken Hollow | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Temple of Deceit | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Bojuka Bog | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Command Tower | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Dimir Aqueduct | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Mortuary Mire | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Myriad Landscape | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Path of Ancestry | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tainted Isle | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Unclaimed Territory | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Island | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Swamp | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Eloise, Nephalia Sleuth | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Cleaver Skaab | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Curse of Unbinding | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Drown in Dreams | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Empty the Laboratory | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Hordewing Skaab | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Shadow Kin | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Crowded Crypt | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Curse of the Restless Dead | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ghouls' Night Out | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Gorex, the Tombshell | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Prowling Geistcatcher | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Ravenous Rotbelly | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+| PASS | Tomb Tyrant | Eksplicitna skripta i strukturna izvršna putanja postoje. |
+
 ## Raw karte izvan aktivnih fiksnih deckova
 
 | Status | Karta | Nalaz |
@@ -7181,7 +7614,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Angelic Curator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angelic Edict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angelic Exaltation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Angelic Gift | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angelic Intervention | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angelic Observer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angelic Overseer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7192,7 +7624,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Angelic Sleuth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angelic Wall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angelsong | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Anger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Anger of the Gods | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angler Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Angrath's Ambusher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7475,7 +7906,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Ashen Firebeast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashen Monstrosity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashen Powder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Ashen Rider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashenmoor Cohort | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashenmoor Gouger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ashiok's Adept | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7748,7 +8178,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Banners Raised | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Banshee's Blade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bant Battlemage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Bant Panorama | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bant Sojourners | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bant Sureblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Bar the Door | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -7944,7 +8373,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Belltoll Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beloved Chaplain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beloved Princess | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Belt of Giant Strength | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Beluna's Gatekeeper // Entry Denied | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ben-Ben, Akki Hermit | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Benalish Cavalry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -8878,7 +9306,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Cathartic Adept | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cathedral Sanctifier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cathedral of War | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Catti-brie of Mithral Hall | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Caught in the Brights | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cauldron Familiar | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Cauldron of Essence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9015,7 +9442,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Chaos Imps | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chaos Maw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chaos Terminator Lord | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Chaos Wand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chaosphere | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chaotic Goo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Chaotic Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9875,7 +10301,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Dark Supplicant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Triumph | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dark Tutelage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Dark-Dweller Oracle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darkbore Pathway // Slitherbore Pathway | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darkest Hour | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Darkheart Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -9996,7 +10421,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Deadwood Treefolk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deafening Clarion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deal Gone Bad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Death Baron | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Death Begets Life | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Death Bomb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Death Charmer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10060,7 +10484,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Deconstruct | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Decorated Griffin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Decoy Ploy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Decree of Savagery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dedicated Martyr | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deduce | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Deem Worthy | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10192,7 +10615,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Desecrated Earth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desecrated Tomb | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desecration Plague | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Desert | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert Cerodon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert Drake | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Desert Sandstorm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10298,7 +10720,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Dire Mimic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dire Wolf Prowler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Direct Current | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Diregraf Colossus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Diregraf Escort | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Diregraf Ghoul | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Diregraf Rebirth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10553,7 +10974,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Dreadful as the Storm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dreadhorde Arcanist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dreadhorde Butcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Dreadhorde Invasion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dreadhorde Twins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dreadlight Monstrosity | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Dreadmalkin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -10938,7 +11358,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Elixir of Vitality | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ellivere of the Wild Court | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elmar, Ulvenwald Informant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Eloise, Nephalia Sleuth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elrond, Lord of Rivendell | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elspeth's Devotee | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Elspeth's Nightmare | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11155,7 +11574,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Esika, God of the Tree // The Prismatic Bridge | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Esper Battlemage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Esper Cormorants | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Esper Panorama | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Esper Sojourners | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Esper Stormblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Esperzoa | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11567,7 +11985,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Feudkiller's Verdict | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fever Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fevered Convulsions | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Fey Steed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Feywild Visitor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiddlehead Kami | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Field Creeper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11582,7 +11999,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Fiend Binder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiend Hunter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiendish Duo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Fiendlash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fierce Empath | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fierce Witchstalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Fiery Cannonade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11801,7 +12217,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Flitterwing Nuisance | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flock Impostor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flood | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Flood Plain | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Flood of Recollection | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Floodbringer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Floodchaser | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -11927,7 +12342,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Forgestoker Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forging the Anchor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forging the Tyrite Sword | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Forgotten Creation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forgotten Harvest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Forgotten Sentinel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Foriysian Brigade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13181,7 +13595,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Haunting Echoes | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haunting Figment | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Haunting Hymn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Havengul Runebinder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Havengul Vampire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Havenwood Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Havoc Demon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -13838,7 +14251,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Index | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Indigo Faerie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Indomitable Archangel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Indomitable Might | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Indomitable Will | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Indulgent Aristocrat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Industrial Advancement | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14310,7 +14722,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Kargan Warleader | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kari Zev's Expertise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karlach, Fury of Avernus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Karmic Guide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karn's Temporal Sundering | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karok Wrangler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Karoo Meerkat | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14398,7 +14809,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Kemba's Skyguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kemuri-Onna | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kenku Artificer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Kenrith's Transformation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Kenrith, the Returned King | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Keral Keep Disciples | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Keskit, the Flesh Sculptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -14518,7 +14928,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Knight Luminary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight Paladin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight Watch | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Knight of Autumn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of Cliffhaven | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of Dawn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Knight of Dawn's Light | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15387,7 +15796,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Mardu Warshrieker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mardu Woe-Reaper | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marionette Apprentice | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Marionette Master | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marisi's Twinclaws | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Marit Lage's Slumber | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Maritime Guard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15592,7 +16000,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Merfolk Cave-Diver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Merfolk Coralsmith | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Merfolk Falconer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Merfolk Looter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Merfolk Mesmerist | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Merfolk Mistbinder | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Merfolk Observer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -15820,7 +16227,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Misery's Shadow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Misguided Rage | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mishra's Bauble | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Mishra's Factory | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mishra's Foundry | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mishra's Helix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Mishra's Juggernaut | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16094,7 +16500,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Murasa Pyromancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murasa Ranger | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murder Investigation | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Murder of Crows | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murderer's Axe | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murderous Cut | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Murderous Redcap | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16265,7 +16670,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Necrosavant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necrosquito | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necrosynthesis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Necrotic Sliver | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Necrotic Wound | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nectar Faerie | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Need for Speed | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16415,7 +16819,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Nimble-Blade Khenra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nimbleclaw Adept | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nimblewright Schematic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Nimbus Maze | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nimbus Naiad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nimbus Swimmer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Nimbus Wings | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16578,7 +16981,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Observant Alseid | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Obsessive Search | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Obsessive Skinner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Obsessive Stitcher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Obsidian Acolyte | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Obsidian Giant | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Obsidian Obelisk | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -16742,7 +17144,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Orazca Frillback | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orazca Puzzle-Door | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orazca Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Orazca Relic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orb of Dreams | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orbs of Warding | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Orbweaver Kumo | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17067,7 +17468,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Phantasmal Bear | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phantasmal Dragon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phantasmal Dreadmaw | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Phantasmal Image | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phantasmal Shieldback | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phantatog | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Phantom Beast | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17183,7 +17583,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Pious Warrior | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pious Wayfarer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pip-Boy 3000 | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Piper of the Swarm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pippin, Guard of the Citadel | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Pippin, Warden of Isengard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Piracy Charm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17445,7 +17844,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Professor's Warning | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Profit // Loss | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Profound Journey | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Prognostic Sphinx | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Project Deathlok Soldier | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Projektor Inspector | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Prologue to Phyresis | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17802,7 +18200,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Ramunap Hydra | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ramunap Ruins | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rancid Rats | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Rancor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rancorous Archaic | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ranger en-Vec | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ranger of Eos | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -17921,7 +18318,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Reality Ripple | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reality Spasm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Realm Razer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Realm-Cloaked Giant // Cast Off | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reap Intellect | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reap What Is Sown | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Reap and Sow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18282,7 +18678,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Righteousness | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rigo, Streetwise Mentor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Riku of Two Reflections | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Rile | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rime Chill | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rime Tender | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rimefur Reindeer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18343,7 +18738,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Rishadan Dockhand | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rishadan Footpad | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rishadan Port | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Rishkar's Expertise | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rising Miasma | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rising Populace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rising of the Day | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18401,7 +18795,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Rob the Archives | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Robber Fly | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Robe of Mirrors | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Robe of Stars | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Robe of the Archmagi | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Robobrain War Mind | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Robotics Mastery | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18450,7 +18843,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Ronin Cliffrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ronin Houndmaster | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ronom Serpent | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Ronom Unicorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Roofstalker Wight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rooftop Assassin | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rooftop Bypass | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -18616,7 +19008,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Rustvine Cultivator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Rustwing Falcon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruthless Cullblade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Ruthless Deathfang | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruthless Disposal | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruthless Invasion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Ruthless Knave | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19451,7 +19842,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Shivan Emissary | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shivan Fire | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shivan Harvest | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Shivan Hellkite | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shivan Meteor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shivan Phoenix | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Shivan Raptor | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19791,7 +20181,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Skyknight Vanguard | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skylasher | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyline Cascade | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Skyline Despot | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyline Predator | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyline Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skymarch Bloodletter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -19806,7 +20195,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Skyscythe Engulfer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyserpent Seeker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyship Buccaneer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Skyship Stalker | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyshooter | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyshroud Archer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Skyshroud Behemoth | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21085,7 +21473,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Taigam's Strike | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tail Slash | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tainted Indulgence | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Tainted Isle | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tainted Observer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tainted Well | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tajic, Blade of the Legion | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -21316,7 +21703,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Territory Culler | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terror Ballista | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terror Tide | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Terror of Mount Velus | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terror of the Fairgrounds | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Terrus Wurm | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Tervigon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22482,7 +22868,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Verdant Automaton | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Verdant Catacombs | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Verdant Eidolon | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Verdant Embrace | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Verdant Field | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Verdant Outrider | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Verdant Succession | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -22608,7 +22993,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Viridescent Wisps | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Viridian Acolyte | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Viridian Joiner | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Viridian Longbow | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Viridian Lorebearers | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Viridian Scout | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Virtue of Persistence // Locthwain Scorn | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
@@ -23477,7 +23861,6 @@ Commander: **Lathril, Blade of the Elves** · 100 karata · 73 jedinstvenih · P
 | PASS | Zhalfirin Knight | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhalfirin Lancer | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhalfirin Shapecraft | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
-| PASS | Zhalfirin Void | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhang He, Wei General | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhao Zilong, Tiger General | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |
 | PASS | Zhao, Ruthless Admiral | Eksplicitna skripta i strukturna izvršna putanja postoje; karta nije u aktivnom deck setu. |

@@ -134,6 +134,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       chosenCommanders: player.chosenCommanders ? player.chosenCommanders.slice() : null,
       colorIdentity: (player.colorIdentity || []).slice(),
       cityBlessing: !!player.cityBlessing,
+      afcDungeon: player.afcDungeon?plainMeta(player.afcDungeon):null, afcDungeonSerial: player.afcDungeonSerial||0, afcCompletedDungeons: player.afcCompletedDungeons||0,
       skipUntapOnce: !!player.skipUntapOnce,
       turnsStarted: Number(player.turnsStarted) || 0,
       lastTurnSpellsCast: Number(player.lastTurnSpellsCast) || 0,
@@ -216,6 +217,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if ((game._additionalPhases || []).length) blockers.push('a scheduled additional phase');
     if ((game.extraTurns || []).length || game._extraTurnAnchor) blockers.push('a scheduled extra turn');
     if(MTG.C1719?.snapshotBlockers)blockers.push(...MTG.C1719.snapshotBlockers(game));
+    if(MTG.AFC?.snapshotBlockers)blockers.push(...MTG.AFC.snapshotBlockers(game));
     if(MTG.ZK?.snapshotBlockers)blockers.push(...MTG.ZK.snapshotBlockers(game));
     if(MTG.C1920?.snapshotBlockers)blockers.push(...MTG.C1920.snapshotBlockers(game));
     if (MTG.C1516?.snapshotBlockers) blockers.push(...MTG.C1516.snapshotBlockers(game));
@@ -305,6 +307,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     assert(Array.isArray(snapshot.players) && snapshot.players.length === game.players.length,
       'the saved table has a different number of seats.');
     assert(snapshot.players.every(player=>player.counters===undefined||player.counters&&Number.isSafeInteger(player.counters.energy??0)&&(player.counters.energy??0)>=0), 'invalid player energy counters.');
+    assert(snapshot.players.every(p=>p.afcDungeon==null||Number.isSafeInteger(p.afcDungeon.id)&&p.afcDungeon.id>0&&!!MTG.AFC?.dungeons[p.afcDungeon.key]?.rooms[p.afcDungeon.room]), 'invalid dungeon progress.');
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.counters?.experience??0)&&(player.counters?.experience??0)>=0), 'invalid player experience counters.');
     assert(validDamageHistory(snapshot.damageHistory, snapshot.turnNo), 'invalid damage history.');
     const landTypeEffects=snapshot.landTypeEffects??[];
@@ -406,6 +409,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.chosenCommanders = saved.chosenCommanders ? saved.chosenCommanders.slice() : null;
       player.colorIdentity = (saved.colorIdentity || []).slice();
       player.cityBlessing = saved.cityBlessing;
+      player.afcDungeon=saved.afcDungeon||null; player.afcDungeonSerial=saved.afcDungeonSerial||0; player.afcCompletedDungeons=saved.afcCompletedDungeons||0;
       player.skipUntapOnce = saved.skipUntapOnce;
       player.turnsStarted = saved.turnsStarted;
       player.lastTurnSpellsCast = saved.lastTurnSpellsCast;

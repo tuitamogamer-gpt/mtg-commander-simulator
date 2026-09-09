@@ -1,0 +1,4394 @@
+{
+  "capturedAt": "2026-09-09T11:33:21.012Z",
+  "phase": "before-final-affected-tests",
+  "baseCommit": "030c0de43607081bed8ea9a07e9c6ecaa948d4e6",
+  "count": 1096,
+  "inputs": [
+    {
+      "path": "api/account.js",
+      "sha256": "901d75d2440510e09827d0f70b5f944a2766f39aae1c5a14abb9d059cbf085d7"
+    },
+    {
+      "path": "api/ws.js",
+      "sha256": "e71af831f82a1051038e0748b14f9f8fdf3612a92a40b5b7bb8d00a03c2ae9b8"
+    },
+    {
+      "path": "index.html",
+      "sha256": "55ba37ec8d640be6a48c74f99a87826f5eed95b90cd59f0afc4ec0e10fff69a8"
+    },
+    {
+      "path": "logic.js",
+      "sha256": "ddd299bd7de09dc2dba5ea19dca4fb4c6f3bcc1dd8520e144013da8b2a85ca74"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "82e1fd8a11b7dd362a26b87e74a0c113d7e5328374187f84980ce66cae63a058"
+    },
+    {
+      "path": "package.json",
+      "sha256": "140455eeacac6e23c3d7b9982c87294b9504fee3497b388f73e18800c8169cf4"
+    },
+    {
+      "path": "scripts/apply-new-deck-data.mjs",
+      "sha256": "52c97307e6bafddc7a68982cb9f2fb67fbb167e355686669c228eb9f4b1b79a5"
+    },
+    {
+      "path": "scripts/audit-oracle-capacity.mjs",
+      "sha256": "372faaa28b3874eb43a76ba28d6f2fcb1494134ad4386e40e863a09cbf0a831a"
+    },
+    {
+      "path": "scripts/audit.mjs",
+      "sha256": "170516a26c613035b93ce8036259485b8b44eb53d912458f9d3360c9569947a9"
+    },
+    {
+      "path": "scripts/benchmark-ai.mjs",
+      "sha256": "8d72d7f28301ab3eb5f6b5206dfd3559bb9c026aba66bb97535de0c434e04721"
+    },
+    {
+      "path": "scripts/card-certification-rules.mjs",
+      "sha256": "896cc172245406c94c56c61bd3b2468c869f8e6db79e70fcaac92f74fe2df0ce"
+    },
+    {
+      "path": "scripts/certify-cards.mjs",
+      "sha256": "8df6b69b670ac8701281adfff0ada597254e8aa7d4f3d7979c2b5aea629ed19f"
+    },
+    {
+      "path": "scripts/check-syntax.mjs",
+      "sha256": "e49b84ab1e1ff2d7bd97a41c579b0d34196ffdb451a82ff711589a60ed2877ce"
+    },
+    {
+      "path": "scripts/export-card-catalog.mjs",
+      "sha256": "1499720b5081a72b47e5267e1adbbeaa0778ee22895ba0bb7d10c7099bd8ef27"
+    },
+    {
+      "path": "scripts/fetch-new-deck-oracle.mjs",
+      "sha256": "521de77368296f8d5a4cbe84c84003cf3e1153100fbf7ec90d814108c4c8f57c"
+    },
+    {
+      "path": "scripts/generate-game-audio.py",
+      "sha256": "f58d3aa8509db82577a966abb009a4fad70b8a9dd6472e339f48d8b1470b149a"
+    },
+    {
+      "path": "scripts/import-afc-mic-precons.mjs",
+      "sha256": "e6735d5f314289b917c34db4ea3128650e35e4879995561e0a627d3dcf860865"
+    },
+    {
+      "path": "scripts/import-c14-precons.mjs",
+      "sha256": "ff66e0d651c22c5bbccb13210ecb9cabf50e041daee21d1281bc2e5c34363167"
+    },
+    {
+      "path": "scripts/import-c15-c16-precons.mjs",
+      "sha256": "6c3306cba0af6eb2a5b099564cad6047e22b256d6ffd6824c01364d24fb75390"
+    },
+    {
+      "path": "scripts/import-c17-c19-precons.mjs",
+      "sha256": "42b5c28925150eac2a41ff3fb55d8365c4b12280c741280a72b9e87b046a5b75"
+    },
+    {
+      "path": "scripts/import-c19-c20-znc-precons.mjs",
+      "sha256": "f68807714ca1b0dd2a3e59b5a5e5d968d4563cf2d608dd0c80b757dc6e711d4a"
+    },
+    {
+      "path": "scripts/import-c21-precons.mjs",
+      "sha256": "e91a465b42148815bc677f2b65d226cb2ad14a156bf804eba3cfc38af319d88b"
+    },
+    {
+      "path": "scripts/import-moxfield-deck-oracle.mjs",
+      "sha256": "d7bdd5f07fe8cc804793dd1a08f490d38aeb410dd9a91d0f7251e1eb7317f164"
+    },
+    {
+      "path": "scripts/import-oracle-batch.mjs",
+      "sha256": "9a21a826f0b344b42c8013c9bead3d2b715a353733536e1cb9d0fdc3d4e987c2"
+    },
+    {
+      "path": "scripts/import-starter-precons.mjs",
+      "sha256": "9b7c9ad0c3a1a7609a52392a459fe4d12bdcde5e03fffa98b1b7af12fd9747bd"
+    },
+    {
+      "path": "scripts/import-znc-cmr-khc-precons.mjs",
+      "sha256": "50c597bc4b5c88978fad7345ec15eb293af196a5c1742dbc369740b5faade801"
+    },
+    {
+      "path": "scripts/intake-new-decks.mjs",
+      "sha256": "aa24f957453306847640b14a05f2887e246d8dc1008e75064f7f88e1f2e4f3de"
+    },
+    {
+      "path": "scripts/oracle-creature-types.mjs",
+      "sha256": "f1b360c0893f5851c73c0cee8d9fdd10f556871d6da209cfc75da1547cef459c"
+    },
+    {
+      "path": "scripts/oracle-extensions-v5.mjs",
+      "sha256": "b1ed9688b68dd2daeb2c749d2c490478832a68ef8b8f1712490adc9769d5c08f"
+    },
+    {
+      "path": "scripts/oracle-extensions-v6.mjs",
+      "sha256": "0c37bd8baff133a3f229563e02d6f7cf23f157546d656be561ba3f2f67db3ae3"
+    },
+    {
+      "path": "scripts/oracle-extensions-v7.mjs",
+      "sha256": "2e120ce4f9c5e815ceb25ebb081dca1791bbea8df4ff1b67227675e242b129e7"
+    },
+    {
+      "path": "scripts/oracle-extensions-v8.mjs",
+      "sha256": "69ab304f4e182db9e3a4c272518c8f0f2e9c5d1255b4f851edd6b5e22810b6b1"
+    },
+    {
+      "path": "scripts/oracle-flavor-words.json",
+      "sha256": "d3bf823a0bcebbaff3d8ee6784c56b8952773dab140b29f46e7a2a6e61ebd3e6"
+    },
+    {
+      "path": "scripts/oracle-semantic-repairs.mjs",
+      "sha256": "830522d6cb9aae7d231352e0fd71d6366e0a02c456076c752d1e15144f957418"
+    },
+    {
+      "path": "scripts/oracle-spell-v4.mjs",
+      "sha256": "abe6d402e4d254bf52a91dda72d4451951f0b5969bb6be5414549d0efebb2a25"
+    },
+    {
+      "path": "scripts/oracle-subtypes.mjs",
+      "sha256": "e3da9921ae09d524f54fd48085219c70bbf91e067e02fa3594db11eb02b6fab0"
+    },
+    {
+      "path": "scripts/oracle-v8-ability-loss.mjs",
+      "sha256": "a88894d9e6a69cd09b41294d6a0721019e49496d83a6afeccaf3433f28b9dbbe"
+    },
+    {
+      "path": "scripts/oracle-v8-activation-prohibitions.mjs",
+      "sha256": "07e71c288faf2e256b93936565cbbacd901bcda5bb6a5b75c2673345c1b13851"
+    },
+    {
+      "path": "scripts/oracle-v8-activation-rules.mjs",
+      "sha256": "454a5fdcf7b48f4ecb4bfd2982082338aea965abae0d076a070e45769da1bb09"
+    },
+    {
+      "path": "scripts/oracle-v8-activation-suffixes.mjs",
+      "sha256": "1c7a41edba522ffa16a569902e1ca115c9334cc3be3c0c96b1d47685d72931df"
+    },
+    {
+      "path": "scripts/oracle-v8-additional-costs.mjs",
+      "sha256": "243963fa9bfe1b584fac8384fb453b116cd5ebeb01d43ed12f09826fd54b0ce8"
+    },
+    {
+      "path": "scripts/oracle-v8-alternative-costs.mjs",
+      "sha256": "70ebda2ee56bf930abf09a2b18ea1d698fd3ddf7cc5d37ed4336c025b84f2017"
+    },
+    {
+      "path": "scripts/oracle-v8-attached-effects.mjs",
+      "sha256": "6d3761e3c5a1f9678ef827ffcb3ba9c438f96e12df076c57b96a6830d7bc471e"
+    },
+    {
+      "path": "scripts/oracle-v8-awaken.mjs",
+      "sha256": "82ec330a719d5ebd9b6c01f236e1762f624efdf0e5862686ed808018c63d418a"
+    },
+    {
+      "path": "scripts/oracle-v8-batch-triggers.mjs",
+      "sha256": "a4f1ae4ba7394ba168f623f0788920d7d8ecaca4938f772770210d0e261ca951"
+    },
+    {
+      "path": "scripts/oracle-v8-cast-events.mjs",
+      "sha256": "e66ebd2b1c203e34c636f86749e8bb055f994ecf793ea044acc75877c821b154"
+    },
+    {
+      "path": "scripts/oracle-v8-casting-choices.mjs",
+      "sha256": "97f58cdcbcae026228e4c536c06a7000b9bbc43214fe86229583a660384998fc"
+    },
+    {
+      "path": "scripts/oracle-v8-casting-limits.mjs",
+      "sha256": "d01d75fb870b6b5deaf08b150f16b471472b1a99217c326824623f36bd679009"
+    },
+    {
+      "path": "scripts/oracle-v8-casting-rules.mjs",
+      "sha256": "8bbf2408cdba38c9496c57fe7de6cbebf16a80dead6aee6c9300822b4a1636b0"
+    },
+    {
+      "path": "scripts/oracle-v8-characteristics.mjs",
+      "sha256": "090141f19397d4ecc01b4a4fc8e7ee908efe696517f656f01829f9ba5a610525"
+    },
+    {
+      "path": "scripts/oracle-v8-clash.mjs",
+      "sha256": "3b62f2ca615ad4409d941e6cafce18f87a9fdf600c2b80e54c57feed6899439a"
+    },
+    {
+      "path": "scripts/oracle-v8-coins.mjs",
+      "sha256": "e9cd3e990393a2e56ec172bbe9f7a85b98cf12d658ca37f59e496333e9122465"
+    },
+    {
+      "path": "scripts/oracle-v8-combat-costs.mjs",
+      "sha256": "8dd6aca53edd3fa833d2b2f7c0f4a3a7caab7d14b15ba5b81e022af52e3a9a52"
+    },
+    {
+      "path": "scripts/oracle-v8-combat-keywords.mjs",
+      "sha256": "c811794f1ec92402f529ec7d3280405abe70ddc4b6349c52f5f75202a7510b80"
+    },
+    {
+      "path": "scripts/oracle-v8-combat-restrictions.mjs",
+      "sha256": "fe026badbc27ef3412fff1f04c04a74ce3be3dfc42dc64d8a9aa30961717600a"
+    },
+    {
+      "path": "scripts/oracle-v8-combat.mjs",
+      "sha256": "bb277c1eb849a0954ed6834d2054a01b54eed6c2062f57adfbab1083e631bf28"
+    },
+    {
+      "path": "scripts/oracle-v8-conditional-effects.mjs",
+      "sha256": "e77cb92855d26951fb305df7ea67b6bcd5efa19ce1ec7853e52dc0dfa74d9dc9"
+    },
+    {
+      "path": "scripts/oracle-v8-control.mjs",
+      "sha256": "4b01d10bca4e837b904629b139026bab97f784c31efe9c687af1efc459b5b8a8"
+    },
+    {
+      "path": "scripts/oracle-v8-copies.mjs",
+      "sha256": "e7f5ab1640531d58d71365343fad5e884be53d5ba55ed081bbcfb611375a198c"
+    },
+    {
+      "path": "scripts/oracle-v8-core.mjs",
+      "sha256": "73a3e088c7eda1b9249f30d1acd354fa4945131a3565e571e847dd15a07dd3e6"
+    },
+    {
+      "path": "scripts/oracle-v8-costs.mjs",
+      "sha256": "3bec52d58d98c3735c4053bc189b09f1fcb39351d08278f284731b914dada919"
+    },
+    {
+      "path": "scripts/oracle-v8-counter-costs.mjs",
+      "sha256": "3fb6a839f70c76189c6cc71c7cb20c3ae75a79973e227f6cb422e75c3ecce4ea"
+    },
+    {
+      "path": "scripts/oracle-v8-counter-effects.mjs",
+      "sha256": "30d19c3d085d7c12f26b611e179bcdc475d47c63381a06d11249bf64ec0f2456"
+    },
+    {
+      "path": "scripts/oracle-v8-counter-transfers.mjs",
+      "sha256": "0f5fd129d357f886f14bf4840eaa15072fdf0e4b11c005c5a11ba360e4ea7cc6"
+    },
+    {
+      "path": "scripts/oracle-v8-counts.mjs",
+      "sha256": "a392db99a752cb467cbd48d96e746ec1fe6601ce28e6d7eae9b520907dd489d1"
+    },
+    {
+      "path": "scripts/oracle-v8-creature-upgrades.mjs",
+      "sha256": "e4bfd8832aa04819a1b74b580ff9ec77f33b590d59b8749beff00c8af994d766"
+    },
+    {
+      "path": "scripts/oracle-v8-damage-events.mjs",
+      "sha256": "d9a31a1d43c75be326726cf28a8bc3893000e46b08a9de51d978b35655208db0"
+    },
+    {
+      "path": "scripts/oracle-v8-delayed-objects.mjs",
+      "sha256": "e90776d59f3d84ba849168560b44f6fc2a15839ae419a670cc77c351b0f79dfa"
+    },
+    {
+      "path": "scripts/oracle-v8-delayed-triggers.mjs",
+      "sha256": "e9bf2d8ca7276520f6c5b9e096735f15b7003b902afdfbe6dcc191051010975f"
+    },
+    {
+      "path": "scripts/oracle-v8-divided-damage.mjs",
+      "sha256": "ac285d1c1efe3ef3ac563b64ecd7c23ac0e7a8c302151d2118b0a6c41bf30e25"
+    },
+    {
+      "path": "scripts/oracle-v8-draw-replacements.mjs",
+      "sha256": "7249c339f0b2d9a77f92e4c5b4a6b7f8be4e432e708139f20b507d7707344320"
+    },
+    {
+      "path": "scripts/oracle-v8-effects.mjs",
+      "sha256": "81c78c4925e64a33002127dd72800fb2a2f635035390cc0e56a26b74732f90f3"
+    },
+    {
+      "path": "scripts/oracle-v8-encore.mjs",
+      "sha256": "4a09e7563d7e4c5bdab9947637a614f09f99fc06e25f1d2e704d15423911cf0f"
+    },
+    {
+      "path": "scripts/oracle-v8-energy.mjs",
+      "sha256": "6eda97d3fc9538ef143b4bbf7d53761937e012fabfcadaeba88f0a4e8b8c497b"
+    },
+    {
+      "path": "scripts/oracle-v8-entry-counters.mjs",
+      "sha256": "e23b257a957d7d8c1e20c018703ad31f778810f96f342a0f45e152c6c7789312"
+    },
+    {
+      "path": "scripts/oracle-v8-entwine.mjs",
+      "sha256": "74722c08f251bba45d159bfcce84b0a545bd946bb4e674b66839c01f83f22d1b"
+    },
+    {
+      "path": "scripts/oracle-v8-equip-costs.mjs",
+      "sha256": "9c97c70ca5a97a93373b7de118b848391e024e47c1b5cd3ccc117cab36719a52"
+    },
+    {
+      "path": "scripts/oracle-v8-exert.mjs",
+      "sha256": "5f2398985d66c4ee3ed33e66e6fb790c6598786206ba96cb3db6d934156322d4"
+    },
+    {
+      "path": "scripts/oracle-v8-exploit.mjs",
+      "sha256": "e656e4dc97f746e32a800f1100d09af40676a827ac358092921852ee0b3b82f7"
+    },
+    {
+      "path": "scripts/oracle-v8-faces.mjs",
+      "sha256": "abb74cfad433197e09cbbda65aad4a1c5d9a7112f5b71008824025f2d14340c4"
+    },
+    {
+      "path": "scripts/oracle-v8-forecast.mjs",
+      "sha256": "2e760cffbe8fd8e3ee00360bdfc99dbfebd84a5ce2c094d24e9f2a4bd1aef098"
+    },
+    {
+      "path": "scripts/oracle-v8-hand-activations.mjs",
+      "sha256": "25c8a9173215791076402310b858c892004306ab42917efb2a46945d28fc446a"
+    },
+    {
+      "path": "scripts/oracle-v8-hand-size.mjs",
+      "sha256": "49dabfa0c2e3ee14cb1f8e68197522daaf70c9b62c95a994d14e08781989f5c6"
+    },
+    {
+      "path": "scripts/oracle-v8-keyword-costs.mjs",
+      "sha256": "2520677d34c0c6778ea6b4b58c430fb6aaa5c25b3132adb00038bfd5cc58b0cb"
+    },
+    {
+      "path": "scripts/oracle-v8-keyword-payments.mjs",
+      "sha256": "b1c64ae28fcd3339c1478848055e4492bc7a75e742e379723ba9931ccce142e4"
+    },
+    {
+      "path": "scripts/oracle-v8-kicker-replacements.mjs",
+      "sha256": "f441f8a48244a98c98b4b5692381bb3132d3ac167d04fcb30482324b24583033"
+    },
+    {
+      "path": "scripts/oracle-v8-land-types.mjs",
+      "sha256": "6008b75ca7374834019ecc0cf749fc9b56a4f62e2087cab986dbbf67f16469e9"
+    },
+    {
+      "path": "scripts/oracle-v8-levels.mjs",
+      "sha256": "fddfea2d7f77fa8e7b06083cf93ba63f7df54b4cd74ddcc5e615046bb1b7d94a"
+    },
+    {
+      "path": "scripts/oracle-v8-library.mjs",
+      "sha256": "61d8a5833f0a1ab9cd77c47fb5fe22e8b9b7443cf5b4eeb6bb4fb91f431db78c"
+    },
+    {
+      "path": "scripts/oracle-v8-linked.mjs",
+      "sha256": "de606c70f310c476ba9558e8a2b6fafc3438accffbdd909bcfe1e348301043b9"
+    },
+    {
+      "path": "scripts/oracle-v8-mana-extensions.mjs",
+      "sha256": "f8c22feb62e8eede23d4cd869275ad067d67e3802cd25e045f01d62ca562325c"
+    },
+    {
+      "path": "scripts/oracle-v8-mayhem.mjs",
+      "sha256": "dab9ef0534e7de989a979a1af8844258fda6bbfae50bce0b20d3f04dd4d98d50"
+    },
+    {
+      "path": "scripts/oracle-v8-miracle.mjs",
+      "sha256": "48da30872c7d7db03bf9fed2b462978eb2800cd90be489e5d2af4f6b770b1fb9"
+    },
+    {
+      "path": "scripts/oracle-v8-morph-costs.mjs",
+      "sha256": "fae94d4d0adf29f0f201bfa11dc0b9309e0d0bd3c2e4181e115317c0ad0910e7"
+    },
+    {
+      "path": "scripts/oracle-v8-multizone-search.mjs",
+      "sha256": "8d7632c63e81757fde79850e44ade7d1f33a0bab53ab091bb2a4acc30e0a3695"
+    },
+    {
+      "path": "scripts/oracle-v8-name-groups.mjs",
+      "sha256": "3cece69906f517e0e0c896572c0a30657bedc9e0afef0c516a6a290cad8ae387"
+    },
+    {
+      "path": "scripts/oracle-v8-name-search.mjs",
+      "sha256": "a87abe4ae70674f8a2178751afbaa6c842f4babfe80c3e71ad7b92997521b156"
+    },
+    {
+      "path": "scripts/oracle-v8-named-counts.mjs",
+      "sha256": "46e84fe213a651861e70ea29ee5ea82ec3914c7d7c0709e2faa7f6c383a4672f"
+    },
+    {
+      "path": "scripts/oracle-v8-observation-triggers.mjs",
+      "sha256": "e94586cacef9e0bf5ebe2f074aa1008d91ca10b90639969abb6f6b2fa411a576"
+    },
+    {
+      "path": "scripts/oracle-v8-permanents.mjs",
+      "sha256": "78819dd657976912d4dc42f0c951473b319ba927511ca041058446c840a5c234"
+    },
+    {
+      "path": "scripts/oracle-v8-phasing.mjs",
+      "sha256": "8f149a3f15831ba947a9f0434590ae8616fb2f91c4cbc215152dcfb1485cf909"
+    },
+    {
+      "path": "scripts/oracle-v8-play-permissions.mjs",
+      "sha256": "706ece2e47bd592d787f48979ca98fa2c469549d03a8e2707c27e9b5b0569eea"
+    },
+    {
+      "path": "scripts/oracle-v8-predefined-tokens.mjs",
+      "sha256": "7cd42680b5beb7d71e20336d2ee1a795c961fc3e7cb98efd55e8a25613eebe5e"
+    },
+    {
+      "path": "scripts/oracle-v8-prevention.mjs",
+      "sha256": "66a47b02351600798f87c8c45289ee42ca48a546ef6153f239533b0f79a2cde4"
+    },
+    {
+      "path": "scripts/oracle-v8-public-abilities.mjs",
+      "sha256": "f0ac707b7e7bc554196cd702ec4e58cc457028b7e2f56fbddd687783edfc4df4"
+    },
+    {
+      "path": "scripts/oracle-v8-results.mjs",
+      "sha256": "4749f72b917c36d53bf2b3d0a1cb9cf0b8a907d4ef15b947b70a12dd613be293"
+    },
+    {
+      "path": "scripts/oracle-v8-revealed.mjs",
+      "sha256": "ac3e8d3acf05b1ad66637e3744db84b796a29e2ff1916093dd2081c82fa8328d"
+    },
+    {
+      "path": "scripts/oracle-v8-ripple.mjs",
+      "sha256": "190881f1689ee8cf696415ef4605a473388c3bbfbd3d41ed75fb291821d053a5"
+    },
+    {
+      "path": "scripts/oracle-v8-scope-effects.mjs",
+      "sha256": "b2317cafc5dd84173390a51c3be5152bef799706586d9d82731bf9f424695604"
+    },
+    {
+      "path": "scripts/oracle-v8-soulbond.mjs",
+      "sha256": "6181fffe5c61bdd89bf74766eef3b43e8432bb77a7b9afac78cb32b084e75276"
+    },
+    {
+      "path": "scripts/oracle-v8-source-durations.mjs",
+      "sha256": "43ce0563abc74d6292076bfddd42e68a8278de9227a844d2a873447993eca11e"
+    },
+    {
+      "path": "scripts/oracle-v8-splice.mjs",
+      "sha256": "1faa0803822ded7f81368df50f3bbfeac72fba2d887c5b0c7b6f9eb11d2d9334"
+    },
+    {
+      "path": "scripts/oracle-v8-stack-copy.mjs",
+      "sha256": "13a024518f98ff78d6cf39a4d14bf830fa7eda47d3b5c241e7ab9980e18fe7b7"
+    },
+    {
+      "path": "scripts/oracle-v8-state-triggers.mjs",
+      "sha256": "3404241967e8e8871bbedac10d1d67c26b42bc8be7ada54011a2091943f6633b"
+    },
+    {
+      "path": "scripts/oracle-v8-target-predicates.mjs",
+      "sha256": "01b46f16fdfabdefd0d07ec31a9e9452127228cc1b7e4ac183599c7912eee484"
+    },
+    {
+      "path": "scripts/oracle-v8-target-quantities.mjs",
+      "sha256": "d2d772db232c64a432a2fd15fe6c152d9e447eeb04ca5f9515d449a8411eb60c"
+    },
+    {
+      "path": "scripts/oracle-v8-timing.mjs",
+      "sha256": "640f0bfbcdef857fc059bf4f5eb03f47cb55570d0431ca9e58fdc4501637fd76"
+    },
+    {
+      "path": "scripts/oracle-v8-token-forms.mjs",
+      "sha256": "e06eeb93322386eddf6dab0998d4226086be4996a6ff133fb13156a21b60881b"
+    },
+    {
+      "path": "scripts/oracle-v8-turns.mjs",
+      "sha256": "b0c63fcdc557317009a1c3c99b4ba6cb6804f2444977d235018495157e6d83a6"
+    },
+    {
+      "path": "scripts/oracle-v8-untap.mjs",
+      "sha256": "4c703ce264e4f28f03cca57ac612c4a73ed7a07911d785f07e82399c95d49e0f"
+    },
+    {
+      "path": "scripts/oracle-v8-upkeep-costs.mjs",
+      "sha256": "dd879769debfaa091af3c19abf4f02ff9024d0867fb486f7beeef9cad81108de"
+    },
+    {
+      "path": "scripts/oracle-v8-variable-counter-costs.mjs",
+      "sha256": "91054816d11c3bcd8df3171f9124a7490997c642080f507490a0234da3286364"
+    },
+    {
+      "path": "scripts/oracle-v8-zone-keyword-costs.mjs",
+      "sha256": "cda01791ebc9b687e60a443647ca489d1673557d7e9f1ff4ea4e583aa393b2f3"
+    },
+    {
+      "path": "scripts/oracle-v8-zone-replacements.mjs",
+      "sha256": "791730ad61c282cc08cf7d04a655b5dc8bb11fa9882fe7c6ae82c805f0f36f23"
+    },
+    {
+      "path": "scripts/package-public.mjs",
+      "sha256": "83cd945111b780dbfaf4889be4f4688dcb8251aea753dc9326fc1068b069753c"
+    },
+    {
+      "path": "scripts/prepare-oracle-drafts.mjs",
+      "sha256": "1b942c5161a86763197e9c61da0efcdc2cd948a228cca3ed4f54e197cb240c60"
+    },
+    {
+      "path": "scripts/repair-oracle-subtype-descriptors.mjs",
+      "sha256": "82dd75c0533f1c6651a5ae3d21ae0b4e7b6e3704b433408e20589e47eb1de86a"
+    },
+    {
+      "path": "scripts/report-c17-c19-images.mjs",
+      "sha256": "f239468410f72065ba10735557b0febf562dcd96980ccf39fd28627d758c0bd4"
+    },
+    {
+      "path": "scripts/serve.mjs",
+      "sha256": "3cdbd61712e6ac77910563535b4e499ab1e71a330386efd3a3254591c7d4397e"
+    },
+    {
+      "path": "scripts/smoke-afc-mic-games.mjs",
+      "sha256": "cfce1decbdaeadac6ad8b74e127653e6cb98945dd3c258a49da5f3141a51f98a"
+    },
+    {
+      "path": "scripts/smoke-afc-mic-precons.mjs",
+      "sha256": "b1e7c1ef4577265f2a54fa7cbdff4e4925b67f17f2d5f8898d78dfcfaa749ece"
+    },
+    {
+      "path": "scripts/smoke-c17-c19-precons.mjs",
+      "sha256": "f183928f97649e9e21eb19177b52175675f3a75bb3f0504a9b61ecd96e4e1306"
+    },
+    {
+      "path": "scripts/smoke-c19-c20-precons.mjs",
+      "sha256": "c0c47b54b44baabace8761f3534e19e1ea1d428d718fb6b836b96244d9c247bb"
+    },
+    {
+      "path": "scripts/smoke-znc-khc-games.mjs",
+      "sha256": "400ac2d607216ccd7abdea827ad61a5ab456c3c71400635d2daacff9df01871b"
+    },
+    {
+      "path": "scripts/smoke-znc-khc-precons.mjs",
+      "sha256": "7e6bb8df2e9d4570b90f4c4256de9628b93f0040ed403da296cb5928241f9854"
+    },
+    {
+      "path": "scripts/source-audit.mjs",
+      "sha256": "b2f46d5520d6145f89ea3f677ed0255aaa3581fa966d32089f01f8ec0a2c3b73"
+    },
+    {
+      "path": "scripts/split-app-modules.mjs",
+      "sha256": "75a7e5fefb183503b3b9c148e548e9c9da2b3d5de8bfe3a2b8527927534b7e4a"
+    },
+    {
+      "path": "scripts/split-monolith.mjs",
+      "sha256": "60caf5e0723455eb1bfa3bd81ea4575e3ea0705cc609e50c0cd3a68f2e9d55f2"
+    },
+    {
+      "path": "scripts/sync-afc-mic-images.mjs",
+      "sha256": "e244f27ffe2e288431fa115e72316ce311573a78ce8423df0ea1a79e411b06dd"
+    },
+    {
+      "path": "scripts/sync-c15-c16-images.mjs",
+      "sha256": "298b6b86f1c64d5fc6fdc706236263e70c881f5534c1494767431556d9948af0"
+    },
+    {
+      "path": "scripts/sync-c19-c20-images.mjs",
+      "sha256": "bc4a88a30de7f09c3945226871af27b305514e18b4009084b465650c5867bb96"
+    },
+    {
+      "path": "scripts/sync-card-images.mjs",
+      "sha256": "be423825b8e268090e2a57be79520cde638aa313889e51a4472eed7b38d5eb15"
+    },
+    {
+      "path": "scripts/sync-online-room.mjs",
+      "sha256": "8985763813187332fe3a075c2ad498753bfd6ee49b4bc7588b430b57eca600e3"
+    },
+    {
+      "path": "scripts/sync-znc-khc-images.mjs",
+      "sha256": "c8770e5792acfcb051dc8cc968aa8ead973ae4d393f393bad57ecc1b97df7c81"
+    },
+    {
+      "path": "scripts/validate-afc-mic-precons.mjs",
+      "sha256": "a37ccfef226b4e92e33661f416170d56e418af65a743048cd9e96d8e20b24015"
+    },
+    {
+      "path": "scripts/validate-c15-c16-precons.mjs",
+      "sha256": "995223e6d49366b91d3eb9af23c0542bafeaccab95666ed23fbe2002fd3414ea"
+    },
+    {
+      "path": "scripts/validate-c17-c19-precons.mjs",
+      "sha256": "ccdb28a0be9fed8980c5dd6f76ee16ac62b1335bfb2770b7dd92468f3e6eb4d2"
+    },
+    {
+      "path": "scripts/validate-c19-c20-precons.mjs",
+      "sha256": "462db73bfb9bf9dcbd62201295c25b2f7958793ea4bdcd1ad849b91d06abe145"
+    },
+    {
+      "path": "scripts/validate-znc-khc-precons.mjs",
+      "sha256": "40bb34ab1011e8b6cc76833a337f61b08ea1b4049fd092cb96fb74d4356c2480"
+    },
+    {
+      "path": "scripts/verify-ai-custom-skills.mjs",
+      "sha256": "7f9180c6b6dafff43734a25f61c1c4a9e9f405f0839f12563d7c6091bcf523e3"
+    },
+    {
+      "path": "scripts/verify-oracle-batch-provenance.mjs",
+      "sha256": "9bd1194b94c4990195e3515c9a8047d20a44117b168f126d684a31d203491fca"
+    },
+    {
+      "path": "scripts/verify-oracle-v6-browser.mjs",
+      "sha256": "d56ab51a592d57f9c0007658a2f6640167231682fd32e8c879904faa69060a69"
+    },
+    {
+      "path": "src/.DS_Store",
+      "sha256": "f1415ad97d3ecc33248c0667d889abb2212813713a42b31d7aaaf888841bdb59"
+    },
+    {
+      "path": "src/account.js",
+      "sha256": "2f91502a3af72361a2de247b02c8b4923ea254fd48c3fa473d00dfe62c016ff7"
+    },
+    {
+      "path": "src/app.js",
+      "sha256": "2dae81e2f9fabc602e44975501e63bcad8659996aad013cb3453e26a10b371e6"
+    },
+    {
+      "path": "src/card-images.js",
+      "sha256": "8b2ea67b0165ec8d174da98b3d50eedb1832c11d4424d7060bf4772016d978f9"
+    },
+    {
+      "path": "src/client-v3.css",
+      "sha256": "74db3f4ce29f8dfadec5c7bfa1052ab925e90683216eb0d21f327fe4ad32c7c9"
+    },
+    {
+      "path": "src/command-landing.css",
+      "sha256": "bacc130b0cfe00035371f78f4459103048502aba6997ef86177f1ede5ccb7466"
+    },
+    {
+      "path": "src/command-table.css",
+      "sha256": "b44d9cb1bd90c1c34b4143298dd19fdc828d5b2d8e295b56bf9b6b698081ba22"
+    },
+    {
+      "path": "src/data.js",
+      "sha256": "53bdf8cfc80564672b4a83d69982727d6c14b5ca62970c74a338e35fb441be4d"
+    },
+    {
+      "path": "src/design-system.css",
+      "sha256": "fb74198085f98156a8234f9728dda0be0934bffbc31ee86dff4b41963c1faaf5"
+    },
+    {
+      "path": "src/frontend-overhaul.css",
+      "sha256": "385414b1a1b1616aad6676189367d55d0960f057100d78457e518c8272138582"
+    },
+    {
+      "path": "src/game-audio.css",
+      "sha256": "09632ea2a01b04c2ca4d332659546d269f5e604beedd11b67e3752092c69845b"
+    },
+    {
+      "path": "src/modules/afc-dungeons.js",
+      "sha256": "2106f43c7f4dbf2e90dd8c895ac4e64acb0cb7fc68e530e2eb5d7191fe4df9a2"
+    },
+    {
+      "path": "src/modules/afc-mic-rules.js",
+      "sha256": "7efb9f8f7a7e238ab7829a70cfd1f4650cacab361c687940d3944b1e1a8daf2c"
+    },
+    {
+      "path": "src/modules/ai-custom-styles.js",
+      "sha256": "bd9e1d1242062499dea03e1b37d37781941e9b17c7b26265a8745ebae84f89ea"
+    },
+    {
+      "path": "src/modules/ai-skill-ui.js",
+      "sha256": "b5c6b15708cba4be408b9ff52e547c5c79629e0c900e3da579583b0f15a31043"
+    },
+    {
+      "path": "src/modules/ai-v2.js",
+      "sha256": "9a0d6d3e3031e9c5d20a79a68ff94ed5b69d3827d516634f361db707924b7d1a"
+    },
+    {
+      "path": "src/modules/ai.js",
+      "sha256": "bea1560d8bb41541b18d0c71d8a2ec0975bbe1b6ac24e98e5273c456eed70ffc"
+    },
+    {
+      "path": "src/modules/arena-render.js",
+      "sha256": "2f4dca92bdf087d09ba8a6ef71b068433e62d917d9cbc393175fd0d12fcde5a1"
+    },
+    {
+      "path": "src/modules/arena-tools.js",
+      "sha256": "54ff8de14143ade816ab041ff1c8d42f7480a66977c647e193580458f3964fd5"
+    },
+    {
+      "path": "src/modules/autoscript.js",
+      "sha256": "dd31d30267832ff6bc9a96cf3e090ffed6cbcc21b31ddfde8610938957aece7a"
+    },
+    {
+      "path": "src/modules/c14-precon-rules.js",
+      "sha256": "4d3f5fa7cc6ba1838bb53f6ee73e0f7fbe316ed3678f978e852662e7ba74cede"
+    },
+    {
+      "path": "src/modules/c15-c16-precon-rules.js",
+      "sha256": "3a785c25a80b1d7585731d571eefd407174238bba1fc98726439eabcc58f81e8"
+    },
+    {
+      "path": "src/modules/c17-c19-casting-rules.js",
+      "sha256": "5441b99a94314f02946ffa25241ede0d24236cabf4995c1916c89df51090d313"
+    },
+    {
+      "path": "src/modules/c17-c19-mana-rules.js",
+      "sha256": "e48f43745464154439b292ec441562a0ce3520be1c9d05f47aee73e4dc3a7c75"
+    },
+    {
+      "path": "src/modules/c17-c19-precon-rules.js",
+      "sha256": "8af05e7007ac82a7295a3ae08684087bdd4271bd8f58dd40850bf66295a7032e"
+    },
+    {
+      "path": "src/modules/c17-c19-search-rules.js",
+      "sha256": "2c3fd874ad1c835236440aab055d30e14b4eb4541a6e60291e8cb660bb975fdd"
+    },
+    {
+      "path": "src/modules/c17-c19-text-rules.js",
+      "sha256": "7c0d01f420b06fc0350204fe79428ec84e5d76e1f6a0d0adec273e4cfd93e587"
+    },
+    {
+      "path": "src/modules/c17-c19-text-scope.js",
+      "sha256": "1ee69b2a3acb9fcbd9560aeddced8b47b40b07221cf59ce63ed7af444afd5680"
+    },
+    {
+      "path": "src/modules/c17-c19-umbra-rules.js",
+      "sha256": "e2ae7eac8179d55d2e510fe21ff3a78c76c0c55a2c1c5c9638c2e4bb38dd3213"
+    },
+    {
+      "path": "src/modules/c19-c20-casting-rules.js",
+      "sha256": "9541a72c64984c00ff7cde453cba0f236f41d770b58b675ea99cafce0ab2854e"
+    },
+    {
+      "path": "src/modules/c19-c20-copy-rules.js",
+      "sha256": "69e4420f127f1884463752b860c98b199d88ca024fdeeecb887d479011878f0c"
+    },
+    {
+      "path": "src/modules/c19-c20-cycling-rules.js",
+      "sha256": "77291dca0052c39d378398337d372d633b5b5c76e55625a3d01afe3f4a41d8c4"
+    },
+    {
+      "path": "src/modules/c19-c20-end-combat.js",
+      "sha256": "224cb2589200c8707cc07a3d6e103a834e4008dea7636429a0f019ce30e5c428"
+    },
+    {
+      "path": "src/modules/c19-c20-mutate-rules.js",
+      "sha256": "2a16aecd289d8adb3893aca86c031dff79b50dc4cfc24c8ac84f3b5147ebbf53"
+    },
+    {
+      "path": "src/modules/c19-c20-precon-rules.js",
+      "sha256": "8aa4a56633d0ea3565002a94fe06ac25c8570734290f9fd5659ddafd8735c7bc"
+    },
+    {
+      "path": "src/modules/c21-precon-rules.js",
+      "sha256": "a7c94ed703558efaa4198b833cca85cf39f2389a5b56057800a074857e56f927"
+    },
+    {
+      "path": "src/modules/command-table.js",
+      "sha256": "35658a6fbea91d659eed521b8a868fd98987d6563311a0bbd0dc0b70143b9c07"
+    },
+    {
+      "path": "src/modules/creature-types.js",
+      "sha256": "90d7b4d8f10253a5a27254cefb32259fad53f04e999a3b69c52a3da8eb59f0ed"
+    },
+    {
+      "path": "src/modules/deck-guides.js",
+      "sha256": "15cf433c6e0c8e2852d30a0c49e9ae2214e3f983a38fb52a5d34020e30ce5d8d"
+    },
+    {
+      "path": "src/modules/deck-import.js",
+      "sha256": "d796195b013ed09768b6172394e737685be00475198b0fc5312b33739f784e30"
+    },
+    {
+      "path": "src/modules/diplomacy.js",
+      "sha256": "9eadde37a9b3c739fe00d80ffdb1d5d5229cf801aa3c56bea29abcc0c220b803"
+    },
+    {
+      "path": "src/modules/engine.js",
+      "sha256": "e0af46171e00b30246299975ce7b1a5f08085e51f386e87c29d96e587f752cf8"
+    },
+    {
+      "path": "src/modules/engine2.js",
+      "sha256": "12d92661aeb9980d8e6658a8a212206add57b5a2e860590558053f2a9596fac8"
+    },
+    {
+      "path": "src/modules/game-audio-ui.js",
+      "sha256": "11610a821db9e747099ba14e3b2d8518569922b6e73af745abb0b2585dd66b31"
+    },
+    {
+      "path": "src/modules/game-audio.js",
+      "sha256": "561dd681dac014102fa9836c413e57f917aa07440b977a7b8b4390b878d534f0"
+    },
+    {
+      "path": "src/modules/landing.js",
+      "sha256": "fdb97a6d2f1f0776a870b19e5a9de04ee457c3dba5282525775a8a459fe887e5"
+    },
+    {
+      "path": "src/modules/lands.js",
+      "sha256": "73a8a746571bad994854f6ad58c85a5c79a0ed4b5012a84c60edf8833a4f51f6"
+    },
+    {
+      "path": "src/modules/loader.js",
+      "sha256": "5a67a46606a2ab3f33e55480e03971d42966d23979f9384fbc57c48aa8e640d2"
+    },
+    {
+      "path": "src/modules/main.js",
+      "sha256": "3ec2693951b9a88cf0923841df210e8b586d1dbf8ecde5be7b764f8190ccf47a"
+    },
+    {
+      "path": "src/modules/multiplayer-arena.js",
+      "sha256": "87c409df7bd5e6bceb4dbc46e04bcf538297495067f7338f339d226081cc4cbd"
+    },
+    {
+      "path": "src/modules/multiplayer-presentation.js",
+      "sha256": "bec5a312c1ea314fec9b626f55a0e1eae56943215539cba5d6ff1bb9de3f4861"
+    },
+    {
+      "path": "src/modules/multiplayer-ui.js",
+      "sha256": "6f0c388bfc3109d364cbfdd1c0ef0ddfc640a2164391533ca0a074db0826e653"
+    },
+    {
+      "path": "src/modules/multiplayer.js",
+      "sha256": "966af844a94fc0bd786a346616155fe15852d95fad90970e4822bce45e3a311d"
+    },
+    {
+      "path": "src/modules/oracle-catalog.js",
+      "sha256": "0738e804a9ec43a86c36409238292705d70483d5484acca0c9a341363231285e"
+    },
+    {
+      "path": "src/modules/oracle-mechanics.js",
+      "sha256": "535ff9ba85bf6887de2282d0c95ab672d438bd14701a4ce7ca3b88257d3a17f6"
+    },
+    {
+      "path": "src/modules/oracle-spell-v4.js",
+      "sha256": "503eaa3040d4f072ffc8d586d0b31dd73028d5fdb013c783e5ec8444573e67f8"
+    },
+    {
+      "path": "src/modules/oracle-v8-ability-loss.js",
+      "sha256": "3e2a452a2123d1e5e7ccf25140d356d1f15a8e2da2a0b8292dce0d959eaa40f9"
+    },
+    {
+      "path": "src/modules/oracle-v8-activation-suffixes.js",
+      "sha256": "663aed0842f9b7a8b53f687354012e4e6f918fdfd2ec0bd5741d9d347fdc9ef4"
+    },
+    {
+      "path": "src/modules/oracle-v8-awaken.js",
+      "sha256": "99eaadf81d2c294819af3f132b892e3eee9e2b7b74b340ae5994ee9c27eacf14"
+    },
+    {
+      "path": "src/modules/oracle-v8-cast-events.js",
+      "sha256": "4ba913e9e0998ab78e34370641ee02049f97e26f87f45fdf21148bc2d3304220"
+    },
+    {
+      "path": "src/modules/oracle-v8-casting-choices.js",
+      "sha256": "57ce7ff92df9265bac88eb09208fd75f8e408d6e22f2c9cf5a7f289f72f18abe"
+    },
+    {
+      "path": "src/modules/oracle-v8-casting-limits.js",
+      "sha256": "32bab683b9c74c6c587ca9f7e8192e94282a68f6d43e7e3285aed3c9cfa3df26"
+    },
+    {
+      "path": "src/modules/oracle-v8-casting-rules.js",
+      "sha256": "88018ad30209e6a10e9995a2a668b6a75328a793b6d9ab1c4cae39ea59ba9064"
+    },
+    {
+      "path": "src/modules/oracle-v8-characteristics.js",
+      "sha256": "09e66e207ba1df831c43fdac2f0e58ed27beeda29df0ba82989c2d9c7a2c87da"
+    },
+    {
+      "path": "src/modules/oracle-v8-clash.js",
+      "sha256": "36775b9c239c22d56a1141f98fca512fac236d698869c703e89ffc6330badfb4"
+    },
+    {
+      "path": "src/modules/oracle-v8-coins.js",
+      "sha256": "023760991b26545963cac72af56b8c9c76186461e71fff84924bb121b0891c18"
+    },
+    {
+      "path": "src/modules/oracle-v8-combat-restrictions.js",
+      "sha256": "e71c2758e06cbc3d4a1cf46666215f3049c548815f2e0d840fd78322fafe1ebd"
+    },
+    {
+      "path": "src/modules/oracle-v8-control.js",
+      "sha256": "e601ca9d08c7a8bad49f99997283378a67ad0f263885f9a1b2740bc0335648a1"
+    },
+    {
+      "path": "src/modules/oracle-v8-copies.js",
+      "sha256": "53b82bb6e9b23e76b9d4933739e61e1e8f87aa72976c5c06ec9f87688be45cf0"
+    },
+    {
+      "path": "src/modules/oracle-v8-counter-costs.js",
+      "sha256": "d6e0a9a03783c4459dc290025f7c80e050ea20173382b27f227fbc676ba69451"
+    },
+    {
+      "path": "src/modules/oracle-v8-counter-effects.js",
+      "sha256": "0522d7016d6e5305b774df180f74db89b00f28009fc0d8e2c4c376e7179a5214"
+    },
+    {
+      "path": "src/modules/oracle-v8-counter-transfers.js",
+      "sha256": "b81f725d43aba494929db1b4897bf2d0dfcda0d2c14f740fd12664196afba458"
+    },
+    {
+      "path": "src/modules/oracle-v8-creature-upgrades.js",
+      "sha256": "4aac1d4d0ef27f104b0c9acb51f881c85debd26882b0a29b6944b0dc1b17b90a"
+    },
+    {
+      "path": "src/modules/oracle-v8-damage-events.js",
+      "sha256": "83ebb78a3e9481a382fead99f2b346088e41c0bf4927e9ebc4fa22d37d216d12"
+    },
+    {
+      "path": "src/modules/oracle-v8-damage-history.js",
+      "sha256": "9c7e1601dd5b571eaf6523aacdb828fa4d259371f7f2adb64e256d5ac14804ae"
+    },
+    {
+      "path": "src/modules/oracle-v8-delayed-objects.js",
+      "sha256": "fe8af50c7dede68954e7976fa02b8500fe27fe4b493788f615b13792aad456be"
+    },
+    {
+      "path": "src/modules/oracle-v8-delayed-triggers.js",
+      "sha256": "c8bb07696a4a104d399e2fdd0900e56b5457cc960cfb6af1d30cc59c594f541e"
+    },
+    {
+      "path": "src/modules/oracle-v8-draw-replacements.js",
+      "sha256": "01f112add9392d723f7ab61a7b5a277362eadc84673ee102aa10b5a2639cbb22"
+    },
+    {
+      "path": "src/modules/oracle-v8-effects.js",
+      "sha256": "bc9093c740a245760d2fb20ae70280b4b538ef95fd0729a8f238dd6c7488bd9b"
+    },
+    {
+      "path": "src/modules/oracle-v8-encore.js",
+      "sha256": "4bddc648258addd9fbe78567542ca9dc7af2c51dbf8a12520057a299b1a029ea"
+    },
+    {
+      "path": "src/modules/oracle-v8-energy.js",
+      "sha256": "4471d53dade099385aadda36cb03595726b1eb74d5593fc5c2992bf5b5d18b44"
+    },
+    {
+      "path": "src/modules/oracle-v8-entry-counters.js",
+      "sha256": "9dc84b8133da2d301cd850965d0d1528394031b1e5f6b794bc0c7ba122bb6929"
+    },
+    {
+      "path": "src/modules/oracle-v8-exert.js",
+      "sha256": "83c93ab835a9d0d918b08d9dc2fb23abb76e2c9d8b2fdb871d367930c3247547"
+    },
+    {
+      "path": "src/modules/oracle-v8-exploit.js",
+      "sha256": "2907d6602d04a3a085d57e4563d4eb09905ed2ea41e0fa610a3717df46346418"
+    },
+    {
+      "path": "src/modules/oracle-v8-faces.js",
+      "sha256": "d3b8c16ec04c0cd1f0411a8eb828688aacc27a1acbd00453e01e1db60eab7ba7"
+    },
+    {
+      "path": "src/modules/oracle-v8-hand-size.js",
+      "sha256": "4c30c6d83d2f6f9847636195682ed58e5df6d8eeccc3882d3b7b1be138641598"
+    },
+    {
+      "path": "src/modules/oracle-v8-keyword-payments.js",
+      "sha256": "ad55257387c4b16ca6f2218754b3ac0e5460113312ee5b338066563c52201f21"
+    },
+    {
+      "path": "src/modules/oracle-v8-land-types.js",
+      "sha256": "60d737bd564131cb805fd4527b85869cac48a9c4d477cb23be8edd7b59b6f5c4"
+    },
+    {
+      "path": "src/modules/oracle-v8-levels.js",
+      "sha256": "e4ea1a7c017cb1d600e420750ce186f3d310d696b8b2576af39424555890b7e2"
+    },
+    {
+      "path": "src/modules/oracle-v8-library.js",
+      "sha256": "2de0c79d59a6382d5b9e5057ae96f718a574887f989c7f901adf846a167e7c8b"
+    },
+    {
+      "path": "src/modules/oracle-v8-linked.js",
+      "sha256": "1bbae7591253e37b7db4eb1ebce73be9ca9525e44b22f4d465863eee77fffb15"
+    },
+    {
+      "path": "src/modules/oracle-v8-mayhem.js",
+      "sha256": "db9d1e5bbbdd7d7c19548f9984f564fcd75d5611ff2b56eb28e18ca354b40ee2"
+    },
+    {
+      "path": "src/modules/oracle-v8-miracle.js",
+      "sha256": "40835d77c05263f925e197d71d54b0b1061b1ff67382961303f9bafd53a75f00"
+    },
+    {
+      "path": "src/modules/oracle-v8-morph-costs.js",
+      "sha256": "674a2dcadecdcb193717ea93d8a2d733d5e312faf4c212f8c945098fc7eb178e"
+    },
+    {
+      "path": "src/modules/oracle-v8-multizone-search.js",
+      "sha256": "20adac0939b9ab49b36d4cb1e3821c6888fa67d48f31fb8da07b6a89b6e40dbf"
+    },
+    {
+      "path": "src/modules/oracle-v8-name-groups.js",
+      "sha256": "21ee02f845e7e4631e93f95bf9c7d869d1ff0bfa33e79ddd5d11195be674d981"
+    },
+    {
+      "path": "src/modules/oracle-v8-name-search.js",
+      "sha256": "fd3bbfdc1a999f43cac0c2bc1e238c2208553a2f06b96c1c4f4aeec81b314fe2"
+    },
+    {
+      "path": "src/modules/oracle-v8-named-counts.js",
+      "sha256": "fdaa4611e770ab65fd492e32cd2738986dcc8fb46bf83e1706ac137d3bbb509e"
+    },
+    {
+      "path": "src/modules/oracle-v8-permanents.js",
+      "sha256": "ef18ca8f76964633a9cbc56d6ae1a7cc07dce6136d2a10a7ca2f262123343f89"
+    },
+    {
+      "path": "src/modules/oracle-v8-phasing.js",
+      "sha256": "b3780c4b1f53dd7ae59d07a27d0d2db75e556bed14d7860545f304f0a846b7b7"
+    },
+    {
+      "path": "src/modules/oracle-v8-play-permissions.js",
+      "sha256": "6da35bb82da0cc3206ecd3300b52261df4f936924ce4671501ddd759378ced33"
+    },
+    {
+      "path": "src/modules/oracle-v8-predefined-tokens.js",
+      "sha256": "a3160e3df5a3c68abe10f3747218d8b90249ceeb88ad13c822a39ca60e9deb23"
+    },
+    {
+      "path": "src/modules/oracle-v8-results.js",
+      "sha256": "34a197b72d0253461389725e781ea29a86db81bd342c7496975379c82dc3b566"
+    },
+    {
+      "path": "src/modules/oracle-v8-revealed.js",
+      "sha256": "c43680f29665e8c77a1268261db154107a9c097027768e27997a42228154d399"
+    },
+    {
+      "path": "src/modules/oracle-v8-ripple.js",
+      "sha256": "351504de1efab2e3348d3681a33f37467ec94894a58d60b41846b803d60d3434"
+    },
+    {
+      "path": "src/modules/oracle-v8-soulbond.js",
+      "sha256": "9637d8b6c3167cf97cf73ebc96ce65e314ae43a8a56e25e8dca902d524a25892"
+    },
+    {
+      "path": "src/modules/oracle-v8-source-prevention.js",
+      "sha256": "a01f73e19598c5aabbed5fecad5bb992634b48536c40b7161665b27e4699b551"
+    },
+    {
+      "path": "src/modules/oracle-v8-stack-copy.js",
+      "sha256": "d66a5f5c37fbe2195ee7fcff42e8cc3de4a2f40855831fd1eeda4f97b2f6ada4"
+    },
+    {
+      "path": "src/modules/oracle-v8-token-forms.js",
+      "sha256": "e36b84d0c585aa85d2bc9e3d6d81b9c315fdf51cd5046a7db3de7795c715aad6"
+    },
+    {
+      "path": "src/modules/oracle-v8-untap.js",
+      "sha256": "4bae81525ddd625026ef862cc2157cdffb5fbd66d2ea343478e579f815073c1a"
+    },
+    {
+      "path": "src/modules/oracle-v8-upkeep-costs.js",
+      "sha256": "681587587504fecc0fef8639c0266ece726453c409d3795695873d0b60d96979"
+    },
+    {
+      "path": "src/modules/oracle-v8-variable-counter-costs.js",
+      "sha256": "af1c77478e05bcd4eb0490b02af8a4cb664140888cebb04f7fb10b5790238ba8"
+    },
+    {
+      "path": "src/modules/oracle-v8-zone-keyword-costs.js",
+      "sha256": "7eba2d8629cd8e4ae51cd8502dc326baf4a56c9f4f79115893be204659a5acf9"
+    },
+    {
+      "path": "src/modules/oracle-v8-zone-replacements.js",
+      "sha256": "efe7aac100de7fc39fc0efba17fa7749674c89428193ad1fc9f3588507ca729e"
+    },
+    {
+      "path": "src/modules/player-tools.js",
+      "sha256": "f0ee8d45f4ebcec4e2ae3f8db05c0006cfa3c104aa5c3514ea2839a3c81937b6"
+    },
+    {
+      "path": "src/modules/rules-state-triggers.js",
+      "sha256": "0a7de99dce3d7f5c0bef805802758b682cea7183f9babc02ff02ccf1fb8c6470"
+    },
+    {
+      "path": "src/modules/save-game.js",
+      "sha256": "589294821e1b2d512cedb758187bbc57ff603ec7372600139bc5c9887cc35175"
+    },
+    {
+      "path": "src/modules/save-state.js",
+      "sha256": "76aed98222b41ee4bd275bfe81906e5feb66eb84b6b9c96322363372aaa70046"
+    },
+    {
+      "path": "src/modules/scripts-afc-creatures.js",
+      "sha256": "c497ce9fefcc697131ef6530443d572876b2790bb82d0cbf3d906167222f32e6"
+    },
+    {
+      "path": "src/modules/scripts-afc-dice.js",
+      "sha256": "80d646990c80c1d6c76cf733521955fb22ff4f5dabd2720b5f7bf419b41a8a6b"
+    },
+    {
+      "path": "src/modules/scripts-afc-dungeons.js",
+      "sha256": "d0b78cc22912ef2dc66a7f450309cf28875f70602b1e7ae1bc55ed395523283d"
+    },
+    {
+      "path": "src/modules/scripts-afc-equipment.js",
+      "sha256": "bc5aa7d11fc55df61bd4cadad4dd3a89030d3140e9973614c9dcb3a9c4613aad"
+    },
+    {
+      "path": "src/modules/scripts-afc-exile.js",
+      "sha256": "dd3a5367755fcefd7165bba9befb393c7c0cfeeb35bfc5fd0205e9ea29d3d281"
+    },
+    {
+      "path": "src/modules/scripts-afc-spells.js",
+      "sha256": "8414da180c431f8086c8a58d25512f3ce6f92db72a85bd19defcfb16fbc2baea"
+    },
+    {
+      "path": "src/modules/scripts-c14-black.js",
+      "sha256": "a099412bc42ddcbf9b123ba70bf13994c36c8425fe37580c527d4e16b8c11ca5"
+    },
+    {
+      "path": "src/modules/scripts-c14-blue.js",
+      "sha256": "6acbdc70e5e8ad6f16cfe12f8e5bfb952506f606f47f54f5a7d4c6c5b1bb3083"
+    },
+    {
+      "path": "src/modules/scripts-c14-green.js",
+      "sha256": "7f6645b090acdd5dfd1fe5cfea29ce262a8cb12ae29995f46be253ccecdc6a65"
+    },
+    {
+      "path": "src/modules/scripts-c14-red.js",
+      "sha256": "d3fc2cb14c3338b9e7ebf8d125ac3bf6acf509ce2a2c6f0c780699d4c4bd5d1f"
+    },
+    {
+      "path": "src/modules/scripts-c14-white.js",
+      "sha256": "8e0a1d3e134608584e59de2ab656e762db55760d9a056aa786e749487911768f"
+    },
+    {
+      "path": "src/modules/scripts-c15-c16-core.js",
+      "sha256": "8306f31ca3c5a80a91f10a975728e4e83c10f7b2539701fc40db3c328086a3fa"
+    },
+    {
+      "path": "src/modules/scripts-c15-c16-objects.js",
+      "sha256": "073b5bc6d97050a0196e590956014aeb0d27078c9d5980ab2bd766a613e43f2d"
+    },
+    {
+      "path": "src/modules/scripts-c15-c16-permanents.js",
+      "sha256": "e37df654b67c021ba5fd05f8d2eceda01193bb15eab8cb8b8554db9b0dd8a70a"
+    },
+    {
+      "path": "src/modules/scripts-c15-c16-special.js",
+      "sha256": "0a5c01695872ba3bb5c307737670a5182cd37721d9e25c959d8497c563de80c9"
+    },
+    {
+      "path": "src/modules/scripts-c15-c16-spells.js",
+      "sha256": "f0973239222f5604d1157b812841faa5443f9f2af70ff8ba0c7556450e229975"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-abilities.js",
+      "sha256": "a9c7199236ce65ac8cc1bb7d1187e164ef5319d765cc48191a951152ffd966ea"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-casting.js",
+      "sha256": "ab6cb33219e162a848e7ed70a78fd91cd005fb1a954242927e523f6b3195ce7e"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-combat.js",
+      "sha256": "db95b4ef095b798e2ca9c1541bc183988f3b19873229f77f3b9625ba7cffb5f2"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-commanders.js",
+      "sha256": "1c803ac05e8323cee74ed7b0737c7a0d4d6daee9d318ac98172b6c404f6a00e3"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-copies.js",
+      "sha256": "9ec8077a19185dd71e39dcb5974b3b6217f235eae4c67c5101e498ebdd010d3f"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-creatures.js",
+      "sha256": "425748e679064fc6ebf6e810a37be8316748d45f3f2620017e04f0e19b7ed322"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-enchantments.js",
+      "sha256": "1262bbf9d05deab596f6066a3eb26e0cce44531acb6cb2bb65f1e62bbdaaa075"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-entry.js",
+      "sha256": "2c661eae36b994903daf0aab007aba43ca89d243ccb116d85d2a917fa8f83124"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-equipment.js",
+      "sha256": "6bfad8e5e92c5659c88c8614c90afe0d58afac5076564bda2cec056ef15a2076"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-lands.js",
+      "sha256": "010c57fd4d72f41967b102f1b03822d95f16f618fdc0c6181c9d46b1efff37fb"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-names.js",
+      "sha256": "841ef39d2316389af86d47651cdd8ba0d911054126c81abd0c9466f24fde76a8"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-reanimation.js",
+      "sha256": "df875062f6704a6de9a049a4e54a7e19128d8d994754f4e49a99a6678bdf5226"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-spells.js",
+      "sha256": "f4b83bce999ae1516967535bc0857b5f79fe361320c6a64c5c9278d456a541c9"
+    },
+    {
+      "path": "src/modules/scripts-c17-c19-turns.js",
+      "sha256": "abee07b34560c4adc99f5dceb46b8d3901821b61d0e59665612f8d1bd7999996"
+    },
+    {
+      "path": "src/modules/scripts-c19-c20-casting.js",
+      "sha256": "770745b0b79226500d777efcfcf23c32b4db3c5c085a52d26eb921cbb3603d97"
+    },
+    {
+      "path": "src/modules/scripts-c19-c20-combat.js",
+      "sha256": "0726567b095816a0c631943264ea2fa0f5a7130457b8aa6fbd523875ec12b40d"
+    },
+    {
+      "path": "src/modules/scripts-c19-c20-copies.js",
+      "sha256": "4bdcdd5221033d45fab1189e6cb275ea5bb6b4f3737f5fcc882485d4fa506091"
+    },
+    {
+      "path": "src/modules/scripts-c19-c20-counters.js",
+      "sha256": "aa338d2c57ab25fc753dcf7ef5623bd4fee1cfdca459e2d591daf99e3ef31543"
+    },
+    {
+      "path": "src/modules/scripts-c19-c20-creatures.js",
+      "sha256": "7d95d3fb5fa30373a3683b05deccdfe9edf9ee70fae8629663c957043057f1c2"
+    },
+    {
+      "path": "src/modules/scripts-c19-c20-cycling.js",
+      "sha256": "0bb60fda16f68739594fb38c6d856e26fce384c8bbf0a2563980ef1593830574"
+    },
+    {
+      "path": "src/modules/scripts-c19-c20-inheritance.js",
+      "sha256": "e7004738c2c82faa13e3e228a01c43515a6ed55b095b8efa69316e5da78e9fb7"
+    },
+    {
+      "path": "src/modules/scripts-c19-c20-morph.js",
+      "sha256": "553a397af195c8fbc949685f765f1de16b4bd37504844d70fd053a30456e3de5"
+    },
+    {
+      "path": "src/modules/scripts-c19-c20-mutate.js",
+      "sha256": "2b7f6288c803b68e4785154bf0f1bbcf5cd6b3d1ca3d2b90062adf172364161d"
+    },
+    {
+      "path": "src/modules/scripts-c19-c20-permanents.js",
+      "sha256": "95494aa394a7a054e245ea3af8b324e1020eb8fb182e6f2f1147d1589d1b817e"
+    },
+    {
+      "path": "src/modules/scripts-c19-c20-planeswalkers.js",
+      "sha256": "06fe97f2bf0d6a1e0caf386eff1577a068778f17d1472c247d793df37b0c9f92"
+    },
+    {
+      "path": "src/modules/scripts-c19-c20-protection.js",
+      "sha256": "372a682631d5b7801446614e002367089b05d15b5d0725fefaf6e7eecbd51516"
+    },
+    {
+      "path": "src/modules/scripts-c19-c20-spells.js",
+      "sha256": "5acc8e2f7617ed626fce91d0b13b8af7107c43399b2c0a60d86338cb63aed5d4"
+    },
+    {
+      "path": "src/modules/scripts-c21-lorehold.js",
+      "sha256": "71674dc5aabc160c834dd3d5acbd42f95caa6732714c285b5e362e0a084d110a"
+    },
+    {
+      "path": "src/modules/scripts-c21-prismari.js",
+      "sha256": "cd9bfde0870ef14db57e260fbfcadc14fb8ae08305f4ebc65c4bfbc577d6690e"
+    },
+    {
+      "path": "src/modules/scripts-c21-quandrix.js",
+      "sha256": "d064cdf5b0155609c8e85e7170150d2ad74fba2e0b4a57f17f67459c416f6bcc"
+    },
+    {
+      "path": "src/modules/scripts-c21-silverquill.js",
+      "sha256": "11b90b12a243a057343bfce10c01675e762c4892f7e2b94d09a6021c228893fd"
+    },
+    {
+      "path": "src/modules/scripts-c21-witherbloom.js",
+      "sha256": "763828f64f10241792f9a517bae63b4fc144a598c26de7ad30fc237c6908406d"
+    },
+    {
+      "path": "src/modules/scripts-coven.js",
+      "sha256": "96fd0aa8033c9c154d7f24666607edbc46c1b2ade0150ca4ce2bd8c174f0ae5b"
+    },
+    {
+      "path": "src/modules/scripts-elements.js",
+      "sha256": "ec8aef7733cf82863f055ba02c2df77faeee4225600c89a0ba2e143da7d97527"
+    },
+    {
+      "path": "src/modules/scripts-jeskai.js",
+      "sha256": "b16a9ac2ac9b3c8a7eb65263bfeb80959e6bee86a41f6879a96c325c1dc833ec"
+    },
+    {
+      "path": "src/modules/scripts-limit-break.js",
+      "sha256": "6836d42eda741340127c85d2be61ff32cb0b32b01af9b3ddf0cbe452cf83fa69"
+    },
+    {
+      "path": "src/modules/scripts-mic-zombies.js",
+      "sha256": "f7920d5075109921366579e4abf134b109f7f3fe598a7ee5b653fd545c1049c8"
+    },
+    {
+      "path": "src/modules/scripts-quandrix.js",
+      "sha256": "febd3eae44c1ada3bd8069f9ae5257c6627eab3518b7e9fc04264d2f5f773db9"
+    },
+    {
+      "path": "src/modules/scripts-sauron.js",
+      "sha256": "26582546a0f92d9b3a0a3d6aa2c92b7e3854b4b7d5050d6e547a27b5d7e502b1"
+    },
+    {
+      "path": "src/modules/scripts-scions.js",
+      "sha256": "2c2a76ef883d25bb9c0f7dd75e86b2951065c89751678f1ab3f8a52c5f30b67b"
+    },
+    {
+      "path": "src/modules/scripts-starter-precons-advanced.js",
+      "sha256": "baf115a56cd852d3092cab2d20b990195b5d9dc19a55b5dd3fcd24e0e7224f02"
+    },
+    {
+      "path": "src/modules/scripts-starter-precons.js",
+      "sha256": "8895976323be3a0421073864951cacc51f629c8bb8de25c7c9bd17df7ae76442"
+    },
+    {
+      "path": "src/modules/scripts-sultai.js",
+      "sha256": "a3bdb6ae8f42961a3d57000a345a76e73504c717662c2a8e1adb169966348c2a"
+    },
+    {
+      "path": "src/modules/scripts-temur.js",
+      "sha256": "88b542a04793bafae1631aaea8ad410e46605dbabcaab55baa0bbf2d9c5fe663"
+    },
+    {
+      "path": "src/modules/scripts-world-shaper.js",
+      "sha256": "038706623b3bc49c668c6a1707bde905d2d9ad05dc7fd3ca26f4706b78c728ae"
+    },
+    {
+      "path": "src/modules/scripts-znc-khc-combat.js",
+      "sha256": "ad3b45d4dba93e9b464e8858573e835f4ddb5556b906574a52a69f91d20e1bb4"
+    },
+    {
+      "path": "src/modules/scripts-znc-khc-elves.js",
+      "sha256": "02c7ae58464a5514f78f187200d7b7943b8f22f4657a9c2d6379bc1f73f2ec48"
+    },
+    {
+      "path": "src/modules/scripts-znc-khc-exile.js",
+      "sha256": "c86df814f3508eee3e0086314645aa4408d7cff1437c1db69ae3c38050e8a5ce"
+    },
+    {
+      "path": "src/modules/scripts-znc-khc-spells.js",
+      "sha256": "b123218fb52d8c09d98036609c57284c09fc9720c0e292aa0a8b58b58141d6bb"
+    },
+    {
+      "path": "src/modules/scripts_base.js",
+      "sha256": "358d3ed4c44617ea6618f5f858972930f9a3599d0a85147feb7b66505086f48c"
+    },
+    {
+      "path": "src/modules/scripts_bello_valg.js",
+      "sha256": "12c16c754e59ba9ed43a14924322d478d7fccff572ff32eec03f84aa0e3c268b"
+    },
+    {
+      "path": "src/modules/scripts_hazel_abzan.js",
+      "sha256": "d2210c248d212b51f9489e0be790593305825ac7f13a0430dbff4e32a98ec7d6"
+    },
+    {
+      "path": "src/modules/scripts_nelly.js",
+      "sha256": "6b197609eafac6c61a7b8d692c029b348ca54c0c521b94ececf788edb3d6aa32"
+    },
+    {
+      "path": "src/modules/scripts_stella.js",
+      "sha256": "e16af9847955dbab7ece36c2f91b4510c6eff3af2035dca2baa067e827285de4"
+    },
+    {
+      "path": "src/modules/scripts_v7a.js",
+      "sha256": "dcb5383b4c9d1038ee2be7c4d980f3fc3dab8a64d2a383b6c991b395c558c826"
+    },
+    {
+      "path": "src/modules/scripts_v7b.js",
+      "sha256": "2fa35ff79c94122a813cb7094d4a2fe40449392204b8d0b8b9706d841dbe52ce"
+    },
+    {
+      "path": "src/modules/scripts_v7c.js",
+      "sha256": "695f3a3a386ba84f742e4d8f242305d7ad3599b42aa6c4af4229d5fc3fda3cc7"
+    },
+    {
+      "path": "src/modules/scripts_v7d.js",
+      "sha256": "4df73fae72d360958b00dbbef63ed5052cebb3bd6d7cdacde5a669ca0c202adf"
+    },
+    {
+      "path": "src/modules/scripts_v9a.js",
+      "sha256": "9e9af30bd8d1afdbea2853ed6b9f42e71896739a73199c94003da5720cc48817"
+    },
+    {
+      "path": "src/modules/scripts_v9b.js",
+      "sha256": "79617f3bffc45b8a0a1797aca5b1790bcb27ef001f6fb15cc6c8cca473455485"
+    },
+    {
+      "path": "src/modules/scripts_zin_morska.js",
+      "sha256": "964c420486eb5b6caf4bacce5d1004914ff442057e283cd74d890e2edf4a5821"
+    },
+    {
+      "path": "src/modules/starter-precon-rules.js",
+      "sha256": "52097caba7dad05c28a02c3fba4d0e57458d28f892d76544be197c993d64650b"
+    },
+    {
+      "path": "src/modules/ui.js",
+      "sha256": "fbe463e459623dc53301816cbfdb535c1513d84a7b60db40b6ea1542b15a60fc"
+    },
+    {
+      "path": "src/modules/util.js",
+      "sha256": "8ee968d56fe9815b7c1564edec32566d75481a85282965d1500341b6dba0de54"
+    },
+    {
+      "path": "src/modules/visuals.js",
+      "sha256": "e8c02d8736fd466a7918e38f383c2b84aef12491fc330545ff04d7a330fc4dd1"
+    },
+    {
+      "path": "src/modules/znc-khc-rules.js",
+      "sha256": "8431ec0722968df5ac4c608513974c6cdb82221fa35627caffbcc846b12fd4cd"
+    },
+    {
+      "path": "src/oracle-batches/batch-0001.js",
+      "sha256": "601264729868d2088f49417471b1fd94ac23357b913eceb46c04c57515237822"
+    },
+    {
+      "path": "src/oracle-batches/batch-0002.js",
+      "sha256": "b45d318395c7d8fc487de98ea34d06c37f7aa49673d64e5d5a8a913752587bc6"
+    },
+    {
+      "path": "src/oracle-batches/batch-0003.js",
+      "sha256": "7aa432a4b24082b59be070feccda2c75759381bc79532a688a58252fcdb746ea"
+    },
+    {
+      "path": "src/oracle-batches/batch-0004.js",
+      "sha256": "ea3045517be7e6064cac06661b124590e14a4edd5917bc02d50b30828f74e175"
+    },
+    {
+      "path": "src/oracle-batches/batch-0005.js",
+      "sha256": "f4ad6dab180669f46c959d9490c6aedeb800a9aa3c3430184107836d3ab89642"
+    },
+    {
+      "path": "src/oracle-batches/batch-0006.js",
+      "sha256": "2dfa96154c9e19d185ef226ff44ba2ed28e5188607342b987395d9edefedc846"
+    },
+    {
+      "path": "src/oracle-batches/batch-0007.js",
+      "sha256": "edfce1bab8e65469ae7ca7a78c71944ab06754cd7c90ba7134f7a3c0c8cfd4d4"
+    },
+    {
+      "path": "src/oracle-batches/batch-0008.js",
+      "sha256": "76f7ec7f2c2dd1517e767da5f7f1d1fff9cfc7f9c714439fdb9d9635c2fee11a"
+    },
+    {
+      "path": "src/oracle-batches/batch-0009.js",
+      "sha256": "a180295aacb064e6b66f89c0534c2cdc0ae2bd26cb3e08d91ec2c172c499ecf0"
+    },
+    {
+      "path": "src/oracle-batches/batch-0010.js",
+      "sha256": "17301f2e493bbfe682d8656d03d8f98da3442857fc75c67f21fa995b1ce811f7"
+    },
+    {
+      "path": "src/oracle-batches/batch-0011.js",
+      "sha256": "7f99941d537535387912a67405c003220782e21a977b35656b39d83d419b44d2"
+    },
+    {
+      "path": "src/oracle-batches/batch-0012.js",
+      "sha256": "7278c494b0136d5b2d7be899eca97d8c16b94a9889dfd59d599517930c012ad9"
+    },
+    {
+      "path": "src/oracle-batches/batch-0013.js",
+      "sha256": "96fb5f686ffa7d6dc371afcff1453c529b54c8db64b13382bc6af99b47312e38"
+    },
+    {
+      "path": "src/oracle-batches/batch-0014.js",
+      "sha256": "ffaade115a0d87012236a9efef4d7f01061aa88895c0d8da88b3f135b76afa32"
+    },
+    {
+      "path": "src/oracle-batches/batch-0015.js",
+      "sha256": "ded90341c4f9a5abd4ca3542ae9e7c1f16d29a8fa0b1052a57dce629a7586205"
+    },
+    {
+      "path": "src/oracle-batches/batch-0016.js",
+      "sha256": "32e0db252808b42905e52521f4272b40c17b640d1f3e14936e18ee45a0dd2c86"
+    },
+    {
+      "path": "src/oracle-batches/batch-0017.js",
+      "sha256": "78fa2d61e68417376afa3fd06c6005e7c3293ead9d28c7e527665ec9cc4f0614"
+    },
+    {
+      "path": "src/oracle-batches/batch-0018.js",
+      "sha256": "3d3e22ac7d68f8a72bce6a1f7769f3ed056b6b136c87a6434f5f0fe5b7ff3414"
+    },
+    {
+      "path": "src/oracle-batches/batch-0019.js",
+      "sha256": "07bcfb9dbef4d457f0d1e5d54ca3f90ea46a41b0d9315daf84fa0a34f858fdd0"
+    },
+    {
+      "path": "src/oracle-batches/batch-0020.js",
+      "sha256": "4e8e96464c5cabd2ba82ed15aad057de0962df8e293953f40f87d98506b66d8d"
+    },
+    {
+      "path": "src/oracle-batches/batch-0021.js",
+      "sha256": "fcd2d68cd94eda76c0c1cd07a52915d4170fea8d5ea1b1cc4172226562459d87"
+    },
+    {
+      "path": "src/oracle-batches/batch-0022.js",
+      "sha256": "064a009b74f098223549ac781661f803227294253c65efa57bc6c6e5410e29a4"
+    },
+    {
+      "path": "src/oracle-batches/batch-0023.js",
+      "sha256": "2813f46c656f0ed527fd06a9decd484dadc77f1dae34d21e10a3aaa9da54ed3e"
+    },
+    {
+      "path": "src/oracle-batches/batch-0024.js",
+      "sha256": "fb1a29f84893608c12720627a0f751cb98be8fb7613c6a3282d85564be0443db"
+    },
+    {
+      "path": "src/oracle-batches/batch-0025.js",
+      "sha256": "86824eea99e3491d681827e16e31f3095adaadb4fcd0db6ca1a84d1ad807aeea"
+    },
+    {
+      "path": "src/oracle-batches/batch-0026.js",
+      "sha256": "9afc46f341c7ad4952d548d53cb8c27665fbc7918e1b01ed17606c19fb608730"
+    },
+    {
+      "path": "src/oracle-batches/batch-0027.js",
+      "sha256": "849e0c4449cdccfaf76eb423d579affc8bea857a127f7bea3a0daa1395a1aded"
+    },
+    {
+      "path": "src/oracle-batches/batch-0028.js",
+      "sha256": "1f626d407803d8ff33ea96ff62d752afc5bf7d19b7c1bc2edf2b19e5cdd465fc"
+    },
+    {
+      "path": "src/oracle-batches/batch-0029.js",
+      "sha256": "856b93fb2afc318d59e8510daaae8c3c06d6b9de55724819968f345b88b51ff6"
+    },
+    {
+      "path": "src/oracle-batches/batch-0030.js",
+      "sha256": "1185e8415264d23577cf41388042a023fb2f9308ce1e2e2b41e138f442092720"
+    },
+    {
+      "path": "src/oracle-batches/batch-0031.js",
+      "sha256": "7a3e48a5f1d95b5768def1dd2ade17af0571bc3574acd3a87eaf8f448b0e7c1e"
+    },
+    {
+      "path": "src/oracle-batches/batch-0032.js",
+      "sha256": "a45e70f5668b0d48a5f0d14f217a0bf528ab0b3e6a83d29c34205bd929490992"
+    },
+    {
+      "path": "src/oracle-batches/batch-0033.js",
+      "sha256": "b09133455c07f72629b18ee56238fe3509ecf721b2e77fc3bf0f6073e1a75ca4"
+    },
+    {
+      "path": "src/oracle-batches/batch-0034.js",
+      "sha256": "a39dac7d34f850648d21f3533876cba8d19ff55f34718e5af28c19e330db4c96"
+    },
+    {
+      "path": "src/oracle-batches/batch-0035.js",
+      "sha256": "138160a70a99d4f34554e99d1e708931f6b6a33eef6d65a63880fb9bb79e4929"
+    },
+    {
+      "path": "src/oracle-batches/batch-0036.js",
+      "sha256": "c7707305bb6e6db0f8dc2d5670a5ebfa130054d7e948ca260f420ef1190c3174"
+    },
+    {
+      "path": "src/oracle-batches/batch-0037.js",
+      "sha256": "d22b51fae09aa4ca7236f0e8701ae33e2075c60e109e85629b2b0ac500534287"
+    },
+    {
+      "path": "src/oracle-batches/batch-0038.js",
+      "sha256": "87b3c221ea2c5864c3d2326dd58e5495c3a1a73e51465b49e28baa25cb477be0"
+    },
+    {
+      "path": "src/oracle-batches/batch-0039.js",
+      "sha256": "9c67af998f26c0066b2e4ede55c6ee0402b8447479b730d3b37448c46c2edf41"
+    },
+    {
+      "path": "src/oracle-batches/batch-0040.js",
+      "sha256": "0d390f620a1648c0f4c79ec5bc6d0065e4262db153aa0d35a23f8767342d57af"
+    },
+    {
+      "path": "src/oracle-batches/batch-0041.js",
+      "sha256": "e26ddc4cb86d199d64a7dd4bc068c2b3026eafee034ef4ea525c4a264a2e3130"
+    },
+    {
+      "path": "src/oracle-batches/batch-0042.js",
+      "sha256": "348ac7dd0aeb7bbae18e4f9ac8075d6681c2254efc1f226a4fb965ded618b074"
+    },
+    {
+      "path": "src/oracle-batches/batch-0043.js",
+      "sha256": "9b6337278161d47ef72d9b3e559a391bfb148dfe8c2468333276e3a7e82dedfa"
+    },
+    {
+      "path": "src/oracle-batches/batch-0044.js",
+      "sha256": "bf68077b44316b86f67fd715ab5b26d9890cb07cc21a39512dc402191ef306de"
+    },
+    {
+      "path": "src/oracle-batches/batch-0045.js",
+      "sha256": "d95af43526be037b6201fcd783e5b5f35de2ff30ae04db0a0b63e30341aa932e"
+    },
+    {
+      "path": "src/oracle-batches/batch-0046.js",
+      "sha256": "1c1928afd785de5aa75ee46243864379268d56e2c0afef7731c4aaa65a7f54d2"
+    },
+    {
+      "path": "src/oracle-batches/batch-0047.js",
+      "sha256": "5a7a98d0a821fafe3801c47f7f03c934ca2dac4e8d2c87fc6ef0bd081ea781b4"
+    },
+    {
+      "path": "src/oracle-batches/batch-0048.js",
+      "sha256": "3910c4f4fa92526e84645cce2d088a69d8c5f098e5ab8efe4af6cf0cc95e7e6f"
+    },
+    {
+      "path": "src/oracle-batches/batch-0049.js",
+      "sha256": "11b333d6efd0c76edbbe7f7202d17a9e04b8d2431712d22c3ee60909793671a6"
+    },
+    {
+      "path": "src/oracle-batches/batch-0050.js",
+      "sha256": "49303abd178798a91cda0599794a68525c49583270d44d3b0d3d008a9a62d2a8"
+    },
+    {
+      "path": "src/oracle-batches/batch-0051.js",
+      "sha256": "052be64527f504b6d6e1bbeeea4f969a1bd1758c5045ea62fd21ff6d2a8cbf28"
+    },
+    {
+      "path": "src/oracle-batches/batch-0052.js",
+      "sha256": "b77c64913fba4725c511aeadc6c415b5437e93ffc1a1765a1372be8259aa7b70"
+    },
+    {
+      "path": "src/oracle-batches/batch-0053.js",
+      "sha256": "c43ac0e58b477c27c68286948d79e1617455b6cf53cd12138d39300f1c3bf52a"
+    },
+    {
+      "path": "src/oracle-batches/batch-0054.js",
+      "sha256": "6231ddd5d7dcfeae8787ad4da67126fc8be71b86877abfbba09dff90946212e9"
+    },
+    {
+      "path": "src/oracle-batches/batch-0055.js",
+      "sha256": "149bfa666ee76fe8055956f585d773ec0d220544f7a97655d4b669a8d92b6d1e"
+    },
+    {
+      "path": "src/oracle-batches/batch-0056.js",
+      "sha256": "80357766b3019a6af38a351229ae74642fe3b0ba30b595a68af376187b1a9de1"
+    },
+    {
+      "path": "src/oracle-batches/batch-0057.js",
+      "sha256": "201a2fc3800e519df593db1d74945c37c51d4c097fec25084a25653062e9b153"
+    },
+    {
+      "path": "src/oracle-batches/batch-0058.js",
+      "sha256": "f2ae62f47dfa968aa151b982096d8d0b1fff2c8b9c8d1bd304aa4497188a9dfe"
+    },
+    {
+      "path": "src/oracle-batches/batch-0059.js",
+      "sha256": "6e7f87775693374f88c796f10f1610d5f5981d7f5b09fa106d1317aa679e6214"
+    },
+    {
+      "path": "src/oracle-batches/batch-0060.js",
+      "sha256": "c6267730ec3ab29950eec4577e387b96d67a8347308c9934ae8ca9a083116c41"
+    },
+    {
+      "path": "src/oracle-batches/batch-0061.js",
+      "sha256": "e10eb1a1a5b4216e8d34117cd0de3332e610a647a16c3a43a371166b03461081"
+    },
+    {
+      "path": "src/oracle-batches/batch-0062.js",
+      "sha256": "d9ca731ace8df93100b24d54bc9177630056ac40a86921bde7c0ba0626c2213e"
+    },
+    {
+      "path": "src/oracle-batches/batch-0063.js",
+      "sha256": "3060bef1cf915e6af2bcfba743c34ad78c8f565aeac885dd87f13259ccb24344"
+    },
+    {
+      "path": "src/oracle-batches/batch-0064.js",
+      "sha256": "3e388a3bc328388b0648bec36d75598547c811119285660f3a9857135676254b"
+    },
+    {
+      "path": "src/oracle-batches/batch-0065.js",
+      "sha256": "cfb664f3dbd99766b79baf439614157f7410ce16d7df41a6285ba5a455f0a150"
+    },
+    {
+      "path": "src/oracle-batches/batch-0066.js",
+      "sha256": "5bb02d5b72108f71d8c3284ece58ee1c24848a5e0635a559ad695f05cf835c46"
+    },
+    {
+      "path": "src/oracle-batches/batch-0067.js",
+      "sha256": "a9798295511701ab8b32d42fbdf0bbc5e8d0a6dd940b373a62f645500329508c"
+    },
+    {
+      "path": "src/oracle-batches/batch-0068.js",
+      "sha256": "744975fb0ca5063d1fd91f9f9929b8e3704b3e113718c32a99c7db61b1ed92be"
+    },
+    {
+      "path": "src/oracle-batches/batch-0069.js",
+      "sha256": "ca096c940e9e12ff33573b79a4bd6cd4d9bbd2197ffb94acb425d810c8e53b64"
+    },
+    {
+      "path": "src/oracle-batches/batch-0070.js",
+      "sha256": "8b7c05161fe48524c91a29284ed7d7468c8ebcad195c16f8eb2ffbfdeb5a66e8"
+    },
+    {
+      "path": "src/oracle-batches/batch-0071.js",
+      "sha256": "989baf0d7ea3b1a44d6c3955ac10e8e2588c99fc98cf425f701a8860a0e3d3d4"
+    },
+    {
+      "path": "src/oracle-batches/batch-0072.js",
+      "sha256": "cb9c9cc55e90d73094f8a4a511a3c08b9494c6428095512cc2ce53bf2210a722"
+    },
+    {
+      "path": "src/oracle-batches/batch-0073.js",
+      "sha256": "3cdadcb68404853829366be44735a555f4c199dc292bba00b84b5615b70873e0"
+    },
+    {
+      "path": "src/oracle-batches/batch-0074.js",
+      "sha256": "7070b0175098ff5827f1e6e694f633aedd3b73acf23ca8dd8ce53f641e8432b2"
+    },
+    {
+      "path": "src/oracle-batches/batch-0075.js",
+      "sha256": "6ce87f1268dcd5f408f7a686a42cf359787bd220cb81a3a3fe4182f0169b6fa7"
+    },
+    {
+      "path": "src/oracle-batches/batch-0076.js",
+      "sha256": "c189d352c1e664a60a80f9db3d5aa8b419cc7c42946c2d393ea91e05f3594dff"
+    },
+    {
+      "path": "src/oracle-batches/batch-0077.js",
+      "sha256": "54ca2b0a78b89452c17355c621c18068769ab6c57ded8c15c0f728ef842dd3c0"
+    },
+    {
+      "path": "src/oracle-batches/batch-0078.js",
+      "sha256": "56db311ea8a58b95913fb45437cdbb7473edbf344ea18215cd397975622e13d3"
+    },
+    {
+      "path": "src/oracle-batches/batch-0079.js",
+      "sha256": "8e4035761005395988a169392da7ccb5691749cd6739db4983f804a0e6cb5613"
+    },
+    {
+      "path": "src/oracle-batches/batch-0080.js",
+      "sha256": "bde1169ed7b443e7bf2c2482be54ee909dd9401ea17d9c624075884626593e76"
+    },
+    {
+      "path": "src/oracle-batches/batch-0081.js",
+      "sha256": "75e835140555112f64987182563e412d8cea3476d1dc38949179eb8f1517caa8"
+    },
+    {
+      "path": "src/oracle-batches/batch-0082.js",
+      "sha256": "1f7e8882250bf4c1febd229dd868dd6b61054689b51622a33bd17ec9a3795d2c"
+    },
+    {
+      "path": "src/oracle-batches/batch-0083.js",
+      "sha256": "4c7b0fe45abe7822abf7f11331b6e257009cef808ae2d8ce863625e87c6c4e35"
+    },
+    {
+      "path": "src/oracle-batches/batch-0084.js",
+      "sha256": "d8aff27e416410ddd4e60d3ad244cdb53320d24e6a1074d44147d955be17db5d"
+    },
+    {
+      "path": "src/oracle-batches/batch-0085.js",
+      "sha256": "354f8aba820dae88d29edeb16271b3d104a5789151f94ae28a2d372265311f3c"
+    },
+    {
+      "path": "src/oracle-batches/batch-0086.js",
+      "sha256": "2e76acabd74eb8e614403c5f2b7329c2e6b317c08309b336f63bed9c5674841e"
+    },
+    {
+      "path": "src/oracle-batches/batch-0087.js",
+      "sha256": "6d489a359089ff5e11c32c614819a0562defe51fe3f398e98857558793f2d1cc"
+    },
+    {
+      "path": "src/oracle-batches/batch-0088.js",
+      "sha256": "75b95c021b29d82b1f85489325ac671936b4aa2d41335f77d3079a197fd43289"
+    },
+    {
+      "path": "src/oracle-batches/batch-0089.js",
+      "sha256": "70bda558749c2b8bec265113f8c64f0f0401d4b22836de6505534930ade8b487"
+    },
+    {
+      "path": "src/oracle-batches/batch-0090.js",
+      "sha256": "1bdc44d6c11021265235a5bf54b6b6fa291b008dac07daf52e41a39ffaf21f0e"
+    },
+    {
+      "path": "src/oracle-batches/batch-0091.js",
+      "sha256": "4cfc74a1d5af323ddfac5c351bdb24788e29d050f022478bd13f15e7b9da6288"
+    },
+    {
+      "path": "src/oracle-batches/batch-0092.js",
+      "sha256": "9c0400bdcf5ff1ed7a35b6b74ad4db28afcce86f4077d97704c518eff14dd3a8"
+    },
+    {
+      "path": "src/oracle-batches/batch-0093.js",
+      "sha256": "cbb1cb1c942f1f770cb92cd24f398812bfb45dd77c246906f416d79b8a4bb5a3"
+    },
+    {
+      "path": "src/oracle-batches/batch-0094.js",
+      "sha256": "671a8a1ee04116e34ac984c77fea1eee0eca77288d0f7930fa270c1d6980da23"
+    },
+    {
+      "path": "src/oracle-batches/batch-0095.js",
+      "sha256": "215557d871f05989a421863d64e2ee729f317e46b15ac02e3516283e02606b7c"
+    },
+    {
+      "path": "src/oracle-batches/batch-0096.js",
+      "sha256": "9ca73bdbc9eb1682971bbfc1e103a3ced9660c4681223ce511a860a43b95764f"
+    },
+    {
+      "path": "src/oracle-batches/batch-0097.js",
+      "sha256": "dc5451713ea33ea16516a9aff60b13d243cd99c3caca1a7ac16fd889a9a25b46"
+    },
+    {
+      "path": "src/oracle-batches/batch-0098.js",
+      "sha256": "30748e8fed13f940aa4870bde84dc4b2b7bcbc96f27b59efb13267d414517cc0"
+    },
+    {
+      "path": "src/oracle-batches/batch-0099.js",
+      "sha256": "64a9cd5b00221939654fc1fafb26711710ce74096a8a4295b7cd626c51e71571"
+    },
+    {
+      "path": "src/oracle-batches/batch-0100.js",
+      "sha256": "2274b62ead1ab3ae3998ad71abf6af7ff11745dfd3662b58a7842ee3540803d9"
+    },
+    {
+      "path": "src/oracle-batches/batch-0101.js",
+      "sha256": "9fff653d637c6ef989a8545123da9152f468bd26f9f283f5bcd88f3675548eb9"
+    },
+    {
+      "path": "src/oracle-batches/batch-0102.js",
+      "sha256": "b6da85927da73122c60991bdfd1403f383c43bf2010fe16c3460f388de314c8b"
+    },
+    {
+      "path": "src/oracle-batches/batch-0103.js",
+      "sha256": "67380b8264706bd7ae2644fa656b90a2da695228ab7ac97f97e37a6c5c3546ff"
+    },
+    {
+      "path": "src/oracle-batches/batch-0104.js",
+      "sha256": "8faf1cda81d124dd135b65b4efe439963e51be87c001f5e31ec765a0fd1a7827"
+    },
+    {
+      "path": "src/oracle-batches/batch-0105.js",
+      "sha256": "be2d66f1e99e70f81b6a725419759e2bbe663aa4fa40e56fa66bd79b756f9524"
+    },
+    {
+      "path": "src/oracle-batches/batch-0106.js",
+      "sha256": "f2ab3cc8a905a0c64055b2b64641c41537cb4f743acf7067b9ef559ed1380f0b"
+    },
+    {
+      "path": "src/oracle-batches/batch-0107.js",
+      "sha256": "14448e89a937651af899fea8611b01a25eb5880969562827b82e93be6feb5c58"
+    },
+    {
+      "path": "src/oracle-batches/batch-0108.js",
+      "sha256": "24dfa28ca8c0f620e92a653247199a9bd8f42845ee40bce4f6eddde469b5c5da"
+    },
+    {
+      "path": "src/oracle-batches/batch-0109.js",
+      "sha256": "914df74fc0959dcc970d493361ec9ffb8689d49a566b5defde4771ce8481d0f4"
+    },
+    {
+      "path": "src/oracle-batches/batch-0110.js",
+      "sha256": "00b32f538f29040a1d26ee792c704f95ff44c9c427dc65d74170ea326efc603a"
+    },
+    {
+      "path": "src/oracle-batches/batch-0111.js",
+      "sha256": "62f90b44924442647dd672f574b66e88668156af1a756c6cbb0bd7548ca4f2a8"
+    },
+    {
+      "path": "src/oracle-batches/batch-0112.js",
+      "sha256": "4169fea31156c8c4004294414a408f09ef3e84d2ea9844c93ac0205649555c62"
+    },
+    {
+      "path": "src/oracle-batches/batch-0113.js",
+      "sha256": "9067f6adc73ac9325e5190305d25f41f69cf9b86588e4ee72588fc1f57b4e8b8"
+    },
+    {
+      "path": "src/oracle-batches/batch-0114.js",
+      "sha256": "d705bf527a155bcd6d8e69112ea1be6cddac9d4388aedf298d13105b19949fa9"
+    },
+    {
+      "path": "src/oracle-batches/batch-0115.js",
+      "sha256": "96a79388ccab5bf280d0ad0f45b81fd693076d32fa11b91bd0eda5cc0ed3a733"
+    },
+    {
+      "path": "src/oracle-batches/batch-0116.js",
+      "sha256": "285c6f6c545203529c7d9c00d5c8957449c109329ed8d1e01a46b44612c234ac"
+    },
+    {
+      "path": "src/oracle-batches/batch-0117.js",
+      "sha256": "109ad868a388e6db4e532cafaf1f49b94186d944949e88d5f4afac0b1b7b7ba2"
+    },
+    {
+      "path": "src/oracle-batches/batch-0118.js",
+      "sha256": "9219c66cd6440511580a6a6457e06134e437891ea96a1d37975eefbbcee06ed2"
+    },
+    {
+      "path": "src/oracle-batches/batch-0119.js",
+      "sha256": "5623b2ab106c8d6c587f85b8e7cc82611e493637c7c2c2f0d3f5a8b093bf9f08"
+    },
+    {
+      "path": "src/oracle-batches/batch-0120.js",
+      "sha256": "db8a38fd23b4ee8f801600eff7ee4710c3d3c480ed9bad51c76d0b7f5596a8c7"
+    },
+    {
+      "path": "src/oracle-batches/batch-0121.js",
+      "sha256": "ba4a5ef610f9e7ad05674fa3e82fc7b09042df7325eed17fe3c669402625fc0f"
+    },
+    {
+      "path": "src/oracle-batches/batch-0122.js",
+      "sha256": "1f65a0b44a940e2231801c4ca05cdef65add7ca9633bf7c9b1e85d7acfe2d2dc"
+    },
+    {
+      "path": "src/oracle-batches/batch-0123.js",
+      "sha256": "dfa64f246b4c652e015a1743979952eeef295a2c5d4aa90689eb2cc150ce0093"
+    },
+    {
+      "path": "src/oracle-batches/batch-0124.js",
+      "sha256": "bbc9eecc0c7eda9c691b2a24c33dd74597e4f9b2ecb8bdbd6a5cc487d999fb43"
+    },
+    {
+      "path": "src/oracle-batches/batch-0125.js",
+      "sha256": "327a9598a7174b5e689cea6fdb1ca833ce2fd52f7699aa67091481a43755cba2"
+    },
+    {
+      "path": "src/oracle-batches/batch-0126.js",
+      "sha256": "394a09ed73b08b3186b6c18fc53571330bc587407c5522fb965eb14166d7e0d6"
+    },
+    {
+      "path": "src/oracle-batches/batch-0127.js",
+      "sha256": "094bb164b0bd2a28a0381c8f770139a4d91189c37e19b218b9e707e351dbc7b5"
+    },
+    {
+      "path": "src/oracle-batches/batch-0128.js",
+      "sha256": "8a48d4a7e3d3842edb292a678e48c6a32f183aa8a7ecad75f255f5ca85a80591"
+    },
+    {
+      "path": "src/oracle-batches/batch-0129.js",
+      "sha256": "afd5b59e21018dc21dab77ec2dd06894a4c262ddb65bb588031f560f2267ea82"
+    },
+    {
+      "path": "src/oracle-batches/batch-0130.js",
+      "sha256": "62a9ebe6ef7464ea24273f39f9cd1c9d373e5702a93e35048ff60470553d0f19"
+    },
+    {
+      "path": "src/oracle-batches/batch-0131.js",
+      "sha256": "d10fbf99e4a3dcda7e495927b8d1c7d566309b8471aa3e9a316bc3212933eb66"
+    },
+    {
+      "path": "src/oracle-batches/batch-0132.js",
+      "sha256": "e9ffc490c5559a436ae53156a5f5cceaa4f37cece3ecb59541011a4d1393a7c3"
+    },
+    {
+      "path": "src/oracle-batches/batch-0133.js",
+      "sha256": "7a985fdbc27375667319ec41e8fa5a62064a6a0c40fcf109e52f216d20a5ce2d"
+    },
+    {
+      "path": "src/oracle-batches/batch-0134.js",
+      "sha256": "d618f600e4af24585feaa2bf3d7478ae4f3568bf1e5e0ccbd3a7d4d139499054"
+    },
+    {
+      "path": "src/oracle-batches/batch-0135.js",
+      "sha256": "0ddb83b8ba9106b29319abcd1ddc390f34b941071d394b0d3ad87426b37a6646"
+    },
+    {
+      "path": "src/oracle-batches/batch-0136.js",
+      "sha256": "33884e17599ba43b82b47776ab1b3ba0117b4eae93c852503bd8b5acf78218da"
+    },
+    {
+      "path": "src/oracle-batches/batch-0137.js",
+      "sha256": "6651f556b9e5f30500f14cfe37f4d298b6adf415255e8bd253d98a3aab7f9e40"
+    },
+    {
+      "path": "src/oracle-batches/batch-0138.js",
+      "sha256": "ff56138ee37abe41d8b72e6d64a60b4274154fb828a1b2b5a90365b17a1f9c41"
+    },
+    {
+      "path": "src/oracle-batches/batch-0139.js",
+      "sha256": "26b3735f1e5a387af9af4d9b2f4cd7ffc083b95a9e33bc299cc86113b01a7136"
+    },
+    {
+      "path": "src/oracle-batches/batch-0140.js",
+      "sha256": "80967059bc519de6118b3f7bf0fc88caabbf564fb856c37e00087fc399c5e44b"
+    },
+    {
+      "path": "src/oracle-batches/batch-0141.js",
+      "sha256": "c59648d6c741161794217cb776ac443fc78184256b3f8dfdc9e4c4f1915e646c"
+    },
+    {
+      "path": "src/oracle-batches/batch-0142.js",
+      "sha256": "20c242bfd786c68e8aac4043af8119afc0bd97f9fd617f3b8a74543147bc3531"
+    },
+    {
+      "path": "src/oracle-batches/batch-0143.js",
+      "sha256": "76aaa22b69d321cf8aec45ff14e43015b20eaf4792b8b5326d2b94bdddb151fb"
+    },
+    {
+      "path": "src/oracle-batches/batch-0144.js",
+      "sha256": "9e5177ac9c5bec10e2228e2c8d4e2387a250749e73ec68e68ad293350d3355f0"
+    },
+    {
+      "path": "src/oracle-batches/batch-0145.js",
+      "sha256": "d71ed83c26eb95b8fdfb0d2ec106fa38966f699285e905bcdbf5f4fa7e880c41"
+    },
+    {
+      "path": "src/oracle-batches/batch-0146.js",
+      "sha256": "2b61c92e6344770f99c6211ae6eeea9254f1aeb0ab06d2e8db76b2e08ba4b497"
+    },
+    {
+      "path": "src/oracle-batches/batch-0147.js",
+      "sha256": "835567360441832119e6a22be4330c0a34aa21117e04aefc69efb8ba23079b82"
+    },
+    {
+      "path": "src/oracle-batches/batch-0148.js",
+      "sha256": "48dfec345c7e7650c4af3d075d5485efbd13fef40fa5cd393fc09463bfa7ff9d"
+    },
+    {
+      "path": "src/oracle-batches/batch-0149.js",
+      "sha256": "d71bea87e622e0b55e120d9f8c6f8124fb53f0f2e7e24adc13c472e16f032883"
+    },
+    {
+      "path": "src/oracle-batches/batch-0150.js",
+      "sha256": "d4406d7eaeea6cd09d31957d8ff13e523d57a48e68002a00b8ede7b27d960d9b"
+    },
+    {
+      "path": "src/oracle-batches/batch-0151.js",
+      "sha256": "7409d430998ca817cd1678f4875ee556f3c5e474314f54b0d8dc7153c4178663"
+    },
+    {
+      "path": "src/oracle-batches/batch-0152.js",
+      "sha256": "c3bc53c9755b43381aeea2803f259216956b49caa41a2c21ab78d6045f2e0116"
+    },
+    {
+      "path": "src/oracle-batches/batch-0153.js",
+      "sha256": "e99d5782c03037993a3b34a024e445bc10e144f08b04cc805d4919347c28df74"
+    },
+    {
+      "path": "src/oracle-batches/batch-0154.js",
+      "sha256": "c4de36e8c9533889470a35b6c5c04de1cc02946dc83fb1f7452df9ecf5c667e8"
+    },
+    {
+      "path": "src/oracle-batches/batch-0155.js",
+      "sha256": "0e5b01a3f02f74f4665ba5d6f372a02180b0016374d2bad7ca547f64fb0506a2"
+    },
+    {
+      "path": "src/oracle-batches/batch-0156.js",
+      "sha256": "8a1f4ee1559efbda34868a8bed91f5153932488e5dd6cd401732546b85da7d6c"
+    },
+    {
+      "path": "src/oracle-batches/batch-0157.js",
+      "sha256": "f935d36a3923070eb71160004115b1bfa46334c4e32b0bcc84889020a1f4fe0a"
+    },
+    {
+      "path": "src/oracle-batches/batch-0158.js",
+      "sha256": "2f80f5632b80787fbefc1239d11bedf363329791e29f192cc84724196cefba4e"
+    },
+    {
+      "path": "src/oracle-batches/batch-0159.js",
+      "sha256": "c7e4d812b0d0561b8fcbb75c0976cef8ade066180024dd64d98f7a6532b54bd1"
+    },
+    {
+      "path": "src/oracle-batches/batch-0160.js",
+      "sha256": "a2af88bacedb1002f00d8ceb99c5f97ac64eb8040840a22fa2f8b4d7517f2c64"
+    },
+    {
+      "path": "src/oracle-batches/batch-0161.js",
+      "sha256": "0a578efd41684452456d3445cac92b3a66c4a441143639cf40bdc2e3ea3bd75a"
+    },
+    {
+      "path": "src/oracle-batches/batch-0162.js",
+      "sha256": "a1ae20e869158817df8d6e5f2da815a3206131b744a47914ba1b1796680d67b1"
+    },
+    {
+      "path": "src/oracle-batches/batch-0163.js",
+      "sha256": "c9ecd0f8bb370372323afb2c4795b42a6d67eb6492e1f156503a1f9b8bb2f603"
+    },
+    {
+      "path": "src/oracle-batches/batch-0164.js",
+      "sha256": "322376a4a88b83792347ef4adfb08d7566b619fed765ef18664546b4f78e2195"
+    },
+    {
+      "path": "src/oracle-batches/batch-0165.js",
+      "sha256": "af5e9979c72949bde36de333036ff07e0a80aa00a4cb33cc8c4b358088366dfe"
+    },
+    {
+      "path": "src/oracle-batches/batch-0166.js",
+      "sha256": "e02afc2b634175a3ecd8cf9581c2a6e66f3002477155339aff15c080e541b301"
+    },
+    {
+      "path": "src/oracle-batches/batch-0167.js",
+      "sha256": "94ba9c8cfd47249af80e8cdf8834fa0e7d6e1d09e37a14d94aa708682c143699"
+    },
+    {
+      "path": "src/oracle-batches/batch-0168.js",
+      "sha256": "fd44969f238f4e4893dc5fc9a26c20023fbd2309860fe4a0b202fc07efc64361"
+    },
+    {
+      "path": "src/oracle-batches/batch-0169.js",
+      "sha256": "17da1dff67668aba2c0a9799ae4d351c766d41a82ffc6b854d5fb7dadfa69735"
+    },
+    {
+      "path": "src/oracle-batches/batch-0170.js",
+      "sha256": "8c902c7f5e3c406e3e87848a1ab396b4bfc5e2eeab2d56196b6e1d821a0c9df2"
+    },
+    {
+      "path": "src/oracle-batches/batch-0171.js",
+      "sha256": "4b312a3fcc3df6107db96740ed68d94d9f6062bd0b714dc33e1858df240ba665"
+    },
+    {
+      "path": "src/oracle-batches/batch-0172.js",
+      "sha256": "14468d62e3bc83ca9eb5592e210546bab3473f19e0a53f49e7f93663de0a811d"
+    },
+    {
+      "path": "src/oracle-batches/batch-0173.js",
+      "sha256": "ffe5a8953d516a0e81f924d0c11f0e0b29ef88d34d9e175a448f9fd0d85baebf"
+    },
+    {
+      "path": "src/oracle-batches/batch-0174.js",
+      "sha256": "db32b351b2afb9eb058da8f686b0d8b238d43351c98e6419ebb4d504ffda8271"
+    },
+    {
+      "path": "src/oracle-batches/batch-0175.js",
+      "sha256": "ce2d4425bbb41e0d54a84da505453eccfa61c70935d804883b59ac6fec808ae9"
+    },
+    {
+      "path": "src/oracle-batches/batch-0176.js",
+      "sha256": "209bd80dc2bebbdcbc8e11c2941d396f7efba8d8fd14a437b8b98a87447e4e8a"
+    },
+    {
+      "path": "src/oracle-batches/batch-0177.js",
+      "sha256": "7236f656421060d1d382e0483937d40104f709c6126920274012fd9c662d64e3"
+    },
+    {
+      "path": "src/oracle-batches/batch-0178.js",
+      "sha256": "bdd073abce3a155331be8453cf77e92feaf64a863eda961bfec7d7598a4bff2d"
+    },
+    {
+      "path": "src/oracle-batches/sauron-dark-lord.js",
+      "sha256": "82230bb665c48dc63c39b97d6ff58be5a9c3cd7b6f8948c98d15988fe6dfa963"
+    },
+    {
+      "path": "src/public-entry.js",
+      "sha256": "e46870389ee6e5dcc0e42396a21388d6d5702fdd9d49da8838ec4ec105274f72"
+    },
+    {
+      "path": "src/public-menu.css",
+      "sha256": "4559c004ce479cde6e4ab26aa70c0bb39c90a7393c6a28649446e02392850287"
+    },
+    {
+      "path": "src/styles.css",
+      "sha256": "f21b80a0cd601ef495c5f38636edb15afcc4cf3dd159a27648f88dffd2dfe425"
+    },
+    {
+      "path": "tests/.DS_Store",
+      "sha256": "5cd809a43dc916b6c7893e2b29ba98db40cba734c565d7c3ce36353cf7cb81ac"
+    },
+    {
+      "path": "tests/account-api.test.mjs",
+      "sha256": "e4c1431e8f2796be0cf34fc2fa3f4dad61afa133aa340c1c512489bba703e8c0"
+    },
+    {
+      "path": "tests/account-client.test.mjs",
+      "sha256": "a7f5d8032ee7b4790c7a1e4d12dec5b9f00016939bb60a00ec1a9c6bc5787314"
+    },
+    {
+      "path": "tests/actions/advance_primary.json",
+      "sha256": "7663875130f858b19ca08e60f201411997e2b4e4e159a1a8eab800716f6d7f55"
+    },
+    {
+      "path": "tests/actions/mana_bloom_activate.json",
+      "sha256": "ef4953e5088969b04f5ae6c087b1de9b9ab30a3f6a47dea9adc4600b3549ed79"
+    },
+    {
+      "path": "tests/actions/mana_bloom_cast_x2.json",
+      "sha256": "b42c35d2b970b30641c79af1dc716355330f4a1198b9c00894bd31c9bab90ce0"
+    },
+    {
+      "path": "tests/actions/mana_bloom_pending.json",
+      "sha256": "96318e6383ba389ca0bc0ca807a6213482cefad2ee0f37b288f4274f1a1aa4e8"
+    },
+    {
+      "path": "tests/actions/observe.json",
+      "sha256": "f83cd063672822977dbf9774f67480e3056cb9fb25e6b7bce83f94a99a0586fb"
+    },
+    {
+      "path": "tests/actions/troyan_activate.json",
+      "sha256": "6e88b30e87fac6e4c13c1a0ac20b35f1c5054614cbd7cf306011dd8803c5474b"
+    },
+    {
+      "path": "tests/actions/troyan_pending.json",
+      "sha256": "96318e6383ba389ca0bc0ca807a6213482cefad2ee0f37b288f4274f1a1aa4e8"
+    },
+    {
+      "path": "tests/actions/x_mana_haldir.json",
+      "sha256": "1d7244a5190d09dfb31960d23ae18b5aef3aaece550ff0a61cb7e64e2810958a"
+    },
+    {
+      "path": "tests/actions/x_mana_haldir_pending.json",
+      "sha256": "96318e6383ba389ca0bc0ca807a6213482cefad2ee0f37b288f4274f1a1aa4e8"
+    },
+    {
+      "path": "tests/afc-additional.test.mjs",
+      "sha256": "e289872b43241607c3a8f23114e7545dc814601c4ab22c262c0ed9d73c171331"
+    },
+    {
+      "path": "tests/afc-dice.test.mjs",
+      "sha256": "ed92177370de7fc4e7cfcaabc66d7d2b0237afe39b09a876ff7fb6f84930f94c"
+    },
+    {
+      "path": "tests/afc-dungeons.test.mjs",
+      "sha256": "27a6ec6b53d6db5d5bedad081a516639f9a52f5eb078222c42768c4c8f0ef6c1"
+    },
+    {
+      "path": "tests/afc-exile.test.mjs",
+      "sha256": "08e5552d57a7847b0c6cbe449237f90b89fe8e0b72cbe02933852ffb0f4ddd83"
+    },
+    {
+      "path": "tests/afc-mic-integration.test.mjs",
+      "sha256": "c41662b35f442c2dcb50e5b3c32ee7bb3f2a6c6e8177fb3d6afab52e9d27c396"
+    },
+    {
+      "path": "tests/ai-adversarial-regressions.test.mjs",
+      "sha256": "f16cb18afd6cda46f91e0698dd3957089023ac915ae437c80bac0302284a98c0"
+    },
+    {
+      "path": "tests/ai-archetypes.test.mjs",
+      "sha256": "d94b8d7ad83365cf277aa8cfe6fd5cb3b3c0f82b86599a79f2351e2247eb1e07"
+    },
+    {
+      "path": "tests/ai-custom-skills.test.mjs",
+      "sha256": "ce572e417efb1a3bb606613b4e849ae14f569ded241fdf3541c98a21f0420564"
+    },
+    {
+      "path": "tests/ai-endgame-and-ward.test.mjs",
+      "sha256": "ccb46330b0e020fd73ff982c249f7ff7d0fb45dff0c8a266b837029a5f980266"
+    },
+    {
+      "path": "tests/ai-lategame-survival.test.mjs",
+      "sha256": "8f07a5d18849da4e1c298fc1629a5bc1aac545cc302902e323ebd69ae0aae2f9"
+    },
+    {
+      "path": "tests/ai-persona-reactions.test.mjs",
+      "sha256": "c031cb2701b67be6111e92acf3cd25b4bee62262c1b822787c43bddb306f7587"
+    },
+    {
+      "path": "tests/ai-persona-ui.test.mjs",
+      "sha256": "8e53066b82a1abf1372a9f8c89688cbe29cef760e2fe6e93d55a8c5dae149f20"
+    },
+    {
+      "path": "tests/ai-station.test.mjs",
+      "sha256": "4eb898b7fe7cf6ea93ca4de2643826916d1aa5040604c1c3e941901853f7251c"
+    },
+    {
+      "path": "tests/ai-target-routing.test.mjs",
+      "sha256": "4c987e8126c1cb25cafd297c2b06468c6054368437757e616065c3825b52a4e9"
+    },
+    {
+      "path": "tests/ai-v2.test.mjs",
+      "sha256": "5df9c352760cc329bf1ef0daee814ee766cd58c152460e721af2924447e7147a"
+    },
+    {
+      "path": "tests/arena-drag-controls.test.mjs",
+      "sha256": "34aa8495ce359e8a24fb6b29f71947e4ad5eba93f6de0108e9ef6b0f1e984247"
+    },
+    {
+      "path": "tests/avengers-assemble.test.mjs",
+      "sha256": "e148ed112da238a734207472b5a0ca18343fafc8507b1e9b92c405768e468f97"
+    },
+    {
+      "path": "tests/baseline.test.mjs",
+      "sha256": "f724ef1d1a5bb0c841195d24e7956f4df2015e60108a337e2d7a95e8a16aea0f"
+    },
+    {
+      "path": "tests/blight-curse.test.mjs",
+      "sha256": "ebc05808de4944d614abea404e28b8915bcb00afedada4b593a31d8013a36a4c"
+    },
+    {
+      "path": "tests/blocking-requirements.test.mjs",
+      "sha256": "47702db5c072e837833c1bc4fa9196a3ff09478c0f2dbf7e81857e0c7dca1824"
+    },
+    {
+      "path": "tests/browser/afc-mic-abilities.mjs",
+      "sha256": "d95805ff07679ebef65c6ff3add6e5a9f9920a571bc955d341281e7e5670ffa1"
+    },
+    {
+      "path": "tests/browser/afc-mic-gameplay.mjs",
+      "sha256": "43b4329cebbf619d9e4922cf0fbd05dfdb42413a967da3a586c4e2bd27ba2af8"
+    },
+    {
+      "path": "tests/browser/afc-mic-live.mjs",
+      "sha256": "da60824bf51787835e734b1f615476fad0653c6c6d2cb7b30d9c13ef10d3db88"
+    },
+    {
+      "path": "tests/browser/afc-mic-precons.mjs",
+      "sha256": "34fd5820fe622bd12477a262f2dab115f788b20aa9922334b12937c734141dfb"
+    },
+    {
+      "path": "tests/browser/amass-token-art.mjs",
+      "sha256": "7aaf5b0905bb73126c2b7b2cdae0452bd2f22548f05bc15bfa3490d978352e25"
+    },
+    {
+      "path": "tests/browser/arena-backgrounds.mjs",
+      "sha256": "c4502103264174b92a7205472947b1c30d71e6bd707c1c03db69fbc373dcacf5"
+    },
+    {
+      "path": "tests/browser/arena-drag-controls.mjs",
+      "sha256": "51c6ad44c7e90196f8a4f667bc00f52f95c06a0022f5d6f049f533a460ae8dc9"
+    },
+    {
+      "path": "tests/browser/arena-refresh.mjs",
+      "sha256": "e220a20eddb5aed5e228230efa532aa6ce547f9c93551ac9b5f9e8cbdfc79058"
+    },
+    {
+      "path": "tests/browser/c14-emblem.mjs",
+      "sha256": "7e47a77d7fad633e307a02ba8734b641781795319ba035cbfeb90341db6f1d17"
+    },
+    {
+      "path": "tests/browser/c14-precons.mjs",
+      "sha256": "f30870f84e682708ed4e87fa6632461ee3c58935f895e2207d56764df3067d43"
+    },
+    {
+      "path": "tests/browser/c15-c16-control.mjs",
+      "sha256": "7be30e0a65ac52604a9363d1e1916a500ca6521e9d305e9a47cd88005e73548c"
+    },
+    {
+      "path": "tests/browser/c15-c16-experience.mjs",
+      "sha256": "dbd3490d1f5550e05e92435c444b58b1aaecaca7b9db9bc65ea1d0ba5a0498e6"
+    },
+    {
+      "path": "tests/browser/c15-c16-gameplay.mjs",
+      "sha256": "9cf09db32f144ceccb9a8f10e62a8427a633d6f891db31717a95f0dd096384b1"
+    },
+    {
+      "path": "tests/browser/c15-c16-precons.mjs",
+      "sha256": "f9e7c5507519419146a4cff91b15bf318f68c3abcee4e6685ebec3ad092865f4"
+    },
+    {
+      "path": "tests/browser/c17-c19-abilities.mjs",
+      "sha256": "ca9e7dacb584f7c259374aa8a8504ed738bf480fe98ae933f4ba88f1d8332f5d"
+    },
+    {
+      "path": "tests/browser/c17-c19-gameplay.mjs",
+      "sha256": "8a1c87ff542378a211bf6ca3c4211bf1956525659b3e74c666a4ce6127dbb963"
+    },
+    {
+      "path": "tests/browser/c17-c19-precons.mjs",
+      "sha256": "d81baf8c5d4906fe6ba6f49fe0eccc456d948e986728bf3c148c611771275509"
+    },
+    {
+      "path": "tests/browser/c17-c19-text.mjs",
+      "sha256": "e4482f6009fa732741143ba3ce806201b3bce42afc102564c31677db340e20a4"
+    },
+    {
+      "path": "tests/browser/c19-c20-abilities.mjs",
+      "sha256": "26ba268a849cce996a0a7e32911a29d345c85f31a4a479eb4b2726145b2fefbe"
+    },
+    {
+      "path": "tests/browser/c19-c20-gameplay.mjs",
+      "sha256": "450bd4326d21daeef9049120bf20dca8982f8170d5ca6bd95141d0d125f4b019"
+    },
+    {
+      "path": "tests/browser/c19-c20-live.mjs",
+      "sha256": "1de83ec13e253691f61715618a0f95895b82bc4452a1bd0e82d21a9a927a0513"
+    },
+    {
+      "path": "tests/browser/c19-c20-precons.mjs",
+      "sha256": "319137760cdfa9768a1ea2cf438efaa7cb6772b3077c29bde12019e7cab10d4d"
+    },
+    {
+      "path": "tests/browser/c21-precons.mjs",
+      "sha256": "9a81797c97e48aac3a45717759ea69ecf22bc7fd0f59fe4fe96b2b4a7683d4fa"
+    },
+    {
+      "path": "tests/browser/command-table.mjs",
+      "sha256": "20b6bdaaedf923e222fc00790bfdfbab6f0678816da2de72fc022f0ef422f3b3"
+    },
+    {
+      "path": "tests/browser/commander-import-visuals.mjs",
+      "sha256": "99ed04e1a8a43960cca571cf6e12a1b121319519ab401849f4bdff58d4053fbb"
+    },
+    {
+      "path": "tests/browser/commander-live-launch.mjs",
+      "sha256": "deeee157675069784a70758d497d44ba54fd653b95c5c1ef060f25d9940220c7"
+    },
+    {
+      "path": "tests/browser/commander-live-mixed.mjs",
+      "sha256": "6e98a4fe4783a097524520369fba6805415b7b526a3591792048e246b01c7990"
+    },
+    {
+      "path": "tests/browser/commander-live-parity.mjs",
+      "sha256": "8cc2ed211b575ac8ed4102d6f4ddbccc02f9ddbc5c110c8bbdfe7c4497cd02e8"
+    },
+    {
+      "path": "tests/browser/game-audio.mjs",
+      "sha256": "d45cf3d74deef367efe3228c11e0d10decd10c4a3a21b75dae56ffd4db6099ac"
+    },
+    {
+      "path": "tests/browser/gift-of-immortality.mjs",
+      "sha256": "a20904f59ecebe702e5099b8aa2ebce021ca19f0b8d52e1f60a31f9a6d7e8d87"
+    },
+    {
+      "path": "tests/browser/graveyard-permission-stack-exit.mjs",
+      "sha256": "404b20649f138ca7fc214c44ffa96e80257a952850167991ed3768ce6ff4e8d0"
+    },
+    {
+      "path": "tests/browser/imported-opening-hand.mjs",
+      "sha256": "fe7d83361d3e45c13c399f603f55fd50ba21805eed07cff0abf1cf10a0d9822f"
+    },
+    {
+      "path": "tests/browser/imported-pod-flow.mjs",
+      "sha256": "3e85d0341e2d9639665fac22d02874bfe19069c8958f5a557505a752183bb0ed"
+    },
+    {
+      "path": "tests/browser/kotis-graveyard-grant.mjs",
+      "sha256": "04daad9019ae562b3db878a3cbaf1f551d7b6e6a03ddc364877b766e1c7a2611"
+    },
+    {
+      "path": "tests/browser/manifest-delve.mjs",
+      "sha256": "f9a1dc6e07230383e22262c80bb5dc23ce97e1ec3079ca1a857594fa69db4b97"
+    },
+    {
+      "path": "tests/browser/mobile-table-view.mjs",
+      "sha256": "4e06a97a3d1fa6b9c15c4d1741dc41fbe5b7bbb14cba60ea733c61228a9e5a86"
+    },
+    {
+      "path": "tests/browser/nexus-mentality.mjs",
+      "sha256": "a4dbb512216dac0107353a0680f2c7573fbda3a9c477aeb2196f1346475b96a9"
+    },
+    {
+      "path": "tests/browser/oracle-import-release.mjs",
+      "sha256": "3b0d6c76a4ca453bb234207fb52fc289d5ec08f5e533e16f20e5e320d294241c"
+    },
+    {
+      "path": "tests/browser/planeswalker-haste.mjs",
+      "sha256": "44b027088f22167f256747ab78ba3353cbaf1dc40364b316bc8abdafe43dd048"
+    },
+    {
+      "path": "tests/browser/player-experience.mjs",
+      "sha256": "fbb1b9a8fb3f3091d3ab3b459de8ed9b0d71baecaafb85ebe50d9752a310019a"
+    },
+    {
+      "path": "tests/browser/player-gameplay.mjs",
+      "sha256": "a745caa3c7780dc1a95ffd97754e13c0e82442bba877be788a92a89844723cd1"
+    },
+    {
+      "path": "tests/browser/priority-stops.mjs",
+      "sha256": "ca7f52380719490a176f8c1ea3c989cde2b56300f84a00b7d61b3baf274ba0bc"
+    },
+    {
+      "path": "tests/browser/starter-precons.mjs",
+      "sha256": "c10f8300f592fa5ed49ca3bf88b447ca82e52e7ead7ddbc3b1654526bd673813"
+    },
+    {
+      "path": "tests/browser/station-ai.mjs",
+      "sha256": "1d76fb5121228f5884053f64e19468b1aa83975c62162b1d38c8caf95f4930c7"
+    },
+    {
+      "path": "tests/browser/twinflame-ai.mjs",
+      "sha256": "3db0c5286da86cbbb20a181fa9e6733f1a8f6b048b9ab48beb810ad557f97b76"
+    },
+    {
+      "path": "tests/browser/znc-khc-abilities.mjs",
+      "sha256": "3508440f62c1a42b84803a15fec001791eb7ae3de0f4469f00f3a22eaadf02c0"
+    },
+    {
+      "path": "tests/browser/znc-khc-gameplay.mjs",
+      "sha256": "09e2a3efc2ea8c157825b13e6340dc959979f7b7677b505fd1e98ff5c8c903b0"
+    },
+    {
+      "path": "tests/browser/znc-khc-live.mjs",
+      "sha256": "d5ead838491f29c0f52c2934d95b4df9d5f5c309d007f7b63eb701b93f07baf0"
+    },
+    {
+      "path": "tests/browser/znc-khc-precons.mjs",
+      "sha256": "92b40f4cbb42943f160fa28aa3e940fad07b5c5e4c3c8da732f5e9850b6c5820"
+    },
+    {
+      "path": "tests/browser/zurgo-graveyard-return.mjs",
+      "sha256": "f817b6782ca9c6a1e6f0d0ff7d76b0111ca7bc8218c2a58e721c67176dda376c"
+    },
+    {
+      "path": "tests/c14-precons.test.mjs",
+      "sha256": "a3e3d2cbb51d6933e8567deacd58386b941776e6d4964e84d4e96bf42c752b18"
+    },
+    {
+      "path": "tests/c15-c16-core.test.mjs",
+      "sha256": "7a874d295be633d47c4c06911ba3480b6ea3d5e799143ad514e93db4b921ed88"
+    },
+    {
+      "path": "tests/c15-c16-more.test.mjs",
+      "sha256": "b0726f84cf25394103c0ceaf8eac3202c5be31a82e1d69e02895e01924bbf323"
+    },
+    {
+      "path": "tests/c15-c16-precons.test.mjs",
+      "sha256": "16013ea6be82b339b852cefa7deeb293e35eb718d7e19f317229609d05e9c108"
+    },
+    {
+      "path": "tests/c15-c16-special.test.mjs",
+      "sha256": "c4f787fa1d6a652dac242ea087e2e8354a7e6cba6f8c444f0761cd0e5f8f20d2"
+    },
+    {
+      "path": "tests/c17-c19-aura-control.test.mjs",
+      "sha256": "3ab1505c316171ac067167dbcdf61f87a3cf858cbddbafc154ce20b2674a6927"
+    },
+    {
+      "path": "tests/c17-c19-casting.test.mjs",
+      "sha256": "b147b82f87242e34c24104517ee1baa0fa7daa96275d767fdb6abb5bc7641341"
+    },
+    {
+      "path": "tests/c17-c19-commanders.test.mjs",
+      "sha256": "259502cdf839f202e4052beddcce8df8662556e8af951eb325e487070c628b20"
+    },
+    {
+      "path": "tests/c17-c19-copies.test.mjs",
+      "sha256": "5c7b4db6a620ae976d1a6ee06f82e9391ead2067a4ab263e1765ec730658bcc9"
+    },
+    {
+      "path": "tests/c17-c19-creatures.test.mjs",
+      "sha256": "d130d09c20c99bbc4b99a71f8be53aa5e9ece494794bdcf0d2da42b4af4d9a4e"
+    },
+    {
+      "path": "tests/c17-c19-draw.test.mjs",
+      "sha256": "4aff9c058eff64935ed714868452596355313565c1ae285bd30d1ba82ef5548c"
+    },
+    {
+      "path": "tests/c17-c19-entry.test.mjs",
+      "sha256": "3119f67a1caadbea86f721c612c66ff1d18106061daa82c73497b828f82a3742"
+    },
+    {
+      "path": "tests/c17-c19-equipment.test.mjs",
+      "sha256": "5c18a82499099b2d6d20a5801834aa4a3a24b647778aef7f54366a9cb76cfc46"
+    },
+    {
+      "path": "tests/c17-c19-lifetime.test.mjs",
+      "sha256": "668c6921cd2944daac471f22aa469e36544c864d7aaf5ecb2e8324bf9d821129"
+    },
+    {
+      "path": "tests/c17-c19-mana.test.mjs",
+      "sha256": "a31d3edd2cb44afb27b6c67777d442a206e85594091473cc4e4025f77038c6fa"
+    },
+    {
+      "path": "tests/c17-c19-precons.test.mjs",
+      "sha256": "927027e674edb4a052755b4cec2fcb7ec04aa57fce8a7cbf3b52e13849e83896"
+    },
+    {
+      "path": "tests/c17-c19-reanimation.test.mjs",
+      "sha256": "f9a862c71cfe85e6063e66925d32aea3613e5887ed73326a6f2df0cedc41a07a"
+    },
+    {
+      "path": "tests/c17-c19-remaining.test.mjs",
+      "sha256": "5509f4f2f96dfe394b696f8f6d3edb9e750d8566937e920bae5c989c30575cc6"
+    },
+    {
+      "path": "tests/c17-c19-spells.test.mjs",
+      "sha256": "e144611e79e2eac396a03bc84ca108937cdd3f95257403ce32db7d8ae61ee0b7"
+    },
+    {
+      "path": "tests/c17-c19-text-search.test.mjs",
+      "sha256": "509a99fd08945cfec227339d5b0f897a2b7fa3ccd5306e27235addd5a5fb7c4a"
+    },
+    {
+      "path": "tests/c17-c19-turns.test.mjs",
+      "sha256": "0aeab1dfe8aa02bbe4f99872fada08568f04922fe5cd04ed2033339c00d75b14"
+    },
+    {
+      "path": "tests/c17-c19-umbra.test.mjs",
+      "sha256": "17319909e3c1d95c118582b5545a2feb7f3036ed357fda0076a0a441e8ea8baf"
+    },
+    {
+      "path": "tests/c19-c20-casting.test.mjs",
+      "sha256": "b023647f6e3c7021cb4351ad55e993d46c9846c81140a92dee4e367fbdc25ba5"
+    },
+    {
+      "path": "tests/c19-c20-combat.test.mjs",
+      "sha256": "ca0914759446dd82d75b1d4fa229e01b9680433e0ee4e42e06f51edc418163dc"
+    },
+    {
+      "path": "tests/c19-c20-common-board.test.mjs",
+      "sha256": "ff178841aa5ae7202176fe74b0c7904daee5f97128433d883c0c13cddac56f5c"
+    },
+    {
+      "path": "tests/c19-c20-copies.test.mjs",
+      "sha256": "80072995e55ebeb04a1dfd2b52d6a311063540622444d05e189e0bd640a7926c"
+    },
+    {
+      "path": "tests/c19-c20-counters-inheritance.test.mjs",
+      "sha256": "65ab2ce8925aa31f3b7e0b5f16582414e05d0e5163a2cd7a105539effd15cc92"
+    },
+    {
+      "path": "tests/c19-c20-creatures.test.mjs",
+      "sha256": "b720c249d6bf44a84692ff362cd7a474f56976543a1190e8b0d3064949492dc2"
+    },
+    {
+      "path": "tests/c19-c20-cycling.test.mjs",
+      "sha256": "6babbad0d5705e7b4cd1f5645f2ae22acceb064ea1562305eae4f9d6db3cc1ec"
+    },
+    {
+      "path": "tests/c19-c20-end-combat.test.mjs",
+      "sha256": "d787566d6828896c831640303785ea9d6552ebe1ebce96b8e9f8933ab111504e"
+    },
+    {
+      "path": "tests/c19-c20-morph.test.mjs",
+      "sha256": "6cb0affd5a64468b20e3f545929657132320fd1f4fce5aede705c4c1ff342771"
+    },
+    {
+      "path": "tests/c19-c20-mutate.test.mjs",
+      "sha256": "4d51ae91a69ec5c46058fa7c9ddf276e567c6a7bc07d0f7ca4091fa1bc2cbe80"
+    },
+    {
+      "path": "tests/c19-c20-permanents.test.mjs",
+      "sha256": "ce2ebe4c697ab1286c1c80f3081342d4011a77b8dc4894a4d1a95a7bdd45c48d"
+    },
+    {
+      "path": "tests/c19-c20-planeswalkers.test.mjs",
+      "sha256": "eddcc15daca1d8e973be6383c3a250ab5148ca00f57efdab127137c1bf9fbcbe"
+    },
+    {
+      "path": "tests/c19-c20-protection.test.mjs",
+      "sha256": "9938edc62850c144d43af1a1217d7cc26e46ec287aaa267ce6bfc0031260d465"
+    },
+    {
+      "path": "tests/c19-c20-spells.test.mjs",
+      "sha256": "abd474aa195ca88b4e326cf68d38519928175cd1733076f73d411feb738ac198"
+    },
+    {
+      "path": "tests/c21-precons.test.mjs",
+      "sha256": "ac06e36d956ede6ce80e8493799667c3f0de9a3afd23ace8c5244c1682328367"
+    },
+    {
+      "path": "tests/card-certification-rules.test.mjs",
+      "sha256": "14c5f25178d92a4d75af626743ed60d10bf6e78e36bda66c32d8776c3ff048ea"
+    },
+    {
+      "path": "tests/card-contracts.test.mjs",
+      "sha256": "5390c6d7df44722aa7c144ebfe3f70bf1b7221aecbf0a65eaf0080bff4c853e0"
+    },
+    {
+      "path": "tests/catalog-native-execution.test.mjs",
+      "sha256": "cc6099bb88d83f5b5ac047b4229bfe122b9c29e9e8cf07ccdf1b3e37110c9ba5"
+    },
+    {
+      "path": "tests/changeling-zone-identity.test.mjs",
+      "sha256": "c4bf204b3b768bba825d441be24d0465eb05fe119ce7e6f2e830b5c819001f8d"
+    },
+    {
+      "path": "tests/combat-battlefield-toggle.test.mjs",
+      "sha256": "43f5eb23d88311799d430164599ad6dff18956a395c764270c841a028e293c85"
+    },
+    {
+      "path": "tests/command-table.test.mjs",
+      "sha256": "561462880fea01ec9e1f409730c23c0bff92718cbce4517d57a512396b0878da"
+    },
+    {
+      "path": "tests/commander-bounce-ai.test.mjs",
+      "sha256": "1e1b7100868c5b8189675128c588b2edffec3e32d12e935a75a24cfac2e6d222"
+    },
+    {
+      "path": "tests/commander-legality.test.mjs",
+      "sha256": "24c5929289ba015c39c4333472ff82e5a5fb5818cf7bfbd35faa364ce520d034"
+    },
+    {
+      "path": "tests/commander-visuals.test.mjs",
+      "sha256": "a83497121d790e7937be3f9a523b7216571c9049b377186d9846eea944422c09"
+    },
+    {
+      "path": "tests/commander-zone-sba.test.mjs",
+      "sha256": "b5b19bf2a8615e15954db4c7fe408b71e253c34790051e5ee7f35ad177bbbcc6"
+    },
+    {
+      "path": "tests/comprehensive-rules-conformance.test.mjs",
+      "sha256": "137eeefaab97143249a2a12e308f66e565bdac25bebf76f3b7af3c12c074ce0d"
+    },
+    {
+      "path": "tests/counter-intelligence.test.mjs",
+      "sha256": "771c28114214b78cf33f79468baf5c0e857719a6694f93c52932029343e8245b"
+    },
+    {
+      "path": "tests/counterspell-and-shuffle.test.mjs",
+      "sha256": "ef58f3178338875f05042417b8d8ddcba2e16113dc3daf853def9d0e1bbb3ce9"
+    },
+    {
+      "path": "tests/coven-counters.test.mjs",
+      "sha256": "f4e1df5980aa8da32c97d83af08e96dd7282b748dbfeb677e393f9ea96fe244f"
+    },
+    {
+      "path": "tests/custom-deck-controller-pilot.test.mjs",
+      "sha256": "6e9e19e6b5596ba144464bb98048429d1888d91d8c9776129715f93daa3b019c"
+    },
+    {
+      "path": "tests/dance-elements.test.mjs",
+      "sha256": "e224f51827cd199da60f45679065bd51cf6c0e06bbb3993a3d49dbb5cb5795c7"
+    },
+    {
+      "path": "tests/debug-bundle.test.mjs",
+      "sha256": "336008b510b390cd88bdb43f814341381855fc2dd1d891137b7b9fb0f8a2661c"
+    },
+    {
+      "path": "tests/deck-audit-sextet.test.mjs",
+      "sha256": "35f40499d4f9330230b182f44bee95b1c8043ee28baa01e55285ce5b49d2057e"
+    },
+    {
+      "path": "tests/deck-spotlight.test.mjs",
+      "sha256": "49824c758a782afb7cfe0ab59fa78b6415e6c1896004a22f53f70b929cfc893c"
+    },
+    {
+      "path": "tests/decklist-import.test.mjs",
+      "sha256": "6508f54ac0159d65dece33c3c483e7a9d98d033c5b392df13af46aa5dc88f0ea"
+    },
+    {
+      "path": "tests/deep-clue-sea.test.mjs",
+      "sha256": "6b07bee886017971ba3e3a8a5afd2e6f9c74ee289d5044e86d0f0581352203c3"
+    },
+    {
+      "path": "tests/diplomacy.test.mjs",
+      "sha256": "0a590a3cb5f8f84dfbf43553852324739507ff9c5d849f090f7f489dcfc94cd0"
+    },
+    {
+      "path": "tests/divided-damage-targeting.test.mjs",
+      "sha256": "2a62f46639fd1516de14e1abefc56f9637053a3fb3dc187282edc7d566a6cefb"
+    },
+    {
+      "path": "tests/doom-prevails.test.mjs",
+      "sha256": "78d7e5ba6c7f79255b44f4ab471e537d1142026efe167cfa57fda2608fbb8332"
+    },
+    {
+      "path": "tests/eliminated-exit.test.mjs",
+      "sha256": "7d113a4acf7ef5f23f6a738e6db5ab8621a25e9bd9848feb91cbc7fc75d5ccf4"
+    },
+    {
+      "path": "tests/elven-council.test.mjs",
+      "sha256": "c98b6094bbd88a11d054f67bf442384a617f0d716347aa054f5cba5bab57d61d"
+    },
+    {
+      "path": "tests/engine-source-and-x-audit.test.mjs",
+      "sha256": "8ecfda58eb54170ba446c10f82a847841ee168d4c478e4533206ce32f781e3df"
+    },
+    {
+      "path": "tests/engine-x-offer-boundaries.test.mjs",
+      "sha256": "fa7108fe1746293147bc6178e87735063a1eba2c1579495578b642e0e3e2704d"
+    },
+    {
+      "path": "tests/entry-characteristic-reset.test.mjs",
+      "sha256": "b0d371c9e00aea4c92cf90ba8049c9fdaa2dbc029a54bf2c372c5c4b8efdfa3f"
+    },
+    {
+      "path": "tests/fantastic-four.test.mjs",
+      "sha256": "7d9d849680cfe2b420a80d7dda897425bc87f0d5815ce29d5d3268469161f609"
+    },
+    {
+      "path": "tests/final-rules-coverage.test.mjs",
+      "sha256": "68604de54b0b21fe3f62f4fb9f00a073bfe6d70df3446cc82569a6d9e89e173e"
+    },
+    {
+      "path": "tests/fixtures/oracle-activation-prohibitions.json",
+      "sha256": "c71b995f19bbe06d317a84c9dce8a2c2e151126946fcadb64a7fba879bd3e5bc"
+    },
+    {
+      "path": "tests/fixtures/oracle-activation-suffixes.json",
+      "sha256": "6043247654c2cecdecb5f4509aa6bda709ec8d19d20601d428b341f2662bd13f"
+    },
+    {
+      "path": "tests/fixtures/oracle-casting-limits.json",
+      "sha256": "6446c48975d92add7de401a06c8a08c0b847a2f2d5bf0723d14dbae912c450b4"
+    },
+    {
+      "path": "tests/fixtures/oracle-characteristics-source.json",
+      "sha256": "a5274223691c5ba1f07a10c2348909fca0d560e0fe97a5ab4556a401c063cfa5"
+    },
+    {
+      "path": "tests/fixtures/oracle-chosen-color-source.json",
+      "sha256": "82b2e6ff9627a1c51c6d526a1c5c4d8f7b7a59156a11d68b434452f00993ad21"
+    },
+    {
+      "path": "tests/fixtures/oracle-clash-source.json",
+      "sha256": "b8d0facc9ec72c7c35cc2ec70ed8cf15201e6c61ae878bb6ee0b84e27fc7489c"
+    },
+    {
+      "path": "tests/fixtures/oracle-combat-assignment.json",
+      "sha256": "65c8b684816e33e43505c458481facddb72b21e9b84b6687cc4f6db5cb249205"
+    },
+    {
+      "path": "tests/fixtures/oracle-combat-keywords.json",
+      "sha256": "3d338416b2617e22c00aae941b17ce143a2cc1df6ad95bacb96c532dfec850c8"
+    },
+    {
+      "path": "tests/fixtures/oracle-combat-restrictions.json",
+      "sha256": "1d7cc94b929c587b50d0c2fc448c4b022eecab1b7ccc0f4595b4a170bea42af2"
+    },
+    {
+      "path": "tests/fixtures/oracle-conditional-effects-source.json",
+      "sha256": "7f3c718b39de5f348d64468262d2a819fb8c39d2c4218713d9572d98a75998ad"
+    },
+    {
+      "path": "tests/fixtures/oracle-conditional-prefix-source.json",
+      "sha256": "0fd81b98537c73a8bbfe5a8b07808cb3f326b093b6770e3ffa27bfb45d8a0fad"
+    },
+    {
+      "path": "tests/fixtures/oracle-counter-effects.json",
+      "sha256": "daae2e8d637d44513fc4b0bb8773f89bc6c9064a114ffebbaae29444ef9941ca"
+    },
+    {
+      "path": "tests/fixtures/oracle-counter-transfers.json",
+      "sha256": "0c11572db55463dab092fe50ab9090c515a2c7f67136827c8d0f61b10483f497"
+    },
+    {
+      "path": "tests/fixtures/oracle-creature-upgrade-source.json",
+      "sha256": "601d5961161fd52436d722970d2f5b56578fac85bef0bef8d8e44ccc631b1275"
+    },
+    {
+      "path": "tests/fixtures/oracle-damage-death.json",
+      "sha256": "7f677c2824a55a9c805fed44120c33bb8d346fb876a5b2f34ea5e17362f431c7"
+    },
+    {
+      "path": "tests/fixtures/oracle-dark-depths-source.json",
+      "sha256": "0fbd1767bd6b618274192bd19ff01030d25dc9024f324809706782ec5a087573"
+    },
+    {
+      "path": "tests/fixtures/oracle-delayed-objects-source.json",
+      "sha256": "fe9ffc3a87ef1d99eab5db3882ccea68a4ef9e8a4e140569a4835abb2e255159"
+    },
+    {
+      "path": "tests/fixtures/oracle-divided-damage-faces.json",
+      "sha256": "4a42c555a27d0d4596847b7849cd6a64848aa02c3e61c4f82bd9e128142ae2fb"
+    },
+    {
+      "path": "tests/fixtures/oracle-divided-damage-source.json",
+      "sha256": "f7ef61f9b9326a9d3b5fd502e14684b1bf5d2b95f38013c78a88c974c8612344"
+    },
+    {
+      "path": "tests/fixtures/oracle-draw-replacement-source.json",
+      "sha256": "67d9cdeabe8832a343c1670c213da663b2e13ba49c729b42a56e81942bd8b4a3"
+    },
+    {
+      "path": "tests/fixtures/oracle-entry-counter-source.json",
+      "sha256": "8042e9d613223ff93589b2e2cdeae25178a1407fe71c152e57b5cc697b8b8d3b"
+    },
+    {
+      "path": "tests/fixtures/oracle-exert-source.json",
+      "sha256": "3f2fbecee685c2f3655b2745ebc53eadef3251e66577e1066c91aff16edc9bcd"
+    },
+    {
+      "path": "tests/fixtures/oracle-exploit-source.json",
+      "sha256": "c9100fa0c9b63061241de863e7dc61bef400ce3b067c257a337fda8b6dfb5d50"
+    },
+    {
+      "path": "tests/fixtures/oracle-hand-activations.json",
+      "sha256": "83c9853a3892fdaf31af191dd639af922c096abfebd7c3496dd4a1fe83348235"
+    },
+    {
+      "path": "tests/fixtures/oracle-kicker-replacements.json",
+      "sha256": "842cdc731ad8437378c6acc4f6bf11bef20b1eb1a88775aaa4cd565de221615f"
+    },
+    {
+      "path": "tests/fixtures/oracle-land-setting-source.json",
+      "sha256": "e186e4d4eb8e6e063785b788c3164a3d2a8c7ff6e91edb61e1a259dbd1247ca7"
+    },
+    {
+      "path": "tests/fixtures/oracle-land-types-source.json",
+      "sha256": "466008452be86a4b8d69977d72f2bd31990e71c4bd8c3e53f311dac995385fc5"
+    },
+    {
+      "path": "tests/fixtures/oracle-library-search-source.json",
+      "sha256": "093b74ca1ff7ad1e26d914919238b42dcc90afd2813265919e35acb51595620e"
+    },
+    {
+      "path": "tests/fixtures/oracle-name-groups-source.json",
+      "sha256": "15c8d223e135a40ebcf355cfde03aea81063e75737b5cb0f0f73061ef86c2638"
+    },
+    {
+      "path": "tests/fixtures/oracle-name-search-source.json",
+      "sha256": "79597d14d5a7fd8d10ff36c4a23d9a2ea1a47a0c68f02006212e08265ca035a3"
+    },
+    {
+      "path": "tests/fixtures/oracle-named-count-source.json",
+      "sha256": "2754624947cc4e00f05ebccadae7cf6ec9b674c11d3cdd5667f1a462d8c1b5d3"
+    },
+    {
+      "path": "tests/fixtures/oracle-phasing-source.json",
+      "sha256": "6f41d5a63f9d1e772c13a3d6fb23609cbce6969b020fd24a338f5b93486817b3"
+    },
+    {
+      "path": "tests/fixtures/oracle-predefined-token-source.json",
+      "sha256": "dca9e760e3dc7574f19c6e6fc4cfd2f048e6c5f9cee82f2cd73eca5bae08d69c"
+    },
+    {
+      "path": "tests/fixtures/oracle-presence-quality-source.json",
+      "sha256": "7841038581475d6fc2b2bccf0c51994fdf837f6f004d3854f8d41f71aa0a3001"
+    },
+    {
+      "path": "tests/fixtures/oracle-prevention-source.json",
+      "sha256": "2291bb42361cf9c07b119b340b91bd0064570c78271c5889629538e82f8c7e93"
+    },
+    {
+      "path": "tests/fixtures/oracle-ripple-source.json",
+      "sha256": "8430eb61d69f72ba6c436b89d37ab6272917c7a8f49e72ac450f68707ab59ce5"
+    },
+    {
+      "path": "tests/fixtures/oracle-selected-hand-source.json",
+      "sha256": "5b3ed7d763a064548f4de8af0e9779133651063505c02e9f4ed38dffdd001897"
+    },
+    {
+      "path": "tests/fixtures/oracle-semantic-repair-source.json",
+      "sha256": "42b5e8458900b600ce2cbab12bccbe1c5d8a50eac4b5da577b06f3663f441600"
+    },
+    {
+      "path": "tests/fixtures/oracle-soulbond-source.json",
+      "sha256": "a3e4b52e14f975d530af0e46d7b530f56b7911b402bb009794d2ca7073a5969b"
+    },
+    {
+      "path": "tests/fixtures/oracle-source-duration-source.json",
+      "sha256": "a1a890ecb1238a99cbfb9b773d9af03f5665273abe771c32e8c3c3c90cbaa71d"
+    },
+    {
+      "path": "tests/fixtures/oracle-standalone-cycling-source.json",
+      "sha256": "ab41f8ffbc687a24b62eb6ee1686a1c5e16a7320e2839dae34d636bcc7ac757a"
+    },
+    {
+      "path": "tests/fixtures/oracle-state-trigger-source.json",
+      "sha256": "1918cc88aa04599c49d5a759abff32ec802101fc0eaeb7d49546a373cfe65750"
+    },
+    {
+      "path": "tests/fixtures/oracle-token-forms-source.json",
+      "sha256": "ee8ba3a9f3f649d178ab594736659d6e4ad0a7c2ec7bfffdac08e9b39eb1c849"
+    },
+    {
+      "path": "tests/fixtures/oracle-v5-maja-deck.txt",
+      "sha256": "7bb676148cfc65884cf00ec6b959655350366507b11d72377952e080e8adb9ed"
+    },
+    {
+      "path": "tests/fixtures/oracle-v6-dwynen-deck.txt",
+      "sha256": "abc4dc879604f7aebce75c8e12cba808362f5da53355933b87032fcf934578ba"
+    },
+    {
+      "path": "tests/fixtures/oracle-variable-counter-costs.json",
+      "sha256": "d4c7751852e32eb9167a22cce14f27a49e70e1622281719db5ce7145ae714d3d"
+    },
+    {
+      "path": "tests/fixtures/oracle-zone-replacement-source.json",
+      "sha256": "919c8205329589837c40a1539af7849baf6371cc52a43718cae9b15877542b07"
+    },
+    {
+      "path": "tests/free-cast-copy-decisions.test.mjs",
+      "sha256": "b18d850ea317061be981187df87e208b6009ff3225123da52d4d4ce32c622544"
+    },
+    {
+      "path": "tests/frontend-overhaul.test.mjs",
+      "sha256": "95b4916ec004d5c1dd1692f60d70837869f2925875f0df89e7693686e7bc1cd5"
+    },
+    {
+      "path": "tests/full-card-audit.test.mjs",
+      "sha256": "3b4590cfb0f024f45e3f7b1b4e62a0cbeec8736275f5a0ab53863da93b8c32b6"
+    },
+    {
+      "path": "tests/game-audio.test.mjs",
+      "sha256": "0b9077c6bfa971e02f8f95694be3a0845e599b9dc8883dd352184cac751f4f4c"
+    },
+    {
+      "path": "tests/gandalf-westward-voyager.test.mjs",
+      "sha256": "fb75b38d3f1d908742648967c9998581a0c7481209eb4a6e0ac7a559b2fae09f"
+    },
+    {
+      "path": "tests/general-effects-ux.test.mjs",
+      "sha256": "1b8f1d7b4543f2a76f289d8e087f250e508648d75a15254bcbed2fe7b0f1c7a7"
+    },
+    {
+      "path": "tests/gift-of-immortality.test.mjs",
+      "sha256": "38bb6bf22f4874dcd5226fadb33124a953dadd3049f151ed826ca5786ff09964"
+    },
+    {
+      "path": "tests/headless-smoke.test.mjs",
+      "sha256": "4eca9fee60a1d65687bc3f973a078017e1706165e51c61f3f849e847cd9aa762"
+    },
+    {
+      "path": "tests/helpers/afc-mic-fixtures.mjs",
+      "sha256": "9a9967172a85217fbaeb7bdc3c9e5a2e26decbee01aac8b6f31edad5cbfbce37"
+    },
+    {
+      "path": "tests/helpers/c15-c16-fixtures.mjs",
+      "sha256": "01d99d55e61a0d2347d15e7187db0307e08e4028e945653aeb3e787018cac3fd"
+    },
+    {
+      "path": "tests/helpers/c17-c19-fixtures.mjs",
+      "sha256": "f299274aa571aab710f75c64cd776c6796f6668c859b809f4150e2fc1061e71d"
+    },
+    {
+      "path": "tests/helpers/c19-c20-fixtures.mjs",
+      "sha256": "97f673906873920a2eeee3258d5f0411dab5ed8aa07cfadf4f066134e0919915"
+    },
+    {
+      "path": "tests/helpers/c21-fixtures.mjs",
+      "sha256": "2863d328ddc870727facd1b63d9ac56fe891083629c310dbf6e0d7e138df3314"
+    },
+    {
+      "path": "tests/helpers/game-state-invariants.mjs",
+      "sha256": "69e78fddb3fafcdff5d8d7f8a7750be0db749f614fe4122c20bed4c61bdf321d"
+    },
+    {
+      "path": "tests/helpers/load-engine.mjs",
+      "sha256": "53198cd66d1c435635033fca83e4c4d47a5daed1c54610ced1413d42430d3265"
+    },
+    {
+      "path": "tests/helpers/native-execution-audit.mjs",
+      "sha256": "8601761cad746956af282e1b6897f84fdb99a1c957139d9d349d8f457e417cb3"
+    },
+    {
+      "path": "tests/helpers/oracle-chosen-color-proof.mjs",
+      "sha256": "f3e0aedc999ea629ab420eb8799cdb621d587128ff58b274719d531cb06a2e28"
+    },
+    {
+      "path": "tests/helpers/oracle-creature-upgrade-proof.mjs",
+      "sha256": "46f617ecc8745cce8b0e93c5c811e8e1d91052f5c9bbe104a879ae0b32145f84"
+    },
+    {
+      "path": "tests/helpers/oracle-delayed-objects-proof.mjs",
+      "sha256": "4c354cd0b01014fd8c1c66587ec0e21ad6e8e8cf5b3ff542aa871269bfe7e104"
+    },
+    {
+      "path": "tests/helpers/oracle-draw-replacement-proof.mjs",
+      "sha256": "a62fe268952a3b46a7166a4996c0a4459169230aa2790c1e3aa5f028cf527750"
+    },
+    {
+      "path": "tests/helpers/oracle-exert-proof.mjs",
+      "sha256": "e30621a5ef10d4922cadb1e7f6a2c42e8f5d81b7db562a77cab2fdb590421d53"
+    },
+    {
+      "path": "tests/helpers/oracle-land-types-proof.mjs",
+      "sha256": "43a605fbe7fcc7a058b6f41844e398cde1771dcb684401b5008f2b385e569208"
+    },
+    {
+      "path": "tests/helpers/oracle-name-groups-proof.mjs",
+      "sha256": "a5c2735faa9dd39f36caf319d8775a95f22234358da3b079ec72d1128c385b81"
+    },
+    {
+      "path": "tests/helpers/oracle-name-search-proof.mjs",
+      "sha256": "cf9c7eb59b596443c4785a0d1c9898247a83f695da6f1f00e47ec70eab96c360"
+    },
+    {
+      "path": "tests/helpers/oracle-named-count-proof.mjs",
+      "sha256": "bca791543c21601f434d343517d14b8c18427a0ff8ddbb4fd062c2128200797e"
+    },
+    {
+      "path": "tests/helpers/oracle-phasing-proof.mjs",
+      "sha256": "48ad72ccd32c875bb75abdbd72eb3d1874819f139322dba648db440b24342f58"
+    },
+    {
+      "path": "tests/helpers/oracle-ripple-proof.mjs",
+      "sha256": "9e2b78428c9b39a8470c96310344152d5b76cbb5015225c13cec42c79cebea77"
+    },
+    {
+      "path": "tests/helpers/oracle-soulbond-proof.mjs",
+      "sha256": "d44cd81460180d2de6b225506786edf14467fc3381b7869ea55490be4957bc0b"
+    },
+    {
+      "path": "tests/helpers/oracle-source-duration-proof.mjs",
+      "sha256": "62e854a71d3636a3891f32b44f530f8a0332e813778413e562cc4a8373ffed03"
+    },
+    {
+      "path": "tests/helpers/oracle-state-trigger-proof.mjs",
+      "sha256": "c2faf71a99caf9d2ef5d0aca020da206f7ad9f832cb006fd124e01401f047d26"
+    },
+    {
+      "path": "tests/helpers/oracle-suspend-cast-proof.mjs",
+      "sha256": "c21218326ef1fc01084b7f0ae188c54c4e2ca07471daa12b433e0674a2bf763a"
+    },
+    {
+      "path": "tests/helpers/oracle-token-forms-proof.mjs",
+      "sha256": "8be7bedd816dd85842c5a6488419e1fa5ce9466271b950904c70eb8825d37f7f"
+    },
+    {
+      "path": "tests/helpers/oracle-token-name.mjs",
+      "sha256": "bb36a7b9eada58990e9f1677ad6e5786be0fd844be85f4fe4e23d540fec5b3af"
+    },
+    {
+      "path": "tests/helpers/oracle-v5-proof.mjs",
+      "sha256": "74c8c6760de43d50890f19aebf939fccd1f49dbda1cd5ac8db6afd61c8138e40"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-ability-loss-proof.mjs",
+      "sha256": "2cd989ef976e106559c26a6e31222ea9cf18793312cd2b0009ce7458421774ec"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-activated-cost-proof.mjs",
+      "sha256": "b9853cf7a114d44899b804f3a9afb2d6da0328b59ac918059ee1c488b7e7fbd1"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-activation-rule-proof.mjs",
+      "sha256": "0340623bb3568d5b069db9c9f95a7aa8f6d091f421b25f4323d23a32fc4f5ec2"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-activation-suffixes-proof.mjs",
+      "sha256": "25f69e1f0f84fef1f00fe52119289ab9a868d86031578845e9469a606ee81baf"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-awaken-proof.mjs",
+      "sha256": "5d899fa26bb26d8e601ace767944aff8b19e01cd008607af8ac959a7e3cb3144"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-cast-event-proof.mjs",
+      "sha256": "eb89dbd131c2af2081782c1d388f0056c3b43fcb8faa87e378bace42ebb1f79b"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-casting-cost-proof.mjs",
+      "sha256": "f6b7dbb95c4e186da00e972bd4a9441aa0f2f546a961b7b0e9130f57d933eb17"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-casting-limits-proof.mjs",
+      "sha256": "cc64ddb9225583dfdde849e8b903f9754f52e7dc2b78e494224df4696f650c46"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-casting-rule-proof.mjs",
+      "sha256": "c05e18da14f29f3997cc488716e559186c8981b62ac0e08b85a992208545b57b"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-combat-proof.mjs",
+      "sha256": "c5131bf94be8ee57ca4f80264865a9732f928850ad52f5b00230601f98ac9736"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-combat-restrictions-proof.mjs",
+      "sha256": "67f9b8110f254ebe40546d8b101f70fe6267876eaebfd373dbeac5d9282e1383"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-control-proof.mjs",
+      "sha256": "86f46344a3c99ed6e569f344672b4acf496b2eaedad18f98cf43b98c96fc7d83"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-copy-linked-proof.mjs",
+      "sha256": "0e13c7ec31f5502cc965c8615aae678ae364b83b591dd5eef570092b157ee7ff"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-counter-cost-proof.mjs",
+      "sha256": "fb599eea7bf56491b3862efe1ee4eff43523e0659b213f336df33bd050062d02"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-damage-event-proof.mjs",
+      "sha256": "bce7d474b108efbd17627ae85f1ad43092a50fb9ecd9cf6ae5397fdbdde7aa84"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-effect-proof.mjs",
+      "sha256": "eb2fa2bf10470c09267f96920665960205d730cf5cc62db011b32ac81645a9ea"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-encore-proof.mjs",
+      "sha256": "66c2c59d5f37e09266b71b507e403c8c1a0a674cafa213e6d878711fbc08a1c6"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-energy-proof.mjs",
+      "sha256": "9645876e13f0c3851a6f91e9c13d3757319dfc503f410e32ac945f85afb5a9df"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-entry-counter-proof.mjs",
+      "sha256": "1a62cfaaad0963e3364e4894962f0c5d4c7884805a743cd319b22067583dae81"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-equip-cost-proof.mjs",
+      "sha256": "94fb2205ca9405bf6c35c5580a5e24f3e6639281d87c0cfc723319aaefec34a0"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-event-proof.mjs",
+      "sha256": "0bd986394c5ddcd1abf5394e403658889615cd1c98a94ecd2cc1bccfdf3ebd0d"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-face-proof.mjs",
+      "sha256": "dc0bc05857eec44d514a05fb50063c530d32a035d1addfa97d3ac7d09739a18e"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-fixtures.mjs",
+      "sha256": "e46f2bd63bf10306807fe3fa6f47f43022ae683e9b5c099697418937bf03ea5f"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-graveyard-static-proof.mjs",
+      "sha256": "3c91f6b211f2010aab3559010d532ca860395522ad898d94ca1ab81de2f5aaf0"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-hand-size-proof.mjs",
+      "sha256": "53326234c22a3061827a808735da80d419504582139332045a88b04871b30f34"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-keyword-payment-proof.mjs",
+      "sha256": "f309f0d45bee5e586e2690b216a76b0bbd183641b7a25edfd15e22f852c56d94"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-layered-static-proof.mjs",
+      "sha256": "a0d7d435ab4c7fc5023bea0f028f57edbae5cc6a9355d8773d9bd3aba2a14f28"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-library-proof.mjs",
+      "sha256": "a84b05a9ebe8c9f364a5e3c4218ef808d3dfdf0dd11196442325696e59c152b2"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-live-condition-proof.mjs",
+      "sha256": "3434d60a8f6bcd7468ea052efd4644d43128f11208e64c6adb45277eba1dbf8a"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-mayhem-proof.mjs",
+      "sha256": "357cc9fc8122daad85d82dc6d87bcf6cba78e65688e68d8dc1309dbe7e4ce9e4"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-miracle-proof.mjs",
+      "sha256": "8694409bf8e8b716aacb0b89d631cd89388cf55f558f21a9f816a972970207bf"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-morph-cost-proof.mjs",
+      "sha256": "e49773f79ad91af4133f1b9837ee4ef374158877e4703e0168f0a22a85e34363"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-multizone-proof.mjs",
+      "sha256": "a844c53cfbaa8713fbed99a1892e77caa72ec77468e6d0cccfe5164b3271a54b"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-payment-proof.mjs",
+      "sha256": "01b50b068560c17c9525ca73314c4eaddccf5d9b85464747d9898af54cedcdd9"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-permanent-count-proof.mjs",
+      "sha256": "05e0a67c02eec18bbea4cf6341160b25aef316068c4e5009de7eae32f01712d0"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-permanent-proof.mjs",
+      "sha256": "d98508ad6ea50c50b4869b352045ec1af9ba4d0aca83b03839bb04c61a00005a"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-play-permission-proof.mjs",
+      "sha256": "f60147fa7fb805dcec34935504f37f48ef30cb8a856ecc11196ba5ea41cb98a4"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-predefined-token-proof.mjs",
+      "sha256": "72b668c5e5633b51c65cde60f4d89b73c93dc0d38312c9dfb6e13a34964c2e44"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-result-proof.mjs",
+      "sha256": "a149a11eb270e24d28c041e479921c1f2106c7d8454bd1b5636879d1742d9ed0"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-revealed-proof.mjs",
+      "sha256": "0ed0715efab77982ca2435e54033d5fb41b5b52edbe503b797a12dd4b8153453"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-stack-copy-proof.mjs",
+      "sha256": "c6e248d72095adf8050754def186564e7bd63a6dd6dbd368fcd411e8085f28c9"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-timing-proof.mjs",
+      "sha256": "29c24e7fa4d3ba44510fb5c594d38f1de2b9f0b0698345340d3e9ccd72cc287d"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-upkeep-cost-proof.mjs",
+      "sha256": "0b87c778ca33b246abe106371529e5ae92afa39d852264e60451e8cd615aa270"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-zone-keyword-cost-proof.mjs",
+      "sha256": "78d405bc6bc69e3c5d79b7462111459235c4d8ccd47ce10c1b49d0a524b9815d"
+    },
+    {
+      "path": "tests/helpers/oracle-v8-zone-replacement-proof.mjs",
+      "sha256": "390b2b4f1b5e22724152daae5803f0982b7efd738bc2f2b8d8b0be32ca803ada"
+    },
+    {
+      "path": "tests/helpers/run-ai-adversarial-games.mjs",
+      "sha256": "9e369e7c410397a98ed1c1fbc5783e73955d88f2f3db0706453d8fdc027cad71"
+    },
+    {
+      "path": "tests/helpers/znc-khc-fixtures.mjs",
+      "sha256": "ab2a59e4128ce68ffb90d71850d6a9f163028d22d4bc2b5fe631fd5967d875a6"
+    },
+    {
+      "path": "tests/hidden-exile-views.test.mjs",
+      "sha256": "aa9c5923e90ddcf267afa92f9b7866a30822e70ae836535347bf9bb5aaba4db1"
+    },
+    {
+      "path": "tests/higgsfield-game-contract.test.mjs",
+      "sha256": "ddfb540e54aeb88f9bc59e30dd203ca6809d08b273cdd30ecd7256e8e7c56bbc"
+    },
+    {
+      "path": "tests/import-anywhere-and-last-stand.test.mjs",
+      "sha256": "9e3e3b2bb41e813e454645c36e510623f4401ca631bd2753d0f46067c8492c46"
+    },
+    {
+      "path": "tests/imported-deck-library.test.mjs",
+      "sha256": "6b046843b0d0f8c8d1c8eef53278139b621bdbaeb7cc9e63e34f4766c77873fc"
+    },
+    {
+      "path": "tests/instant-removal-abort.test.mjs",
+      "sha256": "05a6f15190736517797e31ba91c9c9217b306dee9090a1f0f18941423fbe6b13"
+    },
+    {
+      "path": "tests/jeskai-striker.test.mjs",
+      "sha256": "e0802a64c34edaa976f4c061a7981a75c3cf65e60846ca58b9f6234ec400ae84"
+    },
+    {
+      "path": "tests/jimmy-aggro-pressure.test.mjs",
+      "sha256": "410995859b5642cd53909b62521e868f6f6d4e2ba8926324a01a4bf072cf4db0"
+    },
+    {
+      "path": "tests/josh-value-engine.test.mjs",
+      "sha256": "077ecc8a1950bfccd5901232576d866ea6f05a57f02737b4dc242f3f58657985"
+    },
+    {
+      "path": "tests/keyword-counter-fx.test.mjs",
+      "sha256": "b34fd563e8cf2a14603becdf0754cd8f6193dffd32d74953e54161349dada9be"
+    },
+    {
+      "path": "tests/keywords-equipment.test.mjs",
+      "sha256": "b3465805b587aa7f935700fc5487e146ef0b7a74564f95b460ebe89ae8179317"
+    },
+    {
+      "path": "tests/kotis-graveyard-grant-lifecycle.test.mjs",
+      "sha256": "be1de5f6ee8eca5bb169bc4a975dcf6c59d7549e3b1a03ac902b8b6dd982060b"
+    },
+    {
+      "path": "tests/last-resort.test.mjs",
+      "sha256": "21a1d0f45c181f50fbe7a8d1edde33bf725ec83d799affd59ce35a39c8a7d40c"
+    },
+    {
+      "path": "tests/legacy-card-catalog-integrity.test.mjs",
+      "sha256": "1c9109177dda5eb40d3a9d5796f19fcb60f6f0732db2698ba552bdd6c5230cff"
+    },
+    {
+      "path": "tests/leveler-bands.test.mjs",
+      "sha256": "4dc8a03161d8c73307c82751ee77c43ae7352bb90980c31f28357aa87d0ae4ad"
+    },
+    {
+      "path": "tests/library-top-visibility.test.mjs",
+      "sha256": "57185e6b4053127cab1f4cdd20a958d7bac010b2edf6984187558c7640aca731"
+    },
+    {
+      "path": "tests/limit-break.test.mjs",
+      "sha256": "cf611063a63c5a1660e31b7400c6b99cb076502e4300fa56cd00338f796b7e17"
+    },
+    {
+      "path": "tests/local-card-images.test.mjs",
+      "sha256": "cd8d2d976d7d1be59e504f6cc507d42595d30fa3985363ac5f3907c6174b6eac"
+    },
+    {
+      "path": "tests/mana-bloom.test.mjs",
+      "sha256": "be93ef7a6fa3537fd7f1770c6c4d86ef619603feca0c6030fdd418106d979b03"
+    },
+    {
+      "path": "tests/mana-repeatable-filters.test.mjs",
+      "sha256": "b9ce6220a1540ebd2870abb1841b8b9305c954b5203904a02d765ffc8110b40b"
+    },
+    {
+      "path": "tests/mana-solver-backtracking.test.mjs",
+      "sha256": "e506a770198a3cec228b2520707f2789803732ee542c1cc1c82c7284cdcd7c45"
+    },
+    {
+      "path": "tests/mana-tap-cost.test.mjs",
+      "sha256": "65324f0c7e78fce892464f9e4a20d8119e5d9b10c1db31664b43106bdacf393f"
+    },
+    {
+      "path": "tests/manifest-delve-audit.test.mjs",
+      "sha256": "be9c317f1aa8f7a47705f7deb0f7b36fc288b56be5235c8ad034f82e90924f87"
+    },
+    {
+      "path": "tests/manual-mana-manifest-effects.test.mjs",
+      "sha256": "dcd3102849e99a39f9afa041e2ea086f4f538200b5dff963e493ab9a38662c9b"
+    },
+    {
+      "path": "tests/mardu-surge.test.mjs",
+      "sha256": "eaad656d7ed04abf50c8da55c14b577a8780d0c6f739599b4e9a99e2a7270641"
+    },
+    {
+      "path": "tests/marked-damage-ui.test.mjs",
+      "sha256": "ba7b77664be4315a9f653eaa761e0ba112450c00cb424d3ba015cc7a7472cfa2"
+    },
+    {
+      "path": "tests/monarch-visibility.test.mjs",
+      "sha256": "817843c0715f674297f89d9e68bc4fc0365c1700ecff4f72a81196ce7ecbb221"
+    },
+    {
+      "path": "tests/most-wanted.test.mjs",
+      "sha256": "da6b8d81789f0d66e99a23ca84f89381791e3848049791362fcede25ed749fdb"
+    },
+    {
+      "path": "tests/multiplayer-imported-decks.test.mjs",
+      "sha256": "f4683a66a2f2f8fcf23cbdc6fcb0bda733d13374b57170eba2bd24e72b8aa4b1"
+    },
+    {
+      "path": "tests/multiplayer-mixed.test.mjs",
+      "sha256": "03313e551f93b492f2b7191faa54b0aa52c60b3ad00ca7d8a149a4e43b8624ae"
+    },
+    {
+      "path": "tests/multiplayer-parity.test.mjs",
+      "sha256": "3ea3d41125e44ef53072f761bd70a69c573013f169e79914cefa44f8a6815263"
+    },
+    {
+      "path": "tests/multiplayer.test.mjs",
+      "sha256": "c612dba1a7532b4367fa37d9d4bb68f015fe74b48e373f623755c323be66874f"
+    },
+    {
+      "path": "tests/native-card-interactions-audit.test.mjs",
+      "sha256": "88ed85a22346e3c5dc7d1e373e1de7500c2935e857acbbbb0db26ccc99729dea"
+    },
+    {
+      "path": "tests/native-graveyard-permissions.test.mjs",
+      "sha256": "86a249e9b4954447ee262b6b063edce8de7b065aff01ac51b2dca4975112798f"
+    },
+    {
+      "path": "tests/new-mechanics-core.test.mjs",
+      "sha256": "14a398b3a9f15e78560ede11a1f56b3809d5c1322fbb5dc2ecf8b62a245d42c0"
+    },
+    {
+      "path": "tests/nexus-mentality-target-legality.test.mjs",
+      "sha256": "8533cba8a86380d7e3117ac1d493c36af1a678db7ac238dd66ecd44e675b9781"
+    },
+    {
+      "path": "tests/olivia-saboteur-instigator.test.mjs",
+      "sha256": "2c78b1e933afa7e107218e23624067d120586bbd4dee6a92eccb94a58b8f5e0d"
+    },
+    {
+      "path": "tests/opponent-choice.test.mjs",
+      "sha256": "cbaab95f89e957d489a9f231ae90a8223d9fca67bd79236a3bc72737581de084"
+    },
+    {
+      "path": "tests/optional-trigger-resolution.test.mjs",
+      "sha256": "d1bb1c8890c25c3e47af750dbff650fac1f200536e5417d0aefa1ebf50736f70"
+    },
+    {
+      "path": "tests/oracle-activated-source-identity.test.mjs",
+      "sha256": "043c1524c43148a29cb936628397288597d2f71e78e0e0c0657ea3905f39063e"
+    },
+    {
+      "path": "tests/oracle-ai-crew-regression.test.mjs",
+      "sha256": "5669390ee7c21f77f02708448a78e9b95b6e4c24ee9ff9d0f2d6e2548d24ad89"
+    },
+    {
+      "path": "tests/oracle-ai-destroy-indestructible.test.mjs",
+      "sha256": "118ec37482762d3cb6ad9adc1178dae32182c4e3f15e20af6e4313ba602e81f5"
+    },
+    {
+      "path": "tests/oracle-ai-global-pump-net.test.mjs",
+      "sha256": "6c7866e75549b4c67f8d686d39106ec40db6d0249dec4542e8a17c587bf9caeb"
+    },
+    {
+      "path": "tests/oracle-ai-proactive-regressions.test.mjs",
+      "sha256": "4fde6dc01bc431013579c67a2fbf9cdf63cc53e2a273c53bcd769e0295bf32d4"
+    },
+    {
+      "path": "tests/oracle-ai-team-pump-perspective.test.mjs",
+      "sha256": "20b40c652790af49a429a4711710322b9b04d53f122cc52b7171b90a3ad044eb"
+    },
+    {
+      "path": "tests/oracle-ai-uncounterable-counter.test.mjs",
+      "sha256": "8f83d36b32436acdf6ab394b245c92ed72bf97e9d08552c516b50ad86b5aeeb0"
+    },
+    {
+      "path": "tests/oracle-attack-source-identity.test.mjs",
+      "sha256": "d5b5381f88c1a75fa5fcd2f12c10f45d32cc5d2016eac8bc44139a4abf85fc0c"
+    },
+    {
+      "path": "tests/oracle-batch-import.test.mjs",
+      "sha256": "f67ad3d5702785c56e332ce69fc89b2261bfa1377174fe9736aaca4cb2cbf193"
+    },
+    {
+      "path": "tests/oracle-batch-provenance.test.mjs",
+      "sha256": "0a3ddae97cefcd56810bbd747b51e55cb65aab00a9e9143cbbf763069900f498"
+    },
+    {
+      "path": "tests/oracle-bulk-interactions.test.mjs",
+      "sha256": "135935f0b776a179df87b7733b68dc0d886cbd4c15c542cf4c2a353c46affc0d"
+    },
+    {
+      "path": "tests/oracle-cast-turn-conditions.test.mjs",
+      "sha256": "6716d841788611234213e6b5f1bacb4fec04efbdcdb4ac8fb8552cb9435958d6"
+    },
+    {
+      "path": "tests/oracle-catalog-integrity.test.mjs",
+      "sha256": "4aee39e79b6e8c1d3a2fafe3b4158df61c8875b9c60861287c9e2bb2ff9718b1"
+    },
+    {
+      "path": "tests/oracle-characteristics-source.test.mjs",
+      "sha256": "3e1051e22d6b8d0f3f70b4e03d1bbf955a7ab39d7afcf257cccfade63a85d21c"
+    },
+    {
+      "path": "tests/oracle-chosen-color-source.test.mjs",
+      "sha256": "8f22cad5d062299b5840fa91c1ff54b337768b752bb828c882df812357483d86"
+    },
+    {
+      "path": "tests/oracle-clash-source.test.mjs",
+      "sha256": "05d0dfac6ee58b0cbc4076233d894c04b85bb860e110a5c429ae15080e3a6d04"
+    },
+    {
+      "path": "tests/oracle-combination-regressions.test.mjs",
+      "sha256": "ac44a39b2d2ba3e3474a1ea0fd190110a130901922ae664615f0e850c7688ce0"
+    },
+    {
+      "path": "tests/oracle-complementary-conditions.test.mjs",
+      "sha256": "4491709f14606915e7b15938356cf5fe6cf51b9ce7c4f385632f90c536291b21"
+    },
+    {
+      "path": "tests/oracle-conditional-effects-source.test.mjs",
+      "sha256": "f9905528b889a2eade4592f825674070a16f7d5e763612bae042eee0bbfbe35c"
+    },
+    {
+      "path": "tests/oracle-conditional-land-runtime.test.mjs",
+      "sha256": "971d73fb83547754baafe50c6b3725e0d61fb82485d309b9eb187f93800d5fa6"
+    },
+    {
+      "path": "tests/oracle-conditional-prefix-source.test.mjs",
+      "sha256": "dc284025bd8637e60f5bc2c79984186b150c3267bb0d6949cc1965d2b8c78c6b"
+    },
+    {
+      "path": "tests/oracle-counter-effects.test.mjs",
+      "sha256": "18bb24f8baaa450bcd970c769c3691a2c99995594f6c59febce70730ae46ade0"
+    },
+    {
+      "path": "tests/oracle-counter-transfers.test.mjs",
+      "sha256": "b6c60502ebbbe8528470a5c343d34d8928b4fd6f66720d90757cdfa4469b76d4"
+    },
+    {
+      "path": "tests/oracle-creature-upgrade-source.test.mjs",
+      "sha256": "05e4f6a4a5a8a075b6b61b28c488f2976276f3232efe4c7f4091e058a8c6b1e4"
+    },
+    {
+      "path": "tests/oracle-dark-depths-source.test.mjs",
+      "sha256": "e3fb09580aa7aadb312d3677235719b9d9a24f6f76674d861755aa331494cb23"
+    },
+    {
+      "path": "tests/oracle-deep-controller-matrix.test.mjs",
+      "sha256": "8f636e03adddd9e6c9e016722d4337f150aa12374abc51a71026ba34f41fd1f9"
+    },
+    {
+      "path": "tests/oracle-deep-keyword-behavior.test.mjs",
+      "sha256": "aa1ac6c7a36a548fb671f462f8ed453f5c8f6cb1ccb6eb98c9ea6d6fe9ceb836"
+    },
+    {
+      "path": "tests/oracle-delayed-objects-source.test.mjs",
+      "sha256": "8806f27091febdeb9813453c42b06b927a4a3640316e084e31d821d43d73c693"
+    },
+    {
+      "path": "tests/oracle-divided-damage-source.test.mjs",
+      "sha256": "60aee8c0498d61c335a57ee8f77e9ad36ebbcf29b6867deb1fde491f8d223cf9"
+    },
+    {
+      "path": "tests/oracle-draw-replacement-source.test.mjs",
+      "sha256": "be88adfb042a895b4eceac07a12ae8656f96fbd4e18693fe983ca4c5c9b8429a"
+    },
+    {
+      "path": "tests/oracle-entry-counter-source.test.mjs",
+      "sha256": "d3b0c3bc1061f6c84a19b8dcc58ad8c53bf87a06be2be10da180d2f7a818c024"
+    },
+    {
+      "path": "tests/oracle-exert-source.test.mjs",
+      "sha256": "3fd6db953cbfbbaa8de27f1395b4fbd13436e6362491855e153a42b5658e9e79"
+    },
+    {
+      "path": "tests/oracle-expanded-runtime.test.mjs",
+      "sha256": "cd4d00dd9193eff447433459a426c3059d5912d9eeac812939a78dfa5df60107"
+    },
+    {
+      "path": "tests/oracle-exploit-source.test.mjs",
+      "sha256": "bebd454005fddea8576d0790fe1e295d6983f4b6001143b95d667b572e5ed8ad"
+    },
+    {
+      "path": "tests/oracle-extensions-v5.test.mjs",
+      "sha256": "f8481f245aed20e09713a6f65153a18a51741873cd61e8481ee1282af7b738cb"
+    },
+    {
+      "path": "tests/oracle-extensions-v6.test.mjs",
+      "sha256": "49b2cbf1580c71069f8b592916721515877b3d2479ab3c2363f4d2894ea0edf4"
+    },
+    {
+      "path": "tests/oracle-extensions-v7.test.mjs",
+      "sha256": "622f1fefee8e1c8246bf0e40a7399b38a67964f6bd53918f4c0f62916c25a911"
+    },
+    {
+      "path": "tests/oracle-extensions-v8.test.mjs",
+      "sha256": "585be8868794c0cc3bd501bb42b99aef6ba87e155b9cba9a7a70cfec110f7d5a"
+    },
+    {
+      "path": "tests/oracle-generic-v4-runtime.test.mjs",
+      "sha256": "63af534d8189e3e4995969d359f0381a158102b5a40fba792de9c26f847627b8"
+    },
+    {
+      "path": "tests/oracle-hand-activations.test.mjs",
+      "sha256": "2fdebbf37886c6ee1aef2519f5bd9b335f97ab3063c84f55646645b8c3898638"
+    },
+    {
+      "path": "tests/oracle-importer.test.mjs",
+      "sha256": "1df192701f4b94f3396397e052d407d3f5478c4ef837851b3ede88e7eea1cfea"
+    },
+    {
+      "path": "tests/oracle-interaction-matrix.test.mjs",
+      "sha256": "6a2ef6fafc6d3fdb6a6f8b59d19ba185848f3db1ef2ea67167b79fceacfa5a42"
+    },
+    {
+      "path": "tests/oracle-kicker-replacements.test.mjs",
+      "sha256": "4675be8df2eff211beca05da82926d4b7eb9ca714b6bde5c3196f753afdcfec5"
+    },
+    {
+      "path": "tests/oracle-land-setting-source.test.mjs",
+      "sha256": "2963e7f83699cc348efc50dcbcb829e0ee20534668017e637c39ce174fe1bb66"
+    },
+    {
+      "path": "tests/oracle-land-types-source.test.mjs",
+      "sha256": "0c982b29c67f27e96ff99812f06e034758947533729870865f9f0d8123cd887e"
+    },
+    {
+      "path": "tests/oracle-library-search-source.test.mjs",
+      "sha256": "a7898a6287591d91782c21bf89c4d0040ebeb98a460cc951e5da186f1cca59b8"
+    },
+    {
+      "path": "tests/oracle-name-groups-source.test.mjs",
+      "sha256": "f46fa42a17dc227b008afe18178528f1cc0bce70d70a1bc3dd6dd8e078ff571b"
+    },
+    {
+      "path": "tests/oracle-name-search-source.test.mjs",
+      "sha256": "f1110c1d4003afc46519ecf6d2ed86e0b65e83a7c4adf527cbfce2e8def43894"
+    },
+    {
+      "path": "tests/oracle-named-count-source.test.mjs",
+      "sha256": "9238cce5fca680f2bea0bb47ebfe8edbeac9c50dc55c98745d087446b02b80ed"
+    },
+    {
+      "path": "tests/oracle-phasing-source.test.mjs",
+      "sha256": "68f2954376aed28a14b01917146b5b19873ed5564a2bd0bbf547c17bed2828b4"
+    },
+    {
+      "path": "tests/oracle-poison-ai.test.mjs",
+      "sha256": "9fbdd4c39f4da514460e2d8085600dc86d86b334cf15e932caef1c0ab5db92a6"
+    },
+    {
+      "path": "tests/oracle-poison-survival-integration.test.mjs",
+      "sha256": "ecb9b00ba1585c866a5346b6874d25e3e86ae750927c62d1250d972bf28d493b"
+    },
+    {
+      "path": "tests/oracle-poison-ui.test.mjs",
+      "sha256": "b5d907c7f4a17488f7a4dbbe8008a6291d9030da66b990e628a2894f2ba8d8f9"
+    },
+    {
+      "path": "tests/oracle-predefined-token-source.test.mjs",
+      "sha256": "0a88f0bc1fa3021140eaebe709720b59f7d9f84509101df1dafd206c65e34bf3"
+    },
+    {
+      "path": "tests/oracle-presence-condition-boundary.test.mjs",
+      "sha256": "32e647b14dd182be2b44a58bf370aa3fcabad24338d8838b715675625c0af2af"
+    },
+    {
+      "path": "tests/oracle-presence-quality-source.test.mjs",
+      "sha256": "f3fef3e88b1ef047ac8fb845d28d24c990ad62796d5447bb0395df3b165eb6eb"
+    },
+    {
+      "path": "tests/oracle-prevention-source.test.mjs",
+      "sha256": "5e32d351d47637cb35a0ab05a49d6b261cd9741190497702c89e65992537a7a2"
+    },
+    {
+      "path": "tests/oracle-ripple-source.test.mjs",
+      "sha256": "a602bf44e7e543c7aeb0405a21a2e952af61bce6f0e253eb7c72f0c389dc3b46"
+    },
+    {
+      "path": "tests/oracle-self-counter-source-identity.test.mjs",
+      "sha256": "1cac042b90a9fd341535d293b3ff45b0b0272333332ca54c8864f0392cdb6dd2"
+    },
+    {
+      "path": "tests/oracle-semantic-boundaries.test.mjs",
+      "sha256": "a87d7485c938c02834251ae3a05a995b4efca4896d6a49a0848db316f0dfbb29"
+    },
+    {
+      "path": "tests/oracle-semantic-repairs.test.mjs",
+      "sha256": "b64201456e9457267998c5e74ce2add985d6deb3f30e1f2931d1c90d066cc4e0"
+    },
+    {
+      "path": "tests/oracle-signed-x-pump.test.mjs",
+      "sha256": "dad6d170ef5ca69dbaa8ca0d1596576ebb3f1b924cb6bec561a2c17eb190a39e"
+    },
+    {
+      "path": "tests/oracle-soulbond-source.test.mjs",
+      "sha256": "3ba24e41051240bbea5c4011b1679c1e2cd4e1c2135cdb990723b2e6a3d7f10a"
+    },
+    {
+      "path": "tests/oracle-source-duration-source.test.mjs",
+      "sha256": "7e57a4bc67a608b44a9e5bd8602f6f94d00743ffb8afd0c4830e011dc06ea73e"
+    },
+    {
+      "path": "tests/oracle-spell-v4-parser.test.mjs",
+      "sha256": "62a5a418231639081dfbaf0624b854ae6fdb130c4f44960cee578c2af9508576"
+    },
+    {
+      "path": "tests/oracle-spell-v4-runtime.test.mjs",
+      "sha256": "a07274bd61ecdb6f368afed6a1408e89813a924c49a0b7013169627a95c6cc70"
+    },
+    {
+      "path": "tests/oracle-standalone-cycling-source.test.mjs",
+      "sha256": "d51624d152fd07560d66eb4ffe4bb354122eb4d76f7992a8852125f22815fa42"
+    },
+    {
+      "path": "tests/oracle-state-trigger-source.test.mjs",
+      "sha256": "8dd82b910cd249bfb9ba9fa4efbad6b33b52801fe58ad59bff9b88f473aa4517"
+    },
+    {
+      "path": "tests/oracle-storage-mana.test.mjs",
+      "sha256": "6f2170ae556201c5a2b3ceb8458d514244a48143c12af674ccea8560f9234dd7"
+    },
+    {
+      "path": "tests/oracle-storm-surveil-regressions.test.mjs",
+      "sha256": "7982dd89a59eb71dfd03a4f815d51a753379bb4fcc14260f0fd4e5e17b543bc1"
+    },
+    {
+      "path": "tests/oracle-time-lord-targets.test.mjs",
+      "sha256": "a90c80797b9c5e62c0e33308974aeca7fa345bc39485e277dd307ab855d7477a"
+    },
+    {
+      "path": "tests/oracle-token-condition-provenance.test.mjs",
+      "sha256": "434731aa2bbd9d356623996abc05806d0b4205d12fa325433f1179fa9dab7319"
+    },
+    {
+      "path": "tests/oracle-token-forms-source.test.mjs",
+      "sha256": "fa4b9cc0fa8b24d98c487b7ce3f424c47d8dd6550f93b2b90842c6bad4caec34"
+    },
+    {
+      "path": "tests/oracle-union-controller.test.mjs",
+      "sha256": "e89967bbe01c7d033d8338bcf4383d2bb8eadd10f1bf230c51d2fc306165baaa"
+    },
+    {
+      "path": "tests/oracle-unqualified-search.test.mjs",
+      "sha256": "17c1107f2084cb57c237435ff81c3b175e97bac01939713b3ba6a9ba9ae908b2"
+    },
+    {
+      "path": "tests/oracle-v4-deck-library.test.mjs",
+      "sha256": "c76164c942ad055b79bab100ce8a58219d0a5e352db456bbdf5ca572a0a1dc72"
+    },
+    {
+      "path": "tests/oracle-v4-mechanics.test.mjs",
+      "sha256": "bbf992114ca56e6f7ac39c724dabb5e8639b15275eeb2a4258b9c19487d28616"
+    },
+    {
+      "path": "tests/oracle-v5-deck-game.test.mjs",
+      "sha256": "51964e477a5098ac8a2cef056cd8fae3c419765372b1c8bf032c6c1028ed775d"
+    },
+    {
+      "path": "tests/oracle-v6-deck-game.test.mjs",
+      "sha256": "fa92f9d5fcec205765715cf8ae35fdc80ddcc713178adfda07a2a500356ec489"
+    },
+    {
+      "path": "tests/oracle-v8-ability-loss.test.mjs",
+      "sha256": "1533faec6e7c8783f830be6a601e15513bc773e0f932f5c47579f55cbb4f67f1"
+    },
+    {
+      "path": "tests/oracle-v8-activation-prohibitions.test.mjs",
+      "sha256": "836339acd15d2f9b6a067b4291f518a9fabdaa31a4765a69500a3aa8e5924bc4"
+    },
+    {
+      "path": "tests/oracle-v8-activation-rules.test.mjs",
+      "sha256": "4e45412b918acffe5b9ba5347025a38d2adafbb0460eb7e267162298a016754b"
+    },
+    {
+      "path": "tests/oracle-v8-activation-suffixes.test.mjs",
+      "sha256": "a283ada8229c8b048fd2f5261b730f284e62386af80dba9ce15a9d69e6504e8c"
+    },
+    {
+      "path": "tests/oracle-v8-alternative-costs.test.mjs",
+      "sha256": "8888135b571481aa4733fda7804800e2e5c94dd80b8fd9f4f6fd09a4b43418e7"
+    },
+    {
+      "path": "tests/oracle-v8-animation.test.mjs",
+      "sha256": "90d4364bf5a3ccadb1da0fa8f34cd7cc1d77e54922b2a74a334ae959e820273b"
+    },
+    {
+      "path": "tests/oracle-v8-attached-effects.test.mjs",
+      "sha256": "148ed54ac007647b49418ba701510404e7e65ac8727efce8d116ccf1fa96834e"
+    },
+    {
+      "path": "tests/oracle-v8-awaken.test.mjs",
+      "sha256": "fb5daf1624bbd841c775da16b6c83ddb359c13b4e5ea58ea6b36e34ddbca7962"
+    },
+    {
+      "path": "tests/oracle-v8-batch-triggers.test.mjs",
+      "sha256": "272b3ce76cbf0a27331554fc599d6178d4fa71ea989d4ea53b49d2681b164f6a"
+    },
+    {
+      "path": "tests/oracle-v8-become-copies.test.mjs",
+      "sha256": "5b9b44cefc172b2b068f824748a1d5b6e1d10c381115256998b0dc95b3b797c9"
+    },
+    {
+      "path": "tests/oracle-v8-bestow.test.mjs",
+      "sha256": "99a009af50004176e7d5c7f5fd1e3e5118698fc734aabb22c21852096590dddd"
+    },
+    {
+      "path": "tests/oracle-v8-bound-library-x.test.mjs",
+      "sha256": "ee6373478004b1383eef65502879a9542ed704d0a1bbb5098fa8c751e18bd07f"
+    },
+    {
+      "path": "tests/oracle-v8-cast-events.test.mjs",
+      "sha256": "3a59b1e1d5c61e6cf37f08e9d24f1e81d4e9cce724542e706050378c71e1eb2d"
+    },
+    {
+      "path": "tests/oracle-v8-casting-choices.test.mjs",
+      "sha256": "345153bdaf0f09f3d3f6aeb3b92943d6c175331a10f641eb68cadab60c453e40"
+    },
+    {
+      "path": "tests/oracle-v8-casting-limits.test.mjs",
+      "sha256": "d4fd6d4f58d91d29a754962126d709f92bad9942e405b54be13b9dbc77d8734e"
+    },
+    {
+      "path": "tests/oracle-v8-casting-rules.test.mjs",
+      "sha256": "9a476359f712453d017cea5c1fabcb9cb877fb8824689daa426e019753f1f481"
+    },
+    {
+      "path": "tests/oracle-v8-coins.test.mjs",
+      "sha256": "693e39eee12f568d91aac400ad4a855a092dcbeb6fbe9888b3d3e969e032baa5"
+    },
+    {
+      "path": "tests/oracle-v8-combat-assignment.test.mjs",
+      "sha256": "3fb08ead2649c6eea10d2786243f1cd025844130141da11934f7f268b16b6099"
+    },
+    {
+      "path": "tests/oracle-v8-combat-costs.test.mjs",
+      "sha256": "c6ca2094477da0b6446a564e212e290ef2e0ed5e5748c5d1d834a17a9ae483e5"
+    },
+    {
+      "path": "tests/oracle-v8-combat-declarations.test.mjs",
+      "sha256": "abce0dfb72b17c3bed540ba3657b822b6408e1ef94532f289fd0f663443b6fab"
+    },
+    {
+      "path": "tests/oracle-v8-combat-keywords.test.mjs",
+      "sha256": "d79f006d7df09c8c1051644700df6e82d11259e025f84fdaeb798ec932619978"
+    },
+    {
+      "path": "tests/oracle-v8-combat-restrictions.test.mjs",
+      "sha256": "572f3078baf4e815adac33343fdebbf00f87cbc888c5eab6543d7c731009c0d1"
+    },
+    {
+      "path": "tests/oracle-v8-commander-pairing.test.mjs",
+      "sha256": "582e659f06298e75396a85dea07bb9fba850107195d706cfba31722faf77b16d"
+    },
+    {
+      "path": "tests/oracle-v8-composed-events.test.mjs",
+      "sha256": "f2afdc73f5b8c329bdc06bd3f1af9ce7a296880a98e27541707e64ffff577632"
+    },
+    {
+      "path": "tests/oracle-v8-composition.test.mjs",
+      "sha256": "d5422e7d92f516b888cbe1617ad54234a63e48f30fe91953845a011a5a8cb0ab"
+    },
+    {
+      "path": "tests/oracle-v8-control.test.mjs",
+      "sha256": "3c0696a18bde2f78dfa9f9d9649b2532393c44de08b36a228185c3395eb3030d"
+    },
+    {
+      "path": "tests/oracle-v8-copies.test.mjs",
+      "sha256": "7775e1890c7239a5902126ebaaaa67885a51c8edde849dd6daee410668c01b8e"
+    },
+    {
+      "path": "tests/oracle-v8-copy-next.test.mjs",
+      "sha256": "459e229c9f3f617270d90c8f442f134cc117aea95ab3801627b7d2898b060812"
+    },
+    {
+      "path": "tests/oracle-v8-costs.test.mjs",
+      "sha256": "95a57a150fb13354c927187e59a91e9ada4ff0a10a6be4ce15e0080fe0607623"
+    },
+    {
+      "path": "tests/oracle-v8-counter-costs.test.mjs",
+      "sha256": "fb96b51278aa8784333c8074f756b0b0d431de07af4d6c683927fdb7766ab699"
+    },
+    {
+      "path": "tests/oracle-v8-counts.test.mjs",
+      "sha256": "f7c0b2beb94311aa33ae4b85bd8426cb90b46e9e9ca028cfa3c8800d30a91b76"
+    },
+    {
+      "path": "tests/oracle-v8-damage-death.test.mjs",
+      "sha256": "f12f8b1a8d884d25475649f08927d3d95f722d061ef91da299a9fb5ede7bbd39"
+    },
+    {
+      "path": "tests/oracle-v8-damage-events.test.mjs",
+      "sha256": "a61b4ee5d3bdbd601a1c4ee19f6d6c30b242b4f9250aa578cbf03ad1b7866289"
+    },
+    {
+      "path": "tests/oracle-v8-damage-replacements-next.test.mjs",
+      "sha256": "fe3fe855614515a62043b20cfd876336361c51c248488afae9c2ba879e9eae3a"
+    },
+    {
+      "path": "tests/oracle-v8-delayed-triggers.test.mjs",
+      "sha256": "b5f2f06327fd4965effc39e282070a640be303f7a08132dab14a895ed89ede38"
+    },
+    {
+      "path": "tests/oracle-v8-effects.test.mjs",
+      "sha256": "26392d487b134172d3278bd2b5e2a1284cd8b0da5a2829927a9f73e572bf57cc"
+    },
+    {
+      "path": "tests/oracle-v8-emerge.test.mjs",
+      "sha256": "9f1527513a8714d5c32e42337320e06be4142f04f09ceaec2bd3748b6d3d2e37"
+    },
+    {
+      "path": "tests/oracle-v8-encore.test.mjs",
+      "sha256": "062aa2b9d5563541ee33f2b5d4f2d39dd9a4d107fc28a38ce2045f03a5a45192"
+    },
+    {
+      "path": "tests/oracle-v8-energy-integration.test.mjs",
+      "sha256": "38347d55cfbdb4eb8e26c9dc7c6453df5e9c950c98e8b9d63e3af691bde58c5c"
+    },
+    {
+      "path": "tests/oracle-v8-energy.test.mjs",
+      "sha256": "65c87acdfc429dfae9f7b5cef8890634d07726d7a3c87a863b39bc4b833e42c1"
+    },
+    {
+      "path": "tests/oracle-v8-entwine.test.mjs",
+      "sha256": "a4f58faaa719f937d8569b2aabbf03ad65324fb2afec502091b6d67ac31b11b6"
+    },
+    {
+      "path": "tests/oracle-v8-equip-costs.test.mjs",
+      "sha256": "645e88174ff9b9067a8463d65f486b4ad84a479cdaffb5679c7ed4891297a942"
+    },
+    {
+      "path": "tests/oracle-v8-faces.test.mjs",
+      "sha256": "b6359785c836fca23cd9f4b9b66ee3238858fd390bf1fcdeb2db484c690a6b66"
+    },
+    {
+      "path": "tests/oracle-v8-forecast.test.mjs",
+      "sha256": "37490d1fe02044b2585667d53251df2ca2c5181ba61b4d29a064c142fb1232b2"
+    },
+    {
+      "path": "tests/oracle-v8-foretell-identity.test.mjs",
+      "sha256": "e2c91606e84df0da2c7939b833cbe1bf6fd4a5b3d7b0fdabb840d020fc06b2fe"
+    },
+    {
+      "path": "tests/oracle-v8-graveyard-cast-next.test.mjs",
+      "sha256": "28a16d1c2aeb23e50dbcd2cf68a9cfb1a1bf05afdbc1816b1fac2754b1918102"
+    },
+    {
+      "path": "tests/oracle-v8-graveyard-statics.test.mjs",
+      "sha256": "681c30fa9da080f62260e96852b23adcb37ede7e19aa9da303d30880e61e2767"
+    },
+    {
+      "path": "tests/oracle-v8-hand-size.test.mjs",
+      "sha256": "a6aa8ec44c6fa7c92d52b698ccad441130da4c1d6739a820fe6a475556b36572"
+    },
+    {
+      "path": "tests/oracle-v8-hand-spelling.test.mjs",
+      "sha256": "615ea46e734fad2e8d3cdc0914c85438c1f34f59fcbef0fb32d0f7e45845eb9d"
+    },
+    {
+      "path": "tests/oracle-v8-inspected-cast-next.test.mjs",
+      "sha256": "b61196bf1ad65740c8c6b24ef75db8ec6c7fcfbd24448d666ee2510e6eb78908"
+    },
+    {
+      "path": "tests/oracle-v8-keyword-costs.test.mjs",
+      "sha256": "4b498c89549f1a5a2202699df7d80182f7183ac389187774569219752480e31f"
+    },
+    {
+      "path": "tests/oracle-v8-keyword-payments.test.mjs",
+      "sha256": "33cfa56878aa73255b07cd6db115df6a54e83d3674a9ed3ac7f7672f3c92ecff"
+    },
+    {
+      "path": "tests/oracle-v8-layered-statics.test.mjs",
+      "sha256": "8b711503e29d3d8623ce6e0a599cc33edd47a8c4b84e7afc29faf264afd2de38"
+    },
+    {
+      "path": "tests/oracle-v8-library-next.test.mjs",
+      "sha256": "352c5e1f5ad348a46411d3be875d8bfc61a59bd90483ced38694fb4a441c4e8b"
+    },
+    {
+      "path": "tests/oracle-v8-library.test.mjs",
+      "sha256": "ed62d04f43bf6e6f89d2a879fdf780fe679f13735476aaa9f1a0bb6ea21a34db"
+    },
+    {
+      "path": "tests/oracle-v8-linked.test.mjs",
+      "sha256": "27803d9b8f552a8c34c6619e9dc5be90b371ded44c59db61efd2467d2c714639"
+    },
+    {
+      "path": "tests/oracle-v8-live-conditions.test.mjs",
+      "sha256": "2c3d4762679d46d1509eab3c9f98961b8930724c82c8434f5e1bec7ea1b1430a"
+    },
+    {
+      "path": "tests/oracle-v8-mana-extensions.test.mjs",
+      "sha256": "d20dd1fc3e59199253f5ee0f4e8345296d28bcd2e94de7972961021b1f3bbb08"
+    },
+    {
+      "path": "tests/oracle-v8-mana-stack.test.mjs",
+      "sha256": "7c59993b545684d25d163877870d59ea59e6914dccb5098e4f3f758dd67bda98"
+    },
+    {
+      "path": "tests/oracle-v8-mayhem.test.mjs",
+      "sha256": "dc5994653ca420fadd0215fcc582a8afc6925d763b2d340a9583f34cd5adab52"
+    },
+    {
+      "path": "tests/oracle-v8-miracle.test.mjs",
+      "sha256": "b26cf68950e7a2c2966ad05626f0d37024f5600fdc5085498b42e2be93d3ad35"
+    },
+    {
+      "path": "tests/oracle-v8-morph-costs.test.mjs",
+      "sha256": "24a10ba6d83d67809b951ca58d03e8edaf3394d63641e0fb32f5e5ff394c5f76"
+    },
+    {
+      "path": "tests/oracle-v8-multizone-search.test.mjs",
+      "sha256": "ed4205c837521361c9a87a1fc42457f94c89cea557582f2d6af7e857d2b4f344"
+    },
+    {
+      "path": "tests/oracle-v8-next-activation-costs.test.mjs",
+      "sha256": "f61f59cc833ac1a2255ce448f94ac22084d354c432605b98564dd7ccb5652b7c"
+    },
+    {
+      "path": "tests/oracle-v8-next-costs.test.mjs",
+      "sha256": "2d2010a50ddcd0224f4c458126d46e9a1f0ca3df6cb50c2f17749d3d9d2ea3dc"
+    },
+    {
+      "path": "tests/oracle-v8-next-effects.test.mjs",
+      "sha256": "6d3a5efe0f66f533f02f50cf2495036ad8648799e9569a245117fcf583c9e0bd"
+    },
+    {
+      "path": "tests/oracle-v8-next-permanents.test.mjs",
+      "sha256": "eeac94d27161136db3f613f5dd597eef3d9d4bf56b3303db71702e1f46e57326"
+    },
+    {
+      "path": "tests/oracle-v8-observation-triggers.test.mjs",
+      "sha256": "fc9b7bcfd6aebd1dda75adf627c039332db742afe378abe9cf779db79b3e5f71"
+    },
+    {
+      "path": "tests/oracle-v8-owner-search.test.mjs",
+      "sha256": "9d14b8c953e64a4e12e208e0ab0ad32d8e2aad1f4cdc0d55b2f6e0f9bd41c6d6"
+    },
+    {
+      "path": "tests/oracle-v8-permanents.test.mjs",
+      "sha256": "308da332ce4b0c8087b9253a67416ac09af13102e3185e7250a97ab0c95e44aa"
+    },
+    {
+      "path": "tests/oracle-v8-play-permissions.test.mjs",
+      "sha256": "408e0b27618139c1f4b0865924fe7febad19c590f0f7c8508568d72c7e5164fd"
+    },
+    {
+      "path": "tests/oracle-v8-prevention.test.mjs",
+      "sha256": "c04d5b1b42c7bef5aa9f1c825e46a540ed17772a591da297afef78d76d580589"
+    },
+    {
+      "path": "tests/oracle-v8-public-abilities.test.mjs",
+      "sha256": "668b8eba11378c988ec18e98045410311440c4390c2fe146742f8cb8eca309ec"
+    },
+    {
+      "path": "tests/oracle-v8-random-discard.test.mjs",
+      "sha256": "91b3976b09f4fb3d149a1cecc95d1b51bbd4883c0f258133a34a18ffbf43be6c"
+    },
+    {
+      "path": "tests/oracle-v8-reference-boundaries.test.mjs",
+      "sha256": "695065a09327af12ce988c9247201d6de5a4a90e954e518019fcaea77049f3b8"
+    },
+    {
+      "path": "tests/oracle-v8-results.test.mjs",
+      "sha256": "25ce960f28e078b3eb3f90108d7a9a279d130738d3dfd1c4453fa15aeeb9ef10"
+    },
+    {
+      "path": "tests/oracle-v8-revealed.test.mjs",
+      "sha256": "8237f82a19d74f49c49138a9a672e967ebe5db0646a37f49a9b67e19b0482fa3"
+    },
+    {
+      "path": "tests/oracle-v8-scope-effects.test.mjs",
+      "sha256": "d66a76125e22626fe8593e8a99d7482812409ae9f4d0692f763619c3397274ac"
+    },
+    {
+      "path": "tests/oracle-v8-selected-hand-results.test.mjs",
+      "sha256": "31c44a927422475d6b6dc934f35d4b2c6c70ddada45f1d0322322627c56b5a8b"
+    },
+    {
+      "path": "tests/oracle-v8-source-prevention.test.mjs",
+      "sha256": "dc231defb61acd9d19d5e68774b7922440c0cfc6e472c8fae30363d84bcda369"
+    },
+    {
+      "path": "tests/oracle-v8-stack-copy.test.mjs",
+      "sha256": "1a66834fbb648b99992adf12d7b1c50f2fac12f2f3f41e13ba5787ae80a715d9"
+    },
+    {
+      "path": "tests/oracle-v8-static-composition.test.mjs",
+      "sha256": "fb9a39a58d4678f548f2651bac346c531b7396932ab0873b9f28b9d8e2cbd39a"
+    },
+    {
+      "path": "tests/oracle-v8-target-predicates.test.mjs",
+      "sha256": "1cf2e76ac4353afefbd1374dde1a10e9d8d72cfd6f08be94b26ed3209f3256ae"
+    },
+    {
+      "path": "tests/oracle-v8-target-quantities.test.mjs",
+      "sha256": "bf9326b1f31666d817c0f74981364d99e5407c910f9ef9bceb82332a6a430285"
+    },
+    {
+      "path": "tests/oracle-v8-target-sacrifice.test.mjs",
+      "sha256": "90ead67379a3660e90232ca10cd91d6e02b42e2645d4251e51a8325f60043146"
+    },
+    {
+      "path": "tests/oracle-v8-targets.test.mjs",
+      "sha256": "4395c1557cefadbf153b7bef4f9a642b1bc3d6a2b03cf84e95abab3faaa5c1dd"
+    },
+    {
+      "path": "tests/oracle-v8-timing.test.mjs",
+      "sha256": "571aca5df5e25d79f68a7dee20105bc220d8339ec949cc9dacac016586fc4913"
+    },
+    {
+      "path": "tests/oracle-v8-turns.test.mjs",
+      "sha256": "8524d3a0fbbb26fdb1325addbc57501df58d624f0adb36a21c2e469c2268020f"
+    },
+    {
+      "path": "tests/oracle-v8-untap.test.mjs",
+      "sha256": "9a3c79de074ecb710efe40bea95ff604fb8196844026d9422ef38984c6257a51"
+    },
+    {
+      "path": "tests/oracle-v8-upkeep-costs.test.mjs",
+      "sha256": "8d10356eda119967abeaa4e878260a22e708ab39e38a080feae0c6ce6f6b810c"
+    },
+    {
+      "path": "tests/oracle-v8-variable-permanents.test.mjs",
+      "sha256": "16be505fd93e3e58b1b23bfcb12af955af1a063315b0c6270c8fe9c6039da6a0"
+    },
+    {
+      "path": "tests/oracle-v8-vilis-binding.test.mjs",
+      "sha256": "3f3b4227f4d6b1fba67a485ad7eb046744b0d6b7d536a745b10c7a1f0f3cccda"
+    },
+    {
+      "path": "tests/oracle-v8-zone-costs.test.mjs",
+      "sha256": "2c42e6b606e1ff77473def5a7f194d842dce78facae33ed94bf49b7dd482c56a"
+    },
+    {
+      "path": "tests/oracle-v8-zone-keyword-costs.test.mjs",
+      "sha256": "dd49db38c3810f518cb195fa6c92e500a0c74cb5f74858cc6ae90a550381a654"
+    },
+    {
+      "path": "tests/oracle-variable-counter-costs.test.mjs",
+      "sha256": "90ef0ac1b8dc252f9220fb51e39270aaa1e8c139a3524361268fde83df22313d"
+    },
+    {
+      "path": "tests/oracle-zone-replacement-source.test.mjs",
+      "sha256": "7ba50761f19df3ac1bb9d1114e25d314d043669d927f160d9f5a5cfba8665873"
+    },
+    {
+      "path": "tests/orcish-mine-controller-lki.test.mjs",
+      "sha256": "ad8ade16f418a4b0a608a184f8522b03521a29fa4c50cbb778a7df0f92c34d52"
+    },
+    {
+      "path": "tests/overlapping-native-graveyard-grants.test.mjs",
+      "sha256": "5b530f3cd6bce318a890b5c1010e77da1e7fb3d0a0e7c481510b95d753379a98"
+    },
+    {
+      "path": "tests/permanent-spell-copy-token-creation.test.mjs",
+      "sha256": "bedd4a7c1339331d7d1addca9d4be55f39b1611f8e2df521b0e6a067729400d5"
+    },
+    {
+      "path": "tests/persist-undying-zone-identity.test.mjs",
+      "sha256": "2d5109a9ef18523c0cc5083493f95aaf40cb3c9fa4cbf0ccc67b92bcb9d86722"
+    },
+    {
+      "path": "tests/phased-attachments-lifecycle.test.mjs",
+      "sha256": "6ded58a8d4eacf538be90729f382b68c86c64a96fa5563c98a4f53dfa90bee51"
+    },
+    {
+      "path": "tests/phased-player-departure.test.mjs",
+      "sha256": "4aec9b2d7085f6c0d6df9e69c7a64743f7e08f254d35283bfec4088e0f542b0e"
+    },
+    {
+      "path": "tests/planeswalker-combat.test.mjs",
+      "sha256": "bb4f824fea23500ff2f0655a75ab0ee856ed37f9fc8e1435562a838ea6b13982"
+    },
+    {
+      "path": "tests/planeswalker-decisions.test.mjs",
+      "sha256": "98e366678dbb54c7c6791b59a10dd7313e7a548b8d677dd9131107f19c93225a"
+    },
+    {
+      "path": "tests/player-facing-cards.test.mjs",
+      "sha256": "84c5d041927433d504c71ca24ccb2119d9c202e139c781772d4efbe330b529e9"
+    },
+    {
+      "path": "tests/player-tools.test.mjs",
+      "sha256": "713e4922c38e3dc446ddfd0aa634723d3cc895f9a7d0c5f51ba6477d2362fbf2"
+    },
+    {
+      "path": "tests/post-malone-opportunist.test.mjs",
+      "sha256": "f2ff4f079c89675574b25761f3a2bf6cecd685cc78b42795fe292e0a0a93433a"
+    },
+    {
+      "path": "tests/priority-explicit-stop.test.mjs",
+      "sha256": "ce0dee2284c100583c7f9a6d6c4cf04e45dcc69d8c96e7046ab1fe0b93d82e72"
+    },
+    {
+      "path": "tests/priority-window-reachability.test.mjs",
+      "sha256": "bd88f55fa0c378dc86222e440702f5b5a3448e7e3427a73c69c270b40c5b477c"
+    },
+    {
+      "path": "tests/priority.test.mjs",
+      "sha256": "1deb872e6e6c65342a0d82a4a2e6a534c84b9ec90ceac0ad5e20a82927ef3d58"
+    },
+    {
+      "path": "tests/prismari-artistry.test.mjs",
+      "sha256": "4d4eed791215cf4e5b881fc25a9f5b08705bef24bd665aeace5062cc5184dedc"
+    },
+    {
+      "path": "tests/prowess-source-identity.test.mjs",
+      "sha256": "d157dcf47ab08c430e981e82dd284a1eacc9170e53df033ec629498f7817360f"
+    },
+    {
+      "path": "tests/public-release.test.mjs",
+      "sha256": "8aa09665625192baf69aa498adc52e6ab749c763444a8229f36ec719f7b2bac6"
+    },
+    {
+      "path": "tests/quandrix-unlimited.test.mjs",
+      "sha256": "e54f46ede67c54fc3caadfbe363feb283dfabae88b79fb74ec509faf0ee0bc94"
+    },
+    {
+      "path": "tests/quiet-leader-threat.test.mjs",
+      "sha256": "06c917566b3e6f1e1315909b14bede2467921ab273e345cb0bc4cc68ed6190f4"
+    },
+    {
+      "path": "tests/rachel-balanced-tablecraft.test.mjs",
+      "sha256": "6f16e2800266f869840fc220ddb385ddb1f8c530bcc3cff662961052f1a84439"
+    },
+    {
+      "path": "tests/resource-choice.test.mjs",
+      "sha256": "838b99df75164d3b1ea506d610ff3c9fa56f5483bd32f590f68e1e484640369a"
+    },
+    {
+      "path": "tests/responsive-client-v3.test.mjs",
+      "sha256": "db4b3fe7d10b3b08d0912b1d70a897a110b37f687791cf1894364592a3bd108d"
+    },
+    {
+      "path": "tests/rules-names.test.mjs",
+      "sha256": "60c06bb5052e9b62b886b3569fc9841cef86061ed34a494cdb2c88e4ae4b2fb2"
+    },
+    {
+      "path": "tests/sauron-dark-lord.test.mjs",
+      "sha256": "a3b9145255e4918187f30b8475f0a7ac79035f337ba9caeb3e7968dc001fde47"
+    },
+    {
+      "path": "tests/save-continue.test.mjs",
+      "sha256": "a119fecf3dcc1656da1473e32a415f85805e96a12f2f115202ff4f4ae8d52aae"
+    },
+    {
+      "path": "tests/save-state.test.mjs",
+      "sha256": "25cda9ae3ff7ffb12fb41ac200f81ac7f4287e8b8d91cea77a399de3e1447456"
+    },
+    {
+      "path": "tests/sba-simultaneous-audit.test.mjs",
+      "sha256": "2a5964d5662c7484c16fd324d1b01087f8339495aacf70b66b03cc526c32a017"
+    },
+    {
+      "path": "tests/scions-spellcraft.test.mjs",
+      "sha256": "bcdc1e593cd26bb9d59dcb0a704df5c51037ebede71677aacb9d1c9258275a63"
+    },
+    {
+      "path": "tests/session-fixes.test.mjs",
+      "sha256": "b45a11b09fbb1ce7626b9ee7711aff9ab7ff8e65b7e93508fc9e835caac4265e"
+    },
+    {
+      "path": "tests/setup-selection.test.mjs",
+      "sha256": "684ad4d1bf2dfddda5106ef29bc827900d3ec63c62b72ca46c5d7af55d555eae"
+    },
+    {
+      "path": "tests/shield-state-based-audit.test.mjs",
+      "sha256": "1b193bfbdd13d91af36c4368d698867da3f048c3a60aebf61a0b083ffea68627"
+    },
+    {
+      "path": "tests/simultaneous-entry-land-play.test.mjs",
+      "sha256": "331ffea53057ccba5518f6725e61155f5bcea87d9267c862ada5721a2bfd8b41"
+    },
+    {
+      "path": "tests/spell-heavy-playbook.test.mjs",
+      "sha256": "f509cebac616af0d3c5f423734a18860ae3b3d423d9b91f0b1fc0de81c2023c0"
+    },
+    {
+      "path": "tests/stack-relational-ninjutsu.test.mjs",
+      "sha256": "5999a5023219261de83a8e66a8313dccba3821fbb0695f5820af4bed524981bd"
+    },
+    {
+      "path": "tests/stack-response.test.mjs",
+      "sha256": "fb80f374acbf44f2d859e5207f61e3c1b3eb0c7bc7a2637c9772acb3f8ecf894"
+    },
+    {
+      "path": "tests/stack-target-visibility.test.mjs",
+      "sha256": "ecbd92aefdb9a98f65c8d27abe55fb6b8a45ea98645bc06a7c8388f6b8d46df1"
+    },
+    {
+      "path": "tests/starter-precons.test.mjs",
+      "sha256": "38d9291b58ef7ac2bf77602c6b05a1a8da2263ca7ea35c64130f8d75cae158cf"
+    },
+    {
+      "path": "tests/state-trigger-lifecycle.test.mjs",
+      "sha256": "5146bb70eb2441d046a7b99632c9c93392c7a18cf844341e7538cf057e7dd02e"
+    },
+    {
+      "path": "tests/subtle-damage-keywords.test.mjs",
+      "sha256": "f8b96a660b8583ea0fcbf71244581e369fc8a5850f63862f2e0011eb10f1e19a"
+    },
+    {
+      "path": "tests/subtle-delayed-identity.test.mjs",
+      "sha256": "778e200028c4ec69180e342791bf599d1e0f245e655363b5f315f9a08ab86d7c"
+    },
+    {
+      "path": "tests/subtle-fight-interactions.test.mjs",
+      "sha256": "31aef194796f295c6782f6ba9708edb11acf6b155e8536737e094287b433ea17"
+    },
+    {
+      "path": "tests/subtle-zone-results.test.mjs",
+      "sha256": "f14ce78e095d28dcf044aafd3914382060fb61ef4e4e2bffd407c5c5f589ee8c"
+    },
+    {
+      "path": "tests/sultai-arisen.test.mjs",
+      "sha256": "21a720cf253ab3570907e62e831238862d4d2dca36e201ab5e798cb35631ef72"
+    },
+    {
+      "path": "tests/table-limits-and-prompts.test.mjs",
+      "sha256": "2077062d36400bdfa51d762f5ca3b02b2f073e34cd08e31ac1b1dca4879abcbd"
+    },
+    {
+      "path": "tests/target-shape-robustness.test.mjs",
+      "sha256": "ad807875fb70be29f12a500ba7d4571d1205af04a71e3f033bde639ce535a24f"
+    },
+    {
+      "path": "tests/target-zone-and-suspend-regressions.test.mjs",
+      "sha256": "d67a012e4ca651f417641805daab118098968b7c86545e18ddbd512bb0ac2a72"
+    },
+    {
+      "path": "tests/temur-roar.test.mjs",
+      "sha256": "78358f02218e39cfce663d583e436566a365f6a9147d0f3a7cea3a4825cb73eb"
+    },
+    {
+      "path": "tests/threat-focused-attacks.test.mjs",
+      "sha256": "d4aed25bf35d32b102d763a1530ed73254bc4a746e125f670ea95e1f84166a4a"
+    },
+    {
+      "path": "tests/time-lord-subtypes.test.mjs",
+      "sha256": "19de599e6a65730d20381dfa0f41643e322e3de3006f908cd65bdf56999bf1a7"
+    },
+    {
+      "path": "tests/timing-suspend-evoke-regressions.test.mjs",
+      "sha256": "7ee06d74175bc4e91326b88fb800350304a43a6230559c6d98df65f06f6b32f5"
+    },
+    {
+      "path": "tests/tree-of-perdition.test.mjs",
+      "sha256": "38ebe636683c79db391041c1ebe2377436f0a43b87b7f2237de30cfdd858d5c7"
+    },
+    {
+      "path": "tests/tree-save-state.test.mjs",
+      "sha256": "2e76d5d3b5f1841835f06ced06f884496e1031639ab9ee36a2fdbf6dfb2a6d98"
+    },
+    {
+      "path": "tests/troyan-gutsy-explorer.test.mjs",
+      "sha256": "7cee2c2318f0088fc643df9e90fbf884f46a20be22b8fb97fadb1f1d3e2b5385"
+    },
+    {
+      "path": "tests/turtle-power.test.mjs",
+      "sha256": "b132e335d5178c42f5e398c41f9de2cac80612ccb8057d672d0d01fa618a0bc3"
+    },
+    {
+      "path": "tests/twinflame-ai.test.mjs",
+      "sha256": "3a28a424dab6bffc9425f0abc2085ac940c0455b4424a856a51f1c20fb04407b"
+    },
+    {
+      "path": "tests/ui-english.test.mjs",
+      "sha256": "f5e01dd1b71431592c5cbf0c1ec9fe009ce1c281d195bdbf881cb0ff8533fe31"
+    },
+    {
+      "path": "tests/ui-polish-regressions.test.mjs",
+      "sha256": "d708abd98eaa6a458a5f58ef82b3dbe400c5587eaf084f6f2572890270cebd20"
+    },
+    {
+      "path": "tests/vercel-multiplayer-server.test.mjs",
+      "sha256": "d6a67546fdd859f21df0cadd3e9d1299b646a15f94465de0c373b687eefd46e9"
+    },
+    {
+      "path": "tests/vernal-sovereign-mixed-mana.test.mjs",
+      "sha256": "f7b2d5c7248c2ac4027b79e15a8dba921d2fd278bc01affe7a73dedcb04880b0"
+    },
+    {
+      "path": "tests/vote-diplomacy-effects.test.mjs",
+      "sha256": "e6125934f1e4b691751c75042a68609655ba9ad0af95fc2747b7ad0310ef749c"
+    },
+    {
+      "path": "tests/wakanda-forever.test.mjs",
+      "sha256": "7c91cd224e0a529b9e06d85ae2d4e8f935a4b6109336de2cee81cf68aba14687"
+    },
+    {
+      "path": "tests/ward-blight-ai.test.mjs",
+      "sha256": "8683b5e0f84e29f3d5b85db817d5c0aa50e0584db5f71e9bb34a1c563100f90f"
+    },
+    {
+      "path": "tests/windswift-slice.test.mjs",
+      "sha256": "cffe719071b2737b96d72df620eaa980bde1559493b020cb46739ba83027916f"
+    },
+    {
+      "path": "tests/world-shaper.test.mjs",
+      "sha256": "1924b1da260c1bc51df38dce3203d4711427ef3726dbbae3d9d5ad46272202c4"
+    },
+    {
+      "path": "tests/x-mana-mechanics.test.mjs",
+      "sha256": "c9b0d0717c7eb54dfbd366c69c8e2d3762bcd394a623f49bae0a160a6c9b87a6"
+    },
+    {
+      "path": "tests/znc-khc-combat.test.mjs",
+      "sha256": "26ef9a68079c241689cb78b0f1c42866fc737247f5035f1cb867381d8729ccd8"
+    },
+    {
+      "path": "tests/znc-khc-elves-spells.test.mjs",
+      "sha256": "a31085187bc9e63479cadb2238b7bb5d6c65f3cd95bdb2d9ca61639b1830cd1e"
+    },
+    {
+      "path": "tests/znc-khc-exile.test.mjs",
+      "sha256": "eb85eb360f1537dd92cde245474ebf1ce3c3ee5452bfeb158458a00ea6afdcb8"
+    },
+    {
+      "path": "tests/znc-khc-precons.test.mjs",
+      "sha256": "e236b78e6d65e108e417f5a75035dc0b1cdb0511cd8e15028b697caef626754d"
+    },
+    {
+      "path": "tests/zurgo-graveyard-return.test.mjs",
+      "sha256": "8e83033b2f812e45d1440f0aafd421e4d38114f339b0be291a74ebb47576a356"
+    },
+    {
+      "path": "vercel.json",
+      "sha256": "083a7a04758ab0f6b0a5f74666c8dc6b6291588634a91e6da160b7dc3dcc35d1"
+    }
+  ],
+  "verifiedAt": "2026-09-09T11:36:51.702Z",
+  "unchangedAfterFinalAffected": true
+}

@@ -713,6 +713,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           ? `Held since turn ${g.monarchSince.turn}` : 'Current table role',
         duration: 'Until another player takes the crown',
       });
+      if (p.afcDungeon) {
+        const dungeon=MTG.AFC?.dungeons[p.afcDungeon.key],room=dungeon?.rooms[p.afcDungeon.room];
+        if(dungeon&&room)add({key:'dungeon',kind:'role',icon:'🗝',label:dungeon.name,detail:'Current room: '+room.name,duration:'Venture to advance to the next room.'});
+      }
+      if(p.afcCompletedDungeons)add({key:'completed-dungeons',kind:'role',icon:'✓',label:'Completed dungeons',detail:String(p.afcCompletedDungeons)+' dungeon(s) completed.',duration:'For the rest of the game'});
       if (p.cityBlessing) add({
         key: 'city-blessing', kind: 'role', icon: '☀', label: "City's Blessing",
         detail: 'This player has ascended.', duration: 'For the rest of the game',
@@ -2982,14 +2987,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const status = libraryTopPlayableNow ? 'PLAY NOW'
           : libraryTopPermitted && landPlayUsed ? 'LAND PLAY USED'
             : libraryTopPermitted ? 'PLAYABLE FROM TOP'
-              : 'TOP CARD REVEALED';
+              : libraryTopSources.some(source => source.def.revealAllTop) ? 'TOP CARD REVEALED' : 'VISIBLE TO YOU';
         const topCard = el('button', 'librarytoppeek' + (libraryTopPlayableNow ? ' playable' : '') + (landPlayUsed ? ' used' : ''));
         topCard.type = 'button';
         topCard.dataset.testid = 'library-top-peek';
         topCard.dataset.cname = libraryTop.name;
         topCard.dataset.iid = String(libraryTop.iid);
-        topCard.title = `${libraryTop.name} · ${status.toLowerCase()} · revealed by ${sourceNames.join(', ')}`;
-        topCard.setAttribute('aria-label', `Top of library: ${libraryTop.name}. ${status}. Revealed by ${sourceNames.join(', ')}. Open card details.`);
+        topCard.title = `${libraryTop.name} · ${status.toLowerCase()} · via ${sourceNames.join(', ')}`;
+        topCard.setAttribute('aria-label', `Top of library: ${libraryTop.name}. ${status}. Visible via ${sourceNames.join(', ')}. Open card details.`);
         topCard.innerHTML = `
           <img loading="lazy" src="${imgURL(libraryTop.name)}" alt="" aria-hidden="true" onerror="MTG.imgFail(this)">
           <span><small>LIBRARY TOP</small><b>${esc(libraryTop.name.split(' // ')[0])}</b><em>${esc(status)}</em><i>via ${esc(sourceNames.join(', '))}</i></span>`;
@@ -4942,6 +4947,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (e.card !== card) continue;
           const cost = g.spellCost(card.owner, card, e.alt ? Object.assign({}, e.alt) : {});
           let label = e.alt ? (e.alt.adventure ? `Adventure: ${e.alt.name} ${U.costStr(U.parseCost(e.alt.cost || ''))}` : (e.alt.label || 'Alternative cost')) : `Cast ${U.costStr(cost)}`;
+          if (e.from === 'library') label = `Cast from top ${U.costStr(cost)}`;
           if (e.from === 'command') label += ' (commander)';
           if (e.from === 'graveyard') label += ' (from graveyard)';
           if (e.from === 'exile') label = e.alt?.foretell

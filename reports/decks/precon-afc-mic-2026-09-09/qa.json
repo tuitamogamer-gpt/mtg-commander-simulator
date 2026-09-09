@@ -1,0 +1,427 @@
+{
+  "date": "2026-09-09",
+  "status": "completed-local",
+  "request": "Importuj narednih pet",
+  "baseCommit": "030c0de43607081bed8ea9a07e9c6ecaa948d4e6",
+  "sources": {
+    "originalDecks": 5,
+    "physicalCards": 500,
+    "uniqueNames": 350,
+    "reusedDefinitions": 258,
+    "newNativeDefinitions": 92,
+    "exactOfficialAndMTGJSONAgreement": true,
+    "directMoxfieldExport": false
+  },
+  "fullSuite": {
+    "command": "node --test --test-concurrency=4 tests/*.test.mjs",
+    "log": "output/precon-afc-mic-2026-09-09/full-suite.log",
+    "sha256": "2fd7c25591cdb3024cb61e44a3baad0b25e8ef4e454e9417165d2effa39e4879",
+    "failedCases": [
+      "postojeći cinematic asseti ostaju dostupni; novi preconi koristi slike bez novih videa",
+      "75 predefined decks use available videos or a still image; custom decks never inherit videos",
+      "svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putanju",
+      "svaki deck može završiti jednu determinističku četveroigračku smoke partiju",
+      "the complete pinned legacy card set remains represented exactly once in the runtime catalog",
+      "runtime card art uses local WebP except the explicit API fallback list",
+      "svih 36 deck/planeswalker parova ima svih 107 loyalty putanja",
+      "Liliana, Death's Majesty \\#1 human: paid entry, legal loyalty window, Stack resolution and once-per-turn",
+      "Liliana, Death's Majesty \\#1 AI: paid entry, legal loyalty window, Stack resolution and once-per-turn",
+      "Liliana, Death's Majesty \\#2 human: paid entry, legal loyalty window, Stack resolution and once-per-turn",
+      "Liliana, Death's Majesty \\#2 AI: paid entry, legal loyalty window, Stack resolution and once-per-turn",
+      "Liliana, Death's Majesty \\#3 human: paid entry, legal loyalty window, Stack resolution and once-per-turn",
+      "Liliana, Death's Majesty \\#3 AI: paid entry, legal loyalty window, Stack resolution and once-per-turn"
+    ],
+    "tests": 8960,
+    "pass": 8947,
+    "fail": 13,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "finalTreeFullRerun": false,
+    "startingManifestAvailable": false,
+    "limitation": "Diagnostic run started before the final changes. Its failures are reconciled below. The complete suite was not rerun on the final tree; the final complete affected files, all eight affected game seeds and final new-card question replay provide the post-fix evidence."
+  },
+  "reconciledFailures": [
+    {
+      "cases": "commander-visuals.test.mjs: two inventory assertions",
+      "cause": "The expected raw commander count and selectable-deck count still described the preceding batch.",
+      "fix": "Preserve the exact assertions and update them to 81 raw commanders and 80 selectable decks.",
+      "verification": "Both complete cases pass in the final affected run."
+    },
+    {
+      "cases": "full-card-audit.test.mjs: one inventory assertion",
+      "cause": "The active unique and native raw definition expectations were stale.",
+      "fix": "Update to 3,514 active unique cards and 2,427 native raw definitions.",
+      "verification": "The complete file passes in the final affected run."
+    },
+    {
+      "cases": "headless-smoke.test.mjs: deterministic deck sweep",
+      "cause": "Karazikar called a nonexistent game.goad method when its attack trigger resolved.",
+      "fix": "Use the established timed E.goad effect.",
+      "verification": "Human and actual local-AI trigger cases pass; all eight original deterministic seeds with a new deck at the table are replayed through natural game completion. This includes the preceding Reap the Tides, Phantom Premonition and Elven Empire seats."
+    },
+    {
+      "cases": "legacy-card-catalog-integrity.test.mjs: pinned legacy set",
+      "cause": "The new batch was included in the legacy set instead of its own addition group.",
+      "fix": "Add and validate the separate 92-name batch; keep the original 1,626-name count and digest unchanged.",
+      "verification": "The complete preservation and disjointness test passes in the final affected run."
+    },
+    {
+      "cases": "local-card-images.test.mjs: canonical art and exact manifest",
+      "cause": "Registered Dragon Spirit Token lacked a canonical-name image alias; the exact expected manifest also omitted the new dungeon and token artwork.",
+      "fix": "Map Dragon Spirit to the existing AFC token file and include all source faces, dungeons and token variants in the exact inventory.",
+      "verification": "The complete image file, file signatures, aliases and manifest assertions pass in the final affected run."
+    },
+    {
+      "cases": "planeswalker-combat.test.mjs: inventory; planeswalker-decisions.test.mjs: six Liliana cases",
+      "cause": "The inventory omitted Undead Unleashed/Liliana, and her three loyalty actions lacked the sorcery timing flag.",
+      "fix": "Retain exact 37 deck/walker pairs and 110 loyalty paths; add sorcery timing to all three Liliana actions.",
+      "verification": "Both complete files pass, including human and AI paid entry, main-phase/controller timing, Stack resolution and once-per-turn checks for every active walker."
+    },
+    {
+      "cases": "x-mana-mechanics.test.mjs: diagnostic affected-run inventory",
+      "cause": "The fixed 111-name list omitted eight newly active X spells.",
+      "fix": "Add Dark Salvation, Diviners Portent, Drown in Dreams, Empty the Laboratory, Extract Brain, Hour of Eternity, Klauths Will and Neverwinter Hydra to the exact 119-name inventory.",
+      "verification": "The complete X-mana file passes in the final affected run."
+    }
+  ],
+  "diagnosticAffected": {
+    "command": "Earlier version of the final affected command, before image and X-inventory reconciliation.",
+    "log": "output/precon-afc-mic-2026-09-09/diagnostic-affected-tests.log",
+    "sha256": "df5a3fc88635d0f67b61a80b306ed85cf548cb8c63600b50a83ad6f400ace83a",
+    "failedCases": [
+      "runtime card art uses local WebP except the explicit API fallback list",
+      "inventar pokriva svih 111 aktivnih X spella i sve dodatne X-mana putanje"
+    ],
+    "tests": 471,
+    "pass": 469,
+    "fail": 2,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "finalAffected": {
+    "command": "node --test --test-concurrency=4 tests/afc-*.test.mjs tests/ai-v2.test.mjs tests/baseline.test.mjs tests/commander-visuals.test.mjs tests/full-card-audit.test.mjs tests/save-state.test.mjs tests/save-continue.test.mjs tests/multiplayer-parity.test.mjs tests/library-top-visibility.test.mjs tests/x-mana-mechanics.test.mjs tests/c17-c19-mana.test.mjs tests/c17-c19-casting.test.mjs tests/c17-c19-lifetime.test.mjs tests/c19-c20-casting.test.mjs tests/oracle-v8-ability-loss.test.mjs tests/oracle-v8-damage-events.test.mjs tests/oracle-v8-damage-death.test.mjs tests/oracle-zone-replacement-source.test.mjs tests/oracle-v8-zone-costs.test.mjs tests/oracle-v8-targets.test.mjs tests/oracle-v8-casting-choices.test.mjs tests/local-card-images.test.mjs tests/engine-source-and-x-audit.test.mjs tests/legacy-card-catalog-integrity.test.mjs tests/planeswalker-combat.test.mjs tests/planeswalker-decisions.test.mjs",
+    "log": "output/precon-afc-mic-2026-09-09/final-affected-tests.log",
+    "sha256": "348c7301c75ff53da5b4a9a91b321c940017f1b9be7e3ff38aa647d4ac6fcf0e",
+    "failedCases": [],
+    "tests": 709,
+    "pass": 709,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "unchangedInputs": 1096
+  },
+  "newSemanticCases": 100,
+  "playerFacingReplay": {
+    "command": "node --test output/precon-afc-mic-2026-09-09/player-facing-new-cards.mjs",
+    "log": "output/precon-afc-mic-2026-09-09/player-facing-new-cards.log",
+    "sha256": "bbde8aacafe71d8a97f28c181df4a8eaeef52d0c1045a6fcea5f162337444542",
+    "failedCases": [],
+    "tests": 4,
+    "pass": 4,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "questionCounts": [
+      {
+        "scope": "92 new cards",
+        "cast": 91,
+        "questions": 260,
+        "notCast": [
+          {
+            "name": "Underdark Rift",
+            "reason": "land"
+          }
+        ]
+      },
+      {
+        "scope": "Available new-card activations",
+        "activations": 18
+      }
+    ],
+    "scope": "Original question inspector restricted to the 92 new cards, plus its two defensive cases. The fixture supplies a Forest for Utopia Sprawl and two graveyard creatures for Hour of Eternity. All 91 new nonland spells are actually cast; Underdark Rift is covered by native land smoke. The default complete-catalog test remains unchanged."
+  },
+  "runtimeSmoke": {
+    "cards": 92,
+    "counts": {
+      "runtime-smoke-pass": 184,
+      "prerequisite-gap": 0,
+      "choice-gap": 0,
+      "error": 0
+    },
+    "artifact": "reports/decks/precon-afc-mic-2026-09-09/runtime-smoke.json",
+    "limitation": "Common-board cast/land and entry-trigger smoke, with explicitly reported card-specific prerequisites and Ancestral Vision Suspend/upkeep smoke. Activated abilities, all modes and card-specific semantic correctness require dedicated tests. Gaps are not passing coverage."
+  },
+  "browser": {
+    "selectorAndPaidCommander": 10,
+    "commanderMechanics": 10,
+    "additionalFinalGaleaLabelCases": 2,
+    "widths": [
+      1440,
+      390
+    ],
+    "preparedFollowOnBoards": true,
+    "errors": [],
+    "mixedLive": {
+      "checks": [
+        "2 humans + 2 bots configured through lobby and old invite",
+        "all opening controls visible at 1365×768 and correct local AI seats instantiated",
+        "guest-2 private controls retain focus across sync and play Forest",
+        "guest pays mana, casts Sol Ring onto shared Stack, all humans pass and resolution reaches battlefield",
+        "mixed-table guest reload and host resume preserve the human seat",
+        "every configured local bot independently plays a land",
+        "no browser page or console errors"
+      ],
+      "humans": 2,
+      "bots": 2,
+      "errors": []
+    },
+    "naturalMobileGame": {
+      "human": "Undead Unleashed",
+      "opponent": "Aura of Courage",
+      "turns": 17,
+      "rematchPassed": true,
+      "iterations": 195,
+      "lands": 6,
+      "spells": 10,
+      "attacks": 5,
+      "decisions": [
+        "mulligan",
+        "main",
+        "priority",
+        "chooseOption",
+        "chooseX",
+        "chooseTargets",
+        "attackers",
+        "combatReview",
+        "threatAlert",
+        "chooseCards",
+        "orderTriggers"
+      ],
+      "errors": [],
+      "requests": []
+    }
+  },
+  "finalAIGames": {
+    "passed": 8,
+    "expected": 8,
+    "rows": [
+      {
+        "name": "Reap the Tides",
+        "opponents": [
+          "Phantom Premonition",
+          "Elven Empire",
+          "Planar Portal"
+        ],
+        "seed": 11153,
+        "turns": 53,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Phantom Premonition",
+        "opponents": [
+          "Elven Empire",
+          "Planar Portal",
+          "Draconic Rage"
+        ],
+        "seed": 11154,
+        "turns": 45,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Elven Empire",
+        "opponents": [
+          "Planar Portal",
+          "Draconic Rage",
+          "Aura of Courage"
+        ],
+        "seed": 11155,
+        "turns": 42,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Planar Portal",
+        "opponents": [
+          "Draconic Rage",
+          "Aura of Courage",
+          "Dungeons of Death"
+        ],
+        "seed": 11156,
+        "turns": 53,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Draconic Rage",
+        "opponents": [
+          "Aura of Courage",
+          "Dungeons of Death",
+          "Undead Unleashed"
+        ],
+        "seed": 11157,
+        "turns": 41,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Aura of Courage",
+        "opponents": [
+          "Dungeons of Death",
+          "Undead Unleashed",
+          "Abzan Armor"
+        ],
+        "seed": 11158,
+        "turns": 36,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Dungeons of Death",
+        "opponents": [
+          "Undead Unleashed",
+          "Abzan Armor",
+          "Animated Army"
+        ],
+        "seed": 11159,
+        "turns": 44,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Undead Unleashed",
+        "opponents": [
+          "Abzan Armor",
+          "Animated Army",
+          "Avengers Assemble"
+        ],
+        "seed": 11160,
+        "turns": 29,
+        "winner": "AI Dragon",
+        "passed": true
+      }
+    ]
+  },
+  "strictCertification": {
+    "definitions": 20285,
+    "activeUnique": 3514,
+    "cardDeckChecks": 6570,
+    "failures": 0
+  },
+  "preservation": {
+    "existingRawDefinitions": 2335,
+    "existingDeckRecords": 76,
+    "oldCardsEqual": true,
+    "oldDecksEqual": true,
+    "oracleBatchFilesUnchanged": true,
+    "oldImagesUnchanged": true,
+    "commanderVideosUnchanged": true,
+    "imageMappings": {
+      "CARD_IMAGE_PATHS": 3513,
+      "CARD_ART_PATHS": 75
+    }
+  },
+  "artwork": {
+    "newFiles": 157,
+    "faces": 143,
+    "commanderCrops": 5,
+    "dungeons": 3,
+    "tokenVariants": 6
+  },
+  "idempotence": {
+    "command": "node scripts/import-afc-mic-precons.mjs --write --cached-oracle",
+    "beforeSha256": "53bdf8cfc80564672b4a83d69982727d6c14b5ca62970c74a338e35fb441be4d",
+    "afterSha256": "53bdf8cfc80564672b4a83d69982727d6c14b5ca62970c74a338e35fb441be4d",
+    "unchanged": true
+  },
+  "evidence": [
+    {
+      "path": "output/precon-afc-mic-2026-09-09/new-file-syntax.log",
+      "sha256": "1a358eb9025986d9e4a67c3af76e5af6ca96f8fc32d3745c5a826f44d01159d8"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/check.log",
+      "sha256": "a2395e640f2e23e1d8ed21916d799f0ab4e6d96bc6674abba74841ddc024b70c"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/audit.log",
+      "sha256": "a4ac8f4db466b250efb5f227d63755c895d626a74945bbf5f5471723ff959f57"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/certify.log",
+      "sha256": "3faa92a283a5f87f47122d63e47e3611b0c55c683f9ae18e65fbd75cdbda9290"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/preservation.log",
+      "sha256": "d270c6eadf712efb75577e097c51c9f91e04a454b3ca511fefd1486c9baa883d"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/smoke.log",
+      "sha256": "dc76a4fcbb61acf26aadea54ba6fa9c0e829be5c37acdcd6fe9c707e76032442"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/browser.log",
+      "sha256": "fe97a2ca71b43b959ce2a050316b594bc7a8774dbfe8c74932272dc1fd13a934"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/abilities.log",
+      "sha256": "542c73579dd76eea43e8e5c3567d5b4433e0102771b8184d3e44c7193052a76d"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/galea-final-ui.log",
+      "sha256": "bd55c8fd7b17103744097d1ff52879eaadd0fb56a4ef91fc50e90d7cd5261689"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/natural-game.log",
+      "sha256": "5f21ff12ccacd511e7e2470f006face6a71a7db24689c8f96f23f9bfdcb2e204"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/live.log",
+      "sha256": "981c1b13e9135e2febfd3972f400fd3a6985e9537989298020850972d2e366ca"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/final-affected-games.log",
+      "sha256": "9986eb979ab45772d144127cbfad378c7fb805cbffee2fa6554a57bcda06c337"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/final-affected-games.json",
+      "sha256": "d55260f70623959c1083788c4ca7432d022085d71f3bc2bc4ac5b71bc453037c"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/standard-client.log",
+      "sha256": "9d67c8c6d474de0309be0cef197265b543f4b2e41798764fe85c63001515e89a"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/standard-client/state-0.json",
+      "sha256": "f1db831de6741528a790ed57fa4da258505bbf1230b71472fd96181cbb4ce12f"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/idempotence.log",
+      "sha256": "e0680d20e695828cd3bba1cedbc837cf5562689410330172db447ce8df886a30"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/idempotence.json",
+      "sha256": "22868c2373cebe0882fe6fc7fa0347dae9d5a5659d6680ef97a2a040f118a332"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/player-facing-new-cards.mjs",
+      "sha256": "c91468a17c510c4224d7eced20be378d70810a20b2b725cee1f3ad85b83e70de"
+    },
+    {
+      "path": "output/precon-afc-mic-2026-09-09/player-facing-new-cards.log",
+      "sha256": "bbde8aacafe71d8a97f28c181df4a8eaeef52d0c1045a6fcea5f162337444542"
+    }
+  ],
+  "publication": {
+    "requested": true,
+    "request": "Push commit deploy",
+    "statusAtCapture": "Authorized after completed local verification. Independent release evidence is recorded separately.",
+    "releaseEvidence": "output/precon-afc-mic-release-2026-09-09/release.json"
+  },
+  "outstandingKnownFailures": []
+}

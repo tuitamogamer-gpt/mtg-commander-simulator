@@ -203,6 +203,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     "Reap the Tides": {"archetype": "Extra lands and sea monsters", "length": "long", "tags": ["lands", "ramp", "combat"], "commanderImportance": 1.5},
     "Phantom Premonition": {"archetype": "Foretell and blink", "length": "long", "tags": ["control", "tokens", "blink"], "commanderImportance": 1.5},
     "Elven Empire": {"archetype": "Elf tokens and life drain", "length": "long", "tags": ["tribal", "tokens", "ramp"], "commanderImportance": 1.5},
+    "Undead Unleashed": {"archetype": "Zombie tokens and sacrifice", "length": "long", "tags": ["tribal", "tokens", "sacrifice"], "commanderImportance": 1.5},
+    "Dungeons of Death": {"archetype": "Dungeons and reanimation", "length": "long", "tags": ["graveyard", "reanimate", "value"], "commanderImportance": 1.5},
+    "Aura of Courage": {"archetype": "Auras and Equipment", "length": "long", "tags": ["voltron", "combat", "ramp"], "commanderImportance": 1.5},
+    "Draconic Rage": {"archetype": "Dragons and dice", "length": "long", "tags": ["tribal", "ramp", "combat"], "commanderImportance": 1.5},
+    "Planar Portal": {"archetype": "Exile cards and Treasures", "length": "long", "tags": ["ramp", "value", "control"], "commanderImportance": 1.5},
 
     "Mystic Intellect": {"archetype": "Flashback and spell copies", "length": "long", "tags": ["graveyard", "spellslinger", "control"], "commanderImportance": 1.5},
     "Faceless Menace": {"archetype": "Morph and hidden creatures", "length": "long", "tags": ["control", "ramp", "combat"], "commanderImportance": 1.5},

@@ -16,6 +16,7 @@
  }
  async function emit(game,hits){
   if(!hits.length)return;
+  await game.emit('oracleDamageBatch',{hits,n:hits.reduce((n,h)=>n+h.n,0)});
   for(const hit of hits)await game.emit('oracleDamageHit',{hits:[hit],n:hit.n});
   for(const key of ['src','target']){
    const grouped=new Map();for(const hit of hits){const id=hit[key];if(!grouped.has(id))grouped.set(id,[]);grouped.get(id).push(hit);}

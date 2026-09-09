@@ -131,6 +131,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         graveyard: player.graveyard.map(card), exile: player.exile.map(card), command: player.command.map(card),
         commanders: (player.commanders || []).map(card), commanderDamage: data(player.commanderDamage || {}),
         landsPlayed: player.landsPlayed || 0, landPlayLimit: game.landPlayLimit(player),
+        afcDungeon: data(player.afcDungeon || null), afcCompletedDungeons: player.afcCompletedDungeons || 0,
         emblems: data(player.emblems || []), cityBlessing: !!player.cityBlessing, noMaxHandForever: !!player.noMaxHandForever,
         ringLevel: player.ringLevel || 0,
         libraryTop: visibleTop, libraryTopSources: topSources.map(token),
@@ -358,7 +359,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           isAI: row.isAI, onlineConnected: row.connected, life: row.life, poison: row.poison, lost: row.lost,
           counters: row.counters || {}, pool: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, ...row.manaPool },
           commanderDamage: row.commanderDamage || {}, landsPlayed: row.landsPlayed, emblems: row.emblems || [],
-          cityBlessing: row.cityBlessing, noMaxHandForever: row.noMaxHandForever, ringLevel: row.ringLevel, presentation: row });
+          afcDungeon: row.afcDungeon, afcCompletedDungeons: row.afcCompletedDungeons, cityBlessing: row.cityBlessing, noMaxHandForever: row.noMaxHandForever, ringLevel: row.ringLevel, presentation: row });
       }
       this.players = snapshot.players.map(row => this.playerRefs.get(`p:${row.idx ?? row.seat}`));
       for (const row of snapshot.stack) if (!this.stackRefs.has(row.token)) this.stackRefs.set(row.token, {});

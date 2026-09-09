@@ -1356,6 +1356,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (t) card.tapped = true;
       }
       if (opts.tapped) card.tapped = true;
+      if(opts.afcZombie)MTG.AFC.zombify(this,card,opts.afcDecayed);
+      if(opts.afcWarlock){card.meta.addedSubtypes=[...new Set([...(card.meta.addedSubtypes||[]),'Warlock'])];this.recalc();}
       // Global entry-state replacements finish before ETB observers. The
       // affected controller chooses their order when several apply.
       await MTG.oracleV8ApplyEntryState(this, card);
@@ -2925,7 +2927,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             card.cur.allCreatureTypes=false;card.cur.allCreatureTypesFromOtherEffects=false;card.cur.suppressPrintedChangeling=true;
           }
           if(c.allCreatureTypes){card.cur.allCreatureTypes=true;card.cur.allCreatureTypesFromOtherEffects=true;}
-          if(c.colors!=null)card.cur.colors=c.colors.slice();
+          if(c.colors!=null)card.cur.colors=c.retainColors?[...new Set(card.cur.colors.concat(c.colors))]:c.colors.slice();
           inAbilityLayer(c.timestamp,()=>{for(const keyword of c.keywords||[])card.cur.kw.add(keyword);});
           for(const keyword of c.removeKeywords||[])card.cur.kw.delete(keyword);
           continue;
@@ -4013,6 +4015,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       this.recalc();
       await this.flushRuleEvents();
+      await this.emit('afcPlayerLost',{player:p});
       const alive = this.alivePlayers();
       if (alive.length <= 1) {
         this.gameOver = true;

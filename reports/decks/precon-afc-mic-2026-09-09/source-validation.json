@@ -1,0 +1,108 @@
+{
+  "baseCommit": "030c0de43607081bed8ea9a07e9c6ecaa948d4e6",
+  "before": {
+    "definitions": 20193,
+    "eligible": 20170,
+    "selectableDecks": 75,
+    "nativeDefinitions": 2335,
+    "activeUnique": 3372,
+    "cardDeckChecks": 6172
+  },
+  "after": {
+    "definitions": 20285,
+    "eligible": 20262,
+    "selectableDecks": 80,
+    "nativeDefinitions": 2427,
+    "activeUnique": 3514,
+    "cardDeckChecks": 6570
+  },
+  "newCards": 92,
+  "reusedCards": 258,
+  "physicalCards": 500,
+  "uniqueSourceCards": 350,
+  "newlyEligibleReused": [],
+  "preservation": {
+    "existingRawDefinitions": 2335,
+    "existingDeckRecords": 76,
+    "oldCardsEqual": true,
+    "oldDecksEqual": true,
+    "oracleBatchFilesUnchanged": true,
+    "oldImagesUnchanged": true,
+    "commanderVideosUnchanged": true,
+    "imageMappings": {
+      "CARD_IMAGE_PATHS": 3513,
+      "CARD_ART_PATHS": 75
+    }
+  },
+  "oracleWordingDifferences": [
+    {
+      "name": "Realm-Cloaked Giant",
+      "runtime": "Vigilance",
+      "source": "Realm-Cloaked Giant: Vigilance\nCast Off: Destroy all non-Giant creatures. (Then exile this card. You may cast the creature later from exile.)"
+    }
+  ],
+  "printedFieldDifferences": [],
+  "sources": [
+    {
+      "name": "Planar Portal",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/adventures-forgotten-realms-commander-decklists-2021-07-09",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/PlanarPortal_AFC.json",
+      "moxfield": "https://moxfield.com/decks/3JwMHo6ANUeV4t-0eNLA5A",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "ae56cdbb3193ce199cb55fe24693f05a9eb947c61353e7d55eef8a393e668d99",
+      "officialHtmlSha256": "26191edb6f75306edc942c6e0a16bed4dcc8d03a95c03185917a41967dd4d087",
+      "export": "planar-portal.txt",
+      "sha256": "756118e0ec963c13ba086ec275f319bf1db1b1e98fea0b08fa5c9f7dd14296ce"
+    },
+    {
+      "name": "Draconic Rage",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/adventures-forgotten-realms-commander-decklists-2021-07-09",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/DraconicRage_AFC.json",
+      "moxfield": "https://moxfield.com/decks/Z0Cz_IU2mkC5Qp9y8Nxgog",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "5353d6593f7de9b2c5a9049b188ec590dadaddadf4dc4697beaac7d855cd9040",
+      "officialHtmlSha256": "26191edb6f75306edc942c6e0a16bed4dcc8d03a95c03185917a41967dd4d087",
+      "export": "draconic-rage.txt",
+      "sha256": "8b567ea9af630a0fab8c85b8496a6208fcf98f58b02d0c51070a23c18868d943"
+    },
+    {
+      "name": "Aura of Courage",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/adventures-forgotten-realms-commander-decklists-2021-07-09",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/AuraOfCourage_AFC.json",
+      "moxfield": "https://moxfield.com/decks/C-kanWXqiE2nxFWMEouhAw",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "d7a1b4003467518e9f692a37e510d4217285d6bb4b1ae4ba1a8304d4283570b5",
+      "officialHtmlSha256": "26191edb6f75306edc942c6e0a16bed4dcc8d03a95c03185917a41967dd4d087",
+      "export": "aura-of-courage.txt",
+      "sha256": "54a5571df9911ba73983dc7abe749250bb9f91b231552c50917ce2468a8a4d4a"
+    },
+    {
+      "name": "Dungeons of Death",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/adventures-forgotten-realms-commander-decklists-2021-07-09",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/DungeonsOfDeath_AFC.json",
+      "moxfield": "https://moxfield.com/decks/Ym001xPF0E2HZl91qKhcwQ",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "e5ab726a578a3b2a7db6d3dc42ff9932608239dc7c07afe8a21fe9caaf81e2e0",
+      "officialHtmlSha256": "26191edb6f75306edc942c6e0a16bed4dcc8d03a95c03185917a41967dd4d087",
+      "export": "dungeons-of-death.txt",
+      "sha256": "c3ef0bb0a4ef54d6830c18da05d2f6a6058e46f1dd5c6d4e327ae2a2c65be219"
+    },
+    {
+      "name": "Undead Unleashed",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/innistrad-midnight-hunt-commander-decklists",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/UndeadUnleashed_MIC.json",
+      "moxfield": "https://moxfield.com/decks/DzZRd4RZDEWK4FwRJdSccw",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "704a3e6785aa79f5453c7dcb5498b3846031a9c82d0e3f22806da908426b9d4b",
+      "officialHtmlSha256": "607ed34bf4fea1fa0bc359818e99d83a0c39cea91ce5adad48599a44d0516f3a",
+      "export": "undead-unleashed.txt",
+      "sha256": "707c9ed65c52170c282ac9351360e3637bec022da86f9c364c99e96490851106"
+    }
+  ],
+  "runtimeSmokeSha256": "a33920fe686c509e5bec19fd9a226af0d5cd36c318d791246df0cae8968881e2"
+}

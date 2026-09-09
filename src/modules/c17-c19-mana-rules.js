@@ -3,7 +3,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
  const M=MTG,C=M.C1719,G=M.Game.prototype,colors=['W','U','B','R','G'];
  const hooks=(g,land,p)=>g.bf().filter(c=>C.live(c)&&c.def.c1719LandMana&&(c.def.c1719LandMana.attached?c.attachedTo===land.iid:c.ctrl===p));
- const options=(source,produced)=>{const rule=source.def.c1719LandMana;if(rule.fixed)return [rule.fixed];if(rule.any)return [{ANY:true,n:rule.any}];return Object.keys(produced).filter(k=>[...colors,'C'].includes(k)&&produced[k]>0).map(k=>({[k]:1}));};
+ const options=(source,produced)=>{const rule=source.def.c1719LandMana;if(rule.afcChosen)return source.meta.afcColor?[{[source.meta.afcColor]:1}]:[];if(rule.fixed)return [rule.fixed];if(rule.any)return [{ANY:true,n:rule.any}];return Object.keys(produced).filter(k=>[...colors,'C'].includes(k)&&produced[k]>0).map(k=>({[k]:1}));};
  const countColors=xs=>xs.reduce((out,k)=>(out[k]=(out[k]||0)+1,out),{});
  const sources=G.manaSources;
  G.manaSources=function(p,spell,opts={}){return sources.call(this,p,spell,opts).map(s=>s.card?.is('Land')&&s.extraCost?.tap&&!s.m.viaConvoke?{...s,c1719ManaBonuses:hooks(this,s.card,p)}:s);};

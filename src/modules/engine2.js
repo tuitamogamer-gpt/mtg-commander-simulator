@@ -1984,7 +1984,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(definition.oracleCastRestriction&&!definition.oracleCastRestriction(this,card,p))return false;
     const faceView = alt?.bestow ? MTG.OracleV8Permanents.bestowCastView(card)
       : card.oracleFaces && alt?.oracleFace ? MTG.OracleV8Faces.view(card, alt.oracleFace) : card;
-    const flashGranted = !!MTG.oracleFlashGranted?.(this,p,faceView,alt||{}) || this.bf().some(source => source.ctrl === p && source.def.grantsFlash &&
+    const flashGranted = !!p.turnState.afcAvalanches || !!MTG.oracleFlashGranted?.(this,p,faceView,alt||{}) || this.bf().some(source => source.ctrl === p && source.def.grantsFlash &&
       source.def.grantsFlash(this, source, faceView, p)) ||
       (p.tempFlashFilters || []).some(grant => grant.turn === this.turnNo && grant.filter(this, faceView, p));
     const speed = (alt && alt.speed) || (flashGranted ? 'instant' : advSpeed) ||
@@ -2070,6 +2070,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Bestow ' + card.def.bestowCost,
     } : null;
     const consider = (card, from, alt) => {
+      if(!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.AFC?.rooftopLive(this,p,card,alt||{}))consider(card,from,{...alt,afcRooftop:true,altCostStr:'{0}'});
       if(!['hand','command'].includes(from)&&!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.C1719?.fistLive(this,p))consider(card,from,{...alt,c1719Fist:true,altCostStr:'{W}{U}{B}{R}{G}'});
       if(!alt?.oracleAlternativeCost&&!['hand','command'].includes(from)&&!alt?.free&&alt?.altCostStr===undefined) {
         for(const option of card.def.altCosts||[])if(option.oracleAlternativeCost&&(!option.cond||option.cond(this,p,card)))
@@ -2095,6 +2096,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (castOpts.broodship && !MTG.broodshipCastAllowed(this,p,card,castOpts)) return;
       if (!definition.cost && !castOpts.free && castOpts.altCostStr === undefined) return;
       const cost = this.spellCost(p, card, castOpts);
+      if(definition.afcGorex&&!castOpts.faceDownCast&&!castOpts.adventure)cost.generic=Math.max(0,cost.generic-2*p.graveyard.filter(c=>c!==card&&c.is('Creature')).length);
       if(definition.oracleCastingChoice&&!castOpts.faceDownCast&&!castOpts.adventure&&
         !MTG.OracleV8CastingChoices.canPay({g:this,you:p,src:card,so:{x:0},manaCost:cost,castOpts},definition.oracleCastingChoice))return;
       if (castOpts.jumpstart && !p.hand.some(candidate => candidate !== card)) return;
@@ -2535,6 +2537,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       castOpts.name = selected.name;
     }
     const d = this.castDefinition(card, castOpts);
+    if(castOpts.afcRooftop&&(!MTG.AFC.rooftopLive(this,p,card,castOpts)||castOpts.altCostStr!=='{0}'||castOpts.free||!this.castableList(p).some(e=>e.card===card&&e.from===(castOpts.from||card.zone)&&e.alt?.afcRooftop&&Object.keys(castOpts).every(k=>k==='from'||k==='xVal'||castOpts[k]===e.alt[k]))))return false;
     if(castOpts.c1719Fist&&(!MTG.C1719?.fistLive(this,p)||castOpts.altCostStr!=='{W}{U}{B}{R}{G}'||castOpts.free||!this.castableList(p).some(e=>e.card===card&&e.from===(castOpts.from||card.zone)&&e.alt?.c1719Fist&&Object.keys(castOpts).every(k=>k==='from'||k==='xVal'||castOpts[k]===e.alt[k]))))return false;
     if(castOpts.starterPermission && !MTG.StarterCasting?.allowed(this,p,card,castOpts))return false;
     if(d.c21EndStepCast&&card.zone==='graveyard'&&castOpts.oracleImmediateCast===undefined){
@@ -2885,7 +2888,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (specs) {
       if (mode && d.modes) {
         specs = [];
-        for (const mi of mode) specs = specs.concat(modeTargetsFor(this, d.modes.list[mi], card, castOpts));
+        for (const mi of mode) specs = specs.concat(modeTargetsFor(this, d.modes.list[mi], card, {...castOpts,xVal}));
       }
       so.targetSpecs = specs;
       // Target selection is still part of proposing the spell. No mana or
@@ -2905,7 +2908,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       so.wardTargets = ctx.wardTargets;
     } else if (mode && d.modes) {
       const specs2 = [];
-      for (const mi of mode) specs2.push(...modeTargetsFor(this, d.modes.list[mi], card, castOpts));
+      for (const mi of mode) specs2.push(...modeTargetsFor(this, d.modes.list[mi], card, {...castOpts,xVal}));
       if (specs2.length) {
         so.targetSpecs = specs2;
         const ctx = {
@@ -3241,6 +3244,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Recheck planned Oracle costs before any mana or cards are consumed.
     if(so.c1719KickerVampire&&(!MTG.C1719.current(so.c1719KickerVampire)||so.c1719KickerVampire.card.ctrl!==p||so.c1719KickerVampire.card.tapped||!so.c1719KickerVampire.card.hasSub('Vampire')))return false;
     if(castOpts.c1719Fist&&!MTG.C1719.fistLive(this,p))return false;
+    if(castOpts.afcRooftop&&!MTG.AFC.rooftopLive(this,p,card,castOpts))return false;
+    if(so.afcGorexRows?.some(r=>!MTG.AFC.current(r)||r.card.owner!==p||!r.card.is('Creature')||[...additionalExiled,...delveExiled,...escapeExiled,...kotisExiled].includes(r.card)))return false;
     if(castOpts.starterPermission && !MTG.StarterCasting.validate({g:this,src:card,you:p,so}))return false;
     if (!validExileSelection([...kotisExiled, ...delveExiled, ...escapeExiled, ...additionalExiled], p.graveyard,
       kotisExiled.length + delveExiled.length + escapeExiled.length + additionalExiled.length, kotisExiled.length + delveExiled.length + escapeExiled.length + additionalExiled.length)) return false;
@@ -3332,6 +3337,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     if (castOpts.gravecrawler) delete castOpts.flashback;
     if(castOpts.starterPermission)MTG.StarterCasting.commit({g:this,src:card,you:p,so});
+    await this.moveGraveyardBatch((so.afcGorexRows||[]).map(r=>r.card),'exile');
+    so.afcGorexExiled=(so.afcGorexRows||[]).filter(r=>r.card.zone==='exile'&&r.card.zoneVersion===r.version+1).map(r=>({iid:r.card.iid,version:r.card.zoneVersion}));
     await this.moveGraveyardBatch(additionalExiled, 'exile');
     await this.moveGraveyardBatch(delveExiled, 'exile');
     const c1920Delve=delveExiled.filter(c=>c.zone==='exile').map(c=>({iid:c.iid,version:c.zoneVersion,creature:c.is('Creature'),keywords:MTG.C1920.intrinsicKeywords(c.def)}));
@@ -3378,6 +3385,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     card.castMeta = {
       wasCast:true, castBy:p.idx, convokedCount:so.convokedCards.length,
+      afcGorexExiled:so.afcGorexExiled,
       zkWasForetold:!!so.zkWasForetold,
       c1920Delve,
       c1719DragonRevealed:!!d.c1719Orator&&so.oracleCastingChoicePaid?.kind==='revealHand',
@@ -4112,7 +4120,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!so.isCopy) {
         if (card.isCopySpell) {
           card.zone = 'ceased';
-        } else if (card.zone === 'stack') {
+        } else if (card.zone === 'stack' && !await MTG.AFC.absorbSpell(this,so,d)) {
           let useBuyback = !!co.buybackPaid;
           if (useBuyback && ((d.rebound||so.c1719Rebound) && so.from === 'hand' || so.foundrySource)) {
             const choice = await p.controller.decide(this, {type:'chooseOption',prompt:'Choose the resolving spell destination',
@@ -4395,7 +4403,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const pool = this.bf().filter(card => card.ctrl === p &&
         (!(cost.sacOther || cost.sacSelf) || card !== source) && this.canSacrifice(card) &&
         (cost.sacCreature ? card.is('Creature') : cost.sac(this, card, source)));
-      const need = cost.c1516TargetSacrifice ? 0 : cost.sacN === 'X' ? 1 : cost.sacN || 1;
+      const need = cost.c1516TargetSacrifice ? 0 : cost.sacN === 'X' ? (cost.afcZeroX?0:1) : cost.sacN || 1;
       const visit = (start, picks) => {
         // Reserving additional sacrifices cannot restore lost mana options.
         // Prune impossible partial sets before exploring their combinations.
@@ -4454,7 +4462,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // sacN: cijena može tražiti VIŠE žrtava (Olivia: "Sacrifice two
         // Treasures"). Sa jednim dostupnim permanentom ability ne smije ni
         // biti ponuđen — inače igrač upadne u chooseCards prozor bez izlaza.
-        const sacNeed = cost.c1516TargetSacrifice ? 0 : cost.sacN === 'X' ? 1 : (cost.sacN || 1);
+        const sacNeed = cost.c1516TargetSacrifice ? 0 : cost.sacN === 'X' ? (cost.afcZeroX?0:1) : (cost.sacN || 1);
         if (cost.sacCreature && this.creatures(p).filter(x => (!(cost.sacOther||cost.sacSelf) || x !== c) && this.canSacrifice(x)).length < sacNeed) return;
         if (cost.sac && this.bf().filter(x => x.ctrl === p && (!(cost.sacOther||cost.sacSelf) || x !== c) && cost.sac(this, x, c) && this.canSacrifice(x)).length < sacNeed) return;
         if (cost.life && (p.life <= cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) return;
@@ -5473,9 +5481,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           reservedCounters: plannedCounters ? MTG.OracleV8CounterCosts.reservations(plannedCounters) : []});
       if (nsac === null) {
         sacPicked = await p.controller.decide(this, {
-          type: 'chooseCards', from: pool, min: 1, max: pool.length, prompt: `Žrtvuj (X):`, aiHint: { kind: 'sacX', src: c, canPayRemaining },
+          type: 'chooseCards', from: pool, min: cost.afcZeroX?0:1, max: pool.length, prompt: `Žrtvuj (X):`, aiHint: { kind: 'sacX', src: c, canPayRemaining },
         });
-        if (!Array.isArray(sacPicked)||!sacPicked.length||new Set(sacPicked).size!==sacPicked.length||sacPicked.some(card=>!pool.includes(card))) return false;
+        if (!Array.isArray(sacPicked)||!cost.afcZeroX&&!sacPicked.length||new Set(sacPicked).size!==sacPicked.length||sacPicked.some(card=>!pool.includes(card))) return false;
         ctx.x = sacPicked.length;
       } else {
         if (pool.length < nsac) return false;
@@ -5634,6 +5642,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       c.meta._loyUsed = this.turnNo;
     }
+    if(a.afcDiceCost)ctx.afcDiceCost=(await this.rollDice(p,a.afcDiceCost,1,{source:c}))[0];
     this.markAbilityActivated(p, c, false, { targets: ctx.targets });
     const so = {
       kind: 'ability', name: `${c.name}${a.label ? ' — ' + a.label : ''}`, ctrl: p,

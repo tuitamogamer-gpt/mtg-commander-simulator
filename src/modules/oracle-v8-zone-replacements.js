@@ -2,7 +2,7 @@
   const types=(card,snap)=>snap?.types||card.def.types;
   function sources(game){
     const rows=new Map();
-    const relevant=def=>def?.opponentGraveyardVoid||def?.c1719Slime||def?.c1920Sarcophagus||def?.c1920Rayami||def?.oracleZoneReplacements?.length;
+    const relevant=def=>def?.opponentGraveyardVoid||def?.c1719Slime||def?.c1920Sarcophagus||def?.c1920Rayami||def?.afcLorcan||def?.oracleZoneReplacements?.length;
     for(const card of game.bf())if(relevant(card.def))rows.set(card.iid,{card,ctrl:card.ctrl,snap:game.snapshot(card,false)});
     // A board wipe is one event: use the ability and controller immediately
     // before it, including a source already removed by an earlier loop item.
@@ -39,6 +39,7 @@
       if(from==='battlefield'&&to==='graveyard')for(const [i,effect] of game.untilEffects.entries())if(effect.kind==='zkCosmic'&&effect.who===snap.ctrl)add('zkCosmic:'+i,'Cosmic Intervention — exile and return next end step',()=>{to='exile';zkCosmic=effect;});
       if(to==='graveyard'){
         for(const row of rows){
+          if(from==='battlefield'&&snap.types.includes('Creature')&&snap.ctrl===row.ctrl&&(snap.changeling||snap.subtypes.includes('Warlock'))&&(row.snap?.def||row.card.def).afcLorcan)add('lorcan:'+row.card.iid,row.card.name+' — exile the Warlock',()=>{to='exile';});
           if(from==='battlefield'&&snap.types.includes('Creature')&&!card.isToken&&(row.snap?.def||row.card.def).c1920Rayami)add('rayami:'+row.card.iid,row.card.name+' — exile with a blood counter',()=>{to='exile';c1920Blood=true;});
           if(!opts.cycling&&!card.isToken&&card.owner===row.ctrl&&(row.snap?.def||row.card.def).c1920Sarcophagus&&M.C1920.hasCycling(game,card,snap))add('sarcophagus:'+row.card.iid,row.card.name+' — exile the uncycled card',()=>{to='exile';});
           if(from==='battlefield'&&snap.types.includes('Creature')&&snap.ctrl!==row.ctrl&&(row.snap?.def||row.card.def).c1719Slime)add('slime:'+row.card.iid,row.card.name+' — exile and add counters',()=>{to='exile';c1719Slimes.push({card:row.card,version:row.snap.zoneVersion,ctrl:row.ctrl,n:Math.max(0,snap.power)});});
