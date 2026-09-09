@@ -23,6 +23,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+    "Vampiric Bloodline": {"icon": "🩸", "colors": ["B", "R"], "style": "Vampires and Blood", "blurb": "Strefan turns life loss into Blood and attacking Vampires.", "set": "Innistrad: Crimson Vow Commander (2021)"},
+    "Spirit Squadron": {"icon": "👻", "colors": ["W", "U"], "style": "Spirits and flying tokens", "blurb": "Millicent discounts herself for your Spirits and replaces departing nontoken Spirits.", "set": "Innistrad: Crimson Vow Commander (2021)"},
+    "Buckle Up": {"icon": "🚘", "colors": ["W", "U"], "style": "Vehicles and Pilots", "blurb": "Kotori gives your Vehicles crew 2 and helps an artifact creature race with lifelink.", "set": "Kamigawa: Neon Dynasty Commander (2022)"},
+    "Upgrades Unleashed": {"icon": "🌸", "colors": ["R", "G"], "style": "Modified creatures and counters", "blurb": "Chishiro makes Spirits for Auras and Equipment and grows your modified creatures.", "set": "Kamigawa: Neon Dynasty Commander (2022)"},
+    "Heads I Win, Tails You Lose": {"icon": "🪙", "colors": ["U", "R"], "style": "Coin flips and partner commanders", "blurb": "Zndrsplt draws from won flips while Okaun doubles his power and toughness.", "set": "Secret Lair Commander (2022)"},
+    "Riveteers Rampage": {"icon": "🔥", "colors": ["B", "R", "G"], "style": "Blitz and creature recursion", "blurb": "Henzie gives large creature spells blitz and discounts blitz for your command-zone casts.", "set": "Streets of New Capenna Commander (2022)"},
+    "Obscura Operation": {"icon": "🕵️", "colors": ["W", "U", "B"], "style": "Connive and evasive attacks", "blurb": "Kamiz makes an attacker unblockable, lets it connive, and gives a smaller attacker double strike.", "set": "Streets of New Capenna Commander (2022)"},
+    "Bedecked Brokers": {"icon": "🛡️", "colors": ["G", "W", "U"], "style": "Counter diversity and shields", "blurb": "Perrie rewards the number of different counter kinds across your permanents.", "set": "Streets of New Capenna Commander (2022)"},
+    "Maestros Massacre": {"icon": "🎨", "colors": ["U", "B", "R"], "style": "Casualty and spell copies", "blurb": "Anhelo grants casualty 2 to your first instant or sorcery each turn.", "set": "Streets of New Capenna Commander (2022)"},
+    "Cabaretti Cacophony": {"icon": "🎉", "colors": ["R", "G", "W"], "style": "Creature tokens and goad", "blurb": "Kitt Kanto taps your creatures to strengthen and goad an active player’s creature.", "set": "Streets of New Capenna Commander (2022)"},
+
     "Land's Wrath": {"icon": "🌋", "colors": ["R", "G", "W"], "style": "Landfall and animated lands", "blurb": "Obuun grows your creatures with landfall and animates a land for combat.", "set": "Zendikar Rising Commander (2020)"},
     "Arm for Battle": {"icon": "⚔️", "colors": ["R", "W"], "style": "Equipment and commander attacks", "blurb": "Wyleth turns each attached Aura and Equipment into a card whenever he attacks.", "set": "Commander Legends (2020)"},
     "Reap the Tides": {"icon": "🌊", "colors": ["G", "U"], "style": "Extra lands and sea monsters", "blurb": "Aesi allows an extra land each turn and draws a card whenever your land enters.", "set": "Commander Legends (2020)"},
@@ -266,12 +277,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return { ok: true, why: '' };
   };
 
-  // Turtle Power is presented and played with its canonical two-Commander
-  // Character select pairing. Other decks retain their printed face commander.
+  // Preserve the printed default pair as well as the Turtle Power pairing.
   MTG.defaultCommanders = function (deckData, defs) {
     const names = deckData && deckData.name === 'Turtle Power'
       ? ['Leonardo, the Balance', 'Michelangelo, the Heart']
-      : [deckData && deckData.commander].filter(Boolean);
+      : [deckData && deckData.commander, deckData && deckData.partner].filter(Boolean);
     return MTG.validateCommanders(deckData, names, defs || MTG.DEFS).ok
       ? names : [deckData.commander];
   };

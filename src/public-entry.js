@@ -2,6 +2,7 @@
 // only after a player asks to enter setup or opens a shared game URL.
 'use strict';
 import './account.js';
+import './catalog-summary.js';
 import './modules/player-tools.js';
 import './modules/landing.js';
 
@@ -11,6 +12,7 @@ const page = root && root.querySelector('.mainmenu');
 if (!root || !page) throw new Error('Commander Simulator entry shell is missing.');
 
 if (!page.querySelector('.mainmenu-proof')) page.insertAdjacentHTML('beforeend', MTG.landingDetailsMarkup());
+MTG.syncLandingCounts(page);
 MTG.bindLandingPreview(page);
 MTG.renderRecentShelf(page, async deck => {
   await loadGame('solo');
@@ -37,7 +39,7 @@ function showLoading(mode) {
   veil.className = 'mainmenu-loadveil';
   veil.setAttribute('role', 'status');
   veil.setAttribute('aria-live', 'polite');
-  veil.innerHTML = `<div><i aria-hidden="true"></i><span>OPENING THE TABLE</span><h2>${mode === 'online' ? 'Preparing Commander Live.' : mode === 'import' ? 'Loading the decklist importer.' : 'Loading all 80 decks.'}</h2><p>The complete rules engine stays in this browser. This first load can take a moment.</p></div>`;
+  veil.innerHTML = `<div><i aria-hidden="true"></i><span>OPENING THE TABLE</span><h2>${mode === 'online' ? 'Preparing Commander Live.' : mode === 'import' ? 'Loading the decklist importer.' : `Loading all ${MTG.landingCounts().decks} decks.`}</h2><p>The complete rules engine stays in this browser. This first load can take a moment.</p></div>`;
   root.appendChild(veil);
   page.inert = true;
   root.setAttribute('aria-busy', 'true');
@@ -204,7 +206,7 @@ if (localStaticHost) {
 
 window.render_game_to_text = () => JSON.stringify({
   mode: 'menu',
-  deckCount: 80,
+  deckCount: MTG.landingCounts().decks,
   actions: ['Start a solo table', 'Create a Live table', 'Import your decklist here', 'Guide'],
   onboardingOpen: !!page.querySelector('.mainmenu-onboarding'),
   account: globalThis.MTGAccount?.user ? {

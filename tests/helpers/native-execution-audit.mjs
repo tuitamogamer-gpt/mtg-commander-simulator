@@ -15,7 +15,7 @@ function choose(trace) {
     if (query.type === 'chooseTargets') return query.candidates.slice(0, minimum);
     if (query.type === 'chooseCards') return query.from.slice(0, minimum);
     if (query.type === 'chooseOption') return query.options.find(option => option.key === 'yes')?.key ?? query.options[0]?.key;
-    if (query.type === 'chooseMulti') return query.options.slice(0, minimum).map(option => option.key);
+    if (query.type === 'chooseMulti') return query.repeats?Array.from({length:minimum},(_,i)=>query.options[i%query.options.length].key):query.options.slice(0, minimum).map(option => option.key);
     if (query.type === 'chooseX') return Math.max(minimum, Math.min(1, query.max ?? 1));
     if (query.type === 'orderTriggers') return query.triggers || query.items || [];
     if (query.type === 'bottomCards') return (query.cards || []).slice(0, minimum);
@@ -82,6 +82,7 @@ export async function auditNativeCard(MTG, name, role) {
   if (name === 'New Blood') extra('Falkenrath Noble',player,'battlefield','Untapped Vampire for the mandatory additional tap cost.');
   if (name === 'Runic Repetition') extra('Faithless Looting', player, 'exile', 'Exiled card with flashback for the mandatory target.');
   if (name === 'Despark') extra('Colossal Dreadmaw', opponent, 'battlefield', 'Permanent with mana value at least 4.');
+  if (name === 'Sinister Waltz') for(const n of ['Llanowar Elves','Wind Drake'])extra(n,player,'graveyard','Three graveyard creatures for the three mandatory targets.');
   if (name === 'Victimize') extra('Llanowar Elves', player, 'graveyard', 'Second creature card in your graveyard.');
   if (name === 'Back in Town') extra('Ragavan, Nimble Pilferer', player, 'graveyard', 'Pirate outlaw in your graveyard.');
   if (name === 'Ultimate Nullification') extra('Aunt May', player, 'battlefield', 'Legendary creature for the actual additional sacrifice cost.');

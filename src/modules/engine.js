@@ -1361,7 +1361,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Global entry-state replacements finish before ETB observers. The
       // affected controller chooses their order when several apply.
       await MTG.oracleV8ApplyEntryState(this, card);
+      await MTG.VN?.riotEntry?.(this,card);
       const additionalEntryCounters = {...opts.additionalCounters};
+      if(card.meta.vnAdditionalPlus){additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+card.meta.vnAdditionalPlus;delete card.meta.vnAdditionalPlus;}
       if(card.is('Creature'))for(const source of this.bf())if(source!==card&&source.ctrl===card.ctrl&&!source.cur?.abilitiesDisabled&&source.def.c1920Tayam)additionalEntryCounters.vigilance=(additionalEntryCounters.vigilance||0)+1;
       const bloodthirst=MTG.C1719?.bloodthirstCounters(this,card)||0;
       if(bloodthirst)additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+bloodthirst;
@@ -1635,6 +1637,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           // resolving spell and do not inherit its Bestow/cast choices.
           castMeta: !opts.copyOf || isCopy ? opts.castMeta : undefined,
           entryMeta: !opts.copyOf || isCopy ? opts.entryMeta : undefined,
+          additionalCounters: opts.additionalCounters, additionalCounterBy: opts.additionalCounterBy,
         };
         if (Object.hasOwn(opts, 'attachTo')) {
           const host = opts.attachTo;
@@ -2050,7 +2053,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     async _dealDamageBatch(hits,opts={}){
       // A single instruction damages each recipient once per source. Snapshot
       // amounts and source keywords before wither/counters change the board.
-      const grouped=[],batch={traits:new Map(),lifelink:new Map(),snapshots:new Map()};
+      const grouped=[],batch={traits:new Map(),lifelink:new Map(),snapshots:new Map(),lifeProtected:new Set(this.alivePlayers().filter(p=>this.vnDamageLifeProtected?.(p)))};
       for(const hit of hits){
         if(!hit.target||!(hit.n>0))continue;
         const existing=grouped.find(row=>row.src===hit.src&&row.target===hit.target);
@@ -2077,6 +2080,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (!(n > 0)) { if (!opts.deferSBA) await this.checkSBA(); return 0; }
       const oracleHit=MTG.OracleV8DamageEvents?.capture(this,src,p,n,opts);
+      const preservesLife=opts._damageBatch?opts._damageBatch.lifeProtected.has(p):this.vnDamageLifeProtected?.(p);
       this.recordDamageResult(src, p, n, opts);
       this.lg(`${src ? src.name : 'Source'} deals ${n} damage to ${p.name}.`, 'dmg');
       if (opts.combat && src && src.commander) {
@@ -2101,7 +2105,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.lg(`${p.name} gets ${toxic} poison counter${toxic === 1 ? '' : 's'} (toxic).`, 'dmg');
       }
       await this.applyDamageLifelink(src,n,opts);
-      if (!infect) await this.loseLife(p, n, 'damage');
+      if (!infect&&!preservesLife) await this.loseLife(p, n, 'damage');
       this.note('gameEffect', {
         kind: 'damage', targetKind: 'player', target: p, targetPlayer: p,
         source: src || null, amount: n, combat: !!opts.combat,
@@ -2260,6 +2264,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             }
             continue;
           }
+          if(effect.kind==='vnNextCombatDamage'&&effect.row.card===src&&effect.row.version===src.zoneVersion&&data.combat&&(!effect.usedEvent||effect.usedEvent===(opts._damageBatch||opts))){
+            add({key:effect,src:effect.sourceCard,label:'Impulsive Maneuvers',apply:async()=>{effect.usedEvent=opts._damageBatch||opts;const before=data.n;if(effect.double)data.n*=2;else if(preventionAllowed){data.n=0;await prevented(before);}}});continue;
+          }
           if (!preventionAllowed) continue;
           if(effect.kind==='oracleChosenSourcePrevention'&&MTG.OracleV8SourcePrevention.applies(this,effect,data)){
             add({key:effect,src:effect.sourceCard,label:effect.sourceCard.name+' — chosen source',apply:async()=>{
@@ -2389,7 +2396,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const c of cards) {
           if (c.zone !== 'hand' || !p.hand.includes(c)) continue;
           const wasLand = c.is('Land');
-          const madness = c.def.madness;
+          const madness = this.vnMadnessCost?this.vnMadnessCost(c):c.def.madness;
           let destination = madness ? 'exile' : 'graveyard';
           const library = !opts.noReplacement && this.bf().find(source =>
             source.ctrl === p && source.def.discardToLibraryTop);
@@ -2411,7 +2418,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 options:[{key:'yes',label:`Cast for ${madness}`},{key:'no',label:'Put in graveyard'}],aiHint:{kind:'pay',cost:madness,card:c}});
               if(choice==='yes'){
                 const previous=ctx.g._madnessCasting;
-                ctx.g._madnessCasting={card:c,player:owner,version};
+                ctx.g._madnessCasting={card:c,player:owner,version,cost:madness};
                 try{await ctx.g.castSpell(owner,c,{from:'exile',alt:{madness:true,altCostStr:madness,speed:'instant'}});}
                 finally{ctx.g._madnessCasting=previous;}
               }
@@ -2621,14 +2628,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       card.blocking = null;
     }
 
-    tap(card, { deferEvent = false } = {}) {
+    tap(card, { deferEvent = false, attackerDeclaration = false } = {}) {
       if (!card || card.zone !== 'battlefield' || card.phasedOut || card.tapped) return false;
       card.tapped = true;
       const firstThisTurn = card.meta._firstTappedTurn !== this.turnNo;
       if (firstThisTurn) {
         card.meta._firstTappedTurn = this.turnNo;
       }
-      if (!deferEvent) void this.emit('becameTapped', { card, player: card.ctrl, firstThisTurn });
+      if (!deferEvent) void this.emit('becameTapped', { card, player: card.ctrl, firstThisTurn, attackerDeclaration });
       return true;
     }
 
@@ -3591,7 +3598,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (cands.length < min) return false;
         if (max === 0) { ctx.targets.push([]); continue; }
         const targetHint=spec.aiHint?.goal==='counterTransferRecipient'?{...spec.aiHint,counterTransferSource:spec.aiHint.counterSourceTarget==='self'?src:[ctx.targets[spec.aiHint.counterSourceTarget]].flat()[0]}:spec.aiHint;
-        const decisionPlayer=spec.chooseByOpponent?await MTG.E.chooseOpponent(this,ctrl,{source:src,prompt:'Choose an opponent to choose '+(spec.prompt||'this target')}):(ctx.decisionPlayer||ctrl);
+        const decisionPlayer=typeof spec.decisionPlayer==='function'?spec.decisionPlayer(this,ctx):spec.chooseByOpponent?await MTG.E.chooseOpponent(this,ctrl,{source:src,prompt:'Choose an opponent to choose '+(spec.prompt||'this target')}):(ctx.decisionPlayer||ctrl);
         if(!decisionPlayer)return false;
         const decision = await decisionPlayer.controller.decide(this, {
           type: 'chooseTargets', spec, candidates: cands, min: Math.min(min, cands.length), max,
@@ -3620,11 +3627,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const ctrls = picked.filter(t => t && t.ctrl).map(t => t.ctrl);
           if (new Set(ctrls).size !== ctrls.length) return false;
         }
+        if(spec.sameGraveyard&&new Set(picked.map(c=>c.owner)).size>1)return false;
         // Ward nije dodatni target/cast trošak. Ciljani spell ili ability prvo
         // normalno ide na stack; zatim Ward trigger ide iznad njega i tek na
         // svojoj rezoluciji traži plaćanje ili pokušava counterovati original.
         ctx.wardTargets.push(...this.captureWardTargets(picked, ctrl));
-        for (const t of picked) if (t && t.iid !== undefined && !targetedNow.includes(t)) targetedNow.push(t);
+        for (const t of picked) if (t && (t.iid !== undefined || t instanceof Player) && !targetedNow.includes(t)) targetedNow.push(t);
         if (max === 1) ctx.targets.push(picked[0]);
         else ctx.targets.push(picked);
       }

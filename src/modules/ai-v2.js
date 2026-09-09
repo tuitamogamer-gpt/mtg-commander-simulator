@@ -198,6 +198,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+    "Vampiric Bloodline": {"archetype": "Vampires and Blood", "length": "long", "tags": ["tribal", "tokens", "combat"], "commanderImportance": 1.5},
+    "Spirit Squadron": {"archetype": "Spirits and flying tokens", "length": "long", "tags": ["tribal", "tokens", "combat"], "commanderImportance": 1.5},
+    "Buckle Up": {"archetype": "Vehicles and Pilots", "length": "long", "tags": ["artifacts", "combat", "value"], "commanderImportance": 1.5},
+    "Upgrades Unleashed": {"archetype": "Modified creatures and counters", "length": "long", "tags": ["counters", "combat", "voltron"], "commanderImportance": 1.5},
+    "Heads I Win, Tails You Lose": {"archetype": "Coin flips and partner commanders", "length": "long", "tags": ["value", "combat", "voltron"], "commanderImportance": 1.5},
+    "Riveteers Rampage": {"archetype": "Blitz and creature recursion", "length": "long", "tags": ["graveyard", "reanimate", "ramp"], "commanderImportance": 1.5},
+    "Obscura Operation": {"archetype": "Connive and evasive attacks", "length": "long", "tags": ["combat", "control", "value"], "commanderImportance": 1.5},
+    "Bedecked Brokers": {"archetype": "Counter diversity and shields", "length": "long", "tags": ["counters", "combat", "value"], "commanderImportance": 1.5},
+    "Maestros Massacre": {"archetype": "Casualty and spell copies", "length": "long", "tags": ["spellslinger", "sacrifice", "control"], "commanderImportance": 1.5},
+    "Cabaretti Cacophony": {"archetype": "Creature tokens and goad", "length": "long", "tags": ["tokens", "combat", "politics"], "commanderImportance": 1.5},
+
     "Land's Wrath": {"archetype": "Landfall and animated lands", "length": "long", "tags": ["lands", "ramp", "counters"], "commanderImportance": 1.5},
     "Arm for Battle": {"archetype": "Equipment and commander attacks", "length": "long", "tags": ["artifacts", "combat", "voltron"], "commanderImportance": 1.5},
     "Reap the Tides": {"archetype": "Extra lands and sea monsters", "length": "long", "tags": ["lands", "ramp", "combat"], "commanderImportance": 1.5},

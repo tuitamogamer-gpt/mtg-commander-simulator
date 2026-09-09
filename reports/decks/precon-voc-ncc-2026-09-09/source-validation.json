@@ -1,0 +1,195 @@
+{
+  "baseCommit": "4a7a901d97bb76ba5963a033d70534bd3419cb26",
+  "before": {
+    "definitions": 20285,
+    "eligible": 20262,
+    "selectableDecks": 80,
+    "nativeDefinitions": 2427,
+    "activeUnique": 3514,
+    "cardDeckChecks": 6570
+  },
+  "after": {
+    "definitions": 20450,
+    "eligible": 20428,
+    "selectableDecks": 90,
+    "nativeDefinitions": 2592,
+    "activeUnique": 3811,
+    "cardDeckChecks": 7395
+  },
+  "newCards": 165,
+  "reusedCards": 490,
+  "physicalCards": 1000,
+  "uniqueSourceCards": 655,
+  "newlyEligibleReused": [
+    "Smuggler's Share"
+  ],
+  "preservation": {
+    "existingRawDefinitions": 2427,
+    "existingDeckRecords": 81,
+    "oldCardsEqual": true,
+    "oldDecksEqual": true,
+    "oracleBatchFilesUnchanged": true,
+    "oldImagesUnchanged": true,
+    "commanderVideosUnchanged": true,
+    "imageMappings": {
+      "CARD_IMAGE_PATHS": 3666,
+      "CARD_ART_PATHS": 80
+    }
+  },
+  "oracleWordingDifferences": [
+    {
+      "name": "Bloodthirsty Blade",
+      "runtime": "Equipped creature gets +2/+0 and is goaded. (It attacks each combat if able and attacks a player other than you if able.)\n{1}: Attach Bloodthirsty Blade to target creature an opponent controls. Activate only as a sorcery.",
+      "source": "Equipped creature gets +2/+0 and is goaded. (It attacks each combat if able and attacks a player other than you if able.)\n{1}: Attach this Equipment to target creature an opponent controls. Activate only as a sorcery."
+    }
+  ],
+  "printedFieldDifferences": [
+    {
+      "name": "Commit // Memory",
+      "field": "cost",
+      "runtime": "{3}{U}{4}{U}{U}",
+      "source": "{3}{U} // {4}{U}{U}"
+    },
+    {
+      "name": "Dusk // Dawn",
+      "field": "cost",
+      "runtime": "{2}{W}{W}{3}{W}{W}",
+      "source": "{2}{W}{W} // {3}{W}{W}"
+    },
+    {
+      "name": "Indulge // Excess",
+      "field": "cost",
+      "runtime": "{2}{R}{1}{R}",
+      "source": "{2}{R} // {1}{R}"
+    },
+    {
+      "name": "Tezzeret's Gambit",
+      "field": "cost",
+      "runtime": "{3}{UP}",
+      "source": "{3}{U/P}"
+    }
+  ],
+  "sources": [
+    {
+      "name": "Vampiric Bloodline",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/innistrad-crimson-vow-commander-decklists-2021-11-08",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/VampiricBloodline_VOC.json",
+      "moxfield": "https://moxfield.com/decks/lava2X1Op0aSeUHhPC5cfQ",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "03509abcc75a3c970f2e486eba3b33ec792ee649dbe4ea0d73af1de5153bac3c",
+      "officialHtmlSha256": "56a998fd4755bef3bf9ff2c7bd4911164a2d2c8663955021e346e42ac27837f9",
+      "export": "vampiric-bloodline.txt",
+      "sha256": "44ed1159c9351e20ea5f21edf871d7b38d08a7caade8d6489d629cd18ef23a5f"
+    },
+    {
+      "name": "Spirit Squadron",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/innistrad-crimson-vow-commander-decklists-2021-11-08",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/SpiritSquadron_VOC.json",
+      "moxfield": "https://moxfield.com/decks/zoNqxklcjEyz2NZ9MI6jpA",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "7971d3be1b1ec3a2b1a399252452f80cf8fe207f0a2f35997adecd14decadf5c",
+      "officialHtmlSha256": "56a998fd4755bef3bf9ff2c7bd4911164a2d2c8663955021e346e42ac27837f9",
+      "export": "spirit-squadron.txt",
+      "sha256": "6a0259349e2ba31243ba5f3242d091694a55edf4eecb909ba19e33cb4cfa34b7"
+    },
+    {
+      "name": "Buckle Up",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/kamigawa-neon-dynasty-commander-decklists-2022-02-07",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/BuckleUp_NEC.json",
+      "moxfield": "https://moxfield.com/decks/QTZDODqtBUOQGIoEbEDbCQ",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "d2b80d661b6ba1b71bb71c24537f972a78cc841b285059cd0caba7d9fa6bec17",
+      "officialHtmlSha256": "8a4df9631081c7e0db47e2fa27727c3560b55b64fbc85e8c11119e1470e57339",
+      "export": "buckle-up.txt",
+      "sha256": "f9b1fc20b3ba109784b8d986464c14fd2d7fafc17f178c6d2f0b18c1647a1e2c"
+    },
+    {
+      "name": "Upgrades Unleashed",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/kamigawa-neon-dynasty-commander-decklists-2022-02-07",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/UpgradesUnleashed_NEC.json",
+      "moxfield": "https://moxfield.com/decks/_r0Tk4XqbEOws8IjeFPDlw",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "ec21123e40e07255bec3a6439e041096cde7fa86c33a18d4181c052e33f612e9",
+      "officialHtmlSha256": "8a4df9631081c7e0db47e2fa27727c3560b55b64fbc85e8c11119e1470e57339",
+      "export": "upgrades-unleashed.txt",
+      "sha256": "b77d503cf74d555f997f8e0cf59c4706c0117a1bacbe535794094fd14b06ee01"
+    },
+    {
+      "name": "Heads I Win, Tails You Lose",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/announcements/heads-i-win-tails-you-lose-commander-decklist-2021-11-18",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/HeadsIWinTailsYouLose_SLD.json",
+      "moxfield": "https://moxfield.com/decks/UP1ktQ_GyEK2KErkvoUt-g",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "7bd719f86ed346dbd335d37b75efeab993877cc98ed7ada65d528d51a61ce582",
+      "officialHtmlSha256": "600152b68c894692bd642cb993334d7cbad1778fa94b8f2a422f62788c285748",
+      "export": "heads-i-win-tails-you-lose.txt",
+      "sha256": "db0cc93af4ed114759511b1cfe8f5a99983653342bf028eab7b247884775d6a2"
+    },
+    {
+      "name": "Riveteers Rampage",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/streets-of-new-capenna-commander-decklists",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/RiveteersRampage_NCC.json",
+      "moxfield": "https://moxfield.com/decks/fTgFMxk5cESAhOVIks00kA",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "caafb0cf976f0d26c357e361a0f6b85270f1107260f232abc49b5d0c15bdaefb",
+      "officialHtmlSha256": "ac5d5edb2d7cfa8edc7a77125cc3084be3cf08971922552d5c4e3ec542ba8ef8",
+      "export": "riveteers-rampage.txt",
+      "sha256": "a3145e4a260467eba5a837fd40e00a214d134ad82b38a975d89524aef32f2e84"
+    },
+    {
+      "name": "Obscura Operation",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/streets-of-new-capenna-commander-decklists",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/ObscuraOperation_NCC.json",
+      "moxfield": "https://moxfield.com/decks/flG8SlpN50qt-L-rQ6VftQ",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "a86eda399262621ebe12924e077ae22603d9063a3f761c52920469b364a31ecf",
+      "officialHtmlSha256": "ac5d5edb2d7cfa8edc7a77125cc3084be3cf08971922552d5c4e3ec542ba8ef8",
+      "export": "obscura-operation.txt",
+      "sha256": "d7031fef8badfaf53aa2fa7d4c00aec6bb545d9a2df9db18339b3f2e77c0b96d"
+    },
+    {
+      "name": "Bedecked Brokers",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/streets-of-new-capenna-commander-decklists",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/BedeckedBrokers_NCC.json",
+      "moxfield": "https://moxfield.com/decks/LMu_N7hy3UWNP-HBkaw_xQ",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "b31d3e1c2fbf2b223e3e90c440d00e5b8bd0911df868923cef09cc5a1ae4de96",
+      "officialHtmlSha256": "ac5d5edb2d7cfa8edc7a77125cc3084be3cf08971922552d5c4e3ec542ba8ef8",
+      "export": "bedecked-brokers.txt",
+      "sha256": "892451712c9dc16bd33241335af05efdc2724eab016981bc56bb1dfb641d7ffd"
+    },
+    {
+      "name": "Maestros Massacre",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/streets-of-new-capenna-commander-decklists",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/MaestrosMassacre_NCC.json",
+      "moxfield": "https://moxfield.com/decks/flLw5YvIOE2tBprZ_GTsmQ",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "32f73e48c459ca5e0d3940a1110f00c096fe6894a74ac477565c6ec51060c644",
+      "officialHtmlSha256": "ac5d5edb2d7cfa8edc7a77125cc3084be3cf08971922552d5c4e3ec542ba8ef8",
+      "export": "maestros-massacre.txt",
+      "sha256": "ff5a70d32cdb2d053c1fcda11b4f56dc33a27eadd938c2325b6ccbca02207435"
+    },
+    {
+      "name": "Cabaretti Cacophony",
+      "provider": "Wizards decklist independently verified against MTGJSON",
+      "official": "https://magic.wizards.com/en/news/feature/streets-of-new-capenna-commander-decklists",
+      "mtgjson": "https://mtgjson.com/api/v5/decks/CabarettiCacophony_NCC.json",
+      "moxfield": "https://moxfield.com/decks/ONFl58ai-U-S3u539zDJQg",
+      "mtgjsonSnapshot": "2026-09-08",
+      "mtgjsonSha256": "b62da44aba78b3df8bb73e477aff5ec016ab07e53be395b94ab2c9a74d85a7fa",
+      "officialHtmlSha256": "ac5d5edb2d7cfa8edc7a77125cc3084be3cf08971922552d5c4e3ec542ba8ef8",
+      "export": "cabaretti-cacophony.txt",
+      "sha256": "9a24f390824c3c06b2219f2c1831d3555407ff9abac5f6e9fb5e1625a9572f8c"
+    }
+  ],
+  "runtimeSmokeSha256": "d2bfa25ce3bd78c0b86edc407483360e4d62604641a995a10da2732a8edfb040"
+}

@@ -2070,6 +2070,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       label: 'Bestow ' + card.def.bestowCost,
     } : null;
     const consider = (card, from, alt) => {
+      if(!['hand','command'].includes(from)&&!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.VN?.henzie(this,p,card,alt||{}))consider(card,from,{...alt,blitz:true,vnBlitz:true,altCostStr:this.castDefinition(card,alt||{}).cost,label:'Henzie: blitz'});
       if(!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.AFC?.rooftopLive(this,p,card,alt||{}))consider(card,from,{...alt,afcRooftop:true,altCostStr:'{0}'});
       if(!['hand','command'].includes(from)&&!alt?.free&&alt?.altCostStr===undefined&&!alt?.oracleAlternativeCost&&MTG.C1719?.fistLive(this,p))consider(card,from,{...alt,c1719Fist:true,altCostStr:'{W}{U}{B}{R}{G}'});
       if(!alt?.oracleAlternativeCost&&!['hand','command'].includes(from)&&!alt?.free&&alt?.altCostStr===undefined) {
@@ -2497,7 +2498,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(alt?.madness){
       const permission=this._madnessCasting;
       if(!permission||permission.card!==card||permission.player!==p||permission.version!==card.zoneVersion||
-        card.zone!=='exile'||!card.def.madness||alt.altCostStr!==card.def.madness||!this.canCastTiming(p,card,{speed:'instant'}))return false;
+        card.zone!=='exile'||!permission.cost||alt.altCostStr!==permission.cost||!this.canCastTiming(p,card,{speed:'instant'}))return false;
     }
     // Pitch-cost wrappers have already paid their costs before this entry.
     // These new alternatives instead require a live turn-history condition.
@@ -2537,6 +2538,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       castOpts.name = selected.name;
     }
     const d = this.castDefinition(card, castOpts);
+    if(castOpts.vnBlitz&&(!MTG.VN.henzie(this,p,card,castOpts)||castOpts.blitz!==true||castOpts.free||castOpts.altCostStr!==d.cost||!this.castableList(p).some(e=>e.card===card&&e.from===(castOpts.from||card.zone)&&e.alt?.vnBlitz&&Object.keys(castOpts).every(k=>k==='from'||k==='xVal'||castOpts[k]===e.alt[k]))))return false;
     if(castOpts.afcRooftop&&(!MTG.AFC.rooftopLive(this,p,card,castOpts)||castOpts.altCostStr!=='{0}'||castOpts.free||!this.castableList(p).some(e=>e.card===card&&e.from===(castOpts.from||card.zone)&&e.alt?.afcRooftop&&Object.keys(castOpts).every(k=>k==='from'||k==='xVal'||castOpts[k]===e.alt[k]))))return false;
     if(castOpts.c1719Fist&&(!MTG.C1719?.fistLive(this,p)||castOpts.altCostStr!=='{W}{U}{B}{R}{G}'||castOpts.free||!this.castableList(p).some(e=>e.card===card&&e.from===(castOpts.from||card.zone)&&e.alt?.c1719Fist&&Object.keys(castOpts).every(k=>k==='from'||k==='xVal'||castOpts[k]===e.alt[k]))))return false;
     if(castOpts.starterPermission && !MTG.StarterCasting?.allowed(this,p,card,castOpts))return false;
@@ -3112,21 +3114,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // Casualty and conspire are optional additional costs paid as the spell is
     // cast. Paying one queues a reflexive trigger that copies that same spell.
-    let casualtyPaid = false, conspirePaid = [];
-    if (!faceDownCast && !castOpts.adventure && Number.isInteger(d.casualty)) {
-      const pool = this.creatures(p).filter(c => c !== card && c.power >= d.casualty &&
+    let casualtyPaid = [], conspirePaid = [];
+    const casualtyInstances=[...(!faceDownCast&&!castOpts.adventure&&Number.isInteger(d.casualty)?[{n:d.casualty}]:[]),...(!faceDownCast?this.vnCasualties?.(p,card,castOpts)||[]:[])];
+    for (const casualty of casualtyInstances) {
+      const pool = this.creatures(p).filter(c => c !== card && c.power >= casualty.n &&
         !paidAddl.sacd.includes(c) && this.canSacrifice(c));
       if (pool.length) {
         const answer = await p.controller.decide(this, { type: 'chooseOption',
-          prompt: `Casualty ${d.casualty} for ${card.name} — sacrifice a creature to copy it?`,
+          prompt: `Casualty ${casualty.n} for ${card.name} — sacrifice a creature to copy it?`,
           options: [{ key: 'yes', label: 'Pay casualty' }, { key: 'no', label: 'Do not pay' }],
           aiHint: { kind: 'kicker', card } });
         if (answer === 'yes') {
           const picked = await p.controller.decide(this, { type: 'chooseCards', from: pool, min: 1, max: 1,
-            prompt: `Casualty ${d.casualty}: sacrifice which creature?`,
+            prompt: `Casualty ${casualty.n}: sacrifice which creature?`,
             aiHint: { kind: 'addlSac', card, required: 1 } });
           const victim = Array.isArray(picked) ? picked[0] : picked;
-          if (victim && pool.includes(victim)) { paidAddl.sacd = paidAddl.sacd.concat([victim]); casualtyPaid = true; }
+          if (victim && pool.includes(victim)) { paidAddl.sacd = paidAddl.sacd.concat([victim]); casualtyPaid.push(casualty); }
         }
       }
     }
@@ -3244,6 +3247,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Recheck planned Oracle costs before any mana or cards are consumed.
     if(so.c1719KickerVampire&&(!MTG.C1719.current(so.c1719KickerVampire)||so.c1719KickerVampire.card.ctrl!==p||so.c1719KickerVampire.card.tapped||!so.c1719KickerVampire.card.hasSub('Vampire')))return false;
     if(castOpts.c1719Fist&&!MTG.C1719.fistLive(this,p))return false;
+    if(castOpts.vnBlitz&&!MTG.VN.henzie(this,p,card,castOpts))return false;
     if(castOpts.afcRooftop&&!MTG.AFC.rooftopLive(this,p,card,castOpts))return false;
     if(so.afcGorexRows?.some(r=>!MTG.AFC.current(r)||r.card.owner!==p||!r.card.is('Creature')||[...additionalExiled,...delveExiled,...escapeExiled,...kotisExiled].includes(r.card)))return false;
     if(castOpts.starterPermission && !MTG.StarterCasting.validate({g:this,src:card,you:p,so}))return false;
@@ -3265,6 +3269,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         !MTG.validateOracleAdditionalCostPlans({g:this,src:card,you:p,so,
           reservedCards:[...paidAddl.sacd,...paidAddl.discarded,...kotisExiled,...delveExiled,...escapeExiled,...additionalExiled,...(broodshipLand?[broodshipLand]:[])]})) return false;
     if(d.c1516RevealCreature&&(!MTG.C1516.current(so.c1516Reveal)||!p.hand.includes(so.c1516Reveal.card)||paidAddl.discarded.includes(so.c1516Reveal.card)))return false;
+    if(castOpts.madness&&d.vnMadnessLife)paidAddl.life+=d.vnMadnessLife;
     if(this.canPayLife&&!this.canPayLife(p,paidAddl.life+(cost.lifeCost||0)))return false;
     // pay mana
     const paySpell = { card, castOpts, xVal };
@@ -3386,6 +3391,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     card.castMeta = {
       wasCast:true, castBy:p.idx, convokedCount:so.convokedCards.length,
       afcGorexExiled:so.afcGorexExiled,
+      vnEscapeExiled:d.vnSkyway?escapeExiled.map(c=>({iid:c.iid,version:c.zoneVersion})):undefined,
       zkWasForetold:!!so.zkWasForetold,
       c1920Delve,
       c1719DragonRevealed:!!d.c1719Orator&&so.oracleCastingChoicePaid?.kind==='revealHand',
@@ -3484,7 +3490,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     MTG.C21Rules?.copyTriggers(this,p,so,paySpell);
     // storm
-    for (const [paid, label] of [[casualtyPaid, 'Casualty'], ...conspirePaid.filter(r=>MTG.C1920.copyGrantActive(this,r)).map(()=>[true,'Conspire'])]) if (paid) this.queueTrigger({
+    for (const [paid, label] of [...casualtyPaid.map(()=>[true,'Casualty']), ...conspirePaid.filter(r=>MTG.C1920.copyGrantActive(this,r)).map(()=>[true,'Conspire'])]) if (paid) this.queueTrigger({
       src: card, ctrl: p, name: label, data: { so },
       run: async ctx => { await ctx.g.copySpell(ctx.data.so, ctx.you, { mayNewTargets: true }); },
     });
@@ -4034,7 +4040,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ? so.targets[0] : null;
     const resolvingBestowed = !!bestowHost;
     const queueOracleCastDelayed = permanent => {
-      const kind=co.warp&&d.oracleWarp?'warp':co.blitz&&d.oracleBlitz?'blitz':null;
+      const kind=co.warp&&d.oracleWarp?'warp':co.blitz&&(d.oracleBlitz||co.vnBlitz)?'blitz':null;
       if(!kind||permanent.zone!=='battlefield')return;
       const iid=permanent.iid,version=permanent.zoneVersion;
       this.delayed.push({on:'endStep',once:true,src:permanent,ctrl:p,name:kind==='warp'?'Warp exile':'Blitz sacrifice',run:async later=>{
@@ -4552,10 +4558,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       // crew
-      if (c.hasSub('Vehicle') && c.def.crew !== undefined) {
+      if (c.hasSub('Vehicle') && this.vehicleCrewCost(c) !== undefined) {
         const crewPow = this.creatures(p).filter(x => x !== c && !x.tapped)
-          .reduce((s, x) => s + Math.max(0, x.power), 0);
-        if (crewPow >= c.def.crew) out.push({ card: c, crew: true });
+          .reduce((s, x) => s + this.vehicleCrewPower(x), 0);
+        if (crewPow >= this.vehicleCrewCost(c)) out.push({ card: c, crew: true });
       }
     }
     // Public printed abilities use the same payment and target feasibility
@@ -5164,14 +5170,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return true;
     }
     if (entry.crew) {
-      const need = c.def.crew;
+      const need = this.vehicleCrewCost(c);
+      if (need === undefined) return false;
       const cands = this.creatures(p).filter(x => x !== c && !x.tapped);
       const picked = await p.controller.decide(this, {
         type: 'chooseCards', from: cands, min: 1, max: cands.length, prompt: `Crew ${c.name} (${need}): tapuj stvorenja`,
         aiHint: { kind: 'crew', card: c, need },
       });
       const chosen = Array.isArray(picked) ? [...new Set(picked)].filter(x => cands.includes(x)) : [];
-      const pow = chosen.reduce((s, x) => s + Math.max(0, x.power), 0);
+      const pow = chosen.reduce((s, x) => s + this.vehicleCrewPower(x), 0);
       if (pow < need) return false;
       for (const x of chosen) this.tap(x);
       this.markAbilityActivated(p, c);
@@ -5188,6 +5195,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           crewCtx.src.meta.crewedTurn = crewCtx.g.turnNo;
           crewCtx.g.recalc();
           crewCtx.g.lg(`${crewCtx.src.name} je crewovan.`);
+          await crewCtx.g.emit('vnCrewed', {card: crewCtx.src, player: crewCtx.you});
         },
       };
       this.stack.push(so);
@@ -6625,7 +6633,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.pruneAttackCompanions(attackers);
     }
     // Tap only after the whole declaration and its cost have been validated.
-    for (const card of attackers) if (!card.kw('vigilance')) this.tap(card);
+    for (const card of attackers) if (!card.kw('vigilance')) this.tap(card, {attackerDeclaration:true});
     // CR 508.1g: choose optional exertion costs during the declaration,
     // before any player receives priority or an attack trigger resolves.
     const exertCosts=await MTG.OracleV8Exert.chooseAttackCosts(this,p,attackers);

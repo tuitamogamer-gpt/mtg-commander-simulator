@@ -1,0 +1,362 @@
+{
+  "date": "2026-09-09",
+  "baseCommit": "4a7a901d97bb76ba5963a033d70534bd3419cb26",
+  "scope": "Local landing update followed by ten exact original precon imports; no commit, push or deployment.",
+  "catalog": {
+    "definitions": 20450,
+    "eligible": 20428,
+    "selectableDecks": 90,
+    "nativeDefinitions": 2592,
+    "activeUnique": 3811,
+    "cardDeckChecks": 7395
+  },
+  "preservation": {
+    "existingRawDefinitions": 2427,
+    "existingDeckRecords": 81,
+    "oldCardsEqual": true,
+    "oldDecksEqual": true,
+    "oracleBatchFilesUnchanged": true,
+    "oldImagesUnchanged": true,
+    "commanderVideosUnchanged": true,
+    "imageMappings": {
+      "CARD_IMAGE_PATHS": 3666,
+      "CARD_ART_PATHS": 80
+    }
+  },
+  "finalAffected": {
+    "tests": 450,
+    "passed": 450,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "log": "output/precon-voc-ncc-2026-09-09/final-affected-tests.log",
+    "semanticCases": 115,
+    "inputs": 1124,
+    "allPinnedInputsUnchanged": true,
+    "command": "node --test --test-concurrency=2 tests/voc-ncc-*.test.mjs tests/commander-legality.test.mjs tests/commander-visuals.test.mjs tests/ai-v2.test.mjs tests/baseline.test.mjs tests/full-card-audit.test.mjs tests/legacy-card-catalog-integrity.test.mjs tests/local-card-images.test.mjs tests/c19-c20-casting.test.mjs tests/c17-c19-casting.test.mjs tests/native-graveyard-permissions.test.mjs tests/oracle-v8-coins.test.mjs tests/oracle-v8-ability-loss.test.mjs tests/oracle-ai-crew-regression.test.mjs tests/oracle-v8-damage-events.test.mjs tests/oracle-v8-damage-replacements-next.test.mjs tests/oracle-v8-casting-choices.test.mjs tests/free-cast-copy-decisions.test.mjs tests/save-state.test.mjs tests/hidden-exile-views.test.mjs tests/oracle-v8-play-permissions.test.mjs"
+  },
+  "finalXFollowup": {
+    "tests": 8,
+    "passed": 8,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "log": "output/precon-voc-ncc-2026-09-09/final-x-mana-tests.log",
+    "command": "node --test tests/x-mana-mechanics.test.mjs"
+  },
+  "finalPlaneswalkerFollowup": {
+    "tests": 10,
+    "passed": 10,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "log": "output/precon-voc-ncc-2026-09-09/final-planeswalker-tests.log",
+    "command": "node --test tests/planeswalker-combat.test.mjs"
+  },
+  "diagnosticFullSuite": {
+    "tests": 9099,
+    "passed": 9094,
+    "failed": 5,
+    "cancelled": 0,
+    "skipped": 0,
+    "log": "output/precon-voc-ncc-2026-09-09/full-tests.log",
+    "command": "node --test --test-concurrency=2 tests/*.test.mjs",
+    "failedNames": [
+      "svaki face commander pokriva color identity svog fabri\u010dkog decka",
+      "the complete pinned legacy card set remains represented exactly once in the runtime catalog",
+      "runtime card art uses local WebP except the explicit API fallback list",
+      "svih 37 deck/planeswalker parova ima svih 110 loyalty putanja",
+      "inventar pokriva svih 119 aktivnih X spella i sve dodatne X-mana putanje"
+    ],
+    "reconciliation": [
+      "Single-face color identity assertion now validates the default partner pair.",
+      "Legacy catalog digest preserves its original 1626 names and excludes all 165 additions from the legacy subset.",
+      "Canonical Pilot artwork alias and new split-face/token inventory are included.",
+      "Planeswalker inventory now includes 42 deck/card pairs and 125 loyalty paths; all complete-file cases pass.",
+      "X-spell inventory now includes all 125 active names; the complete X-mana-mechanics file passes."
+    ],
+    "limitation": "The diagnostic suite included 90 completed deterministic four-player games and the full human-question cast/activation inspectors. It began before final fixes. All affected complete files pass on the pinned final tree; the complete suite was not repeated after the final changes."
+  },
+  "runtimeSmoke": {
+    "cards": 165,
+    "runtime-smoke-pass": 330,
+    "prerequisite-gap": 0,
+    "choice-gap": 0,
+    "error": 0,
+    "command": "node scripts/smoke-voc-ncc-precons.mjs",
+    "report": "reports/decks/precon-voc-ncc-2026-09-09/runtime-smoke.json",
+    "limitation": "Common-board paid execution is separate from semantic coverage."
+  },
+  "naturalGames": {
+    "passed": 13,
+    "expected": 13,
+    "rows": [
+      {
+        "name": "Aura of Courage",
+        "opponents": [
+          "Dungeons of Death",
+          "Undead Unleashed",
+          "Vampiric Bloodline"
+        ],
+        "seed": 11158,
+        "turns": 53,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Dungeons of Death",
+        "opponents": [
+          "Undead Unleashed",
+          "Vampiric Bloodline",
+          "Spirit Squadron"
+        ],
+        "seed": 11159,
+        "turns": 79,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Undead Unleashed",
+        "opponents": [
+          "Vampiric Bloodline",
+          "Spirit Squadron",
+          "Buckle Up"
+        ],
+        "seed": 11160,
+        "turns": 45,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Vampiric Bloodline",
+        "opponents": [
+          "Spirit Squadron",
+          "Buckle Up",
+          "Upgrades Unleashed"
+        ],
+        "seed": 11161,
+        "turns": 47,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Spirit Squadron",
+        "opponents": [
+          "Buckle Up",
+          "Upgrades Unleashed",
+          "Heads I Win, Tails You Lose"
+        ],
+        "seed": 11162,
+        "turns": 29,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Buckle Up",
+        "opponents": [
+          "Upgrades Unleashed",
+          "Heads I Win, Tails You Lose",
+          "Riveteers Rampage"
+        ],
+        "seed": 11163,
+        "turns": 36,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Upgrades Unleashed",
+        "opponents": [
+          "Heads I Win, Tails You Lose",
+          "Riveteers Rampage",
+          "Obscura Operation"
+        ],
+        "seed": 11164,
+        "turns": 30,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Heads I Win, Tails You Lose",
+        "opponents": [
+          "Riveteers Rampage",
+          "Obscura Operation",
+          "Bedecked Brokers"
+        ],
+        "seed": 11165,
+        "turns": 46,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Riveteers Rampage",
+        "opponents": [
+          "Obscura Operation",
+          "Bedecked Brokers",
+          "Maestros Massacre"
+        ],
+        "seed": 11166,
+        "turns": 50,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Obscura Operation",
+        "opponents": [
+          "Bedecked Brokers",
+          "Maestros Massacre",
+          "Cabaretti Cacophony"
+        ],
+        "seed": 11167,
+        "turns": 77,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Bedecked Brokers",
+        "opponents": [
+          "Maestros Massacre",
+          "Cabaretti Cacophony",
+          "Abzan Armor"
+        ],
+        "seed": 11168,
+        "turns": 53,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Maestros Massacre",
+        "opponents": [
+          "Cabaretti Cacophony",
+          "Abzan Armor",
+          "Animated Army"
+        ],
+        "seed": 11169,
+        "turns": 39,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Cabaretti Cacophony",
+        "opponents": [
+          "Abzan Armor",
+          "Animated Army",
+          "Avengers Assemble"
+        ],
+        "seed": 11170,
+        "turns": 43,
+        "winner": "AI Wolf",
+        "passed": true
+      }
+    ],
+    "command": "node scripts/smoke-voc-ncc-games.mjs --affected-opponents"
+  },
+  "browser": {
+    "selectorCases": 20,
+    "abilityCases": 20,
+    "widths": [
+      1440,
+      390
+    ],
+    "errors": [],
+    "commands": [
+      "node tests/browser/voc-ncc-precons.mjs",
+      "node tests/browser/voc-ncc-abilities.mjs"
+    ],
+    "preparedBoards": "Selector tests preserve actual original opening lists, then prepare a follow-on payment board. Ability scenarios use prepared boards with real human UI decisions, payments and priority."
+  },
+  "naturalBrowser": {
+    "iterations": 172,
+    "lands": 4,
+    "spells": 8,
+    "attacks": 5,
+    "turns": 18,
+    "winner": "AI Dragon",
+    "decks": [
+      "Spirit Squadron",
+      "Upgrades Unleashed"
+    ],
+    "width": 390,
+    "rematch": true,
+    "errors": [],
+    "command": "ARENA_VIEWPORT_WIDTH=390 ARENA_VIEWPORT_HEIGHT=844 node tests/browser/voc-ncc-gameplay.mjs"
+  },
+  "live": {
+    "checks": 7,
+    "passedChecks": [
+      "2 humans + 2 bots configured through lobby and old invite",
+      "all opening controls visible at 1365\u00d7768 and correct local AI seats instantiated",
+      "guest-1 private controls retain focus across sync and play Forest",
+      "guest pays mana, casts Sol Ring onto shared Stack, all humans pass and resolution reaches battlefield",
+      "mixed-table guest reload and host resume preserve the human seat",
+      "every configured local bot independently plays a land",
+      "no browser page or console errors"
+    ],
+    "humans": 2,
+    "bots": 2,
+    "errors": [],
+    "command": "BOT_SEATS=2,3 node tests/browser/voc-ncc-live.mjs",
+    "coverage": [
+      "Guest-private controls and focus across sync",
+      "Land play",
+      "Paid Sol Ring on the shared Stack",
+      "Human priority and resolution",
+      "Guest reload and host resume",
+      "Independent bot land turns"
+    ]
+  },
+  "landing": {
+    "decks": 90,
+    "importableCards": 20428,
+    "initialBeforeImport": {
+      "decks": 80,
+      "importableCards": 20262
+    },
+    "coldAndWarmWidths": [
+      1440,
+      390
+    ],
+    "errors": [],
+    "command": "node output/precon-voc-ncc-2026-09-09/check-landing.mjs",
+    "standardSkillClient": true
+  },
+  "checks": [
+    {
+      "command": "node scripts/check-syntax.mjs",
+      "passed": true
+    },
+    {
+      "command": "node scripts/audit.mjs",
+      "passed": true
+    },
+    {
+      "command": "node scripts/certify-cards.mjs --strict",
+      "passed": true,
+      "definitions": 20450,
+      "cardDeckChecks": 7395
+    },
+    {
+      "command": "node scripts/validate-voc-ncc-precons.mjs",
+      "passed": true
+    },
+    {
+      "command": "node scripts/import-voc-ncc-precons.mjs --write",
+      "passed": true,
+      "before": "3af869c9bbd97dda529fc728e6acd1986c3269aa08c62a3cfa201a1a411ec8b0",
+      "after": "3af869c9bbd97dda529fc728e6acd1986c3269aa08c62a3cfa201a1a411ec8b0"
+    },
+    {
+      "command": "git diff --check",
+      "passed": true
+    }
+  ],
+  "knownBoundaries": [
+    "Upgrades Unleashed preserves two original Mossfire Valleys; the general imported-list singleton validator correctly rejects that original exception.",
+    "Timothar linked Bat state retains the previous safe checkpoint until resolved; unsupported executable closures are not silently serialized.",
+    "No production publication or production browser verification."
+  ],
+  "browserEnvironment": {
+    "PLAYWRIGHT_MODULE": "/Users/borislavvukojevic/.codex/skills/develop-web-game/node_modules/playwright/index.mjs",
+    "channel": "chrome",
+    "servers": "Ephemeral local Express servers; closed by each browser harness."
+  }
+}

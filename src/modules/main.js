@@ -208,7 +208,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       <div class="mainmenu-hero-copy">
         <span class="mainmenu-kicker">COMMANDER, AT YOUR PACE</span>
         <h1 id="mainmenu-title">Four seats.<br><em>Your next move.</em></h1>
-        <p>Find your commander. Build your pod. Choose from ${nDecks} complete decks and play against local AI, or bring your friends to a private table.</p>
+        <p>Find your commander. Build your pod. Choose from <span data-catalog-decks>${nDecks}</span> complete decks and play against local AI, or bring your friends to a private table.</p>
         <div id="primary-actions" class="mainmenu-actions" tabindex="-1">
           <button type="button" class="mainmenu-primary" data-menu-action="solo"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-player"></use></svg><span><b>Start a solo table</b><small>You + three local AI opponents</small></span></button>
           <button type="button" class="mainmenu-secondary" data-menu-action="live"><svg class="gameicon" aria-hidden="true" focusable="false"><use href="./assets/icons/game-ui.svg#icon-deals"></use></svg><span><b>Create a Live table</b><small>A private pod for 2-4 friends</small></span></button>
@@ -250,6 +250,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (importDeck && !importDeck.querySelector('.gameicon')) importDeck.insertAdjacentHTML('afterbegin', U.icon('cards'));
     }
     if (!page.querySelector('.mainmenu-proof')) page.insertAdjacentHTML('beforeend', U.landingDetailsMarkup(nDecks));
+    U.syncLandingCounts(page);
     U.bindLandingPreview(page);
     if (!bootPage) root.appendChild(page);
 

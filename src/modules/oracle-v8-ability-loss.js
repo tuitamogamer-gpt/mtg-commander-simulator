@@ -3,12 +3,13 @@
 'use strict';
 var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
+  const artifactSubtypes=new Set('Attraction Blood Bobblehead Book Clue Contraption Equipment Food Fortification Gold Incubator Infinity Junk Lander Map Mutagen Powerstone Spacecraft Stone Treasure Vehicle Vibranium'.split(' '));
   function change(card,effect){
     if(effect.types)card.cur.types=effect.types.slice();
     if(effect.subtypes){
       card.cur.subtypes=effect.retainSubtypes?[...new Set(card.cur.subtypes.concat(effect.subtypes))]:card.cur.subtypes.filter(type=>!MTG.CREATURE_SUBTYPES.has(type)).concat(effect.subtypes);
       if(!effect.retainSubtypes){card.cur.allCreatureTypes=false;card.cur.allCreatureTypesFromOtherEffects=false;card.cur.suppressPrintedChangeling=true;}
-      if(effect.types)card.cur.subtypes=card.cur.subtypes.filter(type=>MTG.CREATURE_SUBTYPES.has(type)||effect.types.includes('Artifact')&&['Equipment','Treasure'].includes(type));
+      if(effect.types)card.cur.subtypes=card.cur.subtypes.filter(type=>effect.types.includes('Creature')&&MTG.CREATURE_SUBTYPES.has(type)||effect.types.includes('Artifact')&&artifactSubtypes.has(type));
     }
     if(effect.colors)card.cur.colors=effect.retainColors?[...new Set(card.cur.colors.concat(effect.colors))]:effect.colors.slice();
   }

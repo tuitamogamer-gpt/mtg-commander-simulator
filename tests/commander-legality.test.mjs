@@ -2,10 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadEngine } from './helpers/load-engine.mjs';
 
-test('svaki face commander pokriva color identity svog fabričkog decka', () => {
+test('svaki podrazumijevani commander ili partner par pokriva color identity svog fabričkog decka', () => {
   const MTG = loadEngine();
   for (const deck of Object.values(MTG.DECKS)) {
-    const result = MTG.validateCommanders(deck, [deck.commander], MTG.DEFS);
+    const result = MTG.validateCommanders(deck, MTG.defaultCommanders(deck, MTG.DEFS), MTG.DEFS);
     assert.equal(result.ok, true, `${deck.name}: ${result.why}`);
   }
 });

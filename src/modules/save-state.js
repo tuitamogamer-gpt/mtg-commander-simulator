@@ -217,6 +217,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if ((game._additionalPhases || []).length) blockers.push('a scheduled additional phase');
     if ((game.extraTurns || []).length || game._extraTurnAnchor) blockers.push('a scheduled extra turn');
     if(MTG.C1719?.snapshotBlockers)blockers.push(...MTG.C1719.snapshotBlockers(game));
+    if(MTG.VN?.snapshotBlockers)blockers.push(...MTG.VN.snapshotBlockers(game));
     if(MTG.AFC?.snapshotBlockers)blockers.push(...MTG.AFC.snapshotBlockers(game));
     if(MTG.ZK?.snapshotBlockers)blockers.push(...MTG.ZK.snapshotBlockers(game));
     if(MTG.C1920?.snapshotBlockers)blockers.push(...MTG.C1920.snapshotBlockers(game));

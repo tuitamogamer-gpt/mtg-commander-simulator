@@ -3,11 +3,21 @@
 'use strict';
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function (U) {
-  U.landingDetailsMarkup = (deckCount = 32) => `
+  U.landingCounts = () => ({
+    decks: U.DECKS ? Object.values(U.DECKS).filter(deck => !deck.custom).length : U.CATALOG_SUMMARY.decks,
+    importableCards: U.CARD_CATALOG ? Object.values(U.CARD_CATALOG).filter(card => card.deckImportEligible).length : U.CATALOG_SUMMARY.importableCards,
+  });
+  U.syncLandingCounts = page => {
+    const counts = U.landingCounts();
+    page.querySelectorAll('[data-catalog-decks]').forEach(node => { node.textContent = String(counts.decks); });
+    page.querySelectorAll('[data-catalog-cards]').forEach(node => { node.textContent = counts.importableCards.toLocaleString('en-US'); });
+    page.querySelector('.mainmenu-visual-foot [data-menu-action="solo"]')?.setAttribute('aria-label', `Explore all ${counts.decks} Commander decks`);
+  };
+  U.landingDetailsMarkup = (deckCount = U.landingCounts().decks) => `
     <section class="mainmenu-proof" aria-label="Product details">
-      <div class="mainmenu-proof-stat"><strong>${Number(deckCount) || 32}</strong><span><b>Complete decks</b><small>Find your playstyle</small></span></div>
+      <div class="mainmenu-proof-stat"><strong data-catalog-decks>${Number(deckCount)}</strong><span><b>Complete decks</b><small>Find your playstyle</small></span></div>
       <div class="mainmenu-proof-stat"><strong>4</strong><span><b>Seats at the table</b><small>The full Commander pod</small></span></div>
-      <div class="mainmenu-proof-stat"><strong>Local</strong><span><b>AI opponents</b><small>Play at your own pace</small></span></div>
+      <div class="mainmenu-proof-stat"><strong data-catalog-cards>${U.landingCounts().importableCards.toLocaleString('en-US')}</strong><span><b>Importable cards</b><small>Build your own deck</small></span></div>
       <div class="mainmenu-livecheck" data-live-state="checking" role="status" aria-live="polite"><i aria-hidden="true"></i><span><b>Checking Live rooms</b><small>Solo play is always available</small></span></div>
     </section>
 
