@@ -31,6 +31,11 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
   for(const token of JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-brc-onc-moc-sld-2026-09-09/images.json',import.meta.url))).tokenVariants)expected.add(token.alias);
   importedFaces.push(...JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-ltc-cmm-2026-09-10/oracle.json',import.meta.url))).cards.flatMap(r=>r.faces||[]));
   for(const token of JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-ltc-cmm-2026-09-10/images.json',import.meta.url))).tokenVariants)expected.add(token.alias);
+  importedFaces.push(...JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-cmm-woc-who-2026-09-10/oracle.json',import.meta.url))).cards.flatMap(r=>r.faces||[]));
+  for(const token of JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-cmm-woc-who-2026-09-10/images.json',import.meta.url))).tokenVariants)expected.add(token.alias);
+  for(const [name,alias] of Object.entries(JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-cmm-woc-who-2026-09-10/images.json',import.meta.url))).canonicalAliases)){
+    expected.add(name);assert.equal(MTG.cardImageURL(name),MTG.cardImageURL(alias),name+': pinned canonical token alias');
+  }
   expected.add('MOC Phyrexian');
   for(const face of importedFaces)expected.add(face.name);
   for(const name of [...expected]){const back=MTG.DEFS[name]?.c1719FlipBack?.name;if(back)expected.add(back);}

@@ -1,0 +1,105 @@
+{
+  "baseline": "f674dd7",
+  "passed": true,
+  "originalPhysicalCards": 500,
+  "uniqueNames": 372,
+  "sourceLists": [
+    {
+      "name": "Enduring Enchantments",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/commander-masters-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/EnduringEnchantments_CMM.json"
+      ],
+      "exportSha256": "7103b2d52f477a983833256237ed8e603a4848b169d4e812a79e6ecf7b6f3dc8"
+    },
+    {
+      "name": "Eldrazi Unbound",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/commander-masters-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/EldraziUnbound_CMM.json"
+      ],
+      "exportSha256": "12d436a41498c4b60298b47448849376c77420b3a5bc9a91f2079c726d456170"
+    },
+    {
+      "name": "Virtue and Valor",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/wilds-of-eldraine-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/VirtueAndValor_WOC.json"
+      ],
+      "exportSha256": "e0f44542e59077b7a10d4fa99e3645116b815ebf5d768b6db5818ff8e2e809a5"
+    },
+    {
+      "name": "Fae Dominion",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/wilds-of-eldraine-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/FaeDominion_WOC.json"
+      ],
+      "exportSha256": "64e0623ce8095c74f2c2b9f83fbdb8e7215dc92268f34c88d74bf9eb595a4be3"
+    },
+    {
+      "name": "Timey-Wimey",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/magic-the-gathering-doctor-who-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/TimeyWimey_WHO.json"
+      ],
+      "exportSha256": "679312d500a6bc3c5bc4e04c8bcb06503612eb5c75f6206774580ae1558f1bd9"
+    }
+  ],
+  "existingRawDefinitionsPreserved": 2995,
+  "existingRawDeckRecordsPreserved": 116,
+  "nativeRawDefinitions": 3104,
+  "existingImageMappingsPreserved": 4897,
+  "existingCommanderCropsPreserved": 117,
+  "existingTrackedAssetsUnchanged": true,
+  "addedWebPFiles": 216,
+  "allNewImageDigestsMatch": true,
+  "idempotentDataSha256": "c2693f29e8dc3f241392d0df5b68c691140d18b25143e999840f39b6331cbf28",
+  "retainedOracleDifferences": [
+    {
+      "name": "Ancient Stone Idol",
+      "existingOracle": "Flash\nThis spell costs {1} less to cast for each attacking creature.\nTrample\nWhen Ancient Stone Idol dies, create a 6/12 colorless Construct artifact creature token with trample.",
+      "pinnedOracle": "Flash\nThis spell costs {1} less to cast for each attacking creature.\nTrample\nWhen this creature dies, create a 6/12 colorless Construct artifact creature token with trample.",
+      "preserved": true
+    },
+    {
+      "name": "Brazen Borrower",
+      "existingOracle": "Flash\nFlying\nThis creature can block only creatures with flying.",
+      "pinnedOracle": "Brazen Borrower: Flash\nFlying\nThis creature can block only creatures with flying.\nPetty Theft: Return target nonland permanent an opponent controls to its owner's hand.",
+      "preserved": true
+    },
+    {
+      "name": "Hypnotic Sprite",
+      "existingOracle": "Flying",
+      "pinnedOracle": "Hypnotic Sprite: Flying\nMesmeric Glare: Counter target spell with mana value 3 or less. (Then exile this card. You may cast the creature later from exile.)",
+      "preserved": true
+    },
+    {
+      "name": "Realm-Cloaked Giant // Cast Off",
+      "existingOracle": "Vigilance",
+      "pinnedOracle": "Realm-Cloaked Giant: Vigilance\nCast Off: Destroy all non-Giant creatures. (Then exile this card. You may cast the creature later from exile.)",
+      "preserved": true
+    },
+    {
+      "name": "Spellscorn Coven // Take It Back",
+      "existingOracle": "Flying\nWhen this creature enters, each opponent discards a card.",
+      "pinnedOracle": "Spellscorn Coven: Flying\nWhen this creature enters, each opponent discards a card.\nTake It Back: Return target spell to its owner's hand. (Then exile this card. You may cast the creature later from exile.)",
+      "preserved": true
+    },
+    {
+      "name": "Steel Hellkite",
+      "existingOracle": "Flying\n{2}: Steel Hellkite gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by Steel Hellkite this turn. Activate only once each turn.",
+      "pinnedOracle": "Flying\n{2}: This creature gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn.",
+      "preserved": true
+    }
+  ],
+  "current": {
+    "decks": 120,
+    "definitions": 20962,
+    "eligible": 20944
+  }
+}

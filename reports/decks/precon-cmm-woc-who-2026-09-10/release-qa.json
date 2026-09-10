@@ -1,0 +1,987 @@
+{
+  "preparedAt": "2026-09-10T19:16:44.306902+00:00",
+  "baseline": "f674dd78a5f7683d75b005aee9f8c2446d6cc858",
+  "fullSuite": {
+    "command": "npm.cmd test",
+    "exitCode": 1,
+    "singleRunPass": false,
+    "log": ".local/cmm-woc-who-release-full-test.log",
+    "tests": 9540,
+    "suites": 0,
+    "pass": 9531,
+    "fail": 9,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 2511804.0241,
+    "failedFiles": [
+      "full-card-audit.test.mjs",
+      "headless-smoke.test.mjs",
+      "jeskai-striker.test.mjs",
+      "legacy-card-catalog-integrity.test.mjs",
+      "local-card-images.test.mjs",
+      "planeswalker-combat.test.mjs",
+      "player-facing-cards.test.mjs",
+      "player-facing-cards.test.mjs",
+      "x-mana-mechanics.test.mjs"
+    ]
+  },
+  "finalRegression": {
+    "log": ".local/cmm-woc-who-release-final-regression.log",
+    "tests": 1185,
+    "suites": 0,
+    "pass": 1185,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 152599.199
+  },
+  "finalRegressionFiles": [
+    "tests/afc-additional.test.mjs",
+    "tests/afc-dice.test.mjs",
+    "tests/afc-dungeons.test.mjs",
+    "tests/afc-exile.test.mjs",
+    "tests/afc-mic-integration.test.mjs",
+    "tests/ai-endgame-and-ward.test.mjs",
+    "tests/ai-v2.test.mjs",
+    "tests/baseline.test.mjs",
+    "tests/bom-precons.test.mjs",
+    "tests/c14-precons.test.mjs",
+    "tests/c15-c16-precons.test.mjs",
+    "tests/c17-c19-aura-control.test.mjs",
+    "tests/c17-c19-casting.test.mjs",
+    "tests/c17-c19-turns.test.mjs",
+    "tests/c21-precons.test.mjs",
+    "tests/clb-dmc-40k-precons.test.mjs",
+    "tests/cmm-woc-who-advanced.test.mjs",
+    "tests/cmm-woc-who-precons.test.mjs",
+    "tests/cmm-woc-who-release.test.mjs",
+    "tests/commander-visuals.test.mjs",
+    "tests/full-card-audit.test.mjs",
+    "tests/jeskai-striker.test.mjs",
+    "tests/legacy-card-catalog-integrity.test.mjs",
+    "tests/local-card-images.test.mjs",
+    "tests/ltc-cmm-advanced.test.mjs",
+    "tests/ltc-cmm-deep.test.mjs",
+    "tests/ltc-cmm-precons.test.mjs",
+    "tests/mana-solver-backtracking.test.mjs",
+    "tests/mana-tap-cost.test.mjs",
+    "tests/manual-mana-manifest-effects.test.mjs",
+    "tests/oracle-v8-casting-choices.test.mjs",
+    "tests/oracle-v8-casting-limits.test.mjs",
+    "tests/oracle-v8-casting-rules.test.mjs",
+    "tests/oracle-v8-counter-costs.test.mjs",
+    "tests/oracle-v8-public-abilities.test.mjs",
+    "tests/oracle-v8-stack-copy.test.mjs",
+    "tests/oracle-v8-turns.test.mjs",
+    "tests/planeswalker-combat.test.mjs",
+    "tests/planeswalker-decisions.test.mjs",
+    "tests/save-state.test.mjs",
+    "tests/state-trigger-lifecycle.test.mjs",
+    "tests/target-zone-and-suspend-regressions.test.mjs",
+    "tests/timing-suspend-evoke-regressions.test.mjs",
+    "tests/voc-ncc-precons.test.mjs",
+    "tests/x-mana-mechanics.test.mjs"
+  ],
+  "activationPromptSweep": {
+    "log": ".local/cmm-woc-who-release-activation-prompts.log",
+    "tests": 1,
+    "suites": 0,
+    "pass": 1,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 114684.9051
+  },
+  "allDeckSmoke": {
+    "passed": 120,
+    "expected": 120,
+    "originalCompleted": 109,
+    "resumedAfterFixes": 11,
+    "singleRun": false,
+    "rows": [
+      {
+        "name": "Abzan Armor",
+        "turns": 33,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Animated Army",
+        "turns": 32,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Avengers Assemble",
+        "turns": 49,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Blight Curse",
+        "turns": 32,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Counter Intelligence",
+        "turns": 68,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Deep Clue Sea",
+        "turns": 44,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Doom Prevails",
+        "turns": 30,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Elven Council",
+        "turns": 43,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Endless Punishment",
+        "turns": 32,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Family Matters",
+        "turns": 63,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Mardu Surge",
+        "turns": 65,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Most Wanted",
+        "turns": 47,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Prismari Artistry",
+        "turns": 43,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Quick Draw",
+        "turns": 71,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Squirreled Away",
+        "turns": 45,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "The Fantastic Four",
+        "turns": 73,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Turtle Power",
+        "turns": 49,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Wakanda Forever",
+        "turns": 50,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Scions & Spellcraft",
+        "turns": 73,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Coven Counters",
+        "turns": 40,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Quandrix Unlimited",
+        "turns": 35,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Dance of the Elements",
+        "turns": 36,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "World Shaper",
+        "turns": 25,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Limit Break",
+        "turns": 43,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Temur Roar",
+        "turns": 47,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Sultai Arisen",
+        "turns": 42,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Jeskai Striker",
+        "turns": 65,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "First Flight",
+        "turns": 54,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Grave Danger",
+        "turns": 35,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Chaos Incarnate",
+        "turns": 46,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Draconic Destruction",
+        "turns": 39,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Token Triumph",
+        "turns": 65,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Lorehold Legacies",
+        "turns": 33,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Prismari Performance",
+        "turns": 41,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Quantum Quandrix",
+        "turns": 39,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Silverquill Statement",
+        "turns": 43,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Witherbloom Witchcraft",
+        "turns": 75,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Forged in Stone",
+        "turns": 60,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Peer Through Time",
+        "turns": 55,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Sworn to Darkness",
+        "turns": 76,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Built from Scratch",
+        "turns": 62,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Guided by Nature",
+        "turns": 61,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Call the Spirits",
+        "turns": 53,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Seize Control",
+        "turns": 62,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Plunder the Graves",
+        "turns": 36,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Wade into Battle",
+        "turns": 45,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Swell the Host",
+        "turns": 43,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Entropic Uprising",
+        "turns": 53,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Open Hostility",
+        "turns": 36,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Stalwart Unity",
+        "turns": 57,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Breed Lethality",
+        "turns": 30,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Invent Superiority",
+        "turns": 48,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Draconic Domination",
+        "turns": 48,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Vampiric Bloodlust",
+        "turns": 44,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Feline Ferocity",
+        "turns": 42,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Arcane Wizardry",
+        "turns": 59,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Exquisite Invention",
+        "turns": 45,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Subjective Reality",
+        "turns": 44,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Nature's Vengeance",
+        "turns": 54,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Adaptive Enchantment",
+        "turns": 48,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Merciless Rage",
+        "turns": 37,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Primal Genesis",
+        "turns": 65,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Mystic Intellect",
+        "turns": 66,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Faceless Menace",
+        "turns": 49,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Timeless Wisdom",
+        "turns": 43,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Enhanced Evolution",
+        "turns": 53,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Ruthless Regiment",
+        "turns": 66,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Arcane Maelstrom",
+        "turns": 45,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Symbiotic Swarm",
+        "turns": 50,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Sneak Attack",
+        "turns": 40,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Land's Wrath",
+        "turns": 34,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Arm for Battle",
+        "turns": 48,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Reap the Tides",
+        "turns": 53,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Phantom Premonition",
+        "turns": 45,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Elven Empire",
+        "turns": 42,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Planar Portal",
+        "turns": 53,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Draconic Rage",
+        "turns": 41,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Aura of Courage",
+        "turns": 53,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Dungeons of Death",
+        "turns": 79,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Undead Unleashed",
+        "turns": 45,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Vampiric Bloodline",
+        "turns": 47,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Spirit Squadron",
+        "turns": 29,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Buckle Up",
+        "turns": 36,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Upgrades Unleashed",
+        "turns": 30,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Heads I Win, Tails You Lose",
+        "turns": 46,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Riveteers Rampage",
+        "turns": 50,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Obscura Operation",
+        "turns": 79,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Bedecked Brokers",
+        "turns": 47,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Maestros Massacre",
+        "turns": 50,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Cabaretti Cacophony",
+        "turns": 32,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Mind Flayarrrs",
+        "turns": 48,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Party Time",
+        "turns": 53,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Draconic Dissent",
+        "turns": 65,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Exit from Exile",
+        "turns": 40,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Painbow",
+        "turns": 51,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Legends' Legacy",
+        "turns": 54,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Tyranid Swarm",
+        "turns": 52,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "The Ruinous Powers",
+        "turns": 45,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Necron Dynasties",
+        "turns": 63,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Forces of the Imperium",
+        "turns": 51,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Mishra's Burnished Banner",
+        "turns": 39,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Urza's Iron Alliance",
+        "turns": 50,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Rebellion Rising",
+        "turns": 34,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Corrupting Influence",
+        "turns": 33,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Tinker Time",
+        "turns": 63,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Growing Threat",
+        "turns": 52,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Divine Convocation",
+        "turns": 46,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Cavalry Charge",
+        "turns": 44,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Call for Backup",
+        "turns": 53,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "From Cute to Brute",
+        "seed": 11190,
+        "opponents": [
+          "Riders of Rohan",
+          "The Hosts of Mordor",
+          "Food and Fellowship"
+        ],
+        "turns": 57,
+        "winner": "AI Raven",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "Riders of Rohan",
+        "seed": 11191,
+        "opponents": [
+          "The Hosts of Mordor",
+          "Food and Fellowship",
+          "Sliver Swarm"
+        ],
+        "turns": 57,
+        "winner": "AI Dragon",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "The Hosts of Mordor",
+        "seed": 11192,
+        "opponents": [
+          "Food and Fellowship",
+          "Sliver Swarm",
+          "Planeswalker Party"
+        ],
+        "turns": 51,
+        "winner": "AI Raven",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "Food and Fellowship",
+        "seed": 11193,
+        "opponents": [
+          "Sliver Swarm",
+          "Planeswalker Party",
+          "Enduring Enchantments"
+        ],
+        "turns": 45,
+        "winner": "You",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "Sliver Swarm",
+        "seed": 11194,
+        "opponents": [
+          "Planeswalker Party",
+          "Enduring Enchantments",
+          "Eldrazi Unbound"
+        ],
+        "turns": 57,
+        "winner": "You",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "Planeswalker Party",
+        "seed": 11195,
+        "opponents": [
+          "Enduring Enchantments",
+          "Eldrazi Unbound",
+          "Virtue and Valor"
+        ],
+        "turns": 50,
+        "winner": "AI Dragon",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "Enduring Enchantments",
+        "seed": 11196,
+        "opponents": [
+          "Eldrazi Unbound",
+          "Virtue and Valor",
+          "Fae Dominion"
+        ],
+        "turns": 58,
+        "winner": "You",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "Eldrazi Unbound",
+        "seed": 11197,
+        "opponents": [
+          "Virtue and Valor",
+          "Fae Dominion",
+          "Timey-Wimey"
+        ],
+        "turns": 80,
+        "winner": "AI Wolf",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "Virtue and Valor",
+        "seed": 11198,
+        "opponents": [
+          "Fae Dominion",
+          "Timey-Wimey",
+          "Abzan Armor"
+        ],
+        "turns": 51,
+        "winner": "AI Dragon",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "Fae Dominion",
+        "seed": 11199,
+        "opponents": [
+          "Timey-Wimey",
+          "Abzan Armor",
+          "Animated Army"
+        ],
+        "turns": 51,
+        "winner": "You",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "Timey-Wimey",
+        "seed": 11200,
+        "opponents": [
+          "Abzan Armor",
+          "Animated Army",
+          "Avengers Assemble"
+        ],
+        "turns": 29,
+        "winner": "AI Raven",
+        "fallbacks": 0,
+        "passed": true
+      }
+    ],
+    "criteria": [
+      "real winner",
+      "fewer than 200 turns",
+      "no pending triggers"
+    ]
+  },
+  "reconciliation": [
+    "Rooftop Storm now uses an ordinary front face when no explicit Oracle face is selected. All eleven games from From Cute to Brute onward finish after this fix.",
+    "The emerge cast hook tolerates the partial cast event used by legacy triggers. The full Jeskai Striker file passes in the final regression.",
+    "Jace, Mirror Mage and Myriad Construct now use structured kicker costs. Human and AI regressions assert real total payments of five and seven mana, readable prompts, and resulting copies/counters; an unaffordable kicker is not offered.",
+    "The Black Gate supplies a readable player-choice prompt. The complete activated-ability prompt sweep passes.",
+    "Canonical token aliases retain pinned local art; new faces and linked token variants are included in the complete local-image audit.",
+    "The original 1626-name legacy digest remains intact after excluding the 109 recorded additions. Active-card, planeswalker/loyalty and X-spell inventories include the additions."
+  ],
+  "browser": {
+    "passed": 10,
+    "errors": [],
+    "evidence": "output\\precon-cmm-woc-who-2026-09-10\\release-isolated-browser\\result.json",
+    "log": ".local/cmm-woc-who-release-browser-final.log"
+  },
+  "live": {
+    "passed": 6,
+    "evidence": "output\\precon-cmm-woc-who-2026-09-10\\release-live-isolated\\result.json",
+    "harnessFix": "Re-read the guest main-phase decision after advancing the host so the test does not skip the new Proceed button."
+  },
+  "catalog": {
+    "status": "passed",
+    "sourceFile": ".local/oracle-pinned-20260830090156.jsonl.gz",
+    "sourceSha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+    "sourceBytes": 24531992,
+    "counts": {
+      "runtimeDefinitions": 20962,
+      "genericOracleCards": 17800,
+      "genericBatches": 178,
+      "manualOracleCards": 58,
+      "legacyDefinitions": 3104,
+      "deckImportEligibleDefinitions": 20944,
+      "deckImportRestrictedDefinitions": 18,
+      "representedUniverseOracleIds": 20935,
+      "remainingUniverseOracleIds": 9849,
+      "parserEligibleUnimported": 2,
+      "deferred": 9847,
+      "runtimeEntriesWithoutSnapshotMatch": 17,
+      "runtimeEntriesOutsideComparisonUniverse": 8
+    },
+    "inputFilesSha256": "dba69df94ccc073564e942078ece5dd4e961615cc86f106c561072806f4442ba",
+    "exportLog": ".local/cmm-woc-who-release-catalog-after-fixes.log",
+    "checkLog": ".local/cmm-woc-who-release-catalog-check-final.log"
+  },
+  "syntax": {
+    "passed": true,
+    "log": ".local/cmm-woc-who-release-check-final.log"
+  },
+  "certification": {
+    "passed": true,
+    "definitions": 20962,
+    "cardDeckChecks": 9914,
+    "log": ".local/cmm-woc-who-release-certify-final.log"
+  },
+  "nativeSmoke": {
+    "passed": 218,
+    "cards": 109,
+    "prerequisiteGaps": 0,
+    "choiceGaps": 0,
+    "errors": 0,
+    "log": ".local/cmm-woc-who-release-native-final.log"
+  },
+  "dependencyAudit": {
+    "passed": true,
+    "vulnerabilities": 0,
+    "log": ".local/cmm-woc-who-release-dependency-audit.log"
+  },
+  "isolation": "Release checks use an isolated checkout excluding concurrent Command Table and Live documentation changes. The initial 258 staged files matched that checkout byte for byte; final fixes and generated artifacts are synchronized explicitly.",
+  "limitations": [
+    "The original full-suite command failed; it is not presented as a single full-suite pass. All nine failures are reconciled by the final checks above.",
+    "All-deck coverage combines 109 original successful games and eleven resumed games after fixes.",
+    "The full cast-prompt sweep was not repeated; targeted human/AI paid-cast regressions verify its two reported failures. The complete activation-prompt sweep was repeated.",
+    "These checks do not prove every possible card interaction."
+  ],
+  "delivery": {
+    "branch": "main",
+    "canonical": "https://mtg-commander-simulator.vercel.app/",
+    "finalEvidence": "output\\precon-cmm-woc-who-2026-09-10\\release.json"
+  }
+}

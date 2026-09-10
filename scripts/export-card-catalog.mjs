@@ -237,7 +237,7 @@ CSV files are UTF-8, sorted by card name without locale-specific collation, and 
 
 ## Current inventory
 
-Last recorded import: **${state.updatedAt}**.
+Generic Oracle import state: **${state.updatedAt}**. The counts below include all current runtime definitions, including subsequent native precon imports.
 
 | Measure | Count |
 | --- | ---: |

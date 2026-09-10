@@ -2446,7 +2446,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // but it is not cast and did not itself spend mana, tap/convoked creatures,
   // use Treasures, or acquire later stack state such as countered/ward data.
   const COPIABLE_SPELL_CHOICE_KEYS = [
-    'quality', 'lifestreamX', 'c1516RevealMV',
+    'quality', 'lifestreamX', 'c1516RevealMV', 'cwwRevealed',
     'striveTargets', 'counterDistribution', 'damageDivision',
     'squadN', 'sacdN', 'sacdSnaps', 'additionalTapped', 'harmonizeCreature', 'discardedCards',
     'additionalLifePaid', 'additionalBlightPaid', 'additionalCostChoice',
@@ -3562,6 +3562,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     for (const c of this.bf()) {
       if (c.def.grantsCascade && c.ctrl === p && c.def.grantsCascade(this, c, card, castData, so)) cascades++;
+      if(c.def.cwwDoubleCascade&&c.ctrl===p&&!c.cur?.abilitiesDisabled&&so.from==='hand'&&castData.mv>=7&&!MTG.CWW.castColors(this,card,so.castOpts).length)cascades+=2;
     }
     // Cascade is a cast trigger, not an inline continuation of casting the
     // outer spell. Put every instance on the Stack so the cast events finish
@@ -3990,6 +3991,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if(yes!=='yes')return;
       }
       if (so.run) await so.run(so.ctx);
+      if(so.sagaChapter)await this.emit('cwwSagaResolved',{card:so.srcCard,player:so.ctrl,chapter:so.ctx.data.chapter,final:so.ctx.data.chapter===(so.srcCard.def.saga||[]).length});
       MTG.StateTriggers?.afterResolve(this,so);
       } finally {
         if(so.sagaChapter)this._resolvingSagaChapters=this._resolvingSagaChapters.filter(item=>item!==so);
@@ -4442,7 +4444,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // Minus sposobnost se ne smije nuditi ako planeswalker nema dovoljno
         // loyalty countera da plati trošak (CR 606.5a).
         if (a.loyalty < 0 && (c.counters.loyalty || 0) < -a.loyalty) return;
-        const cost = a.cost || {};
+        const cost = {...a.cost};
+        if(!cost.mana&&!cost.manaFromTarget&&MTG.CWW?.abilityTax(this,p))cost.mana='{0}';
         if (cost.mill && p.library.length < cost.mill) return;
         if (cost.tap && (c.tapped)) return;
         if(cost.untapSelf&&(!c.tapped||c.is('Creature')&&c.sick&&!c.kw('haste')))return;
@@ -4599,7 +4602,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const cost = source.extraCost || {};
       if (cost.life && (p.life <= cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) continue;
       if (cost.mana) {
-        const manaCost = this.abilityManaCost(p, c, typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana);
+        const manaCost = this.abilityManaCost(p, c, typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana, {isMana:true});
         if (!this.canPayMana(p, manaCost, { card: c, isAbility: true }, {
           excludeCards: cost.tap ? [c] : [],
           reservedEnergy: cost.energy || 0,
@@ -4760,7 +4763,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         !source.m.creatureOK && !source.m.ignoreSickness) return false;
       if (cost.life && (p.life <= cost.life||this.canPayLife&&!this.canPayLife(p,cost.life))) return false;
       const manualManaCost = cost.mana ?
-        this.abilityManaCost(p, c, typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana) : null;
+        this.abilityManaCost(p, c, typeof cost.mana === 'function' ? cost.mana(this, c) : cost.mana, {isMana:true}) : null;
       if (manualManaCost) {
         const paid = await this.payMana(p, manualManaCost, { card: c, isAbility: true }, {
           excludeCards: cost.tap ? [c] : [],
@@ -5006,7 +5009,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!ok) return false;
       await this.move(c,'exile');
       c.meta.suspended=n;
-      if(c.def.c1516SuspendX)c.counters.time=n;
+      c.counters.time=n;
       this.lg(`${U.playerVerb(p, 'suspend', 'suspends')} ${c.name} (${n}).`);
       return true;
     }
@@ -5192,6 +5195,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const chosen = Array.isArray(picked) ? [...new Set(picked)].filter(x => cands.includes(x)) : [];
       const pow = chosen.reduce((s, x) => s + this.vehicleCrewPower(x), 0);
       if (pow < need) return false;
+      if(MTG.CWW?.abilityTax(this,p)&&!await this.payMana(p,this.abilityManaCost(p,c,'{0}',{ability:{crew:true}}),{card:c,isAbility:true},{excludeCards:chosen}))return false;
       for (const x of chosen) this.tap(x);
       this.markAbilityActivated(p, c);
       const ctx = {
@@ -5230,6 +5234,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (a.oncePerTurn && c.meta['_ab_' + (a.c1719UseKey||entry.idx)] === this.turnNo) ||
         (a.oncePerObject && c.meta['_abo_' + entry.idx] === c.zoneVersion)) return false;
     const cost = {...a.cost};
+    if(!cost.mana&&!cost.manaFromTarget&&MTG.CWW?.abilityTax(this,p))cost.mana='{0}';
     if(cost.untapSelf&&(!c.tapped||c.is('Creature')&&c.sick&&!c.kw('haste')))return false;
     if (cost.mill && p.library.length < cost.mill) return false;
     if(cost.energy&&(p.counters?.energy||0)<cost.energy)return false;
@@ -6270,6 +6275,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.phase = 'upkeep';
     this.note('phase', {});
     await this.pace(p.isAI ? 330 : 0);
+    for(let upkeep=0;upkeep<1+(p.turnState.cwwExtraUpkeeps||0);upkeep++){
     await this.emit('upkeep', { player: p });
     // Each suspended card creates a normal beginning-of-upkeep trigger. The
     // counter is removed only when that trigger resolves. Removing the last
@@ -6287,11 +6293,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async removeCtx => {
           if (c.zone !== 'exile' || c.zoneVersion !== suspendedZoneVersion ||
               !c.meta || c.meta.suspended <= 0) return;
-          if(c.def.c1516SuspendX){removeCtx.g.removeCounters(c,'time',1);return;}
-          c.meta.suspended--;
-          removeCtx.g.lg(`${c.name}: suspend ${c.meta.suspended} remaining.`);
-          if (c.meta.suspended !== 0) return;
-          removeCtx.g.queueSuspendCast(c,p,suspendedZoneVersion);
+          MTG.CWW?.syncTime(c);
+          removeCtx.g.removeCounters(c,'time',1);
         },
       });
     }
@@ -6300,6 +6303,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     this.emptyPool();          // CR 500.4
     if (this.gameOver) return;
 
+    }
     // DRAW
     if(!this.bf().some(c=>c.ctrl===p&&c.def.c1719SkipDraw&&!c.cur?.abilitiesDisabled)){
     this.phase = 'draw';

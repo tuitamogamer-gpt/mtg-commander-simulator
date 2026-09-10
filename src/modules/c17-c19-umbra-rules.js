@@ -2,7 +2,7 @@
 var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
  const M=MTG,C=M.C1719;
- const armorFor=(g,c,bf=g.bf())=>bf.filter(a=>a.attachedTo===c.iid&&!a.cur.abilitiesDisabled&&a.def.umbraArmor);
+ const armorFor=(g,c,bf=g.bf())=>bf.filter(a=>a.attachedTo===c.iid&&!a.cur.abilitiesDisabled&&(a.def.umbraArmor||a.hasSub('Aura')&&bf.some(s=>s.ctrl===c.ctrl&&C.live(s)&&s.def.cwwUmbraMystic)));
  // Choose all replacements against the pre-destruction battlefield. An Aura
  // being destroyed simultaneously still protects its host (CR 702.89).
  async function planDestruction(g,cards,opts={}){

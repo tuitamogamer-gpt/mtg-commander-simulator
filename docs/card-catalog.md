@@ -2,10 +2,6 @@
 
 This inventory is generated from the application runtime and the pinned Scryfall Oracle feed. It describes the repository's card catalog, not a promise that every Magic card or interaction is implemented.
 
-**Snapshot date: 5 September 2026.** The tables and CSV files below retain that export. The subsequent [five Starter precons](../reports/decks/precon-starter-2026-09-06/README.md) add 61 definitions and reuse 276 existing ones. The following [Commander 2021 batch](../reports/decks/precon-c21-2026-09-06/README.md) adds 80 definitions and reuses 277. The subsequent [Commander 2014 batch](../reports/decks/precon-c14-2026-09-06/README.md) adds 65 definitions and five decks. The [Commander 2015/2016 batch](../reports/decks/precon-c15-c16-2026-09-08/README.md) adds 142 definitions and ten decks. The [Commander 2017–2019 batch](../reports/decks/precon-c17-c19-2026-09-08/README.md) adds ten decks and 170 definitions, and the [Commander 2019–2020/ZNC batch](../reports/decks/precon-c19-c20-znc-2026-09-08/README.md) adds eight decks and 149 definitions. The latest [ZNC/Commander Legends/Kaldheim batch](../reports/decks/precon-znc-cmr-khc-2026-09-08/README.md) adds five decks and 42 definitions. The current local runtime on 8 September has **20,193 definitions, 20,170 eligible for deck import and 75 built-in decks**. Reused cards become importable through active-deck coverage; the latest batch adds Deflecting Palm and Needle Spires to that coverage. Consult the import reports alongside this older export when planning another batch.
-
-The [Lord of the Rings / Commander Masters batch](../reports/decks/precon-ltc-cmm-2026-09-10/README.md) adds five original precons and 76 definitions. As of **10 September 2026**, the runtime has **115 built-in decks, 20,853 definitions and 20,835 definitions eligible for import**. The downloadable inventory below retains its explicitly dated 5 September snapshot.
-
 ## Download the complete lists
 
 - [Imported/runtime cards](catalog/imported-cards.csv): every runtime definition, its source batch, engine marker, and whether arbitrary deck import permits it.
@@ -14,23 +10,23 @@ The [Lord of the Rings / Commander Masters batch](../reports/decks/precon-ltc-cm
 
 CSV files are UTF-8, sorted by card name without locale-specific collation, and use quoted fields. Counts are unique runtime names or unique Oracle IDs as indicated; they are not counts of printings, deck copies, or test cases.
 
-## Exported inventory snapshot
+## Current inventory
 
-Last recorded import: **2026-09-05T16:33:38.988Z**.
+Generic Oracle import state: **2026-09-05T16:33:38.988Z**. The counts below include all current runtime definitions, including subsequent native precon imports.
 
 | Measure | Count |
 | --- | ---: |
-| Runtime card definitions | 19,484 |
+| Runtime card definitions | 20,962 |
 | Generic Oracle imports (178 batches of 100) | 17,800 |
 | Dedicated/manual Oracle imports | 58 |
-| Legacy definitions | 1,626 |
-| Definitions allowed in arbitrary deck imports | 19,438 |
-| Legacy definitions restricted from arbitrary deck imports | 46 |
+| Legacy definitions | 3,104 |
+| Definitions allowed in arbitrary deck imports | 20,944 |
+| Legacy definitions restricted from arbitrary deck imports | 18 |
 | Paper, Commander-legal source Oracle IDs | 30,784 |
-| Source Oracle IDs represented by a runtime name or face alias | 19,463 |
-| Source Oracle IDs still absent from the runtime | 11,321 |
+| Source Oracle IDs represented by a runtime name or face alias | 20,935 |
+| Source Oracle IDs still absent from the runtime | 9,849 |
 | Of those: parser-eligible but not imported | 2 |
-| Of those: deferred by the current semantic compiler | 11,319 |
+| Of those: deferred by the current semantic compiler | 9,847 |
 
 **Availability is explicit.** A row with `deck_import_eligible=false` exists internally but is blocked for arbitrary deck imports: the legacy catalog includes cards from inactive built-in decks. The importer also validates the whole deck. Presence in this CSV alone does not make any proposed deck legal or launch-ready.
 
@@ -40,47 +36,44 @@ Last recorded import: **2026-09-05T16:33:38.988Z**.
 
 The comparison universe is exactly `games.includes('paper') && legalities.commander === 'legal'` in the pinned feed, deduplicated by Oracle ID. It excludes later releases, later Oracle or legality changes, rows not marked for paper, tokens, and other source objects that fail that filter. The feed has 38,627 source rows and 36,495 rows marked for paper.
 
-Imported Oracle batches match by their recorded Oracle ID. Legacy definitions match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists 2 such groups, 17 runtime names without a pinned-source match, and 2 matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
+Imported Oracle batches match by their recorded Oracle ID. Legacy definitions match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists 2 such groups, 17 runtime names without a pinned-source match, and 8 matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
 
 Current parser-eligible, unimported names: `Zuo Ci, the Mocking Sage`, `Zurgo's Vanguard`. These still need an import record and executable proof. The importer defaults to complete 100-card batches; a smaller queue is not a reason to relax its safeguards.
 
 | Current remaining reason | Cards |
 | --- | ---: |
-| `oracle-needs-explicit-semantics` | 5,045 |
-| `spell-needs-explicit-semantics` | 2,630 |
-| `noncreature-needs-explicit-semantics` | 2,500 |
-| `double-faced-card-needs-complete-front-semantics` | 253 |
-| `land-needs-explicit-semantics` | 165 |
-| `complex-layout` | 137 |
-| `saga-chapter-needs-complete-semantics` | 126 |
-| `double-faced-card-needs-face-transition-semantics` | 84 |
+| `oracle-needs-explicit-semantics` | 4,336 |
+| `spell-needs-explicit-semantics` | 2,308 |
+| `noncreature-needs-explicit-semantics` | 2,187 |
+| `double-faced-card-needs-complete-front-semantics` | 230 |
+| `land-needs-explicit-semantics` | 140 |
+| `complex-layout` | 115 |
+| `saga-chapter-needs-complete-semantics` | 110 |
+| `double-faced-card-needs-face-transition-semantics` | 81 |
 | `unsupported-mana-cost` | 49 |
-| `adventure-needs-complete-face-semantics` | 44 |
-| `dynamic-power-toughness` | 39 |
-| `split-needs-complete-face-semantics` | 38 |
-| `unbound-event-reference` | 33 |
-| `double-faced-card-needs-complete-back-semantics` | 28 |
+| `adventure-needs-complete-face-semantics` | 40 |
+| `dynamic-power-toughness` | 32 |
+| `split-needs-complete-face-semantics` | 32 |
+| `unbound-event-reference` | 31 |
 | `unsupported-split-faces` | 27 |
+| `double-faced-card-needs-complete-back-semantics` | 25 |
 | `unbound-target-damage-source` | 25 |
-| `unbound-event-amount` | 17 |
 | `unsupported-adventure-face-types` | 17 |
-| `mana-ability-needs-explicit-semantics` | 16 |
-| `overload-body-needs-complete-semantics` | 11 |
-| `transform-land-face-transition-needs-proof` | 8 |
-| `unbound-target-X` | 8 |
-| `unbound-sacrificed-stat` | 3 |
+| `unbound-event-amount` | 16 |
+| `mana-ability-needs-explicit-semantics` | 15 |
+| `overload-body-needs-complete-semantics` | 8 |
+| `unbound-target-X` | 5 |
+| `transform-land-face-transition-needs-proof` | 4 |
 | `backup-grant-needs-semantics` | 2 |
-| `backup-other-rules-unsupported` | 2 |
 | `leveler-band-needs-complete-semantics` | 2 |
 | `requires-import-and-executable-proof` | 2 |
 | `saga-other-rules-unsupported` | 2 |
 | `unbound-X` | 2 |
+| `unbound-sacrificed-stat` | 2 |
+| `backup-other-rules-unsupported` | 1 |
 | `conflicting-hand-abilities` | 1 |
 | `event-stat-condition-needs-binding` | 1 |
-| `library-selected-reference-needs-binding` | 1 |
 | `reminder-only-oracle` | 1 |
-| `unsupported-backup-suffix` | 1 |
-| `unsupported-loyalty-value` | 1 |
 
 These are compiler queue reasons, not a claim that each card is impossible to implement. The complete per-card list is in [remaining-cards.csv](catalog/remaining-cards.csv).
 

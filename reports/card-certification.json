@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-10T11:53:38.739Z",
+  "generatedAt": "2026-09-10T19:13:08.989Z",
   "policy": "Svaki deck i svaka jedinstvena karta se navode zasebno. Aggregate smoke nije zamjena za ovaj izvještaj.",
   "oracleBatches": [
     {
@@ -1083,18 +1083,18 @@
     }
   ],
   "totals": {
-    "decks": 115,
-    "cardDeckChecks": 9500,
-    "passedCardDeckChecks": 9500,
+    "decks": 120,
+    "cardDeckChecks": 9914,
+    "passedCardDeckChecks": 9914,
     "failedCardDeckChecks": 0,
-    "uniqueCards": 4633,
-    "uniquePassed": 4633,
+    "uniqueCards": 4826,
+    "uniquePassed": 4826,
     "uniqueFailed": 0,
-    "rawCards": 20853,
-    "rawPassed": 20853,
+    "rawCards": 20962,
+    "rawPassed": 20962,
     "rawFailed": 0,
-    "inactiveRawCards": 16220,
-    "inactiveRawPassed": 16220,
+    "inactiveRawCards": 16136,
+    "inactiveRawPassed": 16136,
     "inactiveRawFailed": 0,
     "oracleBatchCards": 17858
   },
@@ -59248,6 +59248,2540 @@
           "issues": []
         }
       ]
+    },
+    {
+      "name": "Enduring Enchantments",
+      "commander": "Anikthea, Hand of Erebos",
+      "cardCount": 100,
+      "uniqueCards": 84,
+      "passed": 84,
+      "failed": 0,
+      "cards": [
+        {
+          "name": "Anikthea, Hand of Erebos",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Narci, Fable Singer",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Battle at the Helvault",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Boon of the Spirit Realm",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ondu Spiritdancer",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Cacophony Unleashed",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Demon of Fate's Design",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ghoulish Impetus",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Composer of Spring",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Nyxborn Behemoth",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Archon of Sun's Grace",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Felidar Retreat",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Grasp of Fate",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Heliod, God of the Sun",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mesa Enchantress",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sigil of the Empty Throne",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Starfield Mystic",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Starfield of Nyx",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Cunning Rhetoric",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Doomwake Giant",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Dreadhorde Invasion",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Erebos, Bleak-Hearted",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Abundance",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Arasta of the Endless Web",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Courser of Kruphix",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Dryad of the Ilysian Grove",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Eidolon of Blossoms",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Enchantress's Presence",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Herald of the Pantheon",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The Mending of Dominaria",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sanctum Weaver",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sandwurm Convergence",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Setessan Champion",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Verduran Enchantress",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Battle for Bretagard",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Calix, Destiny's Hand",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Culling Ritual",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mirari's Wake",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sythis, Harvest's Hand",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Canopy Vista",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Exotic Orchard",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Fortified Village",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Necroblossom Snarl",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Shineshadow Snarl",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sungrass Prairie",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Temple of Malady",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Temple of Plenty",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Temple of Silence",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Path to Exile",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Extinguish All Hope",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Kodama's Reach",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Arcane Signet",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sol Ring",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ash Barrens",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Command Tower",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Cast Out",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Love Song of Night and Day",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Omen of the Sun",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Spirited Companion",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The Eldest Reborn",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mindwrack Harpy",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The Binding of the Titans",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Destiny Spinner",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Farseek",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Font of Fertility",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Greater Tanuki",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Khalni Heart Expedition",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Nessian Wanderer",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Omen of the Hunt",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Rampant Growth",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Binding the Old Gods",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Jukai Naturalist",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Nyx Weaver",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Satyr Enchanter",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Golgari Rot Farm",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Krosan Verge",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Orzhov Basilica",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sandsteppe Citadel",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Selesnya Sanctuary",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Tainted Field",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Tainted Wood",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Plains",
+          "copies": 6,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Swamp",
+          "copies": 5,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Forest",
+          "copies": 8,
+          "status": "PASS",
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "Eldrazi Unbound",
+      "commander": "Zhulodok, Void Gorger",
+      "cardCount": 100,
+      "uniqueCards": 86,
+      "passed": 86,
+      "failed": 0,
+      "cards": [
+        {
+          "name": "Zhulodok, Void Gorger",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Omarthis, Ghostfire Initiate",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Kozilek, the Great Distortion",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Abstruse Archaic",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Calamity of the Titans",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Desecrate Reality",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Flayer of Loyalties",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Rise of the Eldrazi",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Skittering Cicada",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ugin's Mastery",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Darksteel Monolith",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "All Is Dust",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Endbringer",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Endless One",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "It That Betrays",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Matter Reshaper",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Oblivion Sower",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ugin, the Ineffable",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ancient Stone Idol",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Duplicant",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Endless Atlas",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Forsaken Monument",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Hangarback Walker",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Investigator's Journal",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Kaldra Compleat",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mazemind Tome",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Metalwork Colossus",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mirage Mirror",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Myriad Construct",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mystic Forge",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Perilous Vault",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Phyrexian Triniform",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Solemn Simulacrum",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Soul of New Phyrexia",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Steel Hellkite",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Stonecoil Serpent",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Transmogrifying Wand",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Arch of Orazca",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Blast Zone",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Bonders' Enclave",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Geier Reach Sanitarium",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mirrorpool",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ruins of Oran-Rief",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Scavenger Grounds",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sea Gate Wreckage",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Shrine of the Forsaken Gods",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Tyrite Sanctum",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "War Room",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Burnished Hart",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Geode Golem",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Lightning Greaves",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Meteor Golem",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sol Ring",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Thought Vessel",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Thran Dynamo",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Unstable Obelisk",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Reliquary Tower",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Rogue's Passage",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Artisan of Kozilek",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Bane of Bala Ged",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Not of This World",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Spatial Contortion",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Titan's Presence",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Warping Wail",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Crashing Drawbridge",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Dreamstone Hedron",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Everflowing Chalice",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Fireshrieker",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Hedron Archive",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mind Stone",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ornithopter of Paradise",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Palladium Myr",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Scaretiller",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Suspicious Bookcase",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Worn Powerstone",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Arcane Lighthouse",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Eldrazi Temple",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Forge of Heroes",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Guildless Commons",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mage-Ring Network",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Temple of the False God",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Tomb of the Spirit Dragon",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Urza's Mine",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Urza's Power Plant",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Urza's Tower",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Wastes",
+          "copies": 15,
+          "status": "PASS",
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "Virtue and Valor",
+      "commander": "Ellivere of the Wild Court",
+      "cardCount": 100,
+      "uniqueCards": 73,
+      "passed": 73,
+      "failed": 0,
+      "cards": [
+        {
+          "name": "Ellivere of the Wild Court",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Gylwain, Casting Director",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Liberated Livestock",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ox Drover",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Songbirds' Blessing",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Unfinished Business",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Giant Inheritance",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Knickknack Ouphe",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Loamcrafter Faun",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Timber Paladin",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ajani's Chosen",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Angelic Destiny",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Archon of Sun's Grace",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Austere Command",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Celestial Archon",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Daybreak Coronet",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Eidolon of Countless Battles",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Kor Spiritdancer",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mantle of the Ancients",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Realm-Cloaked Giant // Cast Off",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Retether",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Shalai, Voice of Plenty",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Starfield Mystic",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sun Titan",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Timely Ward",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Tithe Taker",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Umbra Mystic",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Winds of Rath",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Bear Umbra",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Eidolon of Blossoms",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Enchantress's Presence",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Indomitable Might",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Rishkar's Expertise",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sanctum Weaver",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Setessan Champion",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Verdant Embrace",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Canopy Vista",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Castle Ardenvale",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Fortified Village",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Hall of Heliod's Generosity",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sungrass Prairie",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Temple of Plenty",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Danitha Capashen, Paragon",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ethereal Armor",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Generous Gift",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sage's Reverie",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Spectral Steel",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Swords to Plowshares",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Transcendent Envoy",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ancestral Mask",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Aura Gnarlid",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Careful Cultivation",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Destiny Spinner",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Fertile Ground",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Kenrith's Transformation",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Paradise Druid",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Snake Umbra",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sylvan Ranger",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Utopia Sprawl",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Warbriar Blessing",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Jukai Naturalist",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Pollenbright Wings",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Siona, Captain of the Pyleas",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Arcane Signet",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sol Ring",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Command Tower",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Krosan Verge",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Myriad Landscape",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Vitu-Ghazi, the City-Tree",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Tanglespan Lookout",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Syr Armont, the Redeemer",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Forest",
+          "copies": 15,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Plains",
+          "copies": 14,
+          "status": "PASS",
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "Fae Dominion",
+      "commander": "Tegwyll, Duke of Splendor",
+      "cardCount": 100,
+      "uniqueCards": 77,
+      "passed": 77,
+      "failed": 0,
+      "cards": [
+        {
+          "name": "Tegwyll, Duke of Splendor",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Alela, Cunning Conqueror",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Archmage of Echoes",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Malleable Impostor",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Misleading Signpost",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Shadow Puppeteers",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Blightwing Bandit",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Faerie Bladecrafter",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Nettling Nuisance",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Tegwyll's Scouring",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Brazen Borrower",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Dig Through Time",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Faerie Formation",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Glen Elendra Archmage",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Hullbreaker Horror",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Illusionist's Gambit",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Midnight Clock",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Perplexing Test",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Reflections of Littjara",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Scion of Oona",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sower of Temptation",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Theoretical Duplication",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Kindred Dominance",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Nightmare Unmaking",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Puppeteer Clique",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Rankle, Master of Pranks",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Thrilling Encore",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Glen Elendra Liege",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Nymris, Oona's Trickster",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Oona, Queen of the Fae",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Choked Estuary",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Darkwater Catacombs",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Exotic Orchard",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Secluded Glen",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sunken Hollow",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Temple of Deceit",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mocking Sprite",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Picklock Prankster",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Spell Stutter",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Obyra, Dreaming Duelist",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Spellscorn Coven // Take It Back",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Arcane Denial",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Cloud of Faeries",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Consider",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Distant Melody",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Fact or Fiction",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Faerie Seer",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Frantic Search",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Hypnotic Sprite",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Keep Watch",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Nightveil Sprite",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Opt",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Quickling",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Reality Shift",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Reconnaissance Mission",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Repulse",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Run Away Together",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Snap",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Reckless Spite",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Halo Forager",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Arcane Signet",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Dimir Signet",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Fellwar Stone",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mind Stone",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sol Ring",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Talisman of Dominance",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Wayfarer's Bauble",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Bojuka Bog",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Command Tower",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Dimir Aqueduct",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Faerie Conclave",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Myriad Landscape",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Path of Ancestry",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Tainted Isle",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Temple of the False God",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Island",
+          "copies": 13,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Swamp",
+          "copies": 12,
+          "status": "PASS",
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "Timey-Wimey",
+      "commander": "The Tenth Doctor",
+      "cardCount": 100,
+      "uniqueCards": 94,
+      "passed": 94,
+      "failed": 0,
+      "cards": [
+        {
+          "name": "The Tenth Doctor",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Rose Tyler",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Wilfred Mott",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Everybody Lives!",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Everything Comes to Dust",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Four Knocks",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The Pandorica",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The Wedding of River Song",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Adipose Offspring",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Astrid Peth",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Crack in Time",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The Girl in the Fireplace",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Martha Jones",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Nanogene Conversion",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Flesh Duplicate",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The Eleventh Hour",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "All of History, All at Once",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Donna Noble",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Amy Pond",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ecstatic Beauty",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "RMS Titanic",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Coward // Killer",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The Parting of the Ways",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The Ninth Doctor",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sally Sparrow",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Jenny, Generated Anomaly",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Rory Williams",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The Eleventh Doctor",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The War Doctor",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Regenerations Restored",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Idris, Soul of the TARDIS",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The Face of Boe",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Run for Your Life",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The Day of the Doctor",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Gallifrey Falls // No More",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Dinosaurs on a Spaceship",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Kate Stewart",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Rotating Fireplace",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "The Moment",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Trenzalore Clocktower",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Grasp of Fate",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Farewell",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Out of Time",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Wedding Ring",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Inspiring Refrain",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "As Foretold",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Fractured Identity",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Port Town",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Temple of Triumph",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Exotic Orchard",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Temple of Enlightenment",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Prairie Stream",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Irrigated Farmland",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Deserted Beach",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Glacial Fortress",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Skycloud Expanse",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Temple of Epiphany",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Frostboil Snarl",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Thespian's Stage",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Furycalm Snarl",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "War Room",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sunbaked Canyon",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sundown Pass",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Stormcarved Coast",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Fiery Islet",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Atraxi Warden",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Wibbly-wobbly, Timey-wimey",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Time Beetle",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Star Whale",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sibylline Soothsayer",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Judoon Enforcers",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Psychic Paper",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "TARDIS",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sonic Screwdriver",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Arcane Signet",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Sol Ring",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Clockspinning",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Thought Vessel",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mind Stone",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Talisman of Creativity",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Lightning Greaves",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Talisman of Conviction",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Evolving Wilds",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Command Tower",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Path of Ancestry",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Temple of the False God",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Myriad Landscape",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Thriving Bluff",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mystic Monastery",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Ominous Cemetery",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Rogue's Passage",
+          "copies": 1,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Plains",
+          "copies": 3,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Island",
+          "copies": 3,
+          "status": "PASS",
+          "issues": []
+        },
+        {
+          "name": "Mountain",
+          "copies": 3,
+          "status": "PASS",
+          "issues": []
+        }
+      ]
     }
   ],
   "inactiveCards": [
@@ -59499,12 +62033,6 @@
     },
     {
       "name": "Absorb Vis",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Abstruse Archaic",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -61700,12 +64228,6 @@
       "issues": []
     },
     {
-      "name": "Ancestral Mask",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Ancestral Memories",
       "active": false,
       "status": "PASS",
@@ -62870,12 +65392,6 @@
       "issues": []
     },
     {
-      "name": "Arch of Orazca",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Archaeological Dig",
       "active": false,
       "status": "PASS",
@@ -62966,12 +65482,6 @@
       "issues": []
     },
     {
-      "name": "Archmage of Echoes",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Archmage of Runes",
       "active": false,
       "status": "PASS",
@@ -62997,12 +65507,6 @@
     },
     {
       "name": "Archon of Justice",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Archon of Sun's Grace",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -63938,12 +66442,6 @@
       "issues": []
     },
     {
-      "name": "Astrid Peth",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "At Knifepoint",
       "active": false,
       "status": "PASS",
@@ -63999,12 +66497,6 @@
     },
     {
       "name": "Atomize",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Atraxi Warden",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -68990,12 +71482,6 @@
       "issues": []
     },
     {
-      "name": "Boon of the Spirit Realm",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Boon-Bringer Valkyrie",
       "active": false,
       "status": "PASS",
@@ -71349,12 +73835,6 @@
     },
     {
       "name": "Careful Consideration",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Careful Cultivation",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -75722,12 +78202,6 @@
       "issues": []
     },
     {
-      "name": "Crack in Time",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Crack the Earth",
       "active": false,
       "status": "PASS",
@@ -79334,12 +81808,6 @@
       "issues": []
     },
     {
-      "name": "Deserted Beach",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Deserted Temple",
       "active": false,
       "status": "PASS",
@@ -82040,12 +84508,6 @@
       "issues": []
     },
     {
-      "name": "Dryad of the Ilysian Grove",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Dryad's Caress",
       "active": false,
       "status": "PASS",
@@ -83414,12 +85876,6 @@
       "issues": []
     },
     {
-      "name": "Eldrazi Temple",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Eldritch Immunity",
       "active": false,
       "status": "PASS",
@@ -83649,12 +86105,6 @@
     },
     {
       "name": "Elixir of Vitality",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Ellivere of the Wild Court",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -84314,12 +86764,6 @@
       "issues": []
     },
     {
-      "name": "Endless One",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Endless Wurm",
       "active": false,
       "status": "PASS",
@@ -84764,12 +87208,6 @@
       "issues": []
     },
     {
-      "name": "Erebos, Bleak-Hearted",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Eriette's Lullaby",
       "active": false,
       "status": "PASS",
@@ -85107,12 +87545,6 @@
     },
     {
       "name": "Ethereal Ambush",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Ethereal Armor",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -85700,12 +88132,6 @@
       "issues": []
     },
     {
-      "name": "Extinguish All Hope",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Extirpate",
       "active": false,
       "status": "PASS",
@@ -85964,18 +88390,6 @@
       "issues": []
     },
     {
-      "name": "Faerie Bladecrafter",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Faerie Conclave",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Faerie Dreamthief",
       "active": false,
       "status": "PASS",
@@ -86025,12 +88439,6 @@
     },
     {
       "name": "Faerie Miscreant",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Faerie Seer",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -87465,12 +89873,6 @@
     },
     {
       "name": "Fiery Intervention",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Fiery Islet",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -89060,12 +91462,6 @@
       "issues": []
     },
     {
-      "name": "Font of Fertility",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Font of Fortunes",
       "active": false,
       "status": "PASS",
@@ -89679,12 +92075,6 @@
     },
     {
       "name": "Fountainport Bell",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Four Knocks",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -90705,12 +93095,6 @@
     },
     {
       "name": "Gallifrey Council Chamber",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Gallifrey Falls // No More",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -91802,12 +94186,6 @@
       "issues": []
     },
     {
-      "name": "Giant Inheritance",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Giant Killer // Chop Down",
       "active": false,
       "status": "PASS",
@@ -92456,19 +94834,7 @@
       "issues": []
     },
     {
-      "name": "Glen Elendra Archmage",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Glen Elendra Guardian",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Glen Elendra Liege",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -94808,12 +97174,6 @@
       "issues": []
     },
     {
-      "name": "Greater Tanuki",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Greatsword",
       "active": false,
       "status": "PASS",
@@ -95696,12 +98056,6 @@
       "issues": []
     },
     {
-      "name": "Guildless Commons",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Guildpact Informant",
       "active": false,
       "status": "PASS",
@@ -95948,12 +98302,6 @@
       "issues": []
     },
     {
-      "name": "Gylwain, Casting Director",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Gyre Engineer",
       "active": false,
       "status": "PASS",
@@ -96141,12 +98489,6 @@
     },
     {
       "name": "Hall Monitor",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Hall of Heliod's Generosity",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -97287,12 +99629,6 @@
     },
     {
       "name": "Heliod's Pilgrim",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Heliod, God of the Sun",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -102284,12 +104620,6 @@
       "issues": []
     },
     {
-      "name": "Jenny, Generated Anomaly",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Jeong Jeong's Deserters",
       "active": false,
       "status": "PASS",
@@ -102728,12 +105058,6 @@
       "issues": []
     },
     {
-      "name": "Jukai Naturalist",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Jukai Preserver",
       "active": false,
       "status": "PASS",
@@ -103017,12 +105341,6 @@
     },
     {
       "name": "Kalastria Nightwatch",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Kaldra Compleat",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -103563,12 +105881,6 @@
     },
     {
       "name": "Keep Safe",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Keep Watch",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -104823,12 +107135,6 @@
     },
     {
       "name": "Kor Skyfisher",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Kor Spiritdancer",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -108932,12 +111238,6 @@
       "issues": []
     },
     {
-      "name": "Malleable Impostor",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Mammoth Bellow",
       "active": false,
       "status": "PASS",
@@ -111494,12 +113794,6 @@
       "issues": []
     },
     {
-      "name": "Mindwrack Harpy",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Mine Bearer",
       "active": false,
       "status": "PASS",
@@ -111879,12 +114173,6 @@
     },
     {
       "name": "Mirrormere Guardian",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Mirrorpool",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -112293,12 +114581,6 @@
     },
     {
       "name": "Mockery of Nature",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Mocking Sprite",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -114110,12 +116392,6 @@
       "issues": []
     },
     {
-      "name": "Nanogene Conversion",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Nantuko Blightcutter",
       "active": false,
       "status": "PASS",
@@ -114717,12 +116993,6 @@
     },
     {
       "name": "Nessian Hornbeetle",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Nessian Wanderer",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -116012,12 +118282,6 @@
       "issues": []
     },
     {
-      "name": "Nymris, Oona's Trickster",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Nyx Herald",
       "active": false,
       "status": "PASS",
@@ -116025,12 +118289,6 @@
     },
     {
       "name": "Nyx Infusion",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Nyxborn Behemoth",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -116355,12 +118613,6 @@
     },
     {
       "name": "Obyra's Attendants // Desperate Parry",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Obyra, Dreaming Duelist",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -116840,19 +119092,7 @@
       "issues": []
     },
     {
-      "name": "Omen of the Hunt",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Omen of the Sea",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Omen of the Sun",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -118868,12 +121108,6 @@
       "issues": []
     },
     {
-      "name": "Perilous Vault",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Perimeter Captain",
       "active": false,
       "status": "PASS",
@@ -120351,12 +122585,6 @@
     },
     {
       "name": "Pollenbright Druid",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Pollenbright Wings",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -122396,12 +124624,6 @@
       "issues": []
     },
     {
-      "name": "Quickling",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Quicksand",
       "active": false,
       "status": "PASS",
@@ -122571,12 +124793,6 @@
     },
     {
       "name": "Qumulox",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "RMS Titanic",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -125228,12 +127444,6 @@
       "issues": []
     },
     {
-      "name": "Repulse",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Repulsor Bots",
       "active": false,
       "status": "PASS",
@@ -126429,12 +128639,6 @@
     },
     {
       "name": "Rise of the Ants",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Rise of the Eldrazi",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -127682,12 +129886,6 @@
       "issues": []
     },
     {
-      "name": "Ruins of Oran-Rief",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Rukh Egg",
       "active": false,
       "status": "PASS",
@@ -127779,12 +129977,6 @@
     },
     {
       "name": "Run Wild",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Run for Your Life",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -128612,12 +130804,6 @@
       "issues": []
     },
     {
-      "name": "Sally Sparrow",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Salt Road Packbeast",
       "active": false,
       "status": "PASS",
@@ -128853,12 +131039,6 @@
     },
     {
       "name": "Sanctum Guardian",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Sanctum Weaver",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -129327,12 +131507,6 @@
     },
     {
       "name": "Saryth, the Viper's Fang",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Satyr Enchanter",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -129975,12 +132149,6 @@
     },
     {
       "name": "Scion of Glaciers",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Scion of Oona",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -130629,12 +132797,6 @@
     },
     {
       "name": "Sea Gate Restoration // Sea Gate, Reborn",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Sea Gate Wreckage",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -131895,12 +134057,6 @@
     },
     {
       "name": "Setessan Battle Priest",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Setessan Champion",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -135818,12 +137974,6 @@
       "issues": []
     },
     {
-      "name": "Snap",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Snapback",
       "active": false,
       "status": "PASS",
@@ -136365,12 +138515,6 @@
     },
     {
       "name": "Sonic Assault",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Sonic Screwdriver",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -137012,12 +139156,6 @@
       "issues": []
     },
     {
-      "name": "Spatial Contortion",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Spawn of Mayhem",
       "active": false,
       "status": "PASS",
@@ -137216,12 +139354,6 @@
       "issues": []
     },
     {
-      "name": "Spectral Steel",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Spectrum Sentinel",
       "active": false,
       "status": "PASS",
@@ -137325,12 +139457,6 @@
     },
     {
       "name": "Spellkeeper Weird",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Spellscorn Coven // Take It Back",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -138884,12 +141010,6 @@
       "issues": []
     },
     {
-      "name": "Starfield Mystic",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Starfield Shepherd",
       "active": false,
       "status": "PASS",
@@ -140090,12 +142210,6 @@
       "issues": []
     },
     {
-      "name": "Stormcarved Coast",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Stormchaser Chimera",
       "active": false,
       "status": "PASS",
@@ -141158,12 +143272,6 @@
       "issues": []
     },
     {
-      "name": "Sunbaked Canyon",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Sunbathing Rootwalla",
       "active": false,
       "status": "PASS",
@@ -141255,12 +143363,6 @@
     },
     {
       "name": "Sundial, Dawn Tyrant",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Sundown Pass",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -141777,12 +143879,6 @@
     },
     {
       "name": "Suspension Field",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Suspicious Bookcase",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -142352,12 +144448,6 @@
       "issues": []
     },
     {
-      "name": "Syr Armont, the Redeemer",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Syr Faren, the Hengehammer",
       "active": false,
       "status": "PASS",
@@ -142371,12 +144461,6 @@
     },
     {
       "name": "Syr Vondam, the Lucent",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Sythis, Harvest's Hand",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -142820,12 +144904,6 @@
       "issues": []
     },
     {
-      "name": "Tanglespan Lookout",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Tangletrap",
       "active": false,
       "status": "PASS",
@@ -143217,12 +145295,6 @@
     },
     {
       "name": "Teferi, Timebender",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Tegwyll, Duke of Splendor",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -144069,12 +146141,6 @@
     },
     {
       "name": "The Biblioplex",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "The Binding of the Titans",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -145748,12 +147814,6 @@
       "issues": []
     },
     {
-      "name": "Timber Paladin",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Timber Protector",
       "active": false,
       "status": "PASS",
@@ -146145,12 +148205,6 @@
     },
     {
       "name": "Tomb Trawler",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Tomb of the Spirit Dragon",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -146912,12 +148966,6 @@
       "issues": []
     },
     {
-      "name": "Transcendent Envoy",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
       "name": "Transcendent Master",
       "active": false,
       "status": "PASS",
@@ -146961,12 +149009,6 @@
     },
     {
       "name": "Transmogrify",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Transmogrifying Wand",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -150495,12 +152537,6 @@
     },
     {
       "name": "Verduran Emissary",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Verduran Enchantress",
       "active": false,
       "status": "PASS",
       "issues": []
@@ -154353,12 +156389,6 @@
     },
     {
       "name": "Wildwood Tracker",
-      "active": false,
-      "status": "PASS",
-      "issues": []
-    },
-    {
-      "name": "Wilfred Mott",
       "active": false,
       "status": "PASS",
       "issues": []

@@ -508,9 +508,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx.you.persistMana.R = (ctx.you.persistMana.R || 0) + n;
       ctx.g.lg(`Rousing Refrain: +${n} {R} (stays until end of turn).`);
       if (!ctx.so.isCopy && ctx.src.zone === 'stack') {
-        ctx.g.remove(ctx.src);
-        ctx.src.zone = 'exile'; ctx.src.owner.exile.push(ctx.src);
-        ctx.src.meta = { suspended: 3 };
+        await ctx.g.move(ctx.src,'exile');
+        if(ctx.src.zone==='exile'){ctx.src.meta.suspended=3;ctx.src.counters.time=3;}
       }
     },
   };

@@ -1,0 +1,1765 @@
+{
+  "retrievedOn": "2026-09-10",
+  "selection": "After Planeswalker Party, by release order and pinned-index order within each edition: Enduring Enchantments and Eldrazi Unbound, both Wilds of Eldraine lists, then Timey-Wimey. Preserve every original card regardless of legality. No substitutions or alternate-edition duplicates.",
+  "moxfieldAccess": "The pinned index supplies queue links. These are verified Wizards / MTGJSON lists, not direct Moxfield exports.",
+  "normalization": "Flip, Adventure and double-faced cards use their front names for source comparison and resolve to existing canonical aliases during intake; split cards retain their combined names. The official Virtue and Valor list calls Syr Armont, the Redeemer simply Armont, the Redeemer; this shorthand is normalized. The WHO source has no space between the quantity and Ominous Cemetery. Time Lord is a single creature type. Full Scryfall faces are preserved in oracle.json.",
+  "decks": [
+    {
+      "name": "Enduring Enchantments",
+      "commander": "Anikthea, Hand of Erebos",
+      "set": "CMM",
+      "moxfield": "c6yH4J1x7kGNjygB_L_yow",
+      "slug": "enduring-enchantments",
+      "cards": [
+        {
+          "name": "Anikthea, Hand of Erebos",
+          "n": 1
+        },
+        {
+          "name": "Narci, Fable Singer",
+          "n": 1
+        },
+        {
+          "name": "Battle at the Helvault",
+          "n": 1
+        },
+        {
+          "name": "Boon of the Spirit Realm",
+          "n": 1
+        },
+        {
+          "name": "Ondu Spiritdancer",
+          "n": 1
+        },
+        {
+          "name": "Cacophony Unleashed",
+          "n": 1
+        },
+        {
+          "name": "Demon of Fate's Design",
+          "n": 1
+        },
+        {
+          "name": "Ghoulish Impetus",
+          "n": 1
+        },
+        {
+          "name": "Composer of Spring",
+          "n": 1
+        },
+        {
+          "name": "Nyxborn Behemoth",
+          "n": 1
+        },
+        {
+          "name": "Archon of Sun's Grace",
+          "n": 1
+        },
+        {
+          "name": "Felidar Retreat",
+          "n": 1
+        },
+        {
+          "name": "Grasp of Fate",
+          "n": 1
+        },
+        {
+          "name": "Heliod, God of the Sun",
+          "n": 1
+        },
+        {
+          "name": "Mesa Enchantress",
+          "n": 1
+        },
+        {
+          "name": "Sigil of the Empty Throne",
+          "n": 1
+        },
+        {
+          "name": "Starfield Mystic",
+          "n": 1
+        },
+        {
+          "name": "Starfield of Nyx",
+          "n": 1
+        },
+        {
+          "name": "Cunning Rhetoric",
+          "n": 1
+        },
+        {
+          "name": "Doomwake Giant",
+          "n": 1
+        },
+        {
+          "name": "Dreadhorde Invasion",
+          "n": 1
+        },
+        {
+          "name": "Erebos, Bleak-Hearted",
+          "n": 1
+        },
+        {
+          "name": "Abundance",
+          "n": 1
+        },
+        {
+          "name": "Arasta of the Endless Web",
+          "n": 1
+        },
+        {
+          "name": "Courser of Kruphix",
+          "n": 1
+        },
+        {
+          "name": "Dryad of the Ilysian Grove",
+          "n": 1
+        },
+        {
+          "name": "Eidolon of Blossoms",
+          "n": 1
+        },
+        {
+          "name": "Enchantress's Presence",
+          "n": 1
+        },
+        {
+          "name": "Herald of the Pantheon",
+          "n": 1
+        },
+        {
+          "name": "The Mending of Dominaria",
+          "n": 1
+        },
+        {
+          "name": "Sanctum Weaver",
+          "n": 1
+        },
+        {
+          "name": "Sandwurm Convergence",
+          "n": 1
+        },
+        {
+          "name": "Setessan Champion",
+          "n": 1
+        },
+        {
+          "name": "Verduran Enchantress",
+          "n": 1
+        },
+        {
+          "name": "Battle for Bretagard",
+          "n": 1
+        },
+        {
+          "name": "Calix, Destiny's Hand",
+          "n": 1
+        },
+        {
+          "name": "Culling Ritual",
+          "n": 1
+        },
+        {
+          "name": "Mirari's Wake",
+          "n": 1
+        },
+        {
+          "name": "Sythis, Harvest's Hand",
+          "n": 1
+        },
+        {
+          "name": "Canopy Vista",
+          "n": 1
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1
+        },
+        {
+          "name": "Fortified Village",
+          "n": 1
+        },
+        {
+          "name": "Necroblossom Snarl",
+          "n": 1
+        },
+        {
+          "name": "Shineshadow Snarl",
+          "n": 1
+        },
+        {
+          "name": "Sungrass Prairie",
+          "n": 1
+        },
+        {
+          "name": "Temple of Malady",
+          "n": 1
+        },
+        {
+          "name": "Temple of Plenty",
+          "n": 1
+        },
+        {
+          "name": "Temple of Silence",
+          "n": 1
+        },
+        {
+          "name": "Path to Exile",
+          "n": 1
+        },
+        {
+          "name": "Extinguish All Hope",
+          "n": 1
+        },
+        {
+          "name": "Kodama's Reach",
+          "n": 1
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Ash Barrens",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Cast Out",
+          "n": 1
+        },
+        {
+          "name": "Love Song of Night and Day",
+          "n": 1
+        },
+        {
+          "name": "Omen of the Sun",
+          "n": 1
+        },
+        {
+          "name": "Spirited Companion",
+          "n": 1
+        },
+        {
+          "name": "The Eldest Reborn",
+          "n": 1
+        },
+        {
+          "name": "Mindwrack Harpy",
+          "n": 1
+        },
+        {
+          "name": "The Binding of the Titans",
+          "n": 1
+        },
+        {
+          "name": "Destiny Spinner",
+          "n": 1
+        },
+        {
+          "name": "Farseek",
+          "n": 1
+        },
+        {
+          "name": "Font of Fertility",
+          "n": 1
+        },
+        {
+          "name": "Greater Tanuki",
+          "n": 1
+        },
+        {
+          "name": "Khalni Heart Expedition",
+          "n": 1
+        },
+        {
+          "name": "Nessian Wanderer",
+          "n": 1
+        },
+        {
+          "name": "Omen of the Hunt",
+          "n": 1
+        },
+        {
+          "name": "Rampant Growth",
+          "n": 1
+        },
+        {
+          "name": "Binding the Old Gods",
+          "n": 1
+        },
+        {
+          "name": "Jukai Naturalist",
+          "n": 1
+        },
+        {
+          "name": "Nyx Weaver",
+          "n": 1
+        },
+        {
+          "name": "Satyr Enchanter",
+          "n": 1
+        },
+        {
+          "name": "Golgari Rot Farm",
+          "n": 1
+        },
+        {
+          "name": "Krosan Verge",
+          "n": 1
+        },
+        {
+          "name": "Orzhov Basilica",
+          "n": 1
+        },
+        {
+          "name": "Sandsteppe Citadel",
+          "n": 1
+        },
+        {
+          "name": "Selesnya Sanctuary",
+          "n": 1
+        },
+        {
+          "name": "Tainted Field",
+          "n": 1
+        },
+        {
+          "name": "Tainted Wood",
+          "n": 1
+        },
+        {
+          "name": "Plains",
+          "n": 6
+        },
+        {
+          "name": "Swamp",
+          "n": 5
+        },
+        {
+          "name": "Forest",
+          "n": 8
+        }
+      ],
+      "source": {
+        "provider": "Wizards decklist independently verified against MTGJSON",
+        "official": "https://magic.wizards.com/en/news/announcements/commander-masters-commander-decklists",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/EnduringEnchantments_CMM.json",
+        "moxfield": "https://moxfield.com/decks/c6yH4J1x7kGNjygB_L_yow",
+        "mtgjsonSnapshot": "2026-09-10",
+        "mtgjsonSha256": "603abf3fc08dc9643a9cddb64fc5a326cacba12b89cde8dce0c79d1c211187ba",
+        "officialHtmlSha256": "4287f67e623e067f0230a061dc86054189f4ca42c1861e3530c1bea277da522f",
+        "export": "enduring-enchantments.txt",
+        "sha256": "7103b2d52f477a983833256237ed8e603a4848b169d4e812a79e6ecf7b6f3dc8"
+      }
+    },
+    {
+      "name": "Eldrazi Unbound",
+      "commander": "Zhulodok, Void Gorger",
+      "set": "CMM",
+      "moxfield": "KjThzhPw-UCQBu3v3CipMA",
+      "slug": "eldrazi-unbound",
+      "cards": [
+        {
+          "name": "Zhulodok, Void Gorger",
+          "n": 1
+        },
+        {
+          "name": "Omarthis, Ghostfire Initiate",
+          "n": 1
+        },
+        {
+          "name": "Kozilek, the Great Distortion",
+          "n": 1
+        },
+        {
+          "name": "Abstruse Archaic",
+          "n": 1
+        },
+        {
+          "name": "Calamity of the Titans",
+          "n": 1
+        },
+        {
+          "name": "Desecrate Reality",
+          "n": 1
+        },
+        {
+          "name": "Flayer of Loyalties",
+          "n": 1
+        },
+        {
+          "name": "Rise of the Eldrazi",
+          "n": 1
+        },
+        {
+          "name": "Skittering Cicada",
+          "n": 1
+        },
+        {
+          "name": "Ugin's Mastery",
+          "n": 1
+        },
+        {
+          "name": "Darksteel Monolith",
+          "n": 1
+        },
+        {
+          "name": "All Is Dust",
+          "n": 1
+        },
+        {
+          "name": "Endbringer",
+          "n": 1
+        },
+        {
+          "name": "Endless One",
+          "n": 1
+        },
+        {
+          "name": "It That Betrays",
+          "n": 1
+        },
+        {
+          "name": "Matter Reshaper",
+          "n": 1
+        },
+        {
+          "name": "Oblivion Sower",
+          "n": 1
+        },
+        {
+          "name": "Ugin, the Ineffable",
+          "n": 1
+        },
+        {
+          "name": "Ancient Stone Idol",
+          "n": 1
+        },
+        {
+          "name": "Duplicant",
+          "n": 1
+        },
+        {
+          "name": "Endless Atlas",
+          "n": 1
+        },
+        {
+          "name": "Forsaken Monument",
+          "n": 1
+        },
+        {
+          "name": "Hangarback Walker",
+          "n": 1
+        },
+        {
+          "name": "Investigator's Journal",
+          "n": 1
+        },
+        {
+          "name": "Kaldra Compleat",
+          "n": 1
+        },
+        {
+          "name": "Mazemind Tome",
+          "n": 1
+        },
+        {
+          "name": "Metalwork Colossus",
+          "n": 1
+        },
+        {
+          "name": "Mirage Mirror",
+          "n": 1
+        },
+        {
+          "name": "Myriad Construct",
+          "n": 1
+        },
+        {
+          "name": "Mystic Forge",
+          "n": 1
+        },
+        {
+          "name": "Perilous Vault",
+          "n": 1
+        },
+        {
+          "name": "Phyrexian Triniform",
+          "n": 1
+        },
+        {
+          "name": "Solemn Simulacrum",
+          "n": 1
+        },
+        {
+          "name": "Soul of New Phyrexia",
+          "n": 1
+        },
+        {
+          "name": "Steel Hellkite",
+          "n": 1
+        },
+        {
+          "name": "Stonecoil Serpent",
+          "n": 1
+        },
+        {
+          "name": "Transmogrifying Wand",
+          "n": 1
+        },
+        {
+          "name": "Arch of Orazca",
+          "n": 1
+        },
+        {
+          "name": "Blast Zone",
+          "n": 1
+        },
+        {
+          "name": "Bonders' Enclave",
+          "n": 1
+        },
+        {
+          "name": "Geier Reach Sanitarium",
+          "n": 1
+        },
+        {
+          "name": "Mirrorpool",
+          "n": 1
+        },
+        {
+          "name": "Ruins of Oran-Rief",
+          "n": 1
+        },
+        {
+          "name": "Scavenger Grounds",
+          "n": 1
+        },
+        {
+          "name": "Sea Gate Wreckage",
+          "n": 1
+        },
+        {
+          "name": "Shrine of the Forsaken Gods",
+          "n": 1
+        },
+        {
+          "name": "Tyrite Sanctum",
+          "n": 1
+        },
+        {
+          "name": "War Room",
+          "n": 1
+        },
+        {
+          "name": "Burnished Hart",
+          "n": 1
+        },
+        {
+          "name": "Geode Golem",
+          "n": 1
+        },
+        {
+          "name": "Lightning Greaves",
+          "n": 1
+        },
+        {
+          "name": "Meteor Golem",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Thought Vessel",
+          "n": 1
+        },
+        {
+          "name": "Thran Dynamo",
+          "n": 1
+        },
+        {
+          "name": "Unstable Obelisk",
+          "n": 1
+        },
+        {
+          "name": "Reliquary Tower",
+          "n": 1
+        },
+        {
+          "name": "Rogue's Passage",
+          "n": 1
+        },
+        {
+          "name": "Artisan of Kozilek",
+          "n": 1
+        },
+        {
+          "name": "Bane of Bala Ged",
+          "n": 1
+        },
+        {
+          "name": "Not of This World",
+          "n": 1
+        },
+        {
+          "name": "Spatial Contortion",
+          "n": 1
+        },
+        {
+          "name": "Titan's Presence",
+          "n": 1
+        },
+        {
+          "name": "Warping Wail",
+          "n": 1
+        },
+        {
+          "name": "Crashing Drawbridge",
+          "n": 1
+        },
+        {
+          "name": "Dreamstone Hedron",
+          "n": 1
+        },
+        {
+          "name": "Everflowing Chalice",
+          "n": 1
+        },
+        {
+          "name": "Fireshrieker",
+          "n": 1
+        },
+        {
+          "name": "Hedron Archive",
+          "n": 1
+        },
+        {
+          "name": "Mind Stone",
+          "n": 1
+        },
+        {
+          "name": "Ornithopter of Paradise",
+          "n": 1
+        },
+        {
+          "name": "Palladium Myr",
+          "n": 1
+        },
+        {
+          "name": "Scaretiller",
+          "n": 1
+        },
+        {
+          "name": "Suspicious Bookcase",
+          "n": 1
+        },
+        {
+          "name": "Worn Powerstone",
+          "n": 1
+        },
+        {
+          "name": "Arcane Lighthouse",
+          "n": 1
+        },
+        {
+          "name": "Eldrazi Temple",
+          "n": 1
+        },
+        {
+          "name": "Forge of Heroes",
+          "n": 1
+        },
+        {
+          "name": "Guildless Commons",
+          "n": 1
+        },
+        {
+          "name": "Mage-Ring Network",
+          "n": 1
+        },
+        {
+          "name": "Temple of the False God",
+          "n": 1
+        },
+        {
+          "name": "Tomb of the Spirit Dragon",
+          "n": 1
+        },
+        {
+          "name": "Urza's Mine",
+          "n": 1
+        },
+        {
+          "name": "Urza's Power Plant",
+          "n": 1
+        },
+        {
+          "name": "Urza's Tower",
+          "n": 1
+        },
+        {
+          "name": "Wastes",
+          "n": 15
+        }
+      ],
+      "source": {
+        "provider": "Wizards decklist independently verified against MTGJSON",
+        "official": "https://magic.wizards.com/en/news/announcements/commander-masters-commander-decklists",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/EldraziUnbound_CMM.json",
+        "moxfield": "https://moxfield.com/decks/KjThzhPw-UCQBu3v3CipMA",
+        "mtgjsonSnapshot": "2026-09-10",
+        "mtgjsonSha256": "347aeb8d15f9dbd3e3b11bbeca001906bb346885d4d5afa6e5c3d95790dd2f70",
+        "officialHtmlSha256": "4287f67e623e067f0230a061dc86054189f4ca42c1861e3530c1bea277da522f",
+        "export": "eldrazi-unbound.txt",
+        "sha256": "12d436a41498c4b60298b47448849376c77420b3a5bc9a91f2079c726d456170"
+      }
+    },
+    {
+      "name": "Virtue and Valor",
+      "commander": "Ellivere of the Wild Court",
+      "set": "WOC",
+      "moxfield": "KnMheGE4ykelGVpKNvopNw",
+      "slug": "virtue-and-valor",
+      "cards": [
+        {
+          "name": "Ellivere of the Wild Court",
+          "n": 1
+        },
+        {
+          "name": "Gylwain, Casting Director",
+          "n": 1
+        },
+        {
+          "name": "Liberated Livestock",
+          "n": 1
+        },
+        {
+          "name": "Ox Drover",
+          "n": 1
+        },
+        {
+          "name": "Songbirds' Blessing",
+          "n": 1
+        },
+        {
+          "name": "Unfinished Business",
+          "n": 1
+        },
+        {
+          "name": "Giant Inheritance",
+          "n": 1
+        },
+        {
+          "name": "Knickknack Ouphe",
+          "n": 1
+        },
+        {
+          "name": "Loamcrafter Faun",
+          "n": 1
+        },
+        {
+          "name": "Timber Paladin",
+          "n": 1
+        },
+        {
+          "name": "Ajani's Chosen",
+          "n": 1
+        },
+        {
+          "name": "Angelic Destiny",
+          "n": 1
+        },
+        {
+          "name": "Archon of Sun's Grace",
+          "n": 1
+        },
+        {
+          "name": "Austere Command",
+          "n": 1
+        },
+        {
+          "name": "Celestial Archon",
+          "n": 1
+        },
+        {
+          "name": "Daybreak Coronet",
+          "n": 1
+        },
+        {
+          "name": "Eidolon of Countless Battles",
+          "n": 1
+        },
+        {
+          "name": "Kor Spiritdancer",
+          "n": 1
+        },
+        {
+          "name": "Mantle of the Ancients",
+          "n": 1
+        },
+        {
+          "name": "Realm-Cloaked Giant",
+          "n": 1
+        },
+        {
+          "name": "Retether",
+          "n": 1
+        },
+        {
+          "name": "Shalai, Voice of Plenty",
+          "n": 1
+        },
+        {
+          "name": "Starfield Mystic",
+          "n": 1
+        },
+        {
+          "name": "Sun Titan",
+          "n": 1
+        },
+        {
+          "name": "Timely Ward",
+          "n": 1
+        },
+        {
+          "name": "Tithe Taker",
+          "n": 1
+        },
+        {
+          "name": "Umbra Mystic",
+          "n": 1
+        },
+        {
+          "name": "Winds of Rath",
+          "n": 1
+        },
+        {
+          "name": "Bear Umbra",
+          "n": 1
+        },
+        {
+          "name": "Eidolon of Blossoms",
+          "n": 1
+        },
+        {
+          "name": "Enchantress's Presence",
+          "n": 1
+        },
+        {
+          "name": "Indomitable Might",
+          "n": 1
+        },
+        {
+          "name": "Rishkar's Expertise",
+          "n": 1
+        },
+        {
+          "name": "Sanctum Weaver",
+          "n": 1
+        },
+        {
+          "name": "Setessan Champion",
+          "n": 1
+        },
+        {
+          "name": "Verdant Embrace",
+          "n": 1
+        },
+        {
+          "name": "Canopy Vista",
+          "n": 1
+        },
+        {
+          "name": "Castle Ardenvale",
+          "n": 1
+        },
+        {
+          "name": "Fortified Village",
+          "n": 1
+        },
+        {
+          "name": "Hall of Heliod's Generosity",
+          "n": 1
+        },
+        {
+          "name": "Sungrass Prairie",
+          "n": 1
+        },
+        {
+          "name": "Temple of Plenty",
+          "n": 1
+        },
+        {
+          "name": "Danitha Capashen, Paragon",
+          "n": 1
+        },
+        {
+          "name": "Ethereal Armor",
+          "n": 1
+        },
+        {
+          "name": "Generous Gift",
+          "n": 1
+        },
+        {
+          "name": "Sage's Reverie",
+          "n": 1
+        },
+        {
+          "name": "Spectral Steel",
+          "n": 1
+        },
+        {
+          "name": "Swords to Plowshares",
+          "n": 1
+        },
+        {
+          "name": "Transcendent Envoy",
+          "n": 1
+        },
+        {
+          "name": "Ancestral Mask",
+          "n": 1
+        },
+        {
+          "name": "Aura Gnarlid",
+          "n": 1
+        },
+        {
+          "name": "Careful Cultivation",
+          "n": 1
+        },
+        {
+          "name": "Destiny Spinner",
+          "n": 1
+        },
+        {
+          "name": "Fertile Ground",
+          "n": 1
+        },
+        {
+          "name": "Kenrith's Transformation",
+          "n": 1
+        },
+        {
+          "name": "Paradise Druid",
+          "n": 1
+        },
+        {
+          "name": "Snake Umbra",
+          "n": 1
+        },
+        {
+          "name": "Sylvan Ranger",
+          "n": 1
+        },
+        {
+          "name": "Utopia Sprawl",
+          "n": 1
+        },
+        {
+          "name": "Warbriar Blessing",
+          "n": 1
+        },
+        {
+          "name": "Jukai Naturalist",
+          "n": 1
+        },
+        {
+          "name": "Pollenbright Wings",
+          "n": 1
+        },
+        {
+          "name": "Siona, Captain of the Pyleas",
+          "n": 1
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Krosan Verge",
+          "n": 1
+        },
+        {
+          "name": "Myriad Landscape",
+          "n": 1
+        },
+        {
+          "name": "Vitu-Ghazi, the City-Tree",
+          "n": 1
+        },
+        {
+          "name": "Tanglespan Lookout",
+          "n": 1
+        },
+        {
+          "name": "Syr Armont, the Redeemer",
+          "n": 1
+        },
+        {
+          "name": "Forest",
+          "n": 15
+        },
+        {
+          "name": "Plains",
+          "n": 14
+        }
+      ],
+      "source": {
+        "provider": "Wizards decklist independently verified against MTGJSON",
+        "official": "https://magic.wizards.com/en/news/announcements/wilds-of-eldraine-commander-decklists",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/VirtueAndValor_WOC.json",
+        "moxfield": "https://moxfield.com/decks/KnMheGE4ykelGVpKNvopNw",
+        "mtgjsonSnapshot": "2026-09-10",
+        "mtgjsonSha256": "ea324643d5b12d184fef138cbb1a0c4fa5d8c889ce0752416f49067121223139",
+        "officialHtmlSha256": "4bdd76559e1bee7a6d7b638cdfe540bcf17ca028d05dfda966c719f2109e8b5b",
+        "export": "virtue-and-valor.txt",
+        "sha256": "e0f44542e59077b7a10d4fa99e3645116b815ebf5d768b6db5818ff8e2e809a5"
+      }
+    },
+    {
+      "name": "Fae Dominion",
+      "commander": "Tegwyll, Duke of Splendor",
+      "set": "WOC",
+      "moxfield": "ozDFoD58AkeKWefQLjSo0A",
+      "slug": "fae-dominion",
+      "cards": [
+        {
+          "name": "Tegwyll, Duke of Splendor",
+          "n": 1
+        },
+        {
+          "name": "Alela, Cunning Conqueror",
+          "n": 1
+        },
+        {
+          "name": "Archmage of Echoes",
+          "n": 1
+        },
+        {
+          "name": "Malleable Impostor",
+          "n": 1
+        },
+        {
+          "name": "Misleading Signpost",
+          "n": 1
+        },
+        {
+          "name": "Shadow Puppeteers",
+          "n": 1
+        },
+        {
+          "name": "Blightwing Bandit",
+          "n": 1
+        },
+        {
+          "name": "Faerie Bladecrafter",
+          "n": 1
+        },
+        {
+          "name": "Nettling Nuisance",
+          "n": 1
+        },
+        {
+          "name": "Tegwyll's Scouring",
+          "n": 1
+        },
+        {
+          "name": "Brazen Borrower",
+          "n": 1
+        },
+        {
+          "name": "Dig Through Time",
+          "n": 1
+        },
+        {
+          "name": "Faerie Formation",
+          "n": 1
+        },
+        {
+          "name": "Glen Elendra Archmage",
+          "n": 1
+        },
+        {
+          "name": "Hullbreaker Horror",
+          "n": 1
+        },
+        {
+          "name": "Illusionist's Gambit",
+          "n": 1
+        },
+        {
+          "name": "Midnight Clock",
+          "n": 1
+        },
+        {
+          "name": "Perplexing Test",
+          "n": 1
+        },
+        {
+          "name": "Reflections of Littjara",
+          "n": 1
+        },
+        {
+          "name": "Scion of Oona",
+          "n": 1
+        },
+        {
+          "name": "Sower of Temptation",
+          "n": 1
+        },
+        {
+          "name": "Theoretical Duplication",
+          "n": 1
+        },
+        {
+          "name": "Kindred Dominance",
+          "n": 1
+        },
+        {
+          "name": "Nightmare Unmaking",
+          "n": 1
+        },
+        {
+          "name": "Puppeteer Clique",
+          "n": 1
+        },
+        {
+          "name": "Rankle, Master of Pranks",
+          "n": 1
+        },
+        {
+          "name": "Thrilling Encore",
+          "n": 1
+        },
+        {
+          "name": "Glen Elendra Liege",
+          "n": 1
+        },
+        {
+          "name": "Nymris, Oona's Trickster",
+          "n": 1
+        },
+        {
+          "name": "Oona, Queen of the Fae",
+          "n": 1
+        },
+        {
+          "name": "Choked Estuary",
+          "n": 1
+        },
+        {
+          "name": "Darkwater Catacombs",
+          "n": 1
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1
+        },
+        {
+          "name": "Secluded Glen",
+          "n": 1
+        },
+        {
+          "name": "Sunken Hollow",
+          "n": 1
+        },
+        {
+          "name": "Temple of Deceit",
+          "n": 1
+        },
+        {
+          "name": "Mocking Sprite",
+          "n": 1
+        },
+        {
+          "name": "Picklock Prankster",
+          "n": 1
+        },
+        {
+          "name": "Spell Stutter",
+          "n": 1
+        },
+        {
+          "name": "Obyra, Dreaming Duelist",
+          "n": 1
+        },
+        {
+          "name": "Spellscorn Coven",
+          "n": 1
+        },
+        {
+          "name": "Arcane Denial",
+          "n": 1
+        },
+        {
+          "name": "Cloud of Faeries",
+          "n": 1
+        },
+        {
+          "name": "Consider",
+          "n": 1
+        },
+        {
+          "name": "Distant Melody",
+          "n": 1
+        },
+        {
+          "name": "Fact or Fiction",
+          "n": 1
+        },
+        {
+          "name": "Faerie Seer",
+          "n": 1
+        },
+        {
+          "name": "Frantic Search",
+          "n": 1
+        },
+        {
+          "name": "Hypnotic Sprite",
+          "n": 1
+        },
+        {
+          "name": "Keep Watch",
+          "n": 1
+        },
+        {
+          "name": "Nightveil Sprite",
+          "n": 1
+        },
+        {
+          "name": "Opt",
+          "n": 1
+        },
+        {
+          "name": "Quickling",
+          "n": 1
+        },
+        {
+          "name": "Reality Shift",
+          "n": 1
+        },
+        {
+          "name": "Reconnaissance Mission",
+          "n": 1
+        },
+        {
+          "name": "Repulse",
+          "n": 1
+        },
+        {
+          "name": "Run Away Together",
+          "n": 1
+        },
+        {
+          "name": "Snap",
+          "n": 1
+        },
+        {
+          "name": "Reckless Spite",
+          "n": 1
+        },
+        {
+          "name": "Halo Forager",
+          "n": 1
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1
+        },
+        {
+          "name": "Dimir Signet",
+          "n": 1
+        },
+        {
+          "name": "Fellwar Stone",
+          "n": 1
+        },
+        {
+          "name": "Mind Stone",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Talisman of Dominance",
+          "n": 1
+        },
+        {
+          "name": "Wayfarer's Bauble",
+          "n": 1
+        },
+        {
+          "name": "Bojuka Bog",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Dimir Aqueduct",
+          "n": 1
+        },
+        {
+          "name": "Faerie Conclave",
+          "n": 1
+        },
+        {
+          "name": "Myriad Landscape",
+          "n": 1
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1
+        },
+        {
+          "name": "Tainted Isle",
+          "n": 1
+        },
+        {
+          "name": "Temple of the False God",
+          "n": 1
+        },
+        {
+          "name": "Island",
+          "n": 13
+        },
+        {
+          "name": "Swamp",
+          "n": 12
+        }
+      ],
+      "source": {
+        "provider": "Wizards decklist independently verified against MTGJSON",
+        "official": "https://magic.wizards.com/en/news/announcements/wilds-of-eldraine-commander-decklists",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/FaeDominion_WOC.json",
+        "moxfield": "https://moxfield.com/decks/ozDFoD58AkeKWefQLjSo0A",
+        "mtgjsonSnapshot": "2026-09-10",
+        "mtgjsonSha256": "2b36a4414394fc21477eb4527f926e97fcb7278583cff2282ce0261fa8379634",
+        "officialHtmlSha256": "4bdd76559e1bee7a6d7b638cdfe540bcf17ca028d05dfda966c719f2109e8b5b",
+        "export": "fae-dominion.txt",
+        "sha256": "64e0623ce8095c74f2c2b9f83fbdb8e7215dc92268f34c88d74bf9eb595a4be3"
+      }
+    },
+    {
+      "name": "Timey-Wimey",
+      "commander": "The Tenth Doctor",
+      "partner": "Rose Tyler",
+      "set": "WHO",
+      "moxfield": "fj8Av0UofkOhiyBAPSOwJw",
+      "slug": "timey-wimey",
+      "cards": [
+        {
+          "name": "The Tenth Doctor",
+          "n": 1
+        },
+        {
+          "name": "Rose Tyler",
+          "n": 1
+        },
+        {
+          "name": "Wilfred Mott",
+          "n": 1
+        },
+        {
+          "name": "Everybody Lives!",
+          "n": 1
+        },
+        {
+          "name": "Everything Comes to Dust",
+          "n": 1
+        },
+        {
+          "name": "Four Knocks",
+          "n": 1
+        },
+        {
+          "name": "The Pandorica",
+          "n": 1
+        },
+        {
+          "name": "The Wedding of River Song",
+          "n": 1
+        },
+        {
+          "name": "Adipose Offspring",
+          "n": 1
+        },
+        {
+          "name": "Astrid Peth",
+          "n": 1
+        },
+        {
+          "name": "Crack in Time",
+          "n": 1
+        },
+        {
+          "name": "The Girl in the Fireplace",
+          "n": 1
+        },
+        {
+          "name": "Martha Jones",
+          "n": 1
+        },
+        {
+          "name": "Nanogene Conversion",
+          "n": 1
+        },
+        {
+          "name": "Flesh Duplicate",
+          "n": 1
+        },
+        {
+          "name": "The Eleventh Hour",
+          "n": 1
+        },
+        {
+          "name": "All of History, All at Once",
+          "n": 1
+        },
+        {
+          "name": "Donna Noble",
+          "n": 1
+        },
+        {
+          "name": "Amy Pond",
+          "n": 1
+        },
+        {
+          "name": "Ecstatic Beauty",
+          "n": 1
+        },
+        {
+          "name": "RMS Titanic",
+          "n": 1
+        },
+        {
+          "name": "Coward // Killer",
+          "n": 1
+        },
+        {
+          "name": "The Parting of the Ways",
+          "n": 1
+        },
+        {
+          "name": "The Ninth Doctor",
+          "n": 1
+        },
+        {
+          "name": "Sally Sparrow",
+          "n": 1
+        },
+        {
+          "name": "Jenny, Generated Anomaly",
+          "n": 1
+        },
+        {
+          "name": "Rory Williams",
+          "n": 1
+        },
+        {
+          "name": "The Eleventh Doctor",
+          "n": 1
+        },
+        {
+          "name": "The War Doctor",
+          "n": 1
+        },
+        {
+          "name": "Regenerations Restored",
+          "n": 1
+        },
+        {
+          "name": "Idris, Soul of the TARDIS",
+          "n": 1
+        },
+        {
+          "name": "The Face of Boe",
+          "n": 1
+        },
+        {
+          "name": "Run for Your Life",
+          "n": 1
+        },
+        {
+          "name": "The Day of the Doctor",
+          "n": 1
+        },
+        {
+          "name": "Gallifrey Falls // No More",
+          "n": 1
+        },
+        {
+          "name": "Dinosaurs on a Spaceship",
+          "n": 1
+        },
+        {
+          "name": "Kate Stewart",
+          "n": 1
+        },
+        {
+          "name": "Rotating Fireplace",
+          "n": 1
+        },
+        {
+          "name": "The Moment",
+          "n": 1
+        },
+        {
+          "name": "Trenzalore Clocktower",
+          "n": 1
+        },
+        {
+          "name": "Grasp of Fate",
+          "n": 1
+        },
+        {
+          "name": "Farewell",
+          "n": 1
+        },
+        {
+          "name": "Out of Time",
+          "n": 1
+        },
+        {
+          "name": "Wedding Ring",
+          "n": 1
+        },
+        {
+          "name": "Inspiring Refrain",
+          "n": 1
+        },
+        {
+          "name": "As Foretold",
+          "n": 1
+        },
+        {
+          "name": "Fractured Identity",
+          "n": 1
+        },
+        {
+          "name": "Port Town",
+          "n": 1
+        },
+        {
+          "name": "Temple of Triumph",
+          "n": 1
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1
+        },
+        {
+          "name": "Temple of Enlightenment",
+          "n": 1
+        },
+        {
+          "name": "Prairie Stream",
+          "n": 1
+        },
+        {
+          "name": "Irrigated Farmland",
+          "n": 1
+        },
+        {
+          "name": "Deserted Beach",
+          "n": 1
+        },
+        {
+          "name": "Glacial Fortress",
+          "n": 1
+        },
+        {
+          "name": "Skycloud Expanse",
+          "n": 1
+        },
+        {
+          "name": "Temple of Epiphany",
+          "n": 1
+        },
+        {
+          "name": "Frostboil Snarl",
+          "n": 1
+        },
+        {
+          "name": "Thespian's Stage",
+          "n": 1
+        },
+        {
+          "name": "Furycalm Snarl",
+          "n": 1
+        },
+        {
+          "name": "War Room",
+          "n": 1
+        },
+        {
+          "name": "Sunbaked Canyon",
+          "n": 1
+        },
+        {
+          "name": "Sundown Pass",
+          "n": 1
+        },
+        {
+          "name": "Stormcarved Coast",
+          "n": 1
+        },
+        {
+          "name": "Fiery Islet",
+          "n": 1
+        },
+        {
+          "name": "Atraxi Warden",
+          "n": 1
+        },
+        {
+          "name": "Wibbly-wobbly, Timey-wimey",
+          "n": 1
+        },
+        {
+          "name": "Time Beetle",
+          "n": 1
+        },
+        {
+          "name": "Star Whale",
+          "n": 1
+        },
+        {
+          "name": "Sibylline Soothsayer",
+          "n": 1
+        },
+        {
+          "name": "Judoon Enforcers",
+          "n": 1
+        },
+        {
+          "name": "Psychic Paper",
+          "n": 1
+        },
+        {
+          "name": "TARDIS",
+          "n": 1
+        },
+        {
+          "name": "Sonic Screwdriver",
+          "n": 1
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Clockspinning",
+          "n": 1
+        },
+        {
+          "name": "Thought Vessel",
+          "n": 1
+        },
+        {
+          "name": "Mind Stone",
+          "n": 1
+        },
+        {
+          "name": "Talisman of Creativity",
+          "n": 1
+        },
+        {
+          "name": "Lightning Greaves",
+          "n": 1
+        },
+        {
+          "name": "Talisman of Conviction",
+          "n": 1
+        },
+        {
+          "name": "Evolving Wilds",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1
+        },
+        {
+          "name": "Temple of the False God",
+          "n": 1
+        },
+        {
+          "name": "Myriad Landscape",
+          "n": 1
+        },
+        {
+          "name": "Thriving Bluff",
+          "n": 1
+        },
+        {
+          "name": "Mystic Monastery",
+          "n": 1
+        },
+        {
+          "name": "Ominous Cemetery",
+          "n": 1
+        },
+        {
+          "name": "Rogue's Passage",
+          "n": 1
+        },
+        {
+          "name": "Plains",
+          "n": 3
+        },
+        {
+          "name": "Island",
+          "n": 3
+        },
+        {
+          "name": "Mountain",
+          "n": 3
+        }
+      ],
+      "source": {
+        "provider": "Wizards decklist independently verified against MTGJSON",
+        "official": "https://magic.wizards.com/en/news/announcements/magic-the-gathering-doctor-who-commander-decklists",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/TimeyWimey_WHO.json",
+        "moxfield": "https://moxfield.com/decks/fj8Av0UofkOhiyBAPSOwJw",
+        "mtgjsonSnapshot": "2026-09-10",
+        "mtgjsonSha256": "c10ac602b62cde7c74e5c68ad2640588b4107163a47f685c3f98da99df1008fb",
+        "officialHtmlSha256": "d4f511f3c33cf7762526b1c8b5b237638e52117da02279c5a23265bfb3058f0a",
+        "export": "timey-wimey.txt",
+        "sha256": "679312d500a6bc3c5bc4e04c8bcb06503612eb5c75f6206774580ae1558f1bd9"
+      }
+    }
+  ]
+}

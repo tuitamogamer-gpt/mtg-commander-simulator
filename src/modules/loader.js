@@ -23,6 +23,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+    "Enduring Enchantments": {"icon": "🌿", "colors": ["W", "B", "G"], "style": "Enchantment reanimation", "set": "Commander Masters (2023)", "blurb": "Anikthea rebuilds your enchantments as a growing Zombie army."},
+    "Eldrazi Unbound": {"icon": "🌀", "colors": [], "style": "Colorless ramp and cascade", "set": "Commander Masters (2023)", "blurb": "Build colorless mana, then let Zhulodok turn huge spells into two cascades."},
+    "Virtue and Valor": {"icon": "🛡️", "colors": ["G", "W"], "style": "Auras and Roles", "set": "Wilds of Eldraine Commander (2023)", "blurb": "Ellivere outfits your creatures with Virtuous Roles and draws cards when enchanted attackers connect."},
+    "Fae Dominion": {"icon": "🧚", "colors": ["U", "B"], "style": "Faeries and instant-speed control", "set": "Wilds of Eldraine Commander (2023)", "blurb": "Tegwyll strengthens a flying Faerie army while flash spells keep your options open."},
+    "Timey-Wimey": {"icon": "⏳", "colors": ["W", "U", "R"], "style": "Suspend and time counters", "set": "Doctor Who Commander (2023)", "blurb": "The Tenth Doctor suspends future spells while Rose Tyler grows with your time counters."},
     "Riders of Rohan": {"icon": "⚔️", "colors": ["U", "R", "W"], "style": "Human cavalry", "blurb": "Deploy Humans before combat to rally Éowyn’s hasty army.", "set": "The Lord of the Rings Commander (2023)"},
     "The Hosts of Mordor": {"icon": "🔥", "colors": ["U", "B", "R"], "style": "Amass and reanimation", "blurb": "Fill the graveyard, raise an Orc Army, and cast Sauron to recover your strongest creature.", "set": "The Lord of the Rings Commander (2023)"},
     "Food and Fellowship": {"icon": "🍲", "colors": ["W", "B", "G"], "style": "Food and life gain", "blurb": "Sam supplies Food while Frodo turns life gain and the Ring into cards.", "set": "The Lord of the Rings Commander (2023)"},

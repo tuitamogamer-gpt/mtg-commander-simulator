@@ -19,54 +19,51 @@
     "oracleIds": 30784
   },
   "counts": {
-    "runtimeDefinitions": 19484,
+    "runtimeDefinitions": 20962,
     "genericOracleCards": 17800,
     "genericBatches": 178,
     "manualOracleCards": 58,
-    "legacyDefinitions": 1626,
-    "deckImportEligibleDefinitions": 19438,
-    "deckImportRestrictedDefinitions": 46,
-    "representedUniverseOracleIds": 19463,
-    "remainingUniverseOracleIds": 11321,
+    "legacyDefinitions": 3104,
+    "deckImportEligibleDefinitions": 20944,
+    "deckImportRestrictedDefinitions": 18,
+    "representedUniverseOracleIds": 20935,
+    "remainingUniverseOracleIds": 9849,
     "parserEligibleUnimported": 2,
-    "deferred": 11319,
+    "deferred": 9847,
     "runtimeEntriesWithoutSnapshotMatch": 17,
-    "runtimeEntriesOutsideComparisonUniverse": 2
+    "runtimeEntriesOutsideComparisonUniverse": 8
   },
   "remainingByReason": {
-    "adventure-needs-complete-face-semantics": 44,
+    "adventure-needs-complete-face-semantics": 40,
     "backup-grant-needs-semantics": 2,
-    "backup-other-rules-unsupported": 2,
-    "complex-layout": 137,
+    "backup-other-rules-unsupported": 1,
+    "complex-layout": 115,
     "conflicting-hand-abilities": 1,
-    "double-faced-card-needs-complete-back-semantics": 28,
-    "double-faced-card-needs-complete-front-semantics": 253,
-    "double-faced-card-needs-face-transition-semantics": 84,
-    "dynamic-power-toughness": 39,
+    "double-faced-card-needs-complete-back-semantics": 25,
+    "double-faced-card-needs-complete-front-semantics": 230,
+    "double-faced-card-needs-face-transition-semantics": 81,
+    "dynamic-power-toughness": 32,
     "event-stat-condition-needs-binding": 1,
-    "land-needs-explicit-semantics": 165,
+    "land-needs-explicit-semantics": 140,
     "leveler-band-needs-complete-semantics": 2,
-    "library-selected-reference-needs-binding": 1,
-    "mana-ability-needs-explicit-semantics": 16,
-    "noncreature-needs-explicit-semantics": 2500,
-    "oracle-needs-explicit-semantics": 5045,
-    "overload-body-needs-complete-semantics": 11,
+    "mana-ability-needs-explicit-semantics": 15,
+    "noncreature-needs-explicit-semantics": 2187,
+    "oracle-needs-explicit-semantics": 4336,
+    "overload-body-needs-complete-semantics": 8,
     "reminder-only-oracle": 1,
     "requires-import-and-executable-proof": 2,
-    "saga-chapter-needs-complete-semantics": 126,
+    "saga-chapter-needs-complete-semantics": 110,
     "saga-other-rules-unsupported": 2,
-    "spell-needs-explicit-semantics": 2630,
-    "split-needs-complete-face-semantics": 38,
-    "transform-land-face-transition-needs-proof": 8,
+    "spell-needs-explicit-semantics": 2308,
+    "split-needs-complete-face-semantics": 32,
+    "transform-land-face-transition-needs-proof": 4,
     "unbound-X": 2,
-    "unbound-event-amount": 17,
-    "unbound-event-reference": 33,
-    "unbound-sacrificed-stat": 3,
-    "unbound-target-X": 8,
+    "unbound-event-amount": 16,
+    "unbound-event-reference": 31,
+    "unbound-sacrificed-stat": 2,
+    "unbound-target-X": 5,
     "unbound-target-damage-source": 25,
     "unsupported-adventure-face-types": 17,
-    "unsupported-backup-suffix": 1,
-    "unsupported-loyalty-value": 1,
     "unsupported-mana-cost": 49,
     "unsupported-split-faces": 27
   },
@@ -95,6 +92,31 @@
   ],
   "runtimeNamesOutsideComparisonUniverse": [
     {
+      "name": "Coastal Tower",
+      "sourceName": "Coastal Tower",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Dockside Extortionist",
+      "sourceName": "Dockside Extortionist",
+      "sourceCommanderLegality": "banned",
+      "sourceGames": [
+        "paper",
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Grafted Exoskeleton",
+      "sourceName": "Grafted Exoskeleton",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
       "name": "Library of Leng",
       "sourceName": "Library of Leng",
       "sourceCommanderLegality": "legal",
@@ -103,8 +125,32 @@
       ]
     },
     {
+      "name": "Muzzio, Visionary Architect",
+      "sourceName": "Muzzio, Visionary Architect",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Plague Myr",
+      "sourceName": "Plague Myr",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
       "name": "Plea for Power",
       "sourceName": "Plea for Power",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Viridian Corrupter",
+      "sourceName": "Viridian Corrupter",
       "sourceCommanderLegality": "legal",
       "sourceGames": [
         "mtgo"
@@ -130,59 +176,31 @@
     }
   ],
   "runtimeNamesRestrictedFromDeckImport": [
-    "Agitator Ant",
-    "Ancient Stone Idol",
-    "Anya, Merciless Angel",
-    "Bloodthirsty Blade",
-    "Boros Garrison",
     "Boros Reckoner",
-    "Comeuppance",
     "Darien, King of Kjeldor",
-    "Deflecting Palm",
-    "Disrupt Decorum",
-    "Duelist's Heritage",
     "Feather, Radiant Arbiter",
     "Fiendish Duo",
-    "Frontier Warmonger",
     "Gideon's Sacrifice",
-    "Gisela, Blade of Goldnight",
     "Havoc Eater",
     "Hot Pursuit",
     "Immortal Obligation",
-    "Kazuul, Tyrant of the Cliffs",
-    "Keeper of the Accord",
-    "Kher Keep",
     "Labyrinth of Skophos",
     "Loran of the Third Path",
-    "Martial Impetus",
     "Mob Verdict",
-    "Needle Spires",
     "Nelly Borca, Impulsive Accuser",
     "Otherworldly Escort",
     "Prisoner's Dilemma",
     "Redemption Arc",
-    "Rite of the Raging Storm",
-    "Seal of Cleansing",
-    "Selfless Squire",
-    "Sevinne's Reclamation",
-    "Smuggler's Share",
-    "Soul Snare",
-    "Spectacular Showdown",
-    "Stalking Leonin",
     "Take the Bait",
     "Trouble in Pairs",
-    "Vow of Duty",
-    "Vow of Lightning",
-    "War Room",
-    "Windborn Muse",
-    "Winds of Rath"
+    "Vow of Lightning"
   ],
   "classifierVersion": 8,
-  "classifierFilesSha256": "0fd0aaea732e5dcd878fb54f88ae9c0ef4c765f34ae1e7a0f12496a979903f46",
-  "inputFilesSha256": "9056bdc96022b5d5c402548b90ccb69b06eafd9e4a40e634b197b3ae2f6071a0",
+  "classifierFilesSha256": "8f8c3ca9adb4667a171490c7200d671cf1f0464dbfd7c8f6e50af63af613f44b",
+  "inputFilesSha256": "dba69df94ccc073564e942078ece5dd4e961615cc86f106c561072806f4442ba",
   "artifactSha256": {
-    "docs/catalog/imported-cards.csv": "47bfba00db0cbf8dc5ddaf7e07a68a6ba06fb87baa91cdb6b2d06931484f4304",
-    "docs/catalog/remaining-cards.csv": "3c0ac13d9baa4837cf53a5db664c55fd3a21251be3c3d3101299168799539501"
+    "docs/catalog/imported-cards.csv": "b183ce798cfedf2e1b58a9626ffd52acc1029f0b961008e55599e116ddc6d8c5",
+    "docs/catalog/remaining-cards.csv": "1e8763024679c2255c7b8fc7704ac35335ac1b5e9f64fed8006b3d110db1f2e1"
   },
   "notes": [
     "Names and face names associate legacy definitions with the pinned feed; these associations do not verify exact Oracle semantics or every face.",

@@ -198,6 +198,7 @@ for (const name of walkers) for (const [index, ability] of M.DEFS[name].abilitie
     for (const zone of ['hand', 'graveyard']) for (const card of ['Solemn Simulacrum', 'Swiftfoot Boots', 'Gravecrawler']) put(bot, card, zone);
     for (let n = 0; n < 32; n++) put(bot, n < 28 ? 'Forest' : 'Gravecrawler', 'library');
     await g.makeTokens({name: 'Soldier', types: ['Creature'], subtypes: ['Soldier'], power: '1', toughness: '1', kws: []}, bot);
+    if(name==="Calix, Destiny's Hand")put(bot,'Glorious Anthem');
     if(name==='Jared Carthalion')put(bot,'Fusion Elemental','graveyard');
     const walker = put(bot, name, 'hand');
     for (const color of ['W', 'U', 'B', 'R', 'G', 'C']) bot.pool[color] = 30;

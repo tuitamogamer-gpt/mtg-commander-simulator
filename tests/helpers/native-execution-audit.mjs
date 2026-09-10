@@ -77,6 +77,8 @@ export async function auditNativeCard(MTG, name, role) {
   const prerequisites = [];
   const extra = (card, owner, zone, reason) => { put(MTG, game, owner, card, zone); prerequisites.push(reason); };
   if (['Entrancing Melody', 'Stolen by the Fae'].includes(name)) extra('Llanowar Elves', opponent, 'battlefield', 'Mana value 1 creature for the declared X=1.');
+  if (['Calamity of the Titans',"Titan's Presence"].includes(name)) extra('Kozilek, the Great Distortion',player,'hand','Colorless creature for the actual additional reveal cost.');
+  if(name==='Daybreak Coronet'){const aura=put(MTG,game,player,'Rancor','battlefield');await game.attach(aura,game.creatures(player)[0]);prerequisites.push('Another Aura is attached to the creature, as required by Daybreak Coronet.');}
   if (name === 'Volcanic Offering') extra('Command Tower', opponent, 'battlefield', 'Opponent nonbasic land for both independently chosen destroy targets.');
   if (name === 'Grip of Phyresis') extra('Behemoth Sledge', opponent, 'battlefield', 'Opponent Equipment for the actual control-and-attach spell.');
   if (name === 'New Blood') extra('Falkenrath Noble',player,'battlefield','Untapped Vampire for the mandatory additional tap cost.');
@@ -150,7 +152,7 @@ export async function auditNativeCard(MTG, name, role) {
     if (!accepted) return { name, role, status: 'choice-gap', reason: 'Offered action declined or lacked prerequisites after the fixed controller choices.', queryTypes: [...new Set(trace)] };
     return complete(land ? 'play-land' : 'cast', beforeMana - Object.values(player.pool).reduce((a, b) => a + b, 0));
   };
-  if (['Take the Bait', 'Wake the Dead', 'Mirror Match', 'Cauldron Dance', 'Mandate of Peace', 'Spinal Embrace'].includes(name)) {
+  if (['Take the Bait', 'Wake the Dead', 'Mirror Match', 'Cauldron Dance', 'Mandate of Peace', 'Spinal Embrace', "Illusionist's Gambit"].includes(name)) {
     let result, attempted = false;
     const controller = opponent.controller;
     opponent.controller = { decide: async (g, q) => q.type === 'attackers'
@@ -158,7 +160,7 @@ export async function auditNativeCard(MTG, name, role) {
       : controller.decide(g, q) };
     game.turnPlayer = opponent;
     game.priorityRound = async () => {
-      if (attempted || game.step !== (name==='Mirror Match'?'blockers':'attackers') || !game.combat?.attackers.length) return;
+      if (attempted || game.step !== (['Mirror Match',"Illusionist's Gambit"].includes(name)?'blockers':'attackers') || !game.combat?.attackers.length) return;
       attempted = true; prerequisites.push('Actual opponent combat after declaring an attacker.'); result = await execute();
     };
     await game.combatPhase(opponent);

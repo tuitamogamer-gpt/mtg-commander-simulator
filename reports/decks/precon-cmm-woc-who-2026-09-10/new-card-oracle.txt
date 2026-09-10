@@ -1,0 +1,472 @@
+Adipose Offspring | {3}{W} | Creature | 2/2
+Emerge {5}{W} (You may cast this spell by sacrificing a creature and paying the emerge cost reduced by that creature's mana value.)
+When this creature enters, create a 2/2 white Alien creature token. If this creature's emerge cost was paid, instead create X of those tokens, where X is the sacrificed creature's toughness.
+
+Alela, Cunning Conqueror | {2}{U}{B} | Creature | 2/4
+Flying
+Whenever you cast your first spell during each opponent's turn, create a 1/1 black Faerie Rogue creature token with flying.
+Whenever one or more Faeries you control deal combat damage to a player, goad target creature that player controls.
+
+All Is Dust | {7} | Kindred Sorcery | /
+Each player sacrifices all permanents they control that are one or more colors.
+
+All of History, All at Once | {2}{U}{U} | Sorcery | /
+Time travel. (For each suspended card you own and each permanent you control with a time counter on it, you may add or remove a time counter.)
+Storm (When you cast this spell, copy it for each spell cast before it this turn.)
+
+Amy Pond | {2}{R} | Creature | 2/2
+Partner with Rory Williams (When this creature enters, target player may put Rory into their hand from their library, then shuffle.)
+Whenever Amy Pond deals combat damage to a player, choose a suspended card you own and remove that many time counters from it.
+Doctor's companion (You can have two commanders if the other is the Doctor.)
+
+Angelic Destiny | {2}{W}{W} | Enchantment | /
+Enchant creature
+Enchanted creature gets +4/+4, has flying and first strike, and is an Angel in addition to its other types.
+When enchanted creature dies, return this card to its owner's hand.
+
+Anikthea, Hand of Erebos | {2}{W}{B}{G} | Enchantment Creature | 4/4
+Menace
+Other enchantment creatures you control have menace.
+Whenever Anikthea enters or attacks, exile up to one target non-Aura enchantment card from your graveyard. Create a token that's a copy of that card, except it's a 3/3 black Zombie creature in addition to its other types.
+
+As Foretold | {2}{U} | Enchantment | /
+At the beginning of your upkeep, put a time counter on this enchantment.
+Once each turn, you may pay {0} rather than pay the mana cost for a spell you cast with mana value X or less, where X is the number of time counters on this enchantment.
+
+Bane of Bala Ged | {7} | Creature | 7/5
+Whenever this creature attacks, defending player exiles two permanents they control.
+
+Battle at the Helvault | {4}{W}{W} | Enchantment | /
+(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)
+I, II — For each player, exile up to one target non-Saga, nonland permanent that player controls until this Saga leaves the battlefield.
+III — Create Avacyn, a legendary 8/8 white Angel creature token with flying, vigilance, and indestructible.
+
+Battle for Bretagard | {1}{G}{W} | Enchantment | /
+(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)
+I — Create a 1/1 white Human Warrior creature token.
+II — Create a 1/1 green Elf Warrior creature token.
+III — Choose any number of artifact tokens and/or creature tokens you control with different names. For each of them, create a token that's a copy of it.
+
+Blast Zone | None | Land | /
+This land enters with a charge counter on it.
+{T}: Add {C}.
+{X}{X}, {T}: Put X charge counters on this land.
+{3}, {T}, Sacrifice this land: Destroy each nonland permanent with mana value equal to the number of charge counters on this land.
+
+Blightwing Bandit | {3}{B} | Creature | 2/2
+Flying, deathtouch
+Whenever you cast your first spell during each opponent's turn, look at the top card of that player's library, then exile it face down. You may play that card for as long as it remains exiled, and mana of any type can be spent to cast it.
+
+Cacophony Unleashed | {5}{B}{B} | Enchantment | /
+When this enchantment enters, if you cast it, destroy all nonenchantment creatures.
+Whenever this enchantment or another enchantment you control enters, until end of turn, this enchantment becomes a legendary 6/6 Nightmare God creature with menace and deathtouch. It's still an enchantment.
+
+Calamity of the Titans | {4}{C}{C} | Sorcery | /
+As an additional cost to cast this spell, reveal a colorless creature card from your hand.
+Exile each creature and planeswalker with mana value less than the revealed card's mana value.
+
+Calix, Destiny's Hand | {2}{G}{W} | Planeswalker | /
++1: Look at the top four cards of your library. You may reveal an enchantment card from among them and put that card into your hand. Put the rest on the bottom of your library in a random order.
+−3: Exile target creature or enchantment you don't control until target enchantment you control leaves the battlefield.
+−7: Return all enchantment cards from your graveyard to the battlefield.
+
+Clockspinning | {U} | Instant | /
+Buyback {3} (You may pay an additional {3} as you cast this spell. If you do, put this card into your hand as it resolves.)
+Choose a counter on target permanent or suspended card. Remove that counter from that permanent or card or put another of those counters on it.
+
+Composer of Spring | {1}{G} | Creature | 1/3
+Constellation — Whenever an enchantment you control enters, you may put a land card from your hand onto the battlefield tapped. If you control six or more enchantments, instead you may put a creature or land card from your hand onto the battlefield tapped.
+
+Courser of Kruphix | {1}{G}{G} | Enchantment Creature | 2/4
+Play with the top card of your library revealed.
+You may play lands from the top of your library.
+Landfall — Whenever a land you control enters, you gain 1 life.
+
+Coward // Killer | {1}{R} // {2}{R}{R} | Sorcery | /
+Coward: Target creature can't block this turn and becomes a Coward in addition to its other types until end of turn.
+Time travel.
+Killer: Killer deals 3 damage to target creature and each other creature that shares a creature type with it.
+
+Darksteel Monolith | {8} | Artifact | /
+Indestructible
+Once each turn, you may pay {0} rather than pay the mana cost for a colorless spell you cast from your hand.
+
+Daybreak Coronet | {W}{W} | Enchantment | /
+Enchant creature with another Aura attached to it
+Enchanted creature gets +3/+3 and has first strike, vigilance, and lifelink. (Damage dealt by the creature also causes its controller to gain that much life.)
+
+Demon of Fate's Design | {4}{B}{B} | Enchantment Creature | 6/6
+Flying, trample
+Once during each of your turns, you may cast an enchantment spell by paying life equal to its mana value rather than paying its mana cost.
+{2}{B}, Sacrifice another enchantment: This creature gets +X/+0 until end of turn, where X is the sacrificed enchantment's mana value.
+
+Desecrate Reality | {7} | Instant | /
+For each opponent, exile up to one target permanent that player controls with an even mana value. (Zero is even.)
+Adamant — If at least three colorless mana was spent to cast this spell, return a permanent card with an odd mana value from your graveyard to the battlefield.
+
+Destiny Spinner | {1}{G} | Enchantment Creature | 2/3
+Creature and enchantment spells you control can't be countered.
+{3}{G}: Target land you control becomes an X/X Elemental creature with trample and haste until end of turn, where X is the number of enchantments you control. It's still a land.
+
+Dinosaurs on a Spaceship | {4}{R}{W} | Creature | 7/7
+Vigilance, trample
+Other Dinosaurs you control get +1/+1 and have vigilance and trample.
+Suspend 4—{3}{R}{W}
+Whenever a time counter is removed from this card while it's exiled, create a 2/2 red and white Dinosaur creature token with flying and haste.
+
+Donna Noble | {3}{R} | Creature | 2/4
+Soulbond (You may pair this creature with another unpaired creature when either enters. They remain paired for as long as you control both of them.)
+Whenever Donna Noble or a creature it's paired with is dealt damage, Donna Noble deals that much damage to target opponent.
+Doctor's companion (You can have two commanders if the other is the Doctor.)
+
+Ecstatic Beauty | {2}{R} | Sorcery | /
+Exile the top three cards of your library. You may play those cards until end of turn. Put four time counters on each of those cards that has suspend.
+Suspend 4—{R}
+
+Eidolon of Countless Battles | {1}{W}{W} | Enchantment Creature | 0/0
+Bestow {2}{W}{W} (If you cast this card for its bestow cost, it's an Aura spell with enchant creature. It becomes a creature again if it's not attached.)
+This creature and enchanted creature each get +1/+1 for each creature you control and +1/+1 for each Aura you control.
+
+Endbringer | {5}{C} | Creature | 5/5
+Untap this creature during each other player's untap step.
+{T}: This creature deals 1 damage to any target.
+{C}, {T}: Target creature can't attack or block this turn.
+{C}{C}, {T}: Draw a card.
+
+Everybody Lives! | {1}{W} | Instant | /
+All creatures gain hexproof and indestructible until end of turn. Players gain hexproof until end of turn. Players can't lose life this turn and players can't lose the game or win the game this turn.
+
+Everything Comes to Dust | {7}{W}{W}{W} | Sorcery | /
+Convoke (Your creatures can help cast this spell. Each creature you tap while casting this spell pays for {1} or one mana of that creature's color.)
+Exile all creatures except those that share a creature type with a creature that convoked this spell, all artifacts, and all enchantments.
+
+Flayer of Loyalties | {8}{C}{C} | Creature | 10/10
+When you cast this spell, gain control of target creature until end of turn. Untap that creature. Until end of turn, it has base power and toughness 10/10 and gains trample, annihilator 2, and haste.
+Annihilator 2 (Whenever this creature attacks, defending player sacrifices two permanents of their choice.)
+Trample
+
+Flesh Duplicate | {U}{U} | Creature | 0/0
+You may have this creature enter as a copy of any creature on the battlefield, except it has vanishing 3 if that creature doesn't have vanishing. (A permanent with vanishing 3 enters with three time counters on it. At the beginning of your upkeep, remove a time counter from it. When the last is removed, sacrifice it.)
+
+Forsaken Monument | {5} | Artifact | /
+Colorless creatures you control get +2/+2.
+Whenever you tap a permanent for {C}, add an additional {C}.
+Whenever you cast a colorless spell, you gain 2 life.
+
+Ghoulish Impetus | {2}{B} | Enchantment | /
+Enchant creature
+Enchanted creature gets +1/+1, has deathtouch, and is goaded. (It attacks each combat if able and attacks a player other than you if able.)
+When enchanted creature dies, return this card to the battlefield at the beginning of the next end step.
+
+Halo Forager | {1}{U}{B} | Creature | 3/1
+Flying
+When this creature enters, you may pay {X}. When you do, you may cast target instant or sorcery card with mana value X from a graveyard without paying its mana cost. If that spell would be put into a graveyard, exile it instead.
+
+Idris, Soul of the TARDIS | {1}{U}{R} | Creature | 3/3
+Vanishing 3
+Imprint — When Idris enters, exile another artifact you control until Idris leaves the battlefield.
+Idris has all activated and triggered abilities of the exiled card and gets +X/+X, where X is the exiled card's mana value.
+
+Illusionist's Gambit | {2}{U}{U} | Instant | /
+Cast this spell only during the declare blockers step on an opponent's turn.
+Remove all attacking creatures from combat and untap them. After this phase, there is an additional combat phase. Each of those creatures attacks that combat if able. They can't attack you or planeswalkers you control that combat.
+
+Investigator's Journal | {2} | Artifact | /
+This artifact enters with a number of suspect counters on it equal to the greatest number of creatures a player controls.
+{2}, {T}, Remove a suspect counter from this artifact: Draw a card.
+{2}, Sacrifice this artifact: Draw a card.
+
+It That Betrays | {12} | Creature | 11/11
+Annihilator 2 (Whenever this creature attacks, defending player sacrifices two permanents of their choice.)
+Whenever an opponent sacrifices a nontoken permanent, put that card onto the battlefield under your control.
+
+Judoon Enforcers | {5}{R}{W} | Creature | 8/8
+Trample
+No more than one creature can attack you each combat.
+Suspend 6—{1}{R}{W} (Rather than cast this card from your hand, you may pay {1}{R}{W} and exile it with six time counters on it. At the beginning of your upkeep, remove a time counter. When the last is removed, you may cast it without paying its mana cost. It has haste.)
+
+Kate Stewart | {1}{U}{R}{W} | Creature | 3/3
+Whenever you put one or more time counters on a permanent you control, create a 1/1 white Soldier creature token.
+Whenever Kate Stewart attacks, you may pay {8}. If you do, attacking creatures get +X/+X until end of turn, where X is the number of time counters among permanents you control.
+
+Knickknack Ouphe | {X}{G} | Creature | 1/1
+This creature enters with X +1/+1 counters on it.
+When this creature enters, reveal the top X cards of your library. You may put any number of Aura cards with mana value X or less from among them onto the battlefield. Then put all cards revealed this way that weren't put onto the battlefield on the bottom of your library in a random order.
+
+Kozilek, the Great Distortion | {8}{C}{C} | Creature | 12/12
+When you cast this spell, if you have fewer than seven cards in hand, draw cards equal to the difference.
+Menace
+Discard a card with mana value X: Counter target spell with mana value X.
+
+Liberated Livestock | {5}{W} | Creature | 4/6
+When this creature dies, create a 1/1 white Cat creature token with lifelink, a 1/1 white Bird creature token with flying, and a 2/4 white Ox creature token. For each of those tokens, you may put an Aura card from your hand and/or graveyard onto the battlefield attached to it.
+
+Love Song of Night and Day | {2}{W} | Enchantment | /
+Read ahead (Choose a chapter and start with that many lore counters. Add one after your draw step. Skipped chapters don't trigger. Sacrifice after III.)
+I — You and target opponent each draw two cards.
+II — Create a 1/1 white Bird creature token with flying.
+III — Put a +1/+1 counter on each of up to two target creatures.
+
+Martha Jones | {2}{U} | Creature | 3/2
+Woman Who Walked the Earth — When Martha Jones enters, investigate. (Create a Clue token. It's an artifact with "{2}, Sacrifice this token: Draw a card.")
+Whenever you sacrifice a Clue, Martha Jones and up to one other target creature can't be blocked this turn.
+Doctor's companion (You can have two commanders if the other is the Doctor.)
+
+Matter Reshaper | {2}{C} | Creature | 3/2
+({C} represents colorless mana.)
+When this creature dies, reveal the top card of your library. You may put that card onto the battlefield if it's a permanent card with mana value 3 or less. Otherwise, put that card into your hand.
+
+Mazemind Tome | {2} | Artifact | /
+{T}, Put a page counter on this artifact: Scry 1. (Look at the top card of your library. You may put that card on the bottom.)
+{2}, {T}, Put a page counter on this artifact: Draw a card.
+When there are four or more page counters on this artifact, exile it. If you do, you gain 4 life.
+
+Misleading Signpost | {2}{U} | Artifact | /
+Flash
+When this artifact enters during the declare attackers step, you may reselect which player or permanent target attacking creature is attacking. (It can't attack its controller or their permanents.)
+{T}: Add {U}.
+
+Myriad Construct | {4} | Artifact Creature | 4/4
+Kicker {3}
+If this creature was kicked, it enters with a +1/+1 counter on it for each nonbasic land your opponents control.
+When this creature becomes the target of a spell, sacrifice it and create a number of 1/1 colorless Construct artifact creature tokens equal to its power.
+
+Narci, Fable Singer | {1}{W}{B}{G} | Creature | 3/3
+Lifelink
+Whenever you sacrifice an enchantment, draw a card.
+Whenever the final chapter ability of a Saga you control resolves, each opponent loses X life and you gain X life, where X is that Saga's mana value.
+
+Nettling Nuisance | {2}{B} | Creature | 3/1
+Flying
+Whenever one or more Faeries you control deal combat damage to a player, that player creates a 4/2 red Pirate creature token with "This token can't block." The token is goaded for the rest of the game. (It attacks each combat if able and attacks a player other than you if able.)
+
+Not of This World | {7} | Kindred Instant | /
+Counter target spell or ability that targets a permanent you control.
+This spell costs {7} less to cast if it targets a spell or ability that targets a creature you control with power 7 or greater.
+
+Oblivion Sower | {6} | Creature | 5/8
+When you cast this spell, target opponent exiles the top four cards of their library, then you may put any number of land cards that player owns from exile onto the battlefield under your control.
+
+Omarthis, Ghostfire Initiate | {X}{X} | Creature | 0/0
+Omarthis enters with X +1/+1 counters on it.
+Whenever you put one or more +1/+1 counters on another colorless creature, you may put a +1/+1 counter on Omarthis.
+When Omarthis dies, manifest a number of cards from the top of your library equal to the number of counters on it.
+
+Ominous Cemetery | None | Land | /
+{T}: Add {C}.
+{5}, {T}, Exile this land: Target creature's owner shuffles it into their library.
+
+Ondu Spiritdancer | {4}{W} | Creature | 3/3
+Whenever an enchantment you control enters, you may create a token that's a copy of it. Do this only once each turn.
+
+Out of Time | {1}{W}{W} | Enchantment | /
+When this enchantment enters, untap all creatures, then those creatures phase out until this enchantment leaves the battlefield. Put a time counter on this enchantment for each creature that phased out this way.
+Vanishing (At the beginning of your upkeep, remove a time counter from this enchantment. When the last is removed, sacrifice it.)
+
+Ox Drover | {3}{W} | Creature | 4/4
+Vigilance
+This creature can't be blocked by Oxen.
+Whenever this creature enters or attacks, target opponent creates a 2/4 white Ox creature token and you draw a card.
+
+Picklock Prankster | {1}{U} | Creature | 1/3
+Picklock Prankster: Flying, vigilance
+Free the Fae: Mill four cards. Then put an instant, sorcery, or Faerie card from among the milled cards into your hand.
+
+Psychic Paper | {2} | Artifact | /
+As this Equipment becomes attached to a creature, choose a creature card name and a creature type.
+Equipped creature has ward {1}, it can't be blocked, and its name and creature type are the last chosen name and creature type.
+Equip {2}
+
+Regenerations Restored | {W}{U} | Enchantment | /
+Vanishing 12 (This enchantment enters with twelve time counters on it. At the beginning of your upkeep, remove a time counter from it. When the last is removed, sacrifice it.)
+Whenever one or more time counters are removed from this enchantment, scry 1 and you gain 1 life. Then if this enchantment has no time counters on it, exile it. When you do, take an extra turn after this one.
+
+Retether | {3}{W} | Sorcery | /
+Return each Aura card from your graveyard to the battlefield. Only creatures can be enchanted this way. (Aura cards that can't enchant a creature on the battlefield remain in your graveyard.)
+
+Rory Williams | {W}{U} | Creature | 3/3
+Partner with Amy Pond
+First strike, lifelink
+The Last Centurion — When you cast this spell from anywhere other than exile, exile it with three time counters on it. It gains suspend. Then investigate. (Create a Clue token. It's an artifact with "{2}, Sacrifice this token: Draw a card.")
+
+Rose Tyler | {1}{W} | Creature | 2/2
+Rose Tyler gets +1/+1 for each time counter on it.
+Bad Wolf — Whenever Rose Tyler attacks, put a time counter on it for each suspended card you own and each other permanent you control with a time counter on it.
+Doctor's companion (You can have two commanders if the other is the Doctor.)
+
+Rotating Fireplace | {3} | Artifact | /
+This artifact enters tapped with a time counter on it.
+{T}: Add an amount of {C} equal to the number of time counters on this artifact.
+{4}, {T}: Time travel. Activate only as a sorcery. (For each suspended card you own and each permanent you control with a time counter on it, you may add or remove a time counter.)
+
+Run Away Together | {1}{U} | Instant | /
+Choose two target creatures controlled by different players. Return those creatures to their owners' hands.
+
+Secluded Glen | None | Land | /
+As this land enters, you may reveal a Faerie card from your hand. If you don't, this land enters tapped.
+{T}: Add {U} or {B}.
+
+Shadow Puppeteers | {6}{U} | Creature | 4/4
+Flying, ward {2}
+When this creature enters, create two 1/1 black Faerie Rogue creature tokens with flying.
+Whenever a creature you control with flying attacks, you may have it become a red Dragon with base power and toughness 4/4 in addition to its other colors and types until end of turn.
+
+Sibylline Soothsayer | {2}{R} | Creature | 3/2
+Temporal Foresight — When this creature enters, reveal cards from the top of your library until you reveal a nonland card with mana value 3 or greater. Exile that card with three time counters on it. If it doesn't have suspend, it gains suspend. Put the rest of the revealed cards on the bottom of your library in a random order.
+
+Siona, Captain of the Pyleas | {1}{G}{W} | Creature | 2/2
+When Siona enters, look at the top seven cards of your library. You may reveal an Aura card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.
+Whenever an Aura you control becomes attached to a creature you control, create a 1/1 white Human Soldier creature token.
+
+Skittering Cicada | {3} | Creature | 2/2
+Flash
+You may cast colorless spells as though they had flash.
+Whenever you cast a colorless spell, until end of turn, this creature gains trample and gets +X/+X, where X is that spell's mana value.
+
+Songbirds' Blessing | {3}{W} | Enchantment | /
+Enchant creature
+Whenever enchanted creature attacks, reveal cards from the top of your library until you reveal an Aura card. You may put that card onto the battlefield. If you don't, put it into your hand. Put the rest on the bottom of your library in a random order.
+
+Sower of Temptation | {2}{U}{U} | Creature | 2/2
+Flying
+When this creature enters, gain control of target creature for as long as this creature remains on the battlefield.
+
+Spell Stutter | {1}{U} | Instant | /
+Counter target spell unless its controller pays {2} plus an additional {1} for each Faerie you control.
+
+Star Whale | {6}{U}{U} | Creature | 8/8
+Flying, vigilance
+Other creatures you control have ward {2}.
+Suspend 6—{1}{U} (Rather than cast this card from your hand, you may pay {1}{U} and exile it with six time counters on it. At the beginning of your upkeep, remove a time counter. When the last is removed, you may cast it without paying its mana cost. It has haste.)
+
+Starfield of Nyx | {4}{W} | Enchantment | /
+At the beginning of your upkeep, you may return target enchantment card from your graveyard to the battlefield.
+As long as you control five or more enchantments, each other non-Aura enchantment you control is a creature in addition to its other types and has base power and base toughness each equal to its mana value.
+
+TARDIS | {2} | Artifact | 2/4
+Flying
+Whenever this Vehicle attacks, if you control a Time Lord, the next spell you cast this turn has cascade and you may planeswalk.
+Crew 2 (Tap any number of creatures you control with total power 2 or more: This Vehicle becomes an artifact creature until end of turn.)
+
+Tegwyll's Scouring | {4}{B}{B} | Sorcery | /
+You may cast this spell as though it had flash by tapping three untapped creatures you control with flying in addition to paying its other costs.
+Destroy all creatures. Create three 1/1 black Faerie Rogue creature tokens with flying.
+
+The Day of the Doctor | {3}{R}{W} | Enchantment | /
+(As this Saga enters and after your draw step, add a lore counter. Sacrifice after IV.)
+I, II, III — Exile cards from the top of your library until you exile a legendary card. You may play that card for as long as this Saga remains on the battlefield. Put the rest of those exiled cards on the bottom of your library in a random order.
+IV — Choose up to three Doctors. You may exile all other creatures. If you do, this Saga deals 13 damage to you.
+
+The Eleventh Doctor | {1}{W}{U} | Creature | 3/2
+I. AM. TALKING! — Whenever The Eleventh Doctor deals combat damage to a player, you may exile a card from your hand with a number of time counters on it equal to its mana value. If it doesn't have suspend, it gains suspend.
+{2}: Target creature with power 3 or less can't be blocked this turn.
+
+The Eleventh Hour | {3}{U} | Enchantment | /
+(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)
+I — Search your library for a Doctor card, reveal it, put it into your hand, then shuffle.
+II — Create a Food token and a 1/1 white Human creature token with "Doctor spells you cast cost {1} less to cast."
+III — Create a token that's a copy of target creature, except it's a legendary Alien named Prisoner Zero.
+
+The Face of Boe | {1}{U}{R}{W} | Creature | 0/4
+{T}: You may cast a spell with suspend from your hand. If you do, pay its suspend cost rather than its mana cost. Activate only as a sorcery.
+
+The Girl in the Fireplace | {2}{W} | Enchantment | /
+(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)
+I — Create a 1/1 white Human Noble creature token with vanishing 3 and "Prevent all damage that would be dealt to this token."
+II — Create a 2/2 white Horse creature token with "Doctors you control have horsemanship." (They can't be blocked except by creatures with horsemanship.)
+III — Whenever a creature you control deals combat damage to a player this turn, time travel.
+
+The Moment | {2} | Artifact | /
+At the beginning of your upkeep, put a time counter on The Moment.
+{2}, {T}: Untap target creature you control. It phases out until The Moment leaves the battlefield.
+{3}, {T}: Destroy each nonland permanent with mana value less than or equal to the number of time counters on The Moment. Then sacrifice The Moment. Activate only as a sorcery.
+
+The Ninth Doctor | {1}{U}{R} | Creature | 2/4
+Haste
+Into the TARDIS — Whenever The Ninth Doctor becomes untapped during your untap step, you get an additional upkeep step after this step.
+
+The Pandorica | {2}{W} | Artifact | /
+You may choose not to untap The Pandorica during your untap step.
+{1}{W}, {T}: Untap another target nonland permanent, then it phases out. It can't phase in for as long as The Pandorica remains tapped. When The Pandorica becomes untapped or leaves the battlefield, that permanent phases in. Activate only as a sorcery.
+
+The Parting of the Ways | {4}{R}{R} | Enchantment | /
+(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)
+I — Exile the top five cards of your library. For each nonland card exiled this way, put a number of time counters on that card equal to its mana value. If it doesn't have suspend, it gains suspend.
+II — Time travel, then time travel.
+III — For each opponent, destroy up to one target artifact that player controls.
+
+The Tenth Doctor | {3}{U}{R} | Creature | 3/5
+Allons-y! — Whenever you attack, exile cards from the top of your library until you exile a nonland card. Put three time counters on it. If it doesn't have suspend, it gains suspend.
+Timey-Wimey — {7}: Time travel three times. Activate only as a sorcery. (For each suspended card you own and each permanent you control with a time counter on it, you may add or remove a time counter. Then do it two more times.)
+
+The War Doctor | {2}{R}{W} | Creature | 3/5
+Whenever one or more other permanents phase out and whenever one or more other cards are put into exile from anywhere, put a time counter on The War Doctor.
+Whenever The War Doctor attacks, it deals damage equal to the number of time counters on it to any target. If a creature dealt damage this way would die this turn, exile it instead.
+
+The Wedding of River Song | {2}{W} | Sorcery | /
+Draw two cards, then you may exile a nonland card from your hand with a number of time counters on it equal to its mana value. Then target opponent does the same. Cards exiled this way that don't have suspend gain suspend.
+Time travel. (For each suspended card you own and each permanent you control with a time counter on it, you may add or remove a time counter.)
+
+Thrilling Encore | {4}{B} | Instant | /
+Put onto the battlefield under your control all creature cards in all graveyards that were put there from the battlefield this turn.
+
+Time Beetle | {1}{U} | Creature | 1/1
+Skulk (This creature can't be blocked by creatures with greater power.)
+Parallel Universe — Whenever this creature deals combat damage to a player, time travel. (For each suspended card you own and each permanent you control with a time counter on it, you may add or remove a time counter.)
+
+Titan's Presence | {3} | Instant | /
+As an additional cost to cast this spell, reveal a colorless creature card from your hand.
+Exile target creature if its power is less than or equal to the revealed card's power.
+
+Tithe Taker | {1}{W} | Creature | 2/1
+During your turn, spells your opponents cast cost {1} more to cast and abilities your opponents activate cost {1} more to activate unless they're mana abilities.
+Afterlife 1 (When this creature dies, create a 1/1 white and black Spirit creature token with flying.)
+
+Trenzalore Clocktower | None | Land | /
+{T}: Add {U}. Put a time counter on Trenzalore Clocktower.
+{1}{U}, {T}, Remove twelve time counters from Trenzalore Clocktower and exile it: Shuffle your graveyard and hand into your library, then draw seven cards. Activate only if you control a Time Lord.
+
+Ugin's Mastery | {4} | Enchantment | /
+Whenever you cast a colorless creature spell, manifest the top card of your library. (Put it onto the battlefield face down as a 2/2 creature. Turn it face up any time for its mana cost if it's a creature card.)
+Whenever you attack with creatures with total power 6 or greater, you may turn a face-down creature you control face up.
+
+Ugin, the Ineffable | {6} | Planeswalker | /
+Colorless spells you cast cost {2} less to cast.
++1: Exile the top card of your library face down and look at it. Create a 2/2 colorless Spirit creature token. When that token leaves the battlefield, put the exiled card into your hand.
+−3: Destroy target permanent that's one or more colors.
+
+Umbra Mystic | {2}{W} | Creature | 2/2
+Auras attached to permanents you control have umbra armor. (If an enchanted permanent you control would be destroyed, instead remove all damage from it and destroy an Aura attached to it.)
+
+Urza's Mine | None | Land | /
+{T}: Add {C}. If you control an Urza's Power-Plant and an Urza's Tower, add {C}{C} instead.
+
+Urza's Power Plant | None | Land | /
+{T}: Add {C}. If you control an Urza's Mine and an Urza's Tower, add {C}{C} instead.
+
+Urza's Tower | None | Land | /
+{T}: Add {C}. If you control an Urza's Mine and an Urza's Power-Plant, add {C}{C}{C} instead.
+
+Warbriar Blessing | {1}{G} | Enchantment | /
+Enchant creature you control
+When this Aura enters, enchanted creature fights up to one target creature you don't control. (Each deals damage equal to its power to the other.)
+Enchanted creature gets +0/+2.
+
+Warping Wail | {1}{C} | Instant | /
+({C} represents colorless mana.)
+Choose one —
+• Exile target creature with power or toughness 1 or less.
+• Counter target sorcery spell.
+• Create a 1/1 colorless Eldrazi Scion creature token. It has "Sacrifice this token: Add {C}."
+
+Wedding Ring | {2}{W}{W} | Artifact | /
+When this artifact enters, if it was cast, target opponent creates a token that's a copy of it.
+Whenever an opponent who controls an artifact named Wedding Ring draws a card during their turn, you draw a card.
+Whenever an opponent who controls an artifact named Wedding Ring gains life during their turn, you gain that much life.
+
+Wibbly-wobbly, Timey-wimey | {1}{U} | Sorcery | /
+Time travel. (For each suspended card you own and each permanent you control with a time counter on it, you may add or remove a time counter.)
+Draw a card.
+
+Zhulodok, Void Gorger | {5}{C} | Creature | 7/4
+Colorless spells you cast from your hand with mana value 7 or greater have "Cascade, cascade." (When you cast one, exile cards from the top of your library until you exile a nonland card that costs less. You may cast it without paying its mana cost. Put the exiled cards on the bottom in a random order. Then do it again.)

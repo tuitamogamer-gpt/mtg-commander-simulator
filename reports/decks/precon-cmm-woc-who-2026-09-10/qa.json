@@ -1,0 +1,348 @@
+{
+  "date": "2026-09-10",
+  "baseline": "f674dd7",
+  "scope": "Five original precons, source-preserving import and production release",
+  "current": {
+    "decks": 120,
+    "definitions": 20962,
+    "eligible": 20944
+  },
+  "semanticTests": {
+    "passed": 53,
+    "failed": 0,
+    "files": [
+      "tests/cmm-woc-who-precons.test.mjs",
+      "tests/cmm-woc-who-advanced.test.mjs"
+    ]
+  },
+  "finalTargetedRegression": {
+    "log": ".local/cmm-woc-who-release-final-regression.log",
+    "tests": 1185,
+    "suites": 0,
+    "pass": 1185,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 152599.199,
+    "files": [
+      "tests/afc-additional.test.mjs",
+      "tests/afc-dice.test.mjs",
+      "tests/afc-dungeons.test.mjs",
+      "tests/afc-exile.test.mjs",
+      "tests/afc-mic-integration.test.mjs",
+      "tests/ai-endgame-and-ward.test.mjs",
+      "tests/ai-v2.test.mjs",
+      "tests/baseline.test.mjs",
+      "tests/bom-precons.test.mjs",
+      "tests/c14-precons.test.mjs",
+      "tests/c15-c16-precons.test.mjs",
+      "tests/c17-c19-aura-control.test.mjs",
+      "tests/c17-c19-casting.test.mjs",
+      "tests/c17-c19-turns.test.mjs",
+      "tests/c21-precons.test.mjs",
+      "tests/clb-dmc-40k-precons.test.mjs",
+      "tests/cmm-woc-who-advanced.test.mjs",
+      "tests/cmm-woc-who-precons.test.mjs",
+      "tests/cmm-woc-who-release.test.mjs",
+      "tests/commander-visuals.test.mjs",
+      "tests/full-card-audit.test.mjs",
+      "tests/jeskai-striker.test.mjs",
+      "tests/legacy-card-catalog-integrity.test.mjs",
+      "tests/local-card-images.test.mjs",
+      "tests/ltc-cmm-advanced.test.mjs",
+      "tests/ltc-cmm-deep.test.mjs",
+      "tests/ltc-cmm-precons.test.mjs",
+      "tests/mana-solver-backtracking.test.mjs",
+      "tests/mana-tap-cost.test.mjs",
+      "tests/manual-mana-manifest-effects.test.mjs",
+      "tests/oracle-v8-casting-choices.test.mjs",
+      "tests/oracle-v8-casting-limits.test.mjs",
+      "tests/oracle-v8-casting-rules.test.mjs",
+      "tests/oracle-v8-counter-costs.test.mjs",
+      "tests/oracle-v8-public-abilities.test.mjs",
+      "tests/oracle-v8-stack-copy.test.mjs",
+      "tests/oracle-v8-turns.test.mjs",
+      "tests/planeswalker-combat.test.mjs",
+      "tests/planeswalker-decisions.test.mjs",
+      "tests/save-state.test.mjs",
+      "tests/state-trigger-lifecycle.test.mjs",
+      "tests/target-zone-and-suspend-regressions.test.mjs",
+      "tests/timing-suspend-evoke-regressions.test.mjs",
+      "tests/voc-ncc-precons.test.mjs",
+      "tests/x-mana-mechanics.test.mjs"
+    ],
+    "command": "node --test tests/afc-additional.test.mjs tests/afc-dice.test.mjs tests/afc-dungeons.test.mjs tests/afc-exile.test.mjs tests/afc-mic-integration.test.mjs tests/ai-endgame-and-ward.test.mjs tests/ai-v2.test.mjs tests/baseline.test.mjs tests/bom-precons.test.mjs tests/c14-precons.test.mjs tests/c15-c16-precons.test.mjs tests/c17-c19-aura-control.test.mjs tests/c17-c19-casting.test.mjs tests/c17-c19-turns.test.mjs tests/c21-precons.test.mjs tests/clb-dmc-40k-precons.test.mjs tests/cmm-woc-who-advanced.test.mjs tests/cmm-woc-who-precons.test.mjs tests/cmm-woc-who-release.test.mjs tests/commander-visuals.test.mjs tests/full-card-audit.test.mjs tests/jeskai-striker.test.mjs tests/legacy-card-catalog-integrity.test.mjs tests/local-card-images.test.mjs tests/ltc-cmm-advanced.test.mjs tests/ltc-cmm-deep.test.mjs tests/ltc-cmm-precons.test.mjs tests/mana-solver-backtracking.test.mjs tests/mana-tap-cost.test.mjs tests/manual-mana-manifest-effects.test.mjs tests/oracle-v8-casting-choices.test.mjs tests/oracle-v8-casting-limits.test.mjs tests/oracle-v8-casting-rules.test.mjs tests/oracle-v8-counter-costs.test.mjs tests/oracle-v8-public-abilities.test.mjs tests/oracle-v8-stack-copy.test.mjs tests/oracle-v8-turns.test.mjs tests/planeswalker-combat.test.mjs tests/planeswalker-decisions.test.mjs tests/save-state.test.mjs tests/state-trigger-lifecycle.test.mjs tests/target-zone-and-suspend-regressions.test.mjs tests/timing-suspend-evoke-regressions.test.mjs tests/voc-ncc-precons.test.mjs tests/x-mana-mechanics.test.mjs"
+  },
+  "nativeSmoke": {
+    "passed": 218,
+    "cards": 109,
+    "roles": [
+      "human",
+      "ai"
+    ],
+    "prerequisiteGaps": 0,
+    "choiceGaps": 0,
+    "errors": 0,
+    "report": "runtime-smoke.json",
+    "log": ".local/cmm-woc-who-release-native-final.log"
+  },
+  "strictCertification": {
+    "passed": true,
+    "cardDeckChecks": 9914,
+    "definitions": 20962,
+    "uniqueActiveCards": 4826,
+    "failed": 0,
+    "command": "npm.cmd run certify:strict",
+    "log": ".local/cmm-woc-who-release-certify-final.log"
+  },
+  "syntax": {
+    "passed": true,
+    "command": "npm.cmd run check",
+    "log": ".local/cmm-woc-who-release-check-final.log"
+  },
+  "sourceAudit": {
+    "passed": true,
+    "command": "npm.cmd run audit",
+    "log": ".local/cmm-woc-who-release-audit-final.log"
+  },
+  "sourcePreservation": {
+    "passed": true,
+    "command": "node scripts/verify-cmm-woc-who-import.mjs",
+    "report": "source-validation.json",
+    "log": ".local/cmm-woc-who-release-source-final.log"
+  },
+  "browser": {
+    "passed": 10,
+    "errors": [],
+    "widths": [
+      1440,
+      390
+    ],
+    "script": "tests/browser/cmm-woc-who-precons.mjs",
+    "evidence": "output\\precon-cmm-woc-who-2026-09-10\\release-isolated-browser\\result.json",
+    "scenarios": [
+      {
+        "deck": "Enduring Enchantments",
+        "width": 1440,
+        "commanders": [
+          "Anikthea, Hand of Erebos"
+        ],
+        "openingCards": 100,
+        "manaSpent": 5,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Eldrazi Unbound",
+        "width": 1440,
+        "commanders": [
+          "Zhulodok, Void Gorger"
+        ],
+        "openingCards": 100,
+        "manaSpent": 6,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Virtue and Valor",
+        "width": 1440,
+        "commanders": [
+          "Ellivere of the Wild Court"
+        ],
+        "openingCards": 100,
+        "manaSpent": 4,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Fae Dominion",
+        "width": 1440,
+        "commanders": [
+          "Tegwyll, Duke of Splendor"
+        ],
+        "openingCards": 100,
+        "manaSpent": 3,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Timey-Wimey",
+        "width": 1440,
+        "commanders": [
+          "The Tenth Doctor",
+          "Rose Tyler"
+        ],
+        "openingCards": 100,
+        "manaSpent": 5,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Enduring Enchantments",
+        "width": 390,
+        "commanders": [
+          "Anikthea, Hand of Erebos"
+        ],
+        "openingCards": 100,
+        "manaSpent": 5,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Eldrazi Unbound",
+        "width": 390,
+        "commanders": [
+          "Zhulodok, Void Gorger"
+        ],
+        "openingCards": 100,
+        "manaSpent": 6,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Virtue and Valor",
+        "width": 390,
+        "commanders": [
+          "Ellivere of the Wild Court"
+        ],
+        "openingCards": 100,
+        "manaSpent": 4,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Fae Dominion",
+        "width": 390,
+        "commanders": [
+          "Tegwyll, Duke of Splendor"
+        ],
+        "openingCards": 100,
+        "manaSpent": 3,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Timey-Wimey",
+        "width": 390,
+        "commanders": [
+          "The Tenth Doctor",
+          "Rose Tyler"
+        ],
+        "openingCards": 100,
+        "manaSpent": 5,
+        "stackSeen": true,
+        "overflow": false
+      }
+    ]
+  },
+  "naturalGames": {
+    "passed": 5,
+    "expected": 5,
+    "rows": [
+      {
+        "name": "Enduring Enchantments",
+        "seed": 11196,
+        "opponents": [
+          "Eldrazi Unbound",
+          "Virtue and Valor",
+          "Fae Dominion"
+        ],
+        "turns": 58,
+        "winner": "You",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "Eldrazi Unbound",
+        "seed": 11197,
+        "opponents": [
+          "Virtue and Valor",
+          "Fae Dominion",
+          "Timey-Wimey"
+        ],
+        "turns": 80,
+        "winner": "AI Wolf",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "Virtue and Valor",
+        "seed": 11198,
+        "opponents": [
+          "Fae Dominion",
+          "Timey-Wimey",
+          "Abzan Armor"
+        ],
+        "turns": 51,
+        "winner": "AI Dragon",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "Fae Dominion",
+        "seed": 11199,
+        "opponents": [
+          "Timey-Wimey",
+          "Abzan Armor",
+          "Animated Army"
+        ],
+        "turns": 51,
+        "winner": "You",
+        "fallbacks": 0,
+        "passed": true
+      },
+      {
+        "name": "Timey-Wimey",
+        "seed": 11200,
+        "opponents": [
+          "Abzan Armor",
+          "Animated Army",
+          "Avengers Assemble"
+        ],
+        "turns": 29,
+        "winner": "AI Raven",
+        "fallbacks": 0,
+        "passed": true
+      }
+    ]
+  },
+  "runtimeSha256": {
+    "src/app.js": "f02bd8d85a115e4fd5e92dd1b0903a5be91970f44566a427140681ea6fc6769c",
+    "src/card-images.js": "07d8048e2ac0ddc333c29c6cfa0cd041b29ead04b5921863c15dd96163c9acd9",
+    "src/catalog-summary.js": "3884cd8feca1be081f28a80c781496d1b2f568184c31c3c6e533d0915cff7093",
+    "src/data.js": "c2693f29e8dc3f241392d0df5b68c691140d18b25143e999840f39b6331cbf28",
+    "src/modules/afc-mic-rules.js": "5dea440cfe6060d25713a80de513f5a02a28b44007d44ad4dba94258635fc85e",
+    "src/modules/ai-v2.js": "6dd8ebb9b34cf93e68ad0b3e1cc0bd92b62ed47dd969e398edc297aa38808d5e",
+    "src/modules/c14-precon-rules.js": "d07979250f9f2aab0ae74699ea96f4722d4633c3e959e4e27aaa264d84d4de06",
+    "src/modules/c17-c19-umbra-rules.js": "c4845267563aa22db1d4a6071799e7fc22f02ae749d2555affeefde530db7454",
+    "src/modules/cmm-woc-who-casting.js": "45966ce3ed9aedb3c48a106f0fdce1e83ba53a13abd5c5fcfb742e1bd8600c57",
+    "src/modules/cmm-woc-who-integration.js": "5225356fb256dec9ba99b9d867556ec63ca2d61cb4be31bcd1cd75e33c8e7dc0",
+    "src/modules/cmm-woc-who-rules.js": "1dbd7f55feabca3e49f0045376f64575c4ebbba2ca014e6c690bb3c684ba5ad8",
+    "src/modules/deck-guides.js": "371711a1c3fd3fb728dc1f197f3eb00dcb9cec335a491e65afd2737687e8b370",
+    "src/modules/engine.js": "21b3c63e366ecea2200aa8bec5ad7a2349ed2232302c79039a01f9704bd0f471",
+    "src/modules/engine2.js": "a928658b844ade2d319680a2b41fee54d7b2b20eee8c6252d25dbb0a2379797f",
+    "src/modules/loader.js": "873ae4a81915147ff3df7725bc54c81c49792b801f9610e48f6defcbbeff4f56",
+    "src/modules/scripts-cmm-colorless.js": "62b2407973198cdf08a457ca7cfeb4fd3885cfb276a6630c4d9230079f33855f",
+    "src/modules/scripts-cmm-enchantments.js": "d3d951b1b00af72a753f77e96bbb864fce611e56b9f0132161a8487ddf4b55c8",
+    "src/modules/scripts-cmm-planeswalkers.js": "554064aa2d4c44bc23972c13c46d2db26d1872712edbfe64d99b2808b353307b",
+    "src/modules/scripts-ltc-spells.js": "b69be12c3c2cc9376c843302968c541115d288bacddf1868d6a027f06898ddb6",
+    "src/modules/scripts-who-creatures.js": "25cf47bb35445357af85e93f6a814a17fc8d2e05250dba20da1687dd728bf680",
+    "src/modules/scripts-who-sagas.js": "e2d95a6cb1223a513faa85dff3ed5fd0bdd66fa4263b6f8a0186e2e05dc3fcd0",
+    "src/modules/scripts-who-time.js": "545a8a6ab1312e3b136a29ac43f4b93a9c0d41972d3569fa595f03aa0a9f8502",
+    "src/modules/scripts-woc-cards.js": "eb90ed2a6748affad64a3eb253bae4b0df14e86817dfcc04501e8b998e56176e",
+    "src/modules/scripts_stella.js": "7d1793d315de96ed3bc36071d88046430ea14b619dd6e2cb4d236687b5c86509"
+  },
+  "limitations": [
+    "The original full-suite command failed; it is not presented as a single full-suite pass. All nine failures are reconciled by the final checks above.",
+    "All-deck coverage combines 109 original successful games and eleven resumed games after fixes.",
+    "The full cast-prompt sweep was not repeated; targeted human/AI paid-cast regressions verify its two reported failures. The complete activation-prompt sweep was repeated.",
+    "These checks do not prove every possible card interaction."
+  ],
+  "delivery": {
+    "branch": "main",
+    "canonical": "https://mtg-commander-simulator.vercel.app/",
+    "finalEvidence": "output\\precon-cmm-woc-who-2026-09-10\\release.json"
+  },
+  "releaseValidation": "release-qa.json"
+}

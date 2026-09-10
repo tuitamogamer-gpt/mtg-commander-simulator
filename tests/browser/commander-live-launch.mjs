@@ -112,9 +112,12 @@ try {
   check('host and guest use the same full Arena and private presentation model');
 
   await until(async () => {
-    if (latest('guest')?.pendingDecision?.type === 'main') return true;
+    const guestMain = () => guest.evaluate(() => window._ui?.pending?.q.type === 'main');
+    if (latest('guest')?.pendingDecision?.type === 'main' && await guestMain()) return true;
     await clickVisible(host, /^(Continue|End turn|Proceed|No attacks|No blocks)/);
-    await clickVisible(guest, /^(Continue|End turn|Proceed|No attacks|No blocks)/);
+    // Advancing the host can deliver the guest's main decision while the click
+    // is still settling. Preserve it instead of clicking its new Proceed button.
+    if (!await guestMain()) await clickVisible(guest, /^(Continue|End turn|Proceed|No attacks|No blocks)/);
     return false;
   }, 'guest receives a real main-phase decision', 60000);
   const guestView = latest('guest');

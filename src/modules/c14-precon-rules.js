@@ -89,6 +89,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
     return {opts};
   }
   async function removeSuspend(ctx,c){const version=c.zoneVersion;if(c.zone!=='exile'||!(c.meta.suspended>0))return;
+    if(M.CWW){M.CWW.syncTime(c);ctx.g.removeCounters(c,'time',1);return;}
     c.meta.suspended--;ctx.g.lg(c.name+': suspend '+c.meta.suspended+' remaining.');
     if(c.meta.suspended===0)ctx.g.queueTrigger({src:c,ctrl:c.owner,name:'Suspend: cast '+c.name,run:async next=>{
       if(c.zone!=='exile'||c.zoneVersion!==version)return;

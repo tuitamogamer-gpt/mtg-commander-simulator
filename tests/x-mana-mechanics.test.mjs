@@ -11,6 +11,7 @@ const ACTIVE_X_SPELLS = [
   "Animist's Awakening",
   "Astral Cornucopia",
   "Back in Town",
+  "Banquet Guests",
   "Benevolent Hydra",
   "Biomass Mutation",
   "Black Sun's Zenith",
@@ -42,6 +43,7 @@ const ACTIVE_X_SPELLS = [
   "Earthquake",
   "Electrodominance",
   "Empty the Laboratory",
+  "Endless One",
   "Entrancing Melody",
   "Entreat the Angels",
   "Entreat the Dead",
@@ -50,9 +52,11 @@ const ACTIVE_X_SPELLS = [
   "Expansion Algorithm",
   "Exsanguinate",
   "Extract Brain",
+  "Farmer Cotton",
   "Finale of Glory",
   "Finale of Promise",
   "Finale of Revelation",
+  "Forth Eorlingas!",
   "Fractal Harness",
   "Full Flowering",
   "Gaze of Granite",
@@ -77,6 +81,7 @@ const ACTIVE_X_SPELLS = [
   "Jaya's Immolating Inferno",
   "Kinetic Ooze",
   "Klauth's Will",
+  "Knickknack Ouphe",
   "Kurbis, Harvest Celebrant",
   "Lattice Library",
   "Lavalanche",
@@ -95,6 +100,7 @@ const ACTIVE_X_SPELLS = [
   "Nissa, Steward of Elements",
   "Nova Flame",
   "Occult Epiphany",
+  "Omarthis, Ghostfire Initiate",
   "Open into Wonder",
   "Open the Way",
   "Orochi Hatchery",
@@ -129,6 +135,7 @@ const ACTIVE_X_SPELLS = [
   "Stroke of Genius",
   "Stumpsquall Hydra",
   "Suffer the Past",
+  "Summons of Saruman",
   "Sylvan Offering",
   "Tempt with Vengeance",
   "Terisiare's Devastation",
@@ -228,7 +235,7 @@ async function resolveAll(game) {
   assert.ok(guard < 180, 'X trigger/stack petlja se nije smirila');
 }
 
-test('inventar pokriva svih 145 aktivnih X spella i sve dodatne X-mana putanje', () => {
+test('inventar pokriva svih 152 aktivnih X spella i sve dodatne X-mana putanje', () => {
   const active = [...new Set(Object.values(MTG.DECKS).flatMap(deck => deck.cards.map(entry => entry.name)))]
     .filter(name => MTG.parseCost(MTG.DEFS[name].cost || '').x > 0)
     .sort();

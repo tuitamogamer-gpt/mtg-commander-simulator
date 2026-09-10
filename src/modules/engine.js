@@ -141,7 +141,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ? this.cur.kw.has(k)
         : (MTG.C1920?.intrinsicKeywords(this.def) || this.def.kws || []).includes(k);
     }
-    get name() { return this.def.name; }
+    get name() { return this.zone==='battlefield'&&this.cur?.name || this.def.name; }
     get power() {
       if(this.zone!=='battlefield'&&this.def.oracleCharacteristicPT)return this.def.cdaPower?this.def.cdaPower(this.owner.game,this):Number(this.def.power)||0;
       return this.zone === 'battlefield' ? (this.cur ? this.cur.power : 0) : (Number(this.def.power) || 0);

@@ -43,7 +43,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const A=M.AFC,S=M.StarterCasting;
   A.moveCards=async(ctx,cards,to)=>ctx.g.withGraveyardEntryBatch(async()=>{const others=cards.filter(c=>c.zone!=='graveyard').map(C.row);await ctx.g.moveGraveyardBatch(cards,to);for(const r of others)if(C.current(r))await ctx.g.move(r.card,to);});
   A.immediate=(ctx,cards,{free=true,filter=()=>true}={})=>M.OracleV8PlayPermissions.castOne(ctx,cards,{free,filter:{}},{target:()=>({filter:(g,so)=>filter(so,g)})});
-  A.rooftopLive=(g,p,c,a)=>!a.faceDownCast&&!a.adventure&&g.castHasType(c,a,'Creature')&&(c.oracleFaces?M.OracleV8Faces.view(c,a.oracleFace):c).hasSub('Zombie')&&g.bf().some(s=>s.ctrl===p&&C.live(s)&&s.def.afcRooftop);
+  A.rooftopLive=(g,p,c,a)=>!a.faceDownCast&&!a.adventure&&g.castHasType(c,a,'Creature')&&(c.oracleFaces&&a.oracleFace?M.OracleV8Faces.view(c,a.oracleFace):c)?.hasSub('Zombie')&&g.bf().some(s=>s.ctrl===p&&C.live(s)&&s.def.afcRooftop);
   const strip=a=>{if(!a?.afcRooftop)return a;const x={...a};delete x.afcRooftop;delete x.altCostStr;return x;};
   const allowed=S.allowed,validate=S.validate;
   S.allowed=(g,p,c,a)=>a?.afcRooftop&&(!A.rooftopLive(g,p,c,a)||a.altCostStr!=='{0}'||a.free)?false:allowed(g,p,c,strip(a));
