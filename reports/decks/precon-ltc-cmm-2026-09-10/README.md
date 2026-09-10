@@ -51,4 +51,6 @@ npm run certify:strict
 
 Run `tests/browser/ltc-cmm-precons.mjs` with `PLAYWRIGHT_MODULE` pointing to a local Playwright installation when it is installed outside the repository.
 
+The later [player and AI deep test](deep-test.md) records adversarial rules regressions, autonomous bot choices, all-card execution, additional games and browser interactions, together with the local fixes discovered after this release.
+
 Commit, push and production deployment were authorized on 10 September 2026. For the same ten browser scenarios against production, set `PRECON_BASE_URL=https://mtg-commander-simulator.vercel.app`; output goes to `output/precon-ltc-cmm-2026-09-10/production-browser/`. The final deployment ID, source revision and HTTP/source-byte checks are recorded in the local `output/precon-ltc-cmm-2026-09-10/release.json` evidence file.

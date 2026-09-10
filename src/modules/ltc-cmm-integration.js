@@ -4,13 +4,16 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const M=MTG,C=M.LC,G=M.Game.prototype;
  C.right=(g,p)=>{const all=g.players.filter(p=>!p.lost),i=all.indexOf(p);return all[(i+all.length-1)%all.length];};
  C.neighbor=(g,p,dir)=>{const all=g.players.filter(p=>!p.lost),i=all.indexOf(p);return all[(i+(dir==='right'?all.length-1:1))%all.length];};
- C.nextCopy=(ctx,rule)=>{const shared={event:null};for(const event of [...(rule.spell?['cast']:[]),...(rule.loyalty||rule.walkerType?['abilityActivated']:[])])ctx.g.delayed.push({on:event,once:false,expires:'eot',src:ctx.src,ctrl:ctx.you,name:'Copy the spell or ability',filter:(g,d)=>{if(d.player!==ctx.you||!(event==='cast'?g.isInstantSorcerySpell(d.so):!d.isMana&&(rule.walkerType?d.card.is('Planeswalker')&&d.card.hasSub(rule.walkerType):d.ability?.loyalty!==undefined)))return false;if(rule.once===false)return true;if(shared.event&&shared.event!==d)return false;shared.event=d;return true;},run:async next=>{const so=next.data.so||next.data.stackObject;if(!next.g.stack.includes(so))return;if(so.kind==='spell')await next.g.copySpells(so,next.you,rule.n,{mayNewTargets:true});else for(let i=0;i<rule.n;i++)await next.g.copyStackAbility(so,next.you,{mayNewTargets:true});}});};
- G.canActivateLoyalty=function(c){const used=c.meta.lcLoyaltyTurn===this.turnNo?c.meta.lcLoyaltyCount||0:c.meta._loyUsed===this.turnNo?1:0;const base=this.bf().some(s=>s.ctrl===c.ctrl&&C.live(s)&&s.def.lcOathTeferi)?2:1;return used<base+(c.meta.lcVeilTurn===this.turnNo?c.meta.lcVeil||0:0);};
+ // Mutable consumption belongs to the game graph, so AI clones receive their
+ // own state. Spell and loyalty listeners share one first-event permission.
+ C.nextCopy=(ctx,rule)=>{const shared={event:null};for(const event of [...(rule.spell?['cast']:[]),...(rule.loyalty||rule.walkerType?['abilityActivated']:[])])ctx.g.delayed.push({on:event,once:false,expires:'eot',src:ctx.src,ctrl:ctx.you,lcCopyState:shared,name:'Copy the spell or ability',filter:(g,d,row)=>{if(d.player!==row.ctrl||!(event==='cast'?g.isInstantSorcerySpell(d.so):!d.isMana&&(rule.walkerType?d.card.is('Planeswalker')&&d.card.hasSub(rule.walkerType):d.ability?.loyalty!==undefined)))return false;if(rule.once===false)return true;const state=row.lcCopyState;if(state.event&&state.event!==d)return false;state.event=d;return true;},run:async next=>{const so=next.data.so||next.data.stackObject;if(!so)return;if(so.kind==='spell')await next.g.copySpells(so,next.you,rule.n,{mayNewTargets:true});else for(let i=0;i<rule.n;i++)await next.g.copyStackAbility(so,next.you,{mayNewTargets:true});}});};
+ G.canActivateLoyalty=function(c){const used=c.meta.lcLoyaltyTurn===this.turnNo?c.meta.lcLoyaltyCount||0:c.meta._loyUsed===this.turnNo?1:0;const walker=c.is('Planeswalker'),base=walker&&this.bf().some(s=>s.ctrl===c.ctrl&&C.live(s)&&s.def.lcOathTeferi)?2:1;return used<base+(walker&&c.ctrl.turnState.lcVeilTurn===this.turnNo?c.ctrl.turnState.lcVeil||0:0);};
  G.recordLoyaltyActivation=function(c){const used=c.meta.lcLoyaltyTurn===this.turnNo?c.meta.lcLoyaltyCount||0:c.meta._loyUsed===this.turnNo?1:0;c.meta.lcLoyaltyTurn=this.turnNo;c.meta.lcLoyaltyCount=used+1;};
  const drawOne=G.drawOne;G.drawOne=async function(p,...a){if(p.turnState.drewThisTurn>=1&&this.bf().some(c=>c.ctrl!==p&&C.live(c)&&c.def.lcNarsetDraw))return null;return drawOne.call(this,p,...a);};
  const emit=G.emit;G.emit=async function(name,data){
   if(name==='monarchChanged')this.recalc();
-  if(name==='damageToPlayer')data.player.turnState.lcDamageTaken=(data.player.turnState.lcDamageTaken||0)+data.n;
+  if(name==='damageToPlayer'){data.player.turnState.lcDamageTaken=(data.player.turnState.lcDamageTaken||0)+data.n;data.lcSourceVersion??=data.src?.zoneVersion;}
+  if(name==='etb')data.lcCastMeta=data.card.castMeta;
   if(name==='tokensCreated')for(const token of data.tokens)await emit.call(this,'lcTokenCreated',{player:data.ctrl,token});
   return emit.call(this,name,data);
  };
@@ -22,7 +25,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  const canBlock=G.canBlock;G.canBlock=function(b,a){if(this.untilEffects.some(e=>e.kind==='lcUnblockableBy'&&e.iid===a.iid&&e.version===a.zoneVersion&&e.player===b.ctrl))return false;return canBlock.call(this,b,a);};
  const attackTax=G.c21AttackTax;G.c21AttackTax=function(c,t){return attackTax.call(this,c,t)+(t?.is?.('Planeswalker')?this.bf().filter(s=>s.ctrl===t.ctrl&&C.live(s)&&s.def.lcOnakke).length:0);};
  const move=G.move;G.move=async function(c,to,o={}){
-  if(c.zone==='battlefield'&&to==='graveyard'&&c.is('Creature')&&this.untilEffects.some(e=>e.kind==='lcExileDying'&&e.iid===c.iid&&e.version===c.zoneVersion))to='exile';
+  if(c.zone==='battlefield'&&to==='graveyard'&&this.untilEffects.some(e=>e.kind==='lcExileDying'&&e.iid===c.iid&&e.version===c.zoneVersion))to='exile';
   return move.call(this,c,to,o);
  };
  const replacers=G.replacers;G.replacers=function(kind){const out=replacers.call(this,kind);if(kind==='damage')for(const p of this.players)for(const e of p.emblems)if(e.lcAjani)out.push({key:e,src:e.source,ctrl:p,prevent:true,applies:(g,d)=>d.target===p||d.target?.is?.('Planeswalker')&&d.target.ctrl===p,run:(g,d)=>Math.min(1,d.n)});return out;};

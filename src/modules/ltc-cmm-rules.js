@@ -23,7 +23,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   if(name==='damageToPlayer'&&data.combat&&data.src?.name==='Gollum, Obsessed Stalker'){
    data.player.lcGollumDamaged=true;
   }
-  if(name==='abilityActivated'&&data.ability?.loyalty!==undefined)data.player.turnState.lcLoyaltyActivated=true;
+  if(name==='abilityActivated'&&data.ability?.loyalty!==undefined&&data.card.is('Planeswalker'))data.player.turnState.lcLoyaltyActivated=true;
   return emit.call(this,name,data);
  };
  const canSacrifice=G.canSacrifice;G.canSacrifice=function(c){if(c?.def.lcUnsacrificable&&C.live(c)||this.untilEffects.some(e=>e.kind==='lcNoSacrifice'&&e.iid===c?.iid&&e.version===c.zoneVersion))return false;return canSacrifice.call(this,c);};

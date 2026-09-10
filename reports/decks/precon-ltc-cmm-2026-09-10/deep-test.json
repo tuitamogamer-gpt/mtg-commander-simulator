@@ -1,0 +1,803 @@
+{
+  "schema": "ltc-cmm-deep-test/v1",
+  "completedAt": "2026-09-10T13:57:24.016Z",
+  "baseline": "c98fc837c731fe88dc15a2e666a07e1a31f5c827",
+  "status": "verified-local",
+  "productionDeploymentPerformed": false,
+  "scope": [
+    "Riders of Rohan",
+    "The Hosts of Mordor",
+    "Food and Fellowship",
+    "Sliver Swarm",
+    "Planeswalker Party"
+  ],
+  "fixedFindings": 8,
+  "rules": {
+    "dedicatedDeepChecks": 51,
+    "pairedRoleScenarios": 19,
+    "pairedRoleChecks": 38,
+    "autonomousBotChecks": 10,
+    "persistenceAndCloneChecks": 3,
+    "importSpecificChecks": 99,
+    "regressionChecks": 712,
+    "failed": 0,
+    "fullNpmTestRun": false,
+    "regressionCommand": "node --test tests/ltc-cmm-deep.test.mjs tests/ltc-cmm-precons.test.mjs tests/ltc-cmm-advanced.test.mjs tests/planeswalker-combat.test.mjs tests/planeswalker-decisions.test.mjs tests/save-state.test.mjs tests/ai-v2.test.mjs tests/ai-adversarial-regressions.test.mjs tests/c19-c20-planeswalkers.test.mjs tests/oracle-v8-delayed-triggers.test.mjs tests/oracle-v8-copy-next.test.mjs tests/oracle-v8-stack-copy.test.mjs tests/permanent-spell-copy-token-creation.test.mjs tests/oracle-v8-damage-events.test.mjs tests/optional-trigger-resolution.test.mjs"
+  },
+  "allCards": {
+    "cards": 369,
+    "checks": 738,
+    "counts": {
+      "runtime-smoke-pass": 738,
+      "prerequisite-gap": 0,
+      "choice-gap": 0,
+      "error": 0
+    },
+    "roles": [
+      {
+        "role": "human",
+        "passed": 369
+      },
+      {
+        "role": "ai",
+        "passed": 369
+      }
+    ],
+    "limitation": "Common-board cast/land and entry-trigger smoke, with explicitly reported card-specific prerequisites and Ancestral Vision Suspend/upkeep smoke. Activated abilities, all modes and card-specific semantic correctness require dedicated tests. Gaps are not passing coverage."
+  },
+  "bot": {
+    "autonomousDifficultyLevels": [
+      "normal",
+      "hard"
+    ],
+    "autonomousDecks": 5,
+    "scriptedAnswers": false,
+    "naturalGames": {
+      "expected": 20,
+      "passed": 20,
+      "allSeatsUseLocalAI": true,
+      "rows": [
+        {
+          "name": "Riders of Rohan",
+          "seed": 910260,
+          "opponents": [
+            "The Hosts of Mordor"
+          ],
+          "turns": 23,
+          "winner": "You",
+          "seconds": 3.762,
+          "passed": true
+        },
+        {
+          "name": "The Hosts of Mordor",
+          "seed": 910261,
+          "opponents": [
+            "Food and Fellowship"
+          ],
+          "turns": 23,
+          "winner": "You",
+          "seconds": 2.874,
+          "passed": true
+        },
+        {
+          "name": "Food and Fellowship",
+          "seed": 910262,
+          "opponents": [
+            "Sliver Swarm"
+          ],
+          "turns": 18,
+          "winner": "You",
+          "seconds": 1.784,
+          "passed": true
+        },
+        {
+          "name": "Sliver Swarm",
+          "seed": 910263,
+          "opponents": [
+            "Planeswalker Party"
+          ],
+          "turns": 26,
+          "winner": "AI Dragon",
+          "seconds": 6.562,
+          "passed": true
+        },
+        {
+          "name": "Planeswalker Party",
+          "seed": 910264,
+          "opponents": [
+            "Riders of Rohan"
+          ],
+          "turns": 18,
+          "winner": "You",
+          "seconds": 2.711,
+          "passed": true
+        },
+        {
+          "name": "Riders of Rohan",
+          "seed": 910360,
+          "opponents": [
+            "The Hosts of Mordor",
+            "Food and Fellowship"
+          ],
+          "turns": 39,
+          "winner": "AI Dragon",
+          "seconds": 5.735,
+          "passed": true
+        },
+        {
+          "name": "The Hosts of Mordor",
+          "seed": 910361,
+          "opponents": [
+            "Food and Fellowship",
+            "Sliver Swarm"
+          ],
+          "turns": 45,
+          "winner": "AI Wolf",
+          "seconds": 7.033,
+          "passed": true
+        },
+        {
+          "name": "Food and Fellowship",
+          "seed": 910362,
+          "opponents": [
+            "Sliver Swarm",
+            "Planeswalker Party"
+          ],
+          "turns": 43,
+          "winner": "AI Wolf",
+          "seconds": 15.776,
+          "passed": true
+        },
+        {
+          "name": "Sliver Swarm",
+          "seed": 910363,
+          "opponents": [
+            "Planeswalker Party",
+            "Riders of Rohan"
+          ],
+          "turns": 35,
+          "winner": "AI Dragon",
+          "seconds": 5.325,
+          "passed": true
+        },
+        {
+          "name": "Planeswalker Party",
+          "seed": 910364,
+          "opponents": [
+            "Riders of Rohan",
+            "The Hosts of Mordor"
+          ],
+          "turns": 49,
+          "winner": "AI Dragon",
+          "seconds": 6.811,
+          "passed": true
+        },
+        {
+          "name": "Riders of Rohan",
+          "seed": 910460,
+          "opponents": [
+            "The Hosts of Mordor",
+            "Food and Fellowship",
+            "Sliver Swarm"
+          ],
+          "turns": 45,
+          "winner": "AI Dragon",
+          "seconds": 8.703,
+          "passed": true
+        },
+        {
+          "name": "The Hosts of Mordor",
+          "seed": 910461,
+          "opponents": [
+            "Food and Fellowship",
+            "Sliver Swarm",
+            "Planeswalker Party"
+          ],
+          "turns": 70,
+          "winner": "AI Dragon",
+          "seconds": 27.365,
+          "passed": true
+        },
+        {
+          "name": "Food and Fellowship",
+          "seed": 910462,
+          "opponents": [
+            "Sliver Swarm",
+            "Planeswalker Party",
+            "Riders of Rohan"
+          ],
+          "turns": 58,
+          "winner": "AI Wolf",
+          "seconds": 14.541,
+          "passed": true
+        },
+        {
+          "name": "Sliver Swarm",
+          "seed": 910463,
+          "opponents": [
+            "Planeswalker Party",
+            "Riders of Rohan",
+            "The Hosts of Mordor"
+          ],
+          "turns": 48,
+          "winner": "AI Dragon",
+          "seconds": 131.718,
+          "passed": true
+        },
+        {
+          "name": "Planeswalker Party",
+          "seed": 910464,
+          "opponents": [
+            "Riders of Rohan",
+            "The Hosts of Mordor",
+            "Food and Fellowship"
+          ],
+          "turns": 58,
+          "winner": "You",
+          "seconds": 9.314,
+          "passed": true
+        },
+        {
+          "name": "Riders of Rohan",
+          "seed": 910560,
+          "opponents": [
+            "Sliver Swarm",
+            "Sliver Swarm",
+            "Planeswalker Party"
+          ],
+          "turns": 43,
+          "winner": "You",
+          "seconds": 5.858,
+          "passed": true
+        },
+        {
+          "name": "The Hosts of Mordor",
+          "seed": 910561,
+          "opponents": [
+            "Sliver Swarm",
+            "Sliver Swarm",
+            "Planeswalker Party"
+          ],
+          "turns": 50,
+          "winner": "You",
+          "seconds": 6.415,
+          "passed": true
+        },
+        {
+          "name": "Food and Fellowship",
+          "seed": 910562,
+          "opponents": [
+            "Sliver Swarm",
+            "Sliver Swarm",
+            "Planeswalker Party"
+          ],
+          "turns": 50,
+          "winner": "AI Raven",
+          "seconds": 16.396,
+          "passed": true
+        },
+        {
+          "name": "Sliver Swarm",
+          "seed": 910563,
+          "opponents": [
+            "Sliver Swarm",
+            "Sliver Swarm",
+            "Planeswalker Party"
+          ],
+          "turns": 60,
+          "winner": "You",
+          "seconds": 97.508,
+          "passed": true
+        },
+        {
+          "name": "Planeswalker Party",
+          "seed": 910564,
+          "opponents": [
+            "Sliver Swarm",
+            "Sliver Swarm",
+            "Planeswalker Party"
+          ],
+          "turns": 40,
+          "winner": "You",
+          "seconds": 8.043,
+          "passed": true
+        }
+      ]
+    },
+    "noFallbacks": true
+  },
+  "player": {
+    "browser": "Installed Google Chrome through Playwright",
+    "widths": [
+      1440,
+      390
+    ],
+    "passed": 10,
+    "errors": [],
+    "results": [
+      {
+        "deck": "Riders of Rohan",
+        "width": 1440,
+        "opening": {
+          "cards": 100,
+          "commanders": [
+            "Éowyn, Shieldmaiden"
+          ]
+        },
+        "decisions": [
+          "main",
+          "chooseTargets",
+          "priority"
+        ],
+        "actions": [
+          {
+            "name": "Fealty to the Realm",
+            "kind": "cast",
+            "landMana": 5
+          }
+        ],
+        "done": true,
+        "stack": 0,
+        "pending": 0,
+        "fallback": false,
+        "overflow": false
+      },
+      {
+        "deck": "The Hosts of Mordor",
+        "width": 1440,
+        "opening": {
+          "cards": 100,
+          "commanders": [
+            "Sauron, Lord of the Rings"
+          ]
+        },
+        "decisions": [
+          "main",
+          "chooseTargets",
+          "priority"
+        ],
+        "actions": [
+          {
+            "name": "Reanimate",
+            "kind": "cast",
+            "landMana": 1
+          }
+        ],
+        "done": true,
+        "stack": 0,
+        "pending": 0,
+        "fallback": false,
+        "overflow": false
+      },
+      {
+        "deck": "Food and Fellowship",
+        "width": 1440,
+        "opening": {
+          "cards": 100,
+          "commanders": [
+            "Frodo, Adventurous Hobbit",
+            "Sam, Loyal Attendant"
+          ]
+        },
+        "decisions": [
+          "main",
+          "chooseX",
+          "priority",
+          "orderTriggers",
+          "chooseTargets"
+        ],
+        "actions": [
+          {
+            "name": "Farmer Cotton",
+            "kind": "cast",
+            "landMana": 4
+          },
+          {
+            "name": "Food Token",
+            "kind": "activate",
+            "landMana": 1
+          }
+        ],
+        "done": true,
+        "stack": 0,
+        "pending": 0,
+        "fallback": false,
+        "overflow": false
+      },
+      {
+        "deck": "Sliver Swarm",
+        "width": 1440,
+        "opening": {
+          "cards": 100,
+          "commanders": [
+            "Sliver Gravemother"
+          ]
+        },
+        "decisions": [
+          "main",
+          "chooseX",
+          "priority"
+        ],
+        "actions": [
+          {
+            "name": "Predatory Sliver",
+            "kind": "cast",
+            "landMana": 6
+          }
+        ],
+        "done": true,
+        "stack": 0,
+        "pending": 0,
+        "fallback": false,
+        "overflow": false
+      },
+      {
+        "deck": "Planeswalker Party",
+        "width": 1440,
+        "opening": {
+          "cards": 100,
+          "commanders": [
+            "Commodore Guff"
+          ]
+        },
+        "decisions": [
+          "main",
+          "priority"
+        ],
+        "actions": [
+          {
+            "name": "The Chain Veil",
+            "kind": "activate",
+            "landMana": 4
+          },
+          {
+            "name": "Jace Beleren",
+            "kind": "cast",
+            "landMana": 3
+          },
+          {
+            "name": "Jace Beleren",
+            "kind": "activate",
+            "landMana": 0
+          },
+          {
+            "name": "Jace Beleren",
+            "kind": "activate",
+            "landMana": 0
+          }
+        ],
+        "done": true,
+        "stack": 0,
+        "pending": 0,
+        "fallback": false,
+        "overflow": false
+      },
+      {
+        "deck": "Riders of Rohan",
+        "width": 390,
+        "opening": {
+          "cards": 100,
+          "commanders": [
+            "Éowyn, Shieldmaiden"
+          ]
+        },
+        "decisions": [
+          "main",
+          "chooseTargets",
+          "priority"
+        ],
+        "actions": [
+          {
+            "name": "Fealty to the Realm",
+            "kind": "cast",
+            "landMana": 5
+          }
+        ],
+        "done": true,
+        "stack": 0,
+        "pending": 0,
+        "fallback": false,
+        "overflow": false
+      },
+      {
+        "deck": "The Hosts of Mordor",
+        "width": 390,
+        "opening": {
+          "cards": 100,
+          "commanders": [
+            "Sauron, Lord of the Rings"
+          ]
+        },
+        "decisions": [
+          "main",
+          "chooseTargets",
+          "priority"
+        ],
+        "actions": [
+          {
+            "name": "Reanimate",
+            "kind": "cast",
+            "landMana": 1
+          }
+        ],
+        "done": true,
+        "stack": 0,
+        "pending": 0,
+        "fallback": false,
+        "overflow": false
+      },
+      {
+        "deck": "Food and Fellowship",
+        "width": 390,
+        "opening": {
+          "cards": 100,
+          "commanders": [
+            "Frodo, Adventurous Hobbit",
+            "Sam, Loyal Attendant"
+          ]
+        },
+        "decisions": [
+          "main",
+          "chooseX",
+          "priority",
+          "orderTriggers",
+          "chooseTargets"
+        ],
+        "actions": [
+          {
+            "name": "Farmer Cotton",
+            "kind": "cast",
+            "landMana": 4
+          },
+          {
+            "name": "Food Token",
+            "kind": "activate",
+            "landMana": 1
+          }
+        ],
+        "done": true,
+        "stack": 0,
+        "pending": 0,
+        "fallback": false,
+        "overflow": false
+      },
+      {
+        "deck": "Sliver Swarm",
+        "width": 390,
+        "opening": {
+          "cards": 100,
+          "commanders": [
+            "Sliver Gravemother"
+          ]
+        },
+        "decisions": [
+          "main",
+          "chooseX",
+          "priority"
+        ],
+        "actions": [
+          {
+            "name": "Predatory Sliver",
+            "kind": "cast",
+            "landMana": 6
+          }
+        ],
+        "done": true,
+        "stack": 0,
+        "pending": 0,
+        "fallback": false,
+        "overflow": false
+      },
+      {
+        "deck": "Planeswalker Party",
+        "width": 390,
+        "opening": {
+          "cards": 100,
+          "commanders": [
+            "Commodore Guff"
+          ]
+        },
+        "decisions": [
+          "main",
+          "priority"
+        ],
+        "actions": [
+          {
+            "name": "The Chain Veil",
+            "kind": "activate",
+            "landMana": 4
+          },
+          {
+            "name": "Jace Beleren",
+            "kind": "cast",
+            "landMana": 3
+          },
+          {
+            "name": "Jace Beleren",
+            "kind": "activate",
+            "landMana": 0
+          },
+          {
+            "name": "Jace Beleren",
+            "kind": "activate",
+            "landMana": 0
+          }
+        ],
+        "done": true,
+        "stack": 0,
+        "pending": 0,
+        "fallback": false,
+        "overflow": false
+      }
+    ]
+  },
+  "validation": {
+    "syntax": true,
+    "catalogAudit": true,
+    "originalSourcesAndImageHashes": true,
+    "diffWhitespace": true
+  },
+  "evidence": [
+    {
+      "path": ".local/ltc-cmm-deep-regression-final.log",
+      "sha256": "83b2ada227d66f7b91b59b66f9eb71d64630827f095d8ae1d645dc669a2e73ce"
+    },
+    {
+      "path": ".local/ltc-cmm-deep-final-targeted.log",
+      "sha256": "6ed32e47d8dbbf10dcb18a5eb7baab7a829a281a3702c23287d22c9173c51a36"
+    },
+    {
+      "path": ".local/ltc-cmm-deep-native-final.log",
+      "sha256": "540c7c9eeeb3c6f65838c574f74b65a477e11928c028c2f523ba3e1a7d49588a"
+    },
+    {
+      "path": ".local/ltc-cmm-deep-games-final.log",
+      "sha256": "6df7662af7f94d50f26a884fab795941e3cb917ba8d238a7a874ad855f8ccb7b"
+    },
+    {
+      "path": ".local/ltc-cmm-deep-browser.log",
+      "sha256": "81d6c282168220c0effaf39f14b4962c8d8b9f6581c5e5697214b84dd4e9c1ff"
+    },
+    {
+      "path": ".local/ltc-cmm-deep-check.log",
+      "sha256": "a70c787b94c2aaf1044d465392333f546cc8ab84cbc20d7f94dae07e04def41a"
+    },
+    {
+      "path": ".local/ltc-cmm-deep-audit.log",
+      "sha256": "5c169a462c4e582f10aaac96e9bc06df2a07edb489f898bed8d60b8fb2db17d8"
+    },
+    {
+      "path": ".local/ltc-cmm-deep-source.log",
+      "sha256": "85e57cef0ffd513397a5de2d213d60797901e9e1addc4ce0d7e32b0e9cd1abcb"
+    },
+    {
+      "path": "output/precon-ltc-cmm-2026-09-10/deep/all-card-execution.json",
+      "sha256": "cf583fc74fee81d1b455d42d621e7cd45d31401035e7c08a3343ff3e24ff65d9"
+    },
+    {
+      "path": "output/precon-ltc-cmm-2026-09-10/deep/games.json",
+      "sha256": "a8a3aec39cb7ff4fe1a123e6e8d0682c314683d41aa12d5652fce11d5cef5bf4"
+    },
+    {
+      "path": "output/precon-ltc-cmm-2026-09-10/deep/browser/result.json",
+      "sha256": "3217dc8d587e171e2e928f6881d2129166358898a3b06390ee37546b30ab2165"
+    },
+    {
+      "path": ".local/ltc-cmm-deep-before-corrected.log",
+      "sha256": "502c8935f2a225e674ee5b5e836a97749ac8e61abd3bdf56e8b2c1e6f9587011"
+    },
+    {
+      "path": ".local/ltc-cmm-deep-countered-before.log",
+      "sha256": "7a839bdfb47ff1f499d6c52872a575ec38ffcbda811844c05c6b51cdc1bd3bbf"
+    }
+  ],
+  "testedInputs": [
+    {
+      "path": "src/modules/engine.js",
+      "sha256": "efac5119c825c484ccd2c2097a95ed6204e8db97324660be40d0e10d8e8615fc"
+    },
+    {
+      "path": "src/modules/ltc-cmm-integration.js",
+      "sha256": "c2b88d04935dd514c3e7170c65fa9be817c83a029dcbe9ec475bea1e1d06064f"
+    },
+    {
+      "path": "src/modules/ltc-cmm-rules.js",
+      "sha256": "0fa32121d3b71658216764e91bea39f070fc08b95558578969281b86a7e32ec3"
+    },
+    {
+      "path": "src/modules/scripts-cmm-creatures.js",
+      "sha256": "3631b28af3b6e42865d652b9efc753e2883d8018ac346cd797ba9987998a0a46"
+    },
+    {
+      "path": "src/modules/scripts-cmm-planeswalkers.js",
+      "sha256": "942f51fae466cc47f2000de6b777a9979baf5e7fd828083b1bb49883648a6752"
+    },
+    {
+      "path": "src/modules/scripts-ltc-creatures.js",
+      "sha256": "69975285dc463cf3fc4e3d269daf8103242deb86594d0fd79d328aae714d5fc4"
+    },
+    {
+      "path": "tests/ltc-cmm-deep.test.mjs",
+      "sha256": "a3059ead18e72d188ee6f7e0997180af2b575e3adf4b6b92177534a18a3422db"
+    },
+    {
+      "path": "tests/ltc-cmm-precons.test.mjs",
+      "sha256": "0a5a6242246807f89c5aa8037e34d5a197edded8a7db7c5c08786e5801b7b305"
+    },
+    {
+      "path": "tests/ltc-cmm-advanced.test.mjs",
+      "sha256": "1853fca517a87940836066dc92074b8445e7da5fa96eeef167916b2b9bbfa4af"
+    },
+    {
+      "path": "tests/planeswalker-combat.test.mjs",
+      "sha256": "5fb1813b2e6b36f6de34419080426ab92137e4f568f31cb5e70f3bd87437cf0d"
+    },
+    {
+      "path": "tests/planeswalker-decisions.test.mjs",
+      "sha256": "b13fbec03b7324793b8db76cb4c61cb051d1c717e2559ab7a1edbdc7f846f90b"
+    },
+    {
+      "path": "tests/save-state.test.mjs",
+      "sha256": "25cda9ae3ff7ffb12fb41ac200f81ac7f4287e8b8d91cea77a399de3e1447456"
+    },
+    {
+      "path": "tests/ai-v2.test.mjs",
+      "sha256": "edd1bf6e61458c7ac275674445ccc5c7b5f08ab4ef7d306296a37bdfdd9eaf21"
+    },
+    {
+      "path": "tests/ai-adversarial-regressions.test.mjs",
+      "sha256": "f16cb18afd6cda46f91e0698dd3957089023ac915ae437c80bac0302284a98c0"
+    },
+    {
+      "path": "tests/c19-c20-planeswalkers.test.mjs",
+      "sha256": "eddcc15daca1d8e973be6383c3a250ab5148ca00f57efdab127137c1bf9fbcbe"
+    },
+    {
+      "path": "tests/oracle-v8-delayed-triggers.test.mjs",
+      "sha256": "b5f2f06327fd4965effc39e282070a640be303f7a08132dab14a895ed89ede38"
+    },
+    {
+      "path": "tests/oracle-v8-copy-next.test.mjs",
+      "sha256": "459e229c9f3f617270d90c8f442f134cc117aea95ab3801627b7d2898b060812"
+    },
+    {
+      "path": "tests/oracle-v8-stack-copy.test.mjs",
+      "sha256": "1a66834fbb648b99992adf12d7b1c50f2fac12f2f3f41e13ba5787ae80a715d9"
+    },
+    {
+      "path": "tests/permanent-spell-copy-token-creation.test.mjs",
+      "sha256": "bedd4a7c1339331d7d1addca9d4be55f39b1611f8e2df521b0e6a067729400d5"
+    },
+    {
+      "path": "tests/oracle-v8-damage-events.test.mjs",
+      "sha256": "a61b4ee5d3bdbd601a1c4ee19f6d6c30b242b4f9250aa578cbf03ad1b7866289"
+    },
+    {
+      "path": "tests/optional-trigger-resolution.test.mjs",
+      "sha256": "d1bb1c8890c25c3e47af750dbff650fac1f200536e5417d0aefa1ebf50736f70"
+    },
+    {
+      "path": "scripts/test-ltc-cmm-deep.mjs",
+      "sha256": "de4ecf7c43f8be0de200bd705f2c4223199b02ffc5e21754b92f3b65be158b50"
+    },
+    {
+      "path": "tests/browser/ltc-cmm-deep.mjs",
+      "sha256": "aa687550311ad31549faf79d2d9514b7052892ca536a1e7d6e45899e726c550e"
+    },
+    {
+      "path": "src/data.js",
+      "sha256": "324186af4e6da1bd8146187fcdcb0c29b9cac96dc5a10bbbbbc73d98ec16ae31"
+    },
+    {
+      "path": "src/app.js",
+      "sha256": "84c34257993363cf11b23e7f08e0cc6bc8554d14587d4e9e24bd930ca5f4b086"
+    }
+  ],
+  "limitations": [
+    "Focused regression rather than a complete npm test run.",
+    "Common-board execution is not all-mode semantic coverage or optimal AI proof.",
+    "Browser actions use controlled boards after a real original-deck opening; bot games are natural shuffled games.",
+    "Save/restore remains limited to portable checkpoints; unsupported lasting effects, delayed triggers and emblems retain the previous save.",
+    "Fixes are local and have not been committed, pushed or deployed in this testing follow-up."
+  ]
+}

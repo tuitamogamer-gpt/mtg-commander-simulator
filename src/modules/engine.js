@@ -3240,7 +3240,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
       // delayed triggers
-      const dl = this.delayed.filter(d => d.on === name && (!d.filter || d.filter(this, data)));
+      const dl = this.delayed.filter(d => d.on === name && (!d.filter || d.filter(this, data, d)));
       for (const d of dl) {
         if (d.once !== false) this.delayed.splice(this.delayed.indexOf(d), 1);
         this.queueTrigger({ src: d.src, name: d.name || name, run: d.run, ctrl: d.ctrl, data, targets: d.targets, prepareTargets:d.prepareTargets, opt:d.opt });
