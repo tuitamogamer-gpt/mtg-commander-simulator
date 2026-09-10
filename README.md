@@ -175,6 +175,8 @@ The arena includes card inspection, searchable zones, a game log, combat assignm
 
 Solo players and Live hosts use the **Command Table** interface. **Table** shows the opponents together; **Focus** gives a selected opponent more room. The decision panel keeps the current action visible, and target/combat choices reveal the relevant players. Live guests use the separate remote player view. The landing-page Table/Focus preview shows screenshots of the interface; it does not start a game.
 
+On phones and tablets, the focused opponent follows the active player's turn. Tap another opponent to inspect their board until the next turn. Short screens show one battlefield at a time: **Mine** opens your board, and an opponent's seat opens theirs. Your turn brings your battlefield back automatically. Dense mobile battlefields scroll horizontally, with lands and mana sources below; landscape phones place the hand beside the board.
+
 ## Automatic and manual mana
 
 The arena's **MANA** button switches between automatic payment and choosing your mana sources manually. **Automatic** is the default; the preference is saved in your current browser. The toggle is part of the full Solo/Live-host arena; remote Live guests currently use automatic payment through their separate decision interface.

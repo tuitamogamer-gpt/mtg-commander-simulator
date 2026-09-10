@@ -4,13 +4,22 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   const U = MTG;
   const decisionsShowingTable = new Set(['chooseTargets', 'choosePlayer', 'attackers', 'blockers']);
-  U.commandTableFocus = function (game, viewer, preferred, decision) {
+  U.commandTableFocus = function (game, viewer, preferred, decision, followActive = false) {
     const opponents = game.players.filter(player => player !== viewer && !player.lost);
-    const focused = opponents.find(player => player.idx === preferred) || opponents[0] || null;
+    const active = opponents.find(player => player.idx === game.turnPlayer?.idx);
+    const focused = (followActive && active) || opponents.find(player => player.idx === preferred) || active || opponents[0] || null;
     return { opponents, focused, showAll: decisionsShowingTable.has(decision) };
   };
   if (typeof document === 'undefined' || !U.UI) return;
   const P = U.UI.prototype;
+  const mobileLayout = window.matchMedia('(max-width: 900px)');
+  const compactLayout = window.matchMedia('(max-width: 900px) and (max-height: 720px)');
+  let currentUI = null;
+  const refreshLayout = () => {
+    if (document.body.classList.contains('game-active')) currentUI?.render();
+  };
+  mobileLayout.addEventListener('change', refreshLayout);
+  compactLayout.addEventListener('change', refreshLayout);
   const node = (tag, cls, text) => {
     const element = document.createElement(tag);
     if (cls) element.className = cls;
@@ -43,9 +52,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const ribbon = node('nav', 'ct-seat-ribbon');
     ribbon.setAttribute('aria-label', 'Players at the table');
     for (const player of focus.opponents) {
-      const selected = player === focus.focused;
+      const selected = player === focus.focused && (!compactLayout.matches || this.mobileView !== 'mine' || this.commandMobileBoard === 'opponent');
       const seat = button('ct-seat' + (selected ? ' selected' : '') + (player === game.turnPlayer ? ' active' : ''), undefined, () => {
         this.commandFocusPlayer = player.idx;
+        this.commandMobileBoard = 'opponent';
         this.mobileView = 'mine';
         this.utilityDrawerOpen = false;
         this.collapsed?.delete(player.idx);
@@ -54,7 +64,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       seat.dataset.focusPlayer = String(player.idx);
       seat.setAttribute('aria-pressed', String(selected));
-      seat.setAttribute('aria-label', `Focus ${player.name}, ${player.life} life${player.poison ? `, ${player.poison} poison` : ''}`);
+      seat.setAttribute('aria-label', `Focus ${player.name}, ${player.life} life${player.poison ? `, ${player.poison} poison` : ''}${player === game.turnPlayer ? ', active turn' : ''}`);
+      if (player === game.turnPlayer) seat.setAttribute('aria-current', 'true');
       const copy = node('span', 'ct-seat-copy');
       copy.append(node('b', '', player.name), node('span', 'ct-seat-life', `${player.life} life`));
       if (player.poison) copy.append(node('small', '', `${player.poison} poison`));
@@ -68,9 +79,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const focus = U.commandTableFocus(game, this.me, this.commandFocusPlayer, this.pending?.q.type);
     this.commandFocusPlayer = focus.focused?.idx ?? null;
     root.dataset.tableView = this.commandTableView;
+    root.dataset.mobileBoard = this.commandMobileBoard || 'mine';
     root.classList.toggle('ct-show-all', focus.showAll);
     root.classList.toggle('ct-no-opponents', !focus.opponents.length);
     root.append(this.renderCommandSeats(game, focus));
+    const mineTab = root.querySelector('.mobileviewtab');
+    if (mineTab) {
+      const openMine = mineTab.onclick;
+      mineTab.onclick = () => { this.commandMobileBoard = 'mine'; openMine(); };
+      const selected = this.mobileView === 'mine' && (!compactLayout.matches || root.dataset.mobileBoard === 'mine');
+      mineTab.classList.toggle('on', selected);
+      mineTab.setAttribute('aria-pressed', String(selected));
+    }
 
     const views = node('div', 'ct-view-switch');
     views.setAttribute('role', 'group'); views.setAttribute('aria-label', 'Battlefield layout');
@@ -92,7 +112,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!player) continue;
       row.classList.toggle('ct-focused', player === focus.focused);
       const head = row.querySelector('.opphead');
+      // On touch screens the header opens details. A hidden collapse control
+      // otherwise leaves the focused battlefield looking empty.
+      if (mobileLayout.matches && !this.isCandidate(player) && this.selectedTargetIndex(player) < 0) {
+        head.title = `Open ${player.name} player details`;
+        head.onclick = () => { this.playerSheet = player; this.render(); };
+      }
       head.prepend(portrait(player));
+      if (player === game.turnPlayer) head.querySelector('.oppname')?.append(node('span', 'ct-turn-badge', 'Active turn'));
       const shortName = commanders(player).map(card => card.name.split(',')[0]).join(' + ');
       head.querySelector('.oppname')?.append(node('small', 'ct-commander-name', shortName));
       const details = button('ct-zone-link', `Graveyard ${player.graveyard.length}`, event => {
@@ -223,12 +250,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   P.render = function () {
     const root = document.querySelector('#game');
     if (!root || !this.game) return originalRender.call(this);
+    currentUI = this;
     if (!this.commandTableView) {
       let saved = null;
       try { saved = localStorage.getItem('mtgCommandTableView'); } catch { /* Default remains usable. */ }
       this.commandTableView = saved === 'focus' ? 'focus' : 'table';
     }
-    if (decisionsShowingTable.has(this.pending?.q.type)) this.collapsed?.clear();
+    const mobile = mobileLayout.matches;
+    // A manual seat choice lasts for this turn. Follow again on a new turn,
+    // including consecutive extra turns by the same player, or entering mobile.
+    const turn = `${this.game.turnNo}:${this.game.turnPlayer?.idx}`;
+    const followActive = mobile && (!this.commandWasMobile || this.commandFocusTurn !== turn);
+    if (followActive) this.commandMobileBoard = this.game.turnPlayer && this.game.turnPlayer !== this.me && !this.game.turnPlayer.lost ? 'opponent' : 'mine';
+    const focus = U.commandTableFocus(this.game, this.me, this.commandFocusPlayer, this.pending?.q.type, followActive);
+    this.commandFocusPlayer = focus.focused?.idx ?? null;
+    this.commandFocusTurn = turn;
+    this.commandWasMobile = mobile;
+    if (mobile || focus.showAll) this.collapsed?.clear();
     root.classList.add('command-table');
     originalRender.call(this);
   };

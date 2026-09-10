@@ -2,16 +2,30 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import '../src/modules/command-table.js';
 
-test('focus survives turn changes, falls back after elimination and supports a solo survivor', () => {
+test('manual focus survives turn changes and falls back to a living active opponent after elimination', () => {
   const me = { idx: 0 }, a = { idx: 1 }, b = { idx: 2 }, c = { idx: 3 };
   const game = { players: [me, a, b, c], turnPlayer: c };
   assert.equal(MTG.commandTableFocus(game, me, b.idx, 'main').focused, b);
   b.lost = true;
   const fallback = MTG.commandTableFocus(game, me, b.idx, 'main');
-  assert.equal(fallback.focused, a);
+  assert.equal(fallback.focused, c);
   assert.deepEqual(fallback.opponents, [a, c]);
   a.lost = c.lost = true;
   assert.deepEqual(MTG.commandTableFocus(game, me, b.idx, 'main'), { opponents: [], focused: null, showAll: false });
+});
+
+test('mobile turn following selects the active opponent while manual inspection remains available', () => {
+  const me = { idx: 2 }, a = { idx: 0 }, b = { idx: 1 }, c = { idx: 3 };
+  const game = { players: [a, b, me, c], turnPlayer: c };
+  assert.equal(MTG.commandTableFocus(game, me, undefined, 'priority').focused, c, 'Initial view follows the active opponent');
+  assert.equal(MTG.commandTableFocus(game, me, a.idx, 'priority', true).focused, c, 'New mobile turn replaces the old selection');
+  assert.equal(MTG.commandTableFocus(game, me, a.idx, 'priority').focused, a, 'Manual inspection lasts within the turn');
+  game.turnPlayer = b;
+  assert.equal(MTG.commandTableFocus(game, me, a.idx, 'priority', true).focused, b);
+  game.turnPlayer = me;
+  assert.equal(MTG.commandTableFocus(game, me, b.idx, 'main', true).focused, b, 'Viewer is never shown as an opponent');
+  b.lost = true;
+  assert.equal(MTG.commandTableFocus(game, me, b.idx, 'main', true).focused, a);
 });
 
 test('target/player selection and combat cannot hide a legal opponent behind Focus', () => {

@@ -9,14 +9,14 @@ import { createAccountHandler, MemoryAccountStore } from '../../api/account.js';
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = fileURLToPath(new URL('../../', import.meta.url));
-const output = `${root}output/web-game/command-table`;
+const output = process.env.COMMAND_TABLE_QA_OUTPUT || `${root}output/web-game/command-table`;
 mkdirSync(output, { recursive: true });
 const server = express().use('/api/account', createAccountHandler({ store: new MemoryAccountStore(), limiter: null }))
   .use(express.static(root)).listen(0, '127.0.0.1');
 await once(server, 'listening');
 const base = `http://127.0.0.1:${server.address().port}`;
-const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1440, height: 1024 }, reducedMotion: 'reduce' });
+const browser = await chromium.launch({ headless: true, ...(process.env.BROWSER_EXECUTABLE ? { executablePath: process.env.BROWSER_EXECUTABLE } : {}) });
+const page = await browser.newPage({ viewport: { width: 1440, height: 1024 }, reducedMotion: 'reduce', hasTouch: true });
 const errors = [], failedRequests = [], checks = [];
 page.on('pageerror', error => errors.push(error.message));
 page.on('response', response => { if (response.status() >= 400) failedRequests.push({ status: response.status(), url: response.url() }); });
@@ -27,7 +27,9 @@ await page.addInitScript(() => {
 const check = message => { checks.push(message); console.log(`PASS ${message}`); };
 const shot = async name => {
   await page.mouse.move(0, 0);
-  await page.waitForFunction(() => [...document.querySelectorAll('.ct-portrait, .ct-review-art[src]')].every(image => image.complete && image.naturalWidth > 0));
+  await page.waitForFunction(() => [...document.querySelectorAll('.ct-portrait, .ct-review-art[src]')]
+    .filter(image => { const r = image.getBoundingClientRect(); return r.width && r.height; })
+    .every(image => image.complete && image.naturalWidth > 0));
   await page.screenshot({ path: `${output}/${name}.png` });
 };
 async function openSetup() {
@@ -95,6 +97,24 @@ async function assertPrimaryVisible(selector) {
     `Primary action must remain visible and reachable: ${JSON.stringify(metrics)}`);
 }
 
+async function swipeBoard(selector, dx, dy) {
+  const point = await page.locator(selector).evaluate((element, horizontal) => {
+    const r = element.getBoundingClientRect(), clip = element.closest('.myboard, .opprow').getBoundingClientRect();
+    const top = Math.max(r.top, clip.top), bottom = Math.min(r.bottom, clip.bottom);
+    return { x: horizontal ? Math.min(r.right, clip.right) - 30 : r.x + r.width / 2, y: top + (bottom - top) * .7 };
+  }, !!dx);
+  const touch = await page.context().newCDPSession(page);
+  try {
+    await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point] });
+    for (let step = 1; step <= 10; step++) {
+      await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: point.x + dx * step / 10, y: point.y + dy * step / 10 }] });
+      await page.waitForTimeout(20);
+    }
+    await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await page.waitForTimeout(350);
+  } finally { await touch.detach(); }
+}
+
 try {
   await openSetup();
   await page.locator('.decksearch input').fill('Quick Draw');
@@ -134,6 +154,72 @@ try {
   assert.equal(await page.evaluate(() => _ui.pending === window.__ctMain), true);
   await shot('desktop-focus');
 
+  await page.setViewportSize({ width: 390, height: 844 });
+  const expectFocus = async id => {
+    await page.waitForFunction(expected => {
+      const rows = [...document.querySelectorAll('.opprow')].filter(row => getComputedStyle(row).display !== 'none');
+      return rows.length === 1 && rows[0].dataset.playerId === String(expected);
+    }, id);
+    assert.equal(await page.locator('.ct-seat[aria-pressed="true"]').getAttribute('data-focus-player'), String(id));
+    assert.equal(await page.evaluate(() => _ui.pending === window.__ctMain && window.__ctAnswered === null), true);
+  };
+  const nextTurn = async id => {
+    await page.evaluate(index => { _game.turnPlayer = _game.players[index]; _game.turnNo++; _ui.render(); }, id);
+  };
+  for (const id of [1, 2, 3]) {
+    await nextTurn(id);
+    await expectFocus(id);
+    assert.equal(await page.locator('.ct-seat[aria-current="true"]').getAttribute('data-focus-player'), String(id));
+    assert.equal(await page.locator('.opprow:visible .ct-turn-badge').innerText(), 'Active turn');
+    await page.locator(`[data-focus-player="${id === 1 ? 2 : 1}"]`).tap();
+    await expectFocus(id === 1 ? 2 : 1);
+    await page.evaluate(() => { _game.phase = 'main2'; _ui.render(); });
+    await expectFocus(id === 1 ? 2 : 1);
+  }
+  await nextTurn(3); // Consecutive extra turn still restores automatic following.
+  await expectFocus(3);
+  await nextTurn(0);
+  await expectFocus(3);
+  for (const [width, height] of [[320, 568], [390, 660], [667, 375], [844, 390]]) {
+    await page.setViewportSize({ width, height });
+    await nextTurn(2);
+    await expectFocus(2);
+    assert.equal(await page.locator('.myboard:visible').count(), 0, 'Short phones give the active opponent the board area');
+    const nav = page.getByRole('navigation', { name: 'Arena view' });
+    await nav.getByRole('button', { name: /^Mine/i }).tap();
+    assert.equal(await page.locator('.myboard:visible').count(), 1, 'Mine gives direct access to your battlefield during another turn');
+    assert.equal(await page.locator('.opprow:visible').count(), 0);
+    await nextTurn(3);
+    await expectFocus(3);
+    await shot(`mobile-compact-opponent-${width}`);
+    await nextTurn(0);
+    assert.equal(await page.locator('.myboard:visible').count(), 1, 'Your turn automatically restores your battlefield');
+    assert.equal(await page.locator('.ct-seat[aria-pressed="true"]').count(), 0, 'Mine does not mark a hidden opponent as selected');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'Compact portrait and landscape fit the viewport');
+    await assertPrimaryVisible('.promptbar .pbtn.primary');
+    await shot(`mobile-compact-mine-${width}`);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator('.opprow:visible .oppname').tap();
+  await page.locator('.sheet').getByRole('button', { name: 'Close', exact: true }).click();
+  assert.equal(await page.locator('.opprow:visible .oppstrip').count(), 1, 'Tapping the opponent header cannot silently collapse the board');
+  await page.evaluate(() => { _ui.collapsed.add(1); });
+  await nextTurn(1);
+  await expectFocus(1);
+  assert.equal(await page.locator('.opprow:visible .oppstrip').count(), 1, 'An active mobile board is always expanded');
+  await shot('mobile-active-turn');
+  await page.setViewportSize({ width: 1440, height: 1024 });
+  await page.locator('[data-focus-player="2"]').click();
+  await nextTurn(3);
+  await expectFocus(2);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expectFocus(3);
+  await page.evaluate(() => { _game.players[3].lost = true; _ui.render(); });
+  await expectFocus(1);
+  await page.evaluate(() => { _game.players[3].lost = false; _game.turnPlayer = _ui.me; _game.phase = 'main1'; _ui.render(); });
+  await page.setViewportSize({ width: 1440, height: 1024 });
+  check('Mobile follows each new opponent turn and extra turns; manual inspection, desktop focus, resize and elimination preserve the decision');
+
   const targetId = await page.evaluate(() => {
     _ui.collapsed = new Set([1, 3]);
     const candidates = _game.bf().filter(card => card.ctrl !== _ui.me && card.is('Creature'));
@@ -149,6 +235,27 @@ try {
   await page.waitForFunction(() => !!window.__ctTargetAnswer);
   assert.deepEqual(await page.evaluate(() => window.__ctTargetAnswer), [targetId]);
   check('Focus and card inspection preserve decisions; all targetable seats expand and accept a real target choice');
+
+  await page.setViewportSize({ width: 320, height: 568 });
+  for (const seat of [3, 0]) {
+    const target = await page.evaluate(index => {
+      const candidates = _game.bf().filter(card => card.is('Creature'));
+      window.__ctTargetAnswer = null;
+      void _ui.me.controller.decide(_game, { type: 'chooseTargets', player: _ui.me, candidates, min: 1, max: 1, message: 'Choose a creature' })
+        .then(answer => { window.__ctTargetAnswer = answer.map(card => card.iid); });
+      return candidates.find(card => card.ctrl.idx === index).iid;
+    }, seat);
+    if (seat) await page.locator(`[data-focus-player="${seat}"]`).tap();
+    else await page.getByRole('navigation', { name: 'Arena view' }).getByRole('button', { name: /^Mine/i }).tap();
+    await page.locator(`.mini[data-iid="${target}"]`).tap();
+    const accept = page.locator('.promptbar .pbtn.primary:visible:not(:disabled)');
+    if (await accept.count() && !await page.evaluate(() => window.__ctTargetAnswer)) await accept.tap();
+    await page.waitForFunction(() => !!window.__ctTargetAnswer);
+    assert.deepEqual(await page.evaluate(() => window.__ctTargetAnswer), [target]);
+    assert.equal(await page.evaluate(() => _ui.pending === window.__ctMain && window.__ctAnswered === null), true);
+  }
+  await page.setViewportSize({ width: 1440, height: 1024 });
+  check('Compact phone targeting reaches both your creatures and the last opponent through ordinary touch controls');
 
   await page.getByRole('button', { name: 'Table', exact: true }).click();
   await page.evaluate(() => {
@@ -187,11 +294,20 @@ try {
     for (let count = 0; count < 12; count++) __ctPut('Riders of Gavony', _ui.me);
     _game.recalc(); _ui.render();
   });
+  await swipeBoard('.mybattlefieldmain', -160, 0);
+  const boardScroll = await page.locator('.mybattlefieldmain').evaluate(element => element.scrollLeft);
+  assert.ok(boardScroll > 0, 'A horizontal touch swipe scrolls the dense battlefield');
+  await swipeBoard('.opprow:visible .oppboardmain', 0, -85);
+  const opponentScroll = await page.locator('.opprow:visible .oppstrip').evaluate(element => element.scrollTop);
+  assert.ok(opponentScroll > 0, 'A vertical swipe over battlefield cards reaches the resources');
+  assert.equal(await page.evaluate(() => !!(_ui.sheet || _ui.playerSheet)), false, 'Scrolling does not open a card or player sheet');
   await page.locator('.hand').evaluate(element => { element.scrollLeft = 380; });
   await page.locator('.myboard').evaluate(element => { element.scrollTop = 180; });
   const before = await page.evaluate(() => [document.querySelector('.hand').scrollLeft, document.querySelector('.myboard').scrollTop]);
   await page.evaluate(() => _ui.render());
   assert.deepEqual(await page.evaluate(() => [document.querySelector('.hand').scrollLeft, document.querySelector('.myboard').scrollTop]), before);
+  assert.equal(await page.locator('.mybattlefieldmain').evaluate(element => element.scrollLeft), boardScroll);
+  assert.equal(await page.locator('.opprow:visible .oppstrip').evaluate(element => element.scrollTop), opponentScroll);
   await assertPrimaryVisible('.promptbar .pbtn.primary');
   const standardSize = await page.locator('.hcard').first().boundingBox();
   await page.evaluate(() => { _ui.handSize = 'large'; _ui.render(); });
@@ -200,14 +316,15 @@ try {
   await shot('mobile-crowded');
   const hand = await page.locator('.hand').boundingBox();
   assert.ok(hand.width > 200 && hand.y + hand.height <= 844);
-  check('Crowded battlefield and 18-card hand scroll at readable sizes; positions survive rerender');
+  check('Touch swipes scroll crowded boards horizontally and reach resources vertically; board and hand positions survive rerender');
   assert.deepEqual(errors, []);
   assert.deepEqual(failedRequests, []);
 } catch (error) {
+  console.error(error);
   await page.screenshot({ path: `${output}/failure.png` });
   throw error;
 } finally {
   writeFileSync(`${output}/report.json`, JSON.stringify({ checks, errors, failedRequests }, null, 2));
   await browser.close();
-  await new Promise(resolve => server.close(resolve));
+  await new Promise(resolve => { server.close(resolve); server.closeAllConnections(); });
 }
