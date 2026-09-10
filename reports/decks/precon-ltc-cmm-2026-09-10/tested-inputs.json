@@ -1,0 +1,165 @@
+{
+  "capturedAt": "2026-09-10T11:54:21.459Z",
+  "baseline": "f27465f",
+  "files": [
+    {
+      "path": "scripts/import-ltc-cmm-precons.mjs",
+      "sha256": "06427ac1c0efa402ce0ca355b635ec8306c0b324d728d25f0e35ea9e1efb02ae"
+    },
+    {
+      "path": "scripts/smoke-ltc-cmm-games.mjs",
+      "sha256": "56cd49a4861fdf193659cf52e0a42ace4b819e9e77d4e04b29424d2395c50f66"
+    },
+    {
+      "path": "scripts/smoke-ltc-cmm-precons.mjs",
+      "sha256": "0f8f216070b76b698408f11e15b0b5e2562310f2a62e693864731c68759f1248",
+      "preNormalizationSha256": "c23c0c26be42518d65712faf737633e4c927562dae7bb5a267338b67d970a456",
+      "lineEndingNormalization": "CRLF to LF only, after the recorded tests"
+    },
+    {
+      "path": "scripts/sync-ltc-cmm-images.mjs",
+      "sha256": "fc47203983b87b69ac7f4a83bdce41eb9b519d047871acd4a1c595e1ea6a0c95"
+    },
+    {
+      "path": "scripts/verify-ltc-cmm-import.mjs",
+      "sha256": "93a3e6f51c3ac929c412eafe98c420194de6f2c692894d9165fe54604d1a29ed"
+    },
+    {
+      "path": "src/app.js",
+      "sha256": "84c34257993363cf11b23e7f08e0cc6bc8554d14587d4e9e24bd930ca5f4b086"
+    },
+    {
+      "path": "src/card-images.js",
+      "sha256": "f643f5c24de1de129ad23e94fb8f869cb89fa3b1fbb2d42cf244ce0f015d50fa"
+    },
+    {
+      "path": "src/catalog-summary.js",
+      "sha256": "15c66c50a1a217aa0bd6143dfe3130f712b526fc068b1947d524c8d7bf9dc261"
+    },
+    {
+      "path": "src/data.js",
+      "sha256": "324186af4e6da1bd8146187fcdcb0c29b9cac96dc5a10bbbbbc73d98ec16ae31"
+    },
+    {
+      "path": "src/modules/ai-v2.js",
+      "sha256": "87abcd2bd98ea34dfbb1d3f1d01fc21b062b7e2694a8c34c4241231f4b5ea32f"
+    },
+    {
+      "path": "src/modules/ai.js",
+      "sha256": "08c28734f9469897bffd4fc208687d6d334bf0a29afb1ba965c8dda76963c50e"
+    },
+    {
+      "path": "src/modules/c17-c19-casting-rules.js",
+      "sha256": "67878f6d67e2ec81eae51c2cf7bb9acfea84c5b92c3f0641e2533401b90c538b"
+    },
+    {
+      "path": "src/modules/deck-guides.js",
+      "sha256": "42b1f409a11fc68dc30ad8e28137226dac9669f1fda4dee0ee5d6f440d4bae22"
+    },
+    {
+      "path": "src/modules/engine.js",
+      "sha256": "c37bd4df11baa2e2a3ca25e7955f76be07322c2b4f8df35e381467069e3f2ed0"
+    },
+    {
+      "path": "src/modules/engine2.js",
+      "sha256": "5ae383d8ed970aa4536af82c2d92e97b25e70220754dfa5a3e43c2f018f6f114"
+    },
+    {
+      "path": "src/modules/loader.js",
+      "sha256": "f4bfacb843c0570ae1fecff9c973d6ece5f7c8c6e98fc8b0a533b39b296da782"
+    },
+    {
+      "path": "src/modules/ltc-cmm-integration.js",
+      "sha256": "8616bba4038b9c37021d4171deec2d02ddda0f92e8078e1ee3aa749ba9fbcf66"
+    },
+    {
+      "path": "src/modules/ltc-cmm-rules.js",
+      "sha256": "cc7e332b10c60587a6cbbec7f842805055a42cd247ec9b07747b29be9c95d0b7"
+    },
+    {
+      "path": "src/modules/oracle-v8-control.js",
+      "sha256": "dd88d0783ded84742e66d7a51a9a34d129ebb01d5a4c61d090ea3ec2092041c4"
+    },
+    {
+      "path": "src/modules/save-state.js",
+      "sha256": "27a1eb3aedb07bc5a47a966eb825cbbea60fe6fe9f5ac6256df91e74c80b5a1a"
+    },
+    {
+      "path": "src/modules/scripts-cmm-creatures.js",
+      "sha256": "6c52e9874ff8205ddf2d44b3d8e423477703b36442755839fa309cc337ac31a2"
+    },
+    {
+      "path": "src/modules/scripts-cmm-planeswalkers.js",
+      "sha256": "0c542ef24124209af2d83b33416a5c66c64a0256a2f00bd6f75e8fb116adff97",
+      "preNormalizationSha256": "7e12ad2cb684c03b3df80b37a9bb584c33223572abba789574a3d084a3491ea6",
+      "lineEndingNormalization": "CRLF to LF only, after the recorded tests"
+    },
+    {
+      "path": "src/modules/scripts-ltc-cmm-advanced.js",
+      "sha256": "295ce1b07877dca80406b12939c8e5fada3859b82014ee6501d2eaef21fa95da"
+    },
+    {
+      "path": "src/modules/scripts-ltc-creatures.js",
+      "sha256": "338923bf514e4a4a969db44015ceefa06ade9ece147c66aeeb1d235597c3eed2"
+    },
+    {
+      "path": "src/modules/scripts-ltc-spells.js",
+      "sha256": "3648894868cd82e525cd022838cd1c05a728af7d1acc62bbaad630aebf0673bf"
+    },
+    {
+      "path": "tests/ai-v2.test.mjs",
+      "sha256": "edd1bf6e61458c7ac275674445ccc5c7b5f08ab4ef7d306296a37bdfdd9eaf21"
+    },
+    {
+      "path": "tests/baseline.test.mjs",
+      "sha256": "8d92c5f38908e37157c979d06e9d886dc0728ab3de05b230342db573c16a1bdb"
+    },
+    {
+      "path": "tests/bom-precons.test.mjs",
+      "sha256": "8e20a65800093635869dff55205000c439bcc92eb8f200b7100a97ba99caaed2"
+    },
+    {
+      "path": "tests/browser/ltc-cmm-precons.mjs",
+      "sha256": "b4defbc535c022cc0f25d53aa2e05c40af403db42747637f9184be38eb6c6aeb",
+      "validation": "Production URL option added after the 605-test run; node --check and npm run check pass. Test scenarios are unchanged and will run against the published revision."
+    },
+    {
+      "path": "tests/clb-dmc-40k-precons.test.mjs",
+      "sha256": "f2c0c4b8a5f34e4658b25f290dbb3c11a19ee7097893e4a3c71f0193def8e7ba"
+    },
+    {
+      "path": "tests/commander-visuals.test.mjs",
+      "sha256": "c0517d8c730e614813c0cb9a6cfd6e560f5d7714c7e22d1ccdf17635a421583a"
+    },
+    {
+      "path": "tests/full-card-audit.test.mjs",
+      "sha256": "f5e8b203c070a1f7a51a7dc38b300ab388e6e100abcdf1de0927462d8f3937a7"
+    },
+    {
+      "path": "tests/legacy-card-catalog-integrity.test.mjs",
+      "sha256": "9cf840171068bed14ccfd2f944efccc6d40f39940d426bfd94b9ac9a606894ca"
+    },
+    {
+      "path": "tests/local-card-images.test.mjs",
+      "sha256": "c388d2f79f3b180b5fb39bcf069775eef5e126651a1cdd56489f60477a626904"
+    },
+    {
+      "path": "tests/ltc-cmm-advanced.test.mjs",
+      "sha256": "1853fca517a87940836066dc92074b8445e7da5fa96eeef167916b2b9bbfa4af"
+    },
+    {
+      "path": "tests/ltc-cmm-precons.test.mjs",
+      "sha256": "0a5a6242246807f89c5aa8037e34d5a197edded8a7db7c5c08786e5801b7b305",
+      "preNormalizationSha256": "b5d7137303b889390370217ade71b9c7ff857ba77bf7e37e3bdee82e63dfaa77",
+      "lineEndingNormalization": "CRLF to LF only, after the recorded tests"
+    },
+    {
+      "path": "tests/planeswalker-combat.test.mjs",
+      "sha256": "5fb1813b2e6b36f6de34419080426ab92137e4f568f31cb5e70f3bd87437cf0d"
+    },
+    {
+      "path": "tests/voc-ncc-precons.test.mjs",
+      "sha256": "ce64aa6012d31203d617fe38cb49346426f255a9c5cfdb20fec871fffe243f49"
+    }
+  ]
+}

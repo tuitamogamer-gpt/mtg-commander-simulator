@@ -206,6 +206,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     "Legends' Legacy": {"archetype":"Legends and graveyard value","length":"long","tags":["legendary","graveyard","ramp"],"commanderImportance":1.5},
     "Tyranid Swarm": {"archetype":"Ravenous X creatures","length":"long","tags":["counters","ramp","combat"],"commanderImportance":1.5},
     "The Ruinous Powers": {"archetype":"Life loss and cascade","length":"long","tags":["spellslinger","combat","value"],"commanderImportance":1.5},
+    "Riders of Rohan": {"archetype": "Human cavalry", "length": "medium", "tags": ["tokens", "combat", "tribal"], "commanderImportance": 1.5},
+    "The Hosts of Mordor": {"archetype": "Amass and reanimation", "length": "long", "tags": ["graveyard", "reanimator", "tokens"], "commanderImportance": 1.5},
+    "Food and Fellowship": {"archetype": "Food and life gain", "length": "medium", "tags": ["tokens", "lifegain", "counters"], "commanderImportance": 1.5},
+    "Sliver Swarm": {"archetype": "Sliver tribal", "length": "medium", "tags": ["tribal", "combat", "graveyard"], "commanderImportance": 1.5},
+    "Planeswalker Party": {"archetype": "Planeswalker control", "length": "long", "tags": ["planeswalkers", "control", "value"], "commanderImportance": 1.5},
     "Mishra's Burnished Banner": {"archetype": "Artifact Copies", "length": "long", "tags": ["artifacts", "tokens", "sacrifice"], "commanderImportance": 1.5},
     "Urza's Iron Alliance": {"archetype": "Artifact Creature Army", "length": "long", "tags": ["artifacts", "tokens"], "commanderImportance": 1.5},
     "Rebellion Rising": {"archetype": "Attacking Tokens", "length": "medium", "tags": ["tokens", "equipment", "combat"], "commanderImportance": 1.5},
@@ -4254,15 +4259,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         player.landsPlayed < game.landPlayLimit(player) && game.lands(player).length < 5) breakdown.resources -= 8;
       const sem = inferCardSemantics(card.def);
       breakdown.synergy += sem.synergyTags.filter(tag => profile.primarySynergies.includes(tag)).length * 0.7;
-      if (ability && ability.targets && ability.targets.some(spec => spec.aiHint && spec.aiHint.goal === 'removal')) {
-        const candidates = game.legalTargets(ability.targets[0], card, player).filter(target => target instanceof U.CardInst && target.ctrl !== player);
+      const abilityTargets = typeof ability?.targets === 'function' ? ability.targets(game, card, {player}) || [] : ability?.targets || [];
+      if (abilityTargets.some(spec => spec.aiHint && spec.aiHint.goal === 'removal')) {
+        const candidates = game.legalTargets(abilityTargets[0], card, player).filter(target => target instanceof U.CardInst && target.ctrl !== player);
         const best = Math.max(0, ...candidates.map(target => permanentGameValue(game, target, player)));
         breakdown.threat += best * 0.75;
         if (best < 3) breakdown.timing -= 5;
       }
       // Score the actual benefit for each target slot, including timing and
       // redundant keywords. Optional empty targets can still grow loyalty.
-      for (const spec of Array.isArray(ability?.targets) ? ability.targets : []) {
+      for (const spec of abilityTargets) {
         if (!/^(protect|buff|pump|untap)$/.test(String(spec.aiHint?.goal || ''))) continue;
         const candidates = game.legalTargets(spec, card, player);
         const best = Math.max(0, ...candidates.map(target => targetValue(game, player, target,

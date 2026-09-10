@@ -1,0 +1,75 @@
+{
+  "baseline": "f27465f",
+  "passed": true,
+  "originalPhysicalCards": 500,
+  "uniqueNames": 369,
+  "sourceLists": [
+    {
+      "name": "Riders of Rohan",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/the-lord-of-the-rings-tales-of-middle-earth-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/RidersOfRohan_LTC.json"
+      ],
+      "exportSha256": "04da021936623f61d2c5e06a771f4404037c0702f1f54b6142cee8dc3a85763e"
+    },
+    {
+      "name": "The Hosts of Mordor",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/the-lord-of-the-rings-tales-of-middle-earth-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/TheHostsOfMordor_LTC.json"
+      ],
+      "exportSha256": "1547c38f1698e84b822f9a11c100781fb843917316280ee8790eac86ba899b84"
+    },
+    {
+      "name": "Food and Fellowship",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/the-lord-of-the-rings-tales-of-middle-earth-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/FoodAndFellowship_LTC.json"
+      ],
+      "exportSha256": "02d07023749eb62d3adfbefc8f6e4ec428a99aac4702d070ffc594c6a4d30f39"
+    },
+    {
+      "name": "Sliver Swarm",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/commander-masters-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/SliverSwarm_CMM.json"
+      ],
+      "exportSha256": "cfb0c1975e9cfa68e38d1d33a9eafc342c7d5844e1eaa43d96a1509b99a8e243"
+    },
+    {
+      "name": "Planeswalker Party",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/commander-masters-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/PlaneswalkerParty_CMM.json"
+      ],
+      "exportSha256": "4573e8c752c1ee63a29d69e244f7a5ffab8a6513a8a56e6e06416d6d8956a9d2"
+    }
+  ],
+  "existingRawDefinitionsPreserved": 2919,
+  "existingRawDeckRecordsPreserved": 111,
+  "nativeRawDefinitions": 2995,
+  "existingImageMappingsPreserved": 4714,
+  "existingCommanderCropsPreserved": 111,
+  "existingTrackedAssetsUnchanged": true,
+  "addedWebPFiles": 185,
+  "allNewImageDigestsMatch": true,
+  "idempotentDataSha256": "324186af4e6da1bd8146187fcdcb0c29b9cac96dc5a10bbbbbc73d98ec16ae31",
+  "retainedOracleDifferences": [
+    {
+      "name": "Selfless Squire",
+      "existingOracle": "Flash\nWhen Selfless Squire enters, prevent all damage that would be dealt to you this turn.\nWhenever damage that would be dealt to you is prevented, put that many +1/+1 counters on Selfless Squire.",
+      "pinnedOracle": "Flash\nWhen this creature enters, prevent all damage that would be dealt to you this turn.\nWhenever damage that would be dealt to you is prevented, put that many +1/+1 counters on this creature.",
+      "preserved": true
+    }
+  ],
+  "current": {
+    "decks": 115,
+    "definitions": 20853,
+    "eligible": 20835
+  }
+}

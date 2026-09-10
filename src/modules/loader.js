@@ -23,6 +23,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+    "Riders of Rohan": {"icon": "⚔️", "colors": ["U", "R", "W"], "style": "Human cavalry", "blurb": "Deploy Humans before combat to rally Éowyn’s hasty army.", "set": "The Lord of the Rings Commander (2023)"},
+    "The Hosts of Mordor": {"icon": "🔥", "colors": ["U", "B", "R"], "style": "Amass and reanimation", "blurb": "Fill the graveyard, raise an Orc Army, and cast Sauron to recover your strongest creature.", "set": "The Lord of the Rings Commander (2023)"},
+    "Food and Fellowship": {"icon": "🍲", "colors": ["W", "B", "G"], "style": "Food and life gain", "blurb": "Sam supplies Food while Frodo turns life gain and the Ring into cards.", "set": "The Lord of the Rings Commander (2023)"},
+    "Sliver Swarm": {"icon": "🧬", "colors": ["W", "U", "B", "R", "G"], "style": "Sliver tribal", "blurb": "Share Sliver abilities across your army, then encore fallen Slivers for a finishing attack.", "set": "Commander Masters (2023)"},
+    "Planeswalker Party": {"icon": "✨", "colors": ["W", "U", "R"], "style": "Planeswalker control", "blurb": "Protect your planeswalkers with blockers, then build loyalty and multiply activations.", "set": "Commander Masters (2023)"},
     "Mishra's Burnished Banner": {"icon": "⚙️", "colors": ["U", "B", "R"], "style": "Artifact copies and sacrifice", "blurb": "Mishra turns a noncreature artifact into a temporary attacking Warform.", "set": "The Brothers’ War Commander (2022)"},
     "Urza's Iron Alliance": {"icon": "🤖", "colors": ["W", "U", "B"], "style": "Artifact creatures and Constructs", "blurb": "Urza discounts himself for artifact creatures and creates growing Constructs at your end step.", "set": "The Brothers’ War Commander (2022)"},
     "Rebellion Rising": {"icon": "☀️", "colors": ["R", "W"], "style": "Attacking tokens and exile cards", "blurb": "Neyali gives attacking tokens double strike and finds cards to play on turns you attack with a token.", "set": "Phyrexia: All Will Be One Commander (2023)"},

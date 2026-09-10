@@ -1443,7 +1443,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
       }
       if (d.loyalty && card.is('Planeswalker')) {
-        card.counters['loyalty'] = (d.loyalty==='X' ? card.castMeta?.x||0 : parseInt(d.loyalty, 10)) + (card.meta.additionalLoyaltyCounters || 0);
+        card.counters['loyalty'] = (d.loyalty==='X' ? card.castMeta?.x||0 : parseInt(d.loyalty, 10)) + (card.meta.additionalLoyaltyCounters || 0) + this.bf().filter(s=>s!==card&&s.ctrl===card.ctrl&&s.def.lcOathGideon&&!s.cur?.abilitiesDisabled).length;
         if (d.compleated && card.castMeta && card.castMeta.phyrexianLifePaid > 0) {
           card.counters['loyalty'] = Math.max(0, card.counters['loyalty'] - 2);
         }
@@ -3907,6 +3907,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (list.length < 2) continue;
         const controller = list[0].ctrl;
         if (list[0].is('Creature') && battlefield.some(card => card.ctrl === controller && card.def.ignoreLegendRuleCreatures)) continue;
+        if(list.every(c=>c.hasSub('Sliver'))&&battlefield.some(c=>c.ctrl===controller&&c.def.lcGravemother&&!c.cur.abilitiesDisabled))continue;
         const worth = card => (card.isToken ? 0 : 1000) + (card.commander ? 500 : 0) +
           (card.counters['+1/+1'] || 0) * 10 + card.attachments.length * 5 + card.toughness;
         list.sort((a, b) => worth(b) - worth(a) || b.timestamp - a.timestamp);

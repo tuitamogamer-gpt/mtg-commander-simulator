@@ -2677,8 +2677,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // X
     let xVal = 0;
-    if (cost.x && !castOpts.free || d.additionalCostX) {
-      let maxX = d.additionalCostX ? Math.max(0,typeof d.additionalCostXMax==='function'?d.additionalCostXMax(this,card,p):p.life) : this.maxAffordableX(p, cost, card, { castOpts });
+    if (cost.x && !castOpts.free || d.additionalCostX || d.lcSummons&&castOpts.flashback) {
+      let maxX = d.lcSummons&&castOpts.flashback ? p.graveyard.filter(c=>c!==card).length : d.additionalCostX ? Math.max(0,typeof d.additionalCostXMax==='function'?d.additionalCostXMax(this,card,p):p.life) : this.maxAffordableX(p, cost, card, { castOpts });
       if (typeof d.xMax === 'function') maxX = Math.min(maxX, Math.max(0, Number(d.xMax(this, card, p, castOpts)) || 0));
       const legalValues = this.legalXValues(p, card, castOpts, maxX);
       if (legalValues && !legalValues.length) return false;
@@ -3205,7 +3205,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       picked.every(candidate => available.includes(candidate) && candidate.zone === 'graveyard' &&
         p.graveyard.includes(candidate) && candidate.zoneVersion === graveyardVersions.get(candidate));
     let additionalExiled=[];
-    if(d.additionalExileGraveyardX&&!faceDownCast){
+    if((d.additionalExileGraveyardX||d.lcSummons&&castOpts.flashback)&&!faceDownCast){
       const available=p.graveyard.filter(c=>c!==card&&!kotisExiled.includes(c));
       additionalExiled=await MTG.C14.choose(this,p,available,xVal,xVal,card.name+': exile '+xVal+' graveyard cards as a cost','delve');
       if(!validExileSelection(additionalExiled,available,xVal,xVal))return false;
@@ -4438,7 +4438,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (a.oncePerTurn && c.meta['_ab_' + (a.c1719UseKey||ai)] === this.turnNo) return;
         if (a.oncePerObject && c.meta['_abo_' + ai] === c.zoneVersion) return;
         // loyalty se troši jednom po potezu — iskorišteni planeswalker se ne nudi ponovo
-        if (a.loyalty !== undefined && c.meta._loyUsed === this.turnNo) return;
+        if (a.loyalty !== undefined && !this.canActivateLoyalty(c)) return;
         // Minus sposobnost se ne smije nuditi ako planeswalker nema dovoljno
         // loyalty countera da plati trošak (CR 606.5a).
         if (a.loyalty < 0 && (c.counters.loyalty || 0) < -a.loyalty) return;
@@ -4748,7 +4748,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Loyalty je trošak. Provjeri ga prije biranja meta i plaćanja drugih
     // troškova, a oznaku korištenja postavi tek kada je aktivacija legalna.
     const loyaltyAbility = entry.ability && entry.ability.loyalty !== undefined ? entry.ability : null;
-    if (loyaltyAbility && (c.meta._loyUsed === this.turnNo ||
+    if (loyaltyAbility && (!this.canActivateLoyalty(c) ||
       (loyaltyAbility.loyalty < 0 && (c.counters.loyalty || 0) < -loyaltyAbility.loyalty))) return false;
     if (entry.manaAbility) {
       const source = entry.manaSource;
@@ -5086,6 +5086,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const a = entry.gyAbilityOverride || c.def.gyAbility;
       if((c.def.oracleEncore||c.def.oracleEternalize)&&a!==c.def.gyAbility)return false;
       if(c.zone!=='graveyard'||c.owner!==p||!p.graveyard.includes(c))return false;
+      if(entry.grantSource&&(!this.bf().includes(entry.grantSource)||entry.grantSource.cur.abilitiesDisabled||entry.grantSource.ctrl!==p||!entry.grantSource.def.grantsGraveyardAbility?.filter(this,entry.grantSource,c,p)))return false;
       if(a.sorcery&&(this.turnPlayer!==p||this.stack.length||!['main1','main2'].includes(this.phase)))return false;
       if(a.cond&&!a.cond(this,c,p))return false;
       const targetSpecs=typeof a.targets==='function'?(a.targets(this,c,{player:p})||[]):(a.targets||[]);
@@ -5240,7 +5241,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       c1719TextChanges:(c.meta.c1719TextChanges||[]).map(r=>({...r})),
       sourceZoneVersion: c.zoneVersion, sourceUntapEpoch:c.meta.oracleUntapEpoch||0, sourcePhaseEpoch:c.meta.oraclePhaseEpoch||0, sourceDurationControlEpoch:c.meta.oracleDurationControl?.epoch||0, sourceCopyEpoch: c.copyEpoch||0, sourceCopying:!!c.isCopyOf,
     };
-    let announcedTargets = a.targets;
+    let announcedTargets = typeof a.targets==='function'?a.targets(this,c,{player:p}):a.targets;
     if (a.modes?.list) {
       const options = a.modes.list.map((mode, index) => ({ mode, index })).filter(({ mode }) =>
         (mode.targets || []).every(spec => spec.upTo || this.legalTargets(spec, c, p).length >= (spec.min ?? spec.count ?? 1)))
@@ -5287,8 +5288,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if(ctx.targets.length!==announcedTargets.length||!this.targetsStillOk(ctx.targets,announcedTargets,c,p))return false;
           ctx.boundTargetSpecs=announcedTargets;
         }
-        if(a.targets?.some(spec=>typeof spec.bindOracleContext==='function')){
-          ctx.boundTargetSpecs=a.targets.map(spec=>typeof spec.bindOracleContext==='function'?spec.bindOracleContext(ctx):spec);
+        if(announcedTargets?.some(spec=>typeof spec.bindOracleContext==='function')){
+          ctx.boundTargetSpecs=announcedTargets.map(spec=>typeof spec.bindOracleContext==='function'?spec.bindOracleContext(ctx):spec);
           if(!this.targetsStillOk(ctx.targets,ctx.boundTargetSpecs,c,p))return false;
         }
       }
@@ -5300,6 +5301,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     ctx.targetIdentities = this.captureTargetIdentities(ctx.targets);
     let tapPermanents=[];
     if (a.prepareTargets && await a.prepareTargets(ctx) === false) return false;
+    if(cost.lcReturnLinked&&!await MTG.LC.prepareLinkedCost(ctx))return false;
     if(cost.c1516TargetSacrifice){cost.sacN=ctx.targets.flat(Infinity).filter(Boolean).length;ctx.x=cost.sacN;}
     if(cost.c1516Unattach&&!c.attachedTo)return false;
     let returnPermanents=[];
@@ -5529,6 +5531,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const filter=typeof cost[key]==='object'?cost[key].filter:null;
       if(picked.some(card=>!currentCostObject(card)||!p[zone].includes(card)||filter&&!filter(this,card,c,p)))return false;
     }
+    if(ctx.lcLinkedCost&&(!MTG.LC.current(ctx.lcLinkedCost)||!MTG.LC.linked(MTG.LC.linkState(c,cost.lcReturnLinked)).some(r=>r.card===ctx.lcLinkedCost.card)))return false;
     if(a.c1719MistCost&&(!MTG.C1719.current(ctx.c1719MistCost)||ctx.c1719MistCost.card.ctrl!==p||!ctx.c1719MistCost.card.faceDown))return false;
     if(cost.energy&&(p.counters?.energy||0)<cost.energy)return false;
     if (resolvedManaCost) {
@@ -5561,6 +5564,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ctx.cdkPhyLife=2*(abilityPayment.phyrexianLifePaid||0);
     }
     if(cost.energy&&!MTG.OracleV8Energy.spend(this,p,cost.energy,c))return false;
+    if(ctx.lcLinkedCost)await this.move(ctx.lcLinkedCost.card,'graveyard');
     if(a.c1719MistCost){await this.move(ctx.c1719MistCost.card,'exile');ctx.c1719MistCost.card.faceDown=false;ctx.c1719MistExile=MTG.C1719.row(ctx.c1719MistCost.card);}
     if(a.c1719RevealOpponent){c.meta.c1719RevealedOpponent=ctx.c1719SecretOpponent;this.lg(c.name+': the secretly chosen player was '+this.players[ctx.c1719SecretOpponent].name+'.');}
     if(cost.tap)this.tap(c);
@@ -5657,7 +5661,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(a.c21Reveal||a.revealChosenPlayer){ctx.c21Revealed=c.meta[a.revealChosenPlayer||'c21Secret'];this.lg(c.name+' reveals '+this.players.find(p=>p.idx===ctx.c21Revealed)?.name+'.');}
     // loyalty
     if (a.loyalty !== undefined) {
-      if (c.meta._loyUsed === this.turnNo) return false;
+      if (!this.canActivateLoyalty(c)) return false;
       if (a.loyalty > 0) this.addCounters(c, 'loyalty', a.loyalty, true);
       else if (a.loyalty === '-X') {
         if(!Number.isInteger(ctx.x)||ctx.x<0||(c.counters.loyalty||0)<ctx.x)return false;
@@ -5667,6 +5671,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if ((c.counters['loyalty'] || 0) < -a.loyalty) return false;
         this.removeCounters(c, 'loyalty', -a.loyalty);
       }
+      this.recordLoyaltyActivation(c);
       c.meta._loyUsed = this.turnNo;
     }
     if(a.afcDiceCost)ctx.afcDiceCost=(await this.rollDice(p,a.afcDiceCost,1,{source:c}))[0];

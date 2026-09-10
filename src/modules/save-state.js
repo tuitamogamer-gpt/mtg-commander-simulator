@@ -135,6 +135,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       chosenCommanders: player.chosenCommanders ? player.chosenCommanders.slice() : null,
       colorIdentity: (player.colorIdentity || []).slice(),
       cityBlessing: !!player.cityBlessing,
+      lcGollumDamaged: !!player.lcGollumDamaged,
       afcDungeon: player.afcDungeon?plainMeta(player.afcDungeon):null, afcDungeonSerial: player.afcDungeonSerial||0, afcCompletedDungeons: player.afcCompletedDungeons||0,
       skipUntapOnce: !!player.skipUntapOnce,
       turnsStarted: Number(player.turnsStarted) || 0,
@@ -413,6 +414,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.chosenCommanders = saved.chosenCommanders ? saved.chosenCommanders.slice() : null;
       player.colorIdentity = (saved.colorIdentity || []).slice();
       player.cityBlessing = saved.cityBlessing;
+      player.lcGollumDamaged=!!saved.lcGollumDamaged;
       player.afcDungeon=saved.afcDungeon||null; player.afcDungeonSerial=saved.afcDungeonSerial||0; player.afcCompletedDungeons=saved.afcCompletedDungeons||0;
       player.skipUntapOnce = saved.skipUntapOnce;
       player.turnsStarted = saved.turnsStarted;

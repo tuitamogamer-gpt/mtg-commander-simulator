@@ -1,0 +1,187 @@
+{
+  "date": "2026-09-10",
+  "baseline": "f27465f",
+  "scope": "Local import of five original precons",
+  "current": {
+    "decks": 115,
+    "definitions": 20853,
+    "eligible": 20835
+  },
+  "semanticTests": {
+    "passed": 48,
+    "files": [
+      "tests/ltc-cmm-precons.test.mjs",
+      "tests/ltc-cmm-advanced.test.mjs"
+    ]
+  },
+  "finalFocusedRegression": {
+    "tests": 605,
+    "passed": 605,
+    "failed": 0,
+    "includes": "New native semantics, catalog integrity, commander visuals, every active planeswalker activation path, AI, casting and copies, graveyard permissions and save-state restoration",
+    "log": ".local/ltc-cmm-final-targeted.log"
+  },
+  "nativeSmoke": {
+    "passed": 152,
+    "cards": 76,
+    "roles": [
+      "human",
+      "ai"
+    ],
+    "report": "runtime-smoke.json"
+  },
+  "browser": {
+    "passed": 10,
+    "failed": 0,
+    "widths": [
+      1440,
+      390
+    ],
+    "scenarios": [
+      "Deck spotlight",
+      "Pod and default commander setup",
+      "Paid commander cast",
+      "Stack and battlefield resolution"
+    ],
+    "controlledBoard": true,
+    "report": "output/precon-ltc-cmm-2026-09-10/browser/result.json",
+    "screenshots": 40
+  },
+  "naturalGames": {
+    "passed": 5,
+    "expected": 5,
+    "rows": [
+      {
+        "name": "Riders of Rohan",
+        "opponents": [
+          "The Hosts of Mordor",
+          "Food and Fellowship",
+          "Sliver Swarm"
+        ],
+        "seed": 11191,
+        "turns": 57,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "The Hosts of Mordor",
+        "opponents": [
+          "Food and Fellowship",
+          "Sliver Swarm",
+          "Planeswalker Party"
+        ],
+        "seed": 11192,
+        "turns": 49,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Food and Fellowship",
+        "opponents": [
+          "Sliver Swarm",
+          "Planeswalker Party",
+          "Abzan Armor"
+        ],
+        "seed": 11193,
+        "turns": 39,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Sliver Swarm",
+        "opponents": [
+          "Planeswalker Party",
+          "Abzan Armor",
+          "Animated Army"
+        ],
+        "seed": 11194,
+        "turns": 55,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Planeswalker Party",
+        "opponents": [
+          "Abzan Armor",
+          "Animated Army",
+          "Avengers Assemble"
+        ],
+        "seed": 11195,
+        "turns": 40,
+        "winner": "AI Wolf",
+        "passed": true
+      }
+    ],
+    "report": "output/precon-ltc-cmm-2026-09-10/final-deck-games.json",
+    "noDecisionFallback": true
+  },
+  "gates": {
+    "syntax": "pass",
+    "audit": "pass",
+    "strictCertification": {
+      "decks": 115,
+      "activeUniqueCards": 4633,
+      "cardDeckChecks": 9500,
+      "rawDefinitions": 20853,
+      "failed": 0
+    },
+    "sourcePreservation": "pass",
+    "importerByteIdempotence": "pass",
+    "imageDigests": "pass",
+    "gitDiffWhitespace": "pass"
+  },
+  "diagnosticRegression": {
+    "status": "interrupted",
+    "log": ".local/ltc-cmm-regression.log",
+    "excluded": [
+      "tests/headless-smoke.test.mjs"
+    ],
+    "finalTree": false,
+    "note": "This diagnostic began before the final fixes. Final focused results above are from the corrected tree.",
+    "elapsedMinutes": 24.94,
+    "observedPassed": 6640,
+    "observedFailed": 6,
+    "remainingTests": "not completed",
+    "interruptedTestFiles": [
+      "tests\\oracle-v8-energy.test.mjs",
+      "tests\\oracle-v8-entwine.test.mjs"
+    ],
+    "observedFailures": [
+      "✖ postojeći cinematic asseti ostaju dostupni; novi preconi koristi slike bez novih videa",
+      "✖ every active deck has a complete spotlight guide with real signature cards",
+      "✖ svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putanju",
+      "✖ the complete pinned legacy card set remains represented exactly once in the runtime catalog",
+      "✖ runtime card art uses local WebP except the explicit API fallback list",
+      "✖ Repeated Reverberation is consumed by the first spell before its copy trigger resolves"
+    ],
+    "reconciliation": "All six reported failures are covered and pass in the final 605-test regression: updated commander counts, guide complexity labels, catalog counts, legacy import partition, local token aliases, and the copy-trigger assertion.",
+    "reason": "The complete task-specific final regression passed 605/605. Stop the additional broad diagnostic while it is still running general Oracle tests; do not report this as a full-suite pass.",
+    "fullSuitePass": false
+  },
+  "sourceNormalization": "Official Dusk shorthand resolves to Dusk // Dawn; retained Selfless Squire Oracle wording is reported in source-validation.json",
+  "limitations": [
+    "The broad diagnostic was interrupted after 24.94 minutes and excludes all-deck headless smoke. A complete npm test pass is not claimed.",
+    "Native execution smoke does not exhaustively prove every rules interaction.",
+    "Browser commander-cast scenarios use prepared boards; natural game coverage is reported separately."
+  ],
+  "releasePreparation": {
+    "authorizedOn": "2026-09-10",
+    "remoteSynced": true,
+    "dependencyAudit": {
+      "vulnerabilities": 0,
+      "command": "npm audit --omit=dev --audit-level=high"
+    },
+    "publicReleaseAndServerTests": {
+      "passed": 19,
+      "failed": 0
+    },
+    "syntax": "pass",
+    "productionBrowserHarnessSyntax": "pass",
+    "runtimeMatchesFinal605TestRun": "Same runtime content; one new runtime module has CRLF normalized to LF.",
+    "finalNewCardTests": {
+      "passed": 48,
+      "failed": 0,
+      "after": "LF normalization of three newly staged files"
+    }
+  }
+}

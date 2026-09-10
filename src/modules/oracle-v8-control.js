@@ -80,7 +80,7 @@
       const independent = pending.findIndex(effect => !effect.source ||
         !pending.some(other => other !== effect && other.target === effect.source));
       const effect = pending.splice(independent < 0 ? 0 : independent, 1)[0];
-      const controller = effect.source ? controllers.get(effect.source) : effect.to;
+      const controller = effect.source ? (effect.source.def.lcFealty ? game.monarch : controllers.get(effect.source)) : effect.to;
       if (controller && !controller.lost) controllers.set(effect.target, controller);
     }
     for (const card of battlefield) {

@@ -796,11 +796,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const e of (q.acts || [])) {
         const a = e.ability;
         if (!a || !a.targets) continue;
-        const wantsSpell = a.targets.some(s => s.what === 'spell' || s.zone === 'stack');
+        const targetSpecs=typeof a.targets==='function'?a.targets(g,e.card,{player:p}):a.targets;
+        const wantsSpell = targetSpecs.some(s => s.what === 'spell' || s.zone === 'stack');
         if (!wantsSpell) continue;
         // kopiraj/kontriraj cilja spell na stacku — biraj po tome ko ga kontroliše
-        const mine = a.targets.some(s => (s.aiHint && /copy/i.test(s.aiHint.goal || '')));
-        const cands = g.legalTargets(a.targets[0], e.card, p)
+        const mine = targetSpecs.some(s => (s.aiHint && /copy/i.test(s.aiHint.goal || '')));
+        const cands = g.legalTargets(targetSpecs[0], e.card, p)
           .filter(so => mine ? so.ctrl === p : so.ctrl !== p);
         if (!cands.length) continue;
         const pick = cands[cands.length - 1];   // vrh stacka

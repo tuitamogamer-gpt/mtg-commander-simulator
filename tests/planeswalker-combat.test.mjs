@@ -89,7 +89,7 @@ async function resolveAll(game) {
   assert.ok(guard < 240, 'stack/trigger petlja se nije smirila');
 }
 
-test('svih 54 deck/planeswalker parova ima svih 155 loyalty putanja', () => {
+test('svih 72 deck/planeswalker parova ima svih 199 loyalty putanja', () => {
   const inventory = [];
   for (const [deckName, deck] of Object.entries(MTG.DECKS)) {
     for (const entry of deck.cards) {
@@ -152,8 +152,26 @@ test('svih 54 deck/planeswalker parova ima svih 155 loyalty putanja', () => {
     ["From Cute to Brute","Arlinn Kord"],
     ["From Cute to Brute","Garruk Relentless"],
     ["From Cute to Brute","Arlinn, the Pack's Hope"],
+    ["Planeswalker Party","Commodore Guff"],
+    ["Planeswalker Party","Teyo, Geometric Tactician"],
+    ["Planeswalker Party","Vronos, Masked Inquisitor"],
+    ["Planeswalker Party","Chandra, Legacy of Fire"],
+    ["Planeswalker Party","Ajani Steadfast"],
+    ["Planeswalker Party","Elspeth, Sun's Champion"],
+    ["Planeswalker Party","Gideon Jura"],
+    ["Planeswalker Party","Jace Beleren"],
+    ["Planeswalker Party","Jace, Architect of Thought"],
+    ["Planeswalker Party","Jace, Mirror Mage"],
+    ["Planeswalker Party","Chandra, Awakened Inferno"],
+    ["Planeswalker Party","Chandra, Torch of Defiance"],
+    ["Planeswalker Party","Sarkhan the Masterless"],
+    ["Planeswalker Party","Nahiri, the Harbinger"],
+    ["Planeswalker Party","Narset of the Ancient Way"],
+    ["Planeswalker Party","The Wanderer"],
+    ["Planeswalker Party","Narset, Parter of Veils"],
+    ["Planeswalker Party","Saheeli, Sublime Artificer"],
   ]);
-  assert.equal(inventory.reduce((sum, [, name]) => sum + MTG.DEFS[name].abilities.filter(a => a.loyalty !== undefined).length, 0), 155);
+  assert.equal(inventory.reduce((sum, [, name]) => sum + MTG.DEFS[name].abilities.filter(a => a.loyalty !== undefined).length, 0), 199);
   for (const [, name] of inventory) {
     assert.ok(MTG.DEFS[name].abilities.every(ability => ability.loyalty !== undefined && ability.sorcery), `${name}: neispravna loyalty putanja`);
   }
