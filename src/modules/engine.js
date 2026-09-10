@@ -1347,6 +1347,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Copy i drugi as-enters replacementi postavljaju karakteristike prije
       // enters-tapped i enters-with-counters replacementa kopirane karte.
       d = MTG.OracleV8LandTypes.entryDefinition(this,card,d);
+      if (opts.entryAnimation) this.addOracleAnimation(card, opts.entryAnimation);
       const appliedEntryReplacements=new Set();
       while (d.asEnters && !appliedEntryReplacements.has(d.asEnters)) {
         appliedEntryReplacements.add(d.asEnters);
@@ -2283,7 +2284,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           let all = false, reflectDamage = false, onlyCreatures = false, consume = false;
           if (effect.kind === 'preventNonElfCombat') all = data.combat && !!src?.is?.('Creature') && !src.hasSub('Elf');
           else if (effect.kind === 'preventAllCombat') all = data.combat;
-          else if (effect.kind === 'preventCombatToPlayer') all = playerTarget && toAffectedPlayer && data.combat;
+          else if (effect.kind === 'preventCombatToPlayer') all = toAffectedPlayer && data.combat &&
+            (playerTarget || effect.includePlaneswalkers && data.target.is?.('Planeswalker'));
           else if (effect.kind === 'preventToPlayer') {
             all = playerTarget && toAffectedPlayer;
             reflectDamage = !!effect.reflectCreatures; onlyCreatures = true;

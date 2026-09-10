@@ -154,16 +154,20 @@ alone cannot perform that migration.
 
 ## Commander Live behavior
 
-The host chooses two, three, or four human seats and shares the private room link.
-Every player selects a different deck and marks the seat ready before the host
-starts. Live has no bot seats. Imported deck lists travel only to their owner and
-the host, which checks them against its executable card catalog before building
-the game.
+The host chooses two, three, or four seats and shares the private room link.
+Unoccupied seats can be assigned to humans or local bots; the host selects bot
+decks. Every human selects a deck and marks the seat ready before the host starts.
+Imported deck lists travel only to their owner and the host, which checks them
+against its executable card catalog before building the game.
 
 The host browser runs the full Commander engine, including hidden game state. The
 server manages seats, room revisions, legal response contracts, presence, and
-viewer-specific projections. Guests receive their own private view and decision
-prompt. The host supplies those projections and legal choices, so Live is intended
+viewer-specific projections. Hosts and guests use the same Command Table and
+gameplay controls: card actions, manual mana, HOLD, Stack responses, combat,
+priority preferences and the full Last Resort toolbox. Each receives their own
+private view and decision prompt. Starting the room, configuring seats and
+resuming after a disconnect remain host room controls.
+The host supplies those projections and legal choices, so Live is intended
 for private, trusted tables; this is not an independently simulated tournament
 server or an anti-cheat system.
 

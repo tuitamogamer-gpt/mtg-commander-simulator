@@ -1,0 +1,363 @@
+{
+  "date": "2026-09-10",
+  "verifiedAt": "2026-09-10T21:51:10.842297+00:00",
+  "workspaceBaseCommit": "a125a78fbbd3c02a88c59a2fb2d4b5f4fdc56772",
+  "scope": "Individual native implementation review and deck-import eligibility for eighteen existing definitions",
+  "delivery": {
+    "environment": "local",
+    "productionDeploymentPerformedForThisReview": false
+  },
+  "source": {
+    "snapshot": "2026-08-30T09:01:56.964+00:00",
+    "compressedFile": ".local/restricted-legacy-oracle-source.jsonl.gz",
+    "compressedBytes": 24531992,
+    "sha256": "a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+    "hashVerified": true,
+    "archiveUrl": "https://data.scryfall.io/oracle-cards/oracle-cards-20260830090156.jsonl.gz"
+  },
+  "before": {
+    "definitions": 20962,
+    "importEligible": 20944,
+    "importRestricted": 18,
+    "builtInDecks": 120
+  },
+  "after": {
+    "definitions": 20962,
+    "importEligible": 20962,
+    "importRestricted": 0,
+    "builtInDecks": 120,
+    "remainingSourceOracleIds": 9849,
+    "parserEligibleUnimported": 2,
+    "deferred": 9847
+  },
+  "reviewedNames": [
+    "Boros Reckoner",
+    "Darien, King of Kjeldor",
+    "Feather, Radiant Arbiter",
+    "Fiendish Duo",
+    "Gideon's Sacrifice",
+    "Havoc Eater",
+    "Hot Pursuit",
+    "Immortal Obligation",
+    "Labyrinth of Skophos",
+    "Loran of the Third Path",
+    "Mob Verdict",
+    "Nelly Borca, Impulsive Accuser",
+    "Otherworldly Escort",
+    "Prisoner's Dilemma",
+    "Redemption Arc",
+    "Take the Bait",
+    "Trouble in Pairs",
+    "Vow of Lightning"
+  ],
+  "newCardDefinitions": 0,
+  "newBuiltInDecks": 0,
+  "newImages": {
+    "cards": 18,
+    "commanderPortraits": 4,
+    "report": "images.json"
+  },
+  "regression": {
+    "log": ".local/restricted-legacy-regression.log",
+    "logSha256": "7492606d9571d9d48626863666a72a7f08b36312e70ef09350ece028164a2ec6",
+    "tests": 1118,
+    "suites": 0,
+    "pass": 1118,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 183427.3353,
+    "files": [
+      "tests/arena-drag-controls.test.mjs",
+      "tests/baseline.test.mjs",
+      "tests/c17-c19-aura-control.test.mjs",
+      "tests/c19-c20-combat.test.mjs",
+      "tests/c19-c20-counters-inheritance.test.mjs",
+      "tests/c19-c20-end-combat.test.mjs",
+      "tests/cmm-woc-who-advanced.test.mjs",
+      "tests/cmm-woc-who-precons.test.mjs",
+      "tests/cmm-woc-who-release.test.mjs",
+      "tests/combat-battlefield-toggle.test.mjs",
+      "tests/counter-intelligence.test.mjs",
+      "tests/counterspell-and-shuffle.test.mjs",
+      "tests/coven-counters.test.mjs",
+      "tests/custom-deck-controller-pilot.test.mjs",
+      "tests/decklist-import.test.mjs",
+      "tests/diplomacy.test.mjs",
+      "tests/divided-damage-targeting.test.mjs",
+      "tests/full-card-audit.test.mjs",
+      "tests/imported-deck-library.test.mjs",
+      "tests/keyword-counter-fx.test.mjs",
+      "tests/legacy-card-catalog-integrity.test.mjs",
+      "tests/marked-damage-ui.test.mjs",
+      "tests/optional-trigger-resolution.test.mjs",
+      "tests/oracle-ai-uncounterable-counter.test.mjs",
+      "tests/oracle-counter-effects.test.mjs",
+      "tests/oracle-counter-transfers.test.mjs",
+      "tests/oracle-deep-controller-matrix.test.mjs",
+      "tests/oracle-divided-damage-source.test.mjs",
+      "tests/oracle-entry-counter-source.test.mjs",
+      "tests/oracle-prevention-source.test.mjs",
+      "tests/oracle-self-counter-source-identity.test.mjs",
+      "tests/oracle-state-trigger-source.test.mjs",
+      "tests/oracle-union-controller.test.mjs",
+      "tests/oracle-v4-deck-library.test.mjs",
+      "tests/oracle-v8-batch-triggers.test.mjs",
+      "tests/oracle-v8-combat-assignment.test.mjs",
+      "tests/oracle-v8-combat-costs.test.mjs",
+      "tests/oracle-v8-combat-declarations.test.mjs",
+      "tests/oracle-v8-combat-keywords.test.mjs",
+      "tests/oracle-v8-combat-restrictions.test.mjs",
+      "tests/oracle-v8-control.test.mjs",
+      "tests/oracle-v8-counter-costs.test.mjs",
+      "tests/oracle-v8-damage-death.test.mjs",
+      "tests/oracle-v8-damage-events.test.mjs",
+      "tests/oracle-v8-damage-replacements-next.test.mjs",
+      "tests/oracle-v8-delayed-triggers.test.mjs",
+      "tests/oracle-v8-observation-triggers.test.mjs",
+      "tests/oracle-v8-prevention.test.mjs",
+      "tests/oracle-v8-source-prevention.test.mjs",
+      "tests/oracle-v8-stack-copy.test.mjs",
+      "tests/oracle-variable-counter-costs.test.mjs",
+      "tests/orcish-mine-controller-lki.test.mjs",
+      "tests/planeswalker-combat.test.mjs",
+      "tests/restricted-legacy-cards.test.mjs",
+      "tests/restricted-legacy-games.test.mjs",
+      "tests/restricted-legacy-import.test.mjs",
+      "tests/restricted-legacy-interactions.test.mjs",
+      "tests/save-state.test.mjs",
+      "tests/state-trigger-lifecycle.test.mjs",
+      "tests/subtle-damage-keywords.test.mjs",
+      "tests/tree-save-state.test.mjs",
+      "tests/vote-diplomacy-effects.test.mjs",
+      "tests/znc-khc-combat.test.mjs"
+    ],
+    "command": "node --test --test-concurrency=4 tests/arena-drag-controls.test.mjs tests/baseline.test.mjs tests/c17-c19-aura-control.test.mjs tests/c19-c20-combat.test.mjs tests/c19-c20-counters-inheritance.test.mjs tests/c19-c20-end-combat.test.mjs tests/cmm-woc-who-advanced.test.mjs tests/cmm-woc-who-precons.test.mjs tests/cmm-woc-who-release.test.mjs tests/combat-battlefield-toggle.test.mjs tests/counter-intelligence.test.mjs tests/counterspell-and-shuffle.test.mjs tests/coven-counters.test.mjs tests/custom-deck-controller-pilot.test.mjs tests/decklist-import.test.mjs tests/diplomacy.test.mjs tests/divided-damage-targeting.test.mjs tests/full-card-audit.test.mjs tests/imported-deck-library.test.mjs tests/keyword-counter-fx.test.mjs tests/legacy-card-catalog-integrity.test.mjs tests/marked-damage-ui.test.mjs tests/optional-trigger-resolution.test.mjs tests/oracle-ai-uncounterable-counter.test.mjs tests/oracle-counter-effects.test.mjs tests/oracle-counter-transfers.test.mjs tests/oracle-deep-controller-matrix.test.mjs tests/oracle-divided-damage-source.test.mjs tests/oracle-entry-counter-source.test.mjs tests/oracle-prevention-source.test.mjs tests/oracle-self-counter-source-identity.test.mjs tests/oracle-state-trigger-source.test.mjs tests/oracle-union-controller.test.mjs tests/oracle-v4-deck-library.test.mjs tests/oracle-v8-batch-triggers.test.mjs tests/oracle-v8-combat-assignment.test.mjs tests/oracle-v8-combat-costs.test.mjs tests/oracle-v8-combat-declarations.test.mjs tests/oracle-v8-combat-keywords.test.mjs tests/oracle-v8-combat-restrictions.test.mjs tests/oracle-v8-control.test.mjs tests/oracle-v8-counter-costs.test.mjs tests/oracle-v8-damage-death.test.mjs tests/oracle-v8-damage-events.test.mjs tests/oracle-v8-damage-replacements-next.test.mjs tests/oracle-v8-delayed-triggers.test.mjs tests/oracle-v8-observation-triggers.test.mjs tests/oracle-v8-prevention.test.mjs tests/oracle-v8-source-prevention.test.mjs tests/oracle-v8-stack-copy.test.mjs tests/oracle-variable-counter-costs.test.mjs tests/orcish-mine-controller-lki.test.mjs tests/planeswalker-combat.test.mjs tests/restricted-legacy-cards.test.mjs tests/restricted-legacy-games.test.mjs tests/restricted-legacy-import.test.mjs tests/restricted-legacy-interactions.test.mjs tests/save-state.test.mjs tests/state-trigger-lifecycle.test.mjs tests/subtle-damage-keywords.test.mjs tests/tree-save-state.test.mjs tests/vote-diplomacy-effects.test.mjs tests/znc-khc-combat.test.mjs"
+  },
+  "artAndImportFollowUp": {
+    "log": ".local/restricted-legacy-art-import.log",
+    "logSha256": "e42e73ae684b837d8521816800a25479e049584cec2b91ac94186856b0a175c2",
+    "tests": 8,
+    "suites": 0,
+    "pass": 8,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 8378.9946,
+    "command": "node --test tests/restricted-legacy-import.test.mjs tests/local-card-images.test.mjs",
+    "note": "Final artwork and image-manifest verification; overlaps the regression set."
+  },
+  "browser": {
+    "passed": 4,
+    "errors": [],
+    "test": "tests/browser/restricted-legacy-import.mjs",
+    "command": "node tests/browser/restricted-legacy-import.mjs",
+    "playwrightModule": "file:///C:/Users/Korisnik/Downloads/MTG/.local/playwright-chrome-shim.mjs",
+    "log": ".local/restricted-legacy-browser.log",
+    "result": "output/restricted-legacy-2026-09-10/browser/result.json",
+    "resultSha256": "adb87a3c156566dbafa6f8891fcdd23f7badfb6b70a7a574edb058c09840ad16",
+    "scenarios": [
+      {
+        "deck": "Reviewed Nelly Eighteen",
+        "width": 1440,
+        "opponent": "Timey-Wimey",
+        "opening": {
+          "commander": [
+            "Nelly Borca, Impulsive Accuser"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "done": true,
+        "error": null,
+        "zone": "battlefield",
+        "manaSpent": 4,
+        "pending": 0,
+        "stack": 0,
+        "fallback": false,
+        "overflow": false,
+        "localCardImagesLoaded": 18
+      },
+      {
+        "deck": "Reviewed Feather Eighteen",
+        "width": 1440,
+        "opponent": "Timey-Wimey",
+        "opening": {
+          "commander": [
+            "Feather, Radiant Arbiter"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "done": true,
+        "error": null,
+        "zone": "battlefield",
+        "manaSpent": 3,
+        "pending": 0,
+        "stack": 0,
+        "fallback": false,
+        "overflow": false,
+        "localCardImagesLoaded": 18
+      },
+      {
+        "deck": "Reviewed Nelly Eighteen",
+        "width": 390,
+        "opponent": "Timey-Wimey",
+        "opening": {
+          "commander": [
+            "Nelly Borca, Impulsive Accuser"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "done": true,
+        "error": null,
+        "zone": "battlefield",
+        "manaSpent": 4,
+        "pending": 0,
+        "stack": 0,
+        "fallback": false,
+        "overflow": false,
+        "localCardImagesLoaded": 18
+      },
+      {
+        "deck": "Reviewed Feather Eighteen",
+        "width": 390,
+        "opponent": "Timey-Wimey",
+        "opening": {
+          "commander": [
+            "Feather, Radiant Arbiter"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "done": true,
+        "error": null,
+        "zone": "battlefield",
+        "manaSpent": 3,
+        "pending": 0,
+        "stack": 0,
+        "fallback": false,
+        "overflow": false,
+        "localCardImagesLoaded": 18
+      }
+    ],
+    "screenshotsVisuallyInspected": [
+      "nelly-1440-battlefield.png",
+      "feather-390-battlefield.png"
+    ]
+  },
+  "naturalGames": {
+    "log": ".local/restricted-legacy-games.log",
+    "logSha256": "1a0d88b0ddc281e75eba2efc19bf814dc7129d9e9b4edd5c66ae41b92d6c7f1b",
+    "tests": 2,
+    "suites": 0,
+    "pass": 2,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 26250.4835,
+    "results": [
+      {
+        "commander": "Nelly Borca, Impulsive Accuser",
+        "seed": 91018,
+        "turn": 36,
+        "winner": "AI Dragon",
+        "pending": 0
+      },
+      {
+        "commander": "Feather, Radiant Arbiter",
+        "seed": 91019,
+        "turn": 58,
+        "winner": "You",
+        "pending": 0
+      }
+    ],
+    "command": "node --test tests/restricted-legacy-games.test.mjs",
+    "alsoIncludedInRegression": true,
+    "opponents": [
+      "Enduring Enchantments",
+      "Fae Dominion",
+      "Timey-Wimey"
+    ],
+    "noAiFallbackVerifiedByTest": true
+  },
+  "checks": {
+    "syntax": {
+      "command": "npm.cmd run check",
+      "status": "PASS",
+      "log": ".local/restricted-legacy-check.log",
+      "logSha256": "a70c787b94c2aaf1044d465392333f546cc8ab84cbc20d7f94dae07e04def41a"
+    },
+    "audit": {
+      "command": "npm.cmd run audit",
+      "status": "PASS",
+      "log": ".local/restricted-legacy-audit.log",
+      "logSha256": "1e2110757d08173a06beb8fb7643c9fa26e28e0517561317d9be8a03f5b5a195"
+    },
+    "strictCertification": {
+      "command": "npm.cmd run certify:strict",
+      "status": "PASS",
+      "log": ".local/restricted-legacy-certify.log",
+      "logSha256": "294371c2aa59c5c008348dcce4a579e29b32e524422e5f8d9f62c12198052cd6",
+      "cardDeckChecks": 9914,
+      "uniqueBuiltInCards": 4826,
+      "rawDefinitions": 20962,
+      "failures": 0
+    },
+    "catalogExport": {
+      "command": "node scripts/export-card-catalog.mjs --source-file=.local/restricted-legacy-oracle-source.jsonl.gz --source-sha256=a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+      "status": "PASS",
+      "log": ".local/combined-release-catalog-export.log",
+      "logSha256": "eb258f5071a9966e37b7063cdaa2c5187643f44e937d0f05178b54adf1674501"
+    },
+    "catalogCheck": {
+      "command": "node scripts/export-card-catalog.mjs --source-file=.local/restricted-legacy-oracle-source.jsonl.gz --source-sha256=a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528 --check",
+      "status": "PASS",
+      "log": ".local/combined-release-catalog-check.log",
+      "logSha256": "9668fd99c15b7551322d80359f6cf7f3d45d1e9dc90e443d3fd4abb22976cef6"
+    }
+  },
+  "fullSuiteRun": false,
+  "limitations": [
+    "Regression, follow-up and game counts overlap and must not be summed as unique tests.",
+    "Browser paid-cast checks use controlled boards after normal deck import, persistence and opening setup.",
+    "Natural games use original Blame Game as a custom imported list; its built-in entry remains inactive.",
+    "Deck-library save/reload is covered. Existing serializer rules reject nonportable linked durations or animations in midgame checkpoints.",
+    "The source comparison is tied to the 30 August 2026 snapshot; import eligibility does not prove every possible interaction."
+  ],
+  "workingCopyFilesSha256": {
+    "src/app.js": "ab049fe303320aefd755906be80d1d8ba45617eeb0b49bbf2a5eb63952d242d4",
+    "src/reviewed-legacy-imports.js": "2c1c17ba2e772b07adc27d84f7c7d48899723d5ded57e71d6ed1241212fcebab",
+    "src/modules/restricted-legacy-rules.js": "8e77885dc001c69d01543d6f5e237378297e55dac443d80cb5e8b00010457584",
+    "src/modules/scripts_nelly.js": "b0c4e1230c90b9f447a8491a9f6d3ccbcf031e8e69905b114b4caafd4da73cdd",
+    "src/modules/engine.js": "29ef5eade755963fb62d60f48f67ea4fdbff73fb7a6d803406fdb49360e014db",
+    "src/modules/engine2.js": "a7c4b07fb98c4efaf4e902fd9539e9bd66c2c4b4d4703b452bf0b2c40b20ead2",
+    "src/modules/oracle-v8-damage-events.js": "476503f8a47d37015cbf0d98f9e260e0d3dc83f4288ae5aea9377abdd5372e84",
+    "src/modules/oracle-catalog.js": "f7900a6c1d17c5a3c6d7221413d664b2a7f67e2bb2dc322ec14e1695b688602a",
+    "src/catalog-summary.js": "3d8648f2bf488f1cf941d6784ef932e2731bd8a22675684b640dc5ecf9e75160",
+    "src/card-images.js": "26372e2f38f0b05cc892034aff40dc4927878c5fde186265b172d01e89effa2b",
+    "scripts/export-card-catalog.mjs": "bef61e2cc2215ca1e48eace2dd6752337d741dbea254aff2a2366f3653d7c61f",
+    "scripts/sync-card-images.mjs": "939bbd758640a2ddcba4393fb845b38a77ecc773c083d625c11c251bc29897a6",
+    "tests/restricted-legacy-cards.test.mjs": "7c1b0179f115dac04778fbda16eca54da2734a744a9379996a0235bb53d45206",
+    "tests/restricted-legacy-interactions.test.mjs": "df8ad2b1e1d9e90a68c57e394dff09857099f7dcb6085a8ff37ca36879149119",
+    "tests/restricted-legacy-import.test.mjs": "c6018e93ca98ac6ca3802e0ddbc62aacb78f133b6cd7f8324e31fae9742d74b3",
+    "tests/restricted-legacy-games.test.mjs": "220d8d21324c124761ae339e13aef21f960d9159fb6cc785326d4e8ee3d1a33f",
+    "tests/browser/restricted-legacy-import.mjs": "6e2992e9dc71460545b48858e7d087d0594cce2d1dba8519ff5a4049d1db4ec7",
+    "tests/decklist-import.test.mjs": "fd9ffcf26b1736c48c8b9baee0cc0f8befdc21500d140428c2e348a1c2227996",
+    "tests/imported-deck-library.test.mjs": "f827d59f7ba2bc105c0424675144c19b9a7f660fcd8c98a2359718c3e5efe726",
+    "tests/oracle-v4-deck-library.test.mjs": "9c0d3990a10d3d7f1693ea7a7e4d8605eeab0ab865053a47ebbd65ccb86f7f77",
+    "tests/local-card-images.test.mjs": "def2eb81134b9016018c0886e71f7c2df85f33e24d17db41b74664a3349f7968",
+    "tests/full-card-audit.test.mjs": "544432acafc21700880236d06177ffc1598fc0f6ba2a322358cfdf38ea2bab1c",
+    "docs/card-catalog.md": "4dccd0d63f183c56af467f7bea574d17d30fbe286492b991612597b4e364b83f",
+    "docs/catalog/imported-cards.csv": "71b593de8ee1b51f6ee2362e6d7bf03dc880c75dd7ca43dea239116abed00900",
+    "docs/catalog/remaining-cards.csv": "1e8763024679c2255c7b8fc7704ac35335ac1b5e9f64fed8006b3d110db1f2e1",
+    "docs/catalog/summary.json": "32c224349a10d38db0ebbfb6843f7790de0b18734b28eace9c1aaec8be462028",
+    "reports/cards/restricted-legacy-2026-09-10/source-cards.json": "4c736835e2563e7a0d55edb50b102e3890d5c24ab2a5f3e70c12f21020693868",
+    "reports/cards/restricted-legacy-2026-09-10/images.json": "b3394c54839a7d94841c03f62fba5301d3b3f8a5a2769442e07f09439d510408",
+    "reports/cards/restricted-legacy-2026-09-10/decklist.txt": "edcb572b9b43cacdca5a963a8c1d5f26b7f38e82ded3a24743f68bb7bf26a212"
+  }
+}

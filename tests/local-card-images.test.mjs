@@ -18,6 +18,11 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
     expected.add(faceName(deck.commander));
     for (const card of deck.cards || []) expected.add(faceName(card.name));
   }
+  for (const name of Object.keys(MTG.REVIEWED_LEGACY_IMPORTS || {})) {
+    expected.add(faceName(name));
+    const def = MTG.DEFS[name];
+    if (def.types.includes('Creature') && def.super.includes('Legendary')) commanders.add(faceName(name));
+  }
   const importedFaces=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-c19-c20-znc-2026-09-08/oracle.json',import.meta.url))).cards.flatMap(r=>r.faces||[]);
   importedFaces.push(...JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-znc-cmr-khc-2026-09-08/oracle.json',import.meta.url))).cards.flatMap(r=>r.faces||[]));
   importedFaces.push(...JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-afc-mic-2026-09-09/oracle.json',import.meta.url))).cards.flatMap(r=>r.faces||[]));

@@ -54,11 +54,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         },
       },
       {
-        on: 'combatDamageToPlayer', desc: 'Both draw', oncePerTurn: true,
-        filter: (g, self, d) => d.card.ctrl !== self.ctrl && d.player !== self.ctrl,
+        on: 'oracleDamageByController', desc: 'Both draw',
+        filter: (g, self, d) => d.controller !== self.ctrl && d.hits.some(hit => hit.combat &&
+          hit.sourceSnap?.types.includes('Creature') && hit.target instanceof MTG.Player && hit.target !== self.ctrl),
         run: async ctx => {
           await ctx.g.draw(ctx.you, 1);
-          await ctx.g.draw(ctx.data.card.ctrl, 1);
+          await ctx.g.draw(ctx.data.controller, 1);
         },
       },
     ],
@@ -117,7 +118,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Boros Reckoner'] = {
     triggers: [{
-      on: 'dealtDamage', desc: 'Redirect damage', filter: (g, self, d) => d.target === self,
+      on: 'dealtDamage', desc: 'Deal that much damage', filter: (g, self, d) => d.target === self,
       targets: [T.any({ prompt: 'Damage to:', aiHint: { goal: 'damage' } })],
       run: async ctx => { await ctx.g.damageAny(ctx.src, ctx.targets[0], ctx.data.n); },
     }],
@@ -143,17 +144,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
       run: async ctx => {
         const so = ctx.data.so;
-        if (!so || !ctx.g.stack.includes(so)) return;
+        if (!so) return;
         const specs = so.targetSpecs || ctx.g.spellTargetSpecs(so.card, so.castOpts || {});
         if (!specs || !specs.length) return;
         const legalSets = specs.map(spec => new Set(ctx.g.legalTargets(spec, so.card, ctx.data.player)));
         const candidates = ctx.g.creatures().filter(card => card !== ctx.src && legalSets.every(set => set.has(card)));
         if (!candidates.length) return;
+        let affordable = 0;
+        while (affordable < candidates.length && ctx.g.canPayMana(ctx.you, U.parseCost('{' + (affordable + 1) * 2 + '}'))) affordable++;
+        if (!affordable) return;
         const picked = await ctx.you.controller.decide(ctx.g, {
-          type: 'chooseCards', from: candidates, min: 0, max: candidates.length,
+          type: 'chooseCards', from: candidates, min: 0, max: affordable,
           prompt: 'Feather: choose additional creatures ({2} per copy)', aiHint: { kind: 'copyTargets', src: ctx.src },
         });
-        if (!picked.length) return;
+        if (!Array.isArray(picked) || !picked.length) return;
+        if (picked.length > affordable || new Set(picked).size !== picked.length || picked.some(c => !candidates.includes(c))) throw new Error('Invalid Feather copy choices');
         const paid = await ctx.g.payMana(ctx.you, { generic: picked.length * 2, x: 0, pips: [] });
         if (!paid) return;
         await ctx.g.copySpellBatch(so, ctx.you, picked.map(creature => ({ forceTarget: creature })));
@@ -196,18 +201,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Havoc Eater'] = {
     triggers: [{
       on: 'etb', filter: etbSelf, desc: 'Goad per opponent',
+      targets: (g, self) => E.eachOpp(g, self.ctrl).map(opponent => T.creature({
+        upTo: true, prompt: `Goad up to one creature ${opponent.name} controls`,
+        filter: (g, c) => c.ctrl === opponent, aiHint: {goal: 'goadTarget'},
+      })),
       run: async ctx => {
         const g = ctx.g;
         let total = 0;
-        for (const o of E.eachOpp(g, ctx.you)) {
-          const pool = g.creatures(o);
-          if (!pool.length) continue;
-          const pick = await ctx.you.controller.decide(g, {
-            type: 'chooseTargets', candidates: pool, min: 0, max: 1, prompt: `Goad a creature ${o.name} controls`, aiHint: { goal: 'goadTarget' },
-          });
-          if (pick.length) { E.goad(g, pick[0], ctx.you); total += Math.max(0, pick[0].power); }
+        for (const c of ctx.targets.flat().filter(Boolean)) {
+          E.goad(g, c, ctx.you); total += c.power;
         }
-        if (total) ctx.g.addCounters(ctx.src, '+1/+1', total);
+        if (total > 0 && MTG.RestrictedLegacy.same(ctx)) g.addCounters(ctx.src, '+1/+1', total);
       },
     }],
   };
@@ -286,27 +290,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Otherworldly Escort'] = {
     triggers: [{
-      on: 'dies', filter: etbSelf, desc: 'Return as a Spirit',
-      onlyIf: (g, self) => !self.meta._returned,
+      on: 'dies', filter: (g, self, d) => d.card === self && !d.snap.subtypes.includes('Spirit') && !d.snap.changeling,
+      desc: 'Return as a Spirit Detective with four charge counters',
       run: async ctx => {
         const c = ctx.src;
-        if (c.zone !== 'graveyard') return;
-        await ctx.g.move(c, 'battlefield', { ctrl: c.owner });
-        c.meta._returned = true;
-        ctx.g.addCounters(c, 'charge', 4, true);
-        ctx.g.lg(`${c.name} returns as a Spirit with 4 charge counters.`);
+        if (c.zone !== 'graveyard' || c.zoneVersion !== ctx.data.graveyardZoneVersion) return;
+        await ctx.g.putPermanentOntoBattlefield(c, c.owner, {
+          additionalCounters: {charge: 4}, additionalCounterBy: ctx.you,
+          entryAnimation: {types: [], subtypes: ['Spirit', 'Detective'], retainTypes: true, replaceCreatureSubtypes: true},
+        });
       },
     }],
     abilities: [{
-      label: 'Destroy an attacker (charge)', cost: { mana: '{1}{W}', tap: true, counter: null },
-      cond: (g, c) => (c.counters['charge'] || 0) > 0,
+      label: 'Destroy a creature that damaged you', cost: { mana: '{1}{W}', tap: true, rmCounter: {kind: 'charge', n: 1} },
       targets: [{
         what: 'creature', prompt: 'Creature that dealt damage to you',
-        filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl !== ctrl,
+        filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && MTG.RestrictedLegacy.dealtDamageTo(g, c, ctrl),
         aiHint: { goal: 'removal' },
       }],
       run: async ctx => {
-        ctx.g.removeCounters(ctx.src, 'charge', 1);
         await ctx.g.destroy(ctx.targets[0]);
       },
     }],
@@ -443,12 +445,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     },
   };
   SC["Gideon's Sacrifice"] = {
-    targets: [T.permanent((g, c, ctrl) => c.ctrl === ctrl && (c.is('Creature') || c.is('Planeswalker')), {
-      prompt: 'Your creature or planeswalker', aiHint: { goal: 'protect' },
-    })],
     resolve: async ctx => {
-      const you = ctx.you, iid = ctx.targets[0].iid, zoneVersion = ctx.targets[0].zoneVersion;
-      ctx.g.untilEffects.push({ kind: 'redirectAllDamage', who: you, iid, zoneVersion, expires: 'eot', sourceCard: ctx.src });
+      const candidates = ctx.g.bf().filter(c => c.ctrl === ctx.you && (c.is('Creature') || c.is('Planeswalker')));
+      if (!candidates.length) return;
+      const [chosen] = await ctx.you.controller.decide(ctx.g, {type: 'chooseCards', from: candidates, min: 1, max: 1,
+        prompt: "Gideon's Sacrifice: choose your creature or planeswalker", aiHint: {kind: 'protect'}});
+      if (!candidates.includes(chosen)) throw new Error('Invalid damage recipient');
+      ctx.g.untilEffects.push({ kind: 'redirectAllDamage', who: ctx.you, iid: chosen.iid, zoneVersion: chosen.zoneVersion, expires: 'eot', sourceCard: ctx.src });
     },
   };
   SC['Immortal Obligation'] = {
@@ -460,21 +463,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       const t = ctx.targets[0], g = ctx.g;
       if (t.zone !== 'graveyard') return;
-      await g.move(t, 'battlefield', { ctrl: t.owner });
-      g.addCounters(t, 'duty', 1, true);
-      t.meta.goadedBy = [ctx.you];
-      g.untilEffects.push({ kind: 'goadCard', iid: t.iid, notPlayer: ctx.you, expires: 'never' });
-      g.lg(`${t.name} returned with a duty counter — permanently goaded.`);
+      await g.putPermanentOntoBattlefield(t, t.owner, {additionalCounters: {duty: 1}, additionalCounterBy: ctx.you});
+      MTG.RestrictedLegacy.addDuty(ctx, t);
+      g.recalc();
     },
   };
   SC['Take the Bait'] = {
     castCond: (g, p) => g.turnPlayer !== p && g.phase === 'combat',
     resolve: async ctx => {
       const g = ctx.g, you = ctx.you;
-      g.untilEffects.push({ kind: 'preventCombatToPlayer', who: you, expires: 'eot' });
+      g.untilEffects.push({ kind: 'preventCombatToPlayer', who: you, includePlaneswalkers: true, expires: 'eot', sourceCard: ctx.src });
       if (g.combat) {
         for (const a of g.combat.attackers) {
-          if (a.zone === 'battlefield') { a.tapped = false; E.goad(g, a, you); }
+          if (a.zone === 'battlefield') { g.untap(a); E.goad(g, a, you); }
         }
       }
       g.scheduleAdditionalCombat();
@@ -490,19 +491,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     resolve: async ctx => {
       const g = ctx.g, you = ctx.you;
       const votes = new Map();
-      for (const q of g.alivePlayers()) {
+      const revealed = [];
+      for (const q of g.apnapFrom(g.turnPlayer)) {
         const cands = g.alivePlayers().filter(x => x !== q);
-        const pick = await q.controller.decide(g, {
-          type: 'chooseTargets', candidates: cands, min: 1, max: 1, prompt: 'Vote against a player', aiHint: { goal: 'drain' },
-        });
-        const v = pick[0] || cands[0];
+        const v = await MTG.RestrictedLegacy.choosePlayer(ctx, q, cands, 'Mob Verdict: secretly vote for another player');
+        if (!v) continue;
         votes.set(v, (votes.get(v) || 0) + 1);
-        g.lg(`${q.name} votes against ${v.name}.`);
+        votes['_by_' + q.idx] = String(v.idx);
+        revealed.push({voter: q, player: v});
       }
+      for (const {voter, player} of revealed) g.lg(`${voter.name} votes against ${player.name}.`);
+      await g.emit('voteEnd', {src: ctx.src, by: you, votes, secret: true,
+        picks: new Map(revealed.map(row => [row.voter, String(row.player.idx)]))});
       for (const [pl, n] of votes) {
         if (pl === you) { await g.draw(you, n); continue; }
-        await g.damagePlayer(ctx.src, pl, 2 * n);
-        for (const c of g.creatures(pl).slice()) await g.damageCreature(ctx.src, c, 2 * n);
+        for (let i = 0; i < n; i++) await g.damageBatch([pl, ...g.creatures(pl)].map(target => ({src: ctx.src, target, n: 2})));
       }
     },
   };
@@ -515,19 +518,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const k = await o.controller.decide(g, {
           type: 'chooseOption', prompt: "Prisoner's Dilemma: stay silent or snitch?",
           options: [{ key: 'silence', label: '🤐 Stay silent' }, { key: 'snitch', label: '🗣️ Snitch' }],
-          aiHint: { kind: 'dilemma' },
+          aiHint: { kind: 'dilemma', secret: true },
         });
+        if (!['silence', 'snitch'].includes(k)) throw new Error('Invalid secret dilemma choice');
         choices.set(o, k);
       }
       const vals = [...choices.values()];
       const allSilence = vals.every(v => v === 'silence');
       const allSnitch = vals.every(v => v === 'snitch');
       for (const [o, k] of choices) g.lg(`${o.name}: ${k === 'silence' ? 'šuti' : 'cinka'}.`);
-      for (const [o, k] of choices) {
-        if (allSilence) await g.damagePlayer(ctx.src, o, 4);
-        else if (allSnitch) await g.damagePlayer(ctx.src, o, 8);
-        else if (k === 'silence') await g.damagePlayer(ctx.src, o, 12);
-      }
+      await g.damageBatch([...choices].map(([target, k]) => ({src: ctx.src, target,
+        n: allSilence ? 4 : allSnitch ? 8 : k === 'silence' ? 12 : 0})));
     },
   };
   SC['Promise of Loyalty'] = {
@@ -678,14 +679,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Ghostly Prison'] = { attackTax: 2 };
   SC['Hot Pursuit'] = {
-    statics: [{
-      apply: (g, self) => {
-        const target = self.meta.pursuitTargetIid && g.byIid(self.meta.pursuitTargetIid);
-        if (target && target.zone === 'battlefield') {
-          target.cur.goadedBy = (target.cur.goadedBy || []).concat([self.ctrl]);
-        }
-      },
-    }],
     triggers: [
       {
         on: 'etb', filter: etbSelf, desc: 'Suspect + goad',
@@ -697,7 +690,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => {
           const t = ctx.targets[0];
           E.suspect(ctx.g, t);
-          ctx.src.meta.pursuitTargetIid = t.iid;
+          MTG.RestrictedLegacy.linkPursuit(ctx, t);
           ctx.g.recalc();
           ctx.g.lg(`${t.name} is goaded while Hot Pursuit is on the battlefield.`);
         },
@@ -705,17 +698,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       {
         on: 'beginCombat', desc: 'Take control of goaded/suspected creatures',
         filter: (g, self, d) => d.player === self.ctrl && g.players.filter(player => player.lost).length >= 2,
+        onlyIf: g => g.players.filter(player => player.lost).length >= 2,
         run: async ctx => {
           const stolen = ctx.g.creatures().filter(card => ctx.g.isGoaded(card) || card.meta.suspected);
           for (const card of stolen) {
-            const from = card.ctrl;
-            if (from === ctx.you) { card.tapped = false; card.meta.tempHaste = true; continue; }
-            card.ctrl = ctx.you;
-            card.tapped = false;
-            card.meta.tempHaste = true;
-            ctx.g.untilEffects.push({
-              kind: 'temporaryControl', iid: card.iid, from, to: ctx.you, expires: 'eot',
-            });
+            MTG.OracleV8Control.gain(ctx.g, card, ctx.you, {temporary: true});
+            ctx.g.untap(card);
+            E.grantUntilEOT(ctx.g, card, ['haste']);
           }
           ctx.g.recalc();
           ctx.g.lg(`Hot Pursuit: ${stolen.length} goaded/suspected creatures under temporary control.`);
@@ -750,17 +739,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     prompt: 'Enchant creature', aiHint: { goal: 'goadTarget' },
   })];
   SC['Redemption Arc'] = {
-    auraTarget: [{
-      what: 'creature', prompt: "Opponent's creature",
-      filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl !== ctrl,
-      aiHint: { goal: 'goadTarget' },
-    }],
+    auraTarget: [T.creature({prompt: 'Enchant creature', aiHint: {goal: 'goadTarget'}})],
     attachGrant: (g, self, host) => { host.cur.kw.add('indestructible'); host.cur.goadedBy = (host.cur.goadedBy || []).concat([self.ctrl]); },
     abilities: [{
       label: 'Exile the bearer', cost: { mana: '{1}{W}' },
       cond: (g, c) => !!c.attachedTo,
       run: async ctx => {
-        const host = ctx.g.byIid(ctx.src.attachedTo);
+        const host = MTG.RestrictedLegacy.enchanted(ctx);
         if (host) await ctx.g.exileCard(host);
       },
     }],
@@ -815,19 +800,20 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }],
   };
   SC['Trouble in Pairs'] = {
+    preventsOpponentExtraTurns: true,
     triggers: [
       {
-        on: 'attackersDeclared', desc: 'Draw', oncePerTurn: true,
+        on: 'attackersDeclared', desc: 'Draw',
         filter: (g, self, d) => d.player !== self.ctrl && d.attackers.filter(a => a.attacking === self.ctrl).length >= 2,
         run: async ctx => { await ctx.g.draw(ctx.you, 1); },
       },
       {
-        on: 'draw', desc: 'Draw', oncePerTurn: true,
+        on: 'draw', desc: 'Draw',
         filter: (g, self, d) => d.player !== self.ctrl && d.player.turnState.drewThisTurn === 2,
         run: async ctx => { await ctx.g.draw(ctx.you, 1); },
       },
       {
-        on: 'castSecond', desc: 'Draw', oncePerTurn: true,
+        on: 'castSecond', desc: 'Draw',
         filter: (g, self, d) => d.player !== self.ctrl,
         run: async ctx => { await ctx.g.draw(ctx.you, 1); },
       },
@@ -837,9 +823,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     auraTarget: [T.creature({ prompt: 'Creature', aiHint: { goal: 'goadTarget' } })],
     attachGrant: (g, self, host) => {
       host.cur.power += 2; host.cur.toughness += 2; host.cur.kw.add(kw);
-    },
-    onAttach: (g, self, host) => {
-      g.untilEffects.push({ kind: 'cantAttackPlayerCard', iid: host.iid, notPlayer: self.ctrl, expires: 'never' });
+      host.cur.restrictedCannotAttack = (host.cur.restrictedCannotAttack || []).concat(self.ctrl);
     },
   });
   SC['Vow of Duty'] = vow('vigilance');

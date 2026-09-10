@@ -1,0 +1,227 @@
+{
+  "sourceSnapshot": "2026-08-30T09:01:56.964+00:00",
+  "preservedCardPaths": 5115,
+  "preservedArtPaths": 123,
+  "images": [
+    {
+      "name": "Boros Reckoner",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/5/5/55a2f767-5928-44c5-91b7-2300bade458f.jpg?1783912983",
+      "path": "./assets/cards/boros-reckoner-493e25368f.webp",
+      "scryfallId": "55a2f767-5928-44c5-91b7-2300bade458f",
+      "sourceSha256": "9b4eb215f3453cd11754b57708e4c7246e95d565443c5caf078ea998a99bf578",
+      "outputSha256": "13de3f9b9c83a80dd59e25da0cac0c7da91d5e033a40ff4cfe1cb7dd9356e5db",
+      "bytes": 76412
+    },
+    {
+      "name": "Darien, King of Kjeldor",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/5/0/50875c99-c5c3-41dd-a0f9-08c98edfebc9.jpg?1783913032",
+      "path": "./assets/cards/darien-king-of-kjeldor-df43f55f08.webp",
+      "scryfallId": "50875c99-c5c3-41dd-a0f9-08c98edfebc9",
+      "sourceSha256": "c8e55bdb5bad23198c4712a1143288a29671650b382963c4c4cdeb4393dfe4b8",
+      "outputSha256": "252dc1ca13b3017dbd606fc6013fb29381397892359be4f82bf0b900d6049b6f",
+      "bytes": 82070
+    },
+    {
+      "name": "Darien, King of Kjeldor",
+      "variant": "art_crop",
+      "source": "https://cards.scryfall.io/art_crop/front/5/0/50875c99-c5c3-41dd-a0f9-08c98edfebc9.jpg?1783913032",
+      "path": "./assets/cards/art/darien-king-of-kjeldor-df43f55f08.webp",
+      "scryfallId": "50875c99-c5c3-41dd-a0f9-08c98edfebc9",
+      "sourceSha256": "7b93e2800999dbd0aaa09230f70ea497bc2484cb87ad0ea613b885a8bfcacf57",
+      "outputSha256": "344b50f65f4ec78db74a7ab445e8cca2560b89976114fb4ab3ca14799f4593a7",
+      "bytes": 74690
+    },
+    {
+      "name": "Feather, Radiant Arbiter",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/d/7/d763695b-c184-409d-962d-5aaf39a6264e.jpg?1783913055",
+      "path": "./assets/cards/feather-radiant-arbiter-4c31e65a3c.webp",
+      "scryfallId": "d763695b-c184-409d-962d-5aaf39a6264e",
+      "sourceSha256": "6da466a3b07e34f4faac42253a5bd4e423afa75ef6c6f796581124cb82213ff9",
+      "outputSha256": "60a92f8b919ed0062ec43f71a7553c843b5f74ab70ab1801fe8910fc773da446",
+      "bytes": 85302
+    },
+    {
+      "name": "Feather, Radiant Arbiter",
+      "variant": "art_crop",
+      "source": "https://cards.scryfall.io/art_crop/front/d/7/d763695b-c184-409d-962d-5aaf39a6264e.jpg?1783913055",
+      "path": "./assets/cards/art/feather-radiant-arbiter-4c31e65a3c.webp",
+      "scryfallId": "d763695b-c184-409d-962d-5aaf39a6264e",
+      "sourceSha256": "ae7307d14c15d44b321cda97266a6df0198ffeceac2fbbcb06a90645a87e3ca5",
+      "outputSha256": "474db95e3da7f42f354fa5abff5f4cea3e09ffd64bd9087b6a691fb31581014d",
+      "bytes": 60454
+    },
+    {
+      "name": "Fiendish Duo",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/e/b/ebb44595-56f6-4be5-80bb-618ddd320f4a.jpg?1783912997",
+      "path": "./assets/cards/fiendish-duo-26f318b685.webp",
+      "scryfallId": "ebb44595-56f6-4be5-80bb-618ddd320f4a",
+      "sourceSha256": "81a23528209d6bac6f91e5963035ce4b614b091322e15343acc0e6076456f589",
+      "outputSha256": "e25e2507033bb4b98de580cf6d5cacc82cf58b013b1526c31f7689f030e12205",
+      "bytes": 70078
+    },
+    {
+      "name": "Gideon's Sacrifice",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/d/4/d483b409-1853-4456-a077-daeb77e165ba.jpg?1783913031",
+      "path": "./assets/cards/gideon-s-sacrifice-58d8386ce8.webp",
+      "scryfallId": "d483b409-1853-4456-a077-daeb77e165ba",
+      "sourceSha256": "cd5a072c4fae086b0f425612d0e262326fa2983b50a292bcbebb88eda3096953",
+      "outputSha256": "770ca40da2963113dbdf18c82cc1331783017152fced313e7374634104bba344",
+      "bytes": 67850
+    },
+    {
+      "name": "Havoc Eater",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/1/7/17054e75-d801-4962-83c1-0b52e7b65f66.jpg?1783913044",
+      "path": "./assets/cards/havoc-eater-a86f0d1092.webp",
+      "scryfallId": "17054e75-d801-4962-83c1-0b52e7b65f66",
+      "sourceSha256": "afe2e825469bc6e70d87ca0aa246b5e2d6907f71300f29eba73e1b367adbe26a",
+      "outputSha256": "5582feea1c0bba2adf41aac5d7b38b1b62a719029c0e877fe349c44dd7bce04b",
+      "bytes": 97738
+    },
+    {
+      "name": "Hot Pursuit",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/b/b/bbba7b9f-d944-4987-b60d-34733382ec53.jpg?1783913044",
+      "path": "./assets/cards/hot-pursuit-9f32a3a7d8.webp",
+      "scryfallId": "bbba7b9f-d944-4987-b60d-34733382ec53",
+      "sourceSha256": "89e84fdcba969bb38334d3e3f66f0f74131ab7d231f7da15e533089a61513b87",
+      "outputSha256": "651af8136f3f34797c11aad147ea264d107a012aec4253a3ae557f3a8c8ef0dc",
+      "bytes": 90056
+    },
+    {
+      "name": "Immortal Obligation",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/b/d/bdadc60f-942f-47e2-b8fc-51deb3d0b86d.jpg?1783913052",
+      "path": "./assets/cards/immortal-obligation-3c5a8fa9ef.webp",
+      "scryfallId": "bdadc60f-942f-47e2-b8fc-51deb3d0b86d",
+      "sourceSha256": "9df4a86a0bbcb5f0c58e22e501b4a8af115803463148aaa4b9a6820026f48186",
+      "outputSha256": "0788f3bfb3f89e5cfb9560184585312d4082c4171dfb52db4b632b787c4012f6",
+      "bytes": 57040
+    },
+    {
+      "name": "Labyrinth of Skophos",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/3/8/388169df-4cce-452d-9215-e3f814ff4fdf.jpg?1783912959",
+      "path": "./assets/cards/labyrinth-of-skophos-c661faf807.webp",
+      "scryfallId": "388169df-4cce-452d-9215-e3f814ff4fdf",
+      "sourceSha256": "16689a462eb10e32404d2af7e5997f6063c682f6f1f773585db2613f952955aa",
+      "outputSha256": "7ff148ca4c7de4989523f6d305011206606114b952fd2f3289d1321720b69d1c",
+      "bytes": 79682
+    },
+    {
+      "name": "Loran of the Third Path",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/9/e/9e83a0ef-4fea-45ba-86c0-130d6687f7fe.jpg?1783913028",
+      "path": "./assets/cards/loran-of-the-third-path-e98337db2a.webp",
+      "scryfallId": "9e83a0ef-4fea-45ba-86c0-130d6687f7fe",
+      "sourceSha256": "de45f6ac4a8592fea853311281d7f04e1a90ad54a79f1355a4c9b1baae55a9e2",
+      "outputSha256": "9773eddc286b8491ba60b7867c9d2a17b52cb9f87e7ec9980f579ba6f006cc7c",
+      "bytes": 65930
+    },
+    {
+      "name": "Loran of the Third Path",
+      "variant": "art_crop",
+      "source": "https://cards.scryfall.io/art_crop/front/9/e/9e83a0ef-4fea-45ba-86c0-130d6687f7fe.jpg?1783913028",
+      "path": "./assets/cards/art/loran-of-the-third-path-e98337db2a.webp",
+      "scryfallId": "9e83a0ef-4fea-45ba-86c0-130d6687f7fe",
+      "sourceSha256": "2f05d370e4ee4102636abbc46851d5abd17ea6b217127e0f32aeaab8c4b738e8",
+      "outputSha256": "d3dce1f477a9e01b16c5e9a0b11d41788e1653d7688c953884c5d51d3f6fce52",
+      "bytes": 50968
+    },
+    {
+      "name": "Mob Verdict",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/e/9/e9bdc40b-ab7a-44a4-afb5-41b6fc2dffdc.jpg?1783913043",
+      "path": "./assets/cards/mob-verdict-69a05c62cc.webp",
+      "scryfallId": "e9bdc40b-ab7a-44a4-afb5-41b6fc2dffdc",
+      "sourceSha256": "845819cb36ed411a66b8e7f5ddd1c8c034ff0bf7c0f6b0af9f734daa76091627",
+      "outputSha256": "ebdab29bc897019b3b33cc24c828f41da3a32c89216b700a7a30694120f66b57",
+      "bytes": 83484
+    },
+    {
+      "name": "Nelly Borca, Impulsive Accuser",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/2/e/2ef59aa9-f5e1-413a-869b-d287db95efd0.jpg?1783913057",
+      "path": "./assets/cards/nelly-borca-impulsive-accuser-b46ccb4383.webp",
+      "scryfallId": "2ef59aa9-f5e1-413a-869b-d287db95efd0",
+      "sourceSha256": "ea3a40330e5321192c409bc6cef9580267b62436f9e6699808f20c9f2985b2cc",
+      "outputSha256": "e3fa8074d7d013db41ad11edb4522a21ee73fb92e591deefee41d23e8bb48454",
+      "bytes": 74210
+    },
+    {
+      "name": "Nelly Borca, Impulsive Accuser",
+      "variant": "art_crop",
+      "source": "https://cards.scryfall.io/art_crop/front/2/e/2ef59aa9-f5e1-413a-869b-d287db95efd0.jpg?1783913057",
+      "path": "./assets/cards/art/nelly-borca-impulsive-accuser-b46ccb4383.webp",
+      "scryfallId": "2ef59aa9-f5e1-413a-869b-d287db95efd0",
+      "sourceSha256": "121fe7d91d091c80e03fad7e3aec9f429b0c2680d339c802a9af1eb023044dd6",
+      "outputSha256": "08d700311d7baa3b3597053f2e77741c3392161a6009dea0c0ed9d8e49710470",
+      "bytes": 38502
+    },
+    {
+      "name": "Otherworldly Escort",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/b/5/b50bfde2-6c2d-403e-ab47-c932bcb2116d.jpg?1783913052",
+      "path": "./assets/cards/otherworldly-escort-ebf5b3bb43.webp",
+      "scryfallId": "b50bfde2-6c2d-403e-ab47-c932bcb2116d",
+      "sourceSha256": "180498ae158576095a4e4a6f23835ba63646c9c17a6c21ff04346796c0c1764d",
+      "outputSha256": "9b1e096f5a2e3b4f09279ed70183958efb5882d3c5dd180f56d98028097ee70f",
+      "bytes": 52892
+    },
+    {
+      "name": "Prisoner's Dilemma",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/d/6/d678e736-7c29-433a-9a2a-b78749252377.jpg?1783913044",
+      "path": "./assets/cards/prisoner-s-dilemma-e2b29f95aa.webp",
+      "scryfallId": "d678e736-7c29-433a-9a2a-b78749252377",
+      "sourceSha256": "11c5941765e8f56476e8b4e467a182a3c5217a6de778a26fe3b15f19722db107",
+      "outputSha256": "7b1462ffd59d846d10bbe45ba970363d990b4e63b5e02e0f72380a7e413caab9",
+      "bytes": 90216
+    },
+    {
+      "name": "Redemption Arc",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/4/9/49326de1-d3b0-4f2b-95bc-5f2878e14a89.jpg?1783903803",
+      "path": "./assets/cards/redemption-arc-53ee05ba9e.webp",
+      "scryfallId": "49326de1-d3b0-4f2b-95bc-5f2878e14a89",
+      "sourceSha256": "7a69df68eef0f9a3f05b831c58a597b68d2e5f3585423ad8a013e30d1b9f7bb3",
+      "outputSha256": "1deaad947aaa67e2cb061e6dc6e090d331b0a0250133b2fdfff5c77779b90962",
+      "bytes": 74254
+    },
+    {
+      "name": "Take the Bait",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/9/7/97425844-dd1b-4f3c-985c-e198e8b9a16b.jpg?1783913039",
+      "path": "./assets/cards/take-the-bait-959416b59e.webp",
+      "scryfallId": "97425844-dd1b-4f3c-985c-e198e8b9a16b",
+      "sourceSha256": "c16d5a727a31e8eb4ac81b00c45644425d41f9600a4e6aeeb1d1d7bd632478fe",
+      "outputSha256": "d2633744eedbcc56d0768c2c3f66ad2742532434fca7a6bd3e533e1d15e8dfa9",
+      "bytes": 83106
+    },
+    {
+      "name": "Trouble in Pairs",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/0/f/0f61e93f-5f97-4c7d-b3d5-0e05242faeb3.jpg?1783913050",
+      "path": "./assets/cards/trouble-in-pairs-9e468365cb.webp",
+      "scryfallId": "0f61e93f-5f97-4c7d-b3d5-0e05242faeb3",
+      "sourceSha256": "c7e82bb39b012e2894b5bf923d4920675f92f5302a3e56359e55ac94ce99071e",
+      "outputSha256": "da4c9ce18b1e023a6c580a0c231915541aa6327321bfcf5165df0fa8f1606903",
+      "bytes": 75316
+    },
+    {
+      "name": "Vow of Lightning",
+      "variant": "normal",
+      "source": "https://cards.scryfall.io/normal/front/a/0/a0742d43-8a67-4485-b0ce-5a4e057fa915.jpg?1783912994",
+      "path": "./assets/cards/vow-of-lightning-ff864f0068.webp",
+      "scryfallId": "a0742d43-8a67-4485-b0ce-5a4e057fa915",
+      "sourceSha256": "24ee9f2c2fa5838a9c0109f651c1910371648e69b9a0c814ae00eb8b6e842bd7",
+      "outputSha256": "86830dfa8ae27b24f8b1512496dece020f1dd29f18717a92c1ce4a84dcae9c80",
+      "bytes": 86802
+    }
+  ]
+}

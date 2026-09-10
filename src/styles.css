@@ -334,6 +334,8 @@ img { -webkit-user-drag: none; }
 .xrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 10px 0; }
 .xrow .pbtn { font-size: 22px; width: 52px; }
 .xval { font-size: 30px; font-weight: 800; min-width: 48px; text-align: center; }
+.pbtn.manacolorchoice { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; font-size: 13px; }
+.manacolorchoice .mana-glyph { width: 24px; height: 24px; flex: 0 0 auto; }
 .selectionreview { display:flex; flex-direction:column; gap:4px; margin:7px 0; padding:8px 10px; color:#b5aea1; background:rgba(8,12,13,.72); border-left:3px solid var(--ds-accent); font-size:10px; line-height:1.35; }
 .selectionreview b { color:#f0d4a7; font-size:11px; }.selectionreview span { max-height:42px; overflow:auto; }
 

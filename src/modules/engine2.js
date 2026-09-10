@@ -1402,7 +1402,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!sol) return false;
     // Manualni izbor vrijedi za spellove i samo za ljudskog igraca. Pool mana
     // se i dalje trosi prva; igrac bira tacne permanente za preostali iznos.
-    if (opts.isSpell && p.manualMana && !p.isAI && sol.plan.some(step => step.src)) {
+    if (opts.isSpell && (p.manualMana || opts.manualMana) && !p.isAI && sol.plan.some(step => step.src)) {
       const allSources = this.manaSources(p, forSpell, { includeRestricted: true })
         .filter(source => !opts.excludeCards || !opts.excludeCards.includes(source.card));
       const candidates = [...new Set(allSources.map(source => source.card))];
@@ -2692,6 +2692,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       xVal = opts.xVal !== undefined ? Number(opts.xVal) : await p.controller.decide(this, {
         type: 'chooseX', min: minX, max: maxChoice, values: legalValues || undefined, preferredXValues:preferredXValues||undefined,
         card, prompt: `X for ${card.name}?`,
+        cost: cost.x ? { ...cost, pips: cost.pips.map(pip => pip.slice()) } : undefined,
+        reason: d.xCostHint,
         aiHint: oracleXDamage
           ? { kind: 'oracleXDamage', card, operation: oracleXDamage }
           : oracleXDebuff
@@ -3193,6 +3195,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (castOpts.broodship && (!broodshipLand || paidAddl.sacd.includes(broodshipLand))) return false;
     const manaPaymentOptions = {
       xVal, isSpell: true,
+      manualMana: !!d.manualManaPayment,
       excludeCards: paidAddl.tapped.concat(harmonizeCreature ? [harmonizeCreature] : [], so.oracleCastingChoicePlan?.kind === 'tapPermanent' ? [so.oracleCastingChoicePlan.card] : []),
       protectedSacrifices: paidAddl.sacd.concat(kotisExiled, broodshipLand ? [broodshipLand] : [], (so.oracleCostPlans || []).flatMap(plan => [...plan.sacrifices, ...(plan.returns || [])]), so.oracleCastingChoicePlan?.card ? [so.oracleCastingChoicePlan.card] : []),
       reservedCounters:so.cdkPlan?.counters||[],
@@ -4777,7 +4780,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const choice = await p.controller.decide(this, {
           type: 'chooseOption',
           prompt: `${c.name}: koju manu proizvodiš?`,
-          options: source.produce.map((option, index) => ({ key: String(index), label: manaOptionLabel(option), n: manaOptionAmount(option) })),
+          options: source.produce.map((option, index) => ({ key: String(index), label: manaOptionLabel(option), n: manaOptionAmount(option), mana: { ...option } })),
           aiHint: cost.removeManaCounters
             ? { kind: 'storageManaAmount', card: c, counterKind: cost.removeManaCounters.kind }
             : { kind: 'manaColor' },
@@ -6091,6 +6094,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const player=this.extraTurns.shift();
       if(!player||!this.players.includes(player))continue;
       if(player.lost){this.departedPlayerTurnWouldBegin(player);continue;}
+      if (this.bf().some(card => card.ctrl !== player && card.def.preventsOpponentExtraTurns && !card.cur.abilitiesDisabled)) {
+        this.lg(`${player.name} skips the extra turn (Trouble in Pairs).`);
+        continue;
+      }
       this._extraTurnAnchor=this._extraTurnAnchor||finished;
       this.extraTurnDepth=(this.extraTurnDepth||0)+1;
       this.turnPlayer=player;this.lg(`⏰ ${player.name} takes an EXTRA turn!`);return;

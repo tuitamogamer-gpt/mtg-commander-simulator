@@ -402,6 +402,8 @@ import './modules/scripts-who-time.js';
 import './modules/scripts-who-sagas.js';
 import './modules/cmm-woc-who-integration.js';
 import './modules/cmm-woc-who-casting.js';
+import './modules/restricted-legacy-rules.js';
+import './reviewed-legacy-imports.js';
 import './modules/autoscript.js';
 import './modules/deck-import.js';
 import './modules/ai-v2.js';

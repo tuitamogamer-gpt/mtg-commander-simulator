@@ -203,6 +203,11 @@ async function main() {
     activeNames.add(faceName(deck.commander));
     for (const card of deck.cards || []) activeNames.add(faceName(card.name));
   }
+  for (const name of Object.keys(MTG.REVIEWED_LEGACY_IMPORTS || {})) {
+    activeNames.add(faceName(name));
+    const def = MTG.DEFS[name];
+    if (def?.types.includes('Creature') && def.super.includes('Legendary')) commanders.add(faceName(name));
+  }
   // Runtime token names include the Oracle " Token" suffix; Scryfall token
   // print identifiers and the local image aliases use the creature/type name.
   for(const name of [...activeNames]){const back=MTG.DEFS[name]?.c1719FlipBack?.name;if(back)activeNames.add(back);}

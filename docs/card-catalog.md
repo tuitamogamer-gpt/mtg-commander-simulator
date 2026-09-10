@@ -20,15 +20,16 @@ Generic Oracle import state: **2026-09-05T16:33:38.988Z**. The counts below incl
 | Generic Oracle imports (178 batches of 100) | 17,800 |
 | Dedicated/manual Oracle imports | 58 |
 | Legacy definitions | 3,104 |
-| Definitions allowed in arbitrary deck imports | 20,944 |
-| Legacy definitions restricted from arbitrary deck imports | 18 |
+| Of those: individually reviewed for deck import | 18 |
+| Definitions allowed in arbitrary deck imports | 20,962 |
+| Legacy definitions restricted from arbitrary deck imports | 0 |
 | Paper, Commander-legal source Oracle IDs | 30,784 |
 | Source Oracle IDs represented by a runtime name or face alias | 20,935 |
 | Source Oracle IDs still absent from the runtime | 9,849 |
 | Of those: parser-eligible but not imported | 2 |
 | Of those: deferred by the current semantic compiler | 9,847 |
 
-**Availability is explicit.** A row with `deck_import_eligible=false` exists internally but is blocked for arbitrary deck imports: the legacy catalog includes cards from inactive built-in decks. The importer also validates the whole deck. Presence in this CSV alone does not make any proposed deck legal or launch-ready.
+**Availability is explicit.** Native definitions qualify through an active built-in deck or a recorded individual review; Oracle imports qualify through their certified batch. The `native_import_review` column identifies individually reviewed native cards. The [18-card native review](../reports/cards/restricted-legacy-2026-09-10/README.md) covers the formerly restricted cards. The importer also validates deck size, commanders, singleton and color identity. A row with `deck_import_eligible=false` remains blocked.
 
 **Certification has a defined limit.** `certified` and `certified-legacy` are internal catalog markers. Strict certification, source provenance, controlled human/local-AI execution, regression tests, and browser checks provide different evidence; none proves every multiplayer permutation. A parser match never grants support by itself.
 

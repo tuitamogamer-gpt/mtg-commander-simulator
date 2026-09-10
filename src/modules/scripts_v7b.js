@@ -1193,8 +1193,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Astral Cornucopia'] = {
     xCost: true,
+    xCostHint: 'Enters with X charge counters. Each time you tap it, choose one color for all the mana it produces.',
+    manualManaPayment: true,
     etbCounters: { kind: 'charge', n: (g, card) => card.castMeta ? (card.castMeta.x || 0) : 0 },
     mana: {
+      manual: true,
       cost: { tap: true },
       produce: (g, c, p) => {
         const n = c.counters['charge'] || 0;

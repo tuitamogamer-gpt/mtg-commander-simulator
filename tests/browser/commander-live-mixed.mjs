@@ -1,4 +1,4 @@
-// Local: PLAYWRIGHT_MODULE=/path/to/playwright/index.mjs node tests/browser/commander-live-launch.mjs
+// Local: PLAYWRIGHT_MODULE=/path/to/playwright/index.mjs node tests/browser/commander-live-mixed.mjs
 // Remote: append --url https://your-game.example (creates one temporary guest room; no account writes).
 // Use --output output/playwright/live-production or GAME_QA_OUTPUT to keep evidence separate.
 import assert from 'node:assert/strict';
@@ -28,7 +28,7 @@ if (server) {
 }
 const base = externalURL || `http://127.0.0.1:${server.address().port}`;
 const browser = await pw[browserName].launch({ headless: true });
-const pages = [], contexts = [], checks = [], errors = [];
+const pages = [], contexts = [], checks = [], errors = [], controls = [];
 const frames = new Map();
 const latest = name => frames.get(name)?.filter(message => message.type === 'state').at(-1)?.view;
 const check = name => { checks.push(name); console.log(`PASS ${name}`); };
@@ -129,6 +129,36 @@ try {
   assert.deepEqual(await host.evaluate(() => _game.players.filter(p => p.isAI).map(p => p.onlineSeat).sort()), botSeats);
   check('all opening controls visible at 1365×768 and correct local AI seats instantiated');
 
+  // Compare the controls every human actually receives, then exercise each
+  // browser's independent settings. Imported decks may additionally expose Judge.
+  for (const [name, page] of pages) {
+    await page.locator('.ct-decision-rail').waitFor();
+    const toolbar = await page.locator('.topbtns button').evaluateAll(buttons => buttons.map(button => ({
+      label: button.querySelector('span:last-of-type')?.textContent.trim(), disabled: button.disabled,
+    })));
+    await page.locator('.menubutton').click();
+    const menu = await page.locator('.quickmenuitem > span').allTextContents();
+    if (controls.length) {
+      assert.deepEqual(toolbar, controls[0].toolbar, `${name} must receive the host toolbar`);
+      for (const command of controls[0].menu) assert.ok(menu.includes(command), `${name} is missing host command: ${command}`);
+    }
+    controls.push({ name, toolbar, menu });
+    await page.getByRole('button', { name: /^Priority stops/ }).click();
+    assert.equal(await page.evaluate(() => _ui.showStops), true, `${name} can open priority settings`);
+    await page.keyboard.press('Escape');
+    await page.locator('.manamode').click();
+    assert.equal(await page.evaluate(() => _ui.manaMode === 'manual' && _ui.me.manualMana), true, `${name} can choose manual mana`);
+    for (const [otherName, other] of pages) if (other !== page) {
+      assert.equal(await other.evaluate(() => _ui.manaMode), 'auto', `${name} must not change ${otherName}'s mana preference`);
+    }
+    await page.locator('.manamode').click();
+    await page.getByRole('button', { name: 'HOLD', exact: true }).click();
+    assert.equal(await page.evaluate(() => _ui.holdNext), true, `${name} can arm HOLD`);
+    await page.getByRole('button', { name: 'HOLD', exact: true }).click();
+    assert.equal(await page.evaluate(() => _ui.holdNext), false, `${name} can cancel HOLD`);
+  }
+  check('every human has the host toolbar and menu commands, working priority settings, independent MANA and HOLD');
+
   const advance = async (hold = null, holdPhase = null) => {
     const hostChoice = await host.evaluate(() => ({ type: _ui.pending?.q.type, min: _ui.pending?.q.min, selected: _ui.pending?.sel.length }));
     if (hostChoice.type === 'chooseCards') {
@@ -225,7 +255,7 @@ try {
   check('every configured local bot independently plays a land');
   assert.deepEqual(errors, []);
   check('no browser page or console errors');
-  writeFileSync(`${out}/result.json`, JSON.stringify({ ok: true, browserName, botSeats, checks, errors }, null, 2));
+  writeFileSync(`${out}/result.json`, JSON.stringify({ ok: true, browserName, botSeats, checks, controls, errors }, null, 2));
   console.log(JSON.stringify({ ok: true, checks: checks.length, output: out }));
 } catch (error) {
   for (const [name, page] of pages) {
@@ -233,7 +263,7 @@ try {
     const visibleText = await page.locator('body').innerText().catch(() => 'Page unavailable');
     writeFileSync(`${out}/failure-${name}.txt`, visibleText.replace(/https?:\/\/\S+\?\S*/g, '[private room URL]'));
   }
-  writeFileSync(`${out}/result.json`, JSON.stringify({ ok: false, base, checks, errors, failure: error.message }, null, 2));
+  writeFileSync(`${out}/result.json`, JSON.stringify({ ok: false, base, checks, controls, errors, failure: error.message }, null, 2));
   throw error;
 } finally {
   await browser.close();

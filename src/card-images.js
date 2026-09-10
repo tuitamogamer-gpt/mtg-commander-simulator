@@ -5118,7 +5118,25 @@ MTG.CARD_IMAGE_PATHS = Object.freeze({
   "Zulaport Cutthroat": "./assets/cards/zulaport-cutthroat-a5f4818013.webp",
   "Zurgo Stormrender": "./assets/cards/zurgo-stormrender-a61f421402.webp",
   "Zuri, Warrior of Wakanda": "./assets/cards/zuri-warrior-of-wakanda-c708eb78d5.webp",
-  "Zurzoth, Chaos Rider": "./assets/cards/zurzoth-chaos-rider-bc5c930412.webp"
+  "Zurzoth, Chaos Rider": "./assets/cards/zurzoth-chaos-rider-bc5c930412.webp",
+  "Boros Reckoner": "./assets/cards/boros-reckoner-493e25368f.webp",
+  "Darien, King of Kjeldor": "./assets/cards/darien-king-of-kjeldor-df43f55f08.webp",
+  "Feather, Radiant Arbiter": "./assets/cards/feather-radiant-arbiter-4c31e65a3c.webp",
+  "Fiendish Duo": "./assets/cards/fiendish-duo-26f318b685.webp",
+  "Gideon's Sacrifice": "./assets/cards/gideon-s-sacrifice-58d8386ce8.webp",
+  "Havoc Eater": "./assets/cards/havoc-eater-a86f0d1092.webp",
+  "Hot Pursuit": "./assets/cards/hot-pursuit-9f32a3a7d8.webp",
+  "Immortal Obligation": "./assets/cards/immortal-obligation-3c5a8fa9ef.webp",
+  "Labyrinth of Skophos": "./assets/cards/labyrinth-of-skophos-c661faf807.webp",
+  "Loran of the Third Path": "./assets/cards/loran-of-the-third-path-e98337db2a.webp",
+  "Mob Verdict": "./assets/cards/mob-verdict-69a05c62cc.webp",
+  "Nelly Borca, Impulsive Accuser": "./assets/cards/nelly-borca-impulsive-accuser-b46ccb4383.webp",
+  "Otherworldly Escort": "./assets/cards/otherworldly-escort-ebf5b3bb43.webp",
+  "Prisoner's Dilemma": "./assets/cards/prisoner-s-dilemma-e2b29f95aa.webp",
+  "Redemption Arc": "./assets/cards/redemption-arc-53ee05ba9e.webp",
+  "Take the Bait": "./assets/cards/take-the-bait-959416b59e.webp",
+  "Trouble in Pairs": "./assets/cards/trouble-in-pairs-9e468365cb.webp",
+  "Vow of Lightning": "./assets/cards/vow-of-lightning-ff864f0068.webp"
 });
 MTG.CARD_ART_PATHS = Object.freeze({
   "Abaddon the Despoiler": "./assets/cards/art/abaddon-the-despoiler-b709a97527.webp",
@@ -5243,7 +5261,11 @@ MTG.CARD_ART_PATHS = Object.freeze({
   "Zimone, Infinite Analyst": "./assets/cards/art/zimone-infinite-analyst-a92b6d577c.webp",
   "Zinnia, Valley's Voice": "./assets/cards/art/zinnia-valley-s-voice-97776a5b00.webp",
   "Zndrsplt, Eye of Wisdom": "./assets/cards/art/zndrsplt-eye-of-wisdom-5ea9e1a668.webp",
-  "Zurgo Stormrender": "./assets/cards/art/zurgo-stormrender-a61f421402.webp"
+  "Zurgo Stormrender": "./assets/cards/art/zurgo-stormrender-a61f421402.webp",
+  "Darien, King of Kjeldor": "./assets/cards/art/darien-king-of-kjeldor-df43f55f08.webp",
+  "Feather, Radiant Arbiter": "./assets/cards/art/feather-radiant-arbiter-4c31e65a3c.webp",
+  "Loran of the Third Path": "./assets/cards/art/loran-of-the-third-path-e98337db2a.webp",
+  "Nelly Borca, Impulsive Accuser": "./assets/cards/art/nelly-borca-impulsive-accuser-b46ccb4383.webp"
 });
 MTG.CARD_IMAGE_MISSING = Object.freeze([
   "Aggro Amalgam",

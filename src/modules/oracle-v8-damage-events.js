@@ -22,6 +22,14 @@
    const grouped=new Map();for(const hit of hits){const id=hit[key];if(!grouped.has(id))grouped.set(id,[]);grouped.get(id).push(hit);}
    for(const rows of grouped.values())await game.emit(key==='src'?'oracleDamageBySource':'oracleDamageToObject',{hits:rows,n:rows.reduce((n,row)=>n+row.n,0)});
   }
+  const controllers=new Map();
+  for(const hit of hits){
+   const controller=hit.sourceSnap?.ctrl||hit.src?.ctrl;
+   if(!controller)continue;
+   if(!controllers.has(controller))controllers.set(controller,[]);
+   controllers.get(controller).push(hit);
+  }
+  for(const [controller,rows] of controllers)await game.emit('oracleDamageByController',{controller,hits:rows,n:rows.reduce((n,row)=>n+row.n,0)});
  }
  function matches(rule,object,snap,game,self,h,hit){
   if(!rule)return false;

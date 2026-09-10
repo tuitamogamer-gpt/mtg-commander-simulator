@@ -1,10 +1,23 @@
 // Real isolated Live clients. Controlled cards are staged only on the authority;
 // all player choices, costs, priority and resolution use actual Arena controls.
 import assert from 'node:assert/strict';
+import { once } from 'node:events';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import express from 'express';
+import { createCommanderLiveServer, createMemoryRoomStore } from '../../api/ws.js';
+import { createAccountHandler, MemoryAccountStore } from '../../api/account.js';
 const pw = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const browserName = process.env.BROWSER || 'chromium';
-const base = process.env.GAME_URL || 'http://127.0.0.1:65460';
+const server = process.env.GAME_URL ? null : createCommanderLiveServer({ store: createMemoryRoomStore() });
+if (server) {
+  const app = server.listeners('request')[0];
+  app.use('/api/account', createAccountHandler({ store: new MemoryAccountStore(), limiter: null }));
+  app.use(express.static(fileURLToPath(new URL('../../', import.meta.url))));
+  server.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+}
+const base = process.env.GAME_URL || `http://127.0.0.1:${server.address().port}`;
 const out = process.env.GAME_QA_OUTPUT || `output/multiplayer-parity/${browserName}-gameplay`;
 mkdirSync(out, { recursive: true });
 const browser = await pw[browserName].launch({ headless: true });
@@ -294,4 +307,10 @@ try {
   }
   writeFileSync(`${out}/result.json`, JSON.stringify({ ok: false, checks, errors, failure: error.stack }, null, 2));
   throw error;
-} finally { await browser.close(); }
+} finally {
+  await browser.close();
+  if (server) {
+    for (const client of server.commanderLive.clients) client.ws.terminate();
+    await new Promise(resolve => server.close(resolve));
+  }
+}

@@ -24,8 +24,9 @@
     "genericBatches": 178,
     "manualOracleCards": 58,
     "legacyDefinitions": 3104,
-    "deckImportEligibleDefinitions": 20944,
-    "deckImportRestrictedDefinitions": 18,
+    "individuallyReviewedLegacyDefinitions": 18,
+    "deckImportEligibleDefinitions": 20962,
+    "deckImportRestrictedDefinitions": 0,
     "representedUniverseOracleIds": 20935,
     "remainingUniverseOracleIds": 9849,
     "parserEligibleUnimported": 2,
@@ -175,7 +176,8 @@
       ]
     }
   ],
-  "runtimeNamesRestrictedFromDeckImport": [
+  "runtimeNamesRestrictedFromDeckImport": [],
+  "runtimeNamesIndividuallyReviewedForDeckImport": [
     "Boros Reckoner",
     "Darien, King of Kjeldor",
     "Feather, Radiant Arbiter",
@@ -196,10 +198,10 @@
     "Vow of Lightning"
   ],
   "classifierVersion": 8,
-  "classifierFilesSha256": "8f8c3ca9adb4667a171490c7200d671cf1f0464dbfd7c8f6e50af63af613f44b",
-  "inputFilesSha256": "dba69df94ccc073564e942078ece5dd4e961615cc86f106c561072806f4442ba",
+  "classifierFilesSha256": "c651642f31946761ec978c262b798613d50bc611554d0188ae7e6f98da82c0a7",
+  "inputFilesSha256": "454edfd0c6b7226d559a3c30b8d9f996dd2337a3f63e8b40d3ed1d697b63d8e9",
   "artifactSha256": {
-    "docs/catalog/imported-cards.csv": "b183ce798cfedf2e1b58a9626ffd52acc1029f0b961008e55599e116ddc6d8c5",
+    "docs/catalog/imported-cards.csv": "71b593de8ee1b51f6ee2362e6d7bf03dc880c75dd7ca43dea239116abed00900",
     "docs/catalog/remaining-cards.csv": "1e8763024679c2255c7b8fc7704ac35335ac1b5e9f64fed8006b3d110db1f2e1"
   },
   "notes": [

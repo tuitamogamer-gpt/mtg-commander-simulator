@@ -89,6 +89,7 @@ const imported = names.map(name => {
     name,
     engine_source: entry.engineBatch || 'legacy',
     deck_import_eligible: entry.deckImportEligible,
+    native_import_review: entry.legacyImportReview || '',
     engine_status: entry.engineStatus,
     semantic_class: entry.semanticClass,
     mana_cost: entry.manaCost,
@@ -193,6 +194,7 @@ const summary = {
     genericBatches: runtimeGeneric.length,
     manualOracleCards: MTG.ORACLE_BATCHES.filter(batch => !/^oracle-\d{4}$/.test(batch.id)).reduce((sum, batch) => sum + batch.cards.length, 0),
     legacyDefinitions: imported.filter(entry => entry.engine_source === 'legacy').length,
+    individuallyReviewedLegacyDefinitions: imported.filter(entry => entry.native_import_review).length,
     deckImportEligibleDefinitions: eligibleEntries,
     deckImportRestrictedDefinitions: imported.length - eligibleEntries,
     representedUniverseOracleIds: representedEligible,
@@ -208,6 +210,7 @@ const summary = {
   runtimeNamesOutsideComparisonUniverse: outside.map(entry => ({ name: entry.name, sourceName: entry.source_name, sourceCommanderLegality: entry.source_commander_legality, sourceGames: entry.source_games.split(',') })),
   multipleRuntimeNamesForOneOracleId: aliases,
   runtimeNamesRestrictedFromDeckImport: imported.filter(entry => !entry.deck_import_eligible).map(entry => entry.name),
+  runtimeNamesIndividuallyReviewedForDeckImport: imported.filter(entry => entry.native_import_review).map(entry => entry.name),
   classifierVersion: state.compilerVersion,
   classifierFilesSha256,
   inputFilesSha256: hash(Object.entries(inputHashes).map(([file, digest]) => `${file}\t${digest}`).join('\n')),
@@ -245,6 +248,7 @@ Generic Oracle import state: **${state.updatedAt}**. The counts below include al
 | Generic Oracle imports (${runtimeGeneric.length} batches of 100) | ${number(state.importedNames.length)} |
 | Dedicated/manual Oracle imports | ${number(summary.counts.manualOracleCards)} |
 | Legacy definitions | ${number(summary.counts.legacyDefinitions)} |
+| Of those: individually reviewed for deck import | ${number(summary.counts.individuallyReviewedLegacyDefinitions)} |
 | Definitions allowed in arbitrary deck imports | ${number(eligibleEntries)} |
 | Legacy definitions restricted from arbitrary deck imports | ${number(imported.length - eligibleEntries)} |
 | Paper, Commander-legal source Oracle IDs | ${number(universe.length)} |
@@ -253,7 +257,7 @@ Generic Oracle import state: **${state.updatedAt}**. The counts below include al
 | Of those: parser-eligible but not imported | ${number(ready.length)} |
 | Of those: deferred by the current semantic compiler | ${number(remaining.length - ready.length)} |
 
-**Availability is explicit.** A row with \`deck_import_eligible=false\` exists internally but is blocked for arbitrary deck imports: the legacy catalog includes cards from inactive built-in decks. The importer also validates the whole deck. Presence in this CSV alone does not make any proposed deck legal or launch-ready.
+**Availability is explicit.** Native definitions qualify through an active built-in deck or a recorded individual review; Oracle imports qualify through their certified batch. The \`native_import_review\` column identifies individually reviewed native cards. The [18-card native review](../reports/cards/restricted-legacy-2026-09-10/README.md) covers the formerly restricted cards. The importer also validates deck size, commanders, singleton and color identity. A row with \`deck_import_eligible=false\` remains blocked.
 
 **Certification has a defined limit.** \`certified\` and \`certified-legacy\` are internal catalog markers. Strict certification, source provenance, controlled human/local-AI execution, regression tests, and browser checks provide different evidence; none proves every multiplayer permutation. A parser match never grants support by itself.
 

@@ -3724,7 +3724,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // exposed by the current client. Those definitions are useful to active
     // deck scripts, but their mere presence is not proof that an arbitrary
     // imported deck can safely use them. Only cards exercised by an active
-    // built-in deck, or cards from a certified Oracle batch, are importable.
+    // built-in deck, a certified Oracle batch, or an individually reviewed
+    // native cohort with executable coverage are importable.
     const activeDeckCards = new Set();
     for (const deck of Object.values(MTG.DECKS || {})) {
       for (const row of deck && deck.cards || []) {
@@ -3736,6 +3737,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const [name, raw] of Object.entries(rawDB.cards || {})) {
       const found = imported.get(name);
       const def = defs && defs[name];
+      const reviewed = MTG.REVIEWED_LEGACY_IMPORTS?.[name];
+      if (reviewed && (!def || !MTG.SCRIPTS[name] || !reviewed.oracleId || !reviewed.sourceSha256)) {
+        throw new Error(name + ': incomplete native import review');
+      }
       const metadata = found ? found.entry.catalog || {} : {};
       catalog[name] = Object.assign({
         name,
@@ -3753,7 +3758,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         rarity: metadata.rarity || null,
         releasedAt: metadata.releasedAt || null,
         engineStatus: found ? 'certified' : 'certified-legacy',
-        deckImportEligible: !!found || activeDeckCards.has(name),
+        deckImportEligible: !!found || activeDeckCards.has(name) || !!reviewed,
+        legacyImportReview: reviewed?.review || null,
         engineBatch: found ? found.batch.id : null,
         semanticClass: found ? found.entry.semanticClass : 'manual',
         implementedKeywords: found ? (found.entry.implementedKeywords || []).slice() : [],

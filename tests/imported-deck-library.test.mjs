@@ -91,12 +91,18 @@ test('unsupported, malformed and built-in-collision decks never mutate storage o
   unsupported.id = 'deck-unsupported-card';
   unsupported.name = 'Unsupported Library Deck';
   unsupported.cards = unsupported.cards.map(row => row.name === 'Sol Ring' ? { ...row, name: 'Boros Reckoner' } : row);
+  // Simulate a support withdrawal; this card is normally individually reviewed.
+  const catalog = MTG.CARD_CATALOG['Boros Reckoner'];
+  const eligible = catalog.deckImportEligible;
+  catalog.deckImportEligible = false;
+  try {
   const unsupportedValidation = MTG.validateImportedDeckRecord(unsupported);
   assert.equal(unsupportedValidation.ok, false);
   assert.ok(unsupportedValidation.errors.some(error => error.code === 'engine-unsupported' && error.card === 'Boros Reckoner'));
   assert.throws(() => MTG.upsertGuestImportedDeck(unsupported, { storage }), /certified|supported/i);
   assert.equal(storage.getItem(MTG.IMPORTED_LIBRARY_KEY), before);
   assert.equal(MTG.DECKS[unsupported.name], undefined);
+  } finally { catalog.deckImportEligible = eligible; }
 
   const collision = recordFor(MTG, 'Quick Draw', 'deck-built-in-collision');
   assert.throws(() => MTG.upsertGuestImportedDeck(collision, { storage }), /built-in deck/i);

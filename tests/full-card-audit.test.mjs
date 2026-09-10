@@ -229,8 +229,10 @@ test('Will of the Abzan nudi oba moda samo kada kontrolor ima komandera', async 
 test('isključene damage-prevention karte imaju pune source, redirect i counter putanje', async () => {
   const MTG = loadEngine();
   let palmSource = null;
+  let sacrificeRecipient = null;
   const chooser = controller({
-    chooseCards: (game, q) => q.prompt.startsWith('Deflecting Palm') ? [palmSource] : q.from.slice(0, q.min || 0),
+    chooseCards: (game, q) => q.prompt.startsWith('Deflecting Palm') ? [palmSource] :
+      q.prompt.startsWith("Gideon's Sacrifice") ? [sacrificeRecipient] : q.from.slice(0, q.min || 0),
   });
   const { game, players: [owner, opponent] } = makeGame(MTG, chooser);
   palmSource = battlefield(MTG, game, opponent, 'Indomitable Ancients');
@@ -249,6 +251,7 @@ test('isključene damage-prevention karte imaju pune source, redirect i counter 
   sacrifice.ctrl = owner;
   const chosen = battlefield(MTG, game, owner, 'Indomitable Ancients');
   const other = battlefield(MTG, game, owner, 'Wall of Omens');
+  sacrificeRecipient = chosen;
   await sacrifice.def.resolve({ g: game, src: sacrifice, you: owner, targets: [chosen] });
   await game.damagePlayer(palmSource, owner, 3, { deferSBA: true });
   await game.damageCreature(palmSource, other, 2, { deferSBA: true });
@@ -257,6 +260,7 @@ test('isključene damage-prevention karte imaju pune source, redirect i counter 
   assert.equal(chosen.damage, 5);
 
   const chosenSecond = battlefield(MTG, game, owner, 'Wall of Mourning');
+  sacrificeRecipient = chosenSecond;
   await sacrifice.def.resolve({ g: game, src: sacrifice, you: owner, targets: [chosenSecond] });
   await game.damagePlayer(palmSource, owner, 1, { deferSBA: true });
   assert.equal(chosenSecond.damage, 1, 'više redirect efekata mora primijeniti svaki najviše jednom');
@@ -327,7 +331,7 @@ test('Hot Pursuit vezuje trajni goad za enchantment i preuzima sve goadovane/sus
   const pursuit = battlefield(MTG, game, owner, 'Hot Pursuit');
   const target = battlefield(MTG, game, opponent, 'Indomitable Ancients');
   target.meta.suspected = true;
-  pursuit.meta.pursuitTargetIid = target.iid;
+  MTG.RestrictedLegacy.linkPursuit({g: game, src: pursuit, you: owner}, target);
   game.recalc();
   assert.equal(game.isGoaded(target), true);
 
@@ -336,6 +340,6 @@ test('Hot Pursuit vezuje trajni goad za enchantment i preuzima sve goadovane/sus
   await trigger.run({ g: game, src: pursuit, you: owner, data: { player: owner }, targets: [] });
   assert.equal(target.ctrl, owner);
   assert.equal(target.tapped, false);
-  assert.equal(target.meta.tempHaste, true);
+  assert.equal(target.kw('haste'), true);
   assert.ok(game.untilEffects.some(effect => effect.kind === 'temporaryControl' && effect.iid === target.iid));
 });

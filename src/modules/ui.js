@@ -8,6 +8,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const COLORS = ['W', 'U', 'B', 'R', 'G'];
   const COLHEX = { W: '#e8e3c8', U: '#4a90d9', B: '#7a5f8a', R: '#d95a4a', G: '#5aa860', C: '#9a9a9a' };
   const MANA_SYM = { W: '☀', U: '💧', B: '💀', R: '🔥', G: '🌳', C: '◇' };
+  const MANA_NAMES = { W: 'white', U: 'blue', B: 'black', R: 'red', G: 'green', C: 'colorless' };
 
   const $ = (sel) => document.querySelector(sel);
   const el = (tag, cls, html) => {
@@ -92,6 +93,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function costHTML(cost) {
     if (!cost) return '';
     return cost.replace(/\{([^}]+)\}/g, (m, t) => manaGlyph(t));
+  }
+
+  function costAtX(cost, x = 0) {
+    return { ...cost, x: 0, xReduction: 0,
+      generic: Math.max(0, (cost.generic || 0) + (cost.x || 0) * x - (cost.xReduction || 0)) };
   }
 
   function manualManaSourceText(source) {
@@ -3847,7 +3853,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         m.classList.add('wide', 'manapickmodal');
         m.appendChild(el('div', 'mtitle', `🖐 ${esc(q.prompt || 'Choose mana sources')}`));
-        m.appendChild(el('div', 'manapickcost', `Cost: ${costHTML(U.costStr(q.cost))}`));
+        m.appendChild(el('div', 'manapickcost', `Cost${q.cost.x ? ` for X=${q.opts?.xVal || 0}` : ''}: ${costHTML(U.costStr(costAtX(q.cost, q.opts?.xVal || 0)))}`));
         const poolText = Object.entries(q.player.pool || {}).filter(([, n]) => n > 0)
           .map(([color, n]) => `${MANA_SYM[color] || color}${n}`).join(' ');
         m.appendChild(el('div', 'manapickhint', poolText
@@ -4068,7 +4074,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             m.classList.add('cardchoicemodal');
             m.appendChild(visualOption);
           } else {
-            const optionButton = btn(esc(o.label), () => this.resolvePending(o.key), 'wide');
+            const mana = Object.entries(o.mana || {}).filter(([color, n]) => MANA_NAMES[color] && Number.isInteger(n) && n > 0);
+            const label = mana.length
+              ? mana.map(([color, n]) => `${manaGlyph(color)} ${n} ${MANA_NAMES[color]} mana`).join(' + ')
+              : esc(o.label);
+            const optionButton = btn(label, () => this.resolvePending(o.key), 'wide' + (mana.length ? ' manacolorchoice' : ''));
+            if (mana.length) optionButton.setAttribute('aria-label', 'Add ' + mana.map(([color, n]) => `${n} ${MANA_NAMES[color]} mana`).join(' + '));
             optionButton.dataset.choiceKey = String(o.key);
             m.appendChild(optionButton);
           }
@@ -4183,6 +4194,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         xrow.appendChild(el('div', 'xval', String(pd.xVal)));
         xrow.appendChild(plus);
         m.appendChild(xrow);
+        if (q.cost?.x) {
+          const summary = el('div', 'xcostsummary');
+          summary.setAttribute('aria-live', 'polite');
+          summary.appendChild(el('div', 'manapickcost', `Mana cost for X=${pd.xVal}: ${costHTML(U.costStr(costAtX(q.cost, pd.xVal)))}`));
+          if (q.cost.x > 1) summary.appendChild(el('div', 'manapickhint',
+            `All ${q.cost.x} X symbols use the same value. ${q.cost.x} × ${pd.xVal} = ${q.cost.x * pd.xVal} mana before cost adjustments. The generic cost can be paid with any combination of mana colors.`));
+          if (q.reason) summary.appendChild(el('div', 'manapickhint', esc(q.reason)));
+          m.appendChild(summary);
+        }
         m.appendChild(btn(`Confirm X=${pd.xVal} ✓`, () => this.resolvePending(pd.xVal), 'primary wide'));
         return ov;
       }
