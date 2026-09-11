@@ -861,7 +861,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const myDmg = g.dmgAmount(c, 'normal');
           const blockers = g.creatures(o).filter(b => g.canBlock(b, c));
           let score = 0;
-          if (!blockers.length) {
+          if (MTG.assessAttackAssignment) {
+            score = MTG.assessAttackAssignment(g, p, c, o, out.filter(item => item.target === o).length).score;
+          } else if (!blockers.length) {
             score = myDmg * 1.2;
             if (o.life <= myDmg) score += 50;
           } else {
@@ -886,7 +888,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       // provokator: ako ništa ne napada a ima sitne evazivce, bocni bar jednim
       if (P.chaos && !out.length && q.eligible.length && teaseTarget) {
-        const small = q.eligible.filter(c => !q.forced.includes(c) && (c.kw('flying') || c.cur.unblockable || c.power <= 2))
+        const small = q.eligible.filter(c => !q.forced.includes(c) && (c.kw('flying') || c.cur.unblockable || c.power <= 2) &&
+          (!MTG.assessAttackAssignment || MTG.assessAttackAssignment(g, p, c, teaseTarget).score > 0))
           .sort((a, b) => a.power - b.power)[0];
         if (small && this.r(g) < 0.6) out.push({ card: small, target: teaseTarget });
       }
@@ -965,6 +968,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const min = q.min !== undefined ? q.min : 1;
       const max = q.max || 1;
       const pick = (sorted) => sorted.slice(0, Math.max(min, Math.min(max, sorted.length)));
+      if (q.aiHint?.deathReturn) return pick(cands.slice().sort((a, b) =>
+        MTG.deathReturnTargetValue(g, p, b) - MTG.deathReturnTargetValue(g, p, a)));
       if(q.aiHint?.oracleNameGroup){
         const beneficial=/buff|protect|recur/.test(goal),destroy=q.aiHint.oracleNameGroup.effect.action==='destroy';
         const score=card=>destroy&&card.kw('indestructible')?0:Math.max(1,this.permThreat(g,card))*((card.ctrl===p)===beneficial?1:-1);
@@ -1195,7 +1200,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return byValAsc.slice(0, Math.max(min, max || 0));
         }
         case 'sacCost': case 'addlSac': case 'eliminateSacrifice': case 'forcedSac': case 'sacToken': case 'sacX': case 'braidsSac': {
-          const sorted = byThreatAsc;
+          const sorted = q.aiHint?.sacrificeKind === 'scry'
+            ? from.slice().sort((a, b) => MTG.sacrificeScryValue(g, this.p, b) - MTG.sacrificeScryValue(g, this.p, a))
+            : byThreatAsc;
           if (typeof q.aiHint?.canPayRemaining === 'function') {
             const preferred = kind === 'sacX' ? sorted.filter(card => card.isToken).slice(0, Math.max(min, 2)) : sorted.slice(0, Math.max(min, 1));
             if (preferred.length >= min && preferred.length <= max && q.aiHint.canPayRemaining(preferred)) return preferred;

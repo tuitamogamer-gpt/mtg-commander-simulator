@@ -46,6 +46,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!hidden && card.def.mana) def.mana = data(card.def.mana) || true;
     const current = publicBody ? data(card.cur) : null;
     const publicMeta = hidden ? {} : Object.fromEntries(metaKeys.filter(k => meta[k] !== undefined).map(k => [k, data(meta[k])]));
+    if (publicBody && meta.togetherForeverTurn !== undefined) publicMeta.togetherForeverTurn = meta.togetherForeverTurn;
     if(card.mutateState){publicMeta.c1920Mutations=meta.c1920Mutations||0;publicMeta.mutateComponents=U.Mutate.present(card,viewer);}
     if (card.faceDown && mayLook) {
       publicMeta.faceDownDef = data(meta.faceDownDef || card.def);

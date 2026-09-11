@@ -1019,43 +1019,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const hit = baseHit * (card.kw('double strike') ? 2 : 1);
     const defenderCreatures = ctx && ctx.creaturesOf ? ctx.creaturesOf(defender) : game.creatures(defender);
     const allBlockers = defenderCreatures.filter(blocker => game.canBlock(blocker, card));
-    const myToughLeft = Math.max(1, (card.toughness || 0) - (card.damage || 0));
     const myValue = permanentGameValue(game, card, player);
-    const iFirst = (card.kw('first strike') || card.kw('double strike'));
-    // Classify every legal blocker against THIS attacker first. A blocker that
-    // eats the attacker for free (deathtouch, first strike, bigger body) or in
-    // a lopsided trade is a "punisher": the defender will spend it on the most
-    // valuable attacker no matter how many other creatures are declared, so a
-    // swarm never hides it from a big attacker.
-    const punishers = [], ordinary = [];
-    for (const blocker of allBlockers) {
-      const bPow = Math.max(0, blocker.power || 0);
-      const bToughLeft = Math.max(1, (blocker.toughness || 0) - (blocker.damage || 0));
-      const bFirst = (blocker.kw('first strike') || blocker.kw('double strike')) && !iFirst;
-      const dies = baseHit >= bToughLeft || (card.kw('deathtouch') && baseHit > 0);
-      // A first striker that kills the blocker first never takes its damage.
-      const struckFirst = iFirst && !blocker.kw('first strike') && !blocker.kw('double strike') && dies;
-      const killsMe = !struckFirst && (bPow >= myToughLeft || (blocker.kw('deathtouch') && bPow > 0));
-      const blockerValue = permanentGameValue(game, blocker, player);
-      const free = killsMe && (!dies || bFirst);
-      const cheapTrade = killsMe && dies && blockerValue <= myValue * 0.6;
-      const info = { blocker, bToughLeft, killsMe, dies, bFirst, blockerValue };
-      if (free || cheapTrade) punishers.push(info); else ordinary.push(info);
-    }
+    const trades = ctx && ctx.blockTradesFor
+      ? ctx.blockTradesFor(card, defender, allBlockers)
+      : attackBlockTrades(game, player, card, defender, allBlockers);
+    // A defender can reserve a profitable single OR joint block for this
+    // attacker. Earlier fodder must not make that trade disappear.
+    const punishers = allBlockers.filter(blocker => trades.punishers.has(blocker));
+    const ordinary = allBlockers.filter(blocker => !trades.punishers.has(blocker));
     // menace: jedan bloker nije dovoljan; swarm: raniji napadači vežu OBIČNE
     // blokere. Punisheri ostaju dostupni bez obzira na broj napadača.
     const capacity = Math.max(0, ordinary.length - Math.max(0, priorAttackers - punishers.length));
     const available = punishers.concat(ordinary.slice(0, capacity));
-    const blockable = available.length >= game.blockerBounds(card).min;
-    const blockers = blockable ? available.map(info => info.blocker) : [];
-    let freeBlock = false, bestTradeLoss = 0, minBlockerTough = Infinity;
-    for (const info of (blockable ? available : [])) {
-      minBlockerTough = Math.min(minBlockerTough, info.bToughLeft);
-      if (info.killsMe && (!info.dies || info.bFirst)) freeBlock = true;
-      else if (info.killsMe && info.dies) {
-        bestTradeLoss = Math.max(bestTradeLoss, myValue - info.blockerValue);
-      }
-    }
+    const bounds = game.blockerBounds(card);
+    const blockable = available.length >= bounds.min && bounds.min <= bounds.max;
+    const blockers = blockable ? available : [];
+    const { freeBlock, bestTradeLoss } = trades;
+    const minBlockerTough = blockers.reduce((minimum, blocker) => Math.min(minimum,
+      card.kw('deathtouch') ? 1 : Math.max(1, blocker.toughness - blocker.damage)), Infinity);
     // očekivana šteta koja stvarno prolazi do mete
     let expDamage, damageEvents;
     const strikes = card.kw('double strike') ? 2 : 1;
@@ -1069,6 +1050,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       expDamage = hit * 0.25; // branilac vjerovatno blokira profitabilan blok
       damageEvents = baseHit > 0 ? strikes * 0.25 : 0;
     }
+    // A visible losing trade is not a chance to hit the player. In particular,
+    // the old 25% chip estimate awarded false life/commander lethals through a
+    // deathtouch chump. Trample uses the damage that survives the actual block.
+    expDamage = Math.min(expDamage, trades.damage);
+    if (expDamage <= 0) damageEvents = 0;
     const projected = projectedPlayerDamage(card, expDamage, damageEvents);
     const poisonLethal = target instanceof U.Player && projected.poison > 0 &&
       (target.poison || 0) + projected.poison >= 10;
@@ -1155,7 +1141,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   // Shared per-declaration cache for the attack planner.
   function attackPlanContext(game, player) {
-    const threats = new Map(), creatures = new Map();
+    const threats = new Map(), creatures = new Map(), blockTrades = new Map();
     const threatFor = defender => {
       if (!threats.has(defender)) threats.set(defender, playerThreatForGame(game, player, defender));
       return threats.get(defender);
@@ -1169,6 +1155,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
     return {
       threatFor,
+      blockTradesFor: (card, defender, blockers) => {
+        const key = `${card.iid}>${defender.idx}`;
+        if (!blockTrades.has(key)) blockTrades.set(key, attackBlockTrades(game, player, card, defender, blockers));
+        return blockTrades.get(key);
+      },
       // The average threat of the OTHER opponents. Above it means this player
       // is the table's problem; below it means someone else is.
       referenceFor: defender => {
@@ -1218,6 +1209,65 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
   function byCombatWeight(a, b) {
     return (Math.max(0, b.power || 0) + Math.max(0, b.toughness || 0) * 0.3) - (Math.max(0, a.power || 0) + Math.max(0, a.toughness || 0) * 0.3) || a.iid - b.iid;
+  }
+  function byBlockingWeight(a, b) {
+    const weight = card => Math.max(0, card.power) + Math.max(0, card.toughness - card.damage) * 0.6 +
+      (card.kw('deathtouch') && card.power > 0 ? 12 : 0) +
+      (card.kw('first strike') || card.kw('double strike') ? Math.max(0, card.power) : 0) +
+      (damageProtectionSaves(card) ? 6 : 0);
+    return weight(b) - weight(a) || a.iid - b.iid;
+  }
+
+  // Consider joint blocks atomically: one or two 1/1s can each be a bad block,
+  // while three or four together kill a valuable commander. Cheap-damage and
+  // durable-first prefixes cover those trades without an exponential subset
+  // search. Every candidate still goes through the combat damage forecast.
+  function blockGroups(game, attacker, legal, already = 0) {
+    const bounds = game.blockerBounds(attacker);
+    const need = Math.max(1, bounds.min - already), maximum = Math.min(legal.length, bounds.max - already);
+    if (maximum < need) return [];
+    const groups = [], seen = new Set();
+    const add = group => {
+      const key = group.map(card => card.iid).sort((a, b) => a - b).join(',');
+      if (!seen.has(key)) { seen.add(key); groups.push(group); }
+    };
+    for (let i = 0; i < legal.length; i++) {
+      const partners = need > 1 ? combinations(legal.slice(i + 1), need - 1, need - 1, MENACE_PARTNER_LIMIT) : [[]];
+      for (const partner of partners) add([legal[i], ...partner]);
+    }
+    if (maximum > need) {
+      const efficiency = new Map(legal.map(card => [card, permanentGameValue(game, card, card.ctrl) /
+        Math.max(1, card.kw('deathtouch') ? attacker.toughness :
+          (game.dmgAmount(card, 'first') || game.dmgAmount(card, 'normal')) * (card.kw('double strike') ? 2 : 1))]));
+      const orders = [legal.slice().sort((a, b) => efficiency.get(a) - efficiency.get(b) || a.iid - b.iid),
+        legal.slice().sort((a, b) => (b.toughness - b.damage) - (a.toughness - a.damage) || byBlockingWeight(a, b))];
+      for (const order of orders) for (let n = need + 1; n <= maximum; n++) add(order.slice(0, n));
+    }
+    return groups;
+  }
+
+  function attackBlockTrades(game, player, attacker, defender, blockers) {
+    const result = { freeBlock: false, bestTradeLoss: 0, damage: Infinity, punishers: new Set() };
+    const minimum = game.blockerBounds(attacker).min;
+    if (blockers.length < minimum) return result;
+    const candidates = blockers.length > WIDE_BOARD_SHIELDS
+      ? blockers.slice().sort(byBlockingWeight).slice(0, Math.max(WIDE_BOARD_SHIELDS, minimum)) : blockers;
+    const myValue = permanentGameValue(game, attacker, player);
+    const values = new Map(candidates.map(card => [card, permanentGameValue(game, card, player)]));
+    for (const group of blockGroups(game, attacker, candidates)) {
+      const outcome = forecastCombat(game, defender, [attacker], group.map(blocker => ({ blocker, attacker })));
+      if (!outcome.dead.has(attacker)) continue;
+      const paid = group.reduce((sum, card) => sum + (outcome.dead.has(card) ? values.get(card) : 0), 0);
+      const loss = myValue - paid;
+      // The small preference for our own permanents must not turn an even
+      // exchange into a losing trade (for example, two identical Titans).
+      if (loss <= Math.max(0.5, myValue * 0.1)) continue;
+      result.freeBlock ||= paid === 0;
+      result.bestTradeLoss = Math.max(result.bestTradeLoss, loss);
+      result.damage = Math.min(result.damage, outcome.damage);
+      for (const blocker of group) result.punishers.add(blocker);
+    }
+    return result;
   }
   // Diplomacy uses the exact same public combat-risk model as the bot planner.
   // This prevents a political promise from calling an attack "available" when
@@ -1356,8 +1406,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return score;
   }
 
-  // Greedy emergency defense supplements the declaration beam. Menace pairs
-  // are added atomically so pruning never loses the only legal saving block.
+  // Greedy defense supplements the declaration beam with complete groups,
+  // including profitable joint blocks whose individual prefixes lose material.
   function survivalBlocks(game, player, attackers, potential, initial = {}) {
     let assignments = [];
     let outcome = forecastCombat(game, player, attackers, assignments, initial);
@@ -1371,38 +1421,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const shieldLimit = wide ? WIDE_BOARD_SWARM_SHIELDS : WIDE_BOARD_SHIELDS;
     const targetLimit = wide ? WIDE_BOARD_SWARM_BLOCK_TARGETS : WIDE_BOARD_BLOCK_TARGETS;
     const available = potential.length > shieldLimit
-      ? potential.slice().sort((a, b) => (b.toughness - a.toughness) || (b.power - a.power) ||
-        (a.iid - b.iid)).slice(0, shieldLimit)
+      ? potential.slice().sort(byBlockingWeight).slice(0, shieldLimit)
       : potential.slice();
     // Against a swarm only the heaviest attackers are worth a block search;
     // the rest still deal their damage in every forecast.
     const blockCandidates = attackers.length > targetLimit
       ? rankedAttackers(attackers).slice(0, targetLimit) : attackers;
     let rounds = 0;
-    const blockedAttackers = new Set();
     while (available.length && rounds++ < shieldLimit) {
       let best = null;
       for (const attacker of blockCandidates) {
         const legal = available.filter(card => game.canBlock(card, attacker) && !assignments.some(pair => pair.blocker === card && pair.attacker === attacker));
         const already = assignments.filter(pair => pair.attacker === attacker).length;
-        const bounds = game.blockerBounds(attacker), need = Math.max(1, bounds.min - already);
+        const bounds = game.blockerBounds(attacker);
         if (already >= bounds.max) continue;
-        for (let i = 0; i < legal.length; i++) {
-          // A minimum-blocker rule needs a complete group before it changes
-          // damage; consider a bounded set of legal partner groups.
-          const pairs = need > 1 ? combinations(legal.slice(i + 1), need - 1, need - 1, MENACE_PARTNER_LIMIT) : [[]];
-          for (const partner of pairs) {
-            const picks = [legal[i], ...partner];
-            const next = assignments.concat(picks.map(blocker => ({ blocker, attacker })));
-            const result = forecastCombat(game, player, attackers, next, initial);
-            const value = defenseScore(game, player, result, initial.life ?? player.life);
-            if (value > score + 0.01 && (!best || value > best.score)) best = { assignments: next, outcome: result, score: value, picks };
-          }
+        for (const picks of blockGroups(game, attacker, legal, already)) {
+          const next = assignments.concat(picks.map(blocker => ({ blocker, attacker })));
+          const result = forecastCombat(game, player, attackers, next, initial);
+          const value = defenseScore(game, player, result, initial.life ?? player.life);
+          if (value > score + 0.01 && (!best || value > best.score)) best = { assignments: next, outcome: result, score: value, picks };
         }
       }
       if (!best) break;
       ({ assignments, outcome, score } = best);
-      for (const item of best.assignments) blockedAttackers.add(item.attacker);
       for (const card of best.picks) if (assignments.filter(pair => pair.blocker === card).length >= game.blockerCapacity(card)) available.splice(available.indexOf(card), 1);
     }
     return { assignments, outcome, score };
@@ -1743,8 +1784,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // Sto blokera je isto što i sto poteza u beamu: cijena raste linearno po
     // kandidatu, a razlika u odbrani ne. Traže se najkorisnija tijela.
     const potential = allPotential.length > WIDE_BOARD_SHIELDS
-      ? allPotential.slice().sort((a, b) => (b.toughness - a.toughness) || (b.power - a.power) ||
-        (a.iid - b.iid)).slice(0, WIDE_BOARD_SHIELDS).sort((a, b) => a.iid - b.iid)
+      ? allPotential.slice().sort(byBlockingWeight).slice(0, WIDE_BOARD_SHIELDS).sort((a, b) => a.iid - b.iid)
       : allPotential;
     // A swarm is forecast in full, but block candidates are limited to its
     // heaviest bodies so the beam stays bounded.
@@ -1808,6 +1848,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // bi svaki novi untapped creature plaćao isti Crew još jednom.
         if (entry.crew && (entry.card.is('Creature') || entry.card.meta.crewedTurn === game.turnNo)) continue;
         if (isStationAbility(entry) && MTG.stationPlan(game, entry.card, player).score <= 0) continue;
+        if (entry.ability?.aiSacrificeKind === 'scry' && MTG.sacrificeScryPlan(game, player).score <= 0) continue;
         actions.push({ kind: 'activate', entry });
       }
       if (q.type === 'main') {
@@ -1984,6 +2025,68 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (perspective && card.ctrl === perspective) value *= 1.03;
     return value;
   }
+
+  // Only public, already announced removal can make a body expendable.
+  // Looking at an opponent's hand or the unknown library top is unnecessary.
+  function pendingCreatureRemoval(game, card, diesOnly = false) {
+    return game.stack.some(so => {
+      if (so.kind !== 'spell') return false;
+      const def = so.card?.def;
+      // Unchosen modes and qualified sweepers are not proof this body dies.
+      if (def?.modes) return false;
+      const oracle = String(def?.oracle || '').toLowerCase();
+      const targeted = (so.targets || []).flat().includes(card);
+      const destroys = /(?:^|\n)destroy all (?:nonland permanents|creatures)\.(?:$|[ \n])/.test(oracle) ||
+        targeted && /destroy target/.test(oracle);
+      if (destroys && !damageProtectionSaves(card)) return true;
+      if (!diesOnly && targeted && /exile target/.test(oracle)) return true;
+      const damage = targeted && /deals? (\d+) damage to/.exec(oracle);
+      return !!damage && Number(damage[1]) >= card.toughness - (card.damage || 0) && !damageProtectionSaves(card);
+    });
+  }
+
+  MTG.deathReturnTargetValue = function (game, player, card) {
+    if (card.ctrl !== player || card.owner !== player || card.isToken ||
+      card.meta.togetherForeverTurn === game.turnNo || (card.counters.finality || 0) > 0) return -30;
+    let threatened = pendingCreatureRemoval(game, card, true);
+    if (!threatened && game.combat?.blockersDeclared && game.step === 'blockers') {
+      const attackers = game.combat.attackers.filter(attacker => attacker.zone === 'battlefield');
+      for (const target of new Set(attackers.map(attacker => attacker.attacking))) {
+        const defender = target instanceof U.Player ? target : target?.ctrl;
+        if (!defender) continue;
+        const attacking = attackers.filter(attacker => attacker.attacking === target);
+        const assignments = attacking.flatMap(attacker => (attacker.blockedBy || [])
+          .filter(blocker => blocker.zone === 'battlefield').map(blocker => ({attacker, blocker})));
+        if (forecastCombat(game, defender, attacking, assignments).dead.has(card)) threatened = true;
+      }
+    }
+    return threatened ? 5 + permanentGameValue(game, card, player) * 0.6 : -30;
+  };
+
+  MTG.sacrificeScryValue = function (game, player, card) {
+    const value = permanentGameValue(game, card, player);
+    const threatened = pendingCreatureRemoval(game, card);
+    // Scry 1 alone is worth less than a healthy creature, including a token.
+    // Death payoffs can justify cheap fodder, but do not erase a large body.
+    let payoff = player.library.length ? 1 : 0;
+    const data = {card, snap: game.snapshot(card)};
+    if (!(card.counters.finality > 0)) for (const source of game.bf()) {
+      if (source.ctrl !== player || source.cur?.abilitiesDisabled ||
+        !inferCardSemantics(source.def).roles.includes('death-payoff')) continue;
+      for (const trigger of source.def.triggers || []) {
+        if (trigger.on === 'dies' && (!trigger.filter || trigger.filter(game, source, data))) payoff += 3;
+      }
+    }
+    const cost = threatened ? 0.25 : 2 + value;
+    const combatCost = !threatened && (card.attacking || card.blocking) ? Math.max(1, card.power) : 0;
+    return payoff - cost - combatCost;
+  };
+  MTG.sacrificeScryPlan = function (game, player) {
+    const ranked = game.creatures(player).filter(card => game.canSacrifice(card))
+      .map(card => ({card, score: MTG.sacrificeScryValue(game, player, card)}))
+      .sort((a, b) => b.score - a.score || a.card.iid - b.card.iid);
+    return ranked[0] || {card: null, score: -30};
+  };
 
   function affordableStriveTargets(game, player, q, maximum) {
     // Strive is paid only when casting the original spell. A spell copy keeps
@@ -2329,6 +2432,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       ? q.aiHint.copyUsedTargetIids || [] : [];
     if (target instanceof U.CardInst && avoidedCopyTargets.includes(target.iid)) return -1000;
     const hint = q.aiHint && q.aiHint.goal || '';
+    if (q.aiHint?.deathReturn && target instanceof U.CardInst) return MTG.deathReturnTargetValue(game, player, target);
     if (target instanceof U.Player) {
       if (hint === 'proliferate') {const poison=target.poison||0,benefit=(target.counters?.energy||0)+(target.counters?.experience||0);return target===player?(poison?(-12-poison*3):(benefit?8:-100)):(poison?8+poison*2:0)-(benefit?8:0);}
       if (hint === 'drawSelf') return target === player ? 100 : -100;
@@ -2632,6 +2736,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (hint === 'delve') return -value - ((q.aiHint.keepTargets||[]).includes(card) ? 10000 : 0);
     if (/discard|sacCost|bounceCost|cleanup|bottom/i.test(hint) || /odbaci|discard|sacrifice|žrtv/i.test(q.prompt || '')) {
       if((q.aiHint?.keepTargets||[]).includes(card))return -10000-value;
+      if (q.aiHint?.sacrificeKind === 'scry') return MTG.sacrificeScryValue(game, player, card);
       const release = persecutorExitValue(game,card,player);
       if (release && /sac|bounce/i.test(hint + ' ' + (q.prompt || ''))) return release;
       let discardScore = -value;
@@ -3342,6 +3447,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       : null;
     if (action.kind === 'declareAttackers') {
       const assignments = action.assignments || [];
+      // Apply risk appetite to holding back as well as attacking. Otherwise
+      // an aggressive seat halves the cost of dying only when it attacks.
+      const riskScale = traits.atkThr < 0 ? 0.5 : traits.atkThr > 1 ? 1.6 : 1;
+      if (breakdown.safety < 0 && breakdown.safety > -50000) breakdown.safety *= riskScale;
       if (!assignments.length) {
         // atkThr > 0 means the seat is happy to stay home; < 0 hates it.
         breakdown.archetype += traits.atkThr * 1.2;
@@ -3355,10 +3464,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (leader && defender === leader.o) bonus += traits.focusLeader * 0.9;
       }
       breakdown.archetype += bonus;
-      // Risk appetite: an aggressive seat discounts the defensive forecast,
-      // a defensive seat weighs it more. Lethal danger stays enormous.
-      const riskScale = traits.atkThr < 0 ? 0.5 : traits.atkThr > 1 ? 1.6 : 1;
-      if (breakdown.safety < 0) breakdown.safety *= riskScale;
     } else if (action.kind === 'declareBlockers') {
       const blocks = (action.assignments || []).length;
       // blockThr > 0: reluctant to block (keeps attackers); < 0: eager.

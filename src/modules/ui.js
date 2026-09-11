@@ -3087,9 +3087,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return c.meta && c.meta.faceDownDef || c.def;
     }
 
+    deathReturnState(c) {
+      return c?.zone === 'battlefield' && c.meta?.togetherForeverTurn === this.game?.turnNo
+        && c.meta?.togetherForeverTurn !== undefined
+        ? "Together Forever: when this creature dies this turn, return its card to its owner's hand." : '';
+    }
+
     keywordBadgesHTML(c) {
       if (!c || !MTG.KEYWORD_VISUALS) return '';
       const badges = [];
+      const deathReturn = this.deathReturnState(c);
+      if (deathReturn) badges.push(`<span class="keywordbadge tone-gold" data-effect="together-forever" title="${esc(deathReturn)}" aria-label="${esc(deathReturn)}">${U.icon('cards')}</span>`);
       for (const [keyword, visual] of Object.entries(MTG.KEYWORD_VISUALS)) {
         // A face-down object's identity stays hidden, but cloak/disguise Ward
         // is public rules information and must remain visible to opponents.
@@ -3182,6 +3190,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ? 'Face-down permanent'
         : `${faceName}${landCreature ? `. Land creature ${c.power}/${c.toughness}` : ''}`;
       if (markedDamage) accessibleName += `. ${markedDamage.detail}`;
+      if (this.deathReturnState(c)) accessibleName += `. ${this.deathReturnState(c)}`;
       // interactions
       if (this.markSelectedTarget(d, c)) {
         const proliferate = pd && pd.q.spec && pd.q.spec.what === 'proliferate';
@@ -4961,6 +4970,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ${markedDamage ? `<div class="smarkeddamage"><b>${markedDamage.amount} damage marked</b><span>${esc(markedDamage.detail)}</span></div>` : ''}
         ${sheetKeywords ? `<div class="sheetkeywords">${sheetKeywords}</div>` : ''}
         ${crewState}
+        ${this.deathReturnState(card) ? `<div class="animatedpermanentstate">${esc(this.deathReturnState(card))}</div>` : ''}
         <div class="soracle">${esc(shownDef.oracle || '').replace(/\n/g, '<br>')}</div>
         ${shownDef.simplified ? `<div class="simplified">⚠️ ${esc(shownDef.simplified)}</div>` : ''}`;
       m.appendChild(info);

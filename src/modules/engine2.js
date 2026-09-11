@@ -5520,7 +5520,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       } else {
         if (pool.length < nsac) return false;
         sacPicked = await p.controller.decide(this, {
-          type: 'chooseCards', from: pool, min: nsac, max: nsac, prompt: `Žrtvuj:`, aiHint: { kind: 'sacCost', src: c, canPayRemaining, keepTargets: ctx.targets.flat().concat(a.oracleAttachedHostEffect?[this.byIid(c.attachedTo)]:[]).filter(Boolean) },
+          type: 'chooseCards', from: pool, min: nsac, max: nsac, prompt: `Žrtvuj:`, aiHint: { kind: 'sacCost', src: c, sacrificeKind: a.aiSacrificeKind, canPayRemaining, keepTargets: ctx.targets.flat().concat(a.oracleAttachedHostEffect?[this.byIid(c.attachedTo)]:[]).filter(Boolean) },
         });
         if (!Array.isArray(sacPicked)||sacPicked.length!==nsac||new Set(sacPicked).size!==nsac||sacPicked.some(x => !pool.includes(x))) return false;
       }
@@ -6435,6 +6435,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // CR 702.26f: previously granted this-turn permissions expire while
       // phased, just like the untilEffects records removed below.
       c.meta.tempHaste = false;
+      delete c.meta.togetherForeverTurn;
       if (c.meta.canAttackDefender) c.meta.canAttackDefender = false;
       // "…dealt combat damage by this creature THIS TURN" — bez čišćenja je
       // Steel Hellkite zauvijek pamtio svakog koga je ikad pogodio.

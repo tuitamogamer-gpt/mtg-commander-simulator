@@ -1189,24 +1189,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     }],
     abilities: [{
-      label: 'Shield: return to hand on death', cost: { mana: '{1}' },
-      targets: [T.creature({ prompt: 'Creature with a counter', filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') && Object.values(c.counters).some(v => v > 0), aiHint: { goal: 'protect' } })],
+      label: 'Return to hand if it dies this turn', cost: { mana: '{1}' },
+      targets: [T.creature({ prompt: 'Creature with a counter', filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') && Object.values(c.counters).some(v => v > 0), aiHint: { goal: 'protect', deathReturn: true } })],
       run: async ctx => {
-        const iid = ctx.targets[0].iid;
+        const target = ctx.targets[0], iid = target.iid, version = target.zoneVersion;
+        target.meta.togetherForeverTurn = ctx.g.turnNo;
+        ctx.g.lg(`${target.name}: Together Forever will return it to its owner's hand if it dies this turn.`);
         ctx.g.delayed.push({
-          on: 'dies', expires: 'eot', name: 'Together Forever', ctrl: ctx.you,
-          filter: (g, d) => d.card.iid === iid,
+          on: 'dies', expires: 'eot', name: 'Together Forever', src: ctx.src, ctrl: ctx.you,
+          filter: (g, d) => d.card.iid === iid && d.snap.zoneVersion === version,
           run: async c2 => {
             const c = c2.data.card;
-            if (c.zone === 'graveyard') {
-              c.owner.graveyard.splice(c.owner.graveyard.indexOf(c), 1);
-              c.zone = 'hand'; c.owner.hand.push(c);
-              c2.g.lg(`${c.name} returns to hand (Together Forever).`);
+            if (c.zone === 'graveyard' && c.zoneVersion === c2.data.graveyardZoneVersion) {
+              await c2.g.move(c, 'hand');
             }
           },
         });
       },
-      aiScore: () => 2,
+      aiScore: (g, c, p) => Math.max(-30, ...g.legalTargets(c.def.abilities[0].targets[0], c, p)
+        .map(target => MTG.deathReturnTargetValue(g, p, target))),
     }],
   };
 
@@ -1569,9 +1570,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Viscera Seer'] = {
     abilities: [{
-      label: 'Sac: scry 1', cost: { sacCreature: true },
+      label: 'Sac: scry 1', cost: { sacCreature: true }, aiSacrificeKind: 'scry',
       run: async ctx => { await E.scry(ctx.g, ctx.you, 1); },
-      aiScore: (g, c, p) => 0.3,
+      aiScore: (g, c, p) => MTG.sacrificeScryPlan(g, p).score,
     }],
   };
   SC['Yahenni, Undying Partisan'] = {
