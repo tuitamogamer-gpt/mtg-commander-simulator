@@ -19,6 +19,44 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const esc = s => U.uiText(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const escAttr = s => esc(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
+  // A landing page can outlive a deployment, then lazy-load newer markup.
+  // Pin the matching styles before opening a spotlight, including on old tabs.
+  // Bump this revision whenever the spotlight's markup/style contract changes.
+  const spotlightStylesURL = new URL('./src/frontend-overhaul.css?v=spotlight-20260912', document.baseURI).href;
+  let spotlightStylesLoading = null;
+  function ensureSpotlightStyles() {
+    const previousLink = document.querySelector('link[rel="stylesheet"][href*="frontend-overhaul.css"]');
+    if (previousLink?.href === spotlightStylesURL && previousLink.sheet) {
+      previousLink.media = 'all';
+      return null;
+    }
+    if (spotlightStylesLoading) return spotlightStylesLoading;
+    spotlightStylesLoading = new Promise((resolve, reject) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      const finish = error => {
+        link.removeEventListener('load', loaded);
+        link.removeEventListener('error', failed);
+        spotlightStylesLoading = null;
+        if (error) {
+          link.remove();
+          reject(error);
+        } else {
+          previousLink?.remove();
+          resolve();
+        }
+      };
+      const loaded = () => finish();
+      const failed = () => finish(new Error('Deck spotlight styles did not load.'));
+      link.addEventListener('load', loaded);
+      link.addEventListener('error', failed);
+      link.media = 'all';
+      link.href = spotlightStylesURL;
+      if (previousLink) previousLink.after(link); else document.head.appendChild(link);
+    });
+    return spotlightStylesLoading;
+  }
+
   function commanderImg(deckName) {
     const d = MTG.DECKS[deckName];
     return artURL(d.commander);
@@ -693,6 +731,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     };
 
     const openDeckSpotlight = (name, returnFocus) => {
+      if (returnFocus?.getAttribute('aria-busy') === 'true') return;
+      const stylesLoading = ensureSpotlightStyles();
+      root.querySelector('.deckspotlightloaderror')?.remove();
+      if (stylesLoading) {
+        returnFocus?.setAttribute('aria-busy', 'true');
+        void stylesLoading.then(() => {
+          returnFocus?.removeAttribute('aria-busy');
+          if (returnFocus?.isConnected && state.deck === name && state.setupStage === 'deck') openDeckSpotlight(name, returnFocus);
+        }).catch(() => {
+          returnFocus?.removeAttribute('aria-busy');
+          if (!returnFocus?.isConnected || state.deck !== name || state.setupStage !== 'deck') return;
+          const notice = el('p', 'deckspotlightloaderror', 'The deck preview could not load. Tap the deck to try again.');
+          notice.setAttribute('role', 'alert');
+          left.prepend(notice);
+        });
+        return;
+      }
       root.querySelector('.deckspotlightoverlay')?.remove();
       const deck = MTG.DECKS[name];
       const meta = MTG.DECK_META[name] || {};
