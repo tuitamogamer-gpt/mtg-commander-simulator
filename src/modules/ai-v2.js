@@ -198,6 +198,108 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+  "Peace Offering": {
+    "archetype": "Shared draws and counters",
+    "length": "medium",
+    "tags": [
+      "draw",
+      "counters",
+      "enchantments"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Miracle Worker": {
+    "archetype": "Enchantment miracles",
+    "length": "long",
+    "tags": [
+      "enchantments",
+      "graveyard",
+      "reanimator"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Jump Scare!": {
+    "archetype": "Manifest dread and landfall",
+    "length": "medium",
+    "tags": [
+      "landfall",
+      "morph",
+      "ramp"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Death Toll": {
+    "archetype": "Delirium and recursion",
+    "length": "long",
+    "tags": [
+      "graveyard",
+      "mill",
+      "reanimator"
+    ],
+    "commanderImportance": 1.8
+  },
+  "20 Ways to Win": {
+    "archetype": "Alternate wins and Shrines",
+    "length": "long",
+    "tags": [
+      "enchantments",
+      "lifegain",
+      "counters"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Living Energy": {
+    "archetype": "Artifacts and energy",
+    "length": "medium",
+    "tags": [
+      "artifacts",
+      "energy",
+      "tokens"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Eternal Might": {
+    "archetype": "Zombies and card flow",
+    "length": "long",
+    "tags": [
+      "tribal",
+      "graveyard",
+      "tokens"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Everyone's Invited!": {
+    "archetype": "Five-color creature types",
+    "length": "medium",
+    "tags": [
+      "tribal",
+      "ramp",
+      "creatures"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Counter Blitz": {
+    "archetype": "Counters and proliferation",
+    "length": "medium",
+    "tags": [
+      "counters",
+      "proliferate",
+      "creatures"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Revival Trance": {
+    "archetype": "Small-creature reanimation",
+    "length": "long",
+    "tags": [
+      "graveyard",
+      "reanimator",
+      "attack-triggers"
+    ],
+    "commanderImportance": 1.8
+  }
+,
+
 
   "Scrappy Survivors": {
     "archetype": "Auras, Equipment and Junk",

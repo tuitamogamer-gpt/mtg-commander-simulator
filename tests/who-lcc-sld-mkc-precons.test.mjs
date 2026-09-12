@@ -17,7 +17,7 @@ test('ten original 100-card precons preserve source lists, native implementation
   for(const name of pair)assert.ok(fs.existsSync(M.CARD_ART_PATHS[name]),name+' commander art');
  }
  for(const name of intake.newNames){assert.ok(M.SCRIPTS[name],name);assert.ok(!M.DEFS[name].autoScripted&&!M.DEFS[name].simplified,name);assert.ok(M.CARD_CATALOG[name].deckImportEligible,name);}
- assert.equal(Object.keys(M.DECKS).length,140);assert.equal(M.CATALOG_SUMMARY.importableCards,21385);
+ assert.equal(Object.keys(M.DECKS).length,150);assert.equal(M.CATALOG_SUMMARY.importableCards,21541);
 });
 
 for(const role of ['human','ai']){

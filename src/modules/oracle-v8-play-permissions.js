@@ -2,6 +2,8 @@
  const actions=new Set(['cast-card-v8','cast-from-hand-v8','cast-from-graveyard-v8','cast-inspected-v8']),frames=new WeakMap();let nextId=1;
  const present=entry=>entry.card.zone===entry.zone&&entry.card.zoneVersion===entry.version&&entry.card.owner[entry.zone]?.includes(entry.card);
  function alternatives(game,card,base){
+  if(card.def.bdfRoom)return M.BDF.castVariants(game,card,base);
+  if(card.def.bdfGift)return [base,{...base,bdfGift:true}];
   const faces=M.OracleV8Faces?.physical(card);
   if(faces)return faces.faces.filter(face=>faces.layout!=='transform'||face.key==='front').map(face=>({...base,oracleFace:face.key,name:face.def.name,label:face.def.name}));
   if(card.def.oracleSplit)return game.oracleSplitCastingOptions(card,card.zone,base);
@@ -24,7 +26,7 @@
   const frame=frames.get(game);if(!frame||frame.player!==player||frame.id!==options.oracleImmediateCast)return false;
   if(options.free!==frame.free||options.asThoughAnyColor!==frame.anyColor||options.speed!=='instant'||options.faceDownCast||options.bestow||options.overloaded||options.oracleAlternativeCost)return false;
   return offers(game,player).some(entry=>entry.card===card&&entry.from===(options.from||card.zone)&&
-   ['oracleFace','adventure','splitHalf','splitFuse','altCostStr','flashback','isAftermath','oracleExileOnGraveyard','lifeCost','pomEnergyCost'].every(key=>entry.alt[key]===options[key]));
+   ['bdfDoor','bdfGift','oracleFace','adventure','splitHalf','splitFuse','altCostStr','flashback','isAftermath','oracleExileOnGraveyard','lifeCost','pomEnergyCost'].every(key=>entry.alt[key]===options[key]));
  }
  async function castOne(ctx,cards,effect,helpers){
   effect={free:true,...effect};

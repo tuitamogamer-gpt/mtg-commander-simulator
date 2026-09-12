@@ -19,43 +19,42 @@
     "oracleIds": 30784
   },
   "counts": {
-    "runtimeDefinitions": 21385,
+    "runtimeDefinitions": 21541,
     "genericOracleCards": 17800,
     "genericBatches": 178,
     "manualOracleCards": 58,
-    "legacyDefinitions": 3527,
+    "legacyDefinitions": 3683,
     "individuallyReviewedLegacyDefinitions": 18,
-    "deckImportEligibleDefinitions": 21385,
+    "deckImportEligibleDefinitions": 21541,
     "deckImportRestrictedDefinitions": 0,
-    "representedUniverseOracleIds": 21357,
-    "remainingUniverseOracleIds": 9427,
+    "representedUniverseOracleIds": 21512,
+    "remainingUniverseOracleIds": 9272,
     "parserEligibleUnimported": 2,
-    "deferred": 9425,
+    "deferred": 9270,
     "runtimeEntriesWithoutSnapshotMatch": 17,
-    "runtimeEntriesOutsideComparisonUniverse": 9
+    "runtimeEntriesOutsideComparisonUniverse": 10
   },
   "remainingByReason": {
     "adventure-needs-complete-face-semantics": 39,
     "backup-grant-needs-semantics": 2,
     "backup-other-rules-unsupported": 1,
-    "complex-layout": 114,
+    "complex-layout": 112,
     "conflicting-hand-abilities": 1,
     "double-faced-card-needs-complete-back-semantics": 25,
     "double-faced-card-needs-complete-front-semantics": 230,
     "double-faced-card-needs-face-transition-semantics": 81,
     "dynamic-power-toughness": 32,
     "event-stat-condition-needs-binding": 1,
-    "land-needs-explicit-semantics": 125,
+    "land-needs-explicit-semantics": 119,
     "leveler-band-needs-complete-semantics": 2,
     "mana-ability-needs-explicit-semantics": 15,
-    "noncreature-needs-explicit-semantics": 2115,
-    "oracle-needs-explicit-semantics": 4088,
+    "noncreature-needs-explicit-semantics": 2078,
+    "oracle-needs-explicit-semantics": 4006,
     "overload-body-needs-complete-semantics": 7,
-    "reminder-only-oracle": 1,
     "requires-import-and-executable-proof": 2,
-    "saga-chapter-needs-complete-semantics": 89,
+    "saga-chapter-needs-complete-semantics": 83,
     "saga-other-rules-unsupported": 2,
-    "spell-needs-explicit-semantics": 2255,
+    "spell-needs-explicit-semantics": 2239,
     "split-needs-complete-face-semantics": 31,
     "transform-land-face-transition-needs-proof": 4,
     "unbound-X": 1,
@@ -66,7 +65,7 @@
     "unbound-target-damage-source": 24,
     "unsupported-adventure-face-types": 16,
     "unsupported-mana-cost": 48,
-    "unsupported-split-faces": 27
+    "unsupported-split-faces": 22
   },
   "parserEligibleUnimportedNames": [
     "Zuo Ci, the Mocking Sage",
@@ -164,6 +163,14 @@
       "sourceGames": [
         "mtgo"
       ]
+    },
+    {
+      "name": "Zombie Master",
+      "sourceName": "Zombie Master",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
     }
   ],
   "multipleRuntimeNamesForOneOracleId": [
@@ -206,11 +213,11 @@
     "Vow of Lightning"
   ],
   "classifierVersion": 8,
-  "classifierFilesSha256": "f30a1d4cb54df53c6969d0d205058c6ef34eb241813f960f4e20d9c33bf78122",
-  "inputFilesSha256": "8620836f81e583e031c0fcec3f6432c8eeb6ce59d323e4ff649442302139aa8d",
+  "classifierFilesSha256": "83704a216dc15ca7a6f85f92db7171287a99dc8b0981ed5157170468f4769aa5",
+  "inputFilesSha256": "54e4b26f7fa3382d01121039797a7a4c0147304cd59b157359cfc8fb5c01ada9",
   "artifactSha256": {
-    "docs/catalog/imported-cards.csv": "dda082d4907afaeacd7a87e69f96817d434d3427b52b4ffb5e46f0414e2cbbe8",
-    "docs/catalog/remaining-cards.csv": "ba6b49d9c2d525f91cf7031c18317781eee778a5bd1a97b57c319788cc061ac3"
+    "docs/catalog/imported-cards.csv": "0534b8a0c908735bf59b2192b1390dd961bd3a2f510b670197479a9a409438fb",
+    "docs/catalog/remaining-cards.csv": "748791fb1e490c2da903a45fdbad67232925d8704982d1878931f3f5af700230"
   },
   "notes": [
     "Names and face names associate legacy definitions with the pinned feed; these associations do not verify exact Oracle semantics or every face.",

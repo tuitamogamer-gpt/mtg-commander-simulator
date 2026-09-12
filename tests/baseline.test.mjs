@@ -27,8 +27,8 @@ test('commander svakog decka postoji u listi i kompletnom katalogu, uključujuć
   }
 });
 
-test('raw snapshot čuva 141 deckova, a proizvod koristi certifikovani set od 140', () => {
-  assert.equal(raw.decks.length, 141);
-  assert.equal(report.deckRows.length, 140);
+test('raw snapshot čuva 151 deckova, a proizvod koristi certifikovani set od 150', () => {
+  assert.equal(raw.decks.length, 151);
+  assert.equal(report.deckRows.length, 150);
   assert.deepEqual(report.excludedDeckRows.map(deck => deck.name), ['Blame Game']);
 });

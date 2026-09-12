@@ -85,6 +85,7 @@ export async function auditNativeCard(MTG, name, role) {
   if (name === 'Runic Repetition') extra('Faithless Looting', player, 'exile', 'Exiled card with flashback for the mandatory target.');
   if (name === 'Despark') extra('Colossal Dreadmaw', opponent, 'battlefield', 'Permanent with mana value at least 4.');
   if (name === 'Sinister Waltz') for(const n of ['Llanowar Elves','Wind Drake'])extra(n,player,'graveyard','Three graveyard creatures for the three mandatory targets.');
+  if (name === 'Skaab Ruinator') for(const n of ['Llanowar Elves','Wind Drake'])extra(n,player,'graveyard','Three creature cards for the mandatory additional exile cost.');
   if (name === 'Victimize') extra('Llanowar Elves', player, 'graveyard', 'Second creature card in your graveyard.');
   if (name === 'Back in Town') extra('Ragavan, Nimble Pilferer', player, 'graveyard', 'Pirate outlaw in your graveyard.');
   if (name === 'Ultimate Nullification') extra('Aunt May', player, 'battlefield', 'Legendary creature for the actual additional sacrifice cost.');

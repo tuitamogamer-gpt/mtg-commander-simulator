@@ -3,6 +3,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
 (function(){
  const M=MTG,G=M.Game.prototype,C=M.C1920,S=M.StarterCasting;
  const variants=(g,c,base)=>{
+  if(c.def.bdfRoom)return c.def.bdfRoom.map(h=>({...base,bdfDoor:h.key,...(!base.free?{altCostStr:h.cost}:{}),label:h.name}));
   if(c.oracleFaces)return c.oracleFaces.faces.filter(f=>c.oracleFaces.layout!=='transform'||f.key==='front').map(f=>({...base,oracleFace:f.key,name:f.def.name}));
   if(c.def.oracleSplit)return g.oracleSplitCastingOptions(c,c.zone,base);
   return [base,...(c.def.adventure?[{...base,adventure:true,name:c.def.adventure.name,types:c.def.adventure.types,cost:c.def.adventure.cost}]:[])];

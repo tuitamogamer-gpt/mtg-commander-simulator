@@ -1,0 +1,13 @@
+'use strict';
+var MTG=globalThis.MTG||(globalThis.MTG={});
+(function(){
+ const M=MTG,C=M.BDF,SC=M.SCRIPTS,T=M.T;
+ const gift=(kind,script)=>({...script,bdfGift:kind,altCosts:[{label:'Promise a gift: '+kind,bdfGift:true}]});
+ C.bdfGiveGift=async ctx=>{const p=ctx.g.players[ctx.so?.bdfGiftPlayer??ctx.src.castMeta?.bdfGiftPlayer];if(!p||p.lost)return false;const kind=ctx.src.def.bdfGift;if(kind==='card')await C.draw(ctx,1,p);else if(kind==='Octopus')await C.make({...ctx,you:p},C.token('Octopus',['Octopus'],8,8,['U']));else if(kind==='extra turn')ctx.g.scheduleExtraTurn(p);await ctx.g.emit('bdfGift',{player:ctx.you,recipient:p,card:ctx.src});return true;};
+ SC['Wear Down']=gift('card',{targets:(g,c,a)=>[T.permanent((g,c)=>c.is('Artifact')||c.is('Enchantment'),{count:a?.bdfGift?2:1})],resolve:async ctx=>{await C.bdfGiveGift(ctx);await ctx.g.destroyMany(C.flat(ctx.targets),{source:ctx.src});}});
+ SC['Peerless Recycling']=gift('card',{targets:(g,c,a)=>[C.grave(c=>C.permanent(g,c),{count:a?.bdfGift?2:1})],resolve:async ctx=>{await C.bdfGiveGift(ctx);for(const c of C.flat(ctx.targets))await ctx.g.move(c,'hand');}});
+ SC["Long River's Pull"]=gift('card',{targets:(g,c,a)=>[T.spell((g,so)=>a?.bdfGift||g.isCreatureSpell(so))],resolve:async ctx=>{await C.bdfGiveGift(ctx);await ctx.g.counterStackObject(ctx.targets[0],{source:ctx.src});}});
+ SC['Octomancer']=gift('Octopus',{triggers:[C.enterTrigger('Give the promised Octopus',ctx=>ctx.src.castMeta?.bdfGiftPlayer!==undefined&&C.bdfGiveGift(ctx)),C.end('Copy a creature token that entered this turn',ctx=>C.copy(ctx,ctx.targets[0]),{filter:()=>true,targets:[T.creature({filter:(g,c)=>c.isToken&&c.meta.bomEnteredTurn===g.turnNo})]})]});
+ SC['Perch Protection']=gift('extra turn',{resolve:async ctx=>{await C.bdfGiveGift(ctx);await C.make(ctx,C.token('Bird',['Bird'],2,2,['U'],['flying']),4);if(ctx.so.castOpts.bdfGift){ctx.g.untilEffects.push({kind:'c1719LifeLock',who:ctx.you,expires:'untilTurnOf',whoTurn:ctx.you},{kind:'c1719PlayerProtection',who:ctx.you,color:'all',expires:'untilTurnOf',whoTurn:ctx.you});ctx.g.phaseOutMany(C.ownPermanents(ctx.g,ctx.you),ctx.you);ctx.g.recalc();}if(!ctx.so.isCopy&&ctx.src.zone==='stack')await ctx.g.move(ctx.src,'exile');}});
+ SC['Endless Detour']={targets:[{what:'permanent',bdfDetour:true}],resolve:async ctx=>{const t=ctx.targets[0],c=t.kind==='spell'?t.card:t,p=c.owner,k=await C.option(ctx,[{key:'top',label:'Top of your library'},{key:'bottom',label:'Bottom of your library'}],'Put '+c.name+' on top or bottom',p);if(t.kind==='spell'){const i=ctx.g.stack.indexOf(t);if(i<0)return;ctx.g.stack.splice(i,1);if(t.isCopy)return;}await ctx.g.move(c,'library',{toBottom:k==='bottom'});}};
+})();

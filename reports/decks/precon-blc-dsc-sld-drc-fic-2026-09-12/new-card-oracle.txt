@@ -1,0 +1,688 @@
+Aetherflux Conduit | {6} | Artifact  | /
+Whenever you cast a spell, you get an amount of {E} (energy counters) equal to the amount of mana spent to cast that spell.
+{T}, Pay fifty {E}: Draw seven cards. You may cast any number of spells from your hand without paying their mana costs.
+
+Aetheric Amplifier | {3} | Artifact  | /
+{T}: Add one mana of any color.
+{4}, {T}: Choose one. Activate only as a sorcery.
+• Double the number of each kind of counter on target permanent.
+• Double the number of each kind of counter you have.
+
+Aminatou, Veil Piercer | {1}{W}{U}{B} | Creature Human Wizard | 2/4
+At the beginning of your upkeep, surveil 2. (Look at the top two cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.)
+Each enchantment card in your hand has miracle. Its miracle cost is equal to its mana cost reduced by {4}. (You may cast a card for its miracle cost when you draw it if it's the first card you drew this turn.)
+
+Amoeboid Changeling | {1}{U} | Creature Shapeshifter | 1/1
+Changeling (This card is every creature type.)
+{T}: Target creature gains all creature types until end of turn.
+{T}: Target creature loses all creature types until end of turn.
+
+Ancient Cellarspawn | {1}{B}{B} | Enchantment Creature Horror | 3/3
+Each spell you cast that's a Demon, Horror, or Nightmare costs {1} less to cast.
+Whenever you cast a spell, if the amount of mana spent to cast it was less than its mana value, target opponent loses life equal to the difference.
+
+Approach of the Second Sun | {6}{W} | Sorcery  | /
+If this spell was cast from your hand and you've cast another spell named Approach of the Second Sun this game, you win the game. Otherwise, put Approach of the Second Sun into its owner's library seventh from the top and you gain 7 life.
+
+Arcane Adaptation | {2}{U} | Enchantment  | /
+As this enchantment enters, choose a creature type.
+Creatures you control are the chosen type in addition to their other types. The same is true for creature spells you control and creature cards you own that aren't on the battlefield.
+
+Arvinox, the Mind Flail | {4}{B}{B}{B} | Enchantment Creature Horror | 9/9
+Arvinox isn't a creature unless you control three or more permanents you don't own.
+At the beginning of your end step, exile the bottom card of each opponent's library face down. For as long as those cards remain exiled, you may look at them, you may cast permanent spells from among them, and you may spend mana as though it were mana of any color to cast those spells.
+
+Ashaya, Soul of the Wild | {3}{G}{G} | Creature Elemental | */*
+Ashaya's power and toughness are each equal to the number of lands you control.
+Nontoken creatures you control are Forest lands in addition to their other types. (They're still affected by summoning sickness.)
+
+Athreos, Shroud-Veiled | {4}{W}{B} | Enchantment Creature God | 4/7
+Indestructible
+As long as your devotion to white and black is less than seven, Athreos isn't a creature.
+At the beginning of your end step, put a coin counter on another target creature.
+Whenever a creature with a coin counter on it dies or is put into exile, return that card to the battlefield under your control.
+
+Auron, Venerated Guardian | {3}{W} | Creature Human Spirit Samurai | 2/5
+Vigilance
+Shooting Star — Whenever Auron attacks, put a +1/+1 counter on it. When you do, exile target creature defending player controls with power less than Auron's power until Auron leaves the battlefield.
+
+Baird, Steward of Argive | {2}{W}{W} | Creature Human Soldier | 2/4
+Vigilance
+Creatures can't attack you or planeswalkers you control unless their controller pays {1} for each of those creatures.
+
+Banon, the Returners' Leader | {R}{W} | Creature Human Cleric Rebel | 1/3
+Pray — Once during each of your turns, you may cast a creature spell from among cards in your graveyard that were put there from anywhere other than the battlefield this turn.
+Whenever you attack, you may pay {1} and discard a card. If you do, draw a card.
+
+Biovisionary | {1}{G}{U} | Creature Human Wizard | 2/3
+At the beginning of the end step, if you control four or more creatures named Biovisionary, you win the game.
+
+Blitzball Stadium | {X}{U} | Artifact  | /
+When this artifact enters, support X. (Put a +1/+1 counter on each of up to X target creatures.)
+Go for the Goal! — {3}, {T}: Until end of turn, target creature gains "Whenever this creature deals combat damage to a player, draw a card for each kind of counter on it" and it can't be blocked this turn.
+
+Bloodroot Apothecary | {2}{G} | Creature Squirrel Druid | 3/3
+Toxic 2 (Players dealt combat damage by this creature also get two poison counters. A player with ten or more poison counters loses the game.)
+When this creature enters, you and target opponent each create a Treasure token.
+Whenever an opponent sacrifices a noncreature token, that player gets two poison counters.
+
+Bottomless Pool // Locker Room | {U} // {4}{U} | Enchantment Room // Enchantment | /
+Bottomless Pool: When you unlock this door, return up to one target creature to its owner's hand.
+(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)
+Locker Room: Whenever one or more creatures you control deal combat damage to a player, draw a card.
+(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)
+
+Brainstone | {1} | Artifact  | /
+{2}, {T}, Sacrifice this artifact: Draw three cards, then put two cards from your hand on top of your library in any order.
+
+Brenard, Ginger Sculptor | {1}{G}{W}{U} | Creature Human Artificer | 3/3
+Each creature you control that's a Food or a Golem gets +2/+2 and has trample.
+Whenever another nontoken creature you control dies, you may exile it. If you do, create a token that's a copy of that creature, except it's a 1/1 Food Golem artifact creature in addition to its other types and it has "{2}, {T}, Sacrifice this token: You gain 3 life."
+
+Bruse Tarl, Roving Rancher | {2}{R}{W} | Creature Human Warrior | 4/3
+Oxen you control have double strike.
+Whenever Bruse Tarl enters or attacks, exile the top card of your library. If it's a land card, create a 2/2 white Ox creature token. Otherwise, you may cast it until the end of your next turn.
+
+Carrion Grub | {3}{B} | Creature Insect | 0/5
+This creature gets +X/+0, where X is the greatest power among creature cards in your graveyard.
+When this creature enters, mill four cards. (Put the top four cards of your library into your graveyard.)
+
+Celes, Rune Knight | {1}{R}{W}{B} | Creature Human Wizard Knight | 4/4
+When Celes enters, discard any number of cards, then draw that many cards plus one.
+Whenever one or more other creatures you control enter, if one or more of them entered from a graveyard or was cast from a graveyard, put a +1/+1 counter on each creature you control.
+
+Cemetery Tampering | {2}{B} | Enchantment  | /
+Hideaway 5 (When this enchantment enters, look at the top five cards of your library, exile one face down, then put the rest on the bottom in a random order.)
+At the beginning of your upkeep, you may mill three cards. Then if there are twenty or more cards in your graveyard, you may play the exiled card without paying its mana cost.
+
+Coin of Fate | {1}{W} | Artifact  | /
+When this artifact enters, surveil 1.
+{3}{W}, {T}, Exile two creature cards from your graveyard, Sacrifice this artifact: An opponent chooses one of the exiled cards. You put that card on the bottom of your library and return the other to the battlefield tapped. You become the monarch.
+
+Communal Brewing | {2}{G} | Enchantment  | /
+When this enchantment enters, any number of target opponents each draw a card. Put an ingredient counter on this enchantment, then put an ingredient counter on it for each card drawn this way.
+Whenever you cast a creature spell, that creature enters with X additional +1/+1 counters on it, where X is the number of ingredient counters on this enchantment.
+
+Convert to Slime | {3}{B}{G} | Sorcery  | /
+Destroy up to one target artifact, up to one target creature, and up to one target enchantment.
+Delirium — Then if there are four or more card types among cards in your graveyard, create an X/X green Ooze creature token, where X is the total mana value of permanents destroyed this way.
+
+Cramped Vents // Access Maze | {3}{B} // {5}{B}{B} | Enchantment Room // Enchantment | /
+Cramped Vents: When you unlock this door, this Room deals 6 damage to target creature an opponent controls. You gain life equal to the excess damage dealt this way.
+(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)
+Access Maze: Once during each of your turns, you may cast a spell from your hand by paying life equal to its mana value rather than paying its mana cost.
+(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)
+
+Curator Beastie | {4}{G}{G} | Creature Beast | 6/6
+Reach
+Colorless creatures you control enter with two additional +1/+1 counters on them.
+Whenever this creature enters or attacks, manifest dread. (Look at the top two cards of your library. Put one onto the battlefield face down as a 2/2 creature and the other into your graveyard. Turn it face up any time for its mana cost if it's a creature card.)
+
+Demonic Covenant | {4}{B}{B} | Kindred Enchantment Demon | /
+Whenever one or more Demons you control attack a player, you draw a card and lose 1 life.
+At the beginning of your end step, create a 5/5 black Demon creature token with flying, then mill two cards. If two cards that share all their card types were milled this way, sacrifice this enchantment.
+
+Disorienting Choice | {3}{G} | Sorcery  | /
+For each opponent, choose up to one target artifact or enchantment that player controls. For each permanent chosen this way, its controller may exile it. Then if one or more of the chosen permanents are still on the battlefield, you search your library for up to that many land cards, put them onto the battlefield tapped, then shuffle.
+
+Double Down | {3}{U} | Enchantment  | /
+Whenever you cast an outlaw spell, copy that spell. (Assassins, Mercenaries, Pirates, Rogues, and Warlocks are outlaws. Copies of permanent spells become tokens.)
+
+Dryad Arbor | null | Land Creature Forest Dryad | 1/1
+(This land isn't a spell, it's affected by summoning sickness, and it has "{T}: Add {G}.")
+
+Edgar, Master Machinist | {2}{R}{W} | Creature Human Artificer Noble | 2/4
+Once during each of your turns, you may cast an artifact spell from your graveyard. If you cast a spell this way, that artifact enters tapped.
+Tools — Whenever Edgar attacks, it gets +X/+0 until end of turn, where X is the greatest mana value among artifacts you control.
+
+Eerie Ultimatum | {W}{W}{B}{B}{B}{G}{G} | Sorcery  | /
+Return any number of permanent cards with different names from your graveyard to the battlefield.
+
+Endless Detour | {G}{W}{U} | Instant  | /
+The owner of target spell, nonland permanent, or card in a graveyard puts it on their choice of the top or bottom of their library.
+
+Espers to Magicite | {3}{B} | Instant  | /
+Exile each opponent's graveyard. When you do, choose up to one target creature card exiled this way. Create a token that's a copy of that card, except it's an artifact and it loses all other card types.
+
+Experimental Lab // Staff Room | {3}{G} // {2}{G} | Enchantment Room // Enchantment | /
+Experimental Lab: When you unlock this door, manifest dread, then put two +1/+1 counters and a trample counter on that creature.
+(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)
+Staff Room: Whenever a creature you control deals combat damage to a player, turn that creature face up or put a +1/+1 counter on it.
+(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)
+
+Fear of Sleep Paralysis | {5}{U} | Enchantment Creature Nightmare | 6/6
+Flying
+Eerie — Whenever this creature or another enchantment you control enters and whenever you fully unlock a Room, tap up to one target creature and put a stun counter on it.
+Stun counters can't be removed from permanents your opponents control. (They won't untap if they have stun counters.)
+
+Felidar Sovereign | {4}{W}{W} | Creature Cat Beast | 4/6
+Vigilance (Attacking doesn't cause this creature to tap.)
+Lifelink (Damage dealt by this creature also causes you to gain that much life.)
+At the beginning of your upkeep, if you have 40 or more life, you win the game.
+
+Fight Rigging | {2}{G} | Enchantment  | /
+Hideaway 5 (When this enchantment enters, look at the top five cards of your library, exile one face down, then put the rest on the bottom in a random order.)
+At the beginning of combat on your turn, put a +1/+1 counter on target creature you control. Then if you control a creature with power 7 or greater, you may play the exiled card without paying its mana cost.
+
+Fire-Belly Changeling | {1}{R} | Creature Shapeshifter | 1/1
+Changeling (This card is every creature type.)
+{R}: This creature gets +1/+0 until end of turn. Activate no more than twice each turn.
+
+Fisher's Talent | {2}{G}{U} | Enchantment Class | /
+(Gain the next level as a sorcery to add its ability.)
+At the beginning of your upkeep, look at the top card of your library. You may reveal it if it's a land card. Create a 1/1 blue Fish creature token if you revealed it this way. Then draw a card.
+{G}{U}: Level 2
+If you would create a Fish token, create a 3/3 blue Shark creature token instead.
+{2}{G}{U}: Level 3
+If you would create a Shark token, create an 8/8 blue Octopus creature token instead.
+
+Gatta and Luzzu | {2}{W} | Creature Human Soldier | 1/1
+Flash
+When Gatta and Luzzu enters, choose target creature you control. If damage would be dealt to that creature this turn, prevent that damage and put that many +1/+1 counters on it.
+
+Gau, Feral Youth | {1}{R} | Creature Human Berserker | 2/2
+Rage — Whenever Gau attacks, put a +1/+1 counter on it.
+At the beginning of each end step, if a card left your graveyard this turn, Gau deals damage equal to its power to each opponent.
+
+Generous Patron | {2}{G} | Creature Elf Advisor | 1/4
+When this creature enters, support 2. (Put a +1/+1 counter on each of up to two other target creatures.)
+Whenever you put one or more counters on a creature you don't control, draw a card.
+
+Ghirapur Orrery | {4} | Artifact  | /
+Each player may play an additional land on each of their turns.
+At the beginning of each player's upkeep, if that player has no cards in hand, that player draws three cards.
+
+Giggling Skitterspike | {4} | Artifact Creature Toy | 1/1
+Indestructible
+Whenever this creature attacks, blocks, or becomes the target of a spell, it deals damage equal to its power to each opponent.
+{5}: Monstrosity 5. (If this creature isn't monstrous, put five +1/+1 counters on it and it becomes monstrous.)
+
+Gilt-Leaf Palace | null | Land  | /
+As this land enters, you may reveal an Elf card from your hand. If you don't, this land enters tapped.
+{T}: Add {B} or {G}.
+
+Glitch Interpreter | {2}{U} | Creature Human Wizard | 2/3
+When this creature enters, if you control no face-down permanents, return this creature to its owner's hand and manifest dread.
+Whenever one or more colorless creatures you control deal combat damage to a player, draw a card.
+
+God-Eternal Oketra | {3}{W}{W} | Creature Zombie God | 3/6
+Double strike
+Whenever you cast a creature spell, create a 4/4 black Zombie Warrior creature token with vigilance.
+When God-Eternal Oketra dies or is put into exile from the battlefield, you may put it into its owner's library third from the top.
+
+Gogo, Mysterious Mime | {3}{R} | Creature Wizard | 2/2
+At the beginning of combat on your turn, you may have Gogo become a copy of another target creature you control until end of turn, except its name is Gogo, Mysterious Mime. If you do, Gogo and that creature each get +2/+0 and gain haste until end of turn and attack this turn if able.
+
+Gond Gate | null | Land Gate | /
+Gates you control enter untapped.
+{T}: Add {C}.
+{T}: Add one mana of any color that a Gate you control could produce.
+
+Growing Dread | {G}{U} | Enchantment  | /
+Flash
+When this enchantment enters, manifest dread. (Look at the top two cards of your library. Put one onto the battlefield face down as a 2/2 creature and the other into your graveyard. Turn it face up any time for its mana cost if it's a creature card.)
+Whenever you turn a permanent face up, put a +1/+1 counter on it.
+
+Halo Fountain | {2}{W} | Artifact  | /
+{W}, {T}, Untap a tapped creature you control: Create a 1/1 green and white Citizen creature token.
+{W}{W}, {T}, Untap two tapped creatures you control: Draw a card.
+{W}{W}{W}{W}{W}, {T}, Untap fifteen tapped creatures you control: You win the game.
+
+Happily Ever After | {2}{W} | Enchantment  | /
+When this enchantment enters, each player gains 5 life and draws a card.
+At the beginning of your upkeep, if there are five colors among permanents you control, there are six or more card types among permanents you control and/or cards in your graveyard, and your life total is greater than or equal to your starting life total, you win the game.
+
+Helix Pinnacle | {G} | Enchantment  | /
+Shroud (This enchantment can't be the target of spells or abilities.)
+{X}: Put X tower counters on this enchantment.
+At the beginning of your upkeep, if there are 100 or more tower counters on this enchantment, you win the game.
+
+Interceptor, Shadow's Hound | {2}{B}{B} | Creature Dog | 4/3
+Menace
+Assassins you control have menace.
+Whenever you attack with one or more legendary creatures, you may pay {2}{B}. If you do, return this card from your graveyard to the battlefield tapped and attacking.
+
+Into the Pit | {2}{B} | Enchantment  | /
+You may look at the top card of your library any time.
+You may cast spells from the top of your library by sacrificing a nonland permanent in addition to paying their other costs.
+
+Jolly Gerbils | {1}{W} | Creature Hamster Citizen | 2/3
+Whenever you give a gift, draw a card.
+
+Kefka, Dancing Mad | {5}{B}{R} | Creature Human Wizard | 6/6
+During your turn, Kefka has indestructible.
+At the beginning of your end step, exile a card at random from each opponent's graveyard. You may cast any number of spells from among cards exiled this way without paying their mana costs. Then each player who owns a spell you cast this way loses life equal to its mana value.
+
+Kianne, Corrupted Memory | {2}{G}{U} | Creature Illusion | 2/2
+As long as Kianne's power is even, you may cast noncreature spells as though they had flash.
+As long as Kianne's power is odd, you may cast creature spells as though they had flash.
+Whenever you draw a card, put a +1/+1 counter on Kianne.
+
+Kwain, Itinerant Meddler | {W}{U} | Creature Rabbit Wizard | 1/3
+{T}: Each player may draw a card, then each player who drew a card this way gains 1 life.
+
+Liliana's Contract | {3}{B}{B} | Enchantment  | /
+When this enchantment enters, you draw four cards and you lose 4 life.
+At the beginning of your upkeep, if you control four or more Demons with different names, you win the game.
+
+Locke, Treasure Hunter | {1}{B}{R} | Creature Human Rogue | 2/3
+Locke can't be blocked by creatures with greater power.
+Mug — Whenever Locke attacks, each player mills a card. If a land card was milled this way, create a Treasure token. Until end of turn, you may cast a spell from among those cards.
+
+Long River's Pull | {U}{U} | Instant  | /
+Gift a card (You may promise an opponent a gift as you cast this spell. If you do, they draw a card before its other effects.)
+Counter target creature spell. If the gift was promised, instead counter target spell.
+
+Lord Jyscal Guado | {1}{W} | Creature Spirit Cleric | 2/1
+Flying
+At the beginning of each end step, if you put a counter on a creature this turn, investigate. (Create a Clue token. It's an artifact with "{2}, Sacrifice this token: Draw a card.")
+
+Lost Monarch of Ifnir | {3}{B} | Creature Zombie Noble | 4/4
+Afflict 3 (Whenever this creature becomes blocked, defending player loses 3 life.)
+Other Zombies you control have afflict 3.
+At the beginning of your second main phase, if a player was dealt combat damage by a Zombie this turn, mill three cards, then you may return a creature card from your graveyard to your hand.
+
+Lulu, Stern Guardian | {2}{U} | Creature Human Wizard | 2/3
+Whenever an opponent attacks you, choose target creature attacking you. Put a stun counter on that creature.
+{3}{U}: Proliferate. (Choose any number of permanents and/or players, then give each another counter of each kind already there.)
+
+Maester Seymour | {2}{G} | Creature Human Elf Cleric | 1/3
+At the beginning of combat on your turn, put a number of +1/+1 counters equal to Maester Seymour's power on another target creature you control.
+{3}{G}{G}: Monstrosity X, where X is the number of counters among creatures you control. (If this creature isn't monstrous, put X +1/+1 counters on it and it becomes monstrous.)
+
+Mayael's Aria | {R}{G}{W} | Enchantment  | /
+At the beginning of your upkeep, put a +1/+1 counter on each creature you control if you control a creature with power 5 or greater. Then you gain 10 life if you control a creature with power 10 or greater. Then you win the game if you control a creature with power 20 or greater.
+
+Maze's End | null | Land  | /
+This land enters tapped.
+{T}: Add {C}.
+{3}, {T}, Return this land to its owner's hand: Search your library for a Gate card, put it onto the battlefield, then shuffle. If you control ten or more Gates with different names, you win the game.
+
+Metamorphosis Fanatic | {4}{B}{B} | Creature Human Cleric | 4/4
+Lifelink
+When this creature enters, return up to one target creature card from your graveyard to the battlefield with a lifelink counter on it.
+Miracle {1}{B} (You may cast this card for its miracle cost when you draw it if it's the first card you drew this turn.)
+
+Mog, Moogle Warrior | {1}{R}{W} | Creature Moogle Warrior | 1/2
+Lifelink
+Dance — At the beginning of your end step, each player may discard a card. Each player who discarded a card this way draws a card. If a creature card was discarded this way, you create a 1/2 white Moogle creature token with lifelink. Then if a noncreature card was discarded this way, put a +1/+1 counter on each Moogle you control.
+
+Moritte of the Frost | {2}{G}{U}{U} | Creature Shapeshifter | 0/0
+Changeling (This card is every creature type.)
+You may have Moritte enter as a copy of a permanent you control, except it's legendary and snow in addition to its other types and, if it's a creature, it enters with two additional +1/+1 counters on it and has changeling.
+
+Mr. Foxglove | {2}{G}{W}{U} | Creature Fox Rogue | 3/5
+Lifelink
+Whenever Mr. Foxglove attacks, draw cards equal to the number of cards in defending player's hand minus the number of cards in your hand. If you didn't draw cards this way, you may put a creature card from your hand onto the battlefield.
+
+Ms. Bumbleflower | {1}{G}{W}{U} | Creature Rabbit Citizen | 1/5
+Vigilance
+Whenever you cast a spell, target opponent draws a card. Put a +1/+1 counter on target creature. It gains flying until end of turn. If this is the second time this ability has resolved this turn, you draw two cards.
+
+Nameless Inversion | {1}{B} | Kindred Instant Shapeshifter | /
+Changeling (This card is every creature type.)
+Target creature gets +3/-3 and loses all creature types until end of turn.
+
+Nightmare Shepherd | {2}{B}{B} | Enchantment Creature Demon | 4/4
+Flying
+Whenever another nontoken creature you control dies, you may exile it. If you do, create a token that's a copy of that creature, except it's 1/1 and it's a Nightmare in addition to its other types.
+
+Nissa, Worldsoul Speaker | {3}{G} | Creature Elf Druid | 3/3
+Landfall — Whenever a land you control enters, you get {E}{E} (two energy counters).
+You may pay eight {E} rather than pay the mana cost for permanent spells you cast.
+
+Octomancer | {3}{G}{U} | Creature Frog Druid | 3/3
+Gift an Octopus (You may promise an opponent a gift as you cast this spell. If you do, when it enters, they create an 8/8 blue Octopus creature token.)
+At the beginning of each end step, create a token that's a copy of target creature token that entered the battlefield this turn.
+
+On Wings of Gold | {3}{W} | Enchantment  | /
+Creatures you control that are Zombies and/or tokens get +1/+1 and have flying.
+Whenever one or more cards leave your graveyard, create a 1/1 white Zombie creature token.
+
+One with the Multiverse | {6}{U}{U} | Enchantment  | /
+You may look at the top card of your library any time.
+You may play lands and cast spells from the top of your library.
+Once during each of your turns, you may cast a spell from your hand or the top of your library without paying its mana cost.
+
+Overgrown Zealot | {1}{G} | Creature Elf Druid | 0/4
+{T}: Add one mana of any color.
+{T}: Add two mana of any one color. Spend this mana only to turn permanents face up.
+
+Pariah | {2}{W} | Enchantment Aura | /
+Enchant creature
+All damage that would be dealt to you is dealt to enchanted creature instead.
+
+Peerless Recycling | {1}{G} | Instant  | /
+Gift a card (You may promise an opponent a gift as you cast this spell. If you do, they draw a card before its other effects.)
+Return target permanent card from your graveyard to your hand. If the gift was promised, instead return two target permanent cards from your graveyard to your hand.
+
+Perch Protection | {4}{W}{W} | Instant  | /
+Gift an extra turn (You may promise an opponent a gift as you cast this spell. If you do, they take an extra turn after this one.)
+Create four 2/2 blue Bird creature tokens with flying. If the gift was promised, all permanents you control phase out, and until your next turn, your life total can't change and you gain protection from everything.
+Exile Perch Protection.
+
+Phenomenon Investigators | {2}{U}{B} | Creature Human Detective | 3/4
+As this creature enters, choose Believe or Doubt.
+• Believe — Whenever a nontoken creature you control dies, create a 2/2 black Horror enchantment creature token.
+• Doubt — At the beginning of your end step, you may return a nonland permanent you own to your hand. If you do, draw a card.
+
+Pia Nalaar, Chief Mechanic | {G}{U}{R} | Creature Human Artificer | 2/4
+Whenever one or more artifact creatures you control deal combat damage to a player, you get {E}{E} (two energy counters).
+At the beginning of your end step, you may pay one or more {E}. If you do, create an X/X colorless Vehicle artifact token named Nalaar Aetherjet with flying and crew 2, where X is the amount of {E} paid this way.
+
+Plaza of Harmony | null | Land  | /
+When this land enters, if you control two or more Gates, you gain 3 life.
+{T}: Add {C}.
+{T}: Add one mana of any type that a Gate you control could produce.
+
+Polluted Cistern // Dim Oubliette | {1}{B} // {4}{B} | Enchantment Room // Enchantment | /
+Polluted Cistern: Whenever one or more cards are put into your graveyard from your library, each opponent loses 1 life for each card type among those cards.
+(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)
+Dim Oubliette: When you unlock this door, mill three cards, then return a creature card from your graveyard to the battlefield.
+(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)
+
+Professor Onyx | {4}{B}{B} | Planeswalker Liliana | /
+Magecraft — Whenever you cast or copy an instant or sorcery spell, each opponent loses 2 life and you gain 2 life.
++1: You lose 1 life. Look at the top three cards of your library. Put one of them into your hand and the rest into your graveyard.
+−3: Each opponent sacrifices a creature with the greatest power among creatures that player controls.
+−8: Each opponent may discard a card. If they don't, they lose 3 life. Repeat this process six more times.
+
+Prophet of the Scarab | {4}{U} | Creature Zombie Wizard | 3/4
+Vigilance
+When this creature enters, draw cards equal to the number of Zombies you control or the number of Zombie cards in your graveyard, whichever is greater.
+
+Rampaging Aetherhood | {4}{G} | Creature Snake Hydra | 4/4
+Trample, ward {2}
+At the beginning of your upkeep, you get an amount of {E} (energy counters) equal to this creature's power. Then you may pay one or more {E}. If you do, put that many +1/+1 counters on this creature.
+
+Realmbreaker, the Invasion Tree | {3} | Artifact  | /
+{2}, {T}: Target opponent mills three cards. Put a land card from their graveyard onto the battlefield tapped under your control. It gains "If this land would leave the battlefield, exile it instead of putting it anywhere else."
+{10}, {T}, Sacrifice Realmbreaker: Search your library for any number of Praetor cards, put them onto the battlefield, then shuffle.
+
+Reflecting Pool | null | Land  | /
+{T}: Add one mana of any type that a land you control could produce.
+
+Rejoin the Fight | {5}{B} | Sorcery  | /
+Mill three cards. Then starting with the next opponent in turn order, each opponent chooses a creature card in your graveyard that hasn't been chosen. Return each card chosen this way to the battlefield under your control.
+
+Rendmaw, Creaking Nest | {3}{B}{G} | Artifact Creature Scarecrow | 5/5
+Reach, menace
+When Rendmaw enters and whenever you play a card with two or more card types, each player creates a tapped 2/2 black Bird creature token with flying. The tokens are goaded for the rest of the game. (They attack each combat if able and attack a player other than you if able.)
+
+Renewed Solidarity | {2}{W} | Enchantment  | /
+As this enchantment enters, choose a creature type.
+Creatures you control of the chosen type get +1/+0.
+At the beginning of your end step, for each token you control of the chosen type that entered this turn, create a token that's a copy of it.
+
+Revel in Riches | {4}{B} | Enchantment  | /
+Whenever a creature an opponent controls dies, create a Treasure token. (It's an artifact with "{T}, Sacrifice this token: Add one mana of any color.")
+At the beginning of your upkeep, if you control ten or more Treasures, you win the game.
+
+Rhet-Tomb Mystic | {1}{U} | Creature Zombie Bird Wizard | 2/1
+Flying
+Each creature card in your hand has cycling {1}{U}. ({1}{U}, Discard that card: Draw a card.)
+
+Rikku, Resourceful Guardian | {2}{U} | Creature Human Artificer | 2/3
+Whenever you put one or more counters on a creature, until end of turn, that creature can't be blocked by creatures your opponents control.
+Steal — {1}, {T}: Move a counter from target creature an opponent controls onto target creature you control. Activate only as a sorcery.
+
+Rot Hulk | {5}{B}{B} | Creature Zombie | 5/5
+Menace
+When this creature enters, return up to X target Zombie cards from your graveyard to the battlefield, where X is the number of opponents you have.
+
+Sabin, Master Monk | {4}{R} | Creature Human Noble Monk | 4/3
+Double strike
+Blitz—{2}{R}{R}, Discard a card. (If you cast this spell for its blitz cost, it gains haste and "When this creature dies, draw a card." Sacrifice it at the beginning of the next end step.)
+You may cast this card from your graveyard using its blitz ability.
+
+Secret Arcade // Dusty Parlor | {4}{W} // {2}{W} | Enchantment Room // Enchantment | /
+Secret Arcade: Nonland permanents you control and permanent spells you control are enchantments in addition to their other types.
+(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)
+Dusty Parlor: Whenever you cast an enchantment spell, put a number of +1/+1 counters equal to that spell's mana value on up to one target creature.
+(You may cast either half. That door unlocks on the battlefield. As a sorcery, you may pay the mana cost of a locked door to unlock it.)
+
+Setzer, Wandering Gambler | {1}{B}{R} | Creature Human Rogue Pilot | 2/2
+When Setzer enters, create The Blackjack, a legendary 3/3 colorless Vehicle artifact token with flying and crew 2.
+Whenever a Vehicle you control deals combat damage to a player, flip a coin.
+Whenever you win a coin flip, create two tapped Treasure tokens.
+
+Shelinda, Yevon Acolyte | {G}{W} | Creature Human Cleric | 2/2
+Lifelink
+Whenever another creature you control enters, put a +1/+1 counter on that creature if its power is less than Shelinda's power. Otherwise, put a +1/+1 counter on Shelinda.
+
+Shields of Velis Vel | {W} | Kindred Instant Shapeshifter | /
+Changeling (This card is every creature type.)
+Creatures target player controls get +0/+1 and gain all creature types until end of turn.
+
+Shriekwood Devourer | {5}{G}{G} | Creature Treefolk | 7/5
+Trample
+Whenever you attack with one or more creatures, untap up to X lands, where X is the greatest power among those creatures.
+
+Sin, Unending Cataclysm | {5}{G}{U} | Creature Leviathan Avatar | 5/5
+Flying, trample
+As Sin enters, remove all counters from any number of artifacts, creatures, and enchantments. Sin enters with X +1/+1 counters on it, where X is twice the number of counters removed this way.
+When Sin dies, put its counters on target creature you control, then shuffle this card into its owner's library.
+
+Skaab Ruinator | {1}{U}{U} | Creature Zombie Horror | 5/6
+As an additional cost to cast this spell, exile three creature cards from your graveyard.
+Flying
+You may cast this card from your graveyard.
+
+Snort | {3}{R} | Sorcery  | /
+Each player may discard their hand and draw five cards. Then Snort deals 5 damage to each opponent who discarded their hand this way.
+Flashback {5}{R} (You may cast this card from your graveyard for its flashback cost. Then exile it.)
+
+Soaring Lightbringer | {4}{W} | Enchantment Creature Bird Glimmer | 4/5
+Flying
+Other enchantment creatures you control have flying.
+Whenever you attack a player, create a 1/1 white Glimmer enchantment creature token that's tapped and attacking that player.
+
+Spirit-Sister's Call | {3}{W}{B} | Enchantment  | /
+At the beginning of your end step, choose target permanent card in your graveyard. You may sacrifice a permanent that shares a card type with the chosen card. If you do, return the chosen card from your graveyard to the battlefield and it gains "If this permanent would leave the battlefield, exile it instead of putting it anywhere else."
+
+Strago and Relm | {2}{R} | Creature Human Wizard | 1/3
+Sketch and Lore — {2}{R}, {T}: Target opponent exiles cards from the top of their library until they exile an instant, sorcery, or creature card. You may cast that card without paying its mana cost. If you cast a creature spell this way, it gains haste and "At the beginning of the end step, sacrifice this creature." Activate only as a sorcery.
+
+Stridehangar Automaton | {3} | Artifact Creature Construct | 1/4
+Thopters you control get +1/+1.
+If one or more artifact tokens would be created under your control, those tokens plus an additional 1/1 colorless Thopter artifact creature token with flying are created instead.
+
+Summon: Esper Valigarmanda | {3}{R} | Enchantment Creature Saga Drake | 3/3
+(As this Saga enters and after your draw step, add a lore counter. Sacrifice after IV.)
+I — Exile an instant or sorcery card from each graveyard.
+II, III, IV — Add {R} for each lore counter on this Saga. You may cast an instant or sorcery card exiled with this Saga, and mana of any type can be spent to cast that spell.
+Flying, haste
+
+Summon: Ixion | {2}{W} | Enchantment Creature Saga Unicorn | 3/3
+(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)
+I — Aerospark — Exile target creature an opponent controls until this Saga leaves the battlefield.
+II, III — Put a +1/+1 counter on each of up to two target creatures you control. You gain 2 life.
+First strike
+
+Summon: Magus Sisters | {4}{G} | Enchantment Creature Saga Faerie | 5/5
+(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)
+I, II, III — Choose one at random —
+• Combine Powers! — Put three +1/+1 counters on target creature.
+• Defense! — Put a shield counter on target creature. You gain 3 life.
+• Fight! — This creature fights up to one target creature an opponent controls.
+Haste
+
+Summon: Valefor | {4}{U} | Enchantment Creature Saga Drake | 5/4
+(As this Saga enters and after your draw step, add a lore counter. Sacrifice after IV.)
+I — Sonic Wings — Each opponent chooses a creature with the greatest mana value among creatures they control. Return those creatures to their owners' hands.
+II, III, IV — Tap up to one target creature and put a stun counter on it.
+Flying
+
+Summon: Yojimbo | {3}{W} | Enchantment Creature Saga Samurai | 5/5
+(As this Saga enters and after your draw step, add a lore counter. Sacrifice after IV.)
+I — Exile target artifact, enchantment, or tapped creature an opponent controls.
+II, III — Until your next turn, creatures can't attack you unless their controller pays {2} for each of those creatures.
+IV — Create X Treasure tokens, where X is the number of opponents who control a creature with power 4 or greater.
+Vigilance
+
+Summoner's Sending | {1}{W} | Enchantment  | /
+At the beginning of your end step, you may exile target creature card from a graveyard. If you do, create a 1/1 white Spirit creature token with flying. Put a +1/+1 counter on it if the exiled card's mana value is 4 or greater.
+
+Tamiyo, Field Researcher | {1}{G}{W}{U} | Planeswalker Tamiyo | /
++1: Choose up to two target creatures. Until your next turn, whenever either of those creatures deals combat damage, you draw a card.
+−2: Tap up to two target nonland permanents. They don't untap during their controller's next untap step.
+−7: Draw three cards. You get an emblem with "You may cast spells from your hand without paying their mana costs."
+
+Tenuous Truce | {1}{W} | Enchantment Aura | /
+Enchant opponent
+At the beginning of enchanted opponent's end step, you and that player each draw a card.
+When you attack enchanted opponent or a planeswalker they control or when they attack you or a planeswalker you control, sacrifice this Aura.
+
+Terra, Herald of Hope | {R}{W}{B} | Creature Human Wizard Warrior | 3/3
+Trance — At the beginning of combat on your turn, mill two cards. Terra gains flying until end of turn.
+Whenever Terra deals combat damage to a player, you may pay {2}. When you do, return target creature card with power 3 or less from your graveyard to the battlefield tapped.
+
+Territorial Aetherkite | {4}{R}{R} | Creature Cat Dragon | 6/5
+Flying, haste
+When this creature enters, you get {E}{E} (two energy counters). Then you may pay one or more {E}. When you do, this creature deals that much damage to each other creature.
+
+Test of Endurance | {2}{W}{W} | Enchantment  | /
+At the beginning of your upkeep, if you have 50 or more life, you win the game.
+
+The Bears of Littjara | {1}{G}{U} | Enchantment Saga | /
+(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)
+I — Create a 2/2 blue Shapeshifter creature token with changeling.
+II — Any number of target Shapeshifter creatures you control have base power and toughness 4/4.
+III — Choose up to one target creature or planeswalker. Each creature with power 4 or greater you control deals damage equal to its power to that permanent.
+
+The Eternal Wanderer | {4}{W}{W} | Planeswalker  | /
+No more than one creature can attack The Eternal Wanderer each combat.
++1: Exile up to one target artifact or creature. Return that card to the battlefield under its owner's control at the beginning of that player's next end step.
+0: Create a 2/2 white Samurai creature token with double strike.
+−4: For each player, choose a creature that player controls. Each player sacrifices all creatures they control not chosen this way.
+
+The Falcon, Airship Restored | {2}{B} | Artifact Vehicle | 4/3
+Flying
+Whenever The Falcon deals combat damage to a player, you may sacrifice it. When you do, return target creature card from your graveyard to the battlefield.
+{4}{B}: Return this card from your graveyard to the battlefield tapped.
+Crew 2
+
+The Master of Keys | {X}{W}{U}{B} | Enchantment Creature Horror | 3/3
+Flying
+When The Master of Keys enters, put X +1/+1 counters on it and mill twice X cards.
+Each enchantment card in your graveyard has escape. The escape cost is equal to the card's mana cost plus exile three other cards from your graveyard. (You may cast cards from your graveyard for their escape cost.)
+
+The Scarab God | {3}{U}{B} | Creature God | 5/5
+At the beginning of your upkeep, each opponent loses X life and you scry X, where X is the number of Zombies you control.
+{2}{U}{B}: Exile target creature card from a graveyard. Create a token that's a copy of it, except it's a 4/4 black Zombie.
+When The Scarab God dies, return it to its owner's hand at the beginning of the next end step.
+
+The Warring Triad | {3} | Artifact Creature God | 5/5
+Flying, trample, haste
+As long as there are fewer than eight cards in your graveyard, The Warring Triad isn't a creature.
+{T}, Mill a card: Target player adds one mana of any color. (Activate only as an instant.)
+
+They Came from the Pipes | {4}{U} | Enchantment  | /
+When this enchantment enters, manifest dread twice. (To manifest dread, look at the top two cards of your library. Put one onto the battlefield face down as a 2/2 creature and the other into your graveyard. Turn it face up any time for its mana cost if it's a creature card.)
+Whenever a face-down creature you control enters, draw a card.
+
+Tidus, Yuna's Guardian | {G}{W}{U} | Creature Human Warrior | 3/3
+At the beginning of combat on your turn, you may move a counter from target creature you control onto a second target creature you control.
+Cheer — Whenever one or more creatures you control with counters on them deal combat damage to a player, you may draw a card and proliferate. Do this only once each turn.
+
+Titania, Nature's Force | {4}{G}{G} | Creature Elemental | 6/6
+You may play Forests from your graveyard.
+Whenever a Forest you control enters, create a 5/3 green Elemental creature token.
+Whenever an Elemental you control dies, you may mill three cards.
+
+Trace of Abundance | {R/W}{G} | Enchantment Aura | /
+Enchant land
+Enchanted land has shroud. (It can't be the target of spells or abilities.)
+Whenever enchanted land is tapped for mana, its controller adds an additional one mana of any color.
+
+Triskaidekaphile | {1}{U} | Creature Human Wizard | 1/3
+You have no maximum hand size.
+At the beginning of your upkeep, if you have exactly thirteen cards in your hand, you win the game.
+{3}{U}: Draw a card.
+
+Tromell, Seymour's Butler | {2}{G} | Creature Elf Advisor | 2/3
+Each other nontoken creature you control enters with an additional +1/+1 counter on it.
+{1}, {T}: Proliferate X times, where X is the number of nontoken creatures you control that entered this turn. (To proliferate, choose any number of permanents and/or players, then give each another counter of each kind already there.)
+
+Twenty-Toed Toad | {3}{U} | Creature Frog Wizard | 3/3
+Your maximum hand size is twenty.
+Whenever you attack with two or more creatures, put a +1/+1 counter on this creature and draw a card.
+Whenever this creature attacks, you win the game if there are twenty or more counters on it or you have twenty or more cards in hand.
+
+Umaro, Raging Yeti | {5}{R} | Creature Yeti Berserker | 6/6
+Trample
+At the beginning of combat on your turn, choose one at random —
+• Other creatures you control get +3/+0 and gain trample until end of turn.
+• Discard your hand, then draw four cards.
+• Umaro deals 5 damage to any target.
+
+Unsettled Mariner | {W}{U} | Creature Shapeshifter | 2/2
+Changeling (This card is every creature type.)
+Whenever you or a permanent you control becomes the target of a spell or ability an opponent controls, counter that spell or ability unless its controller pays {1}.
+
+Ursine Monstrosity | {2}{G} | Creature Bear Mutant | 3/3
+Trample
+At the beginning of combat on your turn, mill a card and choose an opponent at random. This creature attacks that player this combat if able. Until end of turn, this creature gains indestructible and gets +1/+1 for each card type among cards in your graveyard.
+
+Wakka, Devoted Guardian | {2}{G}{W} | Creature Human Warrior | 4/4
+Reach, trample
+Whenever Wakka deals combat damage to a player, destroy up to one target artifact that player controls and put a +1/+1 counter on Wakka.
+Blitzball Captain — At the beginning of your end step, if a counter was put on Wakka this turn, put a +1/+1 counter on each other creature you control.
+
+Wanderwine Hub | null | Land  | /
+As this land enters, you may reveal a Merfolk card from your hand. If you don't, this land enters tapped.
+{T}: Add {W} or {U}.
+
+Wear Down | {1}{G} | Sorcery  | /
+Gift a card (You may promise an opponent a gift as you cast this spell. If you do, they draw a card before its other effects.)
+Destroy target artifact or enchantment. If the gift was promised, instead destroy two target artifacts and/or enchantments.
+
+Whip of Erebos | {2}{B}{B} | Enchantment Artifact  | /
+Creatures you control have lifelink.
+{2}{B}{B}, {T}: Return target creature card from your graveyard to the battlefield. It gains haste. Exile it at the beginning of the next end step. If it would leave the battlefield, exile it instead of putting it anywhere else. Activate only as a sorcery.
+
+Winter, Cynical Opportunist | {2}{B}{G} | Creature Human Warlock | 2/5
+Deathtouch
+Whenever Winter attacks, mill three cards.
+Delirium — At the beginning of your end step, you may exile any number of cards from your graveyard with four or more card types among them. If you do, put a permanent card from among them onto the battlefield with a finality counter on it.
+
+Wizard Class | {U} | Enchantment Class | /
+(Gain the next level as a sorcery to add its ability.)
+You have no maximum hand size.
+{2}{U}: Level 2
+When this Class becomes level 2, draw two cards.
+{4}{U}: Level 3
+Whenever you draw a card, put a +1/+1 counter on target creature you control.
+
+Wizened Mentor | {1}{W} | Creature Zombie Cleric | 2/2
+Whenever an opponent activates an ability of a permanent that isn't a mana ability, you create a 1/1 white Zombie creature token. This ability triggers only once each turn.
+
+Worldspine Wurm | {8}{G}{G}{G} | Creature Wurm | 15/15
+Trample
+When this creature dies, create three 5/5 green Wurm creature tokens with trample.
+When Worldspine Wurm is put into a graveyard from anywhere, shuffle it into its owner's library.
+
+Wrenn and Seven | {3}{G}{G} | Planeswalker Wrenn | /
++1: Reveal the top four cards of your library. Put all land cards revealed this way into your hand and the rest into your graveyard.
+0: Put any number of land cards from your hand onto the battlefield tapped.
+−3: Create a green Treefolk creature token with reach and "This token's power and toughness are each equal to the number of lands you control."
+−8: Return all permanent cards from your graveyard to your hand. You get an emblem with "You have no maximum hand size."
+
+Yuna's Decision | {3}{G} | Sorcery  | /
+Choose one —
+• Continue the Pilgrimage — Sacrifice a creature. If you do, draw a card, then you may put a creature card and/or a land card from your hand onto the battlefield.
+• Find Another Way — Return one or two target permanent cards from your graveyard to your hand.
+
+Yuna's Whistle | {1}{G}{G} | Instant  | /
+Reveal cards from the top of your library until you reveal a creature card. Put that card into your hand and the rest on the bottom of your library in a random order. When you reveal a creature card this way, put X +1/+1 counters on target creature you control, where X is the mana value of that card.
+
+Yuna, Grand Summoner | {1}{G}{W}{U} | Creature Human Cleric | 1/5
+Grand Summon — {T}: Add one mana of any color. When you next cast a creature spell this turn, that creature enters with two additional +1/+1 counters on it.
+Whenever another permanent you control is put into a graveyard from the battlefield, if it had one or more counters on it, you may put that number of +1/+1 counters on target creature.
+
+Zimone, Mystery Unraveler | {2}{G}{U} | Creature Human Wizard | 3/3
+Landfall — Whenever a land you control enters, manifest dread if this is the first time this ability has resolved this turn. Otherwise, you may turn a permanent you control face up. (To manifest dread, look at the top two cards of your library. Put one onto the battlefield face down as a 2/2 creature and the other into your graveyard. Turn it face up any time for its mana cost if it's a creature card.)
+
+Zombie Master | {1}{B}{B} | Creature Zombie | 2/3
+Other Zombie creatures have swampwalk. (They can't be blocked as long as defending player controls a Swamp.)
+Other Zombies have "{B}: Regenerate this permanent."

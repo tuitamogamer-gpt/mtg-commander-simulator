@@ -142,6 +142,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       turnsStarted: Number(player.turnsStarted) || 0,
       lastTurnSpellsCast: Number(player.lastTurnSpellsCast) || 0,
       noMaxHandForever: !!player.noMaxHandForever,
+      bdfApproaches: Number(player.bdfApproaches)||0,
       // A snapshot is taken between turns, so the pool is empty and the turn
       // state is about to be replaced; both are restored for exactness anyway.
       pool: Object.assign({}, player.pool || {}),
@@ -317,6 +318,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     assert(snapshot.players.every(player=>player.counters===undefined||player.counters&&Number.isSafeInteger(player.counters.energy??0)&&(player.counters.energy??0)>=0), 'invalid player energy counters.');
     assert(snapshot.players.every(p=>p.afcDungeon==null||Number.isSafeInteger(p.afcDungeon.id)&&p.afcDungeon.id>0&&!!MTG.AFC?.dungeons[p.afcDungeon.key]?.rooms[p.afcDungeon.room]), 'invalid dungeon progress.');
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.counters?.experience??0)&&(player.counters?.experience??0)>=0), 'invalid player experience counters.');
+    assert(snapshot.players.every(player=>Number.isSafeInteger(player.bdfApproaches??0)&&(player.bdfApproaches??0)>=0), 'invalid Approach casting history.');
     assert(validDamageHistory(snapshot.damageHistory, snapshot.turnNo), 'invalid damage history.');
     const landTypeEffects=snapshot.landTypeEffects??[];
     assert(Array.isArray(landTypeEffects)&&landTypeEffects.length<=MAX_BASE_PT_EFFECTS&&landTypeEffects.every(isPlainLandTypes),'invalid land type effects.');
@@ -424,6 +426,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.turnsStarted = saved.turnsStarted;
       player.lastTurnSpellsCast = saved.lastTurnSpellsCast;
       player.noMaxHandForever = saved.noMaxHandForever;
+      player.bdfApproaches = Number(saved.bdfApproaches)||0;
       player.pool = Object.assign({ W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 }, saved.pool);
       player.coloredOnlyPool = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
       player.poolMeta = [];

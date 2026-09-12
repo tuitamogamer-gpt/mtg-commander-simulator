@@ -1,0 +1,138 @@
+{
+  "baseline": "cf8acd2",
+  "passed": true,
+  "originalPhysicalCards": 1000,
+  "uniqueNames": 715,
+  "sourceLists": [
+    {
+      "name": "Peace Offering",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/bloomburrow-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/PeaceOffering_BLC.json"
+      ],
+      "exportSha256": "141211a7653d3126a4e93c83f313634a85a5932d750e36d1d50b9b27a3f87436"
+    },
+    {
+      "name": "Miracle Worker",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/duskmourn-house-of-horror-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/MiracleWorker_DSC.json"
+      ],
+      "exportSha256": "51309ec0cb7b3dc947996521726fd75e8dcae240fcff110cc75f3b0c6ca2cbd6"
+    },
+    {
+      "name": "Jump Scare!",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/duskmourn-house-of-horror-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/JumpScare_DSC.json"
+      ],
+      "exportSha256": "2d42da4715f8b815c0cd70e7bfaab498ca2659119956385d780f3a171dfb6657"
+    },
+    {
+      "name": "Death Toll",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/duskmourn-house-of-horror-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/DeathToll_DSC.json"
+      ],
+      "exportSha256": "bc478684a007c45f41d31490d13665240da5059dba97a94bb1000c13c2e6248c"
+    },
+    {
+      "name": "20 Ways to Win",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/secret-lair-commander-deck-20-ways-to-win-full-decklist",
+        "https://mtgjson.com/api/v5/decks/20WaysToWin_SLD.json"
+      ],
+      "exportSha256": "2dcb68acc06d4bd2799b59a2d7857267d8e614952f57c52fc525d74f956ec613"
+    },
+    {
+      "name": "Living Energy",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/aetherdrift-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/LivingEnergy_DRC.json"
+      ],
+      "exportSha256": "baffeaedbc7fb7d768bd70e9a139220cbc49c7f3cf1de6c6d5c21241656112c8"
+    },
+    {
+      "name": "Eternal Might",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/aetherdrift-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/EternalMight_DRC.json"
+      ],
+      "exportSha256": "45c3184a3a91c7a18a06e0fe30db68c758a826ed00212222db413a774d31e6de"
+    },
+    {
+      "name": "Everyone's Invited!",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/secret-lair-everyones-invited-commander-decklist",
+        "https://mtgjson.com/api/v5/decks/EveryoneSInvited_SLD.json"
+      ],
+      "exportSha256": "390232f902d8223bb3b8175f769e5493ee806a0849e520c339662a948230e538"
+    },
+    {
+      "name": "Counter Blitz",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/final-fantasy-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/CounterBlitzFinalFantasyX_FIC.json"
+      ],
+      "exportSha256": "8ccc01fda87076c89e54f5eec5aa39648c30889095536b38ba11c281bad2b106"
+    },
+    {
+      "name": "Revival Trance",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/final-fantasy-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/RevivalTranceFinalFantasyVi_FIC.json"
+      ],
+      "exportSha256": "7cee6bfcaa34e4c74cd4c5a1e754699ce15d25b1264422a93b637f9569e2e110"
+    }
+  ],
+  "existingRawDefinitionsPreserved": 3527,
+  "existingRawDeckRecordsPreserved": 141,
+  "nativeRawDefinitions": 3683,
+  "existingImageMappingsPreserved": 5906,
+  "existingCommanderCropsPreserved": 149,
+  "existingTrackedAssetsUnchanged": true,
+  "addedWebPFiles": 294,
+  "allNewImageDigestsMatch": true,
+  "idempotentDataSha256": "e52bae93bbf69d2bf2392a9ebeb0b14464639efe18f40c457c37121c6202b3dc",
+  "retainedOracleDifferences": [
+    {
+      "name": "Beanstalk Giant // Fertile Footsteps",
+      "existingOracle": "Beanstalk Giant's power and toughness are each equal to the number of lands you control.",
+      "pinnedOracle": "Beanstalk Giant: Beanstalk Giant's power and toughness are each equal to the number of lands you control.\nFertile Footsteps: Search your library for a basic land card, put it onto the battlefield, then shuffle. (Then exile this card. You may cast the creature later from exile.)",
+      "preserved": true
+    },
+    {
+      "name": "Loran of the Third Path",
+      "existingOracle": "Vigilance\nWhen Loran of the Third Path enters, destroy up to one target artifact or enchantment.\n{T}: You and target opponent each draw a card.",
+      "pinnedOracle": "Vigilance\nWhen Loran enters, destroy up to one target artifact or enchantment.\n{T}: You and target opponent each draw a card.",
+      "preserved": true
+    },
+    {
+      "name": "Murderous Rider",
+      "existingOracle": "Lifelink\nWhen this creature dies, put it on the bottom of its owner's library.",
+      "pinnedOracle": "Murderous Rider: Lifelink\nWhen this creature dies, put it on the bottom of its owner's library.\nSwift End: Destroy target creature or planeswalker. You lose 2 life. (Then exile this card. You may cast the creature later from exile.)",
+      "preserved": true
+    },
+    {
+      "name": "Realm-Cloaked Giant // Cast Off",
+      "existingOracle": "Vigilance",
+      "pinnedOracle": "Realm-Cloaked Giant: Vigilance\nCast Off: Destroy all non-Giant creatures. (Then exile this card. You may cast the creature later from exile.)",
+      "preserved": true
+    }
+  ],
+  "current": {
+    "decks": 150,
+    "definitions": 21541,
+    "eligible": 21541
+  }
+}

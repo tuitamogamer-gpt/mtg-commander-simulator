@@ -6,7 +6,7 @@ import {buildIntake,sourceDir} from '../scripts/import-pip-otc-m3c-precons.mjs';
 const intake=JSON.parse(fs.readFileSync(sourceDir+'/intake.json'));
 test('ten original lists, 214 native additions and complete player guides',()=>{
  const now=buildIntake(M);assert.equal(now.decks.length,10);assert.equal(now.names.length,726);assert.equal(intake.newCards,214);assert.equal(intake.reusedCards,512);
- assert.equal(Object.keys(M.DECKS).length,140);assert.equal(Object.keys(M.DEFS).length,21385);
+ assert.equal(Object.keys(M.DECKS).length,150);assert.equal(Object.keys(M.DEFS).length,21541);
  for(const d of now.decks){assert.equal(d.cards.reduce((n,c)=>n+c.n,0),100);assert.ok(M.DECK_META[d.name]);const guide=M.DECK_GUIDES[d.name];assert.ok(guide.plan&&guide.mulligan&&guide.tip);assert.equal(M.DECK_GUIDE_ROUTES[guide.route].length,3);for(const key of guide.keys)assert.ok(d.cards.some(c=>c.name===key),d.name+': '+key);}
  for(const n of intake.newNames){assert.ok(M.SCRIPTS[n],n);assert.equal(M.CARD_CATALOG[n].deckImportEligible,true,n);assert.equal(!!M.DEFS[n].auto,false,n);assert.equal(!!M.DEFS[n]._simplified,false,n);}
 });

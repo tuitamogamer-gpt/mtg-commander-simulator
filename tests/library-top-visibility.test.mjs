@@ -49,7 +49,7 @@ for (const role of ['human', 'local-ai']) test(`${role}: paid Oracle of Mul Daya
   assert.equal(ui.visibleLibraryTop(game, owner).name, 'Divination'); assert.equal(state(owner).visibleLibraryTop.name, 'Divination');
 });
 
-for (const name of ['Realmwalker', 'Augur of Autumn', 'Summoning Materia', "Fortune Teller's Talent", 'Thundermane Dragon']) {
+for (const name of ['Realmwalker', 'Augur of Autumn', 'Summoning Materia', "Fortune Teller's Talent", 'Thundermane Dragon', 'One with the Multiverse', 'Into the Pit']) {
   test(`${name}: private top remains controller-only in both UI visibility and text serialization`, () => {
     const { game, human, bot, ui, put, state } = fixture(), source = put(name, bot);
     assert.equal(source.def.revealOwnTop, true); assert.equal(!!source.def.revealAllTop, false);

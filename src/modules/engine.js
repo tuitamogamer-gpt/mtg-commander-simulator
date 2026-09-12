@@ -2370,7 +2370,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         p.hand.push(c); c.zone = 'hand';
         p.turnState.drewThisTurn++;
         if (this.phase === 'draw' && this.turnPlayer === p) p.turnState._firstDrawDone = true;
-        if(c.def.oracleMiracle)await MTG.OracleV8Miracle.onDraw(this,p,c);
+        await MTG.OracleV8Miracle.onDraw(this,p,c);
         await this.emit('draw', { player: p, card: c, srcCard, nth: p.turnState.drewThisTurn });
         // Miracle is a draw-triggered alternative cast, not a permanent-zone
         // ability. Queue it directly while the freshly drawn card is in hand;
@@ -3367,8 +3367,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // i izabrani mod i mete prije nego što dobiju priority.
       let mode = null;
       if (tr.modes && tr.modes.list && tr.modes.list.length) {
+        const randomMode=tr.modes.random?Math.floor(this.rnd()*tr.modes.list.length):null;
         const options = tr.modes.list.map((entry, index) => ({ entry, index }))
-          .filter(({ entry }) => {
+          .filter(({ entry, index }) => {
+            if(randomMode!==null&&index!==randomMode)return false;
             const specs = typeof entry.targets === 'function'
               ? entry.targets(this, tr.src, tr.data || {})
               : entry.targets;
@@ -3379,7 +3381,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             key: String(index), label: entry.label,
           }, entry.aiMeta || {}));
         if (!options.length) return;
-        const picked = await ctrl.controller.decide(this, {
+        const picked = randomMode!==null?String(randomMode):await ctrl.controller.decide(this, {
           type: 'chooseOption', prompt: `${tr.src ? tr.src.name : ''}: izaberi mod`,
           options,
           data: tr.data,

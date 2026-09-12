@@ -23,6 +23,120 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+  "Peace Offering": {
+    "icon": "🐇",
+    "colors": [
+      "G",
+      "U",
+      "W"
+    ],
+    "style": "Shared draws and counters",
+    "set": "Bloomburrow Commander (2024)",
+    "blurb": "Use Bumbleflower to draw cards, grow evasive attackers, and benefit from gifts."
+  },
+  "Miracle Worker": {
+    "icon": "🔮",
+    "colors": [
+      "B",
+      "U",
+      "W"
+    ],
+    "style": "Enchantment miracles",
+    "set": "Duskmourn Commander (2024)",
+    "blurb": "Surveil with Aminatou and cast substantial enchantments through miracle."
+  },
+  "Jump Scare!": {
+    "icon": "🌿",
+    "colors": [
+      "G",
+      "U"
+    ],
+    "style": "Manifest dread and landfall",
+    "set": "Duskmourn Commander (2024)",
+    "blurb": "Manifest useful cards, then use another landfall trigger to reveal a larger permanent."
+  },
+  "Death Toll": {
+    "icon": "🍂",
+    "colors": [
+      "B",
+      "G"
+    ],
+    "style": "Delirium and recursion",
+    "set": "Duskmourn Commander (2024)",
+    "blurb": "Attack with Winter and return a strong permanent at your end step."
+  },
+  "20 Ways to Win": {
+    "icon": "🏆",
+    "colors": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "style": "Alternate wins and Shrines",
+    "set": "Secret Lair Commander (2024)",
+    "blurb": "Recover enchantments with Go-Shintai and develop a specific alternate win."
+  },
+  "Living Energy": {
+    "icon": "⚡",
+    "colors": [
+      "G",
+      "R",
+      "U"
+    ],
+    "style": "Artifacts and energy",
+    "set": "Aetherdrift Commander (2025)",
+    "blurb": "Build an artifact board and use Saheeli to copy your strongest permanent."
+  },
+  "Eternal Might": {
+    "icon": "🪦",
+    "colors": [
+      "B",
+      "U",
+      "W"
+    ],
+    "style": "Zombies and card flow",
+    "set": "Aetherdrift Commander (2025)",
+    "blurb": "Draw and cycle to strengthen the army, then recover creatures from your graveyard."
+  },
+  "Everyone's Invited!": {
+    "icon": "🌈",
+    "colors": [
+      "B",
+      "G",
+      "R",
+      "U",
+      "W"
+    ],
+    "style": "Five-color creature types",
+    "set": "Secret Lair Commander (2025)",
+    "blurb": "Stack creature-type payoffs and choose a useful type for Morophon."
+  },
+  "Counter Blitz": {
+    "icon": "⚽",
+    "colors": [
+      "G",
+      "U",
+      "W"
+    ],
+    "style": "Counters and proliferation",
+    "set": "FINAL FANTASY Commander (2025)",
+    "blurb": "Move counters with Tidus and protect attacks with Rikku or other evasion."
+  },
+  "Revival Trance": {
+    "icon": "🔥",
+    "colors": [
+      "B",
+      "R",
+      "W"
+    ],
+    "style": "Small-creature reanimation",
+    "set": "FINAL FANTASY Commander (2025)",
+    "blurb": "Attack with Terra and reuse creature entry abilities."
+  }
+,
+
 
   "Scrappy Survivors": {
     "icon": "🐕",

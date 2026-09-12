@@ -91,6 +91,9 @@ test('svaki aktivni oracle target-opponent put ima stvarni target spec', () => {
     // for both controllers and checks the opponent while it is on the Stack.
     if(canonicalName==="Caesar, Legion's Emperor"){assert.equal(typeof script.triggers[0].run,'function');continue;}
     const specs = allTargetSpecs(script);
+    // Brewing sizes its up-to target set from the actual number of opponents.
+    if(canonicalName==='Communal Brewing')specs.push(...script.triggers[0].targets(game,card(controller,canonicalName)));
+
     if(canonicalName==='Passionate Archaeologist'){
       const background=card(controller,canonicalName),commander=card(controller,'Faldorn, Dread Wolf Herald');commander.commander=true;
       for(const c of [background,commander]){c.zone='battlefield';game.battlefield.push(c);}game.recalc();

@@ -3,6 +3,178 @@
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   MTG.DECK_GUIDE_ROUTES = Object.freeze({
+  "bdf0": [
+    {
+      "label": "Early game",
+      "title": "Build your resources",
+      "text": "Develop mana and keep inexpensive interaction available."
+    },
+    {
+      "label": "Midgame",
+      "title": "Develop the engine",
+      "text": "Use Bumbleflower to draw cards, grow evasive attackers, and benefit from gifts."
+    },
+    {
+      "label": "Endgame",
+      "title": "Turn advantage into a win",
+      "text": "Protect a large flying attacker or assemble a Twenty-Toed Toad win."
+    }
+  ],
+  "bdf1": [
+    {
+      "label": "Early game",
+      "title": "Build your resources",
+      "text": "Fix your mana and prepare the top of your library."
+    },
+    {
+      "label": "Midgame",
+      "title": "Develop the engine",
+      "text": "Surveil with Aminatou and cast substantial enchantments through miracle."
+    },
+    {
+      "label": "Endgame",
+      "title": "Turn advantage into a win",
+      "text": "Recover enchantments with escape and convert discounted spells into a decisive board."
+    }
+  ],
+  "bdf2": [
+    {
+      "label": "Early game",
+      "title": "Build your resources",
+      "text": "Ramp and develop lands before deploying Zimone."
+    },
+    {
+      "label": "Midgame",
+      "title": "Develop the engine",
+      "text": "Manifest useful cards, then use another landfall trigger to reveal a larger permanent."
+    },
+    {
+      "label": "Endgame",
+      "title": "Turn advantage into a win",
+      "text": "Build a board of large creatures and turn land drops into continued advantage."
+    }
+  ],
+  "bdf3": [
+    {
+      "label": "Early game",
+      "title": "Build your resources",
+      "text": "Fill your graveyard with several card types."
+    },
+    {
+      "label": "Midgame",
+      "title": "Develop the engine",
+      "text": "Attack with Winter and return a strong permanent at your end step."
+    },
+    {
+      "label": "Endgame",
+      "title": "Turn advantage into a win",
+      "text": "Use recursion and removal to outlast the table; finality sends returned permanents to exile when they die."
+    }
+  ],
+  "bdf4": [
+    {
+      "label": "Early game",
+      "title": "Build your resources",
+      "text": "Build your five-color mana and establish a Shrine or draw engine."
+    },
+    {
+      "label": "Midgame",
+      "title": "Develop the engine",
+      "text": "Recover enchantments with Go-Shintai and develop a specific alternate win."
+    },
+    {
+      "label": "Endgame",
+      "title": "Turn advantage into a win",
+      "text": "Protect the relevant upkeep or attack trigger, or resolve a second Approach from hand."
+    }
+  ],
+  "bdf5": [
+    {
+      "label": "Early game",
+      "title": "Build your resources",
+      "text": "Develop mana artifacts and bank energy."
+    },
+    {
+      "label": "Midgame",
+      "title": "Develop the engine",
+      "text": "Build an artifact board and use Saheeli to copy your strongest permanent."
+    },
+    {
+      "label": "Endgame",
+      "title": "Turn advantage into a win",
+      "text": "Turn stored energy into large attacks, Vehicles, or Aetherflux Conduit’s burst of spells."
+    }
+  ],
+  "bdf6": [
+    {
+      "label": "Early game",
+      "title": "Build your resources",
+      "text": "Deploy Zombies and establish reliable mana."
+    },
+    {
+      "label": "Midgame",
+      "title": "Develop the engine",
+      "text": "Draw and cycle to strengthen the army, then recover creatures from your graveyard."
+    },
+    {
+      "label": "Endgame",
+      "title": "Turn advantage into a win",
+      "text": "Use flying Zombies, recursion, and repeated card draw to finish through combat."
+    }
+  ],
+  "bdf7": [
+    {
+      "label": "Early game",
+      "title": "Build your resources",
+      "text": "Fix your colors and play changelings."
+    },
+    {
+      "label": "Midgame",
+      "title": "Develop the engine",
+      "text": "Stack creature-type payoffs and choose a useful type for Morophon."
+    },
+    {
+      "label": "Endgame",
+      "title": "Turn advantage into a win",
+      "text": "Use the shared bonuses and Morophon’s discount to overwhelm the battlefield."
+    }
+  ],
+  "bdf8": [
+    {
+      "label": "Early game",
+      "title": "Build your resources",
+      "text": "Play creatures and seed several kinds of counters."
+    },
+    {
+      "label": "Midgame",
+      "title": "Develop the engine",
+      "text": "Move counters with Tidus and protect attacks with Rikku or other evasion."
+    },
+    {
+      "label": "Endgame",
+      "title": "Turn advantage into a win",
+      "text": "Proliferate a broad board and finish with growing, protected attackers."
+    }
+  ],
+  "bdf9": [
+    {
+      "label": "Early game",
+      "title": "Build your resources",
+      "text": "Develop mana and put useful creatures into the graveyard."
+    },
+    {
+      "label": "Midgame",
+      "title": "Develop the engine",
+      "text": "Attack with Terra and reuse creature entry abilities."
+    },
+    {
+      "label": "Endgame",
+      "title": "Turn advantage into a win",
+      "text": "Build value through recurring allies, Celes counters, and graveyard casting."
+    }
+  ]
+,
+
 
   "pom0": [
     {
@@ -438,6 +610,148 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.DECK_GUIDES = Object.freeze({
+  "Peace Offering": {
+    "route": "bdf0",
+    "pace": "Shared draws and counters",
+    "complexity": "Advanced",
+    "theme": "Use Bumbleflower to draw cards, grow evasive attackers, and benefit from gifts.",
+    "plan": "Develop mana and keep inexpensive interaction available. Use Bumbleflower to draw cards, grow evasive attackers, and benefit from gifts. Protect a large flying attacker or assemble a Twenty-Toed Toad win.",
+    "mulligan": "Keep three lands, Bant fixing, and cheap spells you can cast after Bumbleflower.",
+    "tip": "Cast a second spell each turn to draw two yourself; choose gift recipients and counter targets carefully.",
+    "keys": [
+      "Ms. Bumbleflower",
+      "Mr. Foxglove",
+      "Twenty-Toed Toad"
+    ]
+  },
+  "Miracle Worker": {
+    "route": "bdf1",
+    "pace": "Enchantment miracles",
+    "complexity": "Advanced",
+    "theme": "Surveil with Aminatou and cast substantial enchantments through miracle.",
+    "plan": "Fix your mana and prepare the top of your library. Surveil with Aminatou and cast substantial enchantments through miracle. Recover enchantments with escape and convert discounted spells into a decisive board.",
+    "mulligan": "Keep three lands, Esper colors, and card selection or an early enchantment.",
+    "tip": "Set up the first draw of a turn: Aminatou reduces a revealed enchantment’s miracle cost by four generic mana.",
+    "keys": [
+      "Aminatou, Veil Piercer",
+      "The Master of Keys",
+      "Ancient Cellarspawn"
+    ]
+  },
+  "Jump Scare!": {
+    "route": "bdf2",
+    "pace": "Manifest dread and landfall",
+    "complexity": "Advanced",
+    "theme": "Manifest useful cards, then use another landfall trigger to reveal a larger permanent.",
+    "plan": "Ramp and develop lands before deploying Zimone. Manifest useful cards, then use another landfall trigger to reveal a larger permanent. Build a board of large creatures and turn land drops into continued advantage.",
+    "mulligan": "Keep three lands, green ramp, and a face-down or landfall payoff.",
+    "tip": "Zimone manifests on the first landfall resolution each turn; later resolutions can turn any of your face-down permanents face up.",
+    "keys": [
+      "Zimone, Mystery Unraveler",
+      "Kianne, Corrupted Memory",
+      "Curator Beastie"
+    ]
+  },
+  "Death Toll": {
+    "route": "bdf3",
+    "pace": "Delirium and recursion",
+    "complexity": "Advanced",
+    "theme": "Attack with Winter and return a strong permanent at your end step.",
+    "plan": "Fill your graveyard with several card types. Attack with Winter and return a strong permanent at your end step. Use recursion and removal to outlast the table; finality sends returned permanents to exile when they die.",
+    "mulligan": "Keep three lands, early self-mill, and a way to stabilize the battlefield.",
+    "tip": "Choose Winter’s exiled cards to cover at least four card types while keeping a permanent worth returning.",
+    "keys": [
+      "Winter, Cynical Opportunist",
+      "Rendmaw, Creaking Nest",
+      "Convert to Slime"
+    ]
+  },
+  "20 Ways to Win": {
+    "route": "bdf4",
+    "pace": "Alternate wins and Shrines",
+    "complexity": "Advanced",
+    "theme": "Recover enchantments with Go-Shintai and develop a specific alternate win.",
+    "plan": "Build your five-color mana and establish a Shrine or draw engine. Recover enchantments with Go-Shintai and develop a specific alternate win. Protect the relevant upkeep or attack trigger, or resolve a second Approach from hand.",
+    "mulligan": "Keep reliable multicolor mana, early ramp, and a draw engine.",
+    "tip": "Pick a reachable win condition from your hand and board; keep its exact upkeep, attack, or life threshold in mind.",
+    "keys": [
+      "Go-Shintai of Life's Origin",
+      "Maze's End",
+      "Approach of the Second Sun"
+    ]
+  },
+  "Living Energy": {
+    "route": "bdf5",
+    "pace": "Artifacts and energy",
+    "complexity": "Advanced",
+    "theme": "Build an artifact board and use Saheeli to copy your strongest permanent.",
+    "plan": "Develop mana artifacts and bank energy. Build an artifact board and use Saheeli to copy your strongest permanent. Turn stored energy into large attacks, Vehicles, or Aetherflux Conduit’s burst of spells.",
+    "mulligan": "Keep three lands, an early mana artifact, and an energy source.",
+    "tip": "Save energy for Saheeli’s combat copy or a larger payoff; temporary copies reward strong artifact and creature targets.",
+    "keys": [
+      "Saheeli, Radiant Creator",
+      "Pia Nalaar, Chief Mechanic",
+      "Aetherflux Conduit"
+    ]
+  },
+  "Eternal Might": {
+    "route": "bdf6",
+    "pace": "Zombies and card flow",
+    "complexity": "Advanced",
+    "theme": "Draw and cycle to strengthen the army, then recover creatures from your graveyard.",
+    "plan": "Deploy Zombies and establish reliable mana. Draw and cycle to strengthen the army, then recover creatures from your graveyard. Use flying Zombies, recursion, and repeated card draw to finish through combat.",
+    "mulligan": "Keep three lands, a cheap Zombie, and a source of drawing or cycling.",
+    "tip": "Temmet grows your entire Zombie army whenever you draw; cycling keeps that engine moving.",
+    "keys": [
+      "Temmet, Naktamun's Will",
+      "Lost Monarch of Ifnir",
+      "On Wings of Gold"
+    ]
+  },
+  "Everyone's Invited!": {
+    "route": "bdf7",
+    "pace": "Five-color creature types",
+    "complexity": "Advanced",
+    "theme": "Stack creature-type payoffs and choose a useful type for Morophon.",
+    "plan": "Fix your colors and play changelings. Stack creature-type payoffs and choose a useful type for Morophon. Use the shared bonuses and Morophon’s discount to overwhelm the battlefield.",
+    "mulligan": "Keep multicolor fixing, an inexpensive changeling, and a tribal payoff.",
+    "tip": "Changelings count as every creature type, so one creature can benefit from several different tribal payoffs.",
+    "keys": [
+      "Morophon, the Boundless",
+      "Arcane Adaptation",
+      "Unsettled Mariner"
+    ]
+  },
+  "Counter Blitz": {
+    "route": "bdf8",
+    "pace": "Counters and proliferation",
+    "complexity": "Advanced",
+    "theme": "Move counters with Tidus and protect attacks with Rikku or other evasion.",
+    "plan": "Play creatures and seed several kinds of counters. Move counters with Tidus and protect attacks with Rikku or other evasion. Proliferate a broad board and finish with growing, protected attackers.",
+    "mulligan": "Keep three lands, a cheap creature, and a way to add counters.",
+    "tip": "Use Tidus to move a useful counter before combat, then connect with a countered creature to draw and proliferate.",
+    "keys": [
+      "Tidus, Yuna's Guardian",
+      "Yuna, Grand Summoner",
+      "Rikku, Resourceful Guardian"
+    ]
+  },
+  "Revival Trance": {
+    "route": "bdf9",
+    "pace": "Small-creature reanimation",
+    "complexity": "Advanced",
+    "theme": "Attack with Terra and reuse creature entry abilities.",
+    "plan": "Develop mana and put useful creatures into the graveyard. Attack with Terra and reuse creature entry abilities. Build value through recurring allies, Celes counters, and graveyard casting.",
+    "mulligan": "Keep three lands, early self-mill or discard, and a useful creature with power three or less.",
+    "tip": "Terra needs combat damage and two available mana to return a small creature tapped.",
+    "keys": [
+      "Terra, Herald of Hope",
+      "Celes, Rune Knight",
+      "Locke, Treasure Hunter"
+    ]
+  }
+,
+
 
   "Scrappy Survivors": {
     "route": "pom0",

@@ -2452,7 +2452,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // but it is not cast and did not itself spend mana, tap/convoked creatures,
   // use Treasures, or acquire later stack state such as countered/ward data.
   const COPIABLE_SPELL_CHOICE_KEYS = [
-    'quality', 'lifestreamX', 'c1516RevealMV', 'cwwRevealed',
+    'bdfGiftPlayer', 'quality', 'lifestreamX', 'c1516RevealMV', 'cwwRevealed',
     'striveTargets', 'counterDistribution', 'damageDivision',
     'pomSquad','pomKickerGreen','pomKickerBlue','pomHellkiteCounters','squadN', 'sacdN', 'sacdSnaps', 'additionalTapped', 'harmonizeCreature', 'discardedCards',
     'additionalLifePaid', 'additionalBlightPaid', 'additionalCostChoice',
@@ -2521,7 +2521,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (opts[key] !== undefined && castOpts[key] === undefined) castOpts[key] = opts[key];
     }
     if(castOpts.oracleImmediateCast!==undefined&&(!MTG.OracleV8PlayPermissions?.allowed(this,p,card,castOpts)||!this.canCastTiming(p,card,castOpts)))return false;
-    if(card.def.oracleMiracle&&castOpts.miracle&&!MTG.OracleV8Miracle.allowed(this,p,card,castOpts))return false;
+    if(castOpts.miracle&&!MTG.OracleV8Miracle.allowed(this,p,card,castOpts))return false;
     if (card.oracleFaces && !castOpts.faceDownCast) {
       const from = castOpts.from || card.zone;
       if (castOpts.oracleFace === undefined) {
@@ -3293,7 +3293,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(so.oracleCastingChoicePlan&&!MTG.OracleV8CastingChoices.validate({g:this,you:p,src:card,so},d.oracleCastingChoice))return false;
     if(castOpts.foretell&&!foretellCastAllowed(this,p,card,castOpts))return false;
     if(castOpts.oracleImmediateCast!==undefined&&(!MTG.OracleV8PlayPermissions?.allowed(this,p,card,castOpts)||!this.canCastTiming(p,card,castOpts)))return false;
-    if(card.def.oracleMiracle&&castOpts.miracle&&!MTG.OracleV8Miracle.allowed(this,p,card,castOpts))return false;
+    if(castOpts.miracle&&!MTG.OracleV8Miracle.allowed(this,p,card,castOpts))return false;
     if(d.oracleCastRestriction&&!d.oracleCastRestriction(this,card,p))return false;
     if(cost.oracleColoredReductionRemaining?.length)cost.oracleColoredReductionRemaining=applyOracleColoredReduction(cost,cost.oracleColoredReductionRemaining);
     if(oracleAlternative&&(card.zoneVersion!==oracleAlternativeSourceVersion||
@@ -4253,7 +4253,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // Do not reuse card.castMeta: it contains payment bookkeeping from the
         // physical original. A spell copy carries only copiable cast choices.
         castMeta: {
-          wasCast:!!so.bomCastCopy,
+          wasCast:!!so.bomCastCopy, bdfSpellCopy:true, bdfGiftPlayer:so.bdfGiftPlayer,
           c1719DragonRevealed:!!d.c1719Orator&&so.oracleCastingChoicePaid?.kind==='revealHand',
           x: so.x,
           alt: Object.assign({}, so.castOpts || {}),
@@ -5286,7 +5286,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.sacSelf && !this.canSacrifice(c)) return false;
     if (cost.rmCounter && (c.counters[cost.rmCounter.kind || cost.rmCounter] || 0) < (cost.rmCounter.n || 1)) return false;
     const ctx = {
-      g: this, src: c, you: p, targets: [], isActivatedAbility: true, ability: a,
+      g: this, src: c, you: p, targets: [], isActivatedAbility: true, ability: a, sourceZone:c.zone,
       c1719TextChanges:(c.meta.c1719TextChanges||[]).map(r=>({...r})),
       sourceZoneVersion: c.zoneVersion, sourceUntapEpoch:c.meta.oracleUntapEpoch||0, sourcePhaseEpoch:c.meta.oraclePhaseEpoch||0, sourceDurationControlEpoch:c.meta.oracleDurationControl?.epoch||0, sourceCopyEpoch: c.copyEpoch||0, sourceCopying:!!c.isCopyOf,
     };
