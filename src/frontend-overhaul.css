@@ -187,7 +187,7 @@
 #setup .reviewactions { display: grid; grid-template-columns: 1fr 1.35fr; gap: 7px; }
 #setup .reviewactions .pbtn { min-height: 48px; }
 
-/* Deck Spotlight ------------------------------------------------------- */
+/* Deck Spotlight: full card artwork, readable guides, and a touch card reader. */
 body.deck-spotlight-open { overflow: hidden; }
 #setup .deckspotlightoverlay {
   position: fixed;
@@ -197,181 +197,202 @@ body.deck-spotlight-open { overflow: hidden; }
   display: grid;
   place-items: center;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 72% 16%, rgba(var(--ds-accent-rgb), .12), transparent 34%),
-    rgba(2, 5, 6, .88);
-  backdrop-filter: blur(16px) saturate(.8);
+  background: radial-gradient(circle at 72% 16%, rgba(var(--ds-accent-rgb), .12), transparent 34%), rgba(2, 5, 6, .9);
+  backdrop-filter: blur(16px);
 }
 #setup .deckspotlight {
   position: relative;
   width: min(1180px, 100%);
+  height: min(1000px, calc(100 * var(--dvhu) - 48px));
   max-height: calc(100 * var(--dvhu) - 48px);
-  overflow: auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   color: var(--ds-copy);
   background: var(--ds-table);
   border: 1px solid rgba(var(--ds-accent-rgb), .32);
   border-radius: 18px;
-  box-shadow: 0 36px 100px rgba(0, 0, 0, .72), 0 0 0 1px rgba(255, 255, 255, .025) inset;
+  box-shadow: 0 36px 100px rgba(0, 0, 0, .72);
 }
-#setup .deckspotlightclose {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 8;
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  color: #e1e6e3;
-  background: rgba(5, 8, 9, .76);
-  border: 1px solid rgba(226, 232, 228, .22);
-  border-radius: 50%;
-  font: 300 25px/1 var(--ds-font-body);
-  cursor: pointer;
-  backdrop-filter: blur(10px);
-}
-#setup .deckspotlightclose:hover { color: var(--ds-accent-ink); background: var(--ds-brass-bright); border-color: var(--ds-brass-bright); }
-#setup .deckspotlightclose:focus-visible { outline: 2px solid var(--ds-brass-bright); outline-offset: 3px; }
+#setup .deckspotlighttoolbar { flex: none; min-height: 64px; padding: 10px 20px 10px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--ds-panel); }
+#setup .deckspotlighttoolbar > div { min-width: 0; display: grid; gap: 4px; }
+#setup .deckspotlighttoolbar span { color: var(--ds-accent-bright); font: 700 10px/1.3 var(--ds-font-body); letter-spacing: .15em; }
+#setup .deckspotlighttoolbar b { overflow: hidden; color: var(--ds-text); font: 600 15px/1.3 var(--ds-font-body); text-overflow: ellipsis; white-space: nowrap; }
+#setup .deckspotlightclose,
+#setup .deckcardreaderclose { flex: none; width: 44px; height: 44px; display: grid; place-items: center; color: var(--ds-text); background: rgba(255, 255, 255, .04); border: 1px solid var(--ds-line); border-radius: 50%; font: 400 26px/1 var(--ds-font-body); cursor: pointer; }
+#setup .deckspotlightclose:hover,
+#setup .deckcardreaderclose:hover { color: var(--ds-accent-bright); border-color: var(--ds-accent); }
+#setup .deckspotlightnav { flex: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 0 20px; border-block: 1px solid var(--ds-line-soft); background: var(--ds-panel); }
+#setup .deckspotlightnav button { min-height: 46px; padding: 10px 8px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--ds-copy); font: 600 14px/1.3 var(--ds-font-body); cursor: pointer; }
+#setup .deckspotlightnav button:is(:hover, :focus-visible) { color: var(--ds-accent-bright); background: rgba(var(--ds-accent-rgb), .07); border-bottom-color: var(--ds-accent); }
+#setup .deckspotlightcontent { min-height: 0; flex: 1; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; scroll-padding-block: 20px; }
+#setup .deckspotlightcontent :is(h2, h3) { overflow-wrap: anywhere; }
 #setup .deckspotlighthero {
-  min-height: 378px;
   display: grid;
-  grid-template-columns: minmax(390px, .9fr) minmax(0, 1.1fr);
+  grid-template-columns: minmax(350px, .95fr) minmax(0, 1.05fr);
   background: linear-gradient(135deg, var(--ds-dialog), var(--ds-table) 72%);
   border-bottom: 1px solid var(--ds-line-soft);
 }
-#setup .deckspotlightvisual { position: relative; min-height: 378px; overflow: hidden; background: var(--ds-dialog); }
+#setup .deckspotlightvisual { position: relative; min-width: 0; min-height: 410px; padding: 28px 24px 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: var(--ds-dialog); }
 #setup .deckspotlightbackdrop,
 #setup .deckspotlightvideo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%; }
-#setup .deckspotlightbackdrop { filter: saturate(.9) contrast(1.05); transform: scale(1.04); }
+#setup .deckspotlightbackdrop { filter: saturate(.9) brightness(.65); }
 #setup .deckspotlightvideo { z-index: 1; }
-#setup .deckspotlightshade {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background:
-    linear-gradient(90deg, rgba(4, 7, 8, .12), rgba(4, 7, 8, .02) 48%, rgba(var(--ds-panel-rgb), .92) 100%),
-    linear-gradient(0deg, rgba(3, 6, 7, .94), transparent 48%);
-}
-#setup .deckspotlightcard {
-  position: absolute;
-  left: 24px;
-  bottom: 24px;
-  z-index: 3;
-  width: 152px;
-  aspect-ratio: 5 / 7;
-  object-fit: cover;
-  border: 1px solid rgba(var(--ds-accent-bright-rgb), .52);
-  border-radius: 9px;
-  box-shadow: 0 20px 44px rgba(0, 0, 0, .68), 0 0 0 1px rgba(255, 255, 255, .08) inset;
-}
-#setup .deckspotlightpicked {
-  position: absolute;
-  left: 192px;
-  bottom: 28px;
-  z-index: 4;
-  padding: 7px 10px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--ds-accent-ink);
-  background: linear-gradient(180deg, var(--ds-accent-bright), var(--ds-accent));
-  border: 1px solid #f2cc91;
-  border-radius: 999px;
-  font: 800 8px/1 var(--ds-font-display);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, .38);
-}
-#setup .deckspotlightintro { min-width: 0; padding: 42px 44px 34px; display: flex; flex-direction: column; justify-content: center; }
-#setup .deckspotlightkicker { display: flex; align-items: center; gap: 10px; color: var(--ds-brass); font: 800 8px/1 var(--ds-font-display); letter-spacing: .18em; }
+#setup .deckspotlightshade { position: absolute; inset: 0; z-index: 2; background: linear-gradient(0deg, var(--ds-table), rgba(4, 7, 8, .16) 65%), linear-gradient(90deg, transparent 70%, rgba(var(--ds-panel-rgb), .75)); }
+#setup .deckspotlightcommanders { position: relative; z-index: 3; width: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 14px; }
+#setup .deckspotlightcommanderart { width: min(100%, 228px); min-width: 0; padding: 0; overflow: hidden; background: var(--ds-table); border: 1px solid rgba(var(--ds-accent-bright-rgb), .5); border-radius: 12px; box-shadow: 0 14px 35px rgba(0, 0, 0, .55); cursor: zoom-in; }
+#setup .deckspotlightcommanders.partners .deckspotlightcommanderart { width: calc(50% - 7px); max-width: 200px; }
+#setup .deckspotlightcard { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; object-fit: contain; }
+#setup .deckspotlightcommanderart > span,
+#setup .deckspotlightkeyart > span { padding: 9px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--ds-accent-bright); font: 600 12px/1.25 var(--ds-font-body); }
+#setup .deckspotlightcommanderart > span b,
+#setup .deckspotlightkeyart > span b { font-size: 17px; line-height: 1; }
+#setup .deckspotlightpicked { position: relative; z-index: 3; margin-top: 16px; padding: 7px 12px; display: inline-flex; align-items: center; gap: 8px; color: var(--ds-text); background: rgba(var(--ds-panel-rgb), .72); border: 1px solid rgba(255, 255, 255, .16); border-radius: 999px; font: 600 12px/1.3 var(--ds-font-body); }
+#setup .deckspotlightpicked b { color: var(--ds-accent-bright); }
+#setup .deckspotlightintro { min-width: 0; padding: 32px; display: flex; flex-direction: column; justify-content: center; }
+#setup .deckspotlightkicker { display: flex; align-items: center; gap: 10px; color: var(--ds-accent-bright); font: 700 11px/1.3 var(--ds-font-body); letter-spacing: .1em; }
 #setup .deckspotlightkicker span { padding-right: 10px; border-right: 1px solid rgba(var(--ds-accent-rgb), .3); }
-#setup .deckspotlightkicker b { color: var(--ds-muted); font-weight: 700; }
-#setup .deckspotlightmana { min-height: 22px; margin-top: 25px; display: flex; align-items: center; gap: 5px; }
-#setup .deckspotlightmana img { width: 21px; height: 21px; filter: drop-shadow(0 3px 8px rgba(0, 0, 0, .42)); }
-#setup .deckspotlightintro h2 { margin: 13px 52px 0 0; color: #f0f3f1; font: 400 clamp(38px, 4.8 * var(--vwu), 62px)/.94 var(--ds-font-display); letter-spacing: -.025em; }
-#setup .deckspotlightcommander { margin: 12px 0 0; color: #c9d1ce; font: 600 11px/1.35 var(--ds-font-body); }
-#setup .deckspotlightcommander span { margin-right: 8px; color: var(--ds-brass); font: 800 7px/1 var(--ds-font-display); letter-spacing: .14em; }
-#setup .deckspotlighttheme { max-width: 620px; margin: 22px 0 0; color: #9fa9a6; font: 500 14px/1.55 var(--ds-font-body); }
-#setup .deckspotlightbadges { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 6px; }
-#setup .deckspotlightbadges span { padding: 6px 8px; color: #b9c2bf; background: rgba(255, 255, 255, .035); border: 1px solid #293334; border-radius: 999px; font: 700 7px/1 var(--ds-font-display); letter-spacing: .08em; text-transform: uppercase; }
-#setup .deckspotlightbadges span:first-child { color: #e1c89e; border-color: rgba(var(--ds-accent-rgb), .3); }
-#setup .deckspotlightstats { margin-top: 22px; padding-top: 17px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; border-top: 1px solid rgba(255, 255, 255, .065); }
-#setup .deckspotlightstats span { color: var(--ds-muted); font: 600 8px/1.3 var(--ds-font-display); text-transform: uppercase; letter-spacing: .06em; }
-#setup .deckspotlightstats b { display: block; margin-bottom: 3px; color: #d9dfdc; font: 400 21px/1 var(--ds-font-display); }
-#setup .deckspotlightbody { padding: 34px 40px; display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(280px, .72fr); gap: 34px; border-bottom: 1px solid var(--ds-line-soft); }
-#setup .deckspotlighteyebrow { color: var(--ds-brass); font: 800 8px/1 var(--ds-font-display); letter-spacing: .17em; }
+#setup .deckspotlightkicker b { color: var(--ds-copy); font-weight: 500; }
+#setup .deckspotlightmana { margin-top: 18px; display: flex; align-items: center; gap: 6px; }
+#setup .deckspotlightmana img { width: 25px; height: 25px; filter: drop-shadow(0 3px 8px rgba(0, 0, 0, .42)); }
+#setup .deckspotlightintro h2 { margin: 12px 0 0; color: var(--ds-text); font: 600 clamp(34px, 4 * var(--vwu), 50px)/1.04 var(--ds-font-display); letter-spacing: -.035em; }
+#setup .deckspotlightcommander { margin: 14px 0 0; color: var(--ds-copy); font: 500 14px/1.5 var(--ds-font-body); }
+#setup .deckspotlightcommander span { display: block; margin-bottom: 4px; color: var(--ds-accent-bright); font: 700 10px/1.4 var(--ds-font-body); letter-spacing: .13em; }
+#setup .deckspotlighttheme { margin: 16px 0 0; color: var(--ds-copy); font: 500 16px/1.6 var(--ds-font-body); }
+#setup .deckspotlightbadges { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 7px; }
+#setup .deckspotlightbadges span { padding: 7px 10px; color: var(--ds-copy); background: rgba(255, 255, 255, .035); border: 1px solid var(--ds-line); border-radius: 6px; font: 500 12px/1.35 var(--ds-font-body); }
+#setup .deckspotlightbadges span:first-child { color: var(--ds-accent-glow); border-color: rgba(var(--ds-accent-rgb), .3); }
+#setup .deckspotlightstats { margin-top: 20px; padding-top: 16px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; border-top: 1px solid var(--ds-line-soft); }
+#setup .deckspotlightstats span { color: var(--ds-copy); font: 500 12px/1.45 var(--ds-font-body); }
+#setup .deckspotlightstats b { display: block; margin-bottom: 4px; color: var(--ds-text); font: 500 28px/1.1 var(--ds-font-display); }
+#setup .deckspotlighteyebrow { color: var(--ds-accent-bright); font: 700 11px/1.4 var(--ds-font-body); letter-spacing: .15em; }
 #setup .deckspotlightplan h3,
-#setup .deckspotlightsignatures h3 { margin: 8px 0 0; color: var(--ds-text); font: 400 25px/1.05 var(--ds-font-display); }
-#setup .deckspotlightlead { max-width: 710px; margin: 13px 0 0; color: #9da7a4; font: 500 12px/1.62 var(--ds-font-body); }
-#setup .deckspotlightrhythm { margin: 25px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; list-style: none; }
-#setup .deckspotlightrhythm li { min-width: 0; padding: 15px; display: grid; grid-template-columns: 25px minmax(0, 1fr); gap: 9px; background: var(--ds-panel); border: 1px solid var(--ds-line-soft); border-radius: var(--ds-r-sm); }
-#setup .deckspotlightrhythm li > span { color: rgba(var(--ds-accent-rgb), .56); font: 400 16px/1 var(--ds-font-display); }
-#setup .deckspotlightrhythm li div { min-width: 0; display: grid; align-content: start; gap: 5px; }
-#setup .deckspotlightrhythm small { color: var(--ds-muted); font: 800 6px/1 var(--ds-font-display); letter-spacing: .11em; text-transform: uppercase; }
-#setup .deckspotlightrhythm b { color: #d5dbd8; font: 700 10px/1.2 var(--ds-font-body); }
-#setup .deckspotlightrhythm p { margin: 0; color: #747f7c; font: 500 9px/1.45 var(--ds-font-body); }
-#setup .deckspotlightfieldguide { display: grid; gap: 8px; align-content: stretch; }
-#setup .deckspotlightfieldguide > div { position: relative; min-height: 0; padding: 18px 17px 17px; overflow: hidden; background: linear-gradient(145deg, rgba(var(--ds-accent-rgb), .075), rgba(255, 255, 255, .018)); border: 1px solid rgba(var(--ds-accent-rgb), .18); border-radius: var(--ds-r-sm); }
-#setup .deckspotlightfieldguide > div > span { position: absolute; top: 14px; right: 14px; color: rgba(var(--ds-accent-rgb), .4); }
-#setup .deckspotlightfieldguide .gameicon { width: 24px; height: 24px; }
-#setup .deckspotlightfieldguide small { display: block; color: var(--ds-brass); font: 800 7px/1 var(--ds-font-display); letter-spacing: .14em; }
-#setup .deckspotlightfieldguide b { display: block; margin-top: 8px; color: #dce2df; font: 600 12px/1.2 var(--ds-font-body); }
-#setup .deckspotlightfieldguide p { margin: 8px 30px 0 0; color: #84908c; font: 500 10px/1.52 var(--ds-font-body); }
-#setup .deckspotlightsignatures { padding: 28px 40px; display: grid; grid-template-columns: 250px minmax(0, 1fr); align-items: center; gap: 28px; background: var(--ds-table); border-bottom: 1px solid var(--ds-line-soft); }
-#setup .deckspotlightsignatures h3 { font-size: 20px; }
-#setup .deckspotlightkeys { min-width: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-#setup .deckspotlightkey { min-width: 0; min-height: 106px; margin: 0; display: grid; grid-template-columns: 74px minmax(0, 1fr); align-items: center; overflow: hidden; background: var(--ds-panel-raised); border: 1px solid var(--ds-line-soft); border-radius: 8px; }
-#setup .deckspotlightkey > img { width: 74px; height: 106px; object-fit: cover; object-position: 50% 18%; }
-#setup .deckspotlightkey figcaption { min-width: 0; padding: 11px; display: grid; gap: 6px; }
-#setup .deckspotlightkey small { color: var(--ds-accent-soft); font: 800 6px/1 var(--ds-font-display); letter-spacing: .13em; }
-#setup .deckspotlightkey b { color: #d5dbd8; font: 600 10px/1.3 var(--ds-font-body); }
-#setup .deckspotlightactions { position: sticky; bottom: 0; z-index: 7; min-height: 78px; padding: 14px 18px 14px 40px; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 9px; background: rgba(var(--ds-panel-rgb), .96); border-top: 1px solid rgba(255, 255, 255, .035); backdrop-filter: blur(14px); }
+#setup .deckspotlightsignatures h3 { margin: 7px 0 0; color: var(--ds-text); font: 500 28px/1.15 var(--ds-font-display); letter-spacing: -.025em; }
+#setup .deckspotlightsignatures { padding: 28px 32px; background: var(--ds-table); border-bottom: 1px solid var(--ds-line-soft); }
+#setup .deckspotlightsignaturehead { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+#setup .deckspotlightsignaturehead p { margin: 8px 0 0; color: var(--ds-copy); font: 500 14px/1.5 var(--ds-font-body); }
+#setup .deckspotlightgallerycontrols { display: none; flex: none; gap: 6px; }
+#setup .deckspotlightgallerycontrols button { width: 44px; height: 44px; border: 1px solid var(--ds-line); border-radius: 50%; background: var(--ds-panel-raised); color: var(--ds-text); font-size: 22px; cursor: pointer; }
+#setup .deckspotlightkeys { min-width: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+#setup .deckspotlightkey { min-width: 0; margin: 0; scroll-snap-align: start; }
+#setup .deckspotlightkeyart { width: 100%; padding: 0; display: block; overflow: hidden; background: var(--ds-table); border: 1px solid var(--ds-line); border-radius: 12px; box-shadow: 0 8px 22px rgba(0, 0, 0, .3); cursor: zoom-in; }
+#setup .deckspotlightkeyart > img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; object-fit: contain; }
+#setup .deckspotlightkeyart:is(:hover, :focus-visible),
+#setup .deckspotlightcommanderart:is(:hover, :focus-visible) { border-color: var(--ds-accent-bright); box-shadow: 0 0 0 2px rgba(var(--ds-accent-rgb), .25), 0 12px 28px rgba(0, 0, 0, .5); }
+#setup .deckspotlightkey figcaption { padding: 14px 2px 0; display: grid; gap: 5px; }
+#setup .deckspotlightkey small { color: var(--ds-accent-bright); font: 700 10px/1.3 var(--ds-font-body); letter-spacing: .12em; }
+#setup .deckspotlightkey figcaption > b { color: var(--ds-text); font: 600 17px/1.35 var(--ds-font-body); }
+#setup .deckspotlightkey figcaption > span { color: var(--ds-copy); font: 500 12px/1.45 var(--ds-font-body); }
+#setup .deckspotlightbody { padding: 28px 32px; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, .9fr); align-items: start; gap: 28px; border-bottom: 1px solid var(--ds-line-soft); }
+#setup .deckspotlightlead { margin: 14px 0 0; color: var(--ds-copy); font: 500 16px/1.65 var(--ds-font-body); }
+#setup .deckspotlightrhythm { margin: 22px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; list-style: none; }
+#setup .deckspotlightrhythm li { min-width: 0; padding-top: 14px; border-top: 2px solid rgba(var(--ds-accent-rgb), .4); display: grid; grid-template-columns: 24px minmax(0, 1fr); align-content: start; gap: 8px; }
+#setup .deckspotlightrhythm li > span { color: var(--ds-accent-bright); font: 500 18px/1.2 var(--ds-font-display); }
+#setup .deckspotlightrhythm li div { min-width: 0; display: grid; align-content: start; gap: 7px; }
+#setup .deckspotlightrhythm small { color: var(--ds-copy); font: 700 11px/1.3 var(--ds-font-body); text-transform: uppercase; letter-spacing: .07em; }
+#setup .deckspotlightrhythm b { color: var(--ds-text); font: 600 16px/1.4 var(--ds-font-body); }
+#setup .deckspotlightrhythm p { margin: 0; color: var(--ds-copy); font: 500 14px/1.6 var(--ds-font-body); }
+#setup .deckspotlightfieldguide { display: grid; gap: 12px; align-content: start; }
+#setup .deckspotlightfieldguide > div { position: relative; padding: 18px; background: linear-gradient(145deg, rgba(var(--ds-accent-rgb), .065), rgba(255, 255, 255, .018)); border: 1px solid rgba(var(--ds-accent-rgb), .23); border-radius: 10px; }
+#setup .deckspotlightfieldguide > div > span { position: absolute; top: 16px; right: 16px; color: var(--ds-accent); }
+#setup .deckspotlightfieldguide .gameicon { width: 22px; height: 22px; }
+#setup .deckspotlightfieldguide small { display: block; padding-right: 30px; color: var(--ds-accent-bright); font: 700 11px/1.3 var(--ds-font-body); letter-spacing: .1em; }
+#setup .deckspotlightfieldguide b { display: block; margin-top: 8px; color: var(--ds-text); font: 600 17px/1.35 var(--ds-font-body); }
+#setup .deckspotlightfieldguide p { margin: 8px 0 0; color: var(--ds-copy); font: 500 15px/1.65 var(--ds-font-body); }
+#setup .deckspotlightactions { position: sticky; bottom: 0; z-index: 7; flex: none; min-height: 76px; padding: 12px 20px 12px 28px; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px; background: var(--ds-panel); border-top: 1px solid var(--ds-line); }
 #setup .deckspotlightactions > div { min-width: 0; display: grid; gap: 4px; }
-#setup .deckspotlightactions > div b { overflow: hidden; color: #dbe1de; font: 600 11px/1.2 var(--ds-font-body); text-overflow: ellipsis; white-space: nowrap; }
-#setup .deckspotlightactions > div span { color: var(--ds-muted); font-size: 9px; }
-#setup .deckspotlightactions .pbtn { width: auto !important; min-height: 48px; margin: 0 !important; padding-inline: 20px !important; }
+#setup .deckspotlightactions > div b { overflow: hidden; color: var(--ds-text); font: 600 14px/1.3 var(--ds-font-body); text-overflow: ellipsis; white-space: nowrap; }
+#setup .deckspotlightactions > div span { color: var(--ds-copy); font-size: 12px; }
+#setup .deckspotlightactions .pbtn { width: auto !important; min-height: 48px; margin: 0 !important; padding-inline: 20px !important; font: 700 15px/1.3 var(--ds-font-body); }
+#setup .deckspotlight .pbtn.primary { color: var(--ds-accent-ink) !important; background: linear-gradient(180deg, var(--ds-accent-bright), var(--ds-accent)) !important; border: 1px solid var(--ds-accent-glow) !important; box-shadow: 0 4px 16px rgba(var(--ds-accent-rgb), .18); }
+#setup .deckspotlight .pbtn.primary:hover { background: var(--ds-accent-glow) !important; }
 
+/* Card inspection stays inside the deck flow and keeps the reading position. */
+#setup .deckcardreaderoverlay { position: absolute; inset: 0; z-index: 10; padding: 24px; display: grid; place-items: center; background: rgba(var(--ds-table-rgb), .94); backdrop-filter: blur(14px); }
+#setup .deckcardreader { width: min(980px, 100%); max-height: 100%; min-height: 0; display: flex; flex-direction: column; color: var(--ds-text); background: var(--ds-panel); border: 1px solid var(--ds-line); border-radius: 16px; overflow: hidden; box-shadow: 0 24px 80px rgba(2, 6, 12, .6); }
+#setup .deckcardreaderhead { flex: none; padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--ds-line); }
+#setup .deckcardreaderhead > div { min-width: 0; }
+#setup .deckcardreaderhead small { display: block; color: var(--ds-accent-bright); font: 700 10px/1.3 var(--ds-font-body); letter-spacing: .12em; }
+#setup .deckcardreaderhead h2 { margin: 5px 0 0; color: var(--ds-text); font: 500 26px/1.2 var(--ds-font-display); overflow-wrap: anywhere; }
+#setup .deckcardreaderbody { min-height: 0; padding: 24px; display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1fr); align-items: start; gap: 28px; overflow: auto; overscroll-behavior: contain; }
+#setup .deckcardreaderimage { display: block; width: 100%; max-width: 380px; height: auto; margin-inline: auto; border-radius: 14px; }
+#setup .deckcardreadertext { min-width: 0; }
+#setup .deckcardreadertype { margin: 0; color: var(--ds-copy); font: 600 15px/1.5 var(--ds-font-body); }
+#setup .deckcardreadercost { margin: 12px 0; color: var(--ds-accent-bright); font: 600 17px/1.4 var(--ds-font-mono); }
+#setup .deckcardreaderrules { margin-top: 18px; color: var(--ds-text); font: 500 17px/1.7 var(--ds-font-body); white-space: pre-wrap; overflow-wrap: anywhere; }
+#setup .deckcardreaderactions { flex: none; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; padding: 12px 22px; border-top: 1px solid var(--ds-line); }
+#setup .deckcardreaderactions button { min-height: 46px; padding: 10px 16px; border: 1px solid var(--ds-line); border-radius: 8px; color: var(--ds-text); background: var(--ds-panel-raised); font: 600 14px/1.3 var(--ds-font-body); cursor: pointer; }
+#setup .deckcardreaderactions button:hover { border-color: var(--ds-accent); }
+#setup .deckcardreaderactions [role="status"] { color: var(--ds-copy); font: 500 13px/1.4 var(--ds-font-mono); }
+
+@media (max-width: 1000px) {
+  #setup .deckspotlightstats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #setup .deckspotlightrhythm { grid-template-columns: minmax(0, 1fr); }
+}
 @media (max-width: 900px) {
   #setup .deckspotlightoverlay { padding: 12px; }
-  #setup .deckspotlight { max-height: calc(100 * var(--dvhu) - 24px); }
-  #setup .deckspotlighthero { grid-template-columns: minmax(300px, .8fr) minmax(0, 1.2fr); }
-  #setup .deckspotlightintro { padding: 38px 28px 28px; }
-  #setup .deckspotlightintro h2 { font-size: clamp(34px, 5 * var(--vwu), 48px); }
-  #setup .deckspotlightstats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #setup .deckspotlight { height: calc(100 * var(--dvhu) - 24px); max-height: calc(100 * var(--dvhu) - 24px); }
+  #setup .deckspotlighthero { grid-template-columns: minmax(260px, .9fr) minmax(0, 1fr); }
+  #setup .deckspotlightvisual { padding-inline: 16px; }
+  #setup .deckspotlightintro { padding: 24px; }
   #setup .deckspotlightbody { grid-template-columns: minmax(0, 1fr); }
+  #setup .deckspotlightrhythm { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   #setup .deckspotlightfieldguide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  #setup .deckspotlightsignatures { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  #setup .deckspotlightkeys { gap: 16px; }
 }
-
 @media (max-width: 640px) {
   #setup .deckspotlightoverlay { padding: 0; place-items: stretch; }
-  #setup .deckspotlight { width: 100%; max-height: calc(100 * var(--dvhu)); border: 0; border-radius: 0; }
-  #setup .deckspotlightclose { position: fixed; top: max(12px, env(safe-area-inset-top)); right: 12px; }
-  #setup .deckspotlighthero { min-height: 0; grid-template-columns: minmax(0, 1fr); }
-  #setup .deckspotlightvisual { min-height: 248px; }
-  #setup .deckspotlightshade { background: linear-gradient(0deg, var(--ds-panel) 0%, rgba(4, 7, 8, .05) 62%); }
-  #setup .deckspotlightcard { left: 14px; bottom: 14px; width: 98px; border-radius: 6px; }
-  #setup .deckspotlightpicked { left: 124px; bottom: 17px; max-width: calc(100% - 140px); font-size: 7px; }
-  #setup .deckspotlightintro { padding: 26px 16px 25px; }
-  #setup .deckspotlightmana { margin-top: 19px; }
-  #setup .deckspotlightintro h2 { margin-right: 0; font-size: clamp(34px, 11 * var(--vwu), 48px); }
-  #setup .deckspotlighttheme { margin-top: 17px; font-size: 12px; }
-  #setup .deckspotlightbadges span:last-child { flex-basis: 100%; width: max-content; }
-  #setup .deckspotlightstats { margin-top: 18px; }
-  #setup .deckspotlightbody { padding: 26px 16px; gap: 22px; }
+  #setup .deckspotlight { width: 100%; height: calc(100 * var(--dvhu)); max-height: calc(100 * var(--dvhu)); border: 0; border-radius: 0; }
+  #setup .deckspotlighttoolbar { min-height: 60px; padding: max(8px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left)); }
+  #setup .deckspotlightnav { padding-inline: 8px; }
+  #setup .deckspotlightnav button { font-size: 13px; }
+  #setup .deckspotlightcontent { scroll-padding-block: 16px; }
+  #setup .deckspotlighthero { grid-template-columns: minmax(0, 1fr); }
+  #setup .deckspotlightvisual { min-height: 0; padding: 18px 16px 14px; }
+  #setup .deckspotlightshade { background: linear-gradient(0deg, var(--ds-table), rgba(4, 7, 8, .08) 85%); }
+  #setup .deckspotlightcommanderart { max-width: 204px; }
+  #setup .deckspotlightcommanders.partners { gap: 12px; }
+  #setup .deckspotlightcommanders.partners .deckspotlightcommanderart { width: calc(50% - 6px); max-width: 174px; }
+  #setup .deckspotlightpicked { margin-top: 12px; }
+  #setup .deckspotlightintro { padding: 16px 20px 24px; }
+  #setup .deckspotlightkicker { font-size: 10px; }
+  #setup .deckspotlightmana { margin-top: 14px; }
+  #setup .deckspotlightintro h2 { font-size: clamp(32px, 9 * var(--vwu), 42px); }
+  #setup .deckspotlighttheme { margin-top: 12px; font-size: 16px; }
+  #setup .deckspotlightstats span { font-size: 13px; }
+  #setup .deckspotlightbody { padding: 24px 20px; gap: 24px; }
   #setup .deckspotlightrhythm { grid-template-columns: minmax(0, 1fr); }
-  #setup .deckspotlightrhythm li { min-height: 104px; }
+  #setup .deckspotlightrhythm li { padding-top: 14px; grid-template-columns: 28px minmax(0, 1fr); }
+  #setup .deckspotlightrhythm p { font-size: 15px; }
   #setup .deckspotlightfieldguide { grid-template-columns: minmax(0, 1fr); }
-  #setup .deckspotlightfieldguide > div { min-height: 138px; }
-  #setup .deckspotlightsignatures { padding: 25px 16px; }
-  #setup .deckspotlightkeys { grid-template-columns: minmax(0, 1fr); }
-  #setup .deckspotlightkey { min-height: 116px; grid-template-columns: 82px minmax(0, 1fr); }
-  #setup .deckspotlightkey > img { width: 82px; height: 116px; }
-  #setup .deckspotlightactions { padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); grid-template-columns: 1fr 1.2fr; }
+  #setup .deckspotlightfieldguide > div { padding: 16px; }
+  #setup .deckspotlightfieldguide p { font-size: 16px; }
+  #setup .deckspotlightsignatures { padding: 24px 16px; }
+  #setup .deckspotlightsignaturehead { position: relative; display: block; margin-bottom: 16px; }
+  #setup .deckspotlightsignaturehead p { max-width: calc(100% - 104px); min-height: 44px; display: flex; align-items: center; }
+  #setup .deckspotlightsignatures h3 { font-size: 25px; }
+  #setup .deckspotlightgallerycontrols { position: absolute; right: 0; bottom: 0; display: flex; }
+  #setup .deckspotlightkeys { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 82%; gap: 16px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; padding: 4px 0 12px; scrollbar-width: thin; scrollbar-color: var(--ds-accent) var(--ds-panel); }
+  #setup .deckspotlightkey { scroll-snap-stop: always; }
+  #setup .deckspotlightactions { min-height: 72px; padding: 10px max(12px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); grid-template-columns: 1fr 1.15fr; gap: 8px; }
   #setup .deckspotlightactions > div { display: none; }
-  #setup .deckspotlightactions .pbtn { padding-inline: 11px !important; }
+  #setup .deckspotlightactions .pbtn { padding-inline: 10px !important; font-size: 14px; }
+  #setup .deckcardreaderoverlay { padding: 0; }
+  #setup .deckcardreader { width: 100%; height: 100%; max-height: calc(100 * var(--dvhu)); border: 0; border-radius: 0; }
+  #setup .deckcardreaderhead { padding: max(12px, env(safe-area-inset-top)) 16px 12px; }
+  #setup .deckcardreaderhead h2 { font-size: 22px; }
+  #setup .deckcardreaderbody { grid-template-columns: minmax(0, 1fr); padding: 18px 16px 24px; gap: 24px; }
+  #setup .deckcardreadertext { padding-inline: 4px; }
+  #setup .deckcardreaderrules { font-size: 17px; }
+  #setup .deckcardreaderactions { padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); gap: 12px; }
+  #setup .deckcardreaderactions button { padding-inline: 10px; }
 }
-
+@media (max-width: 360px) {
+  #setup .deckspotlightnav { padding-inline: 4px; }
+  #setup .deckspotlightnav button { padding-inline: 3px; font-size: 12px; white-space: nowrap; }
+}
+body.reduced-motion #setup .deckspotlightvideo { display: none; }
 @media (prefers-reduced-motion: reduce) {
   #setup .deckspotlightvideo { display: none; }
 }
@@ -1803,15 +1824,15 @@ body.high-contrast #game :is(.pbtn, .tbtn, .zbtn, .hcard, .bcard) { border-color
 #setup .deckviewchoices button { min-height: 38px; padding: 0 12px; border: 0; border-radius: 5px; background: transparent; color: var(--ds-muted); font: 600 12px var(--ds-font-body); cursor: pointer; }
 #setup .deckviewchoices [aria-pressed="true"] { background: var(--ds-panel-raised); color: var(--ds-text); box-shadow: 0 1px 3px rgba(2, 6, 12, .6); }
 #setup[data-deck-view="gallery"] .decklist { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 20px !important; }
-#setup[data-deck-view="gallery"] .deckcard { display: flex !important; flex-direction: column; min-height: 350px !important; padding: 0; border: 1px solid var(--ds-line-soft); border-radius: 14px; background: var(--ds-panel); overflow: hidden; text-align: left; }
+#setup[data-deck-view="gallery"] .deckcard { display: flex !important; flex-direction: column; min-height: 0 !important; padding: 0; border: 1px solid var(--ds-line-soft); border-radius: 14px; background: var(--ds-panel); overflow: hidden; text-align: left; }
 #setup[data-deck-view="gallery"] .deckart { position: static; width: 100% !important; height: 168px !important; min-height: 168px !important; flex: none; object-fit: cover; object-position: center 30%; opacity: 1; mask-image: none; }
 #setup[data-deck-view="gallery"] .deckinfo { flex: 1; display: flex !important; flex-direction: column; gap: 9px; padding: 19px 20px 16px !important; min-width: 0; width: 100%; }
-#setup[data-deck-view="gallery"] .deckname { font-size: 22px; font-weight: 600; letter-spacing: -.035em; }
-#setup[data-deck-view="gallery"] .deckcmd b { font-size: 12px; }
+#setup[data-deck-view="gallery"] .deckname { font-size: 22px !important; line-height: 1.15 !important; font-weight: 600; letter-spacing: -.035em; }
+#setup[data-deck-view="gallery"] .deckcmd b { font-size: 14px; line-height: 1.5; }
 #setup[data-deck-view="gallery"] .deckcolors { margin: 0; }
-#setup[data-deck-view="gallery"] .deckstyle { font-size: 10px; }
-#setup[data-deck-view="gallery"] .deckblurb { font-size: 12px; line-height: 1.65; color: var(--ds-copy); }
-#setup[data-deck-view="gallery"] .deckset { margin-top: auto; padding-top: 6px; font-size: 10px; }
+#setup[data-deck-view="gallery"] .deckstyle { font-size: 12px; line-height: 1.5; }
+#setup[data-deck-view="gallery"] .deckblurb { font-size: 14px; line-height: 1.65; color: var(--ds-copy); }
+#setup[data-deck-view="gallery"] .deckset { margin-top: auto; padding-top: 6px; font-size: 12px; line-height: 1.5; }
 #setup[data-deck-view="gallery"] .deckyear { font: 500 11px var(--ds-font-mono); }
 #setup[data-deck-view="gallery"] .deckfavorite { top: 12px; right: 12px; width: 40px; height: 40px; background: rgba(var(--ds-table-rgb), .86); border: 1px solid rgba(255,255,255,.25); }
 #setup .deckfavorite[aria-pressed="true"] { color: var(--ds-accent-bright); background: var(--ds-panel-raised); }
@@ -1820,8 +1841,8 @@ body.high-contrast #game :is(.pbtn, .tbtn, .zbtn, .hcard, .bcard) { border-color
 #setup[data-deck-view="compact"] .deckcard { min-height: 150px !important; }
 #setup[data-deck-view="compact"] .deckart { min-height: 150px !important; }
 #setup[data-deck-view="compact"] .deckblurb { display: none; }
-#setup[data-deck-view="compact"] .deckname { font-size: 20px; }
-#setup[data-deck-view="compact"] .deckcmd b { font-size: 12px; }
+#setup[data-deck-view="compact"] .deckname { font-size: 20px !important; line-height: 1.2 !important; }
+#setup[data-deck-view="compact"] .deckcmd b { font-size: 13px; line-height: 1.45; }
 #setup .setupmobilebar { position: fixed; display: flex; align-items: center; z-index: 100; left: 50%; right: auto; bottom: 16px; transform: translateX(-50%); width: min(580px, calc(100% - 32px)); min-height: 72px; padding: 12px 16px; gap: 20px; border: 1px solid rgba(var(--ds-accent-rgb), .4); border-radius: 14px; background: var(--ds-dialog); box-shadow: 0 14px 50px rgba(2,6,12,.75); }
 #setup .setupmobilebar:has(button:disabled),
 #setup[data-setup-stage="pod"] .setupmobilebar,
@@ -1892,6 +1913,14 @@ body.high-contrast #game :is(.pbtn, .tbtn, .zbtn, .hcard, .bcard) { border-color
 #setup .manacurvestats strong { font: 500 36px var(--ds-font-mono); letter-spacing: -.06em; color: var(--ds-accent-bright); }
 #setup .manacurvestats span { color: var(--ds-copy); font-size: 12px; }
 #setup .manacurvestats b { color: var(--ds-muted); font-size: 11px; font-weight: 500; }
+#setup .deckspotlight .deckanalysis { gap: 24px; padding: 28px 32px; }
+#setup .deckspotlight .deckanalysis .eyebrow { font-size: 11px; }
+#setup .deckspotlight .deckanalysis p { color: var(--ds-copy); font-size: 14px; }
+#setup .deckspotlight .manacurve { height: 132px; }
+#setup .deckspotlight .manacurvebin b,
+#setup .deckspotlight .manacurvebin span { color: var(--ds-copy); font-size: 13px; }
+#setup .deckspotlight .manacurvestats span,
+#setup .deckspotlight .manacurvestats b { color: var(--ds-copy); font-size: 13px; }
 #setup .returningplayer { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 0 0 30px; padding: 20px 24px; border-block: 1px solid var(--ds-line-soft); }
 #setup .returningplayer > div { margin-right: auto; display: grid; gap: 5px; }
 #setup .returningplayer b { font: 650 20px var(--ds-font-display); }
@@ -1973,7 +2002,7 @@ body.game-active #game .handwrap::before { display: none; }
   #setup .deckviewchoices { margin-left: auto; }
   #setup .filterchip { min-height: 44px; }
   #setup[data-deck-view="gallery"] .decklist, #setup[data-deck-view="compact"] .decklist { grid-template-columns: minmax(0,1fr) !important; }
-  #setup[data-deck-view="gallery"] .deckart { height: 170px !important; }
+  #setup[data-deck-view="gallery"] .deckart { height: 190px !important; }
   #setup .setupright.mobile-open { padding: 20px !important; }
   #setup .botrow { display: grid; grid-template-columns: 40px 1fr; gap: 10px; }
   #setup .botfields { grid-column: 1 / -1; width: 100%; grid-template-columns: 1fr; gap: 9px; }
@@ -1987,6 +2016,7 @@ body.game-active #game .handwrap::before { display: none; }
   #setup .reviewdeck b { font-size: 20px; }
   #setup .reviewseats small { white-space: normal; }
   #setup .deckanalysis { grid-template-columns: minmax(0,1fr); padding: 24px 18px; }
+  #setup .deckspotlight .deckanalysis { padding: 24px 20px; }
   #setup .manacurvestats { flex-wrap: wrap; }
   #setup .savepodform > div { flex-direction: column; }
   #setup .savepodform input { font-size: 16px; }

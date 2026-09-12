@@ -727,26 +727,45 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         `<img src="./assets/mana/${color}.svg" alt="{${color}}" title="{${color}}">`).join('');
       const phases = route.map((phase, index) => `
         <li><span>0${index + 1}</span><div><small>${esc(phase.label)}</small><b>${esc(phase.title)}</b><p>${esc(phase.text)}</p></div></li>`).join('');
+      const previewNames = [...new Set([...commanders, ...guide.keys])];
+      const commanderCards = commanders.map(cardName => `
+        <button type="button" class="deckspotlightcommanderart" data-card-preview="${escAttr(cardName)}" aria-label="Inspect ${escAttr(cardName)}">
+          <img class="deckspotlightcard" src="${cardImg(cardName)}" alt="${escAttr(cardName)}" onerror="MTG.imgFail(this)">
+          <span>View card <b aria-hidden="true">↗</b></span>
+        </button>`).join('');
       const keyCards = guide.keys.map(cardName => `
         <figure class="deckspotlightkey">
-          <img loading="eager" decoding="async" src="${cardImg(cardName)}" alt="${esc(cardName)}" onerror="MTG.imgFail(this)">
-          <figcaption><small>${deck.custom ? 'FROM YOUR DECK' : 'KEY CARD'}</small><b>${esc(cardName)}</b></figcaption>
+          <button type="button" class="deckspotlightkeyart" data-card-preview="${escAttr(cardName)}" aria-label="Inspect ${escAttr(cardName)}">
+            <img loading="eager" decoding="async" src="${cardImg(cardName)}" alt="${escAttr(cardName)}" onerror="MTG.imgFail(this)">
+            <span>View card <b aria-hidden="true">↗</b></span>
+          </button>
+          <figcaption><small>${commanders.includes(cardName) ? 'COMMANDER' : deck.custom ? 'FROM YOUR DECK' : 'KEY CARD'}</small><b>${esc(cardName)}</b><span>${esc(typeLine(MTG.DEFS[cardName] || {}))}</span></figcaption>
         </figure>`).join('');
       dialog.innerHTML = `
-        <button type="button" class="deckspotlightclose" aria-label="Close deck spotlight">×</button>
-        <header class="deckspotlighthero">
+        <div class="deckspotlighttoolbar">
+          <div><span>DECK SPOTLIGHT</span><b>${esc(name)}</b></div>
+          <button type="button" class="deckspotlightclose" aria-label="Close deck spotlight">×</button>
+        </div>
+        <nav class="deckspotlightnav" aria-label="Deck spotlight sections">
+          <button type="button" data-spotlight-section="overview">Overview</button>
+          <button type="button" data-spotlight-section="cards">Key cards</button>
+          <button type="button" data-spotlight-section="plan">Game plan</button>
+          <button type="button" data-spotlight-section="mana">Mana curve</button>
+        </nav>
+        <div class="deckspotlightcontent">
+        <header class="deckspotlighthero" data-spotlight-target="overview">
           <div class="deckspotlightvisual">
             <img class="deckspotlightbackdrop" src="${artURL(leadCommander)}" alt="" onerror="MTG.imgFail(this)">
             ${intro ? `<video class="deckspotlightvideo" muted autoplay loop playsinline preload="metadata" poster="${artURL(leadCommander)}" aria-hidden="true"><source src="${intro}" type="video/mp4"></video>` : ''}
             <div class="deckspotlightshade"></div>
-            <img class="deckspotlightcard" src="${cardImg(leadCommander)}" alt="${esc(leadCommander)}" onerror="MTG.imgFail(this)">
+            <div class="deckspotlightcommanders${commanders.length > 1 ? ' partners' : ''}">${commanderCards}</div>
             <span class="deckspotlightpicked"><b>✓</b> Selected for your seat</span>
           </div>
           <div class="deckspotlightintro">
             <div class="deckspotlightkicker"><span>DECK SPOTLIGHT</span><b>${deck.custom ? 'MY LIBRARY' : `${String(deckNumber).padStart(2, '0')} / ${String(activeDecks.length).padStart(2, '0')}`}</b></div>
             <div class="deckspotlightmana" aria-label="Color identity">${mana}</div>
             <h2 data-dialog-title>${esc(name)}</h2>
-            <p class="deckspotlightcommander"><span>COMMANDER</span>${esc(commanders.join(' + '))}</p>
+            <p class="deckspotlightcommander"><span>${commanders.length > 1 ? 'COMMANDERS' : 'COMMANDER'}</span>${esc(commanders.join(' + '))}</p>
             <p class="deckspotlighttheme">${esc(guide.theme)}</p>
             <div class="deckspotlightbadges"><span>${esc(guide.pace)}</span><span>${esc(guide.complexity)}</span><span>${esc(meta.set || '')}</span></div>
             <div class="deckspotlightstats" aria-label="Deck breakdown">
@@ -754,14 +773,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             </div>
           </div>
         </header>
-        <section class="deckanalysis" aria-label="Deck mana curve">
-          <div class="deckanalysisintro"><span class="eyebrow">Know your deck</span><h3>Mana curve</h3><p>Nonland cards, including commanders. X counts as 0.</p></div>
-          <div class="manacurve" role="img" aria-label="${escAttr(curve.bins.map((count, i) => `${i === 7 ? '7 or more' : i} mana: ${count} cards`).join('; '))}">
-            ${curve.bins.map((count, i) => `<div class="manacurvebin" title="${i === 7 ? '7+' : i} mana: ${count} cards"><b>${count}</b><i style="--curve-height:${Math.round(count / curveMax * 100)}%"></i><span>${i === 7 ? '7+' : i}</span></div>`).join('')}
+        <section class="deckspotlightsignatures" data-spotlight-target="cards" aria-labelledby="deckspotlight-signatures-title">
+          <div class="deckspotlightsignaturehead">
+            <div><span class="deckspotlighteyebrow">${deck.custom ? 'YOUR LIST' : 'SIGNATURE PIECES'}</span><h3 id="deckspotlight-signatures-title">${deck.custom ? 'Cards from your deck' : 'Cards that reveal the deck'}</h3><p>Open a card to read its rules.</p></div>
+            <div class="deckspotlightgallerycontrols" aria-label="Browse key cards"><button type="button" data-gallery-step="-1" aria-label="Previous key card">←</button><button type="button" data-gallery-step="1" aria-label="Next key card">→</button></div>
           </div>
-          <div class="manacurvestats"><strong>${curve.average.toFixed(1)}</strong><span>average mana</span><b>${curve.lands} lands · ${curve.spells} nonlands</b></div>
+          <div class="deckspotlightkeys">${keyCards}</div>
         </section>
-        <div class="deckspotlightbody">
+        <div class="deckspotlightbody" data-spotlight-target="plan">
           <section class="deckspotlightplan" aria-labelledby="deckspotlight-plan-title">
             <span class="deckspotlighteyebrow">${deck.custom ? 'BUILD YOUR TABLE' : 'HOW IT PLAYS'}</span>
             <h3 id="deckspotlight-plan-title">${deck.custom ? 'Choose the rest of your pod' : 'Your route through the game'}</h3>
@@ -773,10 +792,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             <div><span>${U.icon('info')}</span><small>PILOT NOTE</small><b>One thing to remember</b><p>${esc(guide.tip)}</p></div>
           </aside>
         </div>
-        <section class="deckspotlightsignatures" aria-labelledby="deckspotlight-signatures-title">
-          <div><span class="deckspotlighteyebrow">${deck.custom ? 'YOUR LIST' : 'SIGNATURE PIECES'}</span><h3 id="deckspotlight-signatures-title">${deck.custom ? 'Cards from your deck' : 'Cards that reveal the deck'}</h3></div>
-          <div class="deckspotlightkeys">${keyCards}</div>
+        <section class="deckanalysis" data-spotlight-target="mana" aria-label="Deck mana curve">
+          <div class="deckanalysisintro"><span class="eyebrow">Know your deck</span><h3>Mana curve</h3><p>Nonland cards, including commanders. X counts as 0.</p></div>
+          <div class="manacurve" role="img" aria-label="${escAttr(curve.bins.map((count, i) => `${i === 7 ? '7 or more' : i} mana: ${count} cards`).join('; '))}">
+            ${curve.bins.map((count, i) => `<div class="manacurvebin" title="${i === 7 ? '7+' : i} mana: ${count} cards"><b>${count}</b><i style="--curve-height:${Math.round(count / curveMax * 100)}%"></i><span>${i === 7 ? '7+' : i}</span></div>`).join('')}
+          </div>
+          <div class="manacurvestats"><strong>${curve.average.toFixed(1)}</strong><span>average mana</span><b>${curve.lands} lands · ${curve.spells} nonlands</b></div>
         </section>
+        </div>
         <footer class="deckspotlightactions">
           <div><b>${esc(name)} is selected.</b><span>You can keep browsing or build the rest of the pod.</span></div>
           <button type="button" class="pbtn deckspotlightbrowse">Keep browsing</button>
@@ -785,6 +808,70 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       overlay.appendChild(dialog);
       root.appendChild(overlay);
       document.body.classList.add('deck-spotlight-open');
+      const content = dialog.querySelector('.deckspotlightcontent');
+      dialog.querySelectorAll('[data-spotlight-section]').forEach(button => {
+        button.onclick = () => {
+          const section = dialog.querySelector(`[data-spotlight-target="${button.dataset.spotlightSection}"]`);
+          const heading = section.querySelector('h2, h3');
+          heading.tabIndex = -1;
+          heading.focus({ preventScroll: true });
+          section.scrollIntoView({ block: 'start', behavior: 'instant' });
+        };
+      });
+      const gallery = dialog.querySelector('.deckspotlightkeys');
+      dialog.querySelectorAll('[data-gallery-step]').forEach(button => {
+        button.onclick = () => {
+          const cards = [...gallery.children];
+          if (!cards.length) return;
+          const nearest = cards.reduce((best, card, index) => Math.abs(card.getBoundingClientRect().left - gallery.getBoundingClientRect().left) < Math.abs(cards[best].getBoundingClientRect().left - gallery.getBoundingClientRect().left) ? index : best, 0);
+          const next = (nearest + Number(button.dataset.galleryStep) + cards.length) % cards.length;
+          gallery.scrollBy({ left: cards[next].getBoundingClientRect().left - cards[nearest].getBoundingClientRect().left, behavior: 'instant' });
+        };
+      });
+      const openCardPreview = (cardName, trigger) => {
+        let index = previewNames.indexOf(cardName);
+        if (index < 0) return;
+        const readerOverlay = el('div', 'deckcardreaderoverlay');
+        const reader = el('article', 'deckcardreader', `
+          <header class="deckcardreaderhead"><div><small>CARD DETAILS</small><h2 data-dialog-title></h2></div><button type="button" class="deckcardreaderclose" aria-label="Close card details">×</button></header>
+          <div class="deckcardreaderbody"><img class="deckcardreaderimage" onerror="MTG.imgFail(this)"><div class="deckcardreadertext"></div></div>
+          <footer class="deckcardreaderactions"><button type="button" data-reader-step="-1" aria-label="Previous card">← Previous</button><span role="status" aria-live="polite"></span><button type="button" data-reader-step="1" aria-label="Next card">Next →</button></footer>`);
+        const renderCard = () => {
+          const current = previewNames[index];
+          const def = MTG.DEFS[current] || {};
+          const image = el('img', 'deckcardreaderimage');
+          image.alt = current;
+          image.onerror = () => MTG.imgFail(image);
+          image.src = cardImg(current);
+          reader.querySelector('.deckcardreaderimage').replaceWith(image);
+          reader.querySelector('h2').textContent = current;
+          reader.querySelector('.deckcardreadertext').innerHTML = `<p class="deckcardreadertype">${esc(typeLine(def))}</p>${def.cost ? `<p class="deckcardreadercost">${esc(def.cost)}</p>` : ''}<div class="deckcardreaderrules">${esc(def.oracle || 'Rules text is shown on the card.')}</div>`;
+          reader.querySelector('[role="status"]').textContent = `${index + 1} / ${previewNames.length}`;
+          reader.querySelector('.deckcardreaderbody').scrollTop = 0;
+        };
+        const closeReader = () => {
+          readerOverlay.remove();
+          dialog.inert = false;
+          dialog.removeAttribute('aria-hidden');
+          trigger.focus({ preventScroll: true });
+        };
+        const stepCard = step => { index = (index + step + previewNames.length) % previewNames.length; renderCard(); };
+        reader.querySelector('.deckcardreaderclose').onclick = closeReader;
+        reader.querySelectorAll('[data-reader-step]').forEach(button => { button.onclick = () => stepCard(Number(button.dataset.readerStep)); });
+        readerOverlay.onclick = event => { if (event.target === readerOverlay) closeReader(); };
+        reader.addEventListener('keydown', event => {
+          if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeReader(); }
+          if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); stepCard(event.key === 'ArrowLeft' ? -1 : 1); }
+        });
+        renderCard();
+        readerOverlay.appendChild(reader);
+        overlay.appendChild(readerOverlay);
+        U.enhanceDialog(readerOverlay, reader, { initialFocus: reader.querySelector('.deckcardreaderclose'), returnFocus: document.body });
+        reader.querySelector('.deckcardreaderclose').focus({ preventScroll: true });
+        dialog.inert = true;
+        dialog.setAttribute('aria-hidden', 'true');
+      };
+      dialog.querySelectorAll('[data-card-preview]').forEach(button => { button.onclick = () => openCardPreview(button.dataset.cardPreview, button); });
       const close = nextStage => {
         const video = dialog.querySelector('video');
         if (video) video.pause();
@@ -806,10 +893,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       U.enhanceDialog(overlay, dialog, {
         label: `${name} deck spotlight`,
-        initialFocus: dialog.querySelector('.deckspotlightcontinue'),
+        initialFocus: dialog.querySelector('.deckspotlightclose'),
         returnFocus: document.body,
       });
-      requestAnimationFrame(() => { dialog.scrollTop = 0; });
+      requestAnimationFrame(() => { content.scrollTop = 0; });
     };
 
     const explorerHead = el('div', 'deckexplorerhead', `

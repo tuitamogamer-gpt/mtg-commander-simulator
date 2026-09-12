@@ -26,7 +26,7 @@ Accounts are optional. Guests can play immediately and retain imported lists in 
 
 ## 150 precon decks and commander video animations
 
-The built-in library contains **150 precon decks, each with 100 cards**. Choose a deck to open its **Deck Spotlight**: a commander preview, color identity, strategy, pace and complexity, mana curve, card-type breakdown, key cards, opening-hand advice, and a route through the early, middle, and late game. You can keep browsing before committing to a pod.
+The built-in library contains **150 precon decks, each with 100 cards**. Choose a deck to open its **Deck Spotlight**: a commander preview, color identity, strategy, pace and complexity, mana curve, card-type breakdown, key cards, opening-hand advice, and a route through the early, middle, and late game. Tap a commander or key card for a large image and readable rules text; on phones, swipe through the key-card gallery or use its arrows. Section shortcuts take you straight to the cards, game plan, or mana curve, and closing a card returns to your place in the guide. You can keep browsing before committing to a pod.
 
 **There are 28 dedicated commander videos across the original 27 decks.** Turtle Power has two default partner commanders, **Leonardo, the Balance** and **Michelangelo, the Heart**, and each has its own clip. The other 123 precons added on 6–12 September use original commander art; these batches add no commander videos.
 
