@@ -244,11 +244,18 @@ test('Jimmy pressure politics remains short, reciprocal and rules-enforced', asy
 });
 
 test('Jimmy completes a deterministic four-player game without fallback or a stalled mode', { timeout: 60_000 }, async () => {
+  const recordedDecisions = [];
   const game = MTG.newGame({
     humanDeck: 'Deep Clue Sea',
     aiDecks: ['Mardu Surge', 'Counter Intelligence', 'Elven Council'],
     aiStyles: ['jimmy', 'passive', 'balanced'],
     difficulty: 'normal', seed: 82811, maxTurns: 200, paced: false,
+    // The game's diagnostic ring retains only its last 160 decisions, which
+    // can all belong to survivors after Jimmy is eliminated. Observe the
+    // complete decision stream so the whole-game assertion covers his play.
+    onEvent: event => {
+      if (event.type === 'aiDecision') recordedDecisions.push({ playerName: event.player.name, ...event.decision });
+    },
   });
   await game.start();
   assert.equal(game.gameOver, true);
@@ -257,7 +264,7 @@ test('Jimmy completes a deterministic four-player game without fallback or a sta
   assert.equal(game.pendingTriggers.length, 0);
   const jimmy = game.players.find(player => player.deckName === 'Mardu Surge');
   assert.equal(jimmy.aiStyle, 'jimmy');
-  const decisions = (game.aiDecisionLog || []).filter(entry => entry.playerName === jimmy.name);
+  const decisions = recordedDecisions.filter(entry => entry.playerName === jimmy.name);
   assert.ok(decisions.length > 0);
   assert.equal(decisions.some(entry => entry.fallback), false);
   assert.ok(decisions.every(entry => entry.skill === 'jimmy-aggro-pressure'));

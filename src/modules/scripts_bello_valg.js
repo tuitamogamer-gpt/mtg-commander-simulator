@@ -698,7 +698,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       on: 'lifeLost', desc: '+1/+1 and a card',
       filter: (g, self, d) => d.player !== self.ctrl && g.turnPlayer === d.player && d.events === 1,
       run: async ctx => {
-        ctx.g.addCounters(ctx.src, '+1/+1', 1);
+        // A queued trigger cannot put counters on a source that left the
+        // battlefield, including the same card after it enters again.
+        if (ctx.src.zone === 'battlefield' && ctx.src.zoneVersion === ctx.sourceZoneVersion) {
+          ctx.g.addCounters(ctx.src, '+1/+1', 1);
+        }
         await ctx.g.draw(ctx.you, 1);
       },
     }],
@@ -865,7 +869,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     triggers: [{
       on: 'cast', desc: 'Damage',
       filter: (g, self, d) => d.player !== self.ctrl && !d.isCreature,
-      run: async ctx => { await ctx.g.damagePlayer(ctx.src, ctx.data.player, Math.max(0, ctx.src.power)); },
+      run: async ctx => {
+        const source = ctx.src.zone === 'battlefield' && ctx.src.zoneVersion === ctx.sourceZoneVersion
+          ? ctx.src : ctx.src.battlefieldLKI?.get(ctx.sourceZoneVersion);
+        await ctx.g.damagePlayer(ctx.src, ctx.data.player, Math.max(0, source?.power || 0));
+      },
     }],
   };
   SC['Gray Merchant of Asphodel'] = {
@@ -990,10 +998,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Nightshade Harvester'] = {
     triggers: [{
       on: 'landfall', desc: 'Lose 1 life, +1/+1',
-      filter: (g, self, d) => d.card.ctrl !== self.ctrl,
+      filter: (g, self, d) => (d.ctrl || d.card.ctrl) !== self.ctrl,
       run: async ctx => {
-        await ctx.g.loseLife(ctx.data.card.ctrl, 1);
-        ctx.g.addCounters(ctx.src, '+1/+1', 1);
+        await ctx.g.loseLife(ctx.data.ctrl || ctx.data.card.ctrl, 1);
+        if (ctx.src.zone === 'battlefield' && ctx.src.zoneVersion === ctx.sourceZoneVersion) {
+          ctx.g.addCounters(ctx.src, '+1/+1', 1);
+        }
       },
     }],
   };
