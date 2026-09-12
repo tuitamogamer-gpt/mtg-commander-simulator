@@ -19,23 +19,23 @@
     "oracleIds": 30784
   },
   "counts": {
-    "runtimeDefinitions": 21171,
+    "runtimeDefinitions": 21385,
     "genericOracleCards": 17800,
     "genericBatches": 178,
     "manualOracleCards": 58,
-    "legacyDefinitions": 3313,
+    "legacyDefinitions": 3527,
     "individuallyReviewedLegacyDefinitions": 18,
-    "deckImportEligibleDefinitions": 21171,
+    "deckImportEligibleDefinitions": 21385,
     "deckImportRestrictedDefinitions": 0,
-    "representedUniverseOracleIds": 21144,
-    "remainingUniverseOracleIds": 9640,
+    "representedUniverseOracleIds": 21357,
+    "remainingUniverseOracleIds": 9427,
     "parserEligibleUnimported": 2,
-    "deferred": 9638,
+    "deferred": 9425,
     "runtimeEntriesWithoutSnapshotMatch": 17,
-    "runtimeEntriesOutsideComparisonUniverse": 8
+    "runtimeEntriesOutsideComparisonUniverse": 9
   },
   "remainingByReason": {
-    "adventure-needs-complete-face-semantics": 40,
+    "adventure-needs-complete-face-semantics": 39,
     "backup-grant-needs-semantics": 2,
     "backup-other-rules-unsupported": 1,
     "complex-layout": 114,
@@ -45,27 +45,27 @@
     "double-faced-card-needs-face-transition-semantics": 81,
     "dynamic-power-toughness": 32,
     "event-stat-condition-needs-binding": 1,
-    "land-needs-explicit-semantics": 138,
+    "land-needs-explicit-semantics": 125,
     "leveler-band-needs-complete-semantics": 2,
     "mana-ability-needs-explicit-semantics": 15,
-    "noncreature-needs-explicit-semantics": 2155,
-    "oracle-needs-explicit-semantics": 4209,
+    "noncreature-needs-explicit-semantics": 2115,
+    "oracle-needs-explicit-semantics": 4088,
     "overload-body-needs-complete-semantics": 7,
     "reminder-only-oracle": 1,
     "requires-import-and-executable-proof": 2,
-    "saga-chapter-needs-complete-semantics": 96,
+    "saga-chapter-needs-complete-semantics": 89,
     "saga-other-rules-unsupported": 2,
-    "spell-needs-explicit-semantics": 2282,
+    "spell-needs-explicit-semantics": 2255,
     "split-needs-complete-face-semantics": 31,
     "transform-land-face-transition-needs-proof": 4,
     "unbound-X": 1,
-    "unbound-event-amount": 16,
-    "unbound-event-reference": 29,
+    "unbound-event-amount": 14,
+    "unbound-event-reference": 28,
     "unbound-sacrificed-stat": 2,
     "unbound-target-X": 5,
     "unbound-target-damage-source": 24,
     "unsupported-adventure-face-types": 16,
-    "unsupported-mana-cost": 49,
+    "unsupported-mana-cost": 48,
     "unsupported-split-faces": 27
   },
   "parserEligibleUnimportedNames": [
@@ -150,6 +150,14 @@
       ]
     },
     {
+      "name": "Pyrogoyf",
+      "sourceName": "Pyrogoyf",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "arena"
+      ]
+    },
+    {
       "name": "Viridian Corrupter",
       "sourceName": "Viridian Corrupter",
       "sourceCommanderLegality": "legal",
@@ -198,11 +206,11 @@
     "Vow of Lightning"
   ],
   "classifierVersion": 8,
-  "classifierFilesSha256": "a2a1cc7758d5c1d2231cc298370ab84e17d66fc6963769f0a2f07fff1fb79ddf",
-  "inputFilesSha256": "b7bf1434fec8969ef6ae4b55ea353c8721e2875971c6cbea98c4b528fc34d1a2",
+  "classifierFilesSha256": "f30a1d4cb54df53c6969d0d205058c6ef34eb241813f960f4e20d9c33bf78122",
+  "inputFilesSha256": "8620836f81e583e031c0fcec3f6432c8eeb6ce59d323e4ff649442302139aa8d",
   "artifactSha256": {
-    "docs/catalog/imported-cards.csv": "85f32a212e759301e15574602714247e25093a6c21f3fe929c0c8f8ca6ff99ae",
-    "docs/catalog/remaining-cards.csv": "9487e853f21e5c7443b9fec9bf0bbf9ac2b1b64ef21856c95572a82d832744d2"
+    "docs/catalog/imported-cards.csv": "dda082d4907afaeacd7a87e69f96817d434d3427b52b4ffb5e46f0414e2cbbe8",
+    "docs/catalog/remaining-cards.csv": "ba6b49d9c2d525f91cf7031c18317781eee778a5bd1a97b57c319788cc061ac3"
   },
   "notes": [
     "Names and face names associate legacy definitions with the pinned feed; these associations do not verify exact Oracle semantics or every face.",

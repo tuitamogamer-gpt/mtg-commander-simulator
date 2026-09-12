@@ -64,11 +64,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       seat.dataset.focusPlayer = String(player.idx);
       seat.setAttribute('aria-pressed', String(selected));
-      seat.setAttribute('aria-label', `Focus ${player.name}, ${player.life} life${player.poison ? `, ${player.poison} poison` : ''}${player === game.turnPlayer ? ', active turn' : ''}`);
+      const counters = [player.poison ? `${player.poison} poison` : '', player.counters?.energy ? `${player.counters.energy} energy` : '', player.counters?.rad ? `${player.counters.rad} rad` : ''].filter(Boolean);
+      seat.setAttribute('aria-label', `Focus ${player.name}, ${player.life} life${counters.length ? ', ' + counters.join(', ') : ''}${player === game.turnPlayer ? ', active turn' : ''}`);
       if (player === game.turnPlayer) seat.setAttribute('aria-current', 'true');
       const copy = node('span', 'ct-seat-copy');
       copy.append(node('b', '', player.name), node('span', 'ct-seat-life', `${player.life} life`));
-      if (player.poison) copy.append(node('small', '', `${player.poison} poison`));
+      if (counters.length) copy.append(node('small', '', counters.join(' · ')));
       seat.append(portrait(player), copy);
       ribbon.append(seat);
     }

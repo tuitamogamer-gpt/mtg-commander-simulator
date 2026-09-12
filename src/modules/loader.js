@@ -23,6 +23,119 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+
+  "Scrappy Survivors": {
+    "icon": "🐕",
+    "colors": [
+      "R",
+      "G",
+      "W"
+    ],
+    "style": "Auras, Equipment and Junk",
+    "set": "Fallout Commander (2024)",
+    "blurb": "Recover gear with Dogmeat and turn equipped or enchanted attacks into cards through Junk."
+  },
+  "Science!": {
+    "icon": "⚡",
+    "colors": [
+      "U",
+      "R",
+      "W"
+    ],
+    "style": "Artifacts and energy",
+    "set": "Fallout Commander (2024)",
+    "blurb": "Cast artifacts for energy, then convert it into card draw, recursion and powerful combat turns."
+  },
+  "Mutant Menace": {
+    "icon": "☢️",
+    "colors": [
+      "U",
+      "B",
+      "G"
+    ],
+    "style": "Radiation, milling and counters",
+    "set": "Fallout Commander (2024)",
+    "blurb": "Spread radiation, grow creatures when nonlands are milled, and reuse the best cards from graveyards."
+  },
+  "Hail, Caesar": {
+    "icon": "🏛️",
+    "colors": [
+      "R",
+      "W",
+      "B"
+    ],
+    "style": "Attacking tokens and sacrifice",
+    "set": "Fallout Commander (2024)",
+    "blurb": "Attack with expendable creatures and sacrifice them to Caesar for cards, Soldiers and damage."
+  },
+  "Grand Larceny": {
+    "icon": "🗝️",
+    "colors": [
+      "B",
+      "G",
+      "U"
+    ],
+    "style": "Evasive attacks and stolen cards",
+    "set": "Outlaws of Thunder Junction Commander (2024)",
+    "blurb": "Connect with evasive creatures, steal opponents’ cards and use cost reductions to play them."
+  },
+  "Desert Bloom": {
+    "icon": "🌵",
+    "colors": [
+      "R",
+      "G",
+      "W"
+    ],
+    "style": "Deserts, sacrifice and land recursion",
+    "set": "Outlaws of Thunder Junction Commander (2024)",
+    "blurb": "Stock the graveyard with lands, return Deserts and turn sacrificed lands into creatures and resources."
+  },
+  "Creative Energy": {
+    "icon": "🔋",
+    "colors": [
+      "U",
+      "R",
+      "W"
+    ],
+    "style": "Energy and creature copies",
+    "set": "Modern Horizons 3 Commander (2024)",
+    "blurb": "Copy useful creatures with Satya, collect their entry effects and use energy to keep the best tokens."
+  },
+  "Graveyard Overdrive": {
+    "icon": "🪦",
+    "colors": [
+      "B",
+      "R",
+      "G"
+    ],
+    "style": "Lhurgoyfs and graveyard value",
+    "set": "Modern Horizons 3 Commander (2024)",
+    "blurb": "Mill Lhurgoyfs into play, fill graveyards with different card types and create Tarmogoyfs through combat."
+  },
+  "Tricky Terrain": {
+    "icon": "🗺️",
+    "colors": [
+      "G",
+      "U"
+    ],
+    "style": "Land types and everything counters",
+    "set": "Modern Horizons 3 Commander (2024)",
+    "blurb": "Use everything counters to connect powerful land types, produce abundant mana and animate a winning board."
+  },
+  "Eldrazi Incursion": {
+    "icon": "👁️",
+    "colors": [
+      "W",
+      "U",
+      "B",
+      "R",
+      "G"
+    ],
+    "style": "Colorless ramp and Eldrazi copies",
+    "set": "Modern Horizons 3 Commander (2024)",
+    "blurb": "Build colored and colorless mana, cast Eldrazi and pay Ulalek to copy spells and triggered abilities."
+  }
+,
 "Paradox Power": {
     "icon": "🌀",
     "colors": [

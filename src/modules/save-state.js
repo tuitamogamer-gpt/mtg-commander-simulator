@@ -226,6 +226,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(MTG.ZK?.snapshotBlockers)blockers.push(...MTG.ZK.snapshotBlockers(game));
     if(MTG.C1920?.snapshotBlockers)blockers.push(...MTG.C1920.snapshotBlockers(game));
     if (MTG.C1516?.snapshotBlockers) blockers.push(...MTG.C1516.snapshotBlockers(game));
+    if (MTG.POM?.snapshotBlockers) blockers.push(...MTG.POM.snapshotBlockers(game));
     if (MTG.WLM?.snapshotBlockers) blockers.push(...MTG.WLM.snapshotBlockers(game));
     return blockers;
   };

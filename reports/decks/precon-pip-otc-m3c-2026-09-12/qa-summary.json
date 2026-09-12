@@ -1,0 +1,774 @@
+{
+  "date": "2026-09-12",
+  "baseline": "489c47b",
+  "scope": "Ten original PIP/OTC/M3C precons; local changes only",
+  "decks": 140,
+  "definitions": 21385,
+  "newNativeDefinitions": 214,
+  "sourceDirectorySha256": "e3c28f3ebf2029e1ab960cd91c6df520a600ce3e40ff27bfd6fd1b9584830128",
+  "syntax": {
+    "command": "npm.cmd run check",
+    "passed": true
+  },
+  "sourceVerification": {
+    "baseline": "489c47b",
+    "passed": true,
+    "originalPhysicalCards": 1000,
+    "uniqueNames": 726,
+    "sourceLists": [
+      {
+        "name": "Scrappy Survivors",
+        "total": 100,
+        "independentSources": [
+          "https://magic.wizards.com/en/news/announcements/magic-the-gathering-fallout-commander-decklists",
+          "https://mtgjson.com/api/v5/decks/ScrappySurvivors_PIP.json"
+        ],
+        "exportSha256": "9c9c9a4e21ab072802294c6e823051a77cb3b8335d9ef1c70d279f5b4f6dc7d4"
+      },
+      {
+        "name": "Science!",
+        "total": 100,
+        "independentSources": [
+          "https://magic.wizards.com/en/news/announcements/magic-the-gathering-fallout-commander-decklists",
+          "https://mtgjson.com/api/v5/decks/Science_PIP.json"
+        ],
+        "exportSha256": "4b0bc15cc603299e196f37df6294dfe65762b9624b3f33d69ebb071d7ce0ca2c"
+      },
+      {
+        "name": "Mutant Menace",
+        "total": 100,
+        "independentSources": [
+          "https://magic.wizards.com/en/news/announcements/magic-the-gathering-fallout-commander-decklists",
+          "https://mtgjson.com/api/v5/decks/MutantMenace_PIP.json"
+        ],
+        "exportSha256": "3b6505b259cb7b9abebee10424a369c12640ec69442e77979321b6d4ad708175"
+      },
+      {
+        "name": "Hail, Caesar",
+        "total": 100,
+        "independentSources": [
+          "https://magic.wizards.com/en/news/announcements/magic-the-gathering-fallout-commander-decklists",
+          "https://mtgjson.com/api/v5/decks/HailCaesar_PIP.json"
+        ],
+        "exportSha256": "368f51254eac234c1dd8b38cb878cb0ee7f3829477869d69a9cae302acaf5785"
+      },
+      {
+        "name": "Grand Larceny",
+        "total": 100,
+        "independentSources": [
+          "https://magic.wizards.com/en/news/announcements/outlaws-of-thunder-junction-commander-decklists",
+          "https://mtgjson.com/api/v5/decks/GrandLarceny_OTC.json"
+        ],
+        "exportSha256": "fe9a9ed9e04626c3b9e0d0cc5b2502c278de3b5047408224e3688d6a706cd889"
+      },
+      {
+        "name": "Desert Bloom",
+        "total": 100,
+        "independentSources": [
+          "https://magic.wizards.com/en/news/announcements/outlaws-of-thunder-junction-commander-decklists",
+          "https://mtgjson.com/api/v5/decks/DesertBloom_OTC.json"
+        ],
+        "exportSha256": "03d5ad3b73f913797450909a67f1e48ef3f32d3143bb32ce3dbd1280eabfccc8"
+      },
+      {
+        "name": "Creative Energy",
+        "total": 100,
+        "independentSources": [
+          "https://magic.wizards.com/en/news/announcements/modern-horizons-3-commander-decklists",
+          "https://mtgjson.com/api/v5/decks/CreativeEnergy_M3C.json"
+        ],
+        "exportSha256": "7160ca727c718c420ab2305d849c207a9638a2445ef9724bb754be6e34554901"
+      },
+      {
+        "name": "Graveyard Overdrive",
+        "total": 100,
+        "independentSources": [
+          "https://magic.wizards.com/en/news/announcements/modern-horizons-3-commander-decklists",
+          "https://mtgjson.com/api/v5/decks/GraveyardOverdrive_M3C.json"
+        ],
+        "exportSha256": "d9850d061b8642699c0e8403963496af25e10b7565e82bd571b25a709c65164c"
+      },
+      {
+        "name": "Tricky Terrain",
+        "total": 100,
+        "independentSources": [
+          "https://magic.wizards.com/en/news/announcements/modern-horizons-3-commander-decklists",
+          "https://mtgjson.com/api/v5/decks/TrickyTerrain_M3C.json"
+        ],
+        "exportSha256": "6ee69531e27ccc0ea29f3b58f27072a7d93f405552b4762546c846798fc0b7d6"
+      },
+      {
+        "name": "Eldrazi Incursion",
+        "total": 100,
+        "independentSources": [
+          "https://magic.wizards.com/en/news/announcements/modern-horizons-3-commander-decklists",
+          "https://mtgjson.com/api/v5/decks/EldraziIncursion_M3C.json"
+        ],
+        "exportSha256": "e15ea088aa59780b23a4e189eaea24d93dcc66bed18a7e0b847da1ba8d97ef76"
+      }
+    ],
+    "existingRawDefinitionsPreserved": 3313,
+    "existingRawDeckRecordsPreserved": 131,
+    "nativeRawDefinitions": 3527,
+    "existingImageMappingsPreserved": 5527,
+    "existingCommanderCropsPreserved": 139,
+    "existingTrackedAssetsUnchanged": true,
+    "addedWebPFiles": 382,
+    "allNewImageDigestsMatch": true,
+    "idempotentDataSha256": "4d6a9a4783871a683282cef6b755c621b6d17be68ec30578fbacb1f8c522e989",
+    "retainedOracleDifferences": [],
+    "current": {
+      "decks": 140,
+      "definitions": 21385,
+      "eligible": 21385
+    }
+  },
+  "targeted": {
+    "command": "node --test tests/pip-otc-m3c-precons.test.mjs tests/pip-otc-m3c-advanced.test.mjs tests/pom-radiation-ui.test.mjs tests/full-card-audit.test.mjs tests/legacy-card-catalog-integrity.test.mjs tests/local-card-images.test.mjs tests/opponent-choice.test.mjs",
+    "log": ".local/pom-final-targeted.log",
+    "tests": 122,
+    "pass": 122,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "duration_ms": 15367.3887
+  },
+  "sharedRegression": {
+    "command": "node --test tests/oracle-poison-ui.test.mjs tests/oracle-v4-mechanics.test.mjs tests/oracle-v8-counter-costs.test.mjs tests/oracle-v8-energy.test.mjs tests/save-state.test.mjs tests/command-table.test.mjs",
+    "log": ".local/pom-shared-final.log",
+    "tests": 75,
+    "pass": 75,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "duration_ms": 130503.4655
+  },
+  "planeswalkerRegression": {
+    "command": "node --test tests/planeswalker-combat.test.mjs",
+    "log": ".local/pom-planeswalkers-final.log",
+    "tests": 10,
+    "pass": 10,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "duration_ms": 9472.9677
+  },
+  "nativeSmoke": {
+    "command": "node scripts/smoke-pip-otc-m3c-precons.mjs",
+    "cards": 214,
+    "cases": 428,
+    "passed": 428,
+    "prerequisiteGaps": 0,
+    "choiceGaps": 0,
+    "errors": 0
+  },
+  "browser": {
+    "command": "node tests/browser/pip-otc-m3c-precons.mjs",
+    "flows": 20,
+    "errors": [],
+    "viewports": [
+      "1440x1000",
+      "390x844"
+    ],
+    "scenarios": [
+      {
+        "deck": "Scrappy Survivors",
+        "width": 1440,
+        "opponent": "Science!",
+        "opening": {
+          "commander": [
+            "Dogmeat, Ever Loyal"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 3,
+        "overflow": false
+      },
+      {
+        "deck": "Science!",
+        "width": 1440,
+        "opponent": "Mutant Menace",
+        "opening": {
+          "commander": [
+            "Dr. Madison Li"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 3,
+        "overflow": false
+      },
+      {
+        "deck": "Mutant Menace",
+        "width": 1440,
+        "opponent": "Hail, Caesar",
+        "opening": {
+          "commander": [
+            "The Wise Mothman"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 4,
+        "overflow": false
+      },
+      {
+        "deck": "Hail, Caesar",
+        "width": 1440,
+        "opponent": "Grand Larceny",
+        "opening": {
+          "commander": [
+            "Caesar, Legion's Emperor"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 4,
+        "overflow": false
+      },
+      {
+        "deck": "Grand Larceny",
+        "width": 1440,
+        "opponent": "Desert Bloom",
+        "opening": {
+          "commander": [
+            "Gonti, Canny Acquisitor"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 5,
+        "overflow": false
+      },
+      {
+        "deck": "Desert Bloom",
+        "width": 1440,
+        "opponent": "Creative Energy",
+        "opening": {
+          "commander": [
+            "Yuma, Proud Protector"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 8,
+        "overflow": false
+      },
+      {
+        "deck": "Creative Energy",
+        "width": 1440,
+        "opponent": "Graveyard Overdrive",
+        "opening": {
+          "commander": [
+            "Satya, Aetherflux Genius"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 4,
+        "overflow": false
+      },
+      {
+        "deck": "Graveyard Overdrive",
+        "width": 1440,
+        "opponent": "Tricky Terrain",
+        "opening": {
+          "commander": [
+            "Disa the Restless"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 5,
+        "overflow": false
+      },
+      {
+        "deck": "Tricky Terrain",
+        "width": 1440,
+        "opponent": "Eldrazi Incursion",
+        "opening": {
+          "commander": [
+            "Omo, Queen of Vesuva"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 3,
+        "overflow": false
+      },
+      {
+        "deck": "Eldrazi Incursion",
+        "width": 1440,
+        "opponent": "Scrappy Survivors",
+        "opening": {
+          "commander": [
+            "Ulalek, Fused Atrocity"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 5,
+        "overflow": false
+      },
+      {
+        "deck": "Scrappy Survivors",
+        "width": 390,
+        "opponent": "Science!",
+        "opening": {
+          "commander": [
+            "Dogmeat, Ever Loyal"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 3,
+        "overflow": false
+      },
+      {
+        "deck": "Science!",
+        "width": 390,
+        "opponent": "Mutant Menace",
+        "opening": {
+          "commander": [
+            "Dr. Madison Li"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 3,
+        "overflow": false
+      },
+      {
+        "deck": "Mutant Menace",
+        "width": 390,
+        "opponent": "Hail, Caesar",
+        "opening": {
+          "commander": [
+            "The Wise Mothman"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 4,
+        "overflow": false
+      },
+      {
+        "deck": "Hail, Caesar",
+        "width": 390,
+        "opponent": "Grand Larceny",
+        "opening": {
+          "commander": [
+            "Caesar, Legion's Emperor"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 4,
+        "overflow": false
+      },
+      {
+        "deck": "Grand Larceny",
+        "width": 390,
+        "opponent": "Desert Bloom",
+        "opening": {
+          "commander": [
+            "Gonti, Canny Acquisitor"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 5,
+        "overflow": false
+      },
+      {
+        "deck": "Desert Bloom",
+        "width": 390,
+        "opponent": "Creative Energy",
+        "opening": {
+          "commander": [
+            "Yuma, Proud Protector"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 8,
+        "overflow": false
+      },
+      {
+        "deck": "Creative Energy",
+        "width": 390,
+        "opponent": "Graveyard Overdrive",
+        "opening": {
+          "commander": [
+            "Satya, Aetherflux Genius"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 4,
+        "overflow": false
+      },
+      {
+        "deck": "Graveyard Overdrive",
+        "width": 390,
+        "opponent": "Tricky Terrain",
+        "opening": {
+          "commander": [
+            "Disa the Restless"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 5,
+        "overflow": false
+      },
+      {
+        "deck": "Tricky Terrain",
+        "width": 390,
+        "opponent": "Eldrazi Incursion",
+        "opening": {
+          "commander": [
+            "Omo, Queen of Vesuva"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 3,
+        "overflow": false
+      },
+      {
+        "deck": "Eldrazi Incursion",
+        "width": 390,
+        "opponent": "Scrappy Survivors",
+        "opening": {
+          "commander": [
+            "Ulalek, Fused Atrocity"
+          ],
+          "count": 100
+        },
+        "stackSeen": true,
+        "zone": "battlefield",
+        "manaSpent": 5,
+        "overflow": false
+      }
+    ],
+    "screenshotsDirectory": "output/precon-pip-otc-m3c-2026-09-12/browser",
+    "visuallyInspected": [
+      "scrappy-survivors-1440-select.png",
+      "tricky-terrain-390-select.png",
+      "mutant-menace-390-battlefield.png"
+    ]
+  },
+  "games": {
+    "command": "node scripts/smoke-pip-otc-m3c-games.mjs --affected-opponents",
+    "log": ".local/pom-final-games2.log",
+    "passed": 13,
+    "expected": 13,
+    "rows": [
+      {
+        "name": "Raining Cats and Dogs",
+        "opponents": [
+          "Revenant Recon",
+          "Deadly Disguise",
+          "Scrappy Survivors"
+        ],
+        "seed": 11208,
+        "turns": 40,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Revenant Recon",
+        "opponents": [
+          "Deadly Disguise",
+          "Scrappy Survivors",
+          "Science!"
+        ],
+        "seed": 11209,
+        "turns": 48,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Deadly Disguise",
+        "opponents": [
+          "Scrappy Survivors",
+          "Science!",
+          "Mutant Menace"
+        ],
+        "seed": 11210,
+        "turns": 46,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Scrappy Survivors",
+        "opponents": [
+          "Science!",
+          "Mutant Menace",
+          "Hail, Caesar"
+        ],
+        "seed": 11211,
+        "turns": 46,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Science!",
+        "opponents": [
+          "Mutant Menace",
+          "Hail, Caesar",
+          "Grand Larceny"
+        ],
+        "seed": 11212,
+        "turns": 53,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Mutant Menace",
+        "opponents": [
+          "Hail, Caesar",
+          "Grand Larceny",
+          "Desert Bloom"
+        ],
+        "seed": 11213,
+        "turns": 52,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Hail, Caesar",
+        "opponents": [
+          "Grand Larceny",
+          "Desert Bloom",
+          "Creative Energy"
+        ],
+        "seed": 11214,
+        "turns": 62,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Grand Larceny",
+        "opponents": [
+          "Desert Bloom",
+          "Creative Energy",
+          "Graveyard Overdrive"
+        ],
+        "seed": 11215,
+        "turns": 40,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Desert Bloom",
+        "opponents": [
+          "Creative Energy",
+          "Graveyard Overdrive",
+          "Tricky Terrain"
+        ],
+        "seed": 11216,
+        "turns": 58,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Creative Energy",
+        "opponents": [
+          "Graveyard Overdrive",
+          "Tricky Terrain",
+          "Eldrazi Incursion"
+        ],
+        "seed": 11217,
+        "turns": 58,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Graveyard Overdrive",
+        "opponents": [
+          "Tricky Terrain",
+          "Eldrazi Incursion",
+          "Abzan Armor"
+        ],
+        "seed": 11218,
+        "turns": 56,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Tricky Terrain",
+        "opponents": [
+          "Eldrazi Incursion",
+          "Abzan Armor",
+          "Animated Army"
+        ],
+        "seed": 11219,
+        "turns": 41,
+        "winner": "AI Dragon",
+        "passed": true
+      },
+      {
+        "name": "Eldrazi Incursion",
+        "opponents": [
+          "Abzan Armor",
+          "Animated Army",
+          "Avengers Assemble"
+        ],
+        "seed": 11220,
+        "turns": 45,
+        "winner": "AI Raven",
+        "passed": true
+      }
+    ]
+  },
+  "oracleExecutionProof": {
+    "cardExecutions": 35600,
+    "keywordExecutions": 10398,
+    "operationRoutes": 49286,
+    "nestedProofs": 86199,
+    "controllers": [
+      "human",
+      "local-ai"
+    ],
+    "passed": true
+  },
+  "lastFixes": {
+    "command": "node --test tests/pip-otc-m3c-advanced.test.mjs tests/sauron-dark-lord.test.mjs tests/x-mana-mechanics.test.mjs",
+    "log": ".local/pom-last-fixes.log",
+    "tests": 81,
+    "pass": 81,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "duration_ms": 18336.5754
+  },
+  "activationSweep": {
+    "command": "node --test --test-name-pattern='svaka aktivirana sposobnost' tests/player-facing-cards.test.mjs",
+    "log": ".local/pom-player-facing-final.log",
+    "tests": 1,
+    "pass": 1,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "duration_ms": 47265.3342
+  },
+  "broaderRegression": {
+    "log": ".local/pom-broad-tests.log",
+    "tests": 10067,
+    "pass": 10059,
+    "fail": 8,
+    "cancelled": 0,
+    "skipped": 0,
+    "duration_ms": 2166706.633,
+    "command": "node --test --test-concurrency=4 <all tests/*.test.mjs except headless-smoke.test.mjs>",
+    "fileList": ".local/pom-broad-test-files.json",
+    "failureNames": [
+      "svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putanju",
+      "the complete pinned legacy card set remains represented exactly once in the runtime catalog",
+      "runtime card art uses local WebP except the explicit API fallback list",
+      "svaki aktivni oracle target-opponent put ima stvarni target spec",
+      "svih 75 deck/planeswalker parova ima svih 207 loyalty putanja",
+      "svaka aktivirana sposobnost koju igrač koristi pita razumljiva pitanja",
+      "Sauron, Lord of the Rings cast package and commander-death Ring trigger both resolve",
+      "inventar pokriva svih 157 aktivnih X spella i sve dodatne X-mana putanje"
+    ],
+    "correctedFailures": [
+      {
+        "name": "svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putanju",
+        "cause": "Active deck-card and native raw-definition inventory grew with this import.",
+        "verifiedBy": ".local/pom-final-targeted.log"
+      },
+      {
+        "name": "the complete pinned legacy card set remains represented exactly once in the runtime catalog",
+        "cause": "The new intake must be partitioned separately from the immutable original 1,626-card baseline.",
+        "verifiedBy": ".local/pom-final-targeted.log"
+      },
+      {
+        "name": "runtime card art uses local WebP except the explicit API fallback list",
+        "cause": "The strict image manifest now includes the new alternate faces and token aliases.",
+        "verifiedBy": ".local/pom-final-targeted.log"
+      },
+      {
+        "name": "svaki aktivni oracle target-opponent put ima stvarni target spec",
+        "cause": "Caesar announces its chosen opponent on a reflexive trigger after sacrifice; both controller paths now test that Stack target.",
+        "verifiedBy": ".local/pom-final-targeted.log"
+      },
+      {
+        "name": "svih 75 deck/planeswalker parova ima svih 207 loyalty putanja",
+        "cause": "Six additional deck/planeswalker pairs add 18 loyalty abilities.",
+        "verifiedBy": ".local/pom-planeswalkers-final.log"
+      },
+      {
+        "name": "svaka aktivirana sposobnost koju igrač koristi pita razumljiva pitanja",
+        "cause": "Expert-Level Safe now captures its linked exile metadata when the ability is activated; matching, differing and blinked-source choices have dedicated tests.",
+        "verifiedBy": ".local/pom-player-facing-final.log"
+      },
+      {
+        "name": "Sauron, Lord of the Rings cast package and commander-death Ring trigger both resolve",
+        "cause": "The new death bookkeeping tolerates a synthetic event whose source card is null and uses last-known token status.",
+        "verifiedBy": ".local/pom-last-fixes.log"
+      },
+      {
+        "name": "inventar pokriva svih 157 aktivnih X spella i sve dodatne X-mana putanje",
+        "cause": "Six new active X spells are now included in the strict 163-card X inventory.",
+        "verifiedBy": ".local/pom-last-fixes.log"
+      }
+    ],
+    "notes": "This run overlapped final fixes. Original failures are recorded without calling this a full pass. Final targeted and shared reruns are recorded separately. The global 140-deck headless sweep was excluded."
+  },
+  "catalog": {
+    "command": "node scripts/export-card-catalog.mjs --check --source-file=.local/oracle-pinned-20260830090156.jsonl.gz --source-sha256=a85e1309439fcaca2639b5eaf0cd2f71a0f4de8bd3926617fae3eded1dda5528",
+    "log": ".local/pom-catalog-check.log"
+  },
+  "limitations": [
+    "Finite execution scenarios are not exhaustive proof of all card interactions.",
+    "The global 140-deck headless game sweep was not run.",
+    "New commanders use still artwork; no new commander videos."
+  ],
+  "releaseLineEndingNormalization": {
+    "originalSourceDirectorySha256": "7e335cb35ee9cb00295e9d0a1b1b0479121b302b197fd0818c59b565cc7b43b7",
+    "files": [
+      "reports/decks/precon-pip-otc-m3c-2026-09-12/decklists.json",
+      "scripts/import-pip-otc-m3c-precons.mjs",
+      "scripts/smoke-pip-otc-m3c-games.mjs",
+      "scripts/verify-pip-otc-m3c-import.mjs",
+      "src/modules/pip-otc-m3c-rules.js",
+      "src/modules/pom-integration.js",
+      "src/modules/pom-payments.js",
+      "src/modules/scripts-pom-advanced.js",
+      "src/modules/scripts-pom-casting.js",
+      "src/modules/scripts-pom-creatures.js",
+      "src/modules/scripts-pom-lands.js",
+      "src/modules/scripts-pom-objects.js",
+      "src/modules/scripts-pom-sagas.js",
+      "src/modules/scripts-pom-special.js",
+      "src/modules/scripts-pom-spells.js",
+      "tests/browser/pip-otc-m3c-precons.mjs",
+      "tests/pip-otc-m3c-advanced.test.mjs",
+      "tests/pip-otc-m3c-precons.test.mjs"
+    ],
+    "note": "Only CRLF to LF normalization; no tokens or logic changed. Release syntax, source validation and catalog hashes checked afterwards."
+  }
+}

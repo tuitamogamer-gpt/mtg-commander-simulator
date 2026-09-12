@@ -1370,6 +1370,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       await MTG.oracleV8ApplyEntryState(this, card);
       await MTG.VN?.riotEntry?.(this,card);
       const additionalEntryCounters = {...opts.additionalCounters};
+      const pomEntryBonus=MTG.POM?.entryCounters(this,card)||0;if(pomEntryBonus)additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+pomEntryBonus;
       if(card.castMeta?.cdkBiophagus&&card.is('Creature'))additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+card.castMeta.cdkBiophagus;
       if(card.meta.vnAdditionalPlus){additionalEntryCounters['+1/+1']=(additionalEntryCounters['+1/+1']||0)+card.meta.vnAdditionalPlus;delete card.meta.vnAdditionalPlus;}
       if(card.is('Creature'))for(const source of this.bf())if(source!==card&&source.ctrl===card.ctrl&&!source.cur?.abilitiesDisabled&&source.def.c1920Tayam)additionalEntryCounters.vigilance=(additionalEntryCounters.vigilance||0)+1;
@@ -1399,6 +1400,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           n = Math.max(0, n) + additionalEntryCounters['+1/+1'];
           delete additionalEntryCounters['+1/+1'];
         }
+        if(n>0)n=MTG.POM?.counterBonus(this,card,n)||n;
         if (n > 0 && d.etbCounters.kind === '+1/+1') n = this.adjustPlusCounters(card, n);
         if (n > 0) {
           card.counters[d.etbCounters.kind] = (card.counters[d.etbCounters.kind] || 0) + n;
@@ -1414,6 +1416,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (Object.keys(additionalEntryCounters).length) {
         for (const [kind, rawN] of Object.entries(additionalEntryCounters)) {
           let n = Math.max(0, Number(rawN) || 0);
+          if(n>0)n=MTG.POM?.counterBonus(this,card,n)||n;
           if (kind === '+1/+1') n = this.adjustPlusCounters(card, n);
           if (!n) continue;
           card.counters[kind] = (card.counters[kind] || 0) + n;
@@ -2105,12 +2108,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const toxic = opts.combat && src && !(src.cur && src.cur.abilitiesDisabled)
         ? Math.max(0, Number(src.def && src.def.toxic) || 0) : 0;
       if (infect) {
-        p.poison = (p.poison || 0) + n;
-        this.lg(`${p.name} gets ${n} poison counter${n === 1 ? '' : 's'} (infect).`, 'dmg');
+        const actual = MTG.POM?.playerCounterBonus(this,p,n)||n;
+        p.poison = (p.poison || 0) + actual;
+        this.lg(`${p.name} gets ${actual} poison counter${actual === 1 ? '' : 's'} (infect).`, 'dmg');
       }
       if (toxic) {
-        p.poison = (p.poison || 0) + toxic;
-        this.lg(`${p.name} gets ${toxic} poison counter${toxic === 1 ? '' : 's'} (toxic).`, 'dmg');
+        const actual = MTG.POM?.playerCounterBonus(this,p,toxic)||toxic;
+        p.poison = (p.poison || 0) + actual;
+        this.lg(`${p.name} gets ${actual} poison counter${actual === 1 ? '' : 's'} (toxic).`, 'dmg');
       }
       await this.applyDamageLifelink(src,n,opts);
       if (!infect&&!preservesLife) await this.loseLife(p, n, 'damage');
@@ -3429,7 +3434,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // put on stack as trigger — allow responses
       const so = {
         kind: 'trigger', name: (tr.src ? tr.src.name + ': ' : '') + (tr.name || 'trigger'),
-        ctrl, ctx, run: tr.run, targets: ctx.targets, srcCard: tr.src, targetSpecs: targetSpecs || null, mode,
+        ctrl, ctx, run: tr.run || selectedMode?.run, targets: ctx.targets, srcCard: tr.src, targetSpecs: targetSpecs || null, mode,
         targetIdentities: ctx.targetIdentities,
         ...(tr.sagaChapter?{sagaChapter:tr.sagaChapter}:{}),
         ...(tr.oracleStateTrigger?{oracleStateTrigger:tr.oracleStateTrigger}:{}),

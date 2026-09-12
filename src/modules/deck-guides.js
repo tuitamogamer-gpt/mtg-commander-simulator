@@ -3,6 +3,178 @@
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   MTG.DECK_GUIDE_ROUTES = Object.freeze({
+
+  "pom0": [
+    {
+      "label": "Early game",
+      "title": "Prepare your survivor",
+      "text": "Develop mana and deploy cheap gear before Dogmeat arrives."
+    },
+    {
+      "label": "Midgame",
+      "title": "Attack with protection",
+      "text": "Recover a useful attachment and build protected attackers that generate Junk."
+    },
+    {
+      "label": "Endgame",
+      "title": "Multiply your gear",
+      "text": "Use Three Dog and attachment payoffs to turn one strong attacker into a winning board."
+    }
+  ],
+  "pom1": [
+    {
+      "label": "Early game",
+      "title": "Build the workshop",
+      "text": "Use cheap artifacts and mana rocks to establish all three colors."
+    },
+    {
+      "label": "Midgame",
+      "title": "Keep Madison active",
+      "text": "Produce energy with artifact spells and spend it on cards or bringing artifacts back."
+    },
+    {
+      "label": "Endgame",
+      "title": "Deploy the heavy machinery",
+      "text": "Protect a large artifact threat and use stored energy to keep pressure on opponents."
+    }
+  ],
+  "pom2": [
+    {
+      "label": "Early game",
+      "title": "Establish a mutation target",
+      "text": "Fix your mana and put creatures onto the battlefield before Mothman."
+    },
+    {
+      "label": "Midgame",
+      "title": "Spread radiation",
+      "text": "Use entry and attack triggers to mill libraries and distribute counters across your board."
+    },
+    {
+      "label": "Endgame",
+      "title": "Return the strongest threats",
+      "text": "Use graveyard access and a large flying Mothman to finish opponents."
+    }
+  ],
+  "pom3": [
+    {
+      "label": "Early game",
+      "title": "Recruit your force",
+      "text": "Build mana and make expendable creatures before committing Caesar."
+    },
+    {
+      "label": "Midgame",
+      "title": "Choose two rewards",
+      "text": "Attack and use Caesar to replace sacrificed creatures, draw cards or damage an opponent."
+    },
+    {
+      "label": "Endgame",
+      "title": "Spend your army well",
+      "text": "Combine token count damage and death payoffs with a wide attack."
+    }
+  ],
+  "pom4": [
+    {
+      "label": "Early game",
+      "title": "Find a way through",
+      "text": "Develop mana and evasive attackers that can connect safely."
+    },
+    {
+      "label": "Midgame",
+      "title": "Expand your options",
+      "text": "Land Gonti and earn cards from each opponent you damage."
+    },
+    {
+      "label": "Endgame",
+      "title": "Use what you steal",
+      "text": "Choose the most useful stolen threats and protect your combat engines."
+    }
+  ],
+  "pom5": [
+    {
+      "label": "Early game",
+      "title": "Develop your landscape",
+      "text": "Ramp and send spare lands to the graveyard while preserving your colors."
+    },
+    {
+      "label": "Midgame",
+      "title": "Recycle your Deserts",
+      "text": "Cast a discounted Yuma and turn land recursion into repeatable value."
+    },
+    {
+      "label": "Endgame",
+      "title": "Bloom across the battlefield",
+      "text": "Build Plant and Sand Warrior tokens and attack with land-based payoffs."
+    }
+  ],
+  "pom6": [
+    {
+      "label": "Early game",
+      "title": "Charge your engines",
+      "text": "Develop mana and play creatures that generate energy or useful entry effects."
+    },
+    {
+      "label": "Midgame",
+      "title": "Copy on the attack",
+      "text": "Attack with Satya and copy the creature that best fits the board."
+    },
+    {
+      "label": "Endgame",
+      "title": "Keep the valuable copies",
+      "text": "Spend stored energy to retain important tokens and build repeated attacks."
+    }
+  ],
+  "pom7": [
+    {
+      "label": "Early game",
+      "title": "Fill the graveyards",
+      "text": "Ramp and use milling or discard to build card-type diversity."
+    },
+    {
+      "label": "Midgame",
+      "title": "Bring the Goyfs online",
+      "text": "Keep Disa active while moving Lhurgoyfs from hand or library into the graveyard."
+    },
+    {
+      "label": "Endgame",
+      "title": "Convert size into damage",
+      "text": "Connect with creatures for Tarmogoyf tokens and let Pyrogoyf turn entries into damage."
+    }
+  ],
+  "pom8": [
+    {
+      "label": "Early game",
+      "title": "Map your mana",
+      "text": "Ramp and find lands whose abilities scale with shared land types."
+    },
+    {
+      "label": "Midgame",
+      "title": "Mark the key permanents",
+      "text": "Use Omo’s entry and attack triggers to grant everything counters to useful lands and creatures."
+    },
+    {
+      "label": "Endgame",
+      "title": "Turn mana into pressure",
+      "text": "Use land animation and large threats to convert your mana advantage into attacks."
+    }
+  ],
+  "pom9": [
+    {
+      "label": "Early game",
+      "title": "Secure all your mana",
+      "text": "Use ramp and fixing while retaining lands that can produce colorless mana."
+    },
+    {
+      "label": "Midgame",
+      "title": "Resolve Ulalek first",
+      "text": "Keep two colorless mana available when you cast an Eldrazi with a valuable cast trigger."
+    },
+    {
+      "label": "Endgame",
+      "title": "Overwhelm the table",
+      "text": "Copy major threats and their abilities, then finish with an Eldrazi attack."
+    }
+  ]
+,
 "wlmparadox": [
     {
       "label": "Early game",
@@ -266,6 +438,148 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.DECK_GUIDES = Object.freeze({
+
+  "Scrappy Survivors": {
+    "route": "pom0",
+    "pace": "Auras, Equipment and Junk",
+    "complexity": "Intermediate",
+    "theme": "Recover gear with Dogmeat and turn equipped or enchanted attacks into cards through Junk.",
+    "plan": "Recover gear with Dogmeat and turn equipped or enchanted attacks into cards through Junk.",
+    "mulligan": "Keep three lands, all three colors, and an inexpensive Aura or Equipment.",
+    "tip": "Junk must tap and be sacrificed at sorcery speed; save mana to use its exiled card.",
+    "keys": [
+      "Dogmeat, Ever Loyal",
+      "Swiftfoot Boots",
+      "Three Dog, Galaxy News DJ"
+    ]
+  },
+  "Science!": {
+    "route": "pom1",
+    "pace": "Artifacts and energy",
+    "complexity": "Advanced",
+    "theme": "Cast artifacts for energy, then convert it into card draw, recursion and powerful combat turns.",
+    "plan": "Cast artifacts for energy, then convert it into card draw, recursion and powerful combat turns.",
+    "mulligan": "Keep three lands, early artifacts and mana fixing for Madison Li.",
+    "tip": "Energy stays between turns. Keep some available for the ability you need most.",
+    "keys": [
+      "Dr. Madison Li",
+      "Liberty Prime, Recharged",
+      "Rex, Cyber-Hound"
+    ]
+  },
+  "Mutant Menace": {
+    "route": "pom2",
+    "pace": "Radiation, milling and counters",
+    "complexity": "Advanced",
+    "theme": "Spread radiation, grow creatures when nonlands are milled, and reuse the best cards from graveyards.",
+    "plan": "Spread radiation, grow creatures when nonlands are milled, and reuse the best cards from graveyards.",
+    "mulligan": "Keep three lands, green fixing and an early creature to receive Mothman counters.",
+    "tip": "Radiation happens at precombat main. Only milled nonlands remove rad counters and cause life loss.",
+    "keys": [
+      "The Wise Mothman",
+      "The Master, Transcendent",
+      "Strong, the Brutish Thespian"
+    ]
+  },
+  "Hail, Caesar": {
+    "route": "pom3",
+    "pace": "Attacking tokens and sacrifice",
+    "complexity": "Intermediate",
+    "theme": "Attack with expendable creatures and sacrifice them to Caesar for cards, Soldiers and damage.",
+    "plan": "Attack with expendable creatures and sacrifice them to Caesar for cards, Soldiers and damage.",
+    "mulligan": "Keep three lands, an early token maker and a way to produce all three colors.",
+    "tip": "Caesar can trigger without attacking himself. Keep another creature available to sacrifice.",
+    "keys": [
+      "Caesar, Legion's Emperor",
+      "Mr. House, President and CEO",
+      "Legate Lanius, Caesar's Ace"
+    ]
+  },
+  "Grand Larceny": {
+    "route": "pom4",
+    "pace": "Evasive attacks and stolen cards",
+    "complexity": "Advanced",
+    "theme": "Connect with evasive creatures, steal opponents’ cards and use cost reductions to play them.",
+    "plan": "Connect with evasive creatures, steal opponents’ cards and use cost reductions to play them.",
+    "mulligan": "Keep three lands, an inexpensive evasive creature and early ramp.",
+    "tip": "Attack several opponents to earn separate combat-damage rewards; budget mana for the stolen cards.",
+    "keys": [
+      "Gonti, Canny Acquisitor",
+      "Felix Five-Boots",
+      "Nashi, Moon Sage's Scion"
+    ]
+  },
+  "Desert Bloom": {
+    "route": "pom5",
+    "pace": "Deserts, sacrifice and land recursion",
+    "complexity": "Intermediate",
+    "theme": "Stock the graveyard with lands, return Deserts and turn sacrificed lands into creatures and resources.",
+    "plan": "Stock the graveyard with lands, return Deserts and turn sacrificed lands into creatures and resources.",
+    "mulligan": "Keep three lands, green ramp and a land discard or sacrifice outlet.",
+    "tip": "Deserts reduce Yuma’s cost further. Reuse a sacrificed land before spending another from your hand.",
+    "keys": [
+      "Yuma, Proud Protector",
+      "Dune Chanter",
+      "Hazezon, Shaper of Sand"
+    ]
+  },
+  "Creative Energy": {
+    "route": "pom6",
+    "pace": "Energy and creature copies",
+    "complexity": "Advanced",
+    "theme": "Copy useful creatures with Satya, collect their entry effects and use energy to keep the best tokens.",
+    "plan": "Copy useful creatures with Satya, collect their entry effects and use energy to keep the best tokens.",
+    "mulligan": "Keep three lands, mana fixing and a cheap creature worth copying.",
+    "tip": "Satya’s copied creature is already attacking. Save energy equal to its mana value if you want to keep it.",
+    "keys": [
+      "Satya, Aetherflux Genius",
+      "Aurora Shifter",
+      "Aether Refinery"
+    ]
+  },
+  "Graveyard Overdrive": {
+    "route": "pom7",
+    "pace": "Lhurgoyfs and graveyard value",
+    "complexity": "Intermediate",
+    "theme": "Mill Lhurgoyfs into play, fill graveyards with different card types and create Tarmogoyfs through combat.",
+    "plan": "Mill Lhurgoyfs into play, fill graveyards with different card types and create Tarmogoyfs through combat.",
+    "mulligan": "Keep three lands, ramp and a way to mill or discard creatures.",
+    "tip": "Disa returns Lhurgoyfs put into your graveyard from places other than the battlefield; ordinary deaths do not qualify.",
+    "keys": [
+      "Disa the Restless",
+      "Pyrogoyf",
+      "Coram, the Undertaker"
+    ]
+  },
+  "Tricky Terrain": {
+    "route": "pom8",
+    "pace": "Land types and everything counters",
+    "complexity": "Advanced",
+    "theme": "Use everything counters to connect powerful land types, produce abundant mana and animate a winning board.",
+    "plan": "Use everything counters to connect powerful land types, produce abundant mana and animate a winning board.",
+    "mulligan": "Keep three lands, green ramp and a useful utility land.",
+    "tip": "Everything counters keep their counters after Omo leaves, but their type-granting benefit needs Omo on the battlefield.",
+    "keys": [
+      "Omo, Queen of Vesuva",
+      "Planar Nexus",
+      "Jyoti, Moag Ancient"
+    ]
+  },
+  "Eldrazi Incursion": {
+    "route": "pom9",
+    "pace": "Colorless ramp and Eldrazi copies",
+    "complexity": "Advanced",
+    "theme": "Build colored and colorless mana, cast Eldrazi and pay Ulalek to copy spells and triggered abilities.",
+    "plan": "Build colored and colorless mana, cast Eldrazi and pay Ulalek to copy spells and triggered abilities.",
+    "mulligan": "Keep three lands, early ramp and access to true colorless mana.",
+    "tip": "Ulalek requires two colorless mana for its trigger. Colored mana cannot pay those symbols.",
+    "keys": [
+      "Ulalek, Fused Atrocity",
+      "Azlask, the Swelling Scourge",
+      "Twins of Discord"
+    ]
+  }
+,
 "Paradox Power": {
     "route": "wlmparadox",
     "pace": "Paradox and exile casting",

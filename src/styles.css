@@ -3999,6 +3999,7 @@ span.msym.mana-glyph {
 #game .poisonbadge i { font-size: 8px; font-style: normal; opacity: .8; }
 #game .poisonbadge small { font-size: 7px; letter-spacing: .04em; }
 #game .poisonbadge.energybadge { color: #f5da91; background: #302814; border-color: #9d823d; }
+#game .poisonbadge.radbadge { color: #e4ef91; background: #282d13; border-color: #879648; }
 #game .poisonbadge.danger { color: #ffd4ad; border-color: #d78355; background: #40251c; }
 #game .poisonbadge.lethal { color: #ffe0de; border-color: #ec766d; background: #511e24; }
 

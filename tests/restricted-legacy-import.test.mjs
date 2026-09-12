@@ -23,7 +23,7 @@ test('all eighteen cards and four legendary commander portraits use the recorded
 test('exactly the eighteen recorded native cards gain import eligibility without adding definitions or built-in decks', () => {
   M.initData(M.RAW_DATA);
   assert.equal(names.length, 18); assert.deepEqual(Object.keys(M.REVIEWED_LEGACY_IMPORTS).sort(), names);
-  assert.equal(Object.keys(M.DEFS).length, 21171); assert.equal(Object.keys(M.DECKS).length, 130);
+  assert.equal(Object.keys(M.DEFS).length, 21385); assert.equal(Object.keys(M.DECKS).length, 140);
   assert.equal(M.DECKS['Blame Game'], undefined);
   for (const row of source.cards) {
     const review = M.REVIEWED_LEGACY_IMPORTS[row.name], catalog = M.CARD_CATALOG[row.name];
@@ -32,7 +32,7 @@ test('exactly the eighteen recorded native cards gain import eligibility without
     assert.deepEqual(JSON.parse(JSON.stringify(M.parseCost(catalog.manaCost))), JSON.parse(JSON.stringify(M.parseCost(row.mana_cost || ''))));
     assert.deepEqual(Array.from(catalog.colorIdentity).sort(), row.color_identity.slice().sort());
   }
-  assert.equal(Object.values(M.CARD_CATALOG).filter(c => c.deckImportEligible).length, 21171);
+  assert.equal(Object.values(M.CARD_CATALOG).filter(c => c.deckImportEligible).length, 21385);
 });
 
 test('unreviewed inactive native cards remain blocked by the general import gate', () => {

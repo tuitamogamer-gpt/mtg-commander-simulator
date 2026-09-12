@@ -40,8 +40,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   const playerCounter=async(ctx,p,kind)=>{
     if(kind==='energy')await M.OracleV8Energy.gain(ctx.g,p,1,ctx.src);
-    else if(kind==='poison')p.poison++;
-    else p.counters[kind]=(p.counters[kind]||0)+1;
+    else if(kind==='poison')p.poison+=M.POM?.playerCounterBonus(ctx.g,p,1)||1;
+    else p.counters[kind]=(p.counters[kind]||0)+(M.POM?.playerCounterBonus(ctx.g,p,1)||1);
     ctx.g.note('counter',{p,kind});
   };
   M.VN={...C,snapshotBlockers,kinds,attached,modified,attack,step,yes,add,buff,spirit,citizen,connive,vote,playerCounter};

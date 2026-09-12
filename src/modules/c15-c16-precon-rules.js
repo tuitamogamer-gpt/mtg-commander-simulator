@@ -12,7 +12,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   // Meren's existing native implementation uses this historical property.
   // Keep it as an alias so proliferate and persistence see the same counters.
   Object.defineProperty(M.Player.prototype,'experienceCounters',{configurable:true,get(){return this.counters.experience||0;},set(n){this.counters.experience=n;}});
-  const experience=ctx=>{ctx.you.counters.experience=exp(ctx.you)+1;ctx.g.recalc();ctx.g.note('counter',{p:ctx.you,kind:'experience'});};
+  const experience=ctx=>{ctx.you.counters.experience=exp(ctx.you)+(M.POM?.playerCounterBonus(ctx.g,ctx.you,1)||1);ctx.g.recalc();ctx.g.note('counter',{p:ctx.you,kind:'experience'});};
   const counters=(ctx,c,n)=>{if(c&&n>0)ctx.g.addCounters(c,'+1/+1',n,false,ctx.you);};
   const life=async(g,p,n)=>{if(n>p.life)await g.gainLife(p,n-p.life);else if(n<p.life)await g.loseLife(p,p.life-n,'life total change');};
   async function enterMany(ctx,cards,ctrl=ctx.you,opts={}){await ctx.g.withBattlefieldEntryBatch(async()=>{for(const c of cards.filter(Boolean)){const p=ctrl||c.owner;await ctx.g.putPermanentOntoBattlefield(c,p,opts);}});}

@@ -273,11 +273,11 @@
         : effect.who === 'each-opponent' ? ctx.g.apnapFrom(ctx.g.turnPlayer || ctx.you).filter(player => player !== ctx.you) : helpers.subjects(ctx, effect.who);
       const placed = [];
       for (const player of new Set(players)) if (player instanceof MTG.Player && !player.lost && n > 0) {
-        const before = player.poison || 0; player.poison = before + n;
-        placed.push({ player, kind: 'poison', n, before, after: player.poison, by: ctx.you, source: ctx.src });
+        const before = player.poison || 0;const actual=MTG.POM?.playerCounterBonus(ctx.g,player,n)||n; player.poison = before + actual;
+        placed.push({ player, kind: 'poison', n:actual, before, after: player.poison, by: ctx.you, source: ctx.src });
       }
       for (const row of placed) {
-        ctx.g.lg(row.player.name + ' gets ' + n + ' poison counter' + (n === 1 ? '' : 's') + '.');
+        ctx.g.lg(row.player.name + ' gets ' + row.n + ' poison counter' + (row.n === 1 ? '' : 's') + '.');
         ctx.g.note('gameEffect', { kind: 'counterChange', counterKind: 'poison', target: row.player, amount: n, source: ctx.src });
         await ctx.g.emit('playerCountersPlaced', row);
       }

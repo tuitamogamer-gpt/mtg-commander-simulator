@@ -198,6 +198,108 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+
+  "Scrappy Survivors": {
+    "archetype": "Auras, Equipment and Junk",
+    "length": "medium",
+    "tags": [
+      "equipment",
+      "enchantments",
+      "tokens"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Science!": {
+    "archetype": "Artifacts and energy",
+    "length": "long",
+    "tags": [
+      "artifacts",
+      "energy",
+      "graveyard"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Mutant Menace": {
+    "archetype": "Radiation, milling and counters",
+    "length": "long",
+    "tags": [
+      "mill",
+      "counters",
+      "graveyard"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Hail, Caesar": {
+    "archetype": "Attacking tokens and sacrifice",
+    "length": "medium",
+    "tags": [
+      "tokens",
+      "sacrifice",
+      "attack-triggers"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Grand Larceny": {
+    "archetype": "Evasive attacks and stolen cards",
+    "length": "medium",
+    "tags": [
+      "evasion",
+      "exile",
+      "combat-damage"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Desert Bloom": {
+    "archetype": "Deserts, sacrifice and land recursion",
+    "length": "long",
+    "tags": [
+      "lands",
+      "graveyard",
+      "tokens"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Creative Energy": {
+    "archetype": "Energy and creature copies",
+    "length": "medium",
+    "tags": [
+      "energy",
+      "tokens",
+      "copy"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Graveyard Overdrive": {
+    "archetype": "Lhurgoyfs and graveyard value",
+    "length": "medium",
+    "tags": [
+      "graveyard",
+      "mill",
+      "combat-damage"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Tricky Terrain": {
+    "archetype": "Land types and everything counters",
+    "length": "long",
+    "tags": [
+      "lands",
+      "counters",
+      "ramp"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Eldrazi Incursion": {
+    "archetype": "Colorless ramp and Eldrazi copies",
+    "length": "long",
+    "tags": [
+      "eldrazi",
+      "ramp",
+      "copy"
+    ],
+    "commanderImportance": 1.8
+  }
+,
 "Paradox Power": {
     "archetype": "Paradox and exile casting",
     "length": "long",

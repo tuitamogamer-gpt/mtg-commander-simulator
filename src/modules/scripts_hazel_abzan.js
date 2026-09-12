@@ -42,12 +42,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       for (const subject of chosen) {
         if (subject instanceof MTG.Player) {
           if ((subject.poison || 0) > 0) {
-            subject.poison++;
+            subject.poison+=MTG.POM?.playerCounterBonus(g,subject,1)||1;
             g.lg(`${subject.name}: poison ${subject.poison}.`);
           }
           if((subject.counters?.energy||0)>0)await MTG.OracleV8Energy.gain(g,subject,1,null);
           for (const kind of Object.keys(subject.counters || {})) if (kind !== 'energy' && subject.counters[kind] > 0) {
-            subject.counters[kind]++;
+            subject.counters[kind]+=MTG.POM?.playerCounterBonus(g,subject,1)||1;
             g.note('counter', {p: subject, kind});
           }
           continue;

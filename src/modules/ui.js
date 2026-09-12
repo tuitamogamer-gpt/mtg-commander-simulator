@@ -691,6 +691,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return n?`<span class="poisonbadge energybadge experiencebadge" role="img" aria-label="${n} experience counters" title="${n} experience counters"><span aria-hidden="true">✦</span><b>${n}</b><small>EXPERIENCE</small></span>`:'';
     }
 
+    radBadge(p) {
+      const n = Number(p?.counters?.rad);
+      return Number.isFinite(n) && n > 0 ? `<span class="poisonbadge radbadge" role="img" aria-label="${n} rad counters" title="At your precombat main phase, mill this many cards. Lose 1 life and remove 1 rad counter for each nonland milled."><span aria-hidden="true">☢</span><b>${n}</b><small>RAD</small></span>` : '';
+    }
+
     // Public, currently relevant player state that would otherwise be easy to
     // lose in the game log. Keep this presentation-only: it reads the same
     // card/player metadata used by the rules engine and never exposes secret
@@ -709,6 +714,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
       if(p.counters?.energy)add({key:'energy',kind:'counter',icon:'ϟ',label:'Energy counters',detail:`${p.counters.energy} energy available to spend.`,duration:'Counters remain until an effect removes them.'});
       if(p.counters?.experience)add({key:'experience',kind:'counter',icon:'✦',label:'Experience counters',detail:`${p.counters.experience} experience counters.`,duration:'Remain when your commander leaves the battlefield.'});
+      if(p.counters?.rad > 0)add({key:'rad',kind:'counter',icon:'☢',label:'Rad counters',detail:`${p.counters.rad} rad counters. At the beginning of your precombat main phase, mill that many cards. For each nonland milled, lose 1 life and remove 1 rad counter.`,duration:'Counters remain until radiation or another effect removes them.'});
       const poison = this.poisonCount(p);
       if (poison) add({
         key: 'poison', kind: 'counter', icon: '☠', label: 'Poison counters',
@@ -2572,7 +2578,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span class="oppname">${isMonarch ? `<i class="seatcrown" aria-label="Monarch">${U.icon('crown')}</i> ` : ''}${U.icon('player', 'oppidentityicon')} ${esc(p.name)}</span>
           ${isActiveAi ? '<span class="activeaitag">ACTIVE TURN</span>' : ''}
           ${styleMeta ? `<span class="personachip${styleMeta.portrait ? ' hasportrait' : ''}" title="Style: ${escAttr(styleMeta.label)}">${styleMeta.portrait ? `<img src="${styleMeta.portrait}" alt="" onerror="MTG.imgFail(this)">` : styleMeta.icon} ${esc(styleMeta.label)}</span>` : ''}
-          <span class="playerlifetotals"><span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${p.life}❤</span>${this.poisonBadge(p)}${this.energyBadge(p)}${this.experienceBadge(p)}</span>
+          <span class="playerlifetotals"><span class="opplife" role="button" tabindex="0" aria-label="${esc(p.name)}: ${p.life} life. Open player details." title="Open ${esc(p.name)} details">${p.life}❤</span>${this.poisonBadge(p)}${this.energyBadge(p)}${this.experienceBadge(p)}${this.radBadge(p)}</span>
           <span class="oppmeta">${U.icon('cards')}${p.hand.length} ${U.icon('library')}${p.library.length}${statusEffects.length ? ` <button type="button" class="playereffectsbadge" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}</span>
           <span class="oppcmd" title="${esc(cmdTitle)}">${U.icon('crown')}${esc(cmdState)}</span>
           <button class="tbtn small" type="button" aria-label="Open ${esc(p.name)} player details" title="Open ${esc(p.name)} player details">${U.icon('info')}</button>`;
@@ -2955,7 +2961,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (g.monarch === me) info.classList.add('monarch');
       const statusEffects = this.playerStatusEffects(g, me);
       if (statusEffects.length) info.classList.add('has-effects');
-      info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="playerlifetotals"><div class="melife" role="button" tabindex="0" aria-label="You: ${me.life} life. Open player details." title="Open your player details">${me.life}<small>life</small></div>${this.poisonBadge(me)}${this.energyBadge(me)}${this.experienceBadge(me)}</div>
+      info.innerHTML = `<div class="seatyou"><span>04</span><small>YOU</small></div><div class="playerlifetotals"><div class="melife" role="button" tabindex="0" aria-label="You: ${me.life} life. Open player details." title="Open your player details">${me.life}<small>life</small></div>${this.poisonBadge(me)}${this.energyBadge(me)}${this.experienceBadge(me)}${this.radBadge(me)}</div>
         ${g.monarch === me ? `<div class="memonarch"><span>${U.icon('crown')}</span><b>MONARCH</b></div>` : ''}
         ${statusEffects.length ? `<button type="button" class="playereffectsbadge mine" title="${esc(statusEffects.map(effect => `${effect.label}: ${effect.detail}`).join(' · '))}"><span>${U.icon('effects')}</span><b>${statusEffects.length}</b><small>EFFECTS</small></button>` : ''}
         <div class="manapool">${poolStr}</div>

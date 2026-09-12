@@ -16,18 +16,18 @@ Generic Oracle import state: **2026-09-05T16:33:38.988Z**. The counts below incl
 
 | Measure | Count |
 | --- | ---: |
-| Runtime card definitions | 21,171 |
+| Runtime card definitions | 21,385 |
 | Generic Oracle imports (178 batches of 100) | 17,800 |
 | Dedicated/manual Oracle imports | 58 |
-| Legacy definitions | 3,313 |
+| Legacy definitions | 3,527 |
 | Of those: individually reviewed for deck import | 18 |
-| Definitions allowed in arbitrary deck imports | 21,171 |
+| Definitions allowed in arbitrary deck imports | 21,385 |
 | Legacy definitions restricted from arbitrary deck imports | 0 |
 | Paper, Commander-legal source Oracle IDs | 30,784 |
-| Source Oracle IDs represented by a runtime name or face alias | 21,144 |
-| Source Oracle IDs still absent from the runtime | 9,640 |
+| Source Oracle IDs represented by a runtime name or face alias | 21,357 |
+| Source Oracle IDs still absent from the runtime | 9,427 |
 | Of those: parser-eligible but not imported | 2 |
-| Of those: deferred by the current semantic compiler | 9,638 |
+| Of those: deferred by the current semantic compiler | 9,425 |
 
 **Availability is explicit.** Native definitions qualify through an active built-in deck or a recorded individual review; Oracle imports qualify through their certified batch. The `native_import_review` column identifies individually reviewed native cards. The [18-card native review](../reports/cards/restricted-legacy-2026-09-10/README.md) covers the formerly restricted cards. The importer also validates deck size, commanders, singleton and color identity. A row with `deck_import_eligible=false` remains blocked.
 
@@ -37,31 +37,31 @@ Generic Oracle import state: **2026-09-05T16:33:38.988Z**. The counts below incl
 
 The comparison universe is exactly `games.includes('paper') && legalities.commander === 'legal'` in the pinned feed, deduplicated by Oracle ID. It excludes later releases, later Oracle or legality changes, rows not marked for paper, tokens, and other source objects that fail that filter. The feed has 38,627 source rows and 36,495 rows marked for paper.
 
-Imported Oracle batches match by their recorded Oracle ID. Legacy definitions match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists 2 such groups, 17 runtime names without a pinned-source match, and 8 matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
+Imported Oracle batches match by their recorded Oracle ID. Legacy definitions match first by an exact source name, then by a face name within the comparison universe. Face matching is an inventory association, not proof that every side or transition is fully implemented. Multiple runtime names can refer to one Oracle ID, so runtime totals and source totals differ. The summary lists 2 such groups, 17 runtime names without a pinned-source match, and 9 matched runtime names outside the comparison universe. Those exceptions remain visible in the imported CSV and are not silently counted as missing source cards.
 
 Current parser-eligible, unimported names: `Zuo Ci, the Mocking Sage`, `Zurgo's Vanguard`. These still need an import record and executable proof. The importer defaults to complete 100-card batches; a smaller queue is not a reason to relax its safeguards.
 
 | Current remaining reason | Cards |
 | --- | ---: |
-| `oracle-needs-explicit-semantics` | 4,209 |
-| `spell-needs-explicit-semantics` | 2,282 |
-| `noncreature-needs-explicit-semantics` | 2,155 |
+| `oracle-needs-explicit-semantics` | 4,088 |
+| `spell-needs-explicit-semantics` | 2,255 |
+| `noncreature-needs-explicit-semantics` | 2,115 |
 | `double-faced-card-needs-complete-front-semantics` | 230 |
-| `land-needs-explicit-semantics` | 138 |
+| `land-needs-explicit-semantics` | 125 |
 | `complex-layout` | 114 |
-| `saga-chapter-needs-complete-semantics` | 96 |
+| `saga-chapter-needs-complete-semantics` | 89 |
 | `double-faced-card-needs-face-transition-semantics` | 81 |
-| `unsupported-mana-cost` | 49 |
-| `adventure-needs-complete-face-semantics` | 40 |
+| `unsupported-mana-cost` | 48 |
+| `adventure-needs-complete-face-semantics` | 39 |
 | `dynamic-power-toughness` | 32 |
 | `split-needs-complete-face-semantics` | 31 |
-| `unbound-event-reference` | 29 |
+| `unbound-event-reference` | 28 |
 | `unsupported-split-faces` | 27 |
 | `double-faced-card-needs-complete-back-semantics` | 25 |
 | `unbound-target-damage-source` | 24 |
-| `unbound-event-amount` | 16 |
 | `unsupported-adventure-face-types` | 16 |
 | `mana-ability-needs-explicit-semantics` | 15 |
+| `unbound-event-amount` | 14 |
 | `overload-body-needs-complete-semantics` | 7 |
 | `unbound-target-X` | 5 |
 | `transform-land-face-transition-needs-proof` | 4 |

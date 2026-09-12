@@ -86,6 +86,10 @@ test('svaki aktivni oracle target-opponent put ima stvarni target spec', () => {
     // distinct opponent specs. Paid entry/death and both controller paths
     // are exercised in c17-c19-entry.test.mjs.
     if(canonicalName==='Vindictive Lich'){assert.equal(typeof script.triggers[0].prepareTargets,'function');continue;}
+    // Caesar chooses modes after the sacrifice, then announces the damage
+    // target on a reflexive trigger. pip-otc-m3c-advanced.test.mjs executes it
+    // for both controllers and checks the opponent while it is on the Stack.
+    if(canonicalName==="Caesar, Legion's Emperor"){assert.equal(typeof script.triggers[0].run,'function');continue;}
     const specs = allTargetSpecs(script);
     if(canonicalName==='Passionate Archaeologist'){
       const background=card(controller,canonicalName),commander=card(controller,'Faldorn, Dread Wolf Herald');commander.commander=true;

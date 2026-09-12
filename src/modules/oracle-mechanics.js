@@ -132,6 +132,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ctx.g.tap(helper);
         const added=Math.max(0,Number(helper.power)||0);
         if(added)MTG.E.pumpUntilEOT(ctx.g,ctx.src,added,0);
+        await ctx.g.emit('pomEnlisted',{card:ctx.src,player:ctx.you});
       }});
       return true;
     }
