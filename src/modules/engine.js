@@ -168,6 +168,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     get colors() {
       if (this.zone === 'battlefield' && this.cur && this.cur.colors) return this.cur.colors;
+      const chosen=MTG.WLM?.commanderColor(this);if(chosen)return chosen;
       if (this.zone === 'stack' && this.castMeta && Array.isArray(this.castMeta.spellColors)) {
         return this.castMeta.spellColors;
       }
@@ -981,7 +982,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // KASNIJE (flushTriggers), a mnogi čitaju baš meta izvora — Colfenor's Urn,
       // Skyclave Apparition, Grothama. Brisanjem ovdje su svi tiho otkazivali.
       // Umjesto toga se meta resetuje pri ULASKU na bojno polje (novi objekat).
-      if (toZone !== 'battlefield') { card.counters = {}; card.sick = true; }
+      if (toZone !== 'battlefield') { if(!(snap.def.wlmMe&&!snap.abilitiesDisabled&&!['hand','library'].includes(toZone)))card.counters = {}; card.sick = true; }
 
       if (card.isToken && toZone !== 'battlefield') {
         for (const owner of zoneReplacement.shuffleOwners) MTG.shuffle(owner.library, this.rnd);
@@ -1037,7 +1038,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // before ETB processing so static effects and triggers observe the
         // Aura already attached (CR 303.4f).
         let enteredAttachedTo = null;
-        if (opts.attachTo instanceof CardInst && opts.attachTo.zone === 'battlefield') {
+        if (opts.attachTo instanceof CardInst && (opts.attachTo.zone === 'battlefield' || card.def.wlmAnimate && opts.attachTo.zone === 'graveyard')) {
           enteredAttachedTo = opts.attachTo;
           if(card.def.asAttach&&!card.cur?.abilitiesDisabled)await card.def.asAttach(this,card,enteredAttachedTo);
           card.attachedTo = enteredAttachedTo.iid;
@@ -1555,7 +1556,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     legalEntryAttachment(card, host, controller) {
-      if (!(host instanceof CardInst) || host.zone !== 'battlefield' || host.phasedOut || card === host || card.is('Creature')) return false;
+      if (!(host instanceof CardInst) || (host.zone !== 'battlefield' && !(card.def.wlmAnimate && host.zone === 'graveyard')) || host.phasedOut || card === host || card.is('Creature')) return false;
       if (this.isProtectedFrom(host, card)) return false;
       if (card.hasSub('Aura')) {
         const spec = card.def.auraTarget?.[0] || (card.def.bestowCost ? card.def.bestowTarget?.[0] : null);
@@ -2861,7 +2862,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if(d.oracleEchoCost&&c.meta.oracleEchoController!==c.ctrl){c.meta.oracleEchoController=c.ctrl;c.meta.oracleEchoPending=true;}
         const cur = {
           types: d.types.slice(), subtypes: d.subtypes.slice(), super: (d.super || []).slice(),
-          colors: d.colorsOverride ? d.colorsOverride.slice() : U.colorsOfCost(d.cost || ''),
+          colors: MTG.WLM?.commanderColor(c) || (d.colorsOverride ? d.colorsOverride.slice() : U.colorsOfCost(d.cost || '')),
           kw: new Set(d.kws || []),
           power: 0, toughness: 0, basePower: 0, baseToughness: 0,
           cantAttack: false, cantBlock: false, cantUntap: false, blockOnlyFlying: false,
@@ -3882,8 +3883,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const player = card.meta?.cursedPlayer;
           const host = card.attachedTo ? this.byIid(card.attachedTo) : null;
           const spec = card.meta?.oracleBestowTarget || card.def.auraTarget?.[0];
-          const legal = player instanceof Player ? !player.lost&&!this.isProtectedFrom(player,card) : host && host.zone === 'battlefield' &&
-            (!spec?.filter || spec.filter(this, host, card.ctrl, card)) && !card.is('Creature') && !this.isProtectedFrom(host, card);
+          const legal = MTG.WLM?.reanimationAuraLegal?.(this,card,host) ?? (player instanceof Player ? !player.lost&&!this.isProtectedFrom(player,card) : host && host.zone === 'battlefield' &&
+            (!spec?.filter || spec.filter(this, host, card.ctrl, card)) && !card.is('Creature') && !this.isProtectedFrom(host, card));
           if (!legal) {
             if (MTG.OracleV8Permanents?.isBestowed(card)) ceaseBestow.push(card);
             else moves.set(card, 'graveyard');
@@ -3900,7 +3901,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Legend choices belong to this same pre-action state, including when
       // one of the copies also has lethal damage or zero toughness.
       const legends = new Map();
-      for (const card of battlefield) if ((card.cur.super || []).includes('Legendary') && !(card.isToken && battlefield.some(s => s.ctrl === card.ctrl && s.def.cdkCadric && !s.cur.abilitiesDisabled))) {
+      for (const card of battlefield) if ((card.cur.super || []).includes('Legendary') && !(card.isToken && battlefield.some(s => s.ctrl === card.ctrl && (s.def.cdkCadric || card.is('Creature') && s.def.wlmMultiplied) && !s.cur.abilitiesDisabled))) {
         const key = card.ctrl.idx + '|' + card.name;
         if (!legends.has(key)) legends.set(key, []);
         legends.get(key).push(card);

@@ -58,7 +58,10 @@ test('the complete pinned legacy card set remains represented exactly once in th
   const cwwNames=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-cmm-woc-who-2026-09-10/intake.json',import.meta.url))).newNames;
   assert.equal(cwwNames.length,109);
   assert.deepEqual(intersection(cwwNames,[...starterNames,...c21Names,...c14Names,...c1516Names,...c1719Names,...c1920Names,...zncKhcNames,...afcMicNames,...vocNccNames,...clbDmc40kNames,...bomNames,...ltcCmmNames]),[]);
-  const legacyNames = Object.keys(legacyRaw.cards || {}).filter(name=>!starterNames.includes(name)&&!c21Names.includes(name)&&!c14Names.includes(name)&&!c1516Names.includes(name)&&!c1719Names.includes(name)&&!c1920Names.includes(name)&&!zncKhcNames.includes(name)&&!afcMicNames.includes(name)&&!vocNccNames.includes(name)&&!clbDmc40kNames.includes(name)&&!bomNames.includes(name)&&!ltcCmmNames.includes(name)&&!cwwNames.includes(name));
+  const wlmNames=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-who-lcc-sld-mkc-2026-09-12/intake.json',import.meta.url))).newNames;
+  assert.equal(wlmNames.length,209);
+  assert.deepEqual(intersection(wlmNames,[...starterNames,...c21Names,...c14Names,...c1516Names,...c1719Names,...c1920Names,...zncKhcNames,...afcMicNames,...vocNccNames,...clbDmc40kNames,...bomNames,...ltcCmmNames,...cwwNames]),[]);
+  const legacyNames = Object.keys(legacyRaw.cards || {}).filter(name=>!starterNames.includes(name)&&!c21Names.includes(name)&&!c14Names.includes(name)&&!c1516Names.includes(name)&&!c1719Names.includes(name)&&!c1920Names.includes(name)&&!zncKhcNames.includes(name)&&!afcMicNames.includes(name)&&!vocNccNames.includes(name)&&!clbDmc40kNames.includes(name)&&!bomNames.includes(name)&&!ltcCmmNames.includes(name)&&!cwwNames.includes(name)&&!wlmNames.includes(name));
   const legacyNameSet = new Set(legacyNames);
   const digest = createHash('sha256').update([...legacyNames].sort().join('\n')).digest('hex');
 
@@ -66,7 +69,7 @@ test('the complete pinned legacy card set remains represented exactly once in th
   assert.equal(legacyNameSet.size, LEGACY_CARD_COUNT, 'legacy raw names are unique');
   assert.equal(digest, LEGACY_NAME_DIGEST, 'pinned legacy card-name identity');
 
-  for (const name of [...legacyNames,...starterNames,...c21Names,...c14Names,...c1516Names,...c1719Names,...c1920Names,...zncKhcNames,...afcMicNames,...vocNccNames,...clbDmc40kNames,...bomNames,...ltcCmmNames]) {
+  for (const name of [...legacyNames,...starterNames,...c21Names,...c14Names,...c1516Names,...c1719Names,...c1920Names,...zncKhcNames,...afcMicNames,...vocNccNames,...clbDmc40kNames,...bomNames,...ltcCmmNames,...cwwNames,...wlmNames]) {
     const raw = legacyRaw.cards[name];
     const catalog = MTG.CARD_CATALOG[name];
     assert.ok(catalog, `${name}: present in MTG.CARD_CATALOG`);
@@ -103,7 +106,7 @@ test('the complete pinned legacy card set remains represented exactly once in th
   assert.deepEqual(intersection(cwwNames,[...legacyNames,...genericNames,...sauronNames]),[], 'CMM/WOC/WHO additions preserve the pinned legacy and Oracle partitions');
   const runtimeNames = Object.keys(MTG.RAW_DATA.cards || {});
   const catalogNames = Object.keys(MTG.CARD_CATALOG || {});
-  const expectedRuntimeUnion = [...legacyNames, ...starterNames, ...c21Names, ...c14Names, ...c1516Names, ...c1719Names, ...c1920Names, ...zncKhcNames, ...afcMicNames, ...vocNccNames, ...clbDmc40kNames, ...bomNames, ...ltcCmmNames, ...cwwNames, ...genericNames, ...sauronNames];
+  const expectedRuntimeUnion = [...legacyNames, ...starterNames, ...c21Names, ...c14Names, ...c1516Names, ...c1719Names, ...c1920Names, ...zncKhcNames, ...afcMicNames, ...vocNccNames, ...clbDmc40kNames, ...bomNames, ...ltcCmmNames, ...cwwNames, ...wlmNames, ...genericNames, ...sauronNames];
   assert.deepEqual(sortedUnique(runtimeNames), sortedUnique(expectedRuntimeUnion),
     'runtime raw cards are exactly legacy plus Starter, C21, C14, C15/C16, C17-C19 C19-C20/ZNC ZNC/CMR/KHC and AFC/MIC additions plus generic Oracle plus Sauron');
   assert.deepEqual(sortedUnique(catalogNames), sortedUnique(runtimeNames),

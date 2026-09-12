@@ -230,6 +230,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   E.searchBasic = async function (g, p, opts = {}) {
+    if(g.canSearchLibrary?.(p)!==false)await g.emit('searchedLibrary',{player:p});
     // opts: {n, toHandN, tapped, filter(def), prompt}
     const n = opts.n || 1;
     const cands = (g.searchableLibrary?g.searchableLibrary(p):(g.canSearchLibrary?.(p)===false?[]:p.library)).filter(c => (c.cur, c.def.super || []).includes('Basic') && (!opts.filter || opts.filter(c.def)));
@@ -263,6 +264,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
 
   E.searchLandByName = async function (g, p, names, opts = {}) {
+    if(g.canSearchLibrary?.(p)!==false)await g.emit('searchedLibrary',{player:p});
     const avail = (g.searchableLibrary?g.searchableLibrary(p):(g.canSearchLibrary?.(p)===false?[]:p.library)).filter(c => c.is('Land') && (names.some(nm => c.name === nm || c.hasSub && c.def.subtypes.includes(nm))));
     if (!avail.length) { U.shuffle(p.library, g.rnd); return null; }
     const picked = await p.controller.decide(g, {

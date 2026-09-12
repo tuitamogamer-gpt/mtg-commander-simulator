@@ -3,6 +3,176 @@
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   MTG.DECK_GUIDE_ROUTES = Object.freeze({
+"wlmparadox": [
+    {
+      "label": "Early game",
+      "title": "Fix your colors",
+      "text": "Develop mana and inexpensive creatures before spending cards on exile effects."
+    },
+    {
+      "label": "Midgame",
+      "title": "Cast from other zones",
+      "text": "Use Yasmin, foretell, and adventures to grow creatures with the Doctor. Leave mana to use revealed cards."
+    },
+    {
+      "label": "Endgame",
+      "title": "Convert counters into damage",
+      "text": "Untap your countered creatures at end step and combine copied spells with evasive attackers."
+    }
+  ],
+  "wlmvillains": [
+    {
+      "label": "Early game",
+      "title": "Assemble artifacts",
+      "text": "Fix blue, black, and red while deploying early artifact creatures."
+    },
+    {
+      "label": "Midgame",
+      "title": "Pressure several opponents",
+      "text": "Reach three life lost for as many opponents as possible before your end step."
+    },
+    {
+      "label": "Endgame",
+      "title": "Multiply the army",
+      "text": "Use artifact copies, sacrifice payoffs, and mass damage to close the game."
+    }
+  ],
+  "wlmhistoric": [
+    {
+      "label": "Early game",
+      "title": "Build a historic board",
+      "text": "Deploy cheap artifacts, companions, and fixing."
+    },
+    {
+      "label": "Midgame",
+      "title": "Use the top of the library",
+      "text": "Cast historic cards with the Doctor and spend Clues when the top stops your progress."
+    },
+    {
+      "label": "Endgame",
+      "title": "Turn value into threats",
+      "text": "Displaced Dinosaurs makes new historic permanents 7/7 creatures; protect the board and attack."
+    }
+  ],
+  "wlmdinosaurs": [
+    {
+      "label": "Early game",
+      "title": "Reach five mana",
+      "text": "Fix your colors and build mana before committing your largest creatures."
+    },
+    {
+      "label": "Midgame",
+      "title": "Choose a discover window",
+      "text": "Deploy Pantlaza and use Dinosaur entries to add value while keeping interaction available."
+    },
+    {
+      "label": "Endgame",
+      "title": "Attack with a large herd",
+      "text": "Trample, fight effects, and Wrathful Raptors force difficult blocks and punish damage."
+    }
+  ],
+  "wlmmerfolk": [
+    {
+      "label": "Early game",
+      "title": "Recruit Merfolk",
+      "text": "Build a wide board of low-cost Merfolk and protect access to both colors."
+    },
+    {
+      "label": "Midgame",
+      "title": "Explore before attacking",
+      "text": "Use Hakbal’s combat trigger to find lands or grow your team before choosing attacks."
+    },
+    {
+      "label": "Endgame",
+      "title": "Finish with counters",
+      "text": "Use evasion and counter payoffs; keep enough creatures to rebuild after removal."
+    }
+  ],
+  "wlmvampires": [
+    {
+      "label": "Early game",
+      "title": "Develop Vampires",
+      "text": "Deploy inexpensive bodies and a reliable way to sacrifice them."
+    },
+    {
+      "label": "Midgame",
+      "title": "Bless attackers",
+      "text": "Attack with eligible Vampires, then trade or sacrifice blessed creatures for cards and Demons."
+    },
+    {
+      "label": "Endgame",
+      "title": "Use death triggers to finish",
+      "text": "Rebuild with Carmen and sacrifice payoffs while flying Vampire Demons pressure life totals."
+    }
+  ],
+  "wlmpirates": [
+    {
+      "label": "Early game",
+      "title": "Prepare the crew",
+      "text": "Develop mana and evasive Pirates while putting useful creatures into your graveyard."
+    },
+    {
+      "label": "Midgame",
+      "title": "Reanimate before attacks",
+      "text": "Use Admiral Brass at beginning of combat and send Pirates where their damage can connect."
+    },
+    {
+      "label": "Endgame",
+      "title": "Convert stolen resources",
+      "text": "Use Treasures, borrowed creatures, and exiled cards to sustain pressure across opponents."
+    }
+  ],
+  "wlmpets": [
+    {
+      "label": "Early game",
+      "title": "Build the pack",
+      "text": "Deploy early Cats and Dogs, then establish Rin and Seri."
+    },
+    {
+      "label": "Midgame",
+      "title": "Grow with each cast",
+      "text": "Alternate creature types to make both tokens and hold mana for Rin and Seri’s ability."
+    },
+    {
+      "label": "Endgame",
+      "title": "Push through defenses",
+      "text": "Use token multipliers, protection, and the commander’s damage ability to finish."
+    }
+  ],
+  "wlmsurveil": [
+    {
+      "label": "Early game",
+      "title": "Shape your draws",
+      "text": "Use surveil to find land drops and put useful creatures into the graveyard."
+    },
+    {
+      "label": "Midgame",
+      "title": "Grow Mirko",
+      "text": "Surveil repeatedly and keep Mirko alive to widen the range of legal reanimation targets."
+    },
+    {
+      "label": "Endgame",
+      "title": "Repeat useful entries",
+      "text": "Reanimate creatures with strong entry effects and use control spells to protect your advantage."
+    }
+  ],
+  "wlmdisguise": [
+    {
+      "label": "Early game",
+      "title": "Build a hidden board",
+      "text": "Play face-down creatures and ramp while preserving useful face-up abilities."
+    },
+    {
+      "label": "Midgame",
+      "title": "Turn attackers face up",
+      "text": "Use Kaust during combat and draw when a creature turned face up this turn deals combat damage to a player."
+    },
+    {
+      "label": "Endgame",
+      "title": "Multiply surprises",
+      "text": "Panoptic Projektor doubles turn-face-up triggers; Duskana makes base 2/2 attackers dangerous."
+    }
+  ],
     timeTravel: [
       {label:'Early game',title:'Prepare future spells',text:'Develop mana and suspend spells while building permanents with time counters.'},
       {label:'Midgame',title:'Travel through your counters',text:'Attack with the Doctor to suspend more cards, then remove time counters to cast them sooner. Add counters to Rose and your mana engine when useful.'},
@@ -96,6 +266,146 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.DECK_GUIDES = Object.freeze({
+"Paradox Power": {
+    "route": "wlmparadox",
+    "pace": "Paradox and exile casting",
+    "complexity": "Advanced",
+    "theme": "Turn spells cast outside your hand into counters, cards, and extra spells.",
+    "plan": "Turn spells cast outside your hand into counters, cards, and extra spells.",
+    "mulligan": "Keep three lands, green fixing, and a cheap spell or exile enabler.",
+    "tip": "Spend temporary exile permissions before they expire. Casting your commander also counts for paradox.",
+    "keys": [
+      "The Thirteenth Doctor",
+      "Yasmin Khan",
+      "The Twelfth Doctor"
+    ]
+  },
+  "Masters of Evil": {
+    "route": "wlmvillains",
+    "pace": "Artifact creatures and villainous choices",
+    "complexity": "Advanced",
+    "theme": "Spread life loss across opponents and build an army of Daleks and Cybermen.",
+    "plan": "Spread life loss across opponents and build an army of Daleks and Cybermen.",
+    "mulligan": "Keep three lands, an early mana rock, and a low-cost artifact creature or removal spell.",
+    "tip": "Davros checks life lost during the entire turn. Opponents choose each villainous outcome.",
+    "keys": [
+      "Davros, Dalek Creator",
+      "Missy",
+      "The Master, Multiplied"
+    ]
+  },
+  "Blast from the Past": {
+    "route": "wlmhistoric",
+    "pace": "Historic spells and Saga value",
+    "complexity": "Advanced",
+    "theme": "Play historic cards from the top and turn Clues, Food, and Sagas into lasting value.",
+    "plan": "Play historic cards from the top and turn Clues, Food, and Sagas into lasting value.",
+    "mulligan": "Keep three lands, fixing, and an inexpensive historic permanent.",
+    "tip": "The Fourth Doctor shares one play allowance for historic lands and spells each turn.",
+    "keys": [
+      "The Fourth Doctor",
+      "Sarah Jane Smith",
+      "Displaced Dinosaurs"
+    ]
+  },
+  "Veloci-Ramp-Tor": {
+    "route": "wlmdinosaurs",
+    "pace": "Dinosaurs and discover",
+    "complexity": "Advanced",
+    "theme": "Ramp into Dinosaurs, discover more resources, and turn creature damage into retaliation.",
+    "plan": "Ramp into Dinosaurs, discover more resources, and turn creature damage into retaliation.",
+    "mulligan": "Keep three lands and at least one ramp spell or cost reducer. Avoid a hand of only expensive Dinosaurs.",
+    "tip": "Pantlaza can discover only once each turn after you accept. Discover uses the entering Dinosaur’s toughness.",
+    "keys": [
+      "Pantlaza, Sun-Favored",
+      "Wayta, Trainer Prodigy",
+      "Wrathful Raptors"
+    ]
+  },
+  "Explorers of the Deep": {
+    "route": "wlmmerfolk",
+    "pace": "Merfolk, explore, and counters",
+    "complexity": "Advanced",
+    "theme": "Explore with a Merfolk army to find lands, grow creatures, and keep pressure on the table.",
+    "plan": "Explore with a Merfolk army to find lands, grow creatures, and keep pressure on the table.",
+    "mulligan": "Keep three lands and two affordable Merfolk or a Merfolk plus ramp.",
+    "tip": "Hakbal explores with every Merfolk at beginning of combat. Topography Tracker repeats every exploration.",
+    "keys": [
+      "Hakbal of the Surging Soul",
+      "Topography Tracker",
+      "Xolatoyac, the Smiling Flood"
+    ]
+  },
+  "Blood Rites": {
+    "route": "wlmvampires",
+    "pace": "Vampires, sacrifice, and death triggers",
+    "complexity": "Advanced",
+    "theme": "Bless attacking Vampires, then turn their deaths into cards and flying Demons.",
+    "plan": "Bless attacking Vampires, then turn their deaths into cards and flying Demons.",
+    "mulligan": "Keep three lands, early Vampires, and a sacrifice outlet or draw spell.",
+    "tip": "Clavileño can bless an attacking Vampire that is not already a Demon. Its death ability remains after Clavileño leaves.",
+    "keys": [
+      "Clavileño, First of the Blessed",
+      "Carmen, Cruel Skymarcher",
+      "Dusk Legion Sergeant"
+    ]
+  },
+  "Ahoy Mateys": {
+    "route": "wlmpirates",
+    "pace": "Pirates and graveyard recursion",
+    "complexity": "Advanced",
+    "theme": "Fill your graveyard, return hasty Pirates, and profit from combat damage to several players.",
+    "plan": "Fill your graveyard, return hasty Pirates, and profit from combat damage to several players.",
+    "mulligan": "Keep three lands, a cheap Pirate, and looting, mill, or a mana rock.",
+    "tip": "Admiral Brass returns a Pirate as a 4/4 with finality. If it would die, it is exiled instead.",
+    "keys": [
+      "Admiral Brass, Unsinkable",
+      "Malcolm, Keen-Eyed Navigator",
+      "Don Andres, the Renegade"
+    ]
+  },
+  "Raining Cats and Dogs": {
+    "route": "wlmpets",
+    "pace": "Cats, Dogs, and creature tokens",
+    "complexity": "Advanced",
+    "theme": "Cast Cats and Dogs to grow a mixed pack, then use Rin and Seri for damage and life.",
+    "plan": "Cast Cats and Dogs to grow a mixed pack, then use Rin and Seri for damage and life.",
+    "mulligan": "Keep three lands, early Cats or Dogs, and green mana development.",
+    "tip": "Rin and Seri trigger from casting Cats and Dogs. Creating creature tokens does not cast them.",
+    "keys": [
+      "Rin and Seri, Inseparable",
+      "Jinnie Fay, Jetmir's Second",
+      "Feline Sovereign"
+    ]
+  },
+  "Revenant Recon": {
+    "route": "wlmsurveil",
+    "pace": "Surveil and reanimation",
+    "complexity": "Advanced",
+    "theme": "Surveil to shape draws, grow Mirko, and bring smaller creatures back from the graveyard.",
+    "plan": "Surveil to shape draws, grow Mirko, and bring smaller creatures back from the graveyard.",
+    "mulligan": "Keep three lands, an early surveil effect, and interaction or a reanimation target.",
+    "tip": "Mirko can return a creature only if its power is strictly less than Mirko’s when choosing the target. Finality exiles it if it would die.",
+    "keys": [
+      "Mirko, Obsessive Theorist",
+      "Eye of Duskmantle",
+      "Animate Dead"
+    ]
+  },
+  "Deadly Disguise": {
+    "route": "wlmdisguise",
+    "pace": "Face-down creatures and combat surprises",
+    "complexity": "Advanced",
+    "theme": "Develop face-down creatures, turn attackers face up with Kaust, and draw when they connect.",
+    "plan": "Develop face-down creatures, turn attackers face up with Kaust, and draw when they connect.",
+    "mulligan": "Keep three lands, a face-down creature, and early mana development.",
+    "tip": "Kaust can turn an attacking face-down creature face up without paying its face-up cost. Duskana rewards base 2/2 creatures.",
+    "keys": [
+      "Kaust, Eyes of the Glade",
+      "Duskana, the Rage Mother",
+      "Panoptic Projektor"
+    ]
+  },
     "Enduring Enchantments": {"route": "enchantments", "pace": "Persistent value", "complexity": "Advanced", "theme": "Anikthea rebuilds your enchantments as a growing Zombie army.", "mulligan": "Keep three lands, a ramp spell, and an enchantment that draws cards.", "tip": "Mill or sacrifice useful non-Aura enchantments, then copy them with Anikthea’s entry and attack triggers.", "keys": ["Anikthea, Hand of Erebos", "Ondu Spiritdancer", "Starfield of Nyx"], "plan": "Anikthea rebuilds your enchantments as a growing Zombie army."},
     "Eldrazi Unbound": {"route": "bigCreatures", "pace": "Big mana", "complexity": "Advanced", "theme": "Build colorless mana, then let Zhulodok turn huge spells into two cascades.", "mulligan": "Keep three lands, at least one early mana rock, and a midgame play.", "tip": "Keep sources of true colorless mana for {C} costs. Zhulodok grants cascade only to colorless spells cast from your hand with mana value seven or greater.", "keys": ["Zhulodok, Void Gorger", "Forsaken Monument", "Darksteel Monolith"], "plan": "Build colorless mana, then let Zhulodok turn huge spells into two cascades."},
     "Virtue and Valor": {"route": "enchantments", "pace": "Enchanted combat", "complexity": "Intermediate", "theme": "Ellivere outfits your creatures with Virtuous Roles and draws cards when enchanted attackers connect.", "mulligan": "Keep three lands, a cheap creature, and an Aura or enchantment draw engine.", "tip": "Spread useful Auras across your board, protect Ellivere, and remember that Daybreak Coronet needs another Aura on its creature.", "keys": ["Ellivere of the Wild Court", "Umbra Mystic", "Retether"], "plan": "Ellivere outfits your creatures with Virtuous Roles and draws cards when enchanted attackers connect."},

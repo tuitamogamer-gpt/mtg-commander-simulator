@@ -134,6 +134,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       commanders: (player.commanders || []).map(card => card.iid),
       chosenCommanders: player.chosenCommanders ? player.chosenCommanders.slice() : null,
       colorIdentity: (player.colorIdentity || []).slice(),
+      ...(player.wlmClaraColor?{wlmClaraColor:player.wlmClaraColor}:{}),
       cityBlessing: !!player.cityBlessing,
       lcGollumDamaged: !!player.lcGollumDamaged,
       afcDungeon: player.afcDungeon?plainMeta(player.afcDungeon):null, afcDungeonSerial: player.afcDungeonSerial||0, afcCompletedDungeons: player.afcCompletedDungeons||0,
@@ -225,6 +226,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(MTG.ZK?.snapshotBlockers)blockers.push(...MTG.ZK.snapshotBlockers(game));
     if(MTG.C1920?.snapshotBlockers)blockers.push(...MTG.C1920.snapshotBlockers(game));
     if (MTG.C1516?.snapshotBlockers) blockers.push(...MTG.C1516.snapshotBlockers(game));
+    if (MTG.WLM?.snapshotBlockers) blockers.push(...MTG.WLM.snapshotBlockers(game));
     return blockers;
   };
 
@@ -413,6 +415,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.commanders = (saved.commanders || []).map(iid => byIid.get(iid)).filter(Boolean);
       player.chosenCommanders = saved.chosenCommanders ? saved.chosenCommanders.slice() : null;
       player.colorIdentity = (saved.colorIdentity || []).slice();
+      if(saved.wlmClaraColor)player.wlmClaraColor=saved.wlmClaraColor;
       player.cityBlessing = saved.cityBlessing;
       player.lcGollumDamaged=!!saved.lcGollumDamaged;
       player.afcDungeon=saved.afcDungeon||null; player.afcDungeonSerial=saved.afcDungeonSerial||0; player.afcCompletedDungeons=saved.afcCompletedDungeons||0;

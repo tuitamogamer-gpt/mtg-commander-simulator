@@ -13,7 +13,7 @@ test('five exact original lists preserve 500 cards and both Food and Fellowship 
  assert.deepEqual(Array.from(M.defaultCommanders(M.DECKS['Food and Fellowship'])),['Frodo, Adventurous Hobbit','Sam, Loyal Attendant']);
  const intake=JSON.parse(fs.readFileSync(sourceDir+'/intake.json'));assert.equal(intake.newCards,76);assert.equal(intake.reusedCards,293);
  for(const n of intake.newNames){assert.ok(M.SCRIPTS[n],n);assert.equal(!!M.DEFS[n].autoScripted,false,n);assert.equal(!!M.DEFS[n].simplified,false,n);}
- assert.equal(Object.keys(M.DECKS).length,120);assert.equal(M.CATALOG_SUMMARY.decks,120);
+ assert.equal(Object.keys(M.DECKS).length,130);assert.equal(M.CATALOG_SUMMARY.decks,130);
 });
 test('Sam produces Food at combat and lowers its activation cost; Frodo uses life gain and Ring',async()=>{
  const f=setup();library(f);const sam=card(f,'Sam, Loyal Attendant'),frodo=card(f,'Frodo, Adventurous Hobbit');

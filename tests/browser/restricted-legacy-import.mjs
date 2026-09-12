@@ -25,7 +25,7 @@ try{
     page.setDefaultTimeout(10000);page.on('response',r=>{if(r.status()>=400)errors.push({deck:deck.name,width,url:r.url(),status:r.status()});});page.on('pageerror',e=>errors.push({deck:deck.name,width,error:e.message}));
     page.on('console',m=>{if(m.type()==='error')errors.push({deck:deck.name,width,error:m.text()});});
     await page.addInitScript(()=>{localStorage.setItem('mtgOnboardingComplete','1');localStorage.setItem('mtgReducedMotion','1');localStorage.setItem('mtgManaMode','auto');});
-    await page.goto(base);assert.equal(await page.evaluate(()=>JSON.parse(render_game_to_text()).deckCount),120);
+    await page.goto(base);assert.equal(await page.evaluate(()=>JSON.parse(render_game_to_text()).deckCount),130);
     await page.locator('[data-menu-action="import"]').first().click();
     await page.waitForFunction(()=>!window.MTGAccount.loading&&document.querySelector('.mainmenu-deckimport')?.dataset.librarySource==='guest');
     const deckText=['Commander','1 '+deck.commander+' *CMDR*','','Deck',...reviewedNames.filter(n=>n!==deck.commander).map(n=>'1 '+n),'41 Plains','41 Mountain'].join('\n');

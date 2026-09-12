@@ -159,6 +159,7 @@
       if(!['yes','no'].includes(answer))throw new Error('Invalid optional search choice');
       if(answer==='no')return null;
     }
+    if(owner===chooser&&ctx.g.canSearchLibrary?.(chooser)!==false)await ctx.g.emit('searchedLibrary',{player:chooser});
     const predicate = effect.filter && helpers.target({...effect.filter, zone: 'graveyard', controller: 'any'}, [], 0, ctx.data).filter;
     let candidates = (ctx.g.searchableLibrary?ctx.g.searchableLibrary(chooser,owner):(ctx.g.canSearchLibrary?.(chooser)===false?[]:owner.library)).filter(card => (!named||effect.names.includes(card.name))&&(!predicate || predicate(ctx.g, card, effect.ownerSearch?owner:ctx.you, ctx.src)));
     if (effect.differentNames) {

@@ -14,7 +14,7 @@ test('five exact original precons, native definitions, artwork, guides and comma
  for(const n of intake.newNames){assert.ok(M.SCRIPTS[n],n);assert.ok(!M.DEFS[n].autoScripted&&!M.DEFS[n].simplified,n);assert.ok(M.CARD_CATALOG[n].deckImportEligible,n);}
  assert.deepEqual(Array.from(M.defaultCommanders(M.DECKS['Timey-Wimey'])),['The Tenth Doctor','Rose Tyler']);
  assert.deepEqual(Array.from(M.DEFS['The Tenth Doctor'].subtypes),['Time Lord','Doctor']);
- assert.equal(Object.keys(M.DECKS).length,120);assert.equal(M.CATALOG_SUMMARY.importableCards,20962);
+ assert.equal(Object.keys(M.DECKS).length,130);assert.equal(M.CATALOG_SUMMARY.importableCards,21171);
 });
 test('Anikthea exiles a real graveyard enchantment and creates a black Zombie copy retaining its ability',async()=>{
  const f=setup(),a=card(f,'Glorious Anthem','graveyard');await play(f,'Anikthea, Hand of Erebos');const copy=f.game.bf().find(c=>c.isToken&&c.name===a.name);assert.equal(a.zone,'exile');assert.ok(copy.is('Enchantment')&&copy.is('Creature')&&copy.hasSub('Zombie'));assert.equal(copy.power,4);assert.equal(copy.toughness,4);assert.ok(copy.kw('menace'));assert.deepEqual(Array.from(copy.colors),['B']);assertRecalculationStable(f.game);

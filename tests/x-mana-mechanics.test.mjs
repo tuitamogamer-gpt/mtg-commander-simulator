@@ -32,11 +32,13 @@ const ACTIVE_X_SPELLS = [
   "Death Grasp",
   "Decree of Justice",
   "Defenders of Humanity",
+  "Delete",
   "Devil's Play",
   "Disorder in the Court",
   "Distorting Wake",
   "Diviner's Portent",
   "Dominate",
+  "Doomsday Confluence",
   "Dread Summons",
   "Dregs of Sorrow",
   "Drown in Dreams",
@@ -89,6 +91,7 @@ const ACTIVE_X_SPELLS = [
   "Lifeblood Hydra",
   "Magmaquake",
   "Mana Bloom",
+  "March of the Canonized",
   "March of the Multitudes",
   "Martial Coup",
   "Mawloc",
@@ -141,6 +144,7 @@ const ACTIVE_X_SPELLS = [
   "Terisiare's Devastation",
   "Termagant Swarm",
   "Tervigon",
+  "The Cyber-Controller",
   "The Goose Mother",
   "Their Number Is Legion",
   "Tyrant Guard",
@@ -149,6 +153,7 @@ const ACTIVE_X_SPELLS = [
   "Universal Surveillance",
   "Vastwood Hydra",
   "Villainous Wealth",
+  "Vrestin, Menoptra Leader",
   "Wake the Dead",
   "West Coast Expansion",
   "Whir of Invention",
@@ -235,7 +240,7 @@ async function resolveAll(game) {
   assert.ok(guard < 180, 'X trigger/stack petlja se nije smirila');
 }
 
-test('inventar pokriva svih 152 aktivnih X spella i sve dodatne X-mana putanje', () => {
+test('inventar pokriva svih 157 aktivnih X spella i sve dodatne X-mana putanje', () => {
   const active = [...new Set(Object.values(MTG.DECKS).flatMap(deck => deck.cards.map(entry => entry.name)))]
     .filter(name => MTG.parseCost(MTG.DEFS[name].cost || '').x > 0)
     .sort();

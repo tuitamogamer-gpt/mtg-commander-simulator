@@ -1,0 +1,162 @@
+{
+  "passed": 13,
+  "expected": 13,
+  "rows": [
+    {
+      "name": "Virtue and Valor",
+      "opponents": [
+        "Fae Dominion",
+        "Timey-Wimey",
+        "Paradox Power"
+      ],
+      "seed": 11198,
+      "turns": 48,
+      "winner": "You",
+      "passed": true
+    },
+    {
+      "name": "Fae Dominion",
+      "opponents": [
+        "Timey-Wimey",
+        "Paradox Power",
+        "Masters of Evil"
+      ],
+      "seed": 11199,
+      "turns": 48,
+      "winner": "AI Raven",
+      "passed": true
+    },
+    {
+      "name": "Timey-Wimey",
+      "opponents": [
+        "Paradox Power",
+        "Masters of Evil",
+        "Blast from the Past"
+      ],
+      "seed": 11200,
+      "turns": 45,
+      "winner": "AI Dragon",
+      "passed": true
+    },
+    {
+      "name": "Paradox Power",
+      "opponents": [
+        "Masters of Evil",
+        "Blast from the Past",
+        "Veloci-Ramp-Tor"
+      ],
+      "seed": 11201,
+      "turns": 42,
+      "winner": "AI Raven",
+      "passed": true
+    },
+    {
+      "name": "Masters of Evil",
+      "opponents": [
+        "Blast from the Past",
+        "Veloci-Ramp-Tor",
+        "Explorers of the Deep"
+      ],
+      "seed": 11202,
+      "turns": 55,
+      "winner": "AI Wolf",
+      "passed": true
+    },
+    {
+      "name": "Blast from the Past",
+      "opponents": [
+        "Veloci-Ramp-Tor",
+        "Explorers of the Deep",
+        "Blood Rites"
+      ],
+      "seed": 11203,
+      "turns": 45,
+      "winner": "AI Dragon",
+      "passed": true
+    },
+    {
+      "name": "Veloci-Ramp-Tor",
+      "opponents": [
+        "Explorers of the Deep",
+        "Blood Rites",
+        "Ahoy Mateys"
+      ],
+      "seed": 11204,
+      "turns": 45,
+      "winner": "You",
+      "passed": true
+    },
+    {
+      "name": "Explorers of the Deep",
+      "opponents": [
+        "Blood Rites",
+        "Ahoy Mateys",
+        "Raining Cats and Dogs"
+      ],
+      "seed": 11205,
+      "turns": 49,
+      "winner": "AI Raven",
+      "passed": true
+    },
+    {
+      "name": "Blood Rites",
+      "opponents": [
+        "Ahoy Mateys",
+        "Raining Cats and Dogs",
+        "Revenant Recon"
+      ],
+      "seed": 11206,
+      "turns": 35,
+      "winner": "AI Dragon",
+      "passed": true
+    },
+    {
+      "name": "Ahoy Mateys",
+      "opponents": [
+        "Raining Cats and Dogs",
+        "Revenant Recon",
+        "Deadly Disguise"
+      ],
+      "seed": 11207,
+      "turns": 49,
+      "winner": "AI Wolf",
+      "passed": true
+    },
+    {
+      "name": "Raining Cats and Dogs",
+      "opponents": [
+        "Revenant Recon",
+        "Deadly Disguise",
+        "Abzan Armor"
+      ],
+      "seed": 11208,
+      "turns": 49,
+      "winner": "You",
+      "passed": true
+    },
+    {
+      "name": "Revenant Recon",
+      "opponents": [
+        "Deadly Disguise",
+        "Abzan Armor",
+        "Animated Army"
+      ],
+      "seed": 11209,
+      "turns": 41,
+      "winner": "AI Wolf",
+      "passed": true
+    },
+    {
+      "name": "Deadly Disguise",
+      "opponents": [
+        "Abzan Armor",
+        "Animated Army",
+        "Avengers Assemble"
+      ],
+      "seed": 11210,
+      "turns": 31,
+      "winner": "AI Wolf",
+      "passed": true
+    }
+  ]
+}

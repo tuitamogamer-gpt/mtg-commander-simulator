@@ -1,0 +1,138 @@
+{
+  "baseline": "7aea478",
+  "passed": true,
+  "originalPhysicalCards": 1000,
+  "uniqueNames": 681,
+  "sourceLists": [
+    {
+      "name": "Paradox Power",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/magic-the-gathering-doctor-who-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/ParadoxPower_WHO.json"
+      ],
+      "exportSha256": "d1cc404d40cea53d36bf98f33c9db81170ac3bc637f6814c706dcfbfeece9b59"
+    },
+    {
+      "name": "Masters of Evil",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/magic-the-gathering-doctor-who-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/MastersOfEvil_WHO.json"
+      ],
+      "exportSha256": "9fbbefa57d851ae7d3089d0bbec9f773351307bed2f87410e2d12e7e93f71109"
+    },
+    {
+      "name": "Blast from the Past",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/magic-the-gathering-doctor-who-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/BlastFromThePast_WHO.json"
+      ],
+      "exportSha256": "9ffc05a268789531e5633923a9f3418132a3bc34425a58f69705215d2538bccf"
+    },
+    {
+      "name": "Veloci-Ramp-Tor",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/the-lost-caverns-of-ixalan-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/VelociRampTor_LCC.json"
+      ],
+      "exportSha256": "edc6bef52db72089ba3e09df5941cc7fd97502c0a80ec70ccb1534e78719c3c0"
+    },
+    {
+      "name": "Explorers of the Deep",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/the-lost-caverns-of-ixalan-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/ExplorersOfTheDeep_LCC.json"
+      ],
+      "exportSha256": "1235180a7d137906ab08a1c4024c33c32a5afaab956290c09e2c4204fb2bd8b7"
+    },
+    {
+      "name": "Blood Rites",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/the-lost-caverns-of-ixalan-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/BloodRites_LCC.json"
+      ],
+      "exportSha256": "b3f9fd7f8d688bb473a8b2ab6e145ddbc3b6cfd30358e511263a4983ad793021"
+    },
+    {
+      "name": "Ahoy Mateys",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/the-lost-caverns-of-ixalan-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/AhoyMateys_LCC.json"
+      ],
+      "exportSha256": "695195b56a063bdc108ccdaf4574406529984a30cb655e6b7f77fcce955d3231"
+    },
+    {
+      "name": "Raining Cats and Dogs",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/secret-lair-commander-deck-raining-cats-and-dogs",
+        "https://mtgjson.com/api/v5/decks/RainingCatsAndDogs_SLD.json"
+      ],
+      "exportSha256": "884bcdb5fc0edba1891ed5e3f2e2581d4925ceeaf9865784a153ff49d14c2bd0"
+    },
+    {
+      "name": "Revenant Recon",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/murders-at-karlov-manor-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/RevenantRecon_MKC.json"
+      ],
+      "exportSha256": "5bfad4f8ff95b9ce2d3856734f2648e02821efb309ccd0900baeb9f11bf48a7e"
+    },
+    {
+      "name": "Deadly Disguise",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/murders-at-karlov-manor-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/DeadlyDisguise_MKC.json"
+      ],
+      "exportSha256": "6723ff5a8d9775b6348eec584818af2e740e4532c98436cd8340ed355da9113c"
+    }
+  ],
+  "existingRawDefinitionsPreserved": 3104,
+  "existingRawDeckRecordsPreserved": 121,
+  "nativeRawDefinitions": 3313,
+  "existingImageMappingsPreserved": 5133,
+  "existingCommanderCropsPreserved": 127,
+  "existingTrackedAssetsUnchanged": true,
+  "addedWebPFiles": 396,
+  "allNewImageDigestsMatch": true,
+  "idempotentDataSha256": "ff73f758bd1eb6ebd70cf5e668032e431b36fb65727c7722e8b5e504b7dc92e9",
+  "retainedOracleDifferences": [
+    {
+      "name": "Boros Garrison",
+      "existingOracle": "Boros Garrison enters tapped.\nWhen Boros Garrison enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "pinnedOracle": "This land enters tapped.\nWhen this land enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "preserved": true
+    },
+    {
+      "name": "Karvanista, Loyal Lupari // Lupari Shield",
+      "existingOracle": "Vigilance, trample, haste\nWhenever Karvanista attacks, put a +1/+1 counter on each Human you control.",
+      "pinnedOracle": "Karvanista, Loyal Lupari: Vigilance, trample, haste\nWhenever Karvanista attacks, put a +1/+1 counter on each Human you control.\nLupari Shield: Humans you control gain indestructible until your next turn. (Then exile this card. You may cast the creature later from exile.)",
+      "preserved": true
+    },
+    {
+      "name": "Promise of Aclazotz // Foul Rebirth",
+      "existingOracle": "At the beginning of your end step, you may sacrifice a non-Demon creature. If you do, populate. (Create a token that's a copy of a creature token you control.)",
+      "pinnedOracle": "Promise of Aclazotz: At the beginning of your end step, you may sacrifice a non-Demon creature. If you do, populate. (Create a token that's a copy of a creature token you control.)\nFoul Rebirth: Sacrifice a non-Demon creature. If you do, create a 4/3 white and black Vampire Demon creature token with flying.",
+      "preserved": true
+    },
+    {
+      "name": "Stalking Leonin",
+      "existingOracle": "When Stalking Leonin enters, secretly choose an opponent.\nReveal the player you chose: Exile target creature that's attacking you if it's controlled by the chosen player. Activate only once.",
+      "pinnedOracle": "When this creature enters, secretly choose an opponent.\nReveal the player you chose: Exile target creature that's attacking you if it's controlled by the chosen player. Activate only once.",
+      "preserved": true
+    }
+  ],
+  "current": {
+    "decks": 130,
+    "definitions": 21171,
+    "eligible": 21171
+  }
+}

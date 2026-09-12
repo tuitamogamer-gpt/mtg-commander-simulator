@@ -198,6 +198,106 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+"Paradox Power": {
+    "archetype": "Paradox and exile casting",
+    "length": "long",
+    "tags": [
+      "exile",
+      "counters",
+      "spellslinger"
+    ],
+    "commanderImportance": 1.7
+  },
+  "Masters of Evil": {
+    "archetype": "Artifact creatures and villainous choices",
+    "length": "long",
+    "tags": [
+      "artifacts",
+      "tokens",
+      "sacrifice"
+    ],
+    "commanderImportance": 1.7
+  },
+  "Blast from the Past": {
+    "archetype": "Historic spells and Saga value",
+    "length": "long",
+    "tags": [
+      "legendary",
+      "artifacts",
+      "value"
+    ],
+    "commanderImportance": 1.7
+  },
+  "Veloci-Ramp-Tor": {
+    "archetype": "Dinosaurs and discover",
+    "length": "medium",
+    "tags": [
+      "ramp",
+      "tribal",
+      "combat"
+    ],
+    "commanderImportance": 1.7
+  },
+  "Explorers of the Deep": {
+    "archetype": "Merfolk, explore, and counters",
+    "length": "medium",
+    "tags": [
+      "tribal",
+      "counters",
+      "combat"
+    ],
+    "commanderImportance": 1.7
+  },
+  "Blood Rites": {
+    "archetype": "Vampires, sacrifice, and death triggers",
+    "length": "long",
+    "tags": [
+      "tribal",
+      "tokens",
+      "sacrifice"
+    ],
+    "commanderImportance": 1.7
+  },
+  "Ahoy Mateys": {
+    "archetype": "Pirates and graveyard recursion",
+    "length": "long",
+    "tags": [
+      "tribal",
+      "graveyard",
+      "combat"
+    ],
+    "commanderImportance": 1.7
+  },
+  "Raining Cats and Dogs": {
+    "archetype": "Cats, Dogs, and creature tokens",
+    "length": "medium",
+    "tags": [
+      "tribal",
+      "tokens",
+      "combat"
+    ],
+    "commanderImportance": 1.7
+  },
+  "Revenant Recon": {
+    "archetype": "Surveil and reanimation",
+    "length": "long",
+    "tags": [
+      "graveyard",
+      "control",
+      "value"
+    ],
+    "commanderImportance": 1.7
+  },
+  "Deadly Disguise": {
+    "archetype": "Face-down creatures and combat surprises",
+    "length": "long",
+    "tags": [
+      "morph",
+      "combat",
+      "value"
+    ],
+    "commanderImportance": 1.7
+  },
     "Mind Flayarrrs": {"archetype":"Horrors, mill, and theft","length":"long","tags":["tribal","mill","control"],"commanderImportance":1.5},
     "Party Time": {"archetype":"Full party and creature value","length":"long","tags":["tribal","counters","combat"],"commanderImportance":1.5},
     "Draconic Dissent": {"archetype":"Dragons and forced combat","length":"long","tags":["politics","combat","control"],"commanderImportance":1.5},
@@ -3911,6 +4011,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       breakdown.base = cardDefinitionValue(card.def) + Math.min(5, spend * 0.35);
       breakdown.synergy = sem.synergyTags.filter(tag => profile.primarySynergies.includes(tag)).length * 2;
       if (card.commander) breakdown.synergy += 2.2 * profile.commanderImportance;
+      breakdown.synergy += MTG.WLM?.aiPlanScore(game,player,action) || 0;
       const temporaryCopies = (game.spellTargetSpecs(card, action.alt || {}, player) || [])
         .filter(spec => spec.aiHint && spec.aiHint.temporaryCopy);
       if (temporaryCopies.length) {

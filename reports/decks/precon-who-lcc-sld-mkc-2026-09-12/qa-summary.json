@@ -1,0 +1,195 @@
+{
+  "recordedAt": "2026-09-12T13:51:56.704Z",
+  "scope": "Local working tree; original Commander 100-card lists, player/AI rules, deck profiles, art and interface.",
+  "targeted": {
+    "rules": {
+      "tests": 145,
+      "pass": 145,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 10625,
+      "files": [
+        "tests/who-lcc-mkc-rules.test.mjs",
+        "tests/who-lcc-mkc-advanced.test.mjs",
+        "tests/who-lcc-sld-mkc-precons.test.mjs"
+      ]
+    },
+    "inventoryAndDamageUI": {
+      "tests": 29,
+      "pass": 29,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 74502,
+      "files": [
+        "tests/legacy-card-catalog-integrity.test.mjs",
+        "tests/local-card-images.test.mjs",
+        "tests/marked-damage-ui.test.mjs",
+        "tests/commander-visuals.test.mjs",
+        "tests/full-card-audit.test.mjs"
+      ]
+    },
+    "legacySyntheticCastEvent": {
+      "file": "tests/jeskai-striker.test.mjs",
+      "test": "creature triggers cover Elsha, Mentor, Mangara, Bibliophile, and Caldera Pyremaw semantics",
+      "passed": true,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 23229
+    },
+    "nativeExecution": {
+      "runtime-smoke-pass": 418,
+      "prerequisite-gap": 0,
+      "choice-gap": 0,
+      "error": 0
+    },
+    "browser": {
+      "passed": 20,
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "width": 390,
+          "height": 844
+        }
+      ],
+      "screenshotsVisuallyInspected": true
+    },
+    "fullGames": {
+      "passed": 13,
+      "expected": 13,
+      "details": "games-smoke.json"
+    },
+    "additionalSharedRegressions": {
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 44517,
+      "files": [
+        "tests/oracle-deep-keyword-behavior.test.mjs",
+        "tests/oracle-extensions-v5.test.mjs",
+        "tests/oracle-generic-v4-runtime.test.mjs",
+        "tests/oracle-v8-activation-prohibitions.test.mjs",
+        "tests/oracle-v8-activation-suffixes.test.mjs",
+        "tests/oracle-v8-casting-rules.test.mjs",
+        "tests/oracle-v8-live-conditions.test.mjs",
+        "tests/planeswalker-combat.test.mjs"
+      ],
+      "scope": "The fourteen reported cases, including the complete 1,510-card keyword execution test and exact planeswalker inventory."
+    },
+    "lastRegressions": {
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 7276,
+      "files": [
+        "tests/sauron-dark-lord.test.mjs",
+        "tests/x-mana-mechanics.test.mjs"
+      ],
+      "scope": "The reported Sauron synthetic death event and the exact 157-card X-spell inventory."
+    },
+    "playerPromptCorrection": {
+      "card": "The Five Doctors",
+      "originalSweepProblems": 1,
+      "passed": true,
+      "proof": "tests/who-lcc-mkc-advanced.test.mjs",
+      "roles": [
+        "human",
+        "ai"
+      ],
+      "scenarios": [
+        "paid kicker",
+        "declined kicker",
+        "unaffordable kicker",
+        "free cast with paid kicker",
+        "graveyard-only search"
+      ],
+      "note": "Included in the 145 rule/import tests; the full player-facing sweep was not repeated after this correction."
+    }
+  },
+  "sourceValidation": "source-validation.json",
+  "syntax": {
+    "command": "npm.cmd run check",
+    "passed": true
+  },
+  "diffWhitespace": {
+    "passed": true
+  },
+  "fullSuite": {
+    "command": "npm.cmd test",
+    "status": "failed-initial-run",
+    "tests": 9919,
+    "pass": 9894,
+    "fail": 25,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 3802445,
+    "headless": {
+      "file": "tests/headless-smoke.test.mjs",
+      "pid": 31048,
+      "started": "2026-09-12T14:49:52.7693611+02:00",
+      "stopped": "2026-09-12T15:12:01.5768223+02:00",
+      "reason": "This full-catalog game worker loaded an engine snapshot before the March of the Canonized and kicker corrections. Superseded by focused checks and the ten-deck full-game validation; not a passing full-suite run.",
+      "cpuSeconds": 480.953125
+    },
+    "note": "The initial run is not a full pass: it overlaps fixes and includes the interrupted full-catalog game worker. The targeted repeat results record corrections to reported inventory assertions and compatibility with source-less damage and synthetic events. The 130-deck global game sweep remains uncompleted; thirteen affected-deck games passed separately.",
+    "reportedFailures": [
+      "postojeći cinematic asseti ostaju dostupni; novi preconi koristi slike bez novih videa",
+      "svaka legacy i Oracle batch karta ima eksplicitnu nepojednostavljenu putanju",
+      "tests\\headless-smoke.test.mjs",
+      "creature triggers cover Elsha, Mentor, Mangara, Bibliophile, and Caldera Pyremaw semantics",
+      "the complete pinned legacy card set remains represented exactly once in the runtime catalog",
+      "runtime card art uses local WebP except the explicit API fallback list",
+      "human: Tree keeps 0/40 after actual damage while mini and sheet show 6 marked damage",
+      "bot: Tree keeps 0/40 after actual damage while mini and sheet show 6 marked damage",
+      "svih 1.510 keyword karata prolazi human/AI cast, a svaka sposobnost rules probe u oba konteksta",
+      "prevention consumes only its amount, expires with object identity and respects cannot-prevent",
+      "cannot-prevent bypasses a new prevention shield without consuming it",
+      "v4 eventFilter contracts reject foreign events and accept only the exact source/controller event",
+      "activation human: paid Arrest preserves indestructible and damage triggers while forbidding activation",
+      "activation ai: paid Arrest preserves indestructible and damage triggers while forbidding activation",
+      "human: graveyard return distinguishes damage from loss of life and enforces the owner's turn",
+      "ai: graveyard return distinguishes damage from loss of life and enforces the owner's turn",
+      "casting count primitives count current modified creatures, distinct lands, owner zones and damaged opponents",
+      "casting count values human: shared effect amounts execute nonzero live and turn counts",
+      "casting count values ai: shared effect amounts execute nonzero live and turn counts",
+      "human: half starting life uses exact arithmetic and the current controller",
+      "ai: half starting life uses exact arithmetic and the current controller",
+      "svih 74 deck/planeswalker parova ima svih 204 loyalty putanja",
+      "svaka karta koju igrač baci pita razumljiva pitanja i ne ruši partiju",
+      "Sauron, Lord of the Rings cast package and commander-death Ring trigger both resolve",
+      "inventar pokriva svih 152 aktivnih X spella i sve dodatne X-mana putanje"
+    ],
+    "oracleExecution": {
+      "cards": 35600,
+      "keywords": 10398,
+      "operationRoutes": 49286,
+      "nestedProofs": 86199,
+      "passed": true
+    },
+    "resolution": {
+      "reportedNonHeadlessFailures": 24,
+      "correctedWithTargetedProofs": 24,
+      "uncompleted": [
+        "tests/headless-smoke.test.mjs"
+      ],
+      "note": "No second full-suite pass is claimed. All other originally reported failures have specific successful follow-up proofs listed above."
+    }
+  },
+  "current": {
+    "decks": 130,
+    "definitions": 21171,
+    "eligible": 21171
+  }
+}

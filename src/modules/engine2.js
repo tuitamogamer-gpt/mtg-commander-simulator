@@ -2727,7 +2727,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           options: [{ key: 'yes', label: 'Yes (kicked)' }, { key: 'no', label: 'No' }],
           aiHint: { kind: 'kicker', card },
         });
-        if (yes === 'yes') { kicked = true; castOpts._kicked = true; cost.generic += kCost.generic; cost.pips = cost.pips.concat(kCost.pips); }
+        if (yes === 'yes') {
+          let kickerX=0;
+          if(kCost.x){
+            const preview={...combined,generic:combined.generic+(cost.x||0)*xVal,x:kCost.x};
+            const min=d.kicker.minX||0,max=this.maxAffordableX(p,preview,card,{forSpell:{card,castOpts}});
+            if(max<min)return false;
+            const preferredXValues=d.wlmSkydiver?[...new Set(this.bf().filter(c=>c.is('Artifact')).map(c=>Math.max(min,c.mv)))].filter(n=>n<=max):undefined;
+            kickerX=await p.controller.decide(this,{type:'chooseX',min,max,preferredXValues,card,prompt:'Choose X for kicker — '+card.name,aiHint:{kind:'chooseX',card}});
+            if(!Number.isSafeInteger(kickerX)||kickerX<min||kickerX>max)return false;
+            castOpts._kickerX=kickerX;
+          }
+          kicked = true; castOpts._kicked = true; cost.generic += kCost.generic+(kCost.x||0)*kickerX; cost.pips = cost.pips.concat(kCost.pips);
+        }
       }
     }
     if (d.buyback && !faceDownCast) {
@@ -3388,7 +3400,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       delete card.meta.suspended;
     }
     card.zone = 'stack';
-    if((castOpts.oracleImmediateCast!==undefined||['jaya','c1719','c1920'].includes(castOpts.starterPermission))&&castOpts.oracleExileOnGraveyard)card.meta.exileIfStackLeaves=true;
+    if((castOpts.oracleImmediateCast!==undefined||['jaya','c1719','c1920','wlm'].includes(castOpts.starterPermission))&&castOpts.oracleExileOnGraveyard)card.meta.exileIfStackLeaves=true;
     if (card.oracleFaces && !faceDownCast) MTG.OracleV8Faces.setFace(card, castOpts.oracleFace);
     if (fromZone === 'graveyard') {
       p.turnState.starterGraveActivity = true;
@@ -3544,7 +3556,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // Demonstrate je stvarni cast trigger: ide na stack i kopira original tek
     // kada se rezolvira, pa protivnici mogu odgovoriti prije nastanka kopija.
-    if (!faceDownCast && d.demonstrate && (!so.isCopy||so.bomCastCopy)) {
+    if (!faceDownCast && (d.demonstrate || MTG.WLM?.demonstrate(this,p,so)) && (!so.isCopy||so.bomCastCopy)) {
       this.queueTrigger({
         src: card, ctrl: p, name: 'Demonstrate', data: { so },
         run: async triggerCtx => {
@@ -4293,7 +4305,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         await this.checkSBA(); await this.flushTriggers();
         return;
       }
-      if (!host || !(host instanceof MTG.CardInst) || host.zone !== 'battlefield') {
+      if (!host || !(host instanceof MTG.CardInst) || (host.zone !== 'battlefield' && !(d.wlmAnimate && host.zone === 'graveyard'))) {
         this.lg(`${card.name}: its enchanted target is gone — it goes to the graveyard.`);
         await this.move(card, 'graveyard');
         await this.checkSBA(); await this.flushTriggers();
@@ -5594,6 +5606,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (cost.life) await this.loseLife(p, cost.life, 'cost');
     if (cost.mill) await this.mill(p, cost.mill);
     if(cost.c1516Unattach)MTG.C1516.detach(this,c);
+    if(cost.wlmBottomSelf)await this.move(c,'library',{toBottom:true});
     if (cost.returnSelf) {
       if (c.zone !== 'battlefield' || c.ctrl !== p) return false;
       await this.move(c, 'hand');
@@ -6134,6 +6147,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const next = this._additionalPhases.shift();
       if(next.kind==='beginning'){await this.runBeginningPhase(p,{additional:true});if(this.gameOver)return;continue;}
       if (next.kind === 'combat') {
+        this.wlmNextCombat = next.wlmOnlyAttackers || null;
         this._extraCombats = Math.max(0, (this._extraCombats || 0) - 1);
         this.lg('⚔️ ADDITIONAL combat phase!', 'attack');
         if (!p.lost) await this.combatPhase(p);
@@ -6418,6 +6432,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // CLEANUP
     this.phase = 'cleanup';
+    await this.emit('cleanupStep', {player:p});
+    await this.flushTriggers();
+    if(this.stack.length)await this.priorityRound(p);
     // discard to hand size
     const maxHand = this.maximumHandSize(p);
     if (p.hand.length > maxHand) {
@@ -6922,7 +6939,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     await this.emit('endCombat', { player: p });
     // myriad tokens exile
     for (const c of this.bf()) {
-      if (c.meta && c.meta.exileEndCombat) await this.exileCard(c);
+      if (c.meta && c.meta.exileEndCombat && !MTG.WLM?.protectedToken(this,c,c.owner)) await this.exileCard(c);
     }
     await this.flushTriggers();
     if (!this.gameOver) await this.priorityRound(p);   // CR 511.3
@@ -7156,16 +7173,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // restrictions and an actual blocking requirement need this exact search.
     const extra = MTG.OracleV8CombatRestrictions;
     const extraRequirements = potential.some(card => extra?.hasRequirements(card));
-    if (!extraRequirements && (!attackers.some(card => card.cur.lure || card.cur.mustBeBlocked) ||
+    const dalekRequirements=attackers.filter(card=>card.cur.wlmDalekBlock);
+    if (!dalekRequirements.length && !extraRequirements && (!attackers.some(card => card.cur.lure || card.cur.mustBeBlocked) ||
         !attackers.some(card => card.cur.minBlockers || card.cur.maxBlockers) && !potential.some(card => card.cur.blockGroupRestrictions?.length || this.blockerCapacity(card) > 1))) return;
     const candidates = potential.filter(blocker => attackers.some(attacker => this.canBlock(blocker, attacker)));
     const legal = new Map(candidates.map(blocker => [blocker, attackers.filter(attacker => this.canBlock(blocker, attacker))]));
     const extraScore = assignments => extraRequirements ? extra.score(potential, assignments) : 0;
     const extraUpper = blockers => extraRequirements ? blockers.reduce((n, blocker) => n + extra.upper(blocker, legal.get(blocker), this.blockerCapacity(blocker)), 0) : 0;
-    const score = assignments => assignments.filter(pair => pair.attacker.cur.lure).length + attackers.filter(attacker => attacker.cur.mustBeBlocked && assignments.some(pair => pair.attacker === attacker)).length + extraScore(assignments);
+    const dalekScore=assignments=>dalekRequirements.filter(attacker=>assignments.some(pair=>pair.attacker===attacker&&pair.blocker.hasSub('Dalek'))).length;
+    const dalekUpper=dalekRequirements.filter(attacker=>candidates.some(blocker=>blocker.hasSub('Dalek')&&legal.get(blocker).includes(attacker))).length;
+    const score = assignments => assignments.filter(pair => pair.attacker.cur.lure).length + attackers.filter(attacker => attacker.cur.mustBeBlocked && assignments.some(pair => pair.attacker === attacker)).length + extraScore(assignments) + dalekScore(assignments);
     let best = attackers.flatMap(attacker => attacker.blockedBy.map(blocker => ({blocker, attacker}))), bestScore = score(best);
     const lureCapacity = blocker => Math.min(this.blockerCapacity(blocker), legal.get(blocker).filter(attacker => attacker.cur.lure).length);
-    const upper = candidates.reduce((sum, blocker) => sum + lureCapacity(blocker), 0) + attackers.filter(attacker => attacker.cur.mustBeBlocked && candidates.filter(blocker => legal.get(blocker).includes(attacker)).length >= this.blockerBounds(attacker).min).length + extraUpper(candidates);
+    const upper = candidates.reduce((sum, blocker) => sum + lureCapacity(blocker), 0) + attackers.filter(attacker => attacker.cur.mustBeBlocked && candidates.filter(blocker => legal.get(blocker).includes(attacker)).length >= this.blockerBounds(attacker).min).length + extraUpper(candidates) + dalekUpper;
     if (bestScore >= upper) return;
     // Each candidate has its current number of blocking slots. A bound on the
     // remaining requirements prunes branches as soon as they cannot improve
@@ -7175,7 +7195,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const visit = index => {
       if (bestScore >= upper) return;
       const remaining = candidates.slice(index);
-      const bound = chosen.filter(pair => pair.attacker.cur.lure).length + remaining.reduce((sum, blocker) => sum + lureCapacity(blocker), 0) + attackers.filter(attacker => attacker.cur.mustBeBlocked && ((counts.get(attacker) || 0) + remaining.filter(blocker => legal.get(blocker).includes(attacker)).length >= this.blockerBounds(attacker).min)).length + extraScore(chosen) + extraUpper(remaining);
+      const bound = chosen.filter(pair => pair.attacker.cur.lure).length + remaining.reduce((sum, blocker) => sum + lureCapacity(blocker), 0) + attackers.filter(attacker => attacker.cur.mustBeBlocked && ((counts.get(attacker) || 0) + remaining.filter(blocker => legal.get(blocker).includes(attacker)).length >= this.blockerBounds(attacker).min)).length + extraScore(chosen) + extraUpper(remaining) + dalekUpper;
       if (bound <= bestScore) return;
       if (index === candidates.length) {
         if (!this.blockDeclarationLegal(attackers, chosen)) return;

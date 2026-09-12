@@ -23,6 +23,113 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+"Paradox Power": {
+    "icon": "🌀",
+    "colors": [
+      "G",
+      "U",
+      "R"
+    ],
+    "style": "Paradox and exile casting",
+    "set": "Doctor Who Commander (2023)",
+    "blurb": "Turn spells cast outside your hand into counters, cards, and extra spells."
+  },
+  "Masters of Evil": {
+    "icon": "🤖",
+    "colors": [
+      "U",
+      "B",
+      "R"
+    ],
+    "style": "Artifact creatures and villainous choices",
+    "set": "Doctor Who Commander (2023)",
+    "blurb": "Spread life loss across opponents and build an army of Daleks and Cybermen."
+  },
+  "Blast from the Past": {
+    "icon": "🕰️",
+    "colors": [
+      "G",
+      "W",
+      "U"
+    ],
+    "style": "Historic spells and Saga value",
+    "set": "Doctor Who Commander (2023)",
+    "blurb": "Play historic cards from the top and turn Clues, Food, and Sagas into lasting value."
+  },
+  "Veloci-Ramp-Tor": {
+    "icon": "🦖",
+    "colors": [
+      "R",
+      "G",
+      "W"
+    ],
+    "style": "Dinosaurs and discover",
+    "set": "The Lost Caverns of Ixalan Commander (2023)",
+    "blurb": "Ramp into Dinosaurs, discover more resources, and turn creature damage into retaliation."
+  },
+  "Explorers of the Deep": {
+    "icon": "🌊",
+    "colors": [
+      "G",
+      "U"
+    ],
+    "style": "Merfolk, explore, and counters",
+    "set": "The Lost Caverns of Ixalan Commander (2023)",
+    "blurb": "Explore with a Merfolk army to find lands, grow creatures, and keep pressure on the table."
+  },
+  "Blood Rites": {
+    "icon": "🦇",
+    "colors": [
+      "W",
+      "B"
+    ],
+    "style": "Vampires, sacrifice, and death triggers",
+    "set": "The Lost Caverns of Ixalan Commander (2023)",
+    "blurb": "Bless attacking Vampires, then turn their deaths into cards and flying Demons."
+  },
+  "Ahoy Mateys": {
+    "icon": "🏴‍☠️",
+    "colors": [
+      "U",
+      "B",
+      "R"
+    ],
+    "style": "Pirates and graveyard recursion",
+    "set": "The Lost Caverns of Ixalan Commander (2023)",
+    "blurb": "Fill your graveyard, return hasty Pirates, and profit from combat damage to several players."
+  },
+  "Raining Cats and Dogs": {
+    "icon": "🐾",
+    "colors": [
+      "R",
+      "G",
+      "W"
+    ],
+    "style": "Cats, Dogs, and creature tokens",
+    "set": "Secret Lair Commander (2024)",
+    "blurb": "Cast Cats and Dogs to grow a mixed pack, then use Rin and Seri for damage and life."
+  },
+  "Revenant Recon": {
+    "icon": "👁️",
+    "colors": [
+      "U",
+      "B"
+    ],
+    "style": "Surveil and reanimation",
+    "set": "Murders at Karlov Manor Commander (2024)",
+    "blurb": "Surveil to shape draws, grow Mirko, and bring smaller creatures back from the graveyard."
+  },
+  "Deadly Disguise": {
+    "icon": "🎭",
+    "colors": [
+      "R",
+      "G",
+      "W"
+    ],
+    "style": "Face-down creatures and combat surprises",
+    "set": "Murders at Karlov Manor Commander (2024)",
+    "blurb": "Develop face-down creatures, turn attackers face up with Kaust, and draw when they connect."
+  },
     "Enduring Enchantments": {"icon": "🌿", "colors": ["W", "B", "G"], "style": "Enchantment reanimation", "set": "Commander Masters (2023)", "blurb": "Anikthea rebuilds your enchantments as a growing Zombie army."},
     "Eldrazi Unbound": {"icon": "🌀", "colors": [], "style": "Colorless ramp and cascade", "set": "Commander Masters (2023)", "blurb": "Build colorless mana, then let Zhulodok turn huge spells into two cascades."},
     "Virtue and Valor": {"icon": "🛡️", "colors": ["G", "W"], "style": "Auras and Roles", "set": "Wilds of Eldraine Commander (2023)", "blurb": "Ellivere outfits your creatures with Virtuous Roles and draws cards when enchanted attackers connect."},
@@ -302,7 +409,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const name of names) for (const color of MTG.cardColorIdentity(defs[name])) commanderColors.add(color);
     const deckColors = MTG.deckColorIdentity(deckData, defs);
     const outside = deckColors.filter(color => !commanderColors.has(color));
-    if (outside.length) {
+    if (outside.length && !(names.includes('Clara Oswald')&&outside.length===1)) {
       return { ok: false, why: `The deck contains colors outside the commanders' color identity: ${outside.join(', ')}.` };
     }
     return { ok: true, why: '' };

@@ -16,18 +16,18 @@ Generic Oracle import state: **2026-09-05T16:33:38.988Z**. The counts below incl
 
 | Measure | Count |
 | --- | ---: |
-| Runtime card definitions | 20,962 |
+| Runtime card definitions | 21,171 |
 | Generic Oracle imports (178 batches of 100) | 17,800 |
 | Dedicated/manual Oracle imports | 58 |
-| Legacy definitions | 3,104 |
+| Legacy definitions | 3,313 |
 | Of those: individually reviewed for deck import | 18 |
-| Definitions allowed in arbitrary deck imports | 20,962 |
+| Definitions allowed in arbitrary deck imports | 21,171 |
 | Legacy definitions restricted from arbitrary deck imports | 0 |
 | Paper, Commander-legal source Oracle IDs | 30,784 |
-| Source Oracle IDs represented by a runtime name or face alias | 20,935 |
-| Source Oracle IDs still absent from the runtime | 9,849 |
+| Source Oracle IDs represented by a runtime name or face alias | 21,144 |
+| Source Oracle IDs still absent from the runtime | 9,640 |
 | Of those: parser-eligible but not imported | 2 |
-| Of those: deferred by the current semantic compiler | 9,847 |
+| Of those: deferred by the current semantic compiler | 9,638 |
 
 **Availability is explicit.** Native definitions qualify through an active built-in deck or a recorded individual review; Oracle imports qualify through their certified batch. The `native_import_review` column identifies individually reviewed native cards. The [18-card native review](../reports/cards/restricted-legacy-2026-09-10/README.md) covers the formerly restricted cards. The importer also validates deck size, commanders, singleton and color identity. A row with `deck_import_eligible=false` remains blocked.
 
@@ -43,38 +43,38 @@ Current parser-eligible, unimported names: `Zuo Ci, the Mocking Sage`, `Zurgo's 
 
 | Current remaining reason | Cards |
 | --- | ---: |
-| `oracle-needs-explicit-semantics` | 4,336 |
-| `spell-needs-explicit-semantics` | 2,308 |
-| `noncreature-needs-explicit-semantics` | 2,187 |
+| `oracle-needs-explicit-semantics` | 4,209 |
+| `spell-needs-explicit-semantics` | 2,282 |
+| `noncreature-needs-explicit-semantics` | 2,155 |
 | `double-faced-card-needs-complete-front-semantics` | 230 |
-| `land-needs-explicit-semantics` | 140 |
-| `complex-layout` | 115 |
-| `saga-chapter-needs-complete-semantics` | 110 |
+| `land-needs-explicit-semantics` | 138 |
+| `complex-layout` | 114 |
+| `saga-chapter-needs-complete-semantics` | 96 |
 | `double-faced-card-needs-face-transition-semantics` | 81 |
 | `unsupported-mana-cost` | 49 |
 | `adventure-needs-complete-face-semantics` | 40 |
 | `dynamic-power-toughness` | 32 |
-| `split-needs-complete-face-semantics` | 32 |
-| `unbound-event-reference` | 31 |
+| `split-needs-complete-face-semantics` | 31 |
+| `unbound-event-reference` | 29 |
 | `unsupported-split-faces` | 27 |
 | `double-faced-card-needs-complete-back-semantics` | 25 |
-| `unbound-target-damage-source` | 25 |
-| `unsupported-adventure-face-types` | 17 |
+| `unbound-target-damage-source` | 24 |
 | `unbound-event-amount` | 16 |
+| `unsupported-adventure-face-types` | 16 |
 | `mana-ability-needs-explicit-semantics` | 15 |
-| `overload-body-needs-complete-semantics` | 8 |
+| `overload-body-needs-complete-semantics` | 7 |
 | `unbound-target-X` | 5 |
 | `transform-land-face-transition-needs-proof` | 4 |
 | `backup-grant-needs-semantics` | 2 |
 | `leveler-band-needs-complete-semantics` | 2 |
 | `requires-import-and-executable-proof` | 2 |
 | `saga-other-rules-unsupported` | 2 |
-| `unbound-X` | 2 |
 | `unbound-sacrificed-stat` | 2 |
 | `backup-other-rules-unsupported` | 1 |
 | `conflicting-hand-abilities` | 1 |
 | `event-stat-condition-needs-binding` | 1 |
 | `reminder-only-oracle` | 1 |
+| `unbound-X` | 1 |
 
 These are compiler queue reasons, not a claim that each card is impossible to implement. The complete per-card list is in [remaining-cards.csv](catalog/remaining-cards.csv).
 
