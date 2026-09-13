@@ -317,6 +317,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       'the saved table has a different number of seats.');
     assert(snapshot.players.every(player=>player.counters===undefined||player.counters&&Number.isSafeInteger(player.counters.energy??0)&&(player.counters.energy??0)>=0), 'invalid player energy counters.');
     assert(snapshot.players.every(p=>p.afcDungeon==null||Number.isSafeInteger(p.afcDungeon.id)&&p.afcDungeon.id>0&&!!MTG.AFC?.dungeons[p.afcDungeon.key]?.rooms[p.afcDungeon.room]), 'invalid dungeon progress.');
+    assert(snapshot.players.every(p => {
+      const d = p.afcDungeon;
+      if (!d || d.path === undefined) return true; // Older saves only recorded the current room.
+      const rooms = MTG.AFC.dungeons[d.key].rooms;
+      return Array.isArray(d.path) && d.path.length > 0 && d.path.length <= Object.keys(rooms).length &&
+        d.path.at(-1) === d.room && d.path.every((key, i) => !!rooms[key] && (!i || rooms[d.path[i - 1]].next.includes(key)));
+    }), 'invalid dungeon path.');
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.counters?.experience??0)&&(player.counters?.experience??0)>=0), 'invalid player experience counters.');
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.bdfApproaches??0)&&(player.bdfApproaches??0)>=0), 'invalid Approach casting history.');
     assert(validDamageHistory(snapshot.damageHistory, snapshot.turnNo), 'invalid damage history.');

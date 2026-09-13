@@ -696,6 +696,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return Number.isFinite(n) && n > 0 ? `<span class="poisonbadge radbadge" role="img" aria-label="${n} rad counters" title="At your precombat main phase, mill this many cards. Lose 1 life and remove 1 rad counter for each nonland milled."><span aria-hidden="true">☢</span><b>${n}</b><small>RAD</small></span>` : '';
     }
 
+    dungeonButton(p, always = false) {
+      if (!always && !p.afcDungeon && !p.afcCompletedDungeons && !U.deckDungeonCards(MTG.DECKS[p.deckName]).length) return null;
+      const room = p.afcDungeon && MTG.AFC?.dungeons[p.afcDungeon.key]?.rooms[p.afcDungeon.room];
+      const button = el('button', 'dungeonbadge', `🗺 <span>${esc(room?.name || 'Dungeons')}</span>`);
+      button.type = 'button';
+      button.setAttribute('aria-label', `Open ${p === this.me ? 'your' : p.name + "'s"} dungeon map${room ? ': ' + room.name : ''}`);
+      button.title = 'View all dungeon rooms, paths, and progress';
+      button.onclick = event => { event.stopPropagation(); this.dungeonPanel = { player: p }; this.render(); };
+      return button;
+    }
+
+    renderDungeonPanel() {
+      const panel = this.dungeonPanel;
+      if (!panel) return null;
+      const overlay = el('div', 'overlay dungeonoverlay');
+      const modal = el('div', 'modal dungeonmodal');
+      modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true');
+      modal.setAttribute('aria-label', `${panel.player.name}: dungeon maps and progress`);
+      const header = el('div', 'dungeonpanelhead', `<div><small>ROOMS &amp; ROUTES</small><h2>${esc(panel.player === this.me ? 'Your dungeons' : panel.player.name + "'s dungeons")}</h2></div>`);
+      const close = el('button', 'pbtn', 'Close'); close.type = 'button';
+      const dismiss = () => { this.dungeonPanel = null; this.render(); };
+      close.onclick = dismiss; header.appendChild(close); modal.appendChild(header);
+      modal.appendChild(U.renderDungeonExplorer({ player: panel.player, selectedKey: panel.key, onTab: key => { panel.key = key; },
+        rulesOpen: panel.rulesOpen, onRules: open => { panel.rulesOpen = open; } }));
+      overlay.appendChild(modal);
+      overlay.onclick = event => { if (event.target === overlay) dismiss(); };
+      return overlay;
+    }
+
     // Public, currently relevant player state that would otherwise be easy to
     // lose in the game log. Keep this presentation-only: it reads the same
     // card/player metadata used by the rules engine and never exposes secret
@@ -731,7 +760,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(g.initiative===p)add({key:'initiative',kind:'role',icon:'⚑',label:'Initiative',detail:'Venture into Undercity at the beginning of your upkeep.',duration:'An opponent takes it by dealing combat damage to you.'});
       if (p.afcDungeon) {
         const dungeon=MTG.AFC?.dungeons[p.afcDungeon.key],room=dungeon?.rooms[p.afcDungeon.room];
-        if(dungeon&&room)add({key:'dungeon',kind:'role',icon:'🗝',label:dungeon.name,detail:'Current room: '+room.name,duration:'Venture to advance to the next room.'});
+        if(dungeon&&room)add({key:'dungeon',kind:'role',icon:'🗝',label:dungeon.name,detail:'Current room: '+room.name+'. '+(U.dungeonGuide(p.afcDungeon.key)?.effects[p.afcDungeon.room]||'')+' Next: '+(room.next.map(key=>dungeon.rooms[key].name).join(' or ')||'final room — completion pending')+'.',duration:'Open the dungeon map to see every route.'});
       }
       if(p.afcCompletedDungeons)add({key:'completed-dungeons',kind:'role',icon:'✓',label:'Completed dungeons',detail:String(p.afcCompletedDungeons)+' dungeon(s) completed.',duration:'For the rest of the game'});
       if (p.cityBlessing) add({
@@ -953,12 +982,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // stack popup stoji na sredini, pa se sklanja kad je otvoren bilo koji drugi
       // overlay — inače bi se preklapali baš na istom mjestu
       const blocked = !!modal || !!reveal || !!this.sheet || !!this.playerSheet || !!this.zoneBrowse ||
-        this.showLog || this.showHelp || this.showJudge || this.showStops || this.quickMenuOpen || this.lastResortConfirm;
+        this.showLog || this.showHelp || this.showJudge || this.showStops || this.quickMenuOpen || this.lastResortConfirm || this.dungeonPanel;
       const stage = blocked ? null : this.renderActionStage(g);
       if (stage) root.appendChild(stage);
       const sp = blocked ? null : this.renderStackPopup(g);
       if (sp && !stage) root.appendChild(sp);
       if (modal) root.appendChild(modal);
+      if (this.dungeonPanel) root.appendChild(this.renderDungeonPanel());
       // Game-over overlay se sklanja dok je otvoren log/zona/sheet — inače je
       // prekrivao "View log" i igra je izgledala zamrznuto na kraju partije.
       const gameOverHidden = this.showLog || this.sheet || this.playerSheet || this.zoneBrowse;
@@ -2010,6 +2040,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           return;
         }
         if (ev.key === 'Escape') {
+          if (this.dungeonPanel) { ev.preventDefault(); this.dungeonPanel = null; this.render(); return; }
           if (this.sheet || this.playerSheet || this.zoneBrowse || this.showLog || this.showHelp || this.showJudge ||
             this.showStops || this.diplomacyComposer || this.quickMenuOpen || this.lastResortConfirm || this.utilityDrawerOpen) {
             this.sheet = null; this.playerSheet = null; this.zoneBrowse = null;
@@ -2024,6 +2055,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         // Drawer i Game Menu imaju vlastite fokusirane kontrole. Dok su otvoreni,
         // Enter/Space ne smiju aktivirati skriveni gameplay prompt ispod njih.
+        if (this.dungeonPanel || ev.target.closest?.('.dungeonexplorer')) return;
         if ((this.quickMenuOpen || this.lastResortConfirm || this.utilityDrawerOpen) && (ev.key === ' ' || ev.key === 'Enter')) return;
         // A focused control owns Enter/Space. Letting the same key bubble into
         // the global shortcut layer can open a sheet and immediately activate
@@ -2327,6 +2359,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return button;
       };
       section('Pace & decisions');
+      action('Dungeons & routes', 'All rooms, effects, and your current progress', () => {
+        this.quickMenuOpen = false; this.dungeonPanel = { player: this.me }; this.render();
+      });
       this.speed = this.speed || 'normal';
       action('AI turn speed', MTG.SPEEDS[this.speed][2], () => {
         const order = ['normal', 'slow', 'fast'];
@@ -2583,6 +2618,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <span class="oppcmd" title="${esc(cmdTitle)}">${U.icon('crown')}${esc(cmdState)}</span>
           <button class="tbtn small" type="button" aria-label="Open ${esc(p.name)} player details" title="Open ${esc(p.name)} player details">${U.icon('info')}</button>`;
         head.querySelector('.tbtn.small').onclick = (e) => { e.stopPropagation(); this.playerSheet = p; this.render(); };
+        const dungeonButton = this.dungeonButton(p);
+        if (dungeonButton) head.appendChild(dungeonButton);
         const libraryTop = this.visibleLibraryTop(g, p);
         if (libraryTop) {
           const topCard = el('button', 'zbtn');
@@ -2980,6 +3017,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
       });
       const effectsBadge = info.querySelector('.playereffectsbadge');
+      const dungeonButton = this.dungeonButton(me);
+      if (dungeonButton) info.appendChild(dungeonButton);
       if (effectsBadge) effectsBadge.onclick = () => { this.playerSheet = me; this.render(); };
       const myLife = info.querySelector('.melife');
       this.registerArenaDropTarget(myLife, { kind: 'entity', value: me });
@@ -4067,6 +4106,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return ov;
       }
       if (q.type === 'chooseOption') {
+        if (q.dungeonChoice) {
+          m.classList.add('dungeonmodal');
+          m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Choose your dungeon route')));
+          m.appendChild(U.renderDungeonExplorer({ player: this.me, choice: q.dungeonChoice, options: q.options,
+            selectedKey: pd.dungeonKey, selectedRoom: pd.dungeonRoom,
+            onTab: key => { pd.dungeonKey = key; }, onRoom: key => { pd.dungeonRoom = key; },
+            rulesOpen: pd.dungeonRulesOpen, onRules: open => { pd.dungeonRulesOpen = open; },
+            onChoose: key => this.resolvePending(key) }));
+          return ov;
+        }
         if (q.diplomacyCampaign) {
           const campaign = q.diplomacyCampaign;
           const source = campaign.source;
@@ -5214,6 +5263,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         statusPanel.appendChild(list);
       }
       m.appendChild(statusPanel);
+      m.appendChild(this.dungeonButton(p, true));
       const zrow = el('div', 'btnrow');
       for (const z of ['graveyard', 'exile']) {
         const b = el('button', 'pbtn', `${z === 'graveyard' ? '🪦' : '🌀'} ${p[z].length}`);

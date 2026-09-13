@@ -22,7 +22,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // A landing page can outlive a deployment, then lazy-load newer markup.
   // Pin the matching styles before opening a spotlight, including on old tabs.
   // Bump this revision whenever the spotlight's markup/style contract changes.
-  const spotlightStylesURL = new URL('./src/frontend-overhaul.css?v=spotlight-20260912', document.baseURI).href;
+  const spotlightStylesURL = new URL('./src/frontend-overhaul.css?v=spotlight-20260913-dungeons', document.baseURI).href;
   let spotlightStylesLoading = null;
   function ensureSpotlightStyles() {
     const previousLink = document.querySelector('link[rel="stylesheet"][href*="frontend-overhaul.css"]');
@@ -771,6 +771,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // choosing an imported deck or opening its ordinary card-art preview.
       const intro = MTG.commanderIntroForDeck?.(deck, leadCommander) || MTG.commanderIntroForDeck?.(deck, deck.commander);
       const counts = deckBreakdown(deck);
+      const dungeonCards = U.deckDungeonCards(deck);
       const curve = U.deckManaCurve(deck);
       const curveMax = Math.max(1, ...curve.bins);
       const activeDecks = Object.keys(MTG.DECKS).filter(deckName => !MTG.DECKS[deckName].custom);
@@ -805,6 +806,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <button type="button" data-spotlight-section="overview">Overview</button>
           <button type="button" data-spotlight-section="cards">Key cards</button>
           <button type="button" data-spotlight-section="plan">Game plan</button>
+          ${dungeonCards.length ? '<button type="button" data-spotlight-section="dungeons">Dungeons &amp; routes</button>' : ''}
           <button type="button" data-spotlight-section="mana">Mana curve</button>
         </nav>
         <div class="deckspotlightcontent">
@@ -847,6 +849,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             <div><span>${U.icon('info')}</span><small>PILOT NOTE</small><b>One thing to remember</b><p>${esc(guide.tip)}</p></div>
           </aside>
         </div>
+        ${dungeonCards.length ? `<section class="deckspotlightdungeons" data-spotlight-target="dungeons"><span class="deckspotlighteyebrow">BEFORE YOU PLAY</span><h3>Dungeons &amp; routes</h3><p>This deck uses dungeons or initiative. Explore every room, effect, and fork before starting the game.</p><p class="dungeondeckcards"><b>Cards in this deck:</b> ${dungeonCards.map(esc).join(' · ')}</p><div data-deck-dungeons></div></section>` : ''}
         <section class="deckanalysis" data-spotlight-target="mana" aria-label="Deck mana curve">
           <div class="deckanalysisintro"><span class="eyebrow">Know your deck</span><h3>Mana curve</h3><p>Nonland cards, including commanders. X counts as 0.</p></div>
           <div class="manacurve" role="img" aria-label="${escAttr(curve.bins.map((count, i) => `${i === 7 ? '7 or more' : i} mana: ${count} cards`).join('; '))}">
@@ -862,6 +865,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         </footer>`;
       overlay.appendChild(dialog);
       root.appendChild(overlay);
+      if (dungeonCards.length) dialog.querySelector('[data-deck-dungeons]').appendChild(U.renderDungeonExplorer());
       document.body.classList.add('deck-spotlight-open');
       const content = dialog.querySelector('.deckspotlightcontent');
       dialog.querySelectorAll('[data-spotlight-section]').forEach(button => {

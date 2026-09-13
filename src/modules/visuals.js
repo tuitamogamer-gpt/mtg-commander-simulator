@@ -72,8 +72,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const returnFocus = options.returnFocus || overlay._dialogReturnFocus || (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     overlay._dialogReturnFocus = returnFocus;
     const focusable = () => [...dialog.querySelectorAll(
-      'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
-    )].filter(node => !node.hidden && node.getAttribute('aria-hidden') !== 'true');
+      'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex]:not([tabindex="-1"])',
+    )].filter(node => !node.hidden && node.getAttribute('aria-hidden') !== 'true' &&
+      (!dialog.classList.contains('dungeonmodal') || node.getClientRects().length > 0 &&
+        (!node.closest('details:not([open])') || node.tagName === 'SUMMARY')));
     dialog.addEventListener('keydown', event => {
       if (event.key !== 'Tab') return;
       const nodes = focusable();
