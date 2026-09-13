@@ -905,6 +905,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const sources = this.manaSources(p, forSpell, { includeRestricted: true }).filter(s =>
       (!opts.excludeCards || !opts.excludeCards.includes(s.card)) &&
       (!onlyCards || onlyCards.has(s.card)));
+    // Keep creatures available for combat, including animated lands/artifacts
+    // and creatures with a granted mana ability. A land that taps another
+    // permanent also belongs in the final group: its payment can use a body.
+    const sourcePriority = source => {
+      if (!source.card) return 3;
+      if (source.card.is('Creature') || source.extraCost.tapPermanents) return 2;
+      return source.card.is('Land') ? 0 : 1;
+    };
     // Converter-first orders are efficient when their activation can use
     // mana that was already floating. Ordinary-first orders are also required:
     // a Plains may fund an Azorius Signet during the same payment, and the
@@ -970,7 +978,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const sourceManaUpperBound = independentSourceOutput +
       [...tappedCardOutput.values()].reduce((total, amount) => total + amount, 0);
     if (floatingManaUpperBound + sourceManaUpperBound < minimumManaNeeded) return null;
-    sources.sort((a, b) => flex(a) - flex(b));
+    sources.sort((a, b) => sourcePriority(a) - sourcePriority(b) || flex(a) - flex(b));
     const converterReserveBudget = sources.reduce((total, source) => total + (source.rawConsume
       ? Math.max(0, source.rawConsume.generic) + source.rawConsume.pips.length : 0), 0);
     if (converterReserveBudget > 0 && initialGeneric > 0) {
@@ -991,10 +999,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
       }
     }
-    const converterSources = sources.filter(source => source.rawConsume);
-    const ordinarySources = sources.filter(source => !source.rawConsume);
-    const fullConverterMask = converterSources.length
-      ? (1n << BigInt(converterSources.length)) - 1n : 0n;
+    let converterSources = sources.filter(source => source.rawConsume);
+    let ordinarySources = sources.filter(source => !source.rawConsume);
     let nodes = 0;
     let totalNodes = 0;
     // The per-order guard protects ordinary backtracking. Converter order
@@ -1151,6 +1157,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return [...unique.values()];
     };
     let seen = new Map();
+    const priorityLimits = new Map();
+    const priorityUsage = (plan, priority) => new Set(plan.filter(step =>
+      step.src && sourcePriority(step.src) >= priority).map(step => step.src.card || step.src)).size;
     const hasResourceSensitiveSources = sources.some(source => {
       const extra = source.extraCost || {};
       return extra.pomExileGY || extra.energy || extra.mill || extra.sacType || extra.sac || extra.sacSelf || extra.rmCounter || extra.removeManaCounters ||
@@ -1162,6 +1171,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         .reduce((sum, [, amount]) => sum + Math.max(0, Number(amount) || 0), 0) > 1)));
     const tryCover = (ordinaryIdx, converterMask, needPips, needGen, planAcc,
       artifactAbilityUsed = initiallyUsedArtifactAbility, availablePool = initialState) => {
+      for (const [priority, limit] of priorityLimits) {
+        if (priorityUsage(planAcc, priority) > limit) return null;
+      }
       const lifeCost = planLifeCost(planAcc);
       if(planAcc.some(step=>step.src?.extraCost?.energy)&&planAcc.reduce((sum,step)=>sum+(step.src?.extraCost?.energy||0),0)>(p.counters?.energy||0)-(opts.reservedEnergy||0))return null;
       if (useMemo) {
@@ -1170,6 +1182,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const memoKey = [ordinaryIdx, converterMask.toString(36), needGen,
           needPips.map(pip => pip.join('/')).sort().join(','),
           artifactAbilityUsed ? 1 : 0, usedTapCards,
+          [...priorityLimits.keys()].map(priority => priorityUsage(planAcc, priority)).join(','),
           ['W', 'U', 'B', 'R', 'G', 'C'].map(color => availablePool.pool[color] || 0).join(','),
           ['W', 'U', 'B', 'R', 'G', 'C'].map(color => availablePool.coloredOnly[color] || 0).join(','),
           metaKey(availablePool.meta)].join('|');
@@ -1284,44 +1297,84 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return tryCover(ordinaryIdx + 1, converterMask, needPips, needGen,
         planAcc, artifactAbilityUsed, availablePool);
     };
-    let bestScarceResult = null;
-    for (const branch of uniquePoolBranches.values()) {
-      // Most real turns can pay without activating a filter source. Prove that
-      // cheap path first so a dormant Signet/filter land does not force every
-      // AI affordability probe through converter-mask branching. The complete
-      // converter search remains the fallback for payments that actually need
-      // one or a converter chain. Exact manual selections must explore their
-      // converter too, and a life/sacrifice/mill/counter route is only a
-      // fallback until it has been compared with the full converter plan.
-      let ordinaryOnly = null;
-      if (converterSources.length && !onlyCards) {
-        nodes = 0;
-        totalNodes = 0;
-        seen = new Map();
-        ordinaryOnly = tryCover(0, 0n, branch.remaining, branch.generic,
-          [], initiallyUsedArtifactAbility, branch);
-        if (ordinaryOnly && !planResourceScore(ordinaryOnly.plan).scarce) {
-          return { plan: ordinaryOnly.plan, usedPool: ordinaryOnly.pool.used };
+    // Prove a complete legal payment with lands first, then add noncreature
+    // sources (including Treasure), and only then creatures. Sorting alone is
+    // insufficient: a color allocation or a converter can otherwise reach a
+    // creature before backtracking to a valid land/artifact payment. Exact
+    // manual selections and boolean affordability probes need only one pass.
+    const priorities = onlyCards || opts._manaFeasibilityOnly
+      ? [Infinity] : [...new Set(sources.map(sourcePriority))];
+    if (!priorities.length) priorities.push(0);
+    for (const priority of priorities) {
+      const eligible = sources.filter(source => sourcePriority(source) <= priority);
+      const tappedOutput = new Map();
+      let independentOutput = 0;
+      for (const source of eligible) {
+        if (source.extraCost.tap) tappedOutput.set(source.card,
+          Math.max(tappedOutput.get(source.card) || 0, source.optimisticManaOutput));
+        else independentOutput += source.optimisticManaOutput;
+      }
+      if (floatingManaUpperBound + independentOutput + [...tappedOutput.values()].reduce((a, b) => a + b, 0) < minimumManaNeeded) continue;
+      converterSources = eligible.filter(source => source.rawConsume);
+      ordinarySources = eligible.filter(source => !source.rawConsume);
+      const fullConverterMask = (1n << BigInt(converterSources.length)) - 1n;
+      const findPayment = () => {
+        let bestScarceResult = null;
+        for (const branch of uniquePoolBranches.values()) {
+          // Prove the ordinary path first; retain the complete converter
+          // search for payments needing a filter or a cheaper resource cost.
+          let ordinaryOnly = null;
+          if (converterSources.length && !onlyCards) {
+            nodes = 0;
+            totalNodes = 0;
+            seen = new Map();
+            ordinaryOnly = tryCover(0, 0n, branch.remaining, branch.generic,
+              [], initiallyUsedArtifactAbility, branch);
+            if (ordinaryOnly && !planResourceScore(ordinaryOnly.plan).scarce) {
+              return { plan: ordinaryOnly.plan, usedPool: ordinaryOnly.pool.used };
+            }
+          }
+          nodes = 0;
+          totalNodes = 0;
+          seen = new Map();
+          const res = tryCover(0, fullConverterMask, branch.remaining, branch.generic,
+            [], initiallyUsedArtifactAbility, branch);
+          const preferred = preferCheaperResult(res, ordinaryOnly);
+          if (!preferred) continue;
+          if (!planResourceScore(preferred.plan).scarce) {
+            return { plan: preferred.plan, usedPool: preferred.pool.used };
+          }
+          bestScarceResult = preferCheaperResult(bestScarceResult, preferred);
+        }
+        return bestScarceResult ? { plan: bestScarceResult.plan, usedPool: bestScarceResult.pool.used } : null;
+      };
+      let solution = findPayment();
+      if (!solution) continue;
+      if (!onlyCards && !opts._manaFeasibilityOnly) {
+        // Needing one creature for a missing color does not justify tapping
+        // extra creatures for generic mana. Limit usage of later source groups
+        // and retry alternate color/converter allocations, preserving
+        // the last proven legal plan if the bounded search finds no improvement.
+        for (let rank = priority; rank > 0; rank--) {
+          if (!eligible.some(source => sourcePriority(source) < rank)) continue;
+          let count = priorityUsage(solution.plan, rank);
+          while (count > (rank === priority ? 1 : 0)) {
+            priorityLimits.set(rank, count - 1);
+            const better = findPayment();
+            if (!better) break;
+            solution = better;
+            count = priorityUsage(solution.plan, rank);
+          }
+          priorityLimits.set(rank, count);
         }
       }
-      nodes = 0;
-      totalNodes = 0;
-      seen = new Map();
-      const res = tryCover(0, fullConverterMask, branch.remaining, branch.generic,
-        [], initiallyUsedArtifactAbility, branch);
-      const preferred = preferCheaperResult(res, ordinaryOnly);
-      if (!preferred) continue;
-      if (!planResourceScore(preferred.plan).scarce) {
-        return { plan: preferred.plan, usedPool: preferred.pool.used };
-      }
-      bestScarceResult = preferCheaperResult(bestScarceResult, preferred);
+      return solution;
     }
-    if (bestScarceResult) return { plan: bestScarceResult.plan, usedPool: bestScarceResult.pool.used };
     return null;
   };
 
   G.canPayMana = function (p, cost, forSpell, opts) {
-    return !!this.manaSolve(p, cost, forSpell, opts || {});
+    return !!this.manaSolve(p, cost, forSpell, { ...opts, _manaFeasibilityOnly: true });
   };
 
   G.manualManaSelectionSolution = function (p, cost, forSpell, cards, opts = {}) {

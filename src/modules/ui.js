@@ -2971,6 +2971,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           <button class="zbtn" data-z="exile" aria-label="Exile: ${me.exile.length} cards" title="Open exile">${U.icon('exile')}<b>${me.exile.length}</b></button>
         </div>`;
       info.querySelectorAll('.zbtn[data-z]').forEach(b => {
+        this.markTargetZone(b, me, b.dataset.z);
         b.onclick = () => {
           if (b.dataset.z === 'library-top') {
             if (libraryTop) this.sheet = { card: libraryTop };
@@ -3671,9 +3672,26 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (proliferate) bar.dataset.testid = 'proliferate-selection';
           const source = q.src || q.card;
           bar.appendChild(el('div', 'targetprompthead',
-            `<span>${proliferate ? U.icon('proliferate') : '🎯'} ${source && source.name ? esc(source.name) + ' · ' : ''}${esc(proliferate ? 'PROLIFERATE · Choose any number' : q.prompt || 'Choose a target')}</span>` +
-            `<strong>${pd.sel.length} / ${max}</strong>`));
-          bar.appendChild(el('div', 'targetprompthint',
+            `<span>${proliferate ? U.icon('proliferate') : '🎯'} ${esc(source?.name || (proliferate ? 'Proliferate' : 'Choose targets'))}</span>` +
+            `<strong>${pd.sel.length} / ${max} selected</strong>`));
+          const body = el('div', 'targetpromptbody');
+          const instruction = el('div', 'targetinstruction');
+          instruction.setAttribute('role', 'status');
+          instruction.setAttribute('aria-live', 'polite');
+          instruction.appendChild(el('small', 'targetstep', q.targetSteps > 1
+            ? `TARGET ${q.targetStep} OF ${q.targetSteps}` : 'CURRENT CHOICE'));
+          instruction.appendChild(el('div', 'targetinstructiontext', esc(proliferate
+            ? 'Choose any number of players and permanents with counters.' : q.prompt || 'Choose a target')));
+          body.appendChild(instruction);
+          if (q.previousTargets?.some(target => [target].flat().filter(Boolean).length)) {
+            const previous = el('div', 'targetprevious');
+            q.previousTargets.forEach((targets, index) => {
+              const names = [targets].flat().filter(Boolean).map(target => target.name || target.card?.name || 'Stack object');
+              previous.appendChild(el('div', '', `<b>Target ${index + 1}:</b> ${esc(names.join(', ') || 'None')}`));
+            });
+            body.appendChild(previous);
+          }
+          body.appendChild(el('div', 'targetprompthint',
             proliferate
               ? 'This is a choice, not targeting — hexproof, shroud and ward do not apply. Every chosen player or permanent gets one additional counter of every kind already there.'
               : pd.sel.length < min
@@ -3696,20 +3714,38 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!pd.sel.length) picked.appendChild(el('div', 'targetpickempty', proliferate
             ? 'No players or permanents selected — proliferating zero is legal.'
             : 'No targets selected yet'));
-          bar.appendChild(picked);
+          body.appendChild(picked);
+          bar.appendChild(body);
+          const zones = this.targetChoiceZones();
+          if (zones.length) {
+            const links = el('div', 'targetzonelinks');
+            for (const { player, zone, cards } of zones) {
+              const label = player === this.me ? `your ${zone}` : `${player.name}'s ${zone}`;
+              const open = btn(`Open ${esc(label)} <span>${cards.length} legal</span>`, () => {
+                this.zoneBrowse = { player, zone }; this.render();
+              }, 'targetzoneopen');
+              open.dataset.targetZone = zone;
+              open.dataset.targetPlayer = String(player.idx);
+              links.appendChild(open);
+            }
+            bar.appendChild(links);
+          }
           const actions = el('div', 'btnrow targetpromptactions');
           if (q.cancelable) actions.appendChild(btn('Abort cast ↩', () => {
             this.resolvePendingEntry(pd, { kind: 'cancel' });
           }, 'danger'));
-          if (pd.sel.length >= min) actions.appendChild(btn(
-            proliferate
+          const confirm = btn(
+            pd.sel.length < min ? `Choose ${min - pd.sel.length} target${min - pd.sel.length === 1 ? '' : 's'}`
+              : proliferate
               ? (pd.sel.length ? `Confirm proliferate (${pd.sel.length}) ✓` : 'Confirm proliferate with no selections ✓')
+              : q.targetStep < q.targetSteps ? 'Confirm & next →'
               : pd.sel.length
               ? `${q.cancelable ? 'Lock & cast with' : 'Lock'} ${pd.sel.length} target${pd.sel.length === 1 ? '' : 's'} ✓`
               : (q.cancelable ? 'Cast with no targets ✓' : 'Choose no targets ✓'),
-            () => this.resolvePending(pd.sel.slice()), 'primary'));
-          if (pd.sel.length) actions.appendChild(btn('Clear', () => { pd.sel = []; this.render(); }));
-          if (!proliferate && min === 0 && !pd.sel.length) actions.appendChild(btn('Skip', () => this.resolvePending([])));
+            () => this.resolvePending(pd.sel.slice()), 'primary');
+          confirm.disabled = pd.sel.length < min;
+          actions.appendChild(confirm);
+          if (pd.sel.length) picked.appendChild(btn('Clear', () => { pd.sel = []; this.render(); }, 'targetclear'));
           bar.appendChild(actions);
           break;
         }
@@ -4378,6 +4414,28 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     // ---------- targeting ----------
+    targetZoneCandidates(player, zone) {
+      const q = this.pending?.q;
+      if (q?.type !== 'chooseTargets' || !['graveyard', 'exile', 'command'].includes(zone)) return [];
+      return (q.candidates || []).filter(card => (player[zone] || []).includes(card));
+    }
+    targetChoiceZones() {
+      return (this.game?.players || []).flatMap(player => ['graveyard', 'exile', 'command'].flatMap(zone => {
+        const cards = this.targetZoneCandidates(player, zone);
+        return cards.length ? [{ player, zone, cards }] : [];
+      }));
+    }
+    markTargetZone(control, player, zone) {
+      const cards = this.targetZoneCandidates(player, zone);
+      if (!cards.length) return;
+      control.classList.add('targetzone');
+      control.dataset.targetZone = zone;
+      control.dataset.targetPlayer = String(player.idx);
+      const label = `${player === this.me ? 'Your' : player.name + "'s"} ${zone}: ${cards.length} legal target${cards.length === 1 ? '' : 's'}. Open to choose.`;
+      control.title = label;
+      control.setAttribute('aria-label', label);
+      control.appendChild(el('span', 'targetzonebadge', 'CHOOSE'));
+    }
     isCandidate(x) {
       if (this.manualPick) {
         if (x instanceof MTG.Player) return this.manualPick.players !== false;
@@ -5190,6 +5248,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const lastResort = this.zoneBrowse.lastResort && this.lastResortActive;
       const pd = this.pending;
       const actionQ = pd && (pd.q.type === 'main' || pd.q.type === 'priority') ? pd.q : null;
+      const choosingTargets = this.targetZoneCandidates(player, zone).length > 0 && !judgeReturn && !lastResort;
+      if (choosingTargets) {
+        m.classList.add('zonetargetpicker');
+        const guide = el('div', 'zonetargetguide');
+        guide.appendChild(el('b', '', `Choose a card${pd.q.targetSteps > 1 ? ` · Target ${pd.q.targetStep} of ${pd.q.targetSteps}` : ''}`));
+        guide.appendChild(el('div', '', esc(pd.q.prompt || 'Choose a highlighted card.')));
+        guide.appendChild(el('small', '', 'Cards marked CHOOSE are legal. Your selection will appear in the decision panel for confirmation.'));
+        m.appendChild(guide);
+      }
       const visibleCards = lastResort
         ? player[zone].filter(card => g.lastResortCardVisibleTo(card, this.me))
         : player[zone];
@@ -5216,8 +5283,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             g.lg('⚒️ ručno: ' + c.name + ' vraćen na tablu.');
             this.queueRender();
           };
-        } else if (this.isCandidate(c)) { cc.classList.add('targetable'); cc.onclick = () => { this.zoneBrowse = null; this.pickCandidate(c); }; }
+        } else if (this.markSelectedTarget(cc, c)) {
+          this.makeKeyboardButton(cc, `Remove selected target: ${c.name}`);
+        } else if (this.isCandidate(c)) {
+          cc.classList.add('targetable');
+          cc.appendChild(el('div', 'zoneplay targetzonepick', 'CHOOSE'));
+          cc.onclick = () => { this.zoneBrowse = null; this.pickCandidate(c); };
+          this.makeKeyboardButton(cc, `Choose ${c.name} from ${zone}`);
+        }
         else {
+          if (choosingTargets) cc.classList.add('targetineligible');
           const playableNow = !!actionQ &&
             ((actionQ.casts || []).some(entry => entry.card === c) || (actionQ.lands || []).includes(c));
           cc.classList.add('inspectable');

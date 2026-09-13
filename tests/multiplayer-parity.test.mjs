@@ -26,6 +26,39 @@ function room() {
   return { L, state };
 }
 
+test('sequential target instructions and previous choices survive the Live decision round trip', async () => {
+  const { game, guest, card } = table();
+  const source = card('Bright-Palm, Soul Awakener');
+  const first = card('Grizzly Bears');
+  const second = card('Llanowar Elves', guest, 'graveyard');
+  const questions = [];
+  guest.controller = { decide: async (g, q) => {
+    questions.push(q);
+    const descriptor = M.onlineDecisionDescriptor(g, q, guest, `target-${q.targetStep}`);
+    const model = new M.OnlineArenaView();
+    model.update(plain(M.onlineGameViewFor(g, guest)), guest.onlineSeat);
+    const viewQuestion = model.decision(plain(descriptor));
+    assert.equal(viewQuestion.targetStep, questions.length);
+    assert.equal(viewQuestion.targetSteps, 2);
+    assert.equal(viewQuestion.prompt, q.prompt);
+    if (questions.length === 2) {
+      assert.equal(viewQuestion.previousTargets[0].name, first.name);
+      assert.equal(viewQuestion.candidates[0], model.viewer.graveyard[0]);
+    }
+    return [q.candidates[0]];
+  } };
+  const context = { g: game, you: guest, src: source };
+  const specs = [
+    { zone: 'battlefield', what: 'creature', count: 1, filter: (g, c) => c === first,
+      prompt: 'Choose a creature you control to receive the granted ability. This instruction remains fully readable when the choice contains a detailed explanation of what happens to the selected creature.' },
+    { zone: 'graveyard', what: 'card', count: 1, filter: (g, c) => c === second,
+      prompt: 'Choose a creature card from your graveyard to return to your hand.' },
+  ];
+  assert.equal(await game.pickTargets(context, specs, source, guest), true);
+  assert.equal(questions.length, 2);
+  assert.deepEqual(Array.from(context.targets), [first, second]);
+});
+
 test('standalone server room contract is generated from the exact browser version', () => {
   execFileSync(process.execPath, ['scripts/sync-online-room.mjs', '--check']);
   const { L, state } = room();

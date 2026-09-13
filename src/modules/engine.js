@@ -3644,6 +3644,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const decision = await decisionPlayer.controller.decide(this, {
           type: 'chooseTargets', spec, candidates: cands, min: Math.min(min, cands.length), max,
           src, so: ctx.so || null, prompt: spec.prompt || 'Izaberi metu',
+          targetStep: specIndex + 1, targetSteps: ctx.boundTargetSpecs.length,
+          previousTargets: ctx.targets.map(target => Array.isArray(target) ? target.slice() : target),
           // Arena-style drag may suggest one exact target, but legality remains
           // authoritative here. A stale/illegal suggestion is simply omitted
           // and the ordinary target prompt continues unchanged.

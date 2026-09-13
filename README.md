@@ -203,6 +203,8 @@ The built-in library contains **150 precon decks, each with 100 cards**. Choose 
 
 The arena includes card inspection, searchable zones, a game log, combat assignments, priority settings, and desktop/mobile table views. [Judge and Last Resort](#judge-and-last-resort-recovery) provide manual actions and emergency state corrections when you need to repair a game; [Politics](#diplomacy--politics) adds optional enforced negotiations.
 
+Target choices show the source card, the full current instruction, and progress such as **Target 1 of 2**, with earlier choices listed on the next step. When eligible cards are in a graveyard, exile, or the command zone, the decision panel offers a direct **Open** button. Relevant graveyard/exile controls are marked **CHOOSE**, and legal cards are highlighted inside the zone. Select a card, then confirm it in the decision panel.
+
 Solo players and all Live players use the **Command Table** interface. **Table** shows the opponents together; **Focus** gives a selected opponent more room. The decision panel keeps the current action visible, and target/combat choices reveal the relevant players. Live hosts and guests share the same gameplay controls, including HOLD, mana selection, card actions, Stack responses, combat and Last Resort. Each player sees their own hand and chooses their own priority and display preferences. The landing-page Table/Focus preview shows screenshots of the interface; it does not start a game.
 
 On phones and tablets, the focused opponent follows the active player's turn. Tap another opponent to inspect their board until the next turn. Short screens show one battlefield at a time: **Mine** opens your board, and an opponent's seat opens theirs. Your turn brings your battlefield back automatically. Dense mobile battlefields scroll horizontally, with lands and mana sources below; landscape phones place the hand beside the board.
@@ -213,7 +215,7 @@ The arena's **MANA** button switches between automatic payment and choosing your
 
 | Mode | How payment works |
 | --- | --- |
-| **Automatic mana** | Choose your spell and its required decisions. The payment solver uses available pool mana and selects a legal combination of sources, accounting for colors, restrictions, and activation costs. You do not need to pre-tap each land. |
+| **Automatic mana** | Choose your spell and its required decisions. The payment solver uses available pool mana, then prioritizes lands, then noncreature artifacts (including Treasure), then creatures. It checks the full payment for colors, restrictions, and activation costs before using a later group. Animated lands and artifacts count as creatures so they can stay available for combat. You do not need to pre-tap each land. |
 | **Manual mana** | When your spell needs additional sources, a **Choose mana sources** dialog opens with a suggested selection. Choose the exact lands, mana rocks, Treasure, or eligible convoke/improvise sources you want to commit, then confirm. |
 
 ### Choose sources manually
