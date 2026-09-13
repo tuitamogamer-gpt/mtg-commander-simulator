@@ -32,6 +32,7 @@ export function installFaceProof(MTG, game) {
   // announcement and must stay visible to the cast list.
   if (scope.layout === 'transform') {
     if (scope.face === 'front') return;
+    if(MTG.DEFS[scope.canonicalName]?.oracleFaces?.faces[0]?.def.bomDaybound){game.bomDayNight='night';return;}
     // The back face is proved where it is actually reachable: the physical card
     // is cast or played normally and then turns to its printed back face, the
     // same transition the printed transform ability performs.

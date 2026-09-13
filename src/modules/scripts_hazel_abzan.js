@@ -24,6 +24,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const candidates = permanents.concat(players);
       if (!candidates.length) {
         g.lg(`${p.name} proliferates (no counters to choose).`);
+        await g.emit('proliferatedV9',{player:p});
         continue;
       }
       const picked = await p.controller.decide(g, {
@@ -65,6 +66,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         subjects: chosen.slice(), additions, count: chosen.length,
       });
       g.lg(`${p.name} proliferates (${chosen.length} chosen).`);
+      await g.emit('proliferatedV9',{player:p});
     }
   };
 

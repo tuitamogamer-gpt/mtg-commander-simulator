@@ -83,6 +83,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const kind = operation.kind.startsWith('mechanic-')
       ? operation.kind.slice('mechanic-'.length)
       : operation.kind;
+    if(kind==='leyline-v9'){script.cdkLeyline=true;return true;}
+    if(kind==='umbra-armor-v9'){script.umbraArmor=true;return true;}
+    if(kind==='skip-draw-v9'){script.c1719SkipDraw=true;return true;}
+    if(kind==='player-shroud-v9'){script.playerShroudV9=true;return true;}
+    if(kind==='freerunning-v9'){
+      push(script,'altCosts',{label:'Freerunning '+operation.cost,altCostStr:operation.cost,oracleFreerunningV9:true,cond:(game,player)=>player.turnState.freerunningV9===game.turnNo});return true;
+    }
+    if(kind==='increment-v9'){
+      push(script,'triggers',captureTriggerObjects({on:'cast',desc:'Increment',
+        filter:(g,s,d)=>d.player===s.ctrl&&Number(d.so?.manaSpent)>Math.min(s.power,s.toughness),
+        run:async(ctx,capture)=>{if(sameBattlefieldObject(ctx.g,ctx.src,capture.source)&&capture.objects.spent>Math.min(ctx.src.power,ctx.src.toughness))plusCounter(ctx.g,ctx.src,1,ctx.you);}
+      },(g,s,d)=>({spent:Number(d.so.manaSpent)})));return true;
+    }
+    if(kind==='station-v9'){
+      script.stationCreatureAt=operation.threshold;script.dynTypes=(g,c)=>(c.counters.charge||0)>=operation.threshold?['Creature']:[];
+      push(script,'abilities',{label:'Station',sorcery:true,cost:{tapCreature:true},
+        run:async ctx=>{if(!aliveSource(ctx))return;const n=ctx.tappedCre?.zone==='battlefield'&&ctx.tappedCre.zoneVersion===ctx.stationZoneVersion?Math.max(0,ctx.tappedCre.power):ctx.stationPower;ctx.g.addCounters(ctx.src,'charge',n,false,ctx.you);},
+        aiScore:(g,c,p)=>MTG.stationPlan(g,c,p).score});return true;
+    }
 
     if(kind==='strive-v8'){
       if(script.strive)return false;
@@ -179,14 +198,44 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if(kind==='surge'||kind==='spectacle'){
       push(script,'altCosts',{label:kind+' '+operation.cost,altCostStr:operation.cost,[kind]:true,cond:(game,p)=>kind==='surge'?p.turnState.spellsCast>0:game.alivePlayers().some(other=>other!==p&&other.turnState.lifeLost>0)});return true;
     }
-    if(kind==='devour'){
-      if(!addEtbPlusCounters(script,(game,card)=>(card.meta.oracleDevoured||0)*number(operation)))return false;
+    if(kind==='devour'||kind==='devour-v9'){
+      if(!addEtbPlusCounters(script,(game,card)=>(card.meta.oracleDevoured||0)*(operation.n==='devoured'?(card.meta.oracleDevoured||0):number(operation))))return false;
       chainAsEnters(script,async(game,card)=>{
-        const candidates=game.creatures(card.ctrl).filter(other=>other!==card&&game.canSacrifice(other));
-        const answer=await card.ctrl.controller.decide(game,{type:'chooseCards',from:candidates,min:0,max:candidates.length,prompt:'Devour: sacrifice creatures',aiHint:{kind:'sacrifice',source:card}});
+        const type=kind==='devour-v9'?operation.what[0].toUpperCase()+operation.what.slice(1):'Creature';
+        const candidates=game.bf().filter(other=>other.ctrl===card.ctrl&&other.is(type)&&other!==card&&game.canSacrifice(other));
+        const answer=await card.ctrl.controller.decide(game,{type:'chooseCards',from:candidates,min:0,max:candidates.length,prompt:'Devour: sacrifice '+type.toLowerCase()+'s',aiHint:{kind:'devour-v9',source:card,n:operation.n}});
         const picked=[...new Set(Array.isArray(answer)?answer:[])].filter(other=>candidates.includes(other));
         card.meta.oracleDevoured=await game.sacrificeMany(card.ctrl,picked);
       });return true;
+    }
+    if(kind==='amplify-v9'){
+      if(!addEtbPlusCounters(script,(game,card)=>(card.meta.oracleAmplifiedV9||0)*number(operation)))return false;
+      chainAsEnters(script,async(game,card)=>{
+        const types=MTG.RULES_CREATURE_TYPES.filter(type=>card.hasSub(type));
+        const pool=card.ctrl.hand.filter(other=>other!==card&&types.some(type=>other.hasSub(type)));
+        const answer=await card.ctrl.controller.decide(game,{type:'chooseCards',from:pool,min:0,max:pool.length,prompt:'Amplify: reveal cards sharing a creature type',aiHint:{kind:'amplify-v9',source:card}});
+        const picked=[...new Set(Array.isArray(answer)?answer:[])].filter(other=>pool.includes(other));
+        card.meta.oracleAmplifiedV9=picked.length;
+        if(picked.length)await game.revealToHuman({cards:picked,ctrl:card.ctrl,kind:'reveal'});
+      });return true;
+    }
+    if(kind==='reconfigure-v9'){
+      script.vnReconfigure=true;
+      push(script,'statics',{phase:1,apply:(game,card)=>{if(card.attachedTo)card.cur.types=card.cur.types.filter(type=>type!=='Creature');}});
+      push(script,'abilities',{label:'Reconfigure — attach',cost:{mana:operation.cost},sorcery:true,targets:[MTG.T.yourCreature({filter:(game,card,player,source)=>card!==source})],run:ctx=>{if(aliveSource(ctx)&&ctx.targets[0])return ctx.g.attach(ctx.src,ctx.targets[0]);}});
+      push(script,'abilities',{label:'Reconfigure — unattach',cost:{mana:operation.cost},sorcery:true,cond:(game,card)=>!!card.attachedTo,run:ctx=>{if(aliveSource(ctx))MTG.C1516.detach(ctx.g,ctx.src);}});
+      return true;
+    }
+    if(kind==='recover-v9'){
+      push(script,'triggers',captureTriggerObjects({on:'lto',zone:'graveyard',desc:'Recover '+operation.cost,
+        filter:(g,s,d)=>d.card!==s&&d.card?.owner===s.owner&&d.card.zone==='graveyard'&&d.snap?.types.includes('Creature'),
+        controller:(g,s)=>s.owner,
+        run:async(ctx,capture)=>{
+          const answer=await ctx.you.controller.decide(ctx.g,{type:'chooseOption',prompt:'Pay '+operation.cost+' to recover this card?',options:[{key:'yes',label:'Pay and return to hand'},{key:'no',label:'Exile this card'}],aiHint:{kind:'recover-v9',cost:operation.cost}});
+          const paid=answer==='yes'&&await ctx.g.payMana(ctx.you,MTG.parseCost(operation.cost),{card:ctx.src});
+          if(ctx.src.zone==='graveyard'&&ctx.src.zoneVersion===capture.source.zoneVersion)await ctx.g.move(ctx.src,paid?'hand':'exile');
+        }
+      },()=>({})));return true;
     }
     if(kind==='graft'){
       if(!addEtbPlusCounters(script,number(operation)))return false;

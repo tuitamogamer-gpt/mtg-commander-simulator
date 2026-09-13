@@ -6,16 +6,18 @@ export function compileFaces(card, helpers = {}) {
     return {reason: 'double-faced-card-needs-two-complete-faces'};
   }
   const faces = [];
+  const dayNight=helpers.dayNight&&card.layout==='transform'&&card.card_faces.every((face,index)=>new RegExp('^'+(index?'Nightbound':'Daybound')+'(?: \\([^\\n]*\\))?$', 'm').test(face.oracle_text||''));
   for (const [index, face] of card.card_faces.entries()) {
     // Transforming is executable; the remaining transition mechanics are not
     // and still fail closed. A modal card never transforms at all.
     const forbidden = card.layout === 'transform'
-      ? /\b(?:convert|meld|daybound|nightbound|disturb)\b/i
+      ? dayNight ? /\b(?:convert|meld|disturb)\b/i : /\b(?:convert|meld|daybound|nightbound|disturb)\b/i
       : /\b(?:transform|convert|meld|daybound|nightbound)\b/i;
     if (!face?.name || !face.type_line || typeof face.oracle_text !== 'string' || forbidden.test(face.oracle_text)) {
       return {reason: 'double-faced-card-needs-face-transition-semantics'};
     }
     const normal = {...card, ...face, layout: 'normal', card_faces: undefined};
+    if(dayNight)normal.oracleDayNightFaceV9=index?'Nightbound':'Daybound';
     for (const field of ['mana_cost', 'power', 'toughness', 'loyalty', 'defense']) {
       if (face[field] === undefined) delete normal[field];
     }

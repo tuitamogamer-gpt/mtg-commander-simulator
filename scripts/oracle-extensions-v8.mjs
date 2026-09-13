@@ -87,6 +87,18 @@ import * as landTypes from './oracle-v8-land-types.mjs';
 import * as activationProhibitions from './oracle-v8-activation-prohibitions.mjs';
 import { ORACLE_SUBTYPES } from './oracle-subtypes.mjs';
 
+// New compiler revisions may supply additional closed leaf parsers while
+// replaying the complete v8 compiler. The context is synchronous and scoped;
+// historical v8 compilation never enables it.
+let additionalGrammar = null;
+export const allowsDayNight = () => additionalGrammar?.dayNight === true;
+export const additionalKeywords = () => additionalGrammar?.grantableKeywords || [];
+export function withAdditionalGrammar(grammar, compile) {
+  const previous = additionalGrammar;
+  additionalGrammar = grammar;
+  try { return compile(); } finally { additionalGrammar = previous; }
+}
+
 const NUM = '(?:a|an|one|two|three|four|five|six|seven|eight|nine|ten|\\d+)';
 const number = value => ({a:1,an:1,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10}[value] ?? Number(value));
 const KEYWORDS = new Set(['flying','reach','first strike','double strike','deathtouch','lifelink','trample','haste','vigilance','menace','defender','indestructible','hexproof','shroud','flash','prowess','shadow','fear','intimidate','skulk','horsemanship','wither','islandwalk','phasing']);
@@ -189,6 +201,8 @@ export function normalizeManaOperations(operations) {
 }
 
 export function extensionTarget(text) {
+  const additional = additionalGrammar?.extensionTarget?.(text, {target: extensionTarget, count: extensionCount});
+  if (additional) return additional;
   // CR 205.3m: Time Lord is one subtype. Tokenize that exact multiword
   // noun before the legacy single-word parser can overwrite Time with Lord.
   if (/\bTime Lord\b/.test(text)) {
@@ -249,6 +263,8 @@ export function extensionTarget(text) {
   return targetPredicates.extensionTarget(text,{target:extensionTarget});
 }
 export function extensionCount(text) {
+  const additional = additionalGrammar?.extensionCount?.(text, {target: extensionTarget, count: extensionCount});
+  if (additional) return additional;
   const eventCounter=/^(\+1\/\+1|-1\/-1|[a-z]+) counters? on that (?:creature|permanent)$/.exec(text);
   if(eventCounter)return {kind:'event-card-counters',counter:eventCounter[1]};
   const prior = core.baseCount(text) || v6.extensionCount?.(text) || v5.extensionCount?.(text);
@@ -282,6 +298,8 @@ export function unsupportedPresence(result){
   return walk(result.implementation);
 }
 export function extensionCondition(text) {
+  const additional = additionalGrammar?.extensionCondition?.(text, {target: extensionTarget, count: extensionCount, condition: extensionCondition});
+  if (additional) return additional;
  const named=namedCounts.extensionCondition(text);if(named)return named;
   const turn=turns.extensionCondition(text);if(turn)return turn;
   const opponentCount=new RegExp('^an opponent controls ('+NUM+') or more (.+)$').exec(text);
@@ -323,6 +341,8 @@ export function extensionCondition(text) {
   return permanents.extensionCondition?.(text,{condition:extensionCondition,count:extensionCount,target:extensionTarget})||castingRules.extensionCondition(text,{condition:extensionCondition,count:extensionCount,target:extensionTarget})||castingLimits.extensionCondition(text)||creatureUpgrades.extensionCondition(text)||null;
 }
 export function extensionCost(text, card = null) {
+  const additional = additionalGrammar?.extensionCost?.(text, {target: extensionTarget, cost: value => extensionCost(value, card)}, card);
+  if (additional) return additional;
   if(/\{E\}/.test(text)){
     const parts=String(text).split(/,\s*/),energyParts=parts.filter(part=>part.startsWith('Pay ')&&energy.fixedAmount(part.slice(4))!==null);
     if(energyParts.length!==1)return null;
@@ -350,6 +370,8 @@ export function extensionCost(text, card = null) {
   return Object.keys(cost).length ? cost : null;
 }
 export function modifierOperation(card, line, helpers = {}) {
+  const additional = additionalGrammar?.modifierOperation?.(card, line, helpersFor(helpers, card));
+  if (additional) return additional;
  const rippling=ripple.extensionLine(card,line);if(rippling)return rippling;
   const combatRule = combatRestrictions.modifierOperation(card, line, helpersFor(helpers, card));
   if (combatRule) return combatRule;
@@ -399,6 +421,7 @@ export function modifierOperation(card, line, helpers = {}) {
   return null;
 }
 export function characteristicOperation(card, line, helpers = {}) {
+  const additional=additionalGrammar?.characteristicOperation?.(card,line,helpersFor(helpers,card));if(additional)return additional;
   return core.baseCharacteristic(card, line) || v6.characteristicOperation(card, line) || v5.characteristicOperation(card, line) || permanents.characteristicOperation(card, line, helpersFor(helpers)) || null;
 }
 export function modalOperation(card, text, parseEffect) {
@@ -409,6 +432,8 @@ function helpersFor(helpers, card = null) {
   return { ...helpers, target: extensionTarget, count: extensionCount, value:core.extensionValue, condition: extensionCondition, cost: text => extensionCost(text, card), normalizeOperations:normalizeManaOperations, line: (card,line)=>extensionLine(card,line,helpers) };
 }
 export function extensionEffect(card, line, helpers) {
+  const additional = additionalGrammar?.extensionEffect?.(card, line, helpersFor(helpers, card));
+  if (additional) return additional;
  const named=namedCounts.extensionEffect(card,line,helpersFor(helpers,card));if(named)return named;
   const namedSearch=nameSearch.extensionEffect(card,line,helpersFor(helpers,card));if(namedSearch)return namedSearch;
   if(/^(.+)\. If ([^,.]+), instead (.+)\.$/.test(line))return conditionalEffects.extensionEffect(card,line,helpersFor(helpers,card));
@@ -444,6 +469,8 @@ export function linkedEffect(card, line, helpers) { return linked.extensionEffec
 export function libraryEffect(card,line,helpers){return library.extensionEffect(card,line,helpersFor(helpers, card));}
 export function resolutionCostEffect(card,line,helpers){return effects.resolutionCostEffect(card,line,helpersFor(helpers, card));}
 export function extensionLine(card, line, helpers) {
+  const additional = additionalGrammar?.extensionLine?.(card, line, helpersFor(helpers, card));
+  if (additional) return additional;
  const rippling=ripple.extensionLine(card,line);if(rippling)return rippling;
  const named=namedCounts.extensionLine(card,line,helpersFor(helpers,card));if(named)return named;
   const namedSearch=nameSearch.extensionLine(card,line,helpersFor(helpers,card));if(namedSearch)return namedSearch;

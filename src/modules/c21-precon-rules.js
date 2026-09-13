@@ -16,9 +16,9 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   const oldFaceUp=G.faceUpCosts;
   G.faceUpCosts=function(card){const costs=oldFaceUp.call(this,card);return card.meta?.faceDownKind==='c21Forest'?costs.filter(c=>c.kind!=='mana cost'):costs;};
   const protectedFrom=G.isProtectedFrom;
-  G.isProtectedFrom=function(target,source){
+  G.isProtectedFrom=function(target,source,options){
     if(source&&target instanceof M.Player&&this.untilEffects.some(e=>e.kind==='c21PlayerProtection'&&e.who===target&&e.from===source.ctrl))return true;
-    return protectedFrom.call(this,target,source);
+    return protectedFrom.call(this,target,source,options);
   };
   const canAttack=G.canAttackTarget;
   G.canAttackTarget=function(card,target){

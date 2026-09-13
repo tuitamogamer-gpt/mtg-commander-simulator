@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {semanticClass} from '../scripts/import-oracle-batch.mjs';
 import {fixtureEngine,context,put,settle} from './helpers/oracle-v8-fixtures.mjs';
 const M=fixtureEngine([
- ['Red Ward','If a red source would deal damage to you, prevent 2 of that damage.','Enchantment'],
+ ['Fixture Red Ward','If a red source would deal damage to you, prevent 2 of that damage.','Enchantment'],
  ['Spell Ward','If a spell would deal damage to you or another permanent you control, prevent that damage.'],
  ['Spell Furnace','If a red instant or sorcery spell you control would deal damage, it deals double that damage instead.','Enchantment'],
  ['Staff Ward','As long as this artifact is untapped, if a creature would deal combat damage to you, prevent 1 of that damage.','Artifact'],
@@ -18,7 +18,7 @@ const M=fixtureEngine([
 ]);
 for(const role of ['human','ai']) {
  test(`${role}: source colors and controller changes govern each prevention event`,async()=>{
-  const {game,a,b}=context(M,role),shield=put(M,game,a,'Red Ward'),red=put(M,game,b,'Red Bolt','graveyard'),blue=put(M,game,b,'Blue Bolt','graveyard');
+  const {game,a,b}=context(M,role),shield=put(M,game,a,'Fixture Red Ward'),red=put(M,game,b,'Red Bolt','graveyard'),blue=put(M,game,b,'Blue Bolt','graveyard');
   const before=a.life;assert.equal(await game.damagePlayer(red,a,3),1);assert.equal(await game.damagePlayer(blue,a,3),3);assert.equal(a.life,before-4);
   M.OracleV8Control.gain(game,shield,b);game.recalc();assert.equal(await game.damagePlayer(red,a,3),3);assert.equal(await game.damagePlayer(red,b,3),1);
  });

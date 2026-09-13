@@ -2697,6 +2697,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function targetValue(game, player, target, q) {
+    if(q.aiHint?.goal==='donate-player-v9')return target instanceof U.Player?(target===player?-20:10):-1000;
+    if(q.aiHint?.goal==='donate-card-v9')return target instanceof U.CardInst?(target.ctrl===player?20:0)-permanentGameValue(game,target,player):-1000;
+    if(q.aiHint?.goal==='exchange-control-v9')return target instanceof U.CardInst?permanentGameValue(game,target,player):-1000;
     if(q.aiHint?.oracleNameGroup){
       const aiHint={...q.aiHint};delete aiHint.oracleNameGroup;
       const value=MTG.OracleV8NameGroups.targetValue(game,player,target,q,card=>baseTargetValue(game,player,card,{...q,aiHint}));
@@ -4728,8 +4731,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       breakdown.safety = action._survivalScore || 0;
     } else if (action.kind === 'chooseTargets') {
       breakdown.choice = action.picks.reduce((sum, target) => sum + targetValue(game, player, target, q || {}), 0);
+      if(q?.aiHint?.goal==='exchange-control-v9'&&action.picks.length===2){const [first,second]=action.picks;breakdown.choice=first.ctrl===second.ctrl?0:action.picks.reduce((sum,c)=>sum+(c.ctrl===player?-1:1)*permanentGameValue(game,c,player),0)+1;}
     } else if (action.kind === 'chooseCards' || action.kind === 'bottomCards') {
-      if (action.kind === 'chooseCards' && q && q.aiHint && q.aiHint.kind === 'crew') {
+      if(q?.aiHint?.kind==='amplify-v9')breakdown.choice=action.picks.length*10;
+      else if(q?.aiHint?.kind==='devour-v9'){
+        const count=action.picks.length,n=q.aiHint.n==='devoured'?count:Number(q.aiHint.n),survives=Number(q.aiHint.source.def.toughness)+count*n>0;
+        breakdown.choice=(survives?0:-100)+count*n*2-action.picks.reduce((sum,c)=>sum+permanentGameValue(game,c,player),0);
+      }
+      else if(q?.aiHint?.kind==='champion-v9')breakdown.choice=action.picks.length?20-permanentGameValue(game,action.picks[0],player):-20;
+      else if (action.kind === 'chooseCards' && q && q.aiHint && q.aiHint.kind === 'crew') {
         const need = Math.max(0, Number(q.aiHint.need) || 0);
         const power = action.picks.reduce((sum, card) => sum + Math.max(0, Number(card.power) || 0), 0);
         if (power < need) breakdown.choice = -1000;
@@ -4743,7 +4753,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
-      if(hintKind==='mutateOrder'){
+      if(hintKind==='recover-v9'){
+        breakdown.choice=action.value===(game.canPayMana(player,MTG.parseCost(q.aiHint.cost))?'yes':'no')?10:0;
+      } else if(hintKind==='mutateOrder'){
         const {definition,host}=q.aiHint,def=action.value==='over'?definition:MTG.C1920.snapshotCopy(host);
         breakdown.choice=(Number(def.power)||0)*1.2+(Number(def.toughness)||0);
       } else if(hintKind==='exertAttack'){
@@ -4976,6 +4988,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const lifeCost = Number(q.aiHint.life || 3);
           breakdown.choice = -lifeCost * (player.life <= 8 ? 3 : player.life <= 15 ? 1.25 : 0.55);
         }
+      } else if (hintKind === 'oracleEndure') {
+        const n=Number(q.aiHint.n)||0,source=q.aiHint.source;
+        const usefulKeyword=source&&['flying','trample','lifelink','double strike'].some(keyword=>source.kw(keyword));
+        breakdown.choice=action.value==='spirit'?3+n*1.8+(game.creatures(player).length<2?2:0):n*(usefulKeyword?2.4:1.6)+1;
       } else if (hintKind === 'fabricate') {
         const tokenEngines = game.bf().filter(card => card.ctrl === player &&
           /token|creature.*enter|leaves the battlefield|dies/i.test(card.def.oracle || '')).length;
@@ -5494,6 +5510,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Event-cohort deduplication is a transient identity cache. WeakMap's
       // contents cannot be graph-cloned, and a prototype-only copy is invalid.
       if(value._oracleTriggerBatches)out._oracleTriggerBatches=new WeakMap();
+      if(value._oracleV9BatchEvents)out._oracleV9BatchEvents=new WeakMap();
     }
     return out;
   }

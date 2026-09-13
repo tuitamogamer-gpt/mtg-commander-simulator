@@ -10,6 +10,7 @@ const mainSource = readFileSync(new URL('../src/modules/main.js', import.meta.ur
 function browserHarness() {
   const MTG = { ...loadEngine() };
   const document = {
+    baseURI: 'https://example.test/',
     readyState: 'loading',
     addEventListener() {},
     querySelector() { return null; },
@@ -22,7 +23,7 @@ function browserHarness() {
   };
   const window = { addEventListener() {} };
   const sandbox = {
-    MTG, document, window, console, setTimeout, clearTimeout,
+    MTG, document, window, URL, console, setTimeout, clearTimeout,
     localStorage: { getItem() { return null; }, setItem() {} },
   };
   runInNewContext(uiSource, sandbox);

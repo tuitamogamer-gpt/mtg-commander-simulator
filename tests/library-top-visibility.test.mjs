@@ -6,8 +6,8 @@ import { loadEngine } from './helpers/load-engine.mjs';
 
 function fixture() {
   const MTG = { ...loadEngine() }, window = { addEventListener() {} };
-  const document = { readyState: 'loading', addEventListener() {}, querySelector() { return null; } };
-  const sandbox = { MTG, window, document, console, setTimeout, clearTimeout,
+  const document = { baseURI: 'https://example.test/', readyState: 'loading', addEventListener() {}, querySelector() { return null; } };
+  const sandbox = { MTG, window, document, URL, console, setTimeout, clearTimeout,
     localStorage: { getItem() { return null; }, setItem() {} } };
   for (const module of ['ui', 'main']) runInNewContext(readFileSync(new URL(`../src/modules/${module}.js`, import.meta.url), 'utf8'), sandbox);
   const game = new MTG.Game({ seed: 90490, paced: false });

@@ -802,7 +802,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         subtypes: derived ? card.cur.subtypes.slice() : card.def.subtypes.slice(),
         changeling: derived ? !!card.cur.types.includes('Creature')&&!!(card.def.changeling&&!card.cur.abilitiesDisabled&&!card.cur.suppressPrintedChangeling||card.cur.allCreatureTypesFromOtherEffects||!card.def.changeling&&card.cur.allCreatureTypes) : !!card.def.changeling,
         attachments: card.attachments.slice(), attachedTo:card.attachedTo, attachedHostVersion:this.byIid(card.attachedTo)?.zoneVersion, zoneVersion:card.zoneVersion, mv: card.mv, colors: card.colors,
-        enteredTurn:card.meta._enteredTurn,attackedTurn:card.meta._attackedTurn,renowned:!!card.meta.renowned,
+        enteredTurn:card.meta._enteredTurn,attackedTurn:card.meta._attackedTurn,damagedTurnV9:card.meta._lastDamageVisual?.turn,renowned:!!card.meta.renowned,
         // Keywordi u trenutku odlaska. Bez ovoga je snap.flying bio undefined,
         // pa se Luminous Broodmoth okidao i na stvorenja koja su umrla SA
         // letenjem → beskonačna petlja sa Selfless Spiritom.
@@ -879,7 +879,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           iid: card.iid, zoneVersion: card.zoneVersion, timestamp: snap.timestamp, def:snap.def, copyEpoch:snap.copyEpoch, copying:snap.copying,
           mutateComponents:snap.mutateComponents,oracleFaces:snap.oracleFaces,oracleFace:snap.oracleFace,attachedTo:snap.attachedTo,attachedHostVersion:snap.attachedHostVersion,
           power: snap.power, toughness: snap.toughness,
-          enteredTurn:snap.enteredTurn,attackedTurn:snap.attackedTurn,renowned:snap.renowned,attachedSources:snap.attachedSources,attachments:snap.attachments,
+          enteredTurn:snap.enteredTurn,attackedTurn:snap.attackedTurn,damagedTurnV9:snap.damagedTurnV9,renowned:snap.renowned,attachedSources:snap.attachedSources,attachments:snap.attachments,
           name:snap.name,types:snap.types.slice(),subtypes:snap.subtypes.slice(),super:snap.super.slice(),colors:snap.colors.slice(),kw:snap.kw.slice(),
           counters:{...snap.counters},isToken:snap.isToken,commander:snap.commander,mv:snap.mv,ctrl:snap.ctrl,owner:snap.owner,
           changeling:!!snap.changeling,
@@ -1293,7 +1293,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const deathData = { card, snap, graveyardZoneVersion };
           const isOriginalGraveyardObject = (source, data) => source === data.card && (MTG.Mutate ? MTG.Mutate.deathObjects(data).length>0 : source.zone === 'graveyard' && source.zoneVersion === data.graveyardZoneVersion);
           const returnDead = (ctx, opts) => MTG.Mutate ? MTG.Mutate.moveDeath(ctx,'battlefield',opts) : ctx.g.move(ctx.src,'battlefield',opts);
-          if (d.undying && !snap.abilitiesDisabled && !snap.plus1) {
+          if ((d.undying || snap.kw.includes('undying')) && !snap.abilitiesDisabled && !snap.plus1) {
             this.queueTrigger({
               src: card, ctrl: snap.ctrl, name: 'Undying', data: deathData,
               onlyIf: (g, source, data) => isOriginalGraveyardObject(source, data),
@@ -1305,7 +1305,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
                 });
               },
             });
-          } else if (d.persist && !snap.abilitiesDisabled && !(snap.minus1 > 0)) {
+          }
+          if ((d.persist || snap.kw.includes('persist')) && !snap.abilitiesDisabled && !(snap.minus1 > 0)) {
             this.queueTrigger({
               src: card, ctrl: snap.ctrl, name: 'Persist', data: deathData,
               onlyIf: (g, source, data) => isOriginalGraveyardObject(source, data),
@@ -1560,7 +1561,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     legalEntryAttachment(card, host, controller) {
       if (!(host instanceof CardInst) || (host.zone !== 'battlefield' && !(card.def.wlmAnimate && host.zone === 'graveyard')) || host.phasedOut || card === host || card.is('Creature')) return false;
-      if (this.isProtectedFrom(host, card)) return false;
+      if (this.isProtectedFrom(host, card,{auraAttachment:card.hasSub('Aura')})) return false;
       if (card.hasSub('Aura')) {
         const spec = card.def.auraTarget?.[0] || (card.def.bestowCost ? card.def.bestowTarget?.[0] : null);
         return !!spec && (!spec.filter || spec.filter(this, host, controller, card));
@@ -1915,6 +1916,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     canGainLife(p) {
       if (!p || p.lost) return false;
+      if(this.untilEffects.some(e=>e.kind==='lifeGainProhibitionV9'&&e.players.includes(p)))return false;
       for (const c of this.bf()) {
         if (c.cur?.abilitiesDisabled) continue;
         if (c.def.noLifegain === 'all') return false;
@@ -3181,6 +3183,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async emit(name, data) {
+      if(['dealtDamage','damageToPlayer'].includes(name)&&data?.n>0&&data.src?.meta){
+        const source=data.src,record=source.meta.dealtDamageV9;
+        if(!record||record.turn!==this.turnNo)source.meta.dealtDamageV9={turn:this.turnNo,players:[]};
+        const player=name==='damageToPlayer'?data.player:data.target instanceof Player?data.target:null;
+        if(player&&!source.meta.dealtDamageV9.players.includes(player.idx))source.meta.dealtDamageV9.players.push(player.idx);
+      }
       MTG.C21Rules?.event(this,name,data||{});
       if(name==='cast')MTG.OracleV8Ripple?.onCast(this,data);
       MTG.StateTriggers?.settle(this);
@@ -3188,8 +3196,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if(this._damageEventQueue&&['dealtDamage','damageToPlayer','damagePrevented','shieldRemoved','lifeGain','lifeLost','countersPlaced','countersRemoved','plusAdded','m1Added','monarchChanged'].includes(name)){
         this._damageEventQueue.push({name,data});return;
       }
-      const found = this.collectTriggers(name, data || {});
       const oracleBatch=data?.oracleBatch||(['dies','lto','sacrificed'].includes(name)?this._simultaneousLeaveSources:null);
+      if(oracleBatch&&['etb','dies','lto','sacrificed','discarded'].includes(name)&&data?.card){
+        const batches=this._oracleV9BatchEvents||(this._oracleV9BatchEvents=new WeakMap());
+        let events=batches.get(oracleBatch);if(!events){events=[];batches.set(oracleBatch,events);}
+        events.push({event:name,card:data.card,player:data.player,snap:data.snap||this.snapshot(data.card)});
+        // The shared cohort finishes before any pending trigger resolves.
+        // Store actual emitted events, including replacement destinations.
+        data.oracleBatchEventsV9=events;
+      }
+      const found = this.collectTriggers(name, data || {});
       if(name==='upkeep')for(const card of this.bf())if(card.def.oracleEchoCost&&card.ctrl===data.player)card.meta.oracleEchoPending=false;
       for (const { card, t, ctrlOverride, onceStamp, history } of found) {
         if(t.oncePerBatch&&oracleBatch){
@@ -3454,9 +3470,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     // ============================================================
     // Targeting
     // ============================================================
-    isProtectedFrom(target, source) {
+    isProtectedFrom(target, source, options) {
       if (!(target instanceof CardInst) || !target.cur || !source) return false;
-      return (target.cur.protectionFrom || []).some(test => test(this, source, target));
+      return (target.cur.protectionFrom || []).some(test => !(options?.auraAttachment&&test.auraExceptionSourceV9===source&&test.auraExceptionVersionV9===source.zoneVersion)&&test(this, source, target));
     }
 
     legalTargets(spec, src, ctrl, opts = {}) {
@@ -3474,7 +3490,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if(this.isProtectedFrom(p,src))return false;
           for (const b of this.bf()) {
             if (b.def.playerHexproof && !b.cur.abilitiesDisabled && b.ctrl === p && ctrl !== p) return false;
+            if (b.def.playerShroudV9 && !b.cur.abilitiesDisabled && b.ctrl === p) return false;
           }
+          if(this.untilEffects.some(effect=>effect.kind==='playerShroudV9'&&effect.who===p))return false;
           if (ctrl !== p && this.untilEffects.some(effect => effect.kind === 'playerHexproof' && effect.who === p)) return false;
           return true;
         }
@@ -3891,7 +3909,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const host = card.attachedTo ? this.byIid(card.attachedTo) : null;
           const spec = card.meta?.oracleBestowTarget || card.def.auraTarget?.[0];
           const legal = MTG.WLM?.reanimationAuraLegal?.(this,card,host) ?? (player instanceof Player ? !player.lost&&!this.isProtectedFrom(player,card) : host && host.zone === 'battlefield' &&
-            (!spec?.filter || spec.filter(this, host, card.ctrl, card)) && !card.is('Creature') && !this.isProtectedFrom(host, card));
+            (!spec?.filter || spec.filter(this, host, card.ctrl, card)) && !card.is('Creature') && !this.isProtectedFrom(host, card,{auraAttachment:true}));
           if (!legal) {
             if (MTG.OracleV8Permanents?.isBestowed(card)) ceaseBestow.push(card);
             else moves.set(card, 'graveyard');

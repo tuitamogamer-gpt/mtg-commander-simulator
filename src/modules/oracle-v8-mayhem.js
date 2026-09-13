@@ -13,6 +13,10 @@
   const fail = message => { throw new Error('Oracle Mayhem: ' + message); };
 
   function compile(script, operation, entry) {
+    if(operation?.kind==='mechanic-mayhem-v9'){
+      if(Object.keys(operation).some(key=>!['kind','cost','contract'].includes(key))||operation.contract!=='mechanic-mayhem-v9'||!mana.test(operation.cost||'')||!entry?.raw?.types?.some(type=>['Creature','Artifact','Enchantment','Planeswalker'].includes(type))||entry.raw.types.some(type=>['Land','Instant','Sorcery'].includes(type))||script.mayhem)fail('invalid permanent Mayhem descriptor');
+      script.mayhem={cost:operation.cost};script.oracleMayhemV9=true;return;
+    }
     if (!operation || Object.keys(operation).some(key => !descriptorKeys.has(key)) ||
       operation.kind !== 'mechanic-mayhem-v8' || operation.contract !== 'mechanic-mayhem-v8' ||
       !mana.test(operation.cost || '') || !['instant', 'sorcery'].includes(operation.speed)) {

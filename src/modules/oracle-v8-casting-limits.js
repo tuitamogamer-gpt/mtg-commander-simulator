@@ -9,9 +9,19 @@
       (script.oracleSpellLimits||(script.oracleSpellLimits=[])).push(operation);
       return true;
     },
-    allowed(game,player){
-      return !game.bf().some(source=>!source.cur?.abilitiesDisabled&&source.def.oracleSpellLimits?.some(limit=>
-        (limit.players==='all'||source.ctrl===player)&&(player.turnState.spellsCast||0)>=limit.max));
+    allowed(game,player,card,options={}){
+      const creature=card&&game.castHasType(card,options||{},'Creature');
+      if(game.untilEffects.some(e=>e.kind==='oracleNoCastV9'&&e.players.includes(player)&&(e.quality==='all'||e.quality==='noncreature'&&!creature)))return false;
+      return !game.bf().some(source=>!source.cur?.abilitiesDisabled&&(source.def.oracleSpellLimits?.some(limit=>
+        (limit.players==='all'||source.ctrl===player)&&(player.turnState.spellsCast||0)>=limit.max)||source.def.oracleCastingProhibitionsV9?.some(rule=>{
+          if(rule.players==='you'&&source.ctrl!==player||rule.players==='opponents'&&source.ctrl===player)return false;
+          if(rule.quality==='creature'&&!creature)return false;
+          if(rule.window==='other-turn')return game.turnPlayer!==player;
+          if(rule.window==='source-turn')return game.turnPlayer===source.ctrl;
+          if(rule.window==='combat')return game.phase==='combat';
+          if(rule.window==='non-sorcery')return game.turnPlayer!==player||!['main1','main2'].includes(game.phase)||game.stack.length>0;
+          return true;
+        })));
     },
     condition(game,source,condition,player){
       if(condition.kind==='casting-spell-history-v8'){

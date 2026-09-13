@@ -11,6 +11,7 @@ import { extensionEffect as v5Effect, extensionLine as v5Line, characteristicOpe
 import { extensionEffect as v6Effect, extensionLine as v6Line, characteristicOperation as v6Characteristic, extensionCost as v6Cost, modifierOperation as v6Modifier, modalOperation as v6Modal } from './oracle-extensions-v6.mjs';
 import * as v7 from './oracle-extensions-v7.mjs';
 import * as v8 from './oracle-extensions-v8.mjs';
+import * as v9 from './oracle-extensions-v9.mjs';
 import {compileFaces} from './oracle-v8-faces.mjs';
 import {compileLeveler} from './oracle-v8-levels.mjs';
 
@@ -43,7 +44,7 @@ const reportDir = path.join(root, 'reports', 'oracle-import');
 const statePath = path.join(reportDir, 'state.json');
 const BULK_INDEX_URL = 'https://api.scryfall.com/bulk-data';
 const DEFAULT_LIMIT = 100;
-const SEMANTIC_COMPILER_VERSION = 8;
+const SEMANTIC_COMPILER_VERSION = 9;
 const USER_AGENT = 'MTGcodexOracleImporter/0.1 (local development)';
 
 const SUPERTYPES = new Set(['Legendary', 'Basic', 'Snow', 'World', 'Ongoing']);
@@ -137,6 +138,7 @@ function keywordLine(line) {
 
 function keywordList(value, allowed = GRANTABLE_KEYWORDS) {
   if(extensionsActive>=6&&allowed===GRANTABLE_KEYWORDS)allowed=new Set([...IMPLEMENTED_KEYWORDS].filter(keyword=>keyword!=='prowess'));
+  if(extensionsActive===8)allowed=new Set([...allowed,...v8.additionalKeywords()]);
   const normalized = String(value || '').trim().toLowerCase()
     .replace(/,?\s+and\s+/g, ',')
     .split(/\s*,\s*/)
@@ -1981,7 +1983,7 @@ export function validateManaCost(manaCost) {
 }
 
 function semanticClassCore(card) {
-  if(extensionsActive===8&&['modal_dfc','transform'].includes(card.layout))return compileFaces(card,{compile:face=>semanticClass(face,{compilerVersion:8}),raw:rawCard});
+  if(extensionsActive===8&&['modal_dfc','transform'].includes(card.layout))return compileFaces(card,{compile:face=>semanticClass(face,{compilerVersion:8}),raw:rawCard,dayNight:v8.allowsDayNight()});
   if(extensionsActive===8&&card.layout==='leveler')return compileLeveler(card,{compile:band=>semanticClass(band,{compilerVersion:8})});
   if(extensionsActive>=7&&/^Backup \d+/m.test(stripReminderText(card.oracle_text||''))){
     if(!card.type_line.includes('Creature')||card.layout!=='normal')return {reason:'backup-needs-normal-creature'};
@@ -2067,6 +2069,14 @@ function semanticClassCore(card) {
 }
 
 export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSION, memoize = true } = {}) {
+  if (compilerVersion === 9) {
+    const frozen = semanticClass(card, {compilerVersion: 8, memoize});
+    if (frozen.semanticClass) return frozen;
+    const normalized = v9.normalizeCard(card);
+    const result = v8.withAdditionalGrammar(v9, () => semanticClass(normalized, {compilerVersion: 8, memoize}));
+    if (result.semanticClass && normalized !== card) result.rulesCore = v8.normalizeAbilityWords(stripReminderText(card.oracle_text || ''));
+    return result;
+  }
   if(![4,5,6,7,8].includes(compilerVersion))throw new Error('Unsupported semantic compiler version: '+compilerVersion);
   // Freeze every successful v7 descriptor before considering the additive v8 grammar.
   if(compilerVersion===8){
@@ -2190,6 +2200,13 @@ export function semanticClass(card, { compilerVersion = SEMANTIC_COMPILER_VERSIO
       if(operation.kind==='attachment-operation')return boundEvents(operation.operation);
       if(operation.grantedOperation)return boundEvents(operation.grantedOperation);
       const encoded=JSON.stringify(operation);
+      if(encoded.includes('"combat-defender-v9"')&&(operation.kind!=='generic-trigger'||![operation.event].flat().every(event=>['attacks','blocks','becomesBlocked','becomesBlockedByCreature','blockersDeclared'].includes(event))))return false;
+      if(encoded.includes('"batch-amount-v9"')&&(operation.kind!=='generic-trigger'||!operation.oncePerBatch||!['batch-discard-v8','filtered-sacrifice','created-batch-v8','filtered-object'].includes(operation.eventFilter?.kind)))return false;
+      if(operation.eventFilter?.kind==='observation-v9'){
+        if(operation.kind!=='generic-trigger'||!['diceRolled','searchedLibrary','mutated','renowned','tappedForMana','lto','upkeep','proliferatedV9','dungeonCompleted','abilityActivated','attached','landPlayed'].includes(operation.event))return false;
+        if(/"event-card(?:-controller|-owner|-stat|-counters)?"/.test(encoded)&&!['mutated','renowned','tappedForMana','lto'].includes(operation.event))return false;
+        return !encoded.includes('"event-player"')||['diceRolled','searchedLibrary','mutated','tappedForMana','upkeep','abilityActivated','landPlayed'].includes(operation.event)||operation.event==='lto'&&!!operation.eventFilter.graveOwner;
+      }
       if(/"event-(?:player|card|card-controller|card-owner|card-stat|card-counters)"/.test(encoded)&&operation.kind!=='generic-trigger')return false;
       if(extensionsActive===8&&['v8-event','damage-event-v8','exploited-self-v8','exploited-controller-v8'].includes(operation.eventFilter?.kind))return (!['event-card-stat','event-card-counters','event-card-owner'].some(kind=>encoded.includes('"'+kind+'"'))||v8.eventReferenceAllowed(operation,'event-card'))&&['event-player','event-card','event-card-controller'].every(reference=>!encoded.includes('"'+reference+'"')||v8.eventReferenceAllowed(operation,reference));
       if(encoded.includes('"event-player"')&&![operation.event].flat().every(event=>['cast','draw','upkeep','endStep','damageToPlayer','combatDamageToPlayer',...(extensionsActive===8?['drawStep','precombatMain','beginCombat']:[]),...(extensionsActive>=7&&operation.eventFilter==='self-unblocked'?['blockersDeclared']:[])].includes(event)))return false;
@@ -2507,7 +2524,7 @@ export function createImportPlan({
     }
     sourceNames.add(card.name);
     sourceOracleIds.add(card.oracle_id);
-    if (legacyNames.has(card.name)||(compilerVersion>=7&&card.layout==='adventure'&&legacyNames.has(card.card_faces?.[0]?.name))||(compilerVersion===8&&['modal_dfc','transform'].includes(card.layout)&&card.card_faces?.some(face=>legacyNames.has(face.name)))) {
+    if (legacyNames.has(card.name)||(compilerVersion>=7&&card.layout==='adventure'&&legacyNames.has(card.card_faces?.[0]?.name))||(compilerVersion>=8&&['modal_dfc','transform'].includes(card.layout)&&card.card_faces?.some(face=>legacyNames.has(face.name)))) {
       addReason(deferredByReason, deferredExamples, 'already-in-legacy-engine', card);
       continue;
     }

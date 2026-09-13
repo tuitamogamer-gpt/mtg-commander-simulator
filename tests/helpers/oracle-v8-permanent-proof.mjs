@@ -170,6 +170,7 @@ export async function replacementProof(MTG, entry, operation, role, h) {
     const target = to.subject === 'self' ? source : to.subject === 'attached' ? game.byIid(source.attachedTo)
       : to.players ? to.players === 'opponent' ? b : a : asCard(h.stageGenericTarget(MTG, ctx, to.permanents, 'replacement-recipient'));
     assert.ok(origin && target, label + ': damage objects');
+    if(from.filter?.blockingSourceV9){origin.blocking=source.iid;source.attacking=origin.ctrl;}
     const n = Math.max(1, Math.min(operation.maxAmount === undefined ? Infinity : Math.max(1, operation.maxAmount - 1), Math.max(5, operation.minAmount || 0, (operation.transform.set || 0) + 2, -(operation.transform.add || 0) + 2)));
     const exerciseDamage = async () => {
     const data = {src: origin, target, n, combat: operation.combat === true, noncombat: operation.combat !== true};
@@ -299,7 +300,7 @@ export async function untapProof(MTG, entry, operation, role, h) {
     }
     h.stageCardCosts(MTG, ctx, entry);
     const aura = entry.implementation.find(item => item.kind === 'aura-target');
-    if (aura) h.stageGenericTarget(MTG, ctx, {what: aura.what.replace(/ you control$/, ''), controller: 'you'}, 'untap-aura-host');
+    if (aura) h.stageGenericTarget(MTG, ctx, h.auraProofTarget(aura), 'untap-aura-host');
     for (const other of entry.implementation) for (const [index, target] of (other.targets || []).entries()) if (target.zone !== 'stack') h.stageGenericTarget(MTG, ctx, target, 'untap-entry-' + index);
     const source = h.zoneCard(MTG, a, entry.raw.name, 'hand');
     if (source.is('Land')) assert.equal(await game.playLand(a, source), true, label + ': real land play');

@@ -1978,7 +1978,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
   G.canCastTiming = function (p, card, alt) {
     if (this.hasSplitSecond()) return false;
-    if (MTG.OracleV8CastingLimits && !MTG.OracleV8CastingLimits.allowed(this,p)) return false;
+    if (MTG.OracleV8CastingLimits && !MTG.OracleV8CastingLimits.allowed(this,p,card,alt)) return false;
     if(alt?.oracleSneakCost&&(!alt.oracleAlternativeCost||
       !card.def.altCosts?.some(option=>option.oracleSneakCost&&option.oracleAlternativeId===alt.oracleAlternativeId)||
       this.turnPlayer!==p||this.phase!=='combat'||this.step!=='blockers'||!this.combat))return false;
@@ -2500,7 +2500,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   G.castSpell = async function (p, card, opts = {}) {
     // opts: {alt, from, xVal, aiChosen..., quickTargets}
     if (this.hasSplitSecond()) return false;
-    if (MTG.OracleV8CastingLimits && !MTG.OracleV8CastingLimits.allowed(this,p)) return false;
+    if (MTG.OracleV8CastingLimits && !MTG.OracleV8CastingLimits.allowed(this,p,card,opts.alt||opts)) return false;
     if (p.turnState && p.turnState.cantCastAdditional && !opts.ignoreAdditionalCastLock) return false;
     const alt = opts.alt || null;
     if(alt?.warp&&card.zone!=='hand')return false;
@@ -3289,7 +3289,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       kotisExiled.length + delveExiled.length + escapeExiled.length + additionalExiled.length, kotisExiled.length + delveExiled.length + escapeExiled.length + additionalExiled.length)) return false;
     if (castOpts.kotis && !MTG.kotisCastPaymentCards(this, p, card, so)) return false;
     if (castOpts.broodship && MTG.broodshipCastPaymentLand(this,p,card,so) !== broodshipLand) return false;
-    if (MTG.OracleV8CastingLimits && !MTG.OracleV8CastingLimits.allowed(this,p)) return false;
+    if (MTG.OracleV8CastingLimits && !MTG.OracleV8CastingLimits.allowed(this,p,card,castOpts)) return false;
     if(so.oracleCastingChoicePlan&&!MTG.OracleV8CastingChoices.validate({g:this,you:p,src:card,so},d.oracleCastingChoice))return false;
     if(castOpts.foretell&&!foretellCastAllowed(this,p,card,castOpts))return false;
     if(castOpts.oracleImmediateCast!==undefined&&(!MTG.OracleV8PlayPermissions?.allowed(this,p,card,castOpts)||!this.canCastTiming(p,card,castOpts)))return false;
@@ -5457,6 +5457,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       this.tap(picked[0]);
       ctx.tappedCre = picked[0];
       ctx.stationPower = Math.max(0, picked[0].power);
+      ctx.stationZoneVersion = picked[0].zoneVersion;
     }
     if (cost.rmCounter) {
       const kind = cost.rmCounter.kind || cost.rmCounter;
@@ -7353,6 +7354,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const dealtN = await this.damagePlayer(d.src, d.target, d.n, damageOpts);
         const finalTarget=damageOpts._damageFinalTarget||d.target;
         if (dealtN > 0 && finalTarget instanceof MTG.Player) {
+          if(d.src.commander||d.src.hasSub('Assassin'))d.src.ctrl.turnState.freerunningV9=this.turnNo;
           await this.emit('combatDamageToPlayer', { card: d.src, player: finalTarget, n: dealtN, step: stepKind, firstThisTurn: this.recordCombatObjectEvent(d.src, 'combatDamageToPlayer') === 1 });
           const hits = playerHits.get(d.target) || [];
           hits.push({ card: d.src, n: dealtN });

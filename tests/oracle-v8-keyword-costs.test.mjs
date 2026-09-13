@@ -58,5 +58,5 @@ test('keyword Evoke copied spell creates its own token sacrifice and blink defea
 });
 
 test('keyword cost grammars remain closed for unbound amounts and unknown Evoke payments',()=>{
- for(const oracle of ['Reinforce X—{W}','Reinforce twelve—{W}','Evoke—Reveal a blue card from your hand.','Evoke—Pay any amount of life.'])assert.equal(!!semanticClass({name:'Unknown keyword cost',layout:'normal',type_line:'Creature — Elemental',mana_cost:'{4}{U}',power:'2',toughness:'2',oracle_text:oracle}).semanticClass,false,oracle);
+ for(const compilerVersion of [8,9])for(const oracle of ['Reinforce X—{W}','Evoke—Reveal a blue card from your hand.','Evoke—Pay any amount of life.',...(compilerVersion===8?['Reinforce twelve—{W}']:[])])assert.equal(!!semanticClass({name:'Unknown keyword cost',layout:'normal',type_line:'Creature — Elemental',mana_cost:'{4}{U}',power:'2',toughness:'2',oracle_text:oracle},{compilerVersion}).semanticClass,false,oracle);
 });

@@ -5,9 +5,11 @@ export async function layeredStaticProof(MTG,entry,operation,role,h){
   const ctx=h.gameFor(MTG,[h.decision(),h.decision()],{ai:role==='ai'}),{game,a}=ctx,label=entry.raw.name+'/'+role;
   h.assertControllerRole(MTG,ctx,label);
   const source=h.permanent(MTG,game,a,entry.raw.name),child=operation.operation;
-  const target=operation.own?source:h.stageGenericTarget(MTG,ctx,operation.attached?{what:'creature',zone:'battlefield',controller:'you',min:1}:operation.filters[0],'layered-recipient');
+  const aura=entry.implementation.find(op=>op.kind==='aura-target');
+  const target=operation.own?source:h.stageGenericTarget(MTG,ctx,operation.attached&&operation.change.creatureV9?h.auraProofTarget(aura):operation.attached?{what:'creature',zone:'battlefield',controller:'you',min:1}:operation.filters[0],'layered-recipient');
   if(operation.attached)assert.equal(await game.attach(source,target),true,label+': actual attachment');
   stageCondition(MTG,ctx,operation.condition,operation.conditionSubject==='affected'?target:source,h);game.recalc();
+  if(operation.change.creatureV9){assert.equal(target.is('Creature'),true,label+': host becomes a creature');for(const type of target.def.types)assert.equal(target.is(type),true,label+': original card type survives animation');}
   for(const subtype of operation.change.addCreatureTypes||[])assert.equal(target.hasSub(subtype),true,label+': added creature type '+subtype);
   for(const subtype of target.def.subtypes||[])assert.equal(target.hasSub(subtype),true,label+': existing subtype is retained');
   if(operation.change.allCreatureTypes){assert.equal(target.hasSub('Brushwagg'),true,label+': all creature types includes an unrelated type');assert.equal(target.hasSub('Equipment'),target.def.subtypes?.includes('Equipment')||false,label+': all creature types does not add artifact subtypes');}
@@ -26,10 +28,12 @@ export async function layeredStaticProof(MTG,entry,operation,role,h){
   }
   if(!operation.own){
     await game.move(source,'exile');
+    if(operation.change.creatureV9)assert.equal(target.is('Creature'),target.def.types.includes('Creature'),label+': removing Aura ends creature animation');
     for(const subtype of operation.change.addCreatureTypes||[])if(!target.def.subtypes.includes(subtype))assert.equal(target.hasSub(subtype),false,label+': source removal ends added type');
     if(operation.change.allCreatureTypes)assert.equal(target.hasSub('Brushwagg'),false,label+': source removal ends all-types grant');
     const counters=(target.counters['+1/+1']||0)-(target.counters['-1/-1']||0);
-    assert.equal(target.power,(Number(target.def.power)||0)+counters,label+': source removal restores printed P/T including noncreature zero');
+    assert.equal(target.power,(Number(target.def.power)||0)+(target.is('Creature')?counters:0),label+': source removal restores printed P/T including noncreature zero');
+    if(operation.change.creatureV9)assert.equal(target.counters['+1/+1'],2,label+': animation ending preserves counters on the noncreature');
   }
   return 8;
 }

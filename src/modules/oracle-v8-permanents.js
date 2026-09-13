@@ -186,7 +186,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.oracleV8ApplyStaticCharacteristics=function(card,change){
-    if(Object.keys(change).some(key=>!['addCreatureTypes','allCreatureTypes','colors'].includes(key)))throw new Error('Unsupported static characteristic change');
+    if(Object.keys(change).some(key=>!['addCreatureTypes','allCreatureTypes','colors','creatureV9'].includes(key)))throw new Error('Unsupported static characteristic change');
+    if(change.creatureV9){if(change.creatureV9!==true)throw new Error('Invalid static animation');card.cur.types=[...new Set(card.cur.types.concat('Creature'))];}
     if(change.colors){if(change.colors.some(color=>!['W','U','B','R','G'].includes(color)))throw new Error('Invalid static color');card.cur.colors=change.colors.slice();}
     if(change.addCreatureTypes||change.allCreatureTypes){
       if((change.addCreatureTypes||[]).some(type=>!MTG.CREATURE_SUBTYPES.has(type)))throw new Error('Invalid static creature subtype');

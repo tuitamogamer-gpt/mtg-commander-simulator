@@ -940,6 +940,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     chooseTargets(g, q) {
       const goal = q.aiHint && q.aiHint.goal || (q.spec && q.spec.aiHint && q.spec.aiHint.goal) || 'generic';
       let cands = q.candidates.slice();
+      if(goal==='donate-player-v9')return cands.filter(p=>p!==this.p).slice(0,1);
+      if(goal==='donate-card-v9')return cands.sort((a,b)=>(a.ctrl===this.p?0:100)+this.permThreat(g,a)-(b.ctrl===this.p?0:100)-this.permThreat(g,b)).slice(0,1);
+      if(goal==='exchange-control-v9'){
+        const own=cands.filter(c=>c.ctrl===this.p).sort((a,b)=>this.permThreat(g,a)-this.permThreat(g,b))[0],other=cands.filter(c=>c.ctrl!==this.p).sort((a,b)=>this.permThreat(g,b)-this.permThreat(g,a))[0];return own&&other?[own,other]:cands.slice(0,2);
+      }
       if (q.aiHint && q.aiHint.avoidCostSource && q.src) {
         const survivingTargets = cands.filter(target => target !== q.src);
         if (survivingTargets.length >= (q.min === undefined ? 1 : q.min)) cands = survivingTargets;
@@ -1155,6 +1160,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     chooseCards(g, q) {
+      if(q.aiHint?.kind==='amplify-v9')return q.from.slice(0,q.max);
+      if(q.aiHint?.kind==='devour-v9'){
+        const sorted=q.from.slice().sort((a,b)=>this.permThreat(g,a)-this.permThreat(g,b));
+        const cheap=sorted.filter(c=>c.isToken||this.permThreat(g,c)<2).slice(0,q.max);
+        return cheap.length?cheap:Number(q.aiHint.source.def.toughness)<=0?sorted.slice(0,1):[];
+      }
+      if(q.aiHint?.kind==='champion-v9')return q.from.slice().sort((a,b)=>this.permThreat(g,a)-this.permThreat(g,b)).slice(0,1);
       if(q.aiHint?.exploitSource)return (q.from||[]).slice().sort((a,b)=>MTG.OracleV8Exploit.value(g,this.p,q.aiHint.exploitSource,q.aiHint.sourceVersion,b)-MTG.OracleV8Exploit.value(g,this.p,q.aiHint.exploitSource,q.aiHint.sourceVersion,a)||a.iid-b.iid).slice(0,q.min||1);
       const kind = q.aiHint && q.aiHint.kind || 'generic';
       const from = q.from || [];
@@ -1366,6 +1378,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const kind = q.aiHint && q.aiHint.kind || '';
       const keys = q.options.map(o => o.key);
       switch (kind) {
+        case 'recover-v9': return g.canPayMana(this.p,MTG.parseCost(q.aiHint.cost))?'yes':'no';
         case 'commanderZone': return q.aiHint.toZone === 'hand' ? 'stay' : 'cz';
         case 'exertAttack': return MTG.OracleV8Exert.choose(g,this.p,q);
         case 'exploit': return MTG.OracleV8Exploit.choose(g,this.p,q);
@@ -1457,6 +1470,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           const hasDiscard = this.p.hand.some(card => card !== (q.aiHint && q.aiHint.card));
           if (hasDiscard && (this.p.life <= 14 || !keys.includes('life')) && keys.includes('discard')) return 'discard';
           return keys.includes('life') ? 'life' : keys[0];
+        }
+        case 'oracleEndure': {
+          return g.creatures(this.p).length<2&&keys.includes('spirit')?'spirit':keys.includes('counters')?'counters':keys[0];
         }
         case 'fabricate': {
           const tokenEngine = g.bf().some(card => card.ctrl === this.p && /token|dies|leaves the battlefield/i.test(card.def.oracle || ''));

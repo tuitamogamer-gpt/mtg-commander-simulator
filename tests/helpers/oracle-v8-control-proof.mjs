@@ -11,7 +11,7 @@ export async function auraControlProof(MTG, entry, operation, role, helpers) {
   helpers.assertControllerRole?.(MTG, context, entry.raw.name + '/' + role);
   const {game, a, b} = context, target = entry.implementation.find(op => op.kind === 'aura-target');
   assert.ok(target, entry.raw.name + ': Aura has its printed enchant restriction');
-  host = helpers.stageGenericTarget(MTG, context, {what: target.what, zone: 'battlefield', controller: 'opponent'}, 'control-host');
+  host = helpers.stageGenericTarget(MTG, context, helpers.auraProofTarget(target, 'opponent'), 'control-host');
   const originalController = host.ctrl, originalOwner = host.owner;
   for (const player of game.players) {helpers.fund(player, 100); helpers.fillLibrary(MTG, player, 20);}
   helpers.stageCardCosts?.(MTG, context, entry);

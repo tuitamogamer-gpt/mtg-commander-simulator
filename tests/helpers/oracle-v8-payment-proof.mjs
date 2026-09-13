@@ -27,7 +27,7 @@ export function installPaymentProof(MTG, context, helpers) {
       result.oracleX = child?.x ?? runCtx.x ?? 0; return result;
     };
     const row = { effect, source: runCtx.src, sourceName: runCtx.src.name, player: runCtx.you, targets: (runCtx.targets || []).slice(),
-      sourceZoneVersion: runCtx.sourceZoneVersion, before: snapshot(runCtx), branches: [],
+      sourceZoneVersion: runCtx.sourceZoneVersion, eventCard:runCtx.oracleSourceCapture?.eventCard||runCtx.data?.card, before: snapshot(runCtx), branches: [],
       traceStart: h.trace?.length, sacrifices: context.sacrificeEvidence?.length || 0, reveals: state.reveals.length };
     state.witnesses.push(row);
     try {
@@ -158,7 +158,7 @@ export async function assertPaymentEffect(MTG, context, entry, effect, source, s
       }
     } else {
       const selection = choices.find(choice => choice.query.type === 'chooseCards' && choice.query.prompt === row.sourceName + ': choose cards to ' + cost.kind);
-      const cards = cost.target === 'self' ? [source] : typeof cost.target === 'number' ? [row.targets[cost.target]].flat().filter(Boolean)
+      const cards = cost.target === 'self' ? [source] : cost.target==='event-card'?[row.eventCard].filter(Boolean):typeof cost.target === 'number' ? [row.targets[cost.target]].flat().filter(Boolean)
         : cost.n === 'all' ? old.handCards : selection?.result || [];
       const need = cost.kind === 'remove-counter' ? 1 : cost.n === 'all' ? old.handCards.length : cost.n;
       assert.equal(cards.length, need, label + ': exact cost cardinality'); assert.equal(new Set(cards).size, cards.length, label + ': distinct payment objects');

@@ -13,9 +13,19 @@ async function activate(ctx,card){const offered=ctx.game.activatableList(ctx.a).
 async function cast(ctx,name){const source=add(ctx,name,ctx.a,'hand');assert.equal(await ctx.game.castSpell(ctx.a,source,{from:'hand'}),true);await settle(ctx.game);return source;}
 async function attackTrigger(ctx,source){source.attacking=ctx.b;await ctx.game.emit('attacks',{card:source,player:ctx.a,defender:ctx.b});await ctx.game.flushTriggers();}
 
-test('all 16800 generated Oracle descriptors use the actual parent type of noncreature subtypes',()=>{
+test('all generated Oracle descriptors use the actual subtype parent or an explicit historic-creature intersection',()=>{
  const failures=[];
- function walk(node,name){if(!node||typeof node!=='object')return;if(node.what==='creature'&&ORACLE_SUBTYPE_TYPES[node.subtype]&&ORACLE_SUBTYPE_TYPES[node.subtype]!=='creature')failures.push(name+': '+node.subtype);for(const value of Object.values(node))walk(value,name);}
+ function walk(node,name,parent){
+  if(!node||typeof node!=='object')return;
+  if(Array.isArray(node)){for(const value of node)walk(value,name,parent);return;}
+  // A historic creature includes an animated Saga. The creature predicate
+  // deliberately intersects the Saga subtype, alongside Artifact/Legendary.
+  const historicCreature=parent?.what==='creature'&&parent.alternatives?.includes(node)&&
+    parent.alternatives.some(alt=>alt.alsoType==='Artifact')&&parent.alternatives.some(alt=>alt.legendary===true);
+  if(node.what==='creature'&&ORACLE_SUBTYPE_TYPES[node.subtype]&&ORACLE_SUBTYPE_TYPES[node.subtype]!=='creature'&&
+    !(historicCreature&&node.subtype==='Saga'))failures.push(name+': '+node.subtype);
+  for(const value of Object.values(node))walk(value,name,node);
+ }
  for(const file of fs.readdirSync('reports/oracle-import').filter(file=>/^batch-\d{4}\.json$/.test(file)))for(const row of JSON.parse(fs.readFileSync('reports/oracle-import/'+file,'utf8')).cards)walk(row.implementation,row.raw.name);
  assert.deepEqual(failures,[]);
 });

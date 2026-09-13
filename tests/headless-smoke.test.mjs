@@ -19,7 +19,14 @@ test('seeded games allocate card identities locally instead of inheriting proces
 test('svaki deck može završiti jednu determinističku četveroigračku smoke partiju', { timeout: 60_000 }, async () => {
   const MTG = loadEngine();
   const decks = Object.keys(MTG.DECKS);
+  // Separate processes can split the long sweep without changing any deck's
+  // original index, opponents, seed, or completion assertions. Default: all.
+  const shardCount = Number(process.env.HEADLESS_SHARD_COUNT || 1);
+  const shardIndex = Number(process.env.HEADLESS_SHARD_INDEX || 0);
+  assert.ok(Number.isSafeInteger(shardCount) && shardCount >= 1 && shardCount <= decks.length, 'valid headless shard count');
+  assert.ok(Number.isSafeInteger(shardIndex) && shardIndex >= 0 && shardIndex < shardCount, 'valid headless shard index');
   for (let index = 0; index < decks.length; index++) {
+    if (index % shardCount !== shardIndex) continue;
     if(process.env.HEADLESS_PROGRESS)console.log(`Deck smoke ${index+1}/${decks.length}: ${decks[index]}`);
     const opponents = [1, 2, 3].map(offset => decks[(index + offset) % decks.length]);
     const game = MTG.newGame({

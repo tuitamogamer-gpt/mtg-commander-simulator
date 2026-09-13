@@ -16,6 +16,14 @@ import { stageOracleCastingCosts, assertOracleCastingCostRecord, proveOracleAlte
 
 export function stageFalseCondition(MTG,ctx,condition,source,helpers){
  const {game,a}=ctx;
+ if(condition.kind==='relative-player-condition-v9')return stageFalseCondition(MTG,{...ctx,a:condition.who==='combat-defender-v9'?ctx.b:ctx.conditionPlayerV9||a},condition.condition,source,helpers);
+ if(condition.kind==='cast-history-v9'){a.turnState.spellsCastList=[];return;}
+ if(condition.kind==='player-poison-v9'){a.poison=0;return;}
+ if(condition.kind==='event-player-condition-v9')return stageFalseCondition(MTG,{...ctx,a:ctx.conditionPlayerV9||ctx.a,b:game.players.find(p=>p!==(ctx.conditionPlayerV9||ctx.a))},condition.condition,source,helpers);
+ if(condition.kind==='no-hand-cast-v9'){a.turnState.spellsCastList.push({so:{from:'hand'},mv:1});return;}
+ if(condition.kind==='cast-mana-value-v9'){a.turnState.spellsCastList=[];return;}
+ if(condition.kind==='source-turn-v9'){if(source)source.meta[condition.field]=condition.field==='_lastDamageVisual'?{turn:game.turnNo-1}:condition.present?game.turnNo-1:game.turnNo;return;}
+ if(condition.kind==='turn-stat'&&condition.field==='landsPlayedV9'){a.landsPlayed=1;return;}
  if(condition.kind==='cast-main-phase'){game.phase='end';ctx.paymentCondition=null;}
  else if(condition.kind==='kicked'){ctx.kickerProof=false;}
  else if(condition.kind==='coven'){
@@ -110,6 +118,15 @@ export function stageFalseCondition(MTG,ctx,condition,source,helpers){
 }
 
 export function stageCondition(MTG,ctx,condition,source,helpers) {
+  if(condition?.kind==='relative-player-condition-v9')return stageCondition(MTG,{...ctx,a:condition.who==='combat-defender-v9'?ctx.b:ctx.conditionPlayerV9||ctx.a},condition.condition,source,helpers);
+  if(condition?.kind==='cast-history-v9'){ctx.a.turnState.spellsCastList.push({types:condition.quality==='noncreature'?['Instant']:['Creature'],mv:1});return;}
+  if(condition?.kind==='player-poison-v9'){ctx.a.poison=condition.min;return;}
+  if(condition?.kind==='count-comparison'&&condition.count.kind==='life-total'){ctx.a.life=condition.min??condition.max;return;}
+  if(condition?.kind==='event-player-condition-v9')return stageCondition(MTG,{...ctx,a:ctx.conditionPlayerV9||ctx.a,b:ctx.game.players.find(p=>p!==(ctx.conditionPlayerV9||ctx.a))},condition.condition,source,helpers);
+  if(condition?.kind==='no-hand-cast-v9'){ctx.a.turnState.spellsCastList=(ctx.a.turnState.spellsCastList||[]).filter(row=>row.so?.from!=='hand');return;}
+  if(condition?.kind==='cast-mana-value-v9'){ctx.a.turnState.spellsCastList.push({mv:condition.min,so:{from:'hand'}});return;}
+  if(condition?.kind==='source-turn-v9'){if(source)source.meta[condition.field]=condition.field==='_lastDamageVisual'?{turn:ctx.game.turnNo}:condition.present?ctx.game.turnNo:ctx.game.turnNo-1;return;}
+  if(condition?.kind==='turn-stat'&&condition.field==='landsPlayedV9'){ctx.a.landsPlayed=0;return;}
   if(stageActivationSuffix(MTG,ctx,condition,source))return;
   if(stageLiveCondition(MTG,ctx,condition,source,helpers))return;
   if(stageCastingRuleCondition(MTG,ctx,condition,source,helpers))return;
@@ -152,6 +169,7 @@ export function stageCondition(MTG,ctx,condition,source,helpers) {
       }
       break;
     }
+    case 'cast-ordinal-v9': a.turnState.spellsCastList=Array.from({length:condition.n},()=>({isCreature:true,isInstantSorcery:condition.quality==='instant or sorcery'}));break;
     case 'cast-main-phase': ctx.game.phase='main1';ctx.paymentCondition=condition;break;
     case 'mana-spent': ctx.paymentCondition=condition;source.castMeta={...(source.castMeta||{}),paymentColorCounts:Object.fromEntries(condition.colors.map(color=>[color,condition.min||condition.colors.filter(c=>c===color).length])),manaSpent:condition.min||condition.colors.length,wasCast:true};break;
     case 'no-mana-spent': ctx.paymentCondition=condition;source.castMeta={...(source.castMeta||{}),paymentColorCounts:{},manaSpent:0,wasCast:true};break;
@@ -261,11 +279,13 @@ export function countValue(ctx,source,node,snapshot=null){
   if(node.kind==='party'){
     let masks=new Set([0]);for(const card of game.creatures(a)){const next=new Set(masks);for(const mask of masks)for(const [i,type]of ['Cleric','Rogue','Warrior','Wizard'].entries())if(!(mask&(1<<i))&&card.hasSub(type))next.add(mask|(1<<i));masks=next;}return Math.max(...[...masks].map(mask=>mask.toString(2).replaceAll('0','').length));
   }
+  if(node.kind==='source-devoured-v9')return source.meta.oracleDevoured||0;
   if(node.kind==='source-counters')return (snapshot?.cards.get(source)?.counters||source.counters)[node.counter]||0;
   if(node.kind==='died-count')return game.diedThisTurn.filter(row=>row.types.includes('Creature')).length;
   if(node.kind==='max-stat')return Math.max(0,...(snapshot?.battlefield||game.bf()).filter(card=>node.filters.some(filter=>matchesTarget(card,filter,ctx,source))).map(card=>snapshot?.cards.get(card)?.[node.stat]??card[node.stat]));
   if(node.kind==='sum')return node.values.reduce((sum,item)=>sum+countValue(ctx,source,item,snapshot),0);
-  if(node.kind==='life-total')return a.life;
+  if(node.kind==='life-total')return snapshot?.players.get(a)?.life??a.life;
+  if(node.kind==='starting-life-v9')return node.half?Math.ceil((a.startingLife??40)/2):(a.startingLife??40);
   const players=node.controller==='all'?game.players:node.controller==='opponents'?game.players.filter(p=>p!==a):[a];
   const cards=node.zone==='battlefield'?(snapshot?.battlefield||game.battlefield).filter(c=>players.includes(c.ctrl)):players.flatMap(p=>snapshot?snapshot.players.get(p)[node.zone+'Cards']:p[node.zone]);
   const rows=cards.filter(card=>(!node.other||card!==source)&&(!node.name||card.name===node.name)&&matches(card,node.what)&&(!node.filters||node.filters.some(filter=>matchesTarget(card,filter,ctx,source)))).filter(card=>{
@@ -292,6 +312,18 @@ export function matches(card,what){
 }
 export function matchesTarget(card,f,ctx,source){
  const {a}=ctx;
+ if(f.attackingYouV9&&card.attacking!==a)return false;
+ if(f.notAttackingV9&&card.attacking)return false;
+ if(f.graveyardTopV9&&card!==card.owner.graveyard.filter(c=>f.graveyardTopV9!=='creature'||c.is('Creature')).at(-1))return false;
+ if(f.dealtDamageV9&&(card.meta?.dealtDamageV9?.turn!==ctx.game.turnNo||f.dealtDamageV9==='you'&&!card.meta.dealtDamageV9.players.includes(ctx.a.idx)))return false;
+ if(f.blockingSourceV9&&card.blocking!==source?.iid)return false;
+ if(f.faceDownV9&&!card.faceDown)return false;
+ if(f.equalStatsV9&&card.power!==card.toughness)return false;
+ if(f.excludedSubtypesV9?.some(subtype=>card.hasSub(subtype)))return false;
+ if(f.exactStatsV9&&['power','toughness'].some(stat=>card[stat]!==f.exactStatsV9[stat]))return false;
+ if(f.totalStatsV9&&(f.totalStatsV9.comparison==='less'?card.power+card.toughness>f.totalStatsV9.n:card.power+card.toughness<f.totalStatsV9.n))return false;
+ if(f.commanderV9&&!card.commander)return false;
+ if(f.ownerV9&&(card.owner===a)!==(f.ownerV9==='you'))return false;
  if(f.controller==='event-player'&&card.ctrl!==ctx.eventPlayer)return false;
  if(f.controller==='defending-player'&&card.ctrl!==(ctx.eventDefender||source?.attacking||ctx.b))return false;
  if(f.damagedThisTurn&&card.meta?._lastDamageVisual?.turn!==ctx.game.turnNo)return false;
@@ -305,6 +337,7 @@ export function matchesTarget(card,f,ctx,source){
  if(f.basic&&!sup.includes('Basic'))return false;
  if(f.token&&!card.isToken||f.nontoken&&card.isToken||f.tapped&&!card.tapped||f.untapped&&card.tapped)return false;
  if(f.hasCounter&&!(card.counters[f.hasCounter]>0)||f.withKeyword&&!card.kw(f.withKeyword)||f.withoutKeyword&&card.kw(f.withoutKeyword))return false;
+ if(f.modifiedV9&&!Object.values(card.counters||{}).some(n=>n>0)&&!ctx.game.isModifiedCreature(card))return false;
  if(f.withoutCounter&&card.counters[f.withoutCounter]>0)return false;
  if(f.snow&&!sup.includes('Snow')||f.nonsnow&&sup.includes('Snow')||f.legendary&&!sup.includes('Legendary')||f.nonlegendary&&sup.includes('Legendary')||f.nonbasic&&sup.includes('Basic'))return false;
  if(f.nonblack&&card.colors.includes('B')||f.nonartifact&&card.is('Artifact'))return false;
@@ -336,8 +369,9 @@ export function stageCount(MTG,ctx,node,helpers){
   if(node.kind==='party'){for(const type of ['Cleric','Rogue','Warrior','Wizard'])helpers.permanent(MTG,ctx.game,ctx.a,helpers.fixtureDefinition('Party '+type,['Creature'],{subtypes:[type],power:'1',toughness:'20'}));return;}
   if(node.kind==='turn-count'){ctx.a.turnState[node.field]=3;return;}
   if(node.kind==='died-count'){ctx.game.diedThisTurn.push({types:['Creature']},{types:['Creature']});return;}
-  if(['source-stat','explicit-source-stat','target-stat','source-counters'].includes(node.kind))return;
+  if(['source-stat','explicit-source-stat','target-stat','source-counters','paid-colors','source-devoured-v9'].includes(node.kind))return;
   if(node.kind==='life-total')return;
+  if(node.kind==='starting-life-v9')return;
   if(node.kind==='target-count'){
     const target=typeof node.target==='number'?ctx.oracleProofTargets?.[node.target]:ctx.b;
     assert.ok(target instanceof MTG.Player,'a relative count needs its actual targeted or event player');
@@ -444,6 +478,19 @@ export async function combatRestrictionProof(MTG,ctx,card,op,h,label){
  return checks;
 }
 
+export async function grantedMechanicProof(MTG,ctx,recipient,mechanic,h){
+ const {game,a,b}=ctx,kind=mechanic.kind.slice(9),controller=recipient.ctrl,opponent=controller===a?b:a;
+ const grants=recipient.cur.extraTriggers.filter(t=>t.desc?.toLowerCase().startsWith(kind));assert.ok(grants.length,'recipient has its granted '+kind+' trigger');
+ const attacker=recipient.is('Creature')?recipient:h.permanent(MTG,game,controller,'Grizzly Bears');attacker.attacking=opponent;attacker.blockedBy=[];attacker.wasBlocked=false;game.combat={attackers:[attacker],defenders:new Map()};
+ const power=attacker.power,life=opponent.life;let blocker;
+ if(kind==='exalted')await game.emit('attackersDeclared',{player:controller,attackers:[attacker]});
+ else if(kind==='afflict')await game.emit('becomesBlocked',{attacker,blockers:[h.permanent(MTG,game,opponent,'Grizzly Bears')]});
+ else if(kind==='flanking'){blocker=h.permanent(MTG,game,opponent,h.fixtureDefinition('Oracle flanking victim',['Creature'],{power:'3',toughness:'20'}));blocker.blocking=attacker.iid;await game.emit('blocks',{attacker,blocker});}
+ else assert.fail('Missing granted mechanic proof '+kind);
+ await game.flushTriggers();assert.ok(game.stack.some(row=>row.srcCard===recipient&&grants.some(t=>t.run===row.run)),'granted trigger uses recipient as its source');await h.resolveAll(game);
+ if(kind==='exalted')assert.ok(attacker.power>=power+1);else if(kind==='afflict')assert.equal(opponent.life,life-mechanic.n);else assert.equal(blocker.power,2);
+ return 3;
+}
 export async function staticProof(MTG,entry,op,role,h){
  const ctx=h.gameFor(MTG,[h.decision(),h.decision()],{ai:role==='ai'}),{game,a,b}=ctx;
  const source=h.permanent(MTG,game,a,entry.raw.name);
@@ -451,6 +498,11 @@ export async function staticProof(MTG,entry,op,role,h){
  if(op.conditionSubject!=='affected')stageCondition(MTG,ctx,op.condition,source,h);
  if(op.multiplier)stageCount(MTG,ctx,op.multiplier,h);
  game.recalc();
+ if(op.grantedMechanicV9){
+   const target=op.scope==='self'?source:op.filters?h.stageGenericTarget(MTG,ctx,op.filters[0],'granted-mechanic'):h.permanent(MTG,game,a,h.semanticSubtypeFixture(op));
+   if(target.hasSub('Aura')){const host=h.permanent(MTG,game,target.ctrl,'Grizzly Bears');target.attachedTo=host.iid;host.attachments.push(target.iid);}
+   game.recalc();return grantedMechanicProof(MTG,ctx,target,op.grantedMechanicV9,h);
+ }
  if(op.scope==='self'&&(op.attackerFilters||op.relativeAttackerPower||op.defenderRule||op.blockOnlyFlying))return combatRestrictionProof(MTG,ctx,source,op,h,entry.raw.name);
  if(op.blockerFilters||op.relativeBlockerPower){
    const blockers=[];
@@ -553,6 +605,9 @@ export async function staticProof(MTG,entry,op,role,h){
 }
 
 export const mechanicKinds=new Set(['mechanic-unearth','mechanic-grave-return-self','mechanic-embalm','mechanic-eternalize','mechanic-soulshift','mechanic-modular','mechanic-fabricate','mechanic-living-weapon','mechanic-for-mirrodin','mechanic-offspring','mechanic-afflict','mechanic-ingest','mechanic-ninjutsu','mechanic-foretell','mechanic-retrace','doesnt-untap']);
+for(const kind of ['amplify-v9','champion-v9','reconfigure-v9','recover-v9','mayhem-v9','devour-v9','skip-draw-v9'])mechanicKinds.add('mechanic-'+kind);
+for(const kind of ['freerunning-v9','increment-v9','station-v9','leyline-v9'])mechanicKinds.add('mechanic-'+kind);
+mechanicKinds.add('mechanic-player-shroud-v9');mechanicKinds.add('uncounterable-spells-v9');
 mechanicKinds.add('mechanic-alternative-costs-v8');
 mechanicKinds.add('mechanic-casting-choice-v8');
 mechanicKinds.add('mechanic-awaken-v8');
@@ -576,7 +631,7 @@ export async function mechanicProof(MTG,entry,op,role,h){
   stageEntryCastingRules(MTG,ctx,entry,h);
  for(const operation of entry.implementation){
    if(operation.kind==='copy-as-enters')h.stageGenericTarget(MTG,ctx,operation.filter,'copy-model');
-   if(operation.kind==='aura-target')h.permanent(MTG,game,a,'Grizzly Bears');
+    if(operation.kind==='aura-target')operation.targetV9?h.stageGenericTarget(MTG,ctx,h.auraProofTarget(operation),'mechanic-aura-host'):h.permanent(MTG,game,a,'Grizzly Bears');
    if(operation.kind==='spell-graveyard-return')h.zoneCard(MTG,a,'Grizzly Bears','graveyard');
    if(operation.kind==='spell-modal-generic')for(const mode of operation.modes)for(const [i,target]of mode.body.targets.entries())h.stageGenericTarget(MTG,ctx,target,i,mode.body.effects.find(effect=>effect.target===i));
    for(const [i,target] of (operation.targets||[]).entries())target.zone==='stack'?await h.stageGenericStackTarget(MTG,ctx,target,i):h.stageGenericTarget(MTG,ctx,target,i,operation.effects?.find(e=>e.target===i));
@@ -593,6 +648,66 @@ export async function mechanicProof(MTG,entry,op,role,h){
  if(JSON.stringify(entry.implementation).includes('"kind":"sacrificed-stat"')){for(const card of game.creatures(a))if(!card.def.oracleImplementation){card.def.power='3';card.def.toughness='4';}game.recalc();}
  const source=h.zoneCard(MTG,a,entry.raw.name,['mechanic-unearth','mechanic-grave-return-self','mechanic-embalm','mechanic-eternalize','mechanic-retrace','mechanic-escape'].includes(op.kind)?'graveyard':'hand');
  const cast=async()=>{if(source.is('Land'))assert.equal(await game.playLand(a,source),true,entry.raw.name+': mechanic real land play');else assert.equal(await game.castSpell(a,source,{from:'hand',xVal:3}),true,entry.raw.name+': mechanic paid cast');await h.resolveAll(game);};
+ if(op.kind==='mechanic-amplify-v9'){
+   const same=h.zoneCard(MTG,a,entry.raw.name,'hand');
+   await cast();assert.equal(same.zone,'hand');assert.ok(source.meta.oracleAmplifiedV9>=1);assert.equal(source.counters['+1/+1'],source.meta.oracleAmplifiedV9*op.n);return 3;
+ }
+ if(op.kind==='mechanic-player-shroud-v9'){
+   await cast();const probe=h.zoneCard(MTG,b,'Shock','hand');
+   for(const player of [a,b])assert.equal(game.legalTargets({what:'player'},probe,player).includes(a),false);
+   await game.move(source,'exile');assert.equal(game.legalTargets({what:'player'},probe,b).includes(a),true);return 3;
+ }
+ if(op.kind==='uncounterable-spells-v9'){
+   await cast();const spell=await h.stageGenericStackTarget(MTG,ctx,{...op.target,controller:op.controller==='you'?'you':'opponent'},'uncounterable');
+   assert.equal(await game.counterStackObject(spell),false);assert.ok(game.stack.includes(spell));await game.move(source,'exile');assert.equal(await game.counterStackObject(spell),true);await h.resolveAll(game);return 3;
+ }
+ if(op.kind==='mechanic-leyline-v9'){
+   const before=Object.values(a.pool).reduce((sum,n)=>sum+n,0);await MTG.CDK.openingPermanents(game);await h.resolveAll(game);assert.equal(source.zone,'battlefield');assert.equal(Object.values(a.pool).reduce((sum,n)=>sum+n,0),before);return 2;
+ }
+ if(op.kind==='mechanic-freerunning-v9'){
+   const alt=source.def.altCosts.find(row=>row.oracleFreerunningV9);assert.ok(alt);assert.equal(alt.cond(game,a,source),false);
+   const attacker=h.permanent(MTG,game,a,h.fixtureDefinition('Oracle Freerunning Assassin',['Creature'],{power:'2',toughness:'20',subtypes:['Assassin']}));attacker.attacking=b;attacker.blockedBy=[];attacker.wasBlocked=false;game.combat={attackers:[attacker],defenders:new Map()};
+   await game.combatDamage(a,'normal');await h.resolveAll(game);assert.equal(alt.cond(game,a,source),true);game.combat=null;game.phase='main2';game.step='main';
+   assert.equal(await game.castSpell(a,source,{from:'hand',alt}),true);await h.resolveAll(game);assert.equal(source.castMeta.alt.oracleFreerunningV9,true);game.turnNo++;assert.equal(alt.cond(game,a,source),false);return 5;
+ }
+ if(op.kind==='mechanic-increment-v9'){
+   await cast();const n=Math.max(1,Math.min(source.power,source.toughness)+1),other=new MTG.CardInst(h.fixtureDefinition('Oracle Increment Expensive Spell',['Creature'],{power:'1',toughness:'1',cost:'{'+n+'}'}),a);other.zone='hand';a.hand.push(other);const before=source.counters['+1/+1']||0;
+   assert.equal(await game.castSpell(a,other,{from:'hand'}),true);await h.resolveAll(game);assert.equal(source.counters['+1/+1'],before+1);return 2;
+ }
+ if(op.kind==='mechanic-station-v9'){
+   await cast();assert.equal(source.is('Creature'),false);const crew=h.permanent(MTG,game,a,h.fixtureDefinition('Oracle Station Crew',['Creature'],{power:String(op.threshold),toughness:'20'}));
+   for(const card of game.creatures(a))if(card!==crew)card.tapped=true;
+   const action=game.activatableList(a).find(row=>row.card===source&&row.ability?.label==='Station');assert.ok(action);assert.equal(await game.activateAbility(a,action),true);assert.equal(crew.tapped,true);await h.resolveAll(game);assert.equal(source.counters.charge,op.threshold);assert.equal(source.is('Creature'),true);return 5;
+ }
+ if(op.kind==='mechanic-recover-v9'){
+   await game.move(source,'graveyard');const victim=h.permanent(MTG,game,a,'Grizzly Bears');await game.destroy(victim);await h.resolveAll(game);
+   assert.equal(source.zone,'hand');
+   await game.move(source,'graveyard');for(const color of ['W','U','B','R','G','C'])a.pool[color]=0;
+   const next=h.permanent(MTG,game,a,'Grizzly Bears');await game.destroy(next);await h.resolveAll(game);assert.equal(source.zone,'exile');return 2;
+ }
+ if(op.kind==='mechanic-mayhem-v9'){
+   await game.move(source,'graveyard');assert.equal(game.castableList(a).some(row=>row.card===source&&row.alt?.mayhem),false);
+   await game.move(source,'hand');await game.discard(a,[source]);
+   const offer=game.castableList(a).find(row=>row.card===source&&row.alt?.mayhem);assert.ok(offer);assert.equal(offer.alt.altCostStr,op.cost);
+   assert.equal(await game.castSpell(a,source,{from:'graveyard',alt:offer.alt}),true);await h.resolveAll(game);assert.equal(source.zone,'battlefield');
+   await game.move(source,'graveyard');assert.equal(game.castableList(a).some(row=>row.card===source&&row.alt?.mayhem),false);return 5;
+ }
+ if(op.kind==='mechanic-skip-draw-v9'){
+   await cast();const library=a.library.length;game.mainPhase=async()=>{};game.combatPhase=async()=>{};
+   await game.runTurn();assert.equal(a.library.length,library);return 1;
+ }
+ if(op.kind==='mechanic-champion-v9'){
+   const candidate=h.stageGenericTarget(MTG,ctx,op.filters[0],0);candidate.def.power='0';candidate.def.toughness='1';candidate.def.cost='{0}';game.recalc();await cast();
+   const rows=source.meta.oracleChampionV9;assert.ok(rows?.length===1,JSON.stringify({zone:source.zone,log:game.log.slice(-5).map(x=>x.msg),decisions:game.aiDecisionLog?.slice(-2).map(x=>({action:x.action,decision:x.decision}))}));const chosen=rows[0].card;assert.equal(chosen.zone,'exile');
+   await game.move(source,'exile');await h.resolveAll(game);assert.equal(chosen.zone,'battlefield');assert.equal(chosen.ctrl,chosen.owner);return 4;
+ }
+ if(op.kind==='mechanic-reconfigure-v9'){
+   const host=h.permanent(MTG,game,a,'Grizzly Bears');await cast();
+   const abilities=()=>game.activatableList(a).filter(row=>row.card===source);
+   let row=abilities().find(row=>row.ability?.label==='Reconfigure — attach');assert.ok(row);assert.equal(await game.activateAbility(a,row),true);await h.resolveAll(game);
+   assert.equal(source.attachedTo,host.iid);assert.equal(source.is('Creature'),false);assert.equal(source.is('Artifact'),true);
+   row=abilities().find(row=>row.ability?.label==='Reconfigure — unattach');assert.ok(row);assert.equal(await game.activateAbility(a,row),true);await h.resolveAll(game);game.recalc();assert.equal(source.attachedTo,null);assert.equal(source.is('Creature'),true);return 8;
+ }
  if(op.kind==='mechanic-replicate'){
    h.constrainSquadMana(MTG,a,entry);assert.equal(await game.castSpell(a,source,{from:'hand'}),true);const original=game.stack.find(row=>row.card===source),paid=source.castMeta.paidTimes;assert.ok(paid>0,entry.raw.name+': positive replicate payment');const spells=a.turnState.spellsCast;
    await game.flushTriggers();const trigger=game.stack.find(row=>row.kind==='trigger'&&row.name.includes('Replicate'));assert.ok(trigger);assert.equal(game.stack.filter(row=>row.isCopy).length,0);
@@ -911,10 +1026,11 @@ export async function mechanicProof(MTG,entry,op,role,h){
    if(source.zone==='battlefield'){assert.equal(source.counters.echo,undefined);await game.emit('upkeep',{player:a});assert.equal(game.pendingTriggers.some(row=>String(row.name).startsWith('Echo')),false);}
    return 3;
  }
- if(op.kind==='mechanic-devour'){
-   h.permanent(MTG,game,a,h.fixtureDefinition('Devour fodder',['Creature'],{power:'0',toughness:'1'}));
-   h.permanent(MTG,game,a,h.fixtureDefinition('Devour fodder 2',['Creature'],{power:'0',toughness:'1'}));
-   await cast();assert.ok(source.meta.oracleDevoured>=0);assert.equal(source.counters['+1/+1']||0,source.meta.oracleDevoured*op.n);return 2;
+ if(op.kind==='mechanic-devour'||op.kind==='mechanic-devour-v9'){
+   const type=op.what?op.what[0].toUpperCase()+op.what.slice(1):'Creature';
+   h.permanent(MTG,game,a,h.fixtureDefinition('Devour fodder',[type],{power:'0',toughness:'1'}));
+   h.permanent(MTG,game,a,h.fixtureDefinition('Devour fodder 2',[type],{power:'0',toughness:'1'}));
+   await cast();assert.ok(source.meta.oracleDevoured>=0);assert.equal(source.counters['+1/+1']||0,source.meta.oracleDevoured*(op.n==='devoured'?source.meta.oracleDevoured:op.n));return 2;
  }
  if(op.kind==='mechanic-graft'){
    await cast();const before=source.counters['+1/+1'];assert.ok(before>=op.n);
