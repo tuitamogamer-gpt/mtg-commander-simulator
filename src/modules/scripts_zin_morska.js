@@ -784,7 +784,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Erdwal Illuminator'] = {
     triggers: [{
-      on: 'investigated', oncePerTurn: true, desc: 'Additional investigation',
+      on: 'investigated', oncePerTurn: true, firstTimeEachTurn: true, desc: 'Additional investigation',
       filter: (g, self, d) => d.player === self.ctrl,
       run: async ctx => { await E.investigate(ctx.g, ctx.you); },
     }],

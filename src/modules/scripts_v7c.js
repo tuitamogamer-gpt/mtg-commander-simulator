@@ -801,7 +801,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       },
     }],
     triggers: [{
-      on: 'cast', desc: 'Outlaw spell → card', oncePerTurn: true,
+      on: 'cast', desc: 'Outlaw spell → card', oncePerTurn: true, firstTimeEachTurn: true,
       filter: (g, self, d) => d.player === self.ctrl && d.card.is('Creature') && isOutlaw(d.card),
       run: async ctx => { await ctx.g.draw(ctx.you, 1); await ctx.g.loseLife(ctx.you, 1, 'retreat'); },
     }],

@@ -3143,6 +3143,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!zoneOK(zone)) continue;
           const onceStamp=t.oncePerTurn?this.turnNo+':'+(history?.zoneVersion??card.zoneVersion):null;
           if (t.oncePerTurn && card.meta['_once_' + (t.onceKey||t.on)] === onceStamp) continue;
+          if (t.oncePerTurnOnUse && (history?.sourceMeta || card.meta)[t.oncePerTurnOnUse] === this.turnNo) continue;
           try { if (t.filter && !t.filter(this, card, data)) continue; } catch (e) { continue; }
           cardSeen.add(t);
           found.push({ card, t, ctrlOverride, onceStamp, history });
@@ -3236,6 +3237,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         }
         // Krang: draw-uzrokovani trigeri tvojih permanenata okidaju dodatni put
         if (name === 'draw' && this.bf().some(v => v.def.doubleDrawTriggers && v.ctrl === card.ctrl)) times *= 2;
+        // An explicit trigger limit also constrains additional-trigger effects.
+        // A trigger for the first occurrence of an event can still be doubled.
+        if (t.oncePerTurn && !t.firstTimeEachTurn) times = Math.min(1, times);
         for (let i = 0; i < times; i++) {
           this.queueTrigger({
             src: card,
@@ -3246,7 +3250,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               : (t.controller || ctrlOverride),
             name: t.desc || name, run: t.run, targets: t.targets, modes: t.modes,
             prepareTargets: t.prepareTargets,
-            opt: t.opt, data, onlyIf: t.onlyIf, aiHint: t.aiHint,
+            opt: t.opt, data, onlyIf: t.onlyIf, aiHint: t.aiHint, oncePerTurnOnUse: t.oncePerTurnOnUse,
           });
         }
       }
@@ -3360,6 +3364,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // able to distinguish a permanent that left and later returned.
         sourceZoneVersion: tr.sourceZoneVersion ?? (tr.src instanceof CardInst ? tr.src.zoneVersion : null),
         sourceMeta: tr.sourceMeta ?? tr.src?.meta,
+        oncePerTurnOnUse: tr.oncePerTurnOnUse,
         sourceUntapEpoch:tr.sourceUntapEpoch,sourceDurationControlEpoch:tr.sourceDurationControlEpoch,sourcePhaseEpoch:tr.sourcePhaseEpoch,
         // Attachment-triggered abilities may need last known information if
         // their Aura is removed in response. Snapshot the exact enchanted

@@ -160,10 +160,13 @@ test('Leonardo može odbiti prvi token trigger i iskoristiti kasniji u istom pot
     chooseOption: (g, q) => q.aiHint?.kind === 'optTrigger' ? (++offers === 1 ? 'no' : 'yes') : q.options[0]?.key,
   }, 2);
   const leonardo = permanent(game, tmnt, 'Leonardo, the Balance');
-  await game.emit('tokensCreated', { ctrl: tmnt, tokens: [] });
+  await game.makeTokens('food', tmnt);
   await resolveAll(game);
   assert.equal(leonardo.counters['+1/+1'] || 0, 0);
-  await game.emit('tokensCreated', { ctrl: tmnt, tokens: [] });
+  await game.makeTokens('food', tmnt);
+  await resolveAll(game);
+  assert.equal(leonardo.counters['+1/+1'], 1);
+  await game.makeTokens('food', tmnt);
   await resolveAll(game);
   assert.equal(leonardo.counters['+1/+1'], 1);
   assert.equal(offers, 2);

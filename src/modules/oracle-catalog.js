@@ -2090,6 +2090,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Keep untargeted legacy optionals on the engine's existing path.
       opt: !!operation.optional && !targetedOptional,
       oncePerTurn: !!operation.onceEachTurn,
+      firstTimeEachTurn: !!operation.onceEachTurn && /for the first time each turn/.test(operation.onceGroup || ''),
       oncePerBatch:!!operation.oncePerBatch,
       onceKey: operation.onceGroup,
       filter: (game, source, data) => {

@@ -331,18 +331,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         },
       },
       {
-        on: 'dies', desc: 'Steal (1×/turn)', opt: true,
+        on: 'dies', desc: 'Steal (1×/turn)', opt: true, oncePerTurnOnUse: '_reaperReturnTurn',
         filter: (g, self, d) => self.meta._reaperReturnTurn !== g.turnNo && d.snap.ctrl !== self.ctrl && d.snap.minus1 > 0 && d.snap.types.includes('Creature'),
         run: async ctx => {
-          if (ctx.src.meta._reaperReturnTurn === ctx.g.turnNo) return;
           const c = ctx.data.card;
-          if (c.zone === 'graveyard' && !c.isToken) {
-            c.owner.graveyard.splice(c.owner.graveyard.indexOf(c), 1);
-            c.zone = 'nowhere';
+          if (c.zone === 'graveyard' && c.zoneVersion === ctx.data.graveyardZoneVersion && !c.isToken) {
             await ctx.g.move(c, 'battlefield', { ctrl: ctx.you });
-            ctx.src.meta._reaperReturnTurn = ctx.g.turnNo;
             ctx.g.lg(`The Reaper steals ${c.name}!`);
-          }
+          } else return false;
         },
       },
     ],
@@ -745,25 +741,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC["Puca's Covenant"] = {
     triggers: [{
-      on: 'dies', desc: 'Return a permanent from graveyard', opt: true,
+      on: 'dies', desc: 'Return a permanent from graveyard', opt: true, oncePerTurnOnUse: '_pucaReturnTurn',
       filter: (g, self, d) => self.meta._pucaReturnTurn !== g.turnNo && d.snap.ctrl === self.ctrl &&
         d.snap.types.includes('Creature') && Object.values(d.snap.counters || {}).some(n => n > 0),
       targets: (g, self, data) => {
         const maxMv = Object.values(data.snap.counters || {}).reduce((sum, n) => sum + Math.max(0, n), 0);
         return [{
           zone: 'graveyard', what: 'card', prompt: `Another target permanent card (mv ≤ ${maxMv})`,
-          filter: (game, card) => card !== data.card && card.mv <= maxMv &&
+          filter: (game, card, ctrl) => card.owner === ctrl && card !== data.card && card.mv <= maxMv &&
             ['Creature', 'Artifact', 'Enchantment', 'Land', 'Planeswalker', 'Battle'].some(type => card.is(type)),
           aiHint: { goal: 'reanimate' },
         }];
       },
       run: async ctx => {
-        if (ctx.src.meta._pucaReturnTurn === ctx.g.turnNo) return;
         const card = ctx.targets[0];
         if (card && card.zone === 'graveyard') {
-          ctx.g.remove(card); card.zone = 'hand'; ctx.you.hand.push(card);
-          ctx.src.meta._pucaReturnTurn = ctx.g.turnNo;
-        }
+          await ctx.g.move(card, 'hand');
+        } else return false;
       },
     }],
   };

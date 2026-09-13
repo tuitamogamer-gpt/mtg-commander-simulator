@@ -566,10 +566,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Leonardo, the Balance'] = {
     triggers: [{
-      on: 'tokensCreated', desc: '+1/+1 to all (1×/turn)', opt: true,
-      filter: (g, self, d) => d.ctrl === self.ctrl && self.meta._leonardoUsedTurn !== g.turnNo,
+      on: 'etb', desc: '+1/+1 to all (1×/turn)', opt: true, oncePerTurnOnUse: '_leonardoUsedTurn',
+      filter: (g, self, d) => d.card.isToken && d.card.ctrl === self.ctrl && self.meta._leonardoUsedTurn !== g.turnNo,
       run: async ctx => {
-        ctx.src.meta._leonardoUsedTurn = ctx.g.turnNo;
         for (const c of ctx.g.creatures(ctx.you)) ctx.g.addCounters(c, '+1/+1', 1);
       },
     }],
@@ -1246,8 +1245,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Ainok Strike Leader'] = {
     triggers: [{
-      on: 'attacks', desc: 'Goblins attack', oncePerTurn: true,
-      filter: (g, self, d) => d.card === self || (d.card.commander && d.card.ctrl === self.ctrl),
+      on: 'attackersDeclared', desc: 'Goblins attack',
+      filter: (g, self, d) => d.player === self.ctrl && d.attackers.some(entry => {
+        const card = entry.card || entry;
+        return card === self || card.commander;
+      }),
       run: async ctx => {
         for (const o of E.eachOpp(ctx.g, ctx.you)) {
           await ctx.g.makeTokens('goblin', ctx.you, {

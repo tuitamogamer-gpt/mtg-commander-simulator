@@ -79,12 +79,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   SC['G\'raha Tia, Scion Reborn'] = {
     triggers: [{
-      on: 'castNonCreature', desc: 'Pay X life: Hero with X counters', opt: true, oncePerTurn: true,
+      on: 'castNonCreature', desc: 'Pay X life: Hero with X counters', opt: true, oncePerTurnOnUse: '_grahaHeroTurn',
       aiHint: { kind: 'scionsHeroLife' },
       filter: (g, self, d) => d.player === self.ctrl,
       run: async ctx => {
-        const x = ctx.data.card ? mvOf(ctx.data.card) : 0;
-        if (!x || ctx.you.life <= x) return;
+        const x = ctx.data.mv ?? (ctx.data.card ? mvOf(ctx.data.card) : 0);
+        if (ctx.you.life < x || ctx.g.canPayLife && !ctx.g.canPayLife(ctx.you, x)) return false;
         await ctx.g.loseLife(ctx.you, x, "G'raha Tia");
         const made = await ctx.g.makeTokens('hero11', ctx.you);
         if (made[0]) ctx.g.addCounters(made[0], '+1/+1', x);
@@ -343,7 +343,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Krile Baldesion'] = {
     triggers: [{
-      on: 'castNonCreature', desc: 'Return a creature with the same MV', opt: true, oncePerTurn: true,
+      on: 'castNonCreature', desc: 'Return a creature with the same MV', opt: true, oncePerTurnOnUse: '_krileReturnTurn',
       filter: (g, self, d) => d.player === self.ctrl && self.ctrl.graveyard.some(card =>
         card.is('Creature') && mvOf(card) === (d.card ? mvOf(d.card) : -1)),
       targets: (g, self, d) => [{
@@ -584,7 +584,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return (info.castOpts && info.castOpts.from === 'graveyard') ? -2 : 0;
     }],
     triggers: [{
-      on: 'lifeLost', desc: 'Cast an instant or sorcery from the graveyard', opt: true, oncePerTurn: true,
+      on: 'lifeLost', desc: 'Cast an instant or sorcery from the graveyard', opt: true, oncePerTurnOnUse: '_emetCastTurn',
       aiHint: { kind: 'scionsGraveCast', free: false },
       filter: (g, self, d) => d.player && d.player !== self.ctrl &&
         self.ctrl.graveyard.some(card => card.is('Instant') || card.is('Sorcery')),
@@ -594,7 +594,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }],
       run: async ctx => {
         const card = ctx.targets[0];
-        if (card) await castGraveyardCard(ctx.g, ctx.you, card, false);
+        return card ? castGraveyardCard(ctx.g, ctx.you, card, false) : false;
       },
     }],
   };

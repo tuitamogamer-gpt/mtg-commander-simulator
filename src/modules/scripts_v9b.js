@@ -79,7 +79,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Baron Strucker, HYDRA Overlord'] = {
     costMods: [(g, self, q) => (q.player === self.ctrl && q.card.is('Creature') && (q.card.def.subtypes || []).includes(MTG.c1719TextType(g,'Villain'))) ? -1 : 0],
     triggers: [{
-      on: 'etb', desc: 'Connive (1×/turn)', oncePerTurn: true, opt: true,
+      on: 'etb', desc: 'Connive (1×/turn)', oncePerTurnOnUse: '_baronConniveTurn', opt: true,
       filter: (g, self, d) => d.card.ctrl === self.ctrl && d.card !== self && d.card.is('Creature') && d.card.hasSub(MTG.c1719TextType(g,'Villain')),
       run: async ctx => { await ctx.g.connive(ctx.data.card); },
     }],
@@ -231,7 +231,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   };
   SC['Lady Loki, Agent of Chaos'] = {
     triggers: [{
-      on: 'cast', desc: 'Chaos swap', oncePerTurn: true,
+      on: 'cast', desc: 'Chaos swap', oncePerTurn: true, firstTimeEachTurn: true,
       filter: (g, self, d) => d.player === self.ctrl &&
         (d.card.is('Instant') || d.card.is('Sorcery') || d.card.hasSub(MTG.c1719TextType(g,'Villain'))),
       run: async ctx => {
@@ -1379,7 +1379,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Valeria Richards, Precocious'] = {
     costMods: [(g, self, q) => (q.player === self.ctrl && !q.card.is('Creature')) ? -1 : 0],
     triggers: [{
-      on: 'cast', desc: 'Draw (1st noncreature)', oncePerTurn: true,
+      on: 'cast', desc: 'Draw (1st noncreature)', oncePerTurn: true, firstTimeEachTurn: true,
       filter: (g, self, d) => d.player === self.ctrl && !d.card.is('Creature') && !d.card.is('Land'),
       run: async ctx => { await ctx.g.draw(ctx.you, 1); },
     }],
@@ -1775,7 +1775,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Cosmic Crucible'] = {
     triggers: [
       {
-        on: 'precombatMain', desc: '4 mana', oncePerTurn: true, filter: (g, self, d) => d.player === self.ctrl,
+        on: 'precombatMain', desc: '4 mana', oncePerTurn: true, firstTimeEachTurn: true, filter: (g, self, d) => d.player === self.ctrl,
         run: async ctx => {
           const made = [];
           for (let i = 0; i < 4; i++) {
@@ -1791,12 +1791,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         },
       },
       {
-        on: 'castNonCreature', desc: 'Copy', oncePerTurn: true, opt: true,
+        on: 'castNonCreature', desc: 'Copy', oncePerTurnOnUse: '_cosmicCopyTurn', opt: true,
         filter: (g, self, d) => d.player === self.ctrl,
         aiHint: { kind: 'cosmicCopy' },
         run: async ctx => {
           const so = ctx.data.so;
           if (so && ctx.g.stack.includes(so)) await ctx.g.copySpell(so, ctx.you, { mayNewTargets: true });
+          else return false;
         },
       },
     ],

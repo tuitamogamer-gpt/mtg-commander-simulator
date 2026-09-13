@@ -1006,7 +1006,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         run: async ctx => { ctx.g.addCounters(ctx.src, '+1/+1', 1, false, ctx.you); E.grantUntilEOT(ctx.g, ctx.src, ['indestructible']); },
       },
       {
-        on: 'dealtDamage', desc: 'Counters from damage', oncePerTurn: true,
+        on: 'dealtDamage', desc: 'Counters from damage', oncePerTurn: true, firstTimeEachTurn: true,
         filter: (g, self, d) => d.target === self && d.n > 0,
         run: async ctx => { if (ctx.src.zone === 'battlefield') ctx.g.addCounters(ctx.src, '+1/+1', ctx.data.n, false, ctx.you); },
       },

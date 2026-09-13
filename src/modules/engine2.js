@@ -4010,6 +4010,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         this.lg(`${so.name}: all targets are illegal — trigger fizzles.`);
         return;
       }
+      const useKey = so.ctx.oncePerTurnOnUse;
+      const useMeta = so.ctx.sourceMeta || so.ctx.src?.meta;
+      const previousUse = useKey && useMeta[useKey];
+      if (useKey && previousUse === this.turnNo) return;
       if(so.ctx.optionalTrigger){
         const choice=so.ctx.optionalTrigger;
         const yes=await so.ctrl.controller.decide(this,{
@@ -4019,7 +4023,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         });
         if(yes!=='yes')return;
       }
-      if (so.run) await so.run(so.ctx);
+      // "Do this only once" is consumed by accepting the action, not by
+      // triggering, declining, or countering the ability. Copies share the
+      // original source object's record, including after it leaves the field.
+      if (useKey) useMeta[useKey] = this.turnNo;
+      const result = so.run ? await so.run(so.ctx) : false;
+      // Card scripts return false when an optional action could not be taken
+      // (for example, the player could not cast the offered graveyard spell).
+      if (useKey && result === false) {
+        if (previousUse === undefined) delete useMeta[useKey];
+        else useMeta[useKey] = previousUse;
+      }
       if(so.sagaChapter)await this.emit('cwwSagaResolved',{card:so.srcCard,player:so.ctrl,chapter:so.ctx.data.chapter,final:so.ctx.data.chapter===(so.srcCard.def.saga||[]).length});
       MTG.StateTriggers?.afterResolve(this,so);
       } finally {
