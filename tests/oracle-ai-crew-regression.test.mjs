@@ -41,8 +41,9 @@ function permanent(game, player, definition) {
   return card;
 }
 
-function aiGame(seed = 9201) {
-  const game = new MTG.Game({ seed, paced: false, maxTurns: 4, difficulty: 'hard' });
+function aiGame(seed = 9201, difficulty = 'hard', search = false) {
+  const game = new MTG.Game({ seed, paced: search, maxTurns: 4, difficulty });
+  game.pace = async () => {};
   const bot = game.addPlayer('Crew bot', { name: 'Crew regression' }, null, true);
   const opponent = game.addPlayer(
     'Crew opponent',
@@ -50,7 +51,7 @@ function aiGame(seed = 9201) {
     { decide: async (currentGame, query) => fallbackDecision(query) },
     false,
   );
-  bot.controller = new MTG.AIController(bot, { difficulty: 'hard', style: 'balanced' });
+  bot.controller = new MTG.AIController(bot, { difficulty, style: 'balanced' });
   bot.life = 40;
   opponent.life = 3;
   game.turnNo = 7;
@@ -133,4 +134,95 @@ test('lokalni AI uvijek vidi minimalni Crew singleton iza mnogo 0-power kandidat
   assert.ok((game.aiDecisionLog || []).some(decision => decision.playerId === bot.idx &&
     decision.chosen === 'Cards: Only useful Crew pilot'),
   'real AI decision evidence contains the minimal singleton');
+});
+
+for (const difficulty of ['easy', 'normal', 'hard']) {
+  for (const search of [false, true]) {
+    test(`${difficulty}, search=${search}: Saheeli crews Battlewagon and it deals combat damage`, async () => {
+      const { game, bot, opponent } = aiGame(9210, difficulty, search);
+      bot.deckName = 'Living Energy';
+      opponent.life = 40;
+      const vehicle = permanent(game, bot, 'Bespoke Battlewagon');
+      const pilot = permanent(game, bot, 'Saheeli, Radiant Creator');
+
+      await game.mainPhase(bot);
+      assert.equal(pilot.tapped, true, 'Saheeli pays Crew 4');
+      assert.equal(vehicle.is('Creature'), true);
+      assert.equal(vehicle.tapped, false, 'does not exchange the prepared attack for two energy');
+      assert.equal(bot.counters.energy || 0, 0);
+
+      await game.combatPhase(bot);
+      assert.equal(opponent.life, 35, 'Battlewagon remains ready through beginning of combat and hits for five');
+      assert.equal(vehicle.tapped, true, 'declaring the attack taps the Vehicle');
+      if (search) assert.ok(game.aiDecisionLog.some(row => row.analyzedNodes > 0), 'exercises browser search');
+      assert.ok(!game.aiDecisionLog.some(row => row.fallback));
+      assert.ok(!game.log.some(row => /AI V2 fallback/.test(row.msg)));
+    });
+  }
+
+  for (const state of ['tapped', 'sick', 'main2', 'attack restriction', 'losing attack']) {
+    test(`${difficulty}: does not waste Saheeli on Battlewagon Crew with ${state}`, async () => {
+      const { game, bot, opponent } = aiGame(9211, difficulty);
+      opponent.life = 40;
+      const vehicle = permanent(game, bot, 'Bespoke Battlewagon');
+      const pilot = permanent(game, bot, 'Saheeli, Radiant Creator');
+      if (state === 'tapped') vehicle.tapped = true;
+      if (state === 'sick') vehicle.sick = true;
+      if (state === 'main2') game.phase = 'main2';
+      if (state === 'attack restriction') {
+        game.untilEffects.push({ kind: 'cantAttackPlayer', who: bot, notPlayer: opponent });
+      }
+      if (state === 'losing attack') permanent(game, opponent, synthetic('Impassable blocker', ['Creature'], {
+        power: '20', toughness: '20',
+      }));
+      game.recalc();
+      assert.ok(game.activatableList(bot).some(entry => entry.card === vehicle && entry.crew),
+        'Crew remains legal in the rules engine');
+
+      await game.mainPhase(bot);
+      assert.equal(pilot.tapped, false, 'AI preserves its pilot');
+      assert.equal(vehicle.meta.crewedTurn, undefined);
+      if (['sick', 'main2'].includes(state)) {
+        assert.equal(bot.counters.energy, 2, 'idle Vehicle can still generate energy');
+      }
+    });
+  }
+}
+
+test('a summoning-sick pilot can crew an older Vehicle for an attack', async () => {
+  const { game, bot, opponent } = aiGame(9212);
+  opponent.life = 40;
+  const vehicle = permanent(game, bot, 'Bespoke Battlewagon');
+  const pilot = permanent(game, bot, 'Saheeli, Radiant Creator');
+  pilot.sick = true;
+  await game.mainPhase(bot);
+  assert.equal(pilot.tapped, true);
+  assert.equal(vehicle.tapped, false);
+  await game.combatPhase(bot);
+  assert.equal(opponent.life, 35);
+});
+
+test('a hasty new Vehicle can crew and attack', async () => {
+  const { game, bot, opponent } = aiGame(9213);
+  opponent.life = 40;
+  const vehicle = permanent(game, bot, synthetic('Hasty Vehicle', ['Artifact'], {
+    subtypes: ['Vehicle'], crew: 1, power: '4', toughness: '4', kws: ['haste'],
+  }));
+  vehicle.sick = true;
+  const pilot = permanent(game, bot, synthetic('Pilot'));
+  await game.mainPhase(bot);
+  assert.equal(pilot.tapped, true);
+  await game.combatPhase(bot);
+  assert.equal(opponent.life, 36);
+});
+
+test('an untapped animated Vehicle can use its tap ability after combat', async () => {
+  const { game, bot } = aiGame(9214);
+  const vehicle = permanent(game, bot, 'Bespoke Battlewagon');
+  vehicle.meta.crewedTurn = game.turnNo;
+  game.phase = 'main2';
+  game.recalc();
+  await game.mainPhase(bot);
+  assert.equal(vehicle.tapped, true);
+  assert.equal(bot.counters.energy, 2);
 });

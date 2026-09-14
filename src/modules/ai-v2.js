@@ -1443,6 +1443,24 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return attackAssignmentAssessment(game, player, card, target, priorAttackers, ctx).score;
   }
 
+  function beforeOwnAttackers(game, player) {
+    return game.turnPlayer === player && (game.phase === 'main1' ||
+      game.phase === 'combat' && game.step === 'begin');
+  }
+
+  // Value the attack enabled by proactive Crew before spending its pilots.
+  // Project only the Vehicle's creature type; its age, tap state and attack
+  // restrictions remain unchanged. Never mutate the live permanent here.
+  function vehicleAttackValue(game, player, source) {
+    if (!beforeOwnAttackers(game, player) || source.tapped ||
+      source.sick && !source.kw('haste') || !game.canAttackAtAll(source)) return 0;
+    const body = Object.create(source);
+    body.cur = { ...source.cur, types: [...new Set([...source.cur.types, 'Creature'])] };
+    const targets = game.legalDeclarationAttackTargets(body).filter(target =>
+      !game.diplomacyAttackBlocked || !game.diplomacyAttackBlocked(player, target));
+    return Math.max(0, ...targets.map(target => attackAssignmentScore(game, player, body, target)));
+  }
+
   // Shared per-declaration cache for the attack planner.
   function attackPlanContext(game, player) {
     const threats = new Map(), creatures = new Map(), blockTrades = new Map();
@@ -2151,6 +2169,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // ponovnog crewovanja već animiranog Vehiclea. Bez ovog AI-only filtera
         // bi svaki novi untapped creature plaćao isti Crew još jednom.
         if (entry.crew && (entry.card.is('Creature') || entry.card.meta.crewedTurn === game.turnNo)) continue;
+        if (entry.crew && vehicleAttackValue(game, player, entry.card) <= 0) continue;
         if (isStationAbility(entry) && MTG.stationPlan(game, entry.card, player).score <= 0) continue;
         if (entry.ability?.aiSacrificeKind === 'scry' && MTG.sacrificeScryPlan(game, player).score <= 0) continue;
         actions.push({ kind: 'activate', entry });
@@ -4671,6 +4690,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         if (card.attachedTo) breakdown.timing -= 9;
       }
       if (entry.crew) breakdown.combat += phase === 'main1' ? 2.5 : -0.5;
+      // Do not crew a Vehicle and then spend its attack on a routine tap
+      // ability (e.g. Battlewagon's energy/draw). This also covers the empty
+      // beginning-of-combat window; valuable responses can still outweigh
+      // the lost attack, and postcombat utility remains available.
+      if (ability?.cost?.tap && card.hasSub('Vehicle') && card.is('Creature')) {
+        const attackValue = vehicleAttackValue(game, player, card);
+        if (attackValue > 0) breakdown.combat -= 6 + attackValue;
+      }
       if (entry.cycling) breakdown.resources += player.hand.length < 4 ? 1.5 : 0.4;
       if(entry.cycling)for(const payment of game.cyclingDefinition(player,card,entry)?.oracleAdditionalCosts||[]){
         if(payment.kind==='payLife')breakdown.safety-=player.life<=payment.amount.value?10000:payment.amount.value*(player.life<10?2:0.15);
