@@ -177,6 +177,7 @@ try {
       await page.getByRole('button', { name: /^Close$/i }).last().click();
       for (const [width, height] of [[1440, 1000], [390, 844]]) {
         await page.setViewportSize({ width, height });
+        await page.waitForTimeout(150);
         const button = page.locator('.faceupactions button').first();
         await button.scrollIntoViewIfNeeded();
         const reachable = await button.evaluate(button => {
