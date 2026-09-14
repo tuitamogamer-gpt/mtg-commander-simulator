@@ -38,6 +38,7 @@
         if (card.ctrl?.lost) {card.ctrl = state.computed; continue;}
         record(game, card, card.ctrl, {legacy: true});
         card.sick = true; card.attacking = null; card.blocking = null;
+        delete card.meta.ringBearer;
         state.computed = card.ctrl;
       }
       const attachment = card.meta.oracleAuraControlAttachment;
@@ -89,7 +90,11 @@
       // default controller. Preserve its previous controller for departure LKI.
       if (controller?.lost) {card.meta.oracleExileForDepartedControl = true; continue;}
       delete card.meta.oracleExileForDepartedControl;
-      if (state.computed !== controller) {card.sick = true; card.attacking = null; card.blocking = null;}
+      if (state.computed !== controller) {
+        card.sick = true; card.attacking = null; card.blocking = null;
+        // The designation ends as soon as another player gains control.
+        delete card.meta.ringBearer;
+      }
       card.ctrl = controller;
       state.computed = controller;
     }

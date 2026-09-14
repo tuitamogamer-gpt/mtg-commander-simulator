@@ -285,20 +285,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Kad god Ring-bearera blokira stvorenje — njegov vlasnik ga
       // žrtvuje na kraju borbe (okida se za svakog blokera posebno).
       g.delayed.push({
-        on: 'becomesBlocked', once: false, ctrl: p, name: 'The Ring: blocker is sacrificed',
+        on: 'becomesBlockedByCreature', once: false, ctrl: p, name: 'The Ring: blocker is sacrificed',
         filter: (g2, d) => isBearer(d.attacker),
         run: async ctx => {
-          for (const b of (ctx.data.blockers || []).slice()) {
-            const iid = b.iid;
-            ctx.g.delayed.push({
-              on: 'endCombat', once: true, expires: 'eot', ctrl: b.ctrl,
-              name: 'The Ring: sacrifice the blocker',
-              run: async c2 => {
-                const x = c2.g.byIid(iid);
-                if (x && x.zone === 'battlefield') await c2.g.sacrifice(x.ctrl, x);
-              },
-            });
-          }
+          const iid = ctx.data.blocker.iid, version = ctx.data.blockerSnapshot.zoneVersion;
+          ctx.g.delayed.push({
+            on: 'endCombat', once: true, expires: 'eot', ctrl: p,
+            name: 'The Ring: sacrifice the blocker',
+            run: async c2 => {
+              const x = c2.g.byIid(iid);
+              if (x && x.zone === 'battlefield' && x.zoneVersion === version && !x.phasedOut) await c2.g.sacrifice(x.ctrl, x);
+            },
+          });
         },
       });
     }
@@ -326,9 +324,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (pool.length) {
       const pick = await p.controller.decide(g, {
         type: 'chooseCards', from: pool, min: 1, max: 1, prompt: 'Choose a Ring-bearer', aiHint: { kind: 'ringBearer' },
+        ringChoice: {level: em.level, currentBearer: E7.ringBearer(g, p)?.iid ?? null},
       });
       if (pick[0]) {
-        for (const c of g.bf()) if (c.ctrl === p) c.meta.ringBearer = false;
+        // Choosing a new bearer also ends the phased-out old designation.
+        for (const c of g.battlefield) if (c.ctrl === p) c.meta.ringBearer = false;
         pick[0].meta.ringBearer = true;
         g.lg(`💍 ${pick[0].name} is the Ring-bearer (The Ring, level ${em.level}).`);
       }

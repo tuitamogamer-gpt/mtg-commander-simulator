@@ -3184,6 +3184,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     async emit(name, data) {
+      // A blocker may leave before its triggered ability reaches the Stack.
+      // Retain the battlefield incarnation at the event, not at resolution.
+      if (name === 'becomesBlockedByCreature' && data?.blocker) {
+        data = {...data, blockerSnapshot: this.snapshot(data.blocker)};
+      }
       if(['dealtDamage','damageToPlayer'].includes(name)&&data?.n>0&&data.src?.meta){
         const source=data.src,record=source.meta.dealtDamageV9;
         if(!record||record.turn!==this.turnNo)source.meta.dealtDamageV9={turn:this.turnNo,players:[]};
@@ -3584,6 +3589,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const sequential = bound.some(spec => spec.differentFromPrevious || spec.differentFromAllPrevious || spec.dependentFilter);
       if (!sequential) return bound.every(spec => {
         const pool = this.legalTargets(spec, src, ctrl);
+        if (spec.sameGraveyard) return minimum(spec) === 0 || pool.some(card =>
+          pool.filter(candidate => candidate.owner === card.owner).length >= minimum(spec));
         return (spec.distinctCtrl ? new Set(pool.filter(card => card.ctrl).map(card => card.ctrl)).size + pool.filter(card => !card.ctrl).length : pool.length) >= minimum(spec);
       });
       // Separate target instructions may require different objects. Check a
@@ -3604,6 +3611,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (picks.length === count) return visit(index + 1, previous.concat([(spec.count ?? 1) === 1 ? picks[0] : picks]));
           for (let i = start; i <= pool.length - (count - picks.length); i++) {
             if (spec.distinctCtrl && picks.some(card => card.ctrl === pool[i].ctrl)) continue;
+            if (spec.sameGraveyard && picks.some(card => card.owner !== pool[i].owner)) continue;
             if (choose(i + 1, picks.concat(pool[i]), count)) return true;
           }
           return false;

@@ -3092,14 +3092,30 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
     // The Ring — emblem uz komandera. Prikazuje nivo i koje su od četiri
     // sposobnosti već stečene (kumulativno se dobijaju odozgo nadolje).
-    ringCard(me, em) {
-      const bearer = this.game.bf().find(c => c.ctrl === me && c.meta.ringBearer);
-      const abil = [
+    ringAbilities() {
+      return [
         "Your Ring-bearer is legendary and can't be blocked by creatures with greater power.",
         'Whenever your Ring-bearer attacks, draw a card, then discard a card.',
-        'Whenever your Ring-bearer becomes blocked by a creature, its controller sacrifices it at end of combat.',
+        'Whenever a creature blocks your Ring-bearer, that blocking creature’s controller sacrifices it at end of combat.',
         'Whenever your Ring-bearer deals combat damage to a player, each opponent loses 3 life.',
       ];
+    }
+
+    ringChoiceGuide(q) {
+      const {level, currentBearer} = q.ringChoice;
+      const current = q.from.find(card => card.iid === currentBearer);
+      const guide = el('section', 'ringchoiceguide');
+      guide.setAttribute('aria-label', 'Ring abilities for this choice');
+      guide.innerHTML = `<h3>The Ring · Level ${level}/4</h3>` +
+        '<p>Choose one creature you control. You can keep the same bearer. This choice does not target.</p>' +
+        `<ol>${this.ringAbilities().map((text, index) => `<li class="${index < level ? 'active' : 'locked'}"><b>${index < level ? 'ACTIVE' : 'FUTURE LEVEL'}</b><span>${esc(text)}</span></li>`).join('')}</ol>` +
+        `<p>${current ? `Current bearer: <b>${esc(current.name)}</b>. ` : ''}Your Ring keeps its abilities when its bearer leaves. The bearer loses its status if another player gains control of it.</p>`;
+      return guide;
+    }
+
+    ringCard(me, em) {
+      const bearer = this.game.bf().find(c => c.ctrl === me && c.meta.ringBearer);
+      const abil = this.ringAbilities();
       const d = el('div', 'czcard ringcard');
       d.innerHTML = `
         <div class="ringart">${U.icon('ring')}</div>
@@ -3722,6 +3738,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           instruction.appendChild(el('div', 'targetinstructiontext', esc(proliferate
             ? 'Choose any number of players and permanents with counters.' : q.prompt || 'Choose a target')));
           body.appendChild(instruction);
+          if (q.spec?.sameGraveyard) body.appendChild(el('div', 'targetprompthint targetconstraint',
+            'Choose all cards from one graveyard. Clear your selection to switch graveyards.'));
           if (q.previousTargets?.some(target => [target].flat().filter(Boolean).length)) {
             const previous = el('div', 'targetprevious');
             q.previousTargets.forEach((targets, index) => {
@@ -4090,6 +4108,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       if (q.type === 'chooseCards') {
         m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Choose cards') + ` (${q.min}-${q.max})`));
+        if (q.ringChoice) m.appendChild(this.ringChoiceGuide(q));
         m.appendChild(this.cardGrid(g, q.from, { min: q.min, max: q.max }));
         m.appendChild(el('div', 'selectionreview', `<b>${pd.sel.length} selected · ${pd.sel.length >= q.min ? 'ready to confirm' : `${q.min - pd.sel.length} more required`}</b><span>${pd.sel.length ? pd.sel.map(card => esc(card.name)).join(' · ') : 'No cards selected.'}</span>`));
         const row = el('div', 'btnrow');
@@ -4463,10 +4482,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
 
     // ---------- targeting ----------
+    targetSelectionAllows(card) {
+      const pd = this.pending;
+      if (pd?.q.type !== 'chooseTargets') return false;
+      if (pd.q.spec?.distinctCtrl && card?.ctrl && pd.sel.some(selected => selected !== card && selected.ctrl === card.ctrl)) return false;
+      if (pd.q.spec?.sameGraveyard && pd.sel.some(selected => selected.owner !== card.owner)) return false;
+      return true;
+    }
     targetZoneCandidates(player, zone) {
       const q = this.pending?.q;
       if (q?.type !== 'chooseTargets' || !['graveyard', 'exile', 'command'].includes(zone)) return [];
-      return (q.candidates || []).filter(card => (player[zone] || []).includes(card));
+      return (q.candidates || []).filter(card => (player[zone] || []).includes(card) && this.targetSelectionAllows(card));
     }
     targetChoiceZones() {
       return (this.game?.players || []).flatMap(player => ['graveyard', 'exile', 'command'].flatMap(zone => {
@@ -4492,7 +4518,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       const pd = this.pending;
       if (!pd || pd.q.type !== 'chooseTargets') return false;
-      if (pd.q.spec && pd.q.spec.distinctCtrl && x && x.ctrl && pd.sel.some(s => s !== x && s.ctrl === x.ctrl)) return false;
+      if (!this.targetSelectionAllows(x)) return false;
       return pd.sel.length < pd.q.max && pd.q.candidates.includes(x) && !pd.sel.includes(x);
     }
     selectedTargetIndex(x) {
@@ -4531,7 +4557,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!pd) return;
       if (pd.sel.includes(x)) { this.removeTargetCandidate(x); return; }
       if (pd.sel.length >= pd.q.max) return;
-      if (pd.q.type === 'chooseTargets' && pd.q.spec && pd.q.spec.distinctCtrl && x && x.ctrl && pd.sel.some(s => s.ctrl === x.ctrl)) return;
+      if (pd.q.type === 'chooseTargets' && !this.isCandidate(x)) return;
       pd.sel.push(x);
       this.render();
     }

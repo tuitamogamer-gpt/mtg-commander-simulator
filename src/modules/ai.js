@@ -972,7 +972,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const p = this.p;
       const min = q.min !== undefined ? q.min : 1;
       const max = q.max || 1;
-      const pick = (sorted) => sorted.slice(0, Math.max(min, Math.min(max, sorted.length)));
+      const pick = sorted => {
+        if (q.spec?.sameGraveyard) {
+          const groups = new Map();
+          for (const card of sorted) {
+            if (!groups.has(card.owner)) groups.set(card.owner, []);
+            groups.get(card.owner).push(card);
+          }
+          sorted = [...groups.values()].find(group => group.length >= min) || [];
+        }
+        return sorted.slice(0, Math.max(min, Math.min(max, sorted.length)));
+      };
       if (q.aiHint?.deathReturn) return pick(cands.slice().sort((a, b) =>
         MTG.deathReturnTargetValue(g, p, b) - MTG.deathReturnTargetValue(g, p, a)));
       if(q.aiHint?.oracleNameGroup){

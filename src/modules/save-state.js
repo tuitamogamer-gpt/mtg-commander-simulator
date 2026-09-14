@@ -126,7 +126,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       life: player.life,
       startingLife: player.startingLife,
       poison: Number(player.poison) || 0,
-      counters: {energy: Number(player.counters?.energy) || 0, ...(player.counters?.experience ? {experience: player.counters.experience} : {})},
+      counters: {energy: Number(player.counters?.energy) || 0, ...(player.counters?.experience ? {experience: player.counters.experience} : {}), ...(player.counters?.rad ? {rad: player.counters.rad} : {})},
       lost: !!player.lost,
       landsPlayed: Number(player.landsPlayed) || 0,
       maxLands: Number(player.maxLands) || 1,
@@ -325,6 +325,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         d.path.at(-1) === d.room && d.path.every((key, i) => !!rooms[key] && (!i || rooms[d.path[i - 1]].next.includes(key)));
     }), 'invalid dungeon path.');
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.counters?.experience??0)&&(player.counters?.experience??0)>=0), 'invalid player experience counters.');
+    assert(snapshot.players.every(player=>Number.isSafeInteger(player.counters?.rad??0)&&(player.counters?.rad??0)>=0), 'invalid player rad counters.');
     assert(snapshot.players.every(player=>Number.isSafeInteger(player.bdfApproaches??0)&&(player.bdfApproaches??0)>=0), 'invalid Approach casting history.');
     assert(validDamageHistory(snapshot.damageHistory, snapshot.turnNo), 'invalid damage history.');
     const landTypeEffects=snapshot.landTypeEffects??[];
@@ -417,7 +418,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       player.life = saved.life;
       player.startingLife = saved.startingLife;
       player.poison = saved.poison;
-      player.counters = {energy: saved.counters?.energy || 0, ...(saved.counters?.experience ? {experience: saved.counters.experience} : {})};
+      player.counters = {energy: saved.counters?.energy || 0, ...(saved.counters?.experience ? {experience: saved.counters.experience} : {}), ...(saved.counters?.rad ? {rad: saved.counters.rad} : {})};
       player.lost = saved.lost;
       player.landsPlayed = saved.landsPlayed;
       player.maxLands = saved.maxLands;
@@ -485,7 +486,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       active: game.turnPlayer ? game.turnPlayer.idx : null,
       monarch: game.monarch ? game.monarch.idx : null,
       players: game.players.map(player => ({
-        idx: player.idx, life: player.life, poison: player.poison || 0, energy: player.counters?.energy || 0, experience: player.counters?.experience || 0, lost: !!player.lost,
+        idx: player.idx, life: player.life, poison: player.poison || 0, energy: player.counters?.energy || 0, experience: player.counters?.experience || 0, rad: player.counters?.rad || 0, lost: !!player.lost,
         commanderDamage: Object.entries(player.commanderDamage || {}).sort(),
         zones: ['library', 'hand', 'graveyard', 'exile', 'command'].map(zone =>
           player[zone].map(card => `${card.name}#${card.iid}`).sort().join(',')),

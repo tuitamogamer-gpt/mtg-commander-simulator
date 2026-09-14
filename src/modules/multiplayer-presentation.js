@@ -181,7 +181,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     'effectKind', 'eligible', 'forSpell', 'forced', 'free', 'from', 'kind', 'lands', 'max', 'min', 'mulls', 'n',
     'names', 'opponents', 'options', 'opts', 'player', 'potential', 'reason', 'repeats', 'revealedCards', 'source',
     'sources', 'spec', 'src', 'stackObject', 'status', 'sub', 'suggested', 'surveil', 'target', 'targets', 'title', 'triggers', 'values', 'quickTarget',
-    'targetStep', 'targetSteps', 'previousTargets', 'dungeonChoice'];
+    'targetStep', 'targetSteps', 'previousTargets', 'dungeonChoice', 'ringChoice'];
   const decisionTypes = new Set(['threatAlert', 'cardReveal', 'combatReview', 'effectReview', 'manualResolve', 'diplomacyReview',
     'mulligan', 'chooseOption', 'chooseMulti', 'chooseX', 'bottomCards', 'chooseCards', 'chooseTargets', 'chooseManaSources',
     'orderTriggers', 'scry', 'attackers', 'blockers', 'main', 'priority']);
@@ -228,6 +228,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       descriptor.bounds = Object.fromEntries((q.attackers || []).map(card => [token(card), data(game.blockerBounds(card))]));
     }
     if (q.type === 'chooseTargets' && q.spec?.distinctCtrl) descriptor.distinctControllers = true;
+    if (q.type === 'chooseTargets' && q.spec?.sameGraveyard) descriptor.sameGraveyard = true;
     descriptor.objects = [...enc.objects.values()];
     descriptor.zoneVersions = Object.fromEntries(descriptor.objects.map(object => [object.token, object.zoneVersion]));
     // Legacy descriptions are retained for protocol inspection, with the same
@@ -256,6 +257,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (descriptor.distinctControllers && Array.isArray(response)) {
       const owners = response.map(id => game.byIid(Number(id.slice(2)))?.ctrl);
       if (new Set(owners).size !== owners.length) throw new Error('Choose targets controlled by different players.');
+    }
+    if (descriptor.sameGraveyard && Array.isArray(response)) {
+      const owners = response.map(id => game.byIid(Number(id.slice(2)))?.owner);
+      if (new Set(owners).size > 1) throw new Error('Choose all targets from the same graveyard.');
     }
   };
 

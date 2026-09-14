@@ -263,6 +263,13 @@ img { -webkit-user-drag: none; }
 .ringpip.on { background: linear-gradient(90deg,var(--ds-accent-bright),#d99a3a); }
 .ringab { font-size: 12px; line-height: 1.45; color: var(--ds-muted); margin: 5px 0; }
 .ringab.on { color: #e8e8ea; }
+.ringchoiceguide { margin: 12px 0 18px; padding: 14px; border: 1px solid #ad8b4d; border-radius: 8px; background: #211b12; color: #f2e9d7; }
+.ringchoiceguide h3 { margin: 0 0 8px; font-size: 18px; }
+.ringchoiceguide p { margin: 8px 0; font-size: 14px; line-height: 1.5; }
+.ringchoiceguide ol { display: grid; gap: 8px; margin: 12px 0; padding-left: 24px; }
+.ringchoiceguide li { padding-left: 4px; font-size: 14px; line-height: 1.5; }
+.ringchoiceguide li b { display: block; color: #f2cc82; font-size: 11px; letter-spacing: .06em; }
+.ringchoiceguide li.locked, .ringchoiceguide li.locked b { color: #b3afa6; }
 .hintact { color: #4ab8d9; }
 .helptext { font-size: 12.5px; line-height: 1.55; color: #cdd; }
 .promptbar { background: #1a1e26; border-top: 1px solid #2a2f3a; padding: 7px 10px; display: flex; flex-direction: column; gap: 6px; }

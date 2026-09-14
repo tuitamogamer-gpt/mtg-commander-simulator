@@ -2178,13 +2178,19 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // A search-width limit cannot turn a mandatory twenty-target spell into
       // an empty choice. Keep enough distinct legal candidates to pay the
       // announced target count; optional targets remain bounded as before.
-      ranked = ranked.slice(0, Math.max(config.targetLimit, q.min || 0));
+      if (!q.spec?.sameGraveyard) ranked = ranked.slice(0, Math.max(config.targetLimit, q.min || 0));
       if (q.aiHint && ['proliferate', 'depthshaker'].includes(q.aiHint.goal)) {
         const strategic = ranked.filter(target => targetValue(game, player, target, q) > 0).slice(0, q.max || ranked.length);
         actions.push({ kind: 'chooseTargets', picks: strategic });
       }
-      const maxTargets = affordableStriveTargets(game, player, q, Math.min(q.max ?? 1, ranked.length));
-      for (const picks of combinations(ranked, q.min || 0, maxTargets, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseTargets', picks });
+      const groups = q.spec?.sameGraveyard
+        ? [...new Set(ranked.map(card => card.owner))].map(owner => ranked.filter(card => card.owner === owner))
+        : [ranked];
+      for (const group of groups) {
+        const candidates = group.slice(0, Math.max(config.targetLimit, q.min || 0));
+        const maxTargets = affordableStriveTargets(game, player, q, Math.min(q.max ?? 1, candidates.length));
+        for (const picks of combinations(candidates, q.min || 0, maxTargets, Math.max(config.beamWidth * 2, 12))) actions.push({ kind: 'chooseTargets', picks });
+      }
     } else if (q.type === 'chooseCards') {
       if (q.aiHint?.kind === 'stationTap' && q.aiHint.src?.def.stationCreatureAt) {
         const plan = MTG.stationPlan(game, q.aiHint.src, player, q.from);
