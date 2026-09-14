@@ -457,7 +457,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       typeof c.def.uncounterableSpells === 'function' && c.def.uncounterableSpells(g, c, so));
   };
   const T = MTG.T = {
-    creature: (o) => Object.assign({ what: 'creature', filter: (g, c) => c.zone === 'battlefield' && c.is('Creature') }, o),
+    creature: (o) => {
+      const filter = o?.filter;
+      // Additional restrictions must retain the base creature requirement.
+      return Object.assign({ what: 'creature' }, o, {
+        filter: (g, c, ctrl, src) => c.zone === 'battlefield' && c.is('Creature') && (!filter || filter(g, c, ctrl, src)),
+      });
+    },
     oppCreature: (o) => Object.assign({
       what: 'creature',
       filter: (g, c, ctrl) => c.zone === 'battlefield' && c.is('Creature') && c.ctrl !== ctrl,

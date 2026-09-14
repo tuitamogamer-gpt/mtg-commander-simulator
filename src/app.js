@@ -462,6 +462,7 @@ import './modules/loader.js';
 import './modules/arena-render.js';
 import './modules/dungeon-guide.js';
 import './modules/ui.js';
+import './modules/mutate-ui.js';
 import './modules/player-tools.js';
 import './modules/game-audio.js';
 import './modules/game-audio-ui.js';

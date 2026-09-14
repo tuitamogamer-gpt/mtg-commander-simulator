@@ -4233,6 +4233,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         return ov;
       }
       if (q.type === 'chooseOption') {
+        if (q.mutateChoice) {
+          m.classList.add('mutate-order-modal');
+          m.appendChild(this.renderMutateOrder(q));
+          return ov;
+        }
         if (q.dungeonChoice) {
           m.classList.add('dungeonmodal');
           m.appendChild(el('div', 'mtitle', esc(q.prompt || 'Choose your dungeon route')));

@@ -453,3 +453,93 @@ body.game-active #game.command-table .ct-decision-rail.has-targets .targetprompt
 #game .live-arena-status { position: fixed; top: 4px; left: 50%; transform: translateX(-50%); max-width: min(90%, 700px); padding: 8px 14px; border: 1px solid var(--ds-accent); border-radius: 8px; background: var(--ds-dialog); color: var(--ds-text); font: 12px var(--ds-font-body); z-index: 3000; }
 #game .live-arena-status[hidden] { display: none; }
 .mutatetag { position: absolute; top: 28px; left: 3px; z-index: 3; max-width: calc(100% - 6px); padding: 2px 4px; border: 1px solid #8cbaa3; border-radius: 3px; background: #122e25e8; color: #e1ffef; font-size: 8px; line-height: 1.2; font-weight: 700; letter-spacing: .03em; }
+
+/* Mutate remains one interactive permanent, with its physical cards underneath. */
+#game .mini.mutated {
+  --mutate-peek: 18px;
+  isolation: isolate;
+  overflow: visible;
+  margin-bottom: calc(5px + var(--mutate-peek-count) * var(--mutate-peek));
+}
+body.game-active #game.command-table .mini.mutated {
+  margin-bottom: calc(5px + var(--mutate-peek-count) * var(--mutate-peek));
+}
+#game .mini.mutated::before { border-radius: inherit; }
+#game .mini.mutated > .mutate-underlay {
+  position: absolute;
+  inset: -2px;
+  z-index: calc(-1 * var(--mutate-layer));
+  transform: translate(calc(var(--mutate-layer) * 2px), calc(var(--mutate-layer) * var(--mutate-peek)));
+  overflow: hidden;
+  border: 1px solid #709e89;
+  border-radius: 6px;
+  background: #183027;
+  box-shadow: 0 2px 4px #0009;
+  cursor: inherit;
+}
+#game .mini .mutate-underlay > img { inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 5px; }
+#game .mini .mutate-underlay > span {
+  position: absolute; inset: auto 0 0; height: 16px;
+  padding: 3px 2px 2px; background: #10271ff2; color: #e1ffef;
+  font: 600 8px/11px var(--ds-font-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mutate-kicker { color: #abd6c1; font: 700 10px/1.4 var(--ds-font-body); letter-spacing: .09em; }
+.mutate-explanation, .mutate-components > p { margin: 8px 0 16px; color: var(--ds-muted, #abb6b1); font-size: 13px; line-height: 1.5; }
+#game .mutate-order-modal { max-width: 620px; }
+.mutate-order .mtitle { margin: 5px 0 0; }
+.mutate-order-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.mutate-order-choice {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  min-width: 0; padding: 16px 12px; border: 1px solid #527262; border-radius: 12px;
+  background: #14201b; color: #edf5f0; font: inherit; text-align: center; cursor: pointer;
+}
+.mutate-order-choice:hover { border-color: #b0e5cd; background: #1d3027; }
+.mutate-order-choice:focus-visible { outline: 3px solid #b0e5cd; outline-offset: 3px; }
+.mutate-choice-title { font-size: 16px; font-weight: 700; }
+.mutate-choice-result { margin-top: auto; color: #afc4b9; font-size: 12px; line-height: 1.4; }
+.mutate-choice-result strong { display: block; color: #edf5f0; }
+.mutate-order-foot { margin: 14px 0 0; color: #afc4b9; font-size: 11px; line-height: 1.5; }
+.mutate-stack {
+  --mutate-offset: 27px;
+  display: grid; width: min(100%, 210px); box-sizing: border-box;
+  padding: 0 calc((var(--mutate-count) - 1) * 2px) calc((var(--mutate-count) - 1) * var(--mutate-offset)) 0;
+  isolation: isolate;
+}
+.mutate-layer {
+  grid-area: 1 / 1; position: relative; align-self: start; width: 100%; aspect-ratio: 5 / 7;
+  transform: translate(calc(var(--mutate-layer) * 2px), calc(var(--mutate-layer) * var(--mutate-offset)));
+  z-index: calc(var(--mutate-count) - var(--mutate-layer));
+  overflow: hidden; border: 1px solid #6b8275; border-radius: 8px;
+  background: #17251f; box-shadow: 0 3px 9px #0009;
+}
+.mutate-layer.incoming { border-color: #adf2cc; box-shadow: 0 0 0 2px #adf2cc, 0 3px 9px #0009; }
+.mutate-layer > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.mutate-layer-name {
+  position: absolute; inset: auto 0 0; padding: 6px 4px;
+  background: #10271ff5; color: #eefbf4; font: 600 10px/14px var(--ds-font-body);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mutate-omitted { padding: 20px 8px; color: #afc4b9; font-size: 12px; }
+.mutate-layer.hidden-card, .mutate-underlay.hidden-card, .mutate-component-body.hidden-card { background: repeating-linear-gradient(135deg, #203328 0 8px, #17271f 8px 16px); }
+.mutate-sheet-visual { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 8px 4px 4px; }
+.mutate-sheet-visual .mutate-stack { width: min(100%, 230px); }
+#game .faceupsheet .mutate-sheet-visual { min-height: 0; overflow-y: auto; padding-inline: 0; }
+.mutate-components { margin-top: 16px; }
+.mutate-components h3 { margin: 0; font-size: 15px; }
+.mutate-component { margin: 6px 0; border: 1px solid #354e41; border-radius: 8px; background: #111e18; }
+.mutate-component > summary { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px; cursor: pointer; }
+.mutate-component > summary::after { content: '+'; margin-left: auto; color: #abd6c1; }
+.mutate-component[open] > summary::after { content: '−'; }
+.mutate-component > summary strong { font-size: 12px; }
+.mutate-component > summary small { color: #afc4b9; font-size: 10px; }
+.mutate-component-position { flex: 0 0 auto; color: #abd6c1; font-size: 9px; font-weight: 700; letter-spacing: .05em; }
+.mutate-component-body { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; padding: 0 10px 12px; }
+.mutate-component-body > img { width: 100%; height: auto; border-radius: 6px; }
+.mutate-component-body > p { margin: 0; color: #c5d2ca; font-size: 12px; line-height: 1.5; }
+@media (max-width: 480px) {
+  .mutate-order-choices { gap: 10px; }
+  .mutate-order-choice { padding: 12px 8px; gap: 12px; }
+  .mutate-choice-title { font-size: 14px; }
+  .mutate-layer-name { font-size: 9px; }
+  .mutate-component-body { grid-template-columns: 90px minmax(0, 1fr); gap: 8px; }
+}

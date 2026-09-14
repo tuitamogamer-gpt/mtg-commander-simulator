@@ -16,6 +16,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   def.oracle=[top.oracle,under.oracle].filter(Boolean).join('\n');return def;
  }
  const physical=c=>({card:c,def:M.nativeGraveyardBaseDefinition(c.meta.characteristicOriginalDef||c.meta.faceDownDef||c.def),copiableDef:c.meta.faceDownDef||C.snapshotCopy(c),isToken:c.isToken,commander:c.commander,oracleFaces:c.oracleFaces,oracleFace:c.oracleFace,faceDown:!!c.faceDown});
+ const describe=def=>({name:def.name,cost:def.cost||'',types:[...(def.types||[])],subtypes:[...(def.subtypes||[])],power:def.power,toughness:def.toughness,oracle:def.oracle||''});
  const components=c=>c.mutateState?.components||[physical(c)];
  const follow=c=>components(c).map(r=>({card:r.card,zoneVersion:r.card.zoneVersion+1}));
  const snapshot=G.snapshot;G.snapshot=function(c,attachments=true){const s=snapshot.call(this,c,attachments);if(c.mutateState)s.mutateComponents=follow(c);return s;};
@@ -30,7 +31,7 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  async function resolve(g,so,host){
   if(!host||host.zone!=='battlefield'||!host.is('Creature')||host.hasSub('Human')||host.owner!==(so.isCopy?so.ctrl:so.card.owner))return false;
   const definition=so.oracleDefinition||so.card.def;
-  const choice=await so.ctrl.controller.decide(g,{type:'chooseOption',player:so.ctrl,options:[{key:'over',label:'Put '+definition.name+' on top'},{key:'under',label:'Put '+definition.name+' underneath'}],prompt:'Choose the top card of the merged creature',aiHint:{kind:'mutateOrder',card:so.card,host,definition}});
+  const choice=await so.ctrl.controller.decide(g,{type:'chooseOption',player:so.ctrl,options:[{key:'over',label:'Put '+definition.name+' on top'},{key:'under',label:'Put '+definition.name+' underneath'}],prompt:'Choose the top card of the merged creature',mutateChoice:{incoming:{...describe(definition),iid:so.card.iid,hidden:false,commander:!so.isCopy&&so.card.commander,token:!!so.isCopy},components:present(host,so.ctrl,true)},aiHint:{kind:'mutateOrder',card:so.card,host,definition}});
   if(!['over','under'].includes(choice))throw Error('Invalid mutate order');
   const previous=C.snapshotCopy(host),faceDown=host.faceDown,previousFaceUp=host.mutateState?.faceUpDefinition||host.meta.faceDownDef||previous;
   let incoming=so.card;
@@ -80,7 +81,10 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
  // cast permissions; reject such snapshots instead of silently losing cards.
  const blockers=C.snapshotBlockers;
  C.snapshotBlockers=g=>[...(blockers?.(g)||[]),...(g.battlefield.some(c=>c.mutateState)?['Merged permanent components']:[]),...((g.c1920CastGrants||[]).some(r=>!r.used&&g.byIid(r.card)?.zoneVersion===r.version&&g.byIid(r.card)?.zone===r.zone)?['C19-C20 cast permissions']:[])];
- const present=(c,viewer)=>c.mutateState?.components.map(r=>({iid:r.card.iid,name:r.faceDown&&c.ctrl!==viewer?'Hidden card':r.def.name,hidden:r.faceDown&&c.ctrl!==viewer,commander:r.commander,token:r.isToken}))||[];
+ const present=(c,viewer,includeSingle=false)=>(c.mutateState?.components||(includeSingle?[physical(c)]:[])).map(r=>{
+  const hidden=!!r.faceDown&&c.ctrl!==viewer;
+  return {...(hidden?{name:'Hidden card'}:describe(r.def)),iid:r.card.iid,hidden,faceDown:!!r.faceDown,commander:r.commander,token:r.isToken};
+ });
  async function transform(g,c){
   const state=c.mutateState;if(!state||c.faceDown)return false;let changed=false;
   for(const r of state.components)if(r.oracleFaces?.layout==='transform'&&!r.faceDown){r.oracleFace=r.oracleFace==='back'?'front':'back';r.copiableDef=M.OracleV8Faces.faceDefinition(r.oracleFaces,r.oracleFace);changed=true;}
