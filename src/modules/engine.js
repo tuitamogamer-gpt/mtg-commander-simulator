@@ -268,7 +268,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this._controllerWrapped && this._controllerWrapped.raw === raw) return this._controllerWrapped.wrapper;
       const player = this;
       const wrapper = Object.create(raw);
-      wrapper.decide = async (game, question) => MTG.normalizeDecision(question, await (game.c1516Decide ? game.c1516Decide(player,question,raw) : raw.decide(game, question)), game, player);
+      wrapper.decide = async (game, question) => {
+        const answer = MTG.normalizeDecision(question, await (game.c1516Decide ? game.c1516Decide(player,question,raw) : raw.decide(game, question)), game, player);
+        MTG.ResolutionRecap?.choice(game, player, question, answer);
+        return answer;
+      };
       this._controllerWrapped = { raw, wrapper };
       return wrapper;
     }

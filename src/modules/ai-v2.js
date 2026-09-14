@@ -5561,6 +5561,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const out = Object.create(Object.getPrototypeOf(value));
     seen.set(value, out);
     for (const ownKey of Reflect.ownKeys(value)) {
+      if (ownKey === '_resolutionRecap') continue;
       const descriptor = Object.getOwnPropertyDescriptor(value, ownKey);
       if (!descriptor || !('value' in descriptor)) continue;
       try { out[ownKey] = cloneGraph(descriptor.value, seen, String(ownKey), value); } catch (error) { /* noncritical UI/cache field */ }

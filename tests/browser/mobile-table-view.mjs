@@ -103,7 +103,7 @@ async function installFixture(handMode = 'normal') {
   // Isolate from a real game's queued animations/account-save renders.
   await page.goto(base);
   await page.locator('[data-menu-action="solo"]').first().click();
-  await page.waitForSelector('.deckentry');
+  await page.waitForSelector('.deckentry:visible');
   await page.evaluate(mode => {
     const oldRoot = document.querySelector('#game');
     oldRoot.replaceWith(oldRoot.cloneNode(false));

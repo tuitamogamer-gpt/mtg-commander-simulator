@@ -32,14 +32,18 @@ async function noOverflow(label) {
 async function openSetup() {
   await page.goto(base);
   await page.locator('[data-menu-action="solo"]').first().click();
-  await page.waitForSelector('.deckentry');
+  await page.waitForSelector('.deckentry:visible');
+}
+async function openDiscovery() {
+  if (!await page.locator('.deckdiscovery').evaluate(node => node.open))
+    await page.locator('.deckdiscovery > summary').click();
 }
 try {
   await openSetup();
   assert.equal((await state()).deckView, 'gallery');
   assert.equal(await page.locator('.setupright').isVisible(), false);
   assert.equal(await page.locator('.deckcard').first().evaluate(node => getComputedStyle(node).display), 'flex');
-  await page.waitForFunction(() => [...document.querySelectorAll('.deckart')].slice(0, 3).every(img => img.complete && img.naturalWidth > 0));
+  await page.waitForFunction(() => [...document.querySelectorAll('.deckentry:not([hidden]) .deckart')].slice(0, 3).every(img => img.complete && img.naturalWidth > 0));
   await shot('desktop-gallery');
   await page.locator('[data-deck-view="compact"]').click();
   assert.equal((await state()).deckView, 'compact');
@@ -51,6 +55,7 @@ try {
   await page.locator('.favoritefilter').click();
   assert.deepEqual((await state()).visibleDecks, ['Quick Draw']);
   await page.locator('.favoritefilter').click();
+  await openDiscovery();
   await page.locator('[data-playstyle="tokens"]').click();
   assert.ok((await state()).visibleDecks.length > 0);
   await page.locator('.filterchip').click();
@@ -75,6 +80,7 @@ try {
   await page.locator('.savepodform button').click();
   assert.match(await page.locator('.savepodstatus').innerText(), /Saved on this device/);
   await page.locator('[data-step="deck"]').click();
+  await openDiscovery();
   await page.locator('.savedpodopen').click();
   assert.equal((await state()).stage, 'review');
   assert.match(await page.locator('.reviewrules').innerText(), /hard/i);

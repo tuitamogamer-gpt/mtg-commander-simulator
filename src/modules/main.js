@@ -5022,6 +5022,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         } : undefined,
         effect: pending.type === 'effectReview' ? {
           kind: pending.effectKind,
+          recap: pending.recap,
           source: pending.source && pending.source.name,
           amount: pending.amount,
           targets: (pending.targets || []).map(player => ({ name: player.name, life: player.life })),

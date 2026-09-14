@@ -991,7 +991,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (this.dungeonPanel) root.appendChild(this.renderDungeonPanel());
       // Game-over overlay se sklanja dok je otvoren log/zona/sheet — inače je
       // prekrivao "View log" i igra je izgledala zamrznuto na kraju partije.
-      const gameOverHidden = this.showLog || this.sheet || this.playerSheet || this.zoneBrowse;
+      const gameOverHidden = this.showLog || this.sheet || this.playerSheet || this.zoneBrowse ||
+        g._resolutionRecap || this.pending?.q.effectKind === 'resolutionRecap';
       if (g.gameOver && !gameOverHidden) root.appendChild(this.renderGameOver(g));
       // An eliminated seat is not a finished match: the remaining players keep
       // going, so the human gets an explicit way out instead of being stuck.
@@ -3937,6 +3938,71 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const btn = (label, fn, cls) => { const b = el('button', 'pbtn ' + (cls || ''), label); b.onclick = fn; return b; };
 
       if (q.type === 'effectReview') {
+        if (q.effectKind === 'resolutionRecap') {
+          const recap = q.recap;
+          ov.classList.add('resolutionrecapoverlay');
+          m.classList.add('wide', 'resolutionrecap');
+          m.dataset.testid = 'resolution-recap';
+          m.setAttribute('role', 'dialog');
+          m.setAttribute('aria-modal', 'true');
+          m.setAttribute('aria-labelledby', 'resolution-recap-title');
+          const header = el('header', 'resolutionrecaphead');
+          header.appendChild(el('div', 'resolutionrecapkicker', 'RESOLVED · GAME PAUSED'));
+          const hero = el('div', 'resolutionrecaphero');
+          if (recap.source) hero.insertAdjacentHTML('beforeend', cardArtHTML(recap.source));
+          const title = el('div', 'resolutionrecaptitle');
+          title.innerHTML = `<h2 id="resolution-recap-title">${esc(recap.name)}</h2><p>${esc(recap.controllerName)}${recap.combat ? ' · Combat damage step' : ' · Spell or ability resolved'}</p>`;
+          hero.appendChild(title);
+          header.appendChild(hero);
+          m.appendChild(header);
+          const body = el('div', 'resolutionrecapbody');
+          const rows = (label, entries) => {
+            if (!entries?.length) return;
+            const section = el('section', 'resolutionrecapsection');
+            section.appendChild(el('h3', '', esc(label)));
+            const grouped = new Map();
+            for (const entry of entries) {
+              if (!grouped.has(entry.text)) grouped.set(entry.text, {...entry, count: 0});
+              grouped.get(entry.text).count++;
+            }
+            for (const entry of grouped.values()) {
+              const row = el('div', 'resolutionrecaprow');
+              if (entry.card) row.insertAdjacentHTML('beforeend', cardArtHTML(entry.card));
+              row.appendChild(el('p', '', `${entry.count > 1 ? `<b>×${entry.count}</b> ` : ''}${esc(entry.text)}`));
+              section.appendChild(row);
+            }
+            body.appendChild(section);
+          };
+          rows('Resolution', recap.details);
+          rows('Search results', recap.searches);
+          rows('Players', (recap.players || []).map(player => ({text: `${player.name}: ` + [
+            player.before !== player.after ? `life ${player.before} → ${player.after}` : '',
+            player.poisonBefore !== player.poisonAfter ? `poison ${player.poisonBefore} → ${player.poisonAfter}` : '',
+            player.handBefore !== player.handAfter ? `cards in hand ${player.handBefore} → ${player.handAfter}` : '',
+            player.eliminated ? 'eliminated' : '',
+          ].filter(Boolean).join(' · ') + '.'})));
+          rows('Battlefield', recap.changes);
+          rows(`Damage dealt${recap.totalDamage ? ' · ' + recap.totalDamage + ' total' : ''}`, recap.damage.map(row => ({text: row.text})));
+          rows('Prevention', recap.prevented.map(row => ({text: row.text})));
+          const next = el('section', 'resolutionrecapnext');
+          next.appendChild(el('h3', '', 'What happens next'));
+          next.appendChild(el('p', '', recap.combat
+            ? 'Combat damage was dealt together. Lethal damage and other state-based actions have been checked.'
+            : 'The top spell or ability finished resolving. Its effects and state-based actions have been applied.'));
+          if (recap.gameOver) next.appendChild(el('p', '', 'The match has ended. Proceed to the match result.'));
+          else if (recap.stack.length || recap.queued.length) {
+            next.appendChild(el('p', '', 'Triggered abilities and other stack objects still need to resolve. After Proceed, players receive priority.'));
+            rows('Stack · next to resolve first', recap.stack.map(name => ({text: name})));
+            rows('Triggered abilities waiting for the stack', recap.queued.map(name => ({text: name})));
+          } else next.appendChild(el('p', '', 'The stack is empty. Proceed to return to the next decision.'));
+          body.appendChild(next);
+          m.appendChild(body);
+          const footer = el('footer', 'resolutionrecapfoot');
+          footer.appendChild(el('span', '', 'Take your time. The game waits for you.'));
+          footer.appendChild(btn('Proceed ▶', () => this.resolvePendingEntry(pd, null), 'primary resolutionrecapproceed'));
+          m.appendChild(footer);
+          return ov;
+        }
         const damage = q.effectKind === 'damageAllOpponents';
         const source = q.source;
         const targets = (q.targets || []).filter(player => player && !player.lost);

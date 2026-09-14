@@ -244,7 +244,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (!avail.length) break;
       const picked = await p.controller.decide(g, {
         type: 'chooseCards', from: avail, min: 0, max: 1, prompt: opts.prompt || 'Search for a basic land',
-        aiHint: { kind: 'searchBasic' }, search: true,
+        aiHint: { kind: 'searchBasic' }, search: true, revealSearch: true,
       });
       if (!picked.length) break;
       const c = picked[0];
@@ -268,7 +268,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const avail = (g.searchableLibrary?g.searchableLibrary(p):(g.canSearchLibrary?.(p)===false?[]:p.library)).filter(c => c.is('Land') && (names.some(nm => c.name === nm || c.hasSub && c.def.subtypes.includes(nm))));
     if (!avail.length) { U.shuffle(p.library, g.rnd); return null; }
     const picked = await p.controller.decide(g, {
-      type: 'chooseCards', from: avail, min: 0, max: 1, prompt: 'Search for a land', aiHint: { kind: 'searchBasic' }, search: true,
+      type: 'chooseCards', from: avail, min: 0, max: 1, prompt: 'Search for a land', aiHint: { kind: 'searchBasic' }, search: true, revealSearch: true,
     });
     if (!picked.length) { U.shuffle(p.library, g.rnd); return null; }
     const c = picked[0];
@@ -721,11 +721,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (t.zone === 'library') g.lg(`${owner.name} shuffles ${t.name} into their library.`);
       else if (t.zone === 'command') g.lg(`${t.name} moves to the command zone; ${owner.name} still shuffles their library.`);
       else g.lg(`${t.name} leaves the battlefield; ${owner.name} shuffles their library.`);
+      g.recordResolutionDetail?.(`${owner.name} shuffled their library after ${t.name} moved to ${t.zone === 'command' ? 'the command zone' : t.isToken ? 'outside the battlefield' : 'the library'}.`);
       if (owner.library.length) {
         const top = owner.library[owner.library.length - 1];
         g.lg(`${owner.name} reveals ${top.name}.`);
+        g.recordResolutionDetail?.(`${owner.name} revealed ${top.name}.`, top);
         const permanentTypes = ['Artifact', 'Battle', 'Creature', 'Enchantment', 'Land', 'Planeswalker'];
-        if (!permanentTypes.some(type => top.is(type))) return;
+        if (!permanentTypes.some(type => top.is(type))) {
+          g.lg(`${top.name} is not a permanent card and remains on top of the library.`);
+          g.recordResolutionDetail?.(`${top.name} is not a permanent card. It stays on top of the library; it is not exiled.`);
+          return;
+        }
 
         // An Aura put onto the battlefield without being cast must enter
         // attached to something it can legally enchant (CR 303.4f). This is a
@@ -746,6 +752,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           }
           if (!candidates.length) {
             g.lg(`${top.name} cannot legally enchant anything, so it remains in the library.`);
+            g.recordResolutionDetail?.(`${top.name} has nothing it can legally enchant, so it stays on top of the library.`);
             return;
           }
           const picked = await owner.controller.decide(g, {
@@ -757,14 +764,18 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           if (!auraHost) return;
         }
 
-        owner.library.pop();
-        top.zone = 'nowhere';
+        // Keep its actual source zone until move applies entry replacements.
         await g.move(top, 'battlefield', {
           ctrl: owner,
           attachTo: auraHost instanceof MTG.CardInst ? auraHost : null,
           cursedPlayer: auraHost instanceof MTG.Player ? auraHost : null,
         });
+        g.recordResolutionDetail?.(top.zone === 'battlefield'
+          ? `${top.name} is a permanent card and entered the battlefield under ${owner.name}'s control.`
+          : `${top.name} could not enter the battlefield and is in ${top.zone}.`);
         if (auraHost) g.lg(`${top.name} enchants ${auraHost.name}.`);
+      } else {
+        g.recordResolutionDetail?.(`${owner.name}'s library is empty, so no card was revealed.`);
       }
     },
   };

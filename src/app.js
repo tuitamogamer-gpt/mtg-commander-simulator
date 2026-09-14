@@ -448,6 +448,7 @@ import './modules/bdf-casting.js';
 import './modules/restricted-legacy-rules.js';
 import './reviewed-legacy-imports.js';
 import './modules/autoscript.js';
+import './modules/resolution-recap.js';
 import './modules/deck-import.js';
 import './modules/ai-v2.js';
 import './modules/ai.js';

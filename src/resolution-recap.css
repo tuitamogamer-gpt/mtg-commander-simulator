@@ -1,0 +1,34 @@
+.resolutionrecapoverlay { padding: 16px; z-index: 1500; }
+.modal.resolutionrecap {
+  display: flex; flex-direction: column; width: min(840px, 100%);
+  max-height: calc(100dvh - 32px); padding: 0; overflow: hidden;
+  border: 1px solid #8f7750; border-radius: 14px;
+  background: #131816; color: #ecebe2; box-shadow: 0 24px 100px #000b;
+}
+.resolutionrecaphead { flex: 0 0 auto; padding: 20px 24px; border-bottom: 1px solid #ffffff18; background: #202720; }
+.resolutionrecapkicker { color: #e5c789; font-size: 10px; font-weight: 700; letter-spacing: .18em; margin-bottom: 12px; }
+.resolutionrecaphero { display: flex; align-items: center; gap: 18px; }
+.resolutionrecaphero > img { width: 64px; height: 90px; object-fit: contain; border-radius: 5px; flex-shrink: 0; }
+.resolutionrecaptitle { min-width: 0; }
+.resolutionrecaptitle h2 { margin: 0; color: #fff4d9; font: 600 clamp(20px, 3vw, 29px)/1.15 Georgia, serif; overflow-wrap: anywhere; }
+.resolutionrecaptitle p { margin: 8px 0 0; color: #bbc5b9; font-size: 12px; }
+.resolutionrecapbody { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 8px 24px 20px; }
+.resolutionrecapsection { margin-top: 18px; }
+.resolutionrecap h3 { margin: 0 0 9px; color: #c6d0bb; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.resolutionrecaprow { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #ffffff0c; }
+.resolutionrecaprow > img { width: 38px; height: 53px; object-fit: contain; border-radius: 3px; flex-shrink: 0; }
+.resolutionrecaprow p, .resolutionrecapnext p { margin: 0; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.resolutionrecapnext { margin-top: 20px; padding: 14px; background: #8ca87512; border: 1px solid #8ca87530; border-radius: 7px; }
+.resolutionrecapnext p + p { margin-top: 7px; color: #bec8b9; }
+.resolutionrecapfoot { flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 24px; border-top: 1px solid #ffffff18; background: #202720; }
+.resolutionrecapfoot > span { color: #bbc5b9; font-size: 12px; }
+.resolutionrecapfoot .pbtn { min-width: 140px; min-height: 44px; }
+@media (max-width: 520px), (max-height: 540px) {
+  .resolutionrecapoverlay { padding: 8px; }
+  .modal.resolutionrecap { max-height: calc(100dvh - 16px); border-radius: 9px; }
+  .resolutionrecaphead { padding: 12px 16px; }
+  .resolutionrecaphero > img { width: 42px; height: 59px; }
+  .resolutionrecapbody { padding: 2px 16px 12px; }
+  .resolutionrecapfoot { padding: 12px 16px; }
+  .resolutionrecapfoot > span { max-width: 140px; font-size: 11px; }
+}
