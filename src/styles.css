@@ -644,6 +644,7 @@ img { -webkit-user-drag: none; }
 .mini.facedown > img { opacity: .28; filter: grayscale(1) contrast(1.2); }
 .facedowntag { position: absolute; left: 4px; right: 4px; bottom: 22px; background: #171421e8; color: #e4d9ff; border: 1px solid #8d78b5; border-radius: 4px; padding: 2px 3px; font-size: 8px; text-align: center; overflow: hidden; white-space: nowrap; }
 .facedownsheet { color: #e2d5ff; background: #302744; border: 1px solid #806aa7; border-radius: 6px; padding: 7px 9px; margin-bottom: 8px; font-size: 12px; letter-spacing: .04em; }
+.faceupready { position: absolute; left: 4px; right: 4px; top: 24px; padding: 4px 2px; border: 1px solid #c4aae8; border-radius: 4px; background: #302744f2; color: #fff; font-size: 9px; font-weight: 800; text-align: center; pointer-events: none; }
 .animatedpermanentstate { color: #c7fff5; background: linear-gradient(90deg,#0d3a3be8,#17453ee8); border: 1px solid #55d8ca; border-radius: 6px; padding: 7px 9px; margin-bottom: 2px; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
 
 /* ============================================================

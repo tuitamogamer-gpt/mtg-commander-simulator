@@ -4634,7 +4634,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (c.faceDown && c.meta && c.meta.faceDownDef) {
         for (const faceUp of this.faceUpCosts(c)) {
           if(faceUp.kind==='morph'&&c.meta.faceDownDef.oracleMorphPayment&&!MTG.OracleV8MorphCosts.canPay(this,p,c,c.meta.faceDownDef.oracleMorphPayment))continue;
-          if (!this.canPayMana(p, U.parseCost(faceUp.cost), { card: c, isAbility: true })) continue;
+          if (!this.canPayMana(p, U.parseCost(faceUp.cost), { card: c, isAbility: true, turnFaceUp: true })) continue;
           out.push({
             card: c, turnFaceUp: true, faceUpCost: faceUp.cost, faceUpKind: faceUp.kind, faceUpDef: c.meta.faceDownDef,
             label: `Okreni licem gore: ${c.meta.faceDownDef.name} (${faceUp.kind}: ${faceUp.label||faceUp.cost})`,

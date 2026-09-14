@@ -1,22 +1,26 @@
 // Controlled starting boards; casts, choices, mana and turning face up use
-// the real human controller/UI and the local AI. No production access.
+// the real human controller/UI and the local AI. --url also verifies deployed
+// client files using browser-local fixtures without accounts or remote writes.
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
+import { parseArgs } from 'node:util';
 import express from 'express';
 import { createAccountHandler, MemoryAccountStore } from '../../api/account.js';
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = fileURLToPath(new URL('../../', import.meta.url));
-const output = `${root}output/ability-audit-2026-09-05/browser`;
+const { values: args } = parseArgs({ options: { url: { type: 'string' }, output: { type: 'string' } } });
+const output = args.output || `${root}output/manifest-face-up/browser`;
 mkdirSync(output, { recursive: true });
 const app = express();
 app.use('/api/account', createAccountHandler({ store: new MemoryAccountStore(), limiter: null }));
 app.use(express.static(root));
-const server = app.listen(0, '127.0.0.1'); await once(server, 'listening');
-const base = `http://127.0.0.1:${server.address().port}`;
+const server = args.url ? null : app.listen(0, '127.0.0.1');
+if (server) await once(server, 'listening');
+const base = args.url || `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 const errors = [], results = [];
@@ -67,6 +71,13 @@ async function setup(scenario, name = 'Grizzly Bears') {
         .catch(error => { state.error = error.stack; });
     };
     __offerAbilityAudit(); ui.render();
+    window.__fundFaceUp = () => {
+      if (scenario.includes('zealot')) {
+        __abilityAudit.zealot = put('Overgrown Zealot');
+        __abilityAudit.zealot.sick = false;
+      } else for (const land of lands) game.untap(land);
+      game.recalc();
+    };
   }, { scenario, name });
 }
 
@@ -76,6 +87,7 @@ async function state() {
     iid: __abilityAudit.card.iid, spell: __abilityAudit.spell.iid,
     name: __abilityAudit.card.name, faceDown: __abilityAudit.card.faceDown, zone: __abilityAudit.card.zone,
     power: __abilityAudit.card.power, tapped: __abilityAudit.lands.map(c => c.tapped),
+    zealotTapped: __abilityAudit.zealot?.tapped,
     exiled: __abilityAudit.fodder.filter(c => c.zone === 'exile').length,
     spent: __abilityAudit.card.castMeta?.manaSpent,
     pending: _ui.pending?.q.type, hint: _ui.pending?.q.aiHint?.kind,
@@ -117,7 +129,7 @@ async function capture(name) {
 }
 
 try {
-  for (const [scenario, name] of [['human-manifest', 'Grizzly Bears'], ['human-noncreature', 'Forest'], ['ai-manifest', 'Grizzly Bears'], ['human-delve', 'Grizzly Bears'], ['ai-delve', 'Grizzly Bears']]) {
+  for (const [scenario, name] of [['human-manifest', 'Grizzly Bears'], ['human-manifest-zealot', 'Grizzly Bears'], ['human-noncreature', 'Forest'], ['ai-manifest', 'Grizzly Bears'], ['ai-manifest-zealot', 'Grizzly Bears'], ['human-delve', 'Grizzly Bears'], ['ai-delve', 'Grizzly Bears']]) {
     await setup(scenario, name);
     if (scenario.startsWith('human')) {
       const s = await state();
@@ -144,9 +156,10 @@ try {
       await page.getByRole('button', { name: /^Close$/i }).last().click();
       await page.evaluate(() => {
         _ui.pending = null;
-        for (const land of __abilityAudit.lands) _game.untap(land);
-        _game.recalc(); __offerAbilityAudit(); _ui.render();
+        __fundFaceUp(); __offerAbilityAudit(); _ui.render();
       });
+      assert.ok(await page.locator(`.mini[data-iid="${cast.iid}"] .faceupready`).count());
+      assert.ok(await page.locator('.faceupactions button').count(), 'main phase directly offers turning face up');
       await openCard(cast.iid);
       assert.equal(await page.locator('.faceupaction:not(:disabled)').count(), 1);
       for (const [width, height] of [[1280, 720], [390, 844], [820, 900], [1440, 1000]]) {
@@ -161,7 +174,20 @@ try {
         await capture(`human-manifest-ready-${width}`);
       }
       await capture(`${scenario}-ready`);
-      await page.locator('.faceupaction:not(:disabled)').click();
+      await page.getByRole('button', { name: /^Close$/i }).last().click();
+      for (const [width, height] of [[1440, 1000], [390, 844]]) {
+        await page.setViewportSize({ width, height });
+        const button = page.locator('.faceupactions button').first();
+        await button.scrollIntoViewIfNeeded();
+        const reachable = await button.evaluate(button => {
+          const r = button.getBoundingClientRect();
+          return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight &&
+            button.contains(document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2));
+        });
+        assert.equal(reachable, true, `${width}: main-phase face-up button is reachable`);
+        await capture(`${scenario}-main-action-${width}`);
+      }
+      await page.locator('.faceupactions button').first().click();
     } else {
       // Human's screen must never expose the bot's manifested identity.
       const hidden = await page.evaluate(() => {
@@ -172,13 +198,13 @@ try {
       await capture('ai-manifest-hidden');
       await page.evaluate(() => {
         _ui.sheet = null;
-        for (const land of __abilityAudit.lands) _game.untap(land);
-        _game.recalc(); __offerAbilityAudit(); _ui.render();
+        __fundFaceUp(); __offerAbilityAudit(); _ui.render();
       });
     }
     const turned = await drive(`${scenario}-faceup`);
     assert.equal(turned.faceDown, false); assert.equal(turned.name, name); assert.equal(turned.stack, 0);
     assert.ok(turned.tapped.every(Boolean)); assert.equal(turned.fallback, false);
+    if (scenario.includes('zealot')) assert.equal(turned.zealotTapped, true);
     await capture(`${scenario}-faceup`); results.push({ scenario, cast, turned });
   }
   if (process.env.WEB_GAME_CLIENT) {
@@ -200,4 +226,4 @@ try {
   await page.screenshot({ path: `${output}/failure.png` });
   writeFileSync(`${output}/failure.txt`, `${error.stack}\n${await page.locator('body').innerText()}`);
   throw error;
-} finally { await browser.close(); server.close(); }
+} finally { await browser.close(); server?.close(); }

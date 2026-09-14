@@ -3240,19 +3240,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const tok = c.isToken ? `<div class="toktag">TOKEN</div>` : '';
       const landCreatureTag = landCreature ? '<div class="landcreaturetag">LAND CREATURE</div>' : '';
       const fd = c.faceDown ? `<div class="facedowntag">${mayLookFaceDown ? 'FACE-DOWN · ' + esc(faceName.split(' // ')[0]) : 'FACE-DOWN'}</div>` : '';
+      const faceUpActions = c.faceDown && c.ctrl === this.me && pd && ['main', 'priority'].includes(pd.q.type)
+        ? (pd.q.acts || []).filter(entry => entry.card === c && entry.turnFaceUp) : [];
+      const faceUpTag = faceUpActions.length ? '<div class="faceupready">TURN FACE UP</div>' : '';
       const stackN = opts.stackN && opts.stackN > 1 ? `<div class="stackn">×${opts.stackN}</div>` : '';
       const keywordBadges = this.keywordBadgesHTML(c);
       if (opts.stackN > 1) d.classList.add('stacked');
       d.innerHTML = `
         ${cardArtHTML(c.faceDown && mayLookFaceDown ? shownFaceDownDef : c, '', c.faceDown && !mayLookFaceDown)}
         <div class="mname">${esc(c.faceDown ? 'Face-down creature' : c.name.split(' // ')[0])}</div>
-        ${combatStats}${cnt}${minusCounter}${oc}${crewed}${att}${tok}${landCreatureTag}${fd}${stackN}${keywordBadges}${mutateTag}
+        ${combatStats}${cnt}${minusCounter}${oc}${crewed}${att}${tok}${landCreatureTag}${fd}${faceUpTag}${stackN}${keywordBadges}${mutateTag}
         ${badges.length ? `<div class="badge">${badges.join('')}</div>` : ''}`;
       d.dataset.cname = mayLookFaceDown ? faceName : c.name;
       let accessibleName = c.faceDown && !mayLookFaceDown
         ? 'Face-down permanent'
         : `${faceName}${landCreature ? `. Land creature ${c.power}/${c.toughness}` : ''}`;
       if (markedDamage) accessibleName += `. ${markedDamage.detail}`;
+      if (faceUpActions.length) accessibleName += '. Turn face up available';
       if (this.deathReturnState(c)) accessibleName += `. ${this.deathReturnState(c)}`;
       // interactions
       if (this.markSelectedTarget(d, c)) {
@@ -3585,6 +3589,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           bar.appendChild(el('div', 'ptext', hint));
           const oz = offZoneRow();
           if (oz) bar.appendChild(oz);
+          const faceUpActions = (q.acts || []).filter(entry => entry.turnFaceUp);
+          if (faceUpActions.length) {
+            const actions = el('div', 'btnrow faceupactions');
+            for (const entry of faceUpActions) {
+              const button = btn(`🃏 ${esc(this.activationLabel(entry))}`,
+                () => this.resolvePending({ kind: 'activate', entry }), 'abilitybtn');
+              button.title = 'Pay this cost to turn the creature face up. This does not use the Stack.';
+              actions.appendChild(button);
+            }
+            bar.appendChild(actions);
+          }
           for(const entry of q.acts||[])if(entry.c14Emblem)bar.appendChild(btn('◆ '+esc(entry.card.name)+' — '+esc(this.activationLabel(entry)),()=>this.resolvePending({kind:'activate',entry}),'abilitybtn'));
           const row = el('div', 'btnrow');
           row.appendChild(btn(additionalMain ? 'Continue ▶ (next phase)'

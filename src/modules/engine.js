@@ -1798,7 +1798,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // object is not turned face up and creates no turned-face-up event.
         if(card.zone!=='battlefield'||card.zoneVersion!==record.sourceZoneVersion)return true;
         card.meta.oracleFaceUpPayment=record;
-      }else if (!await this.payMana(player, {...cost,generic:cost.generic+cost.x*x,x:0}, { card, isAbility: true })) return false;
+      }else if (!await this.payMana(player, {...cost,generic:cost.generic+cost.x*x,x:0}, { card, isAbility: true, turnFaceUp: true })) return false;
       card.def = original;
       delete card.meta.faceDownDef;
       delete card.meta.faceDownKind;

@@ -4661,6 +4661,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const card = entry.card;
       const ability = entry.ability || (entry.handAbility&&card.def.handAbility?.oracleForecast?card.def.handAbility:null);
       breakdown.base = ability && ability.aiScore ? clamp(ability.aiScore(game, card, player), -30, 30) : 2.4;
+      if (entry.turnFaceUp && card.ctrl === player) {
+        // The controller knows the underlying card. Value what turning it up
+        // actually unlocks, rather than giving every hidden 2/2 the same score.
+        // Casting and ETB abilities do not happen when a permanent turns up.
+        const original = entry.faceUpDef || card.meta.faceDownDef;
+        const extraCounter = entry.faceUpKind === 'megamorph' ? 1 : 0;
+        const power = Number(original.power), toughness = Number(original.toughness);
+        if (Number.isFinite(power)) breakdown.combat += (power - 2 + extraCounter) * 1.1;
+        if (Number.isFinite(toughness)) {
+          breakdown.combat += (toughness - 2 + extraCounter) * 0.55;
+          const remaining = card.toughness + toughness - 2 + extraCounter;
+          if ((original.types || []).includes('Creature') && (remaining <= 0 ||
+            remaining <= card.damage && !(original.kws || []).includes('indestructible') && !card.kw('indestructible'))) breakdown.safety -= 100;
+        }
+        if (!card.cur?.abilitiesDisabled) {
+          breakdown.combat += (original.kws || []).filter(keyword => !card.kw(keyword)).length * 1.2;
+          breakdown.resources += (original.mana ? 2 : 0) + (original.abilities || []).length * 1.2 + (original.statics || []).length * 1.5;
+          breakdown.synergy += (original.triggers || []).filter(trigger => trigger.on === 'turnedFaceUp').length * 4;
+          breakdown.resources += (original.triggers || []).filter(trigger =>
+            !['etb', 'cast', 'turnedFaceUp'].includes(trigger.on) && !trigger.zone).length;
+        }
+        breakdown.resources -= U.mv(entry.faceUpCost || '') * 0.45;
+      }
       if(entry.c1719IgnoreArbiter){const search=(q.casts||[]).some(e=>/search (?:your|their|target player's|a) library/i.test(e.card.def.oracle||'')&&(()=>{const cost=game.spellCost(player,e.card,{...e.alt,from:e.from});return game.canPayMana(player,{...cost,generic:cost.generic+2},{card:e.card,castOpts:e.alt||{}});})());breakdown.base=search?25:-100;}
       const selfStatLabel = /^([+-]\d+)\/([+-]\d+)$/.exec(String(
         entry.label || ability && ability.label || '',
@@ -4708,7 +4731,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       // Ne cycluj land dok si kratak sa landovima a land drop je još otvoren
       if (entry.cycling && card.is('Land') && game.turnPlayer === player &&
         player.landsPlayed < game.landPlayLimit(player) && game.lands(player).length < 5) breakdown.resources -= 8;
-      const sem = inferCardSemantics(card.def);
+      const sem = inferCardSemantics(entry.turnFaceUp ? entry.faceUpDef || card.meta.faceDownDef : card.def);
       breakdown.synergy += sem.synergyTags.filter(tag => profile.primarySynergies.includes(tag)).length * 0.7;
       const abilityTargets = typeof ability?.targets === 'function' ? ability.targets(game, card, {player}) || [] : ability?.targets || [];
       if (abilityTargets.some(spec => spec.aiHint && spec.aiHint.goal === 'removal')) {
@@ -5648,7 +5671,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         !!candidate.cycling === !!action.entry.cycling && candidate.cyclingId === action.entry.cyclingId && !!candidate.plot === !!action.entry.plot && !!candidate.foretell === !!action.entry.foretell &&
         !!candidate.ninjutsu === !!action.entry.ninjutsu && !!candidate.c1719IgnoreArbiter===!!action.entry.c1719IgnoreArbiter &&
         !!candidate.suspend === !!action.entry.suspend && !!candidate.handAbility === !!action.entry.handAbility && !!candidate.gyAbility === !!action.entry.gyAbility &&
-        !!candidate.turnFaceUp === !!action.entry.turnFaceUp && !!candidate.manaAbility === !!action.entry.manaAbility);
+        !!candidate.turnFaceUp === !!action.entry.turnFaceUp &&
+        (!action.entry.turnFaceUp || candidate.faceUpCost === action.entry.faceUpCost && candidate.faceUpKind === action.entry.faceUpKind) &&
+        !!candidate.manaAbility === !!action.entry.manaAbility);
       return entry ? { kind: 'activate', entry } : null;
     }
     if (action.kind === 'declareAttackers') return { kind: action.kind, assignments: action.assignments.map(item => ({ card: clone.byIid(item.card.iid), target: item.target instanceof U.Player ? clone.players.find(player => player.idx === item.target.idx) : clone.byIid(item.target.iid) })).filter(item => item.card && item.target) };
