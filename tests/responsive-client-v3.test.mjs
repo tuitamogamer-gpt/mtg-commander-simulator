@@ -49,7 +49,7 @@ test('Main Page V3 keeps discovery and mobile pod controls functional', () => {
   assert.match(main, /data-filter="color"/);
   assert.match(main, /data-filter="strategy"/);
   assert.match(main, /mtgDeckFavorites/);
-  assert.match(main, /const filterDecks = \(\) =>/);
+  assert.match(main, /const filterDecks = /);
   assert.match(main, /const mobileBar = el\('div', 'setupmobilebar'\)/);
   assert.match(main, /right\.classList\.add\('mobile-open'\)/);
   assert.match(main, /deckselectedmark/);

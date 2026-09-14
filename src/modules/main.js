@@ -22,7 +22,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // A landing page can outlive a deployment, then lazy-load newer markup.
   // Pin the matching styles before opening a spotlight, including on old tabs.
   // Bump this revision whenever the spotlight's markup/style contract changes.
-  const spotlightStylesURL = new URL('./src/frontend-overhaul.css?v=spotlight-20260913-dungeons', document.baseURI).href;
+  const spotlightStylesURL = new URL('./src/frontend-overhaul.css?v=deck-library-20260914', document.baseURI).href;
   let spotlightStylesLoading = null;
   function ensureSpotlightStyles() {
     const previousLink = document.querySelector('link[rel="stylesheet"][href*="frontend-overhaul.css"]');
@@ -672,7 +672,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const setupTitle = head.querySelector('.title');
     setupTitle.tabIndex = -1;
     requestAnimationFrame(() => {
-      if (root.dataset.appView === 'setup' && setupTitle.isConnected) setupTitle.focus({ preventScroll: true });
+      if (root.dataset.appView === 'setup' && setupTitle.isConnected && !root.querySelector('.deckspotlightoverlay')) {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        setupTitle.focus({ preventScroll: true });
+      }
     });
     head.querySelector('.setuphome').onclick = () => {
       renderMainMenu();
@@ -695,7 +698,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       arenaDragEnabled: localStorage.getItem('mtgArenaDrag') === '1',
       applyingReplay: false,
       search: '', color: 'all', strategy: 'all', year: 'all', favoritesOnly: false,
-      setupStage: 'deck', playstyle: 'all',
+      setupStage: 'deck', playstyle: 'all', deckPage: 1,
       favorites: new Set(savedFavorites),
       deckView: U.playerPreferences().deckView, deckSort: U.playerPreferences().deckSort,
       importedDeckId: null, importedLibraryOwner: null,
@@ -958,21 +961,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       requestAnimationFrame(() => { content.scrollTop = 0; });
     };
 
+    const deckCatalog = Object.entries(MTG.DECKS).flatMap(([name, deck]) => {
+      const libraryEntry = deck.custom && U.getImportedDeckLibrary().entries.find(entry => entry.name === name && entry.ready);
+      if (deck.custom && !libraryEntry) return [];
+      const commanders = libraryEntry ? libraryEntry.commanders.slice() : MTG.defaultCommanders(deck, MTG.DEFS);
+      return [{ ...U.deckExplorerRecord(name, deck, MTG.DECK_META[name], commanders), deck, libraryEntry }];
+    });
+    const releaseYears = [...new Set(deckCatalog.map(entry => entry.year).filter(Boolean))].sort((a, b) => Number(b) - Number(a));
     const explorerHead = el('div', 'deckexplorerhead', `
-      <div><span class="eyebrow">Deck explorer</span><h2>Find your playstyle</h2></div>
+      <div><span class="eyebrow">Deck library</span><h2>Find your next deck</h2></div>
       <div class="deckexploreractions">
-        <span class="deckresultcount">${nDecks} decks</span>
         <button type="button" class="surprisedeck">↝ Surprise me</button>
       </div>`);
     left.appendChild(explorerHead);
+    const discovery = el('details', 'deckdiscovery', '<summary>Need inspiration? <span>Playstyles, recent decks &amp; saved tables</span></summary>');
+    left.appendChild(discovery);
     const savedPodShelf = el('section', 'savedpodshelf');
     savedPodShelf.setAttribute('aria-label', 'Saved tables');
-    left.appendChild(savedPodShelf);
+    discovery.appendChild(savedPodShelf);
     const recentShelf = el('section', 'recentdecks');
     const recentNames = U.recentDecks().filter(name => MTG.DECKS[name] && !MTG.DECKS[name].custom);
     recentShelf.hidden = !recentNames.length;
     recentShelf.innerHTML = `<span>Back to a favorite</span><div>${recentNames.slice(0, 4).map(name => `<button type="button" data-recent-deck="${escAttr(name)}"><img src="${commanderImg(name)}" alt=""><b>${esc(name)}</b><span>↗</span></button>`).join('')}</div>`;
-    left.appendChild(recentShelf);
+    discovery.appendChild(recentShelf);
     const playstyleQuick = el('section', 'playstylequick');
     playstyleQuick.setAttribute('aria-labelledby', 'playstyle-title');
     playstyleQuick.innerHTML = `
@@ -986,18 +997,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         <button type="button" data-playstyle="counters">${U.icon('effects')}<span>Grow threats</span></button>
       </div>
       <div class="playstylerecs" aria-live="polite"></div>`;
-    left.appendChild(playstyleQuick);
+    discovery.appendChild(playstyleQuick);
+    const deckToolbar = el('div', 'decktoolbar');
+    left.appendChild(deckToolbar);
     const deckTools = el('div', 'decktools');
     deckTools.innerHTML = `
-      <label class="decksearch"><span aria-hidden="true">⌕</span><input type="search" placeholder="Search decks or commanders" aria-label="Search decks or commanders"></label>
-      <label><span class="sr-only">Colors</span><select data-filter="color" aria-label="Filter by color"><option value="all">Colors</option>${['W', 'U', 'B', 'R', 'G', 'C'].map(c => `<option value="${c}">${c === 'C' ? 'Colorless' : `{${c}}`}</option>`).join('')}</select></label>
+      <label class="decksearch"><span aria-hidden="true">⌕</span><input type="search" placeholder="Search decks or commanders" aria-label="Search decks, commanders, sets or themes" aria-describedby="deck-search-hint"><small id="deck-search-hint" class="sr-only">Search by deck, either partner commander, release set, or theme.</small></label>
+      <button type="button" class="deckfiltertoggle" aria-expanded="false" aria-controls="deck-filter-options">Filters</button>
+      <div class="deckfilteroptions" id="deck-filter-options">
+      <label><span class="sr-only">Colors</span><select data-filter="color" aria-label="Filter by color"><option value="all">All colors</option>${Object.entries({ W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green', C: 'Colorless' }).map(([color, label]) => `<option value="${color}">${label}</option>`).join('')}</select></label>
       <label><span class="sr-only">Strategy</span><select data-filter="strategy" aria-label="Filter by strategy"><option value="all">Strategy</option><option value="tokens">Tokens</option><option value="counters">Counters</option><option value="spells">Spells</option><option value="artifacts">Artifacts</option><option value="combat">Combat</option><option value="politics">Politics</option></select></label>
-      <label><span class="sr-only">Year</span><select data-filter="year" aria-label="Filter by year"><option value="all">Year</option>${[2026, 2025, 2024, 2023, 2022, 2021].map(y => `<option value="${y}">${y}</option>`).join('')}</select></label>
-      <button type="button" class="favoritefilter" aria-pressed="false">☆ Favorites</button>`;
-    left.appendChild(deckTools);
+      <label><span class="sr-only">Year</span><select data-filter="year" aria-label="Filter by year"><option value="all">All years</option>${releaseYears.map(y => `<option value="${y}">${y}</option>`).join('')}</select></label>
+      <button type="button" class="favoritefilter" aria-pressed="false">☆ Favorites</button>
+      </div>`;
+    deckToolbar.appendChild(deckTools);
+    const filterToggle = deckTools.querySelector('.deckfiltertoggle');
+    filterToggle.onclick = () => {
+      const open = filterToggle.getAttribute('aria-expanded') !== 'true';
+      filterToggle.setAttribute('aria-expanded', String(open));
+      deckTools.classList.toggle('filters-open', open);
+    };
     const deckBrowseBar = el('div', 'deckbrowsebar');
-    deckBrowseBar.innerHTML = `<div class="activefilters" aria-label="Active deck filters"></div><div class="deckbrowseoptions"><label>Sort <select class="decksort" aria-label="Sort decks"><option value="name">Name A–Z</option><option value="recent">Recently played</option><option value="newest">Newest first</option></select></label><div class="deckviewchoices" role="group" aria-label="Deck layout"><button type="button" data-deck-view="gallery">Gallery</button><button type="button" data-deck-view="compact">Compact</button></div></div>`;
-    left.appendChild(deckBrowseBar);
+    deckBrowseBar.innerHTML = `<span class="deckresultcount" role="status" aria-live="polite" aria-atomic="true"></span><div class="deckbrowseoptions"><label>Sort <select class="decksort" aria-label="Sort decks"><option value="name">Name A–Z</option><option value="recent">Recently played</option><option value="newest">Newest first</option></select></label><div class="deckviewchoices" role="group" aria-label="Deck layout"><button type="button" data-deck-view="gallery">Grid</button><button type="button" data-deck-view="compact">Compact</button></div></div><div class="activefilters" aria-label="Active deck filters"></div>`;
+    deckToolbar.appendChild(deckBrowseBar);
     deckBrowseBar.querySelector('.decksort').value = state.deckSort;
     deckBrowseBar.querySelectorAll('[data-deck-view]').forEach(button => {
       button.setAttribute('aria-pressed', String(button.dataset.deckView === state.deckView));
@@ -1008,33 +1030,44 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         deckBrowseBar.querySelectorAll('[data-deck-view]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
       };
     });
+    const deckPageSize = 24;
+    let browseResult = U.browseDecks(deckCatalog, state, U.recentDecks(), deckPageSize);
     const deckList = el('div', 'decklist');
-    for (const [name, deck] of Object.entries(MTG.DECKS)) {
-      const libraryEntry = deck.custom && U.getImportedDeckLibrary().entries.find(entry => entry.name === name && entry.ready);
-      // A ready imported deck is selectable everywhere now, live rooms included:
-      // the seat carries its list to the host.
-      if (deck.custom && !libraryEntry) continue;
+    deckList.id = 'deck-results';
+    deckList.setAttribute('role', 'list');
+    deckList.setAttribute('aria-label', 'Available decks');
+    deckList.tabIndex = -1;
+    for (const record of deckCatalog) {
+      const { name, deck, libraryEntry, year, commanders } = record;
       const meta = MTG.DECK_META[name] || {};
-      const strategy = MTG.deckStrategy(meta.style);
-      const year = ((meta.set || '').match(/20\d{2}/) || [''])[0];
       const entry = el('div', 'deckentry');
+      record.element = entry;
+      entry.setAttribute('role', 'listitem');
       entry.dataset.deck = name;
       if (libraryEntry) entry.dataset.importedDeckId = libraryEntry.id;
-      entry.dataset.name = `${name} ${deck.commander}`.toLowerCase();
-      entry.dataset.colors = (meta.colors || []).join('');
-      entry.dataset.strategy = strategy;
+      entry.dataset.name = record.searchText;
+      entry.dataset.colors = record.colors.join('');
+      entry.dataset.strategy = record.strategy;
       entry.dataset.year = year;
       const card = el('button', 'deckcard');
       card.type = 'button';
       card.setAttribute('aria-pressed', 'false');
+      card.setAttribute('aria-label', `${name}, led by ${commanders.join(' and ')}. Select deck and open guide`);
       card.innerHTML = `
-        <img class="deckart" loading="lazy" decoding="async" alt="${esc(deck.commander)}" src="${commanderImg(name)}" onerror="MTG.imgFail(this)">
+        <div class="deckcardheading">
+          <span class="deckedition">${libraryEntry ? 'My Library' : 'Precon'}${year ? ` · ${esc(year)}` : ''}</span>
+          <span class="deckselectedmark"><b>✓</b> Selected</span>
+          <div class="deckname">${esc(name)}</div>
+        </div>
+        <div class="deckvisual${commanders.length > 1 ? ' partners' : ''}">
+          <div class="deckportraits">${commanders.map(commander => `<img class="deckart" loading="lazy" decoding="async" width="250" height="350" alt="${escAttr(commander)}" src="${cardImg(commander)}" onerror="MTG.imgFail(this)">`).join('')}</div>
+        </div>
         <div class="deckinfo">
-          <div class="decktopline"><div class="decktitle"><div class="deckname">${esc(name)}</div><span class="deckselectedmark"><b>✓</b> Selected for your seat</span></div><span class="deckyear">${esc(year)}</span></div>
-          <div class="deckcmd"><span>Commander</span><b>${esc(deck.commander)}</b></div>
-          <div class="deckcolors">${(meta.colors || []).map(c => `<img class="deckmana" src="./assets/mana/${c}.svg" alt="{${c}}" title="{${c}}">`).join('')} <span class="deckstyle">${esc(meta.style || '').replace(/[—–]/g, '-')}</span></div>
-          <div class="deckblurb">${esc(meta.blurb || '').replace(/[—–]/g, '-')}</div>
-          <div class="deckset">${esc(meta.set || '').replace(/[—–]/g, '-')}<span>Select deck →</span></div>
+          <div class="deckcmd"><b>${commanders.map(esc).join(' + ')}</b></div>
+          <div class="deckcolors" aria-label="Color identity">${(record.colors.length ? record.colors : ['C']).map(c => `<img class="deckmana" src="./assets/mana/${c}.svg" alt="{${c}}" title="{${c}}">`).join('')}</div>
+          <div class="deckstyle">${esc(meta.style || 'Your imported deck')}</div>
+          <div class="deckset">${esc(meta.set || 'My Library')}</div>
+          <span class="deckopen">Explore deck <span aria-hidden="true">↗</span></span>
         </div>`;
       const favorite = el('button', 'deckfavorite', state.favorites.has(name) ? '★' : '☆');
       favorite.type = 'button';
@@ -1049,7 +1082,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         favorite.title = state.favorites.has(name) ? `Remove ${name} from favorites` : `Add ${name} to favorites`;
         favorite.setAttribute('aria-label', favorite.title);
         void globalThis.MTGAccount?.syncLocalFavorites?.();
-        filterDecks();
+        filterDecks({ resetPage: false });
       };
       card.onclick = () => {
         if (!state.applyingReplay) {
@@ -1060,6 +1093,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         state.importedDeckId = libraryEntry ? libraryEntry.id : null;
         state.importedLibraryOwner = libraryEntry ? currentImportedLibraryOwner() : null;
         state.commanders = libraryEntry ? libraryEntry.commanders.slice() : MTG.defaultCommanders(deck, MTG.DEFS);
+        // Shortcuts can select a deck on another page, including a saved pod.
+        if (entry.hidden) {
+          if (!browseResult.matches.includes(record)) clearFilters();
+          state.deckPage = Math.floor(browseResult.matches.indexOf(record) / deckPageSize) + 1;
+          filterDecks({ resetPage: false });
+        }
         const liveChoice = matchType.querySelector('[data-mode="online"]');
         liveChoice.disabled = false;
         liveChoice.title = libraryEntry
@@ -1076,7 +1115,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (let i = 0; i < state.aiDecks.length; i++) if (state.aiDecks[i] === name) state.aiDecks[i] = '';
         renderBotStyles();
         updateStartLabel();
-        mobileDeck.innerHTML = `<img src="${commanderImg(name)}" alt="${esc(deck.commander)}" onerror="MTG.imgFail(this)"><span><small>Selected deck</small><b>${esc(name)}</b></span>`;
+        mobileDeck.innerHTML = `<img src="${cardImg(state.commanders[0])}" alt="${escAttr(state.commanders[0])}" onerror="MTG.imgFail(this)"><span><small>Selected deck</small><b>${esc(name)}</b></span>`;
         mobileContinue.disabled = false;
         setupSteps.forEach(step => {
           step.disabled = false;
@@ -1101,10 +1140,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       <div class="deckemptyalternatives" aria-label="Closest available decks"></div>`;
     left.appendChild(noResults);
 
+    const scrollToDeckResults = () => {
+      deckList.style.scrollMarginTop = `${Math.ceil(deckToolbar.getBoundingClientRect().height) + 16}px`;
+      deckList.scrollIntoView({ block: 'start', behavior: 'instant' });
+    };
+
+    const pagers = ['top', 'bottom'].map(position => {
+      const pager = el('nav', `deckpagination ${position}`, `
+        <button type="button" data-page-step="-1" aria-label="Previous page of decks" aria-controls="deck-results">←</button>
+        <label><span class="sr-only">Page of deck results</span><select class="deckpagechoice" aria-label="Page of deck results" aria-controls="deck-results"></select></label>
+        <button type="button" data-page-step="1" aria-label="Next page of decks" aria-controls="deck-results">→</button>`);
+      pager.setAttribute('aria-label', `${position === 'top' ? 'Top' : 'Bottom'} deck pagination`);
+      (position === 'top' ? deckBrowseBar : left).appendChild(pager);
+      const changePage = page => {
+        state.deckPage = page;
+        filterDecks({ resetPage: false });
+        scrollToDeckResults();
+        deckList.focus({ preventScroll: true });
+      };
+      pager.querySelectorAll('[data-page-step]').forEach(button => {
+        button.onclick = () => changePage(state.deckPage + Number(button.dataset.pageStep));
+      });
+      pager.querySelector('select').onchange = event => changePage(Number(event.target.value));
+      return pager;
+    });
+
     const activeFilterText = () => {
       const parts = [];
       if (state.search) parts.push(`search “${state.search}”`);
-      if (state.color !== 'all') parts.push(`color ${state.color}`);
+      if (state.color !== 'all') parts.push(deckTools.querySelector('[data-filter="color"]').selectedOptions[0].textContent);
       if (state.strategy !== 'all') parts.push(`${state.strategy} strategy`);
       if (state.year !== 'all') parts.push(`release year ${state.year}`);
       if (state.favoritesOnly) parts.push('favorites only');
@@ -1141,29 +1205,35 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
     };
 
-    const filterDecks = () => {
-      let visible = 0;
-      const recents = U.recentDecks();
-      [...deckList.children].sort((a, b) => {
-        if (state.deckSort === 'newest') return Number(b.dataset.year) - Number(a.dataset.year) || a.dataset.deck.localeCompare(b.dataset.deck);
-        if (state.deckSort === 'recent') return (recents.includes(a.dataset.deck) ? recents.indexOf(a.dataset.deck) : 99) - (recents.includes(b.dataset.deck) ? recents.indexOf(b.dataset.deck) : 99) || a.dataset.deck.localeCompare(b.dataset.deck);
-        return a.dataset.deck.localeCompare(b.dataset.deck);
-      }).forEach(entry => deckList.appendChild(entry));
-      deckList.querySelectorAll('.deckentry').forEach(entry => {
-        const matches = (!state.search || entry.dataset.name.includes(state.search)) &&
-          (state.color === 'all' || entry.dataset.colors.includes(state.color)) &&
-          (state.strategy === 'all' || entry.dataset.strategy === state.strategy) &&
-          (state.year === 'all' || entry.dataset.year === state.year) &&
-          (!state.favoritesOnly || state.favorites.has(entry.querySelector('.deckname').textContent));
-        entry.hidden = !matches;
-        if (matches) visible++;
+    const filterDecks = ({ resetPage = true } = {}) => {
+      const focusedDeckControl = deckList.contains(document.activeElement) ? document.activeElement : null;
+      if (resetPage) state.deckPage = 1;
+      browseResult = U.browseDecks(deckCatalog, state, U.recentDecks(), deckPageSize);
+      state.deckPage = browseResult.page;
+      const filterCount = [state.color, state.strategy, state.year].filter(value => value !== 'all').length + Number(state.favoritesOnly);
+      filterToggle.textContent = filterCount ? `Filters (${filterCount})` : 'Filters';
+      const visible = browseResult.total;
+      const pageEntries = new Set(browseResult.entries);
+      deckCatalog.forEach(record => { record.element.hidden = !pageEntries.has(record); });
+      browseResult.entries.forEach(record => deckList.appendChild(record.element));
+      if (focusedDeckControl) {
+        const stillVisible = !focusedDeckControl.closest('.deckentry')?.hidden;
+        (stillVisible ? focusedDeckControl : deckTools.querySelector('input')).focus({ preventScroll: true });
+      }
+      deckBrowseBar.querySelector('.deckresultcount').textContent = `${visible > deckPageSize ? `${browseResult.start}–${browseResult.end} of ` : ''}${visible} deck${visible === 1 ? '' : 's'}`;
+      pagers.forEach(pager => {
+        pager.hidden = browseResult.pages === 1;
+        pager.querySelector('[data-page-step="-1"]').disabled = state.deckPage === 1;
+        pager.querySelector('[data-page-step="1"]').disabled = state.deckPage === browseResult.pages;
+        const select = pager.querySelector('select');
+        select.innerHTML = Array.from({ length: browseResult.pages }, (_, index) => `<option value="${index + 1}">Page ${index + 1} of ${browseResult.pages}</option>`).join('');
+        select.value = String(state.deckPage);
       });
-      explorerHead.querySelector('.deckresultcount').textContent = `${visible} deck${visible === 1 ? '' : 's'}`;
       deckList.classList.toggle('noresults', visible === 0);
       noResults.hidden = visible !== 0;
       const activeFilters = deckBrowseBar.querySelector('.activefilters');
       activeFilters.replaceChildren();
-      for (const [key, label] of [['search', state.search], ['color', state.color !== 'all' ? `Color ${state.color}` : ''], ['strategy', state.strategy !== 'all' ? state.strategy : ''], ['year', state.year !== 'all' ? state.year : ''], ['favoritesOnly', state.favoritesOnly ? 'Favorites' : '']]) {
+      for (const [key, label] of [['search', state.search], ['color', state.color !== 'all' ? deckTools.querySelector('[data-filter="color"]').selectedOptions[0].textContent : ''], ['strategy', state.strategy !== 'all' ? state.strategy : ''], ['year', state.year !== 'all' ? state.year : ''], ['favoritesOnly', state.favoritesOnly ? 'Favorites' : '']]) {
         if (!label) continue;
         const chip = el('button', 'filterchip');
         chip.type = 'button'; chip.textContent = `${label} ×`; chip.setAttribute('aria-label', `Remove ${label} filter`);
@@ -1177,6 +1247,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         };
         activeFilters.appendChild(chip);
       }
+      if (activeFilters.children.length > 1) {
+        const reset = el('button', 'filterchip', 'Clear all');
+        reset.type = 'button';
+        reset.onclick = () => { clearFilters(); deckTools.querySelector('input').focus(); };
+        activeFilters.appendChild(reset);
+      }
       if (!visible) {
         noResults.querySelector('.deckemptyreason').textContent = `Nothing matches ${activeFilterText()}. Clear everything, or jump to one of the closest decks below.`;
         const alternatives = noResults.querySelector('.deckemptyalternatives');
@@ -1185,7 +1261,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         alternatives.querySelectorAll('[data-alt-deck]').forEach(button => {
           button.onclick = () => {
             clearFilters();
-            deckList.querySelector(`.deckentry[data-deck="${CSS.escape(button.dataset.altDeck)}"] .deckcard`)?.focus();
+            const record = browseResult.matches.find(item => item.name === button.dataset.altDeck);
+            state.deckPage = Math.floor(browseResult.matches.indexOf(record) / deckPageSize) + 1;
+            filterDecks({ resetPage: false });
+            record?.element.querySelector('.deckcard').focus();
           };
         });
       }
@@ -1196,8 +1275,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       filterDecks();
     };
     explorerHead.querySelector('.surprisedeck').onclick = () => {
-      const choices = [...deckList.querySelectorAll('.deckentry:not([hidden])')];
-      if (choices.length) choices[Math.floor(Math.random() * choices.length)].querySelector('.deckcard').click();
+      const choices = browseResult.matches;
+      if (choices.length) choices[Math.floor(Math.random() * choices.length)].element.querySelector('.deckcard').click();
       else { clearFilters(); explorerHead.querySelector('.surprisedeck').click(); }
     };
     recentShelf.querySelectorAll('[data-recent-deck]').forEach(button => {
@@ -1205,7 +1284,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
     deckTools.querySelector('input').oninput = e => { state.search = e.target.value.trim().toLowerCase(); filterDecks(); };
     deckTools.querySelector('[data-filter="color"]').onchange = e => { state.color = e.target.value; filterDecks(); };
-    deckTools.querySelector('[data-filter="strategy"]').onchange = e => { state.strategy = e.target.value; filterDecks(); };
+    deckTools.querySelector('[data-filter="strategy"]').onchange = e => {
+      state.strategy = state.playstyle = e.target.value;
+      renderPlaystyleRecommendations(state.playstyle);
+      filterDecks();
+    };
     deckTools.querySelector('[data-filter="year"]').onchange = e => { state.year = e.target.value; filterDecks(); };
     const favoriteFilter = deckTools.querySelector('.favoritefilter');
     favoriteFilter.onclick = () => {
@@ -1236,7 +1319,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         deckTools.querySelector('[data-filter="strategy"]').value = state.strategy;
         renderPlaystyleRecommendations(state.playstyle);
         filterDecks();
-        deckList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        discovery.open = false;
+        scrollToDeckResults();
+        deckList.focus({ preventScroll: true });
       };
     });
 
@@ -1736,8 +1821,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     mobileBar.appendChild(mobileContinue);
     root.appendChild(mobileBar);
 
+    let deckBrowseScroll = 0;
     const setSetupStage = stage => {
       if (!state.deck && stage !== 'deck') return;
+      const previousStage = state.setupStage;
+      if (previousStage === 'deck' && stage !== 'deck') deckBrowseScroll = window.scrollY;
       state.setupStage = ['deck', 'pod', 'review'].includes(stage) ? stage : 'deck';
       root.dataset.setupStage = state.setupStage;
       root.querySelectorAll('.setupstep').forEach(item => item.classList.toggle('on', item.dataset.step === state.setupStage));
@@ -1755,7 +1843,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         right.classList.add('mobile-open');
         right.scrollTop = 0;
       }
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      if (previousStage !== state.setupStage) window.scrollTo({ top: state.setupStage === 'deck' ? deckBrowseScroll : 0, behavior: 'instant' });
     };
     podNext.onclick = () => setSetupStage('review');
 
@@ -1904,6 +1992,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     podStage.addEventListener('click', event => {
       if (event.target.closest('[data-ai-count], [data-difficulty], [data-mode]')) clearPresetSelection();
     });
+    filterDecks();
     if (options.importedDeckId) {
       const saved = U.getImportedDeckLibraryEntry(options.importedDeckId);
       const selectedEntry = [...deckList.querySelectorAll('.deckentry')].find(entry => entry.dataset.deck === saved?.name);
@@ -1911,7 +2000,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       selectedEntry.querySelector('.deckcard').click();
     }
     if (options.deck && !options.importedDeckId) deckList.querySelector(`.deckentry[data-deck="${CSS.escape(options.deck)}"] .deckcard`)?.click();
-    filterDecks();
   }
 
   // ---------- Izbor komandera (1 ili 2 partnera) ----------

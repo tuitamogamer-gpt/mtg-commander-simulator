@@ -109,7 +109,7 @@ test('heavy rules and deck modules wait for a real setup or deep-link request', 
 
 test('public menu is responsive, motion-safe, and uses real game artwork', () => {
   assert.ok(index.indexOf('./src/public-menu.css') < index.indexOf('./src/frontend-overhaul.css'));
-  assert.match(index, /\.\/src\/frontend-overhaul\.css" media="print" onload="this\.media='all'"/);
+  assert.match(index, /\.\/src\/frontend-overhaul\.css(?:\?v=[\w-]+)?" media="print" onload="this\.media='all'"/);
   assert.match(css, /#setup\[data-app-view="home"\]/);
   assert.match(css, /commander-war-room\.webp/);
   assert.match(css, /@media \(max-width: 900px\)/);

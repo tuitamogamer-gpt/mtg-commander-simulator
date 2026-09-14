@@ -469,4 +469,5 @@ import './modules/command-table.js';
 import './modules/landing.js';
 import './modules/multiplayer-presentation.js';
 import './modules/multiplayer-arena.js';
+import './modules/deck-explorer.js';
 import './modules/main.js';

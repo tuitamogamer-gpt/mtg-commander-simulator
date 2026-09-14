@@ -1825,32 +1825,132 @@ body.high-contrast #game :is(.pbtn, .tbtn, .zbtn, .hcard, .bcard) { border-color
 #setup .deckviewchoices { display: flex; padding: 3px; border: 1px solid var(--ds-line-soft); border-radius: 8px; background: var(--ds-panel); }
 #setup .deckviewchoices button { min-height: 38px; padding: 0 12px; border: 0; border-radius: 5px; background: transparent; color: var(--ds-muted); font: 600 12px var(--ds-font-body); cursor: pointer; }
 #setup .deckviewchoices [aria-pressed="true"] { background: var(--ds-panel-raised); color: var(--ds-text); box-shadow: 0 1px 3px rgba(2, 6, 12, .6); }
-#setup[data-deck-view="gallery"] .decklist { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 20px !important; }
-#setup[data-deck-view="gallery"] .deckcard { display: flex !important; flex-direction: column; min-height: 0 !important; padding: 0; border: 1px solid var(--ds-line-soft); border-radius: 14px; background: var(--ds-panel); overflow: hidden; text-align: left; }
-#setup[data-deck-view="gallery"] .deckart { position: static; width: 100% !important; height: 168px !important; min-height: 168px !important; flex: none; object-fit: cover; object-position: center 30%; opacity: 1; mask-image: none; }
-#setup[data-deck-view="gallery"] .deckinfo { flex: 1; display: flex !important; flex-direction: column; gap: 9px; padding: 19px 20px 16px !important; min-width: 0; width: 100%; }
-#setup[data-deck-view="gallery"] .deckname { font-size: 22px !important; line-height: 1.15 !important; font-weight: 600; letter-spacing: -.035em; }
-#setup[data-deck-view="gallery"] .deckcmd b { font-size: 14px; line-height: 1.5; }
-#setup[data-deck-view="gallery"] .deckcolors { margin: 0; }
-#setup[data-deck-view="gallery"] .deckstyle { font-size: 12px; line-height: 1.5; }
-#setup[data-deck-view="gallery"] .deckblurb { font-size: 14px; line-height: 1.65; color: var(--ds-copy); }
-#setup[data-deck-view="gallery"] .deckset { margin-top: auto; padding-top: 6px; font-size: 12px; line-height: 1.5; }
-#setup[data-deck-view="gallery"] .deckyear { font: 500 11px var(--ds-font-mono); }
-#setup[data-deck-view="gallery"] .deckfavorite { top: 12px; right: 12px; width: 40px; height: 40px; background: rgba(var(--ds-table-rgb), .86); border: 1px solid rgba(255,255,255,.25); }
+/* Deck library: a paged catalog with uncropped commander cards. Keep these
+   scoped overrides together while client-v3 still owns the legacy list view. */
+#setup[data-setup-stage="deck"] { padding: 0 0 100px !important; }
+#setup[data-setup-stage="deck"] .menuhead { max-width: 1376px; margin: 0 auto !important; padding: 18px 32px 22px !important; }
+#setup[data-setup-stage="deck"] .setuphero { padding-top: 14px !important; }
+#setup[data-setup-stage="deck"] .setuphero .title { font-size: clamp(30px, 3.3vw, 44px) !important; margin-bottom: 8px !important; }
+#setup[data-setup-stage="deck"] .setupgrid { padding-top: 20px !important; }
+#setup[data-setup-stage="deck"] .deckexplorerhead { min-height: 44px; margin-bottom: 8px; }
+#setup[data-setup-stage="deck"] .deckexplorerhead .eyebrow { display: none; }
+#setup[data-setup-stage="deck"] .deckexplorerhead h2 { margin: 0; font-size: 22px; }
+#setup .deckdiscovery { margin: 0 0 16px; border-block: 1px solid var(--ds-line-soft); }
+#setup .deckdiscovery > summary { min-height: 44px; padding: 12px 0; color: var(--ds-text); font: 600 13px/1.5 var(--ds-font-body); cursor: pointer; }
+#setup .deckdiscovery > summary span { margin-left: 8px; color: var(--ds-muted); font-weight: 400; }
+#setup .deckdiscovery[open] > summary { margin-bottom: 12px; }
+#setup .deckdiscovery .playstylequick { margin-bottom: 12px; }
+#setup .decktoolbar { position: sticky; top: 0; z-index: 8; padding: 12px 0 8px; background: var(--ds-table); border-bottom: 1px solid var(--ds-line-soft); margin-bottom: 18px; }
+#setup .decktoolbar .decktools { margin: 0; grid-template-columns: minmax(180px, 1fr) auto; }
+#setup .deckfiltertoggle { display: none; }
+#setup .deckfilteroptions { display: grid; grid-template-columns: repeat(3, minmax(95px, 120px)) auto; gap: 8px; }
+#setup .decktoolbar .deckbrowsebar { display: grid; grid-template-columns: auto 1fr auto; min-height: 44px; margin: 8px 0 0; gap: 0 16px; }
+#setup .decktoolbar .deckresultcount { padding: 0; color: var(--ds-copy); font: 500 12px/1.5 var(--ds-font-body); text-transform: none; letter-spacing: 0; }
+#setup .decktoolbar .deckbrowseoptions { margin-left: auto; gap: 14px; }
+#setup .decktoolbar .activefilters { grid-column: 1 / -1; grid-row: 2; }
+#setup .decktoolbar .activefilters:not(:empty) { margin-top: 8px; }
+#setup .deckpagination { display: flex; align-items: center; justify-content: center; gap: 6px; }
+#setup .deckpagination[hidden] { display: none; }
+#setup .deckpagination.bottom { margin: 24px 0 12px; }
+#setup .deckpagination :is(button, select) { min-height: 44px; border: 1px solid var(--ds-line); border-radius: 7px; background: var(--ds-panel); color: var(--ds-text); font: 600 12px/1.4 var(--ds-font-body); cursor: pointer; }
+#setup .deckpagination button { width: 44px; font-size: 18px; }
+#setup .deckpagination select { padding: 0 8px; }
+#setup .deckpagination button:disabled { opacity: .35; cursor: default; }
+#setup .deckpagination button:not(:disabled):hover { border-color: var(--ds-accent); color: var(--ds-accent-bright); }
+#setup[data-deck-view] .decklist { display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 18px !important; scroll-margin-top: 152px; }
+#setup[data-deck-view] .decklist.noresults { display: none !important; }
+#setup[data-deck-view] .deckcard { display: flex !important; flex-direction: column; min-height: 0 !important; border-radius: 12px !important; background: var(--ds-panel) !important; }
+#setup .deckcardheading { position: relative; width: 100%; min-height: 90px; padding: 14px 46px 12px 15px; display: flex; flex-direction: column; align-items: start; gap: 7px; background: var(--ds-table); }
+#setup .deckvisual { position: relative; width: 100%; padding: 0 14px 16px; background: var(--ds-table); border-bottom: 1px solid var(--ds-line-soft); }
+#setup .deckedition { color: var(--ds-muted); font: 500 10px/1.3 var(--ds-font-mono); letter-spacing: .04em; }
+#setup .deckportraits { display: flex; align-items: center; justify-content: center; gap: 8px; height: 218px; }
+#setup[data-deck-view] .deckart { position: static !important; display: block; width: auto !important; max-width: 100%; height: 100% !important; min-height: 0 !important; aspect-ratio: 5 / 7; align-self: center; flex: 0 1 auto; min-width: 0; object-fit: contain !important; object-position: center !important; border-radius: 8px !important; filter: none !important; opacity: 1; mask-image: none; transform: none !important; }
+#setup[data-deck-view] .deckcard:is(:hover, .selected) .deckart { filter: none !important; transform: none !important; }
+#setup .deckvisual.partners .deckart { max-width: calc(50% - 4px); }
+#setup .deckcardheading .deckselectedmark { padding: 0; border: 0; color: var(--ds-accent-bright); background: transparent; font: 700 10px/1.3 var(--ds-font-body); letter-spacing: 0; text-transform: none; }
+#setup .deckcard.selected .deckedition { display: none; }
+#setup[data-deck-view] .deckinfo { flex: 1; gap: 7px; padding: 15px !important; width: 100%; }
+#setup[data-deck-view] .deckname { padding: 0; font: 600 19px/1.2 var(--ds-font-display) !important; letter-spacing: -.025em !important; white-space: normal; overflow-wrap: anywhere; }
+#setup[data-deck-view] .deckcmd { margin: 0 !important; white-space: normal; overflow: visible; }
+#setup[data-deck-view] .deckcmd b { color: var(--ds-copy); font: 500 12px/1.5 var(--ds-font-body); }
+#setup[data-deck-view] .deckcolors { gap: 5px !important; margin: 3px 0 0 !important; flex-wrap: wrap; }
+#setup[data-deck-view] .deckmana { width: 18px !important; height: 18px !important; }
+#setup[data-deck-view] .deckstyle { margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; color: var(--ds-copy) !important; font: 500 12px/1.5 var(--ds-font-body) !important; letter-spacing: 0 !important; }
+#setup[data-deck-view] .deckset { display: block !important; margin: auto 0 0 !important; padding-top: 4px !important; color: var(--ds-muted) !important; font: 400 10px/1.5 var(--ds-font-body) !important; letter-spacing: 0 !important; white-space: normal; }
+#setup .deckopen { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; padding-top: 10px; border-top: 1px solid var(--ds-line-soft); color: var(--ds-accent-bright); font: 600 11px/1.4 var(--ds-font-body); }
+#setup[data-deck-view] .deckfavorite { top: 4px; right: 4px; width: 44px; height: 44px; font-size: 22px; background: transparent; border-color: transparent; backdrop-filter: none; }
 #setup .deckfavorite[aria-pressed="true"] { color: var(--ds-accent-bright); background: var(--ds-panel-raised); }
-#setup[data-deck-view="gallery"] .deckcard:is(:hover, :focus-visible, .selected) { border-color: var(--ds-accent); box-shadow: 0 12px 30px rgba(2, 6, 12, .25); }
+#setup[data-deck-view] .deckcard:is(:hover, .selected) { border-color: var(--ds-accent) !important; }
+#setup .decktoolbar :is(button, select, input):focus-visible,
+#setup .deckpagination :is(button, select):focus-visible,
+#setup .deckdiscovery > summary:focus-visible,
+#setup[data-deck-view] :is(.deckcard, .deckfavorite):focus-visible { outline: 2px solid var(--ds-accent-bright) !important; outline-offset: 3px !important; }
 #setup[data-deck-view="compact"] .decklist { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px; }
-#setup[data-deck-view="compact"] .deckcard { min-height: 150px !important; }
-#setup[data-deck-view="compact"] .deckart { min-height: 150px !important; }
-#setup[data-deck-view="compact"] .deckblurb { display: none; }
-#setup[data-deck-view="compact"] .deckname { font-size: 20px !important; line-height: 1.2 !important; }
-#setup[data-deck-view="compact"] .deckcmd b { font-size: 13px; line-height: 1.45; }
+#setup[data-deck-view="compact"] .deckcard { display: grid !important; grid-template-columns: 120px minmax(0, 1fr) !important; }
+#setup[data-deck-view="compact"] .deckcardheading { grid-column: 2; grid-row: 1; min-height: 0; padding: 14px 42px 0 15px; background: transparent; }
+#setup[data-deck-view="compact"] .deckvisual { grid-column: 1; grid-row: 1 / span 2; padding: 14px 10px; align-self: stretch; display: flex; align-items: center; border: 0; border-right: 1px solid var(--ds-line-soft); }
+#setup[data-deck-view="compact"] .deckportraits { width: 100%; height: 156px; gap: 4px; }
+#setup[data-deck-view="compact"] .deckinfo { grid-column: 2; grid-row: 2; padding-right: 42px !important; padding-top: 8px !important; }
+#setup[data-deck-view="compact"] .deckname { font-size: 18px !important; }
+#setup[data-deck-view="compact"] .deckopen { display: none; }
+@media (min-width: 1440px) {
+  #setup[data-deck-view="gallery"] .decklist { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 1000px) {
+  #setup .decktoolbar .decktools { grid-template-columns: minmax(0, 1fr) auto; }
+  #setup .deckfilteroptions { grid-template-columns: repeat(3, minmax(0, 105px)) auto; gap: 6px; }
+  #setup .decktoolbar .favoritefilter { grid-column: auto; }
+  #setup .decktoolbar .deckbrowsebar { column-gap: 8px; }
+  #setup .decktoolbar .deckbrowseoptions { gap: 8px; }
+}
+@media (max-width: 700px) {
+  #setup[data-setup-stage="deck"] .menuhead { padding: 12px 16px 18px !important; }
+  #setup[data-setup-stage="deck"] .setupgrid { padding: 12px !important; }
+  #setup[data-setup-stage="deck"] .setuphero { padding-top: 8px !important; }
+  #setup[data-setup-stage="deck"] .deckexplorerhead h2 { font-size: 20px; }
+  #setup .decktoolbar { padding-top: 8px; margin-bottom: 12px; }
+  #setup .decktoolbar .decktools { grid-template-columns: minmax(0, 1fr) auto; gap: 6px; }
+  #setup .decktoolbar .decksearch { grid-column: 1; grid-row: 1; }
+  #setup .decktoolbar .deckfiltertoggle { display: block; grid-column: 2; grid-row: 1; min-height: 44px; padding: 0 12px; color: var(--ds-copy); background: var(--ds-panel); border: 1px solid var(--ds-line); border-radius: 8px; font: 600 12px var(--ds-font-body); cursor: pointer; }
+  #setup .decktoolbar .deckfiltertoggle[aria-expanded="true"] { color: var(--ds-accent-bright); border-color: var(--ds-accent); }
+  #setup .deckfilteroptions { display: none; grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 6px 0; }
+  #setup .filters-open .deckfilteroptions { display: grid; }
+  #setup .decktoolbar .decktools label:not(.decksearch),
+  #setup .decktoolbar .favoritefilter { grid-column: auto; grid-row: auto; }
+  #setup .decktoolbar .decktools select { min-width: 0; width: 100%; padding-inline: 10px; font-size: 13px; }
+  #setup .decktoolbar .favoritefilter { padding-inline: 8px; font-size: 11px; }
+  #setup .decktoolbar .decktools input { font-size: 16px; }
+  #setup .decktoolbar .deckbrowsebar { grid-template-columns: 1fr auto; gap: 0 8px; }
+  #setup .decktoolbar .deckbrowseoptions { grid-column: 1 / -1; grid-row: 2; width: 100%; justify-content: space-between; gap: 4px; flex-wrap: nowrap; }
+  #setup .decktoolbar .deckbrowseoptions label { gap: 4px; }
+  #setup .decktoolbar .deckpagination.top { grid-column: 2; grid-row: 1; }
+  #setup .decktoolbar .activefilters { grid-row: 3; }
+  #setup .decktoolbar .deckresultcount { font-size: 11px; }
+  #setup .deckpagination { gap: 4px; }
+  #setup .deckpagination select { max-width: 106px; padding-inline: 4px; font-size: 11px; }
+  #setup[data-deck-view] .decklist { scroll-margin-top: 174px; }
+  #setup:has(.filters-open) .decklist { scroll-margin-top: 280px; }
+  #setup .deckdiscovery > summary span { display: none; }
+  #setup .deckportraits { height: 180px; gap: 5px; }
+  #setup .deckvisual { padding: 0 8px 12px; }
+  #setup .deckcardheading { min-height: 96px; padding: 12px 42px 12px 12px; }
+  #setup .deckedition { padding-right: 27px; font-size: 9px; }
+  #setup[data-deck-view] .deckinfo { padding: 12px !important; gap: 6px; }
+  #setup[data-deck-view] .deckname { font-size: 17px !important; }
+  #setup[data-deck-view] .deckcmd b, #setup[data-deck-view] .deckstyle { font-size: 11px !important; }
+  #setup[data-deck-view] .deckmana { width: 17px !important; height: 17px !important; }
+  #setup[data-deck-view="gallery"] .deckentry:has(.deckvisual.partners) { grid-column: 1 / -1; }
+  #setup[data-deck-view="gallery"] .deckvisual.partners .deckportraits { height: 218px; gap: 12px; }
+  #setup[data-deck-view="compact"] .deckinfo { padding-right: 42px !important; }
+  #setup .deckempty { grid-template-columns: minmax(0, 1fr); padding: 22px 16px; }
+  #setup .deckemptyalternatives { grid-column: 1; grid-template-columns: minmax(0, 1fr); }
+}
 #setup .setupmobilebar { position: fixed; display: flex; align-items: center; z-index: 100; left: 50%; right: auto; bottom: 16px; transform: translateX(-50%); width: min(580px, calc(100% - 32px)); min-height: 72px; padding: 12px 16px; gap: 20px; border: 1px solid rgba(var(--ds-accent-rgb), .4); border-radius: 14px; background: var(--ds-dialog); box-shadow: 0 14px 50px rgba(2,6,12,.75); }
 #setup .setupmobilebar:has(button:disabled),
 #setup[data-setup-stage="pod"] .setupmobilebar,
 #setup[data-setup-stage="review"] .setupmobilebar { display: none !important; }
 #setup .mobiledeck { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
-#setup .mobiledeck img { flex: none; width: 42px; height: 50px; object-fit: cover; border-radius: 5px; }
+#setup .mobiledeck img { flex: none; width: 36px; height: 50px; object-fit: contain; border-radius: 5px; }
 #setup .mobiledeck span { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 #setup .mobiledeck small { color: var(--ds-muted); font-size: 9px; text-transform: uppercase; letter-spacing: .1em; }
 #setup .mobiledeck b { font-size: 16px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1975,7 +2075,7 @@ body.game-active #game .handwrap::before { display: none; }
 
 @media (max-width: 1000px) {
   #setup .setupgrid { padding: 20px !important; }
-  #setup[data-deck-view="gallery"] .decklist { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
+  #setup[data-deck-view="gallery"] .decklist { grid-template-columns: repeat(3, minmax(0,1fr)) !important; }
   #setup .decktools { grid-template-columns: minmax(160px,1fr) repeat(3, 100px); }
   #setup .favoritefilter { grid-column: 1 / -1; }
   #setup .deckanalysis { gap: 20px; padding: 24px; grid-template-columns: 1fr 1.3fr; }
@@ -2003,8 +2103,8 @@ body.game-active #game .handwrap::before { display: none; }
   #setup .deckviewchoices button { min-height: 44px; }
   #setup .deckviewchoices { margin-left: auto; }
   #setup .filterchip { min-height: 44px; }
-  #setup[data-deck-view="gallery"] .decklist, #setup[data-deck-view="compact"] .decklist { grid-template-columns: minmax(0,1fr) !important; }
-  #setup[data-deck-view="gallery"] .deckart { height: 190px !important; }
+  #setup[data-deck-view="gallery"] .decklist { grid-template-columns: repeat(2, minmax(0,1fr)) !important; gap: 12px !important; }
+  #setup[data-deck-view="compact"] .decklist { grid-template-columns: minmax(0,1fr) !important; }
   #setup .setupright.mobile-open { padding: 20px !important; }
   #setup .botrow { display: grid; grid-template-columns: 40px 1fr; gap: 10px; }
   #setup .botfields { grid-column: 1 / -1; width: 100%; grid-template-columns: 1fr; gap: 9px; }
