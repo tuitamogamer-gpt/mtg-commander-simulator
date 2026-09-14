@@ -31,7 +31,7 @@ const check = message => { checks.push(message); console.log(`PASS ${message}`);
 async function fixture() {
   await page.goto(base);
   await page.locator('[data-menu-action="solo"]').first().click();
-  await page.waitForSelector('.deckentry');
+  await page.waitForSelector('.deckentry:visible');
   await page.evaluate(() => {
     const oldRoot = document.querySelector('#game');
     oldRoot.replaceWith(oldRoot.cloneNode(false));

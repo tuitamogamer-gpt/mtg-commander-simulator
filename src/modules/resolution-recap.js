@@ -67,6 +67,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (data.kind === 'damage' ? frame.damage : frame.prevented).push(row);
       }
       if (data.kind === 'boardWipe' || data.kind === 'counterspell') frame.force = true;
+      if (data.kind === 'boardWipe') frame.boardWipe = true;
       if (data.kind === 'counterspell') frame.details.push({text: `${data.stackObject?.name || 'Spell'} was countered.`});
     }
     return note.call(this, type, data);
@@ -123,6 +124,29 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       prevented >= 8 ||
       players.some(row => Math.abs(row.after - row.before) >= 5 || row.poisonAfter - row.poisonBefore >= 3 || Math.abs(row.handAfter - row.handBefore) >= 5 || row.eliminated);
     if (!significant) return;
+    // Visual weight follows public, completed outcomes, never a card's name or
+    // a tutor's hidden result. Routine searches keep the table in view.
+    const removed = departed.filter(([card]) => card.zone !== 'battlefield').length;
+    const eliminated = players.filter(row => row.eliminated).length;
+    const lifeSwing = Math.max(0, ...players.map(row => Math.abs(row.after - row.before)));
+    const handSwing = Math.max(0, ...players.map(row => Math.abs(row.handAfter - row.handBefore)));
+    const poisonGain = Math.max(0, ...players.map(row => row.poisonAfter - row.poisonBefore));
+    const major = !!game.gameOver || eliminated > 0 || removed >= 3 || damage >= 8 || prevented >= 8 ||
+      lifeSwing >= 8 || entered.length >= 5 || handSwing >= 5 || poisonGain >= 3;
+    const headline = game.gameOver ? 'Final blow' : eliminated ? 'Player eliminated' :
+      frame.boardWipe && removed >= 3 ? 'Board wipe' : removed >= 3 ? 'Battlefield upheaval' :
+      damage >= 8 ? 'Massive damage' : prevented >= 8 ? 'Damage stopped' : 'Major shift';
+    const stats = [];
+    if (eliminated) stats.push({value: eliminated, label: 'players eliminated'});
+    if (removed) stats.push({value: removed, label: 'permanents removed'});
+    if (damage) stats.push({value: damage, label: 'damage dealt'});
+    if (prevented) stats.push({value: prevented, label: 'damage prevented'});
+    if (!damage && lifeSwing) stats.push({value: lifeSwing, label: 'largest life change'});
+    if (entered.length) stats.push({value: entered.length, label: 'permanents entered'});
+    if (handSwing >= 5) stats.push({value: handSwing, label: 'largest hand change'});
+    if (poisonGain >= 3) stats.push({value: poisonGain, label: 'most poison gained'});
+    const impact = {level: major ? 'major' : 'minor', headline: major ? headline :
+      frame.searches.size ? 'Search complete' : 'Resolved', stats: major ? stats.slice(0, 3) : []};
     const stack = game.stack.slice().reverse().map(so => so.name);
     const queued = game.pendingTriggers.map(tr => tr.name || tr.desc || publicName(tr.src));
     for (const player of frame.humans) {
@@ -139,7 +163,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const recap = {name: frame.name, source: frame.source, controllerName: frame.controller,
         combat: frame.combat, details: frame.details, searches, changes, players,
         damage: frame.damage, prevented: frame.prevented, totalDamage: damage, stack, queued,
-        gameOver: !!game.gameOver};
+        gameOver: !!game.gameOver, impact};
       await player.controller.decide(game, {type: 'effectReview', effectKind: 'resolutionRecap',
         player, source: frame.source, prompt: `${frame.name} — what happened`, recap});
     }

@@ -100,6 +100,16 @@ async function responsive(label) {
     await page.setViewportSize({width, height});
     const modal = page.getByRole('dialog', {name: /Chaos Warp|Blasphemous Act|Cultivate|Demonic Tutor|Combat damage/});
     await modal.waitFor();
+    // Resizing rebuilds the Arena; wait for its current footer, rather than
+    // measuring a node in the middle of that responsive replacement.
+    await page.waitForFunction(() => {
+      const button = document.querySelector('.resolutionrecapproceed');
+      const box = button?.getBoundingClientRect();
+      return box && box.height > 0 && box.y >= 0 && box.bottom <= innerHeight + 1 && box.x >= 0 && box.right <= innerWidth + 1;
+    }, null, {timeout: 5000}).catch(async error => {
+      await page.screenshot({path: `${out}/${label}-${width}x${height}-failed.png`});
+      throw error;
+    });
     const button = modal.locator('.resolutionrecapproceed');
     const box = await button.boundingBox();
     assert.ok(box && box.y >= 0 && box.y + box.height <= height + 1 && box.x >= 0 && box.x + box.width <= width + 1, `reachable Proceed ${label} ${width}x${height}`);
@@ -116,7 +126,21 @@ try {
     await install(scenario); await toRecap();
     const recap = page.locator('[data-testid="resolution-recap"]');
     const text = await recap.innerText();
-    assert.match(text, /RESOLVED.*GAME PAUSED/s);
+    const major = ['wipe', 'combat', 'lethal'].includes(scenario);
+    assert.equal(await recap.getAttribute('data-impact'), major ? 'major' : 'minor');
+    if (major) {
+      assert.match(text, /MAJOR EVENT.*RESOLVED/s);
+      assert.equal(await recap.locator('.resolutionrecapstats').isVisible(), true);
+    } else {
+      assert.match(text, /Paused · your pace/);
+      assert.equal(await recap.locator('.resolutionrecapdetails').getAttribute('open'), null);
+      const appearance = await recap.evaluate(node => ({width: node.getBoundingClientRect().width,
+        backdrop: getComputedStyle(node.parentElement).backdropFilter,
+        background: getComputedStyle(node.parentElement).backgroundColor}));
+      assert.ok(appearance.width <= 420, 'minor event takes only a corner of the desktop table');
+      assert.equal(appearance.backdrop, 'none');
+      assert.equal(appearance.background, 'rgba(0, 0, 0, 0)');
+    }
     if (scenario.startsWith('chaos')) {
       const state = await page.evaluate(() => ({zone: __recapAudit.revealed.zone, exile: _game.players.reduce((n, p) => n + p.exile.length, 0), spell: __recapAudit.spell.zone}));
       assert.equal(state.zone, scenario === 'chaos-miss' ? 'library' : 'battlefield');
@@ -127,12 +151,26 @@ try {
     if (scenario === 'fetch') {assert.match(text, /Forest|Island/); assert.match(text, /→ hand/); assert.match(text, /→ battlefield, tapped/);}
     if (scenario === 'private-tutor') {assert.match(text, /not revealed.*→ hand/); assert.doesNotMatch(text, /Sol Ring/);}
     if (scenario === 'wipe') {
+      assert.match(text, /BOARD WIPE|Board wipe/);
+      assert.match(await recap.locator('.resolutionrecapstats').innerText(), /3\s*permanents removed/i);
       assert.match(text, /battlefield → graveyard/); assert.match(text, /Darksteel Myr/); assert.match(text, /Stack · next to resolve first/i);
       assert.ok(await page.evaluate(() => _game.stack.length > 0));
     }
     if (scenario === 'combat') assert.match(text, /life 40 → 30/);
     if (scenario === 'lethal') {assert.match(text, /eliminated/); assert.match(text, /match has ended/); assert.equal(await page.locator('.matchrecap').count(), 0);}
     if (['chaos-land', 'fetch', 'wipe'].includes(scenario)) await responsive(scenario);
+    if (scenario === 'fetch') {
+      await recap.locator('summary').click();
+      await page.waitForFunction(() => _ui.pending.recapDetailsOpen === true);
+      await page.evaluate(() => _ui.render());
+      assert.equal(await recap.locator('.resolutionrecapdetails').getAttribute('open'), '', 'details stay expanded across game renders');
+      assert.match(await recap.innerText(), /The stack is empty/);
+      await page.setViewportSize({width: 320, height: 568});
+      const footer = await recap.locator('.resolutionrecapproceed').boundingBox();
+      assert.ok(footer && footer.y + footer.height <= 568, 'expanded details keep Proceed reachable on a small phone');
+      await page.screenshot({path: `${out}/fetch-details-320x568.png`});
+      await page.setViewportSize({width: 1440, height: 900});
+    }
     const before = await page.evaluate(() => ({turn: _game.turnNo, life: _game.players.map(p => p.life), stack: _game.stack.length}));
     await page.waitForTimeout(700);
     assert.deepEqual(await page.evaluate(() => ({turn: _game.turnNo, life: _game.players.map(p => p.life), stack: _game.stack.length})), before);
@@ -143,6 +181,20 @@ try {
     if (scenario === 'lethal') await page.locator('.matchrecap').waitFor();
     check(`${scenario}: paid/actual effect, accurate outcome and explicit Proceed checkpoint`);
   }
+  // Reduced-motion preference must suppress the major entrance. Normal motion
+  // has a short spotlight, with no delay on the review's controls.
+  await page.emulateMedia({reducedMotion: 'no-preference'});
+  await page.evaluate(() => localStorage.setItem('mtgReducedMotion', '0'));
+  await install('wipe'); await toRecap();
+  const animated = page.locator('[data-testid="resolution-recap"]');
+  assert.equal(await animated.evaluate(node => getComputedStyle(node).animationName), 'recapSpotlight');
+  await page.evaluate(() => document.body.classList.add('reduced-motion'));
+  assert.equal(await animated.evaluate(node => getComputedStyle(node).animationName), 'none');
+  await page.evaluate(() => document.body.classList.remove('reduced-motion'));
+  await page.emulateMedia({reducedMotion: 'reduce'});
+  assert.equal(await animated.evaluate(node => getComputedStyle(node).animationName), 'none');
+  await animated.locator('.resolutionrecapproceed').click();
+  check('major entrance respects both app and system reduced-motion preferences');
   assert.deepEqual(errors, []);
   writeFileSync(`${out}/results.json`, JSON.stringify({url: base, checks, errors}, null, 2));
 } finally {

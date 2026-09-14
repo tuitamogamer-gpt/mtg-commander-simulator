@@ -43,7 +43,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const attr of fresh.attributes) if (old.getAttribute(attr.name) !== attr.value) old.setAttribute(attr.name, attr.value);
     old._arenaDropTarget = fresh._arenaDropTarget;
   };
-  const scrollSelector = '.hand, .myboard, .oppsouter, .oppswrap, .oppstrip, .oppboardmain, .mybattlefieldmain, .boardlanecards, .oppresourcecards, .manaartifactstrip, .landstrip, .ct-decision-content, .ct-review-body, .actionstageinfo, .sidebar, .sidelog, .overlay, .modal, .attackalloclanes, .attackpool, .sheet, .quickmenu, .audiobody, .dungeonmapscroll';
+  const scrollSelector = '.hand, .myboard, .oppsouter, .oppswrap, .oppstrip, .oppboardmain, .mybattlefieldmain, .boardlanecards, .oppresourcecards, .manaartifactstrip, .landstrip, .ct-decision-content, .ct-review-body, .actionstageinfo, .sidebar, .sidelog, .overlay, .modal, .resolutionrecapbody, .attackalloclanes, .attackpool, .sheet, .quickmenu, .audiobody, .dungeonmapscroll';
   const path = (node, root) => {
     const parts = [];
     while (node && node !== root) {
@@ -76,7 +76,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             old.onerror = next.onerror; old.onload = next.onload;
             result = old;
           } else if (options.retain && next.closest(stableAreas) && same(old, next)) result = old;
-          else if (options.retain && options.live && old.matches('.overlay, .quickmenuov') && sameDialog(old, next)) result = old;
+          // A pending recap is stable in Solo too: keep its open details,
+          // reading position and one-time entrance through incidental renders.
+          else if (options.retain && (options.live || old.matches('.resolutionrecapoverlay')) && old.matches('.overlay, .quickmenuov') && sameDialog(old, next)) result = old;
           else if (options.retain && options.live && old.closest('.lastresortoverlay') && old.matches('button') && same(old, next)) result = old;
           else if (options.retain && options.live && old.matches('.lastresortoverlay, .lastresortsheet, .lastresortgrid, .lastresorttokens, .lastresortfoot')) {
             // Recovery callbacks refer to stable player objects and the live

@@ -116,6 +116,7 @@ test('Cultivate reports both searched lands and their actual destinations, inclu
   await game.resolveTop();
   assert.equal(reviews.length, 1);
   assert.equal(reviews[0].recap.searches.length, 2);
+  assert.equal(reviews[0].recap.impact.level, 'minor', 'ordinary land searches stay quiet');
   assert.match(prose(reviews[0]), /Forest → battlefield, tapped/);
   assert.match(prose(reviews[0]), /Island → hand/);
 });
@@ -140,6 +141,7 @@ test('an activated fetch names its sacrificed source and fetched land after reso
   assert.equal(fetch.zone, 'graveyard');
   assert.equal(land.zone, 'battlefield'); assert.equal(land.tapped, true);
   assert.equal(reviews[0].recap.source.name, 'Evolving Wilds');
+  assert.equal(reviews[0].recap.impact.level, 'minor');
   assert.match(prose(reviews[0]), /Forest → battlefield, tapped/);
 });
 
@@ -154,6 +156,8 @@ test('a large prevented damage event still explains the completed outcome', asyn
   assert.equal(bank.zone, 'battlefield'); assert.equal(bank.damage, 0);
   assert.equal(reviews.length, 1);
   assert.equal(reviews[0].recap.totalDamage, 0);
+  assert.equal(reviews[0].recap.impact.level, 'major');
+  assert.equal(reviews[0].recap.impact.headline, 'Damage stopped');
   assert.match(prose(reviews[0]), /13 damage prevented/);
 });
 
@@ -174,6 +178,7 @@ test('secret tutor stays private for opponents, but its owner and public reveal 
   const descriptor = MTG.completeOnlineDecision(game, reviews[0], human, {legal: {}});
   assert.doesNotMatch(JSON.stringify(descriptor), /Sol Ring/);
   assert.equal(descriptor.ui.recap.controllerName, owner.name);
+  assert.equal(descriptor.ui.recap.impact.level, 'minor', 'Live receives the same public presentation level');
   await game.move(secret, 'library');
   game.stack.push({kind: 'ability', name: 'Public tutor', ctrl: owner, srcCard: source, targets: [],
     ctx: {g: game, you: owner, src: source}, run: async () => {
@@ -196,6 +201,11 @@ test('Blasphemous Act recap includes deaths, an indestructible survivor and queu
   assert.equal(survivor.zone, 'battlefield');
   assert.equal(recap.changes.filter(row => row.text.includes('graveyard')).length, 3);
   assert.equal(recap.totalDamage, 52);
+  assert.equal(recap.impact.level, 'major');
+  assert.equal(recap.impact.headline, 'Board wipe');
+  assert.deepEqual(JSON.parse(JSON.stringify(recap.impact.stats)), [
+    {value: 3, label: 'permanents removed'}, {value: 52, label: 'damage dealt'},
+  ], 'headline totals count actual removals, excluding the indestructible survivor');
   assert.match(JSON.stringify(recap.changes), /Darksteel Myr remained on the battlefield with indestructible/);
   assert.ok(recap.stack.length > 0);
   assert.ok(game.stack.length > 0, 'death triggers have not resolved while the recap is displayed');
@@ -211,6 +221,8 @@ test('combat damage recap is a separate checkpoint after actual damage', async (
   assert.equal(human.life, 30);
   assert.equal(reviews[0].recap.combat, true);
   assert.equal(reviews[0].recap.totalDamage, 10);
+  assert.equal(reviews[0].recap.impact.level, 'major');
+  assert.equal(reviews[0].recap.impact.headline, 'Massive damage');
   assert.equal(reviews[0].recap.players[0].after, 30);
 });
 
@@ -232,4 +244,5 @@ test('a global life-loss announcement is followed by an actual result recap', as
   assert.equal(human.life, 38);
   assert.equal(reviews.length, 1);
   assert.equal(reviews[0].recap.players.find(row => row.name === human.name).after, 38);
+  assert.equal(reviews[0].recap.impact.level, 'minor', 'a small global effect does not demand a dramatic presentation');
 });
