@@ -4667,7 +4667,11 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         // Casting and ETB abilities do not happen when a permanent turns up.
         const original = entry.faceUpDef || card.meta.faceDownDef;
         const extraCounter = entry.faceUpKind === 'megamorph' ? 1 : 0;
-        const power = Number(original.power), toughness = Number(original.toughness);
+        // As-turns-up replacements can add counters or choose a copy before
+        // state-based actions (Hooded Hydra, Vesuvan Shapeshifter). Their
+        // printed 0/0 is not a prediction of the resulting creature.
+        const power = original.asTurnFaceUp ? NaN : Number(original.power);
+        const toughness = original.asTurnFaceUp ? NaN : Number(original.toughness);
         if (Number.isFinite(power)) breakdown.combat += (power - 2 + extraCounter) * 1.1;
         if (Number.isFinite(toughness)) {
           breakdown.combat += (toughness - 2 + extraCounter) * 0.55;

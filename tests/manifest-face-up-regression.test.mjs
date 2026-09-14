@@ -89,6 +89,16 @@ test('AI does not pay to turn a manifest into a creature that immediately dies',
   assert.equal(walker.faceDown, true); assert.equal(walker.toughness, 2);
 });
 
+test('AI accounts for Hooded Hydra gaining counters as it turns face up', async () => {
+  const f = fixture('ai'), hydra = await f.manifest('Hooded Hydra');
+  f.put('Forest'); f.put('Forest');
+  const action = await f.player.controller.decide(f.game, f.window());
+  assert.equal(action.entry?.card, hydra);
+  assert.equal(await f.game.performAction(f.player, action), true);
+  assert.equal(hydra.faceDown, false); assert.equal(hydra.zone, 'battlefield');
+  assert.equal(hydra.power, 5); assert.equal(hydra.counters['+1/+1'], 5);
+});
+
 test('AI simulation preserves the chosen morph cost when manifest offers two payments', async () => {
   const f = fixture('ai'), card = await f.manifest('Abzan Guide');
   for (const color of ['W', 'B', 'G', 'C']) f.player.pool[color] = 10;
