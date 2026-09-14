@@ -1729,7 +1729,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const lock = el('div', 'diplomacylock');
         lock.innerHTML = `<b>🔒 Negotiations locked</b><span>${esc(view.status.reason)}</span>` +
           `<div class="dipprogress"><i style="width:${Math.round(100 * progress / view.status.unlockRounds)}%"></i></div>` +
-          `<small>${progress} / ${view.status.unlockRounds} full table rounds completed</small>`;
+          `<small>Every active player has started turn ${progress} / ${view.status.unlockRounds}</small>`;
         panel.appendChild(lock);
       }
 
@@ -1738,7 +1738,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const proposal of view.incoming) {
           const card = el('div', 'dipincoming' + (proposal.isCounteroffer ? ' counteroffer' : '') + (proposal.lastStand ? ' laststand' : ''));
           card.innerHTML = proposal.lastStand
-            ? `<b>🩸 ${esc(proposal.fromName)} is begging you</b><div class="diproute">${esc(proposal.signals.join(' · ')) || 'They are about to be eliminated.'}</div>`
+            ? `<b>🩸 ${esc(proposal.fromName)} asks for amnesty</b><div class="diproute">${esc(proposal.signals.join(' · ')) || 'They are at risk of elimination.'}</div>`
             : proposal.kind === 'group-removal'
             ? `<b>◉ ${esc(proposal.fromName)} proposed a three-player table deal</b><div class="diproute">Participants: ${esc(proposal.participantNames.join(' · '))}</div>`
             : proposal.isCounteroffer
@@ -1751,7 +1751,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
               `<p><span>${esc(proposal.fromName)} OFFERS TO</span>${esc(proposal.offer)}</p>`;
           }
           if (proposal.publicBalance) {
-            card.innerHTML += `<div class="dipvaluecheck"><b>RECIPROCITY CHECK</b><span>Expected value: receive ${proposal.publicBalance.benefit.toFixed(1)} · commit ${proposal.publicBalance.cost.toFixed(1)}</span><span>Commitment scope: receive ${proposal.publicBalance.scopeBenefit.toFixed(1)} · commit ${proposal.publicBalance.scopeCost.toFixed(1)}</span><small>Public board value and promise breadth must both favor you.</small></div>`;
+            const balanceNote = proposal.lastStand ? 'Weigh the offered commitment against the attacks and targets you give up.' : 'Public board value and promise breadth must both favor you.';
+            card.innerHTML += `<div class="dipvaluecheck"><b>RECIPROCITY CHECK</b><span>Expected value: receive ${proposal.publicBalance.benefit.toFixed(1)} · commit ${proposal.publicBalance.cost.toFixed(1)}</span><span>Commitment scope: receive ${proposal.publicBalance.scopeBenefit.toFixed(1)} · commit ${proposal.publicBalance.scopeCost.toFixed(1)}</span><small>${balanceNote}</small></div>`;
           }
           card.innerHTML += proposal.reason ? `<small>${esc(proposal.reason)}</small>` : '';
           const row = el('div', 'dipactions');
@@ -1800,9 +1801,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (lastStand.eligible && lastStand.opponents.length) {
         panel.appendChild(el('div', 'dipsectiontitle', 'LAST STAND UNLOCKED'));
         const box = el('div', 'diplaststand');
-        box.innerHTML = `<b>🩸 You are about to be eliminated</b>` +
+        box.innerHTML = `<b>🩸 You are at risk of elimination</b>` +
           `<small>${esc(lastStand.signals.join(' · '))}</small>` +
-          `<p>These promises are far bigger than ordinary diplomacy and are open only while the board says you are dying. They do not use your two normal offers.</p>` +
+          `<p>Ask for amnesty in return for two turns of restraint or two combats against the runaway threat. These use your separate Last Stand allowance.</p>` +
           `<small>${lastStand.remaining} last stand${lastStand.remaining === 1 ? '' : 's'} left this round · one per player</small>`;
         const row = el('div', 'dipactions');
         for (const opponent of lastStand.opponents) {
@@ -1899,8 +1900,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         ov.appendChild(modal);
         ov.onclick = event => { if (event.target === ov) { this.diplomacyComposer = null; this.render(); } };
         modal.appendChild(el('div', 'combatkicker', `LAST STAND · YOU → ${esc(target.name)}`));
-        modal.appendChild(el('div', 'mtitle', `You are one turn from elimination`));
-        modal.appendChild(el('div', 'dippreamble', `The board says so publicly: ${esc(options.signals.join('; '))}. That is what unlocks these promises, and they close again the moment you are safe.`));
+        modal.appendChild(el('div', 'mtitle', `Ask for time to recover`));
+        modal.appendChild(el('div', 'dippreamble', `Public danger signals: ${esc(options.signals.join('; '))}. Amnesty restrains this player’s future attacks and harmful targeting; other players and effects already on the stack still apply.`));
 
         const fields = el('div', 'dipfields');
         const field = (title, sub, list, value, onChange) => {
@@ -1926,7 +1927,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const request = options.requests.find(option => option.key === composer.requestKey);
         const offer = options.offers.find(option => option.key === composer.offerKey);
         modal.appendChild(el('div', 'dipreview', `<b>YOUR LAST STAND</b><p><span>${esc(target.name.toUpperCase())}</span>${esc(request.label)}</p><p><span>YOU</span>${esc(offer.label)}</p>`));
-        modal.appendChild(el('div', 'dipwarning', 'Begging is not surviving. The bot weighs what it gives up — including a kill it could take this turn — against what you promise. A broken promise is remembered by the whole table.'));
+        modal.appendChild(el('div', 'dipwarning', 'The bot weighs what it gives up against your promise and may decline. Accepted terms bind legal attacks and targeting choices for the displayed duration; all spell and ability costs still apply.'));
 
         const actions = el('div', 'btnrow');
         const send = el('button', 'pbtn primary', 'Make your last stand');

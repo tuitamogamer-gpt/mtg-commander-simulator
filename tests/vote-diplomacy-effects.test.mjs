@@ -36,11 +36,11 @@ function sourceCard(game, owner, name = 'Galadriel, Elven-Queen') {
 }
 
 const COUNCIL = [
-  { key: 'dominion', label: 'Dominion' },
+  { key: 'dominion', label: 'Dominion', requiresMajority: true },
   { key: 'guidance', label: 'Guidance' },
 ];
 
-test('enabled public council lets the human ballot plus one promised vote win a 2-2 Dominion tie before normal diplomacy unlock', async () => {
+test('a human vote bargain changes a ballot but preserves the printed 2-2 tie before diplomacy unlock', async () => {
   const { game, players: [human, dragon, wolf, raven] } = makePod({
     decideHuman: (g, q) => {
       if (q.type === 'diplomacyReview') return null;
@@ -59,7 +59,7 @@ test('enabled public council lets the human ballot plus one promised vote win a 
 
   assert.equal(votes.get('dominion'), 2);
   assert.equal(votes.get('guidance'), 2);
-  assert.equal(MTG.E7.voteBeats(votes, 'dominion', 'guidance'), true);
+  assert.equal(MTG.E7.voteBeats(votes, 'dominion', 'guidance'), false);
   assert.equal(game.diplomacy.contracts.length, 1);
   assert.deepEqual(Array.from(game.diplomacy.contracts, contract => contract.kind), ['choice-bargain']);
   assert.ok(game.diplomacy.contracts.every(contract =>
@@ -99,19 +99,67 @@ test('public choice campaign is inert when Diplomacy is disabled and secret ball
   assert.equal(secret.game.diplomacy.proposals.length, 0);
 });
 
-test('local bot campaign buys exactly one vote and uses the public 2-2 campaign tie-break for Dominion', async () => {
+test('a local bot does not spend a promise on a vote that can only produce a losing tie', async () => {
   const { game, players } = makePod({ enabled: true, allAI: true });
   const sponsor = players[0];
   const galadriel = sourceCard(game, sponsor);
   const votes = await MTG.E7.vote(game, sponsor, galadriel, COUNCIL,
     voter => voter === sponsor ? 'dominion' : 'guidance');
 
+  assert.equal(votes.get('dominion'), 1);
+  assert.equal(votes.get('guidance'), 3);
+  assert.equal(MTG.E7.voteBeats(votes, 'dominion', 'guidance'), false);
+  assert.equal(game.diplomacy.contracts.length, 0);
+  assert.equal(game.diplomacy.proposals.length, 0);
+});
+
+test('a local bot buys one decisive ballot when it can produce a real majority', async () => {
+  const { game, players } = makePod({ enabled: true, allAI: true });
+  players[3].lost = true;
+  const sponsor = players[0], galadriel = sourceCard(game, sponsor);
+  const votes = await MTG.E7.vote(game, sponsor, galadriel, COUNCIL,
+    voter => voter === sponsor ? 'dominion' : 'guidance');
   assert.equal(votes.get('dominion'), 2);
-  assert.equal(votes.get('guidance'), 2);
+  assert.equal(votes.get('guidance'), 1);
   assert.equal(MTG.E7.voteBeats(votes, 'dominion', 'guidance'), true);
   assert.equal(game.diplomacy.contracts.length, 1, 'the campaign package allows exactly one secured vote');
   assert.ok(game.diplomacy.contracts.every(contract => contract.fromId === sponsor.idx));
 });
+
+for (const [name, desired, drawn] of [
+  ['Galadriel, Elven-Queen', 'dominion', 1],
+  ['Plea for Power', 'time', 3],
+  ['Sail into the West', 'return', 7],
+]) {
+  test(`${name}: an actual political 2-2 vote resolves the card's printed tie branch`, async () => {
+    const {game, players: [human, dragon]} = makePod({
+      decideHuman: (g, q) => {
+        if (q.diplomacyCampaign?.stage === 'choice') return desired;
+        if (q.diplomacyCampaign?.stage === 'target') return String(dragon.idx);
+        if (q.diplomacyCampaign?.stage === 'promise') return `no_target_player:${dragon.idx}`;
+        if (q.type === 'chooseOption') return q.options.find(option => option.key === 'yes')?.key || q.options[0]?.key;
+        if (q.type === 'chooseCards') return q.from.slice(0, q.min || 0);
+        return null;
+      },
+    });
+    for (const p of game.players) for (let i = 0; i < 10; i++) {
+      const card = new MTG.CardInst(MTG.DEFS.Forest, p);
+      card.zone = 'library'; p.library.push(card);
+    }
+    if (name === 'Sail into the West') for (let i = 0; i < 3; i++) {
+      const card = new MTG.CardInst(MTG.DEFS.Forest, human);
+      card.zone = 'graveyard'; human.graveyard.push(card);
+    }
+    const source = sourceCard(game, human, name);
+    const context = {g: game, you: human, src: source};
+    if (name === 'Galadriel, Elven-Queen') await source.def.triggers[0].run(context);
+    else await source.def.resolve(context);
+    assert.equal(game.diplomacy.contracts.length, 1, 'one actual opposing ballot was secured');
+    assert.equal(human.hand.length, drawn, 'the printed draw/wheel tie outcome applies');
+    assert.equal((game.extraTurns || []).length, 0, 'a time campaign does not award an extra turn on a tie');
+    if (name === 'Sail into the West') assert.equal(human.graveyard.length, 3, 'the tied Return campaign did not retrieve cards');
+  });
+}
 
 test('central game-effect channel covers every applied damage and a battlefield-to-hand transfer', async () => {
   const { game, players: [human, opponent], events } = makePod({ enabled: false });

@@ -888,7 +888,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         (self.ctrl.turnState.elfEntries || []).some(iid => iid !== self.iid),
       run: async ctx => {
         const votes = await E7.vote(ctx.g, ctx.you, ctx.src, [
-          { key: 'dominion', label: '👑 Dominion (Ring + counter)' },
+          { key: 'dominion', label: '👑 Dominion (Ring + counter)', requiresMajority: true },
           { key: 'guidance', label: '📜 Guidance (card)' },
         ], (voter) => voter === ctx.you ? 'dominion' : 'guidance');
         if (E7.voteBeats(votes, 'dominion', 'guidance')) {
@@ -1387,7 +1387,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     exileOnResolve: true,
     resolve: async ctx => {
       const votes = await E7.vote(ctx.g, ctx.you, ctx.src, [
-        { key: 'return', label: '↩️ Return (return 2 from graveyard)' },
+        { key: 'return', label: '↩️ Return (return 2 from graveyard)', requiresMajority: true },
         { key: 'embark', label: '🚢 Embark (new hand of 7)' },
       ], (voter) => voter.graveyard.length >= 3 ? 'return' : 'embark');
       if (E7.voteBeats(votes, 'return', 'embark')) {
@@ -1522,7 +1522,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   SC['Plea for Power'] = {
     resolve: async ctx => {
       const votes = await E7.vote(ctx.g, ctx.you, ctx.src, [
-        { key: 'time', label: '⏰ Time (extra turn)' },
+        { key: 'time', label: '⏰ Time (extra turn)', requiresMajority: true },
         { key: 'knowledge', label: '📚 Knowledge (3 cards)' },
       ], (voter) => voter === ctx.you ? 'time' : 'knowledge');
       if (E7.voteBeats(votes, 'time', 'knowledge')) {

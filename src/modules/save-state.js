@@ -289,7 +289,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       players: game.players.map(capturePlayer),
       // Agreements are plain data that points at seats and card ids, both of
       // which the restore preserves. Without this a resumed game would forget
-      // that someone still owes a tribute.
+      // the targeting, combat and public-vote commitments still in effect.
       diplomacy: game.diplomacy ? JSON.parse(JSON.stringify(game.diplomacy)) : null,
       goads: game.untilEffects.filter(isPlainGoad).map(captureGoad),
       basePTEffects: currentBasePTEffects(game).map(captureBasePT),
@@ -468,6 +468,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const seed = Number(game.opts && game.opts.seed) || 1;
     game.rnd = MTG.mulberry32((seed ^ (snapshot.turnNo + 1) * 2654435761) >>> 0);
     game.recalc();
+    game.diplomacyRefresh?.();
     return game;
   };
 

@@ -285,7 +285,7 @@ test('only the exclusive shapes are accepted, and normal offers stay untouched',
   assert.equal(options.requests.length, 1);
   assert.equal(options.requests[0].type, 'amnesty');
   assert.ok(options.offers.some(option => option.type === 'vassal_pledge'));
-  assert.ok(options.offers.some(option => option.type === 'tribute_permanent'));
+  assert.ok(options.offers.every(option => ['vassal_pledge', 'crusade_pledge'].includes(option.type)));
 
   const wrongShape = game.proposeLastStandDiplomacy(human, bot, `no_attack:${human.idx}`, `no_attack:${bot.idx}`);
   assert.equal(wrongShape.status, 'rejected');
@@ -324,36 +324,27 @@ test('an accepted last stand binds both sides, and a vassal pledge lasts two ful
   assert.equal(game.diplomacyAttackBlocked(human, bot), false, 'and ends after the second');
 });
 
-test('a promised tribute is really sacrificed at the promising player’s next end step', async () => {
+test('last stand cannot offer or execute a sacrifice without a card mechanism', () => {
   const { game, players: [human, bot] } = makeTable();
-  // Low life opens the last stand; the bot has no kill on the board, so a real
-  // permanent is enough to buy one turn of amnesty.
   human.life = 5;
   addCreature(game, bot, 'Stormcatch Mentor');
   const promised = addCreature(game, human, 'Inferno Titan');
   game.recalc();
   const options = game.diplomacyLastStandOptions(human, bot);
-  const tribute = options.offers.find(option => option.type === 'tribute_permanent' && option.targetCardId === promised.iid);
-  assert.ok(tribute, 'the biggest permanent is offerable as a tribute');
-  const result = game.proposeLastStandDiplomacy(human, bot, options.requests[0].key, tribute.key);
-  assert.equal(result.status, 'accepted', result.reason);
-  const card = game.byIid(result.contract.clauses.find(clause => clause.type === 'tribute_permanent').targetCardId);
-
-  await game.diplomacyEndStep(human);
-  assert.equal(card.zone, 'battlefield', 'nothing is owed on the turn the promise is made');
-
+  assert.equal(options.offers.some(option => option.type === 'tribute_permanent'), false);
+  const result = game.proposeLastStandDiplomacy(human, bot, options.requests[0].key, `tribute_permanent:${promised.iid}`);
+  assert.equal(result.status, 'rejected');
   human.turnsStarted += 1;
-  await game.diplomacyEndStep(human);
-  assert.equal(card.zone, 'graveyard', 'the tribute is paid on the next end step');
-  const clause = result.contract.clauses.find(item => item.type === 'tribute_permanent');
-  assert.equal(clause.state, 'fulfilled');
-  assert.match(game.log.map(entry => entry.msg).join('\n'), /pays the promised tribute/);
+  game.diplomacyEndTurn(human);
+  assert.equal(promised.zone, 'battlefield');
+  assert.equal(game.diplomacy.contracts.length, 0);
+  assert.equal(game.diplomacyLastStandStatus(human).used, 0, 'illegal terms spend no allowance');
 });
 
 test('a crusade pledge forces the attack for two combats and then completes', () => {
   const { game, players: [human, bot, wolf, raven] } = makeTable();
   human.life = 6;
-  wolf.life = 300;
+  wolf.life = 500;
   raven.life = 12;
   addCreature(game, human);
   addCreature(game, bot);
@@ -387,7 +378,7 @@ test('a last stand does not spend the normal offers, but is rationed on its own'
     const options = game.diplomacyLastStandOptions(human, target);
     assert.equal(options.eligible, true, options.reason);
     first = first || options;
-    const offer = options.offers.find(option => option.type === 'tribute_permanent') || options.offers[0];
+    const offer = options.offers[0];
     return game.proposeLastStandDiplomacy(human, target, options.requests[0].key, offer.key);
   };
 
@@ -407,10 +398,10 @@ test('a last stand does not spend the normal offers, but is rationed on its own'
   const exhausted = game.diplomacyLastStandStatus(human);
   assert.equal(exhausted.remaining, 0, 'two last stands per table round');
   assert.equal(exhausted.eligible, false);
-  assert.match(exhausted.reason, /last stand at this table round/i);
+  assert.match(exhausted.reason, /both last stands for this table round/i);
 });
 
-test('a bot one turn from elimination begs before it bargains', async () => {
+test('a bot checks that its last stand is acceptable to the other bot before publishing it', async () => {
   const { game, players: [human, bot, wolf] } = makeTable();
   bot.life = 4;
   human.life = 500;
@@ -420,13 +411,13 @@ test('a bot one turn from elimination begs before it bargains', async () => {
   assert.equal(game.diplomacyLastStandStatus(bot).eligible, true, 'the fixture must have the bot dying');
 
   const result = await game.processDiplomacyCheckpoint(bot);
-  assert.ok(result, 'the bot must act on its checkpoint');
-  assert.ok(result.proposal && result.proposal.lastStand, 'and the action is a last stand');
-  assert.equal(result.proposal.fromId, bot.idx);
-  assert.match(game.log.map(entry => entry.msg).join('\n'), /makes a last stand/);
+  assert.ok(result?.proposal?.lastStand);
+  assert.equal(result.status, 'accepted', result.reason);
+  assert.equal(result.proposal.toId, wolf.idx, 'amnesty is requested from a player with a threatening board');
+  assert.equal(game.diplomacy.proposals.some(proposal => proposal.lastStand && proposal.status === 'rejected'), false);
 });
 
-test('an unpaid tribute survives a real save', { timeout: 120_000 }, async () => {
+test('an old unpaid tribute is retired on restore without sacrificing its permanent or keeping amnesty', { timeout: 120_000 }, async () => {
   const setup = {
     humanDeck: 'Abzan Armor', aiDecks: ['Elven Council', 'Doom Prevails'],
     aiStyles: ['balanced', 'balanced'], difficulty: 'normal', seed: 77, maxTurns: 12,
@@ -441,25 +432,19 @@ test('an unpaid tribute survives a real save', { timeout: 120_000 }, async () =>
     const promised = game.bf().find(card => card.ctrl === me && !card.is('Land'))
       || addCreature(game, me, 'Inferno Titan');
     game.recalc();
-    const options = game.diplomacyLastStandOptions(me, bot);
-    if (!options.eligible) return;
-    const tribute = options.offers.find(option => option.type === 'tribute_permanent'
-      && option.targetCardId === promised.iid);
-    if (!tribute) return;
-    // The verdict does not matter here; the contract is written by hand so the
-    // save has something owed to carry.
-    game.proposeLastStandDiplomacy(me, bot, options.requests[0].key, tribute.key);
-    if (!game.diplomacy.contracts.length) {
-      game.diplomacy.contracts.push({
-        id: 99, fromId: me.idx, toId: bot.idx, kind: 'bilateral', status: 'active',
-        participantIds: [me.idx, bot.idx], createdTurn: game.turnNo,
-        clauses: [{
-          type: 'tribute_permanent', actorId: me.idx, beneficiaryId: bot.idx, state: 'active',
-          targetCardId: promised.iid, targetName: promised.name, targetControllerId: me.idx,
-          turnsSpan: 1, createdActorTurns: me.turnsStarted,
-        }],
-      });
-    }
+    // Reproduce the persisted format from a build that authorized free tribute.
+    game.diplomacy.contracts.push({
+      id: 99, fromId: me.idx, toId: bot.idx, kind: 'bilateral', status: 'active',
+      participantIds: [me.idx, bot.idx], createdTurn: game.turnNo,
+      clauses: [{
+        type: 'amnesty', actorId: bot.idx, beneficiaryId: me.idx, state: 'active',
+        turnsSpan: 1, createdActorTurns: bot.turnsStarted,
+      }, {
+        type: 'tribute_permanent', actorId: me.idx, beneficiaryId: bot.idx, state: 'active',
+        targetCardId: promised.iid, targetName: promised.name, targetControllerId: me.idx,
+        turnsSpan: 1, createdActorTurns: me.turnsStarted,
+      }],
+    });
     snapshot = MTG.captureGameState(game);
   };
   await game.start();
@@ -468,10 +453,17 @@ test('an unpaid tribute survives a real save', { timeout: 120_000 }, async () =>
 
   const resumed = MTG.newGame(setup);
   MTG.restoreGameState(resumed, JSON.parse(JSON.stringify(snapshot)));
-  const owed = resumed.diplomacy.contracts.flatMap(contract => contract.clauses)
-    .find(clause => clause.type === 'tribute_permanent' && clause.state === 'active');
-  assert.ok(owed, 'the restored game still knows a tribute is owed');
-  assert.ok(resumed.byIid(owed.targetCardId), 'and the promised permanent is the same card');
+  const old = resumed.diplomacy.contracts.find(contract => contract.id === 99);
+  assert.ok(old.clauses.every(clause => clause.state === 'void'));
+  assert.equal(old.status, 'completed-with-exception');
+  const tribute = old.clauses.find(clause => clause.type === 'tribute_permanent');
+  const card = resumed.byIid(tribute.targetCardId);
+  assert.equal(card.zone, 'battlefield');
+  assert.equal(resumed.diplomacyAttackBlocked(resumed.players[1], resumed.players[0]), false);
+  resumed.players[0].turnsStarted++;
+  resumed.diplomacyEndTurn(resumed.players[0]);
+  assert.equal(card.zone, 'battlefield');
+  assert.equal(Object.keys(resumed.diplomacy.rapport).length, 0, 'neither a reward nor a betrayal is fabricated');
 });
 
 test('a bot begging the human arrives marked as a last stand', async () => {

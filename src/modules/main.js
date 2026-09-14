@@ -1501,8 +1501,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     advancedBody.appendChild(houseRow);
 
     const diplomacyRow = el('label', 'cmdcheck diplomacysetup');
-    diplomacyRow.title = 'Optional structured agreements between every player. Disabled for the first three full table rounds.';
-    diplomacyRow.innerHTML = `<input type="checkbox"> <span><b>Diplomacy &amp; Politics</b><small>Short public deals between you and bots, and between bots. Unlocks after every player completes turn 3.</small></span>`;
+    diplomacyRow.title = 'Optional public agreements. Ordinary deals unlock once every active player has started turn 3; public vote bargains may occur earlier.';
+    diplomacyRow.innerHTML = `<input type="checkbox"> <span><b>Diplomacy &amp; Politics</b><small>Short public deals between you and bots, and between bots. Ordinary deals unlock once every active player has started turn 3.</small></span>`;
     diplomacyRow.querySelector('input').onchange = e => {
       state.diplomacyEnabled = e.target.checked;
       diplomacyRow.classList.toggle('enabled', state.diplomacyEnabled);

@@ -7,15 +7,17 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   const UNLOCK_ROUNDS = 3;
   const PROTECTION_TYPES = new Set(['no_attack', 'no_target_player', 'protect_permanent', 'let_resolve', 'amnesty']);
   const COMBAT_TYPES = new Set(['no_attack', 'pressure_player']);
+  const ORDINARY_TYPES = new Set(['no_attack', 'no_target_player', 'protect_permanent', 'let_resolve', 'pressure_player']);
   const TURN_TYPES = new Set(['no_target_player', 'protect_permanent', 'remove_permanent',
-    'amnesty', 'vassal_pledge', 'tribute_permanent']);
+    'amnesty', 'vassal_pledge']);
   // Ordinary diplomacy trades small, symmetric promises. A player one turn from
   // elimination has nothing small left to trade, so a separate, strictly gated
   // set of much larger promises unlocks for them. Every condition that opens it
   // is public and countable from the board: no bot reads a hand to decide that
   // someone is about to die.
   const LAST_STAND_REQUEST_TYPES = new Set(['amnesty']);
-  const LAST_STAND_OFFER_TYPES = new Set(['vassal_pledge', 'tribute_permanent', 'crusade_pledge']);
+  // Diplomacy constrains choices; it cannot create a sacrifice cost or effect.
+  const LAST_STAND_OFFER_TYPES = new Set(['vassal_pledge', 'crusade_pledge']);
   // Promises that stop their actor from attacking someone, and promises that
   // commit their actor to attacking someone. The two families cannot overlap.
   const SHIELD_TYPES = new Set(['no_attack', 'amnesty', 'vassal_pledge']);
@@ -26,7 +28,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
 
   const REASONS = {
     disabled: 'Diplomacy & Politics is disabled for this game.',
-    locked: 'Diplomacy unlocks after every active player completes turn 3.',
+    locked: 'Diplomacy unlocks once every active player has started turn 3.',
     headsup: 'Diplomacy ends when only two players remain.',
     activePair: 'These players already have an active agreement.',
     shield: 'A player can benefit from only one combat-immunity agreement at a time.',
@@ -34,7 +36,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     pressure: 'A third player may be pressured only when they are the objective runaway threat.',
     rate: 'You have used both proposals for this table round.',
     pairRate: 'You may make only one proposal to the same bot per table round.',
-    unchanged: 'That bot already rejected this offer and the public board has not meaningfully changed.',
+    unchanged: 'This player already declined a deal and the public board has not meaningfully changed.',
     pending: 'The table already has an unanswered bot proposal.',
     empty: 'A promise must have a visible, meaningful effect on the current game.',
     conflict: 'That promise conflicts with another active agreement.',
@@ -43,9 +45,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     unsafe: 'The deal would help the leading threat too much.',
     unsafeAttack: 'That attack promise is available only while a tactically sound attack exists; a certain free block does not count.',
     notDesperate: 'A last stand opens only while the public board says you are about to be eliminated.',
-    lastStandRate: 'You have already made your last stand at this table round.',
+    lastStandRate: 'You have used both last stands for this table round.',
     lastStandPair: 'You have already begged this player during this table round.',
-    lastStandShape: 'A last stand asks for amnesty and offers one of the three exclusive promises.',
+    lastStandShape: 'A last stand asks for amnesty and offers a two-turn restraint or a two-combat attack pledge.',
+    retiredTribute: 'This old sacrifice agreement is void: a deal cannot authorize sacrificing a permanent.',
   };
 
   function state(game) {
@@ -105,7 +108,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   }
 
   function visibleAttackPower(game, actor, beneficiary) {
-    return game.creatures(actor).filter(card => !card.tapped && game.canAttackAtAll(card))
+    return game.creatures(actor).filter(card => !card.tapped && (!card.sick || card.kw('haste')) && game.canAttackAtAll(card))
       .reduce((sum, card) => {
         const canReach = !beneficiary || game.canAttackTarget(card, beneficiary);
         return sum + (canReach ? Math.max(0, game.dmgAmount(card, 'normal')) : 0);
@@ -151,13 +154,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // player controls eats the single biggest attacker it can reach. This is the
   // defender's best case, so clearing their life total means the board really
   // is lethal, not merely large.
-  function unblockableIncoming(game, target) {
+  function unblockableIncoming(game, target, opponents = activePlayers(game)) {
     const shots = [];
-    for (const opponent of activePlayers(game)) {
+    for (const opponent of opponents) {
       if (opponent === target) continue;
       if (game.diplomacyAttackBlocked && game.diplomacyAttackBlocked(opponent, target)) continue;
       for (const card of game.creatures(opponent)) {
-        if (card.tapped || !game.canAttackAtAll(card) || !game.canAttackTarget(card, target)) continue;
+        if (card.tapped || (card.sick && !card.kw('haste')) || !game.canAttackAtAll(card) || !game.canAttackTarget(card, target)) continue;
         shots.push(Math.max(0, game.dmgAmount(card, 'normal')));
       }
     }
@@ -210,14 +213,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return { eligible: true, reason: '', signals, used, remaining };
   }
 
-  function tributeCandidates(game, actor) {
-    return game.bf().filter(card => card.ctrl === actor && !card.is('Land'))
-      .sort((a, b) => publicPermanentValue(game, b) - publicPermanentValue(game, a) || a.iid - b.iid)
-      .slice(0, 3);
-  }
-
   function crusadeTarget(game, actor, beneficiary) {
-    const leader = runawayThreat(game) || objectiveTableThreat(game);
+    const leader = runawayThreat(game);
     if (!leader || leader.p === actor || leader.p === beneficiary) return null;
     return pressureAttackOpportunity(game, actor, leader.p).safe ? leader.p : null;
   }
@@ -233,6 +230,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       return { eligible: false, reason: REASONS.activePair, signals: gate.signals, requests: [], offers: [] };
     if (state(game).lastStandPairs[`${roundKey(game, actor)}:${beneficiary.idx}`])
       return { eligible: false, reason: REASONS.lastStandPair, signals: gate.signals, requests: [], offers: [] };
+    if (state(game).rejectedPairs[pairKey(actor, beneficiary)] === boardSignature(game))
+      return { eligible: false, reason: REASONS.unchanged, signals: gate.signals, requests: [], offers: [] };
     // The request is a promise the other player makes, so it is built from
     // their side: they are its actor and the desperate player its beneficiary.
     const requests = [{
@@ -243,12 +242,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       key: `vassal_pledge:${beneficiary.idx}`, type: 'vassal_pledge',
       label: optionLabel(game, actor, beneficiary, 'vassal_pledge'),
     }];
-    for (const card of tributeCandidates(game, actor)) {
-      offers.push({
-        key: `tribute_permanent:${card.iid}`, type: 'tribute_permanent', targetCardId: card.iid,
-        label: optionLabel(game, actor, beneficiary, 'tribute_permanent', card),
-      });
-    }
     const crusade = crusadeTarget(game, actor, beneficiary);
     if (crusade) {
       offers.push({
@@ -256,13 +249,25 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         label: optionLabel(game, actor, beneficiary, 'crusade_pledge', crusade),
       });
     }
-    return { eligible: true, reason: '', signals: gate.signals, requests, offers, remaining: gate.remaining };
+    let reason = REASONS.invalid;
+    const available = offers.filter(option => {
+      const check = validateProposal(game, {
+        fromId: actor.idx, toId: beneficiary.idx, lastStand: true,
+        request: buildClause(game, beneficiary, actor, requests[0].key),
+        offer: buildClause(game, actor, beneficiary, option.key),
+      }, { botInitiated: true });
+      if (!check.ok) reason = check.reason;
+      return check.ok;
+    });
+    return { eligible: available.length > 0, reason: available.length ? '' : reason, signals: gate.signals,
+      requests: available.length ? requests : [], offers: available, remaining: gate.remaining };
   }
 
   function boardSignature(game) {
     return JSON.stringify({
-      alive: activePlayers(game).map(candidate => [candidate.idx, candidate.life, candidate.lost]),
-      battlefield: game.bf().map(card => [card.iid, card.name, card.ctrl && card.ctrl.idx, card.tapped,
+      alive: activePlayers(game).map(candidate => [candidate.idx, candidate.life, candidate.poison || 0,
+        Object.entries(candidate.commanderDamage || {}).sort()]),
+      battlefield: game.bf().map(card => [card.iid, card.zoneVersion || 0, card.name, card.ctrl && card.ctrl.idx, card.tapped, card.sick,
         card.is('Creature') ? card.power : null, card.is('Creature') ? card.toughness : null,
         Object.entries(card.counters || {}).filter(([, amount]) => amount > 0).sort()]).sort((a, b) => a[0] - b[0]),
       stack: game.stack.map(item => [item.kind, item.name, item.ctrl && item.ctrl.idx]),
@@ -293,7 +298,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (clause.type === 'remove_permanent') return game.byIid(clause.targetCardId)?.name || clause.targetName || 'the named threat';
     if (clause.type === 'let_resolve') return stackByKey(game, clause.stackId)?.name || clause.targetName || 'the named stack object';
     if (clause.type === 'pressure_player') return player(game, clause.targetPlayerId)?.name || 'the leading threat';
-    if (clause.type === 'tribute_permanent') return game.byIid(clause.targetCardId)?.name || clause.targetName || 'the promised permanent';
     if (clause.type === 'crusade_pledge') return player(game, clause.targetPlayerId)?.name || 'the leading threat';
     return player(game, clause.beneficiaryId)?.name || 'that player';
   }
@@ -312,7 +316,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (clause.type === 'remove_permanent') return `${actorName} will cast ${clause.sourceName || 'the announced removal spell'} targeting ${clauseTargetName(game, clause)} by the end of ${actorPossessive} next turn.`;
     if (clause.type === 'amnesty') return `${actorName} will not attack ${beneficiaryName} and will not choose ${beneficiaryName} or their permanents as harmful targets through ${actorPossessive} next turn.`;
     if (clause.type === 'vassal_pledge') return `${actorName} will not attack ${beneficiaryName} and will not choose ${beneficiaryName} or their permanents as harmful targets through ${actorPossessive} next two turns.`;
-    if (clause.type === 'tribute_permanent') return `${actorName} will sacrifice ${clauseTargetName(game, clause)} at the beginning of ${actorPossessive} next end step.`;
+    if (clause.type === 'tribute_permanent') return `Retired sacrifice promise for ${clause.targetName || 'a permanent'} (no legal sacrifice effect).`;
     if (clause.type === 'crusade_pledge') return `${actorName} will make a tactically sound attack on ${clauseTargetName(game, clause)} in each of ${actorPossessive} next two combats, whenever one remains available.`;
     if (clause.type === 'choice_vote') {
       const action = clause.state === 'fulfilled' ? 'voted' : 'will vote';
@@ -333,7 +337,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const whose = beneficiary.name === 'You' ? 'your' : `${beneficiary.name}’s`;
     if (type === 'amnesty') return `No attacks and no harmful targeting of ${who} or ${whose} permanents through your next turn`;
     if (type === 'vassal_pledge') return `No attacks and no harmful targeting of ${who} or ${whose} permanents through your next two turns`;
-    if (type === 'tribute_permanent') return `Sacrifice ${target.name} at the beginning of your next end step`;
     if (type === 'crusade_pledge') return `Attack ${target.name} in each of your next two combats, whenever a sound attack exists`;
     return 'Short-term promise';
   }
@@ -383,6 +386,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const card = game.byIid(Number(raw));
       if (!card || card.zone !== 'battlefield' || card.ctrl !== beneficiary) return null;
       clause.targetCardId = card.iid; clause.targetName = card.name; clause.targetControllerId = beneficiary.idx;
+      clause.targetZoneVersion = card.zoneVersion || 0;
     } else if (type === 'let_resolve') {
       const item = stackByKey(game, raw);
       if (!item || item.ctrl !== beneficiary) return null;
@@ -397,11 +401,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     } else if (type === 'vassal_pledge') {
       if (Number(raw) !== beneficiary.idx) return null;
       clause.turnsSpan = VASSAL_TURNS;
-    } else if (type === 'tribute_permanent') {
-      const card = game.byIid(Number(raw));
-      if (!card || card.zone !== 'battlefield' || card.ctrl !== actor || card.is('Land')) return null;
-      clause.targetCardId = card.iid; clause.targetName = card.name; clause.targetControllerId = actor.idx;
-      clause.turnsSpan = 1;
     } else if (type === 'crusade_pledge') {
       const target = player(game, Number(raw));
       if (!target || target === actor || target === beneficiary || target.lost) return null;
@@ -437,6 +436,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     });
   }
 
+  function namedPermanent(game, clause) {
+    const card = game.byIid(clause.targetCardId);
+    return card && card.zone === 'battlefield' && card.ctrl?.idx === clause.targetControllerId &&
+      (clause.targetZoneVersion === undefined || (card.zoneVersion || 0) === clause.targetZoneVersion) ? card : null;
+  }
+
   function validateProposal(game, proposal, opts = {}) {
     const d = state(game), st = status(game);
     if (!d) return { ok: false, reason: REASONS.disabled };
@@ -447,16 +452,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const request = proposal.request, offer = proposal.offer;
     if (!request || !offer || request.actorId !== to.idx || request.beneficiaryId !== from.idx ||
       offer.actorId !== from.idx || offer.beneficiaryId !== to.idx) return { ok: false, reason: REASONS.invalid };
+    if (proposal.lastStand) {
+      if (!LAST_STAND_REQUEST_TYPES.has(request.type) || !LAST_STAND_OFFER_TYPES.has(offer.type))
+        return { ok: false, reason: REASONS.lastStandShape };
+      if (!lastStandSignals(game, from).length) return { ok: false, reason: REASONS.notDesperate };
+    } else if (![request, offer].every(clause => ORDINARY_TYPES.has(clause.type))) {
+      return { ok: false, reason: REASONS.invalid };
+    }
     for (const clause of [request, offer]) {
       if (promiseConflict(game, clause)) return { ok: false, reason: REASONS.conflict };
       if (clause.type === 'no_attack' && visibleAttackPower(game, player(game, clause.actorId), player(game, clause.beneficiaryId)) <= 0)
         return { ok: false, reason: REASONS.empty };
       if (clause.type === 'protect_permanent') {
-        const card = game.byIid(clause.targetCardId);
-        if (!card || card.zone !== 'battlefield' || card.ctrl.idx !== clause.targetControllerId) return { ok: false, reason: REASONS.invalid };
+        if (!namedPermanent(game, clause)) return { ok: false, reason: REASONS.invalid };
       }
-      if (clause.type === 'let_resolve' && !stackByKey(game, clause.stackId)) return { ok: false, reason: REASONS.invalid };
-      if (clause.type === 'pressure_player') {
+      if (clause.type === 'let_resolve' && stackByKey(game, clause.stackId)?.ctrl !== player(game, clause.beneficiaryId))
+        return { ok: false, reason: REASONS.invalid };
+      if (AGGRESSION_TYPES.has(clause.type)) {
         const runaway = runawayThreat(game);
         if (!runaway || runaway.p.idx !== clause.targetPlayerId) return { ok: false, reason: REASONS.pressure };
         const actor = player(game, clause.actorId), target = player(game, clause.targetPlayerId);
@@ -481,7 +493,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const rejected = d.rejectedPairs[pairKey(from, to)];
       if (rejected && rejected === boardSignature(game)) return { ok: false, reason: REASONS.unchanged };
     }
-    if (opts.pendingHuman && d.proposals.some(item => item.status === 'pending-human')) return { ok: false, reason: REASONS.pending };
+    if (d.proposals.some(item => item.status === 'pending-human' && item !== proposal)) return { ok: false, reason: REASONS.pending };
     return { ok: true, reason: '' };
   }
 
@@ -533,17 +545,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       if (perspective === actor) {
         // Calling off a kill is the most expensive promise in the game. A bot
         // that can finish the beneficiary right now must be paid for it.
-        const givingUpTheKill = unblockableIncoming(game, beneficiary) >= beneficiary.life &&
-          visibleAttackPower(game, actor, beneficiary) > 0;
-        cost += value * 0.8 * (givingUpTheKill ? 2.2 : 1);
+        const givingUpTheKill = unblockableIncoming(game, beneficiary, [actor]) >= beneficiary.life;
+        cost += givingUpTheKill ? Math.max(12, value * 0.8 * 2.2) : value * 0.8;
       }
-    } else if (clause.type === 'tribute_permanent') {
-      const card = game.byIid(clause.targetCardId);
-      const value = Math.max(1, publicPermanentValue(game, card));
-      // The tribute is paid a turn later, so both sides discount it; the actor
-      // still loses the whole permanent.
-      if (perspective === beneficiary) benefit += value * 0.4;
-      if (perspective === actor) cost += value * 0.62;
     } else if (clause.type === 'crusade_pledge') {
       const target = player(game, clause.targetPlayerId);
       const opportunity = pressureAttackOpportunity(game, actor, target);
@@ -590,10 +594,6 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (clause.type === 'pressure_player') return 2.3;
     if (clause.type === 'amnesty') return 4.5;
     if (clause.type === 'vassal_pledge') return 4.5 * VASSAL_TURNS;
-    if (clause.type === 'tribute_permanent') {
-      const card = game.byIid(clause.targetCardId);
-      return Math.min(7, 2 + publicPermanentValue(game, card) * 0.35);
-    }
     if (clause.type === 'crusade_pledge') return 2.3 * CRUSADE_COMBATS;
     return 1;
   }
@@ -849,6 +849,23 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   function refresh(game) {
     const d = state(game);
     if (!d) return;
+    d.botLastStandRoundCounts ||= {};
+    // Old saves may contain a tribute that used to sacrifice a card directly.
+    // Release both unpaid sides of that exchange, without changing any zones
+    // or blaming either player for a promise the rules never supported.
+    for (const contract of activeContracts(game)) {
+      if (contract.clauses.some(clause => clause.type === 'tribute_permanent' && clause.state === 'active')) {
+        for (const clause of contract.clauses) setClauseState(game, contract, clause, 'void', REASONS.retiredTribute);
+      }
+    }
+    for (const proposal of d.proposals.filter(item => item.status === 'pending-human')) {
+      const clauses = proposal.clauses || [proposal.request, proposal.offer];
+      if (clauses.some(clause => clause?.type === 'tribute_permanent')) {
+        proposal.status = 'expired'; proposal.reason = REASONS.retiredTribute;
+      } else if ([proposal.fromId, proposal.toId].some(id => !player(game, id) || player(game, id).lost)) {
+        proposal.status = 'expired'; proposal.reason = REASONS.invalid;
+      }
+    }
     if (activePlayers(game).length <= 2) { closeAllForHeadsUp(game); return; }
     for (const { contract, clause } of activeClauses(game)) {
       const actor = player(game, clause.actorId), beneficiary = player(game, clause.beneficiaryId);
@@ -857,21 +874,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         continue;
       }
       if (clause.type === 'protect_permanent') {
-        const card = game.byIid(clause.targetCardId);
-        if (!card || card.zone !== 'battlefield' || card.ctrl.idx !== clause.targetControllerId)
+        if (!namedPermanent(game, clause))
           setClauseState(game, contract, clause, 'void', 'the named permanent left or changed controller');
       } else if (clause.type === 'remove_permanent') {
-        const card = game.byIid(clause.targetCardId);
-        if (!card || card.zone !== 'battlefield' || card.ctrl.idx !== clause.targetControllerId)
+        if (!namedPermanent(game, clause))
           setClauseState(game, contract, clause, 'fulfilled', 'the named threat left the battlefield');
-      } else if (clause.type === 'tribute_permanent') {
-        const card = game.byIid(clause.targetCardId);
-        if (!card || card.zone !== 'battlefield' || card.ctrl.idx !== clause.targetControllerId)
-          setClauseState(game, contract, clause, 'void', 'the promised permanent left the battlefield');
-      } else if (clause.type === 'crusade_pledge') {
-        const crusadeTargetPlayer = player(game, clause.targetPlayerId);
-        if (!crusadeTargetPlayer || crusadeTargetPlayer.lost)
-          setClauseState(game, contract, clause, 'void', 'the crusade target left the game');
+      } else if (AGGRESSION_TYPES.has(clause.type)) {
+        if (runawayThreat(game)?.p.idx !== clause.targetPlayerId)
+          setClauseState(game, contract, clause, 'void', 'the named player is no longer the runaway threat');
       } else if (clause.type === 'let_resolve' && !stackByKey(game, clause.stackId)) {
         setClauseState(game, contract, clause, 'fulfilled', 'the stack object left the stack');
       }
@@ -891,9 +901,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const hint = String(spec && spec.aiHint && (spec.aiHint.goal || spec.aiHint.kind) || '');
     const prompt = String(spec && spec.prompt || '');
     const oracle = String(src && src.def && src.def.oracle || '');
-    const text = `${hint} ${prompt} ${oracle}`.toLowerCase();
-    if (/destroy|exile|damage|counter target|return target .* hand|tap target|goad|loses? life|sacrifice|discard|remove .* counter|can't attack|can't block|doesn't untap|fight/.test(text)) return true;
-    if (/gain life|draw|put .*\+1\/\+1|indestructible|hexproof|protection|untap target|attach|equip|copy target .* you control/.test(text)) return false;
+    // Classify the chosen effect first. Another mode or cost elsewhere on the
+    // source card must not turn an explicitly helpful target into a hostile one.
+    for (const text of [`${hint} ${prompt}`, oracle].map(value => value.toLowerCase())) {
+      if (/\bdestroy\b|\bexile\b|\bdamage\b|counter target|return target .* hand|\btap target|\bgoad\b|loses? life|\bsacrifice\b|\bdiscard\b|remove .* counter|can't attack|can't block|doesn't untap|\bfight\b|gain control/.test(text)) return true;
+      if (/gain(?:s)? (?:\d+ )?life|\bdraws?\b|put .*\+1\/\+1|indestructible|hexproof|protection|\buntap\b|attach|equip|copy target .* you control/.test(text)) return false;
+    }
     return true;
   }
 
@@ -903,8 +916,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     return activeClauses(game, clause => {
       if (clause.actorId !== ctrl.idx) return false;
       if (clause.type === 'no_target_player' || clause.type === 'amnesty' || clause.type === 'vassal_pledge')
-        return owner && owner.idx === clause.beneficiaryId;
-      if (clause.type === 'protect_permanent') return target && target.iid === clause.targetCardId;
+        return owner && owner.idx === clause.beneficiaryId && (target instanceof U.Player || target.zone === 'battlefield');
+      if (clause.type === 'protect_permanent') return target === namedPermanent(game, clause);
       if (clause.type === 'let_resolve') return target && !(target instanceof U.Player) && !target.zone && stackKey(game, target) === clause.stackId;
       return false;
     });
@@ -976,11 +989,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const remove = {
         type: 'remove_permanent', actorId: remover.idx, beneficiaryId: supporters[0].idx,
         targetCardId: target.iid, targetName: target.name, targetControllerId: threat.p.idx,
+        targetZoneVersion: target.zoneVersion || 0,
         sourceCardId: entry.card.iid, sourceName: entry.card.name, state: 'proposed',
       };
       // Only one supporter grants combat immunity; the second grants targeting
       // restraint. This preserves the existing anti-pillow-fort rule.
       const clauses = [remove, ...supporters.map((candidate, index) => supportClause(game, candidate, remover, index === 0))];
+      if (clauses.some(clause => promiseConflict(game, clause) || SHIELD_TYPES.has(clause.type) &&
+        activeClauses(game, current => SHIELD_TYPES.has(current.type) && current.beneficiaryId === clause.beneficiaryId).length)) continue;
       options.push({
         key: `${entry.card.iid}:${target.iid}`, title: `Remove ${target.name}`,
         removerId: remover.idx, removerName: remover.name, sourceCardId: entry.card.iid, sourceName: entry.card.name,
@@ -1010,6 +1026,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const current = groupRemovalOptions(game, remover).find(option => option.key === proposal.optionKey);
     if (!current) return { ok: false, reason: REASONS.invalid };
     if (current.participantIds.join(':') !== (proposal.participantIds || []).join(':')) return { ok: false, reason: REASONS.invalid };
+    const promisedRemoval = proposal.clauses?.find(clause => clause.type === 'remove_permanent');
+    if (!promisedRemoval || !namedPermanent(game, promisedRemoval)) return { ok: false, reason: REASONS.invalid };
+    for (const clause of current.clauses) {
+      if (promiseConflict(game, clause)) return { ok: false, reason: REASONS.conflict };
+      if (SHIELD_TYPES.has(clause.type) && activeClauses(game, existing =>
+        SHIELD_TYPES.has(existing.type) && existing.beneficiaryId === clause.beneficiaryId).length)
+        return { ok: false, reason: REASONS.shield };
+    }
+    if (state(game).proposals.some(item => item.status === 'pending-human' && item !== proposal))
+      return { ok: false, reason: REASONS.pending };
     return { ok: true, option: current, reason: '' };
   }
 
@@ -1046,6 +1072,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const runaway = runawayThreat(game);
     const candidates = [];
     for (const to of recipients) {
+      if (state(game).rejectedPairs[pairKey(from, to)] === boardSignature(game)) continue;
       const shared = sharedTableThreat(game, from, to);
       // Bez runaway/shared prijetnje ili stvarnog stack objekta nema razloga za
       // nasumičnu razmjenu imuniteta između botova.
@@ -1143,8 +1170,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       else other.set(key, (other.get(key) || 0) + 1);
     }
     const strongestOther = Math.max(0, ...other.values()) + unknown;
-    const securedTieBreak = [...forced.values()].some(entry => entry && entry.contractId);
-    return securedTieBreak ? desired < strongestOther : desired <= strongestOther;
+    return desired <= strongestOther;
   }
 
   function makeChoiceProposal(game, sponsor, voter, src, option, promise, campaignId) {
@@ -1265,6 +1291,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         for (const candidate of eligible) {
           const natural = predicted.get(candidate.idx);
           if (natural === desired.key) continue;
+          if (desired.requiresMajority) {
+            const secured = new Map(forced);
+            secured.set(candidate.idx, { key: desired.key });
+            // This campaign can buy only one ballot. Do not pay for a tie
+            // when the desired printed result requires strictly more votes.
+            if (choiceCampaignStillNeedsVotes(game, desired.key, predicted, secured)) continue;
+          }
           for (const entry of choicePromiseOptions(game, sponsor, candidate)) {
             const draft = makeChoiceProposal(game, sponsor, candidate, src, desired, entry.clause, campaignId);
             // Do not consume a public proposal id while ranking hypothetical terms.
@@ -1327,7 +1360,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       enabled: !!enabled, unlockAfterRounds: UNLOCK_ROUNDS,
       contracts: [], proposals: [], history: [], rapport: {},
       proposalCounts: {}, pairProposalCounts: {}, rejectedPairs: {},
-      lastStandCounts: {}, lastStandPairs: {},
+      lastStandCounts: {}, lastStandPairs: {}, botLastStandRoundCounts: {},
       botRoundCounts: {}, botPairRounds: {}, botHumanOfferRound: -99,
       nextProposalId: 1, nextContractId: 1, nextStackId: 1, nextChoiceCampaignId: 1,
     };
@@ -1431,10 +1464,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     d.lastStandPairs[pair] = true;
     d.proposals.push(proposal);
     this.lg(`🩸 ${from.name} makes a last stand to ${to.name}: ${clauseLabel(this, offer)}`, 'diplomacy');
-    announceProposal(this, proposal, `${from.name} is one turn from elimination and offers ${to.name}: ${clauseLabel(this, offer)} In return: ${clauseLabel(this, request)}`);
+    announceProposal(this, proposal, `${from.name} is at risk of elimination and offers ${to.name}: ${clauseLabel(this, offer)} In return: ${clauseLabel(this, request)}`);
     if (!to.isAI) {
       proposal.status = 'pending-human';
-      proposal.reason = `${from.name} is about to be eliminated (${options.signals.join('; ')}).`;
+      proposal.reason = `${from.name} is at risk of elimination (${options.signals.join('; ')}).`;
       return { status: proposal.status, proposal };
     }
     const verdict = evaluateProposal(this, proposal, to);
@@ -1443,6 +1476,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (verdict.status === 'accepted')
       return { status: 'accepted', proposal, contract: activateProposal(this, proposal), reason: verdict.reason };
     proposal.status = 'rejected';
+    d.rejectedPairs[pairKey(from, to)] = boardSignature(this);
     d.history.push({
       turn: this.turnNo, kind: 'rejected', fromId: from.idx, toId: to.idx, reason: verdict.reason,
       text: `${to.name} refused a last stand from ${from.name}.`,
@@ -1455,10 +1489,15 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     refresh(this);
     const option = groupRemovalOptions(this, from).find(candidate => candidate.key === optionKey);
     if (!option) return { status: 'rejected', reason: REASONS.invalid };
+    const d = state(this), key = roundKey(this, from);
+    if ((d.proposalCounts[key] || 0) >= 2) return { status: 'rejected', reason: REASONS.rate };
+    if (option.supporterIds.some(id => d.pairProposalCounts[`${key}:${id}`]))
+      return { status: 'rejected', reason: REASONS.pairRate };
     const proposal = makeGroupRemovalProposal(this, option, from.isAI ? 'bot' : 'human');
     const check = validateGroupRemovalProposal(this, proposal);
     if (!check.ok) return { status: 'rejected', reason: check.reason };
-    if (!from.isAI) recordHumanAttempt(this, from, player(this, option.supporterIds[0]));
+    recordHumanAttempt(this, from, player(this, option.supporterIds[0]));
+    for (const id of option.supporterIds) d.pairProposalCounts[`${key}:${id}`] = 1;
     state(this).proposals.push(proposal);
     const responder = player(this, proposal.toId);
     if (responder && !responder.isAI && responder !== from) {
@@ -1479,6 +1518,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!proposal || proposal.toId !== responder.idx) return { status: 'rejected', reason: REASONS.invalid };
     if (!accept) {
       proposal.status = 'declined';
+      d.rejectedPairs[pairKey(player(this, proposal.fromId), responder)] = boardSignature(this);
       d.history.push({
         turn: this.turnNo, kind: 'declined', fromId: proposal.fromId, toId: proposal.toId,
         text: `${responder.name} declined ${player(this, proposal.fromId)?.name || 'a player'}’s proposal.`,
@@ -1519,6 +1559,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const target = player(this, entry.clause.targetPlayerId);
     const opportunity = pressureAttackOpportunity(this, actor, target);
     if (opportunity.safe) return target;
+    // A two-combat pledge is conditional in each combat. An unsafe first
+    // combat does not erase the promise to make a sound attack in the second.
+    if (entry.clause.type === 'crusade_pledge') return null;
     setClauseState(this, entry.contract, entry.clause, 'void', 'no tactically sound attack remained; a certain free block did not count as able');
     return null;
   };
@@ -1553,39 +1596,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const { contract, clause } of activeClauses(this, current => current.actorId === actor.idx &&
       TURN_TYPES.has(current.type) && actor.turnsStarted > current.createdActorTurns + ((current.turnsSpan || 1) - 1))) {
       if (clause.type === 'remove_permanent') {
-        const target = this.byIid(clause.targetCardId);
+        const target = namedPermanent(this, clause);
         setClauseState(this, contract, clause,
           target && target.zone === 'battlefield' && target.ctrl.idx === clause.targetControllerId ? 'broken' : 'fulfilled',
           target && target.zone === 'battlefield' ? 'the announced removal deadline was missed' : 'the named threat left the battlefield');
-      } else if (clause.type === 'tribute_permanent') {
-        // The end step already collects a tribute that could be paid. Reaching
-        // cleanup with the clause still active means it was not.
-        setClauseState(this, contract, clause, 'broken', 'the promised tribute was never sacrificed');
       } else setClauseState(this, contract, clause, 'fulfilled', 'the promised turn ended');
     }
     refresh(this);
-  };
-
-  // Tributes are collected in the end step of the promising player's next turn.
-  // This runs before cleanup, so a paid tribute is already settled by the time
-  // the deadline above is checked.
-  G.diplomacyEndStep = async function (actor) {
-    refresh(this);
-    if (!state(this) || !actor || actor.lost) return;
-    const due = activeClauses(this, clause => clause.type === 'tribute_permanent' && clause.actorId === actor.idx &&
-      actor.turnsStarted > clause.createdActorTurns);
-    for (const { contract, clause } of due) {
-      const card = this.byIid(clause.targetCardId);
-      if (!card || card.zone !== 'battlefield' || card.ctrl !== actor) {
-        setClauseState(this, contract, clause, 'void', 'the promised permanent had already left the battlefield');
-        continue;
-      }
-      this.lg(`🤝 ${actor.name} pays the promised tribute: ${card.name}.`, 'diplomacy');
-      await this.sacrifice(actor, card);
-      setClauseState(this, contract, clause,
-        card.zone === 'battlefield' ? 'broken' : 'fulfilled',
-        card.zone === 'battlefield' ? 'the promised permanent could not be sacrificed' : 'the promised tribute was paid');
-    }
   };
 
   G.diplomacyFilterTargets = function (candidates, spec, src, ctrl, opts = {}) {
@@ -1677,20 +1694,32 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     if (!lastStandStatus(game, from).eligible) return null;
     const d = state(game);
     const round = roundKey(game, from);
+    if ((d.botLastStandRoundCounts[completedRounds(game)] || 0) >= 1) return null;
     const candidates = activePlayers(game)
       .filter(other => other !== from && !d.lastStandPairs[`${round}:${other.idx}`] && !hasPairContract(game, from, other))
+      .filter(other => !game.diplomacyAttackBlocked(other, from) &&
+        (unblockableIncoming(game, from, [other]) > 0 || pressureAttackOpportunity(game, other, from).safe))
       .map(other => ({ other, pressure: visibleAttackPower(game, other, from) }))
       .sort((a, b) => b.pressure - a.pressure || a.other.idx - b.other.idx);
     for (const { other } of candidates) {
       const options = lastStandOptions(game, from, other);
       if (!options.eligible || !options.requests.length) continue;
-      const ranked = options.offers
-        .map(option => ({ option, cost: -clauseDelta(game, buildClause(game, from, other, option.key) || {}, from) }))
+      const ranked = options.offers.map(option => {
+        const request = buildClause(game, other, from, options.requests[0].key);
+        const offer = buildClause(game, from, other, option.key);
+        const proposal = { fromId: from.idx, toId: other.idx, request, offer, lastStand: true };
+        if (!validateProposal(game, proposal, { botInitiated: true }).ok) return null;
+        // Pick the cheapest workable commitment. Do not interrupt the human
+        // to watch a bot receive an offer it already knows it cannot accept.
+        if (other.isAI && evaluateProposal(game, proposal, other).status !== 'accepted') return null;
+        return { option, cost: -clauseDelta(game, offer, from) };
+      }).filter(Boolean)
         .filter(entry => Number.isFinite(entry.cost))
         .sort((a, b) => a.cost - b.cost);
       for (const { option } of ranked) {
         const result = game.proposeLastStandDiplomacy(from, other, options.requests[0].key, option.key);
-        if (result.status === 'rejected' && result.reason === REASONS.lastStandShape) continue;
+        if (!result.proposal) continue;
+        d.botLastStandRoundCounts[completedRounds(game)] = 1;
         if (result.status === 'pending-human') d.botHumanOfferRound = status(game).rounds;
         if (game.reviewDiplomacyWithHuman) await game.reviewDiplomacyWithHuman({
           source: 'bot-last-stand', status: result.status, proposal: result.proposal || null,
@@ -1707,13 +1736,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const d = state(this), st = status(this);
     if (!d || !st.unlocked || !active || !active.isAI || d.proposals.some(proposal => proposal.status === 'pending-human')) return null;
     const round = String(st.rounds);
-    if ((d.botRoundCounts[round] || 0) >= 1) return null;
     const runaway = runawayThreat(this);
     if (runaway && runaway.p === active) return null;
     const from = active;
     // A bot that is about to be eliminated begs before it bargains.
     const lastStand = await botLastStand(this, from);
     if (lastStand) return lastStand;
+    if ((d.botRoundCounts[round] || 0) >= 1) return null;
     const group = groupRemovalOptions(this, from)[0];
     if (group) {
       d.botRoundCounts[round] = (d.botRoundCounts[round] || 0) + 1;

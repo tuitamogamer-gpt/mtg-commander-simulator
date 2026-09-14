@@ -190,24 +190,14 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       votes['_by_' + q.idx] = k;
       if (bargain && bargain.contractId && g.diplomacyRecordPublicChoice) g.diplomacyRecordPublicChoice(bargain.contractId, q, k);
     }
-    const campaignPosition = [...bargains.values()].find(entry => entry && entry.campaignPosition);
-    const securedVote = [...bargains.values()].find(entry => entry && entry.contractId &&
-      campaignPosition && entry.key === campaignPosition.key);
-    if (campaignPosition && securedVote) {
-      // Diplomacy package house rule: the controller's declared ballot plus
-      // one secured public vote wins a tied council result. Raw vote counts
-      // stay truthful (2–2 in a four-player pod); only the winner tie-break is
-      // political, visible and backed by an active agreement.
-      votes._diplomacyTieBreak = campaignPosition.key;
-      votes._diplomacyContractId = securedVote.contractId;
-    }
     await g.emit('voteEnd', { src, by: you, votes, options });
     return votes;
   };
   E7.voteBeats = (votes, preferred, other) => {
     const preferredN = votes.get(preferred) || 0;
     const otherN = votes.get(other) || 0;
-    return preferredN > otherN || (preferredN === otherN && votes._diplomacyTieBreak === preferred);
+    // A vote bargain changes ballots, never a card's printed tie outcome.
+    return preferredN > otherN;
   };
   // tajno glasanje — svi biraju bez uvida
   E7.secretVote = async (g, you, src, options) => {

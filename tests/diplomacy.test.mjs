@@ -59,7 +59,7 @@ function activeClause(game, type, actor, beneficiary) {
     .find(clause => clause.type === type && clause.actorId === actor.idx && clause.beneficiaryId === beneficiary.idx);
 }
 
-test('diplomacy is optional, defaults to inert state, and unlocks only after three full table rounds', () => {
+test('diplomacy is optional, defaults to inert state, and unlocks once every active player starts turn three', () => {
   const off = makeGame({ enabled: false });
   const offStatus = off.game.diplomacyStatus();
   assert.equal(offStatus.enabled, false);
