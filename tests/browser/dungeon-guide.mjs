@@ -12,7 +12,8 @@ mkdirSync(out,{recursive:true});
 const server=express().use('/api/account',createAccountHandler({store:new MemoryAccountStore(),limiter:null})).use(express.static(root)).listen(0,'127.0.0.1');
 await once(server,'listening');
 const base=process.env.GAME_URL || `http://127.0.0.1:${server.address().port}`;
-const browser=await chromium.launch({headless:true,channel:'chrome'}),errors=[],checks=[];
+const browser=await chromium.launch({headless:true,...(process.env.BROWSER_EXECUTABLE ? {executablePath:process.env.BROWSER_EXECUTABLE} : {channel:'chrome'})}),errors=[],checks=[];
+const sizes=[{width:3840,height:2160},{width:2560,height:1440},{width:1920,height:1080},{width:1600,height:900},{width:1366,height:768},{width:1024,height:768},{width:768,height:1024},{width:600,height:800},{width:390,height:844},{width:320,height:568},{width:844,height:390}];
 try {
   for (const width of [1440,390,320]) {
     const page=await browser.newPage({viewport:{width,height:width===1440?1000:844},reducedMotion:'reduce'});
@@ -20,6 +21,51 @@ try {
     await page.addInitScript(()=>{localStorage.setItem('mtgOnboardingComplete','1');localStorage.setItem('mtgReducedMotion','1');});
     const check=name=>{checks.push(`${width}: ${name}`);console.log(`PASS ${width}: ${name}`);};
     const noOverflow=async()=>assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+    const mapFits=async()=>{
+      await page.waitForFunction(()=>{
+        const map=document.querySelector('.dungeonmap'),svg=map?.querySelector('svg');
+        return svg?.viewBox.baseVal.width>0&&Math.abs(svg.viewBox.baseVal.width-map.getBoundingClientRect().width)<1;
+      });
+      const layout=await page.evaluate(()=>{
+        const scroll=document.querySelector('.dungeonmapscroll'),map=scroll.querySelector('.dungeonmap'),bounds=map.getBoundingClientRect();
+        const rooms=[...map.querySelectorAll('.dungeonroom')];
+        const modal=document.querySelector('.dungeonmodal')?.getBoundingClientRect();
+        const paths=[...map.querySelectorAll('.dungeonarrows g > path:first-child')];
+        const guide=MTG.dungeonGuide(document.querySelector('[data-dungeon][aria-pressed="true"]').dataset.dungeon);
+        const edges=Object.entries(guide.rooms).flatMap(([from,room])=>room.next.map(to=>({from,to})));
+        return {
+          viewport:[innerWidth,innerHeight],modal:modal?.toJSON(),
+          overflow:scroll.scrollWidth>scroll.clientWidth+1,
+          clipped:rooms.some(n=>n.scrollWidth>n.clientWidth+1||[...n.children].some(c=>c.clientWidth&&c.scrollWidth>c.clientWidth+1)),
+          outside:rooms.some(n=>{const r=n.getBoundingClientRect();return r.left<bounds.left||r.right>bounds.right+1;}),
+          modalOutside:modal&&(modal.left<0||modal.right>innerWidth+1||modal.top<0||modal.bottom>innerHeight+1),
+          arrows:paths.every((path,i)=>{
+            const a=map.querySelector(`[data-room="${edges[i].from}"]`).getBoundingClientRect(),b=map.querySelector(`[data-room="${edges[i].to}"]`).getBoundingClientRect();
+            const start=path.getPointAtLength(0),end=path.getPointAtLength(path.getTotalLength());
+            return Math.abs(start.x-(a.left+a.width/2-bounds.left))<1&&Math.abs(start.y-(a.bottom-bounds.top))<1&&Math.abs(end.x-(b.left+b.width/2-bounds.left))<1&&Math.abs(end.y-(b.top-bounds.top-3))<1;
+          }),
+        };
+      });
+      assert.equal(layout.overflow,false,'all map columns fit without sideways scrolling');
+      assert.equal(layout.clipped,false,'room text is not clipped');
+      assert.equal(layout.outside,false,'rooms stay inside the map');
+      assert.ok(!layout.modalOutside,`dialog fits the viewport height and width: ${JSON.stringify(layout)}`);
+      assert.equal(layout.arrows,true,'arrows follow rooms after resize');
+      await noOverflow();
+    };
+    const resizeMaps=async(surface)=>{
+      for(const size of sizes){
+        await page.setViewportSize(size);
+        for(const key of await page.locator('[data-dungeon]').evaluateAll(nodes=>nodes.map(n=>n.dataset.dungeon))){
+          await page.locator(`[data-dungeon="${key}"]`).evaluate(n=>n.click());
+          await mapFits();
+        }
+        await page.locator('.dungeonmapscroll').scrollIntoViewIfNeeded();
+        await page.screenshot({path:`${out}/${surface}-${size.width}x${size.height}.png`});
+      }
+      await page.setViewportSize({width,height:width===1440?1000:844});
+      check(`${surface} fits desktop, tablet, phone and landscape; arrows track resize`);
+    };
     await page.goto(base);await page.locator('[data-menu-action="solo"]').first().click();
     await page.waitForSelector('.deckentry',{timeout:45000});
     await page.locator('.decksearch input').fill('Dungeons of Death');await page.locator('.deckcard:visible').click();
@@ -29,11 +75,10 @@ try {
       await page.locator(`[data-dungeon="${key}"]`).click();
       assert.equal(await page.locator('.dungeonroom').count(),count);
       await page.waitForFunction(()=>document.querySelectorAll('.dungeonarrows path').length>0);
-      const geometry=await page.locator('.dungeonroom').evaluateAll(nodes=>nodes.map(n=>({width:n.getBoundingClientRect().width,scroll:n.scrollWidth,client:n.clientWidth})));
-      assert.ok(geometry.every(n=>n.width>=160&&n.scroll<=n.client+1),JSON.stringify(geometry));
-      await noOverflow();
+      await mapFits();
       if(key==='mine')await page.screenshot({path:`${out}/pregame-${width}.png`});
     }
+    if(width===1440)await resizeMaps('reference');
     await page.locator('.dungeonrules summary').click();
     assert.match(await page.locator('.dungeonrules').innerText(),/Losing initiative keeps your progress/);
     check('all four maps, room effects, arrows, and rules before play');
@@ -56,6 +101,8 @@ try {
       g.recalc();ui.render();__venture();
     });
     await page.waitForSelector('.dungeonmodal');
+    if(width===1440)await resizeMaps('entry');
+    await page.locator('[data-dungeon="mine"]').click();
     assert.equal(await page.locator('.dungeontabs button').count(),3);
     await page.locator('.dungeonmapscroll').focus();await page.keyboard.press('Space');
     assert.equal(await page.evaluate(()=>_ui.me.afcDungeon ?? null),null,'scrolling the map must not confirm entry');
@@ -79,6 +126,19 @@ try {
     await page.locator('[data-room="tunnels"]').click();
     await page.evaluate(()=>_ui.render());
     assert.equal(await page.locator('[data-dungeon-confirm="tunnels"]').count(),1,'chosen route survives arena refresh');
+    if(width===1440){
+      for(const size of sizes){
+        await page.setViewportSize(size);await mapFits();
+        await page.locator('[data-room="tunnels"]').click();
+        const confirm=page.locator('[data-dungeon-confirm="tunnels"]');
+        await confirm.scrollIntoViewIfNeeded();
+        const r=await confirm.boundingBox();
+        assert.ok(r.y>=0&&r.y+r.height<=size.height+1&&r.height>=44,`confirmation stays reachable and touch sized: ${JSON.stringify({size,r})}`);
+        await page.screenshot({path:`${out}/choice-${size.width}x${size.height}.png`});
+      }
+      await page.setViewportSize({width,height:1000});
+      check('room choices and confirmation remain usable across sizes');
+    }
     await page.screenshot({path:`${out}/branch-${width}.png`});await noOverflow();
     await page.locator('[data-dungeon-confirm="tunnels"]').click();await page.waitForFunction(()=>__dungeonQA.done===2);
     assert.equal(await page.evaluate(()=>_game.bf().some(c=>c.hasSub('Treasure'))),true);
