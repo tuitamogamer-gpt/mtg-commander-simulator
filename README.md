@@ -4,6 +4,8 @@ A browser Commander table with local AI opponents, private multiplayer, animated
 
 **[Play Commander Simulator](https://mtg-commander-simulator.vercel.app/)** · [Import a deck](docs/deck-import.md) · [Card catalog](docs/card-catalog.md) · [Deployment](docs/deployment.md)
 
+**iPhone & iPad:** the [iOS app project](docs/ios.md) adds a SwiftUI home screen, bundled Solo play and an online view for the existing service. Build and install it with Xcode on a Mac.
+
 > **Napomena / Disclaimer:** Multiplayer mod sa živim igračem je trenutno u testnoj fazi. Molim za strpljenje.
 >
 > Kompletna pažnja je posvećena isključivo borbi protiv AI protivnika.

@@ -150,6 +150,21 @@ body.game-active #game.command-table .hcard:hover { transform: translateY(-2px);
 #game.command-table .handtools select { width: 100%; min-height: 34px; }
 #game.command-table .handwrap > .exiletray,
 #game.command-table .handwrap > .suspendtray { max-width: 185px; max-height: 100%; overflow: auto; flex: 0 0 auto; }
+/* Exile states share a bounded dock; only actual hand cards enter the hand scroller. */
+#game .handzones { display: flex; flex-direction: column; flex: 0 0 220px; width: 220px; min-width: 0; max-width: 35%; height: 100%; min-height: 0; gap: 6px; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+#game .handzones > :is(.exiletray, .suspendtray) { display: flex; flex-direction: column; flex: 0 0 auto; align-items: stretch; width: 100%; min-width: 0; max-width: none; height: auto; margin: 0; padding: 3px; gap: 3px; box-sizing: border-box; }
+#game .handzones :is(.exiletraylist, .suspendtraylist) { display: flex; flex-direction: column; overflow: visible; gap: 4px; }
+#game .handzones :is(.exiletraycard, .suspendtraycard) { flex: 0 0 auto; min-width: 0; width: 100%; min-height: 44px; padding: 3px; box-sizing: border-box; grid-template-columns: 24px minmax(0, 1fr); }
+#game .handzones .suspendtraycard { grid-template-columns: 24px minmax(0, 1fr) 28px; }
+#game .handzones :is(.exiletraycard, .suspendtraycard) img { width: 24px; height: 34px; object-fit: cover; }
+#game .handzones .suspendtraycard > span small { display: none; }
+#game .handzones .exiletraytitle { font-size: 9px; letter-spacing: .08em; }
+#game .handzones .exiletraycard { padding-right: 38px; }
+#game .handzones .exiletraycard span { min-width: 0; }
+#game .handzones .exiletraycard b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#game .handzones .suspendtrayhead small { white-space: normal; }
+body.game-active #game.command-table .hand > :first-child { margin-left: 0; }
+body.game-active #game.command-table .hand > :last-child { margin-right: 0; }
 #game.command-table .handwrap.is-empty .hand { min-height: 38px !important; height: 38px !important; }
 
 /* Preserve hard reviews and their real callbacks while docking their presentation. */
@@ -385,6 +400,10 @@ body.game-active #game.command-table .ct-decision-rail.has-targets .targetprompt
   #game.command-table[data-mobile-view='mine'] .ct-seat { min-height: 44px; }
   #game.command-table[data-mobile-view='mine'] .ct-seat .ct-portrait { display: none; }
   body.game-active #game.command-table[data-mobile-view='mine'] .handwrap { flex-direction: column; }
+  #game.command-table[data-mobile-view='mine'] .handzones { flex: 0 0 auto; width: 100%; max-width: none; height: auto; max-height: 48px; }
+  #game.command-table[data-mobile-view='mine'] .handwrap:has(.handzones) .handsortlabel > span { display: none; }
+  body.game-active #game.command-table[data-mobile-view='mine'] .handwrap:has(.handzones) { overflow-y: auto; }
+  body.game-active #game.command-table[data-mobile-view='mine'] .handzones + .hand { min-height: calc(var(--ct-hand) + var(--ct-hand-extra) - 19px) !important; flex-shrink: 0; }
   #game.command-table[data-mobile-view='mine'] .handtools { flex: 0 0 auto; width: 100%; flex-direction: row; align-items: center; justify-content: space-between; gap: 5px; }
   #game.command-table[data-mobile-view='mine'] .handsortlabel { width: 90px; }
   body.game-active #game.command-table[data-mobile-view='mine'] .hand { width: 100%; flex: 1 1 0; }

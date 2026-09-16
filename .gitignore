@@ -7,3 +7,12 @@ output/
 .gstack/
 .env*
 dist/commander-simulator-public.zip
+dist/ios-web/
+dist/commander-ios-mac.zip
+ios/App/App/public/
+ios/App/App/capacitor.config.json
+ios/App/App/config.xml
+ios/DerivedData/
+ios/build/
+**/xcuserdata/
+*.xcuserstate

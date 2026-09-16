@@ -858,6 +858,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const sourceCard = source && source.card || source;
         const sourceBox = el('div', 'stackflowsource');
         if (sourceCard && sourceCard.name) {
+          if (!sourceCard.faceDown) sourceBox.dataset.cname = sourceCard.name;
           sourceBox.insertAdjacentHTML('beforeend', cardArtHTML(sourceCard));
         }
         const copyLabel = so.isCopy ? `SPELL COPY #${so.copyIndex || '?'}` : (so.kind || 'effect').toUpperCase();
@@ -1345,6 +1346,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const wrap = el('div', 'actionstagewrap');
       const stage = el('div', 'actionstage');
       const art = el('div', 'actionstageart');
+      if (!source.faceDown) art.dataset.cname = source.name;
       art.innerHTML = `${cardArtHTML(source)}`;
       stage.appendChild(art);
       const info = el('div', 'actionstageinfo');
@@ -3308,6 +3310,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     renderHand(g) {
       const me = this.me;
       const wrap = el('div', 'handwrap');
+      const zones = el('aside', 'handzones');
+      zones.setAttribute('aria-label', 'Revealed and exiled cards');
       const row = el('div', 'hand');
       const pd = this.pending;
       const castable = new Map();
@@ -3336,7 +3340,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           item.innerHTML=`${cardArtHTML(card)}<span><b>${esc(card.name)}</b><small>${esc(card.owner.name)} · ${miracleCards.includes(card)?'Miracle':'Forecast'}</small></span>`;
           item.onclick=()=>{this.sheet={card};this.render();};list.appendChild(item);
         }
-        tray.appendChild(list);wrap.appendChild(tray);
+        tray.appendChild(list);zones.appendChild(tray);
       }
       // 🌀 IMPULSE / PLOT: karte u egzilu koje trenutno smiješ igrati moraju
       // biti stalno vidljive — inače igrač ne zna ŠTA je egzilirano i da li
@@ -3374,7 +3378,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             list.appendChild(item);
           }
           tray.appendChild(list);
-          wrap.appendChild(tray);
+          zones.appendChild(tray);
         }
       }
       // Suspend is not a normal "play from exile" permission: the game owns
@@ -3407,7 +3411,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           list.appendChild(item);
         }
         tray.appendChild(list);
-        row.appendChild(tray);
+        zones.appendChild(tray);
       }
       for (const c of MTG.sortHandForDisplay(me.hand, this.handSort)) {
         const canSuspendNow = suspendReady.has(c);
@@ -3474,6 +3478,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         row.classList.add('is-empty');
         row.appendChild(el('div', 'emptyrow', `${U.icon('cards')}<span><b>Empty hand</b><small>Your battlefield and priority controls remain active.</small></span>`));
       }
+      if (zones.childElementCount) wrap.appendChild(zones);
       wrap.appendChild(row);
       if (me.hand.length) wrap.appendChild(this.renderHandTools());
       if (!me.hand.length && !wrap.querySelector('.exiletray, .suspendtray')) wrap.classList.add('is-empty');

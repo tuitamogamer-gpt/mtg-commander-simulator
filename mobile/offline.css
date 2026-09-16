@@ -1,0 +1,12 @@
+html[data-ios-offline] [data-menu-action="live"],
+html[data-ios-offline] [data-mode="online"],
+html[data-ios-offline] .mainmenu-account,
+html[data-ios-offline] .mainmenu-livecheck {
+  display: none !important;
+}
+
+/* The native shell supplies safe areas. Keep the board's existing mobile layout. */
+html[data-ios-offline] body { overscroll-behavior-y: none; }
+html[data-ios-offline] input,
+html[data-ios-offline] textarea,
+html[data-ios-offline] select { font-size: max(16px, 1em); }

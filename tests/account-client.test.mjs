@@ -18,14 +18,14 @@ function response(payload, status = 200) {
   return { ok: status >= 200 && status < 300, status, async json() { return payload; } };
 }
 
-function createAccountClient(handleRequest) {
+function createAccountClient(handleRequest, { offlineIOS = false } = {}) {
   const requests = [];
   const listeners = new Map();
   const local = new Map();
   const document = {
     readyState: 'complete',
     activeElement: null,
-    querySelector() { return null; },
+    querySelector(selector) { return offlineIOS && selector === 'meta[name="mtg-build"]' ? { content: 'ios-offline' } : null; },
     body: { classList: { add() {}, remove() {} } },
   };
   const context = {
@@ -72,6 +72,14 @@ function createAccountClient(handleRequest) {
 const user = id => ({ id, displayName: `Player ${id}`, email: `${id}@example.com`, createdAt: '2026-08-30T00:00:00.000Z' });
 const profile = { gamesPlayed: 0, wins: 0, losses: 0, lifetimeScore: 0, winRate: 0, favoriteCommanders: [], favoriteDecks: [], recentMatches: [] };
 const deck = id => ({ id, name: id, updatedAt: '2026-08-30T00:00:00.000Z' });
+
+test('bundled iOS Solo settles as a guest without calling the account backend', async () => {
+  const { api, requests } = createAccountClient(() => { throw new Error('Unexpected network request'); }, { offlineIOS: true });
+  await api.whenReady();
+  assert.equal(api.loading, false);
+  assert.equal(api.user, null);
+  assert.equal(requests.length, 0);
+});
 
 test('account deck operations wait for initial identity and serialize read/write commits', async () => {
   const initialSession = deferred();

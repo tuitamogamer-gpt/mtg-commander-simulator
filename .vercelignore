@@ -6,3 +6,8 @@ node_modules/
 output/
 dist/commander-simulator-public.zip
 *.log
+ios/
+mobile/
+capacitor.config.json
+dist/ios-web/
+dist/commander-ios-mac.zip

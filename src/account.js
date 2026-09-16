@@ -63,6 +63,9 @@ function applySessionSnapshot(result) {
 }
 
 async function request(action, payload = null, query = null) {
+  if (document.querySelector('meta[name="mtg-build"]')?.content === 'ios-offline') {
+    throw new Error('Accounts and cloud saves are available from Play online on the iOS app home screen.');
+  }
   const options = { credentials: 'same-origin', cache: 'no-store', headers: { Accept: 'application/json' } };
   const params = new URLSearchParams({ action });
   if (query && typeof query === 'object') {

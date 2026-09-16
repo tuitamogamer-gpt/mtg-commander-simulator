@@ -1,0 +1,12 @@
+{
+  "appId": "com.tuitamogamer.commandersimulator",
+  "appName": "Commander Simulator",
+  "webDir": "dist/ios-web",
+  "backgroundColor": "#07090c",
+  "ios": {
+    "contentInset": "never",
+    "scrollEnabled": true,
+    "preferredContentMode": "mobile",
+    "backgroundColor": "#07090c"
+  }
+}
