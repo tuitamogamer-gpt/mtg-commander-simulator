@@ -656,7 +656,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     head.innerHTML = `
       <button type="button" class="setupbrand setuphome" aria-label="Back to main menu"><span class="menumark" aria-hidden="true"></span><b>COMMANDER</b><small>SIMULATOR</small></button>
       <nav class="setupsteps" aria-label="Game setup progress">
-        <button type="button" class="setupstep on" data-step="deck"><span>1</span><b>Deck</b></button>
+        <button type="button" class="setupstep on" data-step="deck" aria-current="step"><span>1</span><b>Deck</b></button>
         <button type="button" class="setupstep" data-step="pod"><span>2</span><b>Pod</b></button>
         <button type="button" class="setupstep" data-step="review"><span>3</span><b>Review</b></button>
       </nav>
@@ -719,6 +719,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const right = el('aside', 'setupright podbuilder');
     right.id = 'pod-builder';
     grid.appendChild(left); grid.appendChild(right);
+    const setChoiceSelected = (button, selected) => {
+      button.classList.toggle('selected', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    };
 
     const deckBreakdown = deck => {
       const counts = { lands: 0, creatures: 0, spells: 0, engines: 0 };
@@ -1342,7 +1346,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     matchType.innerHTML = `
       <div class="matchtypecopy"><span>Match type</span><b>Choose how you enter the pod</b></div>
       <div class="matchtypechoices">
-        <button type="button" class="matchtypebtn${state.mode === 'solo' ? ' selected' : ''}" data-mode="solo"><strong>Solo table</strong><small>You + 1-3 AI V2 bots</small></button>
+        <button type="button" class="matchtypebtn${state.mode === 'solo' ? ' selected' : ''}" data-mode="solo"><strong>Solo table</strong><small>You + 1–3 AI opponents</small></button>
         <button type="button" class="matchtypebtn live${state.mode === 'online' ? ' selected' : ''}" data-mode="online"><strong><i></i> Live players</strong><small>2–4 seats · humans + bots</small></button>
       </div>`;
     right.appendChild(matchType);
@@ -1352,9 +1356,10 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const button = el('button', `pbtn choice${count === state.livePlayers ? ' selected' : ''}`, `${count} players`);
       button.type = 'button';
       button.dataset.livePlayers = String(count);
+      setChoiceSelected(button, count === state.livePlayers);
       button.onclick = () => {
         state.livePlayers = count;
-        livePlayerRow.querySelectorAll('[data-live-players]').forEach(item => item.classList.toggle('selected', item === button));
+        livePlayerRow.querySelectorAll('[data-live-players]').forEach(item => setChoiceSelected(item, item === button));
         updateStartLabel();
         opponentsLabel.innerHTML = `<i>Live pod</i> ${count} total seats <em>Add humans or bots in the lobby</em>`;
       };
@@ -1543,7 +1548,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     for (const n of [1, 2, 3]) {
       const b = el('button', 'pbtn choice' + (n === state.ai ? ' selected' : ''), n === 1 ? '1 AI duel' : n === 3 ? '3 AI pod' : '2 AI players');
       b.dataset.aiCount = String(n);
-      b.onclick = () => { state.ai = n; aiRow.querySelectorAll('.pbtn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); renderBotStyles(); };
+      setChoiceSelected(b, n === state.ai);
+      b.onclick = () => { state.ai = n; aiRow.querySelectorAll('.pbtn').forEach(item => setChoiceSelected(item, item === b)); renderBotStyles(); };
       aiRow.appendChild(b);
     }
     right.appendChild(aiRow);
@@ -1647,7 +1653,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       b.type = 'button';
       b.title = DIFFICULTY_NOTES[k].text;
       b.setAttribute('aria-describedby', 'difficultynote');
-      b.onclick = () => { state.difficulty = k; diffRow.querySelectorAll('.pbtn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); renderDifficultyNote(k, false); };
+      setChoiceSelected(b, k === state.difficulty);
+      b.onclick = () => { state.difficulty = k; diffRow.querySelectorAll('.pbtn').forEach(item => setChoiceSelected(item, item === b)); renderDifficultyNote(k, false); };
       b.onmouseenter = () => renderDifficultyNote(k, k !== state.difficulty);
       b.onfocus = () => renderDifficultyNote(k, k !== state.difficulty);
       b.onmouseleave = () => renderDifficultyNote(state.difficulty || 'normal', false);
@@ -1689,7 +1696,12 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const podNext = el('button', 'pbtn primary setupnext', 'Review pod →');
     podNext.type = 'button';
     podNext.disabled = true;
-    right.appendChild(podNext);
+    const podActions = el('div', 'podactions');
+    const podBack = el('button', 'pbtn podback', '← Decks');
+    podBack.type = 'button';
+    podBack.onclick = () => setSetupStage('deck');
+    podActions.append(podBack, podNext);
+    right.appendChild(podActions);
 
     const setMatchMode = mode => {
       if (state.mode === 'solo') state.soloAI = state.ai || 3;
@@ -1752,15 +1764,16 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         const styleName = style ? style.label : styleKey === 'random' ? 'Random style' : '';
         const human = number === '01';
         const selected = MTG.DECKS[deck];
-        const commandNames = human ? state.commanders : selected && !state.aiRandomCommanders ? [selected.commander] : [];
+        const commandNames = human ? state.commanders : selected && !state.aiRandomCommanders ? U.defaultCommanders(selected, MTG.DEFS) : [];
         const lead = commandNames[0];
         const colors = (MTG.DECK_META[deck] || {}).colors || selected?.colors || [];
         // Use the official card-art resolver, including imported commanders.
         const art = lead ? `<img class="ct-review-art" src="${artURL(lead)}" alt="${escAttr(lead)}" onerror="MTG.imgFail(this)">`
           : `<div class="ct-review-art ct-review-random">${U.icon('cards')}<span>${selected ? 'Commander chosen at start' : state.mode === 'online' ? 'Chooses after joining' : 'A surprise at the table'}</span></div>`;
+        const commanderLabel = commandNames.map(value => value.split(',')[0]).join(' + ') || (selected ? 'Random commander' : deck);
         return `<article class="ct-review-seat${human ? ' is-human' : ''}">
           ${art}<span class="ct-review-number">${number}</span>
-          <div class="ct-review-copy"><small>${esc(name)}</small><b>${esc(commandNames.map(value => value.split(',')[0]).join(' + ') || (selected ? 'Random commander' : deck))}</b><span>${esc(deck)}</span>
+          <div class="ct-review-copy"><small>${esc(name)}</small><b>${esc(commanderLabel)}</b>${commanderLabel !== deck ? `<span>${esc(deck)}</span>` : ''}
             <div class="ct-review-colors">${colors.filter(color => ['W', 'U', 'B', 'R', 'G', 'C'].includes(color)).map(color => `<img src="./assets/mana/${color}.svg" alt="{${color}}">`).join('')}</div>
             ${styleName ? `<em class="reviewstyle" title="${escAttr(style?.description || STYLE_DESC[styleKey] || styleName)}">${style?.portrait ? `<img src="${style.portrait}" alt="" onerror="MTG.imgFail(this)">` : ''}<b>${esc(styleName)}</b></em>` : ''}
           </div>
@@ -1843,7 +1856,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         right.classList.add('mobile-open');
         right.scrollTop = 0;
       }
-      if (previousStage !== state.setupStage) window.scrollTo({ top: state.setupStage === 'deck' ? deckBrowseScroll : 0, behavior: 'instant' });
+      if (previousStage !== state.setupStage) {
+        window.scrollTo({ top: state.setupStage === 'deck' ? deckBrowseScroll : 0, behavior: 'instant' });
+        // A step replaces the focused control. Keep keyboard navigation in
+        // the new step without losing the player's deck browsing position.
+        const focusTarget = state.setupStage === 'deck' ? deckList : setupTitle;
+        focusTarget.focus({ preventScroll: true });
+      }
     };
     podNext.onclick = () => setSetupStage('review');
 
@@ -1879,13 +1898,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       state.difficulty = replay.difficulty;
       state.seed = String(replay.seed);
       aiRow.querySelectorAll('[data-ai-count]').forEach(button =>
-        button.classList.toggle('selected', Number(button.dataset.aiCount) === state.ai));
+        setChoiceSelected(button, Number(button.dataset.aiCount) === state.ai));
       randRow.querySelector('input').checked = state.aiRandomCommanders;
       houseRow.querySelector('input').checked = state.sumPartnerDamage;
       diplomacyRow.querySelector('input').checked = state.diplomacyEnabled;
       diplomacyRow.classList.toggle('enabled', state.diplomacyEnabled);
       diffRow.querySelectorAll('[data-difficulty]').forEach(button =>
-        button.classList.toggle('selected', button.dataset.difficulty === state.difficulty));
+        setChoiceSelected(button, button.dataset.difficulty === state.difficulty));
       renderCmdBox();
       renderBotStyles();
       updateStartLabel();
@@ -1944,8 +1963,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       houseRow.querySelector('input').checked = state.sumPartnerDamage;
       diplomacyRow.querySelector('input').checked = state.diplomacyEnabled;
       diplomacyRow.classList.toggle('enabled', state.diplomacyEnabled);
-      aiRow.querySelectorAll('[data-ai-count]').forEach(button => button.classList.toggle('selected', Number(button.dataset.aiCount) === state.ai));
-      diffRow.querySelectorAll('[data-difficulty]').forEach(button => button.classList.toggle('selected', button.dataset.difficulty === state.difficulty));
+      aiRow.querySelectorAll('[data-ai-count]').forEach(button => setChoiceSelected(button, Number(button.dataset.aiCount) === state.ai));
+      diffRow.querySelectorAll('[data-difficulty]').forEach(button => setChoiceSelected(button, button.dataset.difficulty === state.difficulty));
       renderDifficultyNote(state.difficulty, false);
       renderCmdBox(); renderBotStyles(); updateStartLabel();
       setSetupStage('review');
@@ -1978,8 +1997,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         state.aiStyles = key === 'learn' ? ['balanced', 'random', 'random'] : ['aggressive', 'balanced', 'opportunist'];
         state.diplomacyEnabled = key === 'challenge';
         state.aiDecks = ['', '', ''];
-        aiRow.querySelectorAll('[data-ai-count]').forEach(item => item.classList.toggle('selected', Number(item.dataset.aiCount) === state.ai));
-        diffRow.querySelectorAll('[data-difficulty]').forEach(item => item.classList.toggle('selected', item.dataset.difficulty === state.difficulty));
+        aiRow.querySelectorAll('[data-ai-count]').forEach(item => setChoiceSelected(item, Number(item.dataset.aiCount) === state.ai));
+        diffRow.querySelectorAll('[data-difficulty]').forEach(item => setChoiceSelected(item, item.dataset.difficulty === state.difficulty));
         diplomacyRow.querySelector('input').checked = state.diplomacyEnabled;
         diplomacyRow.classList.toggle('enabled', state.diplomacyEnabled);
         renderDifficultyNote(state.difficulty, false); renderBotStyles();

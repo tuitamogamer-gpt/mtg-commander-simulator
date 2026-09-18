@@ -52,7 +52,6 @@ test('visible library top has a named, accessible card control instead of an amb
 test('setup progress does not promise inaccessible screens before a deck is selected', () => {
   assert.match(main, /setupSteps\.filter\(step => step\.dataset\.step !== 'deck'\)/);
   assert.match(main, /step\.disabled = true/);
-  assert.match(main, /Select deck →/);
   assert.match(main, /class='selecteddecksummary'|el\('div', 'selecteddecksummary'\)/);
   assert.match(main, /deckSummary\.setAttribute\('aria-live', 'polite'\)/);
   assert.match(main, /<small>Selected deck<\/small><b>\$\{esc\(state\.deck\)\}<\/b>/);

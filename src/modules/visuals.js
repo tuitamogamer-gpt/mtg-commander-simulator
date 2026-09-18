@@ -64,7 +64,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     overlay.dataset.dialogEnhanced = 'true';
     dialog.setAttribute('role', 'dialog');
     dialog.setAttribute('aria-modal', 'true');
-    const title = dialog.querySelector('[data-dialog-title], .mtitle, .gameover, h1, h2');
+    const title = dialog.querySelector('[data-dialog-title], .mtitle, .gameover, .sname, h1, h2');
     if (title) {
       if (!title.id) title.id = `dialog-title-${Math.random().toString(36).slice(2, 9)}`;
       dialog.setAttribute('aria-labelledby', title.id);

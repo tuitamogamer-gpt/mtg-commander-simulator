@@ -1786,6 +1786,8 @@ body.high-contrast #game :is(.pbtn, .tbtn, .zbtn, .hcard, .bcard) { border-color
 #setup[data-setup-stage="review"] .reviewstage { display: block; padding: 0; }
 #setup .podclose { display: none !important; }
 #setup .setupnext { display: block; width: 100%; min-height: 54px; margin-top: 20px; font-size: 14px; }
+#setup .podactions { position: sticky; bottom: 0; z-index: 8; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 12px; margin-top: 20px; padding: 12px 0 max(12px, env(safe-area-inset-bottom)); border-top: 1px solid var(--ds-line-soft); background: var(--ds-panel); }
+#setup .podactions .pbtn { width: 100%; min-width: 0; min-height: 48px; margin: 0; font-size: 13px; }
 #setup :is(.reviewstart, .setupnext) { background: linear-gradient(135deg, var(--ds-accent-bright), var(--ds-accent)) !important; color: var(--ds-accent-ink) !important; border-color: var(--ds-accent-bright) !important; }
 #setup .pbtn.start { display: none !important; }
 #setup .controlintro { padding: 0 0 20px; }
@@ -2084,6 +2086,8 @@ body.game-active #game .handwrap::before { display: none; }
 }
 @media (max-width: 700px) {
   #setup[data-app-view="setup"] .menuhead { padding: 18px 18px 22px; }
+  #setup:is([data-setup-stage="pod"], [data-setup-stage="review"]) { padding-inline: 0 !important; }
+  #setup:is([data-setup-stage="pod"], [data-setup-stage="review"]) .menuhead { margin-inline: 0 !important; padding-inline: 16px !important; }
   #setup .setuphero { padding-top: 24px; }
   #setup .setuphero .title { font-size: 34px; }
   #setup .setuphero .subtitle { font-size: 13px; }
@@ -2106,6 +2110,10 @@ body.game-active #game .handwrap::before { display: none; }
   #setup[data-deck-view="gallery"] .decklist { grid-template-columns: repeat(2, minmax(0,1fr)) !important; gap: 12px !important; }
   #setup[data-deck-view="compact"] .decklist { grid-template-columns: minmax(0,1fr) !important; }
   #setup .setupright.mobile-open { padding: 20px !important; }
+  #setup[data-setup-stage="pod"] .setupgrid { padding: 16px 12px !important; }
+  #setup[data-setup-stage="pod"] .setupright.mobile-open { padding: 16px !important; border-radius: 12px; }
+  #setup[data-setup-stage="pod"] .controlintro { display: none; }
+  #setup .matchtypebtn small { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.5; }
   #setup .botrow { display: grid; grid-template-columns: 40px 1fr; gap: 10px; }
   #setup .botfields { grid-column: 1 / -1; width: 100%; grid-template-columns: 1fr; gap: 9px; }
   #setup .botconfig { padding: 12px; }

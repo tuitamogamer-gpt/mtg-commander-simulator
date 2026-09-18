@@ -32,8 +32,10 @@ function rememberOnboarding() {
 }
 
 let gameLoad = null;
+let loadTrigger = null;
 
 function showLoading(mode) {
+  if (page.contains(document.activeElement)) loadTrigger = document.activeElement;
   root.querySelector('.mainmenu-loadveil')?.remove();
   const veil = document.createElement('div');
   veil.className = 'mainmenu-loadveil';
@@ -47,16 +49,32 @@ function showLoading(mode) {
   return veil;
 }
 
-function showLoadError(veil, mode) {
+function showLoadError(veil) {
   root.removeAttribute('aria-busy');
   page.querySelectorAll('[data-menu-action]').forEach(button => { button.disabled = false; });
   veil.classList.add('is-error');
-  veil.innerHTML = '<div><span>TABLE LOAD INTERRUPTED</span><h2>The game files did not finish loading.</h2><p>Check the connection and try once more. Nothing has been submitted or saved.</p><button type="button">Try again</button></div>';
-  veil.querySelector('button').onclick = () => {
-    gameLoad = null;
-    void loadGame(mode);
+  veil.removeAttribute('role');
+  veil.removeAttribute('aria-live');
+  veil.innerHTML = '<div role="dialog" aria-modal="true" aria-labelledby="table-load-error-title" aria-describedby="table-load-error-hint"><span>TABLE LOAD INTERRUPTED</span><h2 id="table-load-error-title">The game files did not finish loading.</h2><p id="table-load-error-hint">Check your connection, then reload the page to try again. Your saved decks and settings will stay here.</p><div class="mainmenu-load-actions"><button type="button" class="mainmenu-load-reload">Reload page</button><button type="button" class="mainmenu-load-back">Back to menu</button></div></div>';
+  const reload = veil.querySelector('.mainmenu-load-reload');
+  const back = veil.querySelector('.mainmenu-load-back');
+  // Browsers cache rejected module imports. Retrying the same import in this
+  // document can never recover; a fresh page clears that failed module graph.
+  reload.onclick = () => window.location.reload();
+  const dismiss = () => {
+    hideLoading();
+    if (loadTrigger?.isConnected) loadTrigger.focus({ preventScroll: true });
   };
-  veil.querySelector('button').focus();
+  back.onclick = dismiss;
+  veil.onkeydown = event => {
+    if (event.key === 'Escape') { event.preventDefault(); dismiss(); }
+    else if (event.key === 'Tab' && event.shiftKey && document.activeElement === reload) {
+      event.preventDefault(); back.focus();
+    } else if (event.key === 'Tab' && !event.shiftKey && document.activeElement === back) {
+      event.preventDefault(); reload.focus();
+    }
+  };
+  reload.focus();
 }
 
 async function loadGame(mode = null) {
@@ -77,7 +95,7 @@ async function loadGame(mode = null) {
   } catch (error) {
     console.error('Commander Simulator failed to load.', error);
     delete window.__mtgPendingSetupMode;
-    showLoadError(veil, mode);
+    showLoadError(veil);
     return false;
   }
 }

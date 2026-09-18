@@ -882,6 +882,14 @@ body.account-dialog-open { overflow: hidden; }
 #setup[data-app-view="home"] .mainmenu-loadveil p { margin: 0; color: #8e9996; font-size: 13px; line-height: 1.55; }
 #setup[data-app-view="home"] .mainmenu-loadveil button { min-height: 46px; margin-top: 22px; padding: 0 22px; color: var(--ds-accent-ink); background: var(--ds-brass-bright); border: 0; border-radius: var(--ds-r-sm); font-weight: 800; cursor: pointer; }
 #setup[data-app-view="home"] .mainmenu-loadveil.is-error i { display: none; }
+#setup[data-app-view="home"] .mainmenu-load-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+#setup[data-app-view="home"] .mainmenu-load-actions button { margin: 0; }
+#setup[data-app-view="home"] .mainmenu-load-actions .mainmenu-load-back { color: var(--ds-copy); background: var(--ds-panel-raised); border: 1px solid var(--ds-line); }
+@media (max-width: 480px) {
+  #setup[data-app-view="home"] .mainmenu-loadveil > div { padding: 28px 20px; }
+  #setup[data-app-view="home"] .mainmenu-loadveil h2 { font-size: 28px; }
+  #setup[data-app-view="home"] .mainmenu-load-actions button { flex: 1 1 140px; }
+}
 
 #setup[data-app-view="home"] .mainmenu-deckimport {
   position: fixed;
@@ -1035,7 +1043,7 @@ body.account-dialog-open { overflow: hidden; }
 @media (max-width: 600px) {
   #setup[data-app-view="home"] .mainmenu-deckimport { padding: 0; place-items: stretch; }
   #setup[data-app-view="home"] .mainmenu-deckimport-panel { width: 100%; max-height: calc(100 * var(--dvhu)); min-height: calc(100 * var(--dvhu)); padding: calc(66px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); border: 0; border-radius: 0; }
-  #setup[data-app-view="home"] .mainmenu-deckimport-close { top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); }
+  #setup[data-app-view="home"] .mainmenu-deckimport-close { position: fixed; z-index: 5; top: max(12px, env(safe-area-inset-top)); right: max(24px, env(safe-area-inset-right)); }
   #setup[data-app-view="home"] .mainmenu-deckimport-panel > header { padding-right: 0; }
   #setup[data-app-view="home"] .mainmenu-decklibrary { padding: 13px; }
   #setup[data-app-view="home"] .mainmenu-decklibrary > header { align-items: start; flex-direction: column; gap: 5px; }

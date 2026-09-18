@@ -348,8 +348,8 @@ body.game-active #game.command-table .ct-decision-rail.has-targets .targetprompt
   #game.command-table .actionstagebuttons > .pbtn { flex: 1; min-height: 44px; padding: 8px; }
   #game.command-table .ct-decision-rail .utilityrail { display: none !important; }
   body.game-active #game.command-table .handwrap { padding: 5px 8px !important; gap: 4px; }
-  #game.command-table .handtools { flex-basis: 65px; width: 65px; font-size: 9px; }
-  #game.command-table .handtools select { min-height: 44px; font-size: 10px; }
+  #game.command-table .handtools { flex-basis: 100px; width: 100px; font-size: 11px; }
+  #game.command-table .handtools select { min-height: 44px; font-size: 11px; }
   body.game-active #game.command-table .hand { justify-content: flex-start; gap: 6px !important; }
   #game.command-table .mobileviewtabs { grid-area: tabs; display: flex !important; position: static !important; width: 100%; margin: 0; padding: 3px 6px max(3px, env(safe-area-inset-bottom)); background: var(--ds-table); border-top: 1px solid var(--ds-line); }
   #game.command-table .mobileviewtab { display: inline-flex; align-items: center; justify-content: center; flex: 1; min-height: 44px; flex-direction: column; padding: 4px; gap: 3px; font: 650 10px/1 var(--ds-font-body); color: var(--ds-muted); background: transparent; border: 0; border-bottom: 2px solid transparent; }
@@ -463,6 +463,26 @@ body.game-active #game.command-table .ct-decision-rail.has-targets .targetprompt
   #setup .ct-review-copy > b { font-size: 17px; }
   #setup .ct-review-copy > span { font-size: 12px; }
   #setup .ct-review-copy .reviewstyle b { font-size: 10px; }
+}
+@media (max-width: 600px) {
+  /* Keep the whole pod scannable before committing to a game on a phone. */
+  #setup[data-setup-stage='review'] .setupgrid { padding: 0 12px 16px !important; }
+  #setup .ct-review-seats { grid-template-columns: minmax(0, 1fr); }
+  #setup .ct-review-seat { display: grid; grid-template-columns: 80px minmax(0, 1fr) 62px; min-height: 124px; }
+  #setup .ct-review-art { width: 80px; height: 100%; min-height: 124px; }
+  #setup .ct-review-number { top: 6px; left: 6px; width: 26px; height: 26px; font-size: 10px; }
+  #setup .ct-review-copy { min-width: 0; padding: 12px; gap: 5px; justify-content: center; }
+  #setup .ct-review-copy > b { font-size: 18px; overflow-wrap: anywhere; }
+  #setup .ct-review-copy > span { font-size: 12px; overflow-wrap: anywhere; }
+  #setup .ct-review-colors:empty { display: none; }
+  #setup .ct-review-change { padding: 8px; border-top: 0; border-left: 1px solid var(--ds-line-soft); font-size: 12px; }
+  #setup .ct-review-random > span { display: none; }
+  #setup .ct-review-random .gameicon { width: 30px; height: 30px; }
+  #setup .ct-review-seat .reviewstyle { margin: 0; min-height: 22px; }
+  #setup .ct-review-copy .reviewstyle b { font-size: 11px; }
+  #setup .reviewactions { flex-direction: row; gap: 8px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+  #setup .reviewactions .pbtn { flex: 1 1 0; padding: 10px; font-size: 13px; }
+  #setup .reviewrules > div:nth-child(even) { border-right: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   #game.command-table *, #setup .ct-review-seat { animation: none !important; transition: none !important; }
