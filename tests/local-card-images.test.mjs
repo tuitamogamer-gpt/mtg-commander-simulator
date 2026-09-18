@@ -54,6 +54,11 @@ test('runtime card art uses local WebP except the explicit API fallback list', (
   for(const token of bdfImages.tokenVariants)expected.add(token.alias);
   for(const [name,alias] of Object.entries(bdfImages.canonicalAliases)){expected.add(name);assert.equal(MTG.cardImageURL(name),MTG.cardImageURL(alias),name+': pinned canonical token alias');}
   for(const face of importedFaces)expected.add(face.name);
+  const socOracle=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-soc-2026-09-18/oracle.json',import.meta.url)));
+  for(const face of socOracle.cards.flatMap(r=>r.faces||[]))expected.add(face.name);
+  const socImages=JSON.parse(fs.readFileSync(new URL('../reports/decks/precon-soc-2026-09-18/images.json',import.meta.url)));
+  for(const token of socImages.tokenVariants)expected.add(token.alias);
+  for(const [name,alias] of Object.entries(socImages.canonicalAliases)){expected.add(name);assert.equal(MTG.cardImageURL(name),MTG.cardImageURL(alias),name+': pinned canonical token alias');}
   for(const name of [...expected]){const back=MTG.DEFS[name]?.c1719FlipBack?.name;if(back)expected.add(back);}
   for (const token of Object.values(MTG.TOKENS || {})) if (token && token.name) {
     expected.add(faceName(token.name));

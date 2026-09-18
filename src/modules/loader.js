@@ -23,6 +23,39 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+
+  "Lorehold Spirit": {
+    "icon": "🏺",
+    "colors": [
+      "R",
+      "W"
+    ],
+    "style": "Spirits and graveyard recursion",
+    "set": "Secrets of Strixhaven Commander (2026)",
+    "blurb": "Move cards out of your graveyard to raise a Spirit army with Quintorius."
+  },
+  "Silverquill Influence": {
+    "icon": "🪶",
+    "colors": [
+      "W",
+      "B"
+    ],
+    "style": "Auras and forced combat",
+    "set": "Secrets of Strixhaven Commander (2026)",
+    "blurb": "Use Killian and Auras to divert attacks while drawing cards and building an evasive board."
+  },
+  "Witherbloom Pestilence": {
+    "icon": "🪲",
+    "colors": [
+      "B",
+      "G"
+    ],
+    "style": "Pests, sacrifice and lifegain",
+    "set": "Secrets of Strixhaven Commander (2026)",
+    "blurb": "Turn expendable creatures into cards, life, and large threats with Dina and Gorma."
+  }
+,
+
   "Peace Offering": {
     "icon": "🐇",
     "colors": [

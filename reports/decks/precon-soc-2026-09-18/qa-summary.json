@@ -1,0 +1,252 @@
+{
+  "date": "2026-09-18",
+  "scope": "Development validation before publication",
+  "baseline": "9705435",
+  "current": {
+    "decks": 153,
+    "definitions": 22589,
+    "eligible": 22589
+  },
+  "sourceValidation": "source-validation.json",
+  "focusedSocTests": 111,
+  "regression": {
+    "tests": 554,
+    "passed": 554,
+    "failed": 0,
+    "log": "output/precon-soc-2026-09-18/final-regressions.log"
+  },
+  "nativeExecution": {
+    "runtime-smoke-pass": 96,
+    "prerequisite-gap": 0,
+    "choice-gap": 0,
+    "error": 0,
+    "cards": 48,
+    "report": "runtime-smoke.json"
+  },
+  "additionalEngineSelection": {
+    "tests": 441,
+    "passed": 439,
+    "failed": 2,
+    "log": "output/precon-soc-2026-09-18/engine-regressions.log"
+  },
+  "correctedPlaneswalkerSelection": {
+    "tests": 10,
+    "passed": 10,
+    "failed": 0,
+    "log": "output/precon-soc-2026-09-18/planeswalker-corrected.log"
+  },
+  "knownFailure": {
+    "test": "a game snapshot restores to exactly the same board",
+    "reason": "Saveable-checkpoint coverage is 107/120, below the >90% threshold.",
+    "reproducesOnUnchangedBaseline": true,
+    "baselineEvidence": "baseline-save-comparison.json",
+    "saveEngineAndThresholdUnchanged": true
+  },
+  "games": {
+    "passed": 6,
+    "expected": 6,
+    "rows": [
+      {
+        "name": "Everyone's Invited!",
+        "opponents": [
+          "Counter Blitz",
+          "Revival Trance",
+          "Lorehold Spirit"
+        ],
+        "seed": 11228,
+        "turns": 30,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Counter Blitz",
+        "opponents": [
+          "Revival Trance",
+          "Lorehold Spirit",
+          "Silverquill Influence"
+        ],
+        "seed": 11229,
+        "turns": 39,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Revival Trance",
+        "opponents": [
+          "Lorehold Spirit",
+          "Silverquill Influence",
+          "Witherbloom Pestilence"
+        ],
+        "seed": 11230,
+        "turns": 44,
+        "winner": "AI Wolf",
+        "passed": true
+      },
+      {
+        "name": "Lorehold Spirit",
+        "opponents": [
+          "Silverquill Influence",
+          "Witherbloom Pestilence",
+          "Abzan Armor"
+        ],
+        "seed": 11231,
+        "turns": 49,
+        "winner": "You",
+        "passed": true
+      },
+      {
+        "name": "Silverquill Influence",
+        "opponents": [
+          "Witherbloom Pestilence",
+          "Abzan Armor",
+          "Animated Army"
+        ],
+        "seed": 11232,
+        "turns": 53,
+        "winner": "AI Raven",
+        "passed": true
+      },
+      {
+        "name": "Witherbloom Pestilence",
+        "opponents": [
+          "Abzan Armor",
+          "Animated Army",
+          "Avengers Assemble"
+        ],
+        "seed": 11233,
+        "turns": 35,
+        "winner": "AI Raven",
+        "passed": true
+      }
+    ]
+  },
+  "browser": {
+    "passed": 6,
+    "errors": [],
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "flows": [
+      {
+        "deck": "Lorehold Spirit",
+        "width": 1440,
+        "opening": {
+          "commander": [
+            "Quintorius, History Chaser"
+          ],
+          "count": 100
+        },
+        "manaSpent": 4,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Silverquill Influence",
+        "width": 1440,
+        "opening": {
+          "commander": [
+            "Killian, Decisive Mentor"
+          ],
+          "count": 100
+        },
+        "manaSpent": 3,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Witherbloom Pestilence",
+        "width": 1440,
+        "opening": {
+          "commander": [
+            "Dina, Essence Brewer"
+          ],
+          "count": 100
+        },
+        "manaSpent": 3,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Lorehold Spirit",
+        "width": 390,
+        "opening": {
+          "commander": [
+            "Quintorius, History Chaser"
+          ],
+          "count": 100
+        },
+        "manaSpent": 4,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Silverquill Influence",
+        "width": 390,
+        "opening": {
+          "commander": [
+            "Killian, Decisive Mentor"
+          ],
+          "count": 100
+        },
+        "manaSpent": 3,
+        "stackSeen": true,
+        "overflow": false
+      },
+      {
+        "deck": "Witherbloom Pestilence",
+        "width": 390,
+        "opening": {
+          "commander": [
+            "Dina, Essence Brewer"
+          ],
+          "count": 100
+        },
+        "manaSpent": 3,
+        "stackSeen": true,
+        "overflow": false
+      }
+    ],
+    "screenshotsInspected": [
+      "lorehold-spirit-1440-select.png",
+      "witherbloom-pestilence-390-battlefield.png"
+    ]
+  },
+  "checks": {
+    "syntax": true,
+    "sourceAudit": true,
+    "strictCertification": {
+      "definitions": 22589,
+      "cardDeckChecks": 12860,
+      "failed": 0
+    },
+    "catalogRegenerated": true,
+    "catalogCheck": true,
+    "diffWhitespace": true
+  },
+  "limitations": {
+    "fullNpmTestRun": false,
+    "exhaustiveInteractionProof": false
+  },
+  "sourceSha256": {
+    "src/app.js": "6721ce4415aed2978d650e4d1dcd4481187d549399960768d9dd17dcd9b7e7b1",
+    "src/data.js": "4a22f84f610f7a24d97d0256ee5757ebf57440136a40c7348ed3ad1298eeafc7",
+    "src/card-images.js": "ef5ef66669a429276a02d073a591d5a7aad5ea18fa5d021f42788b6d26ed1658",
+    "src/catalog-summary.js": "19364e9a8bb2f8a78d2ecb65cb98af249c6658d6343d0362d1b9070f77d30746",
+    "src/modules/soc-precon-rules.js": "cc239e922248ec4370bee8bd48ac6d0ae27f52ab1441e8430f807cb25091e6bd",
+    "src/modules/scripts-soc-lorehold.js": "165e06a472a7e0ce26185ac62e377a7ab05c9d82a65fa15cdb77ab49a24cbd7f",
+    "src/modules/scripts-soc-silverquill.js": "62e65e9b005364a261cc0a36cbc765c060a104973ecc341033046b0c56267801",
+    "src/modules/scripts-soc-witherbloom.js": "8cc5dff1c03f61e7248183f5dc1698362baace5ac9be638b78216f8fbd949d2a",
+    "src/modules/soc-precon-casting.js": "9ef3036ff2925f21991ea3d0b297dde25722633d525f8818f9bfb837c555a538",
+    "src/modules/loader.js": "143eb445a8d1aae6713b7d630b0c166954e4366e07487221ea8b49099a3fbb9a",
+    "src/modules/ai-v2.js": "0af9b902f48fea3dbf646427802574d34bcf12a58eb427f8691de7a454e7a08f",
+    "src/modules/deck-guides.js": "e1dc2a48eab991454a53b1461702e2b9cf064aea34c18db5ab3f56e1df51c033",
+    "tests/soc-precons.test.mjs": "d6bca2d15af0df8798d3bf30568e2b973a4c7c5b3c6f9fb1fee840080df9a728"
+  }
+}

@@ -52,9 +52,9 @@ function actionWindow(game, player) {
   };
 }
 
-test('svih 150 aktivnih precona imaju popunjen stvarni AI profil', () => {
+test('svih 153 aktivnih precona imaju popunjen stvarni AI profil', () => {
   const profiles = MTG.DECK_AI_PROFILES;
-  assert.equal(Object.keys(profiles).length, 150);
+  assert.equal(Object.keys(profiles).length, 153);
   assert.deepEqual(Object.keys(profiles).sort(), Object.keys(MTG.DECKS).sort());
   for (const [deckId, profile] of Object.entries(profiles)) {
     assert.equal(profile.deckId, deckId);
@@ -525,6 +525,6 @@ test('AI V2 nema mrežne/model/auth zavisnosti; account paketi ostaju izvan AI m
   assert.doesNotMatch(source, /@upstash|redis|ratelimit/i);
   const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
   const dependencies = Object.keys(pkg.dependencies || {}).sort();
-  assert.deepEqual(dependencies, ['@upstash/ratelimit', '@upstash/redis', 'express', 'ioredis', 'ws']);
+  assert.deepEqual(dependencies, ['@capacitor/core', '@capacitor/ios', '@upstash/ratelimit', '@upstash/redis', 'express', 'ioredis', 'ws']);
   assert.deepEqual(dependencies.filter(name => /openai|anthropic|gemini|ollama|onnx|transformers/i.test(name)), []);
 });

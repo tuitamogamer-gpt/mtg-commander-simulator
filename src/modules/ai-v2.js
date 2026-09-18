@@ -198,6 +198,39 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+
+  "Lorehold Spirit": {
+    "archetype": "Spirits and graveyard recursion",
+    "length": "long",
+    "tags": [
+      "graveyard",
+      "tokens",
+      "reanimator"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Silverquill Influence": {
+    "archetype": "Auras and forced combat",
+    "length": "long",
+    "tags": [
+      "enchantments",
+      "auras",
+      "goad"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Witherbloom Pestilence": {
+    "archetype": "Pests, sacrifice and lifegain",
+    "length": "long",
+    "tags": [
+      "tokens",
+      "sacrifice",
+      "lifegain"
+    ],
+    "commanderImportance": 1.8
+  }
+,
+
   "Peace Offering": {
     "archetype": "Shared draws and counters",
     "length": "medium",

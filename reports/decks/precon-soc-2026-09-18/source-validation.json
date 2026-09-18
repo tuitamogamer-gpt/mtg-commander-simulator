@@ -1,0 +1,50 @@
+{
+  "baseline": "9705435",
+  "passed": true,
+  "originalPhysicalCards": 300,
+  "uniqueNames": 237,
+  "sourceLists": [
+    {
+      "name": "Lorehold Spirit",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/secrets-of-strixhaven-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/LoreholdSpirit_SOC.json"
+      ],
+      "exportSha256": "178328c75a6d85d7262e628562a1cf05d5822edec70f38f881705bd95bfec4d3"
+    },
+    {
+      "name": "Silverquill Influence",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/secrets-of-strixhaven-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/SilverquillInfluence_SOC.json"
+      ],
+      "exportSha256": "ea57defaeee77b52c102ac03d9dcc533a398f8be917b94b389ccfab48eeb10de"
+    },
+    {
+      "name": "Witherbloom Pestilence",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/secrets-of-strixhaven-commander-decklists",
+        "https://mtgjson.com/api/v5/decks/WitherbloomPestilence_SOC.json"
+      ],
+      "exportSha256": "d0aff0d06c00a8c299b5d14142c59ab0387141002c23619af8139ef1252aeb08"
+    }
+  ],
+  "existingRawDefinitionsPreserved": 3683,
+  "existingRawDeckRecordsPreserved": 151,
+  "nativeRawDefinitions": 3731,
+  "existingImageMappingsPreserved": 6201,
+  "existingCommanderCropsPreserved": 159,
+  "existingTrackedAssetsUnchanged": true,
+  "addedWebPFiles": 97,
+  "allNewImageDigestsMatch": true,
+  "idempotentDataSha256": "4a22f84f610f7a24d97d0256ee5757ebf57440136a40c7348ed3ad1298eeafc7",
+  "retainedOracleDifferences": [],
+  "current": {
+    "decks": 153,
+    "definitions": 22589,
+    "eligible": 22589
+  }
+}

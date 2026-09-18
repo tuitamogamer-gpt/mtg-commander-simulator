@@ -3,6 +3,60 @@
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   MTG.DECK_GUIDE_ROUTES = Object.freeze({
+
+  "socLorehold": [
+    {
+      "label": "Early game",
+      "title": "Stock the archives",
+      "text": "Develop your mana, discard expensive permanents, and prepare a graveyard worth revisiting."
+    },
+    {
+      "label": "Midgame",
+      "title": "Summon the past",
+      "text": "Play Quintorius, then recur or exile cards from your graveyard to create 3/2 Spirits."
+    },
+    {
+      "label": "Endgame",
+      "title": "Lead the Spirit charge",
+      "text": "Use Hofri to rebuild after removal, then grant your Spirits double strike for a decisive attack."
+    }
+  ],
+  "socSilverquill": [
+    {
+      "label": "Early game",
+      "title": "Set the terms",
+      "text": "Fix your mana and establish an enchantment or Aura draw engine."
+    },
+    {
+      "label": "Midgame",
+      "title": "Direct the combat",
+      "text": "Use Killian to tap and goad threats, then place Contracts and Impetus Auras on opposing attackers."
+    },
+    {
+      "label": "Endgame",
+      "title": "Collect the advantage",
+      "text": "Drain with Eriette, grow evasive threats, and recover enchantments with a prepared Replenish."
+    }
+  ],
+  "socWitherbloom": [
+    {
+      "label": "Early game",
+      "title": "Grow the supply",
+      "text": "Ramp and create Pests, Saprolings, or recurring creatures to feed later sacrifices."
+    },
+    {
+      "label": "Midgame",
+      "title": "Trade creatures for value",
+      "text": "Use Dina to draw and move power into counters, while Pest deaths restore your life."
+    },
+    {
+      "label": "Endgame",
+      "title": "Overwhelm the table",
+      "text": "Grow Gorma and the Roaster, drain opponents through death payoffs, or prepare a large Exsanguinate."
+    }
+  ]
+,
+
   "bdf0": [
     {
       "label": "Early game",
@@ -610,6 +664,51 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.DECK_GUIDES = Object.freeze({
+
+  "Lorehold Spirit": {
+    "route": "socLorehold",
+    "pace": "Build and rebuild",
+    "complexity": "Advanced",
+    "theme": "Move cards out of your graveyard to raise a Spirit army with Quintorius.",
+    "plan": "Develop your mana, discard expensive permanents, and prepare a graveyard worth revisiting. Play Quintorius, then recur or exile cards from your graveyard to create 3/2 Spirits. Use Hofri to rebuild after removal, then grant your Spirits double strike for a decisive attack.",
+    "mulligan": "Keep three lands, a mana rock, and a way to discard or mill. Early graveyard setup makes Quintorius useful immediately.",
+    "tip": "Use the +1 to stock your graveyard. Leave enough Spirits to protect Quintorius before spending four loyalty on double strike.",
+    "keys": [
+      "Quintorius, History Chaser",
+      "Excava, the Risen Past",
+      "Hofri Ghostforge"
+    ]
+  },
+  "Silverquill Influence": {
+    "route": "socSilverquill",
+    "pace": "Control and grow",
+    "complexity": "Advanced",
+    "theme": "Use Killian and Auras to divert attacks while drawing cards and building an evasive board.",
+    "plan": "Fix your mana and establish an enchantment or Aura draw engine. Use Killian to tap and goad threats, then place Contracts and Impetus Auras on opposing attackers. Drain with Eriette, grow evasive threats, and recover enchantments with a prepared Replenish.",
+    "mulligan": "Keep three lands, an early Aura or draw engine, and white-black fixing. Avoid hands full of expensive enchantments.",
+    "tip": "Auras you control on opposing attackers still fuel Killian. Eriette protects you while Scriv rewards attacks elsewhere.",
+    "keys": [
+      "Killian, Decisive Mentor",
+      "Scriv, the Obligator",
+      "Eriette of the Charmed Apple"
+    ]
+  },
+  "Witherbloom Pestilence": {
+    "route": "socWitherbloom",
+    "pace": "Accumulate and sacrifice",
+    "complexity": "Advanced",
+    "theme": "Turn expendable creatures into cards, life, and large threats with Dina and Gorma.",
+    "plan": "Ramp and create Pests, Saprolings, or recurring creatures to feed later sacrifices. Use Dina to draw and move power into counters, while Pest deaths restore your life. Grow Gorma and the Roaster, drain opponents through death payoffs, or prepare a large Exsanguinate.",
+    "mulligan": "Keep three lands, an early mana creature or ramp spell, and repeatable token production. Dina needs creatures to sacrifice.",
+    "tip": "Dina draws only once each turn for sacrifice. Save an activation for another player’s turn when it advances your board.",
+    "keys": [
+      "Dina, Essence Brewer",
+      "Gorma, the Gullet",
+      "Ribtruss Roaster"
+    ]
+  }
+,
+
   "Peace Offering": {
     "route": "bdf0",
     "pace": "Shared draws and counters",

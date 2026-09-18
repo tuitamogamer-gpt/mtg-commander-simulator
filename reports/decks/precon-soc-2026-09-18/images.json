@@ -1,0 +1,1002 @@
+{
+  "date": "2026-09-18",
+  "source": "Pinned Scryfall card and linked token metadata",
+  "added": [
+    {
+      "name": "Advanced Reconstruction",
+      "variant": "normal",
+      "relative": "./assets/cards/advanced-reconstruction-dc94e962ca.webp",
+      "source": "https://cards.scryfall.io/normal/front/c/c/cc912fec-827d-4deb-8430-79f5ea31ca9b.jpg?1783903856",
+      "scryfallId": "cc912fec-827d-4deb-8430-79f5ea31ca9b",
+      "set": "soc",
+      "collectorNumber": "30",
+      "sha256": "4bdfe068706cf9622639b3e8286326aad5917dd00ac3ca254aa8f60de51bdbe2"
+    },
+    {
+      "name": "Ao, the Dawn Sky",
+      "variant": "normal",
+      "relative": "./assets/cards/ao-the-dawn-sky-df25cd097b.webp",
+      "source": "https://cards.scryfall.io/normal/front/e/0/e002d351-3795-4cd9-b389-9ed81077845e.jpg?1783903814",
+      "scryfallId": "e002d351-3795-4cd9-b389-9ed81077845e",
+      "set": "soc",
+      "collectorNumber": "135",
+      "sha256": "3ca4c3890bd833fc7fdea6ee06dce7a848f99ec30b0c78cb304e4050b164f263"
+    },
+    {
+      "name": "Armored Skyhunter",
+      "variant": "normal",
+      "relative": "./assets/cards/armored-skyhunter-b61d76eded.webp",
+      "source": "https://cards.scryfall.io/normal/front/7/0/707e9d2e-3934-4b90-878d-4699ac1cbe89.jpg?1783903813",
+      "scryfallId": "707e9d2e-3934-4b90-878d-4699ac1cbe89",
+      "set": "soc",
+      "collectorNumber": "138",
+      "sha256": "c26b96444748e1a75360d2a9408e29264020325411d780c04e50604772a71ba7"
+    },
+    {
+      "name": "Augusta, Order Returned",
+      "variant": "normal",
+      "relative": "./assets/cards/augusta-order-returned-ab68636db7.webp",
+      "source": "https://cards.scryfall.io/normal/front/a/0/a0d1df84-0cb6-44fb-9916-d766d93f1519.jpg?1783903864",
+      "scryfallId": "a0d1df84-0cb6-44fb-9916-d766d93f1519",
+      "set": "soc",
+      "collectorNumber": "11",
+      "sha256": "9a7737f03a7bbb51aadb73c46d8c848663f961d4745d3d38223be3b1961e5ab8"
+    },
+    {
+      "name": "Balefire Liege",
+      "variant": "normal",
+      "relative": "./assets/cards/balefire-liege-e21d984a9d.webp",
+      "source": "https://cards.scryfall.io/normal/front/6/f/6f236f33-f6d2-4b07-a69d-42165670bd45.jpg?1783903757",
+      "scryfallId": "6f236f33-f6d2-4b07-a69d-42165670bd45",
+      "set": "soc",
+      "collectorNumber": "295",
+      "sha256": "87c095868f037726a5268dbe20ddeac6e0aa1658d615b287e290b6cb24f4ed2b"
+    },
+    {
+      "name": "Ceaseless Conflict",
+      "variant": "normal",
+      "relative": "./assets/cards/ceaseless-conflict-c501d8f38c.webp",
+      "source": "https://cards.scryfall.io/normal/front/a/0/a0e18f74-7fa6-4e3a-bc80-390a25055205.jpg?1783903866",
+      "scryfallId": "a0e18f74-7fa6-4e3a-bc80-390a25055205",
+      "set": "soc",
+      "collectorNumber": "12",
+      "sha256": "167ad9003138aa98460e4913d55aec1f44939ff704778473dd50ec5d16a92f20"
+    },
+    {
+      "name": "Chains of Custody",
+      "variant": "normal",
+      "relative": "./assets/cards/chains-of-custody-d7d8224458.webp",
+      "source": "https://cards.scryfall.io/normal/front/3/4/3484b0bb-f305-404b-b4a9-430296061365.jpg?1783903812",
+      "scryfallId": "3484b0bb-f305-404b-b4a9-430296061365",
+      "set": "soc",
+      "collectorNumber": "139",
+      "sha256": "02da7aa4a4588e451e717238085ac7eac4a7447be47d97c3e0d4113dac3a7c32"
+    },
+    {
+      "name": "Changing Loyalty",
+      "variant": "normal",
+      "relative": "./assets/cards/changing-loyalty-bae1d8c366.webp",
+      "source": "https://cards.scryfall.io/normal/front/5/c/5c2e30d4-98ab-46a7-87ab-1c36c43ab34a.jpg?1783903859",
+      "scryfallId": "5c2e30d4-98ab-46a7-87ab-1c36c43ab34a",
+      "set": "soc",
+      "collectorNumber": "23",
+      "sha256": "a9b0a032635198c202ebd3f0a0d139136985e6c4385d24e2bd6619653f126acc"
+    },
+    {
+      "name": "Claim Jumper",
+      "variant": "normal",
+      "relative": "./assets/cards/claim-jumper-991cf03514.webp",
+      "source": "https://cards.scryfall.io/normal/front/1/1/11bda4c5-099f-489e-b64b-f4719241cf9d.jpg?1783903812",
+      "scryfallId": "11bda4c5-099f-489e-b64b-f4719241cf9d",
+      "set": "soc",
+      "collectorNumber": "140",
+      "sha256": "42c1585512196b9a53da79512c890ef94d054a189cfa2677e28d3bcecf29a58f"
+    },
+    {
+      "name": "Coercive Impetus",
+      "variant": "normal",
+      "relative": "./assets/cards/coercive-impetus-bc9a145236.webp",
+      "source": "https://cards.scryfall.io/normal/front/f/9/f98ca390-d2ea-41c8-93ed-57fcd22737d8.jpg?1783903858",
+      "scryfallId": "f98ca390-d2ea-41c8-93ed-57fcd22737d8",
+      "set": "soc",
+      "collectorNumber": "24",
+      "sha256": "b143e702d48d8d23b15aa2731c5602261492e5456c6dd9f3301a3fa8d5a4d913"
+    },
+    {
+      "name": "Conspiracy Theorist",
+      "variant": "normal",
+      "relative": "./assets/cards/conspiracy-theorist-6c92cdfadc.webp",
+      "source": "https://cards.scryfall.io/normal/front/d/d/dd6797f7-ecc4-4c45-b1e4-26963a1614dc.jpg?1783903775",
+      "scryfallId": "dd6797f7-ecc4-4c45-b1e4-26963a1614dc",
+      "set": "soc",
+      "collectorNumber": "240",
+      "sha256": "9cb2e837fd320955b2bea82189cfb44283eaee8e45591f201931e2a8f317f003"
+    },
+    {
+      "name": "Containment Construct",
+      "variant": "normal",
+      "relative": "./assets/cards/containment-construct-bd06cdbf62.webp",
+      "source": "https://cards.scryfall.io/normal/front/f/e/feb09084-0fdb-4226-b536-56d856354b5a.jpg?1783903740",
+      "scryfallId": "feb09084-0fdb-4226-b536-56d856354b5a",
+      "set": "soc",
+      "collectorNumber": "344",
+      "sha256": "101b6175b8316598dce9270c3dcb4dd9a2c6376b1a1582ec56084192b7a6f50c"
+    },
+    {
+      "name": "Creakwood Liege",
+      "variant": "normal",
+      "relative": "./assets/cards/creakwood-liege-e3c9f0e565.webp",
+      "source": "https://cards.scryfall.io/normal/front/9/a/9a05c8f9-e810-498d-ab51-632661dd000d.jpg?1783903757",
+      "scryfallId": "9a05c8f9-e810-498d-ab51-632661dd000d",
+      "set": "soc",
+      "collectorNumber": "301",
+      "sha256": "13ac52b0bc8effe78f70721bc56c08a42b60efd006ce19a3ba4e8beee0105d53"
+    },
+    {
+      "name": "Deadly Brew",
+      "variant": "normal",
+      "relative": "./assets/cards/deadly-brew-551e7a33c3.webp",
+      "source": "https://cards.scryfall.io/normal/front/3/e/3e5493c3-0be2-467c-82f0-3ee1ca909d0c.jpg?1783903755",
+      "scryfallId": "3e5493c3-0be2-467c-82f0-3ee1ca909d0c",
+      "set": "soc",
+      "collectorNumber": "303",
+      "sha256": "ee66b8fe954263866b13c174ae825f3ceeaa4e77e16aa9eadbaec71ed785a8b6"
+    },
+    {
+      "name": "Defacing Duskmage",
+      "variant": "normal",
+      "relative": "./assets/cards/defacing-duskmage-c224e54460.webp",
+      "source": "https://cards.scryfall.io/normal/front/c/3/c35a1c6f-1656-4619-9ab8-40044c857a7f.jpg?1783903850",
+      "scryfallId": "c35a1c6f-1656-4619-9ab8-40044c857a7f",
+      "set": "soc",
+      "collectorNumber": "45",
+      "sha256": "2142cdac69b56ca7192ec0b725f60db5ddae91fd406a748d0e378c4efbb1d9ba"
+    },
+    {
+      "name": "Vandal's Edit",
+      "variant": "normal",
+      "relative": "./assets/cards/vandal-s-edit-73fb8b27fc.webp",
+      "source": "https://cards.scryfall.io/normal/front/c/3/c35a1c6f-1656-4619-9ab8-40044c857a7f.jpg?1783903850",
+      "scryfallId": "c35a1c6f-1656-4619-9ab8-40044c857a7f",
+      "set": "soc",
+      "collectorNumber": "45",
+      "sha256": "2142cdac69b56ca7192ec0b725f60db5ddae91fd406a748d0e378c4efbb1d9ba"
+    },
+    {
+      "name": "Defiling Daemogoth",
+      "variant": "normal",
+      "relative": "./assets/cards/defiling-daemogoth-9b3d86bbe6.webp",
+      "source": "https://cards.scryfall.io/normal/front/2/c/2cde79eb-91c3-4a42-a2d3-e733e3b56846.jpg?1783903860",
+      "scryfallId": "2cde79eb-91c3-4a42-a2d3-e733e3b56846",
+      "set": "soc",
+      "collectorNumber": "25",
+      "sha256": "3c88f7d13dfdb9ea2f1fdbfe294eb98cbd90143cea635ba96110d7366e706a4d"
+    },
+    {
+      "name": "Dina, Essence Brewer",
+      "variant": "normal",
+      "relative": "./assets/cards/dina-essence-brewer-ed3edc9111.webp",
+      "source": "https://cards.scryfall.io/normal/front/9/f/9fe237b8-c02c-41ea-9fc4-b771b91d2157.jpg?1783903869",
+      "scryfallId": "9fe237b8-c02c-41ea-9fc4-b771b91d2157",
+      "set": "soc",
+      "collectorNumber": "1",
+      "sha256": "5c3cf54c8af5f9cfbc26096d04f97edb69aa5ec22e118d97eaa0ae4be70027ba"
+    },
+    {
+      "name": "Eccentric Pestfinder",
+      "variant": "normal",
+      "relative": "./assets/cards/eccentric-pestfinder-02c2205a7b.webp",
+      "source": "https://cards.scryfall.io/normal/front/5/0/508e1dd7-edbd-4b76-90bc-ff58c55b58a3.jpg?1783903850",
+      "scryfallId": "508e1dd7-edbd-4b76-90bc-ff58c55b58a3",
+      "set": "soc",
+      "collectorNumber": "46",
+      "sha256": "71de7e89c6aacb2728caea22c6e219b22e17213d3eca236e9eb2f37b9eda4ca8"
+    },
+    {
+      "name": "Turn Stones",
+      "variant": "normal",
+      "relative": "./assets/cards/turn-stones-9c7446fbdc.webp",
+      "source": "https://cards.scryfall.io/normal/front/5/0/508e1dd7-edbd-4b76-90bc-ff58c55b58a3.jpg?1783903850",
+      "scryfallId": "508e1dd7-edbd-4b76-90bc-ff58c55b58a3",
+      "set": "soc",
+      "collectorNumber": "46",
+      "sha256": "71de7e89c6aacb2728caea22c6e219b22e17213d3eca236e9eb2f37b9eda4ca8"
+    },
+    {
+      "name": "Eclipsed Steppe",
+      "variant": "normal",
+      "relative": "./assets/cards/eclipsed-steppe-7567e618cc.webp",
+      "source": "https://cards.scryfall.io/normal/front/d/8/d890999a-dcc7-479e-b0f0-60388c737043.jpg?1783903847",
+      "scryfallId": "d890999a-dcc7-479e-b0f0-60388c737043",
+      "set": "soc",
+      "collectorNumber": "53",
+      "sha256": "8cbd7b60f15eead317b206ea7df306617b7327e1f275512b3dda52a657b675f9"
+    },
+    {
+      "name": "Eiganjo Dynastorian",
+      "variant": "normal",
+      "relative": "./assets/cards/eiganjo-dynastorian-16fff0fa91.webp",
+      "source": "https://cards.scryfall.io/normal/front/0/9/09d1f048-f411-4677-a0dc-dbddd06fe694.jpg?1783903863",
+      "scryfallId": "09d1f048-f411-4677-a0dc-dbddd06fe694",
+      "set": "soc",
+      "collectorNumber": "13",
+      "sha256": "4dcf6548380d699abb66c8b1806124ae2ef20437cdb14f7d310c2b93e2da81c0"
+    },
+    {
+      "name": "Replenish",
+      "variant": "normal",
+      "relative": "./assets/cards/replenish-f8120adc5e.webp",
+      "source": "https://cards.scryfall.io/normal/front/0/9/09d1f048-f411-4677-a0dc-dbddd06fe694.jpg?1783903863",
+      "scryfallId": "09d1f048-f411-4677-a0dc-dbddd06fe694",
+      "set": "soc",
+      "collectorNumber": "13",
+      "sha256": "4dcf6548380d699abb66c8b1806124ae2ef20437cdb14f7d310c2b93e2da81c0"
+    },
+    {
+      "name": "Eriette of the Charmed Apple",
+      "variant": "normal",
+      "relative": "./assets/cards/eriette-of-the-charmed-apple-a35fbd7399.webp",
+      "source": "https://cards.scryfall.io/normal/front/b/a/baf256c5-1b4c-4fbe-94e4-1538d2577f8f.jpg?1783903753",
+      "scryfallId": "baf256c5-1b4c-4fbe-94e4-1538d2577f8f",
+      "set": "soc",
+      "collectorNumber": "307",
+      "sha256": "c97fbf314302b7bae84b7d2134fd5caaa3b45e9a1969821ec4928d69b3fdc19f"
+    },
+    {
+      "name": "Excava, the Risen Past",
+      "variant": "normal",
+      "relative": "./assets/cards/excava-the-risen-past-7fca167aa6.webp",
+      "source": "https://cards.scryfall.io/normal/front/d/4/d47ebf19-b3fa-48a2-851a-254d32b0305a.jpg?1783903867",
+      "scryfallId": "d47ebf19-b3fa-48a2-851a-254d32b0305a",
+      "set": "soc",
+      "collectorNumber": "2",
+      "sha256": "9e1f4c98dd00232f9ebf5ebb34722fadf7b337f9d64f36720ad1bfaf94ce6ea9"
+    },
+    {
+      "name": "Fateful Tempest",
+      "variant": "normal",
+      "relative": "./assets/cards/fateful-tempest-8283231ade.webp",
+      "source": "https://cards.scryfall.io/normal/front/9/6/96ab4d23-14d7-429f-b62e-868c13997fb8.jpg?1783903858",
+      "scryfallId": "96ab4d23-14d7-429f-b62e-868c13997fb8",
+      "set": "soc",
+      "collectorNumber": "31",
+      "sha256": "6956c9812d23ad958cb846937fbe7122bfa6ebc0359858d304c3d0044781594e"
+    },
+    {
+      "name": "Feral Appetite",
+      "variant": "normal",
+      "relative": "./assets/cards/feral-appetite-e44373da8b.webp",
+      "source": "https://cards.scryfall.io/normal/front/6/9/69dda877-c176-456c-8cd8-5a1ea288e4c9.jpg?1783903853",
+      "scryfallId": "69dda877-c176-456c-8cd8-5a1ea288e4c9",
+      "set": "soc",
+      "collectorNumber": "38",
+      "sha256": "506f1fe5983b5bef440f43c57badf454953cc263545d390a79801d6a2af1dc15"
+    },
+    {
+      "name": "Fields of Strife",
+      "variant": "normal",
+      "relative": "./assets/cards/fields-of-strife-a664e824c6.webp",
+      "source": "https://cards.scryfall.io/normal/front/3/d/3dc7a4c3-c356-4fba-bea0-e8788da3eb57.jpg?1783903620",
+      "scryfallId": "3dc7a4c3-c356-4fba-bea0-e8788da3eb57",
+      "set": "sos",
+      "collectorNumber": "255",
+      "sha256": "d2ae01a6f37a482a49be9364bde6126568fb3b0286ef2ff944d7886b11bdf417"
+    },
+    {
+      "name": "Firemane Commando",
+      "variant": "normal",
+      "relative": "./assets/cards/firemane-commando-37787dd95a.webp",
+      "source": "https://cards.scryfall.io/normal/front/c/8/c86269cc-bf4d-44b4-ad4b-8356857c532f.jpg?1783903808",
+      "scryfallId": "c86269cc-bf4d-44b4-ad4b-8356857c532f",
+      "set": "soc",
+      "collectorNumber": "145",
+      "sha256": "7e8a49a6c81ec4771213f0eb6d0c78b094f59a3bc35866024bd6574c84708db7"
+    },
+    {
+      "name": "Flickering Ward",
+      "variant": "normal",
+      "relative": "./assets/cards/flickering-ward-909aba1778.webp",
+      "source": "https://cards.scryfall.io/normal/front/2/3/23fcd6a8-be83-4304-ae32-d3dfc855f596.jpg?1783903827",
+      "scryfallId": "23fcd6a8-be83-4304-ae32-d3dfc855f596",
+      "set": "soc",
+      "collectorNumber": "109",
+      "sha256": "d1f15265ca0febadc7615578ead6181203171b99ba9b910f4f9e7618caae0751"
+    },
+    {
+      "name": "Forum Filibuster",
+      "variant": "normal",
+      "relative": "./assets/cards/forum-filibuster-f47966a85b.webp",
+      "source": "https://cards.scryfall.io/normal/front/1/c/1c2fcf3e-63ce-45bd-afc4-2c11f54c70c4.jpg?1783903863",
+      "scryfallId": "1c2fcf3e-63ce-45bd-afc4-2c11f54c70c4",
+      "set": "soc",
+      "collectorNumber": "14",
+      "sha256": "6650dc587c5cc3a0cc7b19bd2c1bb4e625dddfeefdf2610878d94265708fa36e"
+    },
+    {
+      "name": "Forum of Amity",
+      "variant": "normal",
+      "relative": "./assets/cards/forum-of-amity-f190d9c8d7.webp",
+      "source": "https://cards.scryfall.io/normal/front/1/d/1de6c6cc-0c55-4997-8623-d7f796bd9ab8.jpg?1783903623",
+      "scryfallId": "1de6c6cc-0c55-4997-8623-d7f796bd9ab8",
+      "set": "sos",
+      "collectorNumber": "256",
+      "sha256": "3ffc8a0e0b2d7d3298d3302122744fec1c2b31b679b411efe0a8cdc00c2f0b52"
+    },
+    {
+      "name": "Gorma, the Gullet",
+      "variant": "normal",
+      "relative": "./assets/cards/gorma-the-gullet-39cedb838b.webp",
+      "source": "https://cards.scryfall.io/normal/front/8/6/86f97dd8-8647-4938-aee0-690bb715f88b.jpg?1783903868",
+      "scryfallId": "86f97dd8-8647-4938-aee0-690bb715f88b",
+      "set": "soc",
+      "collectorNumber": "3",
+      "sha256": "030b5866cb4af949cf04b7ca29eba5ce9e9e198c5e3bad754888b9e72a9b5119"
+    },
+    {
+      "name": "Guardian of Faith",
+      "variant": "normal",
+      "relative": "./assets/cards/guardian-of-faith-3e408c91d7.webp",
+      "source": "https://cards.scryfall.io/normal/front/0/3/037739cd-e05c-4aae-9123-f924e420010c.jpg?1783903808",
+      "scryfallId": "037739cd-e05c-4aae-9123-f924e420010c",
+      "set": "soc",
+      "collectorNumber": "148",
+      "sha256": "b66c5b13d4eae969a67b7bc268bcc016ee8693a89e572d3ab1ca0af324cb3fad"
+    },
+    {
+      "name": "Hateful Eidolon",
+      "variant": "normal",
+      "relative": "./assets/cards/hateful-eidolon-7b84da40a0.webp",
+      "source": "https://cards.scryfall.io/normal/front/f/f/ff028d0b-066a-4769-89bc-f267d15eb707.jpg?1783903785",
+      "scryfallId": "ff028d0b-066a-4769-89bc-f267d15eb707",
+      "set": "soc",
+      "collectorNumber": "215",
+      "sha256": "2a9fe03466dbf79fbf8398f702c4ea69a5fab8862a3933bafba5ddffabdbb669"
+    },
+    {
+      "name": "Herald of Amity",
+      "variant": "normal",
+      "relative": "./assets/cards/herald-of-amity-9ba16e5f30.webp",
+      "source": "https://cards.scryfall.io/normal/front/0/a/0a36fe06-225f-44c6-b608-452344e3585a.jpg?1783903864",
+      "scryfallId": "0a36fe06-225f-44c6-b608-452344e3585a",
+      "set": "soc",
+      "collectorNumber": "15",
+      "sha256": "6e6db97054485e5bce047f248e5d1878e4a0eb544e3817b2efd11ee165faa872"
+    },
+    {
+      "name": "Hofri Ghostforge",
+      "variant": "normal",
+      "relative": "./assets/cards/hofri-ghostforge-cba2e9ec26.webp",
+      "source": "https://cards.scryfall.io/normal/front/b/c/bc03cdb6-5ad0-452d-a698-bd19f5ebac83.jpg?1783903750",
+      "scryfallId": "bc03cdb6-5ad0-452d-a698-bd19f5ebac83",
+      "set": "soc",
+      "collectorNumber": "314",
+      "sha256": "2a9c910e33654f308e2c484f39fb059a681b95835e56780ce461e1de9fb4d662"
+    },
+    {
+      "name": "Immoral Bargain",
+      "variant": "normal",
+      "relative": "./assets/cards/immoral-bargain-01339e108f.webp",
+      "source": "https://cards.scryfall.io/normal/front/f/c/fc01f092-80fb-4643-8ada-c2e5aeb68658.jpg?1783903851",
+      "scryfallId": "fc01f092-80fb-4643-8ada-c2e5aeb68658",
+      "set": "soc",
+      "collectorNumber": "47",
+      "sha256": "c7bc9ee98f370bfac0b9cdc2f4c08c315ee3361af079d5e6124901f0e411789f"
+    },
+    {
+      "name": "Intermediate Chirography",
+      "variant": "normal",
+      "relative": "./assets/cards/intermediate-chirography-8a238a4570.webp",
+      "source": "https://cards.scryfall.io/normal/front/d/6/d60c64aa-57a9-4082-82f4-af0d89c1a52d.jpg?1783903857",
+      "scryfallId": "d60c64aa-57a9-4082-82f4-af0d89c1a52d",
+      "set": "soc",
+      "collectorNumber": "26",
+      "sha256": "30ac1c9c7d0b42c8464eaad449aa8383c9cfac7fd4e59d71ac479df020465ec4"
+    },
+    {
+      "name": "Jadar, Ghoulcaller of Nephalia",
+      "variant": "normal",
+      "relative": "./assets/cards/jadar-ghoulcaller-of-nephalia-9fa8dcb83e.webp",
+      "source": "https://cards.scryfall.io/normal/front/4/9/49d5d62b-72ed-446a-b280-ad04c38bdd0c.jpg?1783903786",
+      "scryfallId": "49d5d62b-72ed-446a-b280-ad04c38bdd0c",
+      "set": "soc",
+      "collectorNumber": "217",
+      "sha256": "a344b19c84d31248bc119dc9270353897641b700ce3efdfba1205a2a6bb5f9ca"
+    },
+    {
+      "name": "Kami of Ancient Law",
+      "variant": "normal",
+      "relative": "./assets/cards/kami-of-ancient-law-26ea643176.webp",
+      "source": "https://cards.scryfall.io/normal/front/4/e/4edbce98-bfc1-4c66-bd04-16100d9e22d3.jpg?1783903807",
+      "scryfallId": "4edbce98-bfc1-4c66-bd04-16100d9e22d3",
+      "set": "soc",
+      "collectorNumber": "150",
+      "sha256": "b2456f2d3d688bc23ac847dfac32d95e8b047d8ced7cb2737c160f8c37d5b2b2"
+    },
+    {
+      "name": "Killian, Decisive Mentor",
+      "variant": "normal",
+      "relative": "./assets/cards/killian-decisive-mentor-69383dfa1a.webp",
+      "source": "https://cards.scryfall.io/normal/front/7/6/76b6c35a-bb92-4ad3-8f85-88b9bafc6266.jpg?1783903867",
+      "scryfallId": "76b6c35a-bb92-4ad3-8f85-88b9bafc6266",
+      "set": "soc",
+      "collectorNumber": "4",
+      "sha256": "35cb0a0578723cd21318757745c03053c07bcdb10993a0752a87843b4c69cb3a"
+    },
+    {
+      "name": "Killian, Ink Duelist",
+      "variant": "normal",
+      "relative": "./assets/cards/killian-ink-duelist-53a1ce97ab.webp",
+      "source": "https://cards.scryfall.io/normal/front/9/f/9f51c115-dc9b-40a4-849d-3fc0c26e5a39.jpg?1783903749",
+      "scryfallId": "9f51c115-dc9b-40a4-849d-3fc0c26e5a39",
+      "set": "soc",
+      "collectorNumber": "317",
+      "sha256": "01fe81947e4001cbc68dc5ad8fdf85677a000c25997f8f513f6ee6d20b667cfd"
+    },
+    {
+      "name": "Kirol, History Buff",
+      "variant": "normal",
+      "relative": "./assets/cards/kirol-history-buff-68c4d57352.webp",
+      "source": "https://cards.scryfall.io/normal/front/6/7/676ba521-66e4-42cf-a315-70d03cb7334e.jpg?1783903642",
+      "scryfallId": "676ba521-66e4-42cf-a315-70d03cb7334e",
+      "set": "sos",
+      "collectorNumber": "198",
+      "sha256": "bc2097b2e53190c02c451a69c3bc15423dca2add4fc8eaa62832f18f54457894"
+    },
+    {
+      "name": "Pack a Punch",
+      "variant": "normal",
+      "relative": "./assets/cards/pack-a-punch-ae64393569.webp",
+      "source": "https://cards.scryfall.io/normal/front/6/7/676ba521-66e4-42cf-a315-70d03cb7334e.jpg?1783903642",
+      "scryfallId": "676ba521-66e4-42cf-a315-70d03cb7334e",
+      "set": "sos",
+      "collectorNumber": "198",
+      "sha256": "bc2097b2e53190c02c451a69c3bc15423dca2add4fc8eaa62832f18f54457894"
+    },
+    {
+      "name": "Land Tax",
+      "variant": "normal",
+      "relative": "./assets/cards/land-tax-4f13a0400c.webp",
+      "source": "https://cards.scryfall.io/normal/front/c/7/c70d3706-9d28-49ac-8718-4a516413e727.jpg?1783903809",
+      "scryfallId": "c70d3706-9d28-49ac-8718-4a516413e727",
+      "set": "soc",
+      "collectorNumber": "153",
+      "sha256": "083fc7dc4cff7a22937ef1f65f08e20b387c95fe6b66ad9016b926581f10007f"
+    },
+    {
+      "name": "Lorehold Archivist",
+      "variant": "normal",
+      "relative": "./assets/cards/lorehold-archivist-b8fa002df5.webp",
+      "source": "https://cards.scryfall.io/normal/front/c/b/cb535433-f062-4c35-977e-2f896251b1d8.jpg?1783903848",
+      "scryfallId": "cb535433-f062-4c35-977e-2f896251b1d8",
+      "set": "soc",
+      "collectorNumber": "49",
+      "sha256": "6dbd006fc5f00aec0668455f363662fafda5774d1e3f1996107c9b39b789ec77"
+    },
+    {
+      "name": "Restore Relic",
+      "variant": "normal",
+      "relative": "./assets/cards/restore-relic-ac8fe8873b.webp",
+      "source": "https://cards.scryfall.io/normal/front/c/b/cb535433-f062-4c35-977e-2f896251b1d8.jpg?1783903848",
+      "scryfallId": "cb535433-f062-4c35-977e-2f896251b1d8",
+      "set": "soc",
+      "collectorNumber": "49",
+      "sha256": "6dbd006fc5f00aec0668455f363662fafda5774d1e3f1996107c9b39b789ec77"
+    },
+    {
+      "name": "Lorehold Charm",
+      "variant": "normal",
+      "relative": "./assets/cards/lorehold-charm-6e708b6d8c.webp",
+      "source": "https://cards.scryfall.io/normal/front/5/f/5fe70295-e550-4577-a341-dab6c25aabfd.jpg?1783903640",
+      "scryfallId": "5fe70295-e550-4577-a341-dab6c25aabfd",
+      "set": "sos",
+      "collectorNumber": "200",
+      "sha256": "ba475f1f2063e347d5c745dfa19786b7baca43a948820758ec4b611601721499"
+    },
+    {
+      "name": "Lotus Field",
+      "variant": "normal",
+      "relative": "./assets/cards/lotus-field-e02942f746.webp",
+      "source": "https://cards.scryfall.io/normal/front/e/e/ee5ac47c-e8b6-400e-b91e-a7cd0f952cf1.jpg?1783903726",
+      "scryfallId": "ee5ac47c-e8b6-400e-b91e-a7cd0f952cf1",
+      "set": "soc",
+      "collectorNumber": "385",
+      "sha256": "562ce86cf4f48c6c40f9acd8b12c21ae8b4bd27599c77c769404352b02470f7d"
+    },
+    {
+      "name": "Merchant of Venom",
+      "variant": "normal",
+      "relative": "./assets/cards/merchant-of-venom-b61a2f32a1.webp",
+      "source": "https://cards.scryfall.io/normal/front/d/6/d60cf719-d5ce-46c3-bf92-24682b1c53bd.jpg?1783903858",
+      "scryfallId": "d60cf719-d5ce-46c3-bf92-24682b1c53bd",
+      "set": "soc",
+      "collectorNumber": "27",
+      "sha256": "03e2349a840e5c78d3de1105bb10b4103161731ca375d0a5dc23dbe31e17fb87"
+    },
+    {
+      "name": "Mistveil Plains",
+      "variant": "normal",
+      "relative": "./assets/cards/mistveil-plains-2921e04d90.webp",
+      "source": "https://cards.scryfall.io/normal/front/c/5/c53028dd-efb5-486c-a7d3-45f2f6050c1d.jpg?1783903726",
+      "scryfallId": "c53028dd-efb5-486c-a7d3-45f2f6050c1d",
+      "set": "soc",
+      "collectorNumber": "386",
+      "sha256": "3ee604e3648309cb58f62daafae933382a99ecd6043c650d3fcf2853d67cf531"
+    },
+    {
+      "name": "Moonshaker Cavalry",
+      "variant": "normal",
+      "relative": "./assets/cards/moonshaker-cavalry-64125f9eaf.webp",
+      "source": "https://cards.scryfall.io/normal/front/c/a/ca90d382-7e13-4637-a624-2a1b82abe56c.jpg?1783903824",
+      "scryfallId": "ca90d382-7e13-4637-a624-2a1b82abe56c",
+      "set": "soc",
+      "collectorNumber": "110",
+      "sha256": "8eaa5be94668133b4632d660f51a8065e0b8e46a080999f8af2af0eee3950b18"
+    },
+    {
+      "name": "Naktamun Lorespinner",
+      "variant": "normal",
+      "relative": "./assets/cards/naktamun-lorespinner-7283c5305e.webp",
+      "source": "https://cards.scryfall.io/normal/front/a/c/acca1fd4-6384-460e-905f-118f01aa76ed.jpg?1783903856",
+      "scryfallId": "acca1fd4-6384-460e-905f-118f01aa76ed",
+      "set": "soc",
+      "collectorNumber": "33",
+      "sha256": "3aba6c35e702a4b1002b0028274e86eac7ab5f65b3d9b9baece1366fcf53d092"
+    },
+    {
+      "name": "Wheel of Fortune",
+      "variant": "normal",
+      "relative": "./assets/cards/wheel-of-fortune-1150067a35.webp",
+      "source": "https://cards.scryfall.io/normal/front/a/c/acca1fd4-6384-460e-905f-118f01aa76ed.jpg?1783903856",
+      "scryfallId": "acca1fd4-6384-460e-905f-118f01aa76ed",
+      "set": "soc",
+      "collectorNumber": "33",
+      "sha256": "3aba6c35e702a4b1002b0028274e86eac7ab5f65b3d9b9baece1366fcf53d092"
+    },
+    {
+      "name": "Nether Traitor",
+      "variant": "normal",
+      "relative": "./assets/cards/nether-traitor-315f3a0008.webp",
+      "source": "https://cards.scryfall.io/normal/front/f/a/fae5d1cb-ead9-41e1-84ce-2f06dc8cf6ba.jpg?1783903785",
+      "scryfallId": "fae5d1cb-ead9-41e1-84ce-2f06dc8cf6ba",
+      "set": "soc",
+      "collectorNumber": "220",
+      "sha256": "0c07faffb8c2e2872ce4ce8a7f7e981e6dc3c2052949a10ec2c770ecc945dcd1"
+    },
+    {
+      "name": "Ominous Harvest",
+      "variant": "normal",
+      "relative": "./assets/cards/ominous-harvest-3f9e0a5505.webp",
+      "source": "https://cards.scryfall.io/normal/front/2/2/2271184b-08eb-4d2a-8ebf-a1807d51dd2a.jpg?1783903860",
+      "scryfallId": "2271184b-08eb-4d2a-8ebf-a1807d51dd2a",
+      "set": "soc",
+      "collectorNumber": "28",
+      "sha256": "b43505f9ba277263ae847e9ea1dc3d53233e5c5325ba6e174851f82689cea642"
+    },
+    {
+      "name": "Pearl-Ear, Imperial Advisor",
+      "variant": "normal",
+      "relative": "./assets/cards/pearl-ear-imperial-advisor-3f20383875.webp",
+      "source": "https://cards.scryfall.io/normal/front/7/e/7e8d6bc1-4609-4802-a4b6-7e75fdae186c.jpg?1783903804",
+      "scryfallId": "7e8d6bc1-4609-4802-a4b6-7e75fdae186c",
+      "set": "soc",
+      "collectorNumber": "160",
+      "sha256": "49854b95ca9cbe2931739a768d883b429725966e89af94d0f099776fa4cb7901"
+    },
+    {
+      "name": "Pest Rescuer",
+      "variant": "normal",
+      "relative": "./assets/cards/pest-rescuer-2fedcc4d82.webp",
+      "source": "https://cards.scryfall.io/normal/front/1/f/1f2a066a-7bcd-4e9d-8e52-0769cd6c8124.jpg?1783903854",
+      "scryfallId": "1f2a066a-7bcd-4e9d-8e52-0769cd6c8124",
+      "set": "soc",
+      "collectorNumber": "42",
+      "sha256": "3b7a40fae20d8ee5fabd4a13613512fdd30a89362f302125ac4043d0fcec8b50"
+    },
+    {
+      "name": "Priest of Forgotten Gods",
+      "variant": "normal",
+      "relative": "./assets/cards/priest-of-forgotten-gods-d35989263a.webp",
+      "source": "https://cards.scryfall.io/normal/front/3/6/363f8761-91a7-47e8-9e15-3b73d59bc020.jpg?1783903781",
+      "scryfallId": "363f8761-91a7-47e8-9e15-3b73d59bc020",
+      "set": "soc",
+      "collectorNumber": "225",
+      "sha256": "bd465cbcda9471414d2ca4a14bd7d07e60e0cff789de285bcd6ae0fd5c947ddf"
+    },
+    {
+      "name": "Primary Research",
+      "variant": "normal",
+      "relative": "./assets/cards/primary-research-39714f6ab7.webp",
+      "source": "https://cards.scryfall.io/normal/front/f/6/f6fdb814-45c6-4d14-afff-7f5bd1bd10a1.jpg?1783903700",
+      "scryfallId": "f6fdb814-45c6-4d14-afff-7f5bd1bd10a1",
+      "set": "sos",
+      "collectorNumber": "26",
+      "sha256": "2b98b58de1d3cdf57f279e1c3baa67f9a6f5ba40c8653832028c4ea8749754bb"
+    },
+    {
+      "name": "Quintorius, Field Historian",
+      "variant": "normal",
+      "relative": "./assets/cards/quintorius-field-historian-c12efbf889.webp",
+      "source": "https://cards.scryfall.io/normal/front/8/e/8e3c7f00-e997-4b07-98af-45b9ea35d2d7.jpg?1783903748",
+      "scryfallId": "8e3c7f00-e997-4b07-98af-45b9ea35d2d7",
+      "set": "soc",
+      "collectorNumber": "326",
+      "sha256": "9d28eff072f3352ae92757a91f8507a5a867bb28685f066c000837c1eb6d8bf2"
+    },
+    {
+      "name": "Quintorius, History Chaser",
+      "variant": "normal",
+      "relative": "./assets/cards/quintorius-history-chaser-acaa67dbf0.webp",
+      "source": "https://cards.scryfall.io/normal/front/0/7/0742f19d-179c-43c4-ab95-4160c56b4384.jpg?1783903867",
+      "scryfallId": "0742f19d-179c-43c4-ab95-4160c56b4384",
+      "set": "soc",
+      "collectorNumber": "7",
+      "sha256": "2bb0e1e6c3c81d56a0baff97eb58cb786c7f46560a19de6b05759182a52f4ff3"
+    },
+    {
+      "name": "Quintorius, Loremaster",
+      "variant": "normal",
+      "relative": "./assets/cards/quintorius-loremaster-b90773b4e2.webp",
+      "source": "https://cards.scryfall.io/normal/front/7/a/7a609e56-667d-48b5-a6e6-629f1d7a2f72.jpg?1783903746",
+      "scryfallId": "7a609e56-667d-48b5-a6e6-629f1d7a2f72",
+      "set": "soc",
+      "collectorNumber": "327",
+      "sha256": "c1e785d351a1aea77fdf46de0477dbb10a93438f07908508ead64f4d6345b158"
+    },
+    {
+      "name": "Raffine's Guidance",
+      "variant": "normal",
+      "relative": "./assets/cards/raffine-s-guidance-25e843142c.webp",
+      "source": "https://cards.scryfall.io/normal/front/8/e/8eb97e21-442b-4f23-a846-f0a0135a5c31.jpg?1783903803",
+      "scryfallId": "8eb97e21-442b-4f23-a846-f0a0135a5c31",
+      "set": "soc",
+      "collectorNumber": "162",
+      "sha256": "fed5dc8d9fa648a081c4d54069352fd791dbb4a4866f75ad49bf3fa6d9607d4c"
+    },
+    {
+      "name": "Relic Retriever",
+      "variant": "normal",
+      "relative": "./assets/cards/relic-retriever-b9881f41f7.webp",
+      "source": "https://cards.scryfall.io/normal/front/a/0/a016463d-a0aa-44a5-97ca-17ff70c4eb95.jpg?1783903853",
+      "scryfallId": "a016463d-a0aa-44a5-97ca-17ff70c4eb95",
+      "set": "soc",
+      "collectorNumber": "35",
+      "sha256": "9a6ad99c9d6f2bcd98f1c792fcadbf091af01aceede77e9aeb0b7fb170303ec6"
+    },
+    {
+      "name": "Ribtruss Roaster",
+      "variant": "normal",
+      "relative": "./assets/cards/ribtruss-roaster-0b02f6177f.webp",
+      "source": "https://cards.scryfall.io/normal/front/8/2/8217100d-8244-4565-97bd-6c0f38c3e2f0.jpg?1783903852",
+      "scryfallId": "8217100d-8244-4565-97bd-6c0f38c3e2f0",
+      "set": "soc",
+      "collectorNumber": "43",
+      "sha256": "bc5fb4b7df8ee5365efa03060332ac3b0019494c9811b08684a89178391411a2"
+    },
+    {
+      "name": "Screams from Within",
+      "variant": "normal",
+      "relative": "./assets/cards/screams-from-within-f8eb2e2394.webp",
+      "source": "https://cards.scryfall.io/normal/front/2/7/27e2a759-971d-455b-845c-2e9b471950bb.jpg?1783903820",
+      "scryfallId": "27e2a759-971d-455b-845c-2e9b471950bb",
+      "set": "soc",
+      "collectorNumber": "119",
+      "sha256": "84a19c05c71961077675eeac4d741ad2b45038e80dbc70cae039c53c6cbd7182"
+    },
+    {
+      "name": "Scriv, the Obligator",
+      "variant": "normal",
+      "relative": "./assets/cards/scriv-the-obligator-be983febbe.webp",
+      "source": "https://cards.scryfall.io/normal/front/c/1/c133a860-7b8d-485d-b9a2-bf8ae3a68f47.jpg?1783903867",
+      "scryfallId": "c133a860-7b8d-485d-b9a2-bf8ae3a68f47",
+      "set": "soc",
+      "collectorNumber": "9",
+      "sha256": "b4a367ff6f530a11563b130f72d3b325c0f2a9309d856f425fa9bab87686590a"
+    },
+    {
+      "name": "Seize the Spoils",
+      "variant": "normal",
+      "relative": "./assets/cards/seize-the-spoils-f4479e1736.webp",
+      "source": "https://cards.scryfall.io/normal/front/4/d/4ddf4e34-a1f9-4636-942d-0a08e9f94320.jpg?1783903666",
+      "scryfallId": "4ddf4e34-a1f9-4636-942d-0a08e9f94320",
+      "set": "sos",
+      "collectorNumber": "129",
+      "sha256": "ef63710d62bddc79e99a66954c144f627f9f98c1fe0a090fb40d0e4302e6dd36"
+    },
+    {
+      "name": "Sentinel's Eyes",
+      "variant": "normal",
+      "relative": "./assets/cards/sentinel-s-eyes-9dae66a534.webp",
+      "source": "https://cards.scryfall.io/normal/front/9/f/9f50278a-06fc-4b11-a1d2-d28cd213ff8f.jpg?1783903801",
+      "scryfallId": "9f50278a-06fc-4b11-a1d2-d28cd213ff8f",
+      "set": "soc",
+      "collectorNumber": "168",
+      "sha256": "29bfdd3c0d1697f57bed7f2e30e1ec044c1cfa8832c4afd056071a54dee8cc89"
+    },
+    {
+      "name": "Serra Paragon",
+      "variant": "normal",
+      "relative": "./assets/cards/serra-paragon-ebc4421839.webp",
+      "source": "https://cards.scryfall.io/normal/front/8/e/8e77a410-a053-4349-950c-d59e76b17923.jpg?1783903802",
+      "scryfallId": "8e77a410-a053-4349-950c-d59e76b17923",
+      "set": "soc",
+      "collectorNumber": "169",
+      "sha256": "9378dc0190c6fdb5d8e5a4ec93f666ea9a375abf7a88daba94c693dfe45f19e9"
+    },
+    {
+      "name": "Sheltered by Ghosts",
+      "variant": "normal",
+      "relative": "./assets/cards/sheltered-by-ghosts-60055040d6.webp",
+      "source": "https://cards.scryfall.io/normal/front/8/e/8e8a5cfe-1b3f-4414-b9a4-078bdb4072a7.jpg?1783903800",
+      "scryfallId": "8e8a5cfe-1b3f-4414-b9a4-078bdb4072a7",
+      "set": "soc",
+      "collectorNumber": "171",
+      "sha256": "123e5d62efffbc763eda7242766da8c28dc0daee24716b8168209ab31f7061e1"
+    },
+    {
+      "name": "Smothering Abomination",
+      "variant": "normal",
+      "relative": "./assets/cards/smothering-abomination-9450513881.webp",
+      "source": "https://cards.scryfall.io/normal/front/a/a/aac33238-e4bd-4c72-aecc-9905232c3ab4.jpg?1783903780",
+      "scryfallId": "aac33238-e4bd-4c72-aecc-9905232c3ab4",
+      "set": "soc",
+      "collectorNumber": "226",
+      "sha256": "5103d4cfe01eb08ae9d80589accaca5f06107ef9c301bb5df335f101cac7460f"
+    },
+    {
+      "name": "Spirit of Resilience",
+      "variant": "normal",
+      "relative": "./assets/cards/spirit-of-resilience-94724b5f3c.webp",
+      "source": "https://cards.scryfall.io/normal/front/6/0/60584e5b-4138-405b-bd02-612cf175184e.jpg?1783903856",
+      "scryfallId": "60584e5b-4138-405b-bd02-612cf175184e",
+      "set": "soc",
+      "collectorNumber": "37",
+      "sha256": "170fe4791bbfac72ff081961f0909f4aefd484efc8671a66cc761468fb754bd9"
+    },
+    {
+      "name": "Stensian Sanguinist",
+      "variant": "normal",
+      "relative": "./assets/cards/stensian-sanguinist-3f45b220bf.webp",
+      "source": "https://cards.scryfall.io/normal/front/9/0/909a52bc-53f6-4654-9db7-e8f48333d765.jpg?1783903860",
+      "scryfallId": "909a52bc-53f6-4654-9db7-e8f48333d765",
+      "set": "soc",
+      "collectorNumber": "29",
+      "sha256": "ba0ff9d52b06978f9665b66077c7db38fbedf31d907ac31185305c236a67a4e7"
+    },
+    {
+      "name": "Teacher's Pest",
+      "variant": "normal",
+      "relative": "./assets/cards/teacher-s-pest-2fada3a4d2.webp",
+      "source": "https://cards.scryfall.io/normal/front/e/a/eaa358ac-761d-4507-aa15-3d4684027207.jpg?1783903626",
+      "scryfallId": "eaa358ac-761d-4507-aa15-3d4684027207",
+      "set": "sos",
+      "collectorNumber": "238",
+      "sha256": "a40c4ba2580f5ccc91a4ce96c46c6f9cde2fe0a1c1ea8dbcdccfd47f8c7e8969"
+    },
+    {
+      "name": "Titan's Grave",
+      "variant": "normal",
+      "relative": "./assets/cards/titan-s-grave-eb9768877e.webp",
+      "source": "https://cards.scryfall.io/normal/front/a/9/a9ab41c8-3ee2-4676-9b8b-20c34d9f5f21.jpg?1783903615",
+      "scryfallId": "a9ab41c8-3ee2-4676-9b8b-20c34d9f5f21",
+      "set": "sos",
+      "collectorNumber": "266",
+      "sha256": "2b9aba185cd6c2bec5922dc6c9bfa11ae9c746f8000d7f52e6387d6eb1ba7b57"
+    },
+    {
+      "name": "Tomik, Wielder of Law",
+      "variant": "normal",
+      "relative": "./assets/cards/tomik-wielder-of-law-5d8f100f95.webp",
+      "source": "https://cards.scryfall.io/normal/front/8/a/8a7fc460-fc49-480f-8ee2-28a173509f0b.jpg?1783903744",
+      "scryfallId": "8a7fc460-fc49-480f-8ee2-28a173509f0b",
+      "set": "soc",
+      "collectorNumber": "333",
+      "sha256": "c30f603718c2b32eb80419077e4264eb5cf55b7b0296bf825aba2ac917fd3564"
+    },
+    {
+      "name": "Turbulent Fen",
+      "variant": "normal",
+      "relative": "./assets/cards/turbulent-fen-1be265605d.webp",
+      "source": "https://cards.scryfall.io/normal/front/9/7/9737159b-256c-4004-ba5f-0417c35e1b30.jpg?1783903846",
+      "scryfallId": "9737159b-256c-4004-ba5f-0417c35e1b30",
+      "set": "soc",
+      "collectorNumber": "55",
+      "sha256": "52e00d9c5b9fac3d214dc9150d1b4ac45a9549416f19695f45097960d3cc506f"
+    },
+    {
+      "name": "Turbulent Moor",
+      "variant": "normal",
+      "relative": "./assets/cards/turbulent-moor-fbe23a60b2.webp",
+      "source": "https://cards.scryfall.io/normal/front/d/a/da54562d-8c09-4728-bb2b-ae8d464106b8.jpg?1783903847",
+      "scryfallId": "da54562d-8c09-4728-bb2b-ae8d464106b8",
+      "set": "soc",
+      "collectorNumber": "56",
+      "sha256": "0ce87effd898288c6853c250abf88b121990ceb876ad4f07f718e693626c6fc0"
+    },
+    {
+      "name": "Turbulent Steppe",
+      "variant": "normal",
+      "relative": "./assets/cards/turbulent-steppe-50fc2ce93a.webp",
+      "source": "https://cards.scryfall.io/normal/front/c/0/c0c73dd5-0a88-4a94-9c01-c1473433e46f.jpg?1783903845",
+      "scryfallId": "c0c73dd5-0a88-4a94-9c01-c1473433e46f",
+      "set": "soc",
+      "collectorNumber": "58",
+      "sha256": "1b574f6da02bdb9f2be0beff9e04e997264d238db386c3e158889ef96a454c9e"
+    },
+    {
+      "name": "Umbral Collar Zealot",
+      "variant": "normal",
+      "relative": "./assets/cards/umbral-collar-zealot-f0bcbddaa5.webp",
+      "source": "https://cards.scryfall.io/normal/front/9/8/98648b8a-2cf0-4c10-ab13-c88b2e03fc15.jpg?1783903781",
+      "scryfallId": "98648b8a-2cf0-4c10-ab13-c88b2e03fc15",
+      "set": "soc",
+      "collectorNumber": "227",
+      "sha256": "777b7478fb6ecdc8d4cd41820228a0643fbe61933376e3d0c8d7af62651b5910"
+    },
+    {
+      "name": "Umbral Expanse",
+      "variant": "normal",
+      "relative": "./assets/cards/umbral-expanse-6217e3a571.webp",
+      "source": "https://cards.scryfall.io/normal/front/1/5/15848965-01a8-48bf-aa61-8a753339c761.jpg?1783903846",
+      "scryfallId": "15848965-01a8-48bf-aa61-8a753339c761",
+      "set": "soc",
+      "collectorNumber": "60",
+      "sha256": "86b1ec435ae4a7fda63e5d36d8a5136338fc357a831adbc7e53cdf45cc2b45ce"
+    },
+    {
+      "name": "Vanguard of the Restless",
+      "variant": "normal",
+      "relative": "./assets/cards/vanguard-of-the-restless-c299e7eb2a.webp",
+      "source": "https://cards.scryfall.io/normal/front/9/1/91211c56-b562-4889-8c5c-110c42be62c8.jpg?1783903864",
+      "scryfallId": "91211c56-b562-4889-8c5c-110c42be62c8",
+      "set": "soc",
+      "collectorNumber": "16",
+      "sha256": "1d06b1842f65dd339c2d6fac57c5e39f9dd2fc626c7e9a26146aac9ded281ebf"
+    },
+    {
+      "name": "Vanishing Verse",
+      "variant": "normal",
+      "relative": "./assets/cards/vanishing-verse-c767695504.webp",
+      "source": "https://cards.scryfall.io/normal/front/8/a/8a475868-a335-45e7-9d59-9dc4c2cea1ae.jpg?1783903743",
+      "scryfallId": "8a475868-a335-45e7-9d59-9dc4c2cea1ae",
+      "set": "soc",
+      "collectorNumber": "335",
+      "sha256": "6aa8be453c61d2a41223ad459e3a82728beecc9230fba4dc4ee25d3ef961de13"
+    },
+    {
+      "name": "Venerable Warsinger",
+      "variant": "normal",
+      "relative": "./assets/cards/venerable-warsinger-b5cf13fee7.webp",
+      "source": "https://cards.scryfall.io/normal/front/c/d/cdd0062f-6b2a-49c4-bf47-9b05f16ca6eb.jpg?1783903743",
+      "scryfallId": "cdd0062f-6b2a-49c4-bf47-9b05f16ca6eb",
+      "set": "soc",
+      "collectorNumber": "336",
+      "sha256": "e391dd9836b91d070fe96f295ea2939022639d47b1a63fd60b4bf9a3749248ab"
+    },
+    {
+      "name": "White Orchid Phantom",
+      "variant": "normal",
+      "relative": "./assets/cards/white-orchid-phantom-4b5f4ea019.webp",
+      "source": "https://cards.scryfall.io/normal/front/e/6/e6cebc57-d7b0-4e86-bc9e-ebb1de58f932.jpg?1783903796",
+      "scryfallId": "e6cebc57-d7b0-4e86-bc9e-ebb1de58f932",
+      "set": "soc",
+      "collectorNumber": "184",
+      "sha256": "038ea6be5116998d35fb5ef802f96255425f40b20c49201e12b12fda9784d130"
+    },
+    {
+      "name": "Wight of the Reliquary",
+      "variant": "normal",
+      "relative": "./assets/cards/wight-of-the-reliquary-b6c2972498.webp",
+      "source": "https://cards.scryfall.io/normal/front/a/8/a8c6ee26-fa74-4859-9a94-89b476d218d2.jpg?1783903742",
+      "scryfallId": "a8c6ee26-fa74-4859-9a94-89b476d218d2",
+      "set": "soc",
+      "collectorNumber": "338",
+      "sha256": "a173febc54213eb9a12704976d90ad21a6ae0fa432342d8f96409b9e7d02b0a4"
+    },
+    {
+      "name": "Witherbloom Charm",
+      "variant": "normal",
+      "relative": "./assets/cards/witherbloom-charm-32dde1fd03.webp",
+      "source": "https://cards.scryfall.io/normal/front/2/5/254437f7-7a8a-4b11-9cea-e8e7ea23c59e.jpg?1783903624",
+      "scryfallId": "254437f7-7a8a-4b11-9cea-e8e7ea23c59e",
+      "set": "sos",
+      "collectorNumber": "244",
+      "sha256": "c7d69b9c6f62c10c07c85e43ff29a7d0d555352fe3fee9ccd30bbd4448c9958c"
+    },
+    {
+      "name": "Witherbloom Command",
+      "variant": "normal",
+      "relative": "./assets/cards/witherbloom-command-6d6181bb5f.webp",
+      "source": "https://cards.scryfall.io/normal/front/0/d/0d68dee5-56ff-45bb-a37e-9e2dfc07c5a7.jpg?1783903742",
+      "scryfallId": "0d68dee5-56ff-45bb-a37e-9e2dfc07c5a7",
+      "set": "soc",
+      "collectorNumber": "339",
+      "sha256": "caa0b53355035fab7867bf85bbea8cf2595c3470ce076c7b3ef46de562c39d49"
+    },
+    {
+      "name": "SOC Spirit",
+      "variant": "normal",
+      "relative": "./assets/cards/soc-spirit-83759d4813.webp",
+      "source": "https://cards.scryfall.io/normal/front/5/a/5a9c5b21-c770-4fc0-b205-d96862e6be3e.jpg?1783903567",
+      "scryfallId": "5a9c5b21-c770-4fc0-b205-d96862e6be3e",
+      "set": "tsoc",
+      "collectorNumber": "25",
+      "sha256": "ace3f89fe253a0d0b318fb253afa747b003f17cd1686de11031c246aa445691a"
+    },
+    {
+      "name": "SOC Inkling",
+      "variant": "normal",
+      "relative": "./assets/cards/soc-inkling-0aecffc108.webp",
+      "source": "https://cards.scryfall.io/normal/front/b/2/b2ef67fc-b544-4fb3-8362-a29d4533fdd7.jpg?1783903569",
+      "scryfallId": "b2ef67fc-b544-4fb3-8362-a29d4533fdd7",
+      "set": "tsoc",
+      "collectorNumber": "22",
+      "sha256": "fbe5af34447245e3546b5e8d803b6c6ad8b3d5ae16846dfbc7508f32eff1586d"
+    },
+    {
+      "name": "SOC Contract",
+      "variant": "normal",
+      "relative": "./assets/cards/soc-contract-46865343c9.webp",
+      "source": "https://cards.scryfall.io/normal/front/4/c/4c5e0caa-a043-41de-acbf-cdf3a6b6ab18.jpg?1783903575",
+      "scryfallId": "4c5e0caa-a043-41de-acbf-cdf3a6b6ab18",
+      "set": "tsoc",
+      "collectorNumber": "3",
+      "sha256": "ce6b17b4c21db3a488781423efc47c1416abf64d0141932fefa0b8193e7f5294"
+    },
+    {
+      "name": "Quintorius, History Chaser",
+      "variant": "art_crop",
+      "relative": "./assets/cards/art/quintorius-history-chaser-acaa67dbf0.webp",
+      "source": "https://cards.scryfall.io/art_crop/front/0/7/0742f19d-179c-43c4-ab95-4160c56b4384.jpg?1783903867",
+      "scryfallId": "0742f19d-179c-43c4-ab95-4160c56b4384",
+      "set": "soc",
+      "collectorNumber": "7",
+      "sha256": "d9070c211984501bdd2d0231ac1353086d9f8e30fd0a4719a1a71e8b8a7c296a"
+    },
+    {
+      "name": "Killian, Decisive Mentor",
+      "variant": "art_crop",
+      "relative": "./assets/cards/art/killian-decisive-mentor-69383dfa1a.webp",
+      "source": "https://cards.scryfall.io/art_crop/front/7/6/76b6c35a-bb92-4ad3-8f85-88b9bafc6266.jpg?1783903867",
+      "scryfallId": "76b6c35a-bb92-4ad3-8f85-88b9bafc6266",
+      "set": "soc",
+      "collectorNumber": "4",
+      "sha256": "fa7d8a3a6130cbe73faebec9c8b89143f819ff7a63b94e9fe225655fa6d177e8"
+    },
+    {
+      "name": "Dina, Essence Brewer",
+      "variant": "art_crop",
+      "relative": "./assets/cards/art/dina-essence-brewer-ed3edc9111.webp",
+      "source": "https://cards.scryfall.io/art_crop/front/9/f/9fe237b8-c02c-41ea-9fc4-b771b91d2157.jpg?1783903869",
+      "scryfallId": "9fe237b8-c02c-41ea-9fc4-b771b91d2157",
+      "set": "soc",
+      "collectorNumber": "1",
+      "sha256": "00d37ae200395595e96e0e1e5fc2e5fcda7b79102e33f319d3062588c3690834"
+    }
+  ],
+  "addedCount": 97,
+  "canonicalAliases": {
+    "Contract": "SOC Contract"
+  },
+  "sourceCardsWithLocalImages": 237,
+  "tokenVariants": [
+    {
+      "source": "Quintorius, History Chaser",
+      "name": "Spirit",
+      "alias": "SOC Spirit",
+      "scryfallId": "5a9c5b21-c770-4fc0-b205-d96862e6be3e"
+    },
+    {
+      "source": "Forum Filibuster",
+      "name": "Inkling",
+      "alias": "SOC Inkling",
+      "scryfallId": "b2ef67fc-b544-4fb3-8362-a29d4533fdd7"
+    },
+    {
+      "source": "Scriv, the Obligator",
+      "name": "Contract",
+      "alias": "SOC Contract",
+      "scryfallId": "4c5e0caa-a043-41de-acbf-cdf3a6b6ab18"
+    }
+  ],
+  "existingImagesUnchanged": true
+}

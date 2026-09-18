@@ -1,0 +1,1096 @@
+{
+  "retrievedOn": "2026-09-18",
+  "selection": "Next three missing original lists after Revival Trance by release date and pinned index order: Lorehold Spirit, Silverquill Influence and Witherbloom Pestilence. All intervening Tarkir, Edge of Eternities, Lorwyn and Turtle Power decks, plus Prismari Artistry and Quandrix Unlimited, are already present. Collector duplicates are skipped.",
+  "moxfieldAccess": "The pinned index supplies queue links. These are verified Wizards / MTGJSON lists, not direct Moxfield exports.",
+  "normalization": "Adventure, prepare and double-faced cards use front names for source comparison; split cards retain their combined names. Quantities and punctuation are normalized for comparison. Full Scryfall faces are pinned in oracle.json.",
+  "decks": [
+    {
+      "name": "Lorehold Spirit",
+      "commander": "Quintorius, History Chaser",
+      "set": "SOC",
+      "moxfield": "8erwc7vsiEanV87GMM3IuQ",
+      "slug": "lorehold-spirit",
+      "cards": [
+        {
+          "name": "Quintorius, History Chaser",
+          "n": 1
+        },
+        {
+          "name": "Excava, the Risen Past",
+          "n": 1
+        },
+        {
+          "name": "Lorehold Archivist",
+          "n": 1
+        },
+        {
+          "name": "Augusta, Order Returned",
+          "n": 1
+        },
+        {
+          "name": "Ceaseless Conflict",
+          "n": 1
+        },
+        {
+          "name": "Vanguard of the Restless",
+          "n": 1
+        },
+        {
+          "name": "Advanced Reconstruction",
+          "n": 1
+        },
+        {
+          "name": "Fateful Tempest",
+          "n": 1
+        },
+        {
+          "name": "Naktamun Lorespinner",
+          "n": 1
+        },
+        {
+          "name": "Relic Retriever",
+          "n": 1
+        },
+        {
+          "name": "Spirit of Resilience",
+          "n": 1
+        },
+        {
+          "name": "Turbulent Steppe",
+          "n": 1
+        },
+        {
+          "name": "Moonshaker Cavalry",
+          "n": 1
+        },
+        {
+          "name": "Staff of the Storyteller",
+          "n": 1
+        },
+        {
+          "name": "Wave of Reckoning",
+          "n": 1
+        },
+        {
+          "name": "Fabled Passage",
+          "n": 1
+        },
+        {
+          "name": "Angel of Indemnity",
+          "n": 1
+        },
+        {
+          "name": "Ao, the Dawn Sky",
+          "n": 1
+        },
+        {
+          "name": "Archaeomancer's Map",
+          "n": 1
+        },
+        {
+          "name": "Claim Jumper",
+          "n": 1
+        },
+        {
+          "name": "Drumbellower",
+          "n": 1
+        },
+        {
+          "name": "Guardian of Faith",
+          "n": 1
+        },
+        {
+          "name": "Guardian Scalelord",
+          "n": 1
+        },
+        {
+          "name": "Karmic Guide",
+          "n": 1
+        },
+        {
+          "name": "Monologue Tax",
+          "n": 1
+        },
+        {
+          "name": "Remorseful Cleric",
+          "n": 1
+        },
+        {
+          "name": "Selfless Spirit",
+          "n": 1
+        },
+        {
+          "name": "Serra Paragon",
+          "n": 1
+        },
+        {
+          "name": "Sevinne's Reclamation",
+          "n": 1
+        },
+        {
+          "name": "Skyclave Apparition",
+          "n": 1
+        },
+        {
+          "name": "Sun Titan",
+          "n": 1
+        },
+        {
+          "name": "Tocasia's Welcome",
+          "n": 1
+        },
+        {
+          "name": "Tragic Arrogance",
+          "n": 1
+        },
+        {
+          "name": "White Orchid Phantom",
+          "n": 1
+        },
+        {
+          "name": "Atsushi, the Blazing Sky",
+          "n": 1
+        },
+        {
+          "name": "Conspiracy Theorist",
+          "n": 1
+        },
+        {
+          "name": "Laelia, the Blade Reforged",
+          "n": 1
+        },
+        {
+          "name": "Balefire Liege",
+          "n": 1
+        },
+        {
+          "name": "Hofri Ghostforge",
+          "n": 1
+        },
+        {
+          "name": "Quintorius, Loremaster",
+          "n": 1
+        },
+        {
+          "name": "Venerable Warsinger",
+          "n": 1
+        },
+        {
+          "name": "Bitterthorn, Nissa's Animus",
+          "n": 1
+        },
+        {
+          "name": "Currency Converter",
+          "n": 1
+        },
+        {
+          "name": "Battlefield Forge",
+          "n": 1
+        },
+        {
+          "name": "Clifftop Retreat",
+          "n": 1
+        },
+        {
+          "name": "Emeria, the Sky Ruin",
+          "n": 1
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1
+        },
+        {
+          "name": "Furycalm Snarl",
+          "n": 1
+        },
+        {
+          "name": "Glittering Massif",
+          "n": 1
+        },
+        {
+          "name": "Lotus Field",
+          "n": 1
+        },
+        {
+          "name": "Radiant Summit",
+          "n": 1
+        },
+        {
+          "name": "Rugged Prairie",
+          "n": 1
+        },
+        {
+          "name": "Sunscorched Divide",
+          "n": 1
+        },
+        {
+          "name": "Temple of Triumph",
+          "n": 1
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Primary Research",
+          "n": 1
+        },
+        {
+          "name": "Seize the Spoils",
+          "n": 1
+        },
+        {
+          "name": "Kirol, History Buff",
+          "n": 1
+        },
+        {
+          "name": "Lorehold Charm",
+          "n": 1
+        },
+        {
+          "name": "Fields of Strife",
+          "n": 1
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1
+        },
+        {
+          "name": "Kami of Ancient Law",
+          "n": 1
+        },
+        {
+          "name": "Path to Exile",
+          "n": 1
+        },
+        {
+          "name": "Secret Rendezvous",
+          "n": 1
+        },
+        {
+          "name": "Swords to Plowshares",
+          "n": 1
+        },
+        {
+          "name": "Teshar, Ancestor's Apostle",
+          "n": 1
+        },
+        {
+          "name": "Anger",
+          "n": 1
+        },
+        {
+          "name": "Faithless Looting",
+          "n": 1
+        },
+        {
+          "name": "Squee, Goblin Nabob",
+          "n": 1
+        },
+        {
+          "name": "Quintorius, Field Historian",
+          "n": 1
+        },
+        {
+          "name": "Rip Apart",
+          "n": 1
+        },
+        {
+          "name": "Containment Construct",
+          "n": 1
+        },
+        {
+          "name": "Fellwar Stone",
+          "n": 1
+        },
+        {
+          "name": "Millikin",
+          "n": 1
+        },
+        {
+          "name": "Mind Stone",
+          "n": 1
+        },
+        {
+          "name": "Patchwork Banner",
+          "n": 1
+        },
+        {
+          "name": "Perpetual Timepiece",
+          "n": 1
+        },
+        {
+          "name": "Lorehold Campus",
+          "n": 1
+        },
+        {
+          "name": "Mistveil Plains",
+          "n": 1
+        },
+        {
+          "name": "Sacred Peaks",
+          "n": 1
+        },
+        {
+          "name": "Study Hall",
+          "n": 1
+        },
+        {
+          "name": "Plains",
+          "n": 11
+        },
+        {
+          "name": "Mountain",
+          "n": 6
+        }
+      ],
+      "source": {
+        "provider": "Wizards decklist independently verified against MTGJSON",
+        "official": "https://magic.wizards.com/en/news/announcements/secrets-of-strixhaven-commander-decklists",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/LoreholdSpirit_SOC.json",
+        "moxfield": "https://moxfield.com/decks/8erwc7vsiEanV87GMM3IuQ",
+        "mtgjsonSnapshot": "2026-09-17",
+        "mtgjsonSha256": "771cc9b0e30112c9bee5766e968c3dce866081621e2429e72631d7469dd65d1e",
+        "officialHtmlSha256": "6e60296b7d6aad93df65c489d73eaa0f221373bce0a9649e8a2036ee6a86ba3a",
+        "export": "lorehold-spirit.txt",
+        "sha256": "178328c75a6d85d7262e628562a1cf05d5822edec70f38f881705bd95bfec4d3"
+      }
+    },
+    {
+      "name": "Silverquill Influence",
+      "commander": "Killian, Decisive Mentor",
+      "set": "SOC",
+      "moxfield": "zQLesJzHJEyCaNMw-GUT7w",
+      "slug": "silverquill-influence",
+      "cards": [
+        {
+          "name": "Killian, Decisive Mentor",
+          "n": 1
+        },
+        {
+          "name": "Scriv, the Obligator",
+          "n": 1
+        },
+        {
+          "name": "Eiganjo Dynastorian",
+          "n": 1
+        },
+        {
+          "name": "Forum Filibuster",
+          "n": 1
+        },
+        {
+          "name": "Herald of Amity",
+          "n": 1
+        },
+        {
+          "name": "Changing Loyalty",
+          "n": 1
+        },
+        {
+          "name": "Coercive Impetus",
+          "n": 1
+        },
+        {
+          "name": "Intermediate Chirography",
+          "n": 1
+        },
+        {
+          "name": "Defacing Duskmage",
+          "n": 1
+        },
+        {
+          "name": "Eclipsed Steppe",
+          "n": 1
+        },
+        {
+          "name": "Turbulent Moor",
+          "n": 1
+        },
+        {
+          "name": "Umbral Expanse",
+          "n": 1
+        },
+        {
+          "name": "Fabled Passage",
+          "n": 1
+        },
+        {
+          "name": "Eldrazi Conscription",
+          "n": 1
+        },
+        {
+          "name": "Ajani's Chosen",
+          "n": 1
+        },
+        {
+          "name": "Angelic Destiny",
+          "n": 1
+        },
+        {
+          "name": "Archon of Sun's Grace",
+          "n": 1
+        },
+        {
+          "name": "Armored Skyhunter",
+          "n": 1
+        },
+        {
+          "name": "Combat Calligrapher",
+          "n": 1
+        },
+        {
+          "name": "Eidolon of Countless Battles",
+          "n": 1
+        },
+        {
+          "name": "Firemane Commando",
+          "n": 1
+        },
+        {
+          "name": "Gift of Immortality",
+          "n": 1
+        },
+        {
+          "name": "Kor Spiritdancer",
+          "n": 1
+        },
+        {
+          "name": "Land Tax",
+          "n": 1
+        },
+        {
+          "name": "Mangara, the Diplomat",
+          "n": 1
+        },
+        {
+          "name": "Nils, Discipline Enforcer",
+          "n": 1
+        },
+        {
+          "name": "Pearl-Ear, Imperial Advisor",
+          "n": 1
+        },
+        {
+          "name": "Promise of Loyalty",
+          "n": 1
+        },
+        {
+          "name": "Redemption Arc",
+          "n": 1
+        },
+        {
+          "name": "Shielded by Faith",
+          "n": 1
+        },
+        {
+          "name": "Songbirds' Blessing",
+          "n": 1
+        },
+        {
+          "name": "Sram, Senior Edificer",
+          "n": 1
+        },
+        {
+          "name": "Starfield Mystic",
+          "n": 1
+        },
+        {
+          "name": "Winds of Rath",
+          "n": 1
+        },
+        {
+          "name": "Doomwake Giant",
+          "n": 1
+        },
+        {
+          "name": "Ghoulish Impetus",
+          "n": 1
+        },
+        {
+          "name": "Keen Duelist",
+          "n": 1
+        },
+        {
+          "name": "Anguished Unmaking",
+          "n": 1
+        },
+        {
+          "name": "Breena, the Demagogue",
+          "n": 1
+        },
+        {
+          "name": "Eriette of the Charmed Apple",
+          "n": 1
+        },
+        {
+          "name": "Inkshield",
+          "n": 1
+        },
+        {
+          "name": "Shadrix Silverquill",
+          "n": 1
+        },
+        {
+          "name": "Tomik, Wielder of Law",
+          "n": 1
+        },
+        {
+          "name": "Vanishing Verse",
+          "n": 1
+        },
+        {
+          "name": "Caves of Koilos",
+          "n": 1
+        },
+        {
+          "name": "Desolate Mire",
+          "n": 1
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1
+        },
+        {
+          "name": "Fetid Heath",
+          "n": 1
+        },
+        {
+          "name": "Isolated Chapel",
+          "n": 1
+        },
+        {
+          "name": "Shineshadow Snarl",
+          "n": 1
+        },
+        {
+          "name": "Temple of Silence",
+          "n": 1
+        },
+        {
+          "name": "War Room",
+          "n": 1
+        },
+        {
+          "name": "Flickering Ward",
+          "n": 1
+        },
+        {
+          "name": "Fallen Ideal",
+          "n": 1
+        },
+        {
+          "name": "Screams from Within",
+          "n": 1
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Forum of Amity",
+          "n": 1
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1
+        },
+        {
+          "name": "Chains of Custody",
+          "n": 1
+        },
+        {
+          "name": "Darksteel Mutation",
+          "n": 1
+        },
+        {
+          "name": "Ghostly Prison",
+          "n": 1
+        },
+        {
+          "name": "Martial Impetus",
+          "n": 1
+        },
+        {
+          "name": "Raffine's Guidance",
+          "n": 1
+        },
+        {
+          "name": "Sage's Reverie",
+          "n": 1
+        },
+        {
+          "name": "Secret Rendezvous",
+          "n": 1
+        },
+        {
+          "name": "Sentinel's Eyes",
+          "n": 1
+        },
+        {
+          "name": "Sheltered by Ghosts",
+          "n": 1
+        },
+        {
+          "name": "Spirit Mantle",
+          "n": 1
+        },
+        {
+          "name": "Transcendent Envoy",
+          "n": 1
+        },
+        {
+          "name": "Animate Dead",
+          "n": 1
+        },
+        {
+          "name": "Hateful Eidolon",
+          "n": 1
+        },
+        {
+          "name": "Parasitic Impetus",
+          "n": 1
+        },
+        {
+          "name": "Fracture",
+          "n": 1
+        },
+        {
+          "name": "Killian, Ink Duelist",
+          "n": 1
+        },
+        {
+          "name": "Fellwar Stone",
+          "n": 1
+        },
+        {
+          "name": "Talisman of Hierarchy",
+          "n": 1
+        },
+        {
+          "name": "Arcane Lighthouse",
+          "n": 1
+        },
+        {
+          "name": "Bojuka Bog",
+          "n": 1
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1
+        },
+        {
+          "name": "Silverquill Campus",
+          "n": 1
+        },
+        {
+          "name": "Study Hall",
+          "n": 1
+        },
+        {
+          "name": "Sunlit Marsh",
+          "n": 1
+        },
+        {
+          "name": "Plains",
+          "n": 8
+        },
+        {
+          "name": "Swamp",
+          "n": 8
+        }
+      ],
+      "source": {
+        "provider": "Wizards decklist independently verified against MTGJSON",
+        "official": "https://magic.wizards.com/en/news/announcements/secrets-of-strixhaven-commander-decklists",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/SilverquillInfluence_SOC.json",
+        "moxfield": "https://moxfield.com/decks/zQLesJzHJEyCaNMw-GUT7w",
+        "mtgjsonSnapshot": "2026-09-17",
+        "mtgjsonSha256": "0d48427784f59cf72ffa74571ac6fd246320c9a8f8ba6e203aef69cd3af97bf4",
+        "officialHtmlSha256": "6e60296b7d6aad93df65c489d73eaa0f221373bce0a9649e8a2036ee6a86ba3a",
+        "export": "silverquill-influence.txt",
+        "sha256": "ea57defaeee77b52c102ac03d9dcc533a398f8be917b94b389ccfab48eeb10de"
+      }
+    },
+    {
+      "name": "Witherbloom Pestilence",
+      "commander": "Dina, Essence Brewer",
+      "set": "SOC",
+      "moxfield": "CIe9QwsuMUm0xHZVdXcZJQ",
+      "slug": "witherbloom-pestilence",
+      "cards": [
+        {
+          "name": "Dina, Essence Brewer",
+          "n": 1
+        },
+        {
+          "name": "Gorma, the Gullet",
+          "n": 1
+        },
+        {
+          "name": "Merchant of Venom",
+          "n": 1
+        },
+        {
+          "name": "Defiling Daemogoth",
+          "n": 1
+        },
+        {
+          "name": "Ominous Harvest",
+          "n": 1
+        },
+        {
+          "name": "Stensian Sanguinist",
+          "n": 1
+        },
+        {
+          "name": "Feral Appetite",
+          "n": 1
+        },
+        {
+          "name": "Pest Rescuer",
+          "n": 1
+        },
+        {
+          "name": "Ribtruss Roaster",
+          "n": 1
+        },
+        {
+          "name": "Eccentric Pestfinder",
+          "n": 1
+        },
+        {
+          "name": "Immoral Bargain",
+          "n": 1
+        },
+        {
+          "name": "Turbulent Fen",
+          "n": 1
+        },
+        {
+          "name": "Ophiomancer",
+          "n": 1
+        },
+        {
+          "name": "Toxic Deluge",
+          "n": 1
+        },
+        {
+          "name": "Tendershoot Dryad",
+          "n": 1
+        },
+        {
+          "name": "Fabled Passage",
+          "n": 1
+        },
+        {
+          "name": "Blight Mound",
+          "n": 1
+        },
+        {
+          "name": "Bloodghast",
+          "n": 1
+        },
+        {
+          "name": "Final Act",
+          "n": 1
+        },
+        {
+          "name": "Jadar, Ghoulcaller of Nephalia",
+          "n": 1
+        },
+        {
+          "name": "Nether Traitor",
+          "n": 1
+        },
+        {
+          "name": "Priest of Forgotten Gods",
+          "n": 1
+        },
+        {
+          "name": "Smothering Abomination",
+          "n": 1
+        },
+        {
+          "name": "Veinwitch Coven",
+          "n": 1
+        },
+        {
+          "name": "Witch of the Moors",
+          "n": 1
+        },
+        {
+          "name": "Woe Strider",
+          "n": 1
+        },
+        {
+          "name": "Yahenni, Undying Partisan",
+          "n": 1
+        },
+        {
+          "name": "Awakening Zone",
+          "n": 1
+        },
+        {
+          "name": "Blossoming Bogbeast",
+          "n": 1
+        },
+        {
+          "name": "Gilded Goose",
+          "n": 1
+        },
+        {
+          "name": "Mycoloth",
+          "n": 1
+        },
+        {
+          "name": "Ohran Frostfang",
+          "n": 1
+        },
+        {
+          "name": "Pest Infestation",
+          "n": 1
+        },
+        {
+          "name": "Trudge Garden",
+          "n": 1
+        },
+        {
+          "name": "Assassin's Trophy",
+          "n": 1
+        },
+        {
+          "name": "Beledros Witherbloom",
+          "n": 1
+        },
+        {
+          "name": "Casualties of War",
+          "n": 1
+        },
+        {
+          "name": "Creakwood Liege",
+          "n": 1
+        },
+        {
+          "name": "Culling Ritual",
+          "n": 1
+        },
+        {
+          "name": "Gyome, Master Chef",
+          "n": 1
+        },
+        {
+          "name": "Mazirek, Kraul Death Priest",
+          "n": 1
+        },
+        {
+          "name": "Wight of the Reliquary",
+          "n": 1
+        },
+        {
+          "name": "Witherbloom Command",
+          "n": 1
+        },
+        {
+          "name": "Exotic Orchard",
+          "n": 1
+        },
+        {
+          "name": "Festering Thicket",
+          "n": 1
+        },
+        {
+          "name": "Grim Backwoods",
+          "n": 1
+        },
+        {
+          "name": "High Market",
+          "n": 1
+        },
+        {
+          "name": "Llanowar Wastes",
+          "n": 1
+        },
+        {
+          "name": "Necroblossom Snarl",
+          "n": 1
+        },
+        {
+          "name": "Temple of Malady",
+          "n": 1
+        },
+        {
+          "name": "Twilight Mire",
+          "n": 1
+        },
+        {
+          "name": "Vernal Fen",
+          "n": 1
+        },
+        {
+          "name": "Viridescent Bog",
+          "n": 1
+        },
+        {
+          "name": "Woodland Cemetery",
+          "n": 1
+        },
+        {
+          "name": "Arcane Signet",
+          "n": 1
+        },
+        {
+          "name": "Sol Ring",
+          "n": 1
+        },
+        {
+          "name": "Command Tower",
+          "n": 1
+        },
+        {
+          "name": "Teacher's Pest",
+          "n": 1
+        },
+        {
+          "name": "Witherbloom Charm",
+          "n": 1
+        },
+        {
+          "name": "Terramorphic Expanse",
+          "n": 1
+        },
+        {
+          "name": "Titan's Grave",
+          "n": 1
+        },
+        {
+          "name": "Blood Artist",
+          "n": 1
+        },
+        {
+          "name": "Infernal Grasp",
+          "n": 1
+        },
+        {
+          "name": "Morbid Opportunist",
+          "n": 1
+        },
+        {
+          "name": "Night's Whisper",
+          "n": 1
+        },
+        {
+          "name": "Pawn of Ulamog",
+          "n": 1
+        },
+        {
+          "name": "Plumb the Forbidden",
+          "n": 1
+        },
+        {
+          "name": "Umbral Collar Zealot",
+          "n": 1
+        },
+        {
+          "name": "Viscera Seer",
+          "n": 1
+        },
+        {
+          "name": "Zulaport Cutthroat",
+          "n": 1
+        },
+        {
+          "name": "Cultivate",
+          "n": 1
+        },
+        {
+          "name": "Elvish Mystic",
+          "n": 1
+        },
+        {
+          "name": "Sakura-Tribe Elder",
+          "n": 1
+        },
+        {
+          "name": "Springbloom Druid",
+          "n": 1
+        },
+        {
+          "name": "Deadly Brew",
+          "n": 1
+        },
+        {
+          "name": "Dina, Soul Steeper",
+          "n": 1
+        },
+        {
+          "name": "Moldervine Reclamation",
+          "n": 1
+        },
+        {
+          "name": "Mortality Spear",
+          "n": 1
+        },
+        {
+          "name": "Haywire Mite",
+          "n": 1
+        },
+        {
+          "name": "Bojuka Bog",
+          "n": 1
+        },
+        {
+          "name": "Haunted Mire",
+          "n": 1
+        },
+        {
+          "name": "Path of Ancestry",
+          "n": 1
+        },
+        {
+          "name": "Study Hall",
+          "n": 1
+        },
+        {
+          "name": "Witherbloom Campus",
+          "n": 1
+        },
+        {
+          "name": "Swamp",
+          "n": 8
+        },
+        {
+          "name": "Forest",
+          "n": 8
+        }
+      ],
+      "source": {
+        "provider": "Wizards decklist independently verified against MTGJSON",
+        "official": "https://magic.wizards.com/en/news/announcements/secrets-of-strixhaven-commander-decklists",
+        "mtgjson": "https://mtgjson.com/api/v5/decks/WitherbloomPestilence_SOC.json",
+        "moxfield": "https://moxfield.com/decks/CIe9QwsuMUm0xHZVdXcZJQ",
+        "mtgjsonSnapshot": "2026-09-17",
+        "mtgjsonSha256": "39985840caf0f6dfc927ae8e08126c457df4a886c9c18a40b82716fe1767df2f",
+        "officialHtmlSha256": "6e60296b7d6aad93df65c489d73eaa0f221373bce0a9649e8a2036ee6a86ba3a",
+        "export": "witherbloom-pestilence.txt",
+        "sha256": "d0aff0d06c00a8c299b5d14142c59ab0387141002c23619af8139ef1252aeb08"
+      }
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "baseline": "9705435",
+  "decks": 150,
+  "taken": 107,
+  "blocked": 13,
+  "identical": 107,
+  "threshold": 0.9,
+  "pass": false,
+  "rows": [
+    {
+      "index": 0,
+      "picks": [
+        "Abzan Armor",
+        "Blight Curse",
+        "Doom Prevails",
+        "Family Matters"
+      ],
+      "taken": 21,
+      "blocks": [
+        {
+          "turn": 20,
+          "reasons": [
+            "1 lasting effect(s)"
+          ]
+        },
+        {
+          "turn": 21,
+          "reasons": [
+            "2 lasting effect(s)"
+          ]
+        },
+        {
+          "turn": 22,
+          "reasons": [
+            "3 lasting effect(s)"
+          ]
+        },
+        {
+          "turn": 23,
+          "reasons": [
+            "4 lasting effect(s)"
+          ]
+        },
+        {
+          "turn": 25,
+          "reasons": [
+            "2 lasting effect(s)"
+          ]
+        },
+        {
+          "turn": 26,
+          "reasons": [
+            "2 lasting effect(s)"
+          ]
+        },
+        {
+          "turn": 27,
+          "reasons": [
+            "2 lasting effect(s)"
+          ]
+        },
+        {
+          "turn": 28,
+          "reasons": [
+            "2 lasting effect(s)"
+          ]
+        },
+        {
+          "turn": 29,
+          "reasons": [
+            "2 lasting effect(s)"
+          ]
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "picks": [
+        "Deep Clue Sea",
+        "Endless Punishment",
+        "Most Wanted",
+        "Squirreled Away"
+      ],
+      "taken": 30,
+      "blocks": []
+    },
+    {
+      "index": 2,
+      "picks": [
+        "Mardu Surge",
+        "Quick Draw",
+        "Turtle Power",
+        "Coven Counters"
+      ],
+      "taken": 30,
+      "blocks": []
+    },
+    {
+      "index": 3,
+      "picks": [
+        "The Fantastic Four",
+        "Scions & Spellcraft",
+        "Dance of the Elements",
+        "Temur Roar"
+      ],
+      "taken": 26,
+      "blocks": [
+        {
+          "turn": 7,
+          "reasons": [
+            "1 delayed trigger(s)"
+          ]
+        },
+        {
+          "turn": 8,
+          "reasons": [
+            "1 delayed trigger(s)"
+          ]
+        },
+        {
+          "turn": 9,
+          "reasons": [
+            "1 delayed trigger(s)"
+          ]
+        },
+        {
+          "turn": 10,
+          "reasons": [
+            "1 delayed trigger(s)"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -19,18 +19,18 @@
     "oracleIds": 30784
   },
   "counts": {
-    "runtimeDefinitions": 22541,
+    "runtimeDefinitions": 22589,
     "genericOracleCards": 18800,
     "genericBatches": 188,
     "manualOracleCards": 58,
-    "legacyDefinitions": 3683,
+    "legacyDefinitions": 3731,
     "individuallyReviewedLegacyDefinitions": 18,
-    "deckImportEligibleDefinitions": 22541,
+    "deckImportEligibleDefinitions": 22589,
     "deckImportRestrictedDefinitions": 0,
-    "representedUniverseOracleIds": 22512,
-    "remainingUniverseOracleIds": 8272,
+    "representedUniverseOracleIds": 22560,
+    "remainingUniverseOracleIds": 8224,
     "parserEligibleUnimported": 2,
-    "deferred": 8270,
+    "deferred": 8222,
     "runtimeEntriesWithoutSnapshotMatch": 17,
     "runtimeEntriesOutsideComparisonUniverse": 10
   },
@@ -38,7 +38,7 @@
     "adventure-needs-complete-face-semantics": 36,
     "backup-grant-needs-semantics": 2,
     "backup-other-rules-unsupported": 1,
-    "complex-layout": 112,
+    "complex-layout": 110,
     "conflicting-hand-abilities": 1,
     "double-faced-card-needs-complete-back-semantics": 30,
     "double-faced-card-needs-complete-front-semantics": 230,
@@ -48,13 +48,13 @@
     "land-needs-explicit-semantics": 109,
     "leveler-band-needs-complete-semantics": 2,
     "mana-ability-needs-explicit-semantics": 16,
-    "noncreature-needs-explicit-semantics": 1830,
-    "oracle-needs-explicit-semantics": 3520,
+    "noncreature-needs-explicit-semantics": 1822,
+    "oracle-needs-explicit-semantics": 3495,
     "overload-body-needs-complete-semantics": 7,
     "requires-import-and-executable-proof": 2,
     "saga-chapter-needs-complete-semantics": 79,
     "saga-other-rules-unsupported": 2,
-    "spell-needs-explicit-semantics": 2026,
+    "spell-needs-explicit-semantics": 2020,
     "split-needs-complete-face-semantics": 25,
     "transform-land-face-transition-needs-proof": 4,
     "unbound-X": 1,
@@ -64,7 +64,7 @@
     "unbound-target-X": 6,
     "unbound-target-damage-source": 19,
     "unsupported-adventure-face-types": 16,
-    "unsupported-mana-cost": 48,
+    "unsupported-mana-cost": 41,
     "unsupported-split-faces": 22
   },
   "parserEligibleUnimportedNames": [
@@ -213,11 +213,11 @@
     "Vow of Lightning"
   ],
   "classifierVersion": 9,
-  "classifierFilesSha256": "4c9ed354b2b0f1d1ebdf73c0b361644c9857acf76536f3e5a39a85c811b782a5",
-  "inputFilesSha256": "9321368e6c452cc6a16cf771c742b3152fe3d6ee2f82f8e182464f2dace534ce",
+  "classifierFilesSha256": "332f2a866009b27b8496f11c4f3ff13147ba13e55b115d58b68ea5025530af7d",
+  "inputFilesSha256": "db98c1e55185d343e4fb50e2947fa98cbc35c1fe5d20dc192e22355340f4179c",
   "artifactSha256": {
-    "docs/catalog/imported-cards.csv": "71bee45c37c395e0a34aa9b28ff40658c373b21d16e817ee69a74a30d85ce151",
-    "docs/catalog/remaining-cards.csv": "ff7a687b3c5ee4fcc961c9d8781641e1b868af72be8ce95e25bee66192b6a4cc"
+    "docs/catalog/imported-cards.csv": "ad9d95f4bc10daee08379b4252bfeb23eb00e5b26cf89ebfa8f5d9e56382cb28",
+    "docs/catalog/remaining-cards.csv": "438d6ec42cf72a0455499de85fef76864a92e283dffbe8991d55ea0ec1116f29"
   },
   "notes": [
     "Names and face names associate legacy definitions with the pinned feed; these associations do not verify exact Oracle semantics or every face.",
