@@ -3,6 +3,143 @@
 var MTG = globalThis.MTG || (globalThis.MTG = {});
 (function () {
   MTG.DECK_GUIDE_ROUTES = Object.freeze({
+  "c13Derevi": [
+    {
+      "label": "Early game",
+      "title": "Set up your mana",
+      "text": "Develop mana creatures and evasive attackers."
+    },
+    {
+      "label": "Midgame",
+      "title": "Build your advantage",
+      "text": "Use combat hits to tap blockers or untap your mana and utility permanents."
+    },
+    {
+      "label": "Endgame",
+      "title": "Finish the game",
+      "text": "Keep opponents off balance while your flyers finish the game."
+    }
+  ],
+  "c13Prossh": [
+    {
+      "label": "Early game",
+      "title": "Set up your mana",
+      "text": "Fix colors and ramp toward Prossh."
+    },
+    {
+      "label": "Midgame",
+      "title": "Build your advantage",
+      "text": "Turn Kobolds and other tokens into sacrifice value and card advantage."
+    },
+    {
+      "label": "Endgame",
+      "title": "Finish the game",
+      "text": "Attack with a large flying commander or a wide token army."
+    }
+  ],
+  "c13Oloro": [
+    {
+      "label": "Early game",
+      "title": "Set up your mana",
+      "text": "Use Oloro’s command-zone life gain to support a defensive opening."
+    },
+    {
+      "label": "Midgame",
+      "title": "Build your advantage",
+      "text": "Deploy repeatable life-gain payoffs and use removal to control threats."
+    },
+    {
+      "label": "Endgame",
+      "title": "Finish the game",
+      "text": "Convert your extra cards and life into a resilient late-game board."
+    }
+  ],
+  "c13Jeleva": [
+    {
+      "label": "Early game",
+      "title": "Set up your mana",
+      "text": "Fix your three colors and establish card advantage."
+    },
+    {
+      "label": "Midgame",
+      "title": "Build your advantage",
+      "text": "Cast Jeleva to exile spells, then attack to cast a linked instant or sorcery for free."
+    },
+    {
+      "label": "Endgame",
+      "title": "Finish the game",
+      "text": "Use powerful spells and evasive creatures to outlast the table."
+    }
+  ],
+  "c13Marath": [
+    {
+      "label": "Early game",
+      "title": "Set up your mana",
+      "text": "Ramp and fix colors before playing your large creatures."
+    },
+    {
+      "label": "Midgame",
+      "title": "Build your advantage",
+      "text": "Spend Marath’s counters on removal, creature growth, or Elemental tokens."
+    },
+    {
+      "label": "Endgame",
+      "title": "Finish the game",
+      "text": "Overwhelm blockers with large trampling threats."
+    }
+  ],
+  "sldAngels": [
+    {
+      "label": "Early game",
+      "title": "Set up your mana",
+      "text": "Develop Plains and mana rocks while gaining life."
+    },
+    {
+      "label": "Midgame",
+      "title": "Build your advantage",
+      "text": "Build an Angel board and use life-gain payoffs to strengthen it."
+    },
+    {
+      "label": "Endgame",
+      "title": "Finish the game",
+      "text": "Attack through the air or meld Gisela and Bruna into Brisela."
+    }
+  ],
+  "td0Rubinia": [
+    {
+      "label": "Early game",
+      "title": "Set up your mana",
+      "text": "Fix colors and use enchantments to build incremental advantage."
+    },
+    {
+      "label": "Midgame",
+      "title": "Build your advantage",
+      "text": "Borrow opposing creatures with Rubinia while protecting your important permanents."
+    },
+    {
+      "label": "Endgame",
+      "title": "Finish the game",
+      "text": "Win with enhanced creatures and a board shaped by your control effects."
+    }
+  ],
+  "td0Xira": [
+    {
+      "label": "Early game",
+      "title": "Set up your mana",
+      "text": "Develop all three colors and trade creatures profitably."
+    },
+    {
+      "label": "Midgame",
+      "title": "Build your advantage",
+      "text": "Use Xira to draw cards and recover creatures from your graveyard."
+    },
+    {
+      "label": "Endgame",
+      "title": "Finish the game",
+      "text": "Reuse your strongest creatures while removal clears the way."
+    }
+  ]
+,
 
   "cslGoblins": [
     {
@@ -786,12 +923,125 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   });
 
   MTG.DECK_GUIDES = Object.freeze({
+  "Evasive Maneuvers": {
+    "route": "c13Derevi",
+    "pace": "Build and attack",
+    "complexity": "Advanced",
+    "theme": "Evasive creatures turn combat damage into repeated tapping and untapping.",
+    "plan": "Develop mana creatures and evasive attackers. Use combat hits to tap blockers or untap your mana and utility permanents. Keep opponents off balance while your flyers finish the game.",
+    "mulligan": "Keep three lands, color fixing, and a cheap creature.",
+    "tip": "Derevi’s command-zone ability is an activated ability and does not increase commander tax.",
+    "keys": [
+      "Derevi, Empyrial Tactician",
+      "Roon of the Hidden Realm",
+      "Rubinia Soulsinger"
+    ]
+  },
+  "Power Hungry": {
+    "route": "c13Prossh",
+    "pace": "Build and attack",
+    "complexity": "Intermediate",
+    "theme": "Create expendable creature tokens and sacrifice them for cards, damage, and power.",
+    "plan": "Fix colors and ramp toward Prossh. Turn Kobolds and other tokens into sacrifice value and card advantage. Attack with a large flying commander or a wide token army.",
+    "mulligan": "Keep three lands, ramp, and a sacrifice payoff.",
+    "tip": "Prossh creates tokens when cast, even if the creature spell is countered.",
+    "keys": [
+      "Prossh, Skyraider of Kher",
+      "Endrek Sahr, Master Breeder",
+      "Primal Vigor"
+    ]
+  },
+  "Eternal Bargain": {
+    "route": "c13Oloro",
+    "pace": "Accumulate value",
+    "complexity": "Intermediate",
+    "theme": "Build a defensive board while life gain fuels card draw and creature growth.",
+    "plan": "Use Oloro’s command-zone life gain to support a defensive opening. Deploy repeatable life-gain payoffs and use removal to control threats. Convert your extra cards and life into a resilient late-game board.",
+    "mulligan": "Keep three lands, fixing, and early defense or card draw.",
+    "tip": "Oloro’s card-draw ability works only while he is on the battlefield.",
+    "keys": [
+      "Oloro, Ageless Ascetic",
+      "Cradle of Vitality",
+      "Serene Master"
+    ]
+  },
+  "Mind Seize": {
+    "route": "c13Jeleva",
+    "pace": "Accumulate value",
+    "complexity": "Advanced",
+    "theme": "Use opposing libraries and your own spells to generate lasting card advantage.",
+    "plan": "Fix your three colors and establish card advantage. Cast Jeleva to exile spells, then attack to cast a linked instant or sorcery for free. Use powerful spells and evasive creatures to outlast the table.",
+    "mulligan": "Keep three lands, fixing, and interaction; avoid too many expensive spells.",
+    "tip": "Jeleva can cast only cards exiled by that battlefield incarnation.",
+    "keys": [
+      "Jeleva, Nephalia's Scourge",
+      "Nekusar, the Mindrazer",
+      "Baleful Force"
+    ]
+  },
+  "Nature of the Beast": {
+    "route": "c13Marath",
+    "pace": "Build and attack",
+    "complexity": "Advanced",
+    "theme": "Ramp into large creatures while Marath turns counters into flexible effects.",
+    "plan": "Ramp and fix colors before playing your large creatures. Spend Marath’s counters on removal, creature growth, or Elemental tokens. Overwhelm blockers with large trampling threats.",
+    "mulligan": "Keep three lands, ramp, and an early creature.",
+    "tip": "Marath enters with counters equal to mana actually spent; each activation requires X greater than zero.",
+    "keys": [
+      "Marath, Will of the Wild",
+      "Naya Soulbeast",
+      "Spellbreaker Behemoth"
+    ]
+  },
+  "Angels: They're Just Like Us but Cooler and with Wings": {
+    "route": "sldAngels",
+    "pace": "Build and attack",
+    "complexity": "Intermediate",
+    "theme": "Build a flying Angel army supported by life gain, recursion, and the meld pair.",
+    "plan": "Develop Plains and mana rocks while gaining life. Build an Angel board and use life-gain payoffs to strengthen it. Attack through the air or meld Gisela and Bruna into Brisela.",
+    "mulligan": "Keep three lands, ramp, and an affordable Angel.",
+    "tip": "Melding requires you to own and control both actual Gisela and Bruna cards.",
+    "keys": [
+      "Gisela, the Broken Blade",
+      "Bruna, the Fading Light",
+      "Righteous Valkyrie"
+    ]
+  },
+  "Enchantress Rubinia": {
+    "route": "td0Rubinia",
+    "pace": "Accumulate value",
+    "complexity": "Advanced",
+    "theme": "Combine enchantment value with borrowed creatures and protective interaction.",
+    "plan": "Fix colors and use enchantments to build incremental advantage. Borrow opposing creatures with Rubinia while protecting your important permanents. Win with enhanced creatures and a board shaped by your control effects.",
+    "mulligan": "Keep three lands, fixing, and a useful early enchantment or creature.",
+    "tip": "Rubinia’s control effect ends if she untaps or leaves the battlefield.",
+    "keys": [
+      "Rubinia Soulsinger",
+      "Sterling Grove",
+      "Empyrial Armor"
+    ]
+  },
+  "Deathdancer Xira": {
+    "route": "td0Xira",
+    "pace": "Accumulate value",
+    "complexity": "Advanced",
+    "theme": "Trade resources, draw with Xira, and recover powerful creatures from the graveyard.",
+    "plan": "Develop all three colors and trade creatures profitably. Use Xira to draw cards and recover creatures from your graveyard. Reuse your strongest creatures while removal clears the way.",
+    "mulligan": "Keep three lands, fixing, and early removal or ramp.",
+    "tip": "All Hallow’s Eve returns creatures for every player; plan around opposing graveyards.",
+    "keys": [
+      "Xira Arien",
+      "Genesis",
+      "All Hallow's Eve"
+    ]
+  }
+,
 
   "Goblin Storm": {
     "route": "cslGoblins",
     "pace": "Explosive turns",
     "complexity": "Advanced",
-    "theme": "Goblin spells and tokens",
+    "theme": "Goblin tokens support copied cantrips, pump spells, and explosive attacks.",
     "plan": "Play cheap Goblins and create a wide board before committing Zada. Target Zada with a cantrip or pump spell to copy it for every other eligible creature. Chain draw spells and rituals into a large attack or a damage payoff.",
     "mulligan": "Keep two or three Mountains, early Goblins, and a cheap draw spell.",
     "tip": "A spell must target only Zada to trigger it. Creature removal can interrupt your chain.",
@@ -805,7 +1055,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     "route": "cslMiku",
     "pace": "Build and attack",
     "complexity": "Intermediate",
-    "theme": "Tokens and lifegain",
+    "theme": "Build creature tokens, gain life from their entry, and populate the strongest.",
     "plan": "Ramp, gain life, and establish repeatable token production. Use Trostani to gain life from creature entries and populate your strongest token. Convert life gains into counters and attack with a large, resilient army.",
     "mulligan": "Keep three lands, green fixing, ramp, and an early creature or token maker.",
     "tip": "Populate copies one creature token you control. A large token gives much more value than a small one.",
@@ -819,7 +1069,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     "route": "cmdCounters",
     "pace": "Build and attack",
     "complexity": "Advanced",
-    "theme": "Counters and sacrifice",
+    "theme": "Move between creature tokens and counters to fuel sacrifice and growth.",
     "plan": "Fix all three colors and play mana creatures or token makers. Use Ghave to turn counters into Saprolings and sacrifice creatures to place counters. Build a wide board, recover creatures, and finish with your largest threats.",
     "mulligan": "Keep three lands with color fixing, ramp, and a creature that adds counters or tokens.",
     "tip": "Ghave needs mana for each activation. Leave mana open to respond to removal.",
@@ -833,7 +1083,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     "route": "cmdCopies",
     "pace": "Accumulate value",
     "complexity": "Advanced",
-    "theme": "Creature and spell copies",
+    "theme": "Pay extra mana to copy creatures and spells, multiplying their strongest effects.",
     "plan": "Ramp and fix colors before deploying your expensive value creatures. With Riku in play, save extra mana to copy an entering creature or a useful spell. Multiply powerful entry effects, then attack with the board you have built.",
     "mulligan": "Keep three lands and ramp; avoid hands crowded with expensive creatures.",
     "tip": "Riku uses different colors for creature and spell copies. Plan both the original cost and the copy payment.",
@@ -847,7 +1097,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     "route": "cmdPolitics",
     "pace": "Accumulate value",
     "complexity": "Advanced",
-    "theme": "Donations and control",
+    "theme": "Donate permanents, collect cards and life, and control the table\u2019s threats.",
     "plan": "Fix mana and discourage early attacks while preparing Zedruu. Donate suitable permanents and collect cards and life from the ones opponents control. Use your extra cards and control effects to build a decisive board.",
     "mulligan": "Keep three lands, a mana rock, and an early defensive play.",
     "tip": "Zedruu counts permanents you own that opponents control. Giving away your best threat is rarely necessary.",
@@ -861,7 +1111,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     "route": "cmdKaalia",
     "pace": "Build and attack",
     "complexity": "Intermediate",
-    "theme": "Angels, Demons and Dragons",
+    "theme": "Kaalia puts powerful Angels, Demons, and Dragons directly into combat.",
     "plan": "Fix mana and remove blockers before casting Kaalia. Attack an opponent with Kaalia and put a large Angel, Demon, or Dragon into combat. Use successive attack triggers and evasive threats to close the game.",
     "mulligan": "Keep three lands with all colors, ramp or protection, and one large creature.",
     "tip": "A creature put onto the battlefield attacking does not trigger its own when-this-attacks ability.",
@@ -875,7 +1125,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     "route": "cmdGrave",
     "pace": "Accumulate value",
     "complexity": "Advanced",
-    "theme": "Graveyard creatures",
+    "theme": "Fill graveyards and combine large creatures with powerful copied abilities.",
     "plan": "Ramp, draw, and mill to provide creatures for The Mimeoplasm. Copy the creature with the best abilities and use another creature for extra counters. Reuse graveyard resources and pressure opponents with large evasive creatures.",
     "mulligan": "Keep three lands, ramp, and a way to draw or fill a graveyard.",
     "tip": "The Mimeoplasm exiles two creature cards. Preserve useful targets until you can cast it.",

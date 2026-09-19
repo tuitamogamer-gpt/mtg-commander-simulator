@@ -1,0 +1,106 @@
+{
+  "baseline": "ffc96c3",
+  "passed": true,
+  "originalPhysicalCards": 800,
+  "uniqueNames": 524,
+  "sourceLists": [
+    {
+      "name": "Evasive Maneuvers",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/making-magic/all-five-commander-decklists-2013-10-18",
+        "https://mtgjson.com/api/v5/decks/EvasiveManeuvers_C13.json"
+      ],
+      "exportSha256": "5adc5bf891741e8bd3d4cf2454c688804145e60afd06fbe5ca2fcdced6b5858b"
+    },
+    {
+      "name": "Power Hungry",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/making-magic/all-five-commander-decklists-2013-10-18",
+        "https://mtgjson.com/api/v5/decks/PowerHungry_C13.json"
+      ],
+      "exportSha256": "0e63a8ccd2349e124581b8c1f154e76c941d1822d51d9b9e02f691a2a7185096"
+    },
+    {
+      "name": "Eternal Bargain",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/making-magic/all-five-commander-decklists-2013-10-18",
+        "https://mtgjson.com/api/v5/decks/EternalBargain_C13.json"
+      ],
+      "exportSha256": "16840f7015b508f7404459bade0103b9f2139177ac8ee5a25b47d47b171d39de"
+    },
+    {
+      "name": "Mind Seize",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/making-magic/all-five-commander-decklists-2013-10-18",
+        "https://mtgjson.com/api/v5/decks/MindSeize_C13.json"
+      ],
+      "exportSha256": "6e35e8fcc0898dfd7d3b5e7fa414224d29504c1713f00a6cb79d5d259f611906"
+    },
+    {
+      "name": "Nature of the Beast",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/making-magic/all-five-commander-decklists-2013-10-18",
+        "https://mtgjson.com/api/v5/decks/NatureOfTheBeast_C13.json"
+      ],
+      "exportSha256": "8d07d2e5967f465631b6b608d9bed19f7a8c796ed0ff07531af3aa9e0bc7c65f"
+    },
+    {
+      "name": "Angels: They're Just Like Us but Cooler and with Wings",
+      "total": 100,
+      "independentSources": [
+        "https://magic.wizards.com/en/news/announcements/secret-lairs-next-commander-deck-takes-flight",
+        "https://mtgjson.com/api/v5/decks/AngelsTheyReJustLikeUsButCoolerAndWithWings_SLD.json"
+      ],
+      "exportSha256": "67175a6de74d71c386c98363144ed8d7e105da422b661554fd7369d6f98fa032"
+    },
+    {
+      "name": "Enchantress Rubinia",
+      "total": 100,
+      "independentSources": [
+        "https://mtgjson.com/api/v5/decks/EnchantressRubinia_TD0.json"
+      ],
+      "exportSha256": "64f36b5472964d11a4a1d37402acc5ca06990a4f4a990197657996ee66c1a06a"
+    },
+    {
+      "name": "Deathdancer Xira",
+      "total": 100,
+      "independentSources": [
+        "https://mtgjson.com/api/v5/decks/DeathdancerXira_TD0.json"
+      ],
+      "exportSha256": "0ccbb8953e4fded93105729fffce3f2e82abef38842c2ce265ce2307787f1208"
+    }
+  ],
+  "existingRawDefinitionsPreserved": 3810,
+  "existingRawDeckRecordsPreserved": 161,
+  "nativeRawDefinitions": 3891,
+  "existingImageMappingsPreserved": 6518,
+  "existingCommanderCropsPreserved": 169,
+  "existingTrackedAssetsUnchanged": true,
+  "addedWebPFiles": 246,
+  "allNewImageDigestsMatch": true,
+  "idempotentDataSha256": "f48902aa0e55c883ba12eea8cf32b8343f1ef8a3801d1c2b67209639462ab9d7",
+  "retainedOracleDifferences": [
+    {
+      "name": "Boros Garrison",
+      "existingOracle": "Boros Garrison enters tapped.\nWhen Boros Garrison enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "pinnedOracle": "This land enters tapped.\nWhen this land enters, return a land you control to its owner's hand.\n{T}: Add {R}{W}.",
+      "preserved": true
+    },
+    {
+      "name": "Seal of Cleansing",
+      "existingOracle": "Sacrifice Seal of Cleansing: Destroy target artifact or enchantment.",
+      "pinnedOracle": "Sacrifice this enchantment: Destroy target artifact or enchantment.",
+      "preserved": true
+    }
+  ],
+  "current": {
+    "decks": 168,
+    "definitions": 22749,
+    "eligible": 22748
+  }
+}

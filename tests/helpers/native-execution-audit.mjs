@@ -66,6 +66,12 @@ export async function auditNativeCard(MTG, name, role) {
     player.isAI = true;
     player.controller = new MTG.AIController(player, { difficulty: 'hard', style: 'balanced' });
   }
+  if (name === "Lim-Dûl's Vault" && role !== 'ai') {
+    const decide = player.controller.decide.bind(player.controller);
+    let repeats = 0;
+    player.controller.decide = (g, q) => q.aiHint?.kind === 'c13Vault'
+      ? Promise.resolve(repeats++ < 1 ? 'yes' : 'no') : decide(g, q);
+  }
   game.turnPlayer = player;
   game.turnNo = 8;
   game.phase = 'main1';
@@ -107,16 +113,17 @@ export async function auditNativeCard(MTG, name, role) {
   const incomingSpell = (subject.is('Instant') || subject.is('Sorcery')) && (/counter target (?:\w+ )*spell/i.test(oracle) || /\btarget (?:[a-z/-]+(?:,)? ){0,7}spell\b/i.test(oracle));
   if (incomingSpell) {
     const spellOwner = name === 'Increasing Vengeance' ? player : opponent;
-    const spell = put(MTG, game, spellOwner, 'Lightning Bolt', 'hand');
+    const incomingName = /counter target creature spell/i.test(oracle) ? 'Wind Drake' : 'Lightning Bolt';
+    const spell = put(MTG, game, spellOwner, incomingName, 'hand');
     const controller = opponent.controller;
     opponent.controller = { decide: async (g, q) => q.type === 'chooseTargets'
       ? q.candidates.filter(card => card.zone === 'battlefield' && card.ctrl === player).slice(0, q.min ?? 1)
       : controller.decide(g, q) };
     game.turnPlayer = opponent;
-    assert.equal(await game.castSpell(spellOwner, spell, { from: 'hand' }), true, 'Incoming Lightning Bolt is actually cast');
+    assert.equal(await game.castSpell(spellOwner, spell, { from: 'hand' }), true, 'Incoming '+incomingName+' is actually cast');
     opponent.controller = controller;
     game.turnPlayer = player;
-    prerequisites.push('Actual '+(spellOwner===player?'own':'opponent')+' Lightning Bolt supplies a Stack target.');
+    prerequisites.push('Actual '+(spellOwner===player?'own':'opponent')+' '+incomingName+' supplies a Stack target.');
   }
   const complete = async (action, manaSpent, transitions = 0) => {
     transitions += await settle(game);

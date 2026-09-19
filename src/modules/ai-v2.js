@@ -198,6 +198,87 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   MTG.AI_CARD_ROLE_OVERRIDES = CARD_ROLE_OVERRIDES;
 
   const DECK_PROFILE_HINTS = {
+  "Evasive Maneuvers": {
+    "archetype": "Tempo and untap",
+    "length": "medium",
+    "tags": [
+      "tempo",
+      "tokens",
+      "control"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Power Hungry": {
+    "archetype": "Tokens and sacrifice",
+    "length": "medium",
+    "tags": [
+      "tokens",
+      "sacrifice",
+      "ramp"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Eternal Bargain": {
+    "archetype": "Lifegain and control",
+    "length": "long",
+    "tags": [
+      "lifegain",
+      "control",
+      "draw"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Mind Seize": {
+    "archetype": "Exiled spells and control",
+    "length": "long",
+    "tags": [
+      "spellslinger",
+      "control",
+      "draw"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Nature of the Beast": {
+    "archetype": "Counters and large creatures",
+    "length": "medium",
+    "tags": [
+      "counters",
+      "ramp",
+      "tokens"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Angels: They're Just Like Us but Cooler and with Wings": {
+    "archetype": "Angels and lifegain",
+    "length": "medium",
+    "tags": [
+      "lifegain",
+      "aggro",
+      "reanimator"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Enchantress Rubinia": {
+    "archetype": "Enchantments and creature control",
+    "length": "long",
+    "tags": [
+      "control",
+      "enchantments",
+      "draw"
+    ],
+    "commanderImportance": 1.8
+  },
+  "Deathdancer Xira": {
+    "archetype": "Graveyard value and removal",
+    "length": "long",
+    "tags": [
+      "reanimator",
+      "control",
+      "draw"
+    ],
+    "commanderImportance": 1.8
+  }
+,
 
   "Goblin Storm": {
     "archetype": "Goblin spells and tokens",
@@ -4919,7 +5000,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
     } else if (action.kind === 'chooseOption') {
       const hintKind = q && q.aiHint && q.aiHint.kind;
-      if(hintKind==='tradeSecrets'){
+      if(hintKind==='c13Vault'){
+        breakdown.choice=action.value==='no'?10:0;
+      } else if(hintKind==='tradeSecrets'){
         breakdown.choice=action.value===(player.hand.length<7&&player.library.length>4?'yes':'no')?10:0;
       } else if(hintKind==='recover-v9'){
         breakdown.choice=action.value===(game.canPayMana(player,MTG.parseCost(q.aiHint.cost))?'yes':'no')?10:0;

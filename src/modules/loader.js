@@ -23,6 +23,93 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     }
     // deck meta (blurbs & archetypes for UI/AI)
     MTG.DECK_META = {
+  "Evasive Maneuvers": {
+    "icon": "⚔",
+    "colors": [
+      "W",
+      "U",
+      "G"
+    ],
+    "style": "Tempo and untap",
+    "set": "Commander (2013)",
+    "blurb": "Use combat hits to tap blockers or untap your mana and utility permanents."
+  },
+  "Power Hungry": {
+    "icon": "⚔",
+    "colors": [
+      "B",
+      "R",
+      "G"
+    ],
+    "style": "Tokens and sacrifice",
+    "set": "Commander (2013)",
+    "blurb": "Turn Kobolds and other tokens into sacrifice value and card advantage."
+  },
+  "Eternal Bargain": {
+    "icon": "⚔",
+    "colors": [
+      "W",
+      "U",
+      "B"
+    ],
+    "style": "Lifegain and control",
+    "set": "Commander (2013)",
+    "blurb": "Deploy repeatable life-gain payoffs and use removal to control threats."
+  },
+  "Mind Seize": {
+    "icon": "⚔",
+    "colors": [
+      "U",
+      "B",
+      "R"
+    ],
+    "style": "Exiled spells and control",
+    "set": "Commander (2013)",
+    "blurb": "Cast Jeleva to exile spells, then attack to cast a linked instant or sorcery for free."
+  },
+  "Nature of the Beast": {
+    "icon": "⚔",
+    "colors": [
+      "W",
+      "R",
+      "G"
+    ],
+    "style": "Counters and large creatures",
+    "set": "Commander (2013)",
+    "blurb": "Spend Marath’s counters on removal, creature growth, or Elemental tokens."
+  },
+  "Angels: They're Just Like Us but Cooler and with Wings": {
+    "icon": "⚔",
+    "colors": [
+      "W"
+    ],
+    "style": "Angels and lifegain",
+    "set": "Secret Lair Commander",
+    "blurb": "Build an Angel board and use life-gain payoffs to strengthen it."
+  },
+  "Enchantress Rubinia": {
+    "icon": "⚔",
+    "colors": [
+      "W",
+      "U",
+      "G"
+    ],
+    "style": "Enchantments and creature control",
+    "set": "MTGO Commander (2009)",
+    "blurb": "Borrow opposing creatures with Rubinia while protecting your important permanents."
+  },
+  "Deathdancer Xira": {
+    "icon": "⚔",
+    "colors": [
+      "B",
+      "R",
+      "G"
+    ],
+    "style": "Graveyard value and removal",
+    "set": "MTGO Commander (2009)",
+    "blurb": "Use Xira to draw cards and recover creatures from your graveyard."
+  }
+,
 
   "Goblin Storm": {
     "icon": "✦",

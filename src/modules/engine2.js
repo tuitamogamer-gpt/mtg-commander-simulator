@@ -1680,12 +1680,13 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
         actualProduced[col] = (actualProduced[col] || 0) + chosen[col];
       }
     }
-    if (s.m.restrict||s.m.pomCopyMana||s.m.cslHasteMana||c.hasSub('Desert')||c.hasSub('Treasure')) {
+    if (s.m.restrict||s.m.pomCopyMana||s.m.cslHasteMana||c.cur?.super?.includes('Snow')||c.hasSub('Desert')||c.hasSub('Treasure')) {
       p.poolMeta = p.poolMeta || [];
       for (const [color, n] of Object.entries(actualProduced)) {
         if (!(Number(n) > 0)) continue;
         p.poolMeta.push({
           color, n, restrict: s.m.restrict, source: c, c21Goggles:!!s.m.c21Goggles, cdkBiophagus:!!s.m.cdkBiophagus, pomCopyMana:!!s.m.pomCopyMana,cslHasteMana:!!s.m.cslHasteMana,pomDesertMana:c.hasSub('Desert'),pomTreasureMana:c.hasSub('Treasure'),
+          c13Snow: !!c.cur?.super?.includes('Snow'),
           restrictAbilities: !!s.m.restrictAbilities,
           coloredOnly: !!s.m.coloredOnly, persist: !!s.m.persist,
         });
@@ -3392,6 +3393,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     so.pomDesertMana=paySpell.pomDesertMana||0;so.pomCopyMana=paySpell.pomCopyMana||0;so.cslHasteMana=paySpell.cslHasteMana||0;
     so.manaSpent = paySpell.manaSpent || 0;
     so.paymentColorCounts={...(paySpell.paymentColorCounts||{})};
+    so.snowSpent = paySpell.c13SnowSpent || 0;
     so.grantedSunburstColors = 0;
     if (p.sunburstGrant && p.sunburstGrant.turn === this.turnNo) {
       if (this.castHasType(card, castOpts, 'Artifact')) so.grantedSunburstColors = (card.meta._payColors || []).length;
@@ -5681,6 +5683,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       });
       if (!ok) { if (cost.tap) c.tapped = false; return false; }
       ctx.pomTreasureMana=abilityPayment.pomTreasureMana||0;ctx.pomCopyMana=abilityPayment.pomCopyMana||0;
+      ctx.paymentColorCounts = {...abilityPayment.paymentColorCounts};
+      ctx.c13SnowColors = {...abilityPayment.c13SnowColors};
       ctx.cdkPhyLife=2*(abilityPayment.phyrexianLifePaid||0);
     }
     if(cost.energy&&!MTG.OracleV8Energy.spend(this,p,cost.energy,c))return false;
@@ -6979,6 +6983,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       }
       this.pruneBlockDeclaration(atks);
       this.completeRequiredBlocks(atks, potential);
+      if (this.c13PayBlockTaxes) await this.c13PayBlockTaxes(atks, dp);
+      this.pruneBlockDeclaration(atks);
       // CR 509.1h: jednom blokiran — uvijek blokiran. Ostaje blokiran i ako mu
       // svi blokeri kasnije nestanu (ubijeni first strikeom, bounceovani…),
       // pa u tom slučaju ne nanosi štetu igraču (osim ako ima trample).

@@ -19,45 +19,44 @@
     "oracleIds": 30784
   },
   "counts": {
-    "runtimeDefinitions": 22668,
+    "runtimeDefinitions": 22749,
     "genericOracleCards": 18800,
     "genericBatches": 188,
     "manualOracleCards": 58,
-    "legacyDefinitions": 3810,
+    "legacyDefinitions": 3891,
     "individuallyReviewedLegacyDefinitions": 18,
-    "deckImportEligibleDefinitions": 22668,
-    "deckImportRestrictedDefinitions": 0,
-    "representedUniverseOracleIds": 22634,
-    "remainingUniverseOracleIds": 8150,
+    "deckImportEligibleDefinitions": 22748,
+    "deckImportRestrictedDefinitions": 1,
+    "representedUniverseOracleIds": 22704,
+    "remainingUniverseOracleIds": 8080,
     "parserEligibleUnimported": 2,
-    "deferred": 8148,
+    "deferred": 8078,
     "runtimeEntriesWithoutSnapshotMatch": 17,
-    "runtimeEntriesOutsideComparisonUniverse": 15
+    "runtimeEntriesOutsideComparisonUniverse": 26
   },
   "remainingByReason": {
     "adventure-needs-complete-face-semantics": 36,
     "backup-grant-needs-semantics": 2,
     "backup-other-rules-unsupported": 1,
-    "complex-layout": 108,
+    "complex-layout": 105,
     "conflicting-hand-abilities": 1,
     "double-faced-card-needs-complete-back-semantics": 30,
     "double-faced-card-needs-complete-front-semantics": 230,
     "double-faced-card-needs-face-transition-semantics": 48,
     "dynamic-power-toughness": 27,
     "event-stat-condition-needs-binding": 1,
-    "land-needs-explicit-semantics": 106,
+    "land-needs-explicit-semantics": 104,
     "leveler-band-needs-complete-semantics": 2,
     "mana-ability-needs-explicit-semantics": 16,
-    "noncreature-needs-explicit-semantics": 1814,
-    "oracle-needs-explicit-semantics": 3457,
+    "noncreature-needs-explicit-semantics": 1791,
+    "oracle-needs-explicit-semantics": 3431,
     "overload-body-needs-complete-semantics": 7,
     "requires-import-and-executable-proof": 2,
     "saga-chapter-needs-complete-semantics": 78,
     "saga-other-rules-unsupported": 2,
-    "spell-needs-explicit-semantics": 1999,
+    "spell-needs-explicit-semantics": 1984,
     "split-needs-complete-face-semantics": 25,
     "transform-land-face-transition-needs-proof": 4,
-    "unbound-X": 1,
     "unbound-event-amount": 8,
     "unbound-event-reference": 40,
     "unbound-sacrificed-stat": 2,
@@ -92,6 +91,46 @@
   ],
   "runtimeNamesOutsideComparisonUniverse": [
     {
+      "name": "All Hallow's Eve",
+      "sourceName": "All Hallow's Eve",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Anarchist",
+      "sourceName": "Anarchist",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Ashes to Ashes",
+      "sourceName": "Ashes to Ashes",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Baleful Force",
+      "sourceName": "Baleful Force",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Capsize",
+      "sourceName": "Capsize",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
       "name": "Coastal Tower",
       "sourceName": "Coastal Tower",
       "sourceCommanderLegality": "legal",
@@ -117,6 +156,22 @@
       ]
     },
     {
+      "name": "Empyrial Armor",
+      "sourceName": "Empyrial Armor",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Famine",
+      "sourceName": "Famine",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
       "name": "Goblin Lackey",
       "sourceName": "Goblin Lackey",
       "sourceCommanderLegality": "legal",
@@ -127,6 +182,22 @@
     {
       "name": "Grafted Exoskeleton",
       "sourceName": "Grafted Exoskeleton",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Illusionary Mask",
+      "sourceName": "Illusionary Mask",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Jungle Lion",
+      "sourceName": "Jungle Lion",
       "sourceCommanderLegality": "legal",
       "sourceGames": [
         "mtgo"
@@ -173,8 +244,24 @@
       ]
     },
     {
+      "name": "Rootbreaker Wurm",
+      "sourceName": "Rootbreaker Wurm",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
       "name": "Spike Feeder",
       "sourceName": "Spike Feeder",
+      "sourceCommanderLegality": "legal",
+      "sourceGames": [
+        "mtgo"
+      ]
+    },
+    {
+      "name": "Stronghold Assassin",
+      "sourceName": "Stronghold Assassin",
       "sourceCommanderLegality": "legal",
       "sourceGames": [
         "mtgo"
@@ -232,7 +319,9 @@
       ]
     }
   ],
-  "runtimeNamesRestrictedFromDeckImport": [],
+  "runtimeNamesRestrictedFromDeckImport": [
+    "Brisela, Voice of Nightmares"
+  ],
   "runtimeNamesIndividuallyReviewedForDeckImport": [
     "Boros Reckoner",
     "Darien, King of Kjeldor",
@@ -254,11 +343,11 @@
     "Vow of Lightning"
   ],
   "classifierVersion": 9,
-  "classifierFilesSha256": "e1b9104a206cb5f48c41d3ed988d141eb3d5d629850ce8b73e7017a5fdc5b632",
-  "inputFilesSha256": "f234a1ba220005ee7fd927661f17ce236bcbec0dc0dd3490ba2bce6d565d1266",
+  "classifierFilesSha256": "dff66f0efccdcc2e33b70c4e8ec1bb1fd49eb9f0121a2faf7441e4a45b7b6415",
+  "inputFilesSha256": "ad05a46b4278cb3e86fb7708d1d250707f14815cbb5e014964b7fb0c704f66f8",
   "artifactSha256": {
-    "docs/catalog/imported-cards.csv": "1654e7c8049b3354d7417fd0023ff0d84c6b71844ecdc4e880a785afd7c419f8",
-    "docs/catalog/remaining-cards.csv": "8abb46936145c269023ba486727df83a6979e403a9e6abe62da3d41418c6d6dd"
+    "docs/catalog/imported-cards.csv": "06ee322e29e4255aa3732c2a82dfb82abe43cef7713234d5709dbdaea05dcfca",
+    "docs/catalog/remaining-cards.csv": "3fe5a380ec8a3f682ddfe624d987f2e913dc93425951955a1b887fa51c6070a6"
   },
   "notes": [
     "Names and face names associate legacy definitions with the pinned feed; these associations do not verify exact Oracle semantics or every face.",

@@ -1,0 +1,100 @@
+{
+  "results": [
+    {
+      "deck": "Evasive Maneuvers",
+      "opponents": [
+        "Power Hungry",
+        "Eternal Bargain",
+        "Mind Seize"
+      ],
+      "seed": 11234,
+      "turns": 57,
+      "winner": "You",
+      "passed": true
+    },
+    {
+      "deck": "Power Hungry",
+      "opponents": [
+        "Eternal Bargain",
+        "Mind Seize",
+        "Nature of the Beast"
+      ],
+      "seed": 11235,
+      "turns": 63,
+      "winner": "AI Dragon",
+      "passed": true
+    },
+    {
+      "deck": "Eternal Bargain",
+      "opponents": [
+        "Mind Seize",
+        "Nature of the Beast",
+        "Angels: They're Just Like Us but Cooler and with Wings"
+      ],
+      "seed": 11236,
+      "turns": 39,
+      "winner": "AI Raven",
+      "passed": true
+    },
+    {
+      "deck": "Mind Seize",
+      "opponents": [
+        "Nature of the Beast",
+        "Angels: They're Just Like Us but Cooler and with Wings",
+        "Enchantress Rubinia"
+      ],
+      "seed": 11237,
+      "turns": 45,
+      "winner": "AI Wolf",
+      "passed": true
+    },
+    {
+      "deck": "Nature of the Beast",
+      "opponents": [
+        "Angels: They're Just Like Us but Cooler and with Wings",
+        "Enchantress Rubinia",
+        "Deathdancer Xira"
+      ],
+      "seed": 11238,
+      "turns": 41,
+      "winner": "AI Dragon",
+      "passed": true
+    },
+    {
+      "deck": "Angels: They're Just Like Us but Cooler and with Wings",
+      "opponents": [
+        "Enchantress Rubinia",
+        "Deathdancer Xira",
+        "Evasive Maneuvers"
+      ],
+      "seed": 11239,
+      "turns": 79,
+      "winner": "AI Dragon",
+      "passed": true
+    },
+    {
+      "deck": "Enchantress Rubinia",
+      "opponents": [
+        "Deathdancer Xira",
+        "Evasive Maneuvers",
+        "Power Hungry"
+      ],
+      "seed": 11240,
+      "turns": 54,
+      "winner": "You",
+      "passed": true
+    },
+    {
+      "deck": "Deathdancer Xira",
+      "opponents": [
+        "Evasive Maneuvers",
+        "Power Hungry",
+        "Eternal Bargain"
+      ],
+      "seed": 11241,
+      "turns": 89,
+      "winner": "AI Raven",
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "schema": "precon-import-qa/v1",
+  "generatedAt": "2026-09-19T11:54:36.382Z",
+  "baseline": "ffc96c3",
+  "scope": {
+    "requestedDecks": 10,
+    "remainingDistinctPinnedDecks": 8,
+    "addedDecks": 8,
+    "physicalCards": 800,
+    "uniquePhysicalCardNames": 523,
+    "reusedCards": 443,
+    "newPhysicalCardNames": 80,
+    "supplementalMeldResult": "Brisela, Voice of Nightmares",
+    "newNativeDefinitions": 81,
+    "runtimeDecks": 168,
+    "runtimeDefinitions": 22749,
+    "importableDefinitions": 22748
+  },
+  "regression": {
+    "passed": 533,
+    "total": 533,
+    "failed": 0,
+    "newScenarios": 105,
+    "files": 20,
+    "log": "output/precon-c13-td0-sld-2026-09-19/regression-complete.log",
+    "fullNpmSuiteRun": false
+  },
+  "runtimeSmoke": {
+    "cards": 81,
+    "runtime-smoke-pass": 162,
+    "prerequisite-gap": 0,
+    "choice-gap": 0,
+    "error": 0,
+    "evidence": "runtime-smoke.json"
+  },
+  "browser": {
+    "passed": 16,
+    "widths": [
+      1440,
+      390
+    ],
+    "errors": [],
+    "desktopAndMobileScreenshotsInspected": true,
+    "log": "output/precon-c13-td0-sld-2026-09-19/browser-final.log"
+  },
+  "games": {
+    "passed": 8,
+    "maxTurns": 89,
+    "evidence": "headless.json",
+    "log": "output/precon-c13-td0-sld-2026-09-19/games-final.log"
+  },
+  "syntax": {
+    "passed": true,
+    "log": "output/precon-c13-td0-sld-2026-09-19/check.log"
+  },
+  "certification": {
+    "passed": true,
+    "decks": 168,
+    "cardDeckChecks": 14045,
+    "passedCardDeckChecks": 14045,
+    "failedCardDeckChecks": 0,
+    "uniqueCards": 6337,
+    "uniquePassed": 6337,
+    "uniqueFailed": 0,
+    "rawCards": 22749,
+    "rawPassed": 22749,
+    "rawFailed": 0,
+    "inactiveRawCards": 16412,
+    "inactiveRawPassed": 16412,
+    "inactiveRawFailed": 0,
+    "oracleBatchCards": 18858
+  },
+  "sourcePreservation": {
+    "passed": true,
+    "evidence": "source-validation.json"
+  },
+  "catalog": {
+    "passed": true,
+    "method": "Final exporter completed; independently recomputed current input fingerprint and every generated CSV SHA-256.",
+    "inputFiles": 894,
+    "inputFilesSha256": "ad05a46b4278cb3e86fb7708d1d250707f14815cbb5e014964b7fb0c704f66f8",
+    "artifactSha256": {
+      "docs/catalog/imported-cards.csv": "06ee322e29e4255aa3732c2a82dfb82abe43cef7713234d5709dbdaea05dcfca",
+      "docs/catalog/remaining-cards.csv": "3fe5a380ec8a3f682ddfe624d987f2e913dc93425951955a1b887fa51c6070a6"
+    },
+    "exportLog": "output/precon-c13-td0-sld-2026-09-19/catalog-final.log"
+  },
+  "sourceFileSha256": {
+    "src/data.js": "f48902aa0e55c883ba12eea8cf32b8343f1ef8a3801d1c2b67209639462ab9d7",
+    "src/card-images.js": "c4b1e32f3684c1e69808eb62abd55e68229bdd5c8833489385c6ea44b707fc2e",
+    "src/catalog-summary.js": "3348e2cf1d6d6042a6b277d867a96ff8d4a7db4947948b642e1845f565d14971",
+    "src/app.js": "be7850bb213d16d838d8de02c9fcc94b80174a760e10b3fb5e22f948f368ce17",
+    "src/modules/engine2.js": "ef464e74b4a57306d2308af42419bf58a80ae24ac2442c2839aeebd6dc43c79d",
+    "src/modules/ai-v2.js": "64473809c8090a5dc9a1093dd63939301f6823fd382e55a9fb4b212396977ae1",
+    "src/modules/deck-guides.js": "daeabaf55111f07c64e9e6ad891067f11f27b8ae2c657547a595508a915c89be",
+    "src/modules/loader.js": "5611acf74e962f5a28456dea5d2ff83e7946deef1b6739b140bd63de03ec74be",
+    "src/modules/c13-td0-sld-integration.js": "386ef30f5ac81b8e6b36c88c8411139102777d2fd774d0e8b8bc319a9a119069",
+    "src/modules/c13-td0-sld-rules.js": "6f67130b50d1f4edb821d981f35492b78351f4d747c9c97eae1012f68f1f6d78",
+    "src/modules/c13-td0-sld-special.js": "89ac30ce5e4b9c60f279c66666fb0d727be9a33c170cab0bbbc9e1b7251405f9",
+    "src/modules/scripts-c13-td0-sld-creatures.js": "b8b79a453411d6e8b56f312c8e52ed9b2b2fbf5068173fc91896c50d3d8c8886",
+    "src/modules/scripts-c13-td0-sld-objects.js": "683bdab6592df008786a68dc884e3d84ef9c76a7f3d4af787888874b250d50ec",
+    "src/modules/scripts-c13-td0-sld-spells.js": "53270d1f930fb13b0738823a847ad466788e1deee73f3cd64749583ffe957bb3",
+    "tests/c13-td0-sld-precons.test.mjs": "8bc511ddeeef584aefea6976fd79ca61b868f4c8c59e51b0b9556251c93566da"
+  },
+  "publication": "Implementation QA was recorded before release authorization. The subsequent commit, push and deploy request is covered by reports/releases/precon-c13-td0-sld-2026-09-19.md and local production evidence.",
+  "deckAudit": {
+    "passed": true,
+    "decks": 168,
+    "duplicateScripts": 0,
+    "simplifiedCards": 0,
+    "log": "output/precon-c13-td0-sld-2026-09-19/audit-final.log"
+  }
+}
