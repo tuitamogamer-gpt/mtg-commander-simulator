@@ -16,10 +16,24 @@ function browserHarness() {
     querySelector() { return null; },
     createElement(tagName) {
       return {
-        tagName, className: '', innerHTML: '', children: [],
+        tagName, className: '', innerHTML: '', children: [], dataset: {},
         attributes: {},
         setAttribute(name, value) { this.attributes[name] = String(value); },
         appendChild(child) { this.children.push(child); return child; },
+        insertBefore(child, reference) {
+          const index = this.children.indexOf(reference);
+          if (index < 0) return this.appendChild(child);
+          this.children.splice(index, 0, child);
+          return child;
+        },
+        querySelector(selector) {
+          for (const child of this.children) {
+            if (selector.startsWith('.') && child.className.split(/\s+/).includes(selector.slice(1))) return child;
+            const nested = child.querySelector(selector);
+            if (nested) return nested;
+          }
+          return null;
+        },
       };
     },
   };
