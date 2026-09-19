@@ -103,5 +103,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const c = ctx.targets[0]; C.add(ctx, c, 'enlightened'); C.grant(ctx, c, [], 'object', {field: 'cwwExalted', grants: []});
     }}]};
   S['Empyrial Armor'] = {auraTarget: [T.creature()], attachGrant: (g, c, host) => {host.cur.power += c.ctrl.hand.length; host.cur.toughness += c.ctrl.hand.length;}};
-  S['Illusionary Mask'] = {abilities: [{label: 'Pay X: cast an affordable creature face down', xCost: true, cost: {mana: '{X}'}, sorcery: true, run: ctx => C.mask(ctx)}]};
+  S['Illusionary Mask'] = {abilities: [{label: 'Pay X: cast an affordable creature face down', xCost: true, cost: {mana: '{X}'}, sorcery: true,
+    aiScore: (g, c, p) => p.hand.some(card => card.is('Creature') && card.def.cost != null &&
+      g.canPayMana(p, M.parseCost(card.def.cost), {card: c, isAbility: true, cdkCostHasX: true})) ? 4 : -100,
+    run: ctx => C.mask(ctx)}]};
 })();

@@ -437,7 +437,8 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
   // the budget, so a progressing finite sequence is not mistaken for a loop.
   function optionalTriggerBudget(controller, game, player, query, accepted = false) {
     const hint = query.aiHint;
-    if (query.type !== 'chooseOption' || hint?.kind !== 'optTrigger' || !hint.src ||
+    const source = hint?.src || hint?.source;
+    if (query.type !== 'chooseOption' || !['optTrigger', 'enduringScalelord'].includes(hint?.kind) || !source ||
       !query.options?.some(option => option.key === 'yes') || !query.options.some(option => option.key === 'no')) return false;
     if (controller._optionalTriggerBudget?.turn !== game.turnNo) controller._optionalTriggerBudget = { turn: game.turnNo, entries: new Map() };
     const eventCard = query.data?.card;
@@ -445,14 +446,21 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
     const knownEvent = eventCard && (revealed === 'all' || Array.isArray(revealed) && revealed.includes(player.idx) ||
       !eventCard.faceDown && (['battlefield','graveyard','exile','stack','command'].includes(eventCard.zone) ||
         eventCard.zone === 'hand' && eventCard.owner === player));
-    const key = `${hint.src.iid}|${hint.src.zoneVersion}|${hint.name || query.prompt}|${knownEvent ? eventCard.name : 'unknown event card'}`;
+    // Copies of Scalelord trigger one another. Share the budget across them
+    // and reduce accepted activations as the number of resulting triggers
+    // grows, so a copied army cannot build thousands of optional stack items.
+    const scalelord = hint.kind === 'enduringScalelord';
+    const key = scalelord ? 'enduringScalelord' :
+      `${source.iid}|${source.zoneVersion}|${hint.name || query.prompt}|${knownEvent ? eventCard.name : 'unknown event card'}`;
+    const limit = scalelord ? Math.max(1, Math.floor(48 / Math.max(1,
+      game.creatures(player).filter(card => card.name === source.name).length - 1))) : 24;
     const progress = JSON.stringify([player.hand.map(card => card.name).sort(), player.library.length,
       game.players.filter(other => other !== player).map(other => [other.life, other.poison, other.lost])]);
     const entries = controller._optionalTriggerBudget.entries;
     let entry = entries.get(key);
     if (!entry || entry.progress !== progress) { entry = { progress, accepted: 0 }; entries.set(key, entry); }
     if (accepted) entry.accepted++;
-    return entry.accepted >= 24;
+    return entry.accepted >= limit;
   }
   MTG.optionalAITriggerBudget = optionalTriggerBudget;
 

@@ -1378,7 +1378,9 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             seen = new Map();
             ordinaryOnly = tryCover(0, 0n, branch.remaining, branch.generic,
               [], initiallyUsedArtifactAbility, branch);
-            if (ordinaryOnly && !planResourceScore(ordinaryOnly.plan).scarce) {
+            // An affordability probe only needs a legal witness; choosing the
+            // least destructive payment is reserved for the actual payment.
+            if (ordinaryOnly && (opts._manaFeasibilityOnly || !planResourceScore(ordinaryOnly.plan).scarce)) {
               return { plan: ordinaryOnly.plan, usedPool: ordinaryOnly.pool.used };
             }
           }
@@ -1389,7 +1391,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
             [], initiallyUsedArtifactAbility, branch);
           const preferred = preferCheaperResult(res, ordinaryOnly);
           if (!preferred) continue;
-          if (!planResourceScore(preferred.plan).scarce) {
+          if (opts._manaFeasibilityOnly || !planResourceScore(preferred.plan).scarce) {
             return { plan: preferred.plan, usedPool: preferred.pool.used };
           }
           bestScarceResult = preferCheaperResult(bestScarceResult, preferred);
@@ -5715,7 +5717,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
       const mc = resolvedManaCost;
       if(plannedCounters&&!MTG.OracleV8CounterCosts.validate(counterPaymentContext,cost.oracleCounterPayment,plannedCounters))return false;
       const manaExclude = (cost.tap || cost.rmCounter ? [c] : []).concat(tapPermanents);
-      if (a.xCost&&ctx.x===undefined) {
+      if ((a.xCost || mc.x > 0) && ctx.x === undefined) {
         const maxX = this.maxAffordableX(p, mc, c, {
           forSpell:{card:c,isAbility:true,cdkCostHasX:!!mc.x},
           artifactAbilityAlreadyUsed: c.is('Artifact'), excludeCards: manaExclude,

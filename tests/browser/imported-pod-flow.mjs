@@ -74,7 +74,8 @@ async function importDeck(page, name) {
 async function configure(page) {
   await page.locator('.deckspotlightcontinue').click();
   assert.equal((await state(page)).stage, 'pod');
-  assert.equal(await page.locator('[data-mode="online"]').isDisabled(), true, 'custom decks stay in supported Solo flow');
+  assert.equal(await page.locator('[data-mode="online"]').isDisabled(), false, 'imported decks also support Live');
+  assert.equal(await page.locator('[data-mode="solo"]').getAttribute('class').then(value => value.includes('selected')), true, 'this flow keeps Solo selected');
   await page.locator('[data-ai-count="2"]').click();
   const deckSelects = page.locator('.botfields .deckselect');
   await deckSelects.nth(0).selectOption('Quick Draw');

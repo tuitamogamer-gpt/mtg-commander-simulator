@@ -40,7 +40,12 @@ var MTG=globalThis.MTG||(globalThis.MTG={});
   if(on==='cast'&&d.player){delete d.player.turnState.pomNextDiscount;for(const r of this.pomNukeGrants||[])if(r.player===d.player.idx&&d.player.turnsStarted<=r.throughTurn){const src=this.byIid(r.source);this.queueTrigger({src,ctrl:this.players[r.controller],name:'Nuka-Nuke Launcher: two rad counters',run:ctx=>C.rad(ctx,d.player,2)});}}
   if(on==='etb'&&d.card.is('Artifact'))d.card.ctrl.turnState.pomArtifactEntered=true;
   if(on==='attackedPlayer'){const p=d.player,defender=d.defender;if(defender){const a=p.turnState.pomAttackedPlayers||=[];if(!a.includes(defender.idx))a.push(defender.idx);}}
-  if(on==='etb'&&d.card.is('Creature')&&!d.card.isToken)for(const s of C.sources(this,d.card.ctrl,'pomFabricate'))if(s!==d.card){const c=d.card,t=C.mechanic('fabricate',{}, {n:1}).triggers[0];this.queueTrigger({src:c,ctrl:c.ctrl,name:'Fabricate 1',data:d,run:t.run,prepareTargets:t.prepareTargets});}
+  if(on==='etb'&&d.card.is('Creature')&&!d.card.isToken)for(const s of C.sources(this,d.card.ctrl,'pomFabricate'))if(s!==d.card){
+    const c=d.card,t=C.mechanic('fabricate',{}, {n:1}).triggers[0];
+    // The mechanic filter captures the entering object and its controller.
+    // Granted triggers need the same capture as printed Fabricate triggers.
+    if(t.filter(this,c,d))this.queueTrigger({src:c,ctrl:t.controller(this,c,d),name:'Fabricate 1',data:d,run:t.run,prepareTargets:t.prepareTargets});
+  }
   return emit.call(this,on,d);
  };
  const demonstrate=M.WLM.demonstrate;M.WLM.demonstrate=(g,p,s)=>demonstrate(g,p,s)||g.castHasType(s.card,s.castOpts||{},'Creature')&&C.sources(g,p,'pomDemonstrate').length>0;

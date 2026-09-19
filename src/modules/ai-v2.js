@@ -4924,7 +4924,7 @@ var MTG = globalThis.MTG || (globalThis.MTG = {});
           breakdown.safety -= 100;
         }
       }
-      if (entry.equip) {
+      if (entry.equip || ability?.equip) {
         breakdown.synergy += profile.primarySynergies.includes('equipment') || profile.primarySynergies.includes('voltron') ? 3 : 1;
         const attachment = (card.def.oracleImplementation || [])
           .filter(operation => operation.kind === 'attachment-grant');
